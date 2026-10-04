@@ -1732,7 +1732,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Validates a flag string and returns it in the specification's order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=1BF553
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=E32186
     // Broiler-Human:        PENDING
     private static string RegExpNormalizeFlags(JsEngine engine, string flags)
     {
@@ -1748,7 +1748,8 @@ internal sealed partial class JsRealm
                 'm' => 8,
                 's' => 16,
                 'u' => 32,
-                'y' => 64,
+                'v' => 64,
+                'y' => 128,
                 _ => 0,
             };
 
@@ -1760,10 +1761,17 @@ internal sealed partial class JsRealm
             seen |= bit;
         }
 
+        // `u` AND `v` ARE TWO UNICODE MODES AND A PATTERN HAS ONE: together they are a SyntaxError
+        // (phase F2, which admitted `v`).
+        if ((seen & 96) == 96)
+        {
+            throw engine.Error("SyntaxError", "Invalid regular expression flags: " + flags);
+        }
+
         // THE ORDER IS THE SPECIFICATION'S AND NOT THE ORDER THEY WERE WRITTEN IN, which is what
         // makes `new RegExp("x", "yg").flags` answer "gy" and what `toString` prints.
-        var builder = new System.Text.StringBuilder(7);
-        var order = "dgimsuy";
+        var builder = new System.Text.StringBuilder(8);
+        var order = "dgimsuvy";
 
         for (var at = 0; at < order.Length; at++)
         {
@@ -1777,7 +1785,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Compiles a pattern with this profile's own matcher.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C66184
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=1CF1D4
     // Broiler-Human:        PENDING
     private static JsRegExpMatcher RegExpCompile(JsEngine engine, string source, string flags)
     {
@@ -1788,7 +1796,8 @@ internal sealed partial class JsRealm
                 RegExpHasFlag(flags, 'i'),
                 RegExpHasFlag(flags, 'm'),
                 RegExpHasFlag(flags, 's'),
-                RegExpHasFlag(flags, 'u'));
+                RegExpHasFlag(flags, 'u'),
+                RegExpHasFlag(flags, 'v'));
         }
         catch (JsRegExpSyntaxError failure)
         {

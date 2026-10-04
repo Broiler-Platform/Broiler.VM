@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, and the WeakMap chain stall, JSC-260; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, and phase F2's `v` flag, JSC-262; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -575,6 +575,15 @@ running frames and placed by the position table; `runs/an-error-has-no-stack.js`
 roadmap section 6's two F3 rows have left the table ([JSC-261](roadmap.corrections.md#jsc-261)).
 Each clause of F3's exit gate is observed to hold; both records are unsigned, so no milestone row
 advances.)*
+
+**Phase F2 observation, 2026-10-04.** The RegExp `v` flag runs: set operations, nested classes,
+string literals and the seven properties of strings, generated from two emoji files archived under
+rule N22, with the edition's case folding under `vi`. Its three exit-gate subtrees pass all 308 of
+their variants, the early error naming the flag is gone, and over the RegExp-reading subtrees 282
+variants moved from failing to passing and none moved back
+([JSC-262](roadmap.corrections.md#jsc-262)). The identity `broiler.javascript.regexp` is not minted.
+This is unreviewed implementation and validation material, not accepted milestone evidence; no
+milestone row advances.
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:

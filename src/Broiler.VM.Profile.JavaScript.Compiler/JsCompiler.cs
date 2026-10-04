@@ -9360,7 +9360,7 @@ public sealed class JsCompiler
     /// early SyntaxError whose message names the flag as unsupported (JSeal slice JSD-0031-later).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DBB5D5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=92D102
     // Broiler-Human:        PENDING
     private void CompileRegExpLiteral(JsRegExpLiteral pattern)
     {
@@ -9374,7 +9374,8 @@ public sealed class JsCompiler
                     pattern.Flags.Contains('i', System.StringComparison.Ordinal),
                     pattern.Flags.Contains('m', System.StringComparison.Ordinal),
                     pattern.Flags.Contains('s', System.StringComparison.Ordinal),
-                    pattern.Flags.Contains('u', System.StringComparison.Ordinal));
+                    pattern.Flags.Contains('u', System.StringComparison.Ordinal),
+                    pattern.Flags.Contains('v', System.StringComparison.Ordinal));
             }
             catch (JsRegExpSyntaxError failure)
             {
@@ -9389,24 +9390,17 @@ public sealed class JsCompiler
     }
 
     /// <summary>
-    /// Refuses a regular-expression literal whose flags the language refuses, or whose <c>v</c> flag
-    /// this profile does not implement, and answers whether it did.
+    /// Refuses a regular-expression literal whose flags the language refuses, and answers whether it
+    /// did.
     /// </summary>
     /// <remarks>
     /// ES2026 IsValidRegularExpressionLiteral: the flags are drawn from <c>dgimsuyv</c>, none twice,
-    /// and not <c>u</c> and <c>v</c> together. Those are SyntaxErrors of the language. A literal
-    /// that passes them and carries <c>v</c> is a program the language admits and this matcher
-    /// cannot run - no set operations, nested classes or properties of strings. It is refused
-    /// early, as the SyntaxError the constructor already throws for the flag, with a message that
-    /// names the flag as unsupported rather than invalid. <b>Why not a manifest refusal:</b> that
-    /// is the more exact code, and it was tried, but the pinned suite's whole-run floor
-    /// (<c>src/tests/conformance/floors/test262-wide.floor</c>) holds unsupported variants at
-    /// <c>atMost 0</c>, and the 356 <c>v</c> variants of the RegExp subtrees would have crossed it;
-    /// a floor is not lowered to make a slice fit. The cost is stated instead: a negative test whose
-    /// source is a malformed <c>v</c> pattern is answered by this refusal, which is not evidence of
-    /// <c>v</c> support (decision JSD-0031 section 12).
+    /// and not <c>u</c> and <c>v</c> together. Those are SyntaxErrors of the language, and they are
+    /// all this refuses. <b>A well-formed <c>v</c> is admitted</b> since phase F2 gave the matcher
+    /// the flag's class syntax, set operations and properties of strings; until then it was refused
+    /// here as unsupported, under the reading of decision JSD-0031 section 12 (JSC-262).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=919679
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=51285E
     // Broiler-Human:        PENDING
     private bool RefuseRegExpLiteralFlags(JsRegExpLiteral pattern)
     {
@@ -9441,13 +9435,9 @@ public sealed class JsCompiler
             return true;
         }
 
-        Refuse(
-            pattern.Span,
-            SliceSourceDiagnosticCode.UnexpectedToken,
-            "Invalid regular expression flags: " + flags +
-                " (the flag `v`, unicodeSets, is not supported by this profile's matcher)");
-
-        return true;
+        // A WELL-FORMED `v` IS ADMITTED since phase F2 gave the matcher its class syntax; until then
+        // it was refused here as unsupported (JSC-262).
+        return false;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DF131D

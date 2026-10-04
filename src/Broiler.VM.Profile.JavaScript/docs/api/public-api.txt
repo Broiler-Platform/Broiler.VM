@@ -2267,7 +2267,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.TextOf(System.String input, System.Int32 group) : System.String
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Advance(System.String input, System.Int32 index, System.Boolean unicode) : static System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.CaptureCount : System.Int32 { get; }
-  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Compile(System.String source, System.Boolean ignoreCase, System.Boolean multiline, System.Boolean dotAll, System.Boolean unicode) : static Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Compile(System.String source, System.Boolean ignoreCase, System.Boolean multiline, System.Boolean dotAll, System.Boolean unicode, System.Boolean unicodeSets) : static Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.DotAll : System.Boolean { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.HasGroupNames : System.Boolean { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.IgnoreCase : System.Boolean { get; }

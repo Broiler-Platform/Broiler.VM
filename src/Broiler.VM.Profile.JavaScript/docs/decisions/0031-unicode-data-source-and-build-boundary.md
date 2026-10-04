@@ -882,3 +882,36 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
   operations and `MaybeSimpleCaseFolding`.
 - **What a program meets today does not change** until F2 lands: the early error naming the flag
   stays.
+
+## 14. 2026-10-04: the `v` flag, performed (phase F2)
+
+*Recorded as the slice the section above schedules was performed. It signs nothing and takes
+nothing: this record keeps its status line. Corrections entry
+[JSC-262](../roadmap.corrections.md#jsc-262).*
+
+- **The two files are archived.** `emoji-sequences.txt` and `emoji-zwj-sequences.txt` were
+  retrieved twice from `https://www.unicode.org/Public/17.0.0/emoji/`, found byte-identical, and
+  archived unmodified under `src/tests/unicode/pins/emoji-17.0.0/`, a directory of their own because
+  they come from the release's `emoji/` directory and not its `ucd/` one. `unicode.pin` names both
+  with their lengths and digests and an `emoji-source` line; rule N22 hashes them and reads their
+  `# Version: 17.0` header, as it reads `emoji-data.txt`'s.
+- **A fifth generated file.** `JsUnicodeStringProperties.g.cs`, in the format assembly, holds the
+  seven properties of strings in the ECMAScript table's order: each one's single code points as
+  ranges (only `Basic_Emoji` has any) and its sequences, with `RGI_Emoji` read as the union of the
+  six. The generator refuses a type the table does not name, a single code point outside
+  `Basic_Emoji`, and a sequence listed twice. **The sequences spell their code points through a
+  dictionary**, most frequent first: 2,760 sequences of 11,196 code points use 436 distinct ones, and
+  at three bytes each the tables would have been 5,318 bytes over the owner's 300 KB cap. With one
+  byte for the 240 most frequent and two for the rest, the string tables are about 21 KB smaller and
+  the whole stays under the cap. The cap is not changed.
+- **The matcher reads `v`.** A class under `v` is computed as explicit ranges and a set of
+  strings: nested classes, `&&` and `--`, `\q{...}`, the properties of strings, the
+  `ClassSetCharacter` and reserved-punctuator rules, and `MayContainStrings`' early errors.
+  `MaybeSimpleCaseFolding` folds a character, a range, a string disjunction and a property's set
+  under `vi`, by a pass over the fold table's entries, and `CharacterComplement` takes the
+  complement in the universe of code points that fold to themselves. A class holding strings lowers
+  to an alternation that tries the longest first, then the code points, then the empty string.
+  The front end's early error naming the flag is gone; `u` and `v` together are still refused.
+- **What a program meets now**: `/[\p{L}--[a-z]]/v`, `/\p{RGI_Emoji}/v` and `/[\q{ab|c}]/v` run;
+  `/\P{Ll}/iv.test("a")` is `false` where `/\P{Ll}/iu.test("a")` is `true`, as the edition says;
+  `unicodeSets` answers `true` for a `v` pattern; and `flags` places `v` between `u` and `y`.

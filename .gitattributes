@@ -107,6 +107,9 @@ src/tests/octane/pins/*.tar.gz binary
 # file and the README beside it stay text: they are this repository's own writing and nothing
 # hashes them. Declared 2026-09-22 in the change that archived the files (JSD-0031, slice U1/U2).
 src/tests/unicode/pins/ucd-17.0.0/** binary
+# The two emoji sequence files beside them, from the same release's `emoji/` directory, for the same
+# reason (phase F2, 2026-10-04).
+src/tests/unicode/pins/emoji-17.0.0/** binary
 src/tests/unicode/pins/unicode-LICENSE.txt binary
 
 *.png                     binary

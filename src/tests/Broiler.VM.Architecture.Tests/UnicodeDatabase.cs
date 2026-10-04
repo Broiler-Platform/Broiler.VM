@@ -165,6 +165,8 @@ internal sealed class UnicodeDatabase
 
     private const string Ucd = "ucd-17.0.0/";
 
+    private const string Emoji = "emoji-17.0.0/";
+
     /// <summary>General_Category values (the 30) and groups (the 8), in set-id order.</summary>
     internal List<UnicodeValue> GeneralCategories { get; } = [];
 
@@ -173,6 +175,13 @@ internal sealed class UnicodeDatabase
 
     /// <summary>The binary properties the language admits, in set-id order: canonical name, aliases, ranges.</summary>
     internal List<UnicodeValue> BinaryProperties { get; } = [];
+
+    /// <summary>
+    /// The properties of strings the language admits under <c>v</c>, in the ECMAScript table's row
+    /// order: each one's single code points and its sequences of two or more. <c>RGI_Emoji</c>, the
+    /// table's last row, is the union of the others and has no data of its own (phase F2).
+    /// </summary>
+    internal List<(string Name, List<UnicodeRange> CodePoints, List<int[]> Sequences)> StringProperties { get; } = [];
 
     /// <summary>Script values in id order: Script ranges.</summary>
     internal List<UnicodeValue> Scripts { get; } = [];
@@ -249,8 +258,123 @@ internal sealed class UnicodeDatabase
         database.ReadCaseFolding(Text(Ucd + "CaseFolding.txt"));
         database.ReadSimpleUppercase(unicodeData);
         database.ReadFullCaseMappings(unicodeData, Text(Ucd + "SpecialCasing.txt"));
+        database.ReadStringProperties(strings, Text(Emoji + "emoji-sequences.txt"), Text(Emoji + "emoji-zwj-sequences.txt"));
 
         return database;
+    }
+
+    /// <summary>
+    /// The properties of strings, from the two emoji sequence files, checked against the table of
+    /// names the language admits.
+    /// </summary>
+    /// <remarks>
+    /// <b>The file's type field is the property's name</b>, as the file's own header says: "each of
+    /// the type fields defines the name of a binary property of strings", and <c>RGI_Emoji</c> is their
+    /// union with <c>RGI_Emoji_ZWJ_Sequence</c>. So every type the files use must be a row of the
+    /// ECMAScript table and every row but <c>RGI_Emoji</c> must be a type the files use; a range of
+    /// single code points is admitted only for <c>Basic_Emoji</c>, and a sequence is two or more code
+    /// points listed once.
+    /// </remarks>
+    private void ReadStringProperties(IReadOnlyList<UnicodeSpecName> table, string sequences, string zwj)
+    {
+        const string Union = "RGI_Emoji";
+        var names = table.Select(static row => row.Name).ToArray();
+
+        if (names.Length == 0 || names[^1] != Union || table.Any(static row => row.Name != row.Canonical))
+        {
+            throw new InvalidDataException($"the properties-of-strings table does not end with `{Union}`, or gives a property an alias");
+        }
+
+        var byName = new Dictionary<string, (List<UnicodeRange> CodePoints, List<int[]> Sequences)>(StringComparer.Ordinal);
+
+        foreach (var name in names[..^1])
+        {
+            byName[name] = ([], []);
+        }
+
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var fields in UnicodeDataFile.Records(sequences).Concat(UnicodeDataFile.Records(zwj)))
+        {
+            if (fields.Length < 2 || !byName.TryGetValue(fields[1], out var property))
+            {
+                throw new InvalidDataException($"an emoji sequence line names the type `{(fields.Length < 2 ? string.Empty : fields[1])}`, which the table does not admit");
+            }
+
+            var codePoints = fields[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (codePoints.Length == 1)
+            {
+                if (fields[1] != "Basic_Emoji")
+                {
+                    throw new InvalidDataException($"`{fields[0]}` is a single code point of `{fields[1]}`, and only Basic_Emoji lists any");
+                }
+
+                property.CodePoints.Add(UnicodeDataFile.Range(codePoints[0]));
+                continue;
+            }
+
+            var sequence = codePoints.Select(UnicodeDataFile.Hex).ToArray();
+
+            if (sequence.Any(static codePoint => codePoint > UnicodeDataFile.MaxCodePoint) || !seen.Add(fields[1] + ":" + fields[0]))
+            {
+                throw new InvalidDataException($"`{fields[0]}` of `{fields[1]}` is out of range or listed twice");
+            }
+
+            property.Sequences.Add(sequence);
+        }
+
+        foreach (var name in names[..^1])
+        {
+            var (codePoints, sequenceList) = byName[name];
+
+            if (codePoints.Count == 0 && sequenceList.Count == 0)
+            {
+                throw new InvalidDataException($"the emoji sequence files list nothing for `{name}`");
+            }
+
+            StringProperties.Add((name, Merge(codePoints), sequenceList.OrderBy(static sequence => sequence, SequenceOrder.Instance).ToList()));
+        }
+
+        StringProperties.Add((Union, [], []));
+
+        static List<UnicodeRange> Merge(List<UnicodeRange> ranges)
+        {
+            var merged = new List<UnicodeRange>();
+
+            foreach (var range in ranges.OrderBy(static range => range.First))
+            {
+                if (merged.Count > 0 && range.First <= merged[^1].Last + 1)
+                {
+                    merged[^1] = merged[^1] with { Last = Math.Max(merged[^1].Last, range.Last) };
+                }
+                else
+                {
+                    merged.Add(range);
+                }
+            }
+
+            return merged;
+        }
+    }
+
+    /// <summary>Code point sequences ordered code point by code point, a prefix first.</summary>
+    private sealed class SequenceOrder : IComparer<int[]>
+    {
+        internal static readonly SequenceOrder Instance = new();
+
+        public int Compare(int[]? left, int[]? right)
+        {
+            for (var at = 0; at < Math.Min(left!.Length, right!.Length); at++)
+            {
+                if (left[at] != right[at])
+                {
+                    return left[at].CompareTo(right[at]);
+                }
+            }
+
+            return left.Length.CompareTo(right.Length);
+        }
     }
 
     private void ReadGeneralCategories(string valueAliases, string derived, string unicodeData)

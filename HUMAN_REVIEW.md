@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5932 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5967 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 240 |
-| Code units | 10484 |
-| Relevant | 5932 |
-| Exempt | 4552 |
-| Assessed | 5932 of 5932 (100%) |
-| Human reviewed | 0 of 5932 (0%) |
-| Unverified | 5932 |
+| Files scanned | 242 |
+| Code units | 10532 |
+| Relevant | 5967 |
+| Exempt | 4565 |
+| Assessed | 5967 of 5967 (100%) |
+| Human reviewed | 0 of 5967 (0%) |
+| Unverified | 5967 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5932 |
+| HUMAN_PENDING | 5967 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4552 |
+| EXEMPT | 4565 |
 
 ## 5. Aliases In The Tree
 
@@ -188,13 +188,15 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` | 70 | 45 | 25 | 45 | Low | Critical | 11/11 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNumericManifest.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 175 | 25 | 150 | 25 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 233 | 129 | 104 | 129 | Medium | Medium | 1/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 264 | 157 | 107 | 157 | Medium | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 12 | 12 | 0 | 12 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.cs` | 12 | 12 | 0 | 12 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.cs` | 15 | 15 | 0 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs` | 7 | 1 | 6 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeLexical.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.cs` | 17 | 15 | 2 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` | 18 | 1 | 17 | 1 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.cs` | 3 | 3 | 0 | 3 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` | 11 | 1 | 10 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` | 28 | 22 | 6 | 22 | Low | Critical | 20/20 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` | 181 | 61 | 120 | 61 | Low | Critical | 40/40 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` | 33 | 33 | 0 | 33 | Low | High | 10/10 |
@@ -4106,7 +4108,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5798 of the 5932 assessed units declare
+That is not a figure of speech. 5832 of the 5967 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

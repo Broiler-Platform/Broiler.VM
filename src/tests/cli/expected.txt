@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 141
+runs|0|# Completed: 142
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -898,7 +898,7 @@ runs/html-like-comments-in-a-script.js|0|1 / 5 / 7
 runs/a-for-in-initialiser.js|0|1 / -1 / q / 0 / c
 runs/a-call-as-an-assignment-target.js|0|ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f
 refused/a-call-as-an-assignment-target-in-strict-code.js|3|2205:InvalidAssignmentTarget at 9:1
-runs/the-edition-members-the-realm-lacked.js|0|true,true,false,false / 1,1,symbol / function false / undefined
+runs/the-edition-members-the-realm-lacked.js|0|true,true,false,false / 1,1,symbol / function false true / undefined
 runs/uint8array-base64-and-hex.js|0|SGn7/w== / SGn7_w / 4869fbff / 72,105,33 /  / SyntaxError / 72,105 / 5:2:72,105,0,0 / 0:0:0,0 / SyntaxError:72,105,0
 runs/a-reviver-reads-the-source-text.js|0|a=1.50 0="\u0041" 1=-0 2=1e3 b=- c=- =-
 
@@ -1036,3 +1036,8 @@ runs/a-deep-weak-map-chain.js|0|100000
 # `message`, rendered on first read as V8 renders it, places reduced to the file's name. The values
 # are the comparison engine's *(JSC-261)*.
 runs/an-error-has-a-stack.js|0|string / true / stack,message / function/function/false/true / Error: boom >     at inner (an-error-has-a-stack.js:8:27) >     at outer (an-error-has-a-stack.js:9:27) / Error: sub >     at make (an-error-has-a-stack.js:14:26) / TypeError: Cannot read properties of undefined (reading 'value') >     at read (an-error-has-a-stack.js:16:37) >     at caught (an-error-has-a-stack.js:17:27) / 11 / Error: after / replaced / 0 / {} / false
+
+# THE `v` FLAG (2026-10-04): set operations, nested classes, string literals and properties of
+# strings, `i`'s folding of a class's operands and the early errors. The values are the comparison
+# engine's *(JSC-262)*.
+runs/the-v-flag.js|0|true false true false true false ab true false false true true true v dgimsvy true false SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError 1 3

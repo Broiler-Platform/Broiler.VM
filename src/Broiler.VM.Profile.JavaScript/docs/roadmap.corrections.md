@@ -11269,3 +11269,51 @@ comparison engines' common form and the position table the artifact already carr
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout, and the proposed
 JSD-0038. 2026-10-04.
+
+### JSC-262
+
+**Where:** phase F2: the RegExp `v` flag - the matcher, the front end's early error, the realm's
+flags, and the Unicode archive and generator that feed the properties of strings.
+
+**What the plan said.** Roadmap section 6 said: "A literal carrying it is refused at compile time, and
+the constructor throws a `SyntaxError` for it. `unicodeSets` answers `false` for every RegExp." The
+compiler's comment called the refusal deliberate under JSD-0031 section 12, and the matcher's said it
+had "no `v` flag, none of its set operations and none of the seven properties of strings".
+
+**What replaced it, observed on 2026-10-04.**
+- **The data.** `emoji-sequences.txt` and `emoji-zwj-sequences.txt` from the Unicode 17.0.0
+  release's `emoji/` directory are archived under `src/tests/unicode/pins/emoji-17.0.0/`, each
+  retrieved twice and found byte-identical, and pinned by length and digest; rule N22 reads their
+  version header. `UnicodeTableGenerator` writes a fifth file, `JsUnicodeStringProperties.g.cs`. Its
+  sequences spell code points through a frequency-ordered dictionary so that the tables stay under
+  the owner's 300 KB cap, which three-byte code points would have passed by 5,318 bytes
+  ([JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) section 14).
+- **The matcher.** Under `v` a class is a set of code points and strings: nested classes, `&&`,
+  `--`, `\q{...}`, the seven properties of strings, the class-set character and reserved
+  punctuator rules, and `MayContainStrings`' early errors. `MaybeSimpleCaseFolding` and
+  `CharacterComplement` follow the edition under `vi`, so `/\P{Ll}/iv.test("a")` is `false`. A class
+  that holds strings tries the longest first. Every other rule of `u` holds under `v`.
+- **The front end and the realm.** The early error naming `v` as unsupported is gone; `u` with `v`
+  is still a SyntaxError in both. `flags` orders them `dgimsuvy`, `unicodeSets` answers `true` for a
+  `v` pattern, and `JsRegExpMatcher.Compile` takes the flag as an optional argument (public API
+  baseline updated).
+- **Fixtures and probes.** `runs/the-v-flag.js` pins set operations, string literals, properties
+  of strings, `vi` folding, the early errors and the flags against the comparison engine.
+  `runs/the-edition-members-the-realm-lacked.js` now asserts `true` for `/a/v.unicodeSets` beside
+  `false` for `/a/u.unicodeSets`. The differential probes that declared the refusal as a divergence
+  (`the-unicode-lexical-grammar.js` 54, 55 and 61, `the-unicode-property-escapes.js` 60) agree with
+  it now, and their `#diverges` lines are removed.
+- **test262:** over `built-ins/RegExp`, `language/literals/regexp`, the six RegExp-reading
+  `String.prototype` methods and `annexB/built-ins/RegExp`, 282 variants moved from failing to
+  passing and none moved back. `RegExp/unicodeSets` passes 228 of 228, `CharacterClassEscapes` 24 of
+  24, and `property-escapes/generated/strings` 56 of 56. The 24 variants still failing there are the
+  `cross-realm` cases phase F5 owns. The whole-suite figure is added by an amendment to this entry
+  when the run finishes; until then no whole-suite figure is claimed.
+
+**What must not be read as repaired.**
+- **The identity is still `wide`.** F2's line names `broiler.javascript.regexp`, which needs a
+  person's decision (JSC-167) and was not minted.
+- **The properties of strings are the 17.0 lists**, archived; a later Unicode version is a new pin.
+- No milestone or stage moves; JSD-0031 is still proposed.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

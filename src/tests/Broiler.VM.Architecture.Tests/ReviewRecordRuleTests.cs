@@ -1208,7 +1208,12 @@ public sealed class ReviewRecordRuleTests
         // AND THE STACK (phase F3, 2026-10-04, JSD-0038): JsEngine.Stack.cs, the running frames'
         // sites, the capture an error's `stack` is made from and its rendering. It is covered on the
         // same terms as every other product file, and nothing in it has been read by a human.
-        Assert.Equal(240, AssuranceSources.Files.Count);
+        //
+        // AND THE PROPERTIES OF STRINGS (phase F2, 2026-10-04): JsUnicodeStringProperties.g.cs, the fifth
+        // file UnicodeTableGenerator writes and rule N22 holds, and the hand-written
+        // JsUnicodeStringProperties.cs that reads it for the `v` flag's `\p{...}`. Both are covered on
+        // the same terms as every other product file, and nothing in them has been read by a human.
+        Assert.Equal(242, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

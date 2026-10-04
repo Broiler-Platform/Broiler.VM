@@ -1059,7 +1059,7 @@ meets today is unchanged until the phase that delivers the surface lands, and ro
 
 | Surface | Governing record | What reopening changes in the record | Phase |
 |---|---|---|---|
-| The RegExp `v` flag | [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) | "Keep the `v` flag refused until a matcher slice is scheduled": the slice is scheduled | F2 |
+| The RegExp `v` flag | [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) | "Keep the `v` flag refused until a matcher slice is scheduled": the slice is scheduled *(performed 2026-10-04: JSD-0031 section 14)* | F2 |
 | `Function.prototype.toString` source text | none yet; a record opens F3 *(proposed: [JSD-0037](decisions/0037-the-source-text-section.md), 2026-10-04)* | The artifact carries the source text a function was defined from | F3 |
 | `Error.prototype.stack` | none yet; a record opens F3 *(proposed: [JSD-0038](decisions/0038-the-error-stack.md), 2026-10-04)* | The shape is chosen by that record, from the comparison engines' common form | F3 |
 | `FinalizationRegistry` cleanup | [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) | D03-a is scheduled, and is taken on by the CLI composition by default | F4 |
@@ -1145,6 +1145,10 @@ gate and the ledger's row.
     pass;
   - the compile-time refusal of `v` and its diagnostic are removed;
   - the row asserting `unicodeSets` answers `false` is replaced.
+- *Observed 2026-10-04, unreviewed: each clause of the gate holds - the three subtrees pass all of
+  their 308 variants, the refusal is gone, and the row now asserts `true` for a `v` pattern
+  ([JSC-262](roadmap.corrections.md#jsc-262)). The identity is still `wide`: F1 did not mint
+  `broiler.javascript.regexp`, which needs a person's decision.*
 
 #### F3 — Source text and stacks
 

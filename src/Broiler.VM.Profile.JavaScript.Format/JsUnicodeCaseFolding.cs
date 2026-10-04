@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           0
-// Human-reviewed:   0/12
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       12
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -130,6 +130,21 @@ internal static partial class JsUnicodeCaseFolding
 
         return count;
     }
+
+    /// <summary>How many code points have a simple folding other than themselves.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7D8A08
+    // Broiler-Human:        PENDING
+    internal static int FoldCount => FoldData.Length / 6;
+
+    /// <summary>The code point of fold entry <paramref name="entry"/>, in code point order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=78609B
+    // Broiler-Human:        PENDING
+    internal static int FoldSource(int entry) => JsUnicodeProperties.ReadInt24(FoldData, entry * 6);
+
+    /// <summary>The simple folding of fold entry <paramref name="entry"/>'s code point.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3674F3
+    // Broiler-Human:        PENDING
+    internal static int FoldTarget(int entry) => JsUnicodeProperties.ReadInt24(FoldData, (entry * 6) + 3);
 
     /// <summary>
     /// The non-<c>u</c> Canonicalize of one code unit: UnicodeData.txt's simple upper case, or the

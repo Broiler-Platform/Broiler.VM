@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 240 |
-| Files carrying an annotation | 240 |
-| Code units | 10484 |
-| Relevant | 5932 |
-| Exempt by predicate | 4552 |
-| Annotated | 5932 of 5932 (100%) |
-| Human reviewed | 0 of 5932 (0%) |
-| Unverified | 5932 |
+| Files scanned | 242 |
+| Files carrying an annotation | 242 |
+| Code units | 10532 |
+| Relevant | 5967 |
+| Exempt by predicate | 4565 |
+| Annotated | 5967 of 5967 (100%) |
+| Human reviewed | 0 of 5967 (0%) |
+| Unverified | 5967 |
 
 ## Review states
 
@@ -28,19 +28,19 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5932 |
+| HUMAN_PENDING | 5967 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4552 |
+| EXEMPT | 4565 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1626 |
-| Low | 5525 |
-| Medium | 83 |
+| Low | 5556 |
+| Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
 | *not annotated* | 0 |
@@ -50,8 +50,8 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 983 |
-| Medium | 4385 |
+| Low | 984 |
+| Medium | 4422 |
 | High | 1604 |
 | Critical | 253 |
 | *not annotated* | 0 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5932 |
+| Units scored | 5967 |
 
 ## High-security review areas
 
@@ -1956,21 +1956,21 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1410 |
+| TrivialPropertyOrAccessor | 1412 |
 | ParameterAssigningConstructor | 162 |
 | TrivialExpressionBodiedMember | 64 |
 | CompilerSuppliedRecordOrEnumMember | 24 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 827 |
+| FieldDeclaringStorage | 828 |
 | EnumMemberOfADeclaredVocabulary | 1907 |
-| DeclaredInSource | 37 |
+| DeclaredInSource | 47 |
 
 ## Per-unit exemptions
 
 | Metric | Value |
 |---|---:|
-| Per-unit exemptions | 37 |
+| Per-unit exemptions | 47 |
 
 A per-unit `EXEMPT=<reason>` line exempts one unit by a reason a human wrote, for what the
 predicate cannot see. Nothing mechanical checks that the reason is true, that it describes
@@ -2001,6 +2001,16 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 - `Broiler.VM.Profile.JavaScript.Format.JsUnicodeProperties.PropertyNameIndex` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.Format.JsUnicodeProperties.ScriptNames` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.Format.JsUnicodeProperties.ScriptNameIndex` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.PropertyCount` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.UnionProperty` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.SequenceCount` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.SequenceShortLimit` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.RangeData` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.CodePointDictionary` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.SequenceData` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.PropertyData` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.Names` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.NameIndex` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.MaxMappingLength` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.UpperIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.LowerIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
@@ -2019,7 +2029,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10484 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10532 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2027,7 +2037,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 240 of them - with a
+Beside the units it lists **every covered file** - 242 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

@@ -176,14 +176,15 @@ internal sealed class UnicodePin
     /// hash alone and answers null.
     /// </summary>
     /// <remarks>
-    /// Every UCD file but one opens <c># Name-17.0.0.txt</c>. <c>emoji-data.txt</c> opens with its
-    /// bare name and states <c># Version: 17.0</c> a few lines later, so that is what is read there.
+    /// Every UCD file but one opens <c># Name-17.0.0.txt</c>. <c>emoji-data.txt</c>, and the two
+    /// sequence files of the release's <c>emoji/</c> directory, open with their bare names and state
+    /// <c># Version: 17.0</c> a few lines later, so that is what is read there.
     /// </remarks>
     internal static string? HeaderViolation(string name, byte[] bytes, string version)
     {
         var fileName = name[(name.LastIndexOf('/') + 1)..];
 
-        if (!name.StartsWith("ucd-", StringComparison.Ordinal) ||
+        if (!(name.StartsWith("ucd-", StringComparison.Ordinal) || name.StartsWith("emoji-", StringComparison.Ordinal)) ||
             string.Equals(fileName, "UnicodeData.txt", StringComparison.Ordinal))
         {
             return null;
@@ -191,7 +192,9 @@ internal sealed class UnicodePin
 
         var lines = Decode(bytes).Split('\n', 12);
 
-        if (string.Equals(fileName, "emoji-data.txt", StringComparison.Ordinal))
+        // THE EMOJI FILES STATE THEIR VERSION THE SAME WAY: emoji-data.txt in the UCD, and the two
+        // sequence files of the release's emoji/ directory (phase F2, 2026-10-04).
+        if (fileName.StartsWith("emoji-", StringComparison.Ordinal))
         {
             var shortVersion = version[..version.LastIndexOf('.')];
 
@@ -291,8 +294,10 @@ internal static class UnicodeSpecTables
     /// SyntaxError.
     /// </para>
     /// <para>
-    /// The string-property table is read for one fact only: none of its names is admitted as a
-    /// code point property, because the <c>v</c> flag that admits them is not supported.
+    /// The string-property table is checked here for one fact: none of its names is admitted as a
+    /// code point property, because only the <c>v</c> flag admits them, and only through
+    /// <c>JsUnicodeStringProperties</c>. Its rows are read again by <c>UnicodeDatabase</c>, which holds
+    /// them to the two emoji sequence files (phase F2).
     /// </para>
     /// </remarks>
     internal static IEnumerable<string> Disagreements(

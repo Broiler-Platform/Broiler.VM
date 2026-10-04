@@ -63,9 +63,10 @@ internal static class UnicodeTableGenerator
     internal const string CaseFoldingPath = "src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs";
     internal const string NormalizationPath = "src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs";
     internal const string CasingPath = "src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs";
+    internal const string StringPropertiesPath = "src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs";
 
     /// <summary>The generated files, in the order they are generated.</summary>
-    internal static readonly string[] OutputPaths = [PropertiesPath, CaseFoldingPath, NormalizationPath, CasingPath];
+    internal static readonly string[] OutputPaths = [PropertiesPath, CaseFoldingPath, NormalizationPath, CasingPath, StringPropertiesPath];
 
     /// <summary>The per-unit exemption reason every generated table member states.</summary>
     internal const string ExemptReason =
@@ -103,6 +104,7 @@ internal static class UnicodeTableGenerator
             Emit(CaseFoldingPath, "Broiler.VM.Profile.JavaScript.Format", CaseFolding(database), tables, currentText),
             Emit(NormalizationPath, "Broiler.VM.Profile.JavaScript", Normalization(database), tables, currentText),
             Emit(CasingPath, "Broiler.VM.Profile.JavaScript", Casing(database), tables, currentText),
+            Emit(StringPropertiesPath, "Broiler.VM.Profile.JavaScript.Format", StringProperties(database), tables, currentText),
         };
 
         // Slice U3's conformance probes: test files, not product source, so they carry no
@@ -208,6 +210,97 @@ internal static class UnicodeTableGenerator
                 Table("PropertyNameIndex", propertyIndex, "The offset of each PropertyNames entry."),
                 Table("ScriptNames", scriptNames, "Every Script value name and alias from PropertyValueAliases.txt, with its script id."),
                 Table("ScriptNameIndex", scriptIndex, "The offset of each ScriptNames entry."),
+            ]);
+    }
+
+    /// <summary>The first sequence byte that opens a two-byte dictionary index.</summary>
+    private const int ShortLimit = 0xF0;
+
+    /// <summary>
+    /// The seven properties of strings the <c>v</c> flag admits: each one's single code points as
+    /// ranges and its sequences, with the names that select them (phase F2).
+    /// </summary>
+    private static GeneratedType StringProperties(UnicodeDatabase database)
+    {
+        var ranges = new ByteWriter();
+        var sequences = new ByteWriter();
+        var index = new ByteWriter();
+        var dictionary = new ByteWriter();
+        var rangeCount = 0;
+        var sequenceCount = 0;
+
+        // THE SEQUENCES SPELL THEIR CODE POINTS THROUGH A DICTIONARY, most frequent first, so that
+        // almost every one is a single byte: 2,760 sequences of 11,196 code points use 436 distinct
+        // ones, and three bytes each would put the tables over the owner's cap. An index below
+        // SequenceShortLimit is one byte; any other is two, the first carrying its high bits.
+        var frequency = database.StringProperties
+            .SelectMany(static property => property.Sequences)
+            .SelectMany(static sequence => sequence)
+            .GroupBy(static codePoint => codePoint)
+            .OrderByDescending(static group => group.Count())
+            .ThenBy(static group => group.Key)
+            .Select(static group => group.Key)
+            .ToArray();
+        var position = frequency.Select(static (codePoint, at) => (codePoint, at)).ToDictionary(static pair => pair.codePoint, static pair => pair.at);
+
+        if (frequency.Length > (0x100 - ShortLimit) * 0x100)
+        {
+            throw new InvalidDataException($"{frequency.Length} distinct code points do not fit the sequence dictionary's two-byte indices");
+        }
+
+        foreach (var codePoint in frequency)
+        {
+            dictionary.Int24(codePoint);
+        }
+
+        foreach (var (_, codePoints, list) in database.StringProperties)
+        {
+            index.Int24(rangeCount).Int24(codePoints.Count).Int24(sequences.Count).Int24(list.Count);
+
+            foreach (var range in codePoints)
+            {
+                ranges.Int24(range.First).Int24(range.Last);
+                rangeCount++;
+            }
+
+            foreach (var sequence in list)
+            {
+                sequences.Byte(sequence.Length);
+
+                foreach (var codePoint in sequence)
+                {
+                    var at = position[codePoint];
+
+                    if (at < ShortLimit)
+                    {
+                        sequences.Byte(at);
+                    }
+                    else
+                    {
+                        sequences.Byte(ShortLimit + ((at - ShortLimit) >> 8)).Byte((at - ShortLimit) & 0xFF);
+                    }
+                }
+
+                sequenceCount++;
+            }
+        }
+
+        var (names, nameIndex) = NameTable(database.StringProperties.Select(static (property, id) => (property.Name, id)));
+
+        return new GeneratedType(
+            "JsUnicodeStringProperties",
+            "The Unicode 17.0.0 properties of strings the v flag admits, from the two emoji sequence files unicode.pin names.",
+            [
+                Constant("int", "PropertyCount", Number(database.StringProperties.Count), "How many properties of strings there are, in the ECMAScript table's row order."),
+                Constant("int", "UnionProperty", Number(database.StringProperties.Count - 1), "RGI_Emoji, the table's last row: the union of every other property, with no data of its own."),
+                Constant("int", "SequenceCount", Number(sequenceCount), "How many sequences the properties list in all."),
+                Constant("int", "SequenceShortLimit", Number(ShortLimit), "A SequenceData byte below this is a whole dictionary index; one at or above it and the byte after it are an index of SequenceShortLimit plus ((first - SequenceShortLimit) << 8 | second)."),
+                Table("RangeData", ranges, "The single code points of each property, as ranges: first and last, three bytes each, ascending and merged within a property."),
+                Table("CodePointDictionary", dictionary, "Every code point a sequence uses, most frequent first and then in code point order, three bytes each."),
+                Table("SequenceData", sequences, "Each property's sequences, in code point order: a length byte, then that many dictionary indices, each one byte or two as SequenceShortLimit says."),
+                Table("PropertyData", index, "Per property: its first range in RangeData, its range count, its first byte in SequenceData and its sequence count, three bytes each."),
+                Table("Names", names, "The property names, in ordinal order: a length byte, the ASCII name, and the property's id in two bytes."),
+                Table("NameIndex", nameIndex, "The offset of each Names entry, two bytes each, in the same order."),
             ]);
     }
 

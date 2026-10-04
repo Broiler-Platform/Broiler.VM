@@ -22,6 +22,14 @@
 # this retrieval was given, and that is recorded here rather than implied. It feeds the full case
 # mappings of toUpperCase and toLowerCase and the non-u Canonicalize (JSD-0027 slice N2).
 #
+# emoji-sequences.txt AND emoji-zwj-sequences.txt WERE ADDED ON 2026-10-04, from the same release's
+# `emoji/` directory rather than its `ucd/` one, which is why they sit under emoji-17.0.0/ and the
+# `emoji-source` line names where they came from. Each was retrieved twice by Claude into two
+# directories, found byte-identical, and archived unmodified. They define the seven properties of
+# strings the `v` flag admits (phase F2 of the roadmap's section 26, which names exactly these two
+# files). The repository owner asked that day for the roadmap's phases to be continued; no permission
+# specific to this retrieval was given, and that is recorded here rather than implied.
+#
 # WHAT A LINE MEANS. `file <path relative to this directory> <bytes> <sha256>` for a UCD file or
 # the licence text; `spec-table <path relative to the repository root> <bytes> <sha256>` for an
 # ECMAScript property table. UnicodeData.txt carries no header line and is held by its hash alone;
@@ -32,6 +40,7 @@ data unicode-character-database
 version 17.0.0
 source https://www.unicode.org/Public/17.0.0/ucd/
 licence-source https://www.unicode.org/license.txt
+emoji-source https://www.unicode.org/Public/17.0.0/emoji/
 spec-table-source https://raw.githubusercontent.com/tc39/ecma262/0248456c758431e4bb8e5d26333ff1865123c9cd/
 retrieved 2026-09-22
 retrievals 2 byte-identical
@@ -50,6 +59,8 @@ file ucd-17.0.0/UnicodeData.txt 2198209 2e1efc1dcb59c575eedf5ccae60f95229f706ee6
 file ucd-17.0.0/emoji/emoji-data.txt 107324 2cb2bb9455cda83e8481541ecf5b6dfda66a3bb89efa3fa7c5297eccf607b72b
 file ucd-17.0.0/extracted/DerivedBinaryProperties.txt 17476 13dd09d35a9377e33eb388a01e6581d4bfec6b2685316078c341982fa444071a
 file ucd-17.0.0/extracted/DerivedGeneralCategory.txt 277514 d62e5bab70ca74f099343f71224fa051cb1fdd61a1ab45c0488c44cfc0b6102e
+file emoji-17.0.0/emoji-sequences.txt 194868 12cc8267dc33cbd11ed32bcf6fc5dc2ad9c7a77bae1bdfba2f41b1b9b3ead8dd
+file emoji-17.0.0/emoji-zwj-sequences.txt 277215 5b25441daed2322b068c5e70cda522946a4f0274df864445a1965a92e5fc5cad
 file unicode-LICENSE.txt 1995 e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96
 spec-table src/Broiler.VM.Profile.JavaScript/docs/specification/table-binary-unicode-properties-of-strings.html 702 9c4e35660c28217fb8dd7786de72010c30f901e534a57e3c16eef4831d6bf0e1
 spec-table src/Broiler.VM.Profile.JavaScript/docs/specification/table-binary-unicode-properties.html 10528 bb09794cb0cf887f011f5d1a133b2a29734e432ba0cf87db9281afbd151b8ea0
