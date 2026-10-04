@@ -1064,7 +1064,7 @@ meets today is unchanged until the phase that delivers the surface lands, and ro
 | `Error.prototype.stack` | none yet; a record opens F3 *(proposed: [JSD-0038](decisions/0038-the-error-stack.md), 2026-10-04)* | The shape is chosen by that record, from the comparison engines' common form | F3 |
 | `FinalizationRegistry` cleanup | [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) | D03-a is scheduled, and is taken on by the CLI composition by default *(performed 2026-10-04: JSD-0029 section 11)* | F4 |
 | Nested realms, `$262.createRealm` | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | SR-1, SR-2 and SR-7 are scheduled *(performed 2026-10-04: proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md))* | F5 |
-| ShadowRealm | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | The deferral is not taken; SR-3 to SR-5 follow F5's realm work under `broiler.javascript.shadowrealm` | F5 |
+| ShadowRealm | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | The deferral is not taken; SR-3 to SR-5 follow F5's realm work under `broiler.javascript.shadowrealm` *(performed 2026-10-04: proposed [JSD-0040](decisions/0040-admitting-shadowrealm.md))* | F5 |
 | Agents, `$262.agent` | [roadmap section 13](roadmap.md#13-realms-agents-and-the-host-boundary), [JSD-0028](decisions/0028-shared-memory-and-atomics.md) | A second agent is built, which is the first of JSD-0028's reopening conditions | F6 |
 | `SharedArrayBuffer` and `Atomics` | [JSD-0028](decisions/0028-shared-memory-and-atomics.md) | The exclusion is not taken; slices S1 to S5 follow the agent work under their own identity | F6 |
 | `Intl` | [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md), [JSD-0002](decisions/0002-feature-manifest-allocation.md) | The deferral is not taken; I0 to I4 are scheduled without waiting for a named consumer | F7 |
@@ -1214,6 +1214,13 @@ gate and the ledger's row.
   `createRealm` left section 13's table ([JSC-264](roadmap.corrections.md#jsc-264)). JSH-7's second
   realm exists on one engine, and its refusal of another view's ref is exercised; JSH-7's realm on
   another thread is phase F6's. ShadowRealm, the third clause, is not started.*
+- *Observed again 2026-10-04, unreviewed: the third clause holds. `ShadowRealm` is built behind
+  `broiler.javascript.shadowrealm`, admitted only with the dynamic surface, under proposed
+  [JSD-0040](decisions/0040-admitting-shadowrealm.md), which admits the proposal at `9ff2a01f`; all
+  124 scored variants of `test/built-ins/ShadowRealm` pass, `importValue`'s included, and JSD-0030
+  section 6's policy cases are host-surface checks ([JSC-265](roadmap.corrections.md#jsc-265)). Every
+  clause of the gate holds in the tree; the records are proposed and unsigned, so the phase is
+  delivered and not accepted.*
 
 #### F6 — Agents, then `SharedArrayBuffer` and `Atomics`
 

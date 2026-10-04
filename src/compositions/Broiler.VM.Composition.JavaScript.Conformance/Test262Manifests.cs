@@ -368,6 +368,14 @@ internal sealed class Test262Manifest
             }
         }
 
+        // DECLINING THE DYNAMIC SURFACE DECLINES THE SHADOWREALM ONE WITH IT (JSD-0040): the profile
+        // admits a ShadowRealm only beside `eval`, and a run that declined `eval` asked for neither.
+        if (declined.Contains(JsSurfaces.Dynamic, StringComparer.Ordinal) &&
+            !declined.Contains(JsSurfaces.ShadowRealm, StringComparer.Ordinal))
+        {
+            declined = [.. declined, JsSurfaces.ShadowRealm];
+        }
+
         var admitted = ImmutableArray.CreateBuilder<string>();
 
         foreach (var surface in JsSurfaces.All)

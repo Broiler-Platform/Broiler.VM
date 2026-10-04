@@ -1222,7 +1222,12 @@ public sealed class ReviewRecordRuleTests
         // running realm, GetFunctionRealm, the switch at a built-in of another realm and the realms a
         // guest creates. It is covered on the same terms as every other product file, and nothing in
         // it has been read by a human.
-        Assert.Equal(244, AssuranceSources.Files.Count);
+        //
+        // AND THE SHADOWREALM (phase F5, 2026-10-04, JSD-0040): JsRealm.ShadowRealm.cs, the constructor
+        // and its two methods, and JsEngine.ShadowRealm.cs, the evaluation, the wrapping boundary and
+        // the import. Both are covered on the same terms as every other product file, and nothing in
+        // them has been read by a human.
+        Assert.Equal(246, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

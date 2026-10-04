@@ -756,9 +756,9 @@ internal sealed partial class JsRealm
     /// Attaches two handlers and answers the derived promise, scheduling at once when the receiver
     /// has already settled.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8BE273
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E4B7AD
     // Broiler-Human:        PENDING
-    private JsPromiseObject PromiseThen(
+    internal JsPromiseObject PromiseThen(
         JsEngine engine, JsPromiseObject promise, JsValue onFulfil, JsValue onReject)
     {
         var derived = new JsPromiseObject(PromisePrototype);

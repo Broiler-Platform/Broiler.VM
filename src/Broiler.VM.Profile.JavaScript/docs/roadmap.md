@@ -847,7 +847,7 @@ never silently widened:
 | `broiler.javascript.intl` | Internationalization, ECMA-402. | Reopened 2026-10-03: [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F7 *(corrected: [JSC-251](roadmap.corrections.md#jsc-251))* |
 | `broiler.javascript.temporal` | The temporal surface, ahead of the edition at a pinned revision of the proposal. | Reopened 2026-10-03: phase F8 |
 | `broiler.javascript.shared` | `SharedArrayBuffer`, `Atomics` and the agents they are shared between. Never folded into `broiler.javascript.binary`, for that row's reason. | Proposed 2026-10-03: phase F6, minted by JSD-0028's successor |
-| `broiler.javascript.shadowrealm` | ShadowRealm, ahead of the edition, admitted only with `broiler.javascript.dynamic`. | Proposed 2026-10-03: phase F5, minted by the record admitting the proposal ([JSD-0030](decisions/0030-shadowrealm-support-boundary.md)) |
+| `broiler.javascript.shadowrealm` | ShadowRealm, ahead of the edition, admitted only with `broiler.javascript.dynamic`. | Proposed 2026-10-03: phase F5, minted by the record admitting the proposal ([JSD-0030](decisions/0030-shadowrealm-support-boundary.md)). *Minted 2026-10-04 by proposed [JSD-0040](decisions/0040-admitting-shadowrealm.md): a descriptor naming it without `broiler.javascript.dynamic` is refused, and every door admitting every surface admits it ([JSC-265](roadmap.corrections.md#jsc-265)).* |
 
 **A further identity exists beside that table**: `broiler.javascript.wide`, a surface wider than
 the slice and narrower than `broiler.javascript.core`. The three rules above bind it like any
@@ -931,11 +931,14 @@ column is what a program meets, and it is as true as it was when the surface was
 
 | Surface | What a program meets today | Phase |
 |---|---|---|
-| ShadowRealm | `typeof ShadowRealm` answers `"undefined"`; it is a proposal the suite's runner does not select. *(Amended 2026-10-04: nested realms left this row. `$262.createRealm` builds a second realm on the engine under proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md), [JSC-264](roadmap.corrections.md#jsc-264).)* | F5 |
 | Agents, `SharedArrayBuffer` and `Atomics` | `$262.agent`'s members throw; the ledger's absent-globals block names the two globals, and `typeof` answers `"undefined"` for each. | F6 |
 | `Intl` | The same block names it, and `typeof Intl` answers `"undefined"`; the locale-named methods answer as [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) records. | F7 |
 | `Temporal` | The same block names it, and `typeof Temporal` answers `"undefined"`. | F8 |
 
+*(Amended 2026-10-04: the realms row left this table. `$262.createRealm` builds a second realm under
+proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md) ([JSC-264](roadmap.corrections.md#jsc-264)),
+and `ShadowRealm` is built under proposed [JSD-0040](decisions/0040-admitting-shadowrealm.md) behind
+`broiler.javascript.shadowrealm` ([JSC-265](roadmap.corrections.md#jsc-265)).)*
 *(Amended 2026-10-04: the row for a function's source text left this table. Phase F3 put the
 source in the artifact under proposed [JSD-0037](decisions/0037-the-source-text-section.md), and
 `Function.prototype.toString` answers the text a function was defined from, comments included; a
@@ -1578,8 +1581,9 @@ program meets *(corrected: [JSC-251](roadmap.corrections.md#jsc-251))*.
 builds one on the same engine, from the same surface set, charged to the same allowance and sharing
 the agent's Symbols and job queue; every function carries its realm and runs in it. Proposed
 [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md) records the model, and
-[JSC-264](roadmap.corrections.md#jsc-264) what it replaced. ShadowRealm and a second agent are still
-to come.)*
+[JSC-264](roadmap.corrections.md#jsc-264) what it replaced. `ShadowRealm` followed the same day
+under proposed [JSD-0040](decisions/0040-admitting-shadowrealm.md) ([JSC-265](roadmap.corrections.md#jsc-265));
+a second agent is still to come.)*
 
 **An agent is a runtime.** Worker-style agents are separate core runtimes under one shared
 aggregate budget, which is what makes a host ceiling shared rather than multiplied. Two facts

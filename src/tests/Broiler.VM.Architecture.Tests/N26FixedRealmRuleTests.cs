@@ -48,6 +48,9 @@ public sealed class N26FixedRealmRuleTests
         // `disposeAsync()` is a built-in that awaits: the run resumes in promise reactions and is
         // still the built-in running, so it keeps the built-in's realm as a frame keeps its function's.
         "JsDisposalRun.realm",
+
+        // A ShadowRealm instance's [[ShadowRealm]] slot: the realm its `evaluate` runs source in.
+        "JsShadowRealmObject.Inner",
     ];
 
     /// <summary>The members that may read the first realm: where no frame is running.</summary>

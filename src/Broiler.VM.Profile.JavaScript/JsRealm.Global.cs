@@ -78,7 +78,7 @@ internal sealed partial class JsRealm
     private const string GlobalUriHexDigits = "0123456789ABCDEF";
 
     /// <summary>Builds the global object's non-constructor bindings.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=835ABF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A578B6
     // Broiler-Human:        PENDING
     private void SetupGlobal()
     {
@@ -111,7 +111,13 @@ internal sealed partial class JsRealm
         }
 
         SetupGlobalUriFunctions(host);
-        SetupGlobalHostFunctions(host);
+
+        // A SHADOW REALM'S GLOBAL HOLDS WHAT THE LANGUAGE DEFINES AND NOTHING A HOST ADDS
+        // (JSD-0030 D7): no `print`, `console`, `read` or `$262`.
+        if (!Shadow)
+        {
+            SetupGlobalHostFunctions(host);
+        }
     }
 
     /// <summary>Defines <c>parseInt</c>, <c>parseFloat</c>, <c>isNaN</c> and <c>isFinite</c>.</summary>

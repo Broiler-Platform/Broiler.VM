@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 6016 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6030 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 244 |
-| Code units | 10602 |
-| Relevant | 6016 |
-| Exempt | 4586 |
-| Assessed | 6016 of 6016 (100%) |
-| Human reviewed | 0 of 6016 (0%) |
-| Unverified | 6016 |
+| Files scanned | 246 |
+| Code units | 10620 |
+| Relevant | 6030 |
+| Exempt | 4590 |
+| Assessed | 6030 of 6030 (100%) |
+| Human reviewed | 0 of 6030 (0%) |
+| Unverified | 6030 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6016 |
+| HUMAN_PENDING | 6030 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4586 |
+| EXEMPT | 4590 |
 
 ## 5. Aliases In The Tree
 
@@ -189,7 +189,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNumericManifest.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 175 | 25 | 150 | 25 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 264 | 157 | 107 | 157 | Medium | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 12 | 12 | 0 | 12 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 14 | 14 | 0 | 14 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.cs` | 15 | 15 | 0 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs` | 7 | 1 | 6 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeLexical.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
@@ -205,7 +205,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 38 | 18 | 20 | 18 | Low | High | 8/6 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptLanguageEdition.cs` | 13 | 13 | 0 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptPosition.cs` | 10 | 6 | 4 | 6 | None | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` | 42 | 28 | 14 | 28 | Low | High | 14/14 |
+| `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` | 43 | 28 | 15 | 28 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs` | 28 | 20 | 8 | 20 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` | 62 | 33 | 29 | 33 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 19 | 14 | 5 | 14 | Low | Medium | 0/0 |
@@ -217,6 +217,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` | 14 | 12 | 2 | 12 | Low | Critical | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Finalization.cs` | 16 | 12 | 4 | 12 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Realms.cs` | 15 | 11 | 4 | 11 | Low | High | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs` | 7 | 7 | 0 | 7 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Stack.cs` | 25 | 13 | 12 | 13 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 250 | 216 | 34 | 216 | Low | Critical | 90/88 |
 | `src/Broiler.VM.Profile.JavaScript/JsEvalMap.cs` | 33 | 15 | 18 | 15 | Low | High | 3/3 |
@@ -264,9 +265,10 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Proxy.cs` | 8 | 6 | 2 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Reflect.cs` | 6 | 6 | 0 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 67 | 54 | 13 | 54 | Medium | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.ShadowRealm.cs` | 7 | 5 | 2 | 5 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 25 | 25 | 0 | 25 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 48 | 26 | 22 | 26 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 47 | 22 | 25 | 22 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 48 | 22 | 26 | 22 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsSymbol.cs` | 8 | 2 | 6 | 2 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsThrow.cs` | 10 | 5 | 5 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.cs` | 10 | 10 | 0 | 10 | Low | Medium | 0/0 |
@@ -1204,7 +1206,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a descriptor built here runs a value-form instance whose table does not compact at every safepoint, or changes anything for an instance of another form
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorSweepingFinalization(IJsHostSurface?, bool, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `96FEE8`, PENDING
   - Falsified if: a descriptor built here sweeps anywhere but at a host drain or step, or a descriptor built by any other door sweeps at all
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>, Format.IJsNativeEmitter?, IJsHostSurface?, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `819497`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>, Format.IJsNativeEmitter?, IJsHostSurface?, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `04B8EA`, PENDING
   - Falsified if: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Defaults()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `B1B19D`, PENDING
   - Falsified if: a default here is zero on a dimension this profile declares inapplicable, or any default exceeds its maximum
@@ -1774,6 +1776,18 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a new.target whose prototype is not an object answers an intrinsic of any realm but its own
 - `Broiler.VM.Profile.JavaScript.JsEngine.CreateRealm()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Realms.cs` - Security=High, Spec=none cited, `28AC81`, PENDING
   - Falsified if: a created realm is built from a surface set other than the engine's, is not charged, or shares a global object or an intrinsic with another realm
+- `Broiler.VM.Profile.JavaScript.JsEngine` in `src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs` - Security=High, Spec=none cited, `7BBE7E`, PENDING
+  - Falsified if: a function runs in a ShadowRealm with a host member, or anything but a primitive or a wrapper crosses its boundary
+- `Broiler.VM.Profile.JavaScript.JsEngine.CreateShadowRealm()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs` - Security=High, Spec=none cited, `C4010D`, PENDING
+  - Falsified if: a shadow realm is built uncharged, with a host member on its global, or from another surface set
+- `Broiler.VM.Profile.JavaScript.JsEngine.ShadowRealmEvaluate(JsRealm, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs` - Security=High, Spec=none cited, `213CEA`, PENDING
+  - Falsified if: source evaluated in a ShadowRealm compiles anywhere but through the engine's one mediator, or an exception object or a non-callable object crosses out of it
+- `Broiler.VM.Profile.JavaScript.JsEngine.GetWrappedValue(JsRealm, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs` - Security=High, Spec=none cited, `31925B`, PENDING
+  - Falsified if: a non-callable object crosses a ShadowRealm boundary, or a callable crosses as itself
+- `Broiler.VM.Profile.JavaScript.JsEngine.WrappedFunctionCall(JsObject, JsValue, JsValue[])` in `src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs` - Security=High, Spec=none cited, `DA03D8`, PENDING
+  - Falsified if: a wrapped function hands its target an object, answers its caller an object, or lets the target's exception cross
+- `Broiler.VM.Profile.JavaScript.JsEngine.ShadowRealmImportValue(JsRealm, string, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs` - Security=High, Spec=none cited, `31A99E`, PENDING
+  - Falsified if: a module imported for a ShadowRealm loads anywhere but through the engine's one mediator, or its export crosses unwrapped
 - `Broiler.VM.Profile.JavaScript.JsEngine.nativeForm` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `05B362`, PENDING
   - Falsified if: an engine built for one form runs a program of the other form
 - `Broiler.VM.Profile.JavaScript.JsEngine.valueForm` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `921708`, PENDING
@@ -2316,6 +2330,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a host promise is built from a prototype a guest assignment to Promise can replace
 - `Broiler.VM.Profile.JavaScript.JsRealm.AwaitOn(JsEngine, JsValue, System.Action<JsEngine, JsValue, bool>)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, Spec=none cited, `6F23A9`, PENDING
   - Falsified if: an `await` of a value that is not a promise continues without yielding to the job queue
+- `Broiler.VM.Profile.JavaScript.JsRealm` in `src/Broiler.VM.Profile.JavaScript/JsRealm.ShadowRealm.cs` - Security=High, Spec=none cited, `60DD8D`, PENDING
+  - Falsified if: a function runs in a ShadowRealm with a host member, or anything but a primitive or a wrapper crosses its boundary
+- `Broiler.VM.Profile.JavaScript.JsRealm.SetupShadowRealm()` in `src/Broiler.VM.Profile.JavaScript/JsRealm.ShadowRealm.cs` - Security=High, Spec=none cited, `91450B`, PENDING
+  - Falsified if: a realm builds ShadowRealm without the dynamic surface, or its evaluate compiles outside the mediator
 - `Broiler.VM.Profile.JavaScript.JsRealm.NormalizeText(JsEngine, string, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, Spec=none cited, `E5D2CC`, PENDING
   - Falsified if: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, Spec=none cited, `D64011`, PENDING
@@ -4128,7 +4146,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5881 of the 6016 assessed units declare
+That is not a figure of speech. 5895 of the 6030 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

@@ -336,3 +336,20 @@ line. Corrections entry [JSC-264](../roadmap.corrections.md#jsc-264).*
   `Symbol.iterator` and one registry. Every scored `cross-realm` case did move, which is SR-7's and
   is what it was for.
 
+## Slices SR-3 and SR-5 built, 2026-10-04 (unsigned)
+
+*Recorded with the implementation. It signs nothing and takes nothing: this record keeps its status
+line. Corrections entry [JSC-265](../roadmap.corrections.md#jsc-265).*
+
+- **`ShadowRealm` is in the tree** under proposed [JSD-0040](0040-admitting-shadowrealm.md), which
+  admits the proposal at section 2's pin and mints `broiler.javascript.shadowrealm`, admitted only
+  with `broiler.javascript.dynamic` as section 8 recommends. D1 no longer holds; D2 to D7 are built as
+  written; D8's `importValue` is built rather than refused, over the engine's one module map rather
+  than one per child realm, which JSD-0040 section 2 names as a departure.
+- **Section 7's acceptance.** All 124 scored variants of `test/built-ins/ShadowRealm` pass, the 12
+  `importValue` cases and the 3 `cross-realm` ones included; six of section 6's seven cases are CLI
+  host-surface checks and the fifth a slice-compiler check; a realm's construction cost is measured
+  and retained in JSD-0040 section 5. SR-4 and SR-6 are other repositories' and are not started.
+- **Section 6's cases 3 and 4 say `SyntaxError`, and the answer is a `TypeError`**: the refusal
+  crosses a wrapped function, which D4 makes a `TypeError` of the caller's realm (JSD-0040 section 3).
+

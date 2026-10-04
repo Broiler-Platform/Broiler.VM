@@ -11442,3 +11442,56 @@ built-in iterators' brand, and `super` assignment.
 - JSD-0039 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-265
+
+**Where:** phase F5's second half: `ShadowRealm` (`JsRealm.ShadowRealm.cs`, `JsEngine.ShadowRealm.cs`),
+the surface table, the descriptor builder, the conformance runner's proposal set and decline
+handling, and the charge for a realm.
+
+**What the plan said.**
+- Roadmap section 6's table: "`typeof ShadowRealm` answers `"undefined"`; it is a proposal the suite's
+  runner does not select." Section 13: "ShadowRealm and a second agent are still to come."
+- The allocation table: `broiler.javascript.shadowrealm` "Proposed 2026-10-03: phase F5, minted by
+  the record admitting the proposal".
+- [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) D1: "`ShadowRealm` stays undefined";
+  section 6, cases 3 and 4: the inner refusal "throws `SyntaxError`".
+- [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md) section 3 and
+  [JSC-264](roadmap.corrections.md#jsc-264): a created realm is charged "262,144 live bytes ... and
+  4,096 units of fuel", the first described as what an instantiation reports for its first realm.
+
+**What replaced it, observed on 2026-10-04.**
+- **`ShadowRealm` is built** under proposed [JSD-0040](decisions/0040-admitting-shadowrealm.md),
+  which admits the proposal at `9ff2a01f` and mints `broiler.javascript.shadowrealm`: the constructor,
+  `evaluate` (compiled in the caller's realm through the one mediator, run as the shadow realm's
+  global eval code, every exception a fresh `TypeError` of the caller's realm), wrapped functions with
+  `CopyNameAndLength`, and `importValue`. A shadow realm's global holds no `print`, `console`, `read`
+  or `$262`, and no host surface is told of it.
+- **The identity is admitted only with the dynamic surface**: a descriptor naming it alone is refused
+  when it is built, and the conformance runner's `--decline` of the dynamic surface declines it too.
+  The public surface gains `JavaScriptProfile.ShadowRealmManifest`, `JsSurfaces.ShadowRealm` and
+  `JsSurfaces.ShadowRealmGlobals`; the API baseline records them.
+- **The `--test262` command scores the `ShadowRealm` flag.** All 124 scored variants of
+  `test/built-ins/ShadowRealm` pass; before this change all were skipped as a proposal's.
+- **JSD-0030 section 6's cases are checks**: six as CLI host-surface checks with a provider that
+  counts and filters what it is asked, case 5 and the refused descriptor as slice-compiler checks.
+  Cases 3 and 4 answer a `TypeError`, not the `SyntaxError` section 6 wrote, because the refusal
+  crosses a wrapped function, which D4 makes a `TypeError`.
+- **A realm's cost is measured and its charge raised.** A realm built from every surface held
+  504,818 bytes of managed heap when `$262.createRealm` made it and 489,699 as a ShadowRealm's, over a
+  hundred held at once, and took about 2 ms - about 37,000 units of the interpreter's fuel on the same
+  machine. Both kinds are now charged 524,288 live bytes and 32,768 fuel; JSC-264's figures were half
+  and a ninth of the cost.
+- **A fixture**: `runs/a-shadow-realm-keeps-its-own-realm.js`, whose thirteen lines node 22 with
+  `--experimental-shadow-realm` answers the same.
+
+**What must not be read as repaired.**
+- **A shadow realm shares the engine's module map**, where the proposal gives each its own
+  (JSD-0040 section 2).
+- **SR-4 and SR-6 are other repositories'** (Broiler.JSeal's coverage, Broiler.JS's child-context
+  compilation) and are not started.
+- **The measurement is one machine's**, of the Release build, and the 2 ms is wall-clock time.
+- JSD-0040 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+

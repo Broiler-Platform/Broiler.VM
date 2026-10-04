@@ -30,7 +30,44 @@ internal static class RealmChecks
         AFunctionCalledFromAnotherRealmRunsInItsOwn(),
         TheHostIsToldOfACreatedRealm(),
         ACreatedRealmIsCharged(),
+        ADeclinedDynamicSurfaceHasNoShadowRealm(),
+        TheShadowRealmSurfaceAloneIsRefused(),
     ];
+
+    /// <summary>
+    /// JSD-0030 section 6, case 5: a composition that declined the dynamic surface has no
+    /// <c>ShadowRealm</c>, because there is no route by which one could evaluate anything.
+    /// </summary>
+    private static (string, bool, string) ADeclinedDynamicSurfaceHasNoShadowRealm() =>
+        Check(
+            "realms/sr3/a-declined-dynamic-surface-has-no-shadow-realm",
+            "typeof ShadowRealm + '/' + ('ShadowRealm' in globalThis);",
+            "undefined/false",
+            "a realm whose composition admitted the binary and BigInt surfaces and not the dynamic one built no ShadowRealm",
+            surfaces: [JavaScriptProfile.BinaryManifest, JavaScriptProfile.BigIntManifest]);
+
+    /// <summary>JSD-0040: a descriptor naming the ShadowRealm surface without the dynamic one is refused.</summary>
+    private static (string, bool, string) TheShadowRealmSurfaceAloneIsRefused()
+    {
+        const string Name = "realms/sr3/the-shadow-realm-surface-alone-is-refused";
+
+        try
+        {
+            _ = JavaScriptProfile.DescriptorAdmitting(JavaScriptProfile.ShadowRealmManifest);
+            return (Name, false, "a descriptor admitting broiler.javascript.shadowrealm alone was built");
+        }
+        catch (System.ArgumentException refused)
+        {
+            var named = refused.Message.Contains(Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Dynamic, System.StringComparison.Ordinal);
+            var both = JavaScriptProfile.DescriptorAdmitting(
+                JavaScriptProfile.ShadowRealmManifest, JavaScriptProfile.DynamicManifest) is not null;
+
+            return (
+                Name,
+                named && both,
+                "the descriptor naming the ShadowRealm surface alone was refused, naming the dynamic surface it needs, and one naming both was built");
+        }
+    }
 
     /// <summary>SR-1: the well-known Symbols and the <c>Symbol.for</c> registry are the engine's.</summary>
     private static (string, bool, string) TwoRealmsShareTheAgentSymbols() =>
@@ -89,7 +126,12 @@ internal static class RealmChecks
 
     /// <summary>Compiles <paramref name="source"/>, invokes it once, and compares the answer.</summary>
     private static (string, bool, string) Check(
-        string name, string source, string expected, string meaning, ulong? liveBytes = null)
+        string name,
+        string source,
+        string expected,
+        string meaning,
+        ulong? liveBytes = null,
+        VmFeatureManifestId[]? surfaces = null)
     {
         var compiled = JsCompiler.Compile(
             [new JsScriptUnit("main", source, SliceParseOptions.Script, false, Caller)],
@@ -102,7 +144,7 @@ internal static class RealmChecks
                 (compiled.Diagnostics.Count == 0 ? "no diagnostic" : compiled.Diagnostics[0].ToString()));
         }
 
-        var descriptor = JavaScriptProfile.DescriptorHostingRealms(new CountingSurface());
+        var descriptor = JavaScriptProfile.DescriptorHostingRealms(new CountingSurface(), surfaces ?? []);
         var created = VmRuntime.Create(VmCatalog.CreateBuilder().Add(descriptor).Build(), Options(liveBytes));
 
         if (!created.TryGetRuntime(out var runtime))

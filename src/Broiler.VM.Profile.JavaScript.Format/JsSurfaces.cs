@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
+// Relevant units:   14
+// Annotated:        14/14
 // Exempt:           0
-// Human-reviewed:   0/12
+// Human-reviewed:   0/14
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       12
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -174,6 +174,20 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public const string BigInt = "broiler.javascript.bigint";
 
+    /// <summary>
+    /// The ShadowRealm surface: the <c>ShadowRealm</c> constructor and the realms it makes (JSD-0040).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="Dynamic"/></b> (JSD-0030 section 8): a
+    /// ShadowRealm can do nothing but compile source into a realm of its own, so a composition that
+    /// declined the dynamic surface has no use for it, and a composition that admits <c>eval</c> can
+    /// still decline a second global environment. A program that names <c>ShadowRealm</c> declares
+    /// it, as one naming <c>eval</c> declares the dynamic surface.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1E0973
+    // Broiler-Human:        PENDING
+    public const string ShadowRealm = "broiler.javascript.shadowrealm";
+
     /// <summary>Every optional surface this build knows, in ascending ordinal order.</summary>
     /// <remarks>
     /// An artifact declaring a name that is not here is refused as naming a surface this build does
@@ -182,9 +196,9 @@ public static class JsSurfaces
     /// <i>(Amended 2026-09-21. <see cref="BigInt"/> was for a while known and not here, so that the
     /// descriptor admitting every surface declined it; card B05 admitted it, and it is here.)</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=622B1E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=27E4CD
     // Broiler-Human:        PENDING
-    public static readonly string[] All = [BigInt, Binary, Dynamic, Modules, Native];
+    public static readonly string[] All = [BigInt, Binary, Dynamic, Modules, Native, ShadowRealm];
 
     /// <summary>
     /// The global names the binary surface owns, in ascending ordinal order.
@@ -263,6 +277,11 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public static readonly string[] BigIntGlobals = ["BigInt", "BigInt64Array", "BigUint64Array"];
 
+    /// <summary>The global names the ShadowRealm surface owns.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6C74F3
+    // Broiler-Human:        PENDING
+    public static readonly string[] ShadowRealmGlobals = ["ShadowRealm"];
+
     /// <summary>
     /// The surface that owns <paramref name="globalName"/>, or <see langword="false"/> when the
     /// name belongs to no optional surface.
@@ -273,7 +292,7 @@ public static class JsSurfaces
     /// surface for them, the first list it searches; a caller that records declarations reads
     /// <see cref="BigIntGlobals"/> as well. (Added 2026-09-22, JSeal B07.)
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=338E4D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=393BE9
     // Broiler-Human:        PENDING
     public static bool TryOwner(string globalName, out string manifestId)
     {
@@ -300,6 +319,15 @@ public static class JsSurfaces
             if (string.Equals(name, globalName, System.StringComparison.Ordinal))
             {
                 manifestId = BigInt;
+                return true;
+            }
+        }
+
+        foreach (var name in ShadowRealmGlobals)
+        {
+            if (string.Equals(name, globalName, System.StringComparison.Ordinal))
+            {
+                manifestId = ShadowRealm;
                 return true;
             }
         }

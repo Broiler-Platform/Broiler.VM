@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 144
+runs|0|# Completed: 145
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -1053,3 +1053,16 @@ runs/a-created-realm-is-a-realm-of-its-own.js|0|an intrinsic of the new target's
 runs/a-created-realm-is-a-realm-of-its-own.js|0|its global for a sloppy this true
 runs/a-created-realm-is-a-realm-of-its-own.js|0|another realm's Array is no species true
 runs/a-created-realm-is-a-realm-of-its-own.js|0|a realm from a realm true
+runs/a-shadow-realm-keeps-its-own-realm.js|0|evaluate 42
+runs/a-shadow-realm-keeps-its-own-realm.js|0|its own global undefined
+runs/a-shadow-realm-keeps-its-own-realm.js|0|an object threw TypeError of ours
+runs/a-shadow-realm-keeps-its-own-realm.js|0|a wrapper 5 function 2 true
+runs/a-shadow-realm-keeps-its-own-realm.js|0|an object argument threw TypeError of ours
+runs/a-shadow-realm-keeps-its-own-realm.js|0|a callable argument 41
+runs/a-shadow-realm-keeps-its-own-realm.js|0|an exception threw TypeError of ours
+runs/a-shadow-realm-keeps-its-own-realm.js|0|a new wrapper each time false
+runs/a-shadow-realm-keeps-its-own-realm.js|0|shared Symbols true true
+runs/a-shadow-realm-keeps-its-own-realm.js|0|state kept 2
+runs/a-shadow-realm-keeps-its-own-realm.js|0|host members undefined undefined
+runs/a-shadow-realm-keeps-its-own-realm.js|0|nested 2
+runs/a-shadow-realm-keeps-its-own-realm.js|0|bad source threw SyntaxError

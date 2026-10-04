@@ -96,3 +96,16 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
   section 6's table, each to be minted by the record that admits its surface (JSD-0028's successor,
   and the record admitting ShadowRealm). This record's allocation is unchanged until those records
   exist.
+
+## Minted 2026-10-04: `broiler.javascript.shadowrealm` (unsigned)
+
+*Recorded with phase F5's implementation; it signs nothing. Corrections entry
+[JSC-265](../roadmap.corrections.md#jsc-265).*
+
+- **`broiler.javascript.shadowrealm` is minted by proposed
+  [JSD-0040](0040-admitting-shadowrealm.md)**, the record admitting the proposal, as the reopened
+  section above said it would be. It owns the global `ShadowRealm`; a descriptor naming it without
+  `broiler.javascript.dynamic` is refused; every door that admits every surface admits it. This
+  record's admission criterion - a manifest with no retained run of its own is not accepted - binds
+  it like any other.
+

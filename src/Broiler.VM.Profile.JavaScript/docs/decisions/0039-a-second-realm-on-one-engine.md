@@ -139,3 +139,15 @@ construction, and a save and a restore at each frame, beside the stack site the 
 - A created realm that shares a global object or an intrinsic with another, is built from a
   different surface set, or is not charged.
 - A well-known Symbol that differs between two realms of one engine.
+
+## Amended 2026-10-04: the charge, measured (unsigned)
+
+*Recorded with the ShadowRealm implementation; it signs nothing. Corrections entry
+[JSC-265](../roadmap.corrections.md#jsc-265).*
+
+- **Section 3's charge was not measured, and was too low.** A realm built from every surface holds
+  about 505,000 bytes of managed heap and takes about 2 ms to build
+  ([JSD-0040](0040-admitting-shadowrealm.md) section 5), so the 262,144 live bytes and 4,096 fuel
+  section 3 names were half and a ninth of the cost. A created realm is now charged **524,288 live
+  bytes and 32,768 fuel**, a ShadowRealm's alike. Section 3 is kept as written.
+

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   28
 // Annotated:        28/28
-// Exempt:           14
+// Exempt:           15
 // Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    High
@@ -226,6 +226,20 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     public static VmFeatureManifestId BigIntManifest { get; } =
         VmFeatureManifestId.Parse(Format.JsSurfaces.BigInt);
+
+    /// <summary>
+    /// The ShadowRealm surface: the <c>ShadowRealm</c> constructor, admitted ahead of the pinned
+    /// edition at proposal revision <c>9ff2a01f</c> (JSD-0040).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="DynamicManifest"/></b>: a descriptor naming it
+    /// without the dynamic surface is refused when it is built, because a ShadowRealm does nothing but
+    /// compile source into a realm of its own (JSD-0030 section 8).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=27E17A
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId ShadowRealmManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.ShadowRealm);
 
     /// <summary>
     /// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor.
@@ -786,7 +800,7 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=819497
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=04B8EA
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
@@ -797,6 +811,17 @@ public static class JavaScriptProfile
         bool sweepsFinalization = false)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
+
+        // THE SHADOWREALM SURFACE NEEDS THE DYNAMIC ONE (JSD-0040): a set naming it alone is a
+        // composition's mistake, refused here rather than built into realms whose ShadowRealm could
+        // compile nothing.
+        if (admittedSurfaces.Contains(Format.JsSurfaces.ShadowRealm) &&
+            !admittedSurfaces.Contains(Format.JsSurfaces.Dynamic))
+        {
+            throw new System.ArgumentException(
+                Format.JsSurfaces.ShadowRealm + " is admitted only together with " + Format.JsSurfaces.Dynamic,
+                nameof(admittedSurfaces));
+        }
 
         // THE NUMERIC MANIFEST IS ACCEPTED UNCONDITIONALLY AND THE NATIVE SURFACE IS NOT, because
         // they answer different questions. The numeric manifest is a NARROWING of the wide surface

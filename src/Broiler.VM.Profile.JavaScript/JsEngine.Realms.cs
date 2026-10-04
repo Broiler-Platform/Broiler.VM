@@ -216,9 +216,9 @@ internal sealed partial class JsEngine
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>It is charged as an instance's first realm is retained</b>: the live bytes an instantiation
-    /// reports for its realm, admitted before anything is built, and fuel for the intrinsics, so a
-    /// loop that creates realms meets the allowance rather than the process's memory.
+    /// <b>It is charged what a realm was measured to cost</b>, admitted before anything is built, so a
+    /// loop that creates realms meets the allowance rather than the process's memory
+    /// (<see cref="RealmRetainedBytes"/>, <see cref="RealmFuel"/>).
     /// </para>
     /// <para>
     /// <b>An embedder's host surface is told</b>, through a view of the new realm that shares the
@@ -244,15 +244,26 @@ internal sealed partial class JsEngine
         return realm;
     }
 
-    /// <summary>The live bytes a realm is retained at: what an instantiation reports for its first.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=363FD2
+    /// <summary>The live bytes a created realm is retained at.</summary>
+    /// <remarks>
+    /// <b>Measured, and rounded up to a power of two</b>: on 2026-10-04, a realm built from every
+    /// surface held 504,818 bytes of managed heap when created by <c>$262.createRealm</c> and 489,699
+    /// as a ShadowRealm's, averaged over a hundred held at once (JSD-0040 section 5). The first charge,
+    /// 262,144 - what an instantiation reports for its first realm - was half that (JSC-265).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=11F557
     // Broiler-Human:        PENDING
-    internal const ulong RealmRetainedBytes = 262_144;
+    internal const ulong RealmRetainedBytes = 524_288;
 
     /// <summary>The fuel a realm's construction is charged, in proportion to the intrinsics it builds.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9317AC
+    /// <remarks>
+    /// <b>Measured as time</b>: a realm took about 2 ms to build on 2026-10-04, which is what the
+    /// interpreter spends on about 37,000 units of fuel on the same machine; this is the power of two
+    /// below it. The first charge, 4,096, was a ninth of that (JSC-265).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7A7367
     // Broiler-Human:        PENDING
-    private const ulong RealmFuel = 4_096;
+    private const ulong RealmFuel = 32_768;
 
     /// <summary>
     /// The host surface the composition installed, told of every realm the engine creates after its

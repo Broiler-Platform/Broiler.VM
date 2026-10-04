@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   22
 // Annotated:        22/22
-// Exempt:           25
+// Exempt:           26
 // Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Medium
@@ -190,11 +190,12 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5D7E93
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C15175
     // Broiler-Human:        PENDING
-    internal JsRealm(JsEngine owner)
+    internal JsRealm(JsEngine owner, bool shadow = false)
     {
         engine = owner;
+        Shadow = shadow;
         agent = owner.Symbols;
 
         ObjectPrototype = new JsObject(null);
@@ -268,6 +269,12 @@ internal sealed partial class JsRealm
         // AFTER THE PROMISE AND THE ASYNC-ITERATOR INTRINSICS, because the asynchronous stack
         // settles through the first and `%AsyncIteratorPrototype%` is where one disposer goes.
         SetupDisposal();
+
+        // A SHADOW REALM MAY MAKE SHADOW REALMS OF ITS OWN: it admits what its engine admits.
+        if (owner.Admits(Format.JsSurfaces.ShadowRealm))
+        {
+            SetupShadowRealm();
+        }
 
         // EVERY CONSTRUCTOR BUILT FROM HERE ON IS NOT AN INTRINSIC: an embedder's, or one a guest
         // made, has no counterpart in another realm.
@@ -353,6 +360,14 @@ internal sealed partial class JsRealm
         prototype = null!;
         return false;
     }
+
+    /// <summary>
+    /// Whether this is a <c>ShadowRealm</c>'s realm, whose global holds nothing a host adds
+    /// (JSD-0030 D7).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7CE197
+    // Broiler-Human:        PENDING
+    internal bool Shadow { get; }
 
     /// <summary>The realm's global object.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=962FD4
