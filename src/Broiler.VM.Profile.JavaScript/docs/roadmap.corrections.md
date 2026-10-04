@@ -11322,3 +11322,47 @@ had "no `v` flag, none of its set operations and none of the seven properties of
 - No milestone or stage moves; JSD-0031 is still proposed.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-263
+
+**Where:** phase F4: `FinalizationRegistry` cleanup - the engine's sweep, the registry, the two host
+drain paths, a new descriptor door, and the CLI and conformance compositions.
+
+**What the plan said.** Roadmap section 6 said: "A cleanup callback is never called, as JSD-0029
+records." The registry's own remarks called it "a declared divergence and not an unfinished feature",
+and its falsifier line read "a cleanup callback registered here is ever invoked, or any guest code runs
+from a CLR finalizer".
+
+**What replaced it, observed on 2026-10-04.**
+- **JSD-0029's D03-a is built as written** (its section 11). A composition that builds its
+  descriptor with `JavaScriptProfile.DescriptorSweepingFinalization` gets realms whose host drains
+  sweep: `#drain-jobs` once before its first job, `#step-jobs` before each turn's job. A sweep marks
+  the registrations whose targets the collector has taken and queues one ordinary cleanup job per
+  registry; the job removes each marked registration, then calls the callback with its held value.
+  Nothing runs from a CLR finalizer, nothing sweeps in `JsHostRealm.DrainJobs` or a script, and a guest
+  cannot cause a sweep. Every other door keeps the inert registry.
+- **The CLI and the conformance runner turn it on.** The CLI collects once before its drain, so a
+  callback for a target the program dropped arrives there; the conformance runner never collects.
+- **The registry's falsifier line is rewritten**, as D03-a owes, to "a cleanup callback runs outside a
+  host-requested drain, or any guest code runs from a CLR finalizer", and goes back to human review.
+- **Checks and a fixture.** Seven checks in the slice compiler hold a delivery at a drain and in a
+  step's turn and never in a script, a delegated drain that sweeps nothing, an `unregister` between the
+  sweep and the job, a throwing callback followed by the rest at the next drain, the inert default, and
+  - on the production path, with forced collections - a reachable target never reported. The
+  inert-default check runs the first check's program on a realm that does not sweep and gets no
+  callback, so the delivery checks are not met by an inert registry.
+  `runs/a-cleanup-callback-arrives.js` shows three callbacks
+  arriving in registration order at the CLI's drain, stable over 20 runs; the comparison engine
+  collects when it chooses, so its transcript is not the reference.
+- **test262:** `built-ins/FinalizationRegistry`, `WeakRef`, `WeakMap`, `WeakSet`, `Promise` and
+  `staging` answer exactly as before, 4,686 variants. The suite's cases that need cleanup to arrive
+  are its `host-gc-required` ones, still skipped. The whole-suite figure is added by an amendment to
+  this entry when the run finishes; until then no whole-suite figure is claimed.
+
+**What must not be read as repaired.**
+- **When a callback arrives is the collector's.** Without a collection before the drain, a dropped
+  target may not be reported yet; in the value form its handle table can keep it reachable longer.
+- **The rewritten `Security=High` line needs the owner's review**, which JSD-0029 makes a condition
+  of D03-a counting as done; JSD-0029 is still proposed. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

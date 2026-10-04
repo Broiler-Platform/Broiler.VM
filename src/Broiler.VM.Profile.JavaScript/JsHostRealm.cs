@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   80
-// Annotated:        80/80
+// Relevant units:   81
+// Annotated:        81/81
 // Exempt:           12
-// Human-reviewed:   0/80
+// Human-reviewed:   0/81
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         41/41
 // Resource impact:  6/10 max
-// Unverified:       80
+// Unverified:       81
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2526,6 +2526,36 @@ public sealed class JsHostRealm
         };
 
     // ---- structured clone, internally -----------------------------------------------------------
+
+    /// <summary>
+    /// Marks the object <paramref name="target"/> stands for as collected from this realm's next
+    /// finalization sweep on, whether or not it is alive (JSD-0029 section 6).
+    /// </summary>
+    /// <remarks>
+    /// <b>The scripted eligibility seam, for internal checks only</b>: it is internal and reached by an
+    /// <c>UnsafeAccessor</c>, so no embedder can call it, and it changes nothing the model promises,
+    /// because a cleanup callback only ever receives the held value. It reads nothing and queues
+    /// nothing; only a host drain's sweep acts on the mark.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=61E815
+    // Broiler-Human:        PENDING
+    internal void MarkFinalizationTargetCollected(JsHostValue target)
+    {
+        Enter(1);
+
+        if (Unwrap(target).AsObjectOrNull() is not { } marked)
+        {
+            throw Error(JsHostErrorKind.TypeError, "only an object can be marked collected");
+        }
+
+        if (engine.Eligibility is not JsScriptedEligibility scripted)
+        {
+            scripted = new JsScriptedEligibility();
+            engine.Eligibility = scripted;
+        }
+
+        scripted.Mark(marked);
+    }
 
     /// <summary>Serializes a guest value into a detached clone carrier. Internal: see JSD-0032.</summary>
     /// <remarks>

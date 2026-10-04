@@ -131,6 +131,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorHostingRealms(Broiler.VM.Profile.JavaScript.IJsHostSurface surface, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorReEmittingWith(Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter emitter, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorSweepingFinalization(Broiler.VM.Profile.JavaScript.IJsHostSurface surface, System.Boolean handleStress, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorUnderHandleStress(Broiler.VM.Profile.JavaScript.IJsHostSurface surface, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DrainEntryPoint : const System.String = "#drain-jobs"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DynamicManifest : static Broiler.VM.VmFeatureManifestId { get; }

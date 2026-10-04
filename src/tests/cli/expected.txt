@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 142
+runs|0|# Completed: 143
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -1041,3 +1041,9 @@ runs/an-error-has-a-stack.js|0|string / true / stack,message / function/function
 # strings, `i`'s folding of a class's operands and the early errors. The values are the comparison
 # engine's *(JSC-262)*.
 runs/the-v-flag.js|0|true false true false true false ab true false false true true true v dgimsvy true false SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError SyntaxError 1 3
+
+# A CLEANUP CALLBACK ARRIVES (2026-10-04): this host sweeps its finalization registries at the drain
+# after the script and collects once before it, so the three dropped targets' callbacks run in
+# registration order and the kept and unregistered ones never do. The comparison engine collects when
+# it chooses, so its transcript is not the reference; this host's is *(JSC-263)*.
+runs/a-cleanup-callback-arrives.js|0|arrived h0,h1,h2

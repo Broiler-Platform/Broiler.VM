@@ -245,14 +245,15 @@ internal sealed class JsInstance : IVmInstanceState
 internal static class JsExecution
 {
     /// <summary>Builds an instance and its realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5AD403
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7DE3DF
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Instantiate(
         JsProgram program,
         IVmExecutionEnvironment environment,
         IJsHostSurface? hostSurface,
         System.Threading.CancellationToken cancellationToken,
-        bool handleStress = false)
+        bool handleStress = false,
+        bool sweepsFinalization = false)
     {
         // A BASELINE ARTIFACT THIS PROCESS CANNOT ENTER IS REFUSED BEFORE ANYTHING IS CHARGED, and it
         // is a refusal and not a fallback. The bytecode is in the same artifact and this arm will not
@@ -280,7 +281,8 @@ internal static class JsExecution
             program.AdmittedSurfaces,
             nativeForm: native,
             valueForm: native && program.NativeValueForm,
-            handleStress: handleStress);
+            handleStress: handleStress,
+            sweepsFinalization: sweepsFinalization);
 
         // THE PAGE IS MAPPED NOW AND NOT AT THE FIRST CALL, so a process that may not make memory
         // executable refuses the instance instead of faulting its first invocation.
@@ -885,7 +887,7 @@ internal static class JsExecution
     /// capability this profile imports declares caller-thread affinity - which this satisfies: the
     /// thread that calls it is the thread the guest is running on.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=D9C81E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=1456B0
     // Broiler-Falsified-If: guest code runs on the caller's stack, or an exception the guest raised does not reach the caller
     // Broiler-Human:        PENDING
     private static JsValue RunOnGuestStack(JsInstance instance, uint? unit)
@@ -911,9 +913,18 @@ internal static class JsExecution
                         // A DRAIN RUNS ON THE SAME STACK A SCRIPT DOES. A job is guest code and can
                         // recurse exactly as guest code does, so running it on the caller's stack
                         // would reintroduce the process termination JSC-79 records.
-                        completed = unit is { } entry
-                            ? instance.Engine.RunEntry(instance.Program, entry)
-                            : instance.Engine.DrainJobs();
+                        // A HOST DRAIN SWEEPS ONCE, AT ITS START AND BEFORE ANY GUEST CODE, and a
+                        // script never does (JSD-0029 section 4.2): this is one of the two points
+                        // the collector is read at.
+                        if (unit is { } entry)
+                        {
+                            completed = instance.Engine.RunEntry(instance.Program, entry);
+                        }
+                        else
+                        {
+                            instance.Engine.SweepFinalization();
+                            completed = instance.Engine.DrainJobs();
+                        }
                     }
                     finally
                     {
@@ -952,7 +963,7 @@ internal static class JsExecution
     /// carried out rather than raised, because a job that throws does not stop the stepping any
     /// more than it stops a drain.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=94AAA9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=CFD1F5
     // Broiler-Falsified-If: a job runs on the caller's stack, or a job that throws ends the stepping
     // Broiler-Human:        PENDING
     private static string RunOneJobOnGuestStack(JsInstance instance)
@@ -977,6 +988,11 @@ internal static class JsExecution
 
                     try
                     {
+                        // A HOST STEP SWEEPS BEFORE ITS TURN'S JOB, the other of the two points the
+                        // collector is read at; a cleanup it queues is that turn's job when the
+                        // queue was empty (JSD-0029 section 4.2).
+                        instance.Engine.SweepFinalization();
+
                         if (instance.Engine.StepOneJob(out var thrown))
                         {
                             rendered = instance.Engine.Render(thrown);

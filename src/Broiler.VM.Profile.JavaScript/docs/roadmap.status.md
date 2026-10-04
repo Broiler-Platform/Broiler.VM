@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, and phase F2's `v` flag, JSC-262; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, phase F2's `v` flag, JSC-262, and phase F4's finalization sweep, JSC-263; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -584,6 +584,14 @@ variants moved from failing to passing and none moved back
 ([JSC-262](roadmap.corrections.md#jsc-262)). The identity `broiler.javascript.regexp` is not minted.
 This is unreviewed implementation and validation material, not accepted milestone evidence; no
 milestone row advances.
+
+**Phase F4 observation, 2026-10-04.** A composition may turn on JSD-0029's host-drained sweep, and the
+CLI and the conformance runner do: a `FinalizationRegistry`'s callbacks arrive as ordinary jobs at a
+host's `#drain-jobs` or `#step-jobs`, never from a finalizer and never inside a script. Seven checks
+hold the model through its eligibility seam, a fixture shows callbacks arriving at the CLI's drain, and
+rule N25 passes ([JSC-263](roadmap.corrections.md#jsc-263)). The rewritten `Security=High` falsifier
+line awaits the owner's review. This is unreviewed implementation and validation material, not
+accepted milestone evidence; no milestone row advances.
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:

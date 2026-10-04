@@ -100,7 +100,7 @@ internal sealed partial class JsEngine
     /// and one handle table rooted by it, the table under handle-stress when the composition asked for it
     /// (JSD-0035 sections 3 and 4). Every other engine allocates neither.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=284CF2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8C733C
     // Broiler-Human:        PENDING
     internal JsEngine(
         IVmMeter contractMeter,
@@ -109,13 +109,15 @@ internal sealed partial class JsEngine
         System.Collections.Immutable.ImmutableArray<string> admittedSurfaces = default,
         bool nativeForm = false,
         bool valueForm = false,
-        bool handleStress = false)
+        bool handleStress = false,
+        bool sweepsFinalization = false)
     {
         meter = contractMeter;
         cancellation = token;
         capabilities = invoker;
         this.nativeForm = nativeForm || valueForm;
         this.valueForm = valueForm;
+        SweepsFinalization = sweepsFinalization;
 
         if (valueForm)
         {
@@ -322,13 +324,17 @@ internal sealed partial class JsEngine
     /// and the only way to promise that about a queue of guest callables is not to call them.
     /// Whatever they would have done is not done, which is what abandoning an operation means.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=459593
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=59F781
     // Broiler-Falsified-If: a queued job runs during an unwind
     // Broiler-Human:        PENDING
     internal int DropPendingJobs()
     {
         var dropped = jobs.Count;
         jobs.Clear();
+
+        // A DROPPED CLEANUP JOB LEAVES ITS REGISTRATIONS MARKED, and the next sweep - if the instance
+        // is ever drained again - queues a fresh one for them (JSD-0029 section 4.5).
+        ForgetQueuedCleanups();
         return dropped;
     }
 

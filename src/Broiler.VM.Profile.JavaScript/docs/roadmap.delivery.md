@@ -1062,7 +1062,7 @@ meets today is unchanged until the phase that delivers the surface lands, and ro
 | The RegExp `v` flag | [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) | "Keep the `v` flag refused until a matcher slice is scheduled": the slice is scheduled *(performed 2026-10-04: JSD-0031 section 14)* | F2 |
 | `Function.prototype.toString` source text | none yet; a record opens F3 *(proposed: [JSD-0037](decisions/0037-the-source-text-section.md), 2026-10-04)* | The artifact carries the source text a function was defined from | F3 |
 | `Error.prototype.stack` | none yet; a record opens F3 *(proposed: [JSD-0038](decisions/0038-the-error-stack.md), 2026-10-04)* | The shape is chosen by that record, from the comparison engines' common form | F3 |
-| `FinalizationRegistry` cleanup | [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) | D03-a is scheduled, and is taken on by the CLI composition by default | F4 |
+| `FinalizationRegistry` cleanup | [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) | D03-a is scheduled, and is taken on by the CLI composition by default *(performed 2026-10-04: JSD-0029 section 11)* | F4 |
 | Nested realms, `$262.createRealm` | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | SR-1, SR-2 and SR-7 are scheduled | F5 |
 | ShadowRealm | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | The deferral is not taken; SR-3 to SR-5 follow F5's realm work under `broiler.javascript.shadowrealm` | F5 |
 | Agents, `$262.agent` | [roadmap section 13](roadmap.md#13-realms-agents-and-the-host-boundary), [JSD-0028](decisions/0028-shared-memory-and-atomics.md) | A second agent is built, which is the first of JSD-0028's reopening conditions | F6 |
@@ -1184,6 +1184,11 @@ gate and the ledger's row.
   - `test/built-ins/FinalizationRegistry` passes with the cleanup cases;
   - a fixture shows a callback arriving at a drain point;
   - N25 still passes.
+- *Observed 2026-10-04, unreviewed: the fixture and N25 hold; `built-ins/FinalizationRegistry` passes
+  every variant but its two `cross-realm` ones, which F5 owns. The suite's cases that need a callback
+  to arrive are its `host-gc-required` ones, which the runner skips because it provides no `$262.gc`,
+  so "with the cleanup cases" is met by the profile's own checks rather than by the suite
+  ([JSC-263](roadmap.corrections.md#jsc-263)).*
 
 #### F5 — Realms: `createRealm`, then ShadowRealm
 

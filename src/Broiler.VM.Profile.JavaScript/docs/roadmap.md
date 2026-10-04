@@ -931,7 +931,6 @@ column is what a program meets, and it is as true as it was when the surface was
 
 | Surface | What a program meets today | Phase |
 |---|---|---|
-| `FinalizationRegistry` cleanup | A cleanup callback is never called, as [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) records. | F4 |
 | Nested realms and ShadowRealm | `$262.createRealm` throws a `TypeError` saying this profile creates no nested realm; ShadowRealm is a proposal the suite's runner does not select. | F5 |
 | Agents, `SharedArrayBuffer` and `Atomics` | `$262.agent`'s members throw; the ledger's absent-globals block names the two globals, and `typeof` answers `"undefined"` for each. | F6 |
 | `Intl` | The same block names it, and `typeof Intl` answers `"undefined"`; the locale-named methods answer as [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) records. | F7 |
@@ -950,6 +949,11 @@ own `stack` accessor, in V8's shape, under the proposed
 the flag's class syntax, set operations, string literals and the seven properties of strings, from
 two emoji files archived under rule N22; `unicodeSets` answers `true` for a `v` pattern
 *(corrected: [JSC-262](roadmap.corrections.md#jsc-262))*.)*
+*(Amended 2026-10-04: the row for `FinalizationRegistry` cleanup left this table. A composition that
+builds its descriptor with `DescriptorSweepingFinalization` - the CLI and the conformance runner do -
+sweeps its registries at a host's `#drain-jobs` and `#step-jobs`, and their callbacks arrive as
+ordinary jobs; every other composition keeps the inert registry
+*(corrected: [JSC-263](roadmap.corrections.md#jsc-263))*.)*
 
 **Nothing ahead of the edition is admitted except what a decision record names**: the `using`
 declaration and its disposal surface, under proposed JSD-0034. `FinalizationRegistry.prototype.cleanupSome`,

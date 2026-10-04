@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   63
-// Annotated:        63/63
-// Exempt:           42
-// Human-reviewed:   0/63
+// Relevant units:   66
+// Annotated:        66/66
+// Exempt:           44
+// Human-reviewed:   0/66
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         1/1
+// Criteria:         2/2
 // Resource impact:  4/10 max
-// Unverified:       63
+// Unverified:       66
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -874,12 +874,15 @@ internal sealed class JsFinalizationRecord
         Token = token is null ? null : new System.WeakReference<object>(token);
     }
 
-    /// <summary>The object whose collection would, in a realm that ran cleanups, be reported.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4DDED5
+    /// <summary>
+    /// The object whose collection is reported, until a sweep finds it collected and lets the
+    /// reference go (phase F4).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=93A2CC
     // Broiler-Human:        PENDING
-    internal System.WeakReference<object> Target { get; }
+    internal System.WeakReference<object>? Target { get; private set; }
 
-    /// <summary>The value the cleanup callback would have been handed.</summary>
+    /// <summary>The value the cleanup callback is handed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C1BB99
     // Broiler-Human:        PENDING
     internal JsValue Held { get; }
@@ -888,42 +891,53 @@ internal sealed class JsFinalizationRecord
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1CD0BF
     // Broiler-Human:        PENDING
     internal System.WeakReference<object>? Token { get; }
+
+    /// <summary>Whether a sweep found the target collected; a marked record stays marked.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0396AA
+    // Broiler-Human:        PENDING
+    internal bool Collected { get; private set; }
+
+    /// <summary>Marks the record collected and lets the dead reference go.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CE5C27
+    // Broiler-Human:        PENDING
+    internal void MarkCollected()
+    {
+        Collected = true;
+        Target = null;
+    }
 }
 
 /// <summary>
-/// A <c>FinalizationRegistry</c> that records registrations and NEVER runs a cleanup callback.
+/// A <c>FinalizationRegistry</c>: registrations, and cleanup callbacks that arrive as ordinary jobs
+/// at a drain the host asked for, when the composition turned the sweep on.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>This is a declared divergence and not an unfinished feature, so read the reason before
-/// filing it as a bug.</b> Guest code in this profile runs only on a guest stack, inside a metered
-/// invocation, under an allowance a host granted and a meter is spending: every call goes through
-/// <see cref="JsEngine.Call"/>, which charges fuel, counts depth, polls for cancellation and has
-/// somewhere to put a thrown value. A CLR finalizer has none of those. It runs on the collector's
-/// own thread, at a moment nobody chose, outside every invocation, with no allowance to spend and
-/// no caller to report a throw to. Running a guest's cleanup callback from there would be running
-/// unmetered guest code on a thread this profile does not own - the single worst thing an isolate
-/// could do - and no amount of care inside the callback would fix the frame it was called on.
+/// <b>No guest code ever runs from a CLR finalizer, and that is why the callback is a job.</b> Guest
+/// code in this profile runs only on a guest stack, inside a metered invocation, under an allowance a
+/// host granted: every call goes through <see cref="JsEngine.Call"/>, which charges fuel, counts depth,
+/// polls for cancellation and has somewhere to put a thrown value. A CLR finalizer has none of those,
+/// so a callback run from one would be unmetered guest code on a thread this profile does not own. The
+/// registry declares no finalizer, and rule N25 fails the build if any type here does.
 /// </para>
 /// <para>
-/// <b>So the type exists, answers, and is inert.</b> <c>register</c> validates its arguments
-/// exactly as the specification says and records the registration; <c>unregister</c> removes what
-/// a token names and answers truthfully whether it removed anything; there is no
-/// <c>cleanupSome</c>, which is a proposal's and not the language's. A program that uses a registry
-/// as a bookkeeping device -
-/// which is most of them - behaves identically. A program that WAITS for a cleanup waits for ever,
-/// and that is the observable difference, stated here rather than discovered.
+/// <b>Since phase F4 a composition may turn the sweep on</b> (JSD-0029 D03-a,
+/// <see cref="JavaScriptProfile.DescriptorSweepingFinalization"/>). Then a host's <c>#drain-jobs</c>
+/// or <c>#step-jobs</c> sweeps this registry: every registration whose target the collector has taken
+/// is marked, and one cleanup job is queued that removes each marked registration and then calls the
+/// callback with its held value. Off, which is the default every other composition keeps, the registry
+/// is the inert one it always was: <c>register</c> validates and records, <c>unregister</c> removes and
+/// answers truthfully, and no callback runs. There is no <c>cleanupSome</c>, which is a proposal's.
 /// </para>
 /// <para>
-/// <b>What would make this implementable is a job the host drains.</b> The queue is already there:
-/// a future revision could sweep collected targets at a drain point and enqueue the callback as an
-/// ordinary job, which puts it back on a metered guest stack inside an invocation the host asked
-/// for. That is the shape to build, and it is deliberately not built here, because the sweep needs
-/// a decision about WHEN a target counts as collected that this profile has not yet made.
+/// <b>When a target counts as collected is the collector's decision</b>, read only at a sweep and
+/// never again for a marked registration. A guest cannot make a sweep happen; an embedder that wants
+/// cleanup prompt collects before it drains, which is a cost it accepts for its process and the profile
+/// never imposes (JSD-0029 section 5).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=66E399
-// Broiler-Falsified-If: a cleanup callback registered here is ever invoked, or any guest code runs from a CLR finalizer
+// Broiler-Falsified-If: a cleanup callback runs outside a host-requested drain, or any guest code runs from a CLR finalizer
 // Broiler-Human:        PENDING
 internal sealed class JsFinalizationRegistryObject : JsObject
 {
@@ -931,16 +945,13 @@ internal sealed class JsFinalizationRegistryObject : JsObject
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<JsFinalizationRecord> records = [];
 
-    /// <summary>Creates a registry over <paramref name="cleanup"/>, which is never called.</summary>
+    /// <summary>Creates a registry over <paramref name="cleanup"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AB0C6D
     // Broiler-Human:        PENDING
     internal JsFinalizationRegistryObject(JsObject? prototype, JsValue cleanup)
         : base(prototype, "FinalizationRegistry") => Cleanup = cleanup;
 
-    /// <summary>
-    /// The callback the specification would call. It is held so that identity is preserved and
-    /// nothing else; see this type's remarks for why it is not called.
-    /// </summary>
+    /// <summary>The callback a cleanup job calls with each collected registration's held value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E2A8F8
     // Broiler-Human:        PENDING
     internal JsValue Cleanup { get; }
@@ -956,14 +967,72 @@ internal sealed class JsFinalizationRegistryObject : JsObject
     internal void Register(object target, JsValue held, object? token) =>
         records.Add(new JsFinalizationRecord(target, held, token));
 
+    /// <summary>Whether a cleanup job for this registry is queued and has not finished.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=724224
+    // Broiler-Human:        PENDING
+    internal bool CleanupQueued { get; set; }
+
+    /// <summary>
+    /// Marks every registration whose target <paramref name="eligibility"/> answers collected,
+    /// charging one unit per registration, and answers whether any registration is marked.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=9A7FB3
+    // Broiler-Falsified-If: a registration is marked whose target the eligibility answered alive, or a marked registration is unmarked
+    // Broiler-Human:        PENDING
+    internal bool Mark(JsEngine engine, IJsFinalizationEligibility eligibility)
+    {
+        var marked = false;
+
+        foreach (var record in records)
+        {
+            engine.Charge(1);
+
+            if (!record.Collected && record.Target is { } target && eligibility.IsCollected(target))
+            {
+                record.MarkCollected();
+            }
+
+            marked |= record.Collected;
+        }
+
+        return marked;
+    }
+
+    /// <summary>
+    /// Removes the first marked registration, in registration order, and answers its held value; or
+    /// answers that none is left.
+    /// </summary>
+    /// <remarks>
+    /// The registration goes BEFORE its callback runs, as the specification's cleanup job removes the
+    /// cell and then calls, so a callback that unregisters or re-registers sees the list without it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F9A98A
+    // Broiler-Human:        PENDING
+    internal bool TakeMarked(out JsValue held)
+    {
+        for (var at = 0; at < records.Count; at++)
+        {
+            if (records[at].Collected)
+            {
+                held = records[at].Held;
+                records.RemoveAt(at);
+                return true;
+            }
+        }
+
+        held = JsValue.Undefined;
+        return false;
+    }
+
     /// <summary>
     /// Removes every registration <paramref name="token"/> names, answering whether it removed any.
     /// </summary>
     /// <remarks>
     /// One token may name several registrations and all of them go, which is the specification's
     /// wording and the reason this is a sweep rather than a lookup. A record whose token has been
-    /// collected can never be named again and is dropped on the way past, which is the only
-    /// pruning this list gets.
+    /// collected can never be named again and is dropped on the way past. Marked registrations are
+    /// removed here too when a token names them, so a callback whose job has not run yet never runs;
+    /// otherwise a cleanup job is what removes them.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0A2ED3
     // Broiler-Human:        PENDING

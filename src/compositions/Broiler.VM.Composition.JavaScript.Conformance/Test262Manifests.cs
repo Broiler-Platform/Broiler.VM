@@ -112,12 +112,17 @@ internal sealed class Test262Manifest
         // and the profile installs it only where both are present. A run admitting no optional
         // surface at all keeps the plain descriptor, because the hosting door reads an empty list
         // as "every surface" and would widen what that run declined.
-        var descriptor = string.Equals(form, ValueStress, StringComparison.Ordinal)
-            ? JavaScriptProfile.DescriptorUnderHandleStress(
-                loadsHarness && surfaces.Length != 0 ? Test262Host.Instance : null, surfaces)
-            : loadsHarness && surfaces.Length != 0
-                ? JavaScriptProfile.DescriptorHostingRealms(Test262Host.Instance, surfaces)
-                : JavaScriptProfile.DescriptorAdmitting(surfaces);
+        //
+        // A RUN ADMITTING SURFACES SWEEPS ITS FINALIZATION REGISTRIES (phase F4, JSD-0029 D03-a), so
+        // a cleanup callback arrives at the drain this runner already invokes after the test. The
+        // runner never collects to make one arrive: no test's verdict may depend on when the
+        // collector ran, and the suite's `host-gc-required` tests stay skipped.
+        var descriptor = surfaces.Length != 0
+            ? JavaScriptProfile.DescriptorSweepingFinalization(
+                loadsHarness ? Test262Host.Instance : null,
+                string.Equals(form, ValueStress, StringComparison.Ordinal),
+                surfaces)
+            : JavaScriptProfile.DescriptorAdmitting(surfaces);
 
         Catalog = VmCatalog.CreateBuilder()
             .Add(descriptor)

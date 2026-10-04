@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   29
 // Annotated:        29/29
-// Exempt:           6
+// Exempt:           7
 // Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Medium
@@ -97,6 +97,11 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=BA54CC
     // Broiler-Human:        PENDING
     internal JsObject WeakRefPrototype { get; private set; } = null!;
+
+    /// <summary>The cleanup job a sweep queues for a registry (phase F4); reachable from nothing else.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=91B60F
+    // Broiler-Human:        PENDING
+    internal JsNativeFunction FinalizationCleanupJob { get; private set; } = null!;
 
     /// <summary><c>FinalizationRegistry.prototype</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=417DD2
@@ -664,12 +669,11 @@ internal sealed partial class JsRealm
     /// <summary>Builds <c>WeakRef</c> and <c>FinalizationRegistry</c>.</summary>
     /// <remarks>
     /// The two are built together because they are one feature: a program that wants to know when
-    /// something went away holds a <c>WeakRef</c> to ask and a registry to be told. Only the asking
-    /// half works here - see <see cref="JsFinalizationRegistryObject"/> for why the telling half is
-    /// inert, and note that a registry that never tells is exactly as useful as polling a
-    /// <c>WeakRef</c>, which is what a program should do on this profile.
+    /// something went away holds a <c>WeakRef</c> to ask and a registry to be told. The telling half
+    /// tells only where the composition turned the host-drained sweep on (phase F4); see
+    /// <see cref="JsFinalizationRegistryObject"/> for when, and for why it is inert everywhere else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A148B2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=200131
     // Broiler-Human:        PENDING
     private void SetupWeakReferences()
     {
@@ -713,10 +717,9 @@ internal sealed partial class JsRealm
             {
                 var cleanup = ArgOfCollection(arguments, 0);
 
-                // THE CALLBACK IS VALIDATED THOUGH IT IS NEVER CALLED. A registry built over a
-                // non-function is a programming error the specification reports at construction,
-                // and a profile that skipped the check because it would never call the value would
-                // be hiding the error rather than diverging honestly about the call.
+                // THE CALLBACK IS VALIDATED AT CONSTRUCTION, as the specification says, whether or not
+                // this composition sweeps: a registry built over a non-function is a programming error,
+                // and an inert registry that skipped the check would be hiding it.
                 if (!cleanup.IsObject || !cleanup.AsObject().IsCallable)
                 {
                     throw engine.Error(
@@ -724,9 +727,37 @@ internal sealed partial class JsRealm
                 }
 
                 engine.Charge(1);
-                return JsValue.Object(
-                    new JsFinalizationRegistryObject(FinalizationRegistryPrototype, cleanup));
+                var registry = new JsFinalizationRegistryObject(FinalizationRegistryPrototype, cleanup);
+                engine.TrackRegistry(registry);
+                return JsValue.Object(registry);
             });
+
+        // THE CLEANUP JOB, which a host-requested sweep queues for a registry with collected
+        // registrations (JSD-0029 section 4.4, phase F4). It takes the marked registrations in order,
+        // removing each BEFORE calling the callback with its held value, and stops at a throw: the
+        // rest stay marked and the next sweep queues a fresh job for them. It is no global and no
+        // property; only the sweep reaches it.
+        FinalizationCleanupJob = Native(string.Empty, 1, static (engine, _, arguments) =>
+        {
+            if (arguments.Length == 0 || arguments[0].AsObjectOrNull() is not JsFinalizationRegistryObject registry)
+            {
+                return JsValue.Undefined;
+            }
+
+            try
+            {
+                while (registry.TakeMarked(out var held))
+                {
+                    _ = engine.Call(registry.Cleanup, JsValue.Undefined, [held]);
+                }
+            }
+            finally
+            {
+                registry.CleanupQueued = false;
+            }
+
+            return JsValue.Undefined;
+        });
 
         Method(FinalizationRegistryPrototype, "register", 2, static (engine, thisValue, arguments) =>
         {

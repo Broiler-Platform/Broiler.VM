@@ -1213,7 +1213,11 @@ public sealed class ReviewRecordRuleTests
         // file UnicodeTableGenerator writes and rule N22 holds, and the hand-written
         // JsUnicodeStringProperties.cs that reads it for the `v` flag's `\p{...}`. Both are covered on
         // the same terms as every other product file, and nothing in them has been read by a human.
-        Assert.Equal(242, AssuranceSources.Files.Count);
+        //
+        // AND THE FINALIZATION SWEEP (phase F4, 2026-10-04, JSD-0029 D03-a): JsEngine.Finalization.cs, the
+        // host-drained sweep, its eligibility seam and the registries it tracks. It is covered on the
+        // same terms as every other product file, and nothing in it has been read by a human.
+        Assert.Equal(243, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

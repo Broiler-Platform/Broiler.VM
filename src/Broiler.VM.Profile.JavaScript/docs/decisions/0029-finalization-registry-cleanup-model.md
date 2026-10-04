@@ -376,3 +376,36 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
 - **D03-a is scheduled**, as phase F4 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), and the plan proposes that the CLI and
   conformance compositions turn the sweep on. The model in section 4 is unchanged, and rule N25
   stays: no guest code from a CLR finalizer.
+
+## 11. 2026-10-04: D03-a performed (phase F4)
+
+*Recorded as the slice was performed. It signs nothing and takes nothing: this record keeps its
+status line, and the owner's review of the rewritten `Security=High` falsifier line is still owed
+(section 10). Corrections entry [JSC-263](../roadmap.corrections.md#jsc-263).*
+
+- **The switch is a descriptor door**, as the recommendation of 2026-10-03 proposed:
+  `JavaScriptProfile.DescriptorSweepingFinalization(surface, handleStress, surfaces)`. Every other door
+  builds the inert registry, unchanged.
+- **Sections 4.2 to 4.7 are built as written.** The engine keeps its registries weakly in creation
+  order. `#drain-jobs` sweeps once before its first job and `#step-jobs` before each turn's job, both
+  on the guest stack inside the host step; `JsHostRealm.DrainJobs`, a script and a job never sweep. A
+  sweep charges one unit per registry and per registration, marks every registration whose target the
+  eligibility answers collected, lets the dead reference go, and queues one cleanup job per registry
+  with marked registrations and none queued. The job removes each marked registration before calling
+  the callback with its held value, and stops at a throw, leaving the rest marked for the next sweep's
+  job. `unregister` removes a marked registration too. Dropping the queue at unwind forgets the queued
+  cleanups, so the marks survive for the next drain.
+- **The section 6 seam** is `IJsFinalizationEligibility`, internal, with a scripted implementation a
+  check installs through an internal `JsHostRealm` method reached by `UnsafeAccessor`. Seven checks
+  in the slice compiler's `--checks` hold acceptance items (1), (1a), (2), (3), the inert default and
+  (8) - the last on the production path, with forced collections. Item (7) is rule N25, taken on
+  2026-10-03. Items (4), (5) and (6) are held by the code paths named above and by no check of their
+  own.
+- **The model is on in the CLI and the conformance runner**, which D03-a's *Excludes* left to "its own
+  decision" and the plan's phase F4 proposes. The CLI collects once before its drain, which section 5
+  allows a host and the profile never does, so a callback for a target its program dropped arrives;
+  `runs/a-cleanup-callback-arrives.js` pins that. The conformance runner never collects, so no test's
+  verdict depends on the collector, and the suite's `host-gc-required` tests stay skipped.
+- **In the value form a dropped target can stay reachable** through the instance's handle table until
+  it compacts, so the same program delivers nothing there. That is the implementation-dependent
+  liveness section 5 names, not a defect of the model.

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
+// Relevant units:   28
+// Annotated:        28/28
 // Exempt:           14
-// Human-reviewed:   0/27
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         13/13
+// Criteria:         14/14
 // Resource impact:  3/10 max
-// Unverified:       27
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -693,6 +693,45 @@ public static class JavaScriptProfile
             names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface, handleStress: true);
     }
 
+    /// <summary>
+    /// A descriptor whose instances' host drains sweep their <c>FinalizationRegistry</c>s, so cleanup
+    /// callbacks arrive (JSD-0029 D03-a, phase F4).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The sweep reads the collector at two points only</b>: when a host invokes
+    /// <see cref="DrainEntryPoint"/>, before its first job, and when it invokes
+    /// <see cref="StepEntryPoint"/>, before that turn's job. A registration whose target the collector
+    /// has taken is marked there, and its registry's callback runs later as an ordinary job, on the
+    /// guest stack and under the allowance. Nothing runs from a CLR finalizer, a script invocation
+    /// never sweeps, and a guest cannot make a sweep happen.
+    /// </para>
+    /// <para>
+    /// <b>A fifth door and not a property</b>, for the reason <see cref="DescriptorHostingRealms"/>
+    /// gives: whether a realm's registries tell is fixed before the realm exists. Every other door
+    /// builds the inert registry. The sweep never collects: a composition that wants cleanup prompt
+    /// collects before it drains, which is a process-wide cost it accepts for itself.
+    /// </para>
+    /// </remarks>
+    /// <param name="surface">The realm embedder, or nothing.</param>
+    /// <param name="handleStress">Whether value-form instances run under handle-stress, as <see cref="DescriptorUnderHandleStress"/>.</param>
+    /// <param name="surfaces">The optional surfaces admitted; none means every one.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=96FEE8
+    // Broiler-Falsified-If: a descriptor built here sweeps anywhere but at a host drain or step, or a descriptor built by any other door sweeps at all
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor DescriptorSweepingFinalization(
+        IJsHostSurface? surface, bool handleStress = false, params VmFeatureManifestId[] surfaces)
+    {
+        var names = Named(surfaces);
+
+        return Build(
+            names.Length == 0 ? EverySurface : names,
+            emitter: null,
+            hostSurface: surface,
+            handleStress: handleStress,
+            sweepsFinalization: true);
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50E921
     // Broiler-Human:        PENDING
     public static bool TryGetCompletion(in VmInvocationResult result, out JavaScriptCompletion completion) =>
@@ -747,14 +786,15 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=319B97
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=819497
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
         ImmutableArray<string> admittedSurfaces,
         Format.IJsNativeEmitter? emitter = null,
         IJsHostSurface? hostSurface = null,
-        bool handleStress = false)
+        bool handleStress = false,
+        bool sweepsFinalization = false)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
 
@@ -781,7 +821,7 @@ public static class JavaScriptProfile
                 JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
             acceptedFeatureManifests: accepted,
             verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces, emitter),
-            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface, handleStress),
+            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface, handleStress, sweepsFinalization),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
             supportsConcurrentVerification: true,

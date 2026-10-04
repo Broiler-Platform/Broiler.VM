@@ -484,6 +484,7 @@ internal static class Program
             .Concat(NativeTemplateScanChecks.Run())
             .Concat(CloneChecks.Run())
             .Concat(WeakMapChecks.Run())
+            .Concat(FinalizationChecks.Run())
             .Concat(BigIntChecks.Run())
             .Concat(JsWordChecks.Run())
             .Concat(ValueFormChecks.Run())
