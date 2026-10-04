@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           20
+// Exempt:           21
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -11385,6 +11385,18 @@ internal static class JsCldrTables
         en|one|other|other
         en|other|one|other
         en|other|other|other
+        """u8;
+
+    /// <summary>The ordinal plural rules of each supported language: language, category, rule.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> Ordinals =>
+        """
+        de|other|
+        en|one|n % 10 = 1 and n % 100 != 11
+        en|two|n % 10 = 2 and n % 100 != 12
+        en|few|n % 10 = 3 and n % 100 != 13
+        en|other|
         """u8;
 
     /// <summary>The sanctioned units' patterns of each supported language: language, width, unit, field, value.</summary>

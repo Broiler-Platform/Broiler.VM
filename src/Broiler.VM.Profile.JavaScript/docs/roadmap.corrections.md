@@ -11969,3 +11969,48 @@ format's `JsIntlTable`.
 - JSD-0046 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-273
+
+**Where:** phase F7's slice I4, its second part. `Intl.PluralRules` (`JsRealm.PluralRules.cs`), the
+number data's ordinal rules (`JsNumberData.cs`, `JsIntlTables.cs`), the CLDR archive and its pin, the
+generator's new table, and the format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists PluralRules first among
+  "I4 and later", accepted "each opened by its own consumer and its own card".
+- [JSD-0044](decisions/0044-intl-numberformat.md) carries the cardinal plural rules and ranges for the
+  number format's own use. The ordinal rules were not in the archive.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.PluralRules` is built whole**, under proposed
+  [JSD-0047](decisions/0047-intl-pluralrules.md): `select`, `selectRange`, `resolvedOptions` and
+  `supportedLocalesOf`, with `type`, `notation` and every digit option. **Its rounding is the number
+  format's**, so `select` reads the operands of the string a decimal `Intl.NumberFormat` with the same
+  options writes. An ordinal range reads CLDR's cardinal range data, as ICU's does.
+- **The archive grows under N27**: `supplemental/ordinals.json` from the `cldr-core` 48.2.0 tarball
+  slice I2 verified, retrieved twice more and checked against the registry's integrity. **N28's file
+  grows by one table**, the ordinal rules, to 472,689 bytes, still under the provisional 512 KiB bound.
+- **The retained plural dataset**
+  ([`src/tests/cldr/plurals/`](../../tests/cldr/plurals/README.md)) has 1,299 lines against Node
+  22.22.0's ICU 77.1. The profile answers all of them as ICU did but for 123 lines in four groups,
+  each named in `divergences.txt`:
+  - Node 22 predates the draft's BigInt argument and `notation` option;
+  - ICU resolves a range whose ends write one string by the range data, where the draft answers the
+    start's category;
+  - the resolved options differ in `notation`, the categories' order and V8's language-only locales.
+- **Checks**: one new slice-compiler check, 629 in all, holds the plural dataset.
+- **test262**, against the run JSC-272 records: `test/intl402/PluralRules` passes 78 of 82 scored
+  variants, from 4. The 4 failing are two files, and both need locales the data lacks. The suite tags
+  11 more files `Intl.NumberFormat-v3`, a proposal, and the runner skips them. Run by hand under the
+  profile, all 11 pass.
+
+**What must not be read as repaired.**
+- **Plural rules exist for German and English only**, the section 5 locales. The tests that name other
+  languages fail.
+- **The exponent operands `c` and `e` are always 0.** No supported language's rules read them.
+- **`ListFormat`, `RelativeTimeFormat`, `DisplayNames`, `Segmenter` and `DurationFormat`** are absent,
+  and the phase's exit gate is not met.
+- JSD-0047 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

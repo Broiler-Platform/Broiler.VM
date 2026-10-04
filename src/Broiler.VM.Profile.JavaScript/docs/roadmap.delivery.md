@@ -1300,6 +1300,11 @@ proposed [JSD-0046](decisions/0046-intl-locale.md), with the draft's information
 locale core's likely subtags corrected to UTS #35. The retained Locale dataset agrees with ICU 77.1
 but for 150 named divergences. `Locale` passes all 218 scored `intl402` variants. `PluralRules` is
 next ([JSC-272](roadmap.corrections.md#jsc-272)).*
+*Progress, 2026-10-04: `Intl.PluralRules` is built under proposed
+[JSD-0047](decisions/0047-intl-pluralrules.md), cardinal and ordinal over the number format's
+rounding. The retained plural categories agree with ICU 77.1 but for 123 named divergences.
+`PluralRules` passes 78 of 82 scored `intl402` variants, and the failing ones need other locales.
+`ListFormat` is next ([JSC-273](roadmap.corrections.md#jsc-273)).*
 
 #### F8 — Temporal
 

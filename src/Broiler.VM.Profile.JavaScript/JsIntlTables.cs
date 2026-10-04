@@ -221,7 +221,7 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>Decodes the number tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=65D45E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=C4085C
     // Broiler-Human:        PENDING
     private JsNumberData ReadNumbers()
     {
@@ -270,17 +270,20 @@ internal sealed class JsIntlTables
             data.NumberingSystems[line[..bar]] = list;
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.Plurals))
+        foreach (var (table, plurals) in new[] { (Format.JsIntlTable.Plurals, data.Plurals), (Format.JsIntlTable.Ordinals, data.Ordinals) })
         {
-            var fields = line.Split('|');
-
-            if (!data.Plurals.TryGetValue(fields[0], out var rules))
+            foreach (var line in Lines(table))
             {
-                rules = [];
-                data.Plurals[fields[0]] = rules;
-            }
+                var fields = line.Split('|');
 
-            rules.Add((fields[1], JsPluralRule.Parse(Unescape(fields[2]))));
+                if (!plurals.TryGetValue(fields[0], out var rules))
+                {
+                    rules = [];
+                    plurals[fields[0]] = rules;
+                }
+
+                rules.Add((fields[1], JsPluralRule.Parse(Unescape(fields[2]))));
+            }
         }
 
         foreach (var line in Lines(Format.JsIntlTable.PluralRanges))

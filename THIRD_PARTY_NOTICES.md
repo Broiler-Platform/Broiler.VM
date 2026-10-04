@@ -403,7 +403,9 @@ holds from `cldr-dates-full` `ca-gregorian.json`, `dateFields.json` and `timeZon
 and `en`, and from `cldr-core` `timeData.json` and `dayPeriods.json`. Since the same day, for
 `Intl.Locale` (decision
 [JSD-0046](src/Broiler.VM.Profile.JavaScript/docs/decisions/0046-intl-locale.md)), it also holds
-from `cldr-core` `scriptMetadata.json` and `weekData.json`.
+from `cldr-core` `scriptMetadata.json` and `weekData.json`, and for `Intl.PluralRules` (decision
+[JSD-0047](src/Broiler.VM.Profile.JavaScript/docs/decisions/0047-intl-pluralrules.md))
+`ordinals.json`.
 
 **What is derived, and where it ships.** `CldrTableGenerator` (architecture test project, not
 shipped) writes one source file of tables from those files and the pinned UCD:
@@ -415,7 +417,8 @@ Soft_Dotted ranges, and since slice I2 each language's number patterns and symbo
 unit patterns and plural rules, the currency fraction digits and the numbering systems' digits, and
 since slice I3 each language's Gregorian calendar names and patterns, date field names and UTC and GMT
 zone names, the hour cycles of the supported regions and the day period rules, and since slice I4
-the hour cycles and weeks of every region and the scripts' line directions. The derived tables
+the hour cycles and weeks of every region, the scripts' line directions and each language's ordinal
+plural rules. The derived tables
 therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);

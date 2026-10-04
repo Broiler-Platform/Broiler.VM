@@ -1259,7 +1259,11 @@ public sealed class ReviewRecordRuleTests
         // AND THE LOCALE (phase F7, 2026-10-04, JSD-0046): JsLocaleInfo.cs, the week and script data;
         // and JsRealm.Locale.cs, Intl.Locale. Both are covered on the same terms as every other
         // product file, and nothing in them has been read by a human.
-        Assert.Equal(270, AssuranceSources.Files.Count);
+        //
+        // AND PLURAL RULES (phase F7, 2026-10-04, JSD-0047): JsRealm.PluralRules.cs,
+        // Intl.PluralRules over the number format's rounding. It is covered on the same terms as every
+        // other product file, and nothing in it has been read by a human.
+        Assert.Equal(271, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -637,6 +637,16 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F7 observation, slice I4's `Intl.PluralRules`, 2026-10-04.** `Intl.PluralRules` is built as
+the current ECMA-402 draft states it, cardinal and ordinal, with every digit option and notation. It
+rounds as the number format rounds and selects by CLDR's rules, the ordinal ones gained under rule
+N27. The retained German and English plural categories agree with ICU 77.1 on every line but 123,
+each named with the clause ICU's answer departs from. `test/intl402/PluralRules` passes 78 of 82
+scored variants, and the failing ones need locales the data lacks
+([JSC-273](roadmap.corrections.md#jsc-273), proposed
+[JSD-0047](decisions/0047-intl-pluralrules.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F7 observation, slice I4's `Intl.Locale`, 2026-10-04.** `Intl.Locale` is built as the
 current ECMA-402 draft states it: any well-formed tag, every option, the twelve accessors,
 `maximize` and `minimize` by UTS #35, and the seven information methods over CLDR week, script and

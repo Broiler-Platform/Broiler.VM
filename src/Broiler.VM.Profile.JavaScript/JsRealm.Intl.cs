@@ -50,7 +50,7 @@ internal sealed partial class JsRealm
     internal JsNativeFunction? CollatorConstructor { get; private set; }
 
     /// <summary>Builds <c>Intl</c> and <c>Intl.Collator</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8, s10; IP=Low; Security=Medium; Resources=3; Fingerprint=131B5A
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8, s10; IP=Low; Security=Medium; Resources=3; Fingerprint=EA8199
     // Broiler-Human:        PENDING
     private void SetupIntl()
     {
@@ -77,6 +77,7 @@ internal sealed partial class JsRealm
         SetupNumberFormat(intl);
         SetupDateTimeFormat(intl);
         SetupLocale(intl);
+        SetupPluralRules(intl);
     }
 
     // ---- Intl.Collator ---------------------------------------------------------------------------

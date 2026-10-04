@@ -421,3 +421,7 @@ status line. Corrections entry [JSC-272](../roadmap.corrections.md#jsc-272).*
 - **The archive grew** by the week and script metadata files, under N27. The measured data is now
   472,562 bytes, still under the provisional bound, and no budget is set. Decision (d) holds:
   `getTimeZones` answers no zone for any region.
+- **`PluralRules` is second**, under proposed [JSD-0047](0047-intl-pluralrules.md), recorded in
+  [JSC-273](../roadmap.corrections.md#jsc-273). It rounds as I2's `NumberFormat` rounds. The archive
+  grew by the ordinal rules, and the data is now 472,689 bytes. Its retained dataset of 1,299 lines
+  agrees with ICU 77.1 but for 123 named lines.

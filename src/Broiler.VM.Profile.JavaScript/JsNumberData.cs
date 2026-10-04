@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   14
 // Annotated:        14/14
-// Exempt:           21
+// Exempt:           22
 // Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Medium
@@ -49,6 +49,10 @@ internal sealed class JsNumberData
     internal System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<(string Category, JsPluralRule Rule)>> Plurals { get; } =
         new(System.StringComparer.Ordinal);
 
+    /// <summary>Each language's ordinal plural rules, in the table's order.</summary>
+    internal System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<(string Category, JsPluralRule Rule)>> Ordinals { get; } =
+        new(System.StringComparer.Ordinal);
+
     /// <summary>Each language's plural range results, by <c>language|start|end</c>.</summary>
     internal System.Collections.Generic.Dictionary<string, string> PluralRanges { get; } = new(System.StringComparer.Ordinal);
 
@@ -62,11 +66,11 @@ internal sealed class JsNumberData
         Locales.TryGetValue(language, out var locale) && locale.TryGetValue(key, out var value) ? value : null;
 
     /// <summary>The plural category of a formatted number in a language: the first rule that holds, or <c>other</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s5.1; IP=Low; Security=Low; Resources=1; Fingerprint=928AE2
+    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s5.1; IP=Low; Security=Low; Resources=1; Fingerprint=B031E3
     // Broiler-Human:        PENDING
-    internal string Plural(string language, JsPluralOperands operands)
+    internal string Plural(string language, JsPluralOperands operands, bool ordinal = false)
     {
-        if (Plurals.TryGetValue(language, out var rules))
+        if ((ordinal ? Ordinals : Plurals).TryGetValue(language, out var rules))
         {
             foreach (var (category, rule) in rules)
             {

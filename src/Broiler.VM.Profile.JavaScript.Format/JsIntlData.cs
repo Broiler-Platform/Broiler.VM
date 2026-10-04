@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           21
+// Exempt:           22
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B842B6
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1F2B98
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -128,4 +128,7 @@ public enum JsIntlTable
 
     /// <summary>Each script's line direction: <c>script</c>, <c>YES</c> for right to left or <c>NO</c>.</summary>
     Scripts = 19,
+
+    /// <summary>Each language's ordinal plural rules: <c>language</c>, <c>category</c>, <c>rule</c>.</summary>
+    Ordinals = 20,
 }

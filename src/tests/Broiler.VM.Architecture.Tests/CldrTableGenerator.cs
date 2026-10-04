@@ -98,6 +98,7 @@ internal static class CldrTableGenerator
         TextTable(text, "NumberingSystems", "The numbering systems with a simple digit mapping: name, digits.", NumberingSystems(cldr));
         TextTable(text, "Plurals", "The cardinal plural rules of each supported language: language, category, rule.", Plurals(cldr));
         TextTable(text, "PluralRanges", "The plural range rules of each supported language: language, start, end, result.", PluralRanges(cldr));
+        TextTable(text, "Ordinals", "The ordinal plural rules of each supported language: language, category, rule.", Ordinals(cldr));
         TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
         TextTable(text, "DateLocales", "The Gregorian calendar, date field and zone name data of each supported language, flattened: language, key, value.", DateLocales(cldr));
         TextTable(text, "TimeData", "The hour cycles allowed and preferred in each region: region, allowed, preferred.", TimeData(cldr));
@@ -472,10 +473,18 @@ internal static class CldrTableGenerator
             .Order(StringComparer.Ordinal);
 
     /// <summary>Each language's cardinal plural rules, without their samples.</summary>
-    internal static IEnumerable<string> Plurals(IReadOnlyDictionary<string, byte[]> cldr)
+    internal static IEnumerable<string> Plurals(IReadOnlyDictionary<string, byte[]> cldr) =>
+        PluralRules(cldr, "plurals.json", "plurals-type-cardinal");
+
+    /// <summary>Each language's ordinal plural rules, without their samples.</summary>
+    internal static IEnumerable<string> Ordinals(IReadOnlyDictionary<string, byte[]> cldr) =>
+        PluralRules(cldr, "ordinals.json", "plurals-type-ordinal");
+
+    /// <summary>Each supported language's rules of one plural type, without their samples.</summary>
+    private static IEnumerable<string> PluralRules(IReadOnlyDictionary<string, byte[]> cldr, string file, string type)
     {
-        var rules = Json(cldr, "json/cldr-core/supplemental/plurals.json")
-            .GetProperty("supplemental").GetProperty("plurals-type-cardinal");
+        var rules = Json(cldr, "json/cldr-core/supplemental/" + file)
+            .GetProperty("supplemental").GetProperty(type);
 
         foreach (var language in NumberLanguages)
         {

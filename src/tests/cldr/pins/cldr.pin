@@ -42,6 +42,10 @@
 # EXTENDED 2026-10-04 FOR SLICE I4. Intl.Locale's week and text information read two more files of the
 # cldr-core tarball verified for slice I2, retrieved twice more and found byte-identical to it:
 # scriptMetadata.json and supplemental/weekData.json.
+#
+# EXTENDED 2026-10-04 FOR SLICE I4, AGAIN. Intl.PluralRules's ordinal rules read one more file of the
+# same cldr-core tarball, retrieved twice more, checked against the registry's sha512 integrity and
+# found byte-identical to it: supplemental/ordinals.json.
 
 data unicode-common-locale-data-repository
 version 48.2.0
@@ -88,6 +92,7 @@ file cldr-48.2.0/json/cldr-core/supplemental/currencyData.json 71126 e50315091b1
 file cldr-48.2.0/json/cldr-core/supplemental/dayPeriods.json 86320 6ed3b0e88ea0b8b2a045da6880951812f0ffb256d38156432b10f583c06a28b8
 file cldr-48.2.0/json/cldr-core/supplemental/likelySubtags.json 220093 38345946ad457213fb39e9645ab50f36b61681bf674b2eef2979a3b58d04afc8
 file cldr-48.2.0/json/cldr-core/supplemental/numberingSystems.json 10695 0efb69a00dbae5950195b077e0cc6c7f319d3a1e8a81401083ec4f42c14b0014
+file cldr-48.2.0/json/cldr-core/supplemental/ordinals.json 18839 8a945afc483a4f677fb5641f08a2ccc62948ee05f316d21996be6561c2f83155
 file cldr-48.2.0/json/cldr-core/supplemental/parentLocales.json 5890 5a3f056a70ff52af7a25681a670ec860d785d98894934d3a9e5332508c23651e
 file cldr-48.2.0/json/cldr-core/supplemental/pluralRanges.json 24710 fb56214321fb18675196eda503779b8576fe785084bc0573e1def41dd0e39027
 file cldr-48.2.0/json/cldr-core/supplemental/plurals.json 76105 6c0a48e9bcfc25856f90202f703c2c7f89c105d6868f7712a943a6ed2dcbe8f4
