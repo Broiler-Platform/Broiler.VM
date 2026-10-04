@@ -11356,8 +11356,11 @@ from a CLR finalizer".
   collects when it chooses, so its transcript is not the reference.
 - **test262:** `built-ins/FinalizationRegistry`, `WeakRef`, `WeakMap`, `WeakSet`, `Promise` and
   `staging` answer exactly as before, 4,686 variants. The suite's cases that need cleanup to arrive
-  are its `host-gc-required` ones, still skipped. The whole-suite figure is added by an amendment to
-  this entry when the run finishes; until then no whole-suite figure is claimed.
+  are its `host-gc-required` ones, still skipped. Over the whole pinned suite, against the run
+  [JSC-262](roadmap.corrections.md#jsc-262) records, no variant moved because of this change: 94,996
+  variants, 83,179 passing, 3,891 failing, 42 exhausted and 7,884 skipped. The two that did move are
+  the property-escape variants that ran past their wall-clock allowance in that loaded run and passed
+  when run again alone.
 
 **What must not be read as repaired.**
 - **When a callback arrives is the collector's.** Without a collection before the drain, a dropped
