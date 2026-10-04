@@ -429,3 +429,8 @@ status line. Corrections entry [JSC-272](../roadmap.corrections.md#jsc-272).*
   [JSC-274](../roadmap.corrections.md#jsc-274). The archive grew by a fourth CLDR package,
   `cldr-misc-full`, for its list patterns, and the data is now 473,642 bytes. Its retained dataset of
   481 lines agrees with ICU 77.1 on every string.
+- **`RelativeTimeFormat` is fourth**, under proposed [JSD-0049](0049-intl-relativetimeformat.md),
+  recorded in [JSC-275](../roadmap.corrections.md#jsc-275). Its data is from slice I3's archive. The
+  generated data is now 483,743 bytes, 40,545 under the provisional bound. That is less than
+  `DisplayNames`'s name tables need, so **decision (c), the size budget, is now a precondition of
+  `DisplayNames`**.

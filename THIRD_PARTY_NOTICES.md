@@ -420,7 +420,7 @@ unit patterns and plural rules, the currency fraction digits and the numbering s
 since slice I3 each language's Gregorian calendar names and patterns, date field names and UTC and GMT
 zone names, the hour cycles of the supported regions and the day period rules, and since slice I4
 the hour cycles and weeks of every region, the scripts' line directions, and each language's ordinal
-plural rules and list patterns. The derived tables
+plural rules, list patterns and relative time patterns. The derived tables
 therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);

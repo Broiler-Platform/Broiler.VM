@@ -1309,6 +1309,12 @@ rounding. The retained plural categories agree with ICU 77.1 but for 123 named d
 [JSD-0048](decisions/0048-intl-listformat.md), over CLDR's list patterns. The retained lists agree
 with ICU 77.1 on every string. `ListFormat` passes 154 of 162 `intl402` variants, and the failing
 ones need Spanish. `RelativeTimeFormat` is next ([JSC-274](roadmap.corrections.md#jsc-274)).*
+*Progress, 2026-10-04: `Intl.RelativeTimeFormat` is built under proposed
+[JSD-0049](decisions/0049-intl-relativetimeformat.md), over the relative time data slice I3 archived.
+The retained relative times agree with ICU 77.1 but for 96 named divergences. `RelativeTimeFormat`
+passes 148 of 160 `intl402` variants, and the failing ones need Polish. The generated data is 40,545
+bytes under the provisional bound, less than `DisplayNames` needs, so `Segmenter` is next and
+`DisplayNames` waits on the owner's size budget ([JSC-275](roadmap.corrections.md#jsc-275)).*
 
 #### F8 — Temporal
 

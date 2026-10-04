@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           23
+// Exempt:           24
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7D6BE4
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E7C352
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -137,4 +137,11 @@ public enum JsIntlTable
     /// <c>start</c>, <c>middle</c>, <c>end</c> and two-element patterns.
     /// </summary>
     ListPatterns = 21,
+
+    /// <summary>
+    /// Each language's relative time data: <c>language</c>, <c>field</c> (a unit, or a unit with
+    /// <c>-short</c> or <c>-narrow</c>), <c>key</c> (a value's literal, or <c>future.</c> or
+    /// <c>past.</c> and a plural category) and the pattern.
+    /// </summary>
+    RelativeTimes = 22,
 }

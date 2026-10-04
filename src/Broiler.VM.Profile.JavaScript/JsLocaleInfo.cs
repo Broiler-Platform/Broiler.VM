@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           3
+// Exempt:           4
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -41,4 +41,9 @@ internal sealed class JsLocaleInfo
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.Dictionary<string, (string Start, string Middle, string End, string Pair)> ListPatterns { get; } =
         new(System.StringComparer.Ordinal);
+
+    /// <summary>Each language's relative time literals and patterns, by <c>language|field|key</c> (JSD-0049).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=19AB56
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.Dictionary<string, string> RelativeTimes { get; } = new(System.StringComparer.Ordinal);
 }

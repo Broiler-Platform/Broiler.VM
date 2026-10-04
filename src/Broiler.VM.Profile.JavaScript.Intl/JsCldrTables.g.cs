@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           22
+// Exempt:           23
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -11422,6 +11422,319 @@ internal static class JsCldrTables
         en|unit|{0}, {1}|{0}, {1}|{0}, {1}|{0}, {1}
         en|unit-narrow|{0} {1}|{0} {1}|{0} {1}|{0} {1}
         en|unit-short|{0}, {1}|{0}, {1}|{0}, {1}|{0}, {1}
+        """u8;
+
+    /// <summary>The relative time patterns of each supported language: language, field, key, pattern.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> RelativeTimes =>
+        """
+        de|second|0|jetzt
+        de|second|future.one|in {0} Sekunde
+        de|second|future.other|in {0} Sekunden
+        de|second|past.one|vor {0} Sekunde
+        de|second|past.other|vor {0} Sekunden
+        de|second-short|0|jetzt
+        de|second-short|future.one|in {0} Sek.
+        de|second-short|future.other|in {0} Sek.
+        de|second-short|past.one|vor {0} Sek.
+        de|second-short|past.other|vor {0} Sek.
+        de|second-narrow|0|jetzt
+        de|second-narrow|future.one|in {0} s
+        de|second-narrow|future.other|in {0} s
+        de|second-narrow|past.one|vor {0} s
+        de|second-narrow|past.other|vor {0} s
+        de|minute|0|in dieser Minute
+        de|minute|future.one|in {0} Minute
+        de|minute|future.other|in {0} Minuten
+        de|minute|past.one|vor {0} Minute
+        de|minute|past.other|vor {0} Minuten
+        de|minute-short|0|in dieser Minute
+        de|minute-short|future.one|in {0} Min.
+        de|minute-short|future.other|in {0} Min.
+        de|minute-short|past.one|vor {0} Min.
+        de|minute-short|past.other|vor {0} Min.
+        de|minute-narrow|0|in dieser Minute
+        de|minute-narrow|future.one|in {0} m
+        de|minute-narrow|future.other|in {0} m
+        de|minute-narrow|past.one|vor {0} m
+        de|minute-narrow|past.other|vor {0} m
+        de|hour|0|in dieser Stunde
+        de|hour|future.one|in {0} Stunde
+        de|hour|future.other|in {0} Stunden
+        de|hour|past.one|vor {0} Stunde
+        de|hour|past.other|vor {0} Stunden
+        de|hour-short|0|in dieser Stunde
+        de|hour-short|future.one|in {0} Std.
+        de|hour-short|future.other|in {0} Std.
+        de|hour-short|past.one|vor {0} Std.
+        de|hour-short|past.other|vor {0} Std.
+        de|hour-narrow|0|in dieser Stunde
+        de|hour-narrow|future.one|in {0} Std.
+        de|hour-narrow|future.other|in {0} Std.
+        de|hour-narrow|past.one|vor {0} Std.
+        de|hour-narrow|past.other|vor {0} Std.
+        de|day|-1|gestern
+        de|day|-2|vorgestern
+        de|day|0|heute
+        de|day|1|morgen
+        de|day|2|\u00FCbermorgen
+        de|day|future.one|in {0} Tag
+        de|day|future.other|in {0} Tagen
+        de|day|past.one|vor {0} Tag
+        de|day|past.other|vor {0} Tagen
+        de|day-short|-1|gestern
+        de|day-short|-2|vorgestern
+        de|day-short|0|heute
+        de|day-short|1|morgen
+        de|day-short|2|\u00FCbermorgen
+        de|day-short|future.one|in {0} Tag
+        de|day-short|future.other|in {0} Tagen
+        de|day-short|past.one|vor {0} Tag
+        de|day-short|past.other|vor {0} Tagen
+        de|day-narrow|-1|gestern
+        de|day-narrow|-2|vorgestern
+        de|day-narrow|0|heute
+        de|day-narrow|1|morgen
+        de|day-narrow|2|\u00FCbermorgen
+        de|day-narrow|future.one|in {0} Tag
+        de|day-narrow|future.other|in {0} Tagen
+        de|day-narrow|past.one|vor {0} Tag
+        de|day-narrow|past.other|vor {0} Tagen
+        de|week|-1|letzte Woche
+        de|week|0|diese Woche
+        de|week|1|n\u00E4chste Woche
+        de|week|future.one|in {0} Woche
+        de|week|future.other|in {0} Wochen
+        de|week|past.one|vor {0} Woche
+        de|week|past.other|vor {0} Wochen
+        de|week-short|-1|letzte Woche
+        de|week-short|0|diese Woche
+        de|week-short|1|n\u00E4chste Woche
+        de|week-short|future.one|in {0} Woche
+        de|week-short|future.other|in {0} Wochen
+        de|week-short|past.one|vor {0} Woche
+        de|week-short|past.other|vor {0} Wochen
+        de|week-narrow|-1|letzte Woche
+        de|week-narrow|0|diese Woche
+        de|week-narrow|1|n\u00E4chste Woche
+        de|week-narrow|future.one|in {0} Wo.
+        de|week-narrow|future.other|in {0} Wo.
+        de|week-narrow|past.one|vor {0} Wo.
+        de|week-narrow|past.other|vor {0} Wo.
+        de|month|-1|letzten Monat
+        de|month|0|diesen Monat
+        de|month|1|n\u00E4chsten Monat
+        de|month|future.one|in {0} Monat
+        de|month|future.other|in {0} Monaten
+        de|month|past.one|vor {0} Monat
+        de|month|past.other|vor {0} Monaten
+        de|month-short|-1|letzten Monat
+        de|month-short|0|diesen Monat
+        de|month-short|1|n\u00E4chsten Monat
+        de|month-short|future.one|in {0} Monat
+        de|month-short|future.other|in {0} Monaten
+        de|month-short|past.one|vor {0} Monat
+        de|month-short|past.other|vor {0}\u00A0Monaten
+        de|month-narrow|-1|letzten Monat
+        de|month-narrow|0|diesen Monat
+        de|month-narrow|1|n\u00E4chsten Monat
+        de|month-narrow|future.one|in {0} Monat
+        de|month-narrow|future.other|in {0} Monaten
+        de|month-narrow|past.one|vor {0}\u00A0Monat
+        de|month-narrow|past.other|vor {0} Monaten
+        de|quarter|-1|letztes Quartal
+        de|quarter|0|dieses Quartal
+        de|quarter|1|n\u00E4chstes Quartal
+        de|quarter|future.one|in {0} Quartal
+        de|quarter|future.other|in {0} Quartalen
+        de|quarter|past.one|vor {0} Quartal
+        de|quarter|past.other|vor {0} Quartalen
+        de|quarter-short|-1|letztes Quartal
+        de|quarter-short|0|dieses Quartal
+        de|quarter-short|1|n\u00E4chstes Quartal
+        de|quarter-short|future.one|in {0} Quart.
+        de|quarter-short|future.other|in {0} Quart.
+        de|quarter-short|past.one|vor {0} Quart.
+        de|quarter-short|past.other|vor {0} Quart.
+        de|quarter-narrow|-1|letztes Quartal
+        de|quarter-narrow|0|dieses Quartal
+        de|quarter-narrow|1|n\u00E4chstes Quartal
+        de|quarter-narrow|future.one|in {0} Q
+        de|quarter-narrow|future.other|in {0} Q
+        de|quarter-narrow|past.one|vor {0} Q
+        de|quarter-narrow|past.other|vor {0} Q
+        de|year|-1|letztes Jahr
+        de|year|0|dieses Jahr
+        de|year|1|n\u00E4chstes Jahr
+        de|year|future.one|in {0} Jahr
+        de|year|future.other|in {0} Jahren
+        de|year|past.one|vor {0} Jahr
+        de|year|past.other|vor {0} Jahren
+        de|year-short|-1|letztes Jahr
+        de|year-short|0|dieses Jahr
+        de|year-short|1|n\u00E4chstes Jahr
+        de|year-short|future.one|in {0} Jahr
+        de|year-short|future.other|in {0} Jahren
+        de|year-short|past.one|vor {0} Jahr
+        de|year-short|past.other|vor {0} Jahren
+        de|year-narrow|-1|letztes Jahr
+        de|year-narrow|0|dieses Jahr
+        de|year-narrow|1|n\u00E4chstes Jahr
+        de|year-narrow|future.one|in {0} Jahr
+        de|year-narrow|future.other|in {0} Jahren
+        de|year-narrow|past.one|vor {0} Jahr
+        de|year-narrow|past.other|vor {0} Jahren
+        en|second|0|now
+        en|second|future.one|in {0} second
+        en|second|future.other|in {0} seconds
+        en|second|past.one|{0} second ago
+        en|second|past.other|{0} seconds ago
+        en|second-short|0|now
+        en|second-short|future.one|in {0} sec.
+        en|second-short|future.other|in {0} sec.
+        en|second-short|past.one|{0} sec. ago
+        en|second-short|past.other|{0} sec. ago
+        en|second-narrow|0|now
+        en|second-narrow|future.one|in {0}s
+        en|second-narrow|future.other|in {0}s
+        en|second-narrow|past.one|{0}s ago
+        en|second-narrow|past.other|{0}s ago
+        en|minute|0|this minute
+        en|minute|future.one|in {0} minute
+        en|minute|future.other|in {0} minutes
+        en|minute|past.one|{0} minute ago
+        en|minute|past.other|{0} minutes ago
+        en|minute-short|0|this minute
+        en|minute-short|future.one|in {0} min.
+        en|minute-short|future.other|in {0} min.
+        en|minute-short|past.one|{0} min. ago
+        en|minute-short|past.other|{0} min. ago
+        en|minute-narrow|0|this minute
+        en|minute-narrow|future.one|in {0}m
+        en|minute-narrow|future.other|in {0}m
+        en|minute-narrow|past.one|{0}m ago
+        en|minute-narrow|past.other|{0}m ago
+        en|hour|0|this hour
+        en|hour|future.one|in {0} hour
+        en|hour|future.other|in {0} hours
+        en|hour|past.one|{0} hour ago
+        en|hour|past.other|{0} hours ago
+        en|hour-short|0|this hour
+        en|hour-short|future.one|in {0} hr.
+        en|hour-short|future.other|in {0} hr.
+        en|hour-short|past.one|{0} hr. ago
+        en|hour-short|past.other|{0} hr. ago
+        en|hour-narrow|0|this hour
+        en|hour-narrow|future.one|in {0}h
+        en|hour-narrow|future.other|in {0}h
+        en|hour-narrow|past.one|{0}h ago
+        en|hour-narrow|past.other|{0}h ago
+        en|day|-1|yesterday
+        en|day|0|today
+        en|day|1|tomorrow
+        en|day|future.one|in {0} day
+        en|day|future.other|in {0} days
+        en|day|past.one|{0} day ago
+        en|day|past.other|{0} days ago
+        en|day-short|-1|yesterday
+        en|day-short|0|today
+        en|day-short|1|tomorrow
+        en|day-short|future.one|in {0} day
+        en|day-short|future.other|in {0} days
+        en|day-short|past.one|{0} day ago
+        en|day-short|past.other|{0} days ago
+        en|day-narrow|-1|yesterday
+        en|day-narrow|0|today
+        en|day-narrow|1|tomorrow
+        en|day-narrow|future.one|in {0}d
+        en|day-narrow|future.other|in {0}d
+        en|day-narrow|past.one|{0}d ago
+        en|day-narrow|past.other|{0}d ago
+        en|week|-1|last week
+        en|week|0|this week
+        en|week|1|next week
+        en|week|future.one|in {0} week
+        en|week|future.other|in {0} weeks
+        en|week|past.one|{0} week ago
+        en|week|past.other|{0} weeks ago
+        en|week-short|-1|last wk.
+        en|week-short|0|this wk.
+        en|week-short|1|next wk.
+        en|week-short|future.one|in {0} wk.
+        en|week-short|future.other|in {0} wk.
+        en|week-short|past.one|{0} wk. ago
+        en|week-short|past.other|{0} wk. ago
+        en|week-narrow|-1|last wk.
+        en|week-narrow|0|this wk.
+        en|week-narrow|1|next wk.
+        en|week-narrow|future.one|in {0}w
+        en|week-narrow|future.other|in {0}w
+        en|week-narrow|past.one|{0}w ago
+        en|week-narrow|past.other|{0}w ago
+        en|month|-1|last month
+        en|month|0|this month
+        en|month|1|next month
+        en|month|future.one|in {0} month
+        en|month|future.other|in {0} months
+        en|month|past.one|{0} month ago
+        en|month|past.other|{0} months ago
+        en|month-short|-1|last mo.
+        en|month-short|0|this mo.
+        en|month-short|1|next mo.
+        en|month-short|future.one|in {0} mo.
+        en|month-short|future.other|in {0} mo.
+        en|month-short|past.one|{0} mo. ago
+        en|month-short|past.other|{0} mo. ago
+        en|month-narrow|-1|last mo.
+        en|month-narrow|0|this mo.
+        en|month-narrow|1|next mo.
+        en|month-narrow|future.one|in {0}mo
+        en|month-narrow|future.other|in {0}mo
+        en|month-narrow|past.one|{0}mo ago
+        en|month-narrow|past.other|{0}mo ago
+        en|quarter|-1|last quarter
+        en|quarter|0|this quarter
+        en|quarter|1|next quarter
+        en|quarter|future.one|in {0} quarter
+        en|quarter|future.other|in {0} quarters
+        en|quarter|past.one|{0} quarter ago
+        en|quarter|past.other|{0} quarters ago
+        en|quarter-short|-1|last qtr.
+        en|quarter-short|0|this qtr.
+        en|quarter-short|1|next qtr.
+        en|quarter-short|future.one|in {0} qtr.
+        en|quarter-short|future.other|in {0} qtrs.
+        en|quarter-short|past.one|{0} qtr. ago
+        en|quarter-short|past.other|{0} qtrs. ago
+        en|quarter-narrow|-1|last qtr.
+        en|quarter-narrow|0|this qtr.
+        en|quarter-narrow|1|next qtr.
+        en|quarter-narrow|future.one|in {0}q
+        en|quarter-narrow|future.other|in {0}q
+        en|quarter-narrow|past.one|{0}q ago
+        en|quarter-narrow|past.other|{0}q ago
+        en|year|-1|last year
+        en|year|0|this year
+        en|year|1|next year
+        en|year|future.one|in {0} year
+        en|year|future.other|in {0} years
+        en|year|past.one|{0} year ago
+        en|year|past.other|{0} years ago
+        en|year-short|-1|last yr.
+        en|year-short|0|this yr.
+        en|year-short|1|next yr.
+        en|year-short|future.one|in {0} yr.
+        en|year-short|future.other|in {0} yr.
+        en|year-short|past.one|{0} yr. ago
+        en|year-short|past.other|{0} yr. ago
+        en|year-narrow|-1|last yr.
+        en|year-narrow|0|this yr.
+        en|year-narrow|1|next yr.
+        en|year-narrow|future.one|in {0}y
+        en|year-narrow|future.other|in {0}y
+        en|year-narrow|past.one|{0}y ago
+        en|year-narrow|past.other|{0}y ago
         """u8;
 
     /// <summary>The sanctioned units' patterns of each supported language: language, width, unit, field, value.</summary>

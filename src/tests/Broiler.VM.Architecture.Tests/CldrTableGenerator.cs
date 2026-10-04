@@ -100,6 +100,7 @@ internal static class CldrTableGenerator
         TextTable(text, "PluralRanges", "The plural range rules of each supported language: language, start, end, result.", PluralRanges(cldr));
         TextTable(text, "Ordinals", "The ordinal plural rules of each supported language: language, category, rule.", Ordinals(cldr));
         TextTable(text, "ListPatterns", "The list patterns of each supported language: language, type, start, middle, end, pair.", ListPatterns(cldr));
+        TextTable(text, "RelativeTimes", "The relative time patterns of each supported language: language, field, key, pattern.", RelativeTimes(cldr));
         TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
         TextTable(text, "DateLocales", "The Gregorian calendar, date field and zone name data of each supported language, flattened: language, key, value.", DateLocales(cldr));
         TextTable(text, "TimeData", "The hour cycles allowed and preferred in each region: region, allowed, preferred.", TimeData(cldr));
@@ -497,6 +498,44 @@ internal static class CldrTableGenerator
             {
                 var fields = new[] { "start", "middle", "end", "2" }.Select(field => Escape(type.Value.GetProperty(field).GetString()!));
                 yield return $"{language}|{type.Name["listPattern-type-".Length..]}|{string.Join('|', fields)}";
+            }
+        }
+    }
+
+    /// <summary>
+    /// Each supported language's relative time data for the eight units ECMA-402 names, in the long,
+    /// <c>-short</c> and <c>-narrow</c> fields: the literal for a value (<c>-1</c>, <c>0</c>, <c>1</c>
+    /// and the rest CLDR names), and the <c>future.</c> and <c>past.</c> pattern for each plural
+    /// category.
+    /// </summary>
+    internal static IEnumerable<string> RelativeTimes(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        foreach (var language in NumberLanguages)
+        {
+            var fields = Json(cldr, $"json/cldr-dates-full/main/{language}/dateFields.json")
+                .GetProperty("main").GetProperty(language).GetProperty("dates").GetProperty("fields");
+
+            foreach (var unit in new[] { "second", "minute", "hour", "day", "week", "month", "quarter", "year" })
+            {
+                foreach (var field in new[] { unit, unit + "-short", unit + "-narrow" })
+                {
+                    foreach (var entry in fields.GetProperty(field).EnumerateObject().OrderBy(static entry => entry.Name, StringComparer.Ordinal))
+                    {
+                        if (entry.Name.StartsWith("relative-type-", StringComparison.Ordinal))
+                        {
+                            yield return $"{language}|{field}|{entry.Name["relative-type-".Length..]}|{Escape(entry.Value.GetString()!)}";
+                        }
+                        else if (entry.Name.StartsWith("relativeTime-type-", StringComparison.Ordinal))
+                        {
+                            var tense = entry.Name["relativeTime-type-".Length..];
+
+                            foreach (var pattern in entry.Value.EnumerateObject().OrderBy(static pattern => pattern.Name, StringComparer.Ordinal))
+                            {
+                                yield return $"{language}|{field}|{tense}.{pattern.Name["relativeTimePattern-count-".Length..]}|{Escape(pattern.Value.GetString()!)}";
+                            }
+                        }
+                    }
+                }
             }
         }
     }

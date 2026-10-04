@@ -1921,6 +1921,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Ordinals : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 20
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.PluralRanges : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 13
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Plurals : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 12
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.RelativeTimes : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 22
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Scripts : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 19
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.SoftDotted : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 7
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.TimeData : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 16

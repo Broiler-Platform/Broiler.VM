@@ -12074,3 +12074,41 @@ archive held no list patterns, and no package of CLDR's that has them.
 - JSD-0048 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-275
+
+**Where:** phase F7's slice I4, its fourth part. `Intl.RelativeTimeFormat`
+(`JsRealm.RelativeTimeFormat.cs`), the relative time data it reads (`JsLocaleInfo.cs`,
+`JsIntlTables.cs`), the generator's new table, and the format's `JsIntlTable`.
+
+**What the plan said.** [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists
+RelativeTimeFormat among "I4 and later", accepted "each opened by its own consumer and its own card".
+[JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) section 4 sets a provisional bound of
+512 KiB on the generated data until the owner sets a budget.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.RelativeTimeFormat` is built whole**, under proposed
+  [JSD-0049](decisions/0049-intl-relativetimeformat.md): `format`, `formatToParts`, `resolvedOptions`
+  and `supportedLocalesOf`, in every style and numeric option, with a numbering system. Its number
+  format and plural rules are built by their own constructors, as the draft builds them.
+- **A past value is written with its magnitude**, as test262, ICU and every engine write it. The
+  draft passes the signed value to PartitionNumberPattern. JSD-0049 section 3 records the reading.
+- **The archive does not grow.** The data is in slice I3's `dateFields.json`. **N28's file grows by one
+  table**, to 483,743 bytes. That is 40,545 bytes under the provisional bound, less than
+  `DisplayNames`'s name tables would need, so the bound now decides that constructor's order.
+- **The retained relative time dataset**
+  ([`src/tests/cldr/relativetimes/`](../../tests/cldr/relativetimes/README.md)) has 2,460 lines against
+  Node 22.22.0's ICU 77.1. Every line agrees but 96, in one group named in `divergences.txt`: a value
+  that rounds to 0 under `numeric: 'auto'`, which ICU writes as the literal for 0.
+- **Checks**: one new slice-compiler check, 631 in all, holds the dataset.
+- **test262**, against the run JSC-274 records: `test/intl402/RelativeTimeFormat` passes 148 of 160
+  variants, from none, and the 12 failing need Polish. `test/intl402/Intl` passes 126 of 130, from
+  124, and the 4 failing need `DisplayNames`.
+
+**What must not be read as repaired.**
+- **Relative times exist for German and English only**, the section 5 locales.
+- **`DisplayNames`, `Segmenter` and `DurationFormat`** are absent, and the phase's exit gate is not
+  met. `DisplayNames` waits on the owner's size budget as well as its own change.
+- JSD-0049 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

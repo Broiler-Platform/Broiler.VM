@@ -32,7 +32,7 @@ public sealed class CldrTablesRuleTests
 
         Assert.True(artefact.Desired.Length > 100_000, "the generated tables are not the size of the archive's data");
 
-        foreach (var table in new[] { "LikelySubtags", "Aliases", "Extensions", "Locales", "SoftDotted", "NumberLocales", "Currencies", "CurrencyDigits", "NumberingSystems", "Plurals", "PluralRanges", "Ordinals", "ListPatterns", "Units", "DateLocales", "TimeData", "DayPeriods", "WeekData", "Scripts", "CollationRoot", "CollationTailorings" })
+        foreach (var table in new[] { "LikelySubtags", "Aliases", "Extensions", "Locales", "SoftDotted", "NumberLocales", "Currencies", "CurrencyDigits", "NumberingSystems", "Plurals", "PluralRanges", "Ordinals", "ListPatterns", "RelativeTimes", "Units", "DateLocales", "TimeData", "DayPeriods", "WeekData", "Scripts", "CollationRoot", "CollationTailorings" })
         {
             Assert.Contains($"internal static ReadOnlySpan<byte> {table} =>", artefact.Desired, StringComparison.Ordinal);
         }

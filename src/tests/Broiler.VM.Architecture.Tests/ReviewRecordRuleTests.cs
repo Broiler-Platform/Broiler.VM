@@ -1267,7 +1267,11 @@ public sealed class ReviewRecordRuleTests
         // AND LISTS (phase F7, 2026-10-04, JSD-0048): JsRealm.ListFormat.cs, Intl.ListFormat over
         // CLDR's list patterns. It is covered on the same terms as every other product file, and
         // nothing in it has been read by a human.
-        Assert.Equal(272, AssuranceSources.Files.Count);
+        //
+        // AND RELATIVE TIMES (phase F7, 2026-10-04, JSD-0049): JsRealm.RelativeTimeFormat.cs,
+        // Intl.RelativeTimeFormat over CLDR's relative time patterns. It is covered on the same terms
+        // as every other product file, and nothing in it has been read by a human.
+        Assert.Equal(273, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
