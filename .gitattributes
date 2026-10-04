@@ -111,5 +111,11 @@ src/tests/unicode/pins/ucd-17.0.0/** binary
 # reason (phase F2, 2026-10-04).
 src/tests/unicode/pins/emoji-17.0.0/** binary
 src/tests/unicode/pins/unicode-LICENSE.txt binary
+# THE UNICODE COMMON LOCALE DATA REPOSITORY FILES AND THEIR LICENCE, for the UCD's reason: `cldr.pin`
+# names each file's SHA-256, rule N27 hashes the bytes against it, and the profile's Intl data will be
+# generated from exactly those bytes. Declared 2026-10-04 in the change that archived them (phase F7,
+# JSD-0027 slice I0).
+src/tests/cldr/pins/cldr-48.2.0/** binary
+src/tests/cldr/pins/cldr-LICENSE.txt binary
 
 *.png                     binary

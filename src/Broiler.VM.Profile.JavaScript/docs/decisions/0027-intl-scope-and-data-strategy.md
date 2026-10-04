@@ -323,3 +323,22 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
 - **What a program meets today does not change** until I0 publishes `Intl`; the ledger's
   `absent-globals` block keeps the name until then, and N24's assertion about it changes in the same
   change.
+
+## I0, first half: the archive, 2026-10-04 (unsigned)
+
+*Recorded with the first change of phase F7; it signs nothing and this record keeps its status line.*
+
+- **CLDR 48.2.0 is archived and pinned** under
+  [`src/tests/cldr/pins/`](../../../tests/cldr/pins/README.md), as section 5 item 2 asks and in the shape
+  JSD-0031 gave the UCD: the cldr-json packages `cldr-core` and `cldr-bcp47` (likely subtags, aliases,
+  parent locales, available locales, default content, every `bcp47` file), the root collation in
+  DUCET form (`allkeys_CLDR.txt`) with the root, German and English collation sources, the two UCA
+  conformance files, and the licence. Its UCA version is 17.0.0, the UCD version JSD-0031 pins, so
+  normalization, casing and collation read one UCD.
+- **Rule N27** holds the archive to its pin by length, SHA-256 and stated release, and the pin to the
+  directory. Nothing reads the archive yet: the generator, the data assembly and the identity
+  `broiler.javascript.intl` are the second half of I0.
+- **Owner decisions (a) and (b)** are taken here as the recommendation above proposes - in-tree
+  generation from pinned CLDR JSON, and the Unicode License v3 for CLDR on the UCD's terms - and
+  nobody has signed them; (c), the size budget, waits for the measured tables; (d), tzdb, is not
+  touched.

@@ -1,0 +1,65 @@
+# broiler-js cldr data pin 1
+#
+# The Unicode Common Locale Data Repository files the JavaScript profile's Intl tables are generated
+# from, and the CLDR licence text. Decision JSD-0027 section 5 asks for CLDR to be pinned by release
+# and digest, as JSD-0031 pinned the UCD, and read by nothing but a generator in the architecture test
+# project; rule N27 holds the archive and this file to each other, and the generated tables to the
+# archive once a generator reads it.
+#
+# HOW IT WAS TAKEN. Retrieved twice on 2026-10-04 by Claude into two separate directories; `diff -r`
+# over the two found them byte-identical, and every figure below is a reading of the first copy,
+# which is the copy archived here. The JSON files are the cldr-json packages cldr-core and
+# cldr-bcp47 at 48.2.0 from the npm registry, each tarball checked against the registry's own
+# sha512 integrity before it was unpacked; the collation files and the licence are from the CLDR
+# repository at the tag release-48-2. The repository owner asked that day for the roadmap's phases
+# to be continued, and JSD-0027's recommendation names in-tree generation from pinned CLDR JSON and
+# the Unicode License v3 for CLDR on the UCD's terms; no permission specific to this retrieval was
+# given, and that is recorded here rather than implied.
+#
+# WHAT A LINE MEANS. `file <path relative to this directory> <bytes> <sha256>`. A supplemental JSON
+# file carries its CLDR version in its `version` object and the generator refuses one that does not
+# name the pinned major version; a package.json names the package version; allkeys_CLDR.txt and the
+# two CollationTest files name their UCA version in a `# UCA Version:` line; the bcp47 files and the
+# three collation XML files carry no version and are held by their hashes alone. The two
+# CollationTest files are test-only input: no table is generated from them.
+
+data unicode-common-locale-data-repository
+version 48.2.0
+cldr-major 48
+uca-version 17.0.0
+json-source https://registry.npmjs.org/<package>/-/<package>-48.2.0.tgz
+json-integrity cldr-core sha512-zfmLothncSwfv2jlevoSrgI2VGgH8SDGHXst6jUEotHA8nq9Igeg9jzdJDFtBso9pgJuG89DK16TzrmZDdo2Bg==
+json-integrity cldr-bcp47 sha512-ks3zN+Wbg1zMqvJNeDai1zA0JBGHbAnxv2Ko4rjVohvXscDGmTa7VNy1T+QRlQw3QVPzQcCm2EOiEtAfOU4d+g==
+repository-source https://raw.githubusercontent.com/unicode-org/cldr/release-48-2/
+retrieved 2026-10-04
+retrievals 2 byte-identical
+archived yes
+file cldr-48.2.0/common/collation/de.xml 3557 81c4992984f284f771c449a761926bf15e90e1f133b47a1a695df8096cb7871e
+file cldr-48.2.0/common/collation/en.xml 460 593948669f284ed65c798778b82b8eafae492f759c48a17a4551421d18e4d665
+file cldr-48.2.0/common/collation/root.xml 52735 af6784292b2ec2576efcfdc5e1073f272edc1265a2dc5286ba9bd16b2d7a1ed9
+file cldr-48.2.0/common/uca/CollationTest_CLDR_NON_IGNORABLE_SHORT.txt 2245489 7063c05ad292803f8d4269abc64e2ce50ab96d0038f799670ed325f9a5e20bb8
+file cldr-48.2.0/common/uca/CollationTest_CLDR_SHIFTED_SHORT.txt 2482352 51a2f9d9d0ed4a54bb123c72df7211e9f3b83ca15249ad350cd8780f8ccbf7c5
+file cldr-48.2.0/common/uca/allkeys_CLDR.txt 2304450 f6f8961f6c51373bdc00b09fb61cc8c07bec4122bc4b8bcb50ff71c4b0901ab5
+file cldr-48.2.0/json/cldr-bcp47/bcp47/calendar.json 4101 bcf1a12f71038aca3716f098c23e23d7125f64df7b7dd9945b29ff682eb5ed17
+file cldr-48.2.0/json/cldr-bcp47/bcp47/collation.json 8531 fcd5f22d3d3db3bf94becf5d83ce21cdca45f3d8c66babd09e88231039669181
+file cldr-48.2.0/json/cldr-bcp47/bcp47/currency.json 27552 88228d7c386bdc1cc5ce7d67ae8a149f3eb4cc4f607ecdd4f6c8cefd8c4114d0
+file cldr-48.2.0/json/cldr-bcp47/bcp47/measure.json 1177 313062c751fcbce1d3027bec924421505f72c0084d8b82ca80f0c8e119ffa2dc
+file cldr-48.2.0/json/cldr-bcp47/bcp47/number.json 10182 a8a5d72e55d0bcab49b70887bb69eedbaadc28c7651f6c78661e44e9b28a4cf5
+file cldr-48.2.0/json/cldr-bcp47/bcp47/segmentation.json 2090 a373b341a329fa4ef3d2382ed9e2bcca8e17936a81699e580c28f1a98e23a927
+file cldr-48.2.0/json/cldr-bcp47/bcp47/timezone.json 59702 c11423884420f00cf52733c854de5c898ddb6657ce560334c638a2bd994a1448
+file cldr-48.2.0/json/cldr-bcp47/bcp47/transform-destination.json 4551 7486e03deb1836f307b89911c683a7f5842050f65f224913d064325fbe60e2df
+file cldr-48.2.0/json/cldr-bcp47/bcp47/transform.json 4767 a9774cdb983dcf2f2cefd65d8181b9ccc36e9c68036f0f9e97ce3cf7056bf472
+file cldr-48.2.0/json/cldr-bcp47/bcp47/transform_hybrid.json 404 1c6f49026643aec480707ed93ea084afb48891546fcd1783e6be60a6613d61b2
+file cldr-48.2.0/json/cldr-bcp47/bcp47/transform_ime.json 1276 a03ddeaf3af1a38e5e8839f9043d59fff8e2e3a05548d26268cc45dacaef65c9
+file cldr-48.2.0/json/cldr-bcp47/bcp47/transform_keyboard.json 5383 24adb389b2bf115b139f97ef838023bdfd9470133e61eb2580c330e47f5fbe73
+file cldr-48.2.0/json/cldr-bcp47/bcp47/transform_mt.json 650 85468510811e9ec4d85845d1122911957c4bb8564e6720bd1dfdcafe11e60f4e
+file cldr-48.2.0/json/cldr-bcp47/bcp47/transform_private_use.json 481 6ba8cf2a5a8973eed1a8856623e8982e15a7b75e64e02c31a38e6afdd715bbe3
+file cldr-48.2.0/json/cldr-bcp47/bcp47/variant.json 1513 d7c128971823aabd0f204349175302608f028e360161f74bfddc25d8e2db2497
+file cldr-48.2.0/json/cldr-bcp47/package.json 649 ce19cc06282d7d8cf2ff74b53b939d979e8c6fc78d07a109acc0c95c1220abae
+file cldr-48.2.0/json/cldr-core/availableLocales.json 11175 2961ccc06b437a732c689ad59e891b563e6618546b4c4cda7216549d8a0b4528
+file cldr-48.2.0/json/cldr-core/defaultContent.json 5125 ceeae676236ada8b2c9610c417447280230c1355260a78a2452541e2e1ac6e6c
+file cldr-48.2.0/json/cldr-core/package.json 661 584c01d774ba40135929130a897741ae826597af8bc53735509e6a047abda816
+file cldr-48.2.0/json/cldr-core/supplemental/aliases.json 137469 b7011c866f27502ed6f160ca83f2a83fa42bce9fdc2176e60e2c6630961d877c
+file cldr-48.2.0/json/cldr-core/supplemental/likelySubtags.json 220093 38345946ad457213fb39e9645ab50f36b61681bf674b2eef2979a3b58d04afc8
+file cldr-48.2.0/json/cldr-core/supplemental/parentLocales.json 5890 5a3f056a70ff52af7a25681a670ec860d785d98894934d3a9e5332508c23651e
+file cldr-LICENSE.txt 2033 b49d0e9f8ead51ca8b7df6fec89cc3ae6809198b4b9d43c74216da0118f23f5b

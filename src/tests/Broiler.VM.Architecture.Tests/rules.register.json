@@ -1019,6 +1019,16 @@
       "witness": "witnesses/register/N26-a-profile-type-that-caches-a-realm.cs.witness"
     },
     {
+      "id": "N27",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The CLDR files src/tests/cldr/pins/cldr.pin names are the ones it describes, and it names every file archived beside it: each is present with its recorded length and SHA-256, a supplemental JSON file states the pinned CLDR major version 48, a package.json states 48.2.0, the UCA files state UCA version 17.0.0 - the UCD version rule N22 pins - the pin itself names 48.2.0, says archived and records the npm integrity of both packages, the archive is declared binary to git, and its README records the release. Decision JSD-0027 section 5 asks for CLDR pinned by release and digest in the shape JSD-0031 gave the UCD; the Intl data a later slice generates is only as trustworthy as the bytes it is generated from, and this rule is the mechanical statement about those bytes.",
+      "evidence": "The pin parsed as a generator parses it, every archived file hashed from its bytes, each JSON file's and UCA file's stated version read, the pin directory listed against the pin, and .gitattributes and the README read as text",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The pin is populated from 2026-10-04 with more than twenty entries, every one of which is read and hashed, and the directory listing must find each of them and nothing else. A changed byte of allkeys_CLDR.txt is made in memory against the real archive and reported for that file alone; a supplemental file stating CLDR 45 and a UCA file stating 16.0.0 are refused from witness files even under a pin recording exactly their bytes.",
+      "witness": "witnesses/register/N27-a-supplemental-file-of-another-release.json.witness, witnesses/register/N27-a-uca-file-of-another-version.txt.witness, CldrPinRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
       "id": "W1",
       "owningAdr": "0011",
       "status": "Active",

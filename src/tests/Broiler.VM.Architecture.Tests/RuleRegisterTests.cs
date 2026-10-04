@@ -402,10 +402,13 @@ public sealed class RuleRegisterTests
         // Decision JSD-0030's slice SR-2 adds N26 when an engine starts holding several realms: no
         // profile code stores a realm outside the realm model's own members, and none reads the
         // engine's first realm where a frame may be running. Active when minted; no other count moves.
-        Assert.Equal(109, byStatus["Active"]);
+        // Phase F7's first slice adds N27 beside N22: the archived CLDR files are the ones their pin
+        // describes, by hash and by stated release, and the pin names every file beside it. Active
+        // when minted; no other count moves.
+        Assert.Equal(110, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(111, Loaded.Rules.Count);
+        Assert.Equal(112, Loaded.Rules.Count);
     }
 
     private static Register Load()
