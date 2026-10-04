@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           1
+// Exempt:           3
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Medium
@@ -42,8 +42,29 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsObject HasInstanceFunction { get; private set; } = null!;
 
+    /// <summary>The getter every sloppy plain function's own <c>caller</c> is made from.</summary>
+    /// <remarks>
+    /// It answers the function that called the receiver's latest running call, when that is a
+    /// sloppy plain function called directly, and <c>null</c> otherwise: when the receiver is not
+    /// running, when its caller is strict, a built-in, a generator, an async function or global
+    /// code, and when the receiver is not a sloppy plain function at all. Direct eval code is not a
+    /// caller and is looked through.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=313981
+    // Broiler-Human:        PENDING
+    internal JsObject LegacyCallerGetter { get; private set; } = null!;
+
+    /// <summary>The getter every sloppy plain function's own <c>arguments</c> is made from.</summary>
+    /// <remarks>
+    /// It answers an arguments object for the receiver's latest running call - mapped onto that
+    /// call's parameters when its list is simple - and <c>null</c> when the receiver is not running.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=064589
+    // Broiler-Human:        PENDING
+    internal JsObject LegacyArgumentsGetter { get; private set; } = null!;
+
     /// <summary>Builds <c>Function.prototype</c>'s members and the refused <c>Function</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C3BB29
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=22AFE6
     // Broiler-Human:        PENDING
     private void SetupFunction()
     {
@@ -158,6 +179,16 @@ internal sealed partial class JsRealm
             JsValue.Boolean(engine.OrdinaryHasInstance(thisValue, ArgOfFunction(arguments, 0))));
 
         HasInstanceFunction = hasInstance;
+
+        LegacyCallerGetter = Native("caller", 0, static (engine, thisValue, arguments) =>
+            thisValue.IsObject && thisValue.AsObject() is JsScriptFunction { LegacyReflective: true } function
+                ? engine.LegacyCaller(function)
+                : JsValue.Null);
+
+        LegacyArgumentsGetter = Native("arguments", 0, static (engine, thisValue, arguments) =>
+            thisValue.IsObject && thisValue.AsObject() is JsScriptFunction { LegacyReflective: true } function
+                ? engine.LegacyArguments(function)
+                : JsValue.Null);
 
         functionPrototype.SetOwnSymbol(
             HasInstanceSymbol, JsProperty.Data(JsValue.Object(hasInstance), JsPropertyAttributes.None));

@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 137
+runs|0|# Completed: 138
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -1013,3 +1013,8 @@ runs/a-strict-tail-call-at-any-depth.js|0|plain / conditional / true / comma / f
 runs/keys-targets-and-a-live-set-walk.js|0|true set set / TypeError 1 / 1,2 / true,true / 1,2,3,2
 refused/a-private-name-as-a-binding.js|3|2209:ReservedWordAsBinding at 3:5: `#a` is a private name and not a binding name
 refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await` is not a binding name
+
+# THE LEGACY `caller` AND `arguments` (2026-10-04). The comparison engine wraps a script in a module
+# function, so its global code is a caller and its answers differ there; these are the values the
+# legacy-reflection reading and the pinned suite's staging cases ask for *(JSC-257)*.
+runs/the-legacy-caller-and-arguments.js|0|true / true,true,true / true / true / 2,5,true / true / 9 / function,false,true / TypeError

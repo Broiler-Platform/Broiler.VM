@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   213
-// Annotated:        213/213
-// Exempt:           34
-// Human-reviewed:   0/213
+// Relevant units:   217
+// Annotated:        217/217
+// Exempt:           35
+// Human-reviewed:   0/217
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         86/84
+// Criteria:         90/88
 // Resource impact:  7/10 max
-// Unverified:       213
+// Unverified:       217
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -6308,7 +6308,7 @@ internal sealed partial class JsEngine
     /// <param name="binding">
     /// The box a construction holds its <c>this</c> in, or <see langword="null"/> for a call.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=0E4C29
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=620805
     // Broiler-Human:        PENDING
     private JsValue Invoke(
         JsScriptFunction function,
@@ -6387,17 +6387,14 @@ internal sealed partial class JsEngine
         // AN ARROW TAKES ALL THREE FROM WHERE IT WAS WRITTEN. It has no `this`, no `new.target`
         // and no `super` of its own, so what the call site supplies for any of them is discarded
         // here rather than being allowed to reach the frame.
-        var result = Execute(
-            program,
-            function.Unit,
+        var result = ExecuteCall(
+            function,
+            unit,
             environment,
             receiver,
             arguments,
-            function,
             unit.IsArrow ? function.LexicalNewTarget : newTarget,
-            unit.IsArrow ? function.LexicalThisBinding : binding,
-            null,
-            tailCalls: true);
+            unit.IsArrow ? function.LexicalThisBinding : binding);
 
         // A TAIL CALL IS MADE HERE, AFTER ITS CALLER'S FRAME HAS GONE (JSC-256). The frame that made
         // it answered with no value and left the callee in `tail`; entering the callee from this loop
@@ -6411,20 +6408,137 @@ internal sealed partial class JsEngine
             Charge(CallCharge);
 
             var nextUnit = next.Program.Functions[next.Unit];
-            result = Execute(
-                next.Program,
-                next.Unit,
+            result = ExecuteCall(
+                next,
+                nextUnit,
                 CallEnvironment(next, nextUnit, nextArguments),
                 CallReceiver(next, nextUnit, nextThis),
                 nextArguments,
-                next,
                 nextUnit.IsArrow ? next.LexicalNewTarget : JsValue.Undefined,
-                nextUnit.IsArrow ? next.LexicalThisBinding : null,
-                null,
-                tailCalls: true);
+                nextUnit.IsArrow ? next.LexicalThisBinding : null);
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Runs one ordinary call frame, recording it while it runs when it is a sloppy plain
+    /// function's, for the legacy <c>caller</c> and <c>arguments</c> (JSC-257).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=9A151E
+    // Broiler-Falsified-If: a recorded frame outlives its call, or a frame that is not a sloppy plain function's is recorded
+    // Broiler-Human:        PENDING
+    private JsValue ExecuteCall(
+        JsScriptFunction function,
+        JsCodeUnit unit,
+        JsEnvironment environment,
+        JsValue receiver,
+        JsValue[] arguments,
+        JsValue newTarget,
+        JsCell? binding)
+    {
+        if (!function.LegacyReflective)
+        {
+            return Execute(
+                function.Program, function.Unit, environment, receiver, arguments, function,
+                newTarget, binding, null, tailCalls: true);
+        }
+
+        legacyFrames.Add(new LegacyFrame(function, arguments, environment, depth));
+
+        try
+        {
+            return Execute(
+                function.Program, function.Unit, environment, receiver, arguments, function,
+                newTarget, binding, null, tailCalls: true);
+        }
+        finally
+        {
+            legacyFrames.RemoveAt(legacyFrames.Count - 1);
+        }
+    }
+
+    /// <summary>One running call of a sloppy plain function, and the depth it runs at.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=927B5B
+    // Broiler-Human:        PENDING
+    private readonly record struct LegacyFrame(
+        JsScriptFunction Function, JsValue[] Arguments, JsEnvironment Environment, int Depth);
+
+    /// <summary>The running calls of sloppy plain functions, innermost last.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Only sloppy plain functions are recorded, and the depth says what is between them.</b>
+    /// Every call - of a built-in, a strict function, a generator's resumption - takes one count of
+    /// the depth, and direct eval code takes none. So the call that made a recorded one is the
+    /// recorded one directly beneath it exactly when that one runs one count shallower; anything
+    /// else between them - a built-in such as <c>Array.prototype.map</c> or <c>Reflect.apply</c>, a
+    /// strict function, a generator, an async function - leaves a gap, and the answer is
+    /// <c>null</c>, which is what the forbidden-extension rule and every engine's reading ask for.
+    /// Eval code is looked through because it takes no count, which is also what they ask.
+    /// </para>
+    /// <para>
+    /// <b>It costs a sloppy plain call one append and one removal</b>, and nothing else pays.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=99091E
+    // Broiler-Falsified-If: an entry stays after its call has ended, or the order of the entries is not the order of the calls
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<LegacyFrame> legacyFrames = [];
+
+    /// <summary>The legacy <c>caller</c> of <paramref name="function"/>'s latest running call.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=68336F
+    // Broiler-Falsified-If: it answers a strict function, a built-in, or a function that did not make the call
+    // Broiler-Human:        PENDING
+    internal JsValue LegacyCaller(JsScriptFunction function)
+    {
+        for (var at = legacyFrames.Count - 1; at >= 0; at--)
+        {
+            Charge(1);
+
+            if (!ReferenceEquals(legacyFrames[at].Function, function))
+            {
+                continue;
+            }
+
+            return at > 0 && legacyFrames[at - 1].Depth == legacyFrames[at].Depth - 1
+                ? JsValue.Object(legacyFrames[at - 1].Function)
+                : JsValue.Null;
+        }
+
+        return JsValue.Null;
+    }
+
+    /// <summary>
+    /// The legacy <c>arguments</c> of <paramref name="function"/>'s latest running call: an
+    /// arguments object for it, or <c>null</c> when it is not running.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A2A2A5
+    // Broiler-Falsified-If: it answers an object for a function that is not running, or for a call other than its latest
+    // Broiler-Human:        PENDING
+    internal JsValue LegacyArguments(JsScriptFunction function)
+    {
+        for (var at = legacyFrames.Count - 1; at >= 0; at--)
+        {
+            Charge(1);
+            var frame = legacyFrames[at];
+
+            if (!ReferenceEquals(frame.Function, function))
+            {
+                continue;
+            }
+
+            var unit = function.Program.Functions[function.Unit];
+
+            return JsValue.Object(
+                Realm.CreateArguments(
+                    frame.Arguments,
+                    function,
+                    false,
+                    unit.BindsParameters ? null : frame.Environment,
+                    (int)unit.ParameterCount));
+        }
+
+        return JsValue.Null;
     }
 
     /// <summary>A tail call a frame has handed to the loop that entered it, or none.</summary>

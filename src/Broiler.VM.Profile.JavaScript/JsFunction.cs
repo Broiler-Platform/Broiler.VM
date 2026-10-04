@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   30
-// Annotated:        30/30
-// Exempt:           35
-// Human-reviewed:   0/30
+// Relevant units:   38
+// Annotated:        38/38
+// Exempt:           36
+// Human-reviewed:   0/38
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         3/3
 // Resource impact:  2/10 max
-// Unverified:       30
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -360,6 +360,145 @@ internal sealed class JsScriptFunction : JsFunction
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9D1393
     // Broiler-Human:        PENDING
     internal JsProgram Program { get; }
+
+    /// <summary>
+    /// Whether this is a sloppy, plain function: the one kind the legacy <c>caller</c> and
+    /// <c>arguments</c> properties belong to.
+    /// </summary>
+    /// <remarks>
+    /// <b>Plain means constructible and not a class</b>: a function declaration or expression, or
+    /// one the <c>Function</c> constructor made. An arrow, a method, a generator and an async
+    /// function are none of these, and a strict function is forbidden the extension (17.1).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EF4324
+    // Broiler-Human:        PENDING
+    internal bool LegacyReflective
+    {
+        get
+        {
+            var row = Program.Functions[Unit];
+            return !row.IsStrict && !row.IsClassConstructor &&
+                (row.Flags & Format.JsFormat.FunctionFlags.Constructible) != 0;
+        }
+    }
+
+    /// <summary>
+    /// The two getters this function's own <c>caller</c> and <c>arguments</c> are made from, while
+    /// they have not been made yet.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The two properties are made when they are first needed, and not when the function is
+    /// created.</b> A sloppy closure is created far more often than its <c>caller</c> is read, and
+    /// two more own properties on every one would be paid by every program for a reflection almost
+    /// none uses. So they are made the first time anything could observe them: a read or a
+    /// definition of either name, any other definition, a listing of the keys, and the object
+    /// ceasing to be extensible. They then stand after the properties the function was created
+    /// with, as accessors that are neither enumerable nor writable and are configurable.
+    /// </para>
+    /// <para>
+    /// <b>Accessors and not data properties</b>, because the value changes with the call stack and
+    /// a data property that is not writable and not configurable may not change (the invariant of
+    /// 10.1.6.3). The getters are the realm's, and answer from the engine's record of the sloppy
+    /// frames that are running (<see cref="JsEngine.LegacyCaller"/>).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8B6217
+    // Broiler-Human:        PENDING
+    internal (JsObject Caller, JsObject Arguments)? LegacyAccessors { get; set; }
+
+    /// <summary>Makes the legacy properties, if they have not been made.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E62C24
+    // Broiler-Human:        PENDING
+    private void MakeLegacyProperties()
+    {
+        if (LegacyAccessors is not { } accessors)
+        {
+            return;
+        }
+
+        LegacyAccessors = null;
+        base.SetOwnProperty(
+            "arguments",
+            JsProperty.Accessor(accessors.Arguments, null, JsPropertyAttributes.Configurable));
+
+        base.SetOwnProperty(
+            "caller",
+            JsProperty.Accessor(accessors.Caller, null, JsPropertyAttributes.Configurable));
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=919813
+    // Broiler-Human:        PENDING
+    internal override bool TryGetOwnProperty(string key, out JsProperty property)
+    {
+        if (LegacyAccessors is not null && key is "caller" or "arguments")
+        {
+            MakeLegacyProperties();
+        }
+
+        return base.TryGetOwnProperty(key, out property);
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8B5873
+    // Broiler-Human:        PENDING
+    internal override void SetOwnProperty(string key, JsProperty property)
+    {
+        MakeLegacyProperties();
+        base.SetOwnProperty(key, property);
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A66556
+    // Broiler-Human:        PENDING
+    internal override bool DeleteOwnProperty(string key)
+    {
+        if (LegacyAccessors is not null && key is "caller" or "arguments")
+        {
+            MakeLegacyProperties();
+        }
+
+        return base.DeleteOwnProperty(key);
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E1AAA7
+    // Broiler-Human:        PENDING
+    internal override System.Collections.Generic.List<string> OwnPropertyNames()
+    {
+        MakeLegacyProperties();
+        return base.OwnPropertyNames();
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=569B82
+    // Broiler-Human:        PENDING
+    internal override int OwnPropertyCount
+    {
+        get
+        {
+            MakeLegacyProperties();
+            return base.OwnPropertyCount;
+        }
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=060D5A
+    // Broiler-Human:        PENDING
+    internal override bool Extensible
+    {
+        get => base.Extensible;
+        set
+        {
+            if (!value)
+            {
+                MakeLegacyProperties();
+            }
+
+            base.Extensible = value;
+        }
+    }
 
     /// <summary>Which code unit the body is.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=90B204

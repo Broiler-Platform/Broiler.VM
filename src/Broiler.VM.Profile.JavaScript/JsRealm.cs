@@ -580,7 +580,7 @@ internal sealed partial class JsRealm
     /// them on every closure would cost nothing and mean nothing, and it would make a reader think
     /// an ordinary function consults them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3C004C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E24BBB
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
         JsProgram program,
@@ -706,6 +706,14 @@ internal sealed partial class JsRealm
             function.SetOwnProperty(
                 "prototype",
                 JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.Writable));
+        }
+
+        // A SLOPPY PLAIN FUNCTION HAS THE LEGACY `caller` AND `arguments`, made when first needed
+        // (JsScriptFunction.LegacyAccessors). Until 2026-10-04 it had neither and inherited
+        // Function.prototype's poisoned pair, so reading either threw (JSC-257).
+        if (function.LegacyReflective)
+        {
+            function.LegacyAccessors = (LegacyCallerGetter, LegacyArgumentsGetter);
         }
 
         return function;

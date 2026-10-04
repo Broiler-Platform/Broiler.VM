@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   9
 // Annotated:        9/9
-// Exempt:           28
+// Exempt:           29
 // Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Critical
@@ -261,6 +261,14 @@ internal sealed unsafe class JsNativeActivation
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3F30FA
     // Broiler-Human:        PENDING
     internal string? CallerReferrer;
+
+    /// <summary>
+    /// Whether this direct callee is a sloppy plain function's call the engine recorded for the legacy
+    /// <c>caller</c> and <c>arguments</c>, so its end gives the record back (JSC-257).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=43EBE9
+    // Broiler-Human:        PENDING
+    internal bool LegacyRecorded;
 
     /// <summary>The activation whose emitted code is innermost on this thread.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=859662

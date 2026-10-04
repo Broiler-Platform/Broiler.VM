@@ -191,6 +191,26 @@ internal static class Test262Run
             }
         }
 
+        // A TEST THAT NEEDS THE HOST'S COLLECTION HOOK IS NOT ONE THIS HARNESS CAN RUN. The suite
+        // tags a test that calls `$262.gc` with `host-gc-required`, and this harness provides no
+        // such hook, so every one of them failed at that call with a refusal about the harness
+        // rather than about the engine. One of them, `regress-1507322-deep-weakmap`, also built a
+        // chain of 99,999 weak-map entries before the call, whose marking the platform's collector
+        // cannot interrupt, and held its shard past every allowance. They are skipped by the
+        // suite's own tag, and counted, as a proposal is (JSC-257); the collector's behaviour over
+        // such a chain is the engine's to answer and is named there.
+        if (frontmatter.Features.Contains("host-gc-required"))
+        {
+            return
+            [
+                new Test262Outcome(
+                    relativePath, "-", Test262Verdict.Skipped,
+                    "the test requires the host's collection hook `$262.gc`, which this harness " +
+                        "does not provide",
+                    Features: string.Join(",", frontmatter.Features)),
+            ];
+        }
+
         if (flags.Contains("CanBlockIsFalse"))
         {
             return

@@ -603,7 +603,10 @@ stale ([JSC-235](roadmap.corrections.md#jsc-235)). Entry by entry:
 - **Corrected rather than declared as a defect:** a sloppy function's own `caller` and `arguments`
   are an extension section 17.1 permits for a non-strict function, and Node makes it too. The
   global `import` property is host-defined, which the language allows. Both are declared as
-  divergences whose reasons say so.
+  divergences whose reasons say so. *(Amended 2026-10-04: this realm now carries the legacy
+  `caller` and `arguments` on a sloppy plain function too, since
+  [JSC-257](roadmap.corrections.md#jsc-257), so the general-surface probe's case 62 agrees with both
+  engines and its two declarations are withdrawn.)*
 - **No longer holding:**
   - a date-only string as local time;
   - `Promise.all` and the constructor's `resolve`;

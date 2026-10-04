@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, and phase F1 batches JSC-252 to JSC-256; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, and phase F1 batches JSC-252 to JSC-257; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -552,7 +552,9 @@ row advances. *(Amended 2026-10-04: a fourth change,
 [JSC-255](roadmap.corrections.md#jsc-255), honours JSON modules and repairs three namings and
 renderings; 22 more variants moved from failing to passing and none moved back. A fifth,
 [JSC-256](roadmap.corrections.md#jsc-256), adds proper tail calls to the bytecode form and repairs
-a staging batch; 54 more moved and none moved back.)*
+a staging batch; 54 more moved and none moved back. A sixth,
+[JSC-257](roadmap.corrections.md#jsc-257), adds the legacy `caller` and `arguments` and ends the
+runner's hang; 35 more moved, none moved back, and a whole run now finishes on its own.)*
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:

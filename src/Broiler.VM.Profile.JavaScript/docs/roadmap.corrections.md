@@ -11012,3 +11012,55 @@ against the edition.
 - No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-257
+
+**Where:** phase F1: the legacy `caller` and `arguments` of a sloppy function, and the runner's
+hang on `staging/sm/regress/regress-1507322-deep-weakmap.js`.
+
+**What the plan said.** [Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+put the legacy reflection and the runner's one hang in phase F1.
+[JSC-252](roadmap.corrections.md#jsc-252) named both as not repaired.
+
+**What replaced it, observed on 2026-10-04.**
+- **A sloppy plain function has its own `caller` and `arguments`.** A plain function is a function
+  declaration or expression, or one the `Function` constructor made. Both properties are accessors
+  that are neither enumerable nor writable, and are configurable. They are made the first time
+  anything could observe them, so creating a closure costs nothing more. `caller` answers the
+  sloppy plain function that called the receiver's latest running call, looking through direct
+  eval code. It answers `null` when that call was made by a built-in, a strict function, a
+  generator, an async function or global code, and when the receiver is not running.
+  `arguments` answers an arguments object for that call, mapped onto simple parameters, or `null`.
+  The engine records only sloppy plain calls, together with the depth each runs at. A gap in the
+  depth is what tells it something else made the call. The value form's direct call records them as
+  `Invoke` does.
+- **A strict function and every other kind still have neither.** Reading them still reaches
+  `Function.prototype`'s poisoned pair and throws, as section 17.1 requires.
+- **The runner skips the suite's `host-gc-required` tests.** Those tests call `$262.gc`, a hook
+  this harness does not provide. All 15 of them failed at that call with a refusal about the
+  harness. One of them, the deep-weak-map case, first builds a chain of 99,999 weak-map entries.
+  The platform's collector cannot interrupt its marking of that chain, and the shard ran past every
+  allowance. They are now skipped by the suite's own tag, and counted, as a proposal is. A whole run
+  no longer needs a shard killed by hand.
+- **The general-surface differential probe's case 62 now agrees with both comparison engines.** Its
+  two divergence declarations are withdrawn.
+- **test262:** over the whole pinned suite, against the run JSC-256 was measured on, 35 variants
+  moved from failing to passing and none moved back. The 15 `host-gc-required` files are now 15
+  skipped results where they were 26 variants. Twenty of those failed. Six passed without the hook,
+  in three `*-detaching` files that never reached their call of it, and are no longer counted as
+  passes. The run finished without intervention: 94,996 variants, 82,857 passing, 4,213 failing, 42
+  exhausted and 7,884 skipped, and its own report says it may be retained.
+
+**What must not be read as repaired.**
+- **A weak-map chain of about a hundred thousand entries still stalls the process in a garbage
+  collection** that no allowance can interrupt. The runner no longer runs the one test that builds
+  one, and the engine's exposure to such a guest program is unchanged.
+- **In the value form, `f.arguments` reads a parameter the emitted code holds resident as it was
+  at entry.** The compiler cannot see a reflective read coming, so it does not keep such a function's
+  parameters in the record the mapping reads. `function m(x) { x = 9; return m.arguments[0]; }`
+  answers 9 in the bytecode, native and flat value forms, and 1 in the value form.
+- **The two properties stand after `prototype` in the key order**, where V8 puts them before it.
+  The language orders neither, because it defines neither.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

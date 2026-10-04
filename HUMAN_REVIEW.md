@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5881 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5893 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 239 |
-| Code units | 10391 |
-| Relevant | 5881 |
-| Exempt | 4510 |
-| Assessed | 5881 of 5881 (100%) |
-| Human reviewed | 0 of 5881 (0%) |
-| Unverified | 5881 |
+| Code units | 10408 |
+| Relevant | 5893 |
+| Exempt | 4515 |
+| Assessed | 5893 of 5893 (100%) |
+| Human reviewed | 0 of 5893 (0%) |
+| Unverified | 5893 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5881 |
+| HUMAN_PENDING | 5893 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4510 |
+| EXEMPT | 4515 |
 
 ## 5. Aliases In The Tree
 
@@ -213,10 +213,10 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsClone.cs` | 92 | 30 | 62 | 30 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 87 | 51 | 36 | 51 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` | 14 | 12 | 2 | 12 | Low | Critical | 14/14 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 247 | 213 | 34 | 213 | Low | Critical | 86/84 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 252 | 217 | 35 | 217 | Low | Critical | 90/88 |
 | `src/Broiler.VM.Profile.JavaScript/JsEvalMap.cs` | 33 | 15 | 18 | 15 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 44 | 26 | 18 | 26 | Low | High | 12/12 |
-| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 65 | 30 | 35 | 30 | Low | High | 3/3 |
+| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 74 | 38 | 36 | 38 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 70 | 17 | 53 | 17 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` | 32 | 17 | 15 | 17 | Low | Critical | 13/13 |
 | `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` | 14 | 10 | 4 | 10 | Low | High | 5/5 |
@@ -224,7 +224,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 133 | 55 | 78 | 55 | Low | High | 9/9 |
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 51 | 15 | 36 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 4 | 4 | 0 | 4 | Low | Critical | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` | 37 | 9 | 28 | 9 | Low | Critical | 24/24 |
+| `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` | 38 | 9 | 29 | 9 | Low | Critical | 24/24 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 23 | 14 | 9 | 14 | Low | Critical | 18/18 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` | 12 | 4 | 8 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
@@ -245,7 +245,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` | 57 | 36 | 21 | 36 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` | 6 | 5 | 1 | 5 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs` | 9 | 8 | 1 | 8 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 9 | 8 | 1 | 8 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 11 | 8 | 3 | 8 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs` | 12 | 9 | 3 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs` | 25 | 25 | 0 | 25 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Iterator.cs` | 29 | 16 | 13 | 16 | Low | Medium | 0/0 |
@@ -1745,9 +1745,9 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the context names a cookie other than the activation's, a region other than its own first word, a debt other than zero, or an entry
 - `Broiler.VM.Profile.JavaScript.JsEngine.TryDirectCallee(JsNativeActivation, int, out JsScriptFunction)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `35645C`, PENDING
   - Falsified if: it answers true for a callee that is not a plain script function of the caller's program, or changes a word, a handle or the meter
-- `Broiler.VM.Profile.JavaScript.JsEngine.BeginDirectCall(JsNativeActivation, int, int, JsScriptFunction, JsValueFrame*)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `0002A2`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.BeginDirectCall(JsNativeActivation, int, int, JsScriptFunction, JsValueFrame*)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `A0401F`, PENDING
   - Falsified if: a direct call charges, checks, binds or opens other than the interpreter's call of the same function would, fills an entry other than the callee unit's in the caller's own payload, or a failure leaves a depth, a referrer or a region taken
-- `Broiler.VM.Profile.JavaScript.JsEngine.EndDirectCall(JsNativeActivation)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `7C9518`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.EndDirectCall(JsNativeActivation)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `BCFB76`, PENDING
   - Falsified if: a direct callee's region, referrer or depth outlives its return, or is given back twice
 - `Broiler.VM.Profile.JavaScript.JsEngine.NativePageOf(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `D236B5`, PENDING
   - Falsified if: a page this returns is not armed, or a program's published page is replaced or released while the program is reachable
@@ -1869,6 +1869,14 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: one module key is evaluated twice in one realm
 - `Broiler.VM.Profile.JavaScript.JsEngine.MediatedModule(string, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `006C6A`, PENDING
   - Falsified if: a module request is answered by an artifact whose root is not a module body
+- `Broiler.VM.Profile.JavaScript.JsEngine.ExecuteCall(JsScriptFunction, JsCodeUnit, JsEnvironment, JsValue, JsValue[], JsValue, JsCell?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `9A151E`, PENDING
+  - Falsified if: a recorded frame outlives its call, or a frame that is not a sloppy plain function's is recorded
+- `Broiler.VM.Profile.JavaScript.JsEngine.legacyFrames` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `99091E`, PENDING
+  - Falsified if: an entry stays after its call has ended, or the order of the entries is not the order of the calls
+- `Broiler.VM.Profile.JavaScript.JsEngine.LegacyCaller(JsScriptFunction)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `68336F`, PENDING
+  - Falsified if: it answers a strict function, a built-in, or a function that did not make the call
+- `Broiler.VM.Profile.JavaScript.JsEngine.LegacyArguments(JsScriptFunction)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `A2A2A5`, PENDING
+  - Falsified if: it answers an object for a function that is not running, or for a call other than its latest
 - `Broiler.VM.Profile.JavaScript.JsEngine.tail` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `4339E9`, PENDING
   - Falsified if: a tail call is left pending when the frame that made it has been answered for, or is made by any loop but the one that entered that frame
 - `Broiler.VM.Profile.JavaScript.JsEngine.InTailPosition(JsProgram, int, int, int, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `C72F91`, PENDING
@@ -4097,7 +4105,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5747 of the 5881 assessed units declare
+That is not a figure of speech. 5759 of the 5893 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that
