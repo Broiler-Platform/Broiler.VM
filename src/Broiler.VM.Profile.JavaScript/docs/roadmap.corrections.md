@@ -11150,8 +11150,11 @@ puts source in the artifact".
 - **test262:** `test/built-ins/Function/prototype/toString` passes all 160 variants. Before, it
   passed 158, because its harness accepts the NativeFunction form wherever it accepts the source;
   the two failures were a computed method key. Over the whole pinned suite, against the run
-  [JSC-258](roadmap.corrections.md#jsc-258) was measured on, the figure is recorded by an
-  amendment to this entry when the run finishes; until then no whole-suite figure is claimed.
+  [JSC-258](roadmap.corrections.md#jsc-258) was measured on, 22 variants moved from failing to
+  passing and none moved back. Four of them are the RegExp property-escape variants that ran past
+  their wall-clock allowance in that run's loaded machine, so 18 are this change's: the computed
+  method key and eight `staging/sm` files that compare a function's text. The run finished on its
+  own: 94,996 variants, 82,897 passing, 4,173 failing, 42 exhausted and 7,884 skipped.
 
 **What must not be read as repaired.**
 - **`Error.prototype.stack`** is still absent, and `runs/an-error-has-no-stack.js` still pins that.
@@ -11163,3 +11166,51 @@ puts source in the artifact".
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout, and the proposed
 JSD-0037. 2026-10-04.
+
+### JSC-260
+
+**Where:** the `WeakMap` built-in, and the runner's one former hang,
+`staging/sm/regress/regress-1507322-deep-weakmap.js`.
+
+**What the plan said.** [JSC-257](roadmap.corrections.md#jsc-257) ended the hang by skipping the
+suite's `host-gc-required` tests, and named what it did not repair: "a weak-map chain of about a
+hundred thousand entries still stalls the process in a garbage collection that no allowance can
+interrupt", and "the engine's exposure to such a guest program is unchanged".
+[Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s F1 repeats it: "the
+collector's stall over such a chain is still the engine's".
+
+**What replaced it, observed on 2026-10-04.**
+- **The cause is the runtime's ephemeron table, not the interpreter.** A `WeakMap` was a
+  `ConditionalWeakTable`, a set of dependent handles. The collector resolves a chain of them - each
+  key's value the next key - by rescanning the handle table once per link it can newly mark. The
+  99,999-link chain ran past 120 seconds; with a large enough first-generation budget to keep the
+  collector from running, the same program ended in under a second.
+- **The values now live on their keys.** Every object and every Symbol carries a reference to the
+  entries the WeakMaps hold under it, filed by a per-map token that holds its map weakly. A value is
+  reachable through its key and nothing else, so it dies with the key and a value that refers to
+  its own key pins nothing. The collector marks the chain in one ordinary walk. The map holds
+  nothing, which is possible because the language gives a WeakMap no size, no `clear` and no
+  iteration.
+- **A value may outlive its map.** When a map is collected and a key stays alive, the key keeps
+  that map's value until it next gains an entry, or until the key dies. The edition sets a floor on
+  what must stay alive and no ceiling, so this is retention, not a semantic change. `WeakSet` keeps
+  the runtime's table: its entries hold one shared, empty box and cannot form a chain.
+- **The chain ends.** 99,999 links are built and walked in about 1.2 seconds by the end-user host,
+  and 500,000 links stop in about 3 seconds at the live-bytes ceiling the meter already had. The
+  slice compiler's checks force a full collection over the 99,999-link chain from inside a run, and
+  check that a value dies with its key and that a collected map's value leaves a live key. Run
+  against the former table, those checks did not finish in 240 seconds. A fixture,
+  `runs/a-deep-weak-map-chain.js`, pins the chain against the comparison engine.
+- **test262:** over `built-ins/WeakMap`, `WeakSet`, `WeakRef` and `FinalizationRegistry` and
+  `staging/sm/extensions`, `regress` and `Symbol`, 949 variants answer exactly as in the whole run
+  [JSC-259](roadmap.corrections.md#jsc-259) records.
+
+**What must not be read as repaired.**
+- **The 15 `host-gc-required` tests are still skipped.** They call `$262.gc`, which the harness
+  still does not provide, so `regress-1507322-deep-weakmap.js` is still not run. What changed is
+  that running it would no longer stall.
+- **A collection is still not metered.** Fuel and the wall-clock allowance still cannot interrupt
+  one; this change removes the one guest-built structure known to make a collection superlinear.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

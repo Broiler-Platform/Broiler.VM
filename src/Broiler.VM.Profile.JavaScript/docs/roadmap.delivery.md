@@ -1120,7 +1120,8 @@ gate and the ledger's row.
   - the runner's one hang, `staging/sm/regress/regress-1507322-deep-weakmap.js`, which passes its
     wall-clock allowance without ending *(ended 2026-10-04: the runner skips the suite's
     `host-gc-required` tests, [JSC-257](roadmap.corrections.md#jsc-257); the collector's stall over
-    such a chain is still the engine's)*;
+    such a chain is still the engine's)* *(the stall ended 2026-10-04: a WeakMap's values live on
+    their keys, [JSC-260](roadmap.corrections.md#jsc-260))*;
   - JSW-4's identity: mint `broiler.javascript.regexp`, which needs a person's decision
     (JSC-167);
   - JSW-8's remainder, JSW-9's depth refusals of five Octane workloads, and JSW-10's retained whole

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   2
 // Annotated:        2/2
-// Exempt:           5
+// Exempt:           6
 // Human-reviewed:   0/2
 // IP risk:          Low
 // Security risk:    Medium
@@ -106,4 +106,12 @@ internal sealed class JsSymbol
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7108D5
     // Broiler-Human:        PENDING
     internal bool IsRegistered { get; init; }
+
+    /// <summary>
+    /// The values every <c>WeakMap</c> holds under this Symbol as its key, or <see langword="null"/>
+    /// while it is the key of none (JSC-260).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=75767A
+    // Broiler-Human:        PENDING
+    internal JsWeakEntries? WeakEntries;
 }

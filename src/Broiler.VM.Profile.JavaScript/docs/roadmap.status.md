@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, and phase F3's source text, JSC-259; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text, JSC-259, and the WeakMap chain stall, JSC-260; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -563,9 +563,12 @@ declared limit, or belong to F3 and later, and that entry names them.)*
 optional section under the proposed [JSD-0037](decisions/0037-the-source-text-section.md), and
 `Function.prototype.toString` answers it; a built-in, a bound function and a host function keep the
 NativeFunction form ([JSC-259](roadmap.corrections.md#jsc-259)). Every variant of
-`test/built-ins/Function/prototype/toString` passes. `Error.prototype.stack`, F3's other delivery,
+`test/built-ins/Function/prototype/toString` passes, and over the whole pinned suite 18 variants
+moved from failing to passing and none moved back. `Error.prototype.stack`, F3's other delivery,
 is still absent. This is unreviewed implementation and validation material, not accepted milestone
-evidence; no milestone row advances.
+evidence; no milestone row advances. *(Amended 2026-10-04: a WeakMap's values now live on their
+keys, so a collection over a 99,999-link chain no longer stalls the process; the
+`host-gc-required` tests are still skipped ([JSC-260](roadmap.corrections.md#jsc-260)).)*
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:

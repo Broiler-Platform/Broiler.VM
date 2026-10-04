@@ -483,6 +483,7 @@ internal static class Program
             .Concat(JsArm64GoldenChecks.Run())
             .Concat(NativeTemplateScanChecks.Run())
             .Concat(CloneChecks.Run())
+            .Concat(WeakMapChecks.Run())
             .Concat(BigIntChecks.Run())
             .Concat(JsWordChecks.Run())
             .Concat(ValueFormChecks.Run())

@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 140
+runs|0|# Completed: 141
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -1028,3 +1028,7 @@ runs/receivers-keys-and-finally-completions.js|0|true,true,true / true / key,tar
 # kept, the Function constructor's synthesised text, and the native rendering for what no source
 # defined. The values are the comparison engine's *(JSC-259)*.
 runs/function-source-text.js|0|function /* a */ f /* b */ (x, y) /* c */ { return x + y; } @@ async function* g() { yield 1; } @@ x => x * 2 @@ async (a, b) => { await a; } @@ m() { return 1; } @@ get "k e y"() { return 2; } @@ set s(v) {} @@ *gen() {} @@ ["c" + 1](a) {} @@ class A extends Object { constructor() { super(); } static /* s */ async m() {} #p() {} q() { return this.#p; } } @@ async m() {} @@ #p() {} @@ class B {} @@ class {} @@ function anonymous(a,b~) {~return a + b~} @@ function anonymous(~) {~return 1~} @@ function e() { /* inside eval */ } @@ function t() { return `nested ${1}`; } @@ function max() { [native code] } @@ function () { [native code] } @@ function call() { [native code] }
+
+# A WEAK-MAP CHAIN OF A HUNDRED THOUSAND LINKS ENDS (2026-10-04), where a collection over the
+# runtime's dependent handles ran for minutes. The value is the comparison engine's *(JSC-260)*.
+runs/a-deep-weak-map-chain.js|0|100000

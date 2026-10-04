@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   39
 // Annotated:        39/39
-// Exempt:           31
+// Exempt:           32
 // Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    High
@@ -156,6 +156,14 @@ internal class JsObject
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1CB525
     // Broiler-Human:        PENDING
     private string className;
+
+    /// <summary>
+    /// The values every <c>WeakMap</c> holds under this object as its key, or <see langword="null"/>
+    /// while it is the key of none (JSC-260).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=75767A
+    // Broiler-Human:        PENDING
+    internal JsWeakEntries? WeakEntries;
 
     /// <summary>Creates an object with the given prototype.</summary>
     /// <remarks>

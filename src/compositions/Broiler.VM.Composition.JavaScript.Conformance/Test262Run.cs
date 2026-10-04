@@ -197,8 +197,9 @@ internal static class Test262Run
         // rather than about the engine. One of them, `regress-1507322-deep-weakmap`, also built a
         // chain of 99,999 weak-map entries before the call, whose marking the platform's collector
         // cannot interrupt, and held its shard past every allowance. They are skipped by the
-        // suite's own tag, and counted, as a proposal is (JSC-257); the collector's behaviour over
-        // such a chain is the engine's to answer and is named there.
+        // suite's own tag, and counted, as a proposal is (JSC-257). The collector's stall over such a
+        // chain was the engine's, and ended when a WeakMap's values moved onto their keys (JSC-260);
+        // the skip stays because the hook is still absent.
         if (frontmatter.Features.Contains("host-gc-required"))
         {
             return

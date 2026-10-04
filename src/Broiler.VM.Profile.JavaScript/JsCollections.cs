@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   51
-// Annotated:        51/51
-// Exempt:           36
-// Human-reviewed:   0/51
+// Relevant units:   63
+// Annotated:        63/63
+// Exempt:           42
+// Human-reviewed:   0/63
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  4/10 max
-// Unverified:       51
+// Unverified:       63
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -425,70 +425,322 @@ internal sealed class JsValueBox
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b><see cref="System.Runtime.CompilerServices.ConditionalWeakTable{TKey,TValue}"/> and not a
-/// list of <see cref="System.WeakReference{T}"/>, for one reason that decides it.</b> A WeakMap's
-/// hard requirement is EPHEMERON semantics: the value must not keep its own key alive. A list of
-/// weak references holding values strongly gets that exactly backwards - the overwhelmingly common
-/// <c>weak.set(node, { owner: node })</c> pins <c>node</c> for the life of the realm, which is the
-/// leak a WeakMap is bought to avoid, and it is invisible in every test that does not run a
-/// collector. The runtime's table is a real ephemeron table and gets it right. The list would also
-/// be O(n) per lookup and would need a sweep somebody has to decide when to run; the table is
-/// neither.
+/// <b>The map holds nothing; each KEY holds the values stored under it</b>, in its own
+/// <see cref="JsWeakEntries"/>, filed under this map's <see cref="JsWeakMapToken"/>. That is
+/// EPHEMERON semantics with ordinary references: a value is reachable through its key and through
+/// nothing else, so it lives exactly as long as the key does, and the overwhelmingly common
+/// <c>weak.set(node, { owner: node })</c> pins nothing - the cycle runs through the key and dies
+/// with it.
 /// </para>
 /// <para>
-/// <b>What this costs: there is no <c>size</c>, no <c>clear</c> and no iteration, and that is the
-/// language's decision rather than the table's limitation.</b> A WeakMap that could be counted or
-/// walked would let a program observe when the collector ran, which is a side channel out of the
-/// deterministic execution this profile is built to give. The specification omits all three for
-/// that reason and so does this.
+/// <b>It was a <see cref="System.Runtime.CompilerServices.ConditionalWeakTable{TKey,TValue}"/>
+/// until 2026-10-04, and the collector is why it is not (JSC-260).</b> The runtime's table is a set
+/// of dependent handles, and the collector resolves a chain of them - a key whose value is the next
+/// key, <c>m.set(k, next)</c> ninety-nine thousand times - by rescanning the handle table once per
+/// link it can newly mark. Test262's <c>regress-1507322-deep-weakmap</c> builds that chain, and one
+/// collection over it ran for minutes: no fuel or wall-clock allowance can interrupt a collection,
+/// so any guest program could stall its process. With the values on the key there is no handle to
+/// rescan, and the same chain is marked in one ordinary walk.
+/// </para>
+/// <para>
+/// <b>What it costs: a value may outlive its map.</b> When a map becomes unreachable while a key
+/// stays alive, the key still holds that map's value until the key's entries are next touched, when
+/// entries of collected maps are dropped, or until the key itself dies. The specification sets a
+/// floor on what must stay alive and no ceiling, so this is permitted retention rather than a
+/// semantic change, and it is bounded by the key's own lifetime. Every object and Symbol pays one
+/// reference field for the entries it will usually never have.
+/// </para>
+/// <para>
+/// <b>There is no <c>size</c>, no <c>clear</c> and no iteration, and that is the language's
+/// decision rather than the table's limitation.</b> A WeakMap that could be counted or walked would
+/// let a program observe when the collector ran. The specification omits all three for that reason
+/// and so does this - which is also what lets the map keep no list of its keys.
 /// </para>
 /// <para>
 /// <b>A primitive key is a <c>TypeError</c> on the way in and a miss on the way out.</b>
 /// <c>set</c> refuses one because there is nothing to hold weakly; <c>get</c>, <c>has</c> and
-/// <c>delete</c> answer <c>undefined</c>, <c>false</c> and <c>false</c> without throwing, which is
-/// what the specification says and what lets a caller probe a table without guarding every call.
-/// <b>A key is an object or a Symbol that <c>Symbol.for</c> did not make</b>, which is the
-/// language's <c>CanBeHeldWeakly</c> since ES2023, and the table is keyed on the reference either
-/// one is. Symbols were refused here until 2026-10-03 (JSP-5, JSC-237).
+/// <c>delete</c> answer <c>undefined</c>, <c>false</c> and <c>false</c> without throwing. <b>A key is
+/// an object or a Symbol that <c>Symbol.for</c> did not make</b>, which is the language's
+/// <c>CanBeHeldWeakly</c> since ES2023. Symbols were refused here until 2026-10-03 (JSP-5, JSC-237).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=826AB6
 // Broiler-Human:        PENDING
 internal sealed class JsWeakMapObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A190B
-    // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, JsValueBox> table =
-        new();
-
     /// <summary>Creates an empty WeakMap.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=09CEBB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D87AC1
     // Broiler-Human:        PENDING
     internal JsWeakMapObject(JsObject? prototype)
-        : base(prototype, "WeakMap")
-    {
-    }
+        : base(prototype, "WeakMap") =>
+        Token = new JsWeakMapToken(this);
+
+    /// <summary>The identity this map's entries are filed under on their keys.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4DD037
+    // Broiler-Human:        PENDING
+    internal JsWeakMapToken Token { get; }
 
     /// <summary>Reads the value under <paramref name="key"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=15D91B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AE2BA7
     // Broiler-Human:        PENDING
     internal JsValue Get(object key) =>
-        table.TryGetValue(key, out var box) ? box.Value : JsValue.Undefined;
+        Entries(key) is { } entries && entries.TryGet(Token, out var value) ? value : JsValue.Undefined;
 
     /// <summary>Whether <paramref name="key"/> is present.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7B390B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=75052A
     // Broiler-Human:        PENDING
-    internal bool Has(object key) => table.TryGetValue(key, out _);
+    internal bool Has(object key) => Entries(key) is { } entries && entries.TryGet(Token, out _);
 
     /// <summary>Stores <paramref name="value"/> under <paramref name="key"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=46F956
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=25D5FB
     // Broiler-Human:        PENDING
-    internal void Set(object key, JsValue value) => table.AddOrUpdate(key, new JsValueBox(value));
+    internal void Set(object key, JsValue value)
+    {
+        switch (key)
+        {
+            case JsObject target:
+                (target.WeakEntries ??= new JsWeakEntries()).Set(Token, value);
+                break;
+            case JsSymbol symbol:
+                (symbol.WeakEntries ??= new JsWeakEntries()).Set(Token, value);
+                break;
+            default:
+                throw new System.ArgumentException("a weak key is an object or a Symbol", nameof(key));
+        }
+    }
 
     /// <summary>Removes <paramref name="key"/>, answering whether it was there.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=82FA2D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=812AA6
     // Broiler-Human:        PENDING
-    internal bool Delete(object key) => table.Remove(key);
+    internal bool Delete(object key) => Entries(key) is { } entries && entries.Remove(Token);
+
+    /// <summary>The entries <paramref name="key"/> carries, or <see langword="null"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2CC7CA
+    // Broiler-Human:        PENDING
+    private static JsWeakEntries? Entries(object key) => key switch
+    {
+        JsObject target => target.WeakEntries,
+        JsSymbol symbol => symbol.WeakEntries,
+        _ => null,
+    };
+}
+
+/// <summary>
+/// The identity of one <see cref="JsWeakMapObject"/> as its keys see it, which does not keep the map
+/// alive.
+/// </summary>
+/// <remarks>
+/// <b>One weak reference per map, not per entry</b>: a key's entries hold the token strongly, and
+/// the token answers whether its map has been collected, which is how a key drops the values of maps
+/// nobody can reach any more.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=00B0C5
+// Broiler-Human:        PENDING
+internal sealed class JsWeakMapToken
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E7AAD5
+    // Broiler-Human:        PENDING
+    private readonly System.WeakReference<JsWeakMapObject> map;
+
+    /// <summary>Creates the token of <paramref name="owner"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E5DF45
+    // Broiler-Human:        PENDING
+    internal JsWeakMapToken(JsWeakMapObject owner) => map = new System.WeakReference<JsWeakMapObject>(owner);
+
+    /// <summary>Whether the map this token names has been collected.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=247C7F
+    // Broiler-Human:        PENDING
+    internal bool IsCollected => !map.TryGetTarget(out _);
+}
+
+/// <summary>
+/// The values the WeakMaps hold under one key, by map.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>A short list first, and a dictionary only for a key many maps share.</b> Almost every key is
+/// in one map, so a pair of arrays searched by reference beats a hash table on size and on time; past
+/// <see cref="ListLimit"/> entries the list becomes a dictionary, so a key shared by a hundred
+/// thousand maps is not searched linearly by each of them.
+/// </para>
+/// <para>
+/// <b>Entries of collected maps are dropped when the list would grow</b>, before it grows, and when
+/// a new entry would take the dictionary past twice the size it had after its last sweep. That
+/// bounds what dead maps can leave on a live key by what has been added to it since, keeps the
+/// sweeping amortised over the additions, and costs a lookup nothing.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=93F726
+// Broiler-Human:        PENDING
+internal sealed class JsWeakEntries
+{
+    /// <summary>The most entries kept as a list.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F20A88
+    // Broiler-Human:        PENDING
+    private const int ListLimit = 8;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C1C452
+    // Broiler-Human:        PENDING
+    private JsWeakMapToken?[] tokens = new JsWeakMapToken?[1];
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D5D4F0
+    // Broiler-Human:        PENDING
+    private JsValue[] values = new JsValue[1];
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=71170F
+    // Broiler-Human:        PENDING
+    private int count;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=55B262
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.Dictionary<JsWeakMapToken, JsValue>? table;
+
+    /// <summary>The dictionary's size at which the next new entry first sweeps it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B498A8
+    // Broiler-Human:        PENDING
+    private int sweepAt = ListLimit * 4;
+
+    /// <summary>Reads the value <paramref name="token"/>'s map holds here.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0D0902
+    // Broiler-Human:        PENDING
+    internal bool TryGet(JsWeakMapToken token, out JsValue value)
+    {
+        if (table is not null)
+        {
+            return table.TryGetValue(token, out value);
+        }
+
+        var at = IndexOf(token);
+        value = at < 0 ? JsValue.Undefined : values[at];
+        return at >= 0;
+    }
+
+    /// <summary>Stores the value <paramref name="token"/>'s map holds here.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1E1A3A
+    // Broiler-Human:        PENDING
+    internal void Set(JsWeakMapToken token, JsValue value)
+    {
+        if (table is not null)
+        {
+            if (!table.ContainsKey(token) && table.Count >= sweepAt)
+            {
+                foreach (var held in System.Linq.Enumerable.ToArray(table.Keys))
+                {
+                    if (held.IsCollected)
+                    {
+                        table.Remove(held);
+                    }
+                }
+
+                sweepAt = System.Math.Max(ListLimit * 2, table.Count * 2);
+            }
+
+            table[token] = value;
+            return;
+        }
+
+        var at = IndexOf(token);
+
+        if (at >= 0)
+        {
+            values[at] = value;
+            return;
+        }
+
+        if (count == tokens.Length)
+        {
+            DropCollected();
+        }
+
+        if (count == tokens.Length)
+        {
+            if (count >= ListLimit)
+            {
+                table = new System.Collections.Generic.Dictionary<JsWeakMapToken, JsValue>(
+                    count * 2, System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+                for (var index = 0; index < count; index++)
+                {
+                    table.Add(tokens[index]!, values[index]);
+                }
+
+                table.Add(token, value);
+                tokens = [];
+                values = [];
+                count = 0;
+                return;
+            }
+
+            System.Array.Resize(ref tokens, count * 2);
+            System.Array.Resize(ref values, count * 2);
+        }
+
+        tokens[count] = token;
+        values[count] = value;
+        count++;
+    }
+
+    /// <summary>Removes the value <paramref name="token"/>'s map holds here.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D1A5DF
+    // Broiler-Human:        PENDING
+    internal bool Remove(JsWeakMapToken token)
+    {
+        if (table is not null)
+        {
+            return table.Remove(token);
+        }
+
+        var at = IndexOf(token);
+
+        if (at < 0)
+        {
+            return false;
+        }
+
+        RemoveAt(at);
+        return true;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AE8CC0
+    // Broiler-Human:        PENDING
+    private int IndexOf(JsWeakMapToken token)
+    {
+        for (var index = 0; index < count; index++)
+        {
+            if (ReferenceEquals(tokens[index], token))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>Removes the entry at <paramref name="at"/>, moving the last one into its place.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9EEEF2
+    // Broiler-Human:        PENDING
+    private void RemoveAt(int at)
+    {
+        count--;
+        tokens[at] = tokens[count];
+        values[at] = values[count];
+        tokens[count] = null;
+        values[count] = default;
+    }
+
+    /// <summary>Drops the entries of maps that have been collected.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=42C233
+    // Broiler-Human:        PENDING
+    private void DropCollected()
+    {
+        for (var index = count - 1; index >= 0; index--)
+        {
+            if (tokens[index]!.IsCollected)
+            {
+                RemoveAt(index);
+            }
+        }
+    }
 }
 
 /// <summary>
