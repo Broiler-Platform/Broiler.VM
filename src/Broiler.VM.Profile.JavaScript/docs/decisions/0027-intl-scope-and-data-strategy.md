@@ -425,3 +425,7 @@ status line. Corrections entry [JSC-272](../roadmap.corrections.md#jsc-272).*
   [JSC-273](../roadmap.corrections.md#jsc-273). It rounds as I2's `NumberFormat` rounds. The archive
   grew by the ordinal rules, and the data is now 472,689 bytes. Its retained dataset of 1,299 lines
   agrees with ICU 77.1 but for 123 named lines.
+- **`ListFormat` is third**, under proposed [JSD-0048](0048-intl-listformat.md), recorded in
+  [JSC-274](../roadmap.corrections.md#jsc-274). The archive grew by a fourth CLDR package,
+  `cldr-misc-full`, for its list patterns, and the data is now 473,642 bytes. Its retained dataset of
+  481 lines agrees with ICU 77.1 on every string.

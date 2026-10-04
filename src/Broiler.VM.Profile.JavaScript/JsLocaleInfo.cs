@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           2
+// Exempt:           3
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -35,4 +35,10 @@ internal sealed class JsLocaleInfo
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BF2E87
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.Dictionary<string, bool> RightToLeft { get; } = new(System.StringComparer.Ordinal);
+
+    /// <summary>Each language's list patterns, by <c>language|type</c> with CLDR's type names (JSD-0048).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F35DA3
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.Dictionary<string, (string Start, string Middle, string End, string Pair)> ListPatterns { get; } =
+        new(System.StringComparer.Ordinal);
 }

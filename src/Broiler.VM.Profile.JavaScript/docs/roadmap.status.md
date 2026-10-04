@@ -637,6 +637,15 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F7 observation, slice I4's `Intl.ListFormat`, 2026-10-04.** `Intl.ListFormat` is built as
+the current ECMA-402 draft states it, in every type and style, over CLDR list patterns from a package
+the archive gained under rule N27. The retained German and English lists agree with ICU 77.1 on every
+string. 36 parts lines differ, where ICU leaves out an empty element that the draft keeps.
+`test/intl402/ListFormat` passes 154 of 162 variants, and the failing ones need Spanish
+([JSC-274](roadmap.corrections.md#jsc-274), proposed
+[JSD-0048](decisions/0048-intl-listformat.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F7 observation, slice I4's `Intl.PluralRules`, 2026-10-04.** `Intl.PluralRules` is built as
 the current ECMA-402 draft states it, cardinal and ordinal, with every digit option and notation. It
 rounds as the number format rounds and selects by CLDR's rules, the ordinal ones gained under rule

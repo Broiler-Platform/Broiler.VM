@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           21
+// Exempt:           22
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -11397,6 +11397,31 @@ internal static class JsCldrTables
         en|two|n % 10 = 2 and n % 100 != 12
         en|few|n % 10 = 3 and n % 100 != 13
         en|other|
+        """u8;
+
+    /// <summary>The list patterns of each supported language: language, type, start, middle, end, pair.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> ListPatterns =>
+        """
+        de|or|{0}, {1}|{0}, {1}|{0} oder {1}|{0} oder {1}
+        de|or-narrow|{0}, {1}|{0}, {1}|{0} oder {1}|{0} oder {1}
+        de|or-short|{0}, {1}|{0}, {1}|{0} oder {1}|{0} oder {1}
+        de|standard|{0}, {1}|{0}, {1}|{0} und {1}|{0} und {1}
+        de|standard-narrow|{0}, {1}|{0}, {1}|{0} und {1}|{0} und {1}
+        de|standard-short|{0}, {1}|{0}, {1}|{0} und {1}|{0} und {1}
+        de|unit|{0}, {1}|{0}, {1}|{0} und {1}|{0}, {1}
+        de|unit-narrow|{0}, {1}|{0}, {1}|{0} und {1}|{0}, {1}
+        de|unit-short|{0}, {1}|{0}, {1}|{0} und {1}|{0}, {1}
+        en|or|{0}, {1}|{0}, {1}|{0}, or {1}|{0} or {1}
+        en|or-narrow|{0}, {1}|{0}, {1}|{0}, or {1}|{0} or {1}
+        en|or-short|{0}, {1}|{0}, {1}|{0}, or {1}|{0} or {1}
+        en|standard|{0}, {1}|{0}, {1}|{0}, and {1}|{0} and {1}
+        en|standard-narrow|{0}, {1}|{0}, {1}|{0}, {1}|{0}, {1}
+        en|standard-short|{0}, {1}|{0}, {1}|{0}, & {1}|{0} & {1}
+        en|unit|{0}, {1}|{0}, {1}|{0}, {1}|{0}, {1}
+        en|unit-narrow|{0} {1}|{0} {1}|{0} {1}|{0} {1}
+        en|unit-short|{0}, {1}|{0}, {1}|{0}, {1}|{0}, {1}
         """u8;
 
     /// <summary>The sanctioned units' patterns of each supported language: language, width, unit, field, value.</summary>

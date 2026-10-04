@@ -1913,6 +1913,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.DayPeriods : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 17
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Extensions : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 3
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.LikelySubtags : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 1
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.ListPatterns : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 21
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Locales : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 4
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.None : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 0
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.NumberLocales : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 8

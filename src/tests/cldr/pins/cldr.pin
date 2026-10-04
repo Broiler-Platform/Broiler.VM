@@ -46,6 +46,10 @@
 # EXTENDED 2026-10-04 FOR SLICE I4, AGAIN. Intl.PluralRules's ordinal rules read one more file of the
 # same cldr-core tarball, retrieved twice more, checked against the registry's sha512 integrity and
 # found byte-identical to it: supplemental/ordinals.json.
+#
+# EXTENDED 2026-10-04 FOR SLICE I4, A THIRD TIME. Intl.ListFormat's patterns come from one more npm
+# package, cldr-misc-full at 48.2.0: its tarball, retrieved twice, byte-identical, and checked against
+# the registry's sha512 integrity; from it listPatterns.json for de and en and its package.json.
 
 data unicode-common-locale-data-repository
 version 48.2.0
@@ -57,6 +61,7 @@ json-integrity cldr-bcp47 sha512-ks3zN+Wbg1zMqvJNeDai1zA0JBGHbAnxv2Ko4rjVohvXscD
 json-integrity cldr-numbers-full sha512-0EQ+UkVDsyXOlxnWnL1RIENVZFqCnb04D1Yrku0obnOyttbuZz8tHmUd5c5AEvhGS/Gg2zI4fTaCm51LSGITog==
 json-integrity cldr-units-full sha512-BjDC7V46eeXzgalnIumrJ1XQDk8wJaOxNLME4hmkBT9Q0hnzxn3XgtavigPUwnljk7FxlNQW9Wx+hbFrARPrQg==
 json-integrity cldr-dates-full sha512-zMrKvjMO414HDftLr6vKH1fNQHakFNe+F1h4S0eg+zmL4WRi9pI41fxB3UrTJDY42MEM87jCuAw/qlqCgYKcAQ==
+json-integrity cldr-misc-full sha512-dSc2Tr53dQcUGwsTinamEeoP2YXOhQrIZ+SyeuUrv4MzJOSjT/Q0qkSmX11ZwfcTbYSkIqbrgALQLhAm1yf5fA==
 repository-source https://raw.githubusercontent.com/unicode-org/cldr/release-48-2/
 retrieved 2026-10-04
 retrievals 2 byte-identical
@@ -105,6 +110,9 @@ file cldr-48.2.0/json/cldr-dates-full/main/en/ca-gregorian.json 19266 099b5dadb3
 file cldr-48.2.0/json/cldr-dates-full/main/en/dateFields.json 26073 4fcaa5f74d743a0bc734a556638c687ee7607824cc763be0f746a20d36e9cb0c
 file cldr-48.2.0/json/cldr-dates-full/main/en/timeZoneNames.json 44939 db04305a4bac1389b965e71974adf174adc4130f38b86dfcf1f4e2eec343a174
 file cldr-48.2.0/json/cldr-dates-full/package.json 771 cc651f93556ff63f4ef820c0a4a7ad973e31299764b3118ebfc8b2194dfcdf27
+file cldr-48.2.0/json/cldr-misc-full/main/de/listPatterns.json 1695 d010586775f0e6db1f8c3e8dc76c3a34476c0623332a1f4076a9f490557e2e26
+file cldr-48.2.0/json/cldr-misc-full/main/en/listPatterns.json 1665 e68b0612a0c0f129836460c150bf58045a60a7516c9705e147f2192fce0449e8
+file cldr-48.2.0/json/cldr-misc-full/package.json 730 42e2a38e57b3a731403121ba1f0cc7552461232e2d7da974e882303e438b2d1a
 file cldr-48.2.0/json/cldr-numbers-full/main/de/currencies.json 63618 6ebdb4ee634cabd431adf1df8c9e6e36f442802c149a46f1515a3fe62b37788d
 file cldr-48.2.0/json/cldr-numbers-full/main/de/numbers.json 6771 e8ab22c6d7a1ed1f1fc71c4bf0da7ba57a32a46c7ead5ad8e36f40563c18c00f
 file cldr-48.2.0/json/cldr-numbers-full/main/en/currencies.json 71492 a6c41b28f4035f65ae698b53a66866982b4ff49bc0de7e840f91d2c6e6bdc23b

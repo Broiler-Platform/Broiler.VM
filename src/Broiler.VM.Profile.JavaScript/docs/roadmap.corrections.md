@@ -12033,3 +12033,39 @@ generator's new table, and the format's `JsIntlTable`.
 - JSD-0047 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-274
+
+**Where:** phase F7's slice I4, its third part. `Intl.ListFormat` (`JsRealm.ListFormat.cs`), the list
+patterns it reads (`JsLocaleInfo.cs`, `JsIntlTables.cs`), the CLDR archive and its pin, the
+generator's new table, and the format's `JsIntlTable`.
+
+**What the plan said.** [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists
+ListFormat among "I4 and later", accepted "each opened by its own consumer and its own card". The
+archive held no list patterns, and no package of CLDR's that has them.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.ListFormat` is built whole**, under proposed
+  [JSD-0048](decisions/0048-intl-listformat.md): `format`, `formatToParts`, `resolvedOptions` and
+  `supportedLocalesOf`, with every type and style. Its options go through GetOptionsObject, which the
+  profile already had for `Uint8Array`'s base64 methods, and any iterable of Strings is a list.
+- **The archive grows under N27 by a fourth CLDR package**, `cldr-misc-full` at 48.2.0, retrieved
+  twice, compared and checked against the registry's integrity: `listPatterns.json` for `de` and `en`.
+  **N28's file grows by one table**, the list patterns, to 473,642 bytes, still under the provisional
+  512 KiB bound.
+- **The retained list dataset**
+  ([`src/tests/cldr/lists/`](../../tests/cldr/lists/README.md)) has 481 lines against Node 22.22.0's
+  ICU 77.1. Every string agrees. 36 parts lines differ, in one group named in `divergences.txt`: ICU
+  leaves no part for an empty element, and the draft makes one.
+- **Checks**: one new slice-compiler check, 630 in all, holds the list dataset.
+- **test262**, against the run JSC-273 records: `test/intl402/ListFormat` passes 154 of 162 variants,
+  from 2. The 8 failing are four files, and all need Spanish.
+
+**What must not be read as repaired.**
+- **Lists exist for German and English only**, the section 5 locales. A list in another language is
+  written in English.
+- **`RelativeTimeFormat`, `DisplayNames`, `Segmenter` and `DurationFormat`** are absent, and the
+  phase's exit gate is not met.
+- JSD-0048 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

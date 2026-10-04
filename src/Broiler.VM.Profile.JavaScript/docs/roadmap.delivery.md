@@ -1305,6 +1305,10 @@ next ([JSC-272](roadmap.corrections.md#jsc-272)).*
 rounding. The retained plural categories agree with ICU 77.1 but for 123 named divergences.
 `PluralRules` passes 78 of 82 scored `intl402` variants, and the failing ones need other locales.
 `ListFormat` is next ([JSC-273](roadmap.corrections.md#jsc-273)).*
+*Progress, 2026-10-04: `Intl.ListFormat` is built under proposed
+[JSD-0048](decisions/0048-intl-listformat.md), over CLDR's list patterns. The retained lists agree
+with ICU 77.1 on every string. `ListFormat` passes 154 of 162 `intl402` variants, and the failing
+ones need Spanish. `RelativeTimeFormat` is next ([JSC-274](roadmap.corrections.md#jsc-274)).*
 
 #### F8 — Temporal
 

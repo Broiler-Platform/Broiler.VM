@@ -1263,7 +1263,11 @@ public sealed class ReviewRecordRuleTests
         // AND PLURAL RULES (phase F7, 2026-10-04, JSD-0047): JsRealm.PluralRules.cs,
         // Intl.PluralRules over the number format's rounding. It is covered on the same terms as every
         // other product file, and nothing in it has been read by a human.
-        Assert.Equal(271, AssuranceSources.Files.Count);
+        //
+        // AND LISTS (phase F7, 2026-10-04, JSD-0048): JsRealm.ListFormat.cs, Intl.ListFormat over
+        // CLDR's list patterns. It is covered on the same terms as every other product file, and
+        // nothing in it has been read by a human.
+        Assert.Equal(272, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -99,6 +99,7 @@ internal static class CldrTableGenerator
         TextTable(text, "Plurals", "The cardinal plural rules of each supported language: language, category, rule.", Plurals(cldr));
         TextTable(text, "PluralRanges", "The plural range rules of each supported language: language, start, end, result.", PluralRanges(cldr));
         TextTable(text, "Ordinals", "The ordinal plural rules of each supported language: language, category, rule.", Ordinals(cldr));
+        TextTable(text, "ListPatterns", "The list patterns of each supported language: language, type, start, middle, end, pair.", ListPatterns(cldr));
         TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
         TextTable(text, "DateLocales", "The Gregorian calendar, date field and zone name data of each supported language, flattened: language, key, value.", DateLocales(cldr));
         TextTable(text, "TimeData", "The hour cycles allowed and preferred in each region: region, allowed, preferred.", TimeData(cldr));
@@ -479,6 +480,26 @@ internal static class CldrTableGenerator
     /// <summary>Each language's ordinal plural rules, without their samples.</summary>
     internal static IEnumerable<string> Ordinals(IReadOnlyDictionary<string, byte[]> cldr) =>
         PluralRules(cldr, "ordinals.json", "plurals-type-ordinal");
+
+    /// <summary>
+    /// Each supported language's list patterns: the type as CLDR names it (<c>standard</c>,
+    /// <c>or-short</c>, <c>unit-narrow</c> and the rest), and its start, middle, end and two-element
+    /// patterns.
+    /// </summary>
+    internal static IEnumerable<string> ListPatterns(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        foreach (var language in NumberLanguages)
+        {
+            var patterns = Json(cldr, $"json/cldr-misc-full/main/{language}/listPatterns.json")
+                .GetProperty("main").GetProperty(language).GetProperty("listPatterns");
+
+            foreach (var type in patterns.EnumerateObject().OrderBy(static entry => entry.Name, StringComparer.Ordinal))
+            {
+                var fields = new[] { "start", "middle", "end", "2" }.Select(field => Escape(type.Value.GetProperty(field).GetString()!));
+                yield return $"{language}|{type.Name["listPattern-type-".Length..]}|{string.Join('|', fields)}";
+            }
+        }
+    }
 
     /// <summary>Each supported language's rules of one plural type, without their samples.</summary>
     private static IEnumerable<string> PluralRules(IReadOnlyDictionary<string, byte[]> cldr, string file, string type)
