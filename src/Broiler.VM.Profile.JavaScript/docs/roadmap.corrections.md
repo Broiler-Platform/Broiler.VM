@@ -11252,9 +11252,10 @@ comparison engines' common form and the position table the artifact already carr
   now agrees with it and its `#diverges` line is removed.
 - **The clone carrier admits an error of the new type**; a rebuilt error has a stack of its own,
   captured where it is adopted, and the source's text is not carried, as JSD-0032 says.
-- **test262:** the whole-suite figure against the run [JSC-259](roadmap.corrections.md#jsc-259)
-  records is added by an amendment to this entry when the run finishes; until then no whole-suite
-  figure is claimed.
+- **test262:** over the whole pinned suite, every one of the 94,996 variants answers as in the run
+  [JSC-259](roadmap.corrections.md#jsc-259) records: 82,897 passing, 4,173 failing, 42 exhausted and
+  7,884 skipped. The suite asks nothing of `stack`, so none was expected to move; what the run shows
+  is that the own property, the key order and the extra position rows broke nothing it checks.
 
 **What must not be read as repaired.**
 - **`stack` is still not a member of the edition**, and JSD-0038 is proposed, not taken. No
