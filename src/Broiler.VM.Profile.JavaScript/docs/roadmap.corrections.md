@@ -11307,8 +11307,13 @@ had "no `v` flag, none of its set operations and none of the seven properties of
   `String.prototype` methods and `annexB/built-ins/RegExp`, 282 variants moved from failing to
   passing and none moved back. `RegExp/unicodeSets` passes 228 of 228, `CharacterClassEscapes` 24 of
   24, and `property-escapes/generated/strings` 56 of 56. The 24 variants still failing there are the
-  `cross-realm` cases phase F5 owns. The whole-suite figure is added by an amendment to this entry
-  when the run finishes; until then no whole-suite figure is claimed.
+  `cross-realm` cases phase F5 owns. Over the whole pinned suite, against the run
+  [JSC-261](roadmap.corrections.md#jsc-261) records, the same 282 variants moved from failing to
+  passing: 94,996 variants, 83,177 passing, 3,891 failing, 44 exhausted and 7,884 skipped. Two
+  property-escape variants (`General_Category_-_Enclosing_Mark.js` strict, `Script_-_Lao.js`
+  sloppy) ran past their five-second wall-clock allowance in that run, which shared the machine
+  with builds and the unit suites; run again alone on the same binaries, all 938 variants of
+  `property-escapes/generated` pass, those two included.
 
 **What must not be read as repaired.**
 - **The identity is still `wide`.** F2's line names `broiler.javascript.regexp`, which needs a
