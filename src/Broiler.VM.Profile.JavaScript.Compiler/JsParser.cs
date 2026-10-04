@@ -6212,7 +6212,7 @@ internal sealed class JsParser
     /// single node would have had to re-derive the difference from the first character of a string
     /// at every use.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DF6416
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5E2762
     // Broiler-Human:        PENDING
     private JsExpression AfterDot(SliceSourceSpan span, JsExpression target, bool optional)
     {
@@ -6231,7 +6231,8 @@ internal sealed class JsParser
 
         if (!IsPrivateName(Current))
         {
-            return new JsMemberExpression(span, target, MemberName(), null, optional);
+            var nameSpan = Span();
+            return new JsMemberExpression(span, target, MemberName(), null, optional) { NameSpan = nameSpan };
         }
 
         var name = Current.RawText;

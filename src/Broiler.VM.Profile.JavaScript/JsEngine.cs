@@ -4424,7 +4424,7 @@ internal sealed partial class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=19A9C1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=47ACF0
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -4451,7 +4451,24 @@ internal sealed partial class JsEngine
             // ignores the receiver slot on this path and goes on ignoring it; what changes is that
             // a body written by an embedder can now answer `new.target`, which is a question a
             // constructor is entitled to ask and had no way to.
-            var made = native.Construct(this, arguments, newTarget);
+            // A BUILT-IN REACHED THROUGH `super()` HIDES THE CONSTRUCTORS THAT REACHED IT from the
+            // stack an error it makes captures, down to the one `new` named, as V8 does: the trace
+            // of `new Failure()` starts where the program wrote that (JSD-0038).
+            var outerSkip = stackSkipUntil;
+            stackSkipUntil = ReferenceEquals(newTarget.AsObjectOrNull(), target)
+                ? null
+                : newTarget.AsObjectOrNull();
+
+            JsValue made;
+
+            try
+            {
+                made = native.Construct(this, arguments, newTarget);
+            }
+            finally
+            {
+                stackSkipUntil = outerSkip;
+            }
 
             // A BUILT-IN REACHED THROUGH `super()` MUST STILL MAKE AN INSTANCE OF THE DERIVED
             // CLASS. `class Failure extends Error { }` is the case that matters: the built-in
@@ -7549,7 +7566,7 @@ internal sealed partial class JsEngine
     /// native-only branch the importer removes; the native arm is a call that is never inlined.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=A05CDB
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=0E08FB
     // Broiler-Falsified-If: a program whose form differs from the engine's reaches ExecuteCore or emitted code
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -7578,6 +7595,14 @@ internal sealed partial class JsEngine
         var outerReferrer = activeReferrer;
         activeReferrer = referrer ?? self?.ScriptOrModule ?? string.Empty;
 
+        // THE FRAME'S SITE, which an error made while it runs reads its place from (JSD-0038).
+        PushSite(
+            program,
+            unitIndex,
+            self,
+            activeReferrer,
+            newTarget.Type != JsType.Undefined && !program.Functions[unitIndex].IsArrow);
+
         try
         {
             return nativeForm
@@ -7594,6 +7619,7 @@ internal sealed partial class JsEngine
         }
         finally
         {
+            PopSite();
             activeReferrer = outerReferrer;
         }
     }
@@ -7638,7 +7664,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=87F8D3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=2F53E9
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -7737,6 +7763,11 @@ internal sealed partial class JsEngine
         // with.
         var stepped = typeof(TMode) == typeof(JsNativeEntry);
 
+        // THE FRAME'S SITE, which every instruction run here writes itself into (JSD-0038). The
+        // interpreter's is the one `Execute` took just before entering it; a step of emitted code
+        // runs for the innermost frame, whose site is the innermost one too.
+        var site = TopSite;
+
         while (true)
         {
             try
@@ -7785,6 +7816,8 @@ internal sealed partial class JsEngine
 
                     current = pc;
                     Charge(FuelPerInstruction);
+
+                    site.Pc = current;
 
                     var opcode = typeof(TMode) == typeof(JsInterpreted) || typeof(TMode) == typeof(JsStepBlock)
                         ? (JsOpcode)code[pc]

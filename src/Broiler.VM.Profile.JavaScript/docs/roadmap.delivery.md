@@ -1061,7 +1061,7 @@ meets today is unchanged until the phase that delivers the surface lands, and ro
 |---|---|---|---|
 | The RegExp `v` flag | [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) | "Keep the `v` flag refused until a matcher slice is scheduled": the slice is scheduled | F2 |
 | `Function.prototype.toString` source text | none yet; a record opens F3 *(proposed: [JSD-0037](decisions/0037-the-source-text-section.md), 2026-10-04)* | The artifact carries the source text a function was defined from | F3 |
-| `Error.prototype.stack` | none yet; a record opens F3 | The shape is chosen by that record, from the comparison engines' common form | F3 |
+| `Error.prototype.stack` | none yet; a record opens F3 *(proposed: [JSD-0038](decisions/0038-the-error-stack.md), 2026-10-04)* | The shape is chosen by that record, from the comparison engines' common form | F3 |
 | `FinalizationRegistry` cleanup | [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) | D03-a is scheduled, and is taken on by the CLI composition by default | F4 |
 | Nested realms, `$262.createRealm` | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | SR-1, SR-2 and SR-7 are scheduled | F5 |
 | ShadowRealm | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | The deferral is not taken; SR-3 to SR-5 follow F5's realm work under `broiler.javascript.shadowrealm` | F5 |
@@ -1165,6 +1165,9 @@ gate and the ledger's row.
   - `test/built-ins/Function/prototype/toString` passes;
   - the fixtures that pin the native rendering and `an-error-has-no-stack.js` are replaced;
   - section 6's two rows leave the table.
+- *Observed 2026-10-04, unreviewed: each clause of the gate holds -
+  [JSC-259](roadmap.corrections.md#jsc-259) and [JSC-261](roadmap.corrections.md#jsc-261). Both
+  records are proposed and unsigned, so the phase is delivered in the tree and not accepted.*
 
 #### F4 — FinalizationRegistry cleanup
 

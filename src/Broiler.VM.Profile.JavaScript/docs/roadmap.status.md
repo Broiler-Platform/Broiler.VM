@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text, JSC-259, and the WeakMap chain stall, JSC-260; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, and the WeakMap chain stall, JSC-260; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -569,6 +569,12 @@ is still absent. This is unreviewed implementation and validation material, not 
 evidence; no milestone row advances. *(Amended 2026-10-04: a WeakMap's values now live on their
 keys, so a collection over a 99,999-link chain no longer stalls the process; the
 `host-gc-required` tests are still skipped ([JSC-260](roadmap.corrections.md#jsc-260)).)*
+*(Amended 2026-10-04: F3's other delivery is in the tree. Every error has an own `stack` accessor
+in V8's shape under the proposed [JSD-0038](decisions/0038-the-error-stack.md), captured from the
+running frames and placed by the position table; `runs/an-error-has-no-stack.js` is replaced and
+roadmap section 6's two F3 rows have left the table ([JSC-261](roadmap.corrections.md#jsc-261)).
+Each clause of F3's exit gate is observed to hold; both records are unsigned, so no milestone row
+advances.)*
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:

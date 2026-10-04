@@ -932,7 +932,6 @@ column is what a program meets, and it is as true as it was when the surface was
 | Surface | What a program meets today | Phase |
 |---|---|---|
 | The RegExp `v` flag | A literal carrying it is refused at compile time, and the constructor throws a `SyntaxError` for it. `unicodeSets` answers `false` for every RegExp. | F2 |
-| `Error.prototype.stack` | It is not a member of the edition. `error.stack` reads `undefined`: no error has an own `stack` and nothing it inherits from carries one, so `"stack" in error` is `false`. | F3 |
 | `FinalizationRegistry` cleanup | A cleanup callback is never called, as [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) records. | F4 |
 | Nested realms and ShadowRealm | `$262.createRealm` throws a `TypeError` saying this profile creates no nested realm; ShadowRealm is a proposal the suite's runner does not select. | F5 |
 | Agents, `SharedArrayBuffer` and `Atomics` | `$262.agent`'s members throw; the ledger's absent-globals block names the two globals, and `typeof` answers `"undefined"` for each. | F6 |
@@ -944,6 +943,10 @@ source in the artifact under proposed [JSD-0037](decisions/0037-the-source-text-
 `Function.prototype.toString` answers the text a function was defined from, comments included; a
 built-in, a bound function and a host function keep the NativeFunction form
 *(corrected: [JSC-259](roadmap.corrections.md#jsc-259))*.)*
+*(Amended 2026-10-04: the row for `Error.prototype.stack` left this table too. Every error has an
+own `stack` accessor, in V8's shape, under the proposed
+[JSD-0038](decisions/0038-the-error-stack.md); it is still not a member of the edition
+*(corrected: [JSC-261](roadmap.corrections.md#jsc-261))*.)*
 
 **Nothing ahead of the edition is admitted except what a decision record names**: the `using`
 declaration and its disposal surface, under proposed JSD-0034. `FinalizationRegistry.prototype.cleanupSome`,

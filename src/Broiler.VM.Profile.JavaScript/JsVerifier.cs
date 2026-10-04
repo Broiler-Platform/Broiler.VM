@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   63
 // Annotated:        63/63
-// Exempt:           50
+// Exempt:           51
 // Human-reviewed:   0/63
 // IP risk:          Low
 // Security risk:    High
@@ -800,7 +800,7 @@ internal sealed class JsVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EA6D0B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CCF18C
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadPositions(ref VmBoundedReader reader, Sections state)
     {
@@ -818,6 +818,10 @@ internal sealed class JsVerifier
         }
 
         var previous = 0u;
+
+        // THE ROWS ARE KEPT, not only judged: an error's stack reads the line and column of each
+        // frame's instruction from them (JSD-0038).
+        var rows = new JsPosition[count];
 
         for (var index = 0u; index < count; index++)
         {
@@ -837,9 +841,11 @@ internal sealed class JsVerifier
             }
 
             previous = offset;
+            rows[index] = new JsPosition(offset, line, column);
         }
 
         state.PositionRows = (int)count;
+        state.Positions = rows;
         return Ok;
     }
 
@@ -1529,7 +1535,7 @@ internal sealed class JsVerifier
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F05023
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2421F2
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
@@ -1844,6 +1850,7 @@ internal sealed class JsVerifier
             state.NativeValueImage)
         {
             SourceText = linkedSource,
+            Positions = state.Positions,
         };
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
@@ -3506,6 +3513,11 @@ internal sealed class JsVerifier
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7415BF
         // Broiler-Human:        PENDING
         internal int PositionRows { get; set; }
+
+        /// <summary>The position rows, ascending by offset.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=36C8CC
+        // Broiler-Human:        PENDING
+        internal JsPosition[] Positions { get; set; } = [];
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9FAFA3
         // Broiler-Human:        PENDING

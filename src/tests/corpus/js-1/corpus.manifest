@@ -128,10 +128,10 @@ wide-a-word-after-an-emitted-units-return|a3a9a9ecf6390831b51d1893390481f74559c3
 wide-an-emitted-payload-every-word-of-which-is-a-template|225419512084708e280458997ea9de080744d52e4a3bda021d0aea8f630488e5|wide|ProfileFault|UnsatisfiedHostAssumption|0|-|-|-|-
 wide-a-disposal-step-outside-an-async-function|e4dcfdb526cc3da11f29e03ff45b2cb66ba26877a0fffff67939b52f9c12f94f|wide|InvalidArtifact|SemanticValidationFailed|1611|-|-|-|-
 wide-a-disposal-end-whose-mode-is-undefined|b411e2b289dffd229e7e767aa26645eb21df6fbfe0b2e2270354ba4a836738f4|wide|InvalidArtifact|UnknownFeature|1401|-|-|-|-
-wide-a-block-disposes-its-resource|c96c1c54baeb6e9fb0c12974ddc68a1b4a7b2f516bc4d02f58d871af0d725510|wide|Normal|NormalCompleted|0|20|-|-|-
+wide-a-block-disposes-its-resource|36be58a56399ad2840f2cfb0065bbd0889b9be3f00c3c97b9e64d6a0a1a05f7e|wide|Normal|NormalCompleted|0|20|-|-|-
 wide-a-version-1-artifact-announced-as-version-2|4a871c79683bcd1c0192ed7cfd50d4d8a9caf59d62f8071e9776188fee5d8156|wide|InvalidArtifact|DescriptorMismatch|1003|-|-|-|-
 wide-a-slice-manifest-announced-as-the-wide-one|820f00f2877b8bebc95b8ec462f6fa6c9aade306bf7de8eb32b9d48f065fcd2d|wide|InvalidArtifact|DescriptorMismatch|1006|-|-|-|-
-wide-a-method-called-through-a-property|2af507d189b1e94bfd5e0a3a3878739b4c0c68ca513006eda2b52e384587f8c8|wide|Normal|NormalCompleted|0|7|-|-|-
+wide-a-method-called-through-a-property|071fbcdc3c3817fab91c199b68d99e95bd24e5c1ec0d339b17e38a514780757e|wide|Normal|NormalCompleted|0|7|-|-|-
 modules-a-module-section-no-surface-declares|2cbf7c1c57869b2fb2d7102d361dd409719c62a1c8548e4bdeb192230d2ca8ed|modules|InvalidArtifact|UnknownFeature|1613|-|-|-|-
 modules-a-module-row-the-format-cannot-represent|8a5578e819fdb74a274e13f5cf17de2e99395ad0723c9569879a2d69d5f34b87|modules|InvalidArtifact|InconsistentStructure|1614|-|-|-|-
 modules-a-request-naming-no-module|c0c198de78ffb5a667d1b5054797288266adbe6bf96204d0a86172e938ff6523|modules|InvalidArtifact|InconsistentStructure|1615|-|-|-|-
@@ -155,9 +155,9 @@ eval-scopes-an-eval-name-outside-eval-code|adce7a84ee10e2649a70278bb6f416e7ee1e2
 eval-scopes-eval-code-with-no-declaration|d5496d5321dc1dba2302a5e6dcfda6406dd80e11aeb234b9882aab8b79b96ba9|wide|InvalidArtifact|InconsistentStructure|1627|-|-|-|-
 eval-scopes-eval-code-that-is-a-program-body|abb75c5902bd2be2478d03a335ec1e6ff3a2b84cff4e1a02ae27e580fc0baf46|wide|InvalidArtifact|InconsistentStructure|1601|-|-|-|-
 eval-scopes-a-sound-map-that-verifies|790e3ecd37620752bbc181e75b22f6a8f841d137bf062df2b7af31e61683c07b|wide|Normal|NormalCompleted|0|NaN|-|-|-
-eval-scopes-a-function-site-the-lowering-wrote|4c3690a36594890afdb131e7d92d1f8b46738a3a79910b39526ee2df60f8339e|wide|Normal|NormalCompleted|0|42|-|-|-
-eval-scopes-a-site-no-provider-answers|5d215668dd93de5ca153f866d5cfe517a8aba48a48db6b1f42039a4aa42663cd|wide|Normal|NormalCompleted|0|uncaught:EvalError|-|-|-
-eval-scopes-a-function-body-site-the-lowering-wrote|d9e9f8f085255f0416ac7470a6c2ec1e26e6195477f47166dfe731b8a90bddcb|wide|Normal|NormalCompleted|0|3|-|-|-
+eval-scopes-a-function-site-the-lowering-wrote|29f3c805b65053fe8edc45a651ec8d4f786210ab4ceeaabe81d89211fc0a5a7f|wide|Normal|NormalCompleted|0|42|-|-|-
+eval-scopes-a-site-no-provider-answers|68bc053d395dea651d16a6a117a329841633b86fb2cbaa991d6a9f5cde987307|wide|Normal|NormalCompleted|0|uncaught:EvalError|-|-|-
+eval-scopes-a-function-body-site-the-lowering-wrote|4f105cddf0444ccb8121b74f4a0a8513be4d198a6121bbd181f13c3fd7b27574|wide|Normal|NormalCompleted|0|3|-|-|-
 script-declarations-a-row-naming-no-unit|9bc19830cd5b73b11f28d7e61958040fac3c546fc0251c0947aaf7a105078fb0|wide|InvalidArtifact|InconsistentStructure|1631|-|-|-|-
 script-declarations-a-name-spelled-with-a-number|833823ba50b1fbb7714d4b5dd30a1c6dff42bc0bec03f191d953677986c0aa55|wide|InvalidArtifact|InconsistentStructure|1631|-|-|-|-
 script-declarations-a-row-for-a-function|7f850f7693a4e358bf95ae838c96ae76945021937751c1b31a5612ce3672f2a1|wide|InvalidArtifact|InconsistentStructure|1631|-|-|-|-
@@ -179,4 +179,4 @@ source-text-a-text-spelled-with-a-number|c1421662884ba47fff72e3fa8d57572f57e4839
 source-text-an-empty-span|45e1486a1d0ed0087fbe60348d815e08666201dbe662d4750c0c21961a4ebaed|wide|InvalidArtifact|InconsistentStructure|1633|-|-|-|-
 source-text-a-unit-named-twice|6ccab6500bff24ac5dc4d908e1752d985a19f70b8693f5368b578aa86a3a9dcb|wide|InvalidArtifact|InconsistentStructure|1633|-|-|-|-
 source-text-a-sound-row-that-verifies|d93b0a1be1fd1b95ddd20fa8beaebae55e33c75ab842a0539d8d0425813133ca|wide|Normal|NormalCompleted|0|1|-|-|-
-source-text-a-function-the-lowering-wrote|d87311e1c6cdded6217f15257e21dcfc4af3ad0387dc15987c11754e8822014a|wide|Normal|NormalCompleted|0|27|-|-|-
+source-text-a-function-the-lowering-wrote|082e268ca3775a6f1f23da8de8b0d1f207929c00f0fbac1615583d984ee87ae2|wide|Normal|NormalCompleted|0|27|-|-|-

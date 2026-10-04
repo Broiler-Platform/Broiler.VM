@@ -433,7 +433,7 @@ internal sealed partial class JsRealm
     internal JsArray NewArray() => new(ArrayPrototype);
 
     /// <summary>A fresh Error of the named intrinsic kind.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BFBD54
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C2B29B
     // Broiler-Human:        PENDING
     internal JsValue CreateError(string kind, string message)
     {
@@ -441,8 +441,7 @@ internal sealed partial class JsRealm
             ? engine.GetProperty(JsValue.Object(constructor), "prototype")
             : JsValue.Object(ErrorPrototype);
 
-        var error = new JsObject(
-            prototype.IsObject ? prototype.AsObject() : ErrorPrototype, "Error");
+        var error = NewError(engine, prototype.IsObject ? prototype.AsObject() : ErrorPrototype);
 
         error.SetOwnProperty(
             "message",

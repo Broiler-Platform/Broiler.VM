@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
-// Exempt:           47
-// Human-reviewed:   0/18
+// Relevant units:   20
+// Annotated:        20/20
+// Exempt:           48
+// Human-reviewed:   0/20
 // IP risk:          Low
 // Security risk:    Critical
 // Criteria:         4/4
 // Resource impact:  2/10 max
-// Unverified:       18
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -193,6 +193,11 @@ internal readonly struct JsRegion(
     // Broiler-Human:        PENDING
     internal Format.JsFormat.HandlerKind Kind { get; } = kind;
 }
+
+/// <summary>One row of the position table: a code offset and the source line and column it begins.</summary>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D21B64
+// Broiler-Human:        PENDING
+internal readonly record struct JsPosition(uint Offset, uint Line, uint Column);
 
 /// <summary>One named entry point, naming a code unit.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=92C350
@@ -383,6 +388,50 @@ internal sealed class JsProgram : IVmVerifiedState
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F4FB49
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.Dictionary<int, (string Text, int Start, int Length)>? SourceText { get; init; }
+
+    /// <summary>The position rows, ascending by code offset (JSD-0038).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F0DD67
+    // Broiler-Human:        PENDING
+    internal JsPosition[] Positions { get; init; } = [];
+
+    /// <summary>
+    /// The line and column of the instruction at <paramref name="offset"/> in
+    /// <paramref name="unit"/>: those of the last position row at or before it within the unit, or
+    /// none when the unit has no row that early.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=506E64
+    // Broiler-Human:        PENDING
+    internal bool TryPositionOf(int unit, int offset, out uint line, out uint column)
+    {
+        line = 0;
+        column = 0;
+        var rows = Positions;
+        int low = 0, high = rows.Length - 1, found = -1;
+
+        while (low <= high)
+        {
+            var middle = low + ((high - low) / 2);
+
+            if (rows[middle].Offset <= (uint)offset)
+            {
+                found = middle;
+                low = middle + 1;
+            }
+            else
+            {
+                high = middle - 1;
+            }
+        }
+
+        if (found < 0 || (uint)unit >= (uint)Functions.Length || rows[found].Offset < Functions[unit].CodeOffset)
+        {
+            return false;
+        }
+
+        line = rows[found].Line;
+        column = rows[found].Column;
+        return true;
+    }
 
     /// <summary>The feature manifest the artifact named in its header.</summary>
     /// <remarks>

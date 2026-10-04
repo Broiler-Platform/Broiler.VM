@@ -11214,3 +11214,57 @@ collector's stall over such a chain is still the engine's".
 - No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-261
+
+**Where:** phase F3: an error's `stack`, the running frames it is captured from, the position rows
+it is placed by, and every place that said no error has one.
+
+**What the plan said.** Roadmap section 6 said: "`Error.prototype.stack` ... is not a member of the
+edition. `error.stack` reads `undefined`: no error has an own `stack` and nothing it inherits from
+carries one", and `runs/an-error-has-no-stack.js` pinned that
+([JSC-239](roadmap.corrections.md#jsc-239)). F3 asked for a record choosing the shape "from the
+comparison engines' common form and the position table the artifact already carries".
+
+**What replaced it, observed on 2026-10-04.**
+- **Every error has an own `stack`**, under the proposed
+  [JSD-0038](decisions/0038-the-error-stack.md): an accessor pair shared by every error, configurable
+  and not enumerable, defined before `message`. The frames are captured when the error is made - by
+  any `Error` constructor, by the engine, by disposal or by the clone carrier - and rendered on first
+  read as V8 renders them: the `Error.prototype.toString` header, then at most ten
+  `    at name (place:line:column)` lines, innermost first. A construction through `super()` leaves
+  out the constructors that reached `Error`. Assigning `stack` replaces it.
+- **The engine keeps a site per running frame**, and every instruction the dispatch loop runs
+  writes its offset there, beside the fuel charge. On a call-, loop- and property-heavy script five
+  runs of each build took 1.645 seconds against 1.638 before, inside the spread between runs. The
+  bytecode, baseline native and value forms render the same text; the emitted forms show a frame
+  that a strict tail call replaces in the bytecode form, because only that form has proper tail
+  calls ([JSC-256](roadmap.corrections.md#jsc-256)).
+- **The verifier keeps the position table**, and the lowering places a call, a construction and a
+  named member read again just before its instruction: a construction at its `new`, a method call
+  and a member read at the member's name. In the probes this change was measured with, every line
+  and column of a frame both engines show agrees, except the one case named below. Six retained compiled corpus entries changed bytes for these
+  rows and no other reason; nothing outside the corpus manifest names their hashes.
+- **The fixtures are replaced.** `runs/an-error-has-no-stack.js` is removed and
+  `runs/an-error-has-a-stack.js` pins the descriptor, the key order, the frames of a call, of a
+  `super()` construction and of an engine-raised `TypeError`, the ten-frame bound, the first-read
+  rendering and assignment, against the comparison engine. The general-surface differential probe 321
+  now agrees with it and its `#diverges` line is removed.
+- **The clone carrier admits an error of the new type**; a rebuilt error has a stack of its own,
+  captured where it is adopted, and the source's text is not carried, as JSD-0032 says.
+- **test262:** the whole-suite figure against the run [JSC-259](roadmap.corrections.md#jsc-259)
+  records is added by an amendment to this entry when the run finishes; until then no whole-suite
+  figure is claimed.
+
+**What must not be read as repaired.**
+- **`stack` is still not a member of the edition**, and JSD-0038 is proposed, not taken. No
+  milestone or stage moves.
+- **What differs from V8 on purpose:** a method frame is not prefixed by its receiver's constructor,
+  a built-in has no frame, a frame a proper tail call replaced is gone, and there is no
+  `Error.captureStackTrace`, `stackTraceLimit` or `prepareStackTrace`. A call whose callee is not a
+  name or a member is placed at the callee's start rather than at its arguments.
+- **No async frames** (`at async f`): a resumed async function shows the frames running when it
+  resumed.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout, and the proposed
+JSD-0038. 2026-10-04.

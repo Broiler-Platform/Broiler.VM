@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   240
-// Annotated:        240/240
+// Relevant units:   242
+// Annotated:        242/242
 // Exempt:           128
-// Human-reviewed:   0/240
+// Human-reviewed:   0/242
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       240
+// Unverified:       242
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -7148,7 +7148,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8752FE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2ED2A1
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -7339,6 +7339,7 @@ public sealed class JsCompiler
                 if (CarriesArgumentsInAnArray(construction.Arguments))
                 {
                     CompileArgumentArray(construction.Arguments);
+                    Position(construction.Span);
                     Emit(JsOpcode.ConstructSpread);
                     break;
                 }
@@ -7347,6 +7348,11 @@ public sealed class JsCompiler
                 {
                     CompileExpression(argument);
                 }
+
+                // THE CONSTRUCTION IS PLACED AT ITS OWN `new` AGAIN, after its arguments placed
+                // themselves, so an error it makes - or one made by the constructor it runs - is
+                // placed where the construction is written (JSD-0038).
+                Position(construction.Span);
 
                 Emit(
                     JsOpcode.Construct,
@@ -8825,7 +8831,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BF0425
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6D14B9
     // Broiler-Human:        PENDING
     private void CompileMember(JsMemberExpression member)
     {
@@ -8843,6 +8849,8 @@ public sealed class JsCompiler
             var m = chain[i];
             if (m.Computed is null)
             {
+                // THE READ IS PLACED AT ITS NAME, where an error it raises is shown (JSD-0038).
+                PositionAt(m.NameSpan);
                 Emit(JsOpcode.GetProperty, InternedName(m.Name));
             }
             else
@@ -10033,7 +10041,7 @@ public sealed class JsCompiler
     /// spread test, the 255 ceiling and the choice of instruction live in one place. They did not,
     /// and a spread argument reached a lowering that had never heard of one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8D0F12
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0AB26C
     // Broiler-Human:        PENDING
     private void CompileArguments(JsCallExpression call, bool direct = false)
     {
@@ -10054,6 +10062,7 @@ public sealed class JsCompiler
                 RecordEvalSite();
             }
 
+            PositionCall(call);
             Emit(direct ? JsOpcode.CallEvalSpread : JsOpcode.CallSpread);
             return;
         }
@@ -10067,6 +10076,11 @@ public sealed class JsCompiler
         {
             RecordEvalSite();
         }
+
+        // THE CALL IS PLACED AGAIN, after its arguments placed themselves, so the frame that made it
+        // is shown at the call in an error's stack: at the method's name for a method call, and at
+        // its own start otherwise (JSD-0038).
+        PositionCall(call);
 
         Emit(
             direct ? JsOpcode.CallEval : JsOpcode.Call,
@@ -10225,7 +10239,7 @@ public sealed class JsCompiler
         Emit(JsOpcode.LoadSuperPropertyKeepKey);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=93E764
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1646CE
     // Broiler-Human:        PENDING
     private void CompileSuperCall(JsSuperCallExpression call)
     {
@@ -10245,6 +10259,7 @@ public sealed class JsCompiler
         if (CarriesArgumentsInAnArray(call.Arguments))
         {
             CompileArgumentArray(call.Arguments);
+            Position(call.Span);
             Emit(JsOpcode.SuperCallSpread);
             return;
         }
@@ -10254,6 +10269,7 @@ public sealed class JsCompiler
             CompileExpression(argument);
         }
 
+        Position(call.Span);
         Emit(JsOpcode.SuperCall, (byte)call.Arguments.Count);
     }
 
@@ -11012,6 +11028,23 @@ public sealed class JsCompiler
             JsArtifactWriter.PatchBranch(buffer.Code, site, (uint)label.Offset);
         }
     }
+
+    /// <summary>Places what follows at <paramref name="span"/> when it names a place at all.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7E9920
+    // Broiler-Human:        PENDING
+    private void PositionAt(SliceSourceSpan span)
+    {
+        if (span.Line > 0)
+        {
+            Position(span);
+        }
+    }
+
+    /// <summary>Places a call: at the method's name for a call of a named member, else at its start.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=239DD2
+    // Broiler-Human:        PENDING
+    private void PositionCall(JsCallExpression call) =>
+        Position(call.Callee is JsMemberExpression { NameSpan.Line: > 0 } member ? member.NameSpan : call.Span);
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FFE885
     // Broiler-Human:        PENDING

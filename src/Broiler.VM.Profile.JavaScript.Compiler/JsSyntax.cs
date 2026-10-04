@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   83
 // Annotated:        83/83
-// Exempt:           21
+// Exempt:           22
 // Human-reviewed:   0/83
 // IP risk:          Low
 // Security risk:    Medium
@@ -337,14 +337,21 @@ internal sealed record JsConditionalExpression(
 /// short circuit does not belong to the link: it belongs to the <see cref="JsChainExpression"/>
 /// that encloses it, and a node per optional link would say the opposite.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=BAE977
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=5935D7
 // Broiler-Human:        PENDING
 internal sealed record JsMemberExpression(
     SliceSourceSpan Span,
     JsExpression Target,
     string Name,
     JsExpression? Computed,
-    bool Optional = false) : JsExpression(Span);
+    bool Optional = false) : JsExpression(Span)
+{
+    /// <summary>
+    /// Where the name after the dot is written, or the default span for a computed member: what an
+    /// error's stack places the read, and a call of it, at (JSD-0038).
+    /// </summary>
+    public SliceSourceSpan NameSpan { get; init; }
+}
 
 /// <summary>A call.</summary>
 /// <param name="Optional">Whether the call was spelled <c>?.(</c>, which tests the CALLEE.</param>
