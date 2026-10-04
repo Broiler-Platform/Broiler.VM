@@ -642,7 +642,9 @@ the current ECMA-402 draft states it, cardinal and ordinal, with every digit opt
 rounds as the number format rounds and selects by CLDR's rules, the ordinal ones gained under rule
 N27. The retained German and English plural categories agree with ICU 77.1 on every line but 123,
 each named with the clause ICU's answer departs from. `test/intl402/PluralRules` passes 78 of 82
-scored variants, and the failing ones need locales the data lacks
+scored variants, and the failing ones need locales the data lacks. Over the whole pinned suite
+86,239 of 95,058 variants pass, 74 more. None failed newly, and 9 `Atomics.waitAsync` variants ran out
+of live bytes on the machine the run moved to, as the previous binary does there
 ([JSC-273](roadmap.corrections.md#jsc-273), proposed
 [JSD-0047](decisions/0047-intl-pluralrules.md)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.

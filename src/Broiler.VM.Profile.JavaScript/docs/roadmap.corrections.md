@@ -12004,8 +12004,27 @@ generator's new table, and the format's `JsIntlTable`.
   variants, from 4. The 4 failing are two files, and both need locales the data lacks. The suite tags
   11 more files `Intl.NumberFormat-v3`, a proposal, and the runner skips them. Run by hand under the
   profile, all 11 pass.
+- **test262, whole pinned suite**, against the run [JSC-272](#jsc-272) records: 95,058 variants, 86,239
+  passing, 948 failing, 53 exhausted and 7,818 skipped. 74 moved to passing, all under
+  `test/intl402/PluralRules`, and none moved to failing.
+
+  Nine variants under `test/built-ins/Atomics/waitAsync` moved from passing to exhausted, all
+  `no-spurious-wakeup-*` files, at the live-bytes allowance and not the wall clock. They are not this
+  change's. The container was replaced between the run JSC-272 records and this one. On the new
+  machine, the binary of JSC-272's run, untouched since, exhausts 12 variants of the same files when
+  their directory is run alone, and this change's binary also exhausts 12. The set differs from run
+  to run:
+  - each file awaits a report through the harness's `setTimeout` fallback, which re-queues a promise
+    job until a second has passed;
+  - this profile charges promise jobs to live bytes, as [JSC-267](#jsc-267) records for `getReport`;
+  - so how many jobs a second holds, and whether the allowance is reached, depends on the machine.
+
+  The other 44 exhausted are the set JSC-270 records.
 
 **What must not be read as repaired.**
+- **A promise job loop of a second can spend the live-bytes allowance** on a fast enough machine,
+  which is why the `waitAsync` variants above exhaust. That is the charging JSC-267 records, and this
+  change leaves it as it was.
 - **Plural rules exist for German and English only**, the section 5 locales. The tests that name other
   languages fail.
 - **The exponent operands `c` and `e` are always 0.** No supported language's rules read them.
