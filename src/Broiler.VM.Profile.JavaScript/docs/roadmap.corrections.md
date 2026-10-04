@@ -10909,3 +10909,51 @@ catch clause's scopes, and a `var` initialiser in a `with` body.
 - No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-255
+
+**Where:** phase F1, the module half: JSON modules and the import attribute `type: "json"`, the
+name of an anonymous class exported as the default, a name in parentheses as an assignment target,
+and the rendering of a thrown Symbol. Diagnostic registry revision 17.
+
+**What the plan said.** [Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+put JSON modules in phase F1. Every import attribute had been refused, statically with 2405
+`UnsupportedImportAttribute` and dynamically by a rejected promise, because no composition had a
+loader for a module type.
+
+**What replaced it, observed on 2026-10-04.**
+- **`type: "json"` is honoured, statically and through `import()`.** A typed request is a module of
+  its own: the type travels with the specifier through the artifact's request table, the run-time
+  lookup, the resolution request a composition confirms and the module request a provider answers.
+  The format spells the pair as the specifier, a NUL and the type (`JsFormat.TypedSpecifier`). A
+  composition that predates types resolves that string as a specifier, finds nothing and refuses.
+- **A JSON module is the synthetic module that exports the parsed document as `default`.** The
+  front end checks the text against the JSON grammar and writes the module as
+  `export default ( … );`. Every key is written computed, so `__proto__` is an own key. A text that
+  is not JSON is refused with the new seam code 2406 `InvalidJsonModule`, before any module of the
+  graph runs. The retained source `refuse-a-json-module-that-is-not-json.json` reaches that code.
+- **The conformance harness and the command-line host load typed requests.** The polyglot host and
+  the embedder's own loader seam are not offered them. For the first, a JSON import is refused as an
+  unresolvable specifier; for the second, `import()` goes to the provider.
+- **Every other attribute is still refused by name.** The retained 2405 source now asks for
+  `type: "css"`.
+- **An anonymous class exported as the default is named `default`**, as an anonymous function
+  already was.
+- **`(f) = function () {}` leaves the function anonymous.** A parenthesised name is not an
+  identifier reference for naming, and the parser now marks one.
+- **A thrown or rejected Symbol is rethrown as itself.** Rendering a thrown value for a message
+  called `ToString`, which throws for a Symbol, so `await Promise.reject(Symbol())` was caught as a
+  `TypeError`. A Symbol now renders as its descriptive string.
+- **test262:** over the whole pinned suite, against the run JSC-254 was measured on, 22 variants
+  moved from failing to passing and none moved back. Twenty are this entry's. The other two are
+  `static-init-await-binding`'s, repaired by JSC-253 after that run was taken.
+
+**What must not be read as repaired.**
+- **Rendering a thrown object still reads its `name` and `message`, getters included**, which the
+  language does not do on a throw. A retained check relies on that reading, so it stays until the
+  rendering is made lazy.
+- No other module type and no other attribute is honoured. `import bytes` and source-phase imports
+  are proposals and are not attempted.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

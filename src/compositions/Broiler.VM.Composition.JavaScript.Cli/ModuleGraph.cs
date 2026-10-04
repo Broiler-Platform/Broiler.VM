@@ -43,9 +43,15 @@ internal static class ModuleGraph
     private const int MaximumModules = 1024;
 
     /// <summary>Loads the module rooted at one file, following what each module requests.</summary>
-    internal static Loaded Load(string rootPath)
+    /// <remarks>
+    /// <b>A key is a path, and a typed key is a path and its type</b>
+    /// (<see cref="JsFormat.TypedSpecifier"/>): <c>with { type: "json" }</c> names a different module
+    /// from an untyped import of the same file, and the module it names is the file read as a
+    /// document. A JSON module requests nothing, so the walk stops at it.
+    /// </remarks>
+    internal static Loaded Load(string rootPath, string rootType = "")
     {
-        var root = Key(rootPath);
+        var root = JsFormat.TypedSpecifier(Key(rootPath), rootType);
         var modules = new List<JsModuleUnit>();
         var seen = new HashSet<string>(StringComparer.Ordinal);
         var pending = new Queue<string>();
@@ -65,11 +71,18 @@ internal static class ModuleGraph
                     "files, which this host declines to follow");
             }
 
-            var file = SourceFiles.Read(key);
+            var path = JsFormat.SplitTypedSpecifier(key, out var type);
+            var file = SourceFiles.Read(path);
 
             if (file.Unreadable.Length != 0)
             {
-                return new Loaded([], $"`{key}`: {file.Unreadable}");
+                return new Loaded([], $"`{path}`: {file.Unreadable}");
+            }
+
+            if (type.Length != 0)
+            {
+                modules.Add(new JsModuleUnit(key, file.Text, SliceParseOptions.Module) { Type = type });
+                continue;
             }
 
             var requests = JsCompiler.Requests(file.Text, SliceParseOptions.Module);
@@ -85,8 +98,10 @@ internal static class ModuleGraph
 
             var resolutions = new List<JsResolvedRequest>(requests.Specifiers.Count);
 
-            foreach (var specifier in requests.Specifiers)
+            foreach (var request in requests.Specifiers)
             {
+                var specifier = JsFormat.SplitTypedSpecifier(request, out var requestType);
+
                 if (!TryResolve(key, specifier, out var resolved))
                 {
                     return new Loaded(
@@ -100,11 +115,12 @@ internal static class ModuleGraph
                     return new Loaded([], $"`{key}` requests `{specifier}`, and there is no file at `{resolved}`");
                 }
 
-                resolutions.Add(new JsResolvedRequest(specifier, resolved));
+                var target = JsFormat.TypedSpecifier(resolved, requestType);
+                resolutions.Add(new JsResolvedRequest(request, target));
 
-                if (seen.Add(resolved))
+                if (seen.Add(target))
                 {
-                    pending.Enqueue(resolved);
+                    pending.Enqueue(target);
                 }
             }
 
@@ -125,8 +141,10 @@ internal static class ModuleGraph
     /// is why it goes through <see cref="TryResolve"/> and then through <see cref="Load"/> rather
     /// than through a second reading of what a specifier is.
     /// </remarks>
-    internal static Loaded LoadFor(string referrer, string specifier)
+    internal static Loaded LoadFor(string referrer, string request)
     {
+        var specifier = JsFormat.SplitTypedSpecifier(request, out var type);
+
         if (!TryResolve(referrer, specifier, out var resolved))
         {
             return new Loaded(
@@ -136,7 +154,7 @@ internal static class ModuleGraph
         }
 
         return File.Exists(resolved)
-            ? Load(resolved)
+            ? Load(resolved, type)
             : new Loaded([], $"there is no file at `{resolved}`");
     }
 
@@ -147,19 +165,23 @@ internal static class ModuleGraph
     /// The request is the referring module's key, the specifier as the source wrote it, and the key
     /// the artifact says it resolves to, separated by NULs. This host answers yes only when its own
     /// resolution of the first two is the third, so an artifact bundled under another host's rules
-    /// is refused here rather than run.
+    /// is refused here rather than run. A typed request carries its type after both the specifier
+    /// and the key, so it has five parts, and the two types must agree.
     /// </remarks>
     internal static bool Confirms(ReadOnlySpan<byte> request)
     {
         var parts = JsFormat.DecodeText(request).Split('\0');
 
-        if (parts.Length != 3)
+        return parts.Length switch
         {
-            return false;
-        }
-
-        return TryResolve(parts[0], parts[1], out var resolved) &&
-            string.Equals(resolved, parts[2], StringComparison.Ordinal);
+            3 => TryResolve(parts[0], parts[1], out var resolved) &&
+                string.Equals(resolved, parts[2], StringComparison.Ordinal),
+            5 => string.Equals(parts[2], JsFormat.JsonModuleType, StringComparison.Ordinal) &&
+                string.Equals(parts[4], parts[2], StringComparison.Ordinal) &&
+                TryResolve(parts[0], parts[1], out var typed) &&
+                string.Equals(typed, parts[3], StringComparison.Ordinal),
+            _ => false,
+        };
     }
 
     /// <summary>This host's rule: relative to the importing file, and nothing else.</summary>

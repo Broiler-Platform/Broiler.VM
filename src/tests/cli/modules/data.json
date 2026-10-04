@@ -1,0 +1,6 @@
+{
+  "name": "broiler",
+  "__proto__": "an own key",
+  "list": [1, -0, 2.5e1, "\u2028", true, null],
+  "nested": { "deep": { "er": [] } }
+}

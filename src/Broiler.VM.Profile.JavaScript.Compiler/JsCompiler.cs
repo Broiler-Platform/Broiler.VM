@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   234
-// Annotated:        234/234
-// Exempt:           123
-// Human-reviewed:   0/234
+// Relevant units:   235
+// Annotated:        235/235
+// Exempt:           124
+// Human-reviewed:   0/235
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       234
+// Unverified:       235
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -90,13 +90,28 @@ public sealed record JsScriptUnit(
 /// The parse options. The goal is checked rather than assumed: a module compiled under the script
 /// goal would refuse its own <c>import</c>.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D9AAD7
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=53FFE6
 // Broiler-Human:        PENDING
 public sealed record JsModuleUnit(
     string Key,
     string Text,
     SliceParseOptions Options,
-    System.Collections.Generic.IReadOnlyList<JsResolvedRequest>? Requests = null);
+    System.Collections.Generic.IReadOnlyList<JsResolvedRequest>? Requests = null)
+{
+    /// <summary>
+    /// The module type the composition loaded the text as: empty for a program, or
+    /// <see cref="JsFormat.JsonModuleType"/> for a JSON document.
+    /// </summary>
+    /// <remarks>
+    /// <b>A JSON module is a document and not a program</b>, and the front end reads it as one: the
+    /// text is parsed as JSON - a text that is not JSON is refused, as the language's load refuses
+    /// it with a <c>SyntaxError</c> - and the module is the synthetic one whose only export,
+    /// <c>default</c>, is the parsed value.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=99A9E1
+    // Broiler-Human:        PENDING
+    public string Type { get; init; } = string.Empty;
+}
 
 /// <summary>One specifier a module names, and the key the composition resolved it to.</summary>
 /// <param name="Specifier">The specifier as the source wrote it, unchanged.</param>
@@ -654,7 +669,10 @@ public sealed class JsCompiler
 
     /// <summary>What one source text requests, so a composition can resolve and load it.</summary>
     /// <param name="Succeeded">Whether the source parsed.</param>
-    /// <param name="Specifiers">Every module specifier the source names, in source order.</param>
+    /// <param name="Specifiers">
+/// Every module request the source names, in source order: the specifier, and the type after it
+/// when the request asks for one (<see cref="JsFormat.TypedSpecifier"/>).
+/// </param>
     /// <param name="Diagnostics">Every refusal, when it did not.</param>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B1AB7D
     // Broiler-Human:        PENDING
@@ -673,7 +691,7 @@ public sealed class JsCompiler
     /// answer, and the host cannot without a parser, is which specifiers a source names; so it
     /// answers that and stops.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=78D70A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=846E05
     // Broiler-Human:        PENDING
     public static JsModuleRequests Requests(string text, SliceParseOptions options)
     {
@@ -690,8 +708,9 @@ public sealed class JsCompiler
         {
             var specifier = statement switch
             {
-                JsImportDeclaration import => import.Specifier,
-                JsExportDeclaration exported => exported.From,
+                JsImportDeclaration import => JsFormat.TypedSpecifier(
+                    import.Specifier, compiler.AttributeType(import.Span, import.Attributes, refuse: false)),
+                JsExportDeclaration { From.Length: not 0 } exported => compiler.TypedFrom(exported),
                 _ => string.Empty,
             };
 
@@ -781,7 +800,7 @@ public sealed class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=48370A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1E12C3
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -897,7 +916,41 @@ public sealed class JsCompiler
                 return new JsCompilation(false, null, diagnostics);
             }
 
-            if (!TryParse(module.Text, module.Options, forceStrict: true, out var program))
+            var text = module.Text;
+
+            if (module.Type.Length != 0)
+            {
+                // A TYPED MODULE IS READ AS ITS TYPE SAYS, and JSON is the one type this front end
+                // has a reading for: the document becomes the source of the synthetic module that
+                // exports it as `default`, and a text that is not JSON is refused as the load would
+                // refuse it.
+                if (!string.Equals(module.Type, JsFormat.JsonModuleType, System.StringComparison.Ordinal))
+                {
+                    Refuse(
+                        default,
+                        SliceSourceDiagnosticCode.UnsupportedImportAttribute,
+                        "the module `" + JsFormat.SplitTypedSpecifier(module.Key, out _) +
+                            "` was loaded as the type `" + module.Type +
+                            "`, which no composition of this profile has a reading for");
+
+                    return new JsCompilation(false, null, diagnostics);
+                }
+
+                if (!JsJsonModule.TryTranslate(module.Text, out text, out var error, out var tooDeep))
+                {
+                    Refuse(
+                        default,
+                        tooDeep
+                            ? SliceSourceDiagnosticCode.NestingTooDeep
+                            : SliceSourceDiagnosticCode.InvalidJsonModule,
+                        "the JSON module `" + JsFormat.SplitTypedSpecifier(module.Key, out _) + "` " +
+                            (tooDeep ? "cannot be read: " : "is not JSON: ") + error);
+
+                    return new JsCompilation(false, null, diagnostics);
+                }
+            }
+
+            if (!TryParse(text, module.Options, forceStrict: true, out var program))
             {
                 return new JsCompilation(false, null, diagnostics);
             }
@@ -2479,7 +2532,7 @@ public sealed class JsCompiler
     /// exporting module's slot, so giving it one here would create the copy that makes a live
     /// binding stale - see <see cref="JsOpcode.LoadImport"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=51B1A6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=11D9F4
     // Broiler-Human:        PENDING
     private void DeclareImports(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -2490,8 +2543,10 @@ public sealed class JsCompiler
             {
                 case JsImportDeclaration import:
                 {
-                    RefuseAttributes(import.Span, import.Attributes);
-                    var request = RequestIndex(build, import.Specifier);
+                    var request = RequestIndex(
+                        build,
+                        JsFormat.TypedSpecifier(
+                            import.Specifier, AttributeType(import.Span, import.Attributes, refuse: true)));
 
                     foreach (var specifier in import.Specifiers)
                     {
@@ -2533,8 +2588,10 @@ public sealed class JsCompiler
                 }
 
                 case JsExportDeclaration exported when exported.From.Length != 0:
-                    RefuseAttributes(exported.Span, exported.Attributes);
-                    RequestIndex(build, exported.From);
+                    RequestIndex(
+                        build,
+                        JsFormat.TypedSpecifier(
+                            exported.From, AttributeType(exported.Span, exported.Attributes, refuse: true)));
                     break;
 
                 default:
@@ -2543,47 +2600,71 @@ public sealed class JsCompiler
         }
     }
 
-    /// <summary>Declines an import attribute this host has no loader for.</summary>
+    /// <summary>
+    /// The module type an attributes clause asks for: empty for none, or
+    /// <see cref="JsFormat.JsonModuleType"/>; every other attribute is declined.
+    /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The clause is admitted and the ATTRIBUTE is declined, and the two are different
-    /// answers.</b> An attribute changes what the host LOADS - a JSON module is a module whose
-    /// default export is a parsed document rather than an evaluated program - and no composition of
-    /// this profile has a loader for one. Refusing the syntax said the grammar was outside the
-    /// manifest, which was false and which put every one of these cases in a column reserved for
-    /// constructs this front end does not read.
+    /// <b>One attribute is honoured, and it is the one the language defines.</b> <c>type: "json"</c>
+    /// asks for the module a specifier names to be loaded as a JSON document, and that request is a
+    /// different module from the untyped one: the type travels with the specifier through every
+    /// table that matches a request (<see cref="JsFormat.TypedSpecifier"/>), and the composition
+    /// loads the text the key names as a document rather than as a program.
     /// </para>
     /// <para>
-    /// <b>A static import loads at COMPILE time here, which is why this is the honest place.</b>
-    /// The graph is resolved before the artifact's bytes are written: a specifier becomes a key and
-    /// the artifact carries the module the key names. So an attribute the loader cannot honour is
-    /// discovered at exactly the moment an unresolvable specifier is, and a refusal here is a
-    /// refusal of the LOAD rather than of the text. The dynamic form loads at run time and refuses
-    /// the same attribute there, by rejecting the promise it has already answered with.
-    /// </para>
-    /// <para>
-    /// <b>An empty clause is not an attribute.</b> <c>with { }</c> asks nothing of the host, so
-    /// there is nothing for a host to be unable to honour, and refusing it would be refusing a
-    /// spelling.
+    /// <b>Every other attribute is declined, and the clause is not.</b> An attribute changes what
+    /// the host LOADS, and for any key but <c>type</c>, or any type but <c>json</c>, no composition
+    /// of this profile has a loader. A static import loads at compile time here - the graph is
+    /// resolved before the artifact's bytes are written - so an attribute the loader cannot honour
+    /// is discovered at exactly the moment an unresolvable specifier is, and the dynamic form
+    /// refuses the same attribute at run time, by rejecting the promise it answered with. An empty
+    /// clause asks nothing of the host and is not an attribute.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D03510
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4D385E
     // Broiler-Human:        PENDING
-    private void RefuseAttributes(
+    private string AttributeType(
         SliceSourceSpan span,
-        System.Collections.Generic.IReadOnlyList<JsImportAttribute>? attributes)
+        System.Collections.Generic.IReadOnlyList<JsImportAttribute>? attributes,
+        bool refuse)
     {
         if (attributes is null || attributes.Count == 0)
         {
-            return;
+            return string.Empty;
         }
 
-        Refuse(
-            span,
-            SliceSourceDiagnosticCode.UnsupportedImportAttribute,
-            "no composition of this profile can honour the import attribute `" +
-                attributes[0].Key + "`, so the module this clause decorates cannot be loaded");
+        var type = string.Empty;
+
+        foreach (var attribute in attributes)
+        {
+            if (string.Equals(attribute.Key, "type", System.StringComparison.Ordinal) &&
+                string.Equals(attribute.Value, JsFormat.JsonModuleType, System.StringComparison.Ordinal))
+            {
+                type = JsFormat.JsonModuleType;
+                continue;
+            }
+
+            if (refuse)
+            {
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.UnsupportedImportAttribute,
+                    "no composition of this profile can honour the import attribute `" +
+                        attribute.Key + "`, so the module this clause decorates cannot be loaded");
+            }
+
+            return string.Empty;
+        }
+
+        return type;
     }
+
+    /// <summary>The request specifier of a re-export: its specifier under the type it asks for.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7A3A69
+    // Broiler-Human:        PENDING
+    private string TypedFrom(JsExportDeclaration exported) =>
+        JsFormat.TypedSpecifier(exported.From, AttributeType(exported.Span, exported.Attributes, refuse: false));
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C59449
     // Broiler-Human:        PENDING
@@ -2788,7 +2869,7 @@ public sealed class JsCompiler
     }
 
     /// <summary>Records what the module publishes, and refuses a name it publishes twice.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=006D8D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=112B2E
     // Broiler-Human:        PENDING
     private void DeclareExports(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -2802,7 +2883,7 @@ public sealed class JsCompiler
 
             if (exported.Kind == JsExportKind.All && exported.Specifiers.Count == 0)
             {
-                build.StarExports.Add(RequestIndex(build, exported.From));
+                build.StarExports.Add(RequestIndex(build, TypedFrom(exported)));
                 continue;
             }
 
@@ -2820,7 +2901,7 @@ public sealed class JsCompiler
 
                 if (exported.From.Length != 0)
                 {
-                    var request = RequestIndex(build, exported.From);
+                    var request = RequestIndex(build, TypedFrom(exported));
 
                     build.IndirectExports.Add(
                         new JsIndirectExportRow(
@@ -2912,7 +2993,7 @@ public sealed class JsCompiler
     }
 
     /// <summary>Emits the module's body, which is its statements minus the declarations.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ECA3AA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=17AA45
     // Broiler-Human:        PENDING
     private int EmitModuleBody(JsProgramNode program, ModuleBuild build)
     {
@@ -2971,13 +3052,9 @@ public sealed class JsCompiler
                     // language states as a step of the export's own evaluation rather than as a
                     // property of the function - so the name has to be applied here, where the
                     // export is, and not in the general lowering of a function expression.
-                    CompileExpression(
-                        value is JsFunctionExpression { Function.Name.Length: 0 } anonymous
-                            ? anonymous with
-                            {
-                                Function = anonymous.Function with { Name = "default" },
-                            }
-                            : value);
+                    // A CLASS IS NAMED THE SAME WAY, and `export default (class { })` reaches here
+                    // as a class expression: until 2026-10-04 only a function was (JSC-255).
+                    CompileNamedValue(value, "default");
 
                     EmitScoped(
                         JsOpcode.InitialiseScoped,
@@ -8672,7 +8749,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F8F101
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AF68A1
     // Broiler-Human:        PENDING
     private void CompileAssignment(JsAssignmentExpression assignment)
     {
@@ -8680,13 +8757,15 @@ public sealed class JsCompiler
         {
             if (assignment.Target is JsIdentifier name)
             {
+                var inferred = assignment.ParenthesisedTarget ? string.Empty : name.Name;
+
                 if (TryEmitShadowedReference(
-                    assignment.Span, name.Name, read: false, () => CompileNamedValue(assignment.Value, name.Name)))
+                    assignment.Span, name.Name, read: false, () => CompileNamedValue(assignment.Value, inferred)))
                 {
                     return;
                 }
 
-                CompileNamedValue(assignment.Value, name.Name);
+                CompileNamedValue(assignment.Value, inferred);
                 StoreName(assignment.Span, name.Name);
                 return;
             }
@@ -8853,7 +8932,7 @@ public sealed class JsCompiler
         Emit(JsOpcode.ThrowReferenceError);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=910918
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FF0905
     // Broiler-Human:        PENDING
     private void CompileLogicalAssignment(JsAssignmentExpression assignment)
     {
@@ -8908,7 +8987,7 @@ public sealed class JsCompiler
         }
 
         Emit(JsOpcode.Pop);
-        CompileNamedValue(assignment.Value, name.Name);
+        CompileNamedValue(assignment.Value, assignment.ParenthesisedTarget ? string.Empty : name.Name);
         StoreName(assignment.Span, name.Name);
         Mark(end);
     }

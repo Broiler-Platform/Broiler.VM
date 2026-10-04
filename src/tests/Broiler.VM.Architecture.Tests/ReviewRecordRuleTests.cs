@@ -1199,7 +1199,12 @@ public sealed class ReviewRecordRuleTests
         // hand-written JsUnicodeCasing.cs that reads it for toUpperCase and toLowerCase. Both are
         // covered on the same terms as every other product file, and nothing in them has been read
         // by a human.
-        Assert.Equal(238, AssuranceSources.Files.Count);
+        //
+        // AND THE JSON MODULE READING (phase F1, 2026-10-04, JSC-255): JsJsonModule.cs, which reads a
+        // JSON module's text against the JSON grammar and writes the synthetic module that exports
+        // it - a parser over a composition's file. It is covered on the same terms as every other
+        // product file, and nothing in it has been read by a human.
+        Assert.Equal(239, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

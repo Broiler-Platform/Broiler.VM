@@ -35,9 +35,15 @@ internal static class Test262Modules
     private const int MaximumModules = 256;
 
     /// <summary>Loads the graph rooted at one test file.</summary>
-    internal static Graph Load(string rootPath, string rootText)
+    /// <remarks>
+    /// <b>A key is a path, and a typed key is a path and its type</b>
+    /// (<see cref="JsFormat.TypedSpecifier"/>): <c>with { type: "json" }</c> names a different module
+    /// from an untyped import of the same file, and the module it names is the file read as a
+    /// document. A JSON module requests nothing, so the walk stops at it.
+    /// </remarks>
+    internal static Graph Load(string rootPath, string rootText, string rootType = "")
     {
-        var root = Key(rootPath);
+        var root = JsFormat.TypedSpecifier(Key(rootPath), rootType);
         var modules = new List<JsModuleUnit>();
         var texts = new Dictionary<string, string>(StringComparer.Ordinal) { [root] = rootText };
         var seen = new HashSet<string>(StringComparer.Ordinal) { root };
@@ -47,6 +53,7 @@ internal static class Test262Modules
         while (pending.Count != 0)
         {
             var key = pending.Dequeue();
+            var path = JsFormat.SplitTypedSpecifier(key, out var type);
 
             if (modules.Count == MaximumModules)
             {
@@ -55,13 +62,19 @@ internal static class Test262Modules
 
             if (!texts.TryGetValue(key, out var text))
             {
-                if (!File.Exists(key))
+                if (!File.Exists(path))
                 {
-                    return new Graph([], "no module at " + key);
+                    return new Graph([], "no module at " + path);
                 }
 
-                text = ReadUtf8(key);
+                text = ReadUtf8(path);
                 texts[key] = text;
+            }
+
+            if (type.Length != 0)
+            {
+                modules.Add(new JsModuleUnit(key, text, SliceParseOptions.Module) { Type = type });
+                continue;
             }
 
             var requests = JsCompiler.Requests(text, SliceParseOptions.Module);
@@ -74,8 +87,9 @@ internal static class Test262Modules
 
             var resolutions = new List<JsResolvedRequest>(requests.Specifiers.Count);
 
-            foreach (var specifier in requests.Specifiers)
+            foreach (var request in requests.Specifiers)
             {
+                var specifier = JsFormat.SplitTypedSpecifier(request, out var requestType);
                 var resolved = Resolve(key, specifier);
 
                 // A SPECIFIER THAT NAMES NOTHING IS CARRIED INTO THE ARTIFACT AND REFUSED THERE.
@@ -85,15 +99,16 @@ internal static class Test262Modules
                 // the suite's tests asks about.
                 if (resolved.Length == 0 || !File.Exists(resolved))
                 {
-                    resolutions.Add(new JsResolvedRequest(specifier, specifier));
+                    resolutions.Add(new JsResolvedRequest(request, request));
                     continue;
                 }
 
-                resolutions.Add(new JsResolvedRequest(specifier, resolved));
+                var target = JsFormat.TypedSpecifier(resolved, requestType);
+                resolutions.Add(new JsResolvedRequest(request, target));
 
-                if (seen.Add(resolved))
+                if (seen.Add(target))
                 {
-                    pending.Enqueue(resolved);
+                    pending.Enqueue(target);
                 }
             }
 
@@ -111,8 +126,9 @@ internal static class Test262Modules
     /// through exactly the rule the static walk above uses, and not a second reading of what a
     /// specifier is.
     /// </remarks>
-    internal static Graph LoadFor(string referrer, string specifier)
+    internal static Graph LoadFor(string referrer, string request)
     {
+        var specifier = JsFormat.SplitTypedSpecifier(request, out var type);
         var resolved = Resolve(referrer, specifier);
 
         if (resolved.Length == 0 || !File.Exists(resolved))
@@ -120,16 +136,27 @@ internal static class Test262Modules
             return new Graph([], "no module at " + specifier);
         }
 
-        return Load(resolved, ReadUtf8(resolved));
+        return Load(resolved, ReadUtf8(resolved), type);
     }
 
     /// <summary>Rules on one resolution request the profile put to this harness.</summary>
+    /// <remarks>
+    /// The request is the referrer, the request specifier and the key, NUL-separated; a typed
+    /// request carries its type after both the specifier and the key, so it has five parts and the
+    /// two types must agree. A referrer is never typed, because a JSON module requests nothing.
+    /// </remarks>
     internal static bool Confirms(ReadOnlySpan<byte> request)
     {
         var parts = JsFormat.DecodeText(request).Split('\0');
 
-        return parts.Length == 3 &&
-            string.Equals(Resolve(parts[0], parts[1]), parts[2], StringComparison.Ordinal);
+        return parts.Length switch
+        {
+            3 => string.Equals(Resolve(parts[0], parts[1]), parts[2], StringComparison.Ordinal),
+            5 => string.Equals(parts[2], JsFormat.JsonModuleType, StringComparison.Ordinal) &&
+                string.Equals(parts[4], parts[2], StringComparison.Ordinal) &&
+                string.Equals(Resolve(parts[0], parts[1]), parts[3], StringComparison.Ordinal),
+            _ => false,
+        };
     }
 
     private static string Resolve(string referrer, string specifier)

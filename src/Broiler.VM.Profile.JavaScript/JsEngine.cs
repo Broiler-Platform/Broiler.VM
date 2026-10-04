@@ -5893,7 +5893,7 @@ internal sealed partial class JsEngine
     /// <c>catch</c> can be written against.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=880ABC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=ADB554
     // Broiler-Falsified-If: this throws instead of rejecting, or a specifier reaches bytes without passing through the mediator or the artifact's own records
     // Broiler-Human:        PENDING
     internal JsValue DynamicImport(
@@ -5907,16 +5907,21 @@ internal sealed partial class JsEngine
             // THE SPECIFIER IS COERCED BEFORE THE OPTIONS ARE READ, which is the specification's
             // order and is observable: `import({toString(){throw a}}, {get with(){throw b}})`
             // rejects with `a`.
-            var specifier = ToStringValue(specifierValue);
-            RequireHonourableAttributes(optionsValue);
+            // A TYPED REQUEST IS A DIFFERENT MODULE FROM THE UNTYPED ONE, so the type is part of
+            // the string every lookup below matches (JsFormat.TypedSpecifier).
+            var type = HonourableAttributesType(optionsValue);
+            var specifier = JsFormat.TypedSpecifier(ToStringValue(specifierValue), type);
 
             if (!TryOwnRequest(program, referrer, specifier, out var found))
             {
                 // A SPECIFIER NOBODY RESOLVED BEFORE THE BYTES WERE WRITTEN MAY BE ANSWERED LATER.
                 // An embedder that loads its modules asynchronously takes the request here and
                 // completes it from a turn of its own; until then the promise is simply pending,
-                // and nothing on this path waits for it (JSD-0024 section 15).
-                if (hostRealm is { ModuleLoader: not null } seam &&
+                // and nothing on this path waits for it (JSD-0024 section 15). A typed request is
+                // not offered: the embedder's seam names a specifier and no type, and answering a
+                // JSON request with whatever that specifier loads as a program would be wrong.
+                if (type.Length == 0 &&
+                    hostRealm is { ModuleLoader: not null } seam &&
                     seam.OfferModuleRequest(referrer, specifier, promise))
                 {
                     return JsValue.Object(promise);
@@ -6074,32 +6079,31 @@ internal sealed partial class JsEngine
         JsValue.Object(Graph(program)[index].Namespace!);
 
     /// <summary>
-    /// Reads a dynamic import's second argument, and declines every attribute it carries.
+    /// Reads a dynamic import's second argument, and answers the module type it asks for: empty
+    /// for none, or <see cref="JsFormat.JsonModuleType"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The shape is checked in full before the attributes are declined</b>, and that order is
-    /// what a conformance suite grades: <c>import('./m', null)</c> and
-    /// <c>import('./m', {with: 1})</c> and <c>import('./m', {with: {type: 1}})</c> are three
-    /// different programs and the language rejects each of them for its own reason, none of which
-    /// is "this host has no loader for that type". A host that declined the whole argument on sight
-    /// would answer all three the same way and would be right about none.
+    /// <b>The shape is checked in full before any attribute is judged</b>, and that order is what
+    /// a conformance suite grades: <c>import('./m', null)</c> and <c>import('./m', {with: 1})</c>
+    /// and <c>import('./m', {with: {type: 1}})</c> are three different programs and the language
+    /// rejects each of them for its own reason, none of which is "this host has no loader for
+    /// that type". The attributes are the object's enumerable own string keys, read through its
+    /// own operations, so a proxy is asked exactly what <c>EnumerableOwnProperties</c> asks.
     /// </para>
     /// <para>
-    /// <b>And then every attribute is declined, because no composition of this profile has a loader
-    /// for one.</b> An attribute says what KIND of thing the specifier names — a JSON document, a
-    /// text file — and answering that is the loader's job; the static form of the same clause is
-    /// declined by the front end, where a static import is loaded, and this is the same refusal at
-    /// the moment a dynamic import is loaded.
+    /// <b><c>type: "json"</c> is honoured and every other attribute is declined</b>, as the static
+    /// form is in the front end: an attribute says what KIND of thing the specifier names, and the
+    /// JSON document is the one kind a composition of this profile can load besides a program.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D9090F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=07FAB5
     // Broiler-Human:        PENDING
-    private void RequireHonourableAttributes(JsValue options)
+    private string HonourableAttributesType(JsValue options)
     {
         if (options.Type == JsType.Undefined)
         {
-            return;
+            return string.Empty;
         }
 
         if (!options.IsObject)
@@ -6111,7 +6115,7 @@ internal sealed partial class JsEngine
 
         if (attributes.Type == JsType.Undefined)
         {
-            return;
+            return string.Empty;
         }
 
         if (!attributes.IsObject)
@@ -6121,6 +6125,7 @@ internal sealed partial class JsEngine
 
         var carrier = attributes.AsObject();
         var declined = string.Empty;
+        var type = string.Empty;
 
         foreach (var key in carrier.OwnPropertyNames())
         {
@@ -6131,9 +6136,18 @@ internal sealed partial class JsEngine
                 continue;
             }
 
-            if (!GetProperty(attributes, key).IsString)
+            var value = GetProperty(attributes, key);
+
+            if (!value.IsString)
             {
                 ThrowTypeError("the import attribute `" + key + "` is not a string");
+            }
+
+            if (string.Equals(key, "type", System.StringComparison.Ordinal) &&
+                string.Equals(value.AsString(), JsFormat.JsonModuleType, System.StringComparison.Ordinal))
+            {
+                type = JsFormat.JsonModuleType;
+                continue;
             }
 
             if (declined.Length == 0)
@@ -6148,6 +6162,8 @@ internal sealed partial class JsEngine
                 "no composition of this profile can honour the import attribute `" + declined +
                 "`, so the module this call names cannot be loaded");
         }
+
+        return type;
     }
 
     /// <summary>
@@ -10887,13 +10903,22 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Renders a thrown value for a host that has to describe it in one line.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1C82D0
+    /// <remarks>
+    /// <b>A Symbol renders as its descriptive string and never through <c>ToString</c></b>, which
+    /// throws for one. Every re-throw - an awaited rejection, a generator resumed with
+    /// <c>throw</c> - renders the value it carries, so a rendering that threw replaced the guest's
+    /// value with a <c>TypeError</c> of its own: <c>await Promise.reject(Symbol())</c> was caught as
+    /// "Cannot convert a Symbol value to a string" until 2026-10-04 (JSC-255). An object's
+    /// <c>name</c> and <c>message</c> are still read here, getters included, which the language does
+    /// not do on a throw and which that record names as not repaired.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D177E
     // Broiler-Human:        PENDING
     internal string Render(JsValue value)
     {
         if (!value.IsObject)
         {
-            return value.IsString ? value.AsString() : ToStringValue(value);
+            return RenderPart(value);
         }
 
         var name = GetProperty(value, "name");
@@ -10901,12 +10926,17 @@ internal sealed partial class JsEngine
 
         if (!name.IsNullish || !message.IsNullish)
         {
-            var head = name.IsNullish ? "Error" : ToStringValue(name);
-            var tail = message.IsNullish ? string.Empty : ToStringValue(message);
+            var head = name.IsNullish ? "Error" : RenderPart(name);
+            var tail = message.IsNullish ? string.Empty : RenderPart(message);
             return tail.Length == 0 ? head : head + ": " + tail;
         }
 
         return ToStringValue(value);
+
+        string RenderPart(JsValue part) =>
+            part.IsString
+                ? part.AsString()
+                : part.Type == JsType.Symbol ? part.AsSymbol().Rendered : ToStringValue(part);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C54D2D

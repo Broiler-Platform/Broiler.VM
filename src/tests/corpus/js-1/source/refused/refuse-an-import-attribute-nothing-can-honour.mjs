@@ -1,2 +1,2 @@
-import value from "./data.json" with { type: "json" };
+import value from "./sheet.css" with { type: "css" };
 value

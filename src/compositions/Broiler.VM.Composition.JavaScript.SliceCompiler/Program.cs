@@ -277,11 +277,14 @@ internal static class Program
         // the registry's `source` reachability is a claim that a named retained source is refused
         // with a code, and it is the same claim whichever goal the source was presented under. The
         // extension is what records the goal: a `.mjs` here is read back as module source, which is
-        // the same convention the CLI composition applies to a path it is handed.
+        // the same convention the CLI composition applies to a path it is handed. A `.json` is the
+        // text of a module loaded with `type: "json"`, which no extension of a program names.
         foreach (var program in SliceSourcePrograms.RefusedModules)
         {
             var text = Normalise(program.Source);
-            var extension = program.Options.Goal == SliceGoal.Module ? ".mjs" : ".js";
+            var extension = program.ModuleType.Length != 0
+                ? "." + program.ModuleType
+                : program.Options.Goal == SliceGoal.Module ? ".mjs" : ".js";
             File.WriteAllText(Path.Combine(refused, program.Name + extension), text);
 
             manifest.Append("refused|").Append(program.Name).Append('|')

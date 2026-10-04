@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   52
-// Annotated:        52/52
+// Relevant units:   55
+// Annotated:        55/55
 // Exempt:           59
-// Human-reviewed:   0/52
+// Human-reviewed:   0/55
 // IP risk:          None
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  1/10 max
-// Unverified:       52
+// Unverified:       55
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1018,6 +1018,52 @@ public static class JsFormat
         payload[0] = ModuleRequestMark;
         System.Array.Copy(body, 0, payload, 1, body.Length);
         return payload;
+    }
+
+    /// <summary>The module type a JSON import names with <c>with { type: "json" }</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=0157D7
+    // Broiler-Human:        PENDING
+    public const string JsonModuleType = "json";
+
+    /// <summary>
+    /// The request specifier of a module imported under a type: the specifier, a NUL, and the type.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A module's identity is the specifier AND its type, and this is the one spelling of the
+    /// pair.</b> <c>import a from "./d.json" with { type: "json" }</c> and an untyped import of the
+    /// same specifier are two requests for two modules, and every layer that matches a request - the
+    /// artifact's request table, the run-time lookup a dynamic import makes, the resolution request
+    /// a composition confirms, the module request a provider answers - matches this one string. An
+    /// untyped request is its specifier unchanged, so nothing that existed before a type did reads
+    /// differently.
+    /// </para>
+    /// <para>
+    /// <b>The separator is a NUL for the reason <see cref="ModuleRequestMark"/> is one</b>: a
+    /// composition that predates types resolves the whole string as a specifier, finds no module it
+    /// names, and refuses - a legible failure rather than a JSON document loaded as a program.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=97B458
+    // Broiler-Human:        PENDING
+    public static string TypedSpecifier(string specifier, string type) =>
+        type.Length == 0 ? specifier : specifier + "\0" + type;
+
+    /// <summary>Splits what <see cref="TypedSpecifier"/> wrote into the specifier and its type.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=24A2ED
+    // Broiler-Human:        PENDING
+    public static string SplitTypedSpecifier(string typed, out string type)
+    {
+        var separator = typed.LastIndexOf('\0');
+
+        if (separator < 0)
+        {
+            type = string.Empty;
+            return typed;
+        }
+
+        type = typed[(separator + 1)..];
+        return typed[..separator];
     }
 
     /// <summary>Reads what <see cref="ModuleRequest"/> wrote, or answers false.</summary>

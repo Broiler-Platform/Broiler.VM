@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   10
 // Annotated:        10/10
-// Exempt:           1
+// Exempt:           2
 // Human-reviewed:   0/10
 // IP risk:          None
 // Security risk:    High
@@ -14,6 +14,8 @@
 // Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
@@ -36,6 +38,14 @@ public sealed record SliceRefusedSource(string Name, string Source, SliceSourceD
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=10049D
     // Broiler-Human:        PENDING
     public SliceParseOptions Options { get; init; } = SliceParseOptions.Script;
+
+    /// <summary>
+    /// The module type a module source is loaded as: empty for a program, or
+    /// <see cref="JsFormat.JsonModuleType"/> for a document. Retained with the extension it names.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E79EB1
+    // Broiler-Human:        PENDING
+    public string ModuleType { get; init; } = string.Empty;
 }
 
 /// <summary>
@@ -85,7 +95,7 @@ public static class SliceSourcePrograms
     /// goal does not - and the whole reason that code exists is to keep the two apart.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=C3A6FF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DFEF54
     // Broiler-Falsified-If: any program here is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] RefusedModules =>
@@ -120,13 +130,28 @@ public static class SliceSourcePrograms
 
         // AND THIS ONE IS A MODULE WHOSE SYNTAX IS PERFECTLY ORDINARY. The clause parses; what is
         // refused is the ATTRIBUTE, because no composition of this profile has a loader for a
-        // module of a type - and for a static import, loading is what this front end does.
+        // module of that type - and for a static import, loading is what this front end does.
+        // It named `type: "json"` until 2026-10-04, when JSON modules arrived (JSC-255); a CSS
+        // module is a type no composition of this profile loads.
         new(
             "refuse-an-import-attribute-nothing-can-honour",
-            "import value from \"./data.json\" with { type: \"json\" };\nvalue",
+            "import value from \"./sheet.css\" with { type: \"css\" };\nvalue",
             SliceSourceDiagnosticCode.UnsupportedImportAttribute)
         {
             Options = SliceParseOptions.Module,
+        },
+
+        // AND THIS ONE IS NOT JAVASCRIPT AT ALL. It is the text of a module loaded with
+        // `type: "json"`, and it is refused because it is not JSON: a trailing comma is a valid
+        // object literal and an invalid document, which is exactly the difference the reading
+        // must hold to.
+        new(
+            "refuse-a-json-module-that-is-not-json",
+            "{ \"trailing\": 1, }",
+            SliceSourceDiagnosticCode.InvalidJsonModule)
+        {
+            Options = SliceParseOptions.Module,
+            ModuleType = JsFormat.JsonModuleType,
         },
     ];
 

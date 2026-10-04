@@ -652,7 +652,10 @@ guest-visible half against the comparison engine.
 host-visible module status. An embedder that needs one reads it from the evaluation promise: it is
 pending while the graph is under way, fulfilled when it finished and rejected with the evaluation
 error when any module of the graph failed, whichever route evaluated it first. *(Amended
-2026-09-22: section 20.1 adds `TryGetModuleState`, which answers the status itself.)*
+2026-09-22: section 20.1 adds `TryGetModuleState`, which answers the status itself.)* *(Amended
+2026-10-04: the profile honours the attribute `type: "json"` since JSC-255, through the artifact
+provider and the module graph a composition loads. The embedder's own loader seam is not offered a
+typed request: it names a specifier and no type, so a JSON import goes to the provider.)*
 
 ### 15.4 Addendum 2026-09-21: the specification's async evaluation (JSeal I11-async)
 

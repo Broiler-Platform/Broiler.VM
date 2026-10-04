@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, and phase F1 batches JSC-252 to JSC-254; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, and phase F1 batches JSC-252 to JSC-255; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -548,7 +548,9 @@ moved from failing to passing ([JSC-252](roadmap.corrections.md#jsc-252) to
 [JSC-254](roadmap.corrections.md#jsc-254)). Two moved back and were repaired before the entries
 were written. What F1 still owes is named in those entries' last sections and in section 26. This
 is unreviewed implementation and validation material, not accepted milestone evidence; no milestone
-row advances.
+row advances. *(Amended 2026-10-04: a fourth change,
+[JSC-255](roadmap.corrections.md#jsc-255), honours JSON modules and repairs three namings and
+renderings; 22 more variants moved from failing to passing and none moved back.)*
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:
@@ -1346,7 +1348,9 @@ import attribute clause (`with { type: "json" }` and the older `assert` spelling
 an async generator function. The first two are surfaces this stage did not open — a dynamic
 `import()` belongs to `broiler.javascript.dynamic` and needs an artifact provider, and an attribute
 clause needs a type this host has no reader for — and the last two are not the module goal's at all.
-Nothing on that list is partially admitted, and nothing on it is mis-run.
+Nothing on that list is partially admitted, and nothing on it is mis-run. *(Amended 2026-10-04: the
+attribute `type: "json"` is honoured since [JSC-255](roadmap.corrections.md#jsc-255), static and
+dynamic; every other attribute is still refused by name.)*
 
 **What none of this is.** **Native AOT was not published on the machine this was written on**,
 and the component's lane is the authority for what publishes — under section 1 a lane retains

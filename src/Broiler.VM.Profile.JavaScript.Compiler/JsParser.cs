@@ -4294,7 +4294,7 @@ internal sealed class JsParser
         return new JsSequenceExpression(span, all);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=774E8E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=032666
     // Broiler-Human:        PENDING
     private JsExpression ParseAssignment(bool noIn = false)
     {
@@ -4391,7 +4391,10 @@ internal sealed class JsParser
 
                 Advance();
                 var value = ParseAssignment(noIn);
-                return new JsAssignmentExpression(span, op, target, value);
+                return new JsAssignmentExpression(span, op, target, value)
+                {
+                    ParenthesisedTarget = target is JsIdentifier && parenthesised.Contains(target),
+                };
             }
 
             return target;
@@ -5613,7 +5616,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A7B4E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3DD643
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -5789,7 +5792,12 @@ internal sealed class JsParser
                 // A LITERAL IN PARENTHESES IS NOT A PATTERN: `({}) = 1` and `([a]) = b` are early
                 // errors, because only an unparenthesised literal is reinterpreted (13.15.1).
                 // Until 2026-10-03 both destructured (JSC-253).
-                if (inner is JsLogicalExpression or JsArrayLiteral or JsObjectLiteral)
+                //
+                // A NAME IN PARENTHESES IS NOT AN IDENTIFIER REFERENCE for naming: `(f) = function
+                // () {}` assigns `f` and leaves the function anonymous, because IsIdentifierRef of
+                // a parenthesised expression is false (13.15.2). Until 2026-10-04 it was named
+                // `f` (JSC-255).
+                if (inner is JsLogicalExpression or JsArrayLiteral or JsObjectLiteral or JsIdentifier)
                 {
                     parenthesised.Add(inner);
                 }

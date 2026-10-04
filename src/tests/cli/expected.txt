@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 134
+runs|0|# Completed: 135
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -661,10 +661,15 @@ modules/a-default-async-generator.mjs|0|first awaited false
 # And the two refusals the same work adds, neither of which is a construct outside the manifest.
 # `import.meta` in a script is a SYNTAX error - the manifest admits it and the goal does not - and
 # an import attribute is a LOAD refusal: the clause parsed, and what no composition of this profile
-# has is a loader for a module of a type. Refusing either against the manifest would have said this
+# has is a loader for a module of that type. Refusing either against the manifest would have said this
 # front end cannot read the grammar, which it can.
 modules/an-import-meta-in-a-script.js|3|2404:ImportMetaOutsideModuleGoal
 modules/an-import-attribute.mjs|3|2405:UnsupportedImportAttribute
+# A JSON MODULE (2026-10-04): `type: "json"` is the one attribute honoured, the document is the
+# module's `default`, and a text that is not JSON refuses the load. The first row's values are the
+# comparison engine's *(JSC-255)*.
+modules/a-json-module.mjs|0|name,__proto__,list,nested true an own key 1 -0 25 2028 true null 0 true true default
+modules/an-invalid-json-module.mjs|3|2406:InvalidJsonModule
 
 # THE SIX RULES THIS BUNDLE ADDED, one row per rule and one row per shape each of them must NOT
 # reach. An early error that fires where the language has none turns working programs into
@@ -993,3 +998,7 @@ refused/let-before-await-in-an-async-function.js|3|2209:ReservedWordAsBinding at
 # DELEGATION, DELETION AND CATCH SCOPES (2026-10-03). The values are the comparison engine's but for
 # the last row's, which are the specification's *(JSC-254)*.
 runs/delegation-deletion-and-catch-scopes.js|0|false / 1 / 5 / 1 / ReferenceError / ReferenceError / 1 / outside / inside / number / true / undefined
+
+# A PARENTHESISED NAME AND A SYMBOL REJECTION (2026-10-04). The values are the comparison engine's
+# *(JSC-255)*.
+runs/a-parenthesised-name-and-a-symbol-rejection.js|0|["","g","","k"] true

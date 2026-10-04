@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   4
 // Annotated:        4/4
-// Exempt:           30
+// Exempt:           31
 // Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    Medium
@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// dated it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=212A90
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6F12D3
 // Broiler-Human:        PENDING
 public enum SliceSourceDiagnosticCode
 {
@@ -242,6 +242,15 @@ public enum SliceSourceDiagnosticCode
     /// </para>
     /// </remarks>
     UnsupportedImportAttribute = 2405,
+
+    /// <summary>A module imported with <c>type: "json"</c> is not a JSON text.</summary>
+    /// <remarks>
+    /// <b>The language refuses it where it loads it</b> - <c>ParseJSONModule</c> calls
+    /// <c>JSON.parse</c> on the source and a <c>SyntaxError</c> ends the load - and for a static
+    /// import this front end is where the graph is loaded, so this is the same answer at the same
+    /// moment: no module of the graph is evaluated.
+    /// </remarks>
+    InvalidJsonModule = 2406,
 }
 
 /// <summary>One refusal of source text: a code, a message, and where in the source it happened.</summary>

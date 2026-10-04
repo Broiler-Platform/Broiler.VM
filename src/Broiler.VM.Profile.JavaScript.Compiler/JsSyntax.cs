@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   83
 // Annotated:        83/83
-// Exempt:           16
+// Exempt:           17
 // Human-reviewed:   0/83
 // IP risk:          Low
 // Security risk:    Medium
@@ -292,11 +292,20 @@ internal sealed record JsLogicalExpression(
 /// <param name="Operator">
 /// <see cref="SliceTokenKind.Equals"/> for a simple assignment, or the token of the compound form.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=8CA9E6
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=740180
 // Broiler-Human:        PENDING
 internal sealed record JsAssignmentExpression(
     SliceSourceSpan Span, SliceTokenKind Operator, JsExpression Target, JsExpression Value)
-    : JsExpression(Span);
+    : JsExpression(Span)
+{
+    /// <summary>
+    /// Whether the target is a name written in parentheses, which assigns the name and infers no
+    /// function name from it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=42EFF4
+    // Broiler-Human:        PENDING
+    public bool ParenthesisedTarget { get; init; }
+}
 
 /// <summary><c>a ? b : c</c>.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E979E2
