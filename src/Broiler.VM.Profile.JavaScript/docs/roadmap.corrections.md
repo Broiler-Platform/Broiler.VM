@@ -10957,3 +10957,58 @@ loader for a module type.
 - No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-256
+
+**Where:** phase F1: proper tail calls in the interpreter, the Set methods' walk of their receiver,
+five parser rules, a `super` property as a destructuring target, and the conversion of a property
+key that is a Symbol wrapper or is deleted in strict code.
+
+**What the plan said.** [Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+put proper tail calls and the staging cluster in phase F1. Each item below was otherwise a defect
+against the edition.
+
+**What replaced it, observed on 2026-10-04.**
+- **A call in tail position of a strict function takes no frame, in the bytecode form.** The
+  interpreter recognises the position from the code, so the format does not change. A call is in
+  tail position when the instructions after it reach `Return` through jumps and scope pops alone,
+  and no exception region covers it. That is the edition's reading: a call in a `finally` block or
+  in a `catch` with no `finally` is in tail position, and one in a `try` block is not. The frame
+  hands the callee to the loop that entered it (`JsEngine.Invoke`), which enters it at the same
+  depth. Only a strict, ordinary call frame makes one, and only to an ordinary function, method or
+  arrow. A class constructor, a generator, an async function, a bound function, a proxy and a
+  built-in are called as before.
+- **A Set method walks its receiver live.** `intersection`, `difference`, `isSubsetOf` and
+  `isDisjointFrom` re-read the receiver's length after every call of the argument's `has`, as the
+  edition does. A member deleted and added again is visited twice.
+- **A private name binds nothing and labels nothing.** `var #a`, `function #a() {}`, a parameter
+  `#a` and `#a: ;` are syntax errors, as is `async await => 1`.
+- **`new.target` in a function's default parameter reads the call's**, also in a function declared
+  at the top level of a script. Before this the parameter list was outside the function for that
+  rule.
+- **A `super` property is a destructuring target and a `for … of` head.** The this binding and the
+  key are evaluated when the target is evaluated, and the value is written as `super.x = v` writes
+  it.
+- **A property key converts to a String or a Symbol once.** A Symbol wrapper is a key in `in`, in
+  an indexed read, write or definition, and in a computed member definition. A strict `delete`
+  that fails converts its key once and names the converted key.
+- **test262:** over the whole pinned suite, against the run JSC-255 was measured on, 54 variants
+  moved from failing to passing and none moved back. Thirty-four are tail calls.
+
+**What must not be read as repaired.**
+- **The emitted forms make every call nested.** A strict tail recursion past the call-depth bound
+  still throws a `RangeError` in the native and value forms. An unbounded strict tail recursion in
+  the bytecode form now spends its fuel instead of throwing that `RangeError`.
+- **Function source text is still not kept.** `Function.prototype.toString` renders every function
+  as native, so the staging cases that read it back or `eval` it still fail. That covers
+  `class/newTargetDefaults`, `regress-541455`, `regress-559438`, the async and generator `toString`
+  cases, and the getter `toString` case.
+- **`Date` parsing of the non-ISO forms** `staging/sm/Date/non-iso.js` asks for is the
+  implementation-defined fallback, and it is not attempted.
+- **An Annex B function declared in a block of direct eval code inside `with`** still does not
+  assign the enclosing function's binding.
+- The legacy `caller` and `arguments` properties, the staging cases that need a nested realm or a
+  collection hook, and the Annex B case above remain owed to F1 or to the phases that own them.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 135
+runs|0|# Completed: 137
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -1002,3 +1002,14 @@ runs/delegation-deletion-and-catch-scopes.js|0|false / 1 / 5 / 1 / ReferenceErro
 # A PARENTHESISED NAME AND A SYMBOL REJECTION (2026-10-04). The values are the comparison engine's
 # *(JSC-255)*.
 runs/a-parenthesised-name-and-a-symbol-rejection.js|0|["","g","","k"] true
+
+# A STRICT TAIL CALL AT ANY DEPTH (2026-10-04): eight shapes in tail position recurse past the
+# call-depth bound, and a call inside a `try` does not. The values are the edition's; the comparison
+# engine implements no tail calls *(JSC-256)*.
+runs/a-strict-tail-call-at-any-depth.js|0|plain / conditional / true / comma / finally / block / spread / method / RangeError
+
+# KEYS, TARGETS AND A LIVE SET WALK (2026-10-04), and the private-name and escaped-`await` early
+# errors of the same batch. The run's values are the comparison engine's *(JSC-256)*.
+runs/keys-targets-and-a-live-set-walk.js|0|true set set / TypeError 1 / 1,2 / true,true / 1,2,3,2
+refused/a-private-name-as-a-binding.js|3|2209:ReservedWordAsBinding at 3:5: `#a` is a private name and not a binding name
+refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await` is not a binding name

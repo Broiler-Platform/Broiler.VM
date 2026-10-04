@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   235
-// Annotated:        235/235
+// Relevant units:   236
+// Annotated:        236/236
 // Exempt:           124
-// Human-reviewed:   0/235
+// Human-reviewed:   0/236
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       235
+// Unverified:       236
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -3581,7 +3581,7 @@ public sealed class JsCompiler
     /// where it is STORED - which is why an assignment to an undeclared name in strict code still
     /// fails at the store and not here.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=14277C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E88645
     // Broiler-Human:        PENDING
     private PreparedTarget PrepareTarget(JsPattern? target, BindMode mode)
     {
@@ -3594,6 +3594,18 @@ public sealed class JsCompiler
         {
             case JsPrivateMemberExpression privateAccess:
                 return new PreparedTarget(true, Spill(privateAccess.Target), -1);
+
+            // A `super` PROPERTY'S REFERENCE IS THE THIS BINDING AND THE KEY, evaluated here as for
+            // any other member target and in that order; the base is the frame's own and needs no
+            // slot (JSC-256).
+            case JsSuperMemberExpression inherited:
+            {
+                var owner = FunctionScope();
+                var key = owner.Declare("#held" + owner.SlotCount, constant: false);
+                EmitSuperReference(inherited);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, key);
+                return new PreparedTarget(true, -1, key);
+            }
 
             case JsMemberExpression member when member.Computed is null:
                 return new PreparedTarget(true, Spill(member.Target), -1);
@@ -3620,13 +3632,13 @@ public sealed class JsCompiler
     /// <see cref="PrepareTarget"/> - and the two must give the same answer, which is why it is a
     /// predicate rather than the same three cases written out again.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4988A7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CCD2EB
     // Broiler-Human:        PENDING
     private static bool PreparesTarget(JsPattern? target, BindMode mode) =>
         mode == BindMode.Assign &&
         target is JsTargetPattern
         {
-            Target: JsMemberExpression or JsPrivateMemberExpression,
+            Target: JsMemberExpression or JsPrivateMemberExpression or JsSuperMemberExpression,
         };
 
     /// <summary>Compiles one expression and parks its value in a temporary of the function.</summary>
@@ -3644,7 +3656,7 @@ public sealed class JsCompiler
     /// <summary>
     /// Stores the value on top of the stack through a reference already evaluated, and consumes it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3E2685
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0A0FFF
     // Broiler-Human:        PENDING
     private void BindPrepared(JsPattern target, BindMode mode, in PreparedTarget prepared)
     {
@@ -3658,6 +3670,16 @@ public sealed class JsCompiler
         var owner = FunctionScope();
         var held = owner.Declare("#held" + owner.SlotCount, constant: false);
         EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, held);
+
+        if (leaf.Target is JsSuperMemberExpression)
+        {
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, prepared.Key);
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, held);
+            Emit(JsOpcode.StoreSuperProperty);
+            Emit(JsOpcode.Pop);
+            return;
+        }
+
         EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, prepared.Base);
 
         switch (leaf.Target)
@@ -9918,6 +9940,28 @@ public sealed class JsCompiler
     }
 
     /// <summary>
+    /// Evaluates a <c>super</c> property reference: the this binding, then the key, which is left
+    /// on the stack.
+    /// </summary>
+    /// <remarks>
+    /// <b>The this binding is read for a named key too</b>, because the reference is made from it:
+    /// a destructuring target <c>super.x</c> in a derived constructor before <c>super()</c> throws
+    /// its <c>ReferenceError</c> when the target is evaluated and not when it is written.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0FF5DE
+    // Broiler-Human:        PENDING
+    private void EmitSuperReference(JsSuperMemberExpression member)
+    {
+        if (member.Computed is null)
+        {
+            Emit(JsOpcode.LoadThis);
+            Emit(JsOpcode.Pop);
+        }
+
+        CompileSuperKey(member);
+    }
+
+    /// <summary>
     /// Reads the <c>super</c> property whose key <see cref="CompileSuperKey"/> pushed, leaving the
     /// key under the value for the write that follows.
     /// </summary>
@@ -9973,7 +10017,7 @@ public sealed class JsCompiler
         Emit(JsOpcode.SuperCall, (byte)call.Arguments.Count);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9BDB0D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=909A84
     // Broiler-Human:        PENDING
     private void CompileStoreTo(JsExpression target)
     {
@@ -10003,6 +10047,20 @@ public sealed class JsCompiler
                 CompileExpression(member.Target);
                 EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, slot);
                 Emit(JsOpcode.SetProperty, InternedName(member.Name));
+                break;
+            }
+
+            // A `super` PROPERTY IS A REFERENCE TOO, as the target of `for (super.x of xs)` and
+            // of a pattern's leaf (JSC-256): the this binding is read and the key evaluated, then
+            // the value is written as `super.x = v` writes it.
+            case JsSuperMemberExpression inherited:
+            {
+                var function = FunctionScope();
+                var slot = function.Declare("#target" + function.SlotCount, constant: false);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, slot);
+                EmitSuperReference(inherited);
+                EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, slot);
+                Emit(JsOpcode.StoreSuperProperty);
                 break;
             }
 

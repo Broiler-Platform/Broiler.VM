@@ -1307,22 +1307,33 @@ internal sealed partial class JsRealm
     /// <summary>The receiver's members, in insertion order, as they stand WHEN EACH IS REACHED.</summary>
     /// <remarks>
     /// <b>A slot walk over the live table and not a snapshot of it.</b> The argument's <c>has</c> is
-    /// guest code and may delete from the receiver, and the language says a member deleted before
-    /// the walk reaches it is not visited - which a copy taken up front would visit anyway. The
-    /// bound is taken once, so a member APPENDED during the walk is not visited either.
+    /// guest code and may change the receiver, and the language walks the receiver's list as it
+    /// stands at each step: a member deleted before the walk reaches it is not visited, and a member
+    /// appended during the walk is - the edition re-reads the list's length after every call
+    /// (<c>Set thisSize to the number of elements in O.[[SetData]]</c>). So a member deleted and
+    /// added again is visited twice. Until 2026-10-04 the length was read once and an appended member
+    /// was not visited (JSC-256). The table is held in iteration while the walk runs, so a deletion
+    /// does not renumber the slots under it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A70D5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D6607C
     // Broiler-Human:        PENDING
     private static System.Collections.Generic.IEnumerable<JsValue> CollectionMembers(JsKeyedTable table)
     {
-        var bound = table.SlotCount;
+        table.EnterIteration();
 
-        for (var slot = 0; slot < bound; slot++)
+        try
         {
-            if (table.TryAt(slot, out var key, out _))
+            for (var slot = 0; slot < table.SlotCount; slot++)
             {
-                yield return key;
+                if (table.TryAt(slot, out var key, out _))
+                {
+                    yield return key;
+                }
             }
+        }
+        finally
+        {
+            table.ExitIteration();
         }
     }
 

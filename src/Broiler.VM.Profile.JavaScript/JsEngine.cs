@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   212
-// Annotated:        212/212
-// Exempt:           33
-// Human-reviewed:   0/212
+// Relevant units:   213
+// Annotated:        213/213
+// Exempt:           34
+// Human-reviewed:   0/213
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         84/82
+// Criteria:         86/84
 // Resource impact:  7/10 max
-// Unverified:       212
+// Unverified:       213
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -3100,17 +3100,19 @@ internal sealed partial class JsEngine
     /// <c>Object.prototype</c> and moved the object's prototype instead. The same difference shows
     /// against any setter, and against a read-only property inherited from a frozen prototype.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=339011
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4DBE17
     // Broiler-Human:        PENDING
     private void DefineByKey(JsObject host, JsValue key, JsValue value)
     {
+        key = ToPropertyKeyValue(key);
+
         if (key.IsSymbol)
         {
             host.SetOwnSymbol(key.AsSymbol(), JsProperty.Data(value, JsPropertyAttributes.Default));
             return;
         }
 
-        host.SetOwnProperty(ToPropertyKey(key), JsProperty.Data(value, JsPropertyAttributes.Default));
+        host.SetOwnProperty(key.AsString(), JsProperty.Data(value, JsPropertyAttributes.Default));
     }
 
     // ---- the reflective forms of the two above -------------------------------------------------
@@ -6306,7 +6308,7 @@ internal sealed partial class JsEngine
     /// <param name="binding">
     /// The box a construction holds its <c>this</c> in, or <see langword="null"/> for a call.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C1EF9D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=0E4C29
     // Broiler-Human:        PENDING
     private JsValue Invoke(
         JsScriptFunction function,
@@ -6385,7 +6387,7 @@ internal sealed partial class JsEngine
         // AN ARROW TAKES ALL THREE FROM WHERE IT WAS WRITTEN. It has no `this`, no `new.target`
         // and no `super` of its own, so what the call site supplies for any of them is discarded
         // here rather than being allowed to reach the frame.
-        return Execute(
+        var result = Execute(
             program,
             function.Unit,
             environment,
@@ -6394,8 +6396,115 @@ internal sealed partial class JsEngine
             function,
             unit.IsArrow ? function.LexicalNewTarget : newTarget,
             unit.IsArrow ? function.LexicalThisBinding : binding,
-            null);
+            null,
+            tailCalls: true);
+
+        // A TAIL CALL IS MADE HERE, AFTER ITS CALLER'S FRAME HAS GONE (JSC-256). The frame that made
+        // it answered with no value and left the callee in `tail`; entering the callee from this loop
+        // rather than from inside that frame is what keeps a strict tail recursion at one native
+        // frame and one count of depth however deep it goes. Each turn is charged as a call is.
+        while (tail.Callee is { } next)
+        {
+            var nextArguments = tail.Arguments ?? System.Array.Empty<JsValue>();
+            var nextThis = tail.Receiver;
+            tail = default;
+            Charge(CallCharge);
+
+            var nextUnit = next.Program.Functions[next.Unit];
+            result = Execute(
+                next.Program,
+                next.Unit,
+                CallEnvironment(next, nextUnit, nextArguments),
+                CallReceiver(next, nextUnit, nextThis),
+                nextArguments,
+                next,
+                nextUnit.IsArrow ? next.LexicalNewTarget : JsValue.Undefined,
+                nextUnit.IsArrow ? next.LexicalThisBinding : null,
+                null,
+                tailCalls: true);
+        }
+
+        return result;
     }
+
+    /// <summary>A tail call a frame has handed to the loop that entered it, or none.</summary>
+    /// <remarks>
+    /// It is set by the frame's last act and read by <see cref="Invoke"/> before anything else runs,
+    /// so no guest code can observe or overwrite it in between.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4339E9
+    // Broiler-Falsified-If: a tail call is left pending when the frame that made it has been answered for, or is made by any loop but the one that entered that frame
+    // Broiler-Human:        PENDING
+    private (JsScriptFunction? Callee, JsValue Receiver, JsValue[] Arguments) tail;
+
+    /// <summary>
+    /// Whether a call in the instruction at <paramref name="current"/>, whose next instruction is
+    /// at <paramref name="next"/>, is in tail position of a frame that may make one, and to a
+    /// callee that may be entered from the loop.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The language's tail positions are recognised from the code rather than marked in it</b>,
+    /// so the format does not change. A call is in tail position when nothing of its frame runs
+    /// after it: the instructions after it reach <c>Return</c> through jumps and scope pops alone,
+    /// and no exception region covers it - a <c>try</c> would catch what the callee throws, and a
+    /// <c>finally</c> would run after it returns. That is the edition's own reading: a call in a
+    /// <c>finally</c> block or in a <c>catch</c> with no <c>finally</c> is in tail position, and a
+    /// call in a <c>try</c> block is not.
+    /// </para>
+    /// <para>
+    /// <b>Only a strict, ordinary call frame makes one</b>, and only the interpreter: the frame was
+    /// entered by <see cref="Invoke"/> as a call (the caller passes that), it is not a generator's or
+    /// an async function's, and it has no <c>new.target</c>. The callee is a function this engine
+    /// enters the same way - not a class constructor, a generator or an async function, a bound
+    /// function, a proxy or a built-in - so the loop that enters it needs nothing but its record.
+    /// The emitted forms make every call as an ordinary call, which JSC-256 names.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C72F91
+    // Broiler-Falsified-If: a call is made from the loop while its caller's frame still has an instruction to run, a handler to land in, or a value to construct
+    // Broiler-Human:        PENDING
+    private static bool InTailPosition(
+        JsProgram program, int unitIndex, int current, int next, JsValue callee)
+    {
+        if (!callee.IsObject ||
+            callee.AsObject() is not JsScriptFunction { IsClassConstructor: false } target)
+        {
+            return false;
+        }
+
+        var entered = target.Program.Functions[target.Unit];
+
+        if (entered.IsGenerator || entered.IsAsync)
+        {
+            return false;
+        }
+
+        var code = program.Code;
+
+        for (var hops = 0; hops < 16; hops++)
+        {
+            switch ((JsOpcode)code[next])
+            {
+                case JsOpcode.Return:
+                    return !TryFindHandler(program, unitIndex, current, out _);
+
+                case JsOpcode.PopScope:
+                    next += JsOpcodes.InstructionWidth(JsOpcode.PopScope);
+                    continue;
+
+                case JsOpcode.Jump:
+                    next = (int)U32(code, next);
+                    continue;
+
+                default:
+                    return false;
+            }
+        }
+
+        return false;
+    }
+
 
     /// <summary>The environment a call of <paramref name="function"/> enters with, its parameters copied in.</summary>
     /// <remarks>
@@ -7310,7 +7419,7 @@ internal sealed partial class JsEngine
     /// native-only branch the importer removes; the native arm is a call that is never inlined.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=AAA100
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=A05CDB
     // Broiler-Falsified-If: a program whose form differs from the engine's reaches ExecuteCore or emitted code
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -7325,7 +7434,8 @@ internal sealed partial class JsEngine
         JsValue newTarget,
         JsCell? thisBinding,
         JsFrame? frame,
-        string? referrer = null)
+        string? referrer = null,
+        bool tailCalls = false)
     {
         if ((program.NativeCode.Length != 0) != nativeForm || program.NativeValueForm != valueForm)
         {
@@ -7350,7 +7460,7 @@ internal sealed partial class JsEngine
                         thisBinding, frame)
                 : ExecuteCore<JsInterpreted>(
                     program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
-                    thisBinding, frame, null);
+                    thisBinding, frame, null, tailCalls);
         }
         finally
         {
@@ -7398,7 +7508,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=C2BFE3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=6E9D41
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -7411,7 +7521,8 @@ internal sealed partial class JsEngine
         JsValue newTarget,
         JsCell? thisBinding,
         JsFrame? frame,
-        JsNativeActivation? act)
+        JsNativeActivation? act,
+        bool tailCalls = false)
         where TMode : struct, IJsExecutionMode
     {
         var unit = program.Functions[unitIndex];
@@ -7476,6 +7587,12 @@ internal sealed partial class JsEngine
         var strict = unit.IsStrict;
         var current = pc;
         JsRegion region = default;
+
+        // WHETHER THIS FRAME MAY HAND A TAIL CALL TO THE LOOP THAT ENTERED IT (JSC-256): the
+        // interpreter's strict call frame, entered by `Invoke` as a call. See `InTailPosition`.
+        var tailing = typeof(TMode) == typeof(JsInterpreted) && tailCalls && strict &&
+            frame is null && newTarget.Type == JsType.Undefined &&
+            !unit.IsGenerator && !unit.IsAsync;
 
         // THE FUNCTION `super` BELONGS TO IS NOT ALWAYS THE ONE RUNNING. An arrow has no `super`
         // of its own and reaches the enclosing method's, so both halves of `super` - the home
@@ -8206,17 +8323,22 @@ internal sealed partial class JsEngine
                             // `delete undefined[k]` throws without running `k`'s `toString`.
                             var holder = ToObject(target);
 
-                            var removed = key.IsSymbol
-                                ? holder.DeleteOwnSymbol(key.AsSymbol())
-                                : holder.DeleteOwnProperty(ToPropertyKey(key));
+                            // THE KEY IS CONVERTED ONCE, and the refusal names the converted key:
+                            // converting it again for the message ran its `toString` a second time
+                            // in strict code until 2026-10-04 (JSC-256).
+                            var property = ToPropertyKeyValue(key);
+
+                            var removed = property.IsSymbol
+                                ? holder.DeleteOwnSymbol(property.AsSymbol())
+                                : holder.DeleteOwnProperty(property.AsString());
 
                             if (!removed && strict)
                             {
                                 ThrowTypeError(
                                     "Cannot delete property '" +
-                                    (key.IsSymbol
-                                        ? "Symbol(" + key.AsSymbol().Description + ")"
-                                        : ToPropertyKey(key)) +
+                                    (property.IsSymbol
+                                        ? property.AsSymbol().Rendered
+                                        : property.AsString()) +
                                     "'");
                             }
 
@@ -8247,7 +8369,7 @@ internal sealed partial class JsEngine
                         case JsOpcode.DefineMethod:
                         {
                             var member = stack[--sp];
-                            var key = stack[--sp];
+                            var key = ToPropertyKeyValue(stack[--sp]);
                             var host = stack[sp - 1].AsObject();
 
                             if (key.IsSymbol)
@@ -8256,7 +8378,7 @@ internal sealed partial class JsEngine
                             }
                             else
                             {
-                                DefineMember(host, ToPropertyKey(key), member, code[pc + 1]);
+                                DefineMember(host, key.AsString(), member, code[pc + 1]);
                             }
 
                             pc += 2;
@@ -8473,6 +8595,13 @@ internal sealed partial class JsEngine
 
                             var receiver = stack[--sp];
                             var callee = stack[--sp];
+
+                            if (tailing && InTailPosition(program, unitIndex, current, pc + 2, callee))
+                            {
+                                tail = (callee.AsObject() as JsScriptFunction, receiver, arguments);
+                                return default;
+                            }
+
                             stack[sp++] = Call(callee, receiver, arguments);
                             pc += 2;
                             break;
@@ -8493,7 +8622,14 @@ internal sealed partial class JsEngine
 
                             // THE SPELLING SAYS DIRECT; THE VALUE DECIDES WHETHER IT IS. A program
                             // may assign to the global `eval`, and a call to whatever it now holds
-                            // is an ordinary call however it is written.
+                            // is an ordinary call however it is written - in tail position too.
+                            if (tailing && !Realm.IsEvalIntrinsic(callee) &&
+                                InTailPosition(program, unitIndex, current, pc + 2, callee))
+                            {
+                                tail = (callee.AsObject() as JsScriptFunction, receiver, arguments);
+                                return default;
+                            }
+
                             stack[sp++] = Realm.IsEvalIntrinsic(callee)
                                 ? EvaluateDirect(
                                     program, unitIndex, current, scopes, arguments,
@@ -8544,6 +8680,13 @@ internal sealed partial class JsEngine
                             var spread = ArgumentsOf(stack[--sp]);
                             var receiver = stack[--sp];
                             var callee = stack[--sp];
+
+                            if (tailing && InTailPosition(program, unitIndex, current, pc + 1, callee))
+                            {
+                                tail = (callee.AsObject() as JsScriptFunction, receiver, spread);
+                                return default;
+                            }
+
                             stack[sp++] = Call(callee, receiver, spread);
                             pc++;
                             break;
@@ -8736,10 +8879,12 @@ internal sealed partial class JsEngine
                                 ThrowTypeError("Cannot use 'in' operator to search for a key");
                             }
 
+                            var tested = ToPropertyKeyValue(left);
+
                             stack[sp++] = JsValue.Boolean(
-                                left.IsSymbol
-                                    ? HasSymbol(right.AsObject(), left.AsSymbol())
-                                    : HasProperty(right.AsObject(), ToPropertyKey(left)));
+                                tested.IsSymbol
+                                    ? HasSymbol(right.AsObject(), tested.AsSymbol())
+                                    : HasProperty(right.AsObject(), tested.AsString()));
 
                             pc++;
                             break;
@@ -10480,7 +10625,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Reads an indexed property, with the fast path an Array element deserves.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=383EFA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=250E86
     // Broiler-Human:        PENDING
     internal JsValue GetIndexed(JsValue target, JsValue key)
     {
@@ -10528,12 +10673,17 @@ internal sealed partial class JsEngine
             }
         }
 
-        if (key.IsSymbol)
+        // THE KEY IS CONVERTED TO A STRING OR A SYMBOL, and a Symbol wrapper converts to its
+        // Symbol: `o[Object(s)]` reads `o[s]`. Until 2026-10-04 the wrapper was converted to a
+        // String, which throws (JSC-256).
+        var property = ToPropertyKeyValue(key);
+
+        if (property.IsSymbol)
         {
-            return GetSymbol(target, key.AsSymbol());
+            return GetSymbol(target, property.AsSymbol());
         }
 
-        return GetProperty(target, ToPropertyKey(key));
+        return GetProperty(target, property.AsString());
     }
 
     /// <summary>Reads a Symbol-keyed property, walking the prototype chain the same way.</summary>
@@ -10711,7 +10861,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Writes an indexed property, with the fast path an Array element deserves.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DAF660
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=0A93A3
     // Broiler-Human:        PENDING
     internal void SetIndexed(JsValue target, JsValue key, JsValue value, bool strict)
     {
@@ -10770,13 +10920,15 @@ internal sealed partial class JsEngine
             }
         }
 
-        if (key.IsSymbol)
+        var property = ToPropertyKeyValue(key);
+
+        if (property.IsSymbol)
         {
-            SetSymbol(target, key.AsSymbol(), value, strict);
+            SetSymbol(target, property.AsSymbol(), value, strict);
             return;
         }
 
-        SetProperty(target, ToPropertyKey(key), value, strict);
+        SetProperty(target, property.AsString(), value, strict);
     }
 
     /// <summary>
