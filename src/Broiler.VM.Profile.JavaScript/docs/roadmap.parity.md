@@ -634,7 +634,7 @@ stale ([JSC-235](roadmap.corrections.md#jsc-235)). Entry by entry:
 | The binary surface and its manifest identity | [JSW-2](roadmap.workloads.md#jsw-2--the-binary-surface-and-a-manifest-identity-for-it). **The exotic-object integrity clauses of section 4.5 are its gate's**, and are recorded here because that gate is unmet |
 | The realm publishing its own admitted set | [JSW-6](roadmap.workloads.md#jsw-6--the-core-library-still-absent-from-the-realm), which is where the completeness of the absent list belongs |
 | The module goal | [JSW-8](roadmap.workloads.md#jsw-8--the-module-goal). **Its premise has been overtaken**: the goal exists and runs |
-| Per-frame cost and recursion depth | [JSW-9](roadmap.workloads.md#jsw-9--the-depth-a-generated-program-needs). Proper tail calls are absent from this profile and present in the comparison engine, and that is a depth question rather than a new surface |
+| Per-frame cost and recursion depth | [JSW-9](roadmap.workloads.md#jsw-9--the-depth-a-generated-program-needs). Proper tail calls are absent from this profile and present in the comparison engine, and that is a depth question rather than a new surface. *(Amended 2026-10-04: both halves are now the other way round. The bytecode form makes strict tail calls since [JSC-256](roadmap.corrections.md#jsc-256), and the comparison engine, Node 22, makes none.)* |
 | Throughput | `JS-10`, and nothing here |
 
 ---

@@ -6157,10 +6157,23 @@ internal sealed class JsParser
     /// single node would have had to re-derive the difference from the first character of a string
     /// at every use.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=8DB9AA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DF6416
     // Broiler-Human:        PENDING
     private JsExpression AfterDot(SliceSourceSpan span, JsExpression target, bool optional)
     {
+        // AN IdentifierName FOLLOWS THE DOT, and a literal is not one: `o."x"` and `o.1` are syntax
+        // errors. Until 2026-10-04 the literal's text was taken as the name (JSC-258).
+        if (Current.Kind is SliceTokenKind.StringLiteral or SliceTokenKind.NumericLiteral ||
+            Current.RawText.Length == 0 ||
+            !(char.IsLetter(Current.RawText[0]) || Current.RawText[0] is '_' or '$' or '\\' or '#' ||
+                Current.RawText[0] > 0x7F))
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a property name after `.` is an identifier name, and `" + Current.RawText + "` is not one");
+        }
+
         if (!IsPrivateName(Current))
         {
             return new JsMemberExpression(span, target, MemberName(), null, optional);

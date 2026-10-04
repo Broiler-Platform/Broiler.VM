@@ -3730,7 +3730,7 @@ internal sealed partial class JsEngine
     /// <c>class C { x = this.y }</c> reads the instance and <c>class C { static x = this.name }</c>
     /// reads the constructor - one rule, two objects, decided by which list the element was in.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=19643B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A67651
     // Broiler-Human:        PENDING
     private void ApplyClassElements(
         JsObject target,
@@ -3738,6 +3738,7 @@ internal sealed partial class JsEngine
         bool methods)
     {
         var receiver = JsValue.Object(target);
+        System.Collections.Generic.HashSet<JsSymbol>? installed = null;
 
         foreach (var element in elements)
         {
@@ -3752,7 +3753,22 @@ internal sealed partial class JsEngine
 
             if (isMethod)
             {
-                target.SetPrivate(element.Key.AsSymbol(), PrivateElementOf(element));
+                var method = element.Key.AsSymbol();
+
+                // A PRIVATE METHOD OR ACCESSOR INSTALLED TWICE ON ONE OBJECT IS A TypeError too
+                // (PrivateMethodOrAccessorAdd), reached the same way a field's is. A getter and a
+                // setter of one name are one element of the class and two rows here, so only the
+                // first row of a name in this pass asks. Until 2026-10-04 the second construction
+                // installed it again (JSC-258).
+                installed ??= [];
+
+                if (installed.Add(method) && target.HasPrivate(method))
+                {
+                    ThrowTypeError(
+                        "Cannot initialize " + method.Description + " twice on the same object");
+                }
+
+                target.SetPrivate(method, PrivateElementOf(element));
                 continue;
             }
 
@@ -7622,7 +7638,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=6E9D41
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=87F8D3
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -8262,7 +8278,10 @@ internal sealed partial class JsEngine
                             var value = stack[--sp];
                             var target = stack[--sp];
 
-                            if (strict && !HasProperty(target.AsObject(), name))
+                            // THE PROPERTY IS ASKED FOR IN SLOPPY CODE TOO, because `stillExists` is
+                            // step 1 of SetMutableBinding whatever the mode, and a proxy sees the
+                            // question. Until 2026-10-04 sloppy code skipped it (JSC-258).
+                            if (!HasProperty(target.AsObject(), name) && strict)
                             {
                                 ThrowReferenceError(name + " is not defined");
                             }

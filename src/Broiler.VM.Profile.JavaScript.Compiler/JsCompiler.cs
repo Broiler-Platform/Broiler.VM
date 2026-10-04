@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   236
-// Annotated:        236/236
+// Relevant units:   238
+// Annotated:        238/238
 // Exempt:           124
-// Human-reviewed:   0/236
+// Human-reviewed:   0/238
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       236
+// Unverified:       238
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -3712,11 +3712,10 @@ public sealed class JsCompiler
     /// iterator. The nullish check is explicit rather than left to the first property read, because
     /// <c>var {} = undefined</c> reads nothing and still has to refuse.
     /// <para>
-    /// <b>ONE DECLARED DIVERGENCE, and only where a rest property meets a computed key:</b> the key
-    /// expression is evaluated once, as the language says, but the value it produced is converted
-    /// to a property key twice - once to read the property and once to exclude it from the rest.
-    /// A key object whose <c>toString</c> has a side effect therefore runs it twice. Converting
-    /// once would need an opcode whose only job is <c>ToPropertyKey</c>.
+    /// <b>A computed key is converted once, where it is evaluated</b>, by
+    /// <see cref="JsOpcode.ToPropertyKey"/>: the read and a rest property's exclusion both use the
+    /// converted key. Until 2026-10-04 the value was converted twice where a rest property met a
+    /// computed key, and every conversion waited for the read (JSC-258).
     /// </para>
     /// <para>
     /// <b>AN ASSIGNMENT PATTERN PREPARES EVERY TARGET REFERENCE BEFORE IT READS THE PROPERTY THAT
@@ -3729,7 +3728,7 @@ public sealed class JsCompiler
     /// binding is found where it is written *(corrected: JSC-160)*.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5A65F9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C252A4
     // Broiler-Human:        PENDING
     private void BindObjectPattern(JsObjectPattern pattern, BindMode mode)
     {
@@ -3756,7 +3755,14 @@ public sealed class JsCompiler
 
             if (PreparesTarget(property.Value.Target, mode) && property.Computed is not null)
             {
-                held = Spill(property.Computed);
+                // THE KEY IS CONVERTED WHERE IT IS EVALUATED: `ComputedPropertyName` performs
+                // `ToPropertyKey` as its own last step, before the target is evaluated. Until
+                // 2026-10-04 the conversion waited for the read (JSC-258).
+                var owner = FunctionScope();
+                held = owner.Declare("#held" + owner.SlotCount, constant: false);
+                CompileExpression(property.Computed);
+                Emit(JsOpcode.ToPropertyKey);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, held);
 
                 if (pattern.Rest is not null)
                 {
@@ -3779,6 +3785,7 @@ public sealed class JsCompiler
             else
             {
                 CompileExpression(property.Computed);
+                Emit(JsOpcode.ToPropertyKey);
 
                 if (pattern.Rest is not null)
                 {
@@ -6435,7 +6442,7 @@ public sealed class JsCompiler
         scope = outer;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=623CEA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F0F1A5
     // Broiler-Human:        PENDING
     private void CompileTry(JsTryStatement guarded, int completion)
     {
@@ -6568,7 +6575,32 @@ public sealed class JsCompiler
         // value across the finaliser: `2; try { 3; } finally { }` is 3, and
         // `4; try { } catch (e) { } finally { 5; }` is undefined and not 5. Passing the slot down
         // let the finaliser's own statements overwrite an answer that was already settled.
-        CompileBlock(guarded.Finaliser!, -1);
+        //
+        // UNLESS THE FINALISER ITSELF COMPLETES ABRUPTLY. A `break` or `continue` out of a
+        // `finally` replaces the `try`'s completion with its own, whose value is the finaliser's so
+        // far - `try { 39 } finally { 42; break; }` is 42, and `finally { break; }` is undefined. So
+        // the settled value is set aside, the finaliser writes the slot from undefined, and the
+        // value set aside is put back only where the finaliser falls through. Until 2026-10-04 the
+        // finaliser wrote nothing and a `break` out of it carried the `try`'s value (JSC-258).
+        var settled = -1;
+
+        if (completion >= 0)
+        {
+            var owner = FunctionScope();
+            settled = owner.Declare("#held" + owner.SlotCount, constant: false);
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, completion);
+            EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, settled);
+            ResetCompletion(completion);
+        }
+
+        CompileBlock(guarded.Finaliser!, completion);
+
+        if (settled >= 0)
+        {
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, settled);
+            EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, completion);
+        }
+
         Branch(JsOpcode.Jump, end);
 
         // The exceptional path stores the thrown value, runs the same block, and rethrows it.
@@ -6581,7 +6613,8 @@ public sealed class JsCompiler
         buffer.ScopeSites.Add((site, scope));
         var pending = scope.Declare("#pending", constant: false);
         EmitScoped(JsOpcode.InitialiseScoped, 0, pending);
-        CompileBlock(guarded.Finaliser!, -1);
+        ResetCompletion(completion);
+        CompileBlock(guarded.Finaliser!, completion);
         EmitScoped(JsOpcode.LoadScoped, 0, pending);
         Emit(JsOpcode.PopScope);
         blockDepth--;
@@ -9366,7 +9399,7 @@ public sealed class JsCompiler
     /// it. This is the one place that decision is made, so an ordinary call and a tagged template
     /// cannot drift apart on it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A8CD95
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0FA060
     // Broiler-Human:        PENDING
     private void EmitCallee(JsExpression callee)
     {
@@ -9421,6 +9454,13 @@ public sealed class JsCompiler
         if (callee is JsIdentifier free && !Resolvable(free.Name) && TryEvalHops(out var evalHops))
         {
             EmitEvalName(JsOpcode.LoadEvalNameWithBase, evalHops, free.Name);
+            return;
+        }
+
+        // A PARENTHESISED CHAIN KEEPS ITS BASE AS THE RECEIVER, as `(o.f)()` does (JSC-258).
+        if (callee is JsChainExpression { Chain: JsMemberExpression or JsPrivateMemberExpression })
+        {
+            EmitChainReceiver(EmitChainCalleeValue(callee, NewLabel(), shortIsTrue: false));
             return;
         }
 
@@ -9681,7 +9721,7 @@ public sealed class JsCompiler
     /// the ordinary expression it is - which is how a parenthesised chain inside another one keeps
     /// its own merge.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1DBDA5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C803C1
     // Broiler-Human:        PENDING
     private void EmitChainLink(JsExpression node, Label end, bool shortIsTrue)
     {
@@ -9758,16 +9798,34 @@ public sealed class JsCompiler
                 return;
             }
 
-            case JsCallExpression call:
+            // `super.m?.()` IS CALLED AGAINST `this`, as `super.m()` is: the function is found
+            // through the home object and the receiver is the method's own. Until 2026-10-04 the
+            // optional spelling reached the arm below and called it against `undefined` (JSC-258).
+            case JsCallExpression call when call.Callee is JsSuperMemberExpression inherited:
             {
-                EmitChainLink(call.Callee, end, shortIsTrue);
+                CompileSuperKey(inherited);
+                Emit(JsOpcode.LoadSuperProperty);
 
                 if (call.Optional)
                 {
                     EmitNullishGuard(end, held: 1, shortIsTrue);
                 }
 
-                Emit(JsOpcode.LoadUndefined);
+                Emit(JsOpcode.LoadThis);
+                CompileArguments(call);
+                return;
+            }
+
+            case JsCallExpression call:
+            {
+                var receiver = EmitChainCalleeValue(call.Callee, end, shortIsTrue);
+
+                if (call.Optional)
+                {
+                    EmitNullishGuard(end, held: 1, shortIsTrue);
+                }
+
+                EmitChainReceiver(receiver);
                 CompileArguments(call);
                 return;
             }
@@ -9776,6 +9834,97 @@ public sealed class JsCompiler
                 CompileExpression(node);
                 return;
         }
+    }
+
+    /// <summary>
+    /// Pushes a chain call's callee, and answers the slot its receiver was kept in, or -1 when the
+    /// callee has none.
+    /// </summary>
+    /// <remarks>
+    /// <b>A parenthesised chain is still a reference, so it keeps its base as the receiver.</b>
+    /// <c>(a?.b)()</c> calls <c>a.b</c> against <c>a</c>, as <c>(a.b)()</c> does: the parentheses
+    /// change nothing about the reference a member access evaluates to, and an optional link only
+    /// adds the short circuit. The base is kept in a temporary that is cleared first, so the call
+    /// after a short circuit is made against <c>undefined</c> - and throws, because its callee is
+    /// <c>undefined</c> too. Until 2026-10-04 such a call was always made against
+    /// <c>undefined</c> (JSC-258).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B141C1
+    // Broiler-Human:        PENDING
+    private int EmitChainCalleeValue(JsExpression callee, Label end, bool shortIsTrue)
+    {
+        if (callee is not JsChainExpression
+            {
+                Chain: JsMemberExpression or JsPrivateMemberExpression,
+            } parenthesised)
+        {
+            EmitChainLink(callee, end, shortIsTrue);
+            return -1;
+        }
+
+        var owner = FunctionScope();
+        var kept = owner.Declare("#held" + owner.SlotCount, constant: false);
+        Emit(JsOpcode.LoadUndefined);
+        EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+
+        var inner = NewLabel();
+
+        switch (parenthesised.Chain)
+        {
+            case JsPrivateMemberExpression privateAccess:
+                EmitChainLink(privateAccess.Target, inner, shortIsTrue: false);
+
+                if (privateAccess.Optional)
+                {
+                    EmitNullishGuard(inner, held: 1, shortIsTrue: false);
+                }
+
+                Emit(JsOpcode.Duplicate);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+                Emit(JsOpcode.LoadPrivate);
+                break;
+
+            case JsMemberExpression member:
+                EmitChainLink(member.Target, inner, shortIsTrue: false);
+
+                if (member.Optional)
+                {
+                    EmitNullishGuard(inner, held: 1, shortIsTrue: false);
+                }
+
+                Emit(JsOpcode.Duplicate);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+
+                if (member.Computed is null)
+                {
+                    Emit(JsOpcode.GetProperty, InternedName(member.Name));
+                }
+                else
+                {
+                    CompileExpression(member.Computed);
+                    Emit(JsOpcode.GetIndex);
+                }
+
+                break;
+        }
+
+        Mark(inner);
+        return kept;
+    }
+
+    /// <summary>Pushes the receiver <see cref="EmitChainCalleeValue"/> kept, or <c>undefined</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A367EB
+    // Broiler-Human:        PENDING
+    private void EmitChainReceiver(int kept)
+    {
+        if (kept < 0)
+        {
+            Emit(JsOpcode.LoadUndefined);
+            return;
+        }
+
+        EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
     }
 
     /// <summary>Emits a call's arguments and the call instruction that consumes them.</summary>

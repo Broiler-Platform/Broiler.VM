@@ -11064,3 +11064,52 @@ put the legacy reflection and the runner's one hang in phase F1.
 - No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-258
+
+**Where:** phase F1: receivers in optional chains, the conversion of a computed destructuring key,
+a private method installed twice, a literal after `.`, the object environment's store, and the
+completion value of a `finally` that breaks.
+
+**What the plan said.** [Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+put the single gaps named in [JSC-252](roadmap.corrections.md#jsc-252) to
+[JSC-257](roadmap.corrections.md#jsc-257) in phase F1. Each item below was a defect against the
+edition.
+
+**What replaced it, observed on 2026-10-04.**
+- **A parenthesised optional member keeps its base as the receiver.** `(a?.b)()` and
+  `(a?.b)?.()` call `a.b` against `a`, as `(a.b)()` does. After a short circuit the call is made
+  against `undefined` and throws, because its callee is `undefined`. `super.m?.()` is called against
+  `this`.
+- **A computed key in an object pattern is converted where it is evaluated**, by the existing
+  `ToPropertyKey` instruction, before the target is evaluated. A rest property's exclusion uses the
+  converted key, so the double conversion the lowering declared as a divergence is gone.
+- **A private method or accessor installed twice on one object throws a `TypeError`**, as a private
+  field already did. A getter and a setter of one name count as one element.
+- **A literal after `.` is a syntax error.** `o.""` and `o.1` were read as names.
+- **An object environment's store asks whether the name still exists, in sloppy code too.** That
+  is step 1 of `SetMutableBinding`, and a proxy sees the question. Only strict code throws when the
+  answer is no.
+- **A `break` or `continue` out of a `finally` carries the finaliser's value.** The `try`'s settled
+  value is set aside and the finaliser writes the completion from `undefined`. The settled value is
+  restored only where the finaliser falls through. `try { 39 } finally { 42; break; }` is 42, and
+  `finally { break; }` is `undefined`.
+- **test262:** over the whole pinned suite, against the run JSC-257 was measured on, 22 variants
+  moved from failing to passing. Four RegExp property-escape variants ran past their five-second
+  wall-clock allowance in that run, which shared the machine with the unit suites. All four pass
+  when run again alone on the same binaries, and the change touches no part of the matcher.
+
+**What must not be read as repaired.**
+- **A strict assignment to an undeclared global** is checked when it is written, not when the
+  reference is evaluated. So `undeclared = (this.undeclared = 5)` does not throw. The check before
+  the right-hand side needs an instruction the format does not have.
+- **An object rest property still asks a proxy for the descriptor of every key**, excluded ones
+  included. Copying with exclusions needs an instruction the format does not have.
+- **A `var` target in a `with` body is resolved after the value is read**, so a proxy's `has` for
+  it comes late (`destructuring/binding/keyed-…-with-bindings`).
+- **The parser's nesting bound of 64** still refuses `statements/function/S13.2.1_A1_T1.js`. It is
+  the measured limit `SliceParseOptions` documents.
+- **Function source text** is still not kept, which the computed-method-name `toString` case needs.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 138
+runs|0|# Completed: 139
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -1018,3 +1018,8 @@ refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBin
 # function, so its global code is a caller and its answers differ there; these are the values the
 # legacy-reflection reading and the pinned suite's staging cases ask for *(JSC-257)*.
 runs/the-legacy-caller-and-arguments.js|0|true / true,true,true / true / true / 2,5,true / true / 9 / function,false,true / TypeError
+
+# RECEIVERS, KEYS AND FINALLY COMPLETIONS (2026-10-04). The values are the comparison engine's but
+# for the `with` store, where it asks `has` once and the edition asks twice - the search, then
+# SetMutableBinding's stillExists *(JSC-258)*.
+runs/receivers-keys-and-finally-completions.js|0|true,true,true / true / key,target,get / TypeError / has:p,has:p,set:p / 42 / undefined
