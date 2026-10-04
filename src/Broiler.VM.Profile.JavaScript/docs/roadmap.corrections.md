@@ -12060,6 +12060,11 @@ archive held no list patterns, and no package of CLDR's that has them.
 - **Checks**: one new slice-compiler check, 630 in all, holds the list dataset.
 - **test262**, against the run JSC-273 records: `test/intl402/ListFormat` passes 154 of 162 variants,
   from 2. The 8 failing are four files, and all need Spanish.
+- **test262, whole pinned suite**, against the run [JSC-273](#jsc-273) records: 95,058 variants, 86,397
+  passing, 796 failing, 47 exhausted and 7,818 skipped. 152 moved from failing to passing, all under
+  `test/intl402/ListFormat`, and none moved to failing. The `Atomics.waitAsync`
+  `no-spurious-wakeup-*` variants JSC-273 records as machine-dependent moved again: 8 passed and 2
+  others ran out of live bytes. The 47 exhausted are JSC-270's 44 and those 3.
 
 **What must not be read as repaired.**
 - **Lists exist for German and English only**, the section 5 locales. A list in another language is
