@@ -11484,6 +11484,11 @@ handling, and the charge for a realm.
   and a ninth of the cost.
 - **A fixture**: `runs/a-shadow-realm-keeps-its-own-realm.js`, whose thirteen lines node 22 with
   `--experimental-shadow-realm` answers the same.
+- **test262, whole pinned suite**, against the run [JSC-264](roadmap.corrections.md#jsc-264) records:
+  95,056 variants, 83,800 passing, 3,394 failing, 42 exhausted and 7,820 skipped. The 124 that moved
+  to passing are the ShadowRealm cases, which were skipped as a proposal's and counted then as one
+  variant per file; none moved anywhere else, and the failing and exhausted sets are the same
+  variants as before.
 
 **What must not be read as repaired.**
 - **A shadow realm shares the engine's module map**, where the proposal gives each its own
