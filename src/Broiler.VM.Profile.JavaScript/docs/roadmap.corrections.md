@@ -11113,3 +11113,53 @@ edition.
 - No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-259
+
+**Where:** phase F3: a function's source text, the artifact section that carries it, and the
+identity line of [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s F3.
+
+**What the plan said.** Roadmap section 6 said `Function.prototype.toString` answers
+`function name() { [native code] }` for every function, "because the artifact carries no source",
+and put the repair in phase F3. F3's identity line said: "a format-version increment if the record
+puts source in the artifact".
+
+**What replaced it, observed on 2026-10-04.**
+- **The artifact carries source text, in an optional section** (kind 16, `SourceText`), under the
+  proposed [JSD-0037](decisions/0037-the-source-text-section.md). A row names a code unit and a
+  span of one String constant that holds the whole source it was compiled from. Every compilation
+  writes it unless the request sets `KeepsSourceText` to `false`.
+- **`Function.prototype.toString` answers the span**: a declaration or expression from `function`
+  or `async` to its `}`, a method from its `get`, `set`, `async`, `*` or name (a static method's
+  text leaves out `static`), an arrow from its parameters, and a class's whole text. Comments and
+  whitespace are kept. The `Function` constructor's result answers the text the edition
+  synthesises, and code compiled by `eval` answers its own. A built-in, a bound function and a host
+  function keep the NativeFunction form.
+- **The format version is not incremented.** An artifact without the section reads as before, a
+  build that predates the section refuses one carrying it with `1101 UnknownSectionKind`, and
+  sections 13 to 15 were added the same way. The identity line is corrected in place.
+- **One verifier code, `1633 MalformedSourceText`**, at diagnostic registry revision 18, refuses a
+  row past the table, out of order or repeated, a text that is not a String, an empty span and a
+  span past its text. Seven retained `source-text-*` entries pin it, two of which verify and run.
+  Seven retained compiled entries changed bytes, because they now carry the section.
+- **The fixtures that pinned the native rendering are replaced.**
+  `runs/bound-length-and-the-immutable-root.js` answers `#m() {}` for the private method, and
+  `runs/function-source-text.js` pins every form above against the comparison engine. The
+  differential probe that declared a divergence for the rendering (`the-general-surface.js`, 313)
+  now agrees, and its `#diverges` line is removed.
+- **test262:** `test/built-ins/Function/prototype/toString` passes all 160 variants. Before, it
+  passed 158, because its harness accepts the NativeFunction form wherever it accepts the source;
+  the two failures were a computed method key. Over the whole pinned suite, against the run
+  [JSC-258](roadmap.corrections.md#jsc-258) was measured on, the figure is recorded by an
+  amendment to this entry when the run finishes; until then no whole-suite figure is claimed.
+
+**What must not be read as repaired.**
+- **`Error.prototype.stack`** is still absent, and `runs/an-error-has-no-stack.js` still pins that.
+  It is F3's second record and second change.
+- **A composition that drops the text** answers the NativeFunction form for every function. That
+  departs from the edition, and JSD-0037 says a composition that does so may not claim
+  conformance on `toString`. No composition in the tree drops it.
+- **The record is proposed, not taken.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout, and the proposed
+JSD-0037. 2026-10-04.

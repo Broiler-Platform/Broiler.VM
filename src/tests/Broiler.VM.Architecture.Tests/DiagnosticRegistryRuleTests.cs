@@ -162,10 +162,16 @@ public sealed class DiagnosticRegistryRuleTests
         // module loaded with `type: "json"` whose text is not JSON. The load is the front end's for
         // a static import, so the refusal is a refusal of source and the core vocabulary does not
         // grow. It is published at no milestone.
-        Assert.Equal(71, Vocabulary.Count);
+        //
+        // Revision 18 is ONE CORE CODE, the source-text section (phase F3, the proposed JSD-0037,
+        // JSC-259), and THE SEAM HALF DOES NOT GROW: the section carries text the compilation was
+        // already given, and no source is refused for it. One code covers every clause of a row that
+        // disagrees with itself, the pool or the function table, and the retained `source-text-*`
+        // entries tell the clauses apart. It is published at no milestone.
+        Assert.Equal(72, Vocabulary.Count);
         Assert.Equal(30, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(17, DiagnosticRegistry.Revision);
+        Assert.Equal(18, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -350,10 +356,11 @@ public sealed class DiagnosticRegistryRuleTests
                 StringComparison.Ordinal));
         // Sixty-seven since revision 13, whose two eval scope rows name retained entries, and
         // sixty-eight since revision 14, whose BigInt constant row names one, sixty-nine since
-        // revision 15, whose script-declarations row names one, and seventy since revision 16, whose
-        // script-referrers row names one.
+        // revision 15, whose script-declarations row names one, seventy since revision 16, whose
+        // script-referrers row names one, and seventy-one since revision 18, whose source-text
+        // row names one.
         Assert.Equal(
-            70,
+            71,
             Registry.Count(static row => row.Reachability == "corpus"));
         // Twenty-nine since revision 17, whose JSON module row names a retained `.json` source.
         Assert.Equal(

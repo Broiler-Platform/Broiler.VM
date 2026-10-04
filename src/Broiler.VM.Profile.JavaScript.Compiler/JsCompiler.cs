@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   238
-// Annotated:        238/238
-// Exempt:           124
-// Human-reviewed:   0/238
+// Relevant units:   240
+// Annotated:        240/240
+// Exempt:           128
+// Human-reviewed:   0/240
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       238
+// Unverified:       240
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -244,6 +244,19 @@ public sealed record JsCompileRequest(
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BAEFB1
     // Broiler-Human:        PENDING
     internal bool AdmitsBigIntLiterals => Manifest == JsFeatureManifest.Wide;
+
+    /// <summary>
+    /// Whether the artifact carries the source text each function was defined from, which
+    /// <c>Function.prototype.toString</c> answers (JSD-0037). True unless a caller says otherwise.
+    /// </summary>
+    /// <remarks>
+    /// <b>A size-sensitive composition may drop it, and loses nothing else.</b> The section grants
+    /// nothing and no instruction reads it: without it a function renders as a native one, which is
+    /// what every artifact said before the section existed.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=010B4F
+    // Broiler-Human:        PENDING
+    public bool KeepsSourceText { get; init; } = true;
 }
 
 /// <summary>
@@ -800,7 +813,7 @@ public sealed class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1E12C3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=80F932
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -866,6 +879,7 @@ public sealed class JsCompiler
             }
 
             scriptReferrer = script.Referrer;
+            currentSource = AddSource(script.Text);
             var unit = evaluated
                 ? CompileEvalProgram(program, script.Options.EvalFlags)
                 : CompileProgram(program, script.ForceStrict);
@@ -955,6 +969,7 @@ public sealed class JsCompiler
                 return new JsCompilation(false, null, diagnostics);
             }
 
+            currentSource = AddSource(text);
             CompileModule(program, module);
 
             if (diagnostics.Count != 0)
@@ -1034,7 +1049,7 @@ public sealed class JsCompiler
 
     // ---- assembly ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=21F757
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=241F76
     // Broiler-Human:        PENDING
     private byte[] Assemble()
     {
@@ -1044,6 +1059,20 @@ public sealed class JsCompiler
         // left every one of those names past the end of the pool the artifact carries, and the
         // verifier refused the first module row of every module artifact this host produced.
         var moduleRows = built.Count == 0 ? [] : ModuleRows();
+
+        // THE SOURCE TEXT IS INTERNED HERE TOO, before the pool is encoded, so its constants follow
+        // every constant an instruction names and an artifact that drops it differs from one that
+        // keeps it in the section and the constants appended after the code's own (JSD-0037).
+        var sourceRows = new System.Collections.Generic.List<(uint FunctionIndex, uint TextConstant, uint Start, uint Length)>();
+
+        foreach (var (unit, span) in System.Linq.Enumerable.OrderBy(sourceSpans, static pair => pair.Key))
+        {
+            sourceRows.Add((
+                (uint)unit,
+                StringConstant(sources[span.Source]),
+                (uint)span.Start,
+                (uint)(span.End - span.Start)));
+        }
 
         // THE EVAL SCOPE MAP INTERNS NAMES TOO, for the same reason and with the same consequence:
         // it is built here, before the constant section is encoded, or the names it spells would
@@ -1324,6 +1353,15 @@ public sealed class JsCompiler
             sections.Add(new JavaScriptArtifactWriter.Section(
                 (JavaScriptFormat.SectionKind)JsFormat.SectionKind.ScriptReferrers,
                 JsArtifactWriter.ScriptReferrers(referrerRows)));
+        }
+
+        // THE SOURCE TEXT IS WRITTEN BESIDE EVERY MANIFEST, for every function the compilation
+        // kept a span for (JSD-0037).
+        if (sourceRows.Count != 0)
+        {
+            sections.Add(new JavaScriptArtifactWriter.Section(
+                (JavaScriptFormat.SectionKind)JsFormat.SectionKind.SourceText,
+                JsArtifactWriter.SourceText([.. sourceRows])));
         }
 
         return JsArtifactWriter.Write(ManifestId(), sections.ToArray());
@@ -2145,7 +2183,7 @@ public sealed class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=00EB21
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4C96B3
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -2440,8 +2478,58 @@ public sealed class JsCompiler
         insideFieldInitialiser = outerField;
         fieldValueName = outerFieldValueName;
         exits = outerExits;
+        RecordSource(index, function.SourceStart, function.SourceEnd);
         return index;
     }
+
+    /// <summary>Records the source text a compilation is about to lower, and answers its index.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=CC3D91
+    // Broiler-Human:        PENDING
+    private int AddSource(string text)
+    {
+        if (!request.KeepsSourceText)
+        {
+            return -1;
+        }
+
+        sources.Add(text);
+        return sources.Count - 1;
+    }
+
+    /// <summary>
+    /// Records that <paramref name="unit"/> was defined from the span of the current source between
+    /// <paramref name="start"/> and <paramref name="end"/> (JSD-0037).
+    /// </summary>
+    /// <remarks>
+    /// A later record for the same unit replaces an earlier one, which is how a class constructor
+    /// written as a method gets the whole class's text rather than its own.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=B0DAEE
+    // Broiler-Human:        PENDING
+    private void RecordSource(int unit, int start, int end)
+    {
+        if (currentSource < 0 || start < 0 || end <= start || end > sources[currentSource].Length)
+        {
+            return;
+        }
+
+        sourceSpans[unit] = (currentSource, start, end);
+    }
+
+    /// <summary>Every source text this compilation lowered while keeping source text.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=2182BA
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<string> sources = [];
+
+    /// <summary>The source the unit being lowered was parsed from, or -1.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=FB6845
+    // Broiler-Human:        PENDING
+    private int currentSource = -1;
+
+    /// <summary>Each unit's span in its source, by unit.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=32A922
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.Dictionary<int, (int Source, int Start, int End)> sourceSpans = [];
 
     // ---- modules -------------------------------------------------------------------------------
 
@@ -7474,7 +7562,7 @@ public sealed class JsCompiler
     /// was written would have collapsed the middle two and been wrong about both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8F7ACF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=82D7CD
     // Broiler-Human:        PENDING
     private void CompileClass(JsClassNode node, string inferredName)
     {
@@ -7532,6 +7620,9 @@ public sealed class JsCompiler
             ? CompileImplicitConstructor(node.Span, name, node.HasHeritage, flags)
             : CompileFunction(
                 constructor with { Name = name }, flags, isMethod: true, isDerived: node.HasHeritage);
+
+        // A CLASS'S CONSTRUCTOR RENDERS AS THE WHOLE CLASS, whether it was written or implied.
+        RecordSource(unit, node.SourceStart, node.SourceEnd);
 
         Emit(JsOpcode.Closure, (ushort)unit);
         Emit(JsOpcode.NewClass, (byte)(node.HasHeritage ? JsOpcodes.ClassIsDerived : 0));

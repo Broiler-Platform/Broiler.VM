@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 139
+runs|0|# Completed: 140
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -969,9 +969,9 @@ runs/a-key-defined-again-goes-last.js|0|0,2,p2,p4,p1 / k30,k31,k32,k33,k34,k35,k
 runs/property-keys-that-convert-to-symbols.js|0|true true true RangeError RangeError 1 1 true true 5 true 7 7 true false 3 1+3 2 key>descriptor got got 13
 
 # A BOUND FUNCTION'S LENGTH, THE IMMUTABLE ROOT AND THE NATIVE RENDERING (2026-10-03). The values
-# are the comparison engine's but for the private method's rendering, which keeps no source text
-# here *(JSC-249)*.
-runs/bound-length-and-the-immutable-root.js|0|2 / 0 / 0 / 0 / 0 / Infinity / 0 / 2147483648 / 2 / 0 / TypeError / true / false / TypeError / TypeError / TypeError / undefined / function () { [native code] } / function () { [native code] } / function max() { [native code] }
+# are the comparison engine's *(JSC-249)*; the private method's rendering is its source text since
+# phase F3 kept it *(JSC-259)*, and was the native rendering before.
+runs/bound-length-and-the-immutable-root.js|0|2 / 0 / 0 / 0 / 0 / Infinity / 0 / 2147483648 / 2 / 0 / TypeError / true / false / TypeError / TypeError / TypeError / undefined / #m() {} / function () { [native code] } / function max() { [native code] }
 
 # A LABELLED FUNCTION OR AN ASYNC FUNCTION CANNOT BE A NESTED STATEMENT (2026-10-03), and in a `with`
 # body `let` before a line break is the identifier. The engine raises the two SyntaxErrors and
@@ -1023,3 +1023,8 @@ runs/the-legacy-caller-and-arguments.js|0|true / true,true,true / true / true / 
 # for the `with` store, where it asks `has` once and the edition asks twice - the search, then
 # SetMutableBinding's stillExists *(JSC-258)*.
 runs/receivers-keys-and-finally-completions.js|0|true,true,true / true / key,target,get / TypeError / has:p,has:p,set:p / 42 / undefined
+
+# A FUNCTION'S SOURCE TEXT (2026-10-04): every form a program writes, its comments and whitespace
+# kept, the Function constructor's synthesised text, and the native rendering for what no source
+# defined. The values are the comparison engine's *(JSC-259)*.
+runs/function-source-text.js|0|function /* a */ f /* b */ (x, y) /* c */ { return x + y; } @@ async function* g() { yield 1; } @@ x => x * 2 @@ async (a, b) => { await a; } @@ m() { return 1; } @@ get "k e y"() { return 2; } @@ set s(v) {} @@ *gen() {} @@ ["c" + 1](a) {} @@ class A extends Object { constructor() { super(); } static /* s */ async m() {} #p() {} q() { return this.#p; } } @@ async m() {} @@ #p() {} @@ class B {} @@ class {} @@ function anonymous(a,b~) {~return a + b~} @@ function anonymous(~) {~return 1~} @@ function e() { /* inside eval */ } @@ function t() { return `nested ${1}`; } @@ function max() { [native code] } @@ function () { [native code] } @@ function call() { [native code] }

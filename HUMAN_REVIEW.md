@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5895 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5902 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 239 |
-| Code units | 10410 |
-| Relevant | 5895 |
-| Exempt | 4515 |
-| Assessed | 5895 of 5895 (100%) |
-| Human reviewed | 0 of 5895 (0%) |
-| Unverified | 5895 |
+| Code units | 10430 |
+| Relevant | 5902 |
+| Exempt | 4528 |
+| Assessed | 5902 of 5902 (100%) |
+| Human reviewed | 0 of 5902 (0%) |
+| Unverified | 5902 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5895 |
+| HUMAN_PENDING | 5902 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4515 |
+| EXEMPT | 4528 |
 
 ## 5. Aliases In The Tree
 
@@ -148,13 +148,13 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` | 54 | 45 | 9 | 45 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Backend.cs` | 42 | 37 | 5 | 37 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` | 31 | 18 | 13 | 18 | Low | High | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 362 | 238 | 124 | 238 | Low | High | 19/18 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 368 | 240 | 128 | 240 | Low | High | 19/18 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsJsonModule.cs` | 18 | 15 | 3 | 15 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 23 | 12 | 11 | 12 | None | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeCompiler.cs` | 9 | 7 | 2 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` | 14 | 12 | 2 | 12 | None | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 194 | 170 | 24 | 170 | Low | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 100 | 83 | 17 | 83 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 197 | 172 | 25 | 172 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 104 | 83 | 21 | 83 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` | 11 | 9 | 2 | 9 | Low | High | 8/8 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Assembler.cs` | 97 | 65 | 32 | 65 | Low | Critical | 20/20 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` | 34 | 29 | 5 | 29 | Low | High | 17/17 |
@@ -178,10 +178,10 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptArtifactWriter.cs` | 20 | 17 | 3 | 17 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs` | 26 | 14 | 12 | 14 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` | 40 | 10 | 30 | 10 | None | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsArtifactWriter.cs` | 41 | 41 | 0 | 41 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsArtifactWriter.cs` | 42 | 42 | 0 | 42 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` | 76 | 46 | 30 | 46 | Low | High | 19/17 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineFrame.cs` | 17 | 9 | 8 | 9 | None | Critical | 8/8 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` | 114 | 55 | 59 | 55 | None | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` | 115 | 55 | 60 | 55 | None | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` | 29 | 17 | 12 | 17 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` | 17 | 3 | 14 | 3 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` | 54 | 25 | 29 | 25 | Low | Critical | 14/14 |
@@ -199,7 +199,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` | 181 | 61 | 120 | 61 | Low | Critical | 40/40 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` | 33 | 33 | 0 | 33 | Low | High | 10/10 |
 | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 80 | 8 | 72 | 8 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 81 | 8 | 73 | 8 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 37 | 18 | 19 | 18 | Low | High | 7/6 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptLanguageEdition.cs` | 13 | 13 | 0 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptPosition.cs` | 10 | 6 | 4 | 6 | None | Medium | 1/0 |
@@ -229,7 +229,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` | 12 | 4 | 8 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 70 | 39 | 31 | 39 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 64 | 18 | 46 | 18 | Low | Critical | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 65 | 18 | 47 | 18 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsProxy.cs` | 44 | 37 | 7 | 37 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 39 | 38 | 1 | 38 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.ArrayFromAsync.cs` | 23 | 14 | 9 | 14 | Low | Medium | 0/0 |
@@ -273,7 +273,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` | 14 | 11 | 3 | 11 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` | 12 | 9 | 3 | 9 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` | 14 | 14 | 0 | 14 | Low | Critical | 14/14 |
-| `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 110 | 61 | 49 | 61 | Low | High | 17/17 |
+| `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 113 | 63 | 50 | 63 | Low | High | 18/17 |
 | `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` | 49 | 39 | 10 | 39 | Low | Critical | 22/22 |
 | `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` | 5 | 5 | 0 | 5 | Low | Critical | 5/5 |
 | `src/Broiler.VM.Profile.MachineCode/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
@@ -863,7 +863,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a name with no binding is accepted, or a name shadowed in an inner scope resolves to the outer one
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `5006C2`, PENDING
   - Falsified if: a second call site for this type appears, or a consumer re-reads the source text
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `DCF21B`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `9D1496`, PENDING
   - Falsified if: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadToken(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `415EF1`, PENDING
   - Falsified if: a character that starts an identifier is read as a punctuator, or a numeric literal is read as an identifier
@@ -4105,7 +4105,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5761 of the 5895 assessed units declare
+That is not a figure of speech. 5768 of the 5902 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

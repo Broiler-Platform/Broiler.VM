@@ -64,7 +64,7 @@ internal sealed partial class JsRealm
     internal JsObject LegacyArgumentsGetter { get; private set; } = null!;
 
     /// <summary>Builds <c>Function.prototype</c>'s members and the refused <c>Function</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=22AFE6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EFB82E
     // Broiler-Human:        PENDING
     private void SetupFunction()
     {
@@ -197,10 +197,19 @@ internal sealed partial class JsRealm
         {
             var receiver = FunctionCallableReceiver(engine, thisValue, "toString");
 
-            // NO SOURCE TEXT IS KEPT, so every function renders as a native one. This is a stated
-            // approximation: the specification returns the source a function was defined from, and
-            // an engine that executes verified bytecode has thrown that text away long before a
-            // guest can ask for it.
+            // A FUNCTION DEFINED FROM SOURCE RENDERS AS THAT SOURCE, cut from the text the artifact
+            // carries in its source-text section (JSD-0037): the declaration, expression, method,
+            // arrow or whole class it was parsed from, comments and all. Until 2026-10-04 no source
+            // text was kept and every function rendered as a native one (JSC-259).
+            if (receiver is JsScriptFunction script &&
+                script.Program.SourceText is { } texts &&
+                texts.TryGetValue(script.Unit, out var source))
+            {
+                return JsValue.String(source.Text.Substring(source.Start, source.Length));
+            }
+
+            // EVERYTHING ELSE RENDERS AS A NATIVE FUNCTION: a built-in, a bound function, a proxy,
+            // and a function whose artifact dropped its source text.
             //
             // The rendering must still be a NativeFunction, whose name is a PropertyName with an
             // optional `get` or `set`. A private method's `#m` and a bound function's `bound f` are

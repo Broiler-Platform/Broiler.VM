@@ -63,6 +63,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.MalformedPositionRow : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1506
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.MalformedScriptDeclarations : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1631
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.MalformedScriptReferrers : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1632
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.MalformedSourceText : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1633
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.ManifestIdTooLong : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1005
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.MissingSection : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1103
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.ModuleExportAmbiguous : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1617
@@ -488,6 +489,7 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest.Equals(System.Object obj) : virtual System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest.Form : Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest.KeepsSourceText : System.Boolean { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest.Manifest : Broiler.VM.Profile.JavaScript.Compiler.JsFeatureManifest { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest.ToString() : virtual System.String
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest left, Broiler.VM.Profile.JavaScript.Compiler.JsCompileRequest right) : static System.Boolean
@@ -1312,9 +1314,10 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.Value : System.String { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral left, Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral left, Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral right) : static System.Boolean
-  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Kind, System.String RawText, System.Double NumericValue, System.String StringValue, System.Int32 Line, System.Int32 Column, System.Boolean PrecededByLineTerminator, System.Boolean IsLegacyOctal, System.Boolean IsEscaped) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Kind, System.String RawText, System.Double NumericValue, System.String StringValue, System.Int32 Line, System.Int32 Column, System.Boolean PrecededByLineTerminator, System.Boolean IsLegacyOctal, System.Boolean IsEscaped, System.Int32 Offset, System.Int32 End) : void
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Column : System.Int32 { get; set; }
-  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Kind, out System.String RawText, out System.Double NumericValue, out System.String StringValue, out System.Int32 Line, out System.Int32 Column, out System.Boolean PrecededByLineTerminator, out System.Boolean IsLegacyOctal, out System.Boolean IsEscaped) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Kind, out System.String RawText, out System.Double NumericValue, out System.String StringValue, out System.Int32 Line, out System.Int32 Column, out System.Boolean PrecededByLineTerminator, out System.Boolean IsLegacyOctal, out System.Boolean IsEscaped, out System.Int32 Offset, out System.Int32 End) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.End : System.Int32 { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceToken other) : System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Equals(System.Object obj) : virtual System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.GetHashCode() : virtual System.Int32
@@ -1323,6 +1326,7 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Kind : Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Line : System.Int32 { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.NumericValue : System.Double { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Offset : System.Int32 { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.PrecededByLineTerminator : System.Boolean { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.RawText : System.String { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.StringValue : System.String { get; set; }
@@ -1578,6 +1582,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.Positions(System.ValueTuple<System.UInt32, System.UInt32, System.UInt32>[] rows, System.Nullable<System.UInt32> declaredCount) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.ScriptDeclarations(Broiler.VM.Profile.JavaScript.Format.JsScriptDeclarationRow[] rows) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.ScriptReferrers(System.ValueTuple<System.UInt32, System.UInt32>[] rows) : static System.Byte[]
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.SourceText(System.ValueTuple<System.UInt32, System.UInt32, System.UInt32, System.UInt32>[] rows) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.StringConstant(System.String value) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.Surfaces(System.String[] manifestIds, System.Nullable<System.UInt32> declaredCount) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.UndefinedConstant() : static System.Byte[]
@@ -1833,6 +1838,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Positions : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 7
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.ScriptDeclarations : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 14
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.ScriptReferrers : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 15
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.SourceText : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 16
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Surfaces : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 9
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.SuspensionTargets : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 6
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.value__ : System.UInt32

@@ -1060,7 +1060,7 @@ meets today is unchanged until the phase that delivers the surface lands, and ro
 | Surface | Governing record | What reopening changes in the record | Phase |
 |---|---|---|---|
 | The RegExp `v` flag | [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) | "Keep the `v` flag refused until a matcher slice is scheduled": the slice is scheduled | F2 |
-| `Function.prototype.toString` source text | none yet; a record opens F3 | The artifact carries the source text a function was defined from | F3 |
+| `Function.prototype.toString` source text | none yet; a record opens F3 *(proposed: [JSD-0037](decisions/0037-the-source-text-section.md), 2026-10-04)* | The artifact carries the source text a function was defined from | F3 |
 | `Error.prototype.stack` | none yet; a record opens F3 | The shape is chosen by that record, from the comparison engines' common form | F3 |
 | `FinalizationRegistry` cleanup | [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) | D03-a is scheduled, and is taken on by the CLI composition by default | F4 |
 | Nested realms, `$262.createRealm` | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | SR-1, SR-2 and SR-7 are scheduled | F5 |
@@ -1157,7 +1157,9 @@ gate and the ledger's row.
     common form and the position table the artifact already carries;
   - the two implementations.
 - **Needs:** F1.
-- **Identity:** a format-version increment if the record puts source in the artifact.
+- **Identity:** a format-version increment if the record puts source in the artifact. *(Corrected
+  2026-10-04: the record puts it in an optional section under format version 2, as sections 13 to 15
+  were, and does not increment the version; see [JSC-259](roadmap.corrections.md#jsc-259).)*
 - **Exit gate:**
   - `test/built-ins/Function/prototype/toString` passes;
   - the fixtures that pin the native rendering and `an-error-has-no-stack.js` are replaced;

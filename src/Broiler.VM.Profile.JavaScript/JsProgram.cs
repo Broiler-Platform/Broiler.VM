@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           46
+// Exempt:           47
 // Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Critical
@@ -374,6 +374,15 @@ internal sealed class JsProgram : IVmVerifiedState
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=01008F
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.Dictionary<int, string>? ScriptReferrers { get; }
+
+    /// <summary>The source text each unit was defined from, by unit, or nothing (JSD-0037).</summary>
+    /// <remarks>
+    /// <b>Its absence is what every artifact written before the section existed says</b>, and what a
+    /// compilation that dropped it says: every function renders as a native one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F4FB49
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.Dictionary<int, (string Text, int Start, int Length)>? SourceText { get; init; }
 
     /// <summary>The feature manifest the artifact named in its header.</summary>
     /// <remarks>

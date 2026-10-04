@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   61
-// Annotated:        61/61
-// Exempt:           49
-// Human-reviewed:   0/61
+// Relevant units:   63
+// Annotated:        63/63
+// Exempt:           50
+// Human-reviewed:   0/63
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         17/17
+// Criteria:         18/17
 // Resource impact:  3/10 max
-// Unverified:       61
+// Unverified:       63
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -238,7 +238,7 @@ internal sealed class JsVerifier
         return VmVerifierOutcome.Verified(EmptyState.Instance, VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EE5705
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=07E0E7
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadSection(
         ref VmBoundedReader reader,
@@ -259,7 +259,7 @@ internal sealed class JsVerifier
             return FromReader(ref reader, reader.Position);
         }
 
-        if (kind is < 1 or > 15)
+        if (kind is < 1 or > 16)
         {
             return Invalid(
                 VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownSectionKind, at);
@@ -293,6 +293,7 @@ internal sealed class JsVerifier
             JsFormat.SectionKind.EvalScopes => ReadEvalScopes(ref reader, adapter, state),
             JsFormat.SectionKind.ScriptDeclarations => ReadScriptDeclarations(ref reader, state),
             JsFormat.SectionKind.ScriptReferrers => ReadScriptReferrers(ref reader, state),
+            JsFormat.SectionKind.SourceText => ReadSourceText(ref reader, state),
             _ => Invalid(
                 VmReason.UnknownFeature,
                 JavaScriptDiagnosticCode.SuspensionTargetOutsideManifest,
@@ -1528,7 +1529,7 @@ internal sealed class JsVerifier
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6DCE13
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F05023
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
@@ -1757,6 +1758,13 @@ internal sealed class JsVerifier
             return scriptReferrers;
         }
 
+        var sourceText = LinkSourceText(state, units, adapter, out var linkedSource);
+
+        if (sourceText.Category != VmOutcome.Normal)
+        {
+            return sourceText;
+        }
+
         var walker = new Walker(state, units, adapter);
 
         for (var index = 0; index < units.Length; index++)
@@ -1833,7 +1841,10 @@ internal sealed class JsVerifier
             linkedScripts,
             linkedReferrers,
             state.NativeValueForm,
-            state.NativeValueImage);
+            state.NativeValueImage)
+        {
+            SourceText = linkedSource,
+        };
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
     }
@@ -2300,6 +2311,105 @@ internal sealed class JsVerifier
         }
 
         referrers = linked;
+        return Ok;
+    }
+
+    /// <summary>Reads the source-text section (JSD-0037) into its rows.</summary>
+    /// <remarks>
+    /// Only the framing is judged here; what a row may name is judged by
+    /// <see cref="LinkSourceText"/>, once the function table and the pool exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B5267C
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadSourceText(ref VmBoundedReader reader, Sections state)
+    {
+        if (!reader.TryReadDeclaredCount(out var rowCount))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (rowCount > JsFormat.CeilingFunctions)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedSourceText,
+                reader.Position);
+        }
+
+        var rows = new (uint FunctionIndex, uint TextConstant, uint Start, uint Length)[rowCount];
+
+        for (var index = 0u; index < rowCount; index++)
+        {
+            if (!reader.TryReadVarUInt32(out var unit) ||
+                !reader.TryReadVarUInt32(out var text) ||
+                !reader.TryReadVarUInt32(out var start) ||
+                !reader.TryReadVarUInt32(out var length))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            rows[index] = (unit, text, start, length);
+        }
+
+        state.SourceTextRows = rows;
+        return Ok;
+    }
+
+    /// <summary>
+    /// Holds the source-text rows to the function table and the pool, and builds what
+    /// <c>Function.prototype.toString</c> reads (JSD-0037).
+    /// </summary>
+    /// <remarks>
+    /// <b>A row names one unit, in ascending order, and a non-empty span inside a String
+    /// constant.</b> Any unit may have one - a function, a method, an arrow, a class's constructor -
+    /// because the text grants nothing and a program reads it back as a String. Each row is charged
+    /// one unit of work.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=241191
+    // Broiler-Falsified-If: a source-text row whose span lies outside its text, whose text is not a String constant, or whose unit is past the table reaches the executor
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome LinkSourceText(
+        Sections state,
+        JsCodeUnit[] units,
+        JavaScriptReadAdapter adapter,
+        out System.Collections.Generic.Dictionary<int, (string Text, int Start, int Length)>? sources)
+    {
+        sources = null;
+
+        if (state.SourceTextRows is not { } rows)
+        {
+            return Ok;
+        }
+
+        var linked = new System.Collections.Generic.Dictionary<int, (string Text, int Start, int Length)>(rows.Length);
+        var previous = -1L;
+
+        foreach (var (function, text, start, length) in rows)
+        {
+            if (!adapter.TryChargeWork(1))
+            {
+                return VmVerifierOutcome.ResourceExhaustion(
+                    VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+            }
+
+            if (function >= units.Length ||
+                function <= previous ||
+                text >= state.Constants!.Length ||
+                state.Constants[text].Type != JsType.String ||
+                length == 0 ||
+                (ulong)start + length > (ulong)state.Constants[text].AsString().Length)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedSourceText,
+                    function);
+            }
+
+            previous = function;
+            linked.Add((int)function, (state.Constants[text].AsString(), (int)start, (int)length));
+        }
+
+        sources = linked;
         return Ok;
     }
 
@@ -3563,6 +3673,11 @@ internal sealed class JsVerifier
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=06A473
         // Broiler-Human:        PENDING
         internal (uint FunctionIndex, uint ReferrerConstant)[]? ScriptReferrerRows { get; set; }
+
+        /// <summary>The source-text rows as the payload declares them, or null without the section.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=88753B
+        // Broiler-Human:        PENDING
+        internal (uint FunctionIndex, uint TextConstant, uint Start, uint Length)[]? SourceTextRows { get; set; }
 
         /// <summary>Whether any code unit is flagged as eval code.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5C5485

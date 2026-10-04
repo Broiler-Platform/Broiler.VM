@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   170
-// Annotated:        170/170
-// Exempt:           24
-// Human-reviewed:   0/170
+// Relevant units:   172
+// Annotated:        172/172
+// Exempt:           25
+// Human-reviewed:   0/172
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       170
+// Unverified:       172
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2717,7 +2717,7 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=58FD64
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BB468C
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
@@ -2810,8 +2810,48 @@ internal sealed class JsParser
         inParameters = outerArrowParameters;
 
         return new JsFunctionNode(
-            span, name, parameters, body, isArrow, inner, directives, isGenerator, isAsync);
+            span, name, parameters, body, isArrow, inner, directives, isGenerator, isAsync)
+        {
+            SourceStart = OffsetAt(span),
+            SourceEnd = PreviousEnd,
+        };
     }
+
+    /// <summary>
+    /// The source offset of the token that starts at <paramref name="span"/>, or -1 when no token
+    /// does.
+    /// </summary>
+    /// <remarks>
+    /// <b>A node is located by its span, and the span names a token</b>: every production records
+    /// the line and column of the token it began at. The table from positions to offsets is built
+    /// once per parser, the first time a function asks, so a source with no function pays nothing
+    /// (JSD-0037).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=2; Fingerprint=CA95AB
+    // Broiler-Human:        PENDING
+    private int OffsetAt(SliceSourceSpan span)
+    {
+        if (offsets is null)
+        {
+            offsets = new System.Collections.Generic.Dictionary<(int, int), int>(tokens.Length);
+
+            foreach (var token in tokens)
+            {
+                offsets.TryAdd((token.Line, token.Column), token.Offset);
+            }
+        }
+
+        return offsets.TryGetValue((span.Line, span.Column), out var offset) ? offset : -1;
+    }
+
+    /// <summary>The source offset just past the last token this parser consumed.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=BD0A12
+    // Broiler-Human:        PENDING
+    private int PreviousEnd => at > 0 ? tokens[at - 1].End : 0;
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=879453
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.Dictionary<(int, int), int>? offsets;
 
     // ---- classes -------------------------------------------------------------------------------
 
@@ -2830,7 +2870,7 @@ internal sealed class JsParser
     /// why <c>class D extends a.b() { }</c> parses and <c>class D extends a = b { }</c> does not.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B7CB47
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=159C3D
     // Broiler-Human:        PENDING
     private JsClassNode ParseClass(SliceSourceSpan span, bool declaration)
     {
@@ -2910,7 +2950,11 @@ internal sealed class JsParser
         Expect(SliceTokenKind.CloseBrace, "}");
         strict = outer;
         ValidateClassBody(members);
-        return new JsClassNode(span, name, heritage, hasHeritage, members);
+        return new JsClassNode(span, name, heritage, hasHeritage, members)
+        {
+            SourceStart = OffsetAt(span),
+            SourceEnd = PreviousEnd,
+        };
     }
 
     /// <summary>Rules on the names a class body may not give its elements.</summary>
@@ -3085,7 +3129,7 @@ internal sealed class JsParser
     /// <c>static m() { }</c> is a static method - and reading the key first would have made the
     /// second one a field called <c>static</c> followed by a surprise.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F89CED
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1BBD71
     // Broiler-Human:        PENDING
     private JsClassMember? ParseClassMember()
     {
@@ -3104,6 +3148,10 @@ internal sealed class JsParser
             Advance();
         }
 
+        // THE METHOD'S SOURCE TEXT BEGINS AFTER `static`: the specification's
+        // `MethodDefinition` is the production after the modifier, so `toString` on a static
+        // method answers the text that starts at its `get`, `async`, `*` or name.
+        var sourceStart = Current.Offset;
         var isGenerator = false;
         var isAsync = false;
 
@@ -3196,7 +3244,10 @@ internal sealed class JsParser
         }
 
         var body = ParseFunctionBody(
-            span, key, parameters, isArrow: false, isGenerator, isAsync, uniqueParameters: true);
+            span, key, parameters, isArrow: false, isGenerator, isAsync, uniqueParameters: true) with
+        {
+            SourceStart = sourceStart,
+        };
 
         yieldIsOperator = outerOperator;
         awaitIsOperator = outerAwait;
@@ -4796,7 +4847,7 @@ internal sealed class JsParser
         return tokens[scan].Kind == SliceTokenKind.EqualsGreaterThan;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=852CA3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E53604
     // Broiler-Human:        PENDING
     private JsExpression ParseArrowBody(
         SliceSourceSpan span,
@@ -4853,7 +4904,11 @@ internal sealed class JsParser
             return new JsFunctionExpression(
                 span,
                 new JsFunctionNode(
-                    span, string.Empty, parameters, body, true, strict, [], false, isAsync));
+                    span, string.Empty, parameters, body, true, strict, [], false, isAsync)
+                {
+                    SourceStart = OffsetAt(span),
+                    SourceEnd = PreviousEnd,
+                });
         }
         finally
         {
@@ -6717,7 +6772,7 @@ internal sealed class JsParser
     /// break is regardless of how the file was saved.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C7F08F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FC3985
     // Broiler-Human:        PENDING
     private JsTemplateLiteral ParseTemplate(bool tagged)
     {
@@ -6780,7 +6835,8 @@ internal sealed class JsParser
                 var innerEnd = System.Math.Max(innerStart, reader.At - 1);
 
                 substitutions.Add(
-                    ParseInterpolation(reader.Slice(innerStart, innerEnd), innerLine, innerColumn));
+                    ParseInterpolation(
+                        reader.Slice(innerStart, innerEnd), innerLine, innerColumn, token.Offset + innerStart));
 
                 chunkStart = reader.At;
                 continue;
@@ -6992,9 +7048,9 @@ internal sealed class JsParser
     /// encloses it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DFCAF3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A69224
     // Broiler-Human:        PENDING
-    private JsExpression ParseInterpolation(string text, int line, int column)
+    private JsExpression ParseInterpolation(string text, int line, int column, int offset)
     {
         var tokenizer = new SliceTokenizer(text) { HtmlLikeComments = options.Goal != SliceGoal.Module };
         var stream = tokenizer.Tokenize();
@@ -7016,7 +7072,13 @@ internal sealed class JsParser
         {
             var token = stream[index];
             var moved = Move(new SliceSourceSpan(token.Line, token.Column), line, column);
-            stream[index] = token with { Line = moved.Line, Column = moved.Column };
+            stream[index] = token with
+            {
+                Line = moved.Line,
+                Column = moved.Column,
+                Offset = token.Offset + offset,
+                End = token.End + offset,
+            };
         }
 
         var inner = new JsParser(

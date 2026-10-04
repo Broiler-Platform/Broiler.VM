@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   83
 // Annotated:        83/83
-// Exempt:           17
+// Exempt:           21
 // Human-reviewed:   0/83
 // IP risk:          Low
 // Security risk:    Medium
@@ -217,7 +217,7 @@ internal sealed record JsParameter(
 /// arrow is not a production of the grammar. The two suspension flags are never both set, because
 /// this manifest refuses an async generator by name at the parse.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=A9F65E
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=C96473
 // Broiler-Human:        PENDING
 internal sealed record JsFunctionNode(
     SliceSourceSpan Span,
@@ -228,7 +228,21 @@ internal sealed record JsFunctionNode(
     bool IsStrict,
     System.Collections.Generic.IReadOnlyList<JsStringLiteral> Directives,
     bool IsGenerator = false,
-    bool IsAsync = false) : JsNode(Span);
+    bool IsAsync = false) : JsNode(Span)
+{
+    /// <summary>
+    /// The offset of the function's first character in the source text it was parsed from, or -1 when it
+    /// was not parsed from source.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=C7575C
+    // Broiler-Human:        PENDING
+    public int SourceStart { get; init; } = -1;
+
+    /// <summary>The offset just past the function's last character, or -1.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=FBA60D
+    // Broiler-Human:        PENDING
+    public int SourceEnd { get; init; } = -1;
+}
 
 /// <summary><c>yield</c>, <c>yield expr</c> or <c>yield* expr</c>.</summary>
 /// <param name="Operand">
@@ -800,14 +814,28 @@ internal sealed record JsClassMember(
 /// that, while <c>class D { }</c> has no heritage and a base constructor.
 /// </param>
 /// <param name="Members">The body, in source order.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D0D9B5
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=ADBEB8
 // Broiler-Human:        PENDING
 internal sealed record JsClassNode(
     SliceSourceSpan Span,
     string Name,
     JsExpression? Heritage,
     bool HasHeritage,
-    System.Collections.Generic.IReadOnlyList<JsClassMember> Members) : JsNode(Span);
+    System.Collections.Generic.IReadOnlyList<JsClassMember> Members) : JsNode(Span)
+{
+    /// <summary>
+    /// The offset of the class's first character in the source text it was parsed from, or -1 when it
+    /// was not parsed from source.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=C7575C
+    // Broiler-Human:        PENDING
+    public int SourceStart { get; init; } = -1;
+
+    /// <summary>The offset just past the class's last character, or -1.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=FBA60D
+    // Broiler-Human:        PENDING
+    public int SourceEnd { get; init; } = -1;
+}
 
 /// <summary>A class declaration.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=75C7B7

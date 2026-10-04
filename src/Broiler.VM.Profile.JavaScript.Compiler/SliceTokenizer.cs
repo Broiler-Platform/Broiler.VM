@@ -364,7 +364,13 @@ public enum SliceTokenKind
 /// <param name="IsEscaped">
 /// Whether the token's characters were written with at least one unicode escape in them.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CD6A13
+/// <param name="Offset">
+/// The UTF-16 offset of the token's first character in the source text, which is the fifth fact:
+/// a function's source text is the slice of the source between two tokens, and recording where
+/// each one stands is what lets the front end cut it without scanning again (JSD-0037).
+/// </param>
+/// <param name="End">The offset just past the token's last character.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B19D06
 // Broiler-Falsified-If: any consumer of this type reads the original source text to recover a fact a field here carries
 // Broiler-Human:        PENDING
 public readonly record struct SliceToken(
@@ -376,7 +382,9 @@ public readonly record struct SliceToken(
     int Column,
     bool PrecededByLineTerminator,
     bool IsLegacyOctal,
-    bool IsEscaped = false);
+    bool IsEscaped = false,
+    int Offset = 0,
+    int End = 0);
 
 /// <summary>
 /// The one pass over the source characters. Every artifact is tokenized at most once.
@@ -452,7 +460,7 @@ public sealed class SliceTokenizer
     public System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics => diagnostics;
 
     /// <summary>Reads every token, ending with one <see cref="SliceTokenKind.EndOfSource"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DCF21B
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9D1496
     // Broiler-Falsified-If: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
     // Broiler-Human:        PENDING
     public SliceToken[] Tokenize()
@@ -477,12 +485,14 @@ public sealed class SliceTokenizer
             {
                 tokens.Add(new SliceToken(
                     SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
-                    startLine, startColumn, sawNewline, false));
+                    startLine, startColumn, sawNewline, false, false, source.Length, source.Length));
 
                 return tokens.ToArray();
             }
 
-            var token = ReadToken(startLine, startColumn, sawNewline);
+            var start = index;
+            var token = ReadToken(startLine, startColumn, sawNewline) with { Offset = start };
+            token = token with { End = index };
 
             if (diagnostics.Count > 0)
             {
@@ -502,7 +512,7 @@ public sealed class SliceTokenizer
         // so it never reports a cascade of parse errors that are all one bad character.
         tokens.Add(new SliceToken(
             SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
-            line, index - lineStart + 1, false, false));
+            line, index - lineStart + 1, false, false, false, index, index));
 
         return tokens.ToArray();
     }

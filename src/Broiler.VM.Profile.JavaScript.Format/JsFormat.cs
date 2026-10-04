@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   55
 // Annotated:        55/55
-// Exempt:           59
+// Exempt:           60
 // Human-reviewed:   0/55
 // IP risk:          None
 // Security risk:    High
@@ -63,7 +63,7 @@ public static class JsFormat
     /// version-1 meanings; their bodies are read under version 2's rules where those differ, and
     /// the two places they differ - the limits body and the exception-region body - say so.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9D29BE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=44A389
     // Broiler-Human:        PENDING
     public enum SectionKind : uint
     {
@@ -222,6 +222,27 @@ public static class JsFormat
         /// </para>
         /// </remarks>
         ScriptReferrers = 15,
+
+        /// <summary>
+        /// The source text: for each function compiled from source, the span of the source it was
+        /// defined from, which <c>Function.prototype.toString</c> answers (JSD-0037).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>One row per function, in ascending unit order</b>: the unit, a String constant holding
+        /// the whole source text the unit was parsed from, and the offset and length of the
+        /// function's span inside it. A source is one constant however many functions it defines, so
+        /// a nested function costs two integers rather than a second copy of its text.
+        /// </para>
+        /// <para>
+        /// <b>It is optional, and its absence means "no source text"</b>, which is what every
+        /// artifact written before the kind existed says and what a compilation that dropped it says:
+        /// such a function renders as a native one, as before. It is admitted beside every manifest
+        /// and <b>it grants nothing</b>: it is text a program can already read in the source it was
+        /// given.
+        /// </para>
+        /// </remarks>
+        SourceText = 16,
     }
 
     /// <summary>What one import entry binds its local name to.</summary>
