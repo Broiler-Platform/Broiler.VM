@@ -11801,6 +11801,12 @@ the format's `JsIntlTable`.
   variants, from 2. The 44 failing are 22 files: 21 expect `ja-JP`, `ko-KR`, `zh-TW` or `en-IN`, and
   `this-value-ignored.js` needs `DateTimeFormat`. `Number`, `BigInt`, `Array` and `TypedArray`
   `toLocaleString` pass every variant under `intl402` and `test/built-ins`.
+- **test262, whole pinned suite**, against the run [JSC-269](#jsc-269) records: 95,058 variants, 85,538
+  passing, 1,658 failing, 44 exhausted and 7,818 skipped. 296 moved to passing, all under
+  `test/intl402`: 278 under `NumberFormat`, 10 under `BigInt`, 6 under `Number` and 2 under `Array`.
+  None moved to failing. `test/intl402` passes 608 of its 4,418 variants, against 312. The three
+  `test/staging/sm` files JSC-269 names still fail, because their `Intl` half also needs
+  `DateTimeFormat`, `PluralRules` or `RelativeTimeFormat`. The exhausted set is the same 44 variants.
 
 **What must not be read as repaired.**
 - **`ja`, `ko`, `zh-TW` and `en-IN` are not in the data**, and the tests that expect them fail.

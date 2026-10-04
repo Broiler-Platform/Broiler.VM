@@ -643,7 +643,8 @@ the archive gained under rule N27. `Number`, `BigInt`, `Array` and `TypedArray` 
 through it. Values are exact decimals. The retained German and English numbers agree with ICU 77.1 on
 every line but 24, each named with the clause ICU's answer departs from. `test/intl402/NumberFormat`
 passes 280 of 324 scored variants, and the failing ones expect `ja-JP`, `ko-KR`, `zh-TW`, `en-IN` or
-`DateTimeFormat` ([JSC-270](roadmap.corrections.md#jsc-270), proposed
+`DateTimeFormat`. Over the whole pinned suite 85,538 of 95,058 variants pass, 296 more, and none moved
+back ([JSC-270](roadmap.corrections.md#jsc-270), proposed
 [JSD-0044](decisions/0044-intl-numberformat.md)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.
 
