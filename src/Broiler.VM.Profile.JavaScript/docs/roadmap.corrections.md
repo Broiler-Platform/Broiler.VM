@@ -11629,6 +11629,13 @@ agent policy, the host drain, the ledger's `absent-globals` block and the publis
   surface adopts no block.
 - **test262, `test/built-ins/Atomics`**: 752 of 752 scored variants pass, against 524 of 748 before,
   in three consecutive runs; the 6 skipped are `Atomics.pause`'s.
+- **test262, whole pinned suite**, against the run [JSC-266](roadmap.corrections.md#jsc-266) records:
+  95,058 variants, 84,986 passing, 2,210 failing, 44 exhausted and 7,818 skipped. 228 moved to passing:
+  the 224 `Atomics` variants that start an agent - 106 under `waitAsync`, 86 under `wait`, 32 under
+  `notify` - and the four of the two `CanBlockIsFalse` files, which were one skipped case each and are
+  now two scored variants each. None moved anywhere else; the exhausted set is the same 44 variants,
+  `sort_large_countingsort.js`'s two among them, and `length-truncate-with-indexed.js` no longer held
+  its shard ([JSC-268](roadmap.corrections.md#jsc-268)).
 
 **What must not be read as repaired.**
 - **A growable block does not cross**, and retention follows the agent that made a block, not its
