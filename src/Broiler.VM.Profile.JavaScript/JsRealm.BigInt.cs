@@ -59,7 +59,7 @@ internal sealed partial class JsRealm
     internal JsObject? BigIntPrototype { get; private set; }
 
     /// <summary>Builds <c>BigInt</c>, its two statics and <c>BigInt.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D3D1FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D8795
     // Broiler-Human:        PENDING
     private void SetupBigInt()
     {
@@ -117,9 +117,12 @@ internal sealed partial class JsRealm
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
-            _ = arguments;
-            return JsValue.String(
-                BigIntOfThis(engine, thisValue, "toLocaleString").ToDecimalString(engine.ChargeFuel));
+            var value = BigIntOfThis(engine, thisValue, "toLocaleString");
+
+            // WITH INTL, ECMA-402 s20.3.1: through the realm's own %Intl.NumberFormat%.
+            return engine.Realm.NumberFormatConstructor is null
+                ? JsValue.String(value.ToDecimalString(engine.ChargeFuel))
+                : JsValue.String(ToLocaleNumberString(engine, JsDecimal.FromBigInt(value, engine.ChargeFuel), arguments));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>

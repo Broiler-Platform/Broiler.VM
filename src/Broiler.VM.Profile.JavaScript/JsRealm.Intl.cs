@@ -50,7 +50,7 @@ internal sealed partial class JsRealm
     internal JsNativeFunction? CollatorConstructor { get; private set; }
 
     /// <summary>Builds <c>Intl</c> and <c>Intl.Collator</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8, s10; IP=Low; Security=Medium; Resources=3; Fingerprint=18E6F4
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8, s10; IP=Low; Security=Medium; Resources=3; Fingerprint=870A1C
     // Broiler-Human:        PENDING
     private void SetupIntl()
     {
@@ -71,6 +71,7 @@ internal sealed partial class JsRealm
             JsProperty.Data(JsValue.Object(intl), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         SetupCollator(intl);
+        SetupNumberFormat(intl);
     }
 
     // ---- Intl.Collator ---------------------------------------------------------------------------
@@ -334,13 +335,13 @@ internal sealed partial class JsRealm
         throw engine.Error(kind, message);
 
     /// <summary>ECMA-402's <c>CoerceOptionsToObject</c>: <c>undefined</c> is an empty object with no prototype.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.12; IP=Low; Security=Low; Resources=1; Fingerprint=002FE8
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.10; IP=Low; Security=Low; Resources=1; Fingerprint=002FE8
     // Broiler-Human:        PENDING
     internal static JsValue CoerceOptionsToObject(JsEngine engine, JsValue options) =>
         options.Type == JsType.Undefined ? JsValue.Object(new JsObject(null)) : JsValue.Object(engine.ToObject(options));
 
     /// <summary>ECMA-402's <c>GetOption</c> for a String: read, convert, and check against the values when there are any.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.13; IP=Low; Security=Low; Resources=1; Fingerprint=EA4D7B
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.11; IP=Low; Security=Low; Resources=1; Fingerprint=EA4D7B
     // Broiler-Human:        PENDING
     internal static string? GetStringOption(JsEngine engine, JsValue options, string property, string[]? values, string? fallback)
     {
@@ -362,7 +363,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's <c>GetOption</c> for a Boolean.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.13; IP=Low; Security=Low; Resources=1; Fingerprint=0C4684
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.11; IP=Low; Security=Low; Resources=1; Fingerprint=0C4684
     // Broiler-Human:        PENDING
     internal static bool? GetBooleanOption(JsEngine engine, JsValue options, string property, bool? fallback)
     {
@@ -542,7 +543,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's <c>FilterLocales</c>: the requested locales a prefix of which is available, in the order requested.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.10; IP=Low; Security=Low; Resources=2; Fingerprint=928316
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.9; IP=Low; Security=Low; Resources=2; Fingerprint=928316
     // Broiler-Human:        PENDING
     internal static System.Collections.Generic.List<string> FilterLocales(
         JsEngine engine,

@@ -1281,6 +1281,12 @@ N24's witness moved to `Temporal`. The first clause's admission is JSD-0018's am
 Its "passes per slice" holds for I1: `Collator` passes 124 of 130 `intl402` variants, and the three
 failing files need `NumberFormat`, Thai's tailoring and the `eor` collation. I2 (`NumberFormat`) is
 next ([JSC-269](roadmap.corrections.md#jsc-269)).*
+*Progress, 2026-10-04: I2 is built under proposed
+[JSD-0044](decisions/0044-intl-numberformat.md): `Intl.NumberFormat` whole, units, compact and
+scientific notation included, and `toLocaleString` of Number, BigInt, Array and TypedArray through
+it. The retained numbers agree with ICU 77.1 but for 24 named divergences. `NumberFormat` passes 280
+of 324 `intl402` variants, and every failing one expects a locale the data lacks or `DateTimeFormat`.
+I3 (`DateTimeFormat`) is next ([JSC-270](roadmap.corrections.md#jsc-270)).*
 
 #### F8 — Temporal
 

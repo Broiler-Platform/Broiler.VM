@@ -92,6 +92,13 @@ internal static class CldrTableGenerator
             "The ranges of Unicode 17.0.0's Soft_Dotted, which Lithuanian's casing reads: first, last, in hexadecimal.",
             database.BinaryProperties.Single(static property => property.ShortName == "Soft_Dotted").Ranges
                 .Select(static range => range.First.ToString("X4", CultureInfo.InvariantCulture) + "|" + range.Last.ToString("X4", CultureInfo.InvariantCulture)));
+        TextTable(text, "NumberLocales", "The number data of each supported language for the latn numbering system, flattened: language, key, value.", NumberLocales(cldr));
+        TextTable(text, "Currencies", "The currency names of each supported language: language, code, symbol, narrow symbol, singular name, plural name, name, and whether each symbol's first and last characters are symbols or separators.", Currencies(cldr, database));
+        TextTable(text, "CurrencyDigits", "The currencies whose fraction digits are not 2: code, digits.", CurrencyDigits(cldr));
+        TextTable(text, "NumberingSystems", "The numbering systems with a simple digit mapping: name, digits.", NumberingSystems(cldr));
+        TextTable(text, "Plurals", "The cardinal plural rules of each supported language: language, category, rule.", Plurals(cldr));
+        TextTable(text, "PluralRanges", "The plural range rules of each supported language: language, start, end, result.", PluralRanges(cldr));
+        TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
         ByteTable(text, "CollationRoot", "The root collation: allkeys_CLDR.txt in runs and entries, the implicit-weight ranges and the unified ideographs.", root.Encode(database));
         ByteTable(
             text,
@@ -308,6 +315,246 @@ internal static class CldrTableGenerator
         }
 
         return lines;
+    }
+
+    /// <summary>The languages whose number data the tables carry: the supported locales' languages.</summary>
+    internal static readonly string[] NumberLanguages = ["de", "en"];
+
+    /// <summary>ECMA-402's sanctioned single units (table 2 of the pinned edition).</summary>
+    internal static readonly string[] SanctionedUnits =
+    [
+        "acre", "bit", "byte", "celsius", "centimeter", "day", "degree", "fahrenheit", "fluid-ounce", "foot",
+        "gallon", "gigabit", "gigabyte", "gram", "hectare", "hour", "inch", "kilobit", "kilobyte", "kilogram",
+        "kilometer", "liter", "megabit", "megabyte", "meter", "microsecond", "mile", "mile-scandinavian",
+        "milliliter", "millimeter", "millisecond", "minute", "month", "nanosecond", "ounce", "percent", "petabyte",
+        "pound", "second", "stone", "terabit", "terabyte", "week", "yard", "year",
+    ];
+
+    /// <summary>
+    /// A table value with every character a line cannot carry written as <c>\uXXXX</c>: what is not
+    /// printable ASCII, and the backslash, the bar and the quote.
+    /// </summary>
+    internal static string Escape(string value)
+    {
+        var escaped = new StringBuilder(value.Length);
+
+        foreach (var c in value)
+        {
+            if (c < 0x20 || c > 0x7E || c is '\\' or '|' or '"')
+            {
+                escaped.Append("\\u").Append(((int)c).ToString("X4", CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                escaped.Append(c);
+            }
+        }
+
+        return escaped.ToString();
+    }
+
+    /// <summary>Each language's number data for <c>latn</c>, its JSON flattened to dotted keys.</summary>
+    internal static IEnumerable<string> NumberLocales(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var lines = new List<string>();
+
+        foreach (var language in NumberLanguages)
+        {
+            var numbers = Json(cldr, $"json/cldr-numbers-full/main/{language}/numbers.json")
+                .GetProperty("main").GetProperty(language).GetProperty("numbers");
+
+            foreach (var property in numbers.EnumerateObject())
+            {
+                var key = property.Name switch
+                {
+                    "symbols-numberSystem-latn" => "symbols",
+                    "decimalFormats-numberSystem-latn" => "decimal",
+                    "percentFormats-numberSystem-latn" => "percent",
+                    "scientificFormats-numberSystem-latn" => "scientific",
+                    "currencyFormats-numberSystem-latn" => "currency",
+                    "miscPatterns-numberSystem-latn" => "misc",
+                    "defaultNumberingSystem" or "minimumGroupingDigits" => property.Name,
+                    _ => null,
+                };
+
+                if (key is not null)
+                {
+                    Flatten(language, key, property.Value, lines);
+                }
+            }
+        }
+
+        return lines.Order(StringComparer.Ordinal);
+    }
+
+    private static void Flatten(string language, string key, JsonElement value, List<string> lines)
+    {
+        if (value.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in value.EnumerateObject())
+            {
+                Flatten(language, key + "." + property.Name, property.Value, lines);
+            }
+
+            return;
+        }
+
+        lines.Add($"{language}|{key}|{Escape(value.GetString()!)}");
+    }
+
+    /// <summary>Each language's currency symbols and names.</summary>
+    internal static IEnumerable<string> Currencies(IReadOnlyDictionary<string, byte[]> cldr, UnicodeDatabase database)
+    {
+        var lines = new List<string>();
+        var symbolic = database.GeneralCategories
+            .Where(static category => category.ShortName is "Sm" or "Sc" or "Sk" or "So" or "Zs" or "Zl" or "Zp")
+            .SelectMany(static category => category.Ranges)
+            .ToArray();
+
+        // CLDR'S CURRENCY SPACING asks whether a symbol's character next to the number is
+        // [[:^S:]&[:^Z:]]; the profile has no General_Category table, so each symbol states it here:
+        // `S` for a symbol or separator, `L` for anything else, first character then last.
+        string Ends(string symbol)
+        {
+            if (symbol.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            char Kind(int codePoint) => symbolic.Any(range => range.First <= codePoint && codePoint <= range.Last) ? 'S' : 'L';
+            return new string([Kind(char.ConvertToUtf32(symbol, 0)), Kind(char.IsLowSurrogate(symbol[^1]) ? char.ConvertToUtf32(symbol, symbol.Length - 2) : symbol[^1])]);
+        }
+
+        foreach (var language in NumberLanguages)
+        {
+            var currencies = Json(cldr, $"json/cldr-numbers-full/main/{language}/currencies.json")
+                .GetProperty("main").GetProperty(language).GetProperty("numbers").GetProperty("currencies");
+
+            foreach (var currency in currencies.EnumerateObject())
+            {
+                string Field(string name) =>
+                    currency.Value.TryGetProperty(name, out var field) ? Escape(field.GetString()!) : string.Empty;
+
+                string Raw(string name) =>
+                    currency.Value.TryGetProperty(name, out var field) ? field.GetString()! : string.Empty;
+
+                lines.Add(string.Join('|',
+                    language, currency.Name, Field("symbol"), Field("symbol-alt-narrow"),
+                    Field("displayName-count-one"), Field("displayName-count-other"), Field("displayName"),
+                    Ends(Raw("symbol")), Ends(Raw("symbol-alt-narrow"))));
+            }
+        }
+
+        return lines.Order(StringComparer.Ordinal);
+    }
+
+    /// <summary>CLDR's currency fraction digits that differ from its default of 2.</summary>
+    internal static IEnumerable<string> CurrencyDigits(IReadOnlyDictionary<string, byte[]> cldr) =>
+        Json(cldr, "json/cldr-core/supplemental/currencyData.json")
+            .GetProperty("supplemental").GetProperty("currencyData").GetProperty("fractions")
+            .EnumerateObject()
+            .Where(static currency => currency.Name != "DEFAULT" && currency.Value.GetProperty("_digits").GetString() != "2")
+            .Select(static currency => currency.Name + "|" + currency.Value.GetProperty("_digits").GetString())
+            .Order(StringComparer.Ordinal);
+
+    /// <summary>The numeric numbering systems and their digits.</summary>
+    internal static IEnumerable<string> NumberingSystems(IReadOnlyDictionary<string, byte[]> cldr) =>
+        Json(cldr, "json/cldr-core/supplemental/numberingSystems.json")
+            .GetProperty("supplemental").GetProperty("numberingSystems")
+            .EnumerateObject()
+            .Where(static system => system.Value.GetProperty("_type").GetString() == "numeric")
+            .Select(static system => system.Name + "|" + Escape(system.Value.GetProperty("_digits").GetString()!))
+            .Order(StringComparer.Ordinal);
+
+    /// <summary>Each language's cardinal plural rules, without their samples.</summary>
+    internal static IEnumerable<string> Plurals(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var rules = Json(cldr, "json/cldr-core/supplemental/plurals.json")
+            .GetProperty("supplemental").GetProperty("plurals-type-cardinal");
+
+        foreach (var language in NumberLanguages)
+        {
+            foreach (var rule in rules.GetProperty(language).EnumerateObject())
+            {
+                var text = rule.Value.GetString()!;
+                var samples = text.IndexOf('@', StringComparison.Ordinal);
+                yield return $"{language}|{rule.Name["pluralRule-count-".Length..]}|{Escape((samples < 0 ? text : text[..samples]).Trim())}";
+            }
+        }
+    }
+
+    /// <summary>Each language's plural range rules.</summary>
+    internal static IEnumerable<string> PluralRanges(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var ranges = Json(cldr, "json/cldr-core/supplemental/pluralRanges.json")
+            .GetProperty("supplemental").GetProperty("plurals");
+
+        foreach (var language in NumberLanguages)
+        {
+            foreach (var range in ranges.GetProperty(language).EnumerateObject())
+            {
+                // pluralRange-start-<start>-end-<end>
+                var parts = range.Name.Split('-');
+                yield return $"{language}|{parts[2]}|{parts[4]}|{range.Value.GetString()}";
+            }
+        }
+    }
+
+    /// <summary>
+    /// Each language's patterns for the sanctioned units and the compound units CLDR names whose
+    /// two halves are sanctioned, in the three widths, and each width's compound pattern.
+    /// </summary>
+    internal static IEnumerable<string> Units(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var lines = new List<string>();
+
+        bool Wanted(string unit)
+        {
+            if (SanctionedUnits.Contains(unit, StringComparer.Ordinal))
+            {
+                return true;
+            }
+
+            var per = unit.IndexOf("-per-", StringComparison.Ordinal);
+            return per > 0 &&
+                SanctionedUnits.Contains(unit[..per], StringComparer.Ordinal) &&
+                SanctionedUnits.Contains(unit[(per + "-per-".Length)..], StringComparer.Ordinal);
+        }
+
+        foreach (var language in NumberLanguages)
+        {
+            var units = Json(cldr, $"json/cldr-units-full/main/{language}/units.json")
+                .GetProperty("main").GetProperty(language).GetProperty("units");
+
+            foreach (var width in new[] { "long", "short", "narrow" })
+            {
+                foreach (var entry in units.GetProperty(width).EnumerateObject())
+                {
+                    if (entry.Name == "per")
+                    {
+                        lines.Add($"{language}|{width}|per|compoundUnitPattern|{Escape(entry.Value.GetProperty("compoundUnitPattern").GetString()!)}");
+                        continue;
+                    }
+
+                    var dash = entry.Name.IndexOf('-');
+
+                    if (dash < 0 || entry.Value.ValueKind != JsonValueKind.Object || !Wanted(entry.Name[(dash + 1)..]))
+                    {
+                        continue;
+                    }
+
+                    foreach (var field in entry.Value.EnumerateObject())
+                    {
+                        if (field.Name is "displayName" or "perUnitPattern" || field.Name.StartsWith("unitPattern-count-", StringComparison.Ordinal))
+                        {
+                            lines.Add($"{language}|{width}|{entry.Name[(dash + 1)..]}|{field.Name}|{Escape(field.Value.GetString()!)}");
+                        }
+                    }
+                }
+            }
+        }
+
+        return lines.Order(StringComparer.Ordinal);
     }
 
     /// <summary>A BCP 47 type: subtags of three to eight lowercase letters and digits.</summary>

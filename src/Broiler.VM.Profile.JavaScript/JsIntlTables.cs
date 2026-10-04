@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
-// Exempt:           8
-// Human-reviewed:   0/15
+// Relevant units:   18
+// Annotated:        18/18
+// Exempt:           9
+// Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       15
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -65,7 +65,11 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly System.Lazy<(int First, int Last)[]> softDotted;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0DA634
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=228073
+    // Broiler-Human:        PENDING
+    private readonly System.Lazy<JsNumberData> numbers;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50B0C8
     // Broiler-Human:        PENDING
     internal JsIntlTables(Format.IJsIntlData data)
     {
@@ -77,6 +81,7 @@ internal sealed class JsIntlTables
         collation = new(() => new JsCollationData(
             data.Table(Format.JsIntlTable.CollationRoot), data.Table(Format.JsIntlTable.CollationTailorings)));
         softDotted = new(ReadRanges);
+        numbers = new(ReadNumbers);
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -161,6 +166,116 @@ internal sealed class JsIntlTables
         }
 
         return false;
+    }
+
+    /// <summary>The number, currency, unit and plural data, decoded the first time a number is formatted.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C30BD0
+    // Broiler-Human:        PENDING
+    internal JsNumberData Numbers => numbers.Value;
+
+    /// <summary>A table value with its <c>\uXXXX</c> escapes resolved.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=771818
+    // Broiler-Human:        PENDING
+    internal static string Unescape(string value)
+    {
+        if (value.IndexOf('\\') < 0)
+        {
+            return value;
+        }
+
+        var text = new System.Text.StringBuilder(value.Length);
+
+        for (var at = 0; at < value.Length; at++)
+        {
+            if (value[at] == '\\' && at + 5 < value.Length && value[at + 1] == 'u')
+            {
+                text.Append((char)int.Parse(value.Substring(at + 2, 4), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture));
+                at += 5;
+                continue;
+            }
+
+            text.Append(value[at]);
+        }
+
+        return text.ToString();
+    }
+
+    /// <summary>Decodes the number tables.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=65D45E
+    // Broiler-Human:        PENDING
+    private JsNumberData ReadNumbers()
+    {
+        var data = new JsNumberData();
+
+        foreach (var line in Lines(Format.JsIntlTable.NumberLocales))
+        {
+            var fields = line.Split('|');
+
+            if (!data.Locales.TryGetValue(fields[0], out var locale))
+            {
+                locale = new(System.StringComparer.Ordinal);
+                data.Locales[fields[0]] = locale;
+            }
+
+            locale[fields[1]] = Unescape(fields[2]);
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.Currencies))
+        {
+            var fields = line.Split('|');
+            data.Currencies[fields[0] + "|" + fields[1]] = new JsCurrencyNames(
+                Unescape(fields[2]), Unescape(fields[3]), Unescape(fields[4]), Unescape(fields[5]), Unescape(fields[6]), fields[7], fields[8]);
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.CurrencyDigits))
+        {
+            var bar = line.IndexOf('|');
+            data.CurrencyDigits[line[..bar]] = int.Parse(line[(bar + 1)..], System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.NumberingSystems))
+        {
+            var bar = line.IndexOf('|');
+            var digits = Unescape(line[(bar + 1)..]);
+            var list = new string[10];
+            var index = 0;
+
+            for (var at = 0; at < digits.Length && index < 10; index++)
+            {
+                var width = char.IsHighSurrogate(digits[at]) && at + 1 < digits.Length ? 2 : 1;
+                list[index] = digits.Substring(at, width);
+                at += width;
+            }
+
+            data.NumberingSystems[line[..bar]] = list;
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.Plurals))
+        {
+            var fields = line.Split('|');
+
+            if (!data.Plurals.TryGetValue(fields[0], out var rules))
+            {
+                rules = [];
+                data.Plurals[fields[0]] = rules;
+            }
+
+            rules.Add((fields[1], JsPluralRule.Parse(Unescape(fields[2]))));
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.PluralRanges))
+        {
+            var fields = line.Split('|');
+            data.PluralRanges[fields[0] + "|" + fields[1] + "|" + fields[2]] = fields[3];
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.Units))
+        {
+            var fields = line.Split('|');
+            data.Units[fields[0] + "|" + fields[1] + "|" + fields[2] + "|" + fields[3]] = Unescape(fields[4]);
+        }
+
+        return data;
     }
 
     /// <summary>The lines of a text table.</summary>

@@ -16,10 +16,11 @@ JSON - is the starting point phase F7 takes.
 |---|---|
 | Version | **CLDR 48.2.0**, whose collation data states UCA 17.0.0 - the Unicode version [`../../unicode/pins/`](../../unicode/pins/README.md) pins, so collation, normalization and casing read one UCD |
 | JSON | the npm packages `cldr-core` and `cldr-bcp47` at 48.2.0, each tarball checked against the registry's sha512 integrity before it was unpacked; under [`cldr-48.2.0/json/`](cldr-48.2.0/json) at their package paths: `availableLocales.json`, `defaultContent.json`, `package.json`, and from `supplemental/` the likely subtags, the aliases and the parent locales; and every `bcp47/` file |
+| Numbers, currencies, units, plurals | added 2026-10-04 for slice I2 (`Intl.NumberFormat`): the npm packages `cldr-numbers-full` and `cldr-units-full` at 48.2.0, integrity-checked the same way, under [`cldr-48.2.0/json/`](cldr-48.2.0/json): `numbers.json` for `de`, `en` and `und`, `currencies.json` for `de` and `en`, `units.json` for `de` and `en`, and both `package.json` files; and from `cldr-core`'s `supplemental/`, `currencyData.json`, `numberingSystems.json`, `plurals.json` and `pluralRanges.json` |
 | Collation | from the CLDR repository at the tag `release-48-2`, under [`cldr-48.2.0/common/`](cldr-48.2.0/common) at their repository paths: `uca/allkeys_CLDR.txt`, the root collation in DUCET form as CLDR modifies it, and `collation/root.xml`, `de.xml` and `en.xml` |
 | Test-only | `uca/CollationTest_CLDR_NON_IGNORABLE_SHORT.txt` and `uca/CollationTest_CLDR_SHIFTED_SHORT.txt`: no table is generated from them; they are the conformance input JSD-0027's slice I1 names |
 | Licence | [`cldr-LICENSE.txt`](cldr-LICENSE.txt), the repository's `LICENSE` at that tag: the Unicode License v3 |
-| Retrieved | 2026-10-04, **twice**, into two directories; `diff -r` found them byte-identical, and the first copy is the one archived |
+| Retrieved | 2026-10-04, **twice**, into two directories; `diff -r` found them byte-identical, and the first copy is the one archived. The slice I2 files were retrieved twice the same day, separately, and compared the same way |
 
 The retrieval was performed by Claude on 2026-10-04. The repository owner asked that day for the
 roadmap's phases to be continued; phase F7 begins with this archive, and JSD-0027's recommendation

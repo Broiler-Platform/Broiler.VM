@@ -11752,3 +11752,62 @@ the ledger's `absent-globals` block.
 - JSD-0043 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-270
+
+**Where:** phase F7's slice I2. `Intl.NumberFormat` (`JsRealm.NumberFormat.cs`, `JsNumberFormatter.cs`,
+`JsDecimal.cs`, `JsNumberData.cs`, `JsPluralRule.cs`). `Number`, `BigInt`, `Array` and
+`%TypedArray%` `toLocaleString`. The CLDR archive and its pin, the generator's seven new tables, and
+the format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7: I2 is "`Intl.NumberFormat`
+  (decimal, percent, currency)" with "Digit options, rounding, grouping, `signDisplay`,
+  `formatToParts`; `Number.prototype.toLocaleString` routes through it. Units, compact and scientific
+  notation are a later slice". Its acceptance names "a retained `(locale, options, value) → string`
+  dataset covering `-0`, `NaN`, `±Infinity`, `1e21`, half-even/half-expand ties and grouping at 3, 4
+  and 5 digits".
+- [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) section 7: "`Intl.NumberFormat` (I2) ...
+  are later slices"; `Intl.supportedValuesOf` "arrives with I2 and I3".
+- `Array.prototype.toLocaleString` and `%TypedArray%.prototype.toLocaleString` called each element's
+  method with no arguments, which ECMA-262 states without ECMA-402.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.NumberFormat` is built whole**, under proposed [JSD-0044](decisions/0044-intl-numberformat.md):
+  every style, every notation, every option the current ECMA-402 draft reads, all six methods, and the
+  normative optional legacy constructor path. **Units, compact and scientific notation are in it**,
+  against JSD-0027's line. ECMA-402 admits those options on every format, so leaving them out would
+  have published the partial surface section 6 refused.
+- **Number and BigInt `toLocaleString` route through it, and Array and TypedArray
+  `toLocaleString` hand each element the locales and options**, where `Intl` is built.
+- **The archive grows under N27**: number, currency, unit and plural data from `cldr-numbers-full`,
+  `cldr-units-full` and `cldr-core` at 48.2.0, retrieved twice and compared. **N28's file grows by
+  seven tables**, to 438,831 bytes of data, still under the provisional 512 KiB bound. A currency
+  symbol's ends are classified from the pinned UCD for CLDR's currency spacing.
+- **Values are exact decimals** read as ToIntlMathematicalValue reads them, RoundMVResult's zero and
+  infinity included. They are rounded on their digit strings in time linear in their length.
+- **Two identifiers were renamed for rule X4**: the raw formats are `ToRawFixed` and
+  `ToRawPrecision`, as ECMA-402 names them. X4 confines the bare name `Fixed` to the native scan and
+  the lowering.
+- **The retained numbers dataset**
+  ([`src/tests/cldr/numbers/`](../../tests/cldr/numbers/README.md)) has 2,241 lines against Node
+  22.22.0's ICU 77.1. The profile answers all of them as ICU did but for 24 lines in four groups, each
+  checked against the draft and named in `divergences.txt`. It first differed in one more: a plural
+  range CLDR does not name now resolves to `other`, as ICU resolves it.
+- **ECMA-402 clause numbers in the code are the current draft's** (14th edition, read on
+  2026-10-04), for the I1 code too, which had mixed editions' numbers.
+- **Checks**: one new slice-compiler check, 626 in all. It holds the numbers dataset.
+- **test262**, against the run JSC-269 records: `test/intl402/NumberFormat` passes 280 of 324 scored
+  variants, from 2. The 44 failing are 22 files: 21 expect `ja-JP`, `ko-KR`, `zh-TW` or `en-IN`, and
+  `this-value-ignored.js` needs `DateTimeFormat`. `Number`, `BigInt`, `Array` and `TypedArray`
+  `toLocaleString` pass every variant under `intl402` and `test/built-ins`.
+
+**What must not be read as repaired.**
+- **`ja`, `ko`, `zh-TW` and `en-IN` are not in the data**, and the tests that expect them fail.
+- **Numbering systems other than `latn` write the locale's `latn` symbols**, where ICU writes
+  `arab` and `arabext` with their own.
+- **`Intl.supportedValuesOf` waits for I3.** `DateTimeFormat`, `PluralRules`, `Locale` and the other
+  constructors are absent, and the phase's exit gate is not met.
+- JSD-0044 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

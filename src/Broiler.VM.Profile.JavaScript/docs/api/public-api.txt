@@ -1907,11 +1907,18 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Aliases : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.CollationRoot : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 5
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.CollationTailorings : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 6
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Currencies : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 9
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.CurrencyDigits : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 10
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Extensions : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 3
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.LikelySubtags : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Locales : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 4
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.None : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 0
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.NumberLocales : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 8
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.NumberingSystems : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 11
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.PluralRanges : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 13
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Plurals : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 12
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.SoftDotted : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 7
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Units : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 14
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.value__ : System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsLocalExportRow..ctor(System.UInt32 NameConstant, System.UInt32 Slot) : void
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsLocalExportRow.Deconstruct(out System.UInt32 NameConstant, out System.UInt32 Slot) : System.Void

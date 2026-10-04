@@ -54,7 +54,7 @@ public sealed class JsCldrData : IJsIntlData
     public string CldrVersion => JsCldrTables.Version;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A77D44
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86E5B2
     // Broiler-Human:        PENDING
     public System.ReadOnlySpan<byte> Table(JsIntlTable table) => table switch
     {
@@ -65,6 +65,13 @@ public sealed class JsCldrData : IJsIntlData
         JsIntlTable.CollationRoot => JsCldrTables.CollationRoot,
         JsIntlTable.CollationTailorings => JsCldrTables.CollationTailorings,
         JsIntlTable.SoftDotted => JsCldrTables.SoftDotted,
+        JsIntlTable.NumberLocales => JsCldrTables.NumberLocales,
+        JsIntlTable.Currencies => JsCldrTables.Currencies,
+        JsIntlTable.CurrencyDigits => JsCldrTables.CurrencyDigits,
+        JsIntlTable.NumberingSystems => JsCldrTables.NumberingSystems,
+        JsIntlTable.Plurals => JsCldrTables.Plurals,
+        JsIntlTable.PluralRanges => JsCldrTables.PluralRanges,
+        JsIntlTable.Units => JsCldrTables.Units,
         _ => default,
     };
 }

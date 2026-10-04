@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           8
+// Exempt:           15
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -10348,6 +10348,2007 @@ internal static class JsCldrTables
         1DF1A|1DF1A
         1E04C|1E04D
         1E068|1E068
+        """u8;
+
+    /// <summary>The number data of each supported language for the latn numbering system, flattened: language, key, value.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> NumberLocales =>
+        """
+        de|currency.accounting-alphaNextToNumber|#,##0.00\u00A0\u00A4
+        de|currency.accounting-noCurrency|#,##0.00
+        de|currency.accounting|#,##0.00\u00A0\u00A4
+        de|currency.currencyPatternAppendISO|{0}\u00A0\u00A4\u00A4
+        de|currency.currencySpacing.afterCurrency.currencyMatch|[[:^S:]&[:^Z:]]
+        de|currency.currencySpacing.afterCurrency.insertBetween|\u00A0
+        de|currency.currencySpacing.afterCurrency.surroundingMatch|[:digit:]
+        de|currency.currencySpacing.beforeCurrency.currencyMatch|[[:^S:]&[:^Z:]]
+        de|currency.currencySpacing.beforeCurrency.insertBetween|\u00A0
+        de|currency.currencySpacing.beforeCurrency.surroundingMatch|[:digit:]
+        de|currency.short.standard.1000-count-one|0
+        de|currency.short.standard.1000-count-other|0
+        de|currency.short.standard.10000-count-one|0
+        de|currency.short.standard.10000-count-other|0
+        de|currency.short.standard.100000-count-one|0
+        de|currency.short.standard.100000-count-other|0
+        de|currency.short.standard.1000000-count-one|0\u00A0Mio'.'\u00A0\u00A4
+        de|currency.short.standard.1000000-count-other|0\u00A0Mio'.'\u00A0\u00A4
+        de|currency.short.standard.10000000-count-one|00\u00A0Mio'.'\u00A0\u00A4
+        de|currency.short.standard.10000000-count-other|00\u00A0Mio'.'\u00A0\u00A4
+        de|currency.short.standard.100000000-count-one|000\u00A0Mio'.'\u00A0\u00A4
+        de|currency.short.standard.100000000-count-other|000\u00A0Mio'.'\u00A0\u00A4
+        de|currency.short.standard.1000000000-count-one|0\u00A0Mrd'.'\u00A0\u00A4
+        de|currency.short.standard.1000000000-count-other|0\u00A0Mrd'.'\u00A0\u00A4
+        de|currency.short.standard.10000000000-count-one|00\u00A0Mrd'.'\u00A0\u00A4
+        de|currency.short.standard.10000000000-count-other|00\u00A0Mrd'.'\u00A0\u00A4
+        de|currency.short.standard.100000000000-count-one|000\u00A0Mrd'.'\u00A0\u00A4
+        de|currency.short.standard.100000000000-count-other|000\u00A0Mrd'.'\u00A0\u00A4
+        de|currency.short.standard.1000000000000-count-one|0\u00A0Bio'.'\u00A0\u00A4
+        de|currency.short.standard.1000000000000-count-other|0\u00A0Bio'.'\u00A0\u00A4
+        de|currency.short.standard.10000000000000-count-one|00\u00A0Bio'.'\u00A0\u00A4
+        de|currency.short.standard.10000000000000-count-other|00\u00A0Bio'.'\u00A0\u00A4
+        de|currency.short.standard.100000000000000-count-one|000\u00A0Bio'.'\u00A0\u00A4
+        de|currency.short.standard.100000000000000-count-other|000\u00A0Bio'.'\u00A0\u00A4
+        de|currency.standard-alphaNextToNumber|#,##0.00\u00A0\u00A4
+        de|currency.standard-noCurrency|#,##0.00
+        de|currency.standard|#,##0.00\u00A0\u00A4
+        de|currency.unitPattern-count-other|{0} {1}
+        de|decimal.long.decimalFormat.1000-count-one|0 Tausend
+        de|decimal.long.decimalFormat.1000-count-other|0 Tausend
+        de|decimal.long.decimalFormat.10000-count-one|00 Tausend
+        de|decimal.long.decimalFormat.10000-count-other|00 Tausend
+        de|decimal.long.decimalFormat.100000-count-one|000 Tausend
+        de|decimal.long.decimalFormat.100000-count-other|000 Tausend
+        de|decimal.long.decimalFormat.1000000-count-one|0 Million
+        de|decimal.long.decimalFormat.1000000-count-other|0 Millionen
+        de|decimal.long.decimalFormat.10000000-count-one|00 Millionen
+        de|decimal.long.decimalFormat.10000000-count-other|00 Millionen
+        de|decimal.long.decimalFormat.100000000-count-one|000 Millionen
+        de|decimal.long.decimalFormat.100000000-count-other|000 Millionen
+        de|decimal.long.decimalFormat.1000000000-count-one|0 Milliarde
+        de|decimal.long.decimalFormat.1000000000-count-other|0 Milliarden
+        de|decimal.long.decimalFormat.10000000000-count-one|00 Milliarden
+        de|decimal.long.decimalFormat.10000000000-count-other|00 Milliarden
+        de|decimal.long.decimalFormat.100000000000-count-one|000 Milliarden
+        de|decimal.long.decimalFormat.100000000000-count-other|000 Milliarden
+        de|decimal.long.decimalFormat.1000000000000-count-one|0 Billion
+        de|decimal.long.decimalFormat.1000000000000-count-other|0 Billionen
+        de|decimal.long.decimalFormat.10000000000000-count-one|00 Billionen
+        de|decimal.long.decimalFormat.10000000000000-count-other|00 Billionen
+        de|decimal.long.decimalFormat.100000000000000-count-one|000 Billionen
+        de|decimal.long.decimalFormat.100000000000000-count-other|000 Billionen
+        de|decimal.short.decimalFormat.1000-count-one|0
+        de|decimal.short.decimalFormat.1000-count-other|0
+        de|decimal.short.decimalFormat.10000-count-one|0
+        de|decimal.short.decimalFormat.10000-count-other|0
+        de|decimal.short.decimalFormat.100000-count-one|0
+        de|decimal.short.decimalFormat.100000-count-other|0
+        de|decimal.short.decimalFormat.1000000-count-one|0\u00A0Mio'.'
+        de|decimal.short.decimalFormat.1000000-count-other|0\u00A0Mio'.'
+        de|decimal.short.decimalFormat.10000000-count-one|00\u00A0Mio'.'
+        de|decimal.short.decimalFormat.10000000-count-other|00\u00A0Mio'.'
+        de|decimal.short.decimalFormat.100000000-count-one|000\u00A0Mio'.'
+        de|decimal.short.decimalFormat.100000000-count-other|000\u00A0Mio'.'
+        de|decimal.short.decimalFormat.1000000000-count-one|0\u00A0Mrd'.'
+        de|decimal.short.decimalFormat.1000000000-count-other|0\u00A0Mrd'.'
+        de|decimal.short.decimalFormat.10000000000-count-one|00\u00A0Mrd'.'
+        de|decimal.short.decimalFormat.10000000000-count-other|00\u00A0Mrd'.'
+        de|decimal.short.decimalFormat.100000000000-count-one|000\u00A0Mrd'.'
+        de|decimal.short.decimalFormat.100000000000-count-other|000\u00A0Mrd'.'
+        de|decimal.short.decimalFormat.1000000000000-count-one|0\u00A0Bio'.'
+        de|decimal.short.decimalFormat.1000000000000-count-other|0\u00A0Bio'.'
+        de|decimal.short.decimalFormat.10000000000000-count-one|00\u00A0Bio'.'
+        de|decimal.short.decimalFormat.10000000000000-count-other|00\u00A0Bio'.'
+        de|decimal.short.decimalFormat.100000000000000-count-one|000\u00A0Bio'.'
+        de|decimal.short.decimalFormat.100000000000000-count-other|000\u00A0Bio'.'
+        de|decimal.standard|#,##0.###
+        de|defaultNumberingSystem|latn
+        de|minimumGroupingDigits|1
+        de|misc.approximately|\u2248{0}
+        de|misc.atLeast|{0}+
+        de|misc.atMost|\u2264{0}
+        de|misc.range|{0}\u2013{1}
+        de|percent.standard|#,##0\u00A0%
+        de|scientific.standard|#E0
+        de|symbols.approximatelySign|\u2248
+        de|symbols.decimal|,
+        de|symbols.exponential|E
+        de|symbols.group|.
+        de|symbols.infinity|\u221E
+        de|symbols.list|;
+        de|symbols.minusSign|-
+        de|symbols.nan|NaN
+        de|symbols.perMille|\u2030
+        de|symbols.percentSign|%
+        de|symbols.plusSign|+
+        de|symbols.superscriptingExponent|\u00B7
+        de|symbols.timeSeparator|:
+        en|currency.accounting-alphaNextToNumber|\u00A4\u00A0#,##0.00;(\u00A4\u00A0#,##0.00)
+        en|currency.accounting-noCurrency|#,##0.00;(#,##0.00)
+        en|currency.accounting|\u00A4#,##0.00;(\u00A4#,##0.00)
+        en|currency.currencyPatternAppendISO|{0}\u00A0\u00A4\u00A4
+        en|currency.currencySpacing.afterCurrency.currencyMatch|[[:^S:]&[:^Z:]]
+        en|currency.currencySpacing.afterCurrency.insertBetween|\u00A0
+        en|currency.currencySpacing.afterCurrency.surroundingMatch|[:digit:]
+        en|currency.currencySpacing.beforeCurrency.currencyMatch|[[:^S:]&[:^Z:]]
+        en|currency.currencySpacing.beforeCurrency.insertBetween|\u00A0
+        en|currency.currencySpacing.beforeCurrency.surroundingMatch|[:digit:]
+        en|currency.short.standard.1000-count-one-alt-alphaNextToNumber|\u00A4\u00A00K
+        en|currency.short.standard.1000-count-one|\u00A40K
+        en|currency.short.standard.1000-count-other-alt-alphaNextToNumber|\u00A4\u00A00K
+        en|currency.short.standard.1000-count-other|\u00A40K
+        en|currency.short.standard.10000-count-one-alt-alphaNextToNumber|\u00A4\u00A000K
+        en|currency.short.standard.10000-count-one|\u00A400K
+        en|currency.short.standard.10000-count-other-alt-alphaNextToNumber|\u00A4\u00A000K
+        en|currency.short.standard.10000-count-other|\u00A400K
+        en|currency.short.standard.100000-count-one-alt-alphaNextToNumber|\u00A4\u00A0000K
+        en|currency.short.standard.100000-count-one|\u00A4000K
+        en|currency.short.standard.100000-count-other-alt-alphaNextToNumber|\u00A4\u00A0000K
+        en|currency.short.standard.100000-count-other|\u00A4000K
+        en|currency.short.standard.1000000-count-one-alt-alphaNextToNumber|\u00A4\u00A00M
+        en|currency.short.standard.1000000-count-one|\u00A40M
+        en|currency.short.standard.1000000-count-other-alt-alphaNextToNumber|\u00A4\u00A00M
+        en|currency.short.standard.1000000-count-other|\u00A40M
+        en|currency.short.standard.10000000-count-one-alt-alphaNextToNumber|\u00A4\u00A000M
+        en|currency.short.standard.10000000-count-one|\u00A400M
+        en|currency.short.standard.10000000-count-other-alt-alphaNextToNumber|\u00A4\u00A000M
+        en|currency.short.standard.10000000-count-other|\u00A400M
+        en|currency.short.standard.100000000-count-one-alt-alphaNextToNumber|\u00A4\u00A0000M
+        en|currency.short.standard.100000000-count-one|\u00A4000M
+        en|currency.short.standard.100000000-count-other-alt-alphaNextToNumber|\u00A4\u00A0000M
+        en|currency.short.standard.100000000-count-other|\u00A4000M
+        en|currency.short.standard.1000000000-count-one-alt-alphaNextToNumber|\u00A4\u00A00B
+        en|currency.short.standard.1000000000-count-one|\u00A40B
+        en|currency.short.standard.1000000000-count-other-alt-alphaNextToNumber|\u00A4\u00A00B
+        en|currency.short.standard.1000000000-count-other|\u00A40B
+        en|currency.short.standard.10000000000-count-one-alt-alphaNextToNumber|\u00A4\u00A000B
+        en|currency.short.standard.10000000000-count-one|\u00A400B
+        en|currency.short.standard.10000000000-count-other-alt-alphaNextToNumber|\u00A4\u00A000B
+        en|currency.short.standard.10000000000-count-other|\u00A400B
+        en|currency.short.standard.100000000000-count-one-alt-alphaNextToNumber|\u00A4\u00A0000B
+        en|currency.short.standard.100000000000-count-one|\u00A4000B
+        en|currency.short.standard.100000000000-count-other-alt-alphaNextToNumber|\u00A4\u00A0000B
+        en|currency.short.standard.100000000000-count-other|\u00A4000B
+        en|currency.short.standard.1000000000000-count-one-alt-alphaNextToNumber|\u00A4\u00A00T
+        en|currency.short.standard.1000000000000-count-one|\u00A40T
+        en|currency.short.standard.1000000000000-count-other-alt-alphaNextToNumber|\u00A4\u00A00T
+        en|currency.short.standard.1000000000000-count-other|\u00A40T
+        en|currency.short.standard.10000000000000-count-one-alt-alphaNextToNumber|\u00A4\u00A000T
+        en|currency.short.standard.10000000000000-count-one|\u00A400T
+        en|currency.short.standard.10000000000000-count-other-alt-alphaNextToNumber|\u00A4\u00A000T
+        en|currency.short.standard.10000000000000-count-other|\u00A400T
+        en|currency.short.standard.100000000000000-count-one-alt-alphaNextToNumber|\u00A4\u00A0000T
+        en|currency.short.standard.100000000000000-count-one|\u00A4000T
+        en|currency.short.standard.100000000000000-count-other-alt-alphaNextToNumber|\u00A4\u00A0000T
+        en|currency.short.standard.100000000000000-count-other|\u00A4000T
+        en|currency.standard-alphaNextToNumber|\u00A4\u00A0#,##0.00
+        en|currency.standard-noCurrency|#,##0.00
+        en|currency.standard|\u00A4#,##0.00
+        en|currency.unitPattern-count-one|{0} {1}
+        en|currency.unitPattern-count-other|{0} {1}
+        en|decimal.long.decimalFormat.1000-count-one|0 thousand
+        en|decimal.long.decimalFormat.1000-count-other|0 thousand
+        en|decimal.long.decimalFormat.10000-count-one|00 thousand
+        en|decimal.long.decimalFormat.10000-count-other|00 thousand
+        en|decimal.long.decimalFormat.100000-count-one|000 thousand
+        en|decimal.long.decimalFormat.100000-count-other|000 thousand
+        en|decimal.long.decimalFormat.1000000-count-one|0 million
+        en|decimal.long.decimalFormat.1000000-count-other|0 million
+        en|decimal.long.decimalFormat.10000000-count-one|00 million
+        en|decimal.long.decimalFormat.10000000-count-other|00 million
+        en|decimal.long.decimalFormat.100000000-count-one|000 million
+        en|decimal.long.decimalFormat.100000000-count-other|000 million
+        en|decimal.long.decimalFormat.1000000000-count-one|0 billion
+        en|decimal.long.decimalFormat.1000000000-count-other|0 billion
+        en|decimal.long.decimalFormat.10000000000-count-one|00 billion
+        en|decimal.long.decimalFormat.10000000000-count-other|00 billion
+        en|decimal.long.decimalFormat.100000000000-count-one|000 billion
+        en|decimal.long.decimalFormat.100000000000-count-other|000 billion
+        en|decimal.long.decimalFormat.1000000000000-count-one|0 trillion
+        en|decimal.long.decimalFormat.1000000000000-count-other|0 trillion
+        en|decimal.long.decimalFormat.10000000000000-count-one|00 trillion
+        en|decimal.long.decimalFormat.10000000000000-count-other|00 trillion
+        en|decimal.long.decimalFormat.100000000000000-count-one|000 trillion
+        en|decimal.long.decimalFormat.100000000000000-count-other|000 trillion
+        en|decimal.short.decimalFormat.1000-count-one|0K
+        en|decimal.short.decimalFormat.1000-count-other|0K
+        en|decimal.short.decimalFormat.10000-count-one|00K
+        en|decimal.short.decimalFormat.10000-count-other|00K
+        en|decimal.short.decimalFormat.100000-count-one|000K
+        en|decimal.short.decimalFormat.100000-count-other|000K
+        en|decimal.short.decimalFormat.1000000-count-one|0M
+        en|decimal.short.decimalFormat.1000000-count-other|0M
+        en|decimal.short.decimalFormat.10000000-count-one|00M
+        en|decimal.short.decimalFormat.10000000-count-other|00M
+        en|decimal.short.decimalFormat.100000000-count-one|000M
+        en|decimal.short.decimalFormat.100000000-count-other|000M
+        en|decimal.short.decimalFormat.1000000000-count-one|0B
+        en|decimal.short.decimalFormat.1000000000-count-other|0B
+        en|decimal.short.decimalFormat.10000000000-count-one|00B
+        en|decimal.short.decimalFormat.10000000000-count-other|00B
+        en|decimal.short.decimalFormat.100000000000-count-one|000B
+        en|decimal.short.decimalFormat.100000000000-count-other|000B
+        en|decimal.short.decimalFormat.1000000000000-count-one|0T
+        en|decimal.short.decimalFormat.1000000000000-count-other|0T
+        en|decimal.short.decimalFormat.10000000000000-count-one|00T
+        en|decimal.short.decimalFormat.10000000000000-count-other|00T
+        en|decimal.short.decimalFormat.100000000000000-count-one|000T
+        en|decimal.short.decimalFormat.100000000000000-count-other|000T
+        en|decimal.standard|#,##0.###
+        en|defaultNumberingSystem|latn
+        en|minimumGroupingDigits|1
+        en|misc.approximately|~{0}
+        en|misc.atLeast|{0}+
+        en|misc.atMost|\u2264{0}
+        en|misc.range|{0}\u2013{1}
+        en|percent.standard|#,##0%
+        en|scientific.standard|#E0
+        en|symbols.approximatelySign|~
+        en|symbols.decimal|.
+        en|symbols.exponential|E
+        en|symbols.group|,
+        en|symbols.infinity|\u221E
+        en|symbols.list|;
+        en|symbols.minusSign|-
+        en|symbols.nan|NaN
+        en|symbols.perMille|\u2030
+        en|symbols.percentSign|%
+        en|symbols.plusSign|+
+        en|symbols.superscriptingExponent|\u00D7
+        en|symbols.timeSeparator|:
+        """u8;
+
+    /// <summary>The currency names of each supported language: language, code, symbol, narrow symbol, singular name, plural name, name, and whether each symbol's first and last characters are symbols or separators.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> Currencies =>
+        """
+        de|ADP|||Andorranische Pesete|Andorranische Peseten|Andorranische Pesete||
+        de|AED||||VAE-Dirham|VAE-Dirham||
+        de|AFA||||Afghanische Afghani (1927\u20132002)|Afghanische Afghani (1927\u20132002)||
+        de|AFN||\u060B|Afghanischer Afghani|Afghanische Afghani|Afghanischer Afghani||SS
+        de|ALK|||Albanischer Lek (1946\u20131965)|Albanische Lek (1946\u20131965)|Albanischer Lek (1946\u20131965)||
+        de|ALL|||Albanischer Lek|Albanische Lek|Albanischer Lek||
+        de|AMD||\u058F|Armenischer Dram|Armenische Dram|Armenischer Dram||SS
+        de|ANG||||Niederl\u00E4ndische-Antillen-Gulden|Niederl\u00E4ndische-Antillen-Gulden||
+        de|AOA||Kz|Angolanischer Kwanza|Angolanische Kwanza|Angolanischer Kwanza||LL
+        de|AOK|||Angolanischer Kwanza (1977\u20131990)|Angolanische Kwanza (1977\u20131990)|Angolanischer Kwanza (1977\u20131990)||
+        de|AON|||Angolanischer Neuer Kwanza (1990\u20132000)|Angolanische Neue Kwanza (1990\u20132000)|Angolanischer Neuer Kwanza (1990\u20132000)||
+        de|AOR|||Angolanischer Kwanza Reajustado (1995\u20131999)|Angolanische Kwanza Reajustado (1995\u20131999)|Angolanischer Kwanza Reajustado (1995\u20131999)||
+        de|ARA|||Argentinischer Austral|Argentinische Austral|Argentinischer Austral||
+        de|ARL|||Argentinischer Peso Ley (1970\u20131983)|Argentinische Pesos Ley (1970\u20131983)|Argentinischer Peso Ley (1970\u20131983)||
+        de|ARM|||Argentinischer Peso (1881\u20131970)|Argentinische Pesos (1881\u20131970)|Argentinischer Peso (1881\u20131970)||
+        de|ARP|||Argentinischer Peso (1983\u20131985)|Argentinische Peso (1983\u20131985)|Argentinischer Peso (1983\u20131985)||
+        de|ARS||$|Argentinischer Peso|Argentinische Pesos|Argentinischer Peso||SS
+        de|ATS|\u00F6S||\u00D6sterreichischer Schilling|\u00D6sterreichische Schilling|\u00D6sterreichischer Schilling|LL|
+        de|AUD|AU$|$|Australischer Dollar|Australische Dollar|Australischer Dollar|LS|SS
+        de|AWG||||Aruba-Florin|Aruba-Florin||
+        de|AZM||||Aserbaidschan-Manat (1993\u20132006)|Aserbaidschan-Manat (1993\u20132006)||
+        de|AZN||\u20BC||Aserbaidschan-Manat|Aserbaidschan-Manat||SS
+        de|BAD||||Bosnien und Herzegowina Dinar (1992\u20131994)|Bosnien und Herzegowina Dinar (1992\u20131994)||
+        de|BAM||KM||Konvertible Mark Bosnien und Herzegowina|Konvertible Mark Bosnien und Herzegowina||LL
+        de|BAN|||Bosnien und Herzegowina Neuer Dinar (1994\u20131997)|Bosnien und Herzegowina Neue Dinar (1994\u20131997)|Bosnien und Herzegowina Neuer Dinar (1994\u20131997)||
+        de|BBD||$||Barbados-Dollar|Barbados-Dollar||SS
+        de|BDT||\u09F3||Bangladesch-Taka|Bangladesch-Taka||SS
+        de|BEC|||Belgischer Franc (konvertibel)|Belgische Franc (konvertibel)|Belgischer Franc (konvertibel)||
+        de|BEF|||Belgischer Franc|Belgische Franc|Belgischer Franc||
+        de|BEL|||Belgischer Finanz-Franc|Belgische Finanz-Franc|Belgischer Finanz-Franc||
+        de|BGL||||Bulgarische Lew (1962\u20131999)|Bulgarische Lew (1962\u20131999)||
+        de|BGM|BGK||Bulgarischer Lew (1952\u20131962)|Bulgarische Lew (1952\u20131962)|Bulgarischer Lew (1952\u20131962)|LL|
+        de|BGN|||Bulgarischer Lew|Bulgarische Lew|Bulgarischer Lew||
+        de|BGO|BGJ||Bulgarischer Lew (1879\u20131952)|Bulgarische Lew (1879\u20131952)|Bulgarischer Lew (1879\u20131952)|LL|
+        de|BHD||||Bahrain-Dinar|Bahrain-Dinar||
+        de|BIF|||Burundi-Franc|Burundi-Francs|Burundi-Franc||
+        de|BMD||$||Bermuda-Dollar|Bermuda-Dollar||SS
+        de|BND||$||Brunei-Dollar|Brunei-Dollar||SS
+        de|BOB||Bs|Bolivianischer Boliviano|Bolivianische Bolivianos|Bolivianischer Boliviano||LL
+        de|BOL|||Bolivianischer Boliviano (1863\u20131963)|Bolivianische Bolivianos (1863\u20131963)|Bolivianischer Boliviano (1863\u20131963)||
+        de|BOP|||Bolivianischer Peso|Bolivianische Peso|Bolivianischer Peso||
+        de|BOV|||Boliviansiche Mvdol|Bolivianische Mvdol|Boliviansiche Mvdol||
+        de|BRB|||Brasilianischer Cruzeiro Novo (1967\u20131986)|Brasilianische Cruzeiro Novo (1967\u20131986)|Brasilianischer Cruzeiro Novo (1967\u20131986)||
+        de|BRC|||Brasilianischer Cruzado (1986\u20131989)|Brasilianische Cruzado (1986\u20131989)|Brasilianischer Cruzado (1986\u20131989)||
+        de|BRE|||Brasilianischer Cruzeiro (1990\u20131993)|Brasilianische Cruzeiro (1990\u20131993)|Brasilianischer Cruzeiro (1990\u20131993)||
+        de|BRL|R$|R$|Brasilianischer Real|Brasilianische Real|Brasilianischer Real|LS|LS
+        de|BRN|||Brasilianischer Cruzado Novo (1989\u20131990)|Brasilianische Cruzado Novo (1989\u20131990)|Brasilianischer Cruzado Novo (1989\u20131990)||
+        de|BRR|||Brasilianischer Cruzeiro (1993\u20131994)|Brasilianische Cruzeiro (1993\u20131994)|Brasilianischer Cruzeiro (1993\u20131994)||
+        de|BRZ||||Brasilianischer Cruzeiro (1942\u20131967)|Brasilianischer Cruzeiro (1942\u20131967)||
+        de|BSD||$||Bahamas-Dollar|Bahamas-Dollar||SS
+        de|BTN||||Bhutan-Ngultrum|Bhutan-Ngultrum||
+        de|BUK|||Birmanischer Kyat|Birmanische Kyat|Birmanischer Kyat||
+        de|BWP||P|Botswanischer Pula|Botswanische Pula|Botswanischer Pula||LL
+        de|BYB||||Belarus-Rubel (1994\u20131999)|Belarus-Rubel (1994\u20131999)||
+        de|BYN||\u0440.|Wei\u00DFrussischer Rubel|Wei\u00DFrussische Rubel|Wei\u00DFrussischer Rubel||LL
+        de|BYR|||Wei\u00DFrussischer Rubel (2000\u20132016)|Wei\u00DFrussische Rubel (2000\u20132016)|Wei\u00DFrussischer Rubel (2000\u20132016)||
+        de|BZD||$||Belize-Dollar|Belize-Dollar||SS
+        de|CAD|CA$|$|Kanadischer Dollar|Kanadische Dollar|Kanadischer Dollar|LS|SS
+        de|CDF|||Kongo-Franc|Kongo-Francs|Kongo-Franc||
+        de|CHE||||WIR-Euro|WIR-Euro||
+        de|CHF||||Schweizer Franken|Schweizer Franken||
+        de|CHW||||WIR Franken|WIR Franken||
+        de|CLE|||Chilenischer Escudo|Chilenische Escudo|Chilenischer Escudo||
+        de|CLF||||Chilenische Unidades de Fomento|Chilenische Unidades de Fomento||
+        de|CLP||$|Chilenischer Peso|Chilenische Pesos|Chilenischer Peso||SS
+        de|CNH||||Renminbi-Yuan (Offshore)|Renminbi-Yuan (Offshore)||
+        de|CNX||||Dollar der Chinesischen Volksbank|Dollar der Chinesischen Volksbank||
+        de|CNY|CN\u00A5|\u00A5|Chinesischer Yuan|Renminbi Yuan|Renminbi Yuan|LS|SS
+        de|COP||$|Kolumbianischer Peso|Kolumbianische Pesos|Kolumbianischer Peso||SS
+        de|COU|||Kolumbianische Unidad de valor real|Kolumbianische Unidades de valor real|Kolumbianische Unidades de valor real||
+        de|CRC||\u20A1||Costa-Rica-Col\u00F3n|Costa-Rica-Col\u00F3n||SS
+        de|CSD|||Serbischer Dinar (2002\u20132006)|Serbische Dinar (2002\u20132006)|Serbischer Dinar (2002\u20132006)||
+        de|CSK|||Tschechoslowakische Kronen|Tschechoslowakische Kronen|Tschechoslowakische Krone||
+        de|CUC||Cub$|Kubanischer Peso (konvertibel)|Kubanische Pesos (konvertibel)|Kubanischer Peso (konvertibel)||LS
+        de|CUP||$|Kubanischer Peso|Kubanische Pesos|Kubanischer Peso||SS
+        de|CVE|||Cabo-Verde-Escudo|Cabo-Verde-Escudos|Cabo-Verde-Escudo||
+        de|CYP|||Zypern Pfund|Zypern Pfund|Zypern-Pfund||
+        de|CZK||K\u010D|Tschechische Krone|Tschechische Kronen|Tschechische Krone||LL
+        de|DDM||||Mark der DDR|Mark der DDR||
+        de|DEM|DM|||Deutsche Mark|Deutsche Mark|LL|
+        de|DJF||||Dschibuti-Franc|Dschibuti-Franc||
+        de|DKK||kr|D\u00E4nische Krone|D\u00E4nische Kronen|D\u00E4nische Krone||LL
+        de|DOP||$|Dominikanischer Peso|Dominikanische Pesos|Dominikanischer Peso||SS
+        de|DZD|||Algerischer Dinar|Algerische Dinar|Algerischer Dinar||
+        de|ECS|||Ecuadorianischer Sucre|Ecuadorianische Sucre|Ecuadorianischer Sucre||
+        de|ECV|||Verrechnungseinheiten f\u00FCr Ecuador|Verrechnungseinheiten f\u00FCr Ecuador|Verrechnungseinheit f\u00FCr Ecuador||
+        de|EEK|||Estnische Krone|Estnische Kronen|Estnische Krone||
+        de|EGP||E\u00A3|\u00C4gyptisches Pfund|\u00C4gyptische Pfund|\u00C4gyptisches Pfund||LS
+        de|ERN|||Eritreischer Nakfa|Eritreische Nakfa|Eritreischer Nakfa||
+        de|ESA|||Spanische Peseta (A\u2013Konten)|Spanische Peseten (A\u2013Konten)|Spanische Peseta (A\u2013Konten)||
+        de|ESB|||Spanische Peseta (konvertibel)|Spanische Peseten (konvertibel)|Spanische Peseta (konvertibel)||
+        de|ESP||\u20A7|Spanische Peseta|Spanische Peseten|Spanische Peseta||SS
+        de|ETB|||\u00C4thiopischer Birr|\u00C4thiopische Birr|\u00C4thiopischer Birr||
+        de|EUR|\u20AC|\u20AC||Euro|Euro|SS|SS
+        de|FIM||||Finnische Mark|Finnische Mark||
+        de|FJD||$||Fidschi-Dollar|Fidschi-Dollar||SS
+        de|FKP||Fl\u00A3||Falkland-Pfund|Falkland-Pfund||LS
+        de|FRF|||Franz\u00F6sischer Franc|Franz\u00F6sische Franc|Franz\u00F6sischer Franc||
+        de|GBP|\u00A3|\u00A3|Britisches Pfund|Britische Pfund|Britisches Pfund|SS|SS
+        de|GEK|||Georgischer Kupon Larit|Georgische Kupon Larit|Georgischer Kupon Larit||
+        de|GEL||\u20BE|Georgischer Lari|Georgische Lari|Georgischer Lari||SS
+        de|GHC|||Ghanaischer Cedi (1979\u20132007)|Ghanaische Cedi (1979\u20132007)|Ghanaischer Cedi (1979\u20132007)||
+        de|GHS||\u20B5|Ghanaischer Cedi|Ghanaische Cedi|Ghanaischer Cedi||SS
+        de|GIP||\u00A3||Gibraltar-Pfund|Gibraltar-Pfund||SS
+        de|GMD||||Gambia-Dalasi|Gambia-Dalasi||
+        de|GNF||F.G.||Guinea-Franc|Guinea-Franc||LL
+        de|GNS|||Guineischer Syli|Guineische Syli|Guineischer Syli||
+        de|GQE||||\u00C4quatorialguinea-Ekwele|\u00C4quatorialguinea-Ekwele||
+        de|GRD|||Griechische Drachme|Griechische Drachmen|Griechische Drachme||
+        de|GTQ||Q|Guatemaltekischer Quetzal|Guatemaltekische Quetzales|Guatemaltekischer Quetzal||LL
+        de|GWE||||Portugiesisch Guinea Escudo|Portugiesisch Guinea Escudo||
+        de|GWP|||Guinea-Bissau Peso|Guinea-Bissau Pesos|Guinea-Bissau Peso||
+        de|GYD||$||Guyana-Dollar|Guyana-Dollar||SS
+        de|HKD|HK$|$||Hongkong-Dollar|Hongkong-Dollar|LS|SS
+        de|HNL||L||Honduras-Lempira|Honduras-Lempira||LL
+        de|HRD|||Kroatischer Dinar|Kroatische Dinar|Kroatischer Dinar||
+        de|HRK||kn|Kroatischer Kuna|Kroatische Kuna|Kroatischer Kuna||LL
+        de|HTG|||Haitianische Gourde|Haitianische Gourdes|Haitianische Gourde||
+        de|HUF||Ft|Ungarischer Forint|Ungarische Forint|Ungarischer Forint||LL
+        de|IDR||Rp||Indonesische Rupiah|Indonesische Rupiah||LL
+        de|IEP|||Irisches Pfund|Irische Pfund|Irisches Pfund||
+        de|ILP|||Israelisches Pfund|Israelische Pfund|Israelisches Pfund||
+        de|ILR|||Israelischer Schekel (1980\u20131985)|Israelische Schekel (1980\u20131985)|Israelischer Schekel (1980\u20131985)||
+        de|ILS|\u20AA|\u20AA|Israelischer Neuer Schekel|Israelische Neue Schekel|Israelischer Neuer Schekel|SS|SS
+        de|INR|\u20B9|\u20B9|Indische Rupie|Indische Rupien|Indische Rupie|SS|SS
+        de|IQD|||Irakischer Dinar|Irakische Dinar|Irakischer Dinar||
+        de|IRR|||Iranischer Rial|Iranische Rial|Iranischer Rial||
+        de|ISJ|||Isl\u00E4ndische Krone (1918\u20131981)|Isl\u00E4ndische Kronen (1918\u20131981)|Isl\u00E4ndische Krone (1918\u20131981)||
+        de|ISK||kr|Isl\u00E4ndische Krone|Isl\u00E4ndische Kronen|Isl\u00E4ndische Krone||LL
+        de|ITL|||Italienische Lira|Italienische Lire|Italienische Lira||
+        de|JMD||$||Jamaika-Dollar|Jamaika-Dollar||SS
+        de|JOD|||Jordanischer Dinar|Jordanische Dinar|Jordanischer Dinar||
+        de|JPY|\u00A5|\u00A5|Japanischer Yen|Japanische Yen|Japanischer Yen|SS|SS
+        de|KES||||Kenia-Schilling|Kenia-Schilling||
+        de|KGS||\u20C0|Kirgisischer Som|Kirgisische Som|Kirgisischer Som||SS
+        de|KHR||\u17DB|Kambodschanischer Riel|Kambodschanische Riel|Kambodschanischer Riel||SS
+        de|KMF||FC|Komoren-Franc|Komoren-Francs|Komoren-Franc||LL
+        de|KPW||\u20A9|Nordkoreanischer Won|Nordkoreanische Won|Nordkoreanischer Won||SS
+        de|KRH||||S\u00FCdkoreanischer Hwan (1953\u20131962)|S\u00FCdkoreanischer Hwan (1953\u20131962)||
+        de|KRO||||S\u00FCdkoreanischer Won (1945\u20131953)|S\u00FCdkoreanischer Won (1945\u20131953)||
+        de|KRW|\u20A9|\u20A9|S\u00FCdkoreanischer Won|S\u00FCdkoreanische Won|S\u00FCdkoreanischer Won|SS|SS
+        de|KWD||||Kuwait-Dinar|Kuwait-Dinar||
+        de|KYD||$||Kaiman-Dollar|Kaiman-Dollar||SS
+        de|KZT||\u20B8|Kasachischer Tenge|Kasachische Tenge|Kasachischer Tenge||SS
+        de|LAK||\u20AD|Laotischer Kip|Laotische Kip|Laotischer Kip||SS
+        de|LBP||L\u00A3|Libanesisches Pfund|Libanesische Pfund|Libanesisches Pfund||LS
+        de|LKR||Rs|Sri-Lanka-Rupie|Sri-Lanka-Rupien|Sri-Lanka-Rupie||LL
+        de|LRD||$|Liberianischer Dollar|Liberianische Dollar|Liberianischer Dollar||SS
+        de|LSL||||Loti|Loti||
+        de|LTL||Lt|Litauischer Litas|Litauische Litas|Litauischer Litas||LL
+        de|LTT|||Litauische Talonas|Litauische Talonas|Litauischer Talonas||
+        de|LUC|||Luxemburgische Franc (konvertibel)|Luxemburgische Franc (konvertibel)|Luxemburgischer Franc (konvertibel)||
+        de|LUF|||Luxemburgische Franc|Luxemburgische Franc|Luxemburgischer Franc||
+        de|LUL|||Luxemburgische Finanz-Franc|Luxemburgische Finanz-Franc|Luxemburgischer Finanz-Franc||
+        de|LVL||Ls|Lettischer Lats|Lettische Lats|Lettischer Lats||LL
+        de|LVR|||Lettische Rubel|Lettische Rubel|Lettischer Rubel||
+        de|LYD|||Libyscher Dinar|Libysche Dinar|Libyscher Dinar||
+        de|MAD|||Marokkanischer Dirham|Marokkanische Dirham|Marokkanischer Dirham||
+        de|MAF|||Marokkanische Franc|Marokkanische Franc|Marokkanischer Franc||
+        de|MCF|||Monegassischer Franc|Monegassische Franc|Monegassischer Franc||
+        de|MDC||||Moldau-Cupon|Moldau-Cupon||
+        de|MDL||||Moldau-Leu|Moldau-Leu||
+        de|MGA||Ar||Madagaskar-Ariary|Madagaskar-Ariary||LL
+        de|MGF||||Madagaskar-Franc|Madagaskar-Franc||
+        de|MKD|||Mazedonischer Denar|Mazedonische Denari|Mazedonischer Denar||
+        de|MKN|||Mazedonischer Denar (1992\u20131993)|Mazedonische Denar (1992\u20131993)|Mazedonischer Denar (1992\u20131993)||
+        de|MLF|||Malische Franc|Malische Franc|Malischer Franc||
+        de|MMK||K|Myanmarischer Kyat|Myanmarische Kyat|Myanmarischer Kyat||LL
+        de|MNT||\u20AE|Mongolischer T\u00F6gr\u00F6g|Mongolische T\u00F6gr\u00F6g|Mongolischer T\u00F6gr\u00F6g||SS
+        de|MOP||||Macao-Pataca|Macao-Pataca||
+        de|MRO|||Mauretanischer Ouguiya (1973\u20132017)|Mauretanische Ouguiya (1973\u20132017)|Mauretanischer Ouguiya (1973\u20132017)||
+        de|MRU|||Mauretanischer Ouguiya|Mauretanische Ouguiya|Mauretanischer Ouguiya||
+        de|MTL||||Maltesische Lira|Maltesische Lira||
+        de|MTP|||Maltesische Pfund|Maltesische Pfund|Maltesisches Pfund||
+        de|MUR||Rs|Mauritius-Rupie|Mauritius-Rupien|Mauritius-Rupie||LL
+        de|MVP|||Malediven-Rupie (alt)|Malediven-Rupien (alt)|Malediven-Rupie (alt)||
+        de|MVR|||Malediven-Rufiyaa|Malediven-Rufiyaa|Malediven-Rufiyaa||
+        de|MWK||||Malawi-Kwacha|Malawi-Kwacha||
+        de|MXN|MX$|$|Mexikanischer Peso|Mexikanische Pesos|Mexikanischer Peso|LS|SS
+        de|MXP|||Mexikanische Silber-Peso (1861\u20131992)|Mexikanische Silber-Pesos (1861\u20131992)|Mexikanischer Silber-Peso (1861\u20131992)||
+        de|MXV|||Mexicanischer Unidad de Inversion (UDI)|Mexikanische Unidad de Inversion (UDI)|Mexicanischer Unidad de Inversion (UDI)||
+        de|MYR||RM|Malaysischer Ringgit|Malaysische Ringgit|Malaysischer Ringgit||LL
+        de|MZE|||Mozambikanische Escudo|Mozambikanische Escudo|Mosambikanischer Escudo||
+        de|MZM|||Mosambikanischer Metical (1980\u20132006)|Mosambikanische Meticais (1980\u20132006)|Mosambikanischer Metical (1980\u20132006)||
+        de|MZN|||Mosambikanischer Metical|Mosambikanische Meticais|Mosambikanischer Metical||
+        de|NAD||$||Namibia-Dollar|Namibia-Dollar||SS
+        de|NGN||\u20A6|Nigerianischer Naira|Nigerianische Naira|Nigerianischer Naira||SS
+        de|NIC|||Nicaraguanischer C\u00F3rdoba (1988\u20131991)|Nicaraguanische C\u00F3rdoba (1988\u20131991)|Nicaraguanischer C\u00F3rdoba (1988\u20131991)||
+        de|NIO||C$|Nicaragua-C\u00F3rdoba|Nicaragua-C\u00F3rdobas|Nicaragua-C\u00F3rdoba||LS
+        de|NLG|||Niederl\u00E4ndischer Gulden|Niederl\u00E4ndische Gulden|Niederl\u00E4ndischer Gulden||
+        de|NOK||kr|Norwegische Krone|Norwegische Kronen|Norwegische Krone||LL
+        de|NPR||Rs|Nepalesische Rupie|Nepalesische Rupien|Nepalesische Rupie||LL
+        de|NZD|NZ$|$||Neuseeland-Dollar|Neuseeland-Dollar|LS|SS
+        de|OMR|||Omanischer Rial|Omanische Rials|Omanischer Rial||
+        de|PAB|||Panamaischer Balboa|Panamaische Balboas|Panamaischer Balboa||
+        de|PEI|||Peruanische Inti|Peruanische Inti|Peruanischer Inti||
+        de|PEN|||Peruanischer Sol|Peruanische Sol|Peruanischer Sol||
+        de|PES|||Peruanischer Sol (1863\u20131965)|Peruanische Sol (1863\u20131965)|Peruanischer Sol (1863\u20131965)||
+        de|PGK||||Papua-neuguineischer Kina|Papua-neuguineischer Kina||
+        de|PHP|PHP|\u20B1|Philippinischer Peso|Philippinische Pesos|Philippinischer Peso|LL|SS
+        de|PKR||Rs|Pakistanische Rupie|Pakistanische Rupien|Pakistanische Rupie||LL
+        de|PLN||z\u0142|Polnischer Z\u0142oty|Polnische Z\u0142oty|Polnischer Z\u0142oty||LL
+        de|PLZ|||Polnischer Zloty (1950\u20131995)|Polnische Zloty (1950\u20131995)|Polnischer Zloty (1950\u20131995)||
+        de|PTE|||Portugiesische Escudo|Portugiesische Escudo|Portugiesischer Escudo||
+        de|PYG||\u20B2|Paraguayischer Guaran\u00ED|Paraguayische Guaran\u00EDes|Paraguayischer Guaran\u00ED||SS
+        de|QAR||||Katar-Riyal|Katar-Riyal||
+        de|RHD|||Rhodesische Dollar|Rhodesische Dollar|Rhodesischer Dollar||
+        de|ROL|||Rum\u00E4nischer Leu (1952\u20132006)|Rum\u00E4nische Leu (1952\u20132006)|Rum\u00E4nischer Leu (1952\u20132006)||
+        de|RON||L|Rum\u00E4nischer Leu|Rum\u00E4nische Leu|Rum\u00E4nischer Leu||LL
+        de|RSD|||Serbischer Dinar|Serbische Dinaren|Serbischer Dinar||
+        de|RUB||\u20BD|Russischer Rubel|Russische Rubel|Russischer Rubel||SS
+        de|RUR||\u0440.|Russischer Rubel (1991\u20131998)|Russische Rubel (1991\u20131998)|Russischer Rubel (1991\u20131998)||LL
+        de|RWF||F.Rw|Ruanda-Franc|Ruanda-Francs|Ruanda-Franc||LL
+        de|SAR||||Saudi-Rial|Saudi-Rial||
+        de|SBD||$||Salomonen-Dollar|Salomonen-Dollar||SS
+        de|SCR|||Seychellen-Rupie|Seychellen-Rupien|Seychellen-Rupie||
+        de|SDD|||Sudanesischer Dinar (1992\u20132007)|Sudanesische Dinar (1992\u20132007)|Sudanesischer Dinar (1992\u20132007)||
+        de|SDG|||Sudanesisches Pfund|Sudanesische Pfund|Sudanesisches Pfund||
+        de|SDP|||Sudanesisches Pfund (1957\u20131998)|Sudanesische Pfund (1957\u20131998)|Sudanesisches Pfund (1957\u20131998)||
+        de|SEK||kr|Schwedische Krone|Schwedische Kronen|Schwedische Krone||LL
+        de|SGD||$||Singapur-Dollar|Singapur-Dollar||SS
+        de|SHP||\u00A3||St.-Helena-Pfund|St.-Helena-Pfund||SS
+        de|SIT|||Slowenischer Tolar|Slowenische Tolar|Slowenischer Tolar||
+        de|SKK|||Slowakische Kronen|Slowakische Kronen|Slowakische Krone||
+        de|SLE|||Sierra-leonischer Leone|Sierra-leonische Leones|Sierra-leonischer Leone||
+        de|SLL|||Sierra-leonischer Leone (1964\u20132022)|Sierra-leonische Leones (1964\u20132022)|Sierra-leonischer Leone (1964\u20132022)||
+        de|SOS||||Somalia-Schilling|Somalia-Schilling||
+        de|SRD||$||Suriname-Dollar|Suriname-Dollar||SS
+        de|SRG|||Suriname-Gulden|Suriname-Gulden|Suriname Gulden||
+        de|SSP||\u00A3|S\u00FCdsudanesisches Pfund|S\u00FCdsudanesische Pfund|S\u00FCdsudanesisches Pfund||SS
+        de|STD|||S\u00E3o-tom\u00E9ischer Dobra (1977\u20132017)|S\u00E3o-tom\u00E9ische Dobra (1977\u20132017)|S\u00E3o-tom\u00E9ischer Dobra (1977\u20132017)||
+        de|STN||Db|S\u00E3o-tom\u00E9ischer Dobra|S\u00E3o-tom\u00E9ische Dobras|S\u00E3o-tom\u00E9ischer Dobra||LL
+        de|SUR|||Sowjetische Rubel|Sowjetische Rubel|Sowjetischer Rubel||
+        de|SVC|||El Salvador-Colon|El Salvador-Colon|El Salvador Colon||
+        de|SYP||SYP|Syrisches Pfund|Syrische Pfund|Syrisches Pfund||LL
+        de|SZL|||Swasil\u00E4ndischer Lilangeni|Swasil\u00E4ndische Emalangeni|Swasil\u00E4ndischer Lilangeni||
+        de|THB|\u0E3F|\u0E3F|Thail\u00E4ndischer Baht|Thail\u00E4ndische Baht|Thail\u00E4ndischer Baht|SS|SS
+        de|TJR|||Tadschikistan-Rubel|Tadschikistan-Rubel|Tadschikistan Rubel||
+        de|TJS||||Tadschikistan-Somoni|Tadschikistan-Somoni||
+        de|TMM||||Turkmenistan-Manat (1993\u20132009)|Turkmenistan-Manat (1993\u20132009)||
+        de|TMT||||Turkmenistan-Manat|Turkmenistan-Manat||
+        de|TND|||Tunesischer Dinar|Tunesische Dinar|Tunesischer Dinar||
+        de|TOP||T$|Tongaischer Pa\u02BBanga|Tongaische Pa\u02BBanga|Tongaischer Pa\u02BBanga||LS
+        de|TPE||||Timor-Escudo|Timor-Escudo||
+        de|TRL||||T\u00FCrkische Lira (1922\u20132005)|T\u00FCrkische Lira (1922\u20132005)||
+        de|TRY||\u20BA||T\u00FCrkische Lira|T\u00FCrkische Lira||SS
+        de|TTD||$||Trinidad-und-Tobago-Dollar|Trinidad-und-Tobago-Dollar||SS
+        de|TWD|NT$|NT$|Neuer Taiwan-Dollar|Neue Taiwan-Dollar|Neuer Taiwan-Dollar|LS|LS
+        de|TZS||||Tansania-Schilling|Tansania-Schilling||
+        de|UAH||\u20B4|Ukrainische Hrywnja|Ukrainische Hrywen|Ukrainische Hrywnja||SS
+        de|UAK|||Ukrainische Karbovanetz|Ukrainische Karbovanetz|Ukrainischer Karbovanetz||
+        de|UGS||||Uganda-Schilling (1966\u20131987)|Uganda-Schilling (1966\u20131987)||
+        de|UGX||||Uganda-Schilling|Uganda-Schilling||
+        de|USD|$|$||US-Dollar|US-Dollar|SS|SS
+        de|USN|||US-Dollar (N\u00E4chster Tag)|US-Dollar (N\u00E4chster Tag)|US Dollar (N\u00E4chster Tag)||
+        de|USS|||US-Dollar (Gleicher Tag)|US-Dollar (Gleicher Tag)|US Dollar (Gleicher Tag)||
+        de|UYI|||Uruguayischer Peso (Indexierte Rechnungseinheiten)|Uruguayische Pesos (Indexierte Rechnungseinheiten)|Uruguayischer Peso (Indexierte Rechnungseinheiten)||
+        de|UYP|||Uruguayischer Peso (1975\u20131993)|Uruguayische Pesos (1975\u20131993)|Uruguayischer Peso (1975\u20131993)||
+        de|UYU||$|Uruguayischer Peso|Uruguayische Pesos|Uruguayischer Peso||SS
+        de|UZS||||Usbekistan-Sum|Usbekistan-Sum||
+        de|VEB|||Venezolanischer Bol\u00EDvar (1871\u20132008)|Venezolanische Bol\u00EDvares (1871\u20132008)|Venezolanischer Bol\u00EDvar (1871\u20132008)||
+        de|VEF||Bs|Venezolanischer Bol\u00EDvar (2008\u20132018)|Venezolanische Bol\u00EDvares (2008\u20132018)|Venezolanischer Bol\u00EDvar (2008\u20132018)||LL
+        de|VES|||Venezolanischer Bol\u00EDvar|Venezolanische Bol\u00EDvares|Venezolanischer Bol\u00EDvar||
+        de|VND|\u20AB|\u20AB|Vietnamesischer Dong|Vietnamesische Dong|Vietnamesischer Dong|SS|SS
+        de|VNN|||Vietnamesischer Dong(1978\u20131985)|Vietnamesische Dong(1978\u20131985)|Vietnamesischer Dong(1978\u20131985)||
+        de|VUV||||Vanuatu-Vatu|Vanuatu-Vatu||
+        de|WST|||Samoanischer Tala|Samoanische Tala|Samoanischer Tala||
+        de|XAF|FCFA|||CFA-Franc (BEAC)|CFA-Franc (BEAC)|LL|
+        de|XAG|||Unze Silber|Unzen Silber|Unze Silber||
+        de|XAU|||Unze Gold|Unzen Gold|Unze Gold||
+        de|XBA|||Europ\u00E4ische Rechnungseinheiten|Europ\u00E4ische Rechnungseinheiten|Europ\u00E4ische Rechnungseinheit||
+        de|XBB|||Europ\u00E4ische W\u00E4hrungseinheiten (XBB)|Europ\u00E4ische W\u00E4hrungseinheiten (XBB)|Europ\u00E4ische W\u00E4hrungseinheit (XBB)||
+        de|XBC|||Europ\u00E4ische Rechnungseinheiten (XBC)|Europ\u00E4ische Rechnungseinheiten (XBC)|Europ\u00E4ische Rechnungseinheit (XBC)||
+        de|XBD|||Europ\u00E4ische Rechnungseinheiten (XBD)|Europ\u00E4ische Rechnungseinheiten (XBD)|Europ\u00E4ische Rechnungseinheit (XBD)||
+        de|XCD|EC$|$|Ostkaribischer Dollar|Ostkaribische Dollar|Ostkaribischer Dollar|LS|SS
+        de|XCG|Cg.||Karibischer Gulden|Karibische Gulden|Karibischer Gulden|LL|
+        de|XDR||||Sonderziehungsrechte|Sonderziehungsrechte||
+        de|XEU|||Europ\u00E4ische W\u00E4hrungseinheiten (XEU)|Europ\u00E4ische W\u00E4hrungseinheiten (XEU)|Europ\u00E4ische W\u00E4hrungseinheit (XEU)||
+        de|XFO|||Franz\u00F6sische Gold-Franc|Franz\u00F6sische Gold-Franc|Franz\u00F6sischer Gold-Franc||
+        de|XFU|||Franz\u00F6sische UIC-Franc|Franz\u00F6sische UIC-Franc|Franz\u00F6sischer UIC-Franc||
+        de|XOF|F\u202FCFA||CFA-Franc (BCEAO)|CFA-Francs (BCEAO)|CFA-Franc (BCEAO)|LL|
+        de|XPD|||Unze Palladium|Unzen Palladium|Unze Palladium||
+        de|XPF|CFPF|||CFP-Franc|CFP-Franc|LL|
+        de|XPT|||Unze Platin|Unzen Platin|Unze Platin||
+        de|XRE||||RINET Funds|RINET Funds||
+        de|XSU||||SUCRE|SUCRE||
+        de|XTS||||Testw\u00E4hrung|Testw\u00E4hrung||
+        de|XUA|||Rechnungseinheit der AfEB|Rechnungseinheiten der AfEB|Rechnungseinheit der AfEB||
+        de|XXX|XXX||(unbekannte W\u00E4hrung)|(unbekannte W\u00E4hrung)|Unbekannte W\u00E4hrung|LL|
+        de|YDD||||Jemen-Dinar|Jemen-Dinar||
+        de|YER||||Jemen-Rial|Jemen-Rial||
+        de|YUD|||Jugoslawischer Dinar (1966\u20131990)|Jugoslawische Dinar (1966\u20131990)|Jugoslawischer Dinar (1966\u20131990)||
+        de|YUM|||Jugoslawischer Neuer Dinar (1994\u20132002)|Jugoslawische Neue Dinar (1994\u20132002)|Jugoslawischer Neuer Dinar (1994\u20132002)||
+        de|YUN|||Jugoslawische Dinar (konvertibel)|Jugoslawische Dinar (konvertibel)|Jugoslawischer Dinar (konvertibel)||
+        de|YUR|||Jugoslawischer reformierter Dinar (1992\u20131993)|Jugoslawische reformierte Dinar (1992\u20131993)|Jugoslawischer reformierter Dinar (1992\u20131993)||
+        de|ZAL||||S\u00FCdafrikanischer Rand (Finanz)|S\u00FCdafrikanischer Rand (Finanz)||
+        de|ZAR||R|S\u00FCdafrikanischer Rand|S\u00FCdafrikanische Rand|S\u00FCdafrikanischer Rand||LL
+        de|ZMK||||Kwacha (1968\u20132012)|Kwacha (1968\u20132012)||
+        de|ZMW||K||Kwacha|Kwacha||LL
+        de|ZRN|||Zaire-Neuer Za\u00EFre (1993\u20131998)|Zaire-Neue Za\u00EFre (1993\u20131998)|Zaire-Neuer Za\u00EFre (1993\u20131998)||
+        de|ZRZ||||Zaire-Za\u00EFre (1971\u20131993)|Zaire-Za\u00EFre (1971\u20131993)||
+        de|ZWD||||Simbabwe-Dollar (1980\u20132008)|Simbabwe-Dollar (1980\u20132008)||
+        de|ZWG|||Simbabwe-Gold|Simbabwe-Gold|Simbabwe-Gold||
+        de|ZWL||||Simbabwe-Dollar (2009)|Simbabwe-Dollar (2009)||
+        de|ZWR||||Simbabwe-Dollar (2008)|Simbabwe-Dollar (2008)||
+        en|ADP|||Andorran peseta|Andorran pesetas|Andorran Peseta||
+        en|AED|AED||UAE dirham|UAE dirhams|United Arab Emirates Dirham|LL|
+        en|AFA|||Afghan afghani (1927\u20132002)|Afghan afghanis (1927\u20132002)|Afghan Afghani (1927\u20132002)||
+        en|AFN|AFN|\u060B|Afghan Afghani|Afghan Afghanis|Afghan Afghani|LL|SS
+        en|ALK|||Albanian lek (1946\u20131965)|Albanian lek\u00EB (1946\u20131965)|Albanian Lek (1946\u20131965)||
+        en|ALL|ALL||Albanian lek|Albanian lek\u00EB|Albanian Lek|LL|
+        en|AMD|AMD|\u058F|Armenian dram|Armenian drams|Armenian Dram|LL|SS
+        en|ANG|ANG||Netherlands Antillean guilder|Netherlands Antillean guilders|Netherlands Antillean Guilder|LL|
+        en|AOA|AOA|Kz|Angolan kwanza|Angolan kwanzas|Angolan Kwanza|LL|LL
+        en|AOK|||Angolan kwanza (1977\u20131991)|Angolan kwanzas (1977\u20131991)|Angolan Kwanza (1977\u20131991)||
+        en|AON|||Angolan new kwanza (1990\u20132000)|Angolan new kwanzas (1990\u20132000)|Angolan New Kwanza (1990\u20132000)||
+        en|AOR|||Angolan readjusted kwanza (1995\u20131999)|Angolan readjusted kwanzas (1995\u20131999)|Angolan Readjusted Kwanza (1995\u20131999)||
+        en|ARA|||Argentine austral|Argentine australs|Argentine Austral||
+        en|ARL|||Argentine peso ley (1970\u20131983)|Argentine pesos ley (1970\u20131983)|Argentine Peso Ley (1970\u20131983)||
+        en|ARM|||Argentine peso (1881\u20131970)|Argentine pesos (1881\u20131970)|Argentine Peso (1881\u20131970)||
+        en|ARP|||Argentine peso (1983\u20131985)|Argentine pesos (1983\u20131985)|Argentine Peso (1983\u20131985)||
+        en|ARS|ARS|$|Argentine peso|Argentine pesos|Argentine Peso|LL|SS
+        en|ATS|||Austrian schilling|Austrian schillings|Austrian Schilling||
+        en|AUD|A$|$|Australian dollar|Australian dollars|Australian Dollar|LS|SS
+        en|AWG|AWG||Aruban florin|Aruban florin|Aruban Florin|LL|
+        en|AZM|||Azerbaijani manat (1993\u20132006)|Azerbaijani manats (1993\u20132006)|Azerbaijani Manat (1993\u20132006)||
+        en|AZN|AZN|\u20BC|Azerbaijani manat|Azerbaijani manats|Azerbaijani Manat|LL|SS
+        en|BAD|||Bosnia-Herzegovina dinar (1992\u20131994)|Bosnia-Herzegovina dinars (1992\u20131994)|Bosnia-Herzegovina Dinar (1992\u20131994)||
+        en|BAM|BAM|KM|Bosnia-Herzegovina convertible mark|Bosnia-Herzegovina convertible marks|Bosnia-Herzegovina Convertible Mark|LL|LL
+        en|BAN|||Bosnia-Herzegovina new dinar (1994\u20131997)|Bosnia-Herzegovina new dinars (1994\u20131997)|Bosnia-Herzegovina New Dinar (1994\u20131997)||
+        en|BBD|BBD|$|Barbadian dollar|Barbadian dollars|Barbadian Dollar|LL|SS
+        en|BDT|BDT|\u09F3|Bangladeshi taka|Bangladeshi takas|Bangladeshi Taka|LL|SS
+        en|BEC|||Belgian franc (convertible)|Belgian francs (convertible)|Belgian Franc (convertible)||
+        en|BEF|||Belgian franc|Belgian francs|Belgian Franc||
+        en|BEL|||Belgian franc (financial)|Belgian francs (financial)|Belgian Franc (financial)||
+        en|BGL|||Bulgarian hard lev|Bulgarian hard leva|Bulgarian Hard Lev||
+        en|BGM|||Bulgarian socialist lev|Bulgarian socialist leva|Bulgarian Socialist Lev||
+        en|BGN|BGN||Bulgarian lev|Bulgarian leva|Bulgarian Lev|LL|
+        en|BGO|||Bulgarian lev (1879\u20131952)|Bulgarian leva (1879\u20131952)|Bulgarian Lev (1879\u20131952)||
+        en|BHD|BHD||Bahraini dinar|Bahraini dinars|Bahraini Dinar|LL|
+        en|BIF|BIF||Burundian franc|Burundian francs|Burundian Franc|LL|
+        en|BMD|BMD|$|Bermudan dollar|Bermudan dollars|Bermudan Dollar|LL|SS
+        en|BND|BND|$|Brunei dollar|Brunei dollars|Brunei Dollar|LL|SS
+        en|BOB|BOB|Bs|Bolivian boliviano|Bolivian bolivianos|Bolivian Boliviano|LL|LL
+        en|BOL|||Bolivian boliviano (1863\u20131963)|Bolivian bolivianos (1863\u20131963)|Bolivian Boliviano (1863\u20131963)||
+        en|BOP|||Bolivian peso|Bolivian pesos|Bolivian Peso||
+        en|BOV|||Bolivian mvdol|Bolivian mvdols|Bolivian Mvdol||
+        en|BRB|||Brazilian new cruzeiro (1967\u20131986)|Brazilian new cruzeiros (1967\u20131986)|Brazilian New Cruzeiro (1967\u20131986)||
+        en|BRC|||Brazilian cruzado (1986\u20131989)|Brazilian cruzados (1986\u20131989)|Brazilian Cruzado (1986\u20131989)||
+        en|BRE|||Brazilian cruzeiro (1990\u20131993)|Brazilian cruzeiros (1990\u20131993)|Brazilian Cruzeiro (1990\u20131993)||
+        en|BRL|R$|R$|Brazilian real|Brazilian reals|Brazilian Real|LS|LS
+        en|BRN|||Brazilian new cruzado (1989\u20131990)|Brazilian new cruzados (1989\u20131990)|Brazilian New Cruzado (1989\u20131990)||
+        en|BRR|||Brazilian cruzeiro (1993\u20131994)|Brazilian cruzeiros (1993\u20131994)|Brazilian Cruzeiro (1993\u20131994)||
+        en|BRZ|||Brazilian cruzeiro (1942\u20131967)|Brazilian cruzeiros (1942\u20131967)|Brazilian Cruzeiro (1942\u20131967)||
+        en|BSD|BSD|$|Bahamian dollar|Bahamian dollars|Bahamian Dollar|LL|SS
+        en|BTN|BTN||Bhutanese ngultrum|Bhutanese ngultrums|Bhutanese Ngultrum|LL|
+        en|BUK|||Burmese kyat|Burmese kyats|Burmese Kyat||
+        en|BWP|BWP|P|Botswanan pula|Botswanan pulas|Botswanan Pula|LL|LL
+        en|BYB|||Belarusian ruble (1994\u20131999)|Belarusian rubles (1994\u20131999)|Belarusian Ruble (1994\u20131999)||
+        en|BYN|BYN||Belarusian ruble|Belarusian rubles|Belarusian Ruble|LL|
+        en|BYR|||Belarusian ruble (2000\u20132016)|Belarusian rubles (2000\u20132016)|Belarusian Ruble (2000\u20132016)||
+        en|BZD|BZD|$|Belize dollar|Belize dollars|Belize Dollar|LL|SS
+        en|CAD|CA$|$|Canadian dollar|Canadian dollars|Canadian Dollar|LS|SS
+        en|CDF|CDF||Congolese franc|Congolese francs|Congolese Franc|LL|
+        en|CHE|||WIR euro|WIR euros|WIR Euro||
+        en|CHF|CHF||Swiss franc|Swiss francs|Swiss Franc|LL|
+        en|CHW|||WIR franc|WIR francs|WIR Franc||
+        en|CLE|||Chilean escudo|Chilean escudos|Chilean Escudo||
+        en|CLF|||Chilean unit of account (UF)|Chilean units of account (UF)|Chilean Unit of Account (UF)||
+        en|CLP|CLP|$|Chilean peso|Chilean pesos|Chilean Peso|LL|SS
+        en|CNH|CNH||Chinese yuan (offshore)|Chinese yuan (offshore)|Chinese Yuan (offshore)|LL|
+        en|CNX|||Chinese People\u2019s Bank dollar|Chinese People\u2019s Bank dollars|Chinese People\u2019s Bank Dollar||
+        en|CNY|CN\u00A5|\u00A5|Chinese yuan|Chinese yuan|Chinese Yuan|LS|SS
+        en|COP|COP|$|Colombian peso|Colombian pesos|Colombian Peso|LL|SS
+        en|COU|||Colombian real value unit|Colombian real value units|Colombian Real Value Unit||
+        en|CRC|CRC|\u20A1|Costa Rican col\u00F3n|Costa Rican col\u00F3ns|Costa Rican Col\u00F3n|LL|SS
+        en|CSD|||Serbian dinar (2002\u20132006)|Serbian dinars (2002\u20132006)|Serbian Dinar (2002\u20132006)||
+        en|CSK|||Czechoslovak hard koruna|Czechoslovak hard korunas|Czechoslovak Hard Koruna||
+        en|CUC|CUC|$|Cuban convertible peso|Cuban convertible pesos|Cuban Convertible Peso|LL|SS
+        en|CUP|CUP|$|Cuban peso|Cuban pesos|Cuban Peso|LL|SS
+        en|CVE|CVE||Cape Verdean escudo|Cape Verdean escudos|Cape Verdean Escudo|LL|
+        en|CYP|||Cypriot pound|Cypriot pounds|Cypriot Pound||
+        en|CZK|CZK|K\u010D|Czech koruna|Czech korunas|Czech Koruna|LL|LL
+        en|DDM|||East German mark|East German marks|East German Mark||
+        en|DEM|||German mark|German marks|German Mark||
+        en|DJF|DJF||Djiboutian franc|Djiboutian francs|Djiboutian Franc|LL|
+        en|DKK|DKK|kr|Danish krone|Danish kroner|Danish Krone|LL|LL
+        en|DOP|DOP|$|Dominican peso|Dominican pesos|Dominican Peso|LL|SS
+        en|DZD|DZD||Algerian dinar|Algerian dinars|Algerian Dinar|LL|
+        en|ECS|||Ecuadorian sucre|Ecuadorian sucres|Ecuadorian Sucre||
+        en|ECV|||Ecuadorian unit of constant value|Ecuadorian units of constant value|Ecuadorian Unit of Constant Value||
+        en|EEK|||Estonian kroon|Estonian kroons|Estonian Kroon||
+        en|EGP|EGP|E\u00A3|Egyptian pound|Egyptian pounds|Egyptian Pound|LL|LS
+        en|ERN|ERN||Eritrean nakfa|Eritrean nakfas|Eritrean Nakfa|LL|
+        en|ESA|||Spanish peseta (A account)|Spanish pesetas (A account)|Spanish Peseta (A account)||
+        en|ESB|||Spanish peseta (convertible account)|Spanish pesetas (convertible account)|Spanish Peseta (convertible account)||
+        en|ESP||\u20A7|Spanish peseta|Spanish pesetas|Spanish Peseta||SS
+        en|ETB|ETB||Ethiopian birr|Ethiopian birrs|Ethiopian Birr|LL|
+        en|EUR|\u20AC|\u20AC|euro|euros|Euro|SS|SS
+        en|FIM|||Finnish markka|Finnish markkas|Finnish Markka||
+        en|FJD|FJD|$|Fijian dollar|Fijian dollars|Fijian Dollar|LL|SS
+        en|FKP|FKP|\u00A3|Falkland Islands pound|Falkland Islands pounds|Falkland Islands Pound|LL|SS
+        en|FRF|||French franc|French francs|French Franc||
+        en|GBP|\u00A3|\u00A3|British pound|British pounds|British Pound|SS|SS
+        en|GEK|||Georgian kupon larit|Georgian kupon larits|Georgian Kupon Larit||
+        en|GEL|GEL|\u20BE|Georgian lari|Georgian laris|Georgian Lari|LL|SS
+        en|GHC|||Ghanaian cedi (1979\u20132007)|Ghanaian cedis (1979\u20132007)|Ghanaian Cedi (1979\u20132007)||
+        en|GHS|GHS|GH\u20B5|Ghanaian cedi|Ghanaian cedis|Ghanaian Cedi|LL|LS
+        en|GIP|GIP|\u00A3|Gibraltar pound|Gibraltar pounds|Gibraltar Pound|LL|SS
+        en|GMD|GMD||Gambian dalasi|Gambian dalasis|Gambian Dalasi|LL|
+        en|GNF|GNF|FG|Guinean franc|Guinean francs|Guinean Franc|LL|LL
+        en|GNS|||Guinean syli|Guinean sylis|Guinean Syli||
+        en|GQE|||Equatorial Guinean ekwele|Equatorial Guinean ekwele|Equatorial Guinean Ekwele||
+        en|GRD|||Greek drachma|Greek drachmas|Greek Drachma||
+        en|GTQ|GTQ|Q|Guatemalan quetzal|Guatemalan quetzals|Guatemalan Quetzal|LL|LL
+        en|GWE|||Portuguese Guinea escudo|Portuguese Guinea escudos|Portuguese Guinea Escudo||
+        en|GWP|||Guinea-Bissau peso|Guinea-Bissau pesos|Guinea-Bissau Peso||
+        en|GYD|GYD|$|Guyanaese dollar|Guyanaese dollars|Guyanaese Dollar|LL|SS
+        en|HKD|HK$|$|Hong Kong dollar|Hong Kong dollars|Hong Kong Dollar|LS|SS
+        en|HNL|HNL|L|Honduran lempira|Honduran lempiras|Honduran Lempira|LL|LL
+        en|HRD|||Croatian dinar|Croatian dinars|Croatian Dinar||
+        en|HRK|HRK|kn|Croatian kuna|Croatian kunas|Croatian Kuna|LL|LL
+        en|HTG|HTG||Haitian gourde|Haitian gourdes|Haitian Gourde|LL|
+        en|HUF|HUF|Ft|Hungarian forint|Hungarian forints|Hungarian Forint|LL|LL
+        en|IDR|IDR|Rp|Indonesian rupiah|Indonesian rupiahs|Indonesian Rupiah|LL|LL
+        en|IEP|||Irish pound|Irish pounds|Irish Pound||
+        en|ILP|||Israeli pound|Israeli pounds|Israeli Pound||
+        en|ILR|||Israeli shekel (1980\u20131985)|Israeli shekels (1980\u20131985)|Israeli Shekel (1980\u20131985)||
+        en|ILS|\u20AA|\u20AA|Israeli new shekel|Israeli new shekels|Israeli New Shekel|SS|SS
+        en|INR|\u20B9|\u20B9|Indian rupee|Indian rupees|Indian Rupee|SS|SS
+        en|IQD|IQD||Iraqi dinar|Iraqi dinars|Iraqi Dinar|LL|
+        en|IRR|IRR||Iranian rial|Iranian rials|Iranian Rial|LL|
+        en|ISJ|||Icelandic kr\u00F3na (1918\u20131981)|Icelandic kr\u00F3nur (1918\u20131981)|Icelandic Kr\u00F3na (1918\u20131981)||
+        en|ISK|ISK|kr|Icelandic kr\u00F3na|Icelandic kr\u00F3nur|Icelandic Kr\u00F3na|LL|LL
+        en|ITL|||Italian lira|Italian liras|Italian Lira||
+        en|JMD|JMD|$|Jamaican dollar|Jamaican dollars|Jamaican Dollar|LL|SS
+        en|JOD|JOD||Jordanian dinar|Jordanian dinars|Jordanian Dinar|LL|
+        en|JPY|\u00A5|\u00A5|Japanese yen|Japanese yen|Japanese Yen|SS|SS
+        en|KES|KES||Kenyan shilling|Kenyan shillings|Kenyan Shilling|LL|
+        en|KGS|KGS|\u20C0|Kyrgyz som|Kyrgyz soms|Kyrgyz Som|LL|SS
+        en|KHR|KHR|\u17DB|Cambodian riel|Cambodian riels|Cambodian Riel|LL|SS
+        en|KMF|KMF|CF|Comorian franc|Comorian francs|Comorian Franc|LL|LL
+        en|KPW|KPW|\u20A9|North Korean won|North Korean won|North Korean Won|LL|SS
+        en|KRH|||South Korean hwan (1953\u20131962)|South Korean hwan (1953\u20131962)|South Korean Hwan (1953\u20131962)||
+        en|KRO|||South Korean won (1945\u20131953)|South Korean won (1945\u20131953)|South Korean Won (1945\u20131953)||
+        en|KRW|\u20A9|\u20A9|South Korean won|South Korean won|South Korean Won|SS|SS
+        en|KWD|KWD||Kuwaiti dinar|Kuwaiti dinars|Kuwaiti Dinar|LL|
+        en|KYD|KYD|$|Cayman Islands dollar|Cayman Islands dollars|Cayman Islands Dollar|LL|SS
+        en|KZT|KZT|\u20B8|Kazakhstani tenge|Kazakhstani tenges|Kazakhstani Tenge|LL|SS
+        en|LAK|LAK|\u20AD|Laotian kip|Laotian kips|Laotian Kip|LL|SS
+        en|LBP|LBP|L\u00A3|Lebanese pound|Lebanese pounds|Lebanese Pound|LL|LS
+        en|LKR|LKR|Rs|Sri Lankan rupee|Sri Lankan rupees|Sri Lankan Rupee|LL|LL
+        en|LRD|LRD|$|Liberian dollar|Liberian dollars|Liberian Dollar|LL|SS
+        en|LSL|LSL||Lesotho loti|Lesotho lotis|Lesotho Loti|LL|
+        en|LTL||Lt|Lithuanian litas|Lithuanian litai|Lithuanian Litas||LL
+        en|LTT|||Lithuanian talonas|Lithuanian talonases|Lithuanian Talonas||
+        en|LUC|||Luxembourgian convertible franc|Luxembourgian convertible francs|Luxembourgian Convertible Franc||
+        en|LUF|||Luxembourgian franc|Luxembourgian francs|Luxembourgian Franc||
+        en|LUL|||Luxembourg financial franc|Luxembourg financial francs|Luxembourg Financial Franc||
+        en|LVL||Ls|Latvian lats|Latvian lati|Latvian Lats||LL
+        en|LVR|||Latvian ruble|Latvian rubles|Latvian Ruble||
+        en|LYD|LYD||Libyan dinar|Libyan dinars|Libyan Dinar|LL|
+        en|MAD|MAD||Moroccan dirham|Moroccan dirhams|Moroccan Dirham|LL|
+        en|MAF|||Moroccan franc|Moroccan francs|Moroccan Franc||
+        en|MCF|||Monegasque franc|Monegasque francs|Monegasque Franc||
+        en|MDC|||Moldovan cupon|Moldovan cupon|Moldovan Cupon||
+        en|MDL|MDL||Moldovan leu|Moldovan lei|Moldovan Leu|LL|
+        en|MGA|MGA|Ar|Malagasy ariary|Malagasy ariaries|Malagasy Ariary|LL|LL
+        en|MGF|||Malagasy franc|Malagasy francs|Malagasy Franc||
+        en|MKD|MKD||Macedonian denar|Macedonian denari|Macedonian Denar|LL|
+        en|MKN|||Macedonian denar (1992\u20131993)|Macedonian denari (1992\u20131993)|Macedonian Denar (1992\u20131993)||
+        en|MLF|||Malian franc|Malian francs|Malian Franc||
+        en|MMK|MMK|K|Myanmar kyat|Myanmar kyats|Myanmar Kyat|LL|LL
+        en|MNT|MNT|\u20AE|Mongolian tugrik|Mongolian tugriks|Mongolian Tugrik|LL|SS
+        en|MOP|MOP||Macanese pataca|Macanese patacas|Macanese Pataca|LL|
+        en|MRO|||Mauritanian ouguiya (1973\u20132017)|Mauritanian ouguiyas (1973\u20132017)|Mauritanian Ouguiya (1973\u20132017)||
+        en|MRU|MRU||Mauritanian ouguiya|Mauritanian ouguiyas|Mauritanian Ouguiya|LL|
+        en|MTL|||Maltese lira|Maltese lira|Maltese Lira||
+        en|MTP|||Maltese pound|Maltese pounds|Maltese Pound||
+        en|MUR|MUR|Rs|Mauritian rupee|Mauritian rupees|Mauritian Rupee|LL|LL
+        en|MVP|||Maldivian rupee (1947\u20131981)|Maldivian rupees (1947\u20131981)|Maldivian Rupee (1947\u20131981)||
+        en|MVR|MVR||Maldivian rufiyaa|Maldivian rufiyaas|Maldivian Rufiyaa|LL|
+        en|MWK|MWK||Malawian kwacha|Malawian kwachas|Malawian Kwacha|LL|
+        en|MXN|MX$|$|Mexican peso|Mexican pesos|Mexican Peso|LS|SS
+        en|MXP|||Mexican silver peso (1861\u20131992)|Mexican silver pesos (1861\u20131992)|Mexican Silver Peso (1861\u20131992)||
+        en|MXV|||Mexican investment unit|Mexican investment units|Mexican Investment Unit||
+        en|MYR|MYR|RM|Malaysian ringgit|Malaysian ringgits|Malaysian Ringgit|LL|LL
+        en|MZE|||Mozambican escudo|Mozambican escudos|Mozambican Escudo||
+        en|MZM|||Mozambican metical (1980\u20132006)|Mozambican meticals (1980\u20132006)|Mozambican Metical (1980\u20132006)||
+        en|MZN|MZN||Mozambican metical|Mozambican meticals|Mozambican Metical|LL|
+        en|NAD|NAD|$|Namibian dollar|Namibian dollars|Namibian Dollar|LL|SS
+        en|NGN|NGN|\u20A6|Nigerian naira|Nigerian nairas|Nigerian Naira|LL|SS
+        en|NIC|||Nicaraguan c\u00F3rdoba (1988\u20131991)|Nicaraguan c\u00F3rdobas (1988\u20131991)|Nicaraguan C\u00F3rdoba (1988\u20131991)||
+        en|NIO|NIO|C$|Nicaraguan c\u00F3rdoba|Nicaraguan c\u00F3rdobas|Nicaraguan C\u00F3rdoba|LL|LS
+        en|NLG|||Dutch guilder|Dutch guilders|Dutch Guilder||
+        en|NOK|NOK|kr|Norwegian krone|Norwegian kroner|Norwegian Krone|LL|LL
+        en|NPR|NPR|Rs|Nepalese rupee|Nepalese rupees|Nepalese Rupee|LL|LL
+        en|NZD|NZ$|$|New Zealand dollar|New Zealand dollars|New Zealand Dollar|LS|SS
+        en|OMR|OMR||Omani rial|Omani rials|Omani Rial|LL|
+        en|PAB|PAB||Panamanian balboa|Panamanian balboas|Panamanian Balboa|LL|
+        en|PEI|||Peruvian inti|Peruvian intis|Peruvian Inti||
+        en|PEN|PEN||Peruvian sol|Peruvian soles|Peruvian Sol|LL|
+        en|PES|||Peruvian sol (1863\u20131965)|Peruvian soles (1863\u20131965)|Peruvian Sol (1863\u20131965)||
+        en|PGK|PGK||Papua New Guinean kina|Papua New Guinean kina|Papua New Guinean Kina|LL|
+        en|PHP|\u20B1|\u20B1|Philippine peso|Philippine pesos|Philippine Peso|SS|SS
+        en|PKR|PKR|Rs|Pakistani rupee|Pakistani rupees|Pakistani Rupee|LL|LL
+        en|PLN|PLN|z\u0142|Polish zloty|Polish zlotys|Polish Zloty|LL|LL
+        en|PLZ|||Polish zloty (PLZ)|Polish zlotys (PLZ)|Polish Zloty (1950\u20131995)||
+        en|PTE|||Portuguese escudo|Portuguese escudos|Portuguese Escudo||
+        en|PYG|PYG|\u20B2|Paraguayan guarani|Paraguayan guaranis|Paraguayan Guarani|LL|SS
+        en|QAR|QAR||Qatari riyal|Qatari riyals|Qatari Riyal|LL|
+        en|RHD|||Rhodesian dollar|Rhodesian dollars|Rhodesian Dollar||
+        en|ROL|||Romanian leu (1952\u20132006)|Romanian Lei (1952\u20132006)|Romanian Leu (1952\u20132006)||
+        en|RON|RON|lei|Romanian leu|Romanian lei|Romanian Leu|LL|LL
+        en|RSD|RSD||Serbian dinar|Serbian dinars|Serbian Dinar|LL|
+        en|RUB|RUB|\u20BD|Russian ruble|Russian rubles|Russian Ruble|LL|SS
+        en|RUR|||Russian ruble (1991\u20131998)|Russian rubles (1991\u20131998)|Russian Ruble (1991\u20131998)||
+        en|RWF|RWF|RF|Rwandan franc|Rwandan francs|Rwandan Franc|LL|LL
+        en|SAR|SAR||Saudi riyal|Saudi riyals|Saudi Riyal|LL|
+        en|SBD|SBD|$|Solomon Islands dollar|Solomon Islands dollars|Solomon Islands Dollar|LL|SS
+        en|SCR|SCR||Seychellois rupee|Seychellois rupees|Seychellois Rupee|LL|
+        en|SDD|||Sudanese dinar (1992\u20132007)|Sudanese dinars (1992\u20132007)|Sudanese Dinar (1992\u20132007)||
+        en|SDG|SDG||Sudanese pound|Sudanese pounds|Sudanese Pound|LL|
+        en|SDP|||Sudanese pound (1957\u20131998)|Sudanese pounds (1957\u20131998)|Sudanese Pound (1957\u20131998)||
+        en|SEK|SEK|kr|Swedish krona|Swedish kronor|Swedish Krona|LL|LL
+        en|SGD|SGD|$|Singapore dollar|Singapore dollars|Singapore Dollar|LL|SS
+        en|SHP|SHP|\u00A3|St. Helena pound|St. Helena pounds|St. Helena Pound|LL|SS
+        en|SIT|||Slovenian tolar|Slovenian tolars|Slovenian Tolar||
+        en|SKK|||Slovak koruna|Slovak korunas|Slovak Koruna||
+        en|SLE|SLE||Sierra Leonean leone|Sierra Leonean leones|Sierra Leonean Leone|LL|
+        en|SLL|SLL||Sierra Leonean leone (1964\u20142022)|Sierra Leonean leones (1964\u20142022)|Sierra Leonean Leone (1964\u20142022)|LL|
+        en|SOS|SOS||Somali shilling|Somali shillings|Somali Shilling|LL|
+        en|SRD|SRD|$|Surinamese dollar|Surinamese dollars|Surinamese Dollar|LL|SS
+        en|SRG|||Surinamese guilder|Surinamese guilders|Surinamese Guilder||
+        en|SSP|SSP|\u00A3|South Sudanese pound|South Sudanese pounds|South Sudanese Pound|LL|SS
+        en|STD|||S\u00E3o Tom\u00E9 & Pr\u00EDncipe dobra (1977\u20132017)|S\u00E3o Tom\u00E9 & Pr\u00EDncipe dobras (1977\u20132017)|S\u00E3o Tom\u00E9 & Pr\u00EDncipe Dobra (1977\u20132017)||
+        en|STN|STN|Db|S\u00E3o Tom\u00E9 & Pr\u00EDncipe dobra|S\u00E3o Tom\u00E9 & Pr\u00EDncipe dobras|S\u00E3o Tom\u00E9 & Pr\u00EDncipe Dobra|LL|LL
+        en|SUR|||Soviet rouble|Soviet roubles|Soviet Rouble||
+        en|SVC|||Salvadoran col\u00F3n|Salvadoran colones|Salvadoran Col\u00F3n||
+        en|SYP|SYP|\u00A3|Syrian pound|Syrian pounds|Syrian Pound|LL|SS
+        en|SZL|SZL||Swazi lilangeni|Swazi emalangeni|Swazi Lilangeni|LL|
+        en|THB|THB|\u0E3F|Thai baht|Thai baht|Thai Baht|LL|SS
+        en|TJR|||Tajikistani ruble|Tajikistani rubles|Tajikistani Ruble||
+        en|TJS|TJS||Tajikistani somoni|Tajikistani somonis|Tajikistani Somoni|LL|
+        en|TMM|||Turkmenistani manat (1993\u20132009)|Turkmenistani manat (1993\u20132009)|Turkmenistani Manat (1993\u20132009)||
+        en|TMT|TMT||Turkmenistani manat|Turkmenistani manat|Turkmenistani Manat|LL|
+        en|TND|TND||Tunisian dinar|Tunisian dinars|Tunisian Dinar|LL|
+        en|TOP|TOP|T$|Tongan pa\u02BBanga|Tongan pa\u02BBanga|Tongan Pa\u02BBanga|LL|LS
+        en|TPE|||Timorese escudo|Timorese escudos|Timorese Escudo||
+        en|TRL|||Turkish lira (1922\u20132005)|Turkish Lira (1922\u20132005)|Turkish Lira (1922\u20132005)||
+        en|TRY|TRY|\u20BA|Turkish lira|Turkish Lira|Turkish Lira|LL|SS
+        en|TTD|TTD|$|Trinidad & Tobago dollar|Trinidad & Tobago dollars|Trinidad & Tobago Dollar|LL|SS
+        en|TWD|NT$|$|New Taiwan dollar|New Taiwan dollars|New Taiwan Dollar|LS|SS
+        en|TZS|TZS||Tanzanian shilling|Tanzanian shillings|Tanzanian Shilling|LL|
+        en|UAH|UAH|\u20B4|Ukrainian hryvnia|Ukrainian hryvnias|Ukrainian Hryvnia|LL|SS
+        en|UAK|||Ukrainian karbovanets|Ukrainian karbovantsiv|Ukrainian Karbovanets||
+        en|UGS|||Ugandan shilling (1966\u20131987)|Ugandan shillings (1966\u20131987)|Ugandan Shilling (1966\u20131987)||
+        en|UGX|UGX||Ugandan shilling|Ugandan shillings|Ugandan Shilling|LL|
+        en|USD|$|$|US dollar|US dollars|US Dollar|SS|SS
+        en|USN|||US dollar (next day)|US dollars (next day)|US Dollar (Next day)||
+        en|USS|||US dollar (same day)|US dollars (same day)|US Dollar (Same day)||
+        en|UYI|||Uruguayan peso (indexed units)|Uruguayan pesos (indexed units)|Uruguayan Peso (Indexed Units)||
+        en|UYP|||Uruguayan peso (1975\u20131993)|Uruguayan pesos (1975\u20131993)|Uruguayan Peso (1975\u20131993)||
+        en|UYU|UYU|$|Uruguayan peso|Uruguayan pesos|Uruguayan Peso|LL|SS
+        en|UYW|||Uruguayan nominal wage index unit|Uruguayan nominal wage index units|Uruguayan Nominal Wage Index Unit||
+        en|UZS|UZS||Uzbekistani som|Uzbekistani som|Uzbekistani Som|LL|
+        en|VEB|||Venezuelan bol\u00EDvar (1871\u20132008)|Venezuelan bol\u00EDvars (1871\u20132008)|Venezuelan Bol\u00EDvar (1871\u20132008)||
+        en|VED|||Bol\u00EDvar Soberano|Bol\u00EDvar Soberanos|Bol\u00EDvar Soberano||
+        en|VEF||Bs|Venezuelan bol\u00EDvar (2008\u20132018)|Venezuelan bol\u00EDvars (2008\u20132018)|Venezuelan Bol\u00EDvar (2008\u20132018)||LL
+        en|VES|VES||Venezuelan bol\u00EDvar|Venezuelan bol\u00EDvars|Venezuelan Bol\u00EDvar|LL|
+        en|VND|\u20AB|\u20AB|Vietnamese dong|Vietnamese dong|Vietnamese Dong|SS|SS
+        en|VNN|||Vietnamese dong (1978\u20131985)|Vietnamese dong (1978\u20131985)|Vietnamese Dong (1978\u20131985)||
+        en|VUV|VUV||Vanuatu vatu|Vanuatu vatus|Vanuatu Vatu|LL|
+        en|WST|WST||Samoan tala|Samoan tala|Samoan Tala|LL|
+        en|XAF|FCFA||Central African CFA franc|Central African CFA francs|Central African CFA Franc|LL|
+        en|XAG|||troy ounce of silver|troy ounces of silver|Silver||
+        en|XAU|||troy ounce of gold|troy ounces of gold|Gold||
+        en|XBA|||European composite unit|European composite units|European Composite Unit||
+        en|XBB|||European monetary unit|European monetary units|European Monetary Unit||
+        en|XBC|||European unit of account (XBC)|European units of account (XBC)|European Unit of Account (XBC)||
+        en|XBD|||European unit of account (XBD)|European units of account (XBD)|European Unit of Account (XBD)||
+        en|XCD|EC$|$|East Caribbean dollar|East Caribbean dollars|East Caribbean Dollar|LS|SS
+        en|XCG|Cg.||Caribbean guilder|Caribbean guilders|Caribbean guilder|LL|
+        en|XDR|||special drawing rights|special drawing rights|Special Drawing Rights||
+        en|XEU|||European currency unit|European currency units|European Currency Unit||
+        en|XFO|||French gold franc|French gold francs|French Gold Franc||
+        en|XFU|||French UIC-franc|French UIC-francs|French UIC-Franc||
+        en|XOF|F\u202FCFA||West African CFA franc|West African CFA francs|West African CFA Franc|LL|
+        en|XPD|||troy ounce of palladium|troy ounces of palladium|Palladium||
+        en|XPF|CFPF||CFP franc|CFP francs|CFP Franc|LL|
+        en|XPT|||troy ounce of platinum|troy ounces of platinum|Platinum||
+        en|XRE|||RINET Funds unit|RINET Funds units|RINET Funds||
+        en|XSU|||Sucre|Sucres|Sucre||
+        en|XTS|||Testing Currency unit|Testing Currency units|Testing Currency Code||
+        en|XUA|||ADB unit of account|ADB units of account|ADB Unit of Account||
+        en|XXX|\u00A4||(unknown unit of currency)|(unknown currency)|Unknown Currency|SS|
+        en|YDD|||Yemeni dinar|Yemeni dinars|Yemeni Dinar||
+        en|YER|YER||Yemeni rial|Yemeni rials|Yemeni Rial|LL|
+        en|YUD|||Yugoslavian hard dinar (1966\u20131990)|Yugoslavian hard dinars (1966\u20131990)|Yugoslavian Hard Dinar (1966\u20131990)||
+        en|YUM|||Yugoslavian new dinar (1994\u20132002)|Yugoslavian new dinars (1994\u20132002)|Yugoslavian New Dinar (1994\u20132002)||
+        en|YUN|||Yugoslavian convertible dinar (1990\u20131992)|Yugoslavian convertible dinars (1990\u20131992)|Yugoslavian Convertible Dinar (1990\u20131992)||
+        en|YUR|||Yugoslavian reformed dinar (1992\u20131993)|Yugoslavian reformed dinars (1992\u20131993)|Yugoslavian Reformed Dinar (1992\u20131993)||
+        en|ZAL|||South African rand (financial)|South African rands (financial)|South African Rand (financial)||
+        en|ZAR|ZAR|R|South African rand|South African rand|South African Rand|LL|LL
+        en|ZMK|||Zambian kwacha (1968\u20132012)|Zambian kwachas (1968\u20132012)|Zambian Kwacha (1968\u20132012)||
+        en|ZMW|ZMW|ZK|Zambian kwacha|Zambian kwachas|Zambian Kwacha|LL|LL
+        en|ZRN|||Zairean new zaire (1993\u20131998)|Zairean new zaires (1993\u20131998)|Zairean New Zaire (1993\u20131998)||
+        en|ZRZ|||Zairean zaire (1971\u20131993)|Zairean zaires (1971\u20131993)|Zairean Zaire (1971\u20131993)||
+        en|ZWD|||Zimbabwean dollar (1980\u20132008)|Zimbabwean dollars (1980\u20132008)|Zimbabwean Dollar (1980\u20132008)||
+        en|ZWG|ZWG||Zimbabwean gold|Zimbabwean gold|Zimbabwean Gold|LL|
+        en|ZWL|||Zimbabwean dollar (2009\u20132024)|Zimbabwean dollars (2009\u20132024)|Zimbabwean Dollar (2009\u20132024)||
+        en|ZWR|||Zimbabwean dollar (2008)|Zimbabwean dollars (2008)|Zimbabwean Dollar (2008)||
+        """u8;
+
+    /// <summary>The currencies whose fraction digits are not 2: code, digits.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> CurrencyDigits =>
+        """
+        ADP|0
+        AFN|0
+        ALL|0
+        BHD|3
+        BIF|0
+        BYR|0
+        CLF|4
+        CLP|0
+        COP|0
+        DJF|0
+        ESP|0
+        GNF|0
+        HUF|0
+        IDR|0
+        IQD|0
+        IRR|0
+        ISK|0
+        ITL|0
+        JOD|3
+        JPY|0
+        KMF|0
+        KPW|0
+        KRW|0
+        KWD|3
+        LAK|0
+        LBP|0
+        LUF|0
+        LYD|3
+        MGA|0
+        MGF|0
+        MMK|0
+        MRO|0
+        OMR|3
+        PKR|0
+        PYG|0
+        RWF|0
+        SLL|0
+        SOS|0
+        STD|0
+        SYP|0
+        TMM|0
+        TND|3
+        TRL|0
+        UGX|0
+        UYI|0
+        UYW|4
+        VND|0
+        VUV|0
+        XAF|0
+        XOF|0
+        XPF|0
+        YER|0
+        ZMK|0
+        ZWD|0
+        """u8;
+
+    /// <summary>The numbering systems with a simple digit mapping: name, digits.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> NumberingSystems =>
+        """
+        adlm|\uD83A\uDD50\uD83A\uDD51\uD83A\uDD52\uD83A\uDD53\uD83A\uDD54\uD83A\uDD55\uD83A\uDD56\uD83A\uDD57\uD83A\uDD58\uD83A\uDD59
+        ahom|\uD805\uDF30\uD805\uDF31\uD805\uDF32\uD805\uDF33\uD805\uDF34\uD805\uDF35\uD805\uDF36\uD805\uDF37\uD805\uDF38\uD805\uDF39
+        arabext|\u06F0\u06F1\u06F2\u06F3\u06F4\u06F5\u06F6\u06F7\u06F8\u06F9
+        arab|\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669
+        bali|\u1B50\u1B51\u1B52\u1B53\u1B54\u1B55\u1B56\u1B57\u1B58\u1B59
+        beng|\u09E6\u09E7\u09E8\u09E9\u09EA\u09EB\u09EC\u09ED\u09EE\u09EF
+        bhks|\uD807\uDC50\uD807\uDC51\uD807\uDC52\uD807\uDC53\uD807\uDC54\uD807\uDC55\uD807\uDC56\uD807\uDC57\uD807\uDC58\uD807\uDC59
+        brah|\uD804\uDC66\uD804\uDC67\uD804\uDC68\uD804\uDC69\uD804\uDC6A\uD804\uDC6B\uD804\uDC6C\uD804\uDC6D\uD804\uDC6E\uD804\uDC6F
+        cakm|\uD804\uDD36\uD804\uDD37\uD804\uDD38\uD804\uDD39\uD804\uDD3A\uD804\uDD3B\uD804\uDD3C\uD804\uDD3D\uD804\uDD3E\uD804\uDD3F
+        cham|\uAA50\uAA51\uAA52\uAA53\uAA54\uAA55\uAA56\uAA57\uAA58\uAA59
+        deva|\u0966\u0967\u0968\u0969\u096A\u096B\u096C\u096D\u096E\u096F
+        diak|\uD806\uDD50\uD806\uDD51\uD806\uDD52\uD806\uDD53\uD806\uDD54\uD806\uDD55\uD806\uDD56\uD806\uDD57\uD806\uDD58\uD806\uDD59
+        fullwide|\uFF10\uFF11\uFF12\uFF13\uFF14\uFF15\uFF16\uFF17\uFF18\uFF19
+        gara|\uD803\uDD40\uD803\uDD41\uD803\uDD42\uD803\uDD43\uD803\uDD44\uD803\uDD45\uD803\uDD46\uD803\uDD47\uD803\uDD48\uD803\uDD49
+        gong|\uD807\uDDA0\uD807\uDDA1\uD807\uDDA2\uD807\uDDA3\uD807\uDDA4\uD807\uDDA5\uD807\uDDA6\uD807\uDDA7\uD807\uDDA8\uD807\uDDA9
+        gonm|\uD807\uDD50\uD807\uDD51\uD807\uDD52\uD807\uDD53\uD807\uDD54\uD807\uDD55\uD807\uDD56\uD807\uDD57\uD807\uDD58\uD807\uDD59
+        gujr|\u0AE6\u0AE7\u0AE8\u0AE9\u0AEA\u0AEB\u0AEC\u0AED\u0AEE\u0AEF
+        gukh|\uD818\uDD30\uD818\uDD31\uD818\uDD32\uD818\uDD33\uD818\uDD34\uD818\uDD35\uD818\uDD36\uD818\uDD37\uD818\uDD38\uD818\uDD39
+        guru|\u0A66\u0A67\u0A68\u0A69\u0A6A\u0A6B\u0A6C\u0A6D\u0A6E\u0A6F
+        hanidec|\u3007\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D
+        hmng|\uD81A\uDF50\uD81A\uDF51\uD81A\uDF52\uD81A\uDF53\uD81A\uDF54\uD81A\uDF55\uD81A\uDF56\uD81A\uDF57\uD81A\uDF58\uD81A\uDF59
+        hmnp|\uD838\uDD40\uD838\uDD41\uD838\uDD42\uD838\uDD43\uD838\uDD44\uD838\uDD45\uD838\uDD46\uD838\uDD47\uD838\uDD48\uD838\uDD49
+        java|\uA9D0\uA9D1\uA9D2\uA9D3\uA9D4\uA9D5\uA9D6\uA9D7\uA9D8\uA9D9
+        kali|\uA900\uA901\uA902\uA903\uA904\uA905\uA906\uA907\uA908\uA909
+        kawi|\uD807\uDF50\uD807\uDF51\uD807\uDF52\uD807\uDF53\uD807\uDF54\uD807\uDF55\uD807\uDF56\uD807\uDF57\uD807\uDF58\uD807\uDF59
+        khmr|\u17E0\u17E1\u17E2\u17E3\u17E4\u17E5\u17E6\u17E7\u17E8\u17E9
+        knda|\u0CE6\u0CE7\u0CE8\u0CE9\u0CEA\u0CEB\u0CEC\u0CED\u0CEE\u0CEF
+        krai|\uD81B\uDD70\uD81B\uDD71\uD81B\uDD72\uD81B\uDD73\uD81B\uDD74\uD81B\uDD75\uD81B\uDD76\uD81B\uDD77\uD81B\uDD78\uD81B\uDD79
+        lanatham|\u1A90\u1A91\u1A92\u1A93\u1A94\u1A95\u1A96\u1A97\u1A98\u1A99
+        lana|\u1A80\u1A81\u1A82\u1A83\u1A84\u1A85\u1A86\u1A87\u1A88\u1A89
+        laoo|\u0ED0\u0ED1\u0ED2\u0ED3\u0ED4\u0ED5\u0ED6\u0ED7\u0ED8\u0ED9
+        latn|0123456789
+        lepc|\u1C40\u1C41\u1C42\u1C43\u1C44\u1C45\u1C46\u1C47\u1C48\u1C49
+        limb|\u1946\u1947\u1948\u1949\u194A\u194B\u194C\u194D\u194E\u194F
+        mathbold|\uD835\uDFCE\uD835\uDFCF\uD835\uDFD0\uD835\uDFD1\uD835\uDFD2\uD835\uDFD3\uD835\uDFD4\uD835\uDFD5\uD835\uDFD6\uD835\uDFD7
+        mathdbl|\uD835\uDFD8\uD835\uDFD9\uD835\uDFDA\uD835\uDFDB\uD835\uDFDC\uD835\uDFDD\uD835\uDFDE\uD835\uDFDF\uD835\uDFE0\uD835\uDFE1
+        mathmono|\uD835\uDFF6\uD835\uDFF7\uD835\uDFF8\uD835\uDFF9\uD835\uDFFA\uD835\uDFFB\uD835\uDFFC\uD835\uDFFD\uD835\uDFFE\uD835\uDFFF
+        mathsanb|\uD835\uDFEC\uD835\uDFED\uD835\uDFEE\uD835\uDFEF\uD835\uDFF0\uD835\uDFF1\uD835\uDFF2\uD835\uDFF3\uD835\uDFF4\uD835\uDFF5
+        mathsans|\uD835\uDFE2\uD835\uDFE3\uD835\uDFE4\uD835\uDFE5\uD835\uDFE6\uD835\uDFE7\uD835\uDFE8\uD835\uDFE9\uD835\uDFEA\uD835\uDFEB
+        mlym|\u0D66\u0D67\u0D68\u0D69\u0D6A\u0D6B\u0D6C\u0D6D\u0D6E\u0D6F
+        modi|\uD805\uDE50\uD805\uDE51\uD805\uDE52\uD805\uDE53\uD805\uDE54\uD805\uDE55\uD805\uDE56\uD805\uDE57\uD805\uDE58\uD805\uDE59
+        mong|\u1810\u1811\u1812\u1813\u1814\u1815\u1816\u1817\u1818\u1819
+        mroo|\uD81A\uDE60\uD81A\uDE61\uD81A\uDE62\uD81A\uDE63\uD81A\uDE64\uD81A\uDE65\uD81A\uDE66\uD81A\uDE67\uD81A\uDE68\uD81A\uDE69
+        mtei|\uABF0\uABF1\uABF2\uABF3\uABF4\uABF5\uABF6\uABF7\uABF8\uABF9
+        mymrepka|\uD805\uDEDA\uD805\uDEDB\uD805\uDEDC\uD805\uDEDD\uD805\uDEDE\uD805\uDEDF\uD805\uDEE0\uD805\uDEE1\uD805\uDEE2\uD805\uDEE3
+        mymrpao|\uD805\uDED0\uD805\uDED1\uD805\uDED2\uD805\uDED3\uD805\uDED4\uD805\uDED5\uD805\uDED6\uD805\uDED7\uD805\uDED8\uD805\uDED9
+        mymrshan|\u1090\u1091\u1092\u1093\u1094\u1095\u1096\u1097\u1098\u1099
+        mymrtlng|\uA9F0\uA9F1\uA9F2\uA9F3\uA9F4\uA9F5\uA9F6\uA9F7\uA9F8\uA9F9
+        mymr|\u1040\u1041\u1042\u1043\u1044\u1045\u1046\u1047\u1048\u1049
+        nagm|\uD839\uDCF0\uD839\uDCF1\uD839\uDCF2\uD839\uDCF3\uD839\uDCF4\uD839\uDCF5\uD839\uDCF6\uD839\uDCF7\uD839\uDCF8\uD839\uDCF9
+        newa|\uD805\uDC50\uD805\uDC51\uD805\uDC52\uD805\uDC53\uD805\uDC54\uD805\uDC55\uD805\uDC56\uD805\uDC57\uD805\uDC58\uD805\uDC59
+        nkoo|\u07C0\u07C1\u07C2\u07C3\u07C4\u07C5\u07C6\u07C7\u07C8\u07C9
+        olck|\u1C50\u1C51\u1C52\u1C53\u1C54\u1C55\u1C56\u1C57\u1C58\u1C59
+        onao|\uD839\uDDF1\uD839\uDDF2\uD839\uDDF3\uD839\uDDF4\uD839\uDDF5\uD839\uDDF6\uD839\uDDF7\uD839\uDDF8\uD839\uDDF9\uD839\uDDFA
+        orya|\u0B66\u0B67\u0B68\u0B69\u0B6A\u0B6B\u0B6C\u0B6D\u0B6E\u0B6F
+        osma|\uD801\uDCA0\uD801\uDCA1\uD801\uDCA2\uD801\uDCA3\uD801\uDCA4\uD801\uDCA5\uD801\uDCA6\uD801\uDCA7\uD801\uDCA8\uD801\uDCA9
+        outlined|\uD833\uDCF0\uD833\uDCF1\uD833\uDCF2\uD833\uDCF3\uD833\uDCF4\uD833\uDCF5\uD833\uDCF6\uD833\uDCF7\uD833\uDCF8\uD833\uDCF9
+        rohg|\uD803\uDD30\uD803\uDD31\uD803\uDD32\uD803\uDD33\uD803\uDD34\uD803\uDD35\uD803\uDD36\uD803\uDD37\uD803\uDD38\uD803\uDD39
+        saur|\uA8D0\uA8D1\uA8D2\uA8D3\uA8D4\uA8D5\uA8D6\uA8D7\uA8D8\uA8D9
+        segment|\uD83E\uDFF0\uD83E\uDFF1\uD83E\uDFF2\uD83E\uDFF3\uD83E\uDFF4\uD83E\uDFF5\uD83E\uDFF6\uD83E\uDFF7\uD83E\uDFF8\uD83E\uDFF9
+        shrd|\uD804\uDDD0\uD804\uDDD1\uD804\uDDD2\uD804\uDDD3\uD804\uDDD4\uD804\uDDD5\uD804\uDDD6\uD804\uDDD7\uD804\uDDD8\uD804\uDDD9
+        sind|\uD804\uDEF0\uD804\uDEF1\uD804\uDEF2\uD804\uDEF3\uD804\uDEF4\uD804\uDEF5\uD804\uDEF6\uD804\uDEF7\uD804\uDEF8\uD804\uDEF9
+        sinh|\u0DE6\u0DE7\u0DE8\u0DE9\u0DEA\u0DEB\u0DEC\u0DED\u0DEE\u0DEF
+        sora|\uD804\uDCF0\uD804\uDCF1\uD804\uDCF2\uD804\uDCF3\uD804\uDCF4\uD804\uDCF5\uD804\uDCF6\uD804\uDCF7\uD804\uDCF8\uD804\uDCF9
+        sund|\u1BB0\u1BB1\u1BB2\u1BB3\u1BB4\u1BB5\u1BB6\u1BB7\u1BB8\u1BB9
+        sunu|\uD806\uDFF0\uD806\uDFF1\uD806\uDFF2\uD806\uDFF3\uD806\uDFF4\uD806\uDFF5\uD806\uDFF6\uD806\uDFF7\uD806\uDFF8\uD806\uDFF9
+        takr|\uD805\uDEC0\uD805\uDEC1\uD805\uDEC2\uD805\uDEC3\uD805\uDEC4\uD805\uDEC5\uD805\uDEC6\uD805\uDEC7\uD805\uDEC8\uD805\uDEC9
+        talu|\u19D0\u19D1\u19D2\u19D3\u19D4\u19D5\u19D6\u19D7\u19D8\u19D9
+        tamldec|\u0BE6\u0BE7\u0BE8\u0BE9\u0BEA\u0BEB\u0BEC\u0BED\u0BEE\u0BEF
+        telu|\u0C66\u0C67\u0C68\u0C69\u0C6A\u0C6B\u0C6C\u0C6D\u0C6E\u0C6F
+        thai|\u0E50\u0E51\u0E52\u0E53\u0E54\u0E55\u0E56\u0E57\u0E58\u0E59
+        tibt|\u0F20\u0F21\u0F22\u0F23\u0F24\u0F25\u0F26\u0F27\u0F28\u0F29
+        tirh|\uD805\uDCD0\uD805\uDCD1\uD805\uDCD2\uD805\uDCD3\uD805\uDCD4\uD805\uDCD5\uD805\uDCD6\uD805\uDCD7\uD805\uDCD8\uD805\uDCD9
+        tnsa|\uD81A\uDEC0\uD81A\uDEC1\uD81A\uDEC2\uD81A\uDEC3\uD81A\uDEC4\uD81A\uDEC5\uD81A\uDEC6\uD81A\uDEC7\uD81A\uDEC8\uD81A\uDEC9
+        tols|\uD807\uDDE0\uD807\uDDE1\uD807\uDDE2\uD807\uDDE3\uD807\uDDE4\uD807\uDDE5\uD807\uDDE6\uD807\uDDE7\uD807\uDDE8\uD807\uDDE9
+        vaii|\uA620\uA621\uA622\uA623\uA624\uA625\uA626\uA627\uA628\uA629
+        wara|\uD806\uDCE0\uD806\uDCE1\uD806\uDCE2\uD806\uDCE3\uD806\uDCE4\uD806\uDCE5\uD806\uDCE6\uD806\uDCE7\uD806\uDCE8\uD806\uDCE9
+        wcho|\uD838\uDEF0\uD838\uDEF1\uD838\uDEF2\uD838\uDEF3\uD838\uDEF4\uD838\uDEF5\uD838\uDEF6\uD838\uDEF7\uD838\uDEF8\uD838\uDEF9
+        """u8;
+
+    /// <summary>The cardinal plural rules of each supported language: language, category, rule.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> Plurals =>
+        """
+        de|one|i = 1 and v = 0
+        de|other|
+        en|one|i = 1 and v = 0
+        en|other|
+        """u8;
+
+    /// <summary>The plural range rules of each supported language: language, start, end, result.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> PluralRanges =>
+        """
+        de|one|other|other
+        de|other|one|one
+        de|other|other|other
+        en|one|other|other
+        en|other|one|other
+        en|other|other|other
+        """u8;
+
+    /// <summary>The sanctioned units' patterns of each supported language: language, width, unit, field, value.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> Units =>
+        """
+        de|long|acre|displayName|Acres
+        de|long|acre|unitPattern-count-one|{0} Acre
+        de|long|acre|unitPattern-count-other|{0} Acres
+        de|long|bit|displayName|Bits
+        de|long|bit|unitPattern-count-one|{0}\u00A0Bit
+        de|long|bit|unitPattern-count-other|{0} Bit
+        de|long|byte|displayName|Bytes
+        de|long|byte|unitPattern-count-one|{0}\u00A0Byte
+        de|long|byte|unitPattern-count-other|{0} Byte
+        de|long|celsius|displayName|Grad Celsius
+        de|long|celsius|unitPattern-count-one|{0} Grad Celsius
+        de|long|celsius|unitPattern-count-other|{0} Grad Celsius
+        de|long|centimeter|displayName|Zentimeter
+        de|long|centimeter|perUnitPattern|{0} pro Zentimeter
+        de|long|centimeter|unitPattern-count-one|{0} Zentimeter
+        de|long|centimeter|unitPattern-count-other|{0} Zentimeter
+        de|long|day|displayName|Tage
+        de|long|day|perUnitPattern|{0} pro Tag
+        de|long|day|unitPattern-count-one|{0} Tag
+        de|long|day|unitPattern-count-other|{0} Tage
+        de|long|degree|displayName|Grad
+        de|long|degree|unitPattern-count-one|{0} Grad
+        de|long|degree|unitPattern-count-other|{0} Grad
+        de|long|fahrenheit|displayName|Grad Fahrenheit
+        de|long|fahrenheit|unitPattern-count-one|{0} Grad Fahrenheit
+        de|long|fahrenheit|unitPattern-count-other|{0} Grad Fahrenheit
+        de|long|fluid-ounce|displayName|Fl\u00FCssigunzen
+        de|long|fluid-ounce|unitPattern-count-one|{0}\u00A0Fl\u00FCssigunze
+        de|long|fluid-ounce|unitPattern-count-other|{0}\u00A0Fl\u00FCssigunzen
+        de|long|foot|displayName|Fu\u00DF
+        de|long|foot|perUnitPattern|{0} pro Fu\u00DF
+        de|long|foot|unitPattern-count-one|{0} Fu\u00DF
+        de|long|foot|unitPattern-count-other|{0} Fu\u00DF
+        de|long|gallon|displayName|Gallone
+        de|long|gallon|perUnitPattern|{0} pro Gallone
+        de|long|gallon|unitPattern-count-one|{0}\u00A0Gallone
+        de|long|gallon|unitPattern-count-other|{0}\u00A0Gallonen
+        de|long|gigabit|displayName|Gigabits
+        de|long|gigabit|unitPattern-count-one|{0}\u00A0Gigabit
+        de|long|gigabit|unitPattern-count-other|{0} Gigabit
+        de|long|gigabyte|displayName|Gigabytes
+        de|long|gigabyte|unitPattern-count-one|{0}\u00A0Gigabyte
+        de|long|gigabyte|unitPattern-count-other|{0} Gigabyte
+        de|long|gram|displayName|Gramm
+        de|long|gram|perUnitPattern|{0} pro Gramm
+        de|long|gram|unitPattern-count-one|{0} Gramm
+        de|long|gram|unitPattern-count-other|{0} Gramm
+        de|long|hectare|displayName|Hektar
+        de|long|hectare|unitPattern-count-one|{0} Hektar
+        de|long|hectare|unitPattern-count-other|{0} Hektar
+        de|long|hour|displayName|Stunden
+        de|long|hour|perUnitPattern|{0} pro Stunde
+        de|long|hour|unitPattern-count-one|{0} Stunde
+        de|long|hour|unitPattern-count-other|{0} Stunden
+        de|long|inch|displayName|Zoll
+        de|long|inch|perUnitPattern|{0} pro Zoll
+        de|long|inch|unitPattern-count-one|{0} Zoll
+        de|long|inch|unitPattern-count-other|{0} Zoll
+        de|long|kilobit|displayName|Kilobits
+        de|long|kilobit|unitPattern-count-one|{0}\u00A0Kilobit
+        de|long|kilobit|unitPattern-count-other|{0} Kilobit
+        de|long|kilobyte|displayName|Kilobytes
+        de|long|kilobyte|unitPattern-count-one|{0}\u00A0Kilobyte
+        de|long|kilobyte|unitPattern-count-other|{0} Kilobyte
+        de|long|kilogram|displayName|Kilogramm
+        de|long|kilogram|perUnitPattern|{0} pro Kilogramm
+        de|long|kilogram|unitPattern-count-one|{0} Kilogramm
+        de|long|kilogram|unitPattern-count-other|{0} Kilogramm
+        de|long|kilometer-per-hour|displayName|Kilometer pro Stunde
+        de|long|kilometer-per-hour|unitPattern-count-one|{0} Kilometer pro Stunde
+        de|long|kilometer-per-hour|unitPattern-count-other|{0} Kilometer pro Stunde
+        de|long|kilometer|displayName|Kilometer
+        de|long|kilometer|perUnitPattern|{0} pro Kilometer
+        de|long|kilometer|unitPattern-count-one|{0} Kilometer
+        de|long|kilometer|unitPattern-count-other|{0} Kilometer
+        de|long|liter-per-kilometer|displayName|Liter pro Kilometer
+        de|long|liter-per-kilometer|unitPattern-count-one|{0}\u00A0Liter pro Kilometer
+        de|long|liter-per-kilometer|unitPattern-count-other|{0}\u00A0Liter pro Kilometer
+        de|long|liter|displayName|Liter
+        de|long|liter|perUnitPattern|{0} pro Liter
+        de|long|liter|unitPattern-count-one|{0} Liter
+        de|long|liter|unitPattern-count-other|{0} Liter
+        de|long|megabit|displayName|Megabits
+        de|long|megabit|unitPattern-count-one|{0}\u00A0Megabit
+        de|long|megabit|unitPattern-count-other|{0} Megabit
+        de|long|megabyte|displayName|Megabytes
+        de|long|megabyte|unitPattern-count-one|{0}\u00A0Megabyte
+        de|long|megabyte|unitPattern-count-other|{0} Megabyte
+        de|long|meter-per-second|displayName|Meter pro Sekunde
+        de|long|meter-per-second|unitPattern-count-one|{0} Meter pro Sekunde
+        de|long|meter-per-second|unitPattern-count-other|{0} Meter pro Sekunde
+        de|long|meter|displayName|Meter
+        de|long|meter|perUnitPattern|{0} pro Meter
+        de|long|meter|unitPattern-count-one|{0} Meter
+        de|long|meter|unitPattern-count-other|{0} Meter
+        de|long|microsecond|displayName|Mikrosekunden
+        de|long|microsecond|unitPattern-count-one|{0} Mikrosekunde
+        de|long|microsecond|unitPattern-count-other|{0} Mikrosekunden
+        de|long|mile-per-gallon|displayName|Meilen pro Gallone
+        de|long|mile-per-gallon|unitPattern-count-one|{0}\u00A0Meile pro Gallone
+        de|long|mile-per-gallon|unitPattern-count-other|{0}\u00A0Meilen pro Gallone
+        de|long|mile-per-hour|displayName|Meilen pro Stunde
+        de|long|mile-per-hour|unitPattern-count-one|{0} Meile pro Stunde
+        de|long|mile-per-hour|unitPattern-count-other|{0} Meilen pro Stunde
+        de|long|mile-scandinavian|displayName|skandinavische Meilen
+        de|long|mile-scandinavian|unitPattern-count-one|{0} skandinavische Meile
+        de|long|mile-scandinavian|unitPattern-count-other|{0} skandinavische Meilen
+        de|long|mile|displayName|Meilen
+        de|long|mile|unitPattern-count-one|{0} Meile
+        de|long|mile|unitPattern-count-other|{0} Meilen
+        de|long|milliliter|displayName|Milliliter
+        de|long|milliliter|unitPattern-count-one|{0}\u00A0Milliliter
+        de|long|milliliter|unitPattern-count-other|{0}\u00A0Milliliter
+        de|long|millimeter|displayName|Millimeter
+        de|long|millimeter|unitPattern-count-one|{0} Millimeter
+        de|long|millimeter|unitPattern-count-other|{0} Millimeter
+        de|long|millisecond|displayName|Millisekunden
+        de|long|millisecond|unitPattern-count-one|{0} Millisekunde
+        de|long|millisecond|unitPattern-count-other|{0} Millisekunden
+        de|long|minute|displayName|Minuten
+        de|long|minute|perUnitPattern|{0} pro Minute
+        de|long|minute|unitPattern-count-one|{0} Minute
+        de|long|minute|unitPattern-count-other|{0} Minuten
+        de|long|month|displayName|Monate
+        de|long|month|perUnitPattern|{0} pro Monat
+        de|long|month|unitPattern-count-one|{0} Monat
+        de|long|month|unitPattern-count-other|{0} Monate
+        de|long|nanosecond|displayName|Nanosekunden
+        de|long|nanosecond|unitPattern-count-one|{0} Nanosekunde
+        de|long|nanosecond|unitPattern-count-other|{0} Nanosekunden
+        de|long|ounce|displayName|Unzen
+        de|long|ounce|perUnitPattern|{0} pro Unze
+        de|long|ounce|unitPattern-count-one|{0} Unze
+        de|long|ounce|unitPattern-count-other|{0} Unzen
+        de|long|percent|displayName|Prozent
+        de|long|percent|unitPattern-count-one|{0} Prozent
+        de|long|percent|unitPattern-count-other|{0} Prozent
+        de|long|per|compoundUnitPattern|{0} pro {1}
+        de|long|petabyte|displayName|Petabytes
+        de|long|petabyte|unitPattern-count-one|{0} Petabyte
+        de|long|petabyte|unitPattern-count-other|{0} Petabyte
+        de|long|pound|displayName|Pfund
+        de|long|pound|perUnitPattern|{0} pro Pfund
+        de|long|pound|unitPattern-count-one|{0} Pfund
+        de|long|pound|unitPattern-count-other|{0} Pfund
+        de|long|second|displayName|Sekunden
+        de|long|second|perUnitPattern|{0} pro Sekunde
+        de|long|second|unitPattern-count-one|{0} Sekunde
+        de|long|second|unitPattern-count-other|{0} Sekunden
+        de|long|stone|displayName|Stones
+        de|long|stone|unitPattern-count-one|{0}\u00A0Stone
+        de|long|stone|unitPattern-count-other|{0}\u00A0Stones
+        de|long|terabit|displayName|Terabits
+        de|long|terabit|unitPattern-count-one|{0}\u00A0Terabit
+        de|long|terabit|unitPattern-count-other|{0} Terabit
+        de|long|terabyte|displayName|Terabytes
+        de|long|terabyte|unitPattern-count-one|{0}\u00A0Terabyte
+        de|long|terabyte|unitPattern-count-other|{0} Terabyte
+        de|long|week|displayName|Wochen
+        de|long|week|perUnitPattern|{0} pro Woche
+        de|long|week|unitPattern-count-one|{0} Woche
+        de|long|week|unitPattern-count-other|{0} Wochen
+        de|long|yard|displayName|Yards
+        de|long|yard|unitPattern-count-one|{0} Yard
+        de|long|yard|unitPattern-count-other|{0} Yards
+        de|long|year|displayName|Jahre
+        de|long|year|perUnitPattern|{0} pro Jahr
+        de|long|year|unitPattern-count-one|{0} Jahr
+        de|long|year|unitPattern-count-other|{0} Jahre
+        de|narrow|acre|displayName|ac
+        de|narrow|acre|unitPattern-count-other|{0} ac
+        de|narrow|bit|displayName|b
+        de|narrow|bit|unitPattern-count-one|{0} b
+        de|narrow|bit|unitPattern-count-other|{0} b
+        de|narrow|byte|displayName|B
+        de|narrow|byte|unitPattern-count-one|{0} B
+        de|narrow|byte|unitPattern-count-other|{0} B
+        de|narrow|celsius|displayName|\u00B0C
+        de|narrow|celsius|unitPattern-count-one|{0} \u00B0C
+        de|narrow|celsius|unitPattern-count-other|{0} \u00B0C
+        de|narrow|centimeter|displayName|cm
+        de|narrow|centimeter|perUnitPattern|{0}/cm
+        de|narrow|centimeter|unitPattern-count-other|{0} cm
+        de|narrow|day|displayName|T
+        de|narrow|day|perUnitPattern|{0}/T
+        de|narrow|day|unitPattern-count-one|{0} T
+        de|narrow|day|unitPattern-count-other|{0} T
+        de|narrow|degree|displayName|\u00B0
+        de|narrow|degree|unitPattern-count-other|{0}\u00B0
+        de|narrow|fahrenheit|displayName|\u00B0F
+        de|narrow|fahrenheit|unitPattern-count-one|{0}\u00B0F
+        de|narrow|fahrenheit|unitPattern-count-other|{0}\u00B0F
+        de|narrow|fluid-ounce|displayName|fl.oz.
+        de|narrow|fluid-ounce|unitPattern-count-one|{0} fl.oz.
+        de|narrow|fluid-ounce|unitPattern-count-other|{0} fl oz
+        de|narrow|foot|displayName|ft
+        de|narrow|foot|perUnitPattern|{0}/ft
+        de|narrow|foot|unitPattern-count-other|{0} ft
+        de|narrow|gallon|displayName|gal
+        de|narrow|gallon|perUnitPattern|{0}/gal
+        de|narrow|gallon|unitPattern-count-one|{0} gal
+        de|narrow|gallon|unitPattern-count-other|{0} gal
+        de|narrow|gigabit|displayName|Gb
+        de|narrow|gigabit|unitPattern-count-one|{0}\u00A0Gb
+        de|narrow|gigabit|unitPattern-count-other|{0}\u00A0Gb
+        de|narrow|gigabyte|displayName|GB
+        de|narrow|gigabyte|unitPattern-count-one|{0}\u00A0GB
+        de|narrow|gigabyte|unitPattern-count-other|{0}\u00A0GB
+        de|narrow|gram|displayName|Gramm
+        de|narrow|gram|perUnitPattern|{0}/g
+        de|narrow|gram|unitPattern-count-other|{0} g
+        de|narrow|hectare|displayName|ha
+        de|narrow|hectare|unitPattern-count-other|{0} ha
+        de|narrow|hour|displayName|Std.
+        de|narrow|hour|perUnitPattern|{0}/h
+        de|narrow|hour|unitPattern-count-one|{0}h
+        de|narrow|hour|unitPattern-count-other|{0}h
+        de|narrow|inch|displayName|in
+        de|narrow|inch|perUnitPattern|{0}/in
+        de|narrow|inch|unitPattern-count-one|{0}\u00A0in
+        de|narrow|inch|unitPattern-count-other|{0} in
+        de|narrow|kilobit|displayName|kb
+        de|narrow|kilobit|unitPattern-count-other|{0} kb
+        de|narrow|kilobyte|displayName|kB
+        de|narrow|kilobyte|unitPattern-count-other|{0} kB
+        de|narrow|kilogram|displayName|kg
+        de|narrow|kilogram|perUnitPattern|{0}/kg
+        de|narrow|kilogram|unitPattern-count-other|{0} kg
+        de|narrow|kilometer-per-hour|displayName|km/h
+        de|narrow|kilometer-per-hour|unitPattern-count-other|{0} km/h
+        de|narrow|kilometer|displayName|km
+        de|narrow|kilometer|perUnitPattern|{0}/km
+        de|narrow|kilometer|unitPattern-count-other|{0} km
+        de|narrow|liter-per-kilometer|displayName|l/km
+        de|narrow|liter-per-kilometer|unitPattern-count-one|{0}l/km
+        de|narrow|liter-per-kilometer|unitPattern-count-other|{0}l/km
+        de|narrow|liter|displayName|l
+        de|narrow|liter|perUnitPattern|{0}/l
+        de|narrow|liter|unitPattern-count-other|{0} l
+        de|narrow|megabit|displayName|Mb
+        de|narrow|megabit|unitPattern-count-other|{0} Mb
+        de|narrow|megabyte|displayName|MB
+        de|narrow|megabyte|unitPattern-count-other|{0} MB
+        de|narrow|meter-per-second|displayName|m/s
+        de|narrow|meter-per-second|unitPattern-count-other|{0} m/s
+        de|narrow|meter|displayName|Meter
+        de|narrow|meter|perUnitPattern|{0}/m
+        de|narrow|meter|unitPattern-count-other|{0} m
+        de|narrow|microsecond|displayName|\u03BCs
+        de|narrow|microsecond|unitPattern-count-one|{0}\u03BCs
+        de|narrow|microsecond|unitPattern-count-other|{0} \u03BCs
+        de|narrow|mile-per-gallon|displayName|mpg
+        de|narrow|mile-per-gallon|unitPattern-count-one|{0}mpg
+        de|narrow|mile-per-gallon|unitPattern-count-other|{0}mpg
+        de|narrow|mile-per-hour|displayName|mi/h
+        de|narrow|mile-per-hour|unitPattern-count-other|{0} mi/h
+        de|narrow|mile-scandinavian|displayName|smi
+        de|narrow|mile-scandinavian|unitPattern-count-one|{0}smi
+        de|narrow|mile-scandinavian|unitPattern-count-other|{0}smi
+        de|narrow|mile|displayName|mi
+        de|narrow|mile|unitPattern-count-other|{0} mi
+        de|narrow|milliliter|displayName|ml
+        de|narrow|milliliter|unitPattern-count-one|{0}\u00A0ml
+        de|narrow|milliliter|unitPattern-count-other|{0}\u00A0ml
+        de|narrow|millimeter|displayName|mm
+        de|narrow|millimeter|unitPattern-count-other|{0} mm
+        de|narrow|millisecond|displayName|ms
+        de|narrow|millisecond|unitPattern-count-one|{0}ms
+        de|narrow|millisecond|unitPattern-count-other|{0} ms
+        de|narrow|minute|displayName|Min.
+        de|narrow|minute|perUnitPattern|{0}/min
+        de|narrow|minute|unitPattern-count-one|{0} Min.
+        de|narrow|minute|unitPattern-count-other|{0} Min.
+        de|narrow|month|displayName|M
+        de|narrow|month|perUnitPattern|{0}/M
+        de|narrow|month|unitPattern-count-one|{0} M
+        de|narrow|month|unitPattern-count-other|{0} M
+        de|narrow|nanosecond|displayName|ns
+        de|narrow|nanosecond|unitPattern-count-other|{0} ns
+        de|narrow|ounce|displayName|Unzen
+        de|narrow|ounce|perUnitPattern|{0}/oz
+        de|narrow|ounce|unitPattern-count-other|{0} oz
+        de|narrow|percent|displayName|%
+        de|narrow|percent|unitPattern-count-one|{0} %
+        de|narrow|percent|unitPattern-count-other|{0} %
+        de|narrow|per|compoundUnitPattern|{0}/{1}
+        de|narrow|petabyte|displayName|PB
+        de|narrow|petabyte|unitPattern-count-other|{0} PB
+        de|narrow|pound|displayName|Pfund
+        de|narrow|pound|perUnitPattern|{0}/lb
+        de|narrow|pound|unitPattern-count-other|{0} lb
+        de|narrow|second|displayName|Sek.
+        de|narrow|second|perUnitPattern|{0}/s
+        de|narrow|second|unitPattern-count-one|{0} Sek.
+        de|narrow|second|unitPattern-count-other|{0} Sek.
+        de|narrow|stone|displayName|Stones
+        de|narrow|stone|unitPattern-count-other|{0} st
+        de|narrow|terabit|displayName|Tb
+        de|narrow|terabit|unitPattern-count-other|{0} Tb
+        de|narrow|terabyte|displayName|TB
+        de|narrow|terabyte|unitPattern-count-other|{0} TB
+        de|narrow|week|displayName|W
+        de|narrow|week|perUnitPattern|{0}/W
+        de|narrow|week|unitPattern-count-one|{0} W
+        de|narrow|week|unitPattern-count-other|{0} W
+        de|narrow|yard|displayName|yd
+        de|narrow|yard|unitPattern-count-other|{0} yd
+        de|narrow|year|displayName|J
+        de|narrow|year|perUnitPattern|{0}/J
+        de|narrow|year|unitPattern-count-one|{0} J
+        de|narrow|year|unitPattern-count-other|{0} J
+        de|short|acre|displayName|ac
+        de|short|acre|unitPattern-count-other|{0} ac
+        de|short|bit|displayName|Bit
+        de|short|bit|unitPattern-count-one|{0}\u00A0Bit
+        de|short|bit|unitPattern-count-other|{0} Bit
+        de|short|byte|displayName|Byte
+        de|short|byte|unitPattern-count-one|{0}\u00A0Byte
+        de|short|byte|unitPattern-count-other|{0} Byte
+        de|short|celsius|displayName|\u00B0C
+        de|short|celsius|unitPattern-count-one|{0} \u00B0C
+        de|short|celsius|unitPattern-count-other|{0} \u00B0C
+        de|short|centimeter|displayName|cm
+        de|short|centimeter|perUnitPattern|{0}/cm
+        de|short|centimeter|unitPattern-count-other|{0} cm
+        de|short|day|displayName|Tg.
+        de|short|day|perUnitPattern|{0}/T
+        de|short|day|unitPattern-count-one|{0} Tg.
+        de|short|day|unitPattern-count-other|{0} Tg.
+        de|short|degree|displayName|Grad
+        de|short|degree|unitPattern-count-other|{0}\u00B0
+        de|short|fahrenheit|displayName|\u00B0F
+        de|short|fahrenheit|unitPattern-count-one|{0} \u00B0F
+        de|short|fahrenheit|unitPattern-count-other|{0} \u00B0F
+        de|short|fluid-ounce|displayName|fl oz
+        de|short|fluid-ounce|unitPattern-count-one|{0} fl.oz.
+        de|short|fluid-ounce|unitPattern-count-other|{0} fl oz
+        de|short|foot|displayName|Fu\u00DF
+        de|short|foot|perUnitPattern|{0}/ft
+        de|short|foot|unitPattern-count-other|{0} ft
+        de|short|gallon|displayName|gal
+        de|short|gallon|perUnitPattern|{0}/gal
+        de|short|gallon|unitPattern-count-one|{0} gal
+        de|short|gallon|unitPattern-count-other|{0} gal
+        de|short|gigabit|displayName|Gigabit
+        de|short|gigabit|unitPattern-count-one|{0}\u00A0Gb
+        de|short|gigabit|unitPattern-count-other|{0}\u00A0Gb
+        de|short|gigabyte|displayName|Gigabyte
+        de|short|gigabyte|unitPattern-count-one|{0}\u00A0GB
+        de|short|gigabyte|unitPattern-count-other|{0}\u00A0GB
+        de|short|gram|displayName|Gramm
+        de|short|gram|perUnitPattern|{0}/g
+        de|short|gram|unitPattern-count-other|{0} g
+        de|short|hectare|displayName|Hektar
+        de|short|hectare|unitPattern-count-other|{0} ha
+        de|short|hour|displayName|Std.
+        de|short|hour|perUnitPattern|{0}/h
+        de|short|hour|unitPattern-count-one|{0} Std.
+        de|short|hour|unitPattern-count-other|{0} Std.
+        de|short|inch|displayName|in
+        de|short|inch|perUnitPattern|{0}/in
+        de|short|inch|unitPattern-count-one|{0}\u00A0in
+        de|short|inch|unitPattern-count-other|{0} in
+        de|short|kilobit|displayName|kbit
+        de|short|kilobit|unitPattern-count-other|{0} kb
+        de|short|kilobyte|displayName|kbyte
+        de|short|kilobyte|unitPattern-count-other|{0} kB
+        de|short|kilogram|displayName|kg
+        de|short|kilogram|perUnitPattern|{0}/kg
+        de|short|kilogram|unitPattern-count-other|{0} kg
+        de|short|kilometer-per-hour|displayName|km/h
+        de|short|kilometer-per-hour|unitPattern-count-other|{0} km/h
+        de|short|kilometer|displayName|km
+        de|short|kilometer|perUnitPattern|{0}/km
+        de|short|kilometer|unitPattern-count-other|{0} km
+        de|short|liter-per-kilometer|displayName|l/km
+        de|short|liter-per-kilometer|unitPattern-count-one|{0}\u00A0l/km
+        de|short|liter-per-kilometer|unitPattern-count-other|{0}\u00A0l/km
+        de|short|liter|displayName|Liter
+        de|short|liter|perUnitPattern|{0}/l
+        de|short|liter|unitPattern-count-other|{0} l
+        de|short|megabit|displayName|Mbit
+        de|short|megabit|unitPattern-count-other|{0} Mb
+        de|short|megabyte|displayName|Mbyte
+        de|short|megabyte|unitPattern-count-other|{0} MB
+        de|short|meter-per-second|displayName|m/s
+        de|short|meter-per-second|unitPattern-count-other|{0} m/s
+        de|short|meter|displayName|Meter
+        de|short|meter|perUnitPattern|{0}/m
+        de|short|meter|unitPattern-count-other|{0} m
+        de|short|microsecond|displayName|\u03BCs
+        de|short|microsecond|unitPattern-count-other|{0} \u03BCs
+        de|short|mile-per-gallon|displayName|mpg
+        de|short|mile-per-gallon|unitPattern-count-one|{0} mpg
+        de|short|mile-per-gallon|unitPattern-count-other|{0} mpg
+        de|short|mile-per-hour|displayName|mi/h
+        de|short|mile-per-hour|unitPattern-count-other|{0} mi/h
+        de|short|mile-scandinavian|displayName|smi
+        de|short|mile-scandinavian|unitPattern-count-other|{0} smi
+        de|short|mile|displayName|Meilen
+        de|short|mile|unitPattern-count-other|{0} mi
+        de|short|milliliter|displayName|ml
+        de|short|milliliter|unitPattern-count-one|{0}\u00A0ml
+        de|short|milliliter|unitPattern-count-other|{0}\u00A0ml
+        de|short|millimeter|displayName|mm
+        de|short|millimeter|unitPattern-count-other|{0} mm
+        de|short|millisecond|displayName|ms
+        de|short|millisecond|unitPattern-count-other|{0} ms
+        de|short|minute|displayName|Min.
+        de|short|minute|perUnitPattern|{0}/min
+        de|short|minute|unitPattern-count-one|{0} Min.
+        de|short|minute|unitPattern-count-other|{0} Min.
+        de|short|month|displayName|Mon.
+        de|short|month|perUnitPattern|{0}/M
+        de|short|month|unitPattern-count-one|{0} Mon.
+        de|short|month|unitPattern-count-other|{0} Mon.
+        de|short|nanosecond|displayName|ns
+        de|short|nanosecond|unitPattern-count-other|{0} ns
+        de|short|ounce|displayName|oz
+        de|short|ounce|perUnitPattern|{0}/oz
+        de|short|ounce|unitPattern-count-other|{0} oz
+        de|short|percent|displayName|%
+        de|short|percent|unitPattern-count-one|{0} %
+        de|short|percent|unitPattern-count-other|{0} %
+        de|short|per|compoundUnitPattern|{0}/{1}
+        de|short|petabyte|displayName|PB
+        de|short|petabyte|unitPattern-count-other|{0} PB
+        de|short|pound|displayName|lb
+        de|short|pound|perUnitPattern|{0}/lb
+        de|short|pound|unitPattern-count-other|{0} lb
+        de|short|second|displayName|Sek.
+        de|short|second|perUnitPattern|{0}/s
+        de|short|second|unitPattern-count-one|{0} Sek.
+        de|short|second|unitPattern-count-other|{0} Sek.
+        de|short|stone|displayName|Stones
+        de|short|stone|unitPattern-count-other|{0} st
+        de|short|terabit|displayName|Tb
+        de|short|terabit|unitPattern-count-other|{0} Tb
+        de|short|terabyte|displayName|TB
+        de|short|terabyte|unitPattern-count-other|{0} TB
+        de|short|week|displayName|Wo.
+        de|short|week|perUnitPattern|{0}/W
+        de|short|week|unitPattern-count-one|{0} Wo.
+        de|short|week|unitPattern-count-other|{0} Wo.
+        de|short|yard|displayName|Yards
+        de|short|yard|unitPattern-count-other|{0} yd
+        de|short|year|displayName|J
+        de|short|year|perUnitPattern|{0}/J
+        de|short|year|unitPattern-count-one|{0} J
+        de|short|year|unitPattern-count-other|{0} J
+        en|long|acre|displayName|acres
+        en|long|acre|unitPattern-count-one|{0} acre
+        en|long|acre|unitPattern-count-other|{0} acres
+        en|long|bit|displayName|bits
+        en|long|bit|unitPattern-count-one|{0} bit
+        en|long|bit|unitPattern-count-other|{0} bits
+        en|long|byte|displayName|bytes
+        en|long|byte|unitPattern-count-one|{0} byte
+        en|long|byte|unitPattern-count-other|{0} bytes
+        en|long|celsius|displayName|degrees Celsius
+        en|long|celsius|unitPattern-count-one|{0} degree Celsius
+        en|long|celsius|unitPattern-count-other|{0} degrees Celsius
+        en|long|centimeter|displayName|centimeters
+        en|long|centimeter|perUnitPattern|{0} per centimeter
+        en|long|centimeter|unitPattern-count-one|{0} centimeter
+        en|long|centimeter|unitPattern-count-other|{0} centimeters
+        en|long|day|displayName|days
+        en|long|day|perUnitPattern|{0} per day
+        en|long|day|unitPattern-count-one|{0} day
+        en|long|day|unitPattern-count-other|{0} days
+        en|long|degree|displayName|degrees
+        en|long|degree|unitPattern-count-one|{0} degree
+        en|long|degree|unitPattern-count-other|{0} degrees
+        en|long|fahrenheit|displayName|degrees Fahrenheit
+        en|long|fahrenheit|unitPattern-count-one|{0} degree Fahrenheit
+        en|long|fahrenheit|unitPattern-count-other|{0} degrees Fahrenheit
+        en|long|fluid-ounce|displayName|fluid ounces
+        en|long|fluid-ounce|unitPattern-count-one|{0} fluid ounce
+        en|long|fluid-ounce|unitPattern-count-other|{0} fluid ounces
+        en|long|foot|displayName|feet
+        en|long|foot|perUnitPattern|{0} per foot
+        en|long|foot|unitPattern-count-one|{0} foot
+        en|long|foot|unitPattern-count-other|{0} feet
+        en|long|gallon|displayName|gallons
+        en|long|gallon|perUnitPattern|{0} per gallon
+        en|long|gallon|unitPattern-count-one|{0} gallon
+        en|long|gallon|unitPattern-count-other|{0} gallons
+        en|long|gigabit|displayName|gigabits
+        en|long|gigabit|unitPattern-count-one|{0} gigabit
+        en|long|gigabit|unitPattern-count-other|{0} gigabits
+        en|long|gigabyte|displayName|gigabytes
+        en|long|gigabyte|unitPattern-count-one|{0} gigabyte
+        en|long|gigabyte|unitPattern-count-other|{0} gigabytes
+        en|long|gram|displayName|grams
+        en|long|gram|perUnitPattern|{0} per gram
+        en|long|gram|unitPattern-count-one|{0} gram
+        en|long|gram|unitPattern-count-other|{0} grams
+        en|long|hectare|displayName|hectares
+        en|long|hectare|unitPattern-count-one|{0} hectare
+        en|long|hectare|unitPattern-count-other|{0} hectares
+        en|long|hour|displayName|hours
+        en|long|hour|perUnitPattern|{0} per hour
+        en|long|hour|unitPattern-count-one|{0} hour
+        en|long|hour|unitPattern-count-other|{0} hours
+        en|long|inch|displayName|inches
+        en|long|inch|perUnitPattern|{0} per inch
+        en|long|inch|unitPattern-count-one|{0} inch
+        en|long|inch|unitPattern-count-other|{0} inches
+        en|long|kilobit|displayName|kilobits
+        en|long|kilobit|unitPattern-count-one|{0} kilobit
+        en|long|kilobit|unitPattern-count-other|{0} kilobits
+        en|long|kilobyte|displayName|kilobytes
+        en|long|kilobyte|unitPattern-count-one|{0} kilobyte
+        en|long|kilobyte|unitPattern-count-other|{0} kilobytes
+        en|long|kilogram|displayName|kilograms
+        en|long|kilogram|perUnitPattern|{0} per kilogram
+        en|long|kilogram|unitPattern-count-one|{0} kilogram
+        en|long|kilogram|unitPattern-count-other|{0} kilograms
+        en|long|kilometer-per-hour|displayName|kilometers per hour
+        en|long|kilometer-per-hour|unitPattern-count-one|{0} kilometer per hour
+        en|long|kilometer-per-hour|unitPattern-count-other|{0} kilometers per hour
+        en|long|kilometer|displayName|kilometers
+        en|long|kilometer|perUnitPattern|{0} per kilometer
+        en|long|kilometer|unitPattern-count-one|{0} kilometer
+        en|long|kilometer|unitPattern-count-other|{0} kilometers
+        en|long|liter-per-kilometer|displayName|liters per kilometer
+        en|long|liter-per-kilometer|unitPattern-count-one|{0} liter per kilometer
+        en|long|liter-per-kilometer|unitPattern-count-other|{0} liters per kilometer
+        en|long|liter|displayName|liters
+        en|long|liter|perUnitPattern|{0} per liter
+        en|long|liter|unitPattern-count-one|{0} liter
+        en|long|liter|unitPattern-count-other|{0} liters
+        en|long|megabit|displayName|megabits
+        en|long|megabit|unitPattern-count-one|{0} megabit
+        en|long|megabit|unitPattern-count-other|{0} megabits
+        en|long|megabyte|displayName|megabytes
+        en|long|megabyte|unitPattern-count-one|{0} megabyte
+        en|long|megabyte|unitPattern-count-other|{0} megabytes
+        en|long|meter-per-second|displayName|meters per second
+        en|long|meter-per-second|unitPattern-count-one|{0} meter per second
+        en|long|meter-per-second|unitPattern-count-other|{0} meters per second
+        en|long|meter|displayName|meters
+        en|long|meter|perUnitPattern|{0} per meter
+        en|long|meter|unitPattern-count-one|{0} meter
+        en|long|meter|unitPattern-count-other|{0} meters
+        en|long|microsecond|displayName|microseconds
+        en|long|microsecond|unitPattern-count-one|{0} microsecond
+        en|long|microsecond|unitPattern-count-other|{0} microseconds
+        en|long|mile-per-gallon|displayName|miles per gallon
+        en|long|mile-per-gallon|unitPattern-count-one|{0} mile per gallon
+        en|long|mile-per-gallon|unitPattern-count-other|{0} miles per gallon
+        en|long|mile-per-hour|displayName|miles per hour
+        en|long|mile-per-hour|unitPattern-count-one|{0} mile per hour
+        en|long|mile-per-hour|unitPattern-count-other|{0} miles per hour
+        en|long|mile-scandinavian|displayName|miles-scandinavian
+        en|long|mile-scandinavian|unitPattern-count-one|{0} mile-scandinavian
+        en|long|mile-scandinavian|unitPattern-count-other|{0} miles-scandinavian
+        en|long|mile|displayName|miles
+        en|long|mile|unitPattern-count-one|{0} mile
+        en|long|mile|unitPattern-count-other|{0} miles
+        en|long|milliliter|displayName|milliliters
+        en|long|milliliter|unitPattern-count-one|{0} milliliter
+        en|long|milliliter|unitPattern-count-other|{0} milliliters
+        en|long|millimeter|displayName|millimeters
+        en|long|millimeter|unitPattern-count-one|{0} millimeter
+        en|long|millimeter|unitPattern-count-other|{0} millimeters
+        en|long|millisecond|displayName|milliseconds
+        en|long|millisecond|unitPattern-count-one|{0} millisecond
+        en|long|millisecond|unitPattern-count-other|{0} milliseconds
+        en|long|minute|displayName|minutes
+        en|long|minute|perUnitPattern|{0} per minute
+        en|long|minute|unitPattern-count-one|{0} minute
+        en|long|minute|unitPattern-count-other|{0} minutes
+        en|long|month|displayName|months
+        en|long|month|perUnitPattern|{0} per month
+        en|long|month|unitPattern-count-one|{0} month
+        en|long|month|unitPattern-count-other|{0} months
+        en|long|nanosecond|displayName|nanoseconds
+        en|long|nanosecond|unitPattern-count-one|{0} nanosecond
+        en|long|nanosecond|unitPattern-count-other|{0} nanoseconds
+        en|long|ounce|displayName|ounces
+        en|long|ounce|perUnitPattern|{0} per ounce
+        en|long|ounce|unitPattern-count-one|{0} ounce
+        en|long|ounce|unitPattern-count-other|{0} ounces
+        en|long|percent|displayName|percent
+        en|long|percent|unitPattern-count-one|{0} percent
+        en|long|percent|unitPattern-count-other|{0} percent
+        en|long|per|compoundUnitPattern|{0} per {1}
+        en|long|petabyte|displayName|petabytes
+        en|long|petabyte|unitPattern-count-one|{0} petabyte
+        en|long|petabyte|unitPattern-count-other|{0} petabytes
+        en|long|pound|displayName|pounds
+        en|long|pound|perUnitPattern|{0} per pound
+        en|long|pound|unitPattern-count-one|{0} pound
+        en|long|pound|unitPattern-count-other|{0} pounds
+        en|long|second|displayName|seconds
+        en|long|second|perUnitPattern|{0} per second
+        en|long|second|unitPattern-count-one|{0} second
+        en|long|second|unitPattern-count-other|{0} seconds
+        en|long|stone|displayName|stones
+        en|long|stone|unitPattern-count-one|{0} stone
+        en|long|stone|unitPattern-count-other|{0} stones
+        en|long|terabit|displayName|terabits
+        en|long|terabit|unitPattern-count-one|{0} terabit
+        en|long|terabit|unitPattern-count-other|{0} terabits
+        en|long|terabyte|displayName|terabytes
+        en|long|terabyte|unitPattern-count-one|{0} terabyte
+        en|long|terabyte|unitPattern-count-other|{0} terabytes
+        en|long|week|displayName|weeks
+        en|long|week|perUnitPattern|{0} per week
+        en|long|week|unitPattern-count-one|{0} week
+        en|long|week|unitPattern-count-other|{0} weeks
+        en|long|yard|displayName|yards
+        en|long|yard|unitPattern-count-one|{0} yard
+        en|long|yard|unitPattern-count-other|{0} yards
+        en|long|year|displayName|years
+        en|long|year|perUnitPattern|{0} per year
+        en|long|year|unitPattern-count-one|{0} year
+        en|long|year|unitPattern-count-other|{0} years
+        en|narrow|acre|displayName|acre
+        en|narrow|acre|unitPattern-count-one|{0}ac
+        en|narrow|acre|unitPattern-count-other|{0}ac
+        en|narrow|bit|displayName|bit
+        en|narrow|bit|unitPattern-count-one|{0}bit
+        en|narrow|bit|unitPattern-count-other|{0}bit
+        en|narrow|byte|displayName|B
+        en|narrow|byte|unitPattern-count-one|{0}B
+        en|narrow|byte|unitPattern-count-other|{0}B
+        en|narrow|celsius|displayName|\u00B0C
+        en|narrow|celsius|unitPattern-count-one|{0}\u00B0C
+        en|narrow|celsius|unitPattern-count-other|{0}\u00B0C
+        en|narrow|centimeter|displayName|cm
+        en|narrow|centimeter|perUnitPattern|{0}/cm
+        en|narrow|centimeter|unitPattern-count-one|{0}cm
+        en|narrow|centimeter|unitPattern-count-other|{0}cm
+        en|narrow|day|displayName|day
+        en|narrow|day|perUnitPattern|{0}/d
+        en|narrow|day|unitPattern-count-one|{0}d
+        en|narrow|day|unitPattern-count-other|{0}d
+        en|narrow|degree|displayName|deg
+        en|narrow|degree|unitPattern-count-one|{0}\u00B0
+        en|narrow|degree|unitPattern-count-other|{0}\u00B0
+        en|narrow|fahrenheit|displayName|\u00B0F
+        en|narrow|fahrenheit|unitPattern-count-one|{0}\u00B0
+        en|narrow|fahrenheit|unitPattern-count-other|{0}\u00B0
+        en|narrow|fluid-ounce|displayName|fl oz
+        en|narrow|fluid-ounce|unitPattern-count-one|{0}fl oz
+        en|narrow|fluid-ounce|unitPattern-count-other|{0}fl oz
+        en|narrow|foot|displayName|ft
+        en|narrow|foot|perUnitPattern|{0}/ft
+        en|narrow|foot|unitPattern-count-one|{0}\u2032
+        en|narrow|foot|unitPattern-count-other|{0}\u2032
+        en|narrow|gallon|displayName|gal
+        en|narrow|gallon|perUnitPattern|{0}/gal
+        en|narrow|gallon|unitPattern-count-one|{0}gal
+        en|narrow|gallon|unitPattern-count-other|{0}gal
+        en|narrow|gigabit|displayName|Gb
+        en|narrow|gigabit|unitPattern-count-one|{0}Gb
+        en|narrow|gigabit|unitPattern-count-other|{0}Gb
+        en|narrow|gigabyte|displayName|GB
+        en|narrow|gigabyte|unitPattern-count-one|{0}GB
+        en|narrow|gigabyte|unitPattern-count-other|{0}GB
+        en|narrow|gram|displayName|gram
+        en|narrow|gram|perUnitPattern|{0}/g
+        en|narrow|gram|unitPattern-count-one|{0}g
+        en|narrow|gram|unitPattern-count-other|{0}g
+        en|narrow|hectare|displayName|hectare
+        en|narrow|hectare|unitPattern-count-one|{0}ha
+        en|narrow|hectare|unitPattern-count-other|{0}ha
+        en|narrow|hour|displayName|hour
+        en|narrow|hour|perUnitPattern|{0}/h
+        en|narrow|hour|unitPattern-count-one|{0}h
+        en|narrow|hour|unitPattern-count-other|{0}h
+        en|narrow|inch|displayName|in
+        en|narrow|inch|perUnitPattern|{0}/in
+        en|narrow|inch|unitPattern-count-one|{0}\u2033
+        en|narrow|inch|unitPattern-count-other|{0}\u2033
+        en|narrow|kilobit|displayName|kb
+        en|narrow|kilobit|unitPattern-count-one|{0}kb
+        en|narrow|kilobit|unitPattern-count-other|{0}kb
+        en|narrow|kilobyte|displayName|kB
+        en|narrow|kilobyte|unitPattern-count-one|{0}kB
+        en|narrow|kilobyte|unitPattern-count-other|{0}kB
+        en|narrow|kilogram|displayName|kg
+        en|narrow|kilogram|perUnitPattern|{0}/kg
+        en|narrow|kilogram|unitPattern-count-one|{0}kg
+        en|narrow|kilogram|unitPattern-count-other|{0}kg
+        en|narrow|kilometer-per-hour|displayName|km/hr
+        en|narrow|kilometer-per-hour|unitPattern-count-one|{0}km/h
+        en|narrow|kilometer-per-hour|unitPattern-count-other|{0}km/h
+        en|narrow|kilometer|displayName|km
+        en|narrow|kilometer|perUnitPattern|{0}/km
+        en|narrow|kilometer|unitPattern-count-one|{0}km
+        en|narrow|kilometer|unitPattern-count-other|{0}km
+        en|narrow|liter-per-kilometer|displayName|L/km
+        en|narrow|liter-per-kilometer|unitPattern-count-one|{0}L/km
+        en|narrow|liter-per-kilometer|unitPattern-count-other|{0}L/km
+        en|narrow|liter|displayName|liter
+        en|narrow|liter|perUnitPattern|{0}/L
+        en|narrow|liter|unitPattern-count-one|{0}L
+        en|narrow|liter|unitPattern-count-other|{0}L
+        en|narrow|megabit|displayName|Mb
+        en|narrow|megabit|unitPattern-count-one|{0}Mb
+        en|narrow|megabit|unitPattern-count-other|{0}Mb
+        en|narrow|megabyte|displayName|MB
+        en|narrow|megabyte|unitPattern-count-one|{0}MB
+        en|narrow|megabyte|unitPattern-count-other|{0}MB
+        en|narrow|meter-per-second|displayName|m/s
+        en|narrow|meter-per-second|unitPattern-count-one|{0}m/s
+        en|narrow|meter-per-second|unitPattern-count-other|{0}m/s
+        en|narrow|meter|displayName|m
+        en|narrow|meter|perUnitPattern|{0}/m
+        en|narrow|meter|unitPattern-count-one|{0}m
+        en|narrow|meter|unitPattern-count-other|{0}m
+        en|narrow|microsecond|displayName|\u03BCsec
+        en|narrow|microsecond|unitPattern-count-one|{0}\u03BCs
+        en|narrow|microsecond|unitPattern-count-other|{0}\u03BCs
+        en|narrow|mile-per-gallon|displayName|mpg
+        en|narrow|mile-per-gallon|unitPattern-count-one|{0}mpg
+        en|narrow|mile-per-gallon|unitPattern-count-other|{0}mpg
+        en|narrow|mile-per-hour|displayName|mi/hr
+        en|narrow|mile-per-hour|unitPattern-count-one|{0}mph
+        en|narrow|mile-per-hour|unitPattern-count-other|{0}mph
+        en|narrow|mile-scandinavian|displayName|smi
+        en|narrow|mile-scandinavian|unitPattern-count-one|{0}smi
+        en|narrow|mile-scandinavian|unitPattern-count-other|{0}smi
+        en|narrow|mile|displayName|mi
+        en|narrow|mile|unitPattern-count-one|{0}mi
+        en|narrow|mile|unitPattern-count-other|{0}mi
+        en|narrow|milliliter|displayName|mL
+        en|narrow|milliliter|unitPattern-count-one|{0}mL
+        en|narrow|milliliter|unitPattern-count-other|{0}mL
+        en|narrow|millimeter|displayName|mm
+        en|narrow|millimeter|unitPattern-count-one|{0}mm
+        en|narrow|millimeter|unitPattern-count-other|{0}mm
+        en|narrow|millisecond|displayName|msec
+        en|narrow|millisecond|unitPattern-count-one|{0}ms
+        en|narrow|millisecond|unitPattern-count-other|{0}ms
+        en|narrow|minute|displayName|min
+        en|narrow|minute|perUnitPattern|{0}/min
+        en|narrow|minute|unitPattern-count-one|{0}m
+        en|narrow|minute|unitPattern-count-other|{0}m
+        en|narrow|month|displayName|month
+        en|narrow|month|perUnitPattern|{0}/m
+        en|narrow|month|unitPattern-count-one|{0}m
+        en|narrow|month|unitPattern-count-other|{0}m
+        en|narrow|nanosecond|displayName|ns
+        en|narrow|nanosecond|unitPattern-count-one|{0}ns
+        en|narrow|nanosecond|unitPattern-count-other|{0}ns
+        en|narrow|ounce|displayName|oz
+        en|narrow|ounce|perUnitPattern|{0}/oz
+        en|narrow|ounce|unitPattern-count-one|{0}oz
+        en|narrow|ounce|unitPattern-count-other|{0}oz
+        en|narrow|percent|displayName|%
+        en|narrow|percent|unitPattern-count-one|{0}%
+        en|narrow|percent|unitPattern-count-other|{0}%
+        en|narrow|per|compoundUnitPattern|{0}/{1}
+        en|narrow|petabyte|displayName|PB
+        en|narrow|petabyte|unitPattern-count-one|{0}PB
+        en|narrow|petabyte|unitPattern-count-other|{0}PB
+        en|narrow|pound|displayName|lb
+        en|narrow|pound|perUnitPattern|{0}/lb
+        en|narrow|pound|unitPattern-count-one|{0}#
+        en|narrow|pound|unitPattern-count-other|{0}#
+        en|narrow|second|displayName|sec
+        en|narrow|second|perUnitPattern|{0}/s
+        en|narrow|second|unitPattern-count-one|{0}s
+        en|narrow|second|unitPattern-count-other|{0}s
+        en|narrow|stone|displayName|stone
+        en|narrow|stone|unitPattern-count-one|{0}st
+        en|narrow|stone|unitPattern-count-other|{0}st
+        en|narrow|terabit|displayName|Tb
+        en|narrow|terabit|unitPattern-count-one|{0}Tb
+        en|narrow|terabit|unitPattern-count-other|{0}Tb
+        en|narrow|terabyte|displayName|TB
+        en|narrow|terabyte|unitPattern-count-one|{0}TB
+        en|narrow|terabyte|unitPattern-count-other|{0}TB
+        en|narrow|week|displayName|wk
+        en|narrow|week|perUnitPattern|{0}/w
+        en|narrow|week|unitPattern-count-one|{0}w
+        en|narrow|week|unitPattern-count-other|{0}w
+        en|narrow|yard|displayName|yd
+        en|narrow|yard|unitPattern-count-one|{0}yd
+        en|narrow|yard|unitPattern-count-other|{0}yd
+        en|narrow|year|displayName|yr
+        en|narrow|year|perUnitPattern|{0}/y
+        en|narrow|year|unitPattern-count-one|{0}y
+        en|narrow|year|unitPattern-count-other|{0}y
+        en|short|acre|displayName|acres
+        en|short|acre|unitPattern-count-one|{0} ac
+        en|short|acre|unitPattern-count-other|{0} ac
+        en|short|bit|displayName|bit
+        en|short|bit|unitPattern-count-one|{0} bit
+        en|short|bit|unitPattern-count-other|{0} bit
+        en|short|byte|displayName|byte
+        en|short|byte|unitPattern-count-one|{0} byte
+        en|short|byte|unitPattern-count-other|{0} byte
+        en|short|celsius|displayName|deg. C
+        en|short|celsius|unitPattern-count-one|{0}\u00B0C
+        en|short|celsius|unitPattern-count-other|{0}\u00B0C
+        en|short|centimeter|displayName|cm
+        en|short|centimeter|perUnitPattern|{0}/cm
+        en|short|centimeter|unitPattern-count-one|{0} cm
+        en|short|centimeter|unitPattern-count-other|{0} cm
+        en|short|day|displayName|days
+        en|short|day|perUnitPattern|{0}/d
+        en|short|day|unitPattern-count-one|{0} day
+        en|short|day|unitPattern-count-other|{0} days
+        en|short|degree|displayName|degrees
+        en|short|degree|unitPattern-count-one|{0} deg
+        en|short|degree|unitPattern-count-other|{0} deg
+        en|short|fahrenheit|displayName|deg. F
+        en|short|fahrenheit|unitPattern-count-one|{0}\u00B0F
+        en|short|fahrenheit|unitPattern-count-other|{0}\u00B0F
+        en|short|fluid-ounce|displayName|fl oz
+        en|short|fluid-ounce|unitPattern-count-one|{0} fl oz
+        en|short|fluid-ounce|unitPattern-count-other|{0} fl oz
+        en|short|foot|displayName|feet
+        en|short|foot|perUnitPattern|{0}/ft
+        en|short|foot|unitPattern-count-one|{0} ft
+        en|short|foot|unitPattern-count-other|{0} ft
+        en|short|gallon|displayName|gal
+        en|short|gallon|perUnitPattern|{0}/gal US
+        en|short|gallon|unitPattern-count-one|{0} gal
+        en|short|gallon|unitPattern-count-other|{0} gal
+        en|short|gigabit|displayName|Gbit
+        en|short|gigabit|unitPattern-count-one|{0} Gb
+        en|short|gigabit|unitPattern-count-other|{0} Gb
+        en|short|gigabyte|displayName|GByte
+        en|short|gigabyte|unitPattern-count-one|{0} GB
+        en|short|gigabyte|unitPattern-count-other|{0} GB
+        en|short|gram|displayName|grams
+        en|short|gram|perUnitPattern|{0}/g
+        en|short|gram|unitPattern-count-one|{0} g
+        en|short|gram|unitPattern-count-other|{0} g
+        en|short|hectare|displayName|hectares
+        en|short|hectare|unitPattern-count-one|{0} ha
+        en|short|hectare|unitPattern-count-other|{0} ha
+        en|short|hour|displayName|hours
+        en|short|hour|perUnitPattern|{0}/h
+        en|short|hour|unitPattern-count-one|{0} hr
+        en|short|hour|unitPattern-count-other|{0} hr
+        en|short|inch|displayName|inches
+        en|short|inch|perUnitPattern|{0}/in
+        en|short|inch|unitPattern-count-one|{0} in
+        en|short|inch|unitPattern-count-other|{0} in
+        en|short|kilobit|displayName|kbit
+        en|short|kilobit|unitPattern-count-one|{0} kb
+        en|short|kilobit|unitPattern-count-other|{0} kb
+        en|short|kilobyte|displayName|kByte
+        en|short|kilobyte|unitPattern-count-one|{0} kB
+        en|short|kilobyte|unitPattern-count-other|{0} kB
+        en|short|kilogram|displayName|kg
+        en|short|kilogram|perUnitPattern|{0}/kg
+        en|short|kilogram|unitPattern-count-one|{0} kg
+        en|short|kilogram|unitPattern-count-other|{0} kg
+        en|short|kilometer-per-hour|displayName|km/hour
+        en|short|kilometer-per-hour|unitPattern-count-one|{0} km/h
+        en|short|kilometer-per-hour|unitPattern-count-other|{0} km/h
+        en|short|kilometer|displayName|km
+        en|short|kilometer|perUnitPattern|{0}/km
+        en|short|kilometer|unitPattern-count-one|{0} km
+        en|short|kilometer|unitPattern-count-other|{0} km
+        en|short|liter-per-kilometer|displayName|liters/km
+        en|short|liter-per-kilometer|unitPattern-count-one|{0} L/km
+        en|short|liter-per-kilometer|unitPattern-count-other|{0} L/km
+        en|short|liter|displayName|liters
+        en|short|liter|perUnitPattern|{0}/L
+        en|short|liter|unitPattern-count-one|{0} L
+        en|short|liter|unitPattern-count-other|{0} L
+        en|short|megabit|displayName|Mbit
+        en|short|megabit|unitPattern-count-one|{0} Mb
+        en|short|megabit|unitPattern-count-other|{0} Mb
+        en|short|megabyte|displayName|MByte
+        en|short|megabyte|unitPattern-count-one|{0} MB
+        en|short|megabyte|unitPattern-count-other|{0} MB
+        en|short|meter-per-second|displayName|meters/sec
+        en|short|meter-per-second|unitPattern-count-one|{0} m/s
+        en|short|meter-per-second|unitPattern-count-other|{0} m/s
+        en|short|meter|displayName|m
+        en|short|meter|perUnitPattern|{0}/m
+        en|short|meter|unitPattern-count-one|{0} m
+        en|short|meter|unitPattern-count-other|{0} m
+        en|short|microsecond|displayName|\u03BCsecs
+        en|short|microsecond|unitPattern-count-one|{0} \u03BCs
+        en|short|microsecond|unitPattern-count-other|{0} \u03BCs
+        en|short|mile-per-gallon|displayName|miles/gal
+        en|short|mile-per-gallon|unitPattern-count-one|{0} mpg
+        en|short|mile-per-gallon|unitPattern-count-other|{0} mpg
+        en|short|mile-per-hour|displayName|miles/hour
+        en|short|mile-per-hour|unitPattern-count-one|{0} mph
+        en|short|mile-per-hour|unitPattern-count-other|{0} mph
+        en|short|mile-scandinavian|displayName|smi
+        en|short|mile-scandinavian|unitPattern-count-one|{0} smi
+        en|short|mile-scandinavian|unitPattern-count-other|{0} smi
+        en|short|mile|displayName|miles
+        en|short|mile|unitPattern-count-one|{0} mi
+        en|short|mile|unitPattern-count-other|{0} mi
+        en|short|milliliter|displayName|mL
+        en|short|milliliter|unitPattern-count-one|{0} mL
+        en|short|milliliter|unitPattern-count-other|{0} mL
+        en|short|millimeter|displayName|mm
+        en|short|millimeter|unitPattern-count-one|{0} mm
+        en|short|millimeter|unitPattern-count-other|{0} mm
+        en|short|millisecond|displayName|millisecs
+        en|short|millisecond|unitPattern-count-one|{0} ms
+        en|short|millisecond|unitPattern-count-other|{0} ms
+        en|short|minute|displayName|mins
+        en|short|minute|perUnitPattern|{0}/min
+        en|short|minute|unitPattern-count-one|{0} min
+        en|short|minute|unitPattern-count-other|{0} min
+        en|short|month|displayName|months
+        en|short|month|perUnitPattern|{0}/m
+        en|short|month|unitPattern-count-one|{0} mth
+        en|short|month|unitPattern-count-other|{0} mths
+        en|short|nanosecond|displayName|nanosecs
+        en|short|nanosecond|unitPattern-count-one|{0} ns
+        en|short|nanosecond|unitPattern-count-other|{0} ns
+        en|short|ounce|displayName|oz
+        en|short|ounce|perUnitPattern|{0}/oz
+        en|short|ounce|unitPattern-count-one|{0} oz
+        en|short|ounce|unitPattern-count-other|{0} oz
+        en|short|percent|displayName|percent
+        en|short|percent|unitPattern-count-one|{0}%
+        en|short|percent|unitPattern-count-other|{0}%
+        en|short|per|compoundUnitPattern|{0}/{1}
+        en|short|petabyte|displayName|PByte
+        en|short|petabyte|unitPattern-count-one|{0} PB
+        en|short|petabyte|unitPattern-count-other|{0} PB
+        en|short|pound|displayName|pounds
+        en|short|pound|perUnitPattern|{0}/lb
+        en|short|pound|unitPattern-count-one|{0} lb
+        en|short|pound|unitPattern-count-other|{0} lb
+        en|short|second|displayName|secs
+        en|short|second|perUnitPattern|{0}/s
+        en|short|second|unitPattern-count-one|{0} sec
+        en|short|second|unitPattern-count-other|{0} sec
+        en|short|stone|displayName|stones
+        en|short|stone|unitPattern-count-one|{0} st
+        en|short|stone|unitPattern-count-other|{0} st
+        en|short|terabit|displayName|Tbit
+        en|short|terabit|unitPattern-count-one|{0} Tb
+        en|short|terabit|unitPattern-count-other|{0} Tb
+        en|short|terabyte|displayName|TByte
+        en|short|terabyte|unitPattern-count-one|{0} TB
+        en|short|terabyte|unitPattern-count-other|{0} TB
+        en|short|week|displayName|weeks
+        en|short|week|perUnitPattern|{0}/w
+        en|short|week|unitPattern-count-one|{0} wk
+        en|short|week|unitPattern-count-other|{0} wks
+        en|short|yard|displayName|yards
+        en|short|yard|unitPattern-count-one|{0} yd
+        en|short|yard|unitPattern-count-other|{0} yd
+        en|short|year|displayName|years
+        en|short|year|perUnitPattern|{0}/y
+        en|short|year|unitPattern-count-one|{0} yr
+        en|short|year|unitPattern-count-other|{0} yrs
         """u8;
 
     /// <summary>The root collation: allkeys_CLDR.txt in runs and entries, the implicit-weight ranges and the unified ideographs.</summary>

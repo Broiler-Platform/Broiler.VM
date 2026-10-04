@@ -37,6 +37,7 @@ internal static class IntlChecks
         ADoorNamingIntlWithoutDataIsRefused(),
         GermanPhonebookAndSearchOrder(),
         GermanAndEnglishOrderingsMatchIcu(),
+        GermanAndEnglishNumbersMatchIcu(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -125,6 +126,70 @@ internal static class IntlChecks
             differing.Count == 0 && expected.Length >= 20,
             differing.Count == 0
                 ? $"all {expected.Length} collators order the words as ICU 77.1 did"
+                : $"{differing.Count} of {expected.Length} lines differ, first {differing[0]}");
+    }
+
+    /// <summary>
+    /// The retained German and English number formatting (JSD-0027 section 7, slice I2): the program
+    /// under <c>src/tests/cldr/numbers</c>, run here, answers every line ICU 77.1 answered, but for the
+    /// lines <c>divergences.txt</c> names, which it answers as written there.
+    /// </summary>
+    private static (string, bool, string) GermanAndEnglishNumbersMatchIcu()
+    {
+        const string Name = "intl/i2/german-and-english-numbers-match-icu";
+
+        if (Archived("src/tests/cldr/numbers/numbers.js") is not { } program ||
+            Archived("src/tests/cldr/numbers/numbers.icu-77.1.txt") is not { } retained ||
+            Archived("src/tests/cldr/numbers/divergences.txt") is not { } divergences)
+        {
+            return ("not-run/" + Name, false, "the retained numbers are not under this working directory");
+        }
+
+        static string Key(string line)
+        {
+            var arrow = line.IndexOf(" => ", System.StringComparison.Ordinal);
+            var resolved = line.IndexOf(" resolved ", System.StringComparison.Ordinal);
+            return arrow >= 0 ? line[..arrow] : resolved >= 0 ? line[..resolved] : line;
+        }
+
+        var replaced = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+
+        foreach (var line in System.IO.File.ReadAllLines(divergences))
+        {
+            if (line.Length != 0 && line[0] != '#')
+            {
+                replaced[Key(line)] = line;
+            }
+        }
+
+        var expected = System.IO.File.ReadAllText(retained).TrimEnd('\n').Split('\n');
+        var answered = Evaluate(System.IO.File.ReadAllText(program), Composing()).Split('\n');
+        var differing = new System.Collections.Generic.List<string>();
+        var used = 0;
+
+        for (var line = 0; line < System.Math.Max(expected.Length, answered.Length); line++)
+        {
+            var want = line < expected.Length ? expected[line] : "(no line)";
+
+            if (replaced.TryGetValue(Key(want), out var divergent))
+            {
+                want = divergent;
+                used++;
+            }
+
+            var got = line < answered.Length ? answered[line] : "(no line)";
+
+            if (!string.Equals(want, got, System.StringComparison.Ordinal))
+            {
+                differing.Add($"line {line + 1}: `{got}` where `{want}` was expected");
+            }
+        }
+
+        return (
+            Name,
+            differing.Count == 0 && used == replaced.Count && expected.Length > 2000,
+            differing.Count == 0
+                ? $"all {expected.Length} lines answer as ICU 77.1 did, {used} of them as the divergences name"
                 : $"{differing.Count} of {expected.Length} lines differ, first {differing[0]}");
     }
 

@@ -637,6 +637,16 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F7 observation, slice I2, 2026-10-04.** `Intl.NumberFormat` is built with every style,
+notation and option of the current ECMA-402 draft, over CLDR number, currency, unit and plural data
+the archive gained under rule N27. `Number`, `BigInt`, `Array` and `TypedArray` `toLocaleString` go
+through it. Values are exact decimals. The retained German and English numbers agree with ICU 77.1 on
+every line but 24, each named with the clause ICU's answer departs from. `test/intl402/NumberFormat`
+passes 280 of 324 scored variants, and the failing ones expect `ja-JP`, `ko-KR`, `zh-TW`, `en-IN` or
+`DateTimeFormat` ([JSC-270](roadmap.corrections.md#jsc-270), proposed
+[JSD-0044](decisions/0044-intl-numberformat.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:
 - the tokenizer reads a `/` by what its bracket closed;

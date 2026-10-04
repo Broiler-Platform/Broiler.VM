@@ -391,15 +391,21 @@ supplemental files `likelySubtags.json`, `aliases.json` and `parentLocales.json`
 short CollationTest files (test input only) and `collation/root.xml`, `de.xml` and `en.xml`; and the
 licence text. They are archived unmodified at [`src/tests/cldr/pins/`](src/tests/cldr/pins/README.md),
 where `cldr.pin` records each file's length and SHA-256 and rule **N27** hashes them on every run of
-the architecture suite. The pin and its README record how and when they were retrieved.
+the architecture suite. The pin and its README record how and when they were retrieved. Since the
+same day, for `Intl.NumberFormat` (decision
+[JSD-0044](src/Broiler.VM.Profile.JavaScript/docs/decisions/0044-intl-numberformat.md)), the archive
+also holds from `cldr-numbers-full` `numbers.json` for `de`, `en` and `und` and `currencies.json` for
+`de` and `en`, from `cldr-units-full` `units.json` for `de` and `en`, and from `cldr-core`
+`currencyData.json`, `numberingSystems.json`, `plurals.json` and `pluralRanges.json`.
 
 **What is derived, and where it ships.** `CldrTableGenerator` (architecture test project, not
 shipped) writes one source file of tables from those files and the pinned UCD:
 `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs`, compiled into
 **`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N28** holds to the generator byte for
 byte. It carries likely subtags, the language, script, region, variant and subdivision aliases, the
-BCP 47 keys and types, the supported locales, the root collation and three tailorings, and the
-UCD's Soft_Dotted ranges. The derived tables therefore ship in:
+BCP 47 keys and types, the supported locales, the root collation and three tailorings, the UCD's
+Soft_Dotted ranges, and since slice I2 each language's number patterns and symbols, currency names,
+unit patterns and plural rules, the currency fraction digits and the numbering systems' digits. The derived tables therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);
 - **the composition images that admit `Intl`**: the published outputs of
@@ -414,8 +420,9 @@ images the notice is not yet carried**, for the reason the entry above records; 
 than met.
 
 **Owner decisions, and what is not given.** JSD-0027's owner decision (c) asks for a size budget from
-a measured prototype. The tables measure 325,646 bytes of data on 2026-10-04, in an assembly of
-333,312 bytes, and rule N28 holds them under a provisional bound of 512 KiB that JSD-0043 records. **Nobody has signed a budget, and the
+a measured prototype. The tables measured 325,646 bytes of data on 2026-10-04, in an assembly of
+333,312 bytes, and 438,831 bytes in an assembly of 448,000 once slice I2's data joined them the same
+day. Rule N28 holds them under a provisional bound of 512 KiB that JSD-0043 records. **Nobody has signed a budget, and the
 release owner's co-signature this file requires for ingested material is not given.**
 
 The CLDR licence text, as archived at `src/tests/cldr/pins/cldr-LICENSE.txt`:

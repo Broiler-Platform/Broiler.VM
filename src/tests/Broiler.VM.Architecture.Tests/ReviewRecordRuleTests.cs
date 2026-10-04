@@ -1243,7 +1243,13 @@ public sealed class ReviewRecordRuleTests
         // the tables over, and JsCldrTables.g.cs, which CldrTableGenerator writes and rule N28
         // holds. All nine are covered on the same terms as every other product file, and nothing in
         // them has been read by a human.
-        Assert.Equal(258, AssuranceSources.Files.Count);
+        //
+        // AND NUMBER FORMATTING (phase F7, 2026-10-04, JSD-0044): JsDecimal.cs, the exact decimal and
+        // its rounding; JsNumberData.cs, the decoded number data and the CLDR pattern reader;
+        // JsPluralRule.cs, the plural rule evaluator; JsNumberFormatter.cs, the formatting itself; and
+        // JsRealm.NumberFormat.cs, Intl.NumberFormat. All five are covered on the same terms as every
+        // other product file, and nothing in them has been read by a human.
+        Assert.Equal(263, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

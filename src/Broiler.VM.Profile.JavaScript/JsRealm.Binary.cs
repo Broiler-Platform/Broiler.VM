@@ -1196,7 +1196,7 @@ internal sealed partial class JsRealm
     /// N1). What <c>Number.prototype.toLocaleString</c> answers is still exactly <c>toString</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FC377E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6098F5
     // Broiler-Human:        PENDING
     private void SetupTypedArrayLaterAdditions()
     {
@@ -1340,7 +1340,7 @@ internal sealed partial class JsRealm
 
         Method(TypedArrayPrototype, "toLocaleString", 0, (engine, thisValue, arguments) =>
         {
-            _ = arguments;
+            var passed = LocaleArguments(engine, arguments);
             var array = BinaryLiveTypedArray(engine, thisValue, "toLocaleString");
             var text = new System.Text.StringBuilder();
 
@@ -1368,8 +1368,7 @@ internal sealed partial class JsRealm
 
                 var method = engine.GetProperty(element, "toLocaleString");
 
-                text.Append(engine.ToStringValue(
-                    engine.Call(method, element, System.Array.Empty<JsValue>())));
+                text.Append(engine.ToStringValue(engine.Call(method, element, passed)));
             }
 
             return JsValue.String(text.ToString());

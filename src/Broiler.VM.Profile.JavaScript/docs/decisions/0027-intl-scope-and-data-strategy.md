@@ -372,3 +372,17 @@ line. Corrections entry [JSC-269](../roadmap.corrections.md#jsc-269).*
 - **Section 1's fixed answers now hold only where `Intl` is not built**, which is every composition
   but the two JSD-0043 names. Where it is built, `localeCompare` and the locale-named case methods
   answer as ECMA-402 requires.
+
+## I2: Intl.NumberFormat, 2026-10-04 (unsigned)
+
+*Recorded with the change that publishes `Intl.NumberFormat`; it signs nothing and this record keeps
+its status line. Corrections entry [JSC-270](../roadmap.corrections.md#jsc-270).*
+
+- **I2 is built under proposed [JSD-0044](0044-intl-numberformat.md), wider than section 7 drew it**:
+  units, compact and scientific notation are in it. ECMA-402 admits them on every format, so a slice
+  without them would be the partial surface section 6 refused.
+- **The acceptance section 7 names is met** as JSD-0044 section 6 records. The retained `(locale,
+  options, value)` dataset covers `-0`, `NaN`, both infinities, `1e21`, ties under every rounding
+  mode, and grouping at 3 to 9 digits. Every line agrees with ICU 77.1 but 24 named divergences.
+- **The archive grew** by the number, currency, unit and plural files, under N27. The measured data is
+  now 438,831 bytes, still under the provisional bound, and no budget is set.

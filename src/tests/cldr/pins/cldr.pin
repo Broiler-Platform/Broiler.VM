@@ -22,6 +22,16 @@
 # two CollationTest files name their UCA version in a `# UCA Version:` line; the bcp47 files and the
 # three collation XML files carry no version and are held by their hashes alone. The two
 # CollationTest files are test-only input: no table is generated from them.
+#
+# EXTENDED 2026-10-04 FOR SLICE I2. The number, currency, unit and plural data Intl.NumberFormat reads
+# was added the same way: the cldr-json packages cldr-numbers-full and cldr-units-full at 48.2.0, and
+# cldr-core again, each tarball checked against the registry's sha512 integrity, retrieved twice into
+# two directories and found byte-identical by `cmp` and `diff -r`. From cldr-numbers-full: numbers.json
+# for de, en and und, currencies.json for de and en; from cldr-units-full: units.json for de and en;
+# from cldr-core: supplemental/currencyData.json, numberingSystems.json, plurals.json and
+# pluralRanges.json. The files under main/ carry no version and are held by their hashes alone. The
+# cldr-core file archived first is byte-identical in the second tarball. No permission specific to
+# this retrieval was given either.
 
 data unicode-common-locale-data-repository
 version 48.2.0
@@ -30,6 +40,8 @@ uca-version 17.0.0
 json-source https://registry.npmjs.org/<package>/-/<package>-48.2.0.tgz
 json-integrity cldr-core sha512-zfmLothncSwfv2jlevoSrgI2VGgH8SDGHXst6jUEotHA8nq9Igeg9jzdJDFtBso9pgJuG89DK16TzrmZDdo2Bg==
 json-integrity cldr-bcp47 sha512-ks3zN+Wbg1zMqvJNeDai1zA0JBGHbAnxv2Ko4rjVohvXscDGmTa7VNy1T+QRlQw3QVPzQcCm2EOiEtAfOU4d+g==
+json-integrity cldr-numbers-full sha512-0EQ+UkVDsyXOlxnWnL1RIENVZFqCnb04D1Yrku0obnOyttbuZz8tHmUd5c5AEvhGS/Gg2zI4fTaCm51LSGITog==
+json-integrity cldr-units-full sha512-BjDC7V46eeXzgalnIumrJ1XQDk8wJaOxNLME4hmkBT9Q0hnzxn3XgtavigPUwnljk7FxlNQW9Wx+hbFrARPrQg==
 repository-source https://raw.githubusercontent.com/unicode-org/cldr/release-48-2/
 retrieved 2026-10-04
 retrievals 2 byte-identical
@@ -60,6 +72,19 @@ file cldr-48.2.0/json/cldr-core/availableLocales.json 11175 2961ccc06b437a732c68
 file cldr-48.2.0/json/cldr-core/defaultContent.json 5125 ceeae676236ada8b2c9610c417447280230c1355260a78a2452541e2e1ac6e6c
 file cldr-48.2.0/json/cldr-core/package.json 661 584c01d774ba40135929130a897741ae826597af8bc53735509e6a047abda816
 file cldr-48.2.0/json/cldr-core/supplemental/aliases.json 137469 b7011c866f27502ed6f160ca83f2a83fa42bce9fdc2176e60e2c6630961d877c
+file cldr-48.2.0/json/cldr-core/supplemental/currencyData.json 71126 e50315091b1f34428480f82970be64159ad207af0bdcebe7faa6260d3e34c8a6
 file cldr-48.2.0/json/cldr-core/supplemental/likelySubtags.json 220093 38345946ad457213fb39e9645ab50f36b61681bf674b2eef2979a3b58d04afc8
+file cldr-48.2.0/json/cldr-core/supplemental/numberingSystems.json 10695 0efb69a00dbae5950195b077e0cc6c7f319d3a1e8a81401083ec4f42c14b0014
 file cldr-48.2.0/json/cldr-core/supplemental/parentLocales.json 5890 5a3f056a70ff52af7a25681a670ec860d785d98894934d3a9e5332508c23651e
+file cldr-48.2.0/json/cldr-core/supplemental/pluralRanges.json 24710 fb56214321fb18675196eda503779b8576fe785084bc0573e1def41dd0e39027
+file cldr-48.2.0/json/cldr-core/supplemental/plurals.json 76105 6c0a48e9bcfc25856f90202f703c2c7f89c105d6868f7712a943a6ed2dcbe8f4
+file cldr-48.2.0/json/cldr-numbers-full/main/de/currencies.json 63618 6ebdb4ee634cabd431adf1df8c9e6e36f442802c149a46f1515a3fe62b37788d
+file cldr-48.2.0/json/cldr-numbers-full/main/de/numbers.json 6771 e8ab22c6d7a1ed1f1fc71c4bf0da7ba57a32a46c7ead5ad8e36f40563c18c00f
+file cldr-48.2.0/json/cldr-numbers-full/main/en/currencies.json 71492 a6c41b28f4035f65ae698b53a66866982b4ff49bc0de7e840f91d2c6e6bdc23b
+file cldr-48.2.0/json/cldr-numbers-full/main/en/numbers.json 8089 07a58e473f6d28dcc5d5562539d3ab5c8fbe37e435414969e3a2672525a80d5f
+file cldr-48.2.0/json/cldr-numbers-full/main/und/numbers.json 4315 5261f5c98146bd13d9a42435c61c1cdc94f4aee1cefc8cb9b4ab1289d6d274f1
+file cldr-48.2.0/json/cldr-numbers-full/package.json 723 25840c6b28602f283db686387ec65eca1de553fc0cb8299338f1c80376bea0f5
+file cldr-48.2.0/json/cldr-units-full/main/de/units.json 184936 9be616a64b53202a70d9a6122b7668b244a6f6502c2abe87fe26c6c7cf953767
+file cldr-48.2.0/json/cldr-units-full/main/en/units.json 141786 67a02c6f633c2e5452a64c024d45077ebe41832ed2df890f7dfbee20e48266c2
+file cldr-48.2.0/json/cldr-units-full/package.json 720 4c34127f8e7c1a39d1a5798c7a70bbe9ea0ead680501b2b984d2c24f5789f7c1
 file cldr-LICENSE.txt 2033 b49d0e9f8ead51ca8b7df6fec89cc3ae6809198b4b9d43c74216da0118f23f5b

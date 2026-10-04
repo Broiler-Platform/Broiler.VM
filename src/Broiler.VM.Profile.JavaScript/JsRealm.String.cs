@@ -657,7 +657,7 @@ internal sealed partial class JsRealm
             var other = engine.ToStringValue(ArgOfString(arguments, 0));
             StringCharge(engine, text.Length + other.Length);
 
-            // WITH `Intl`, ECMA-402 s19.1.1: A COLLATOR FROM THE LOCALES AND OPTIONS, made by the
+            // WITH `Intl`, ECMA-402 s20.1.1: A COLLATOR FROM THE LOCALES AND OPTIONS, made by the
             // realm's own %Intl.Collator% whatever the global binding now holds (JSD-0043).
             if (engine.Realm.CollatorConstructor is { } constructor)
             {
@@ -1224,7 +1224,7 @@ internal sealed partial class JsRealm
     /// the language rules of SpecialCasing.txt when it is Turkish, Azeri or Lithuanian; without
     /// <c>Intl</c>, the locale is ignored as JSD-0027 section 1 states.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s19.1.2; IP=Low; Security=Medium; Resources=3; Fingerprint=920956
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.1.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=920956
     // Broiler-Human:        PENDING
     private static string TransformCase(JsEngine engine, string text, JsValue[] arguments, bool upper)
     {

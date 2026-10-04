@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   38
-// Annotated:        38/38
+// Relevant units:   39
+// Annotated:        39/39
 // Exempt:           1
-// Human-reviewed:   0/38
+// Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       38
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -914,7 +914,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>slice</c>, <c>concat</c>, <c>join</c>, <c>toString</c> and the three searches.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B4E0A5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A16EA7
     // Broiler-Human:        PENDING
     private void SetupArrayReaders()
     {
@@ -1022,9 +1022,10 @@ internal sealed partial class JsRealm
         // nullish, with no arguments and `,` as the separator. Inheriting Object.prototype's, which
         // is what this prototype did before, called `join` and so each element's `toString`
         // (decision JSD-0027, follow-up N1). A non-callable method is a TypeError from `Call`.
+        // WITH INTL, ECMA-402 s20.5.1 replaces it: each element is handed the locales and options.
         Method(ArrayPrototype, "toLocaleString", 0, (engine, thisValue, arguments) =>
         {
-            _ = arguments;
+            var passed = LocaleArguments(engine, arguments);
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
             var text = new System.Text.StringBuilder();
@@ -1044,8 +1045,7 @@ internal sealed partial class JsRealm
                 {
                     var method = engine.GetProperty(element, "toLocaleString");
 
-                    text.Append(engine.ToStringValue(
-                        engine.Call(method, element, System.Array.Empty<JsValue>())));
+                    text.Append(engine.ToStringValue(engine.Call(method, element, passed)));
                 }
             }
 
@@ -2080,4 +2080,15 @@ internal sealed partial class JsRealm
             items[at] = buffer[at];
         }
     }
+
+    /// <summary>
+    /// The arguments an element's <c>toLocaleString</c> is called with: none without Intl, as
+    /// ECMA-262 states; the locales and the options with it, as ECMA-402 s20.5.1 states.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.5.1; IP=Low; Security=Low; Resources=0; Fingerprint=56CE3A
+    // Broiler-Human:        PENDING
+    internal static JsValue[] LocaleArguments(JsEngine engine, JsValue[] arguments) =>
+        engine.Realm.NumberFormatConstructor is null
+            ? System.Array.Empty<JsValue>()
+            : [arguments.Length > 0 ? arguments[0] : JsValue.Undefined, arguments.Length > 1 ? arguments[1] : JsValue.Undefined];
 }

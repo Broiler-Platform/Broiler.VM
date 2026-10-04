@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           9
+// Exempt:           16
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -51,10 +51,11 @@ public interface IJsIntlData
 
 /// <summary>The tables an <see cref="IJsIntlData"/> carries.</summary>
 /// <remarks>
-/// The text tables are UTF-8, one record per line and fields separated by <c>|</c>, in the order the
-/// generator writes them; the collation tables are binary and their reader states their layout.
+/// The text tables are ASCII, one record per line and fields separated by <c>|</c>, in the order the
+/// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
+/// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=46E820
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A8BC38
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -81,4 +82,29 @@ public enum JsIntlTable
 
     /// <summary>The ranges of Soft_Dotted, which Lithuanian's casing reads: <c>first</c>, <c>last</c>, in hexadecimal.</summary>
     SoftDotted = 7,
+
+    /// <summary>Each language's number data for <c>latn</c>: <c>language</c>, a dotted <c>key</c>, <c>value</c>.</summary>
+    NumberLocales = 8,
+
+    /// <summary>
+    /// Each language's currencies: <c>language</c>, <c>code</c>, <c>symbol</c>, <c>narrow</c>, <c>one</c>,
+    /// <c>other</c>, <c>name</c>, and for the symbol and the narrow symbol whether its first and last
+    /// characters are symbols or separators (<c>S</c>) or not (<c>L</c>).
+    /// </summary>
+    Currencies = 9,
+
+    /// <summary>The currencies whose fraction digits are not 2: <c>code</c>, <c>digits</c>.</summary>
+    CurrencyDigits = 10,
+
+    /// <summary>The numbering systems with a simple digit mapping: <c>name</c>, <c>digits</c>.</summary>
+    NumberingSystems = 11,
+
+    /// <summary>Each language's cardinal plural rules: <c>language</c>, <c>category</c>, <c>rule</c>.</summary>
+    Plurals = 12,
+
+    /// <summary>Each language's plural range rules: <c>language</c>, <c>start</c>, <c>end</c>, <c>result</c>.</summary>
+    PluralRanges = 13,
+
+    /// <summary>Each language's unit patterns: <c>language</c>, <c>width</c>, <c>unit</c>, <c>field</c>, <c>value</c>.</summary>
+    Units = 14,
 }
