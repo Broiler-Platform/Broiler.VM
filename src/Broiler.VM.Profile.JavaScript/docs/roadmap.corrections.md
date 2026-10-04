@@ -11900,3 +11900,66 @@ tables, and the format's `JsIntlTable`.
 - JSD-0045 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-272
+
+**Where:** phase F7's slice I4, its first part. `Intl.Locale` (`JsRealm.Locale.cs`, `JsLocaleInfo.cs`),
+the locale core's Add Likely Subtags, Remove Likely Subtags and `-u-` attribute order
+(`JsLocaleTag.cs`), and CanonicalizeLocaleList's reading of a Locale (`JsRealm.Intl.cs`). The CLDR
+archive and its pin, the generator's two new tables and its widened hour cycle table, and the
+format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7: "I4 and later" is
+  "PluralRules, ListFormat, RelativeTimeFormat, DisplayNames, Segmenter, DurationFormat, Locale,
+  tzdb-backed time zones, `toLocale*Case` tailoring for `tr`/`az`/`lt`", accepted "each opened by its
+  own consumer and its own card".
+- [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) section 3: the locale core's
+  canonicalization and likely subtags are UTS #35's. They were internal, and `Intl.getCanonicalLocales`
+  was their only guest-visible reader.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.Locale` is built whole**, under proposed [JSD-0046](decisions/0046-intl-locale.md): the
+  constructor with every option, the twelve accessors, `maximize`, `minimize`, `toString`, and the
+  draft's seven information methods. A Locale is any well-formed tag. Every list ECMA-402 takes reads
+  a Locale as its identifier.
+- **I4 is taken constructor by constructor**, each its own change and record, as section 7's "each
+  ... its own card" reads. Phase F7's own schedule is their consumer, as for I1 to I3. `Locale` is
+  first because the other constructors' tests construct Locales.
+- **Two of the locale core's operations are corrected to UTS #35.**
+  - Add Likely Subtags looked up the language with its region before the language with its script,
+    then fell back to `und`. It now takes UTS #35's current order and no fallback.
+  - `-u-` attributes were left in the tag's order, and are now sorted.
+
+  Remove Likely Subtags is new. No test262 variant and no slice check of I1 to I3 moved.
+- **The archive grows under N27**: `scriptMetadata.json` and `supplemental/weekData.json` from the
+  `cldr-core` 48.2.0 tarball slice I2 verified, retrieved twice more and compared. **N28's file grows
+  by two tables**, the weeks and the scripts' directions, and the hour cycle table covers every
+  region. The data is 472,562 bytes, still under the provisional 512 KiB bound.
+- **The retained Locale dataset**
+  ([`src/tests/cldr/locales/`](../../tests/cldr/locales/README.md)) has 780 lines against Node
+  22.22.0's ICU 77.1, over 65 tags. The profile answers all of them as ICU did but for 150 lines in
+  eight groups, each named in `divergences.txt`:
+  - Node 22 predates the draft's `firstDayOfWeek`, `variants` and `language` of `und`;
+  - the profile's data is narrower in calendars, collations, numbering systems and time zones;
+  - Node answers one hour cycle where CLDR allows several.
+
+  The first runs differed in two more groups, both corrected as above: the likely subtags' lookup
+  order and the attributes' order.
+- **Checks**: one new slice-compiler check, 628 in all, holds the Locale dataset.
+- **test262**, against the run JSC-271 records:
+  - `test/intl402/Locale` passes all 218 scored variants, from none. The suite tags 43 more files
+    `Intl.Locale-info`, a proposal, and the runner skips them. Run by hand under the profile, 41 pass.
+    The other two expect a collation for `en` and a time zone for `en-US`.
+  - `test/intl402/Intl` passes 124 of 130, from 116. The six failing need `DisplayNames` or
+    `RelativeTimeFormat`.
+  - All of `test/intl402` passes 1,242 variants, from 1,016, with none moving back.
+
+**What must not be read as repaired.**
+- **The information methods answer from the profile's data**: `gregory` alone, German's `phonebk`
+  alone, and no time zone in use in any region.
+- **`PluralRules`, `ListFormat`, `RelativeTimeFormat`, `DisplayNames`, `Segmenter` and
+  `DurationFormat`** are absent, and the phase's exit gate is not met.
+- JSD-0046 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

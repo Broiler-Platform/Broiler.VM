@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   20
-// Annotated:        20/20
-// Exempt:           10
-// Human-reviewed:   0/20
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           11
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       20
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -73,7 +73,11 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly System.Lazy<JsDateData> dates;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=100E0C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E52983
+    // Broiler-Human:        PENDING
+    private readonly System.Lazy<JsLocaleInfo> localeInfo;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ECEC57
     // Broiler-Human:        PENDING
     internal JsIntlTables(Format.IJsIntlData data)
     {
@@ -87,6 +91,7 @@ internal sealed class JsIntlTables
         softDotted = new(ReadRanges);
         numbers = new(ReadNumbers);
         dates = new(ReadDates);
+        localeInfo = new(ReadLocaleInfo);
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -182,6 +187,11 @@ internal sealed class JsIntlTables
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=813274
     // Broiler-Human:        PENDING
     internal JsDateData Dates => dates.Value;
+
+    /// <summary>The week data and the scripts' line directions, decoded the first time a locale is asked for them.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F90F89
+    // Broiler-Human:        PENDING
+    internal JsLocaleInfo LocaleInfo => localeInfo.Value;
 
     /// <summary>A table value with its <c>\uXXXX</c> escapes resolved.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=771818
@@ -333,6 +343,28 @@ internal sealed class JsIntlTables
         }
 
         return data;
+    }
+
+    /// <summary>Decodes the week and script tables.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2C1A9C
+    // Broiler-Human:        PENDING
+    private JsLocaleInfo ReadLocaleInfo()
+    {
+        var info = new JsLocaleInfo();
+
+        foreach (var line in Lines(Format.JsIntlTable.WeekData))
+        {
+            var fields = line.Split('|');
+            info.Weeks[fields[0]] = (fields[1], fields[2], fields[3], fields[4]);
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.Scripts))
+        {
+            var bar = line.IndexOf('|');
+            info.RightToLeft[line[..bar]] = line[(bar + 1)..] == "YES";
+        }
+
+        return info;
     }
 
     /// <summary>The lines of a text table.</summary>

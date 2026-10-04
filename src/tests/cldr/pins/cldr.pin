@@ -38,6 +38,10 @@
 # retrieved twice and found byte-identical; from it ca-gregorian.json, dateFields.json and
 # timeZoneNames.json for de and en; and from the cldr-core tarball already verified for slice I2,
 # supplemental/timeData.json and dayPeriods.json, byte-identical in a third retrieval of that tarball.
+#
+# EXTENDED 2026-10-04 FOR SLICE I4. Intl.Locale's week and text information read two more files of the
+# cldr-core tarball verified for slice I2, retrieved twice more and found byte-identical to it:
+# scriptMetadata.json and supplemental/weekData.json.
 
 data unicode-common-locale-data-repository
 version 48.2.0
@@ -78,6 +82,7 @@ file cldr-48.2.0/json/cldr-bcp47/package.json 649 ce19cc06282d7d8cf2ff74b53b939d
 file cldr-48.2.0/json/cldr-core/availableLocales.json 11175 2961ccc06b437a732c689ad59e891b563e6618546b4c4cda7216549d8a0b4528
 file cldr-48.2.0/json/cldr-core/defaultContent.json 5125 ceeae676236ada8b2c9610c417447280230c1355260a78a2452541e2e1ac6e6c
 file cldr-48.2.0/json/cldr-core/package.json 661 584c01d774ba40135929130a897741ae826597af8bc53735509e6a047abda816
+file cldr-48.2.0/json/cldr-core/scriptMetadata.json 62446 9160c07c87f58495f57076c88231f63c1c062672991822671c9e99697b5e5cda
 file cldr-48.2.0/json/cldr-core/supplemental/aliases.json 137469 b7011c866f27502ed6f160ca83f2a83fa42bce9fdc2176e60e2c6630961d877c
 file cldr-48.2.0/json/cldr-core/supplemental/currencyData.json 71126 e50315091b1f34428480f82970be64159ad207af0bdcebe7faa6260d3e34c8a6
 file cldr-48.2.0/json/cldr-core/supplemental/dayPeriods.json 86320 6ed3b0e88ea0b8b2a045da6880951812f0ffb256d38156432b10f583c06a28b8
@@ -87,6 +92,7 @@ file cldr-48.2.0/json/cldr-core/supplemental/parentLocales.json 5890 5a3f056a70f
 file cldr-48.2.0/json/cldr-core/supplemental/pluralRanges.json 24710 fb56214321fb18675196eda503779b8576fe785084bc0573e1def41dd0e39027
 file cldr-48.2.0/json/cldr-core/supplemental/plurals.json 76105 6c0a48e9bcfc25856f90202f703c2c7f89c105d6868f7712a943a6ed2dcbe8f4
 file cldr-48.2.0/json/cldr-core/supplemental/timeData.json 22206 2962960c14e40ffb09526e33832fe60ff932ba1b41a01f4964c601c2274ac61d
+file cldr-48.2.0/json/cldr-core/supplemental/weekData.json 11204 b28ea2cedf6da29e9b93d7492e0f0a8a6852fe49f7990c58f9fc57531bf7c6b3
 file cldr-48.2.0/json/cldr-dates-full/main/de/ca-gregorian.json 18792 afa871ef7f2b4b9a7d680342e18dcf6a37a910e81af8d7d9561722d790b6d20b
 file cldr-48.2.0/json/cldr-dates-full/main/de/dateFields.json 27239 80b32cf55be64c7e5b0c2b909789bf7ed4f633e5a90dd2b11e52f30a2662fb19
 file cldr-48.2.0/json/cldr-dates-full/main/de/timeZoneNames.json 49972 de8f2c65e357c3498960dcb1667bb475a15d2df6f253f31cad3a0d55562cf507

@@ -637,6 +637,16 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F7 observation, slice I4's `Intl.Locale`, 2026-10-04.** `Intl.Locale` is built as the
+current ECMA-402 draft states it: any well-formed tag, every option, the twelve accessors,
+`maximize` and `minimize` by UTS #35, and the seven information methods over CLDR week, script and
+hour cycle data the archive gained under rule N27. The locale core's likely subtags and attribute
+order are corrected to UTS #35. The retained Locale dataset agrees with ICU 77.1 on every line but
+150, each named with its reason. `test/intl402/Locale` passes all 218 scored variants, and all of
+`test/intl402` passes 1,242, none moving back ([JSC-272](roadmap.corrections.md#jsc-272), proposed
+[JSD-0046](decisions/0046-intl-locale.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F7 observation, slice I3, 2026-10-04.** `Intl.DateTimeFormat` is built for the Gregorian
 calendar with every component, both styles, the four hour cycles and ranges, its patterns chosen by
 a port of ICU's pattern generator and interval formats over CLDR calendar data the archive gained

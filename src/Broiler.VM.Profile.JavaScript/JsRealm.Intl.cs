@@ -50,7 +50,7 @@ internal sealed partial class JsRealm
     internal JsNativeFunction? CollatorConstructor { get; private set; }
 
     /// <summary>Builds <c>Intl</c> and <c>Intl.Collator</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8, s10; IP=Low; Security=Medium; Resources=3; Fingerprint=42A943
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8, s10; IP=Low; Security=Medium; Resources=3; Fingerprint=131B5A
     // Broiler-Human:        PENDING
     private void SetupIntl()
     {
@@ -76,6 +76,7 @@ internal sealed partial class JsRealm
         SetupCollator(intl);
         SetupNumberFormat(intl);
         SetupDateTimeFormat(intl);
+        SetupLocale(intl);
     }
 
     // ---- Intl.Collator ---------------------------------------------------------------------------
@@ -283,7 +284,7 @@ internal sealed partial class JsRealm
     // ---- the abstract operations ----------------------------------------------------------------
 
     /// <summary>ECMA-402's <c>CanonicalizeLocaleList</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=508B4A
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=19C4FC
     // Broiler-Falsified-If: an element that is not a String or an Object is admitted, or a structurally invalid tag is not a RangeError
     // Broiler-Human:        PENDING
     internal static System.Collections.Generic.List<string> CanonicalizeLocaleList(JsEngine engine, JsValue locales)
@@ -295,7 +296,7 @@ internal sealed partial class JsRealm
             return seen;
         }
 
-        var list = locales.IsString ? engine.Realm.NewArray([locales]) : engine.ToObject(locales);
+        var list = locales.IsString || locales.AsObjectOrNull() is JsLocaleObject ? engine.Realm.NewArray([locales]) : engine.ToObject(locales);
         var length = ArrayLengthOf(engine, JsValue.Object(list));
 
         for (var index = 0.0; index < length; index++)
@@ -315,7 +316,7 @@ internal sealed partial class JsRealm
                 return ThrowList(engine, "TypeError", "Intl: a locale in the list is neither a String nor an Object");
             }
 
-            var tag = engine.ToStringValue(value);
+            var tag = value.AsObjectOrNull() is JsLocaleObject locale ? locale.Locale : engine.ToStringValue(value);
 
             if (JsLocaleTag.Parse(tag) is not { } parsed)
             {

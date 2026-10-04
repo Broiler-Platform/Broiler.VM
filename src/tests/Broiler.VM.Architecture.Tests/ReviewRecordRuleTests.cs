@@ -1255,7 +1255,11 @@ public sealed class ReviewRecordRuleTests
         // range patterns; JsDateTimeFormatter.cs, the formatting itself; and JsRealm.DateTimeFormat.cs,
         // Intl.DateTimeFormat and Intl.supportedValuesOf. All five are covered on the same terms as
         // every other product file, and nothing in them has been read by a human.
-        Assert.Equal(268, AssuranceSources.Files.Count);
+        //
+        // AND THE LOCALE (phase F7, 2026-10-04, JSD-0046): JsLocaleInfo.cs, the week and script data;
+        // and JsRealm.Locale.cs, Intl.Locale. Both are covered on the same terms as every other
+        // product file, and nothing in them has been read by a human.
+        Assert.Equal(270, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

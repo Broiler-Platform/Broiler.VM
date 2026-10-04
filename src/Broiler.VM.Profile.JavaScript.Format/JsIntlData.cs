@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           19
+// Exempt:           21
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9BEEFB
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B842B6
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -119,4 +119,13 @@ public enum JsIntlTable
 
     /// <summary>Each language's day period rules: <c>language</c>, <c>period</c>, <c>at</c> or <c>from</c>, <c>before</c>.</summary>
     DayPeriods = 17,
+
+    /// <summary>
+    /// Each region's week: <c>region</c>, <c>firstDay</c>, <c>weekendStart</c>, <c>weekendEnd</c>,
+    /// <c>minDays</c>, a field empty where the world's (<c>001</c>) applies.
+    /// </summary>
+    WeekData = 18,
+
+    /// <summary>Each script's line direction: <c>script</c>, <c>YES</c> for right to left or <c>NO</c>.</summary>
+    Scripts = 19,
 }

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           18
+// Exempt:           20
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -13085,14 +13085,287 @@ internal static class JsCldrTables
         en|zone.utc.short|UTC
         """u8;
 
-    /// <summary>The hour cycles allowed and preferred in the supported locales' likely regions and the world: region, allowed, preferred.</summary>
+    /// <summary>The hour cycles allowed and preferred in each region: region, allowed, preferred.</summary>
     // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
     // Broiler-Human:        PENDING
     internal static ReadOnlySpan<byte> TimeData =>
         """
         001|H h|H
+        419|h H hB hb|h
+        AC|H h hb hB|H
+        AD|H hB|H
+        AE|h hB hb H|h
+        AF|H hb hB h|H
+        AG|h hb H hB|h
+        AI|H h hb hB|H
+        AL|h H hB|h
+        AM|H hB|H
+        AO|H hB|H
+        AR|h H hB hb|h
+        AS|h H|h
+        AT|H hB|H
+        AU|h hb H hB|h
+        AW|H hB|H
+        AX|H|H
+        AZ|H hB h|H
+        BA|H hB h|H
+        BB|h hb H hB|h
+        BD|h hB H|h
+        BE|H hB|H
+        BF|H hB|H
+        BG|H hB h|H
+        BH|h hB hb H|h
+        BI|H h|H
+        BJ|H hB|H
+        BL|H hB|H
+        BM|h hb H hB|h
+        BN|hb hB h H|h
+        BO|h H hB hb|h
+        BQ|H|H
+        BR|H hB|H
+        BS|h hb H hB|h
+        BT|h H|h
+        BW|H h hb hB|H
+        BY|H h|H
+        BZ|H h hb hB|H
+        CA|h hb H hB|h
+        CC|H h hb hB|H
+        CD|hB H|H
+        CF|H h hB|H
+        CG|H hB|H
+        CH|H hB h|H
+        CI|H hB|H
+        CK|H h hb hB|H
+        CL|h H hB hb|h
+        CM|H h hB|H
+        CN|H hB hb h|H
+        CO|h H hB hb|h
+        CP|H|H
+        CR|h H hB hb|h
+        CU|h H hB hb|h
+        CV|H hB|H
+        CW|H hB|H
+        CX|H h hb hB|H
+        CY|h H hb hB|h
+        CZ|H|H
         DE|H hB|H
+        DG|H h hb hB|H
+        DJ|h H|h
+        DK|H|H
+        DM|h hb H hB|h
+        DO|h H hB hb|h
+        DZ|h hB hb H|h
+        EA|H h hB hb|H
+        EC|h H hB hb|h
+        EE|H hB|H
+        EG|h hB hb H|h
+        EH|h hB hb H|h
+        ER|h H|h
+        ES|H hB h hb|H
+        ET|hB hb h H|h
+        FI|H|H
+        FJ|h hb H hB|h
+        FK|H h hb hB|H
+        FM|h hb H hB|h
+        FO|H h|H
+        FR|H hB|H
+        GA|H hB|H
+        GB|H h hb hB|H
+        GD|h hb H hB|h
+        GE|H hB h|H
+        GF|H hB|H
+        GG|H h hb hB|H
+        GH|h H|h
+        GI|H h hb hB|H
+        GL|H h|H
+        GM|h hb H hB|h
+        GN|H hB|H
+        GP|H hB|H
+        GQ|H hB h hb|H
+        GR|h H hb hB|h
+        GS|H h hb hB|H
+        GT|h H hB hb|h
+        GU|h hb H hB|h
+        GW|H hB|H
+        GY|h hb H hB|h
+        HK|h hB hb H|h
+        HN|h H hB hb|h
+        HR|H hB|H
+        HU|H h|H
+        IC|H h hB hb|H
+        ID|H|H
+        IE|H h hb hB|H
+        IL|H hB|H
+        IM|H h hb hB|H
+        IN|h H|h
+        IO|H h hb hB|H
+        IQ|h hB hb H|h
+        IR|hB H|H
+        IS|H|H
+        IT|H hB|H
+        JE|H h hb hB|H
+        JM|h hb H hB|h
+        JO|h hB hb H|h
+        JP|H K h|H
+        KE|hB hb H h|H
+        KG|H h hB hb|H
+        KH|hB h H hb|h
+        KI|h hb H hB|h
+        KM|H h hB hb|H
+        KN|h hb H hB|h
+        KP|h H hB hb|h
+        KR|h H hB hb|h
+        KW|h hB hb H|h
+        KY|h hb H hB|h
+        KZ|H hB|H
+        LA|H hb hB h|H
+        LB|h hB hb H|h
+        LC|h hb H hB|h
+        LI|H hB h|H
+        LK|H h hB hb|H
+        LR|h hb H hB|h
+        LS|h H|h
+        LT|H h hb hB|H
+        LU|H h hB|H
+        LV|H hB hb h|H
+        LY|h hB hb H|h
+        MA|H h hB hb|H
+        MC|H hB|H
+        MD|H hB|H
+        ME|H hB h|H
+        MF|H hB|H
+        MG|H h|H
+        MH|h hb H hB|h
+        MK|H h hb hB|H
+        ML|H|H
+        MM|hB hb H h|H
+        MN|H h hb hB|H
+        MO|h hB hb H|h
+        MP|h hb H hB|h
+        MQ|H hB|H
+        MR|h hB hb H|h
+        MS|H h hb hB|H
+        MT|H h|H
+        MU|H h|H
+        MV|H h|H
+        MW|h hb H hB|h
+        MX|h H hB hb|h
+        MY|hb hB h H|h
+        MZ|H hB|H
+        NA|h H hB hb|h
+        NC|H hB|H
+        NE|H|H
+        NF|H h hb hB|H
+        NG|H h hb hB|H
+        NI|h H hB hb|h
+        NL|H hB|H
+        NO|H h|H
+        NP|H h hB|H
+        NR|H h hb hB|H
+        NU|H h hb hB|H
+        NZ|h hb H hB|h
+        OM|h hB hb H|h
+        PA|h H hB hb|h
+        PE|h H hB hb|h
+        PF|H h hB|H
+        PG|h H|h
+        PH|h hB hb H|h
+        PK|h hB H|h
+        PL|H h|H
+        PM|H hB|H
+        PN|H h hb hB|H
+        PR|h H hB hb|h
+        PS|h hB hb H|h
+        PT|H hB|H
+        PW|h H|h
+        PY|h H hB hb|h
+        QA|h hB hb H|h
+        RE|H hB|H
+        RO|H hB|H
+        RS|H hB h|H
+        RU|H|H
+        RW|H h|H
+        SA|h hB hb H|h
+        SB|h hb H hB|h
+        SC|H h hB|H
+        SD|h hB hb H|h
+        SE|H|H
+        SG|h hb H hB|h
+        SH|H h hb hB|H
+        SI|H hB|H
+        SJ|H|H
+        SK|H|H
+        SL|h hb H hB|h
+        SM|H h hB|H
+        SN|H h hB|H
+        SO|h H|h
+        SR|H hB|H
+        SS|h hb H hB|h
+        ST|H hB|H
+        SV|h H hB hb|h
+        SX|H h hb hB|H
+        SY|h hB hb H|h
+        SZ|h hb H hB|h
+        TA|H h hb hB|H
+        TC|h hb H hB|h
+        TD|h H hB|h
+        TF|H h hB|H
+        TG|H hB|H
+        TH|H h|H
+        TJ|H h|H
+        TL|H hB hb h|H
+        TM|H h|H
+        TN|h hB hb H|h
+        TO|h H|h
+        TR|H hB|H
+        TT|h hb H hB|h
+        TW|hB hb h H|h
+        TZ|hB hb H h|H
+        UA|H hB h|H
+        UG|hB hb H h|H
+        UM|h hb H hB|h
         US|h hb H hB|h
+        UY|h H hB hb|h
+        UZ|H hB h|H
+        VA|H h hB|H
+        VC|h hb H hB|h
+        VE|h H hB hb|h
+        VG|h hb H hB|h
+        VI|h hb H hB|h
+        VN|H h|H
+        VU|h H|h
+        WF|H hB|H
+        WS|h H|h
+        XK|H hB h|H
+        YE|h hB hb H|h
+        YT|H hB|H
+        ZA|H h hb hB|H
+        ZM|h hb H hB|h
+        ZW|H h|H
+        af-ZA|H h hB hb|H
+        ar-001|h hB hb H|h
+        ca-ES|H h hB|H
+        en-001|h hb H hB|h
+        en-HK|h hb H hB|h
+        en-IL|H h hb hB|H
+        en-MY|h hb H hB|h
+        es-BR|H h hB hb|H
+        es-ES|H h hB hb|H
+        es-GQ|H h hB hb|H
+        fr-CA|H h hB|H
+        gl-ES|H h hB|H
+        gu-IN|hB hb h H|h
+        hi-IN|hB h H|h
+        it-CH|H h hB|H
+        it-IT|H h hB|H
+        kn-IN|hB h H|h
+        ku-SY|H hB|H
+        ml-IN|hB h H|h
+        mr-IN|hB hb h H|h
+        pa-IN|hB hb h H|h
+        ta-IN|hB h hb H|h
+        te-IN|hB h H|h
+        zu-ZA|H hB hb h|H
         """u8;
 
     /// <summary>The day period rules of each supported language: language, period, at or from, before.</summary>
@@ -13113,6 +13386,353 @@ internal static class JsCldrTables
         en|morning1|00:00|12:00
         en|night1|21:00|24:00
         en|noon|12:00|
+        """u8;
+
+    /// <summary>Each region's week: region, first day, weekend start, weekend end, minimal days; empty where the world's applies.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> WeekData =>
+        """
+        001|mon|sat|sun|1
+        AD|mon|||4
+        AE|mon|||
+        AF|sat|thu|fri|
+        AG|sun|||
+        AI|mon|||
+        AL|mon|||
+        AM|mon|||
+        AN|mon|||4
+        AR|mon|||
+        AS|sun|||
+        AT|mon|||4
+        AU|mon|||
+        AX|mon|||4
+        AZ|mon|||
+        BA|mon|||
+        BD|sun|||
+        BE|mon|||4
+        BG|mon|||4
+        BH|sat|fri|sat|
+        BM|mon|||
+        BN|mon|||
+        BR|sun|||
+        BS|sun|||
+        BT|sun|||
+        BW|sun|||
+        BY|mon|||
+        BZ|sun|||
+        CA|sun|||
+        CH|mon|||4
+        CL|mon|||
+        CM|mon|||
+        CN|mon|||
+        CO|sun|||
+        CR|mon|||
+        CY|mon|||
+        CZ|mon|||4
+        DE|mon|||4
+        DJ|sat|||
+        DK|mon|||4
+        DM|sun|||
+        DO|sun|||
+        DZ|sat|fri|sat|
+        EC|mon|||
+        EE|mon|||4
+        EG|sat|fri|sat|
+        ES|mon|||4
+        ET|sun|||
+        FI|mon|||4
+        FJ|mon|||4
+        FO|mon|||4
+        FR|mon|||4
+        GB|mon|||4
+        GE|mon|||
+        GF|mon|||4
+        GG||||4
+        GI||||4
+        GP|mon|||4
+        GR|mon|||4
+        GT|sun|||
+        GU|sun|||1
+        HK|sun|||
+        HN|sun|||
+        HR|mon|||
+        HU|mon|||4
+        ID|sun|||
+        IE|mon|||4
+        IL|sun|fri|sat|
+        IM||||4
+        IN|sun|sun||
+        IQ|sat|fri|sat|
+        IR|sat|fri|fri|
+        IS|sun|||4
+        IT|mon|||4
+        JE||||4
+        JM|sun|||
+        JO|sat|fri|sat|
+        JP|sun|||
+        KE|sun|||
+        KG|mon|||
+        KH|sun|||
+        KR|sun|||
+        KW|sat|fri|sat|
+        KZ|mon|||
+        LA|sun|||
+        LB|mon|||
+        LI|mon|||4
+        LK|mon|||
+        LT|mon|||4
+        LU|mon|||4
+        LV|mon|||
+        LY|sat|fri|sat|
+        MC|mon|||4
+        MD|mon|||
+        ME|mon|||
+        MH|sun|||
+        MK|mon|||
+        MM|sun|||
+        MN|mon|||
+        MO|sun|||
+        MQ|mon|||4
+        MT|sun|||
+        MV|fri|||
+        MX|sun|||
+        MY|mon|||
+        MZ|sun|||
+        NI|sun|||
+        NL|mon|||4
+        NO|mon|||4
+        NP|sun|||
+        NZ|mon|||
+        OM|sat|fri|sat|
+        PA|sun|||
+        PE|sun|||
+        PH|sun|||
+        PK|sun|||
+        PL|mon|||4
+        PR|sun|||
+        PT|sun|||4
+        PY|sun|||
+        QA|sat|fri|sat|
+        RE|mon|||4
+        RO|mon|||
+        RS|mon|||
+        RU|mon|||4
+        SA|sun|fri|sat|
+        SD|sat|fri|sat|
+        SE|mon|||4
+        SG|sun|||
+        SI|mon|||
+        SJ||||4
+        SK|mon|||4
+        SM|mon|||4
+        SV|sun|||
+        SY|sat|fri|sat|
+        TH|sun|||
+        TJ|mon|||
+        TM|mon|||
+        TR|mon|||
+        TT|sun|||
+        TW|sun|||
+        UA|mon|||
+        UG||sun||
+        UM|sun|||1
+        US|sun|||1
+        UY|mon|||
+        UZ|mon|||
+        VA|mon|||4
+        VE|sun|||
+        VI|sun|||1
+        VN|mon|||
+        WS|sun|||
+        XK|mon|||
+        YE|sun|fri|sat|
+        ZA|sun|||
+        ZW|sun|||
+        """u8;
+
+    /// <summary>The line direction of each script CLDR states one for: script, right to left (YES) or not (NO).</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> Scripts =>
+        """
+        Adlm|YES
+        Aghb|NO
+        Ahom|NO
+        Arab|YES
+        Armi|YES
+        Armn|NO
+        Avst|YES
+        Bali|NO
+        Bamu|NO
+        Bass|NO
+        Batk|NO
+        Beng|NO
+        Berf|NO
+        Bhks|NO
+        Bopo|NO
+        Brah|NO
+        Bugi|NO
+        Buhd|NO
+        Cakm|NO
+        Cans|NO
+        Cari|NO
+        Cham|NO
+        Cher|NO
+        Chrs|YES
+        Copt|NO
+        Cpmn|NO
+        Cprt|YES
+        Cyrl|NO
+        Deva|NO
+        Diak|NO
+        Dogr|NO
+        Dsrt|NO
+        Dupl|NO
+        Egyp|NO
+        Elba|NO
+        Elym|YES
+        Ethi|NO
+        Gara|YES
+        Geor|NO
+        Glag|NO
+        Gong|NO
+        Gonm|NO
+        Goth|NO
+        Gran|NO
+        Grek|NO
+        Gujr|NO
+        Gukh|NO
+        Guru|NO
+        Hanb|NO
+        Hang|NO
+        Hani|NO
+        Hano|NO
+        Hans|NO
+        Hant|NO
+        Hatr|YES
+        Hebr|YES
+        Hira|NO
+        Hluw|NO
+        Hmng|NO
+        Hmnp|NO
+        Hung|YES
+        Ital|NO
+        Jamo|NO
+        Java|NO
+        Jpan|NO
+        Kali|NO
+        Kana|NO
+        Kawi|NO
+        Khar|YES
+        Khmr|NO
+        Khoj|NO
+        Kits|NO
+        Knda|NO
+        Kore|NO
+        Krai|NO
+        Kthi|NO
+        Lana|NO
+        Laoo|NO
+        Latn|NO
+        Lepc|NO
+        Limb|NO
+        Lina|NO
+        Linb|NO
+        Lisu|NO
+        Lyci|NO
+        Lydi|YES
+        Mahj|NO
+        Maka|NO
+        Mand|YES
+        Mani|YES
+        Marc|NO
+        Medf|NO
+        Mend|YES
+        Merc|YES
+        Mero|YES
+        Mlym|NO
+        Modi|NO
+        Mong|NO
+        Mroo|NO
+        Mtei|NO
+        Mult|NO
+        Mymr|NO
+        Nagm|NO
+        Nand|NO
+        Narb|YES
+        Nbat|YES
+        Newa|NO
+        Nkoo|YES
+        Nshu|NO
+        Ogam|NO
+        Olck|NO
+        Onao|NO
+        Orkh|YES
+        Orya|NO
+        Osge|NO
+        Osma|NO
+        Ougr|YES
+        Palm|YES
+        Pauc|NO
+        Perm|NO
+        Phag|NO
+        Phli|YES
+        Phlp|YES
+        Phnx|YES
+        Plrd|NO
+        Prti|YES
+        Rjng|NO
+        Rohg|YES
+        Runr|NO
+        Samr|YES
+        Sarb|YES
+        Saur|NO
+        Sgnw|NO
+        Shaw|NO
+        Shrd|NO
+        Sidd|NO
+        Sidt|YES
+        Sind|NO
+        Sinh|NO
+        Sogd|YES
+        Sogo|YES
+        Sora|NO
+        Soyo|NO
+        Sund|NO
+        Sunu|NO
+        Sylo|NO
+        Syrc|YES
+        Tagb|NO
+        Takr|NO
+        Tale|NO
+        Talu|NO
+        Taml|NO
+        Tang|NO
+        Tavt|NO
+        Tayo|NO
+        Telu|NO
+        Tfng|NO
+        Tglg|NO
+        Thaa|YES
+        Thai|NO
+        Tibt|NO
+        Tirh|NO
+        Tnsa|NO
+        Todr|NO
+        Tols|NO
+        Toto|NO
+        Tutg|NO
+        Ugar|NO
+        Vaii|NO
+        Vith|NO
+        Wara|NO
+        Wcho|NO
+        Xpeo|NO
+        Xsux|NO
+        Yezi|YES
+        Yiii|NO
+        Zanb|NO
         """u8;
 
     /// <summary>The root collation: allkeys_CLDR.txt in runs and entries, the implicit-weight ranges and the unified ideographs.</summary>

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           12
-// Human-reviewed:   0/25
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         2/0
 // Resource impact:  3/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -330,9 +330,9 @@ internal sealed class JsLocaleTag
     private static bool IsTransformKey(string subtag) =>
         subtag.Length == 2 && IsAlpha(subtag[..1]) && IsDigits(subtag[1..]);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=93932C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4382E4
     // Broiler-Human:        PENDING
-    private static bool IsAlpha(string text)
+    internal static bool IsAlpha(string text)
     {
         foreach (var c in text)
         {
@@ -386,15 +386,15 @@ internal sealed class JsLocaleTag
     /// ECMA-402's <c>CanonicalizeUnicodeLocaleId</c>: aliases replaced, extensions canonicalized and
     /// ordered, in canonical case.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s6.2.3, UTS35 Annex C; IP=Low; Security=Medium; Resources=3; Fingerprint=423ADC
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s6.2.3, UTS35 Annex C; IP=Low; Security=Medium; Resources=3; Fingerprint=5DC78A
     // Broiler-Falsified-If: a canonical tag canonicalizes to anything but itself, or an alias the CLDR data names survives canonicalization
     // Broiler-Human:        PENDING
     internal JsLocaleTag Canonicalize(JsIntlTables tables)
     {
         ReplaceAliases(tables);
 
-        // -u-: ATTRIBUTES WITHOUT DUPLICATES, KEYWORDS BY FIRST OCCURRENCE, TYPES BY THEIR ALIASES,
-        // `true` LEFT IMPLICIT, AND THE KEYWORDS SORTED.
+        // -u-: ATTRIBUTES SORTED WITHOUT DUPLICATES, KEYWORDS BY FIRST OCCURRENCE, TYPES BY THEIR
+        // ALIASES, `true` LEFT IMPLICIT, AND THE KEYWORDS SORTED.
         var attributes = new System.Collections.Generic.List<string>();
 
         foreach (var attribute in Attributes)
@@ -405,6 +405,7 @@ internal sealed class JsLocaleTag
             }
         }
 
+        attributes.Sort(System.StringComparer.Ordinal);
         Attributes.Clear();
         Attributes.AddRange(attributes);
 
@@ -646,36 +647,45 @@ internal sealed class JsLocaleTag
     /// UTS #35's Add Likely Subtags over the language, script and region; answers whether the data
     /// held a match.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 s4.3; IP=Low; Security=Low; Resources=2; Fingerprint=39FFD2
+    // Broiler-AI:           Origin=AI; Spec=UTS35 s4.3; IP=Low; Security=Low; Resources=2; Fingerprint=2AEF10
     // Broiler-Human:        PENDING
     internal bool Maximize(JsIntlTables tables)
     {
-        // LOOKUP ORDER: language_script_region, language_region, language_script, language, and the
-        // same with `und` for the language.
+        // CLEAN-UP: Zzzz and ZZ are empty, and a language with a script and a region is already maximal.
+        if (Script == "Zzzz")
+        {
+            Script = null;
+        }
+
+        if (Region == "ZZ")
+        {
+            Region = null;
+        }
+
+        if (Language != "und" && Script is not null && Region is not null)
+        {
+            return true;
+        }
+
+        // LOOKUP ORDER: language_script_region, language_script, language_region, language.
         var keys = new System.Collections.Generic.List<string>();
 
-        foreach (var language in Language == "und" ? new[] { "und" } : [Language, "und"])
+        if (Script is not null && Region is not null)
         {
-            if (Script is not null && Region is not null)
-            {
-                keys.Add(language + "-" + Script + "-" + Region);
-            }
-
-            if (Region is not null)
-            {
-                keys.Add(language + "-" + Region);
-            }
-
-            if (Script is not null)
-            {
-                keys.Add(language + "-" + Script);
-            }
-
-            if (language != "und" || (Script is null && Region is null))
-            {
-                keys.Add(language);
-            }
+            keys.Add(Language + "-" + Script + "-" + Region);
         }
+
+        if (Script is not null)
+        {
+            keys.Add(Language + "-" + Script);
+        }
+
+        if (Region is not null)
+        {
+            keys.Add(Language + "-" + Region);
+        }
+
+        keys.Add(Language);
 
         foreach (var key in keys)
         {
@@ -693,6 +703,41 @@ internal sealed class JsLocaleTag
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// UTS #35's Remove Likely Subtags: the shortest of the language, the language and region, and the
+    /// language and script whose likely subtags are this tag's, its variants and extensions kept;
+    /// whether the data held a match for the tag at all.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B28AA8
+    // Broiler-Human:        PENDING
+    internal bool Minimize(JsIntlTables tables)
+    {
+        var maximal = Parse(LanguageId())!;
+
+        if (!maximal.Maximize(tables))
+        {
+            return false;
+        }
+
+        foreach (var (script, region) in new[] { ((string?)null, (string?)null), (null, maximal.Region), (maximal.Script, null) })
+        {
+            var trial = new JsLocaleTag { Language = maximal.Language, Script = script, Region = region };
+
+            if (trial.Maximize(tables) && trial.Language == maximal.Language && trial.Script == maximal.Script && trial.Region == maximal.Region)
+            {
+                Language = maximal.Language;
+                Script = script;
+                Region = region;
+                return true;
+            }
+        }
+
+        Language = maximal.Language;
+        Script = maximal.Script;
+        Region = maximal.Region;
+        return true;
     }
 
     // ---- writing --------------------------------------------------------------------------------

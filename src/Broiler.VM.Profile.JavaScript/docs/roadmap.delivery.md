@@ -1295,6 +1295,11 @@ retained dates agree with ICU 77.1 but for 352 named divergences. `DateTimeForma
 `intl402` variants, and the failing ones need another calendar, `ja` or the `arab` decimal
 separator. I4 (`PluralRules`,
 `Locale` and the rest) is next ([JSC-271](roadmap.corrections.md#jsc-271)).*
+*Progress, 2026-10-04: I4 is taken constructor by constructor, and `Intl.Locale` is built first under
+proposed [JSD-0046](decisions/0046-intl-locale.md), with the draft's information methods and the
+locale core's likely subtags corrected to UTS #35. The retained Locale dataset agrees with ICU 77.1
+but for 150 named divergences. `Locale` passes all 218 scored `intl402` variants. `PluralRules` is
+next ([JSC-272](roadmap.corrections.md#jsc-272)).*
 
 #### F8 — Temporal
 

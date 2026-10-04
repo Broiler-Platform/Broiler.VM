@@ -404,3 +404,20 @@ its status line. Corrections entry [JSC-271](../roadmap.corrections.md#jsc-271).
 - **The archive grew** by the Gregorian calendar, date field, zone name, hour cycle and day period
   files, under N27. The measured data is now 465,869 bytes, still under the provisional bound, and no
   budget is set.
+
+## I4: Intl.Locale, 2026-10-04 (unsigned)
+
+*Recorded with the change that publishes `Intl.Locale`; it signs nothing and this record keeps its
+status line. Corrections entry [JSC-272](../roadmap.corrections.md#jsc-272).*
+
+- **I4 is taken one constructor at a time**, each its own change and record, as section 7's "each
+  opened by its own consumer and its own card" reads. `Locale` is first, under proposed
+  [JSD-0046](0046-intl-locale.md), because the other constructors' tests construct Locales.
+- **I0's locale core is corrected, not widened** ([JSD-0043](0043-intl-data-boundary-and-collation.md)
+  section 3): Add Likely Subtags takes UTS #35's current lookup order, `-u-` attributes are sorted,
+  and Remove Likely Subtags is added. Section 5's supported locales and default are unchanged.
+- **Its acceptance is a retained dataset like I1 to I3's**: 780 lines over 65 tags of every shape,
+  agreeing with ICU 77.1 but for 150 named lines. `test/intl402/Locale` passes every scored variant.
+- **The archive grew** by the week and script metadata files, under N27. The measured data is now
+  472,562 bytes, still under the provisional bound, and no budget is set. Decision (d) holds:
+  `getTimeZones` answers no zone for any region.

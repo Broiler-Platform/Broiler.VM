@@ -100,8 +100,10 @@ internal static class CldrTableGenerator
         TextTable(text, "PluralRanges", "The plural range rules of each supported language: language, start, end, result.", PluralRanges(cldr));
         TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
         TextTable(text, "DateLocales", "The Gregorian calendar, date field and zone name data of each supported language, flattened: language, key, value.", DateLocales(cldr));
-        TextTable(text, "TimeData", "The hour cycles allowed and preferred in the supported locales' likely regions and the world: region, allowed, preferred.", TimeData(cldr));
+        TextTable(text, "TimeData", "The hour cycles allowed and preferred in each region: region, allowed, preferred.", TimeData(cldr));
         TextTable(text, "DayPeriods", "The day period rules of each supported language: language, period, at or from, before.", DayPeriods(cldr));
+        TextTable(text, "WeekData", "Each region's week: region, first day, weekend start, weekend end, minimal days; empty where the world's applies.", WeekData(cldr));
+        TextTable(text, "Scripts", "The line direction of each script CLDR states one for: script, right to left (YES) or not (NO).", Scripts(cldr));
         ByteTable(text, "CollationRoot", "The root collation: allkeys_CLDR.txt in runs and entries, the implicit-weight ranges and the unified ideographs.", root.Encode(database));
         ByteTable(
             text,
@@ -657,27 +659,47 @@ internal static class CldrTableGenerator
         lines.Add($"{language}|{key}|{Escape(value.GetString()!)}");
     }
 
-    /// <summary>
-    /// The hour cycles CLDR allows and prefers in the regions the supported locales are likely to
-    /// name, and in the world (<c>001</c>): region, allowed, preferred.
-    /// </summary>
-    internal static IEnumerable<string> TimeData(IReadOnlyDictionary<string, byte[]> cldr)
-    {
-        var likely = LikelySubtags(cldr).Select(static line => line.Split('|')).ToDictionary(static pair => pair[0], static pair => pair[1], StringComparer.Ordinal);
-        var regions = new SortedSet<string>(StringComparer.Ordinal) { "001" };
+    /// <summary>The hour cycles CLDR allows and prefers in each region it names: region, allowed, preferred.</summary>
+    internal static IEnumerable<string> TimeData(IReadOnlyDictionary<string, byte[]> cldr) =>
+        Json(cldr, "json/cldr-core/supplemental/timeData.json").GetProperty("supplemental").GetProperty("timeData")
+            .EnumerateObject()
+            .Select(static entry => $"{entry.Name}|{entry.Value.GetProperty("_allowed").GetString()}|{entry.Value.GetProperty("_preferred").GetString()}")
+            .Order(StringComparer.Ordinal)
+            .ToList();
 
-        foreach (var language in NumberLanguages)
+    /// <summary>
+    /// Each region's week: region, first day, weekend start, weekend end and minimal days in the first
+    /// week, a field empty where CLDR states none and the world's (<c>001</c>) applies.
+    /// </summary>
+    internal static IEnumerable<string> WeekData(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var week = Json(cldr, "json/cldr-core/supplemental/weekData.json").GetProperty("supplemental").GetProperty("weekData");
+        var fields = new[] { "firstDay", "weekendStart", "weekendEnd", "minDays" };
+        var regions = new SortedSet<string>(StringComparer.Ordinal);
+
+        foreach (var field in fields)
         {
-            regions.Add(likely[language].Split('-')[^1]);
+            foreach (var entry in week.GetProperty(field).EnumerateObject())
+            {
+                if (!entry.Name.Contains("-alt-", StringComparison.Ordinal))
+                {
+                    regions.Add(entry.Name);
+                }
+            }
         }
 
-        var data = Json(cldr, "json/cldr-core/supplemental/timeData.json").GetProperty("supplemental").GetProperty("timeData");
-        return regions.Select(region =>
-        {
-            var entry = data.GetProperty(region);
-            return $"{region}|{entry.GetProperty("_allowed").GetString()}|{entry.GetProperty("_preferred").GetString()}";
-        }).ToList();
+        return regions.Select(region => region + string.Concat(fields.Select(field =>
+            "|" + (week.GetProperty(field).TryGetProperty(region, out var value) ? value.GetString() : string.Empty)))).ToList();
     }
+
+    /// <summary>Each script whose line direction CLDR states: script, and whether it is right to left (<c>YES</c>) or not (<c>NO</c>).</summary>
+    internal static IEnumerable<string> Scripts(IReadOnlyDictionary<string, byte[]> cldr) =>
+        Json(cldr, "json/cldr-core/scriptMetadata.json").GetProperty("scriptMetadata")
+            .EnumerateObject()
+            .Where(static entry => entry.Value.GetProperty("rtl").GetString() is "YES" or "NO")
+            .Select(static entry => entry.Name + "|" + entry.Value.GetProperty("rtl").GetString())
+            .Order(StringComparer.Ordinal)
+            .ToList();
 
     /// <summary>
     /// Each supported language's day period rules: language, period, and the time it is at or the
