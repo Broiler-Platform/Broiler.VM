@@ -644,7 +644,9 @@ under rule N27. The `Date.prototype.toLocale*` methods go through it, and `Intl.
 answers its six keys. The time zones are UTC, offset strings and IANA's `Etc/GMT` offsets; no other
 name is admitted. The retained German and English dates agree with ICU 77.1 on every line but 352,
 each named with its reason. `test/intl402/DateTimeFormat` passes 326 of 350 scored variants, and
-the failing ones need another calendar, the `ja` locale or the `arab` decimal separator ([JSC-271](roadmap.corrections.md#jsc-271), proposed
+the failing ones need another calendar, the `ja` locale or the `arab` decimal separator. Over the
+whole pinned suite 85,946 of 95,058 variants pass, 410 more, and none moved back
+([JSC-271](roadmap.corrections.md#jsc-271), proposed
 [JSD-0045](decisions/0045-intl-datetimeformat.md)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.
 

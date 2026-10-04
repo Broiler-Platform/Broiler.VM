@@ -11875,6 +11875,20 @@ tables, and the format's `JsIntlTable`.
   `test/intl402` passes 1,016 variants, from 608, with none moving back. `test/built-ins/Date` is
   unchanged, and `test/staging/sm/String/internalUsage.js`, one of the three files JSC-269 names, now
   passes.
+- **test262, whole pinned suite**, against the run [JSC-270](#jsc-270) records: 95,058 variants, 85,946
+  passing, 1,248 failing, 46 exhausted and 7,818 skipped. 410 moved to passing:
+  - 408 under `test/intl402`: 320 under `DateTimeFormat`, 36 under `Intl`, 6 under `Date`, 2 each
+    under `Collator`, `NumberFormat` and `PluralRules`, and 40 from the 20 files at its top level. The
+    files at the top level and under the last three need every constructor, `DateTimeFormat` among
+    them;
+  - 2 from `test/staging/sm/String/internalUsage.js`.
+
+  None moved to failing. Two variants moved from passing to exhausted, both on the wall clock:
+  `Script_Extensions_-_Oriya.js` under `test/built-ins/RegExp/property-escapes/generated` (strict) and
+  `test/staging/sm/expressions/short-circuit-compound-assignment.js`. The run shared the machine with
+  builds and other runs. Run again on their own with the same binary, both directories pass every
+  variant, so the two are the machine's load, not a change. The other 44 exhausted are the set JSC-270
+  records.
 
 **What must not be read as repaired.**
 - **Calendars other than the Gregorian, IANA time zones and the locales outside section 5** are not
