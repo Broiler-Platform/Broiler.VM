@@ -11954,6 +11954,12 @@ format's `JsIntlTable`.
   - `test/intl402/Intl` passes 124 of 130, from 116. The six failing need `DisplayNames` or
     `RelativeTimeFormat`.
   - All of `test/intl402` passes 1,242 variants, from 1,016, with none moving back.
+- **test262, whole pinned suite**, against the run [JSC-271](#jsc-271) records: 95,058 variants, 86,174
+  passing, 1,022 failing, 44 exhausted and 7,818 skipped. 228 moved to passing:
+  - 218 under `test/intl402/Locale` and 8 under `test/intl402/Intl`;
+  - the 2 variants JSC-271 records as exhausted by the machine's load, which pass again.
+
+  None moved to failing. The exhausted set is again the 44 variants JSC-270 records.
 
 **What must not be read as repaired.**
 - **The information methods answer from the profile's data**: `gregory` alone, German's `phonebk`

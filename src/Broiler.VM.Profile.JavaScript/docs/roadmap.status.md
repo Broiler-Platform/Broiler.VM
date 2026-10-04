@@ -643,7 +643,8 @@ current ECMA-402 draft states it: any well-formed tag, every option, the twelve 
 hour cycle data the archive gained under rule N27. The locale core's likely subtags and attribute
 order are corrected to UTS #35. The retained Locale dataset agrees with ICU 77.1 on every line but
 150, each named with its reason. `test/intl402/Locale` passes all 218 scored variants, and all of
-`test/intl402` passes 1,242, none moving back ([JSC-272](roadmap.corrections.md#jsc-272), proposed
+`test/intl402` passes 1,242. Over the whole pinned suite 86,174 of 95,058 variants pass, 228 more,
+and none moved back ([JSC-272](roadmap.corrections.md#jsc-272), proposed
 [JSD-0046](decisions/0046-intl-locale.md)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.
 
