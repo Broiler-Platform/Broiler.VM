@@ -630,7 +630,9 @@ reference. Rule N28 holds the 325,646 bytes of table data to the generator under
 512 KiB bound. Only the slice-compiler and conformance roots reference it. `Intl.Collator` orders
 both UCA CollationTest files and the retained German and English orderings as ICU 77.1 does, and
 `localeCompare` routes through it. Under `test/intl402`, 312 of 4,418 variants pass, against 50,
-with none moving back; `Collator` passes 124 of its 130
+with none moving back; `Collator` passes 124 of its 130. Over the whole pinned suite 85,242 of 95,058
+variants pass. Six moved to failing: three `test/staging/sm` files whose `Intl` half needs a constructor
+of a later slice and which passed only while `Intl` was absent
 ([JSC-269](roadmap.corrections.md#jsc-269), proposed
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.

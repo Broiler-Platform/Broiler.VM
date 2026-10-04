@@ -11732,6 +11732,15 @@ the ledger's `absent-globals` block.
   variants pass, against 50. 262 moved to passing and none moved back. `Collator` passes 124 of 130,
   `getCanonicalLocales` 74 of 76, and `String/prototype/localeCompare`, `toLocaleLowerCase` and
   `toLocaleUpperCase` all 38. `test/built-ins/String` is unchanged.
+- **test262, whole pinned suite**, against the run [JSC-267](#jsc-267) records: 95,058 variants, 85,242
+  passing, 1,954 failing, 44 exhausted and 7,818 skipped. 262 moved to passing, all under
+  `test/intl402`. **Six moved to failing, three files under `test/staging/sm`**:
+  `String/internalUsage.js`, `extensions/quote-string-for-nul-character.js` and
+  `Proxy/revoked-get-function-realm-typeerror.js`. Each runs its `Intl` half only where `Intl` exists,
+  and that half needs `DateTimeFormat`, `NumberFormat`, `PluralRules` or `RelativeTimeFormat`. They
+  passed before because `Intl` was absent. JSD-0027 section 6 named this risk of a partial `Intl`:
+  feature detection that sees the namespace assumes its constructors. The slices that publish those
+  constructors are what passes them. The exhausted set is the same 44 variants.
 
 **What must not be read as repaired.**
 - **`NumberFormat`, `DateTimeFormat`, `Locale` and every other constructor are absent**, and so is
