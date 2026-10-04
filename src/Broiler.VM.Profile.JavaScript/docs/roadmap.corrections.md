@@ -12104,6 +12104,16 @@ RelativeTimeFormat among "I4 and later", accepted "each opened by its own consum
 - **test262**, against the run JSC-274 records: `test/intl402/RelativeTimeFormat` passes 148 of 160
   variants, from none, and the 12 failing need Polish. `test/intl402/Intl` passes 126 of 130, from
   124, and the 4 failing need `DisplayNames`.
+- **test262, whole pinned suite**, against the run [JSC-274](#jsc-274) records: 95,058 variants, 86,550
+  passing, 642 failing, 48 exhausted and 7,818 skipped. 154 moved from failing to passing, and none
+  moved to failing:
+  - 148 under `test/intl402/RelativeTimeFormat` and 2 under `test/intl402/Intl`;
+  - 4 from `test/staging/sm/extensions/quote-string-for-nul-character.js` and
+    `test/staging/sm/Proxy/revoked-get-function-realm-typeerror.js`.
+
+  Those two staging files are the last of the three [JSC-269](#jsc-269) records as failing, so all
+  three now pass. The `Atomics.waitAsync` variants JSC-273 records as machine-dependent moved again,
+  3 passing and 4 others running out of live bytes. The 48 exhausted are JSC-270's 44 and those 4.
 
 **What must not be read as repaired.**
 - **Relative times exist for German and English only**, the section 5 locales.

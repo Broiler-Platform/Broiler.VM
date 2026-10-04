@@ -642,8 +642,10 @@ is built as the current ECMA-402 draft states it, in every style and numeric opt
 numbers with its own number format and chooses its patterns with its own plural rules, over the CLDR
 relative time data slice I3 archived. The retained German and English relative times agree with ICU
 77.1 on every line but 96, each named with the clause ICU's answer departs from.
-`test/intl402/RelativeTimeFormat` passes 148 of 160 variants, and the failing ones need Polish. The
-generated data is 483,743 bytes, 40,545 under the provisional bound
+`test/intl402/RelativeTimeFormat` passes 148 of 160 variants, and the failing ones need Polish. Over
+the whole pinned suite 86,550 of 95,058 variants pass, 154 more, among them the last two
+`test/staging/sm` files JSC-269 records, and none failed newly. The generated data is 483,743 bytes,
+40,545 under the provisional bound
 ([JSC-275](roadmap.corrections.md#jsc-275), proposed
 [JSD-0049](decisions/0049-intl-relativetimeformat.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
