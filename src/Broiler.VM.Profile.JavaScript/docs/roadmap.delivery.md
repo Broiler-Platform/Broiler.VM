@@ -1247,6 +1247,16 @@ gate and the ledger's row.
   variant that does not start a second agent, and the conformance runner's main agent may block, so
   it runs its `CanBlockIsTrue` cases. Agents, `$262.agent` and the `CanBlockIsFalse` cases are the
   second slice ([JSC-266](roadmap.corrections.md#jsc-266)).*
+- *Observed 2026-10-04, unreviewed: the second slice is in the tree under proposed
+  [JSD-0042](decisions/0042-a-second-agent.md). A second agent is a runtime its host starts, holding a
+  fixed-length block another agent made; the conformance runner's `$262.agent` starts real agents
+  under one aggregate budget and scores the `CanBlockIsFalse` files as well as the `CanBlockIsTrue`
+  ones. `test/built-ins/Atomics` passes all 752 of its scored variants; its six skipped files claim
+  `Atomics.pause`, which the pinned suite lists as a proposal. The exit gate's three clauses are met
+  as written, with one reading stated: the clause on declining is met by the `--test262` runner, and
+  the slice-manifest ingestion translator still declines both flags because that manifest has no
+  shared memory. JSH-5, a growable block across agents, retention against the aggregate, JSD-0028's
+  S2 rule and audit, and S5 remain ([JSC-267](roadmap.corrections.md#jsc-267)).*
 
 #### F7 — `Intl`
 

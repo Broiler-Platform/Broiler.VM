@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
-// Exempt:           9
-// Human-reviewed:   0/8
+// Relevant units:   9
+// Annotated:        9/9
+// Exempt:           10
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       8
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -30,8 +30,9 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </para>
 /// <para>
 /// <b>A growable block replaces its array when it grows</b>, as a resizable <c>ArrayBuffer</c> does,
-/// under <see cref="Gate"/>. A growth that races another agent's plain write may lose that write;
-/// with one agent - all this profile runs until agents land - nothing races it (JSD-0041 section 3).
+/// under <see cref="Gate"/>. A growth that races another agent's plain write may lose that write, so
+/// a growable block never crosses to another agent: <see cref="JsHostRealm.ShareBlock"/> refuses it
+/// (JSD-0041 section 3, JSD-0042 section 2).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5987D4
@@ -56,6 +57,22 @@ internal sealed class JsSharedBlock
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B169FC
     // Broiler-Human:        PENDING
     internal int? MaxByteLength { get; }
+
+    /// <summary>
+    /// Whether the block has been handed to another agent (JSD-0042), so that a waiter on it may yet
+    /// be notified by one: set once, by <see cref="JsHostRealm.ShareBlock"/>, and never cleared.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=543056
+    // Broiler-Human:        PENDING
+    internal bool Crossed
+    {
+        get => System.Threading.Volatile.Read(ref crossed);
+        set => System.Threading.Volatile.Write(ref crossed, value);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5796DE
+    // Broiler-Human:        PENDING
+    private bool crossed;
 
     /// <summary>
     /// The specification's critical section for this block: it guards <see cref="Waiters"/>, a
@@ -91,7 +108,7 @@ internal sealed class JsWaiter
     // Broiler-Human:        PENDING
     internal int ByteIndex { get; }
 
-    /// <summary>When the wait times out, in <see cref="System.Environment.TickCount64"/> milliseconds; <see cref="long.MaxValue"/> for never.</summary>
+    /// <summary>When the wait times out, in <see cref="System.Diagnostics.Stopwatch"/> ticks; <see cref="long.MaxValue"/> for never.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CCBBF0
     // Broiler-Human:        PENDING
     internal long Deadline { get; }

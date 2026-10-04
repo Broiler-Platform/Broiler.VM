@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, phase F2's `v` flag, JSC-262, phase F4's finalization sweep, JSC-263, and phase F5's realms and ShadowRealm, JSC-264 and JSC-265, and phase F6's shared memory, JSC-266; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, phase F2's `v` flag, JSC-262, phase F4's finalization sweep, JSC-263, and phase F5's realms and ShadowRealm, JSC-264 and JSC-265, and phase F6's shared memory and second agent, JSC-266 to JSC-268; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -614,6 +614,13 @@ variant; every one of the 224 failing variants under `test/built-ins/Atomics` st
 which is the phase's next slice ([JSC-266](roadmap.corrections.md#jsc-266), proposed
 [JSD-0041](decisions/0041-shared-memory-in-one-agent.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
+*(Amended 2026-10-04: the next slice is in the tree. A second agent is a runtime its host starts,
+holding a fixed-length block through `JsHostRealm.ShareBlock` and `AdoptBlock`; the conformance
+runner's `$262.agent` starts real agents and scores the `CanBlockIsFalse` files, and
+`test/built-ins/Atomics` passes all 752 of its scored variants
+([JSC-267](roadmap.corrections.md#jsc-267), proposed [JSD-0042](decisions/0042-a-second-agent.md)).
+An array-length truncation that walked every index between the two lengths now visits only the
+indices the array holds ([JSC-268](roadmap.corrections.md#jsc-268)). No milestone row advances.)*
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:

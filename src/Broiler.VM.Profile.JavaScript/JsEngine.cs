@@ -208,7 +208,7 @@ internal sealed partial class JsEngine
     /// host through the return value rather than being swallowed, and the remaining jobs still run.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=4B5EB1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=21DD26
     // Broiler-Falsified-If: a job runs at a point the host did not ask for, or an endless queue is a hang rather than an exhaustion
     // Broiler-Human:        PENDING
     internal JsValue DrainJobs()
@@ -232,6 +232,13 @@ internal sealed partial class JsEngine
                     faulted = true;
                     first = thrown.Value;
                 }
+            }
+
+            // A WAITER THAT IS DUE IS SETTLED BETWEEN TWO JOBS, as a job the host enqueued: a queue
+            // that keeps refilling itself must not starve the timeouts it waits on (JSC-267).
+            if (asyncWaiters.Count != 0)
+            {
+                _ = SettleWaiters(wait: false);
             }
         }
 

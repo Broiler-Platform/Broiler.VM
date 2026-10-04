@@ -9,8 +9,9 @@ using System.Collections.Immutable;
 namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 
 /// <summary>
-/// Checks of shared memory in one agent (JSD-0041, phase F6's first slice): who may block, what bounds
-/// a wait, when an asynchronous waiter settles, and which compositions build the surface at all.
+/// Checks of shared memory (JSD-0041 and JSD-0042, phase F6): who may block, what bounds a wait, when an
+/// asynchronous waiter settles, which compositions build the surface at all, and a block two agents
+/// share.
 /// </summary>
 /// <remarks>
 /// Each check compiles one or two scripts and invokes a sequence of entry points against one instance;
@@ -33,6 +34,9 @@ internal static class SharedChecks
         ANotifyWakesAnAsynchronousWaiterAtTheNextDrain(),
         TheSharedSurfaceAloneIsRefused(),
         ADeclinedSharedSurfaceBuildsNeitherGlobal(),
+        TwoInstancesShareOneBlock(),
+        OnlyAFixedLengthSharedBufferIsHandedOut(),
+        ARealmThatDeclinedTheSharedSurfaceAdoptsNoBlock(),
     ];
 
     /// <summary>A host that does not say its agent may block is an event loop: <c>wait</c> refuses.</summary>
@@ -130,6 +134,250 @@ internal static class SharedChecks
             "a realm admitting the binary surface and not the shared one built ArrayBuffer and neither SharedArrayBuffer nor Atomics",
             canBlock: null,
             surfaces: [JavaScriptProfile.BinaryManifest]);
+
+    /// <summary>The script both agents of the agent checks run, one entry point per step.</summary>
+    private static readonly JsScriptUnit[] AgentUnits =
+    [
+        new JsScriptUnit("make", "var sab = new SharedArrayBuffer(8); var a = new Int32Array(sab); Atomics.store(a, 0, 41); 'made';", SliceParseOptions.Script, false, Caller),
+        new JsScriptUnit("add", "var b = new Int32Array(shared); Atomics.add(b, 0, 1) + ':' + (shared instanceof SharedArrayBuffer) + ':' + shared.byteLength;", SliceParseOptions.Script, false, Caller),
+        new JsScriptUnit("read", "Atomics.load(a, 0);", SliceParseOptions.Script, false, Caller),
+        new JsScriptUnit("wait", "Atomics.wait(a, 1, 0, 3000);", SliceParseOptions.Script, false, Caller),
+        new JsScriptUnit("notify", "Atomics.notify(b, 1);", SliceParseOptions.Script, false, Caller),
+        new JsScriptUnit("growable", "var g = new SharedArrayBuffer(4, { maxByteLength: 8 }); var plain = new ArrayBuffer(4); 'made';", SliceParseOptions.Script, false, Caller),
+    ];
+
+    /// <summary>
+    /// Two instances on two runtimes - two agents, as JSD-0042 builds them - share one block: an
+    /// <c>Atomics.add</c> through the second is seen by the first, and a notification from the second
+    /// wakes the first, blocked on a thread of its own.
+    /// </summary>
+    private static (string, bool, string) TwoInstancesShareOneBlock()
+    {
+        const string Name = "shared/agents/two-instances-share-one-block";
+
+        using var first = Agent.TryCreate(AgentUnits, []);
+        using var second = Agent.TryCreate(AgentUnits, []);
+
+        if (first.Failure is not null || second.Failure is not null)
+        {
+            return (Name, false, first.Failure ?? second.Failure!);
+        }
+
+        var answers = new System.Collections.Generic.List<string> { first.Invoke("make") };
+        JsHostSharedBlock? block = null;
+
+        first.Surface.Turn = realm => block = realm.ShareBlock(realm.GetProperty(realm.Global, "sab"));
+        answers.Add(first.Invoke(JavaScriptProfile.TurnEntryPoint));
+
+        second.Surface.Turn = realm => realm.SetProperty(realm.Global, "shared", realm.AdoptBlock(block!));
+        answers.Add(second.Invoke(JavaScriptProfile.TurnEntryPoint));
+        answers.Add(second.Invoke("add"));
+        answers.Add(first.Invoke("read"));
+
+        // THE FIRST AGENT BLOCKS ON A THREAD OF ITS OWN, and the second notifies until a waiter is
+        // there to wake: a notification sent before the wait began wakes nothing and answers 0.
+        var waiting = System.Threading.Tasks.Task.Run(() => first.Invoke("wait"));
+        var woken = "0";
+
+        for (var attempt = 0; attempt < 200 && woken == "0"; attempt++)
+        {
+            System.Threading.Thread.Sleep(10);
+            woken = second.Invoke("notify");
+        }
+
+        answers.Add(woken);
+        answers.Add(waiting.Wait(System.TimeSpan.FromSeconds(10)) ? waiting.Result : "still waiting");
+
+        var joined = string.Join('|', answers);
+        const string Expected = "made|undefined|undefined|41:true:8|42|1|ok";
+
+        return (
+            Name,
+            string.Equals(joined, Expected, System.StringComparison.Ordinal),
+            $"answered `{joined}` (`{Expected}` expected): the second agent's add was the first's, and its notify woke the first agent's blocking wait");
+    }
+
+    /// <summary>
+    /// <see cref="JsHostRealm.ShareBlock"/> refuses an <c>ArrayBuffer</c> and a growable
+    /// <c>SharedArrayBuffer</c>, each with a guest <c>TypeError</c>.
+    /// </summary>
+    private static (string, bool, string) OnlyAFixedLengthSharedBufferIsHandedOut()
+    {
+        const string Name = "shared/agents/only-a-fixed-length-shared-buffer-is-handed-out";
+
+        using var agent = Agent.TryCreate(AgentUnits, []);
+
+        if (agent.Failure is { } why)
+        {
+            return (Name, false, why);
+        }
+
+        var refusals = new System.Collections.Generic.List<string>();
+
+        agent.Surface.Turn = realm =>
+        {
+            foreach (var name in new[] { "plain", "g" })
+            {
+                try
+                {
+                    _ = realm.ShareBlock(realm.GetProperty(realm.Global, name));
+                    refusals.Add(name + " shared");
+                }
+                catch (JsHostThrowException)
+                {
+                    refusals.Add(name + " refused");
+                }
+            }
+        };
+
+        _ = agent.Invoke("growable");
+        _ = agent.Invoke(JavaScriptProfile.TurnEntryPoint);
+
+        var joined = string.Join(',', refusals);
+
+        return (
+            Name,
+            string.Equals(joined, "plain refused,g refused", System.StringComparison.Ordinal),
+            $"answered `{joined}`: an ArrayBuffer has no block to share, and a growable block replaces its storage when it grows");
+    }
+
+    /// <summary>A realm whose composition declined <c>broiler.javascript.shared</c> adopts no block.</summary>
+    private static (string, bool, string) ARealmThatDeclinedTheSharedSurfaceAdoptsNoBlock()
+    {
+        const string Name = "shared/agents/a-realm-that-declined-the-shared-surface-adopts-no-block";
+
+        // THE SECOND AGENT'S PROGRAM NAMES NO SHARED GLOBAL, or its own verification would refuse it
+        // before the crossing could.
+        using var first = Agent.TryCreate(AgentUnits, []);
+        using var second = Agent.TryCreate(
+            [new JsScriptUnit("idle", "'idle';", SliceParseOptions.Script, false, Caller)],
+            [JavaScriptProfile.BinaryManifest]);
+
+        if (first.Failure is not null || second.Failure is not null)
+        {
+            return (Name, false, first.Failure ?? second.Failure!);
+        }
+
+        JsHostSharedBlock? block = null;
+        var answer = "adopted";
+
+        _ = first.Invoke("make");
+        first.Surface.Turn = realm => block = realm.ShareBlock(realm.GetProperty(realm.Global, "sab"));
+        _ = first.Invoke(JavaScriptProfile.TurnEntryPoint);
+
+        second.Surface.Turn = realm =>
+        {
+            try
+            {
+                _ = realm.AdoptBlock(block!);
+            }
+            catch (JsHostThrowException)
+            {
+                answer = "refused";
+            }
+        };
+
+        _ = second.Invoke(JavaScriptProfile.TurnEntryPoint);
+
+        return (
+            Name,
+            block is not null && answer == "refused",
+            $"the block was {(block is null ? "not handed out" : "handed out")} and {answer} by a realm admitting the binary surface alone");
+    }
+
+    /// <summary>One agent of the agent checks: a runtime of its own, one instance, and the surface that runs its turns.</summary>
+    private sealed class Agent : System.IDisposable
+    {
+        private VmRuntime? runtime;
+
+        private VmVerifiedArtifact? artifact;
+
+        private VmInstance? instance;
+
+        private Agent()
+        {
+        }
+
+        internal TurnSurface Surface { get; } = new();
+
+        internal string? Failure { get; private set; }
+
+        internal static Agent TryCreate(JsScriptUnit[] units, VmFeatureManifestId[] surfaces)
+        {
+            var agent = new Agent();
+            var compiled = JsCompiler.Compile(units, [], new JsCompileRequest());
+
+            if (!compiled.Succeeded || compiled.Artifact is null)
+            {
+                agent.Failure = "the source was refused";
+                return agent;
+            }
+
+            var descriptor = JavaScriptProfile.DescriptorHostingRealms(agent.Surface, surfaces);
+            var created = VmRuntime.Create(VmCatalog.CreateBuilder().Add(descriptor).Build(), Options(null));
+
+            if (!created.TryGetRuntime(out agent.runtime))
+            {
+                agent.Failure = $"the runtime refused creation: {created.Outcome}/{created.Reason}";
+                return agent;
+            }
+
+            var artifactDescriptor = new VmArtifactDescriptor(
+                JavaScriptProfile.Id,
+                Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
+                JavaScriptProfile.WideManifest,
+                default,
+                VmCallerIdentity.FromCanonicalIdentity(Caller));
+
+            var verified = agent.runtime.Verify(in artifactDescriptor, compiled.Artifact, System.Threading.CancellationToken.None);
+
+            if (!verified.TryGetArtifact(out agent.artifact))
+            {
+                agent.Failure = $"verification refused: {verified.Outcome}/{verified.Reason}";
+                return agent;
+            }
+
+            var instantiated = agent.runtime.Instantiate(agent.artifact, System.Threading.CancellationToken.None);
+
+            if (!instantiated.TryGetInstance(out agent.instance))
+            {
+                agent.Failure = $"instantiation refused: {instantiated.Outcome}/{instantiated.Reason}";
+            }
+
+            return agent;
+        }
+
+        internal string Invoke(string entry)
+        {
+            var request = new VmInvocationRequest(new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(entry)));
+            var result = instance!.Invoke(in request, System.Threading.CancellationToken.None);
+
+            return JavaScriptProfile.TryGetWideCompletion(in result, out var completion) ? completion.Value
+                : JavaScriptProfile.TryGetUncaught(in result, out var uncaught) ? "uncaught " + uncaught.Message
+                : $"{result.Outcome}/{result.Reason}";
+        }
+
+        public void Dispose()
+        {
+            instance?.Dispose();
+            artifact?.Dispose();
+            runtime?.Dispose();
+        }
+    }
+
+    /// <summary>An embedder whose turn runs whatever the check hands it, and whose agent may block.</summary>
+    private sealed class TurnSurface : IJsHostSurface, IJsHostAgentPolicy
+    {
+        internal System.Action<JsHostRealm>? Turn { get; set; }
+
+        public bool CanBlock => true;
+
+        public void OnRealmCreated(JsHostRealm realm)
+        {
+        }
+
+        public void OnTurn(JsHostRealm realm) => Turn?.Invoke(realm);
+    }
 
     /// <summary>
     /// Compiles <paramref name="main"/> and <paramref name="read"/>, invokes <paramref name="sequence"/>

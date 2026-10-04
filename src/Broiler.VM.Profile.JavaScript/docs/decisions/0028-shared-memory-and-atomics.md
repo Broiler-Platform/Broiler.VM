@@ -338,3 +338,19 @@ Corrections entry [JSC-266](../roadmap.corrections.md#jsc-266).*
 - **What section 2 asked about several agents is still open**: a block held by several, charged to
   their aggregate once (2.2), a growth that races another agent (2.3), `$262.agent` and a worker's
   `[[CanBlock]]` (2.4), and the carrier entry 2.7 describes. Those are F6's next slice.
+
+## A second agent, 2026-10-04 (unsigned)
+
+*Recorded with phase F6's second slice; it signs nothing and this record keeps its status line.
+Corrections entry [JSC-267](../roadmap.corrections.md#jsc-267).*
+
+- **Proposed [JSD-0042](0042-a-second-agent.md) answers sections 2.1 to 2.6 for several agents**: an
+  agent is a runtime its host starts, the block is the only thing two agents hold, it crosses through
+  two host doors and is never copied, and worker agents share one aggregate budget, as section 2.2
+  asks. The suite's `$262.agent` runs over real second agents in the conformance runner, which also
+  scores the `CanBlockIsFalse` files.
+- **Still open from section 2**: retention against the aggregate once, released with the last holder
+  (2.2); growth while another agent holds the block, which the crossing refuses (2.3); S2's rule and
+  audit; and the carrier entry 2.7 describes. Section 1's row for `Test262Adapter.cs` describes the
+  slice-manifest translator, which still declines both `CanBlock` flags, now naming the slice
+  manifest rather than the profile.

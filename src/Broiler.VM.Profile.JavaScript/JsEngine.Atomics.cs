@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           2
-// Human-reviewed:   0/8
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         4/4
 // Resource impact:  3/10 max
-// Unverified:       8
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -33,8 +33,19 @@ namespace Broiler.VM.Profile.JavaScript;
 /// <b>An asynchronous waiter is settled only at a host drain</b>, as a <c>FinalizationRegistry</c>
 /// cleanup is (JSD-0029): a notification marks it, a timeout expires it, and the drain turns either
 /// into the settlement of its promise, which queues its reactions as ordinary jobs. A drain whose
-/// queue is empty while a waiter of this agent has a deadline waits for the earliest one, bounded as
-/// a blocking wait is.
+/// queue is empty while a waiter of this agent can still be settled - it has a deadline, or its block
+/// has crossed to another agent that may notify it - waits for it, bounded as a blocking wait is.
+/// </para>
+/// <para>
+/// <b>A drain also settles what is due between two jobs</b> <i>(corrected: JSC-267)</i>. Settling a
+/// waiter is a job the host enqueues, and the edition leaves its order against promise jobs to the
+/// host; settling only once the queue was empty let a program whose jobs kept queueing more - the
+/// suite's <c>setTimeout</c> stand-in does exactly that - starve every timeout it was waiting for.
+/// </para>
+/// <para>
+/// <b>Deadlines are read on the high-resolution clock</b> <i>(corrected: JSC-267)</i>. They were
+/// read on <see cref="System.Environment.TickCount64"/>, whose granularity let a wait end a few
+/// milliseconds before its timeout by a finer clock, which is what a program measures it with.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7BBE7E
@@ -80,18 +91,37 @@ internal sealed partial class JsEngine
         }
     }
 
-    /// <summary>The deadline <paramref name="timeout"/> milliseconds from now, or never.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0225A9
+    /// <summary>The deadline <paramref name="timeout"/> milliseconds from now, in clock ticks, or never.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=09C408
     // Broiler-Human:        PENDING
-    private static long DeadlineAfter(double timeout) =>
-        double.IsPositiveInfinity(timeout) || timeout >= long.MaxValue / 2
+    private static long DeadlineAfter(double timeout)
+    {
+        var ticks = System.Math.Ceiling(timeout * System.Diagnostics.Stopwatch.Frequency / 1000.0);
+
+        return double.IsPositiveInfinity(ticks) || ticks >= long.MaxValue / 4
             ? long.MaxValue
-            : System.Environment.TickCount64 + (long)System.Math.Ceiling(timeout);
+            : System.Diagnostics.Stopwatch.GetTimestamp() + (long)ticks;
+    }
+
+    /// <summary>
+    /// How many whole milliseconds remain until <paramref name="deadline"/>, rounded up, so that a
+    /// sleep of that length never ends before it; zero or less once it has passed.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BC250A
+    // Broiler-Human:        PENDING
+    private static long MillisecondsUntil(long deadline)
+    {
+        var ticks = deadline - System.Diagnostics.Stopwatch.GetTimestamp();
+
+        return ticks <= 0
+            ? 0
+            : (long)System.Math.Ceiling(ticks * 1000.0 / System.Diagnostics.Stopwatch.Frequency);
+    }
 
     /// <summary>
     /// The blocking half of <c>DoWait</c>: answers <c>"not-equal"</c>, <c>"ok"</c> or <c>"timed-out"</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=3FCEF0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=3C03E7
     // Broiler-Falsified-If: a blocking wait runs in an agent whose host did not say it may block, outlives its operation's allowance, or leaves its waiter in the list
     // Broiler-Human:        PENDING
     internal string WaitBlocking(JsSharedBlock block, int byteIndex, int width, long expected, double timeout)
@@ -113,7 +143,7 @@ internal sealed partial class JsEngine
                 {
                     var remaining = waiter.Deadline == long.MaxValue
                         ? WaitSlice
-                        : waiter.Deadline - System.Environment.TickCount64;
+                        : MillisecondsUntil(waiter.Deadline);
 
                     if (remaining <= 0)
                     {
@@ -214,11 +244,12 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>
-    /// Settles this agent's asynchronous waiters that were notified or have timed out, waiting first
-    /// for the earliest deadline when <paramref name="wait"/> is set and nothing is due; answers whether
-    /// any was settled. Only a host drain or step calls it.
+    /// Settles this agent's asynchronous waiters that were notified or have timed out, waiting first,
+    /// when <paramref name="wait"/> is set and nothing is due, for the earliest deadline or for a
+    /// notification from another agent; answers whether any was settled. Only a host drain or step
+    /// calls it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=87C56B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=84E69B
     // Broiler-Falsified-If: an asynchronous waiter's promise settles anywhere but at a host drain or step, or a drain waits past its allowance
     // Broiler-Human:        PENDING
     internal bool SettleWaiters(bool wait)
@@ -227,7 +258,9 @@ internal sealed partial class JsEngine
         {
             var settled = false;
             var earliest = long.MaxValue;
-            var now = System.Environment.TickCount64;
+            var notifiable = false;
+            (JsSharedBlock Block, JsWaiter Waiter)? watched = null;
+            var now = System.Diagnostics.Stopwatch.GetTimestamp();
 
             for (var at = 0; at < asyncWaiters.Count; at++)
             {
@@ -250,6 +283,13 @@ internal sealed partial class JsEngine
                 if (outcome is null)
                 {
                     earliest = System.Math.Min(earliest, waiter.Deadline);
+
+                    if (block.Crossed)
+                    {
+                        notifiable = true;
+                        watched ??= (block, waiter);
+                    }
+
                     continue;
                 }
 
@@ -259,18 +299,39 @@ internal sealed partial class JsEngine
                 settled = true;
             }
 
-            if (settled || !wait || earliest == long.MaxValue)
+            // NOTHING IS DUE, AND NOTHING EVER WILL BE, when no waiter has a deadline and none is on a
+            // block another agent holds: in one agent, nothing but this agent could notify it.
+            if (settled || !wait || (earliest == long.MaxValue && !notifiable))
             {
                 return settled;
             }
 
-            // NOTHING IS DUE AND A DEADLINE IS COMING: wait for it in slices, bounded by the
-            // operation, and look again.
-            var remaining = earliest - System.Environment.TickCount64;
+            // NOTHING IS DUE AND A DEADLINE OR A NOTIFICATION IS COMING: wait for it in slices,
+            // bounded by the operation, and look again.
+            var remaining = earliest == long.MaxValue ? WaitSlice : MillisecondsUntil(earliest);
 
             if (remaining > 0)
             {
-                System.Threading.Thread.Sleep((int)System.Math.Min(remaining, WaitSlice));
+                var slice = (int)System.Math.Min(remaining, WaitSlice);
+
+                // A WAITER ANOTHER AGENT MAY NOTIFY IS WATCHED ON ITS BLOCK'S LOCK, which a
+                // notification pulses, so the drain wakes when it is notified rather than at the end
+                // of the slice; any other waiter is due only at its deadline.
+                if (watched is { } pair)
+                {
+                    lock (pair.Block.Gate)
+                    {
+                        if (!pair.Waiter.Notified)
+                        {
+                            System.Threading.Monitor.Wait(pair.Block.Gate, slice);
+                        }
+                    }
+                }
+                else
+                {
+                    System.Threading.Thread.Sleep(slice);
+                }
+
                 PollWhileWaiting();
             }
         }

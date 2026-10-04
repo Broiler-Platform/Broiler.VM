@@ -117,14 +117,27 @@ internal sealed class Test262Manifest
         // a cleanup callback arrives at the drain this runner already invokes after the test. The
         // runner never collects to make one arrive: no test's verdict may depend on when the
         // collector ran, and the suite's `host-gc-required` tests stay skipped.
+        Catalog = CatalogWith(loadsHarness ? Test262Host.Instance : null, form, surfaces);
+
+        // A `CanBlockIsFalse` TEST RUNS WHERE THE MAIN AGENT MAY NOT BLOCK (JSD-0042): the same
+        // composition, with the host surface that answers `[[CanBlock]]` false, as a browser's main
+        // thread does. The suite has two such files, and the runner skipped them before.
+        EventLoopCatalog = loadsHarness && surfaces.Length != 0
+            ? CatalogWith(Test262Host.EventLoop, form, surfaces)
+            : Catalog;
+    }
+
+    /// <summary>The catalog of one composition of this run, with <paramref name="host"/> as its host surface.</summary>
+    private static VmCatalog CatalogWith(Test262Host? host, string form, VmFeatureManifestId[] surfaces)
+    {
         var descriptor = surfaces.Length != 0
             ? JavaScriptProfile.DescriptorSweepingFinalization(
-                loadsHarness ? Test262Host.Instance : null,
+                host,
                 string.Equals(form, ValueStress, StringComparison.Ordinal),
                 surfaces)
             : JavaScriptProfile.DescriptorAdmitting(surfaces);
 
-        Catalog = VmCatalog.CreateBuilder()
+        return VmCatalog.CreateBuilder()
             .Add(descriptor)
             .Build();
     }
@@ -164,6 +177,12 @@ internal sealed class Test262Manifest
 
     /// <summary>The catalog this run verifies and executes against.</summary>
     internal VmCatalog Catalog { get; }
+
+    /// <summary>
+    /// <see cref="Catalog"/> with a host surface whose main agent may not block, for the suite's
+    /// <c>CanBlockIsFalse</c> tests; the same catalog where this run loads no harness.
+    /// </summary>
+    internal VmCatalog EventLoopCatalog { get; }
 
     /// <summary>Whether this run is taken under the wide manifest.</summary>
     internal bool IsWide => Id == JavaScriptProfile.WideManifest;

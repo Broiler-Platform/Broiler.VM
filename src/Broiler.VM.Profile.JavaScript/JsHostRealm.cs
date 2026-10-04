@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   84
-// Annotated:        84/84
-// Exempt:           14
-// Human-reviewed:   0/84
+// Relevant units:   88
+// Annotated:        88/88
+// Exempt:           16
+// Human-reviewed:   0/88
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         42/42
+// Criteria:         44/44
 // Resource impact:  6/10 max
-// Unverified:       84
+// Unverified:       88
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1134,6 +1134,75 @@ public sealed class JsHostRealm
         }
 
         _ = target.Detach();
+    }
+
+    /// <summary>
+    /// The shared block a <c>SharedArrayBuffer</c> of this realm is over, for the embedder to hand to
+    /// another agent's realm (JSD-0042).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The block, not the buffer, crosses</b>: a buffer object belongs to its realm, and the block
+    /// is what both agents' views will read. A value that is not a <c>SharedArrayBuffer</c> is a guest
+    /// <c>TypeError</c>, as <see cref="DetachArrayBuffer"/>'s is.
+    /// </para>
+    /// <para>
+    /// <b>A growable block is refused, for now.</b> Its growth replaces its storage (JSD-0041 section
+    /// 3), and an agent still writing to the storage it replaced would lose the write - an
+    /// <c>Atomics</c> one included, which the memory model forbids. Holding its storage reserved is
+    /// what JSD-0042 section 5 leaves open; until then the guest meets a <c>TypeError</c>.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4E8C20
+    // Broiler-Falsified-If: anything but a fixed-length SharedArrayBuffer's block leaves a realm through this, or a block is handed out as the bytes of an ArrayBuffer
+    // Broiler-Human:        PENDING
+    public JsHostSharedBlock ShareBlock(JsHostValue buffer)
+    {
+        Enter(1);
+
+        if (UnwrapAtCrossing(buffer).AsObjectOrNull() is not JsArrayBuffer { Block: { } block })
+        {
+            throw Error(JsHostErrorKind.TypeError, "only a SharedArrayBuffer's block can be shared");
+        }
+
+        if (block.MaxByteLength is not null)
+        {
+            throw Error(
+                JsHostErrorKind.TypeError,
+                "a growable SharedArrayBuffer's block is not handed to a second agent: its growth " +
+                "replaces its storage");
+        }
+
+        block.Crossed = true;
+        return new JsHostSharedBlock(block);
+    }
+
+    /// <summary>
+    /// A new <c>SharedArrayBuffer</c> of this realm over <paramref name="block"/>, which another
+    /// realm's <see cref="ShareBlock"/> answered (JSD-0042).
+    /// </summary>
+    /// <remarks>
+    /// <b>It shares, and copies nothing</b>: a write through either realm's views is a write to the one
+    /// block, and an <c>Atomics.notify</c> in either wakes a waiter in the other. The block's bytes
+    /// were charged to the operation that made it; adopting it charges one crossing. A realm whose
+    /// composition did not admit <c>broiler.javascript.shared</c> answers a guest <c>TypeError</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=0B12F2
+    // Broiler-Falsified-If: a realm that did not admit the shared surface adopts a block, or adopting copies the bytes
+    // Broiler-Human:        PENDING
+    public JsHostValue AdoptBlock(JsHostSharedBlock block)
+    {
+        Enter(1);
+        System.ArgumentNullException.ThrowIfNull(block);
+
+        if (realm.SharedArrayBufferPrototype is not { } prototype)
+        {
+            throw Error(
+                JsHostErrorKind.TypeError,
+                "this realm's composition did not admit " + Format.JsSurfaces.Shared);
+        }
+
+        return Wrap(JsValue.Object(new JsArrayBuffer(prototype, block.Block)));
     }
 
     // ---- calling -------------------------------------------------------------------------------
@@ -3026,3 +3095,31 @@ internal sealed class JsHostWindow
     // Broiler-Human:        PENDING
     internal int StepDepth;
 }
+
+/// <summary>
+/// A shared block one realm's <see cref="JsHostRealm.ShareBlock"/> answered, for another realm's
+/// <see cref="JsHostRealm.AdoptBlock"/> (JSD-0042).
+/// </summary>
+/// <remarks>
+/// <b>Opaque, and safe to carry between threads</b>: it holds the block and nothing of the realm it came
+/// from, so it can be handed to an agent on another thread, which is what it is for.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C55118
+// Broiler-Human:        PENDING
+public sealed class JsHostSharedBlock
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FD8C5D
+    // Broiler-Human:        PENDING
+    internal JsHostSharedBlock(JsSharedBlock block) => Block = block;
+
+    /// <summary>The block.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6FF995
+    // Broiler-Human:        PENDING
+    internal JsSharedBlock Block { get; }
+
+    /// <summary>How many bytes the block holds now.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8DEC18
+    // Broiler-Human:        PENDING
+    public int ByteLength => Block.Bytes.Length;
+}
+

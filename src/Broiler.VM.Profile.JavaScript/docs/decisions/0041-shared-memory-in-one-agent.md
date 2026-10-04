@@ -85,3 +85,21 @@ held by one person**, and it does not claim the co-signature is independent.
 - A `waitAsync` promise settled anywhere but at a host drain or step.
 - A shared buffer detached, transferred or copied into a clone carrier, or reachable as an
   `ArrayBuffer`.
+
+## The second agent, 2026-10-04 (unsigned)
+
+*Recorded with phase F6's second slice; it signs nothing and this record keeps its status line.
+Corrections entry [JSC-267](../roadmap.corrections.md#jsc-267).*
+
+- **Section 5's first item is built** under proposed [JSD-0042](0042-a-second-agent.md): a second
+  agent is a runtime its host starts, a fixed-length block crosses to it through
+  `JsHostRealm.ShareBlock` and `AdoptBlock`, and the conformance runner's `$262.agent` starts real
+  agents and runs the suite's `CanBlockIsFalse` cases where the main agent may not block.
+- **Section 3's growable block is decided for now by refusal**: a growable block is not handed to a
+  second agent, because its growth replaces its storage. Section 4's S1 retention against an
+  aggregate, S2's rule and audit and S5's carrier entry are still owed, as JSD-0042 section 5 says.
+- **Section 2.4 is corrected in three places** (JSD-0042 section 3): a drain also settles a waiter
+  that is due between two jobs; it waits for a waiter with no deadline when that waiter's block has
+  crossed to another agent; and deadlines are read on the high-resolution clock.
+- **Section 1 was wrong about `Atomics.pause`**: the pinned suite lists that feature among proposals,
+  and the runner skips its six files. The member is built; admitting the proposal is not decided.

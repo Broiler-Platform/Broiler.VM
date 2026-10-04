@@ -257,6 +257,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.None : const Broiler.VM.Profile.JavaScript.JsHostPropertyFlags = 0
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.Writable : const Broiler.VM.Profile.JavaScript.JsHostPropertyFlags = 4
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.value__ : System.Int32
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.AdoptBlock(Broiler.VM.Profile.JavaScript.JsHostSharedBlock block) : Broiler.VM.Profile.JavaScript.JsHostValue
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.AdoptClone(System.Object carrier) : Broiler.VM.Profile.JavaScript.JsHostValue
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.CompleteModuleRequest(Broiler.VM.Profile.JavaScript.JsHostModuleRequest request) : Broiler.VM.Profile.JavaScript.JsHostSettlement
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.Construct(Broiler.VM.Profile.JavaScript.JsHostValue constructor, System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> arguments) : Broiler.VM.Profile.JavaScript.JsHostValue
@@ -295,6 +296,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ResolvePromise(Broiler.VM.Profile.JavaScript.JsHostPromiseCapability capability, Broiler.VM.Profile.JavaScript.JsHostValue value) : Broiler.VM.Profile.JavaScript.JsHostSettlement
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.SetProperty(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Void
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.SetPrototype(Broiler.VM.Profile.JavaScript.JsHostValue target, Broiler.VM.Profile.JavaScript.JsHostValue prototype) : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ShareBlock(Broiler.VM.Profile.JavaScript.JsHostValue buffer) : Broiler.VM.Profile.JavaScript.JsHostSharedBlock
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.Throw(Broiler.VM.Profile.JavaScript.JsHostValue value) : Broiler.VM.Profile.JavaScript.JsHostThrowException
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ToBoolean(Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ToJsString(Broiler.VM.Profile.JavaScript.JsHostValue value) : System.String
@@ -313,6 +315,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSettlement.Accepted : const Broiler.VM.Profile.JavaScript.JsHostSettlement = 0
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSettlement.AlreadyResolved : const Broiler.VM.Profile.JavaScript.JsHostSettlement = 1
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSettlement.value__ : System.Int32
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSharedBlock.ByteLength : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSurfaceException.Refusal : Broiler.VM.Profile.JavaScript.JsHostRefusal { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostThrowException.Thrown : Broiler.VM.Profile.JavaScript.JsHostValue { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.AsBigInt() : System.Nullable<System.Numerics.BigInteger>
@@ -2543,6 +2546,7 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm : s
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRef : sealed class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSettlement : enum
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSharedBlock : sealed class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSurfaceException : sealed class System.Exception
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostTerminatedException : sealed class System.Exception
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostThrowException : sealed class System.Exception

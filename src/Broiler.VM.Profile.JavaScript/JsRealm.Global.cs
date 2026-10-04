@@ -238,9 +238,10 @@ internal sealed partial class JsRealm
 
         var agent = new JsObject(ObjectPrototype);
 
-        // Every member of `$262.agent` refuses. The agent API is about workers sharing a buffer,
-        // and this profile has neither, so answering `undefined` would let a test proceed on a
-        // false premise and report a pass it did not earn.
+        // Every member of `$262.agent` refuses. A second agent is a runtime its host starts and
+        // hands a shared block to (JSD-0042), and this profile starts none, so answering
+        // `undefined` would let a test proceed on a false premise and report a pass it did not
+        // earn. A host that starts agents replaces the object, as the conformance harness does.
         GlobalRefuse(agent, "start", 1, "$262.agent.start: this profile runs no second agent");
         GlobalRefuse(agent, "broadcast", 1, "$262.agent.broadcast: this profile runs no second agent");
         GlobalRefuse(agent, "getReport", 0, "$262.agent.getReport: this profile runs no second agent");

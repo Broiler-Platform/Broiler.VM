@@ -12,7 +12,11 @@ engine. A guest's `$262.createRealm` builds it, the composition's surface is tol
 view of its own, and that view refuses a ref the first view minted by name, `ForeignRealm`, as
 JSH-7's "judged by" asks (proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md),
 [JSC-264](roadmap.corrections.md#jsc-264)). A realm on another thread, which the rest of JSH-7
-judges by, is phase F6's, and no embedder API creates a realm.)*
+judges by, is phase F6's, and no embedder API creates a realm.)* *(Amended 2026-10-04 again: a realm
+on another thread is now a second agent - a runtime its host starts - and what crosses to it is a
+shared block, through `JsHostRealm.ShareBlock` and `AdoptBlock`, never an object (proposed
+[JSD-0042](decisions/0042-a-second-agent.md), [JSC-267](roadmap.corrections.md#jsc-267)). JSH-5 is
+not started by it: each agent's invocations still run on a fresh guest thread each.)*
 
 **What this document is.** A design analysis and a proposed programme for one objective: that an
 embedder with a document-shaped object model - a DOM, a style declaration, a storage area, an event

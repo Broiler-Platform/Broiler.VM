@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 249 |
 | Files carrying an annotation | 249 |
-| Code units | 10670 |
-| Relevant | 6064 |
-| Exempt by predicate | 4606 |
-| Annotated | 6064 of 6064 (100%) |
-| Human reviewed | 0 of 6064 (0%) |
-| Unverified | 6064 |
+| Code units | 10679 |
+| Relevant | 6070 |
+| Exempt by predicate | 4609 |
+| Annotated | 6070 of 6070 (100%) |
+| Human reviewed | 0 of 6070 (0%) |
+| Unverified | 6070 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6064 |
+| HUMAN_PENDING | 6070 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4606 |
+| EXEMPT | 4609 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1630 |
-| Low | 5690 |
+| Low | 5699 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,8 +51,8 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 9 |
 | Low | 984 |
-| Medium | 4534 |
-| High | 1630 |
+| Medium | 4541 |
+| High | 1632 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6064 |
+| Units scored | 6070 |
 
 ## High-security review areas
 
@@ -913,6 +913,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.NewArrayBuffer(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.BufferBytes(JsHostValue, out byte[]?)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.DetachArrayBuffer(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.ShareBlock(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.AdoptBlock(JsHostSharedBlock)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Invoke(JsHostValue, JsHostValue, System.ReadOnlySpan<JsHostValue>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.EvaluateScript(string, string, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.EnqueueJob(System.Action)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, human line PENDING
@@ -1954,8 +1956,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2021 |
-| Units required to carry one | 1883 |
+| Units carrying a criterion | 2023 |
+| Units required to carry one | 1885 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1982,13 +1984,13 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1425 |
-| ParameterAssigningConstructor | 163 |
+| TrivialPropertyOrAccessor | 1426 |
+| ParameterAssigningConstructor | 164 |
 | TrivialExpressionBodiedMember | 64 |
 | CompilerSuppliedRecordOrEnumMember | 24 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 855 |
+| FieldDeclaringStorage | 856 |
 | EnumMemberOfADeclaredVocabulary | 1907 |
 | DeclaredInSource | 47 |
 
@@ -2055,7 +2057,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10670 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10679 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

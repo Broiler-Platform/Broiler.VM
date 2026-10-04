@@ -11576,3 +11576,93 @@ agent policy, the host drain, the ledger's `absent-globals` block and the publis
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
 
+
+### JSC-267
+
+**Where:** phase F6's second slice: a second agent. The host doors (`JsHostRealm.ShareBlock`,
+`AdoptBlock`, `JsHostSharedBlock`), the shared block and the engine's asynchronous waiters
+(`JsShared.cs`, `JsEngine.Atomics.cs`, `JsEngine.cs`), and the conformance runner's `$262.agent`
+(`Test262Agents.cs`, `Test262Host.cs`, `Test262Manifests.cs`, `Test262Run.cs`).
+
+**What the plan said.**
+- [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) section 5: "A second agent: `$262.agent`,
+  worker agents, a block held by several, and the `CanBlockIsFalse` cases that need an agent which may
+  not block. The suite's cases that start an agent still fail at `$262.agent.start`'s refusal."
+- JSD-0041 section 1: "the suite's `SharedArrayBuffer`, `Atomics`, `Atomics.waitAsync` and
+  `Atomics.pause` features are standard ones".
+- JSD-0041 section 2.4: a drain "whose queue is empty while a waiter of this agent has a deadline waits
+  for it"; `JsEngine.Atomics.cs` read every deadline on `Environment.TickCount64`.
+- `Test262Run.cs` skipped every `CanBlockIsFalse` file: "this agent's [[CanBlock]] is true".
+- `Test262Host.cs`: the profile's `$262` members "refuse with a `TypeError` naming what this profile
+  does not do - `createRealm`, `gc`, the `agent` API", a sentence `createRealm` had already left
+  under [JSC-264](roadmap.corrections.md#jsc-264).
+
+**What replaced it, observed on 2026-10-04.**
+- **A second agent is a runtime its host starts**, under proposed
+  [JSD-0042](decisions/0042-a-second-agent.md). A fixed-length block crosses between agents through
+  `JsHostRealm.ShareBlock` and `AdoptBlock`, which copy nothing; an `ArrayBuffer` and a growable block
+  are refused at the crossing, and a realm that declined `broiler.javascript.shared` adopts nothing.
+  The public surface gains the two members and `JsHostSharedBlock`, which the API baseline records.
+  The profile's own `$262.agent` still refuses, because the profile starts no agent.
+- **The conformance runner's `$262.agent` runs real agents**: `start` builds a runtime from the test's
+  manifest on a thread of its own, with the flow of the test's execution context suppressed; the
+  agents of one test share one aggregate budget sized at the test runtime's ceilings, with at most
+  eight live, and each adopts what is left of it; `broadcast` returns once every agent has taken the
+  block; `getReport` waits up to 100 ms for a running agent's report before answering `null`; every
+  agent is cancelled, joined and disposed when its test's verdict is reached.
+- **The suite's `CanBlockIsFalse` files run** under a host surface whose main agent may not block, and
+  pass; the slice-manifest ingestion translator still declines both `CanBlock` flags, and its reason
+  now names the slice manifest rather than the profile.
+- **Three corrections to JSD-0041's waiters, found by the agents' cases**: a drain settles a waiter
+  that is due between two jobs, not only once its queue is empty, so a queue that keeps refilling
+  itself - the suite's stand-in for `setTimeout` - no longer starves the timeouts it waits on; a drain
+  waits for a waiter with no deadline when its block has crossed to another agent, woken by the
+  notification's pulse, and still returns at once when nothing could ever notify it; and deadlines are
+  read on the high-resolution clock, because `TickCount64`'s granularity ended waits a few
+  milliseconds before their timeout by the clock a program measures them with.
+- **JSD-0041 section 1 was wrong about `Atomics.pause`**: the pinned suite's feature table lists it
+  among proposals, and the runner skips its six files as it does every proposal not admitted. The
+  member is built (JSC-266); whether to admit the proposal is not decided here.
+- **Checks**: three slice-compiler checks - two instances on two runtimes share one block, an
+  `Atomics.add` through one is seen by the other and a notification from one wakes the other's
+  blocking wait; only a fixed-length shared buffer is handed out; a realm that declined the shared
+  surface adopts no block.
+- **test262, `test/built-ins/Atomics`**: 752 of 752 scored variants pass, against 524 of 748 before,
+  in three consecutive runs; the 6 skipped are `Atomics.pause`'s.
+
+**What must not be read as repaired.**
+- **A growable block does not cross**, and retention follows the agent that made a block, not its
+  last holder; JSD-0028's S2 rule and audit and S5's carrier entry are owed (JSD-0042 section 5).
+- **The test's own runtime is not under its agents' aggregate**, so a test and its agents together may
+  spend two allowances.
+- **`getReport`'s wait is a harness choice** made against this profile's live-bytes charging of
+  promise jobs, not something the suite requires; a report that never comes still answers `null`.
+- JSD-0042 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-268
+
+**Where:** `JsArray.TrySetLength`, an array's length set below its old value.
+
+**What the plan said.** "A SHORTENING DELETES FROM THE TOP DOWN AND STOPS AT THE FIRST ELEMENT IT MAY
+NOT DELETE", implemented as a walk from the old length down to the new one, one index at a time,
+formatting each index as a key and looking it up.
+
+**What replaced it, observed on 2026-10-04.**
+- **The walk visits the indices the array holds**: the map's index keys at or past the new length,
+  highest first, stopping at the first that may not be deleted; the dense half above that point is cut
+  in one step. Only the map can refuse a deletion, so the result is the one the walk reached.
+- **Why it mattered**: `a[987654321] = 1; a.length = 8` made about a billion lookups that charged no
+  fuel and polled no clock, so the operation's wall clock could not end it.
+  `test/staging/sm/Array/length-truncate-with-indexed.js` held a shard of the whole run
+  [JSC-266](roadmap.corrections.md#jsc-266) records for about twenty minutes, and passed; it now
+  passes in under a second.
+- **test262**: `test/built-ins/Array`, `test/staging/sm/Array`, `Object/defineProperty`,
+  `Object/defineProperties` and `SharedArrayBuffer`, 10,011 variants, answer exactly as in that whole
+  run.
+
+**What must not be read as repaired.** Other loops bounded by a guest-controlled length rather than by
+what the object holds were not audited here.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
