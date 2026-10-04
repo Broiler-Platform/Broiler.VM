@@ -11551,6 +11551,20 @@ agent policy, the host drain, the ledger's `absent-globals` block and the publis
   `DataView`, `TypedArray` and `TypedArrayConstructors` have no failing variant; `built-ins/Atomics`
   passes 524 and fails 224, every one of them in a file that starts a second agent through
   `$262.agent`.
+- **test262, whole pinned suite**, against the run [JSC-265](roadmap.corrections.md#jsc-265) records:
+  95,056 variants, 84,758 passing, 2,434 failing, 44 exhausted and 7,820 skipped. 960 moved from
+  failing to passing - 524 under `built-ins/Atomics`, 208 under `SharedArrayBuffer`, 108 under
+  `TypedArrayConstructors`, 78 under `DataView`, 18 under `ArrayBuffer`, 14 under `TypedArray`, and
+  12 elsewhere that construct a shared buffer in passing. None moved to failing. **Two moved from
+  passing to exhausted**: both variants of `staging/sm/TypedArray/sort_large_countingsort.js`, whose
+  shell harness sorts a shared copy of every typed-array constructor when `SharedArrayBuffer` exists,
+  so the test now does twice the work; under the whole run's load it spent its 5,000 ms wall clock,
+  and run alone both variants pass. The 224 failing `Atomics` variants are the ones that start an
+  agent: 106 under `waitAsync`, 86 under `wait` and 32 under `notify`.
+- **The run met a hang that is not this change's**: `staging/sm/Array/length-truncate-with-indexed.js`
+  held one shard for about twenty minutes, in an array-length truncation that walks every index
+  between the two lengths without charging or polling. It passed in this run and the one before;
+  the walk is corrected by [JSC-268](roadmap.corrections.md#jsc-268).
 
 **What must not be read as repaired.**
 - **No second agent runs**: `$262.agent` still refuses, and the cases that start an agent fail.
