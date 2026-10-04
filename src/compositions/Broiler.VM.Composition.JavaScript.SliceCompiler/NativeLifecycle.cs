@@ -484,18 +484,14 @@ internal static class NativeLifecycle
             ? "exhausted:" + diagnostics.ExhaustedDimension + " " + stage
             : stage + " " + outcome + "/" + reason;
 
-    /// <summary>Every surface this build implements, as the descriptor doors take them.</summary>
-    private static VmFeatureManifestId[] EverySurface()
-    {
-        var surfaces = new VmFeatureManifestId[JsSurfaces.All.Length];
-
-        for (var index = 0; index < surfaces.Length; index++)
-        {
-            surfaces[index] = VmFeatureManifestId.Parse(JsSurfaces.All[index]);
-        }
-
-        return surfaces;
-    }
+    /// <summary>
+    /// Every surface this build implements that a door handed no data can build: all but
+    /// <see cref="JsSurfaces.Intl"/>, whose tables these checks do not carry (JSD-0043).
+    /// </summary>
+    private static VmFeatureManifestId[] EverySurface() =>
+        [.. System.Linq.Enumerable.Select(
+            System.Linq.Enumerable.Where(JsSurfaces.All, static surface => surface != JsSurfaces.Intl),
+            static surface => VmFeatureManifestId.Parse(surface))];
 
     /// <summary>The source provider a wide run registers: it compiles an <c>eval</c> with the run's own request.</summary>
     /// <remarks>

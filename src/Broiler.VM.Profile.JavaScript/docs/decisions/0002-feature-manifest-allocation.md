@@ -118,3 +118,16 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
   JSD-0028's successor, as the reopened section above said. It owns `SharedArrayBuffer` and
   `Atomics`; a descriptor naming it without `broiler.javascript.binary` is refused; every door that
   admits every surface admits it.
+
+## Minted 2026-10-04: `broiler.javascript.intl` (unsigned)
+
+*Recorded with phase F7's first implementation; it signs nothing. Corrections entry
+[JSC-269](../roadmap.corrections.md#jsc-269).*
+
+- **`broiler.javascript.intl` is minted by proposed
+  [JSD-0043](0043-intl-data-boundary-and-collation.md)**, as the reopened section above said. It
+  owns the global `Intl`. **Unlike every other surface, it is built from data the composition hands
+  over**, so a descriptor naming it without an `IJsIntlData` is refused. A door that admits every
+  surface admits it only when data is handed over, which is only through
+  `JavaScriptProfile.DescriptorComposing`. Every existing door therefore builds the realm it built
+  before. This record's admission criterion binds it like any other.

@@ -127,14 +127,26 @@ internal sealed class Test262Manifest
             : Catalog;
     }
 
+    /// <summary>
+    /// The descriptor of a run admitting <paramref name="surfaces"/>: sweeping its finalization
+    /// registries, with <paramref name="host"/> as its host surface, and handed the
+    /// internationalization data, which <see cref="JsSurfaces.Intl"/> is built from (JSD-0043).
+    /// </summary>
+    internal static VmProfileDescriptor Descriptor(IJsHostSurface? host, string form, VmFeatureManifestId[] surfaces) =>
+        JavaScriptProfile.DescriptorComposing(new JsComposition
+        {
+            Surfaces = surfaces,
+            HostSurface = host,
+            HandleStress = string.Equals(form, ValueStress, StringComparison.Ordinal),
+            SweepsFinalization = true,
+            IntlData = Broiler.VM.Profile.JavaScript.Intl.JsCldrData.Instance,
+        });
+
     /// <summary>The catalog of one composition of this run, with <paramref name="host"/> as its host surface.</summary>
     private static VmCatalog CatalogWith(Test262Host? host, string form, VmFeatureManifestId[] surfaces)
     {
         var descriptor = surfaces.Length != 0
-            ? JavaScriptProfile.DescriptorSweepingFinalization(
-                host,
-                string.Equals(form, ValueStress, StringComparison.Ordinal),
-                surfaces)
+            ? Descriptor(host, form, surfaces)
             : JavaScriptProfile.DescriptorAdmitting(surfaces);
 
         return VmCatalog.CreateBuilder()

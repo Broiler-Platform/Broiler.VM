@@ -1029,6 +1029,16 @@
       "witness": "witnesses/register/N27-a-supplemental-file-of-another-release.json.witness, witnesses/register/N27-a-uca-file-of-another-version.txt.witness, CldrPinRuleTests in Broiler.VM.Architecture.Tests.dll"
     },
     {
+      "id": "N28",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript family's internationalization tables, src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs, are byte-identical to what CldrTableGenerator writes from the CLDR files src/tests/cldr/pins/cldr.pin names and the UCD files src/tests/unicode/pins/unicode.pin names, both verified against their pins before anything is generated; generation twice gives the same bytes; the table data stays under the provisional bound of 512 x 1024 bytes decision JSD-0043 records until the owner sets a budget; and THIRD_PARTY_NOTICES.md carries the archived CLDR licence text and names the generated file. Decision JSD-0043 moves likely subtags, aliases, BCP 47 keys, the supported locales and the collation the Intl surface reads onto these tables; rule N27 is the statement about the archived bytes and this rule is the statement that the shipped tables are what those bytes generate.",
+      "evidence": "Both pins parsed as the generator parses them, both archives hashed from their bytes, the tables regenerated in memory by the same function that writes them and compared with the checked-in .g.cs file, the byte and text literals of that file counted, and THIRD_PARTY_NOTICES.md read as text",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The generated file is compared whole and must exceed a hundred thousand characters, name every table the profile reads, and hold over a hundred thousand bytes of binary table data counted independently from the literals. A hand edit to the generated file and a changed letter of likelySubtags.json are made in memory against the real output and the real archive, because a witness of either would be a second copy of it; the edit is reported as not current and the changed archive generates nothing.",
+      "witness": "CldrTablesRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
       "id": "W1",
       "owningAdr": "0011",
       "status": "Active",

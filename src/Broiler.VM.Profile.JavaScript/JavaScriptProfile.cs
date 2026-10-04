@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   28
-// Annotated:        28/28
-// Exempt:           16
-// Human-reviewed:   0/28
+// Relevant units:   30
+// Annotated:        30/30
+// Exempt:           17
+// Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         14/14
+// Criteria:         15/15
 // Resource impact:  3/10 max
-// Unverified:       28
+// Unverified:       30
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -252,6 +252,19 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     public static VmFeatureManifestId SharedManifest { get; } =
         VmFeatureManifestId.Parse(Format.JsSurfaces.Shared);
+
+    /// <summary>
+    /// The internationalization surface: <c>Intl</c> and the ECMA-402 behaviour of the
+    /// locale-sensitive methods (JSD-0043).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only with its data</b>, which a composition hands to
+    /// <see cref="DescriptorComposing"/>; every other door builds without it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9A120D
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId IntlManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Intl);
 
     /// <summary>
     /// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor.
@@ -637,9 +650,70 @@ public static class JavaScriptProfile
     /// and reads it — would otherwise be handed a default array. That is a defect a build cannot
     /// see and a type initialiser reports as a null reference from somewhere else entirely.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6C43BD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6E5B7F
     // Broiler-Human:        PENDING
-    private static ImmutableArray<string> EverySurface => ImmutableArray.Create(Format.JsSurfaces.All);
+    private static ImmutableArray<string> EverySurface => EverySurfaceWith(intl: null);
+
+    /// <summary>
+    /// Every optional surface a composition holding <paramref name="intl"/> can build: every surface
+    /// this build implements, less <see cref="Format.JsSurfaces.Intl"/> when it was handed no data
+    /// (JSD-0043).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ADD171
+    // Broiler-Human:        PENDING
+    private static ImmutableArray<string> EverySurfaceWith(Format.IJsIntlData? intl)
+    {
+        var surfaces = ImmutableArray.CreateBuilder<string>();
+
+        foreach (var surface in Format.JsSurfaces.All)
+        {
+            if (intl is not null || !string.Equals(surface, Format.JsSurfaces.Intl, System.StringComparison.Ordinal))
+            {
+                surfaces.Add(surface);
+            }
+        }
+
+        return surfaces.ToImmutable();
+    }
+
+    /// <summary>
+    /// A descriptor stated in full by <paramref name="composition"/>: the one door that takes the
+    /// internationalization data, and every other choice the narrower doors make one at a time.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The data is the composition's, and so is the decision to carry it</b> (JSD-0043). The
+    /// tables <see cref="Format.JsSurfaces.Intl"/> is built from live in an assembly the profile does
+    /// not reference; a composition that wants the surface references it and hands its data here, and
+    /// one that does not carries none of it. Every other door is handed no data, so none of them
+    /// admits the surface, and naming it to one of them is refused.
+    /// </para>
+    /// <para>
+    /// <b>A null <see cref="JsComposition.Surfaces"/> means every surface this composition can
+    /// build</b> - every one this build implements, with the internationalization surface among them
+    /// only when the data was handed over - and a list, however short, means exactly the surfaces it
+    /// names.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=31ED75
+    // Broiler-Falsified-If: a descriptor built here admits the internationalization surface without its data, or builds an Intl from data it was not handed
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor DescriptorComposing(JsComposition composition)
+    {
+        System.ArgumentNullException.ThrowIfNull(composition);
+
+        var names = composition.Surfaces is { } surfaces
+            ? Named([.. surfaces])
+            : EverySurfaceWith(composition.IntlData);
+
+        return Build(
+            names,
+            composition.NativeEmitter,
+            composition.HostSurface,
+            composition.HandleStress,
+            composition.SweepsFinalization,
+            composition.IntlData);
+    }
 
     /// <summary>
     /// A descriptor whose realms are handed to <paramref name="surface"/>, for a composition that
@@ -812,7 +886,7 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=010AA8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=2B40BE
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
@@ -820,9 +894,25 @@ public static class JavaScriptProfile
         Format.IJsNativeEmitter? emitter = null,
         IJsHostSurface? hostSurface = null,
         bool handleStress = false,
-        bool sweepsFinalization = false)
+        bool sweepsFinalization = false,
+        Format.IJsIntlData? intl = null)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
+
+        // THE INTERNATIONALIZATION SURFACE IS BUILT FROM DATA THE COMPOSITION HANDS OVER (JSD-0043),
+        // and a set naming it without that data is the composition's mistake, refused here rather than
+        // built into realms with an Intl that has nothing to answer from.
+        if (admittedSurfaces.Contains(Format.JsSurfaces.Intl) && intl is null)
+        {
+            throw new System.ArgumentException(
+                Format.JsSurfaces.Intl + " is admitted only with its data, an IJsIntlData handed to " +
+                nameof(DescriptorComposing),
+                nameof(admittedSurfaces));
+        }
+
+        var intlTables = intl is not null && admittedSurfaces.Contains(Format.JsSurfaces.Intl)
+            ? new JsIntlTables(intl)
+            : null;
 
         // THE SHADOWREALM SURFACE NEEDS THE DYNAMIC ONE (JSD-0040): a set naming it alone is a
         // composition's mistake, refused here rather than built into realms whose ShadowRealm could
@@ -867,7 +957,7 @@ public static class JavaScriptProfile
                 JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
             acceptedFeatureManifests: accepted,
             verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces, emitter),
-            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface, handleStress, sweepsFinalization),
+            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface, handleStress, sweepsFinalization, intlTables),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
             supportsConcurrentVerification: true,

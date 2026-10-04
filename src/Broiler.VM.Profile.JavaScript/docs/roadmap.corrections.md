@@ -11673,3 +11673,73 @@ formatting each index as a key and looking it up.
 what the object holds were not audited here.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-269
+
+**Where:** phase F7's I0 second half and I1. The data assembly `Broiler.VM.Profile.JavaScript.Intl`
+and its generator (`CldrTableGenerator`, rule N28); the format's `IJsIntlData` and
+`broiler.javascript.intl`; the profile's `JavaScriptProfile.DescriptorComposing`, `JsComposition`,
+`JsIntlTables`, `JsLocaleTag`, `JsCollationData`, `JsCollator` and `JsRealm.Intl.cs`; `localeCompare`
+and the locale-named case methods; the slice-compiler and conformance roots that hand the data over;
+the ledger's `absent-globals` block.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7: I0 is "the pinned CLDR input and
+  generator (section 5), the separate data assembly, `broiler.javascript.intl` minted with its
+  admission scope; locale canonicalization, likely subtags and negotiation as **internal**
+  operations. **Installs no global**"; I1 is "`Intl.Collator` and a locale-aware `localeCompare`" with
+  "`Intl` global appears here with only `Collator` and `getCanonicalLocales`".
+- JSD-0027's "I0, first half" section: "Nothing reads the archive yet: the generator, the data
+  assembly and the identity `broiler.javascript.intl` are the second half of I0."
+- The ledger's `absent-globals` block named `Intl`; JSD-0027 section 6's consumer limitation said
+  "`Intl` is absent".
+- Delivery F7's exit gate: "`test/intl402` is admitted by a JSD-0018 record and passes per slice".
+
+**What replaced it, observed on 2026-10-04.**
+- **The data is an assembly of its own that the profile reads and does not reference**, under
+  proposed [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md). It references the format
+  only; the profile reads it through `IJsIntlData`. ADR 0001's revision of 2026-10-04 takes the graph
+  from 31 projects and 113 edges to 32 and 116, and eleven assemblies now pack. The slice-compiler
+  and conformance roots reference it, and their retained closure listings and register rows name it.
+  Every other root's closure is unchanged.
+- **`broiler.javascript.intl` is admitted only with its data.** A door naming it without data is
+  refused when the descriptor is built. The one door that takes data is new,
+  `JavaScriptProfile.DescriptorComposing(JsComposition)`, and the API baseline records it. Every
+  existing door builds the realm it built before.
+- **I0 and I1 land together**, because the global I0 would not install is the one I1 installs, and
+  splitting them would have published a surface with nothing behind it for one change. `Intl` has
+  `getCanonicalLocales` and `Collator`. `localeCompare` routes through the realm's own
+  `%Intl.Collator%`, and `toLocaleUpperCase` and `toLocaleLowerCase` apply Turkish, Azeri and
+  Lithuanian casing. `Intl` left the `absent-globals` block in this change, `globals.txt` was
+  regenerated, and rule N24's witness now uses `Temporal` as its genuinely absent global.
+- **Rule N28 is minted**: the tables are what the generator writes from the two pinned archives,
+  under a provisional bound of 512 KiB. They measure 325,646 bytes. `THIRD_PARTY_NOTICES.md` carries
+  the CLDR licence text.
+- **The case of a tailored element is stated, not derived.** The retained German and English
+  orderings ([`src/tests/cldr/orderings/`](../../tests/cldr/orderings/README.md)), 27 collators over 81
+  words, first differed from ICU 77.1 on one line: German phonebook order under `caseFirst: 'upper'`
+  put `ä` before `Ä`. A tailored tertiary sits between two root weights, so it cannot carry case the
+  way a root one does. The generator now states it, as ICU's `setCaseBits` does, and every line
+  agrees.
+- **Soft_Dotted lives in the Intl data**, not in the UCD tables: adding it there made a 31st table
+  where rule N22 holds 30, and only Intl's Lithuanian casing reads it.
+- **The JSD-0018 admission is an amendment, not a mechanism**: the wide dialect has always selected
+  `test/intl402`.
+- **Checks**: seven slice-compiler checks, 625 in all: no data, no `Intl`; a door naming it without
+  data is refused; German phonebook and search order; alias replacement; both CollationTest files in
+  order; and the ICU orderings.
+- **test262, `test/intl402`**, against the whole run [JSC-267](#jsc-267) records: 312 of 4,418
+  variants pass, against 50. 262 moved to passing and none moved back. `Collator` passes 124 of 130,
+  `getCanonicalLocales` 74 of 76, and `String/prototype/localeCompare`, `toLocaleLowerCase` and
+  `toLocaleUpperCase` all 38. `test/built-ins/String` is unchanged.
+
+**What must not be read as repaired.**
+- **`NumberFormat`, `DateTimeFormat`, `Locale` and every other constructor are absent**, and so is
+  `Intl.supportedValuesOf`. 1,876 `intl402` variants fail, almost all of them for that reason. The
+  phase's exit gate is not met.
+- **Collations the data does not carry**: `eor`, and Thai's default `ignorePunctuation`.
+- **No size budget is set**; the 512 KiB bound is provisional, and owner decision (c) is open.
+- **The composition images carry no notice file**, for the CLDR data as for the UCD's.
+- JSD-0043 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

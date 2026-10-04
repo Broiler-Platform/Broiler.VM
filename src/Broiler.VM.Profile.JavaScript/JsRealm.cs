@@ -190,7 +190,7 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6B67AD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C2A089
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner, bool shadow = false)
     {
@@ -280,6 +280,13 @@ internal sealed partial class JsRealm
         if (owner.Admits(Format.JsSurfaces.ShadowRealm))
         {
             SetupShadowRealm();
+        }
+
+        // `Intl` IS BUILT FROM THE COMPOSITION'S DATA (JSD-0043): a descriptor admits the surface only
+        // with it, so where the surface is admitted the tables are there.
+        if (owner.Admits(Format.JsSurfaces.Intl) && owner.Intl is not null)
+        {
+            SetupIntl();
         }
 
         // EVERY CONSTRUCTOR BUILT FROM HERE ON IS NOT AN INTRINSIC: an embedder's, or one a guest

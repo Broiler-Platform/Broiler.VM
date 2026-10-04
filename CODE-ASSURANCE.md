@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 249 |
-| Files carrying an annotation | 249 |
-| Code units | 10679 |
-| Relevant | 6070 |
-| Exempt by predicate | 4609 |
-| Annotated | 6070 of 6070 (100%) |
-| Human reviewed | 0 of 6070 (0%) |
-| Unverified | 6070 |
+| Files scanned | 258 |
+| Files carrying an annotation | 258 |
+| Code units | 10882 |
+| Relevant | 6187 |
+| Exempt by predicate | 4695 |
+| Annotated | 6187 of 6187 (100%) |
+| Human reviewed | 0 of 6187 (0%) |
+| Unverified | 6187 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6070 |
+| HUMAN_PENDING | 6187 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4609 |
+| EXEMPT | 4695 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1630 |
-| Low | 5699 |
+| None | 1636 |
+| Low | 5845 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 984 |
-| Medium | 4541 |
-| High | 1632 |
+| Low | 1087 |
+| Medium | 4589 |
+| High | 1633 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6070 |
+| Units scored | 6187 |
 
 ## High-security review areas
 
@@ -478,10 +478,11 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.HostSurfaceCapability` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorReEmittingWith(Format.IJsNativeEmitter, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorComposing(JsComposition)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorHostingRealms(IJsHostSurface, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorUnderHandleStress(IJsHostSurface?, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorSweepingFinalization(IJsHostSurface?, bool, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>, Format.IJsNativeEmitter?, IJsHostSurface?, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>, Format.IJsNativeEmitter?, IJsHostSurface?, bool, bool, Format.IJsIntlData?)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Defaults()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Matrix()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptValue.ToInt32()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs` - Security=High, human line PENDING
@@ -1956,8 +1957,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2023 |
-| Units required to carry one | 1885 |
+| Units carrying a criterion | 2032 |
+| Units required to carry one | 1886 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1984,21 +1985,21 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1426 |
-| ParameterAssigningConstructor | 164 |
-| TrivialExpressionBodiedMember | 64 |
+| TrivialPropertyOrAccessor | 1470 |
+| ParameterAssigningConstructor | 166 |
+| TrivialExpressionBodiedMember | 65 |
 | CompilerSuppliedRecordOrEnumMember | 24 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 856 |
-| EnumMemberOfADeclaredVocabulary | 1907 |
-| DeclaredInSource | 47 |
+| FieldDeclaringStorage | 876 |
+| EnumMemberOfADeclaredVocabulary | 1918 |
+| DeclaredInSource | 55 |
 
 ## Per-unit exemptions
 
 | Metric | Value |
 |---|---:|
-| Per-unit exemptions | 47 |
+| Per-unit exemptions | 55 |
 
 A per-unit `EXEMPT=<reason>` line exempts one unit by a reason a human wrote, for what the
 predicate cannot see. Nothing mechanical checks that the reason is true, that it describes
@@ -2039,6 +2040,14 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 - `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.PropertyData` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.Names` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties.NameIndex` in `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Version` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.LikelySubtags` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Aliases` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Extensions` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Locales` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.SoftDotted` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.CollationRoot` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.CollationTailorings` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.MaxMappingLength` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.UpperIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.LowerIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
@@ -2057,7 +2066,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10679 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10882 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2065,7 +2074,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 249 of them - with a
+Beside the units it lists **every covered file** - 258 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

@@ -421,10 +421,7 @@ internal sealed class Test262Worker : IJsHostSurface, IJsHostAgentPolicy, System
         }
 
         var catalog = VmCatalog.CreateBuilder()
-            .Add(JavaScriptProfile.DescriptorSweepingFinalization(
-                this,
-                string.Equals(manifest.Form, Test262Manifest.ValueStress, StringComparison.Ordinal),
-                surfaces))
+            .Add(Test262Manifest.Descriptor(this, manifest.Form, surfaces))
             .Build();
 
         var created = VmRuntime.Create(catalog, Test262Run.Options(manifest, fuel, wallClock, [], aggregate));

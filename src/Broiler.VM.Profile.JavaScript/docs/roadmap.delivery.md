@@ -1271,6 +1271,17 @@ gate and the ledger's row.
   - `Intl` leaves the `absent-globals` block in the change that publishes it, with N24's
     assertion about it amended in the same change.
 
+*Progress, 2026-10-04: I0 and I1 are built under proposed
+[JSD-0043](decisions/0043-intl-data-boundary-and-collation.md). The CLDR 48.2.0 tables are generated
+into `Broiler.VM.Profile.JavaScript.Intl` (rules N27 and N28), which only a composition admitting
+`broiler.javascript.intl` references. `Intl` has `getCanonicalLocales` and `Collator`, and
+`localeCompare` routes through it. Both CollationTest files are in order, and the retained German and
+English orderings agree with ICU 77.1. The second exit-gate clause is met: `Intl` left the block, and
+N24's witness moved to `Temporal`. The first clause's admission is JSD-0018's amendment of 2026-10-04.
+Its "passes per slice" holds for I1: `Collator` passes 124 of 130 `intl402` variants, and the three
+failing files need `NumberFormat`, Thai's tailoring and the `eor` collation. I2 (`NumberFormat`) is
+next ([JSC-269](roadmap.corrections.md#jsc-269)).*
+
 #### F8 — Temporal
 
 - **Delivers:** the temporal surface.

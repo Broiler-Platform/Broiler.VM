@@ -405,10 +405,13 @@ public sealed class RuleRegisterTests
         // Phase F7's first slice adds N27 beside N22: the archived CLDR files are the ones their pin
         // describes, by hash and by stated release, and the pin names every file beside it. Active
         // when minted; no other count moves.
-        Assert.Equal(110, byStatus["Active"]);
+        // Phase F7's second slice adds N28 beside N27: the Intl data's generated tables are what the
+        // generator writes from the two pinned archives, under a provisional size bound, with the
+        // CLDR licence in the notices. Active when minted; no other count moves.
+        Assert.Equal(111, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(112, Loaded.Rules.Count);
+        Assert.Equal(113, Loaded.Rules.Count);
     }
 
     private static Register Load()

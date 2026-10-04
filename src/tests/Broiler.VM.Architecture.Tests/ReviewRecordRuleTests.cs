@@ -1233,7 +1233,17 @@ public sealed class ReviewRecordRuleTests
         // JsEngine.Atomics.cs, the blocking wait and the asynchronous waiters a host drain settles.
         // All three are covered on the same terms as every other product file, and nothing in them
         // has been read by a human.
-        Assert.Equal(249, AssuranceSources.Files.Count);
+        //
+        // AND INTL (phase F7, 2026-10-04, JSD-0043): in the profile, JsIntlTables.cs, the decoded
+        // tables a composition hands over; JsLocaleTag.cs, the language tag's parse, canonicalization
+        // and likely subtags; JsCollationData.cs and JsCollator.cs, the collation elements and their
+        // comparison; JsRealm.Intl.cs, the Intl object and Intl.Collator; and JsComposition.cs, the
+        // composition the descriptor is built from. In the format, JsIntlData.cs, the interface the
+        // data is read through. And the new family assembly's two files: JsCldrData.cs, which hands
+        // the tables over, and JsCldrTables.g.cs, which CldrTableGenerator writes and rule N28
+        // holds. All nine are covered on the same terms as every other product file, and nothing in
+        // them has been read by a human.
+        Assert.Equal(258, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

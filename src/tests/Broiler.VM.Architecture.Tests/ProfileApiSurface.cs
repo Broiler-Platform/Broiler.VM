@@ -3,7 +3,7 @@ using System.Reflection;
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
-/// The complete public surface of the JavaScript profile family's three assemblies, as text.
+/// The complete public surface of the JavaScript profile family's assemblies, as text.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -36,7 +36,10 @@ namespace Broiler.VM.Architecture.Tests;
 /// </remarks>
 internal static class ProfileApiSurface
 {
-    /// <summary>The JavaScript profile family's three assemblies, in dependency order.</summary>
+    /// <summary>
+    /// The JavaScript profile family's assemblies, in dependency order: the three of the profile and
+    /// the internationalization data a composition may hand it (JSD-0043).
+    /// </summary>
     /// <remarks>
     /// Named rather than discovered, for the reason <see cref="ApiSurface.PackableAssemblies"/>
     /// gives: a set enumerated from whatever is on disk silently starts and stops covering things.
@@ -48,6 +51,7 @@ internal static class ProfileApiSurface
         "Broiler.VM.Profile.JavaScript.Format",
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler",
+        "Broiler.VM.Profile.JavaScript.Intl",
     ];
 
     /// <summary>Describes the public surface of the family's assemblies, sorted.</summary>

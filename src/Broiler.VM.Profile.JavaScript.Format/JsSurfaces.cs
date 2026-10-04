@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   16
-// Annotated:        16/16
+// Relevant units:   18
+// Annotated:        18/18
 // Exempt:           0
-// Human-reviewed:   0/16
+// Human-reviewed:   0/18
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       16
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -201,6 +201,28 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public const string Shared = "broiler.javascript.shared";
 
+    /// <summary>
+    /// The internationalization surface: the <c>Intl</c> global and the ECMA-402 behaviour of the
+    /// locale-sensitive methods (JSD-0043).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the one surface whose data a composition supplies.</b> Its answers come from tables
+    /// generated from the pinned CLDR release, and those tables live in an assembly of their own that
+    /// only a composition admitting this surface references (JSD-0027 section 5), handed to the
+    /// profile as an <see cref="IJsIntlData"/>. So a door handed no data does not admit it even
+    /// when it admits every surface - "every" means every surface the composition can build - and a
+    /// door that names it without data is refused when it is built.
+    /// </para>
+    /// <para>
+    /// A program naming <c>Intl</c> declares it, as one naming <c>eval</c> declares the dynamic
+    /// surface; a composition that declines it refuses that program at verification.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4638BC
+    // Broiler-Human:        PENDING
+    public const string Intl = "broiler.javascript.intl";
+
     /// <summary>Every optional surface this build knows, in ascending ordinal order.</summary>
     /// <remarks>
     /// An artifact declaring a name that is not here is refused as naming a surface this build does
@@ -208,10 +230,12 @@ public static class JsSurfaces
     /// carries a different diagnostic.
     /// <i>(Amended 2026-09-21. <see cref="BigInt"/> was for a while known and not here, so that the
     /// descriptor admitting every surface declined it; card B05 admitted it, and it is here.)</i>
+    /// <see cref="Intl"/> is here too, and a door admitting every surface admits it only when it was
+    /// handed the data it is built from (JSD-0043).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=05A586
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=919AF9
     // Broiler-Human:        PENDING
-    public static readonly string[] All = [BigInt, Binary, Dynamic, Modules, Native, ShadowRealm, Shared];
+    public static readonly string[] All = [BigInt, Binary, Dynamic, Intl, Modules, Native, ShadowRealm, Shared];
 
     /// <summary>
     /// The global names the binary surface owns, in ascending ordinal order.
@@ -300,6 +324,11 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public static readonly string[] SharedGlobals = ["Atomics", "SharedArrayBuffer"];
 
+    /// <summary>The global names the internationalization surface owns.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B06A18
+    // Broiler-Human:        PENDING
+    public static readonly string[] IntlGlobals = ["Intl"];
+
     /// <summary>
     /// The surface that owns <paramref name="globalName"/>, or <see langword="false"/> when the
     /// name belongs to no optional surface.
@@ -310,7 +339,7 @@ public static class JsSurfaces
     /// surface for them, the first list it searches; a caller that records declarations reads
     /// <see cref="BigIntGlobals"/> as well. (Added 2026-09-22, JSeal B07.)
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6F06EA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=392737
     // Broiler-Human:        PENDING
     public static bool TryOwner(string globalName, out string manifestId)
     {
@@ -355,6 +384,15 @@ public static class JsSurfaces
             if (string.Equals(name, globalName, System.StringComparison.Ordinal))
             {
                 manifestId = Shared;
+                return true;
+            }
+        }
+
+        foreach (var name in IntlGlobals)
+        {
+            if (string.Equals(name, globalName, System.StringComparison.Ordinal))
+            {
+                manifestId = Intl;
                 return true;
             }
         }

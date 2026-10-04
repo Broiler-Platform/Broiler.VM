@@ -1609,11 +1609,22 @@ public sealed class AssuranceRuleTests
         // the generator byte for byte. So the fact asserted here moved with the tree: every use in
         // the product is one of those members stating that reason - nothing hand-written uses it -
         // and the report counts and names each one.
+        //
+        // (Revised 2026-10-04: and the CLDR tables. Decision JSD-0043 chose the same hatch for the
+        // Intl data's generated file, whose every table member carries the reason
+        // CldrTableGenerator writes, and rule N28 holds that file to the generator byte for byte.
+        // A use is one of the two generators' members stating that generator's reason.)
         var declared = AssuranceScanner.DeclaredExemptions(ProductUnits);
 
         Assert.NotEmpty(declared);
         Assert.All(declared, static unit =>
         {
+            if (string.Equals(unit.File.RelativePath, CldrTableGenerator.OutputPath, StringComparison.Ordinal))
+            {
+                Assert.Equal(CldrTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                return;
+            }
+
             Assert.Contains(unit.File.RelativePath, UnicodeTableGenerator.OutputPaths);
             Assert.Equal(UnicodeTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
         });

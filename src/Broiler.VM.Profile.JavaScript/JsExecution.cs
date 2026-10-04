@@ -245,7 +245,7 @@ internal sealed class JsInstance : IVmInstanceState
 internal static class JsExecution
 {
     /// <summary>Builds an instance and its realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7DE3DF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C41876
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Instantiate(
         JsProgram program,
@@ -253,7 +253,8 @@ internal static class JsExecution
         IJsHostSurface? hostSurface,
         System.Threading.CancellationToken cancellationToken,
         bool handleStress = false,
-        bool sweepsFinalization = false)
+        bool sweepsFinalization = false,
+        JsIntlTables? intl = null)
     {
         // A BASELINE ARTIFACT THIS PROCESS CANNOT ENTER IS REFUSED BEFORE ANYTHING IS CHARGED, and it
         // is a refusal and not a fallback. The bytecode is in the same artifact and this arm will not
@@ -282,7 +283,8 @@ internal static class JsExecution
             nativeForm: native,
             valueForm: native && program.NativeValueForm,
             handleStress: handleStress,
-            sweepsFinalization: sweepsFinalization);
+            sweepsFinalization: sweepsFinalization,
+            intl: intl);
 
         // THE PAGE IS MAPPED NOW AND NOT AT THE FIRST CALL, so a process that may not make memory
         // executable refuses the instance instead of faulting its first invocation.

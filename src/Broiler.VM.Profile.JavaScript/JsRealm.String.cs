@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   31
+// Annotated:        31/31
 // Exempt:           0
-// Human-reviewed:   0/25
+// Human-reviewed:   0/31
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  4/10 max
-// Unverified:       25
+// Unverified:       31
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5BE062
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D64C20
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -471,16 +471,10 @@ internal sealed partial class JsRealm
         });
 
         Method(prototype, "toLocaleUpperCase", 0, static (engine, thisValue, arguments) =>
-        {
-            _ = arguments;
-            return JsValue.String(StringChangeCase(engine, StringThis(engine, thisValue), true));
-        });
+            JsValue.String(TransformCase(engine, StringThis(engine, thisValue), arguments, true)));
 
         Method(prototype, "toLocaleLowerCase", 0, static (engine, thisValue, arguments) =>
-        {
-            _ = arguments;
-            return JsValue.String(StringChangeCase(engine, StringThis(engine, thisValue), false));
-        });
+            JsValue.String(TransformCase(engine, StringThis(engine, thisValue), arguments, false)));
 
         Method(prototype, "trim", 0, static (engine, thisValue, arguments) =>
         {
@@ -663,6 +657,18 @@ internal sealed partial class JsRealm
             var other = engine.ToStringValue(ArgOfString(arguments, 0));
             StringCharge(engine, text.Length + other.Length);
 
+            // WITH `Intl`, ECMA-402 s19.1.1: A COLLATOR FROM THE LOCALES AND OPTIONS, made by the
+            // realm's own %Intl.Collator% whatever the global binding now holds (JSD-0043).
+            if (engine.Realm.CollatorConstructor is { } constructor)
+            {
+                var made = NewCollator(
+                    engine,
+                    JsValue.Object(constructor),
+                    [ArgOfString(arguments, 1), ArgOfString(arguments, 2)]);
+
+                return JsValue.Number(((JsCollatorObject)made.AsObject()).Collator.Compare(engine, text, other));
+            }
+
             // THE ORDER IS ORDINAL OVER THE CANONICAL DECOMPOSITIONS. The specification allows any
             // order that is consistent and total, and requires one more thing ECMA-262 states
             // without ECMA-402: canonically equivalent strings compare as 0. Comparing NFD forms
@@ -733,10 +739,10 @@ internal sealed partial class JsRealm
     /// ordering is a counting sort per run, so a long run of combining marks is linear work too.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=E5D2CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=2BD89E
     // Broiler-Falsified-If: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
     // Broiler-Human:        PENDING
-    private static string NormalizeText(JsEngine engine, string text, bool compose, bool compatibility)
+    internal static string NormalizeText(JsEngine engine, string text, bool compose, bool compatibility)
     {
         StringCharge(engine, text.Length);
 
@@ -1211,6 +1217,194 @@ internal sealed partial class JsRealm
         }
 
         return built?.ToString() ?? text;
+    }
+
+    /// <summary>
+    /// ECMA-402's <c>TransformCase</c> where the realm has <c>Intl</c>: the first requested locale, and
+    /// the language rules of SpecialCasing.txt when it is Turkish, Azeri or Lithuanian; without
+    /// <c>Intl</c>, the locale is ignored as JSD-0027 section 1 states.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s19.1.2; IP=Low; Security=Medium; Resources=3; Fingerprint=920956
+    // Broiler-Human:        PENDING
+    private static string TransformCase(JsEngine engine, string text, JsValue[] arguments, bool upper)
+    {
+        if (engine.Realm.CollatorConstructor is null)
+        {
+            return StringChangeCase(engine, text, upper);
+        }
+
+        var requested = CanonicalizeLocaleList(engine, Argument(arguments, 0));
+        var locale = JsLocaleTag.Parse(requested.Count != 0 ? requested[0] : DefaultLocale)!;
+        var language = LookupMatchingLocale(["az", "lt", "tr"], [locale.WithoutUnicodeExtension()])?.Locale ?? "und";
+
+        return StringChangeCase(engine, LanguageCasing(engine, text, upper, language), upper);
+    }
+
+    /// <summary>
+    /// SpecialCasing.txt's rules for one language, applied before the default conversion: each one's
+    /// output is a fixed point of the default mapping in its direction, so the two passes compose,
+    /// and each condition is read on the string as it was.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=Unicode SpecialCasing.txt; IP=Low; Security=Medium; Resources=3; Fingerprint=62B580
+    // Broiler-Human:        PENDING
+    private static string LanguageCasing(JsEngine engine, string text, bool upper, string language)
+    {
+        if (language is not ("tr" or "az" or "lt"))
+        {
+            return text;
+        }
+
+        StringCharge(engine, text.Length);
+
+        var points = new System.Collections.Generic.List<int>(text.Length);
+
+        for (var at = 0; at < text.Length;)
+        {
+            points.Add(JsUnicodeCasing.NextCodePoint(text, at, out var width));
+            at += width;
+        }
+
+        var built = new System.Text.StringBuilder(text.Length + 4);
+
+        for (var index = 0; index < points.Count; index++)
+        {
+            var point = points[index];
+
+            if (language is "tr" or "az")
+            {
+                if (!upper && point == 0x0130)
+                {
+                    built.Append('i');
+                    continue;
+                }
+
+                if (!upper && point == 0x0307 && AfterCapitalI(points, index))
+                {
+                    continue;
+                }
+
+                if (!upper && point == 'I')
+                {
+                    built.Append(BeforeDot(points, index) ? 'i' : '\u0131');
+                    continue;
+                }
+
+                if (upper && point == 'i')
+                {
+                    built.Append('\u0130');
+                    continue;
+                }
+            }
+            else
+            {
+                if (!upper && point is 'I' or 'J' or 0x012E && MoreAbove(points, index))
+                {
+                    built.Append(point == 0x012E ? '\u012F' : (char)(point + 0x20)).Append('\u0307');
+                    continue;
+                }
+
+                if (!upper && point is 0x00CC or 0x00CD or 0x0128)
+                {
+                    built.Append("i\u0307").Append(point switch { 0x00CC => '\u0300', 0x00CD => '\u0301', _ => '\u0303' });
+                    continue;
+                }
+
+                if (upper && point == 0x0307 && AfterSoftDotted(engine.Intl!, points, index))
+                {
+                    continue;
+                }
+            }
+
+            AppendCodePoint(built, point);
+        }
+
+        return built.ToString();
+    }
+
+    /// <summary>After_I: an upper-case I before, with no combining class 0 or 230 between.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DC6A33
+    // Broiler-Human:        PENDING
+    private static bool AfterCapitalI(System.Collections.Generic.List<int> points, int index)
+    {
+        for (var at = index - 1; at >= 0; at--)
+        {
+            if (points[at] == 'I')
+            {
+                return true;
+            }
+
+            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>After_Soft_Dotted: a Soft_Dotted character before, with no combining class 0 or 230 between.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0DC57E
+    // Broiler-Human:        PENDING
+    private static bool AfterSoftDotted(JsIntlTables intl, System.Collections.Generic.List<int> points, int index)
+    {
+        for (var at = index - 1; at >= 0; at--)
+        {
+            if (intl.IsSoftDotted(points[at]))
+            {
+                return true;
+            }
+
+            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Before_Dot: COMBINING DOT ABOVE after, with only combining classes other than 0 and 230 between.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1DB648
+    // Broiler-Human:        PENDING
+    private static bool BeforeDot(System.Collections.Generic.List<int> points, int index)
+    {
+        for (var at = index + 1; at < points.Count; at++)
+        {
+            if (points[at] == 0x0307)
+            {
+                return true;
+            }
+
+            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>More_Above: a combining class 230 after, with no combining class 0 between.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0640C3
+    // Broiler-Human:        PENDING
+    private static bool MoreAbove(System.Collections.Generic.List<int> points, int index)
+    {
+        for (var at = index + 1; at < points.Count; at++)
+        {
+            var combining = JsUnicodeNormalization.CombiningClass(points[at]);
+
+            if (combining == 230)
+            {
+                return true;
+            }
+
+            if (combining == 0)
+            {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>Appends one code point as one or two code units.</summary>

@@ -421,8 +421,12 @@ public sealed class ProjectFileRuleTests
         // (Revised 2026-09-28. This test was N4_No_JavaScript_Profile_Project_Is_Packable, asserting
         // the literal IsPackable false, and its body was commented out on 2026-09-19 when the owner
         // made the families packable, so nothing asserted the rule the register listed Active.)
+        //
+        // (Revised 2026-10-04: six, with the JavaScript family's internationalization data,
+        // Broiler.VM.Profile.JavaScript.Intl, which JSD-0043 makes a packable family assembly so a
+        // composition that declines Intl carries none of it.)
         Assert.Equal(
-            5,
+            6,
             ComponentGraph.Projects.Count(project =>
                 ArchitectureRules.ProfileFamily(project.AssemblyName) is not null));
 

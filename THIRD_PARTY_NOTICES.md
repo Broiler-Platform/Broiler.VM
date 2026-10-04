@@ -368,3 +368,98 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 ```
+
+## CLDR data, and the tables derived from it
+
+**Added 2026-10-04 (phase F7, slices I0 and I1; decision
+[JSD-0043](src/Broiler.VM.Profile.JavaScript/docs/decisions/0043-intl-data-boundary-and-collation.md)).
+The second entry in this file whose material is compiled into a shipped assembly, and the first
+whose assembly holds nothing else.**
+
+This repository contains data files published by the Unicode Consortium's Common Locale Data
+Repository (CLDR) and tables generated from them. **Those data files and the tables derived from
+them remain subject to the [Unicode Terms of Use](https://www.unicode.org/terms_of_use.html), which
+apply the Unicode License v3 (SPDX `Unicode-3.0`) to data files. The Apache License 2.0 in
+[`LICENSE`](LICENSE) applies to Broiler's source code, the generator and the code that reads the
+tables included, and does not replace the Unicode terms for Unicode-provided data.** The pattern is
+the one the entry above uses for the UCD.
+
+**What was ingested.** CLDR 48.2.0: from the npm packages `cldr-core` and `cldr-bcp47`, the
+supplemental files `likelySubtags.json`, `aliases.json` and `parentLocales.json`, the files
+`availableLocales.json` and `defaultContent.json`, every `bcp47/*.json` file and both
+`package.json` files; and from the CLDR release's `common/` tree, `uca/allkeys_CLDR.txt`, the two
+short CollationTest files (test input only) and `collation/root.xml`, `de.xml` and `en.xml`; and the
+licence text. They are archived unmodified at [`src/tests/cldr/pins/`](src/tests/cldr/pins/README.md),
+where `cldr.pin` records each file's length and SHA-256 and rule **N27** hashes them on every run of
+the architecture suite. The pin and its README record how and when they were retrieved.
+
+**What is derived, and where it ships.** `CldrTableGenerator` (architecture test project, not
+shipped) writes one source file of tables from those files and the pinned UCD:
+`src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N28** holds to the generator byte for
+byte. It carries likely subtags, the language, script, region, variant and subdivision aliases, the
+BCP 47 keys and types, the supported locales, the root collation and three tailorings, and the
+UCD's Soft_Dotted ranges. The derived tables therefore ship in:
+
+- **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);
+- **the composition images that admit `Intl`**: the published outputs of
+  `Broiler.VM.Composition.JavaScript.SliceCompiler` and `Broiler.VM.Composition.JavaScript.Conformance`.
+  No other composition references the assembly, so no other image carries the data.
+
+**How the notice travels.** As for the UCD entry above: this file is packed into every package this
+repository produces, so the Intl package carries it, and the full CLDR licence text is reproduced
+verbatim below. Rule N28 asserts that it is the archived text, character for character. The
+generated file names the licence in a comment below its generated header. **For the composition
+images the notice is not yet carried**, for the reason the entry above records; that is owed rather
+than met.
+
+**Owner decisions, and what is not given.** JSD-0027's owner decision (c) asks for a size budget from
+a measured prototype. The tables measure 325,646 bytes of data on 2026-10-04, in an assembly of
+333,312 bytes, and rule N28 holds them under a provisional bound of 512 KiB that JSD-0043 records. **Nobody has signed a budget, and the
+release owner's co-signature this file requires for ingested material is not given.**
+
+The CLDR licence text, as archived at `src/tests/cldr/pins/cldr-LICENSE.txt`:
+
+```text
+UNICODE LICENSE V3
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright © 2004-2026 Unicode, Inc.
+
+NOTICE TO USER: Carefully read the following legal agreement. BY
+DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
+SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
+TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
+DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of data files and any associated documentation (the "Data Files") or
+software and any associated documentation (the "Software") to deal in the
+Data Files or Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, and/or sell
+copies of the Data Files or Software, and to permit persons to whom the
+Data Files or Software are furnished to do so, provided that either (a)
+this copyright and permission notice appear with all copies of the Data
+Files or Software, or (b) this copyright and permission notice appear in
+associated Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
+THIRD PARTY RIGHTS.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
+FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall
+not be used in advertising or otherwise to promote the sale, use or other
+dealings in these Data Files or Software without prior written
+authorization of the copyright holder.
+
+SPDX-License-Identifier: Unicode-3.0
+```

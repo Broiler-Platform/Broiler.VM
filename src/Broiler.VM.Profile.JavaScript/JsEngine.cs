@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   216
 // Annotated:        216/216
-// Exempt:           34
+// Exempt:           35
 // Human-reviewed:   0/216
 // IP risk:          Low
 // Security risk:    Critical
@@ -100,7 +100,7 @@ internal sealed partial class JsEngine
     /// and one handle table rooted by it, the table under handle-stress when the composition asked for it
     /// (JSD-0035 sections 3 and 4). Every other engine allocates neither.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1AE255
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B03C84
     // Broiler-Human:        PENDING
     internal JsEngine(
         IVmMeter contractMeter,
@@ -110,9 +110,11 @@ internal sealed partial class JsEngine
         bool nativeForm = false,
         bool valueForm = false,
         bool handleStress = false,
-        bool sweepsFinalization = false)
+        bool sweepsFinalization = false,
+        JsIntlTables? intl = null)
     {
         meter = contractMeter;
+        Intl = intl;
         cancellation = token;
         capabilities = invoker;
         this.nativeForm = nativeForm || valueForm;
@@ -349,6 +351,14 @@ internal sealed partial class JsEngine
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=486D64
     // Broiler-Human:        PENDING
     internal bool Admits(string manifestId) => surfaces.Contains(manifestId);
+
+    /// <summary>
+    /// The internationalization tables the composition handed over, or nothing; a realm builds
+    /// <c>Intl</c> only where the surface is admitted and these are present (JSD-0043).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=806EEF
+    // Broiler-Human:        PENDING
+    internal JsIntlTables? Intl { get; }
 
     /// <summary>
     /// The mediator this invocation may ask for further executable bytes through, or nothing.

@@ -3386,18 +3386,14 @@ unit 3 at 512
             compiled.Succeeded ? "the arm64 backend emitted a wide artifact" : refusal);
     }
 
-    /// <summary>Every surface this build implements, as the descriptor doors take them.</summary>
-    private static VmFeatureManifestId[] EverySurface()
-    {
-        var surfaces = new VmFeatureManifestId[JsSurfaces.All.Length];
-
-        for (var index = 0; index < surfaces.Length; index++)
-        {
-            surfaces[index] = VmFeatureManifestId.Parse(JsSurfaces.All[index]);
-        }
-
-        return surfaces;
-    }
+    /// <summary>
+    /// Every surface this build implements that a door handed no data can build: all but
+    /// <see cref="JsSurfaces.Intl"/>, whose tables these checks do not carry (JSD-0043).
+    /// </summary>
+    private static VmFeatureManifestId[] EverySurface() =>
+        [.. System.Linq.Enumerable.Select(
+            System.Linq.Enumerable.Where(JsSurfaces.All, static surface => surface != JsSurfaces.Intl),
+            static surface => VmFeatureManifestId.Parse(surface))];
 
     /// <summary>Verifies wide artifacts under one descriptor, one runtime for all of them.</summary>
     private static System.Collections.Generic.List<(string Label, bool Accepted, string Detail)> VerifyAll(

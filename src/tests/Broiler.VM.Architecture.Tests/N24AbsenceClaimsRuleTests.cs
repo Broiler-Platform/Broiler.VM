@@ -116,7 +116,7 @@ public sealed partial class N24AbsenceClaimsRuleTests
         // And the passing directions: a genuinely absent global, a present one inside a marked span,
         // a present one the clause does not call absent, and a bullet under a heading that is not
         // about absence.
-        Assert.DoesNotContain(findings, static finding => finding.Contains("`Intl`", StringComparison.Ordinal));
+        Assert.DoesNotContain(findings, static finding => finding.Contains("`Temporal`", StringComparison.Ordinal));
         Assert.DoesNotContain(findings, static finding => finding.Contains("`Map`", StringComparison.Ordinal));
         Assert.DoesNotContain(findings, static finding => finding.Contains("`Symbol`", StringComparison.Ordinal));
         Assert.DoesNotContain(findings, static finding => finding.Contains("`Array`", StringComparison.Ordinal));
@@ -319,7 +319,8 @@ public sealed partial class N24AbsenceClaimsRuleTests
         // Non-vacuous: the published set is a real one, with the names the witness is written about.
         Assert.Contains("Proxy", names);
         Assert.Contains("Promise", names);
-        Assert.DoesNotContain("Intl", names);
+        Assert.Contains("Intl", names);
+        Assert.DoesNotContain("Temporal", names);
         return names;
     }
 

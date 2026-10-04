@@ -526,7 +526,11 @@ public sealed class AssuranceScannerTests
         // its walk, so it is covered on the terms every other product project is. The tenth is its
         // bytecode emitter, Broiler.VM.Emitter.Bytecode, at UBC-2: the loop that executes every
         // family's instructions is product code for the same reason.
-        Assert.Equal(10, onDisk.Length);
+        //
+        // The eleventh is the JavaScript family's internationalization data,
+        // Broiler.VM.Profile.JavaScript.Intl, at F7 (JSD-0043): an assembly a composition hands to
+        // the profile, packed with the family, whose tables are generated but whose reader is code.
+        Assert.Equal(11, onDisk.Length);
 
         // The covered list is exactly those projects...
         Assert.Equal(

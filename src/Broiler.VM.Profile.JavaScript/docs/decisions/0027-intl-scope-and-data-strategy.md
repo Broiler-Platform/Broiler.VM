@@ -219,6 +219,7 @@ needs a measured prototype of I0 below, not a guess; (d) whether IANA tzdb is ev
   ignore and never coerce its arguments, check its receiver, and be added to this FIXED row in the
   same change. The `BigInt` typed arrays of card B07 inherit `%TypedArray%.prototype.toLocaleString`
   and so its N1 behaviour.
+<!-- as-written, superseded 2026-10-04 -->
 - **The consumer limitation, stated once so a consumer can quote it:**
 
   > The Broiler.VM JavaScript profile does not implement ECMA-402. `Intl` is absent. Locale and
@@ -230,7 +231,14 @@ needs a measured prototype of I0 below, not a guess; (d) whether IANA tzdb is ev
   > one-to-one (`'ß'.toUpperCase()` stays `"ß"`, no final sigma, no `İ`/`ı` special cases),
   > and `localeCompare` does not treat canonically equivalent strings as equal. Code that needs
   > locale-correct formatting or collation must format on the host side and pass strings in.
-
+<!-- /as-written -->
+- *(Superseded 2026-10-04: the limitation above now holds only for a composition that does not admit
+  `broiler.javascript.intl`, which is every composition but the slice compiler and the conformance
+  harness. Where it is admitted, `Intl` exists with `Collator` and `getCanonicalLocales`, and
+  `localeCompare` and the locale-named case methods answer as ECMA-402 requires; numbers and dates
+  still format as stated until I2 and I3. Case mapping is full and `localeCompare` equates
+  canonically equivalent strings since N2 and N3. Proposed [JSD-0043](0043-intl-data-boundary-and-collation.md),
+  [JSC-269](../roadmap.corrections.md#jsc-269).)*
 - **What reopens the deferral:** a named consumer with a workload that needs a specific
   constructor, recorded on the roadmap. None exists today: JSeal's tracked non-documentation files
   contain no `Intl.`, `toLocale…(` or `localeCompare(` call. When one appears, it schedules the
@@ -342,3 +350,25 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
   generation from pinned CLDR JSON, and the Unicode License v3 for CLDR on the UCD's terms - and
   nobody has signed them; (c), the size budget, waits for the measured tables; (d), tzdb, is not
   touched.
+
+## I0, second half, and I1: the data assembly and the collator, 2026-10-04 (unsigned)
+
+*Recorded with the change that publishes `Intl`; it signs nothing and this record keeps its status
+line. Corrections entry [JSC-269](../roadmap.corrections.md#jsc-269).*
+
+- **The generator, the data assembly and `broiler.javascript.intl` are built** under proposed
+  [JSD-0043](0043-intl-data-boundary-and-collation.md), as section 5 items 1 to 4 propose: the
+  default locale `en-US`, the locale list `de`, `de-DE`, `en`, `en-US` with `und` as the root, and
+  tables generated from the archive rule N27 holds, which rule N28 holds to the generator. A
+  composition that declines the surface does not reference the assembly.
+- **I1 is built**: `Intl` with `getCanonicalLocales` and `Collator`, and `localeCompare` routed
+  through it. The acceptance this record's section 7 names is met as JSD-0043 section 6 records:
+  both CollationTest files are in order, and the retained German and English orderings agree with
+  ICU 77.1 on every line.
+- **Owner decision (c), the size budget, now has its measurement**: 325,646 bytes of table data, in
+  an assembly of 333,312 bytes. A provisional bound of 512 KiB holds it until a budget is set.
+  Nobody has set one. Decisions (a) and (b) stay as the first half of I0 records them, and (d) is not
+  touched.
+- **Section 1's fixed answers now hold only where `Intl` is not built**, which is every composition
+  but the two JSD-0043 names. Where it is built, `localeCompare` and the locale-named case methods
+  answer as ECMA-402 requires.

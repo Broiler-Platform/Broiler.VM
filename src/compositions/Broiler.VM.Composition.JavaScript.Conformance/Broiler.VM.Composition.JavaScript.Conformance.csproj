@@ -51,6 +51,11 @@
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
 
+    <!-- THE INTERNATIONALIZATION DATA (JSD-0043): this root admits broiler.javascript.intl, and the
+         surface is built from tables in an assembly of their own that a root declining it does not
+         name, so only roots like this one carry them. -->
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Intl\Broiler.VM.Profile.JavaScript.Intl.csproj" />
+
     <!-- THE ARMING PATH, RESTORED TO THIS ROOT ON 2026-09-23. The harness scores this profile in
          two forms, and the native form is one of them. The arming path left the profile assembly
          on 2026-09-18 and was rearmed for the slice-compiler root alone, which left every native

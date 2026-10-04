@@ -622,6 +622,19 @@ runner's `$262.agent` starts real agents and scores the `CanBlockIsFalse` files,
 An array-length truncation that walked every index between the two lengths now visits only the
 indices the array holds ([JSC-268](roadmap.corrections.md#jsc-268)). No milestone row advances.)*
 
+**Phase F7 observation, 2026-10-04.** `Intl` is built where a composition admits
+`broiler.javascript.intl` and hands over its data, and left the ledger's `absent-globals` block in
+the same change. The CLDR 48.2.0 tables are generated into an assembly of their own,
+`Broiler.VM.Profile.JavaScript.Intl`, which the profile reads through `IJsIntlData` and does not
+reference. Rule N28 holds the 325,646 bytes of table data to the generator under a provisional
+512 KiB bound. Only the slice-compiler and conformance roots reference it. `Intl.Collator` orders
+both UCA CollationTest files and the retained German and English orderings as ICU 77.1 does, and
+`localeCompare` routes through it. Under `test/intl402`, 312 of 4,418 variants pass, against 50,
+with none moving back; `Collator` passes 124 of its 130
+([JSC-269](roadmap.corrections.md#jsc-269), proposed
+[JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
+validation material, not accepted milestone evidence; no milestone row advances.
+
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:
 - the tokenizer reads a `/` by what its bracket closed;
@@ -1208,11 +1221,13 @@ running `Object.getOwnPropertyNames(globalThis)` in a verified artifact and writ
 fails when the two disagree in either direction. **The block is the claim; the file is the fact.**
 
 ```absent-globals
-Intl
 Temporal
 ```
 
-**Both are absent for want of work, and each is scheduled.** *(Amended 2026-10-04: `SharedArrayBuffer`
+**Both are absent for want of work, and each is scheduled.** *(Amended 2026-10-04, phase F7: `Intl`
+left the block in the change that publishes it, under proposed
+[JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) and the identity `broiler.javascript.intl`
+([JSC-269](roadmap.corrections.md#jsc-269)); `Temporal` is the one name left.)* *(Amended 2026-10-04: `SharedArrayBuffer`
 and `Atomics` left the block in the change that publishes them, phase F6's first slice, under
 proposed [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) and the identity
 `broiler.javascript.shared` ([JSC-266](roadmap.corrections.md#jsc-266)); the published file is now

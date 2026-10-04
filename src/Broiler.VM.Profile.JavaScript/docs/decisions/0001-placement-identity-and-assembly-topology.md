@@ -152,3 +152,17 @@ tree, and restore rule N4 in its new form.**
   pointing at `d16a6aa` and the N4 revision, so the record and the rule agree.
 - **The alternative** is to revert to unpackable until JS-10. That keeps the original plan but
   breaks whatever consumes the packages today; take it only if nothing does.
+
+## Amended 2026-10-04: a fourth assembly, the internationalization data (unsigned)
+
+*Recorded with phase F7's first implementation; it signs nothing and this record keeps its status
+line. Corrections entry [JSC-269](../roadmap.corrections.md#jsc-269).*
+
+- **The family has a fourth assembly**: `Broiler.VM.Profile.JavaScript.Intl`, holding the tables
+  generated from the pinned CLDR release and the class that hands them over. It references the
+  format and nothing else, and the profile does not reference it, as proposed
+  [JSD-0043](0043-intl-data-boundary-and-collation.md) section 1 states. ADR 0001's revision of
+  2026-10-04 authorises it.
+- **Why it is not part of the profile**: JSD-0027 section 5 item 3 requires that a composition
+  declining `Intl` carry none of its data. That is a deployment boundary, the test this record's
+  topology applies to the lowering. The assembly packs under its own name (rule N4).

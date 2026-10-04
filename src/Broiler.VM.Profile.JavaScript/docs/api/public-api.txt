@@ -130,6 +130,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.CompletionKindId : const System.Int32 = 1001
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.Descriptor : static Broiler.VM.VmProfileDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorComposing(Broiler.VM.Profile.JavaScript.JsComposition composition) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorHostingRealms(Broiler.VM.Profile.JavaScript.IJsHostSurface surface, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorReEmittingWith(Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter emitter, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorSweepingFinalization(Broiler.VM.Profile.JavaScript.IJsHostSurface surface, System.Boolean handleStress, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
@@ -140,6 +141,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.HostSurfaceBindingIndex : const System.Int32 = 3
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.HostSurfaceCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.Id : static Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.IntlManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ModulesManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.NativeManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.NumericManifest : static Broiler.VM.VmFeatureManifestId { get; }
@@ -209,6 +211,13 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.TypeOf : System.String { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.Value : System.String { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsComposition..ctor() : void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsComposition.HandleStress : System.Boolean { get; set; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsComposition.HostSurface : Broiler.VM.Profile.JavaScript.IJsHostSurface { get; set; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsComposition.IntlData : Broiler.VM.Profile.JavaScript.Format.IJsIntlData { get; set; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsComposition.NativeEmitter : Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter { get; set; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsComposition.Surfaces : System.Collections.Generic.IReadOnlyList<Broiler.VM.VmFeatureManifestId> { get; set; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsComposition.SweepsFinalization : System.Boolean { get; set; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostBufferStatus.Copied : const Broiler.VM.Profile.JavaScript.JsHostBufferStatus = 0
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostBufferStatus.DestinationTooSmall : const Broiler.VM.Profile.JavaScript.JsHostBufferStatus = 3
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostBufferStatus.Detached : const Broiler.VM.Profile.JavaScript.JsHostBufferStatus = 2
@@ -1480,6 +1489,8 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.ToString() : virtual System.String
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.IJsIntlData.CldrVersion : abstract System.String { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.IJsIntlData.Table(Broiler.VM.Profile.JavaScript.Format.JsIntlTable table) : abstract System.ReadOnlySpan<System.Byte>
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter.Architecture : abstract Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter.CodeAlignment : abstract System.UInt32 { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter.SemanticVersion : abstract System.UInt32 { get; }
@@ -1893,6 +1904,15 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow.ToString() : virtual System.String
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow.op_Equality(Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow left, Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow.op_Inequality(Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow left, Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Aliases : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 2
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.CollationRoot : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 5
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.CollationTailorings : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 6
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Extensions : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 3
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.LikelySubtags : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 1
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Locales : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 4
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.None : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 0
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.SoftDotted : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 7
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.value__ : System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsLocalExportRow..ctor(System.UInt32 NameConstant, System.UInt32 Slot) : void
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsLocalExportRow.Deconstruct(out System.UInt32 NameConstant, out System.UInt32 Slot) : System.Void
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsLocalExportRow.Equals(Broiler.VM.Profile.JavaScript.Format.JsLocalExportRow other) : System.Boolean
@@ -2306,6 +2326,8 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.BinaryGlobals : static readonly System.String[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Dynamic : const System.String = "broiler.javascript.dynamic"
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.DynamicGlobals : static readonly System.String[]
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Intl : const System.String = "broiler.javascript.intl"
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.IntlGlobals : static readonly System.String[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.IsKnown(System.String manifestId) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Modules : const System.String = "broiler.javascript.modules"
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Native : const System.String = "broiler.javascript.native"
@@ -2510,6 +2532,9 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.ToNumber(System.UInt64 word) : static System.Double
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.True : const System.UInt64 = 18444773748872577027
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Undefined : const System.UInt64 = 18444773748872577024
+  Broiler.VM.Profile.JavaScript.Intl Broiler.VM.Profile.JavaScript.Intl.JsCldrData.CldrVersion : System.String { get; }
+  Broiler.VM.Profile.JavaScript.Intl Broiler.VM.Profile.JavaScript.Intl.JsCldrData.Instance : static Broiler.VM.Profile.JavaScript.Intl.JsCldrData { get; }
+  Broiler.VM.Profile.JavaScript.Intl Broiler.VM.Profile.JavaScript.Intl.JsCldrData.Table(Broiler.VM.Profile.JavaScript.Format.JsIntlTable table) : System.ReadOnlySpan<System.Byte>
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostAgentPolicy : interface
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic : interface
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExoticDeletion : interface
@@ -2531,6 +2556,7 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValue
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValueKind : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier : sealed class Broiler.VM.IVmProfileVerifier
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion : sealed class Broiler.VM.IVmProfilePayload
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsComposition : sealed class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostBufferStatus : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier : sealed class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind : enum
@@ -2635,6 +2661,7 @@ type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compil
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression>
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement>
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement>
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.IJsIntlData : interface
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter : interface
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptArtifactWriter : static class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptArtifactWriter.Section : struct
@@ -2673,6 +2700,7 @@ type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.J
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFunctionRow : struct System.IEquatable<Broiler.VM.Profile.JavaScript.Format.JsFunctionRow>
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsImportEntryRow : struct System.IEquatable<Broiler.VM.Profile.JavaScript.Format.JsImportEntryRow>
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow : struct System.IEquatable<Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow>
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable : enum
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsLocalExportRow : struct System.IEquatable<Broiler.VM.Profile.JavaScript.Format.JsLocalExportRow>
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsModuleRow : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Format.JsModuleRow>
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeAbiProbe : struct
@@ -2714,3 +2742,4 @@ type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.J
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueTemplate : enum
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan : sealed class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord : static class
+type Broiler.VM.Profile.JavaScript.Intl Broiler.VM.Profile.JavaScript.Intl.JsCldrData : sealed class Broiler.VM.Profile.JavaScript.Format.IJsIntlData
