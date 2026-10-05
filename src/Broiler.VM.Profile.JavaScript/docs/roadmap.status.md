@@ -647,7 +647,8 @@ Gregorian data; the data is 761,598 bytes. A retained dataset of 5,951 lines agr
 reference polyfill on 4,556 lines, the 1,395 others named, 1,386 of them CLDR 48's era names against
 the CLDR 47 the polyfill's ICU reads. `test/intl402/DateTimeFormat` passes 478 of 488,
 `test/intl402/Temporal` 3,980 of 3,982 and `test/intl402/Intl` all 132; no variant scored before
-moves back ([JSC-283](roadmap.corrections.md#jsc-283)). F8's exit gate still waits on a zone's long
+moves back. Over the whole pinned suite 100,364 of 101,723 variants pass, 40 more
+([JSC-283](roadmap.corrections.md#jsc-283)). F8's exit gate still waits on a zone's long
 name, which needs CLDR's metazones. This is unreviewed implementation and validation material, not
 accepted milestone evidence; no milestone row advances.
 

@@ -114,8 +114,11 @@ the profile reads CLDR 48.2. The dataset's divergences file names each line, in 
     zone's long name, which needs CLDR's metazones;
   - `test/intl402/Intl` passes all 132, where it passed 130;
   - no variant scored before moves from passing.
-- **The whole pinned suite**, run after the change: recorded in
-  [JSC-283](../roadmap.corrections.md#jsc-283).
+- **The whole pinned suite**, run after the change: 101,723 variants, 100,364 passing, 160 failing,
+  46 exhausted and 1,153 skipped. 42 variants moved from failing to passing, all under
+  `test/intl402`, and none moved to failing; two `Atomics.waitAsync` variants that JSC-273 records as
+  machine-dependent ran out of live bytes, and pass when their files run alone
+  ([JSC-283](../roadmap.corrections.md#jsc-283)).
 - **The slice compiler's checks**: one new, 645 in all - the dataset against the polyfill.
 - **Rule N28** holds the regenerated tables to the generator and the data to the budget; the
   architecture suite's 339 tests pass.

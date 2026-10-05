@@ -12516,6 +12516,14 @@ under `src/tests/cldr/pins/` (rule N27), and the retained dataset `src/tests/tem
   from passing.
 - **Checks**: one new slice-compiler check, 645 in all; the architecture suite's 339 tests pass, the
   regenerated tables among them.
+- **test262, whole pinned suite**, against the run [JSC-282](#jsc-282) records: 101,723 variants,
+  100,364 passing, 160 failing, 46 exhausted and 1,153 skipped. 42 variants moved from failing to
+  passing, all under `test/intl402` (20 under `DateTimeFormat/prototype`, 18 under `Temporal`, 2 under
+  `Intl/supportedValuesOf` and 2 in `DateTimeFormat/canonicalize-calendar.js`), and none moved to failing. Two
+  `Atomics.waitAsync` `no-spurious-wakeup-*` variants, the files [JSC-273](#jsc-273) records as
+  machine-dependent, ran out of live bytes while draining the job queue; run alone on the same binary,
+  both pass and another variant of the same files runs out instead. They do not touch `Intl`. The 46
+  exhausted are JSC-282's 44 and those 2.
 
 **What must not be read as repaired.**
 - **F8's exit gate is not met**: `test/intl402/Temporal` keeps two failing variants, one file asking

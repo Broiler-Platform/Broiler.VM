@@ -1387,7 +1387,8 @@ layers over each language's Gregorian data, under proposed
 [JSD-0057](decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md); the data is 761,598 bytes,
 under the owner's budget. `test/intl402/Temporal` passes 3,980 of 3,982 and `test/intl402/Intl` all
 132. The exit gate is not yet met: the two variants left ask for a zone's long name, which needs
-CLDR's metazones; a slice T5 measures them against the 24,834 bytes left and is next
+CLDR's metazones; a slice T5 measures them against the 24,834 bytes left and is next. Over the whole
+pinned suite 100,364 of 101,723 variants pass, none moving to failing
 ([JSC-283](roadmap.corrections.md#jsc-283)).*
 
 #### F9 — The release
