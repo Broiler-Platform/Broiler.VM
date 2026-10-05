@@ -146,6 +146,23 @@ internal static class Program
                 return RunHarnessChecks(verbose);
             }
 
+            // THE MEASUREMENT LANE'S CHILDREN (JSD-0059): asked for without a suite, because what
+            // they measure is the profile's verifier and its start, not a conformance test.
+            if (Argument(args, "--measure-verify") is { } measured)
+            {
+                return Measurement.VerifyThroughput(measured);
+            }
+
+            if (args.Contains("--cold-start", StringComparer.Ordinal))
+            {
+                return Measurement.ColdStart();
+            }
+
+            if (args.Contains("--cold-start-control", StringComparer.Ordinal))
+            {
+                return Measurement.ColdStartControl();
+            }
+
             // THE SCHEMA IS ASKED FOR WITHOUT A RUN, because a consumer writing a reader has no run
             // yet. It is generated from the same member list the renderer walks, so what it prints
             // is the contract this build actually emits rather than a description of one.
