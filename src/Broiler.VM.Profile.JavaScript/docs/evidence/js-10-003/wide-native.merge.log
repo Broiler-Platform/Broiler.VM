@@ -1,0 +1,113 @@
+json /tmp/broiler-js-rc-wide-native-b2r5zqb3/test262.json
+broiler-js-conformance: merged 16 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 16 shards
+selection candidates=53469 selected=53469 merged=53469
+# this run met no construct outside the manifest
+# exhausted dimensions: 4 distinct, 44 variants
+#        19  WallClock  e.g. test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict]
+#        18  NestedLoadFanOut  e.g. test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js [sloppy]
+#         5  Fuel  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]
+#         2  NestedLoadBytes  e.g. test/staging/sm/RegExp/unicode-class-braced.js [sloppy]
+# exhausted test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js [sloppy] on NestedLoadFanOut
+# exhausted test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js [strict] on NestedLoadFanOut
+# exhausted test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [sloppy] on NestedLoadFanOut
+# exhausted test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [strict] on NestedLoadFanOut
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict] on WallClock
+# exhausted test/language/comments/S7.4_A5.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/comments/S7.4_A5.js [strict] on NestedLoadFanOut
+# exhausted test/language/comments/S7.4_A6.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/comments/S7.4_A6.js [strict] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A1.1_T2.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A1.1_T2.js [strict] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A1.4_T2.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A1.4_T2.js [strict] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A2.1_T2.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A2.1_T2.js [strict] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A2.4_T2.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A2.4_T2.js [strict] on NestedLoadFanOut
+# exhausted test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-1-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-3-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-3-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-5-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-5-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-6-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-6-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/RegExp/unicode-class-braced.js [sloppy] on NestedLoadBytes
+# exhausted test/staging/sm/RegExp/unicode-class-braced.js [strict] on NestedLoadBytes
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy] on WallClock
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [strict] on WallClock
+# exhausted test/staging/sm/class/newTargetEval.js [sloppy] on NestedLoadFanOut
+# exhausted test/staging/sm/class/newTargetEval.js [strict] on NestedLoadFanOut
+# exhausted test/staging/sm/regress/regress-610026.js [sloppy] on WallClock
+# exhausted test/staging/sm/regress/regress-610026.js [strict] on WallClock
+# failure classification over 192 failing variant(s)
+#   by kind: 7 distinct, 192 variants
+#         131  an uncaught Test262Error  e.g. test/intl402/Collator/prototype/resolvedOptions/ignorePunctuation-default.js [sloppy]
+#          34  an uncaught RangeError  e.g. test/language/expressions/call/tco-call-args.js [strict]
+#          10  an uncaught TypeError  e.g. test/staging/built-ins/Object/preventExtensions/preventExtensions-variable-length-typed-arrays.js [sloppy]
+#          10  the front end refused a source this manifest admits  e.g. test/language/statements/function/S13.2.1_A1_T1.js [sloppy]
+#           4  an uncaught Error  e.g. test/staging/sm/Math/expm1-approx.js [sloppy]
+#           2  an uncaught SyntaxError  e.g. test/staging/sm/async-functions/await-in-arrow-parameters.js [sloppy]
+#           1  a declared runtime-phase ReferenceError was not raised  e.g. test/language/identifier-resolution/assign-to-global-undefined.js [strict]
+#   by area: 48 distinct, 192 variants
+#          42  test/intl402/NumberFormat/prototype  e.g. test/intl402/NumberFormat/prototype/format/engineering-scientific-zh-TW.js [sloppy]
+#          12  test/intl402/RelativeTimeFormat/prototype  e.g. test/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-long.js [sloppy]
+#          12  test/staging/sm/RegExp  e.g. test/staging/sm/RegExp/7.8.5-01.js [sloppy]
+#          10  test/intl402/DateTimeFormat/prototype  e.g. test/intl402/DateTimeFormat/prototype/format/numbering-system.js [sloppy]
+#           9  test/staging/sm/class  e.g. test/staging/sm/class/boundFunctionSubclassing.js [sloppy]
+#           8  test/intl402/ListFormat/prototype  e.g. test/intl402/ListFormat/prototype/format/es-es-long.js [sloppy]
+#           6  test/language/expressions/call  e.g. test/language/expressions/call/tco-call-args.js [strict]
+#           6  test/staging/sm/Set  e.g. test/staging/sm/Set/difference.js [sloppy]
+#           6  test/staging/sm/statements  e.g. test/staging/sm/statements/arrow-function-in-for-statement-head.js [sloppy]
+#           4  test/intl402/Collator/prototype  e.g. test/intl402/Collator/prototype/resolvedOptions/ignorePunctuation-default.js [sloppy]
+#           4  test/intl402/PluralRules/prototype  e.g. test/intl402/PluralRules/prototype/resolvedOptions/plural-categories-order.js [sloppy]
+#           4  test/intl402/Segmenter/constructor  e.g. test/intl402/Segmenter/constructor/constructor/locales-valid.js [sloppy]
+#           4  test/language/statements/for  e.g. test/language/statements/for/tco-const-body.js [strict]
+#           4  test/staging/built-ins/Object  e.g. test/staging/built-ins/Object/preventExtensions/preventExtensions-variable-length-typed-arrays.js [sloppy]
+#           4  test/staging/sm/Function  e.g. test/staging/sm/Function/constructor-binding.js [sloppy]
+#           4  test/staging/sm/Math  e.g. test/staging/sm/Math/expm1-approx.js [sloppy]
+#           3  test/language/statements/switch  e.g. test/language/statements/switch/tco-case-body-dflt.js [strict]
+#           3  test/language/statements/try  e.g. test/language/statements/try/tco-catch-finally.js [strict]
+#           2  test/intl402/DurationFormat/supportedLocalesOf  e.g. test/intl402/DurationFormat/supportedLocalesOf/locales-specific.js [sloppy]
+#           2  test/language/expressions/coalesce  e.g. test/language/expressions/coalesce/tco-pos-null.js [strict]
+#           2  test/language/expressions/conditional  e.g. test/language/expressions/conditional/tco-cond.js [strict]
+#           2  test/language/expressions/object  e.g. test/language/expressions/object/dstr/object-rest-proxy-gopd-not-called-on-excluded-keys.js [sloppy]
+#           2  test/language/expressions/tagged-template  e.g. test/language/expressions/tagged-template/tco-call.js [strict]
+#           2  test/language/statements/block  e.g. test/language/statements/block/tco-stmt-list.js [strict]
+#           2  test/language/statements/function  e.g. test/language/statements/function/S13.2.1_A1_T1.js [sloppy]
+#          23  further row(s) not printed here; every one of them is in the report
+#   by declared feature (115 of 192 failing variants declare one; a variant with two is in two rows): 17 distinct, 137 taggings over 115 variants
+#          40  Intl.NumberFormat-unified  e.g. test/intl402/NumberFormat/prototype/format/engineering-scientific-zh-TW.js [sloppy]
+#          34  tail-call-optimization  e.g. test/language/expressions/call/tco-call-args.js [strict]
+#          12  Intl.RelativeTimeFormat  e.g. test/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-long.js [sloppy]
+#           8  Intl.ListFormat  e.g. test/intl402/ListFormat/prototype/format/es-es-long.js [sloppy]
+#           6  ArrayBuffer  e.g. test/staging/built-ins/Object/preventExtensions/preventExtensions-variable-length-typed-arrays.js [sloppy]
+#           6  SharedArrayBuffer  e.g. test/staging/built-ins/Object/preventExtensions/preventExtensions-variable-length-typed-arrays.js [sloppy]
+#           6  resizable-arraybuffer  e.g. test/staging/built-ins/Object/preventExtensions/preventExtensions-variable-length-typed-arrays.js [sloppy]
+#           4  Array.prototype.includes  e.g. test/intl402/DateTimeFormat/prototype/format/related-year-zh.js [sloppy]
+#           4  Intl.Segmenter  e.g. test/intl402/Segmenter/constructor/constructor/locales-valid.js [sloppy]
+#           3  Proxy  e.g. test/language/destructuring/binding/keyed-destructuring-property-reference-target-evaluation-order-with-bindings.js [sloppy]
+#           2  Intl.DurationFormat  e.g. test/intl402/DurationFormat/supportedLocalesOf/locales-specific.js [sloppy]
+#           2  Symbol  e.g. test/language/expressions/object/dstr/object-rest-proxy-gopd-not-called-on-excluded-keys.js [sloppy]
+#           2  Temporal  e.g. test/intl402/DateTimeFormat/prototype/format/temporal-objects-no-time-clip-non-latin-numerals.js [sloppy]
+#           2  class  e.g. test/staging/sm/expressions/destructuring-pattern-parenthesized.js [sloppy]
+#           2  coalesce-expression  e.g. test/language/expressions/coalesce/tco-pos-null.js [strict]
+#           2  destructuring-binding  e.g. test/language/expressions/object/dstr/object-rest-proxy-gopd-not-called-on-excluded-keys.js [sloppy]
+#           2  object-rest  e.g. test/language/expressions/object/dstr/object-rest-proxy-gopd-not-called-on-excluded-keys.js [sloppy]
+# test262 53469 files, 101723 variants: pass 100334, fail 192, unsupported 0, exhausted 44, skipped 1153
+coverage whole

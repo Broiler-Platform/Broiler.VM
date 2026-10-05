@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           19
+// Exempt:           21
 // Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         7/6
+// Criteria:         8/6
 // Resource impact:  5/10 max
 // Unverified:       18
 //
@@ -250,19 +250,34 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     // Broiler-Human:        PENDING
     private readonly bool handleStress;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E10F7D
+    /// <summary>Whether an instance's host drains sweep its finalization registries (phase F4).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EA87D7
+    // Broiler-Falsified-If: an instance of this executor sweeps, or does not, other than as its descriptor was built
+    // Broiler-Human:        PENDING
+    private readonly bool sweepsFinalization;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6BB511
     // Broiler-Human:        PENDING
     internal JavaScriptExecutor(
         VmProfileId profileId,
         IVmExecutionEnvironment executionEnvironment,
         IJsHostSurface? surface = null,
-        bool stress = false)
+        bool stress = false,
+        bool sweeps = false,
+        JsIntlTables? intl = null)
     {
         ProfileId = profileId;
         environment = executionEnvironment;
         hostSurface = surface;
         handleStress = stress;
+        sweepsFinalization = sweeps;
+        intlTables = intl;
     }
+
+    /// <summary>The internationalization tables this executor's descriptor was built with, or nothing (JSD-0043).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=747049
+    // Broiler-Human:        PENDING
+    private readonly JsIntlTables? intlTables;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CCA6CF
@@ -270,7 +285,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     public VmProfileId ProfileId { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=C59E32
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=9CEF10
     // Broiler-Falsified-If: a handle this profile did not verify produces an instance
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(
@@ -298,7 +313,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
                     wideProgram.ManifestId, JsNumericManifest.ManifestId, System.StringComparison.Ordinal)
                 ? JsNativeExecution.Instantiate(wideProgram, environment)
                 : JsExecution.Instantiate(
-                    wideProgram, environment, hostSurface, cancellationToken, handleStress);
+                    wideProgram, environment, hostSurface, cancellationToken, handleStress, sweepsFinalization, intlTables);
         }
 
         if (!artifact.TryGetState(out var state) || state is not JavaScriptProgram program)

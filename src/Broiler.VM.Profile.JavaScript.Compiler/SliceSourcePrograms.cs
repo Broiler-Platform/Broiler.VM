@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   10
 // Annotated:        10/10
-// Exempt:           1
+// Exempt:           2
 // Human-reviewed:   0/10
 // IP risk:          None
 // Security risk:    High
@@ -14,6 +14,8 @@
 // Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
@@ -36,6 +38,14 @@ public sealed record SliceRefusedSource(string Name, string Source, SliceSourceD
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=10049D
     // Broiler-Human:        PENDING
     public SliceParseOptions Options { get; init; } = SliceParseOptions.Script;
+
+    /// <summary>
+    /// The module type a module source is loaded as: empty for a program, or
+    /// <see cref="JsFormat.JsonModuleType"/> for a document. Retained with the extension it names.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E79EB1
+    // Broiler-Human:        PENDING
+    public string ModuleType { get; init; } = string.Empty;
 }
 
 /// <summary>
@@ -85,7 +95,7 @@ public static class SliceSourcePrograms
     /// goal does not - and the whole reason that code exists is to keep the two apart.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=C3A6FF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DFEF54
     // Broiler-Falsified-If: any program here is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] RefusedModules =>
@@ -120,13 +130,28 @@ public static class SliceSourcePrograms
 
         // AND THIS ONE IS A MODULE WHOSE SYNTAX IS PERFECTLY ORDINARY. The clause parses; what is
         // refused is the ATTRIBUTE, because no composition of this profile has a loader for a
-        // module of a type - and for a static import, loading is what this front end does.
+        // module of that type - and for a static import, loading is what this front end does.
+        // It named `type: "json"` until 2026-10-04, when JSON modules arrived (JSC-255); a CSS
+        // module is a type no composition of this profile loads.
         new(
             "refuse-an-import-attribute-nothing-can-honour",
-            "import value from \"./data.json\" with { type: \"json\" };\nvalue",
+            "import value from \"./sheet.css\" with { type: \"css\" };\nvalue",
             SliceSourceDiagnosticCode.UnsupportedImportAttribute)
         {
             Options = SliceParseOptions.Module,
+        },
+
+        // AND THIS ONE IS NOT JAVASCRIPT AT ALL. It is the text of a module loaded with
+        // `type: "json"`, and it is refused because it is not JSON: a trailing comma is a valid
+        // object literal and an invalid document, which is exactly the difference the reading
+        // must hold to.
+        new(
+            "refuse-a-json-module-that-is-not-json",
+            "{ \"trailing\": 1, }",
+            SliceSourceDiagnosticCode.InvalidJsonModule)
+        {
+            Options = SliceParseOptions.Module,
+            ModuleType = JsFormat.JsonModuleType,
         },
     ];
 
@@ -194,7 +219,7 @@ public static class SliceSourcePrograms
     /// becomes bytes. They are judged by the composition that carries the front end, and the
     /// execution-only image - which has no front end - could not judge them and does not claim to.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=FEAC8D
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=ACE5A3
     // Broiler-Falsified-If: any source here compiles, or is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] Refused =>
@@ -250,6 +275,13 @@ public static class SliceSourcePrograms
         new("refuse-loose-equality", "1 == true", SliceSourceDiagnosticCode.ConstructOutsideManifest),
         new("refuse-bitwise-not", "~0", SliceSourceDiagnosticCode.ConstructOutsideManifest),
         new("refuse-typeof", "typeof 1", SliceSourceDiagnosticCode.ConstructOutsideManifest),
+
+        // A BIGINT LITERAL IS REFUSED BY NAME HERE, and it is the refusal the parity roadmap's JSP-2
+        // calls the one that was lost: until 2026-09-08 the wide front end read `1n` as the Number
+        // 1, a plausible wrong value no exit code reports. The wide manifest now admits the type,
+        // so this surface is where the refusal is still a property, and this entry retains it
+        // (JSC-241).
+        new("refuse-a-bigint-literal", "1n", SliceSourceDiagnosticCode.ConstructOutsideManifest),
 
         // ---- static semantics --------------------------------------------------------------------
         new(

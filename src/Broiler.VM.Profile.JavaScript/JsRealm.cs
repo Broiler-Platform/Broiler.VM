@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
-// Exempt:           20
-// Human-reviewed:   0/19
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           26
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       19
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -19,41 +19,81 @@ namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>An enumerator over the property names <c>for…in</c> visits.</summary>
 /// <remarks>
+/// <para>
 /// It is an object because the operand stack holds values and a value that is not a primitive is
 /// an object. Guest code can never reach it: nothing puts it in a property and the two opcodes
 /// that touch it are the only ones that accept it.
+/// </para>
+/// <para>
+/// <b>It reads one object at a time, and asks for each name when it reaches it</b>, which is the
+/// enumeration the specification's own <c>%ForInIteratorPrototype%.next</c> performs. A name deleted
+/// before the loop reaches it is not visited, and one made non-enumerable is not visited either,
+/// where a list collected whole at the start visited both (JSP-5, JSC-237). A name already visited,
+/// or present lower in the chain, is not visited again; the prototype is read when the object above
+/// it runs out, so a prototype swapped mid-loop is the one the loop goes on to.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5A6690
 // Broiler-Human:        PENDING
 internal sealed class JsEnumerator : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A6428A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D90CE
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<string> keys;
+    private readonly System.Collections.Generic.HashSet<string> visited =
+        new(System.StringComparer.Ordinal);
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1FDE8E
+    // Broiler-Human:        PENDING
+    private JsObject? current;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6FFF1F
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<string>? names;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=98C321
     // Broiler-Human:        PENDING
     private int at;
 
-    /// <summary>Creates an enumerator over an already-collected key list.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BE0557
+    /// <summary>Creates an enumerator that starts at <paramref name="start"/>, or visits nothing.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F78D99
     // Broiler-Human:        PENDING
-    internal JsEnumerator(System.Collections.Generic.List<string> names)
-        : base(null, "Enumerator") => keys = names;
+    internal JsEnumerator(JsObject? start)
+        : base(null, "Enumerator") => current = start;
 
     /// <summary>Yields the next name, or answers that there is none.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=083E20
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5D5530
     // Broiler-Human:        PENDING
     internal bool TryNext(out string key)
     {
-        if (at >= keys.Count)
+        while (current is not null)
         {
-            key = string.Empty;
-            return false;
+            names ??= current.OwnPropertyNames();
+
+            while (at < names.Count)
+            {
+                var name = names[at++];
+
+                if (visited.Contains(name) || !current.TryGetOwnProperty(name, out var property))
+                {
+                    continue;
+                }
+
+                visited.Add(name);
+
+                if (property.Enumerable)
+                {
+                    key = name;
+                    return true;
+                }
+            }
+
+            current = current.Prototype;
+            names = null;
+            at = 0;
         }
 
-        key = keys[at++];
-        return true;
+        key = string.Empty;
+        return false;
     }
 }
 
@@ -150,14 +190,17 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=261AFE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=83DC64
     // Broiler-Human:        PENDING
-    internal JsRealm(JsEngine owner)
+    internal JsRealm(JsEngine owner, bool shadow = false)
     {
         engine = owner;
+        Shadow = shadow;
+        agent = owner.Symbols;
 
         ObjectPrototype = new JsObject(null);
         FunctionPrototype = new JsNativeFunction(
+            this,
             ObjectPrototype, string.Empty, 0, static (_, _, _) => JsValue.Undefined);
 
         ThrowTypeErrorFunction = CreateThrowTypeError();
@@ -199,6 +242,12 @@ internal sealed partial class JsRealm
         if (owner.Admits(Format.JsSurfaces.Binary))
         {
             SetupBinary();
+
+            // SHARED MEMORY IS BUILT ON THE BINARY SURFACE'S TYPES, and only where both were admitted.
+            if (owner.Admits(Format.JsSurfaces.Shared))
+            {
+                SetupShared();
+            }
         }
 
         if (owner.Admits(Format.JsSurfaces.Dynamic))
@@ -226,7 +275,119 @@ internal sealed partial class JsRealm
         // AFTER THE PROMISE AND THE ASYNC-ITERATOR INTRINSICS, because the asynchronous stack
         // settles through the first and `%AsyncIteratorPrototype%` is where one disposer goes.
         SetupDisposal();
+
+        // A SHADOW REALM MAY MAKE SHADOW REALMS OF ITS OWN: it admits what its engine admits.
+        if (owner.Admits(Format.JsSurfaces.ShadowRealm))
+        {
+            SetupShadowRealm();
+        }
+
+        // `Intl` IS BUILT FROM THE COMPOSITION'S DATA (JSD-0043): a descriptor admits the surface only
+        // with it, so where the surface is admitted the tables are there.
+        if (owner.Admits(Format.JsSurfaces.Intl) && owner.Intl is not null)
+        {
+            SetupIntl();
+
+            // TEMPORAL AFTER INTL (JSD-0054): its time zones are Intl's data, and its Duration's
+            // toLocaleString builds an Intl.DurationFormat.
+            if (owner.Admits(Format.JsSurfaces.Temporal))
+            {
+                SetupTemporal();
+            }
+        }
+
+        // EVERY CONSTRUCTOR BUILT FROM HERE ON IS NOT AN INTRINSIC: an embedder's, or one a guest
+        // made, has no counterpart in another realm.
+        built = true;
     }
+
+    /// <summary>The constructors this realm built while it was being built, in the order it built them.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0080AE
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<JsNativeFunction> intrinsicConstructors = [];
+
+    /// <summary>Whether the realm's constructor has finished.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E7F825
+    // Broiler-Human:        PENDING
+    private bool built;
+
+    /// <summary>Records a constructor the realm is building, answering its ordinal, or -1 once built.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=005A08
+    // Broiler-Human:        PENDING
+    internal int NoteIntrinsicConstructor(JsNativeFunction constructor)
+    {
+        if (built)
+        {
+            return -1;
+        }
+
+        intrinsicConstructors.Add(constructor);
+        return intrinsicConstructors.Count - 1;
+    }
+
+    /// <summary>
+    /// This realm's counterpart of <paramref name="intrinsic"/>, a built-in constructor's
+    /// <c>prototype</c> in <paramref name="source"/>: the specification's
+    /// <c>realm.[[Intrinsics]].[[%X.prototype%]]</c> that <c>GetPrototypeFromConstructor</c> falls
+    /// back on when <c>new.target</c> is another realm's and its <c>prototype</c> is not an object.
+    /// </summary>
+    /// <remarks>
+    /// <b>Every realm on one engine builds the same constructors in the same order</b>, because they
+    /// are built from the same surface set, so the ordinal of the constructor whose prototype
+    /// <paramref name="intrinsic"/> is names its counterpart here; the name is checked as well, and
+    /// an object that is no constructor's prototype answers itself.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=268ADB
+    // Broiler-Human:        PENDING
+    internal JsObject CounterpartOf(JsObject intrinsic, JsRealm source)
+    {
+        if (ReferenceEquals(source, this))
+        {
+            return intrinsic;
+        }
+
+        foreach (var constructor in source.intrinsicConstructors)
+        {
+            if (!PrototypeOf(constructor, out var prototype) || !ReferenceEquals(prototype, intrinsic))
+            {
+                continue;
+            }
+
+            var ordinal = constructor.IntrinsicOrdinal;
+
+            return ordinal < intrinsicConstructors.Count &&
+                intrinsicConstructors[ordinal].FunctionName == constructor.FunctionName &&
+                PrototypeOf(intrinsicConstructors[ordinal], out var mine)
+                    ? mine
+                    : intrinsic;
+        }
+
+        return intrinsic;
+    }
+
+    /// <summary>A built-in constructor's own <c>prototype</c>, which no program can change.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5416D3
+    // Broiler-Human:        PENDING
+    private static bool PrototypeOf(JsNativeFunction constructor, out JsObject prototype)
+    {
+        if (constructor.TryGetOwnProperty("prototype", out var property) &&
+            !property.IsAccessor && property.Value.IsObject)
+        {
+            prototype = property.Value.AsObject();
+            return true;
+        }
+
+        prototype = null!;
+        return false;
+    }
+
+    /// <summary>
+    /// Whether this is a <c>ShadowRealm</c>'s realm, whose global holds nothing a host adds
+    /// (JSD-0030 D7).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7CE197
+    // Broiler-Human:        PENDING
+    internal bool Shadow { get; }
 
     /// <summary>The realm's global object.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=962FD4
@@ -256,6 +417,11 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A1061D
     // Broiler-Human:        PENDING
     internal JsNativeFunction ThrowTypeErrorFunction { get; }
+
+    /// <summary><c>%Array%</c>, which <c>ArraySpeciesCreate</c> recognises when another realm's code hands it over.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=662A0E
+    // Broiler-Human:        PENDING
+    internal JsNativeFunction? ArrayConstructor { get; private set; }
 
     /// <summary><c>Array.prototype</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=09FBFD
@@ -331,10 +497,10 @@ internal sealed partial class JsRealm
                 JsPropertyAttributes.Configurable));
 
     /// <summary>Builds a built-in function object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=87A99A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4FBE33
     // Broiler-Human:        PENDING
     internal JsNativeFunction Native(string name, int arity, JsNativeBody body) =>
-        new(FunctionPrototype, name, arity, body);
+        new(this, FunctionPrototype, name, arity, body);
 
     /// <summary>Defines a built-in method on <paramref name="host"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FF73D9
@@ -347,12 +513,12 @@ internal sealed partial class JsRealm
                 JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
     /// <summary>Defines a built-in constructor on the global object and links its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0B795C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1C829F
     // Broiler-Human:        PENDING
     internal JsNativeFunction Constructor(
         string name, int arity, JsObject prototype, JsNativeBody call, JsNativeBody construct)
     {
-        var function = new JsNativeFunction(FunctionPrototype, name, arity, call, construct);
+        var function = new JsNativeFunction(this, FunctionPrototype, name, arity, call, construct);
 
         function.SetOwnProperty(
             "prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
@@ -393,7 +559,7 @@ internal sealed partial class JsRealm
     internal JsArray NewArray() => new(ArrayPrototype);
 
     /// <summary>A fresh Error of the named intrinsic kind.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BFBD54
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C2B29B
     // Broiler-Human:        PENDING
     internal JsValue CreateError(string kind, string message)
     {
@@ -401,8 +567,7 @@ internal sealed partial class JsRealm
             ? engine.GetProperty(JsValue.Object(constructor), "prototype")
             : JsValue.Object(ErrorPrototype);
 
-        var error = new JsObject(
-            prototype.IsObject ? prototype.AsObject() : ErrorPrototype, "Error");
+        var error = NewError(engine, prototype.IsObject ? prototype.AsObject() : ErrorPrototype);
 
         error.SetOwnProperty(
             "message",
@@ -540,7 +705,7 @@ internal sealed partial class JsRealm
     /// them on every closure would cost nothing and mean nothing, and it would make a reader think
     /// an ordinary function consults them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3C004C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=18FB82
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
         JsProgram program,
@@ -573,6 +738,7 @@ internal sealed partial class JsRealm
         var isAsyncGenerator = isGenerator && isAsync;
 
         var function = new JsScriptFunction(
+            this,
             isAsyncGenerator ? AsyncGeneratorFunctionPrototype
                 : isGenerator ? GeneratorFunctionPrototype
                 : isAsync ? AsyncFunctionPrototype
@@ -668,47 +834,25 @@ internal sealed partial class JsRealm
                 JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.Writable));
         }
 
+        // A SLOPPY PLAIN FUNCTION HAS THE LEGACY `caller` AND `arguments`, made when first needed
+        // (JsScriptFunction.LegacyAccessors). Until 2026-10-04 it had neither and inherited
+        // Function.prototype's poisoned pair, so reading either threw (JSC-257).
+        if (function.LegacyReflective)
+        {
+            function.LegacyAccessors = (LegacyCallerGetter, LegacyArgumentsGetter);
+        }
+
         return function;
     }
 
     /// <summary>
-    /// Collects the names <c>for…in</c> visits: own and inherited enumerable string keys, each
-    /// once, shadowed names excluded.
+    /// Starts the names <c>for…in</c> visits: own and inherited enumerable string keys, each once,
+    /// shadowed names excluded, each asked for when the loop reaches it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=53AD7C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=03A836
     // Broiler-Human:        PENDING
-    internal JsEnumerator CreateEnumerator(JsEngine owner, JsValue target)
-    {
-        var names = new System.Collections.Generic.List<string>();
-
-        if (target.IsNullish)
-        {
-            return new JsEnumerator(names);
-        }
-
-        var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
-        var current = target.IsObject ? target.AsObject() : owner.ToObject(target);
-
-        while (current is not null)
-        {
-            foreach (var key in current.OwnPropertyNames())
-            {
-                if (!seen.Add(key))
-                {
-                    continue;
-                }
-
-                if (current.TryGetOwnProperty(key, out var property) && property.Enumerable)
-                {
-                    names.Add(key);
-                }
-            }
-
-            current = current.Prototype;
-        }
-
-        return new JsEnumerator(names);
-    }
+    internal JsEnumerator CreateEnumerator(JsEngine owner, JsValue target) =>
+        new(target.IsNullish ? null : target.IsObject ? target.AsObject() : owner.ToObject(target));
 
     /// <summary>The engine this realm belongs to.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=96CC19

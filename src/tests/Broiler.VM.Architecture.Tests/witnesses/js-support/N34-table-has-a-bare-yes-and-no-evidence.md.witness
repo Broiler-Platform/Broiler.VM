@@ -1,0 +1,229 @@
+<!-- SPDX-FileCopyrightText: 2026 Broiler Platform contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# The JavaScript profile's support table
+
+> **DRAFTED, NOT ISSUED.** Release gate 11 issues no support table until a named human has recorded
+> a decision on every relevant code unit, and none has: `HUMAN_REVIEW.md` is unsigned and every unit
+> reads `PENDING`. This document is the table JS-10 will issue, kept true of the checkout by rules
+> **N34**, **N35** and **N36** so that issuing it is a signature and not a rewrite. Until then nothing
+> here is a support claim: a row says what the checkout does and what evidence shows it, and no row
+> says more.
+
+Drafted 2026-10-05 under proposed [JSD-0060](decisions/0060-the-support-table-drafted.md), phase F9's
+slice R2. Roadmap [section 22](roadmap.gates.md#22-release-gates)'s release gate 1 and
+[section 19](roadmap.delivery.md#js-10--baselines-packaging-the-support-table-and-the-release-gate)'s
+JS-10 name what it must carry.
+
+**Its vocabulary never reads as a bare yes.** A row is one of: **Implemented** (the checkout does it,
+and the evidence cell names what shows it), **Implemented, partly** (with what is missing named),
+**Not provided** (with the deterministic failure a program or a host meets), **Excluded** (by a named
+decision), **Held** (an amendment this profile would ask of the core, with what stands meanwhile), or
+**Not declared** (a descriptor row this profile leaves undeclared). Every row has an evidence cell
+naming a rule or a retained artifact.
+
+---
+
+## 1. Identity
+
+| Field | Value | Evidence |
+|---|---|---|
+| Profile | `broiler.javascript`, descriptor revision 1 | Rule N10 holds the public surface that declares it; [`api/public-api.txt`](api/public-api.txt) |
+| Core contract version implemented | **1** | Rule N34 reads `authoredCoreContractVersion` in `JavaScriptProfile.cs` |
+| Minimum core contract version accepted | **1** | Rule N34 reads `VmCoreContract.MinimumSupportedVersion` |
+| Accepted format-version range | **1 to 2** | Rule N34 reads `JavaScriptFormat.MinimumFormatVersion` and `JsFormat.FormatVersion` |
+| Accepted manifest set | `broiler.javascript.slice`, `broiler.javascript.wide` and `broiler.javascript.numeric` unconditionally; `broiler.javascript.binary`, `broiler.javascript.dynamic`, `broiler.javascript.modules`, `broiler.javascript.native`, `broiler.javascript.bigint`, `broiler.javascript.shadowrealm`, `broiler.javascript.shared`, `broiler.javascript.intl` and `broiler.javascript.temporal` where a composition admits them | Rule N34 reads the descriptor's unconditional set and every surface `JsSurfaces` declares |
+| Conformance manifest | `broiler.javascript.conformance`, version **1** | Rule N34 reads the descriptor |
+| Pinned language-specification edition | ECMA-262, 17th edition (ES2026), `tc39/ecma262` revision `0248456c758431e4bb8e5d26333ff1865123c9cd`, `spec.html` SHA-256 `ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0` | Rule N14; [`specification/README.md`](specification/README.md) |
+| Pinned conformance suite | `tc39/test262` revision `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, archive SHA-256 `f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040` | Rule N15; [`test262.pin`](../../tests/conformance/pins/test262.pin) |
+| Package | `Broiler.VM.Profile.JavaScript`, with `.Format`, `.Compiler` and `.Intl` beside it | Rule N4; section 9 |
+
+---
+
+## 2. What varies, and what is fixed
+
+Roadmap section 6 names five kinds of surface that must each be fixed and recorded, or declared
+varying and kept out of the corpus by name. **A determinism claim broader than this list is an
+untruthful support claim.**
+
+| Surface | Fixed or varying | What is fixed, or why it varies | Evidence |
+|---|---|---|---|
+| Property enumeration order | **Fixed** | The specification's order where it fixes one, and insertion order for the rest, a deleted and re-added key going last | Rule N11's corpus; [`evidence/js-1/README.md`](evidence/js-1/README.md) |
+| Error message text | **Varying** | The message string is this profile's and may change; the error's kind is fixed, and the corpus pins the kind and never the string | [`roadmap.md`](roadmap.md) section 6 |
+| `Error.prototype.stack` | **Fixed** by this profile | Its form is decision JSD-0038's | [`decisions/0038-the-error-stack.md`](decisions/0038-the-error-stack.md) |
+| Number to string and string to number at the edges | **Fixed** | The specification's algorithms, implemented here rather than delegated to the platform | Rule N11's corpus |
+| Locale-sensitive behaviour | **Fixed** | CLDR 48.2's `de` and `en`, archived and generated; the default locale is `en-US` whatever the host's | Rules N27 and N28; [`decisions/0027-intl-scope-and-data-strategy.md`](decisions/0027-intl-scope-and-data-strategy.md) |
+| Calendar and time-zone behaviour | **Fixed** | tzdb 2026e and the calendars' published years, archived and generated; the default time zone is `UTC` whatever the host's | Rules N29 to N32; [`decisions/0053-time-zone-data-and-temporal-admission.md`](decisions/0053-time-zone-data-and-temporal-admission.md) |
+| `Math.random` | **Varying** | Seeded for each realm from the platform's entropy source | [`roadmap.status.md`](roadmap.status.md), JSC-231 |
+| `Date.now`, `new Date()`, `Temporal.Now` | **Varying** | The host's clock | [`roadmap.md`](roadmap.md) section 6 |
+| When a `FinalizationRegistry` callback or a `WeakRef`'s emptying is observed | **Varying** | It follows the platform's collector | [`decisions/0029-finalization-registry-cleanup-model.md`](decisions/0029-finalization-registry-cleanup-model.md) |
+| Anything a composition's host capabilities supply | **Varying** | `print`'s destination, a module source, a host object: each is the host's | [`roadmap.md`](roadmap.md) section 13 |
+
+---
+
+## 3. The language, by manifest and surface
+
+What the core contract admits, what this profile implements, and what a composition provides, kept
+apart: the contract treats every manifest as an opaque identifier, so **it admits all of them and
+implements none**.
+
+| Manifest or surface | This profile implements | What a composition provides | Evidence |
+|---|---|---|---|
+| `broiler.javascript.wide` | **Implemented, partly**: the pinned edition's language and library. Over the whole pinned suite, with every surface below admitted, 100,368 of 101,723 variants pass, 158 fail, 44 exhaust a budget and 1,153 are skipped; **no percentage is published** | Every JavaScript composition root admits it; none is advertised | [`test262-wide.floor`](../../tests/conformance/floors/test262-wide.floor); [`roadmap.corrections.md`](roadmap.corrections.md), JSC-284 |
+| `broiler.javascript.slice` | **Implemented**: the first manifest's subset, read by the same verifier | Every root | Rules N11 and N16; [`evidence/js-1/README.md`](evidence/js-1/README.md) |
+| `broiler.javascript.numeric` | **Implemented**: a narrowing of the wide manifest, for the native form | Every root | Rule N16 |
+| `broiler.javascript.binary` | **Implemented**: `ArrayBuffer`, the typed arrays and `DataView` | Roots that admit it | [`JsSurfaces.cs`](../../Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs); rule N16 |
+| `broiler.javascript.dynamic` | **Implemented**: `eval` and the `Function` constructor, through the guest-load mediator and nowhere else | Roots that register a provider; a root that registers none refuses every load deterministically | Rule N13; [`roadmap.md`](roadmap.md) section 11 |
+| `broiler.javascript.modules` | **Implemented**: the module goal, dynamic `import()` and JSON modules | Roots that register the resolve capability | [`roadmap.md`](roadmap.md) section 11 |
+| `broiler.javascript.native` | **Implemented, partly**: the baseline native form on `x86-64`; `arm64` is **emitting-only** and runs nowhere | Roots whose native-execution cell reads `x86-64` | Rules X1 to X4 and K5; [`../../../docs/compositions.md`](../../../docs/compositions.md) |
+| `broiler.javascript.bigint` | Yes | Roots that admit it | [`decisions/0033-the-internal-bigint-value-and-the-gated-literal.md`](decisions/0033-the-internal-bigint-value-and-the-gated-literal.md) |
+| `broiler.javascript.shadowrealm` | **Implemented** | Roots that admit it with `broiler.javascript.dynamic` | [`decisions/0040-admitting-shadowrealm.md`](decisions/0040-admitting-shadowrealm.md) |
+| `broiler.javascript.shared` | **Implemented**: `SharedArrayBuffer` and `Atomics`, and agents a host starts | Roots that admit it with `broiler.javascript.binary` | [`decisions/0041-shared-memory-in-one-agent.md`](decisions/0041-shared-memory-in-one-agent.md) |
+| `broiler.javascript.intl` | **Implemented, partly**: ECMA-402 in `de` and `en`; any other locale resolves to one of them | Roots that link the Intl data assembly | Rules N27 and N28; [`decisions/0027-intl-scope-and-data-strategy.md`](decisions/0027-intl-scope-and-data-strategy.md) |
+| `broiler.javascript.temporal` | **Implemented**: every calendar of the Intl era and month code proposal, and zone names | Roots that admit it with `broiler.javascript.intl` and `broiler.javascript.bigint` | Rules N29 to N32; [`decisions/0058-time-zone-names.md`](decisions/0058-time-zone-names.md) |
+
+---
+
+## 4. What is not provided, and what a program or host meets instead
+
+| Capability | Status | What is met instead | Evidence |
+|---|---|---|---|
+| The `WebAssembly` host-object surface | **Not provided**, and not inferable from a second profile in the image | `typeof WebAssembly` answers `"undefined"` and a reference throws `ReferenceError`; no manifest allocates it | [`realm/globals.txt`](realm/globals.txt); [`decisions/0007-cross-profile-position-and-amendment-grading.md`](decisions/0007-cross-profile-position-and-amendment-grading.md) |
+| Decorators | **Not provided** | Refused at compile time, `2104:ConstructOutsideManifest` | [`roadmap.parity.md`](roadmap.parity.md) |
+| `accessor` class elements | **Not provided** | Refused at compile time as a syntax error, `2102:ExpectedToken` | [`roadmap.parity.md`](roadmap.parity.md) |
+| Proposals the pinned suite carries beyond the edition | **Not provided**, but for `explicit-resource-management`, `ShadowRealm`, `Temporal` and `Intl.Era-monthcode` | Their syntax is refused or their globals are absent; the suite skips them by name | [`SuiteFeatures.cs`](../../compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs) |
+| Locales other than `de` and `en` | **Not provided** | Resolution falls back to `de` or `en` deterministically | [`decisions/0027-intl-scope-and-data-strategy.md`](decisions/0027-intl-scope-and-data-strategy.md) |
+| A function of more than 255 leading parameters | **Not provided** | Refused at compile time, `2301:TooManyLocals`, naming the count | [`roadmap.parity.md`](roadmap.parity.md) |
+| A persisted envelope or code cache | **Excluded** by roadmap section 16; reopened only against a host's latency budget and JS-10's figures | Every artifact is lowered or read as bytes and verified whole | [`baselines.md`](baselines.md); rule V10 |
+| Streaming or incremental verification | **Not provided** at core contract version 1 | Verification is whole-artifact and eager | Rule V10 |
+| Asynchronous instantiation | **Not declared** | No member returns a task | Rule V8 |
+| External suspension | **Not declared** | `RequestSuspend` answers `ExternalSuspensionNotDeclared` | Read by hand |
+
+---
+
+## 5. The amendment register's state
+
+Roadmap section 18's rows, one to a row here. **The amendment procedure is unexecutable**: one person
+holds the minting role and both co-signing roles, so no co-signature would be independent, and no
+amendment has been minted or filed with the core. A row's state is what this profile's own register
+records - held, opened or not needed - and its last cell is what stands meanwhile.
+
+| Amendment | State | What stands meanwhile | Evidence |
+|---|---|---|---|
+| An argument channel on invocation | **Held**; graded strong | A caller lowers a program that carries its arguments | [`decisions/0007-cross-profile-position-and-amendment-grading.md`](decisions/0007-cross-profile-position-and-amendment-grading.md) |
+| A result channel on invocation | **Not needed**: the typed payload carries results | Results travel in the payload | [`roadmap.md`](roadmap.md) section 18 |
+| Multi-result host capabilities | **Held**; graded moderate | An import whose signature has two results is refused, deterministically, rather than truncated | [`roadmap.md`](roadmap.md) section 18 |
+| A wider value slot on the capability channel | **Held**; graded weak | A wider value is split under a published encoding | [`roadmap.md`](roadmap.md) section 18 |
+| Nested instantiation through the mediator | **Held**; opened only if a module needs an instance of its own | One instance holds several realms | [`roadmap.md`](roadmap.md) section 18 |
+| A charging hook for work done inside a host capability | **Held**; graded strong | Wall clock bounds a slow capability; an allocating one is not charged | [`roadmap.md`](roadmap.md) section 18 |
+| An in-process producer input form — compiling straight to a verified handle | **Held**; opened only against JS-10's figures | Every compile serializes and re-verifies | [`baselines.md`](baselines.md) |
+| Lazy per-section verification | **Held**; funded by a measurement | Whole-artifact verification | [`baselines.md`](baselines.md) |
+| Streaming or incremental verification | **Held**; reopened against a measurement | Whole-artifact verification | Rule V10 |
+| A persisted envelope | **Held**; needs a gate rather than an amendment | Section 4's exclusion | Rule V10 |
+| A host capability that answers a guest with **bytes** | **Held**; reached by an observation | The capability channel answers a number or an opaque reference; a host object may answer bytes through the host surface | [`roadmap.md`](roadmap.md) section 18 |
+
+---
+
+## 6. The extraction gate
+
+**This profile's half.** The JavaScript profile's verifier, lowering, executor and native form are its
+own and merged, and none of them is a core mechanism. For each of them the gate's **first condition
+is unsatisfied**: no second product profile implements the same behaviour. **What would satisfy it**
+is a second product profile's merged implementation of a behaviour this profile also implements,
+named as that behaviour. This profile cannot schedule that, and this section records the state alone.
+The rule this section is scanned by is N35.
+
+---
+
+## 7. The declared-default vector
+
+**The neighbour-facing half.** A host that adopts profile defaults rather than stating ceilings gets,
+on each dimension, the tightest default any profile in its catalog declares, so this vector reaches
+every profile composed beside this one. Its **reconciliation is unowned**: roadmap section 15 puts it
+in the component that composes two profiles for a browser, and that component does not exist.
+
+| Dimension | Default | Evidence |
+|---|---|---|
+| `Fuel` | 50,000,000 | Rule N34 reads `Defaults()` in `JavaScriptProfile.cs` |
+| `WallClock` | 10,000 ms | Rule N34 |
+| `AllocatedBytes` | 67,108,864 | Rule N34 |
+| `LiveBytes` | 33,554,432 | Rule N34 |
+| `HostCalls` | 1,000,000 | Rule N34 |
+| `CallDepth` | 6,144 | Rule N34 |
+| `VerifierWork` | 100,000,000 | Rule N34 |
+| `ArtifactBytes` | 33,554,432 | Rule N34 |
+| `SectionCount` | 64 | Rule N34 |
+| `DeclaredCount` | 4,194,304 | Rule N34 |
+| `StructuralDepth` | 256 | Rule N34 |
+| `NestedLoadDepth` | 4 | Rule N34 |
+| `NestedLoadFanOut` | 4,096 | Rule N34 |
+| `NestedLoadBytes` | 16,777,216 | Rule N34 |
+| `LiveRuntimes` | 64 | Rule N34 |
+
+---
+
+## 8. Runtime identifiers
+
+**No runtime identifier is claimed.** Claiming one is a release act, and release gate 11 makes none
+before review. What each has been shown to do:
+
+| RID | What has been shown | Status | Evidence |
+|---|---|---|---|
+| `linux-x64` | Every composition root published and run under JIT, trimmed self-contained and Native AOT, every exit zero; the measurement lane's two arms | **Not claimed**: published and run, not reviewed | [`evidence/js-7-001/README.md`](evidence/js-7-001/README.md); [`evidence/js-10-001/README.md`](evidence/js-10-001/README.md) |
+| `win-x64` | Published and run under JIT, trimmed self-contained and Native AOT | **Not claimed**: published and run, not reviewed | [`evidence/js-1/README.md`](evidence/js-1/README.md) |
+| `android-x64` | Run on an emulator under Mono, without trimming or AOT | **Not claimed**: an emulator is not a device | [`evidence/js-android-001/README.md`](evidence/js-android-001/README.md) |
+| `android-arm64` | Published, not run | **Not claimed**: no device | [`evidence/js-android-001/README.md`](evidence/js-android-001/README.md) |
+| `linux-arm64`, `win-arm64`, `osx-arm64`, `osx-x64` | Nothing retained; the core's CI lane publishes on some | **Not claimed**: no retained collection | [`../../../docs/support.md`](../../../docs/support.md) section 3 |
+
+---
+
+## 9. Packages and compositions
+
+| Package | State | Evidence |
+|---|---|---|
+| `Broiler.VM.Profile.JavaScript` | Packable; published to nuget.org at `0.1.0-preview.4` and `0.1.0-preview.5` on 2026-09-23 by the owner's workflow, before any review | Rule N4; [`../../../docs/support.md`](../../../docs/support.md) section 1 |
+| `Broiler.VM.Profile.JavaScript.Format` | Packable; published at the same two versions | Rule N4 |
+| `Broiler.VM.Profile.JavaScript.Compiler` | Packable; published at the same two versions | Rule N4 |
+| `Broiler.VM.Profile.JavaScript.Intl` | Packable since phase F7; **not published** | Rule N4 |
+| `Broiler.VM.Profile.MachineCode` | Packable; published at the same two versions; the arming path the native form needs | Rule N4; rule X1 |
+
+**No composition is advertised.** Every JavaScript composition root is a demonstration and none is
+packable; the composition register is the authority, and rules K1 to K5 hold it to the checkout.
+
+---
+
+## 10. Operational holders
+
+Release gate 13 asks for each to be named. **A role no record names is recorded vacant**, not passed to
+whoever is available.
+
+| Role | Holder | Evidence |
+|---|---|---|
+| Diagnostics | **Vacant** | Release [gate 13](roadmap.gates.md#22-release-gates) names the role; no record names a holder |
+| Cancellation | **Vacant** | Release [gate 13](roadmap.gates.md#22-release-gates) names the role; no record names a holder |
+| Rollback | **Vacant** | Release [gate 13](roadmap.gates.md#22-release-gates) names the role; no record names a holder |
+| Format-version rejection | **Vacant** | Release [gate 13](roadmap.gates.md#22-release-gates) names the role; no record names a holder |
+| Corpus drift | **Vacant** | Release [gate 13](roadmap.gates.md#22-release-gates) names the role; no record names a holder |
+| Suite-revision drift | **Vacant** | Release [gate 13](roadmap.gates.md#22-release-gates) names the role; no record names a holder |
+| Vulnerability response | MaiRat, at repository level (role R4); **no security contact and no intake channel exists**, and the holder is the only reviewer | [`../../../docs/adr/0012-security-ownership-and-support-matrix.md`](../../../docs/adr/0012-security-ownership-and-support-matrix.md), EX-35 and EX-30 |
+| Recertification | MaiRat, at repository level (role R6); the holder is the only reviewer | [`../../../docs/adr/0012-security-ownership-and-support-matrix.md`](../../../docs/adr/0012-security-ownership-and-support-matrix.md), EX-30 |
+
+---
+
+## 11. Suppressions
+
+| Suppression | Owner | Reachability | Evidence |
+|---|---|---|---|
+| **None** in any product project of the JavaScript family or in any JavaScript composition root: no `#pragma warning disable`, no `SuppressMessage` or `UnconditionalSuppressMessage`, no `NoWarn` and no `WarningsNotAsErrors` | - | - | Rule N36 scans for each |
+
+---
+
+## 12. What this table does not say
+
+- **That anything here is supported.** It is drafted and not issued; nothing in it is a claim until a
+  named human has read every relevant unit and the owner issues it.
+- **How fast a program runs.** The two baselines are a verifier's and a start's; no workload's score
+  appears here, and no figure from any other component does.
+- **Anything about a RID, a locale, a calendar or a time zone it does not name.**
+- **That a held amendment will be granted**, or that the extraction gate's state is a verdict.
+- **What the core supports.** The core's own support table is the core's.

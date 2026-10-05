@@ -1,0 +1,23 @@
+# manifest sha256 9d2fd4828aec6cc15f51b01fc89b75bb0e8597d743f275d0546a3f635ec1eb0d
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Intl/Broiler.VM.Profile.JavaScript.Intl.csproj (in 460 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 460 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj (in 460 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 460 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 12 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 13 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 12 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 15 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 8 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.MachineCode -> /home/user/Broiler.VM/src/Broiler.VM.Profile.MachineCode/bin/Release/net10.0/Broiler.VM.Profile.MachineCode.dll
+  Broiler.VM.Profile.JavaScript.Intl -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Intl/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Intl.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Conformance.dll
+  Generating native code
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/artifacts/measure/JS-10-001/aot/
+exit 0

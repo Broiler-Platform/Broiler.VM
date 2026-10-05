@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
+// Relevant units:   31
+// Annotated:        31/31
 // Exempt:           0
-// Human-reviewed:   0/21
+// Human-reviewed:   0/31
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  4/10 max
-// Unverified:       21
+// Unverified:       31
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FB076A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D64C20
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -186,7 +186,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toString", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.String(StringThis(engine, thisValue));
+            return JsValue.String(StringThisValue(engine, thisValue, "toString"));
         });
 
         // `normalize` IS THE UNICODE NORMALIZATION OF THE STRING'S CODE POINTS, read from the
@@ -218,7 +218,7 @@ internal sealed partial class JsRealm
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.String(StringThis(engine, thisValue));
+            return JsValue.String(StringThisValue(engine, thisValue, "valueOf"));
         });
 
         Method(prototype, "charAt", 1, static (engine, thisValue, arguments) =>
@@ -471,16 +471,10 @@ internal sealed partial class JsRealm
         });
 
         Method(prototype, "toLocaleUpperCase", 0, static (engine, thisValue, arguments) =>
-        {
-            _ = arguments;
-            return JsValue.String(StringChangeCase(engine, StringThis(engine, thisValue), true));
-        });
+            JsValue.String(TransformCase(engine, StringThis(engine, thisValue), arguments, true)));
 
         Method(prototype, "toLocaleLowerCase", 0, static (engine, thisValue, arguments) =>
-        {
-            _ = arguments;
-            return JsValue.String(StringChangeCase(engine, StringThis(engine, thisValue), false));
-        });
+            JsValue.String(TransformCase(engine, StringThis(engine, thisValue), arguments, false)));
 
         Method(prototype, "trim", 0, static (engine, thisValue, arguments) =>
         {
@@ -499,6 +493,26 @@ internal sealed partial class JsRealm
             _ = arguments;
             return JsValue.String(StringTrimEnds(engine, StringThis(engine, thisValue), false, true));
         });
+
+        // ANNEX B'S TWO OLD NAMES ARE THE SAME FUNCTION OBJECTS AS THE NEW ONES, as the language
+        // says: `trimLeft === trimStart` and `trimLeft.name` is "trimStart" (JSP-7, JSC-239).
+        StringAlias(prototype, "trimLeft", "trimStart");
+        StringAlias(prototype, "trimRight", "trimEnd");
+
+        // ANNEX B'S HTML METHODS, every one of them (JSP-7, JSC-239). The realm admits the whole of
+        // Annex B.2 rather than the part of it someone happened to write, which is the rule
+        // section 6 of the roadmap now states; each is `CreateHTML` with its tag and attribute.
+        foreach (var (name, tag, attribute) in new (string, string, string)[]
+        {
+            ("anchor", "a", "name"), ("big", "big", ""), ("blink", "blink", ""), ("bold", "b", ""),
+            ("fixed", "tt", ""), ("fontcolor", "font", "color"), ("fontsize", "font", "size"),
+            ("italics", "i", ""), ("link", "a", "href"), ("small", "small", ""),
+            ("strike", "strike", ""), ("sub", "sub", ""), ("sup", "sup", ""),
+        })
+        {
+            Method(prototype, name, attribute.Length == 0 ? 0 : 1, (engine, thisValue, arguments) =>
+                JsValue.String(StringCreateHtml(engine, thisValue, tag, attribute, ArgOfString(arguments, 0))));
+        }
 
         Method(prototype, "split", 2, static (engine, thisValue, arguments) =>
         {
@@ -643,10 +657,33 @@ internal sealed partial class JsRealm
             var other = engine.ToStringValue(ArgOfString(arguments, 0));
             StringCharge(engine, text.Length + other.Length);
 
-            // THE COMPARISON IS ORDINAL, which is a declared deviation: the specification allows any
-            // locale-sensitive order and requires only that the result be a consistent total order.
-            // An ordinal one is consistent, reproducible across hosts, and the same order `<` uses.
-            return JsValue.Number(System.Math.Sign(string.CompareOrdinal(text, other)));
+            // WITH `Intl`, ECMA-402 s20.1.1: A COLLATOR FROM THE LOCALES AND OPTIONS, made by the
+            // realm's own %Intl.Collator% whatever the global binding now holds (JSD-0043).
+            if (engine.Realm.CollatorConstructor is { } constructor)
+            {
+                var made = NewCollator(
+                    engine,
+                    JsValue.Object(constructor),
+                    [ArgOfString(arguments, 1), ArgOfString(arguments, 2)]);
+
+                return JsValue.Number(((JsCollatorObject)made.AsObject()).Collator.Compare(engine, text, other));
+            }
+
+            // THE ORDER IS ORDINAL OVER THE CANONICAL DECOMPOSITIONS. The specification allows any
+            // order that is consistent and total, and requires one more thing ECMA-262 states
+            // without ECMA-402: canonically equivalent strings compare as 0. Comparing NFD forms
+            // gives exactly that, since two strings are canonically equivalent when their NFD
+            // forms are equal; until 2026-10-03 the raw code units were compared, and `'\u00e4'` and
+            // `'a\u0308'` were unequal (JSD-0027 N3). Two strings already equal skip the work, and
+            // the comparison stays reproducible across hosts: NFD is the pinned tables' own.
+            if (string.Equals(text, other, System.StringComparison.Ordinal))
+            {
+                return JsValue.Number(0);
+            }
+
+            var left = NormalizeText(engine, text, compose: false, compatibility: false);
+            var right = NormalizeText(engine, other, compose: false, compatibility: false);
+            return JsValue.Number(System.Math.Sign(string.CompareOrdinal(left, right)));
         });
     }
 
@@ -702,10 +739,10 @@ internal sealed partial class JsRealm
     /// ordering is a counting sort per run, so a long run of combining marks is linear work too.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=E5D2CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=2BD89E
     // Broiler-Falsified-If: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
     // Broiler-Human:        PENDING
-    private static string NormalizeText(JsEngine engine, string text, bool compose, bool compatibility)
+    internal static string NormalizeText(JsEngine engine, string text, bool compose, bool compatibility)
     {
         StringCharge(engine, text.Length);
 
@@ -1007,6 +1044,55 @@ internal sealed partial class JsRealm
         engine.Charge(units <= 0 ? 1UL : (ulong)units);
 
     /// <summary>
+    /// Defines <paramref name="alias"/> on <paramref name="host"/> as the very function object
+    /// <paramref name="name"/> already holds.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=91ADF7
+    // Broiler-Human:        PENDING
+    private static void StringAlias(JsObject host, string alias, string name)
+    {
+        _ = host.TryGetOwnProperty(name, out var existing);
+
+        host.SetOwnProperty(
+            alias,
+            JsProperty.Data(existing.Value, JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+    }
+
+    /// <summary>
+    /// Annex B's <c>CreateHTML</c>: the receiver's text wrapped in <paramref name="tag"/>, with
+    /// <paramref name="attribute"/> set to <paramref name="value"/> when there is one.
+    /// </summary>
+    /// <remarks>
+    /// The receiver is converted before the value, and a <c>"</c> in the value is written as
+    /// <c>&amp;quot;</c>, which is the whole of the escaping the language does: nothing else in either
+    /// text is touched.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0AD7F3
+    // Broiler-Human:        PENDING
+    private static string StringCreateHtml(
+        JsEngine engine, JsValue thisValue, string tag, string attribute, JsValue value)
+    {
+        var text = StringThis(engine, thisValue);
+        var opened = new System.Text.StringBuilder().Append('<').Append(tag);
+
+        if (attribute.Length != 0)
+        {
+            var written = engine.ToStringValue(value);
+            StringCharge(engine, written.Length);
+
+            opened
+                .Append(' ')
+                .Append(attribute)
+                .Append("=\"")
+                .Append(written.Replace("\"", "&quot;", System.StringComparison.Ordinal))
+                .Append('"');
+        }
+
+        StringCharge(engine, text.Length);
+        return opened.Append('>').Append(text).Append("</").Append(tag).Append('>').ToString();
+    }
+
+    /// <summary>
     /// The receiver of a <c>String.prototype</c> method, as a String.
     /// </summary>
     /// <remarks>
@@ -1079,14 +1165,260 @@ internal sealed partial class JsRealm
             : JsValue.String(text[from..to]);
     }
 
-    /// <summary>Maps case under the invariant culture, which is the only one this profile has.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A8E1A
+    /// <summary>
+    /// The Unicode Default Case Conversion over the pinned tables: full mappings, and Final_Sigma
+    /// for GREEK CAPITAL LETTER SIGMA when lowering. No language is applied.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F34134
     // Broiler-Human:        PENDING
     private static string StringChangeCase(JsEngine engine, string text, bool upper)
     {
         StringCharge(engine, text.Length);
-        var info = System.Globalization.CultureInfo.InvariantCulture.TextInfo;
-        return upper ? info.ToUpper(text) : info.ToLower(text);
+
+        // THE PINNED TABLES AND NOT THE PLATFORM'S TextInfo, which maps one code unit to one code
+        // unit and reads whatever Unicode version the host carries (JSD-0027 N2). The text is
+        // copied only from the first code point casing changes, so an unchanged string costs one
+        // pass and no allocation.
+        System.Text.StringBuilder? built = null;
+
+        for (var at = 0; at < text.Length;)
+        {
+            var codePoint = JsUnicodeCasing.NextCodePoint(text, at, out var width);
+            var start = at;
+            at += width;
+
+            if (!upper && codePoint == JsUnicodeCasing.CapitalSigma)
+            {
+                var final = JsUnicodeCasing.IsFinalSigma(text, start, width, out var scanned);
+                StringCharge(engine, scanned);
+                built ??= new System.Text.StringBuilder(text, 0, start, text.Length + 8);
+                built.Append((char)(final ? JsUnicodeCasing.FinalSigma : 0x03C3));
+                continue;
+            }
+
+            if (!JsUnicodeCasing.TryGetMapping(codePoint, upper, out var mapping))
+            {
+                built?.Append(text, start, width);
+                continue;
+            }
+
+            StringCharge(engine, mapping.Length);
+            built ??= new System.Text.StringBuilder(text, 0, start, text.Length + 8);
+
+            for (var index = 0; index < mapping.Length; index++)
+            {
+                AppendCodePoint(built, mapping[index]);
+            }
+
+            if (built.Length > StringLengthCeiling)
+            {
+                throw engine.Error("RangeError", "Invalid string length");
+            }
+        }
+
+        return built?.ToString() ?? text;
+    }
+
+    /// <summary>
+    /// ECMA-402's <c>TransformCase</c> where the realm has <c>Intl</c>: the first requested locale, and
+    /// the language rules of SpecialCasing.txt when it is Turkish, Azeri or Lithuanian; without
+    /// <c>Intl</c>, the locale is ignored as JSD-0027 section 1 states.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.1.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=920956
+    // Broiler-Human:        PENDING
+    private static string TransformCase(JsEngine engine, string text, JsValue[] arguments, bool upper)
+    {
+        if (engine.Realm.CollatorConstructor is null)
+        {
+            return StringChangeCase(engine, text, upper);
+        }
+
+        var requested = CanonicalizeLocaleList(engine, Argument(arguments, 0));
+        var locale = JsLocaleTag.Parse(requested.Count != 0 ? requested[0] : DefaultLocale)!;
+        var language = LookupMatchingLocale(["az", "lt", "tr"], [locale.WithoutUnicodeExtension()])?.Locale ?? "und";
+
+        return StringChangeCase(engine, LanguageCasing(engine, text, upper, language), upper);
+    }
+
+    /// <summary>
+    /// SpecialCasing.txt's rules for one language, applied before the default conversion: each one's
+    /// output is a fixed point of the default mapping in its direction, so the two passes compose,
+    /// and each condition is read on the string as it was.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=Unicode SpecialCasing.txt; IP=Low; Security=Medium; Resources=3; Fingerprint=62B580
+    // Broiler-Human:        PENDING
+    private static string LanguageCasing(JsEngine engine, string text, bool upper, string language)
+    {
+        if (language is not ("tr" or "az" or "lt"))
+        {
+            return text;
+        }
+
+        StringCharge(engine, text.Length);
+
+        var points = new System.Collections.Generic.List<int>(text.Length);
+
+        for (var at = 0; at < text.Length;)
+        {
+            points.Add(JsUnicodeCasing.NextCodePoint(text, at, out var width));
+            at += width;
+        }
+
+        var built = new System.Text.StringBuilder(text.Length + 4);
+
+        for (var index = 0; index < points.Count; index++)
+        {
+            var point = points[index];
+
+            if (language is "tr" or "az")
+            {
+                if (!upper && point == 0x0130)
+                {
+                    built.Append('i');
+                    continue;
+                }
+
+                if (!upper && point == 0x0307 && AfterCapitalI(points, index))
+                {
+                    continue;
+                }
+
+                if (!upper && point == 'I')
+                {
+                    built.Append(BeforeDot(points, index) ? 'i' : '\u0131');
+                    continue;
+                }
+
+                if (upper && point == 'i')
+                {
+                    built.Append('\u0130');
+                    continue;
+                }
+            }
+            else
+            {
+                if (!upper && point is 'I' or 'J' or 0x012E && MoreAbove(points, index))
+                {
+                    built.Append(point == 0x012E ? '\u012F' : (char)(point + 0x20)).Append('\u0307');
+                    continue;
+                }
+
+                if (!upper && point is 0x00CC or 0x00CD or 0x0128)
+                {
+                    built.Append("i\u0307").Append(point switch { 0x00CC => '\u0300', 0x00CD => '\u0301', _ => '\u0303' });
+                    continue;
+                }
+
+                if (upper && point == 0x0307 && AfterSoftDotted(engine.Intl!, points, index))
+                {
+                    continue;
+                }
+            }
+
+            AppendCodePoint(built, point);
+        }
+
+        return built.ToString();
+    }
+
+    /// <summary>After_I: an upper-case I before, with no combining class 0 or 230 between.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DC6A33
+    // Broiler-Human:        PENDING
+    private static bool AfterCapitalI(System.Collections.Generic.List<int> points, int index)
+    {
+        for (var at = index - 1; at >= 0; at--)
+        {
+            if (points[at] == 'I')
+            {
+                return true;
+            }
+
+            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>After_Soft_Dotted: a Soft_Dotted character before, with no combining class 0 or 230 between.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0DC57E
+    // Broiler-Human:        PENDING
+    private static bool AfterSoftDotted(JsIntlTables intl, System.Collections.Generic.List<int> points, int index)
+    {
+        for (var at = index - 1; at >= 0; at--)
+        {
+            if (intl.IsSoftDotted(points[at]))
+            {
+                return true;
+            }
+
+            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Before_Dot: COMBINING DOT ABOVE after, with only combining classes other than 0 and 230 between.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1DB648
+    // Broiler-Human:        PENDING
+    private static bool BeforeDot(System.Collections.Generic.List<int> points, int index)
+    {
+        for (var at = index + 1; at < points.Count; at++)
+        {
+            if (points[at] == 0x0307)
+            {
+                return true;
+            }
+
+            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>More_Above: a combining class 230 after, with no combining class 0 between.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0640C3
+    // Broiler-Human:        PENDING
+    private static bool MoreAbove(System.Collections.Generic.List<int> points, int index)
+    {
+        for (var at = index + 1; at < points.Count; at++)
+        {
+            var combining = JsUnicodeNormalization.CombiningClass(points[at]);
+
+            if (combining == 230)
+            {
+                return true;
+            }
+
+            if (combining == 0)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Appends one code point as one or two code units.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2EBD3E
+    // Broiler-Human:        PENDING
+    private static void AppendCodePoint(System.Text.StringBuilder built, int codePoint)
+    {
+        if (codePoint <= 0xFFFF)
+        {
+            built.Append((char)codePoint);
+            return;
+        }
+
+        built.Append(char.ConvertFromUtf32(codePoint));
     }
 
     /// <summary>Trims the ECMAScript whitespace set from one or both ends.</summary>
@@ -1324,5 +1656,32 @@ internal sealed partial class JsRealm
         }
 
         return builder.ToString();
+    }
+
+    /// <summary>
+    /// The specification's <c>thisStringValue</c>: a String, or the String a String wrapper holds,
+    /// and a <c>TypeError</c> for anything else.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>toString</c> and <c>valueOf</c> do not coerce</b>, unlike every other member of
+    /// <c>String.prototype</c>: an object with its own <c>toString</c> is not a String. Until
+    /// 2026-10-03 both coerced their receiver (JSC-252).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1BB13F
+    // Broiler-Human:        PENDING
+    private static string StringThisValue(JsEngine engine, JsValue value, string member)
+    {
+        if (value.IsString)
+        {
+            return value.AsString();
+        }
+
+        if (value.AsObjectOrNull() is JsPrimitiveWrapper wrapper && wrapper.Primitive.IsString)
+        {
+            return wrapper.Primitive.AsString();
+        }
+
+        throw engine.Error(
+            "TypeError", "String.prototype." + member + " requires that 'this' be a String");
     }
 }

@@ -165,6 +165,8 @@ internal sealed class UnicodeDatabase
 
     private const string Ucd = "ucd-17.0.0/";
 
+    private const string Emoji = "emoji-17.0.0/";
+
     /// <summary>General_Category values (the 30) and groups (the 8), in set-id order.</summary>
     internal List<UnicodeValue> GeneralCategories { get; } = [];
 
@@ -173,6 +175,13 @@ internal sealed class UnicodeDatabase
 
     /// <summary>The binary properties the language admits, in set-id order: canonical name, aliases, ranges.</summary>
     internal List<UnicodeValue> BinaryProperties { get; } = [];
+
+    /// <summary>
+    /// The properties of strings the language admits under <c>v</c>, in the ECMAScript table's row
+    /// order: each one's single code points and its sequences of two or more. <c>RGI_Emoji</c>, the
+    /// table's last row, is the union of the others and has no data of its own (phase F2).
+    /// </summary>
+    internal List<(string Name, List<UnicodeRange> CodePoints, List<int[]> Sequences)> StringProperties { get; } = [];
 
     /// <summary>Script values in id order: Script ranges.</summary>
     internal List<UnicodeValue> Scripts { get; } = [];
@@ -204,6 +213,23 @@ internal sealed class UnicodeDatabase
     /// <summary>UnicodeData.txt's Simple_Uppercase_Mapping (field 12), where a code point has one.</summary>
     internal SortedDictionary<int, int> SimpleUppercase { get; } = [];
 
+    /// <summary>UnicodeData.txt's Simple_Lowercase_Mapping (field 13), where a code point has one.</summary>
+    internal SortedDictionary<int, int> SimpleLowercase { get; } = [];
+
+    /// <summary>
+    /// The full upper-case mapping of every code point upper-casing changes: SpecialCasing.txt's
+    /// unconditional mapping where it gives one, and the simple mapping otherwise. This is the
+    /// Unicode Default Case Conversion's toUppercase, which ECMA-262 uses with no language.
+    /// </summary>
+    internal SortedDictionary<int, int[]> FullUppercase { get; } = [];
+
+    /// <summary>
+    /// The full lower-case mapping of every code point lower-casing changes, as
+    /// <see cref="FullUppercase"/>. GREEK CAPITAL LETTER SIGMA maps here to its ordinary small form;
+    /// the one language-independent condition, Final_Sigma, is applied at run time.
+    /// </summary>
+    internal SortedDictionary<int, int[]> FullLowercase { get; } = [];
+
     /// <summary>Parses and cross-checks the verified archive.</summary>
     internal static UnicodeDatabase Read(IReadOnlyDictionary<string, byte[]> archive)
     {
@@ -231,8 +257,124 @@ internal sealed class UnicodeDatabase
         database.ReadNormalization(unicodeData, Text(Ucd + "DerivedNormalizationProps.txt"));
         database.ReadCaseFolding(Text(Ucd + "CaseFolding.txt"));
         database.ReadSimpleUppercase(unicodeData);
+        database.ReadFullCaseMappings(unicodeData, Text(Ucd + "SpecialCasing.txt"));
+        database.ReadStringProperties(strings, Text(Emoji + "emoji-sequences.txt"), Text(Emoji + "emoji-zwj-sequences.txt"));
 
         return database;
+    }
+
+    /// <summary>
+    /// The properties of strings, from the two emoji sequence files, checked against the table of
+    /// names the language admits.
+    /// </summary>
+    /// <remarks>
+    /// <b>The file's type field is the property's name</b>, as the file's own header says: "each of
+    /// the type fields defines the name of a binary property of strings", and <c>RGI_Emoji</c> is their
+    /// union with <c>RGI_Emoji_ZWJ_Sequence</c>. So every type the files use must be a row of the
+    /// ECMAScript table and every row but <c>RGI_Emoji</c> must be a type the files use; a range of
+    /// single code points is admitted only for <c>Basic_Emoji</c>, and a sequence is two or more code
+    /// points listed once.
+    /// </remarks>
+    private void ReadStringProperties(IReadOnlyList<UnicodeSpecName> table, string sequences, string zwj)
+    {
+        const string Union = "RGI_Emoji";
+        var names = table.Select(static row => row.Name).ToArray();
+
+        if (names.Length == 0 || names[^1] != Union || table.Any(static row => row.Name != row.Canonical))
+        {
+            throw new InvalidDataException($"the properties-of-strings table does not end with `{Union}`, or gives a property an alias");
+        }
+
+        var byName = new Dictionary<string, (List<UnicodeRange> CodePoints, List<int[]> Sequences)>(StringComparer.Ordinal);
+
+        foreach (var name in names[..^1])
+        {
+            byName[name] = ([], []);
+        }
+
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var fields in UnicodeDataFile.Records(sequences).Concat(UnicodeDataFile.Records(zwj)))
+        {
+            if (fields.Length < 2 || !byName.TryGetValue(fields[1], out var property))
+            {
+                throw new InvalidDataException($"an emoji sequence line names the type `{(fields.Length < 2 ? string.Empty : fields[1])}`, which the table does not admit");
+            }
+
+            var codePoints = fields[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (codePoints.Length == 1)
+            {
+                if (fields[1] != "Basic_Emoji")
+                {
+                    throw new InvalidDataException($"`{fields[0]}` is a single code point of `{fields[1]}`, and only Basic_Emoji lists any");
+                }
+
+                property.CodePoints.Add(UnicodeDataFile.Range(codePoints[0]));
+                continue;
+            }
+
+            var sequence = codePoints.Select(UnicodeDataFile.Hex).ToArray();
+
+            if (sequence.Any(static codePoint => codePoint > UnicodeDataFile.MaxCodePoint) || !seen.Add(fields[1] + ":" + fields[0]))
+            {
+                throw new InvalidDataException($"`{fields[0]}` of `{fields[1]}` is out of range or listed twice");
+            }
+
+            property.Sequences.Add(sequence);
+        }
+
+        foreach (var name in names[..^1])
+        {
+            var (codePoints, sequenceList) = byName[name];
+
+            if (codePoints.Count == 0 && sequenceList.Count == 0)
+            {
+                throw new InvalidDataException($"the emoji sequence files list nothing for `{name}`");
+            }
+
+            StringProperties.Add((name, Merge(codePoints), sequenceList.OrderBy(static sequence => sequence, SequenceOrder.Instance).ToList()));
+        }
+
+        StringProperties.Add((Union, [], []));
+
+        static List<UnicodeRange> Merge(List<UnicodeRange> ranges)
+        {
+            var merged = new List<UnicodeRange>();
+
+            foreach (var range in ranges.OrderBy(static range => range.First))
+            {
+                if (merged.Count > 0 && range.First <= merged[^1].Last + 1)
+                {
+                    merged[^1] = merged[^1] with { Last = Math.Max(merged[^1].Last, range.Last) };
+                }
+                else
+                {
+                    merged.Add(range);
+                }
+            }
+
+            return merged;
+        }
+    }
+
+    /// <summary>Code point sequences ordered code point by code point, a prefix first.</summary>
+    private sealed class SequenceOrder : IComparer<int[]>
+    {
+        internal static readonly SequenceOrder Instance = new();
+
+        public int Compare(int[]? left, int[]? right)
+        {
+            for (var at = 0; at < Math.Min(left!.Length, right!.Length); at++)
+            {
+                if (left[at] != right[at])
+                {
+                    return left[at].CompareTo(right[at]);
+                }
+            }
+
+            return left.Length.CompareTo(right.Length);
+        }
     }
 
     private void ReadGeneralCategories(string valueAliases, string derived, string unicodeData)
@@ -491,6 +633,110 @@ internal sealed class UnicodeDatabase
         foreach (var source in SimpleUppercase.Keys.Where(source => !changes.Any(range => range.First <= source && source <= range.Last)))
         {
             throw new InvalidDataException($"U+{source:X4} has a simple upper case in UnicodeData.txt and is not Changes_When_Uppercased");
+        }
+    }
+
+    /// <summary>
+    /// Reads UnicodeData.txt's simple lower-case field and SpecialCasing.txt's unconditional
+    /// mappings into the two full mappings, and holds them to the derived properties: a code point
+    /// a mapping changes is exactly one <c>Changes_When_Uppercased</c> or
+    /// <c>Changes_When_Lowercased</c> names.
+    /// </summary>
+    /// <remarks>
+    /// A SpecialCasing.txt line with a condition is language-sensitive - every one but
+    /// <c>Final_Sigma</c> names a language, and ECMA-262's toUppercase and toLowercase use none - so
+    /// only <c>Final_Sigma</c> is read among them, and only to check that it is the one line the
+    /// run-time rule for GREEK CAPITAL LETTER SIGMA stands for.
+    /// </remarks>
+    private void ReadFullCaseMappings(string unicodeData, string specialCasing)
+    {
+        foreach (var (first, last, fields) in UnicodeDataEntries(unicodeData))
+        {
+            if (fields[13].Length == 0)
+            {
+                continue;
+            }
+
+            if (first != last)
+            {
+                throw new InvalidDataException($"UnicodeData.txt gives the range {fields[0]} a simple lower case");
+            }
+
+            var lower = UnicodeDataFile.Hex(fields[13]);
+
+            if (lower == first || !SimpleLowercase.TryAdd(first, lower))
+            {
+                throw new InvalidDataException($"UnicodeData.txt gives {fields[0]} a simple lower case that is itself, or two of them");
+            }
+        }
+
+        foreach (var (source, upper) in SimpleUppercase)
+        {
+            FullUppercase.Add(source, [upper]);
+        }
+
+        foreach (var (source, lower) in SimpleLowercase)
+        {
+            FullLowercase.Add(source, [lower]);
+        }
+
+        static int[] Mapping(string field) =>
+            field.Length == 0 ? [] : field.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(UnicodeDataFile.Hex).ToArray();
+
+        var finalSigma = 0;
+
+        foreach (var fields in UnicodeDataFile.Records(specialCasing))
+        {
+            // code; lower; title; upper; (condition_list;)
+            var source = UnicodeDataFile.Hex(fields[0]);
+            var condition = fields.Length > 4 ? fields[4] : string.Empty;
+
+            if (condition.Length > 0)
+            {
+                if (condition == "Final_Sigma")
+                {
+                    if (source != 0x03A3 || !Mapping(fields[1]).SequenceEqual([0x03C2]))
+                    {
+                        throw new InvalidDataException($"Final_Sigma is given to U+{source:X4}, and the run-time rule is written for U+03A3 to U+03C2 alone");
+                    }
+
+                    finalSigma++;
+                }
+                else if (!condition.Split(' ')[0].All(char.IsLower))
+                {
+                    throw new InvalidDataException($"U+{source:X4} carries the condition `{condition}`, which names no language and is not Final_Sigma");
+                }
+
+                continue;
+            }
+
+            foreach (var (mapping, full) in new[] { (Mapping(fields[1]), FullLowercase), (Mapping(fields[3]), FullUppercase) })
+            {
+                if (mapping.Length == 1 && mapping[0] == source)
+                {
+                    full.Remove(source);
+                }
+                else
+                {
+                    full[source] = mapping;
+                }
+            }
+        }
+
+        if (finalSigma != 1)
+        {
+            throw new InvalidDataException($"SpecialCasing.txt gives Final_Sigma {finalSigma} times, and the run-time rule expects it once");
+        }
+
+        foreach (var (name, full) in new[] { ("Changes_When_Uppercased", FullUppercase), ("Changes_When_Lowercased", FullLowercase) })
+        {
+            var changes = BinaryProperties.Single(value => value.ShortName == name).Ranges;
+            var listed = UnicodeDataFile.Normalize(full.Keys.Select(static codePoint => new UnicodeRange(codePoint, codePoint)));
+
+            if (!listed.SequenceEqual(changes))
+            {
+                throw new InvalidDataException($"the code points the full mapping changes are not exactly {name}");
+            }
         }
     }
 

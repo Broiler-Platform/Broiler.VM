@@ -1,0 +1,5 @@
+# failure manifest of run numeric-native, generated from its merged report
+# result|path|variant|verdict|family|dimension|kind|features|detail
+# total|53469|101723|6172|2|94396|0|1153
+result|test/language/statements/function/S13.2.1_A1_T1.js|sloppy|Failed|||the front end refused a source this manifest admits||the front end refused the source: 2103:NestingTooDeep at 31:85: the source nests deeper than the 64 levels these parse options allow
+result|test/language/statements/function/S13.2.1_A1_T1.js|strict|Failed|||the front end refused a source this manifest admits||the front end refused the source: 2103:NestingTooDeep at 31:85: the source nests deeper than the 64 levels these parse options allow

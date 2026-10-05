@@ -153,3 +153,21 @@ with one member in it, so a descriptor mismatch could not be observed, and the d
 it had been `defensive` since the registry's first revision. Registering a second of each made both
 screens reachable, and each now has a corpus entry that reaches it. A second identity is not only a
 bookkeeping cost; it is the first thing that made the identity check observable at all.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: keep the identity, and take a whole-suite run of it now.**
+
+- **Retire or narrow stays JS-5's decision**, taken when `broiler.javascript.core` is minted; nothing
+  argues for taking it earlier.
+- **Retain a whole-suite conformance run of `broiler.javascript.wide` at the current head.** The
+  usage text and the ledger both say bundle `jsw-10-001`'s figures predate the BigInt parser fix and
+  describe no current build. A fresh retained run satisfies the admission rule's evidence half and
+  gives JS-5 a baseline to compare core against.
+- **When JS-5 decides, prefer narrowing over retiring** if core's scope leaves anything out (regular
+  expressions, the binary surface, BigInt): artifacts already written under the wide identity then
+  stay verifiable instead of needing re-minting.

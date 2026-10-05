@@ -3,6 +3,21 @@
 
 # The hosting roadmap - what the host surface would take for a real embedder
 
+**Where this document stands, 2026-10-03.** JSH-1 is implemented, and JSH-2 and JSH-3 are for the
+members their gates name; JSH-4 and JSH-7 are partly implemented (the provider route, and the clone
+carrier without a second realm); JSH-5, JSH-6 and JSH-8 are not started; none is accepted. JSH-7's
+second realm is phase F5 of the plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile), and JSH-5's thread model is phase F6
+([JSC-251](roadmap.corrections.md#jsc-251)). *(Amended 2026-10-04: a second realm exists on one
+engine. A guest's `$262.createRealm` builds it, the composition's surface is told of it through a
+view of its own, and that view refuses a ref the first view minted by name, `ForeignRealm`, as
+JSH-7's "judged by" asks (proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md),
+[JSC-264](roadmap.corrections.md#jsc-264)). A realm on another thread, which the rest of JSH-7
+judges by, is phase F6's, and no embedder API creates a realm.)* *(Amended 2026-10-04 again: a realm
+on another thread is now a second agent - a runtime its host starts - and what crosses to it is a
+shared block, through `JsHostRealm.ShareBlock` and `AdoptBlock`, never an object (proposed
+[JSD-0042](decisions/0042-a-second-agent.md), [JSC-267](roadmap.corrections.md#jsc-267)). JSH-5 is
+not started by it: each agent's invocations still run on a fresh guest thread each.)*
+
 **What this document is.** A design analysis and a proposed programme for one objective: that an
 embedder with a document-shaped object model - a DOM, a style declaration, a storage area, an event
 target - can put its objects in this profile's realms and be answered honestly about what it may and
@@ -10,7 +25,8 @@ may not do there. It is written against the seam, the engine and the core as the
 checkout, and it names, for every obligation it records, either the stage that owns it or the fact
 that nothing does.
 
-**One of its stages is built and the rest are proposals nobody has scheduled.**
+**One of its stages was built when this was written, and the rest were proposals nobody had
+scheduled.** The paragraph is kept as written on that day; the note above says what has changed.
 [JSH-1](#jsh-1---the-seam-values-identity-a-step-bracket-and-an-abort-that-cannot-be-swallowed) is
 code in this checkout: the values, the identity table, the step bracket, the abort latch, the mint
 and define and read members, the exotic object, the call back into the guest, and a lane of checks
@@ -600,6 +616,7 @@ ledger row, and the ledger carries no row that any of them would move.
 ### JSH-7 - A second realm, and what may cross between two
 
 - **Delivers.** More than one realm in one process, and a stated rule for what may pass between them.
+<!-- as-written, superseded 2026-10-04 -->
 - **What does not exist today, said plainly rather than implied.** One realm per engine, constructed
   in the engine's own constructor and nowhere else; **nothing in this profile creates a second**.
   There is no structured clone anywhere in the tree. `SharedArrayBuffer` and `Atomics` are absent,
@@ -608,6 +625,13 @@ ledger row, and the ledger carries no row that any of them would move.
   them in would let a composition asking for an ordinary byte buffer admit cross-agent shared memory
   by accident. The step bracket pins a realm to one thread for the duration of a step. **So there is
   no worker story, and a reader who needs one needs this stage and the stage does not exist.**
+<!-- /as-written -->
+- *(Superseded 2026-10-04: a guest's `$262.createRealm` and `ShadowRealm` create realms on one
+  engine ([JSC-264](roadmap.corrections.md#jsc-264), [JSC-265](roadmap.corrections.md#jsc-265)), the
+  clone carrier exists (JSD-0032), and `SharedArrayBuffer` and `Atomics` are built behind their own
+  identity, `broiler.javascript.shared`, for one agent ([JSC-266](roadmap.corrections.md#jsc-266)).
+  There is still no worker story: no second agent runs, and the step bracket still pins a realm to
+  one thread.)*
 - **What does exist, and it is the beginning of the answer rather than a coincidence.** `JsHostRef`
   carries the realm that minted it, and `Unwrap` refuses a ref from another realm by name with
   `JsHostRefusal.ForeignRealm`. **That refusal is written for a case that cannot yet arise**, which is

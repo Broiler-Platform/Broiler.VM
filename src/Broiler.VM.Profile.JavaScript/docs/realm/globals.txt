@@ -12,6 +12,7 @@ AggregateError
 Array
 ArrayBuffer
 AsyncDisposableStack
+Atomics
 BigInt
 BigInt64Array
 BigUint64Array
@@ -30,6 +31,7 @@ Infinity
 Int16Array
 Int32Array
 Int8Array
+Intl
 Iterator
 JSON
 Map
@@ -44,10 +46,13 @@ ReferenceError
 Reflect
 RegExp
 Set
+ShadowRealm
+SharedArrayBuffer
 String
 SuppressedError
 Symbol
 SyntaxError
+Temporal
 TypeError
 URIError
 Uint16Array

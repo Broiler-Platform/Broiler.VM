@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           14
-// Human-reviewed:   0/27
+// Relevant units:   30
+// Annotated:        30/30
+// Exempt:           18
+// Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         13/13
+// Criteria:         15/15
 // Resource impact:  3/10 max
-// Unverified:       27
+// Unverified:       30
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -226,6 +226,58 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     public static VmFeatureManifestId BigIntManifest { get; } =
         VmFeatureManifestId.Parse(Format.JsSurfaces.BigInt);
+
+    /// <summary>
+    /// The ShadowRealm surface: the <c>ShadowRealm</c> constructor, admitted ahead of the pinned
+    /// edition at proposal revision <c>9ff2a01f</c> (JSD-0040).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="DynamicManifest"/></b>: a descriptor naming it
+    /// without the dynamic surface is refused when it is built, because a ShadowRealm does nothing but
+    /// compile source into a realm of its own (JSD-0030 section 8).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=27E17A
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId ShadowRealmManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.ShadowRealm);
+
+    /// <summary>
+    /// The shared-memory surface: <c>SharedArrayBuffer</c> and <c>Atomics</c> (JSD-0041).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="BinaryManifest"/></b>: a descriptor naming it
+    /// without the binary surface is refused when it is built.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=084F37
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId SharedManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Shared);
+
+    /// <summary>
+    /// The internationalization surface: <c>Intl</c> and the ECMA-402 behaviour of the
+    /// locale-sensitive methods (JSD-0043).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only with its data</b>, which a composition hands to
+    /// <see cref="DescriptorComposing"/>; every other door builds without it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9A120D
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId IntlManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Intl);
+
+    /// <summary>
+    /// The Temporal surface: the <c>Temporal</c> namespace, admitted at proposal revision
+    /// <c>e8cc03fc</c> (JSD-0054).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="IntlManifest"/> and <see cref="BigIntManifest"/></b>:
+    /// a descriptor naming it without either is refused when it is built.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BAD2A7
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId TemporalManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Temporal);
 
     /// <summary>
     /// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor.
@@ -611,9 +663,73 @@ public static class JavaScriptProfile
     /// and reads it — would otherwise be handed a default array. That is a defect a build cannot
     /// see and a type initialiser reports as a null reference from somewhere else entirely.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6C43BD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6E5B7F
     // Broiler-Human:        PENDING
-    private static ImmutableArray<string> EverySurface => ImmutableArray.Create(Format.JsSurfaces.All);
+    private static ImmutableArray<string> EverySurface => EverySurfaceWith(intl: null);
+
+    /// <summary>
+    /// Every optional surface a composition holding <paramref name="intl"/> can build: every surface
+    /// this build implements, less <see cref="Format.JsSurfaces.Intl"/> when it was handed no data
+    /// (JSD-0043).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BC0349
+    // Broiler-Human:        PENDING
+    private static ImmutableArray<string> EverySurfaceWith(Format.IJsIntlData? intl)
+    {
+        var surfaces = ImmutableArray.CreateBuilder<string>();
+
+        foreach (var surface in Format.JsSurfaces.All)
+        {
+            // TEMPORAL READS ITS TIME ZONES FROM THE SAME DATA (JSD-0054), so it goes with Intl.
+            if (intl is not null ||
+                !(string.Equals(surface, Format.JsSurfaces.Intl, System.StringComparison.Ordinal) ||
+                  string.Equals(surface, Format.JsSurfaces.Temporal, System.StringComparison.Ordinal)))
+            {
+                surfaces.Add(surface);
+            }
+        }
+
+        return surfaces.ToImmutable();
+    }
+
+    /// <summary>
+    /// A descriptor stated in full by <paramref name="composition"/>: the one door that takes the
+    /// internationalization data, and every other choice the narrower doors make one at a time.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The data is the composition's, and so is the decision to carry it</b> (JSD-0043). The
+    /// tables <see cref="Format.JsSurfaces.Intl"/> is built from live in an assembly the profile does
+    /// not reference; a composition that wants the surface references it and hands its data here, and
+    /// one that does not carries none of it. Every other door is handed no data, so none of them
+    /// admits the surface, and naming it to one of them is refused.
+    /// </para>
+    /// <para>
+    /// <b>A null <see cref="JsComposition.Surfaces"/> means every surface this composition can
+    /// build</b> - every one this build implements, with the internationalization surface among them
+    /// only when the data was handed over - and a list, however short, means exactly the surfaces it
+    /// names.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=31ED75
+    // Broiler-Falsified-If: a descriptor built here admits the internationalization surface without its data, or builds an Intl from data it was not handed
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor DescriptorComposing(JsComposition composition)
+    {
+        System.ArgumentNullException.ThrowIfNull(composition);
+
+        var names = composition.Surfaces is { } surfaces
+            ? Named([.. surfaces])
+            : EverySurfaceWith(composition.IntlData);
+
+        return Build(
+            names,
+            composition.NativeEmitter,
+            composition.HostSurface,
+            composition.HandleStress,
+            composition.SweepsFinalization,
+            composition.IntlData);
+    }
 
     /// <summary>
     /// A descriptor whose realms are handed to <paramref name="surface"/>, for a composition that
@@ -693,6 +809,45 @@ public static class JavaScriptProfile
             names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface, handleStress: true);
     }
 
+    /// <summary>
+    /// A descriptor whose instances' host drains sweep their <c>FinalizationRegistry</c>s, so cleanup
+    /// callbacks arrive (JSD-0029 D03-a, phase F4).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The sweep reads the collector at two points only</b>: when a host invokes
+    /// <see cref="DrainEntryPoint"/>, before its first job, and when it invokes
+    /// <see cref="StepEntryPoint"/>, before that turn's job. A registration whose target the collector
+    /// has taken is marked there, and its registry's callback runs later as an ordinary job, on the
+    /// guest stack and under the allowance. Nothing runs from a CLR finalizer, a script invocation
+    /// never sweeps, and a guest cannot make a sweep happen.
+    /// </para>
+    /// <para>
+    /// <b>A fifth door and not a property</b>, for the reason <see cref="DescriptorHostingRealms"/>
+    /// gives: whether a realm's registries tell is fixed before the realm exists. Every other door
+    /// builds the inert registry. The sweep never collects: a composition that wants cleanup prompt
+    /// collects before it drains, which is a process-wide cost it accepts for itself.
+    /// </para>
+    /// </remarks>
+    /// <param name="surface">The realm embedder, or nothing.</param>
+    /// <param name="handleStress">Whether value-form instances run under handle-stress, as <see cref="DescriptorUnderHandleStress"/>.</param>
+    /// <param name="surfaces">The optional surfaces admitted; none means every one.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=96FEE8
+    // Broiler-Falsified-If: a descriptor built here sweeps anywhere but at a host drain or step, or a descriptor built by any other door sweeps at all
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor DescriptorSweepingFinalization(
+        IJsHostSurface? surface, bool handleStress = false, params VmFeatureManifestId[] surfaces)
+    {
+        var names = Named(surfaces);
+
+        return Build(
+            names.Length == 0 ? EverySurface : names,
+            emitter: null,
+            hostSurface: surface,
+            handleStress: handleStress,
+            sweepsFinalization: true);
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50E921
     // Broiler-Human:        PENDING
     public static bool TryGetCompletion(in VmInvocationResult result, out JavaScriptCompletion completion) =>
@@ -747,16 +902,63 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=319B97
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=BBB011
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
         ImmutableArray<string> admittedSurfaces,
         Format.IJsNativeEmitter? emitter = null,
         IJsHostSurface? hostSurface = null,
-        bool handleStress = false)
+        bool handleStress = false,
+        bool sweepsFinalization = false,
+        Format.IJsIntlData? intl = null)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
+
+        // THE INTERNATIONALIZATION SURFACE IS BUILT FROM DATA THE COMPOSITION HANDS OVER (JSD-0043),
+        // and a set naming it without that data is the composition's mistake, refused here rather than
+        // built into realms with an Intl that has nothing to answer from.
+        if (admittedSurfaces.Contains(Format.JsSurfaces.Intl) && intl is null)
+        {
+            throw new System.ArgumentException(
+                Format.JsSurfaces.Intl + " is admitted only with its data, an IJsIntlData handed to " +
+                nameof(DescriptorComposing),
+                nameof(admittedSurfaces));
+        }
+
+        var intlTables = intl is not null && admittedSurfaces.Contains(Format.JsSurfaces.Intl)
+            ? new JsIntlTables(intl)
+            : null;
+
+        // THE SHADOWREALM SURFACE NEEDS THE DYNAMIC ONE (JSD-0040): a set naming it alone is a
+        // composition's mistake, refused here rather than built into realms whose ShadowRealm could
+        // compile nothing.
+        if (admittedSurfaces.Contains(Format.JsSurfaces.ShadowRealm) &&
+            !admittedSurfaces.Contains(Format.JsSurfaces.Dynamic))
+        {
+            throw new System.ArgumentException(
+                Format.JsSurfaces.ShadowRealm + " is admitted only together with " + Format.JsSurfaces.Dynamic,
+                nameof(admittedSurfaces));
+        }
+
+        // AND THE SHARED-MEMORY SURFACE NEEDS THE BINARY ONE (JSD-0041), whose views read it.
+        if (admittedSurfaces.Contains(Format.JsSurfaces.Shared) &&
+            !admittedSurfaces.Contains(Format.JsSurfaces.Binary))
+        {
+            throw new System.ArgumentException(
+                Format.JsSurfaces.Shared + " is admitted only together with " + Format.JsSurfaces.Binary,
+                nameof(admittedSurfaces));
+        }
+
+        // AND THE TEMPORAL SURFACE NEEDS BOTH INTL, whose data holds its time zones, AND BIGINT,
+        // whose values its epoch nanoseconds are (JSD-0054).
+        if (admittedSurfaces.Contains(Format.JsSurfaces.Temporal) &&
+            !(admittedSurfaces.Contains(Format.JsSurfaces.Intl) && admittedSurfaces.Contains(Format.JsSurfaces.BigInt)))
+        {
+            throw new System.ArgumentException(
+                Format.JsSurfaces.Temporal + " is admitted only together with " + Format.JsSurfaces.Intl + " and " + Format.JsSurfaces.BigInt,
+                nameof(admittedSurfaces));
+        }
 
         // THE NUMERIC MANIFEST IS ACCEPTED UNCONDITIONALLY AND THE NATIVE SURFACE IS NOT, because
         // they answer different questions. The numeric manifest is a NARROWING of the wide surface
@@ -781,7 +983,7 @@ public static class JavaScriptProfile
                 JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
             acceptedFeatureManifests: accepted,
             verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces, emitter),
-            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface, handleStress),
+            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface, handleStress, sweepsFinalization, intlTables),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
             supportsConcurrentVerification: true,

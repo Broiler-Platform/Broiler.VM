@@ -10092,3 +10092,2668 @@ the catalogue of what must not be taken from the comparison engine, and
 
 **Authority and date.** The implementation of 2026-09-30 in this checkout and
 [record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md). 2026-09-30.
+
+### JSC-236
+
+**Where:** the parity roadmap's [section 4.5](roadmap.parity.md#45-the-operations-underneath-and-the-integrity-clauses-on-top),
+its first two bullets and the `delete` bullet, and
+[JSP-4](roadmap.parity.md#jsp-4--the-abstract-operations-underneath-the-library)'s gate. The
+2026-09-21 note under JSP-4 said what JSeal V01, VM-FIX-B and VM-FIX-C repaired, and that
+`super[k] op= v` was not among them.
+
+**What the plan said.**
+- `ToLength` is `ToUint32` throughout the array-like surface, and `Function.prototype.apply` over an
+  object with a negative `length` spends the whole allowance.
+- `ToPropertyKey` runs twice on a computed key in a compound assignment, an increment or a
+  decrement, and in a logical assignment that writes.
+- `delete` through a primitive base answers `true` without performing `ToObject`, and
+  `delete undefined.x` answers `true` where the language requires a `TypeError`.
+
+**What replaced it, observed on 2026-10-03.**
+- **`apply`'s list.** `CreateListFromArrayLike` reads its length with `ToLength`, as the Array methods
+  have since VM-FIX-C. A length of `-1` is an empty list, where `ToUint32` made it four billion reads
+  and the program met its wall clock. A length past the ceiling `Reflect.apply` already had is the
+  `RangeError` that one gives, where `2**32 + 2` was read as a list of two.
+- **`super[k]` read and then written.** A compound, update or logical assignment converts the key
+  once, and the write uses the key the read produced. The base is still taken before the key is
+  converted, so a `toString` that re-points the home object's prototype does not change where the
+  read looks. That took a new instruction, `LoadSuperPropertyKeepKey` (`0xB3`): a `super` reference
+  has no base on the stack, so `ToPropertyKey` cannot convert its key, and converting it first would
+  read the base after the conversion. A `super.x` with a literal name keeps its two instructions,
+  and a program with no computed `super` write lowers to the bytes it did.
+- **`delete`.** The base goes through `ToObject` before the key is converted. A nullish base is a
+  `TypeError`, and its key's `toString` does not run. A primitive is asked through its wrapper, so
+  `delete "abc".length` and `delete "abc"[0]` answer `false`, and throw in strict code.
+- **The rest of the gate held before this date**: operand order for every binary and relational
+  operator, `ToPropertyKey` once for an ordinary computed member, and loose equality between an
+  Object and a Symbol. The ordinary member's count has a fixture now beside the `super` one.
+- **The comparison engine is not the oracle for the key count.** Node 22 converts the key twice for
+  `o[k] += 1` and for `super[k] += 1`, and reads a `super` base after converting the key. The
+  pinned test262 requires one conversion and the earlier base, and the fixture's row holds those.
+
+**What must not be read as repaired.**
+- A `super` write still takes its base again when it writes. The specification takes it once, when
+  the reference is made, so a right-hand side that re-points the home object's prototype is seen by
+  the write here and not by the language.
+- JSP-4 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-237
+
+**Where:** the parity roadmap's [section 4.5](roadmap.parity.md#45-the-operations-underneath-and-the-integrity-clauses-on-top),
+its `for … in`, `String` object and keyed-collection bullets, and
+[JSP-5](roadmap.parity.md#jsp-5--the-integrity-clauses-on-the-object-model)'s gate.
+
+**What the plan said.**
+- `for … in` enumerates a stale snapshot: a property deleted before the loop reaches it is still
+  visited, and a property made non-enumerable mid-loop is still visited.
+- Redefining a `String` object's index with an identical descriptor adds a duplicate own key, and an
+  added array-index property sorts after `length`.
+- The `Map`, `Set`, `WeakMap` and `WeakSet` constructors resolve the adder on the intrinsic
+  prototype, so a subclass's `set` or `add` is not called; and Symbols are refused as weak keys and
+  `WeakRef` targets.
+
+**What replaced it, observed on 2026-10-03.**
+- **`for … in`.** The enumerator reads one object at a time and asks for each name when the loop
+  reaches it, which is the specification's `%ForInIteratorPrototype%.next`. A name deleted first,
+  own or inherited, is not visited; a name made non-enumerable first is not visited; a name already
+  visited or shadowed is not visited again. The prototype is read when the object above it runs out.
+  `ForInNext` now reaches guest code through a Proxy's traps, and the slice compiler's baseline
+  partition names it `T R` where it said `T P`.
+- **The comparison engine differs on one of these.** Node 22 still visits a name made
+  non-enumerable before the loop reaches it. The gate asks for demotion to be observed, and the
+  fixture's row holds the specification's algorithm.
+- **The `String` object.** Its `length` and its indices are never stored: a definition the
+  validation admits describes them as they are and changes nothing. Its own keys are its indices,
+  every other index ascending, `length`, then the other names in the order they were made.
+- **The collections.** Each constructor makes its object from `new.target` before reading the adder,
+  so a subclass's own adder runs. Each now builds from `new.target` itself, as the binary
+  constructors do.
+- **Weak references.** `CanBeHeldWeakly` admits a Symbol that `Symbol.for` did not make: as a
+  `WeakMap` key, a `WeakSet` member, a `WeakRef` target, and a registry's target and token. A
+  registered Symbol is refused, because `Symbol.for` answers it again whenever it is asked for.
+
+**What must not be read as repaired.**
+- The symbol registry is still one per realm. The specification's is one per agent.
+- The rest of section 4.5's integrity clauses were repaired before this date, by the JSeal slices the
+  2026-09-21 note names, and this entry did not re-examine them beyond the probes run beside it.
+- JSP-5 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-238
+
+**Where:** the parity roadmap's [section 4.4](roadmap.parity.md#44-the-mechanisms-the-realm-publishes-and-does-not-honour),
+its `Function.prototype[Symbol.hasInstance]`, name inference and object spread bullets, and
+[JSP-6](roadmap.parity.md#jsp-6--the-protocols-the-realm-publishes-and-does-not-consult)'s gate. With
+them the `node` declarations on cases 295 and 301 of `the-general-surface.js`.
+
+**What the plan said.**
+- `Function.prototype[Symbol.hasInstance]` does not exist, so assigning it changes `instanceof` for
+  every function in the realm.
+- An anonymous function gets no name through a computed key, through a class field initialiser, or
+  through a logical assignment; and a Symbol-keyed method in an object literal gets none while the
+  same key in a class body does.
+- Object spread does not copy Symbol-keyed own enumerable properties.
+- The two declarations said a computed member of an object literal does not name an anonymous
+  function, because the key is not known until it is evaluated.
+
+**What replaced it, observed on 2026-10-03.**
+- **`Function.prototype[Symbol.hasInstance]`** is `OrdinaryHasInstance`, named `[Symbol.hasInstance]`,
+  of length one, neither writable, enumerable nor configurable. `instanceof` is the specification's
+  `InstanceofOperator`: a primitive right-hand side is a `TypeError`, a method found on the object
+  decides, and the realm's own method is answered without a call.
+- **Name inference.**
+  - A data member with a computed key names an anonymous function, arrow or class with the key's
+    value, in brackets for a Symbol. A new `DefineMethod` operand bit, `MemberIsNamedValue` (`8`),
+    marks it, and the value gets no home object.
+  - A class field names one after its key. A literal or private key names it when it is lowered.
+    A computed key names it when the field is defined, under a new `DefineClassElement` bit,
+    `ElementIsNamedValue` (`64`).
+  - A computed field's key is now converted once, when the class is defined. It was converted for
+    every instance.
+  - An object literal's computed key is converted before its value is evaluated. It was converted
+    after.
+  - The logical assignment and the method cases already held, and the object-literal and class-body
+    Symbol cases agree.
+- **Object spread and object rest** copy enumerable Symbol-keyed own properties, from one
+  `[[OwnPropertyKeys]]`.
+- **The two declarations went stale** and are removed. The probe's retained answers now hold the
+  names.
+
+**What must not be read as repaired.**
+- An anonymous class with a static element, at a computed key, keeps the empty name. A static
+  element runs while the class is defined, so naming it afterwards could be observed, and a static
+  `name` member must not be overwritten. Node 22 names such a class and overwrites a static `name`
+  method; the specification does the first and not the second.
+- Found on the way and not repaired: an object rest pattern reads an excluded property again.
+  `var { a, ...rest } = o` runs `a`'s getter twice, where the specification excludes the key before
+  any read.
+- JSP-6 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-239
+
+**Where:** the parity roadmap's [section 4.3](roadmap.parity.md#43-the-types-and-surfaces-that-are-absent)
+and its 2026-09-29 list of what was still absent, the `cleanupSome` bullet of
+[section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself), and
+[JSP-7](roadmap.parity.md#jsp-7--the-surfaces-that-are-absent-without-being-declared)'s gate. With them
+[section 6 of the roadmap](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted), which
+gains the subsection the gate's Annex B clause asks for.
+
+**What the plan said.**
+- The `Uint8Array` base64 and hex methods, the reviver's source-text argument, `Error.prototype.stack`,
+  and the `Annex B` `String` HTML-tag family, `trimLeft`, `trimRight`, `getYear`, `setYear` and
+  `toGMTString` were absent, while `escape` was present, "so the surface is admitted in part without a
+  rule saying which part".
+- `FinalizationRegistry.prototype.cleanupSome` is shipped and is not in the language.
+- `Error.isError` was absent, and the 2026-09-29 list added that the comparison engine lacks it too.
+
+**What replaced it, observed on 2026-10-03.**
+- **A scan of the pinned edition.** Every built-in property the archived ES2026 text defines was asked
+  of the realm. Beyond the gate's list it found four members of the edition missing without a word:
+  `Error.isError`, `WeakMap.prototype.getOrInsert` and `getOrInsertComputed`, and
+  `RegExp.prototype.unicodeSets`. `Atomics` and `SharedArrayBuffer` were the only other gaps, and the
+  ledger's block declares both.
+- **Admitted.**
+  - The six `Uint8Array` codecs: `fromBase64`, `fromHex`, `toBase64`, `toHex`, `setFromBase64` and
+    `setFromHex`, each the specification's algorithm. A decode that fails part way writes what it
+    decoded and then throws.
+  - `JSON.parse`'s reviver receives a context object. For a primitive the parse produced, its `source`
+    is the text as written; an object, an Array and a value a reviver already replaced have none.
+  - `Error.isError`, which asks for the error slot and not the prototype chain.
+  - `WeakMap.prototype.getOrInsert` and `getOrInsertComputed`.
+  - `RegExp.prototype.unicodeSets`, which answers `false` for every RegExp, since none here can carry
+    `v`.
+- **Annex B is admitted whole, in the script goal, and the rule is written down** in section 6 of the
+  roadmap. Its members:
+  - the thirteen HTML methods;
+  - `trimLeft` and `trimRight` as the very function objects `trimStart` and `trimEnd` are;
+  - `getYear`, `setYear`, and `toGMTString` as `toUTCString` itself;
+  - `RegExp.prototype.compile`.
+
+  The scan of Annex B found three syntax features as well, and each is repaired:
+  - **HTML-like comments.** `<!--` and a line-leading `-->` are comments in a script. `1 <!-- 2` was
+    read as `1 < !(--2)`, a program the file does not contain. A module still reads them as
+    operators, as the language does.
+  - **The `for (var x = 1 in o)` initialiser.** The parser admitted it and the lowering dropped the
+    value, so `x` was `undefined` after a loop that ran no iteration — a wrong value rather than a
+    refusal.
+  - **A call as an assignment target in non-strict code.** It now runs the call and throws a
+    `ReferenceError`, without converting the result or evaluating the right-hand side. That took a new
+    instruction, `ThrowReferenceError` (`0xB4`). The program was refused at compile time, which is
+    strict code's answer.
+- **Removed.** `FinalizationRegistry.prototype.cleanupSome`, as decision record 0029's D03-b
+  recommended. `typeof registry.cleanupSome` answers `"undefined"`, as the language does.
+- **Declined by name.** `Error.prototype.stack` is not a member of the edition. Section 6 names it
+  with the answer a program meets: no error has an own `stack` and nothing it inherits carries one.
+  The same table names the `v` flag, `Intl`, `Temporal`, the shared-memory pair, the registry's
+  cleanup and a function's source text.
+- **The comparison engine is not the oracle for every row.** Node 22 has neither `Error.isError`,
+  `WeakMap`'s pair nor the `Uint8Array` codecs, so those rows' values come from the specification's
+  algorithms. Node 22 gives every error an own `stack`, which this host declines.
+
+**What must not be read as repaired.**
+- Rule N24 reads claims that a global is absent. Nothing reads section 6's table against the realm,
+  so a member declined there that later appears would be stale without a rule saying so.
+- Four Annex B RegExp variants of the pinned suite spend their allowance before they decide.
+- JSP-7 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md). 2026-10-03.
+
+### JSC-240
+
+**Where:** the parity roadmap's [section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself)
+bullets on host capabilities, on the order of several named files and on the three suspending
+constructors; the argument-count clause of
+[section 4.8](roadmap.parity.md#48-the-host-and-what-an-embedder-meets); and
+[JSP-10](roadmap.parity.md#jsp-10--the-host-surface-an-embedder-meets-first)'s gate. With them the
+roadmap's [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) list of the ceilings a source
+program can meet, its [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)
+row for `broiler.javascript.dynamic`, and [section 13](roadmap.md#13-realms-agents-and-the-host-boundary),
+which gains the statement the gate's capability clause asks for.
+
+**What the plan said.**
+- Every host capability is a function that throws, so `typeof` cannot tell a capability this host
+  has from one it lacks. The gate: absent rather than present-and-throwing, or the profile states in
+  its own documentation that it does the opposite and why.
+- No refusal reason names a cause that is untrue of the realm it is raised in. `GeneratorFunction`,
+  `AsyncFunction` and `AsyncGeneratorFunction` gave the dynamic surface's reason.
+- The argument-count ceiling is raised, or refused with a diagnostic naming it at a source location.
+  Section 7 recorded the second since 2026-09-29 ([JSC-233](#jsc-233)): past 255 arguments written
+  out, a call was refused with `2104`.
+- Several named files run in the order given, or the usage text stops promising it.
+
+**What replaced it, observed on 2026-10-03.**
+- **The argument ceiling is raised.** Past 255, a call's, a construction's and a super call's
+  arguments travel in one Array, through the instructions a spread call uses. A direct `eval` keeps
+  its directness. Each argument is evaluated once and in order. A tagged template with more than 254
+  substitutions does the same, and its strings object is built from a cooked Array and a raw Array by
+  a new instruction, `GetTemplateObjectWide` (`0xB5`). It makes the same frozen object
+  `GetTemplateObject` makes, cached by the same site. The `2104` both refusals carried named the
+  manifest, which admits a call of any length.
+- **A fourth source ceiling was found, and it was a host defect.** A function with more than 255
+  parameters before its first default or rest was lowered, and the verifier refused the artifact
+  this host had produced: exit 4, which the host reserves for its own defects. The verifier bounds a
+  function row's arity by the call ceiling, because for a simple list the frame copies that many
+  arguments. The source is now refused at compile time with `2301`, naming the ceiling, at the
+  function, and section 7 lists it. Raising it would move a bound the verifier holds every artifact
+  to, which this change does not do.
+- **The suspending constructors build from source where `Function` does.** A realm whose composition
+  admitted `broiler.javascript.dynamic` builds a generator, an async function or an async generator
+  through the same door, so with no provider registered each is refused as `eval` is, with an
+  `EvalError` the guest catches. A realm that declined the surface refuses all four with a
+  `TypeError` saying so. `Function`'s own message read "the broiler.javascript.wide manifest does not
+  admit the Function constructor, because this profile declares no guest-initiated load". The wide
+  manifest decides nothing about it, and section 11 describes the guest-initiated load the profile
+  declares.
+- **`read`'s message said "no composition can register a reader"**, which the comment above it had
+  retracted with [JSC-212](#jsc-212): a composition can install a reader through the host-object
+  surface. It now says that no reader is installed in this realm and why the capability table could
+  not carry one. The other members were read again. `$262.detachArrayBuffer` and `evalScript` were
+  corrected on 2026-09-21, and `createRealm`, `gc` and `agent`'s members say what is true of every
+  realm this profile builds.
+- **Present and refusing is kept, and stated.** Section 13 lists each member with the reason absence
+  would be worse. `read` is read without being called by a shell probe. The conformance suite's
+  `INTERPRETING.md` requires `$262`'s members defined and `gc` to throw, and chooses tests by
+  declared features rather than by `typeof`. The constructors are the language's. `$262.IsHTMLDDA`
+  is the one member absent until a host installs it, as the same file says.
+- **The file-order clause already held.** The usage text has said that several named files run "in
+  ordinal order by path and not in the order you named them" since 2026-09-17, after the parity
+  roadmap's finding of 2026-09-06. [JSC-75](#jsc-75)'s "in order" is that order. A new acceptance
+  row names the two shared-realm files in reverse and gets the same transcript.
+
+**What must not be read as repaired.**
+- `typeof read` still answers `"function"`. The capability clause is met by its documented branch,
+  not by absence.
+- The parameter ceiling is refused, not raised.
+- A throw in shared-realm multi-file mode still abandons the remaining files, as section 4.8 says.
+  That is outside the gate.
+- JSP-10 has no owner. The allowance defaults stay a decision for whoever owns
+  [ADR 0004](decisions/0004-limit-defaults-hard-maxima-and-the-budget-matrix.md)'s budget matrix. No
+  gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md). 2026-10-03.
+
+### JSC-241
+
+**Where:** [JSP-2](roadmap.parity.md#jsp-2--the-refusal-that-was-lost-a-bigint-literal-is-not-a-number)'s
+gate and its paragraph "Where this stands on 2026-09-08", and the sentence of the parity roadmap's
+[section 7](roadmap.parity.md#7-order-and-what-is-schedulable-today) that says "the rest of JSP-2's
+gate stays open".
+
+**What the plan said.** The gate has two halves. The cheap half: `1n` is refused at compile time with
+a diagnostic naming the construct, `--check` decides it, and a retained corpus entry carries it. The
+type half, if the type is admitted: `typeof` answers `bigint`, mixing with a Number throws, strict
+equality across the types is `false` and loose equality `true`, a value past the Number range
+round-trips, `JSON.stringify` throws, and every literal form is exercised. A negative control for each
+half, watched failing and then passing after the revert, and the host's usage text describing the
+manifest it runs. On 2026-09-08 only the first clause of the cheap half was met
+([JSC-207](#jsc-207)).
+
+**What replaced it, observed on 2026-10-03.**
+- **The type was admitted** by JSeal B01 to B08 (2026-09-21 and 2026-09-22), through the surface
+  `broiler.javascript.bigint`, and the usage text was corrected with it. The wide manifest admits the
+  literal as an exact integer. The slice and numeric manifests still refuse it by name.
+- **The cheap half's last clause is met.** The source corpus retains `refuse-a-bigint-literal`, the
+  slice surface refusing `1n` with `2104`. No retained entry carried the refusal until now.
+- **The type half has a fixture.** One acceptance row asks every item of the gate's list and gets
+  the comparison engine's values: `typeof`, `Object(1n)`, mixing in three forms, the four
+  comparisons, `2n ** 64n + 1n` round-tripped through a String, `9007199254740993n` and its Number,
+  `JSON.stringify`, the hexadecimal, octal and binary forms, division, remainder, a shift past 64
+  bits and the two `asIntN` forms.
+- **Both halves have rows at the host.** `--slice --check` and `--numeric --check` refuse the literal
+  by name, and the default manifest reads the same file's `9007199254740993n` exactly.
+- **Each half has controls**, in [record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md): the
+  literal read as a Number under each narrow manifest and under the wide one, a BigInt mixed with a
+  Number, and `JSON.stringify` of a BigInt.
+
+**What must not be read as repaired.**
+- The refusal under the slice surface names "the construct BigInt" and under the numeric manifest
+  "a BigInt literal". Both name the construct, in two wordings.
+- JSP-2 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md). 2026-10-03.
+
+### JSC-242
+
+**Where:** [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) sections 2, 6 and 7 (slices N2
+and N3, and the consumer limitation's list of known defects), and
+[JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) sections 9.2 and 12 (the archive's
+file list, the measured table size, and the two stated differences that waited on
+`SpecialCasing.txt`).
+
+**What the plan said.**
+- Case mapping is simple and one-to-one: `'ß'.toUpperCase()` stays `"ß"`, no final sigma is written,
+  and `İ` and `ı` get no special case. Slice N2 owes the full default case mapping, and its
+  prerequisite is `SpecialCasing.txt` beside the archived UCD files.
+- `localeCompare` does not treat canonically equivalent strings as equal. Slice N3 owes it, over the
+  normalization JSD-0031's U3 built.
+- The non-`u` Canonicalize uses the simple upper case, so 27 Greek letters with a ypogegrammeni match
+  their title-case partners where the specification's full mapping makes each canonicalize to itself.
+- The tables measure 236,721 bytes, under the 300 KB cap.
+
+**What replaced it, observed on 2026-10-03.**
+- **`SpecialCasing.txt` is archived** with the other UCD 17.0.0 files and pinned in `unicode.pin`,
+  retrieved twice and found byte-identical. The pin records that no permission specific to this
+  retrieval was given: the owner asked that day for the roadmap to be continued, and JSD-0031's
+  recommendation of the same day names the file.
+- **Case conversion is the Unicode Default Case Conversion over the pinned tables.** A fourth
+  generated file, `JsUnicodeCasing.g.cs`, holds the full upper and lower mappings and the `Cased` and
+  `Case_Ignorable` ranges. The generator checks that the code points each mapping changes are
+  exactly `Changes_When_Uppercased` and `Changes_When_Lowercased`, and that `Final_Sigma` is the only
+  condition naming no language. `toUpperCase`, `toLowerCase` and the two `toLocale…Case` methods read
+  them, and apply `Final_Sigma` to GREEK CAPITAL LETTER SIGMA. The platform's `TextInfo` is no longer
+  called, so the answer no longer depends on the host's Unicode version.
+- **`localeCompare` is ordinal over the canonical decompositions**, so canonically equivalent strings
+  compare as 0 and the order stays a consistent total one.
+- **The non-`u` Canonicalize reads the full upper-case mapping**, and the 27 letters canonicalize to
+  themselves: `/ᾀ/i.test("ᾈ")` is `false`, as in the comparison engine.
+- **The tables measure 275,436 bytes**, still under the 300 KB (307,200-byte) cap.
+
+**What must not be read as repaired.**
+- Language-sensitive casing (`tr`, `az`, `lt`) is not implemented: the `toLocale…Case` methods ignore
+  their argument, as ECMA-262 permits without ECMA-402.
+- `localeCompare` is not a collation: `'a'.localeCompare('B')` is positive, as code-unit order says.
+- No milestone or stage moves; JSD-0027 and JSD-0031 stay unsigned.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-243
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s lowering of a name
+inside a `with` body, as `JsCompiler.StoreName` and `EmitDynamicName` describe it: "a write asks the
+same objects a read asks", once for the read and again for the write.
+
+**What the plan said.** A read of a name in a `with` body searches the objects and falls back to the
+static address; a write is the read's shape with `SetProperty` where `GetProperty` was. Each
+occurrence searches again, after the value it writes has been computed.
+
+**What replaced it, observed on 2026-10-03.**
+- **An assignment resolves its reference once, before anything else.** A plain assignment searches
+  before its right-hand side; a compound assignment and an update search once, read through the
+  object found, and write back to that object. Re-resolving at the write wrote the enclosing variable
+  when a getter on the `with` object had deleted the property, or when the right-hand side had added
+  the name to a nearer object. The comparison engine has the same defect, so these rows declare the
+  specification's answer rather than its.
+- **Two instructions read and write an object environment record's binding:**
+  `GetObjectBinding` (`0xB6`) and `SetObjectBinding` (`0xB7`). Each asks for the property again and,
+  in strict code, throws a `ReferenceError` when a getter or a `Symbol.unscopables` lookup has removed
+  it since the search (`GetBindingValue`, `SetMutableBinding`). Every read in a `with` body now uses
+  the first.
+- **test262:** over `test/language/expressions`, `statements`, `eval-code`, `identifier-resolution`,
+  `global-code` and `test/annexB`, 68 variants moved from failing to passing and none moved back. They
+  are `S11.13.1_A5`/`A6`, `S11.13.2_A5`/`A6`, the four update expressions' `A5`, and six `with`
+  statement cases (the proxy-environment reads, the strict-mode deleted bindings, and
+  `unscopables-inc-dec`).
+
+- **Three retained corpus entries were re-derived**, `eval-scopes-a-function-site-the-lowering-wrote`,
+  `eval-scopes-a-function-body-site-the-lowering-wrote` and `eval-scopes-a-site-no-provider-answers`:
+  a function's eval-introduced variables are searched as a `with` object is, so their reads now lower
+  to `GetObjectBinding`. Their recorded answers are unchanged, and every other entry re-derives byte
+  for byte.
+
+**What must not be read as repaired.**
+- A logical assignment, a `for … in`/`for … of` head and a destructuring target in a `with` body
+  still resolve at the write.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-244
+
+**Where:** the from-scratch matcher's grammar, `JsRegExpMatcher`'s parser, emitter and runner, against
+the pinned edition's `Atom :: ( ? RegularExpressionModifiers : Disjunction )` and
+`( ? RegularExpressionModifiers - RegularExpressionModifiers : Disjunction )`.
+
+**What the plan said.** Roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+`broiler.javascript.regexp` admits regular expressions "over the from-scratch matcher" and declines
+only the `v` flag. The matcher read every group opened with `(?` as a lookaround, a named group or
+`(?:`, and threw a `SyntaxError` for anything else, so a modifier group was refused without being
+declined anywhere. The `i`, `m` and `s` flags were the pattern's, read once.
+
+**What replaced it, observed on 2026-10-03.**
+- **A group `(?ims-ims:...)` sets the three flags for its body.** The parser reads `s` for the full
+  stop's set and `i` for `\w` under `iu` while it parses the body, and puts them back after it. The
+  emitter stamps every instruction with the case folding and the multiline mode in force where it was
+  written. The runner reads those instead of the pattern's flags, for a character, a class, a run, a
+  backreference, `^`, `$` and `\b`. The prefilter reads its first instruction's folding.
+- **The early errors are `SyntaxError`s:** a flag repeated in either list, a flag both added and
+  removed, a letter other than `i`, `m` and `s`, and `(?-:`.
+- **The regular expression's own flags do not change.** `flags` and `ignoreCase` answer for the
+  pattern as written.
+- **test262:** over `test/built-ins/RegExp`, `test/language/literals/regexp` and
+  `test/annexB/built-ins/RegExp`, 140 variants moved from failing to passing and none moved back: the
+  whole of `test/built-ins/RegExp/regexp-modifiers`, its `syntax/valid` cases among them. The
+  early-error cases under `test/language/literals/regexp` passed before, refused as invalid groups,
+  and pass now refused for the edition's reasons. Two `property-escapes/generated` variants spent their wall-clock
+  allowance in a run with twice as many jobs as the machine has cores, and pass at one job per core,
+  as on the base.
+- **The comparison engine** reads modifier groups only under `--js-regexp-modifiers`. With it, it
+  gives every answer of `runs/regexp-pattern-modifiers.js`.
+
+**What must not be read as repaired.**
+- The `v` flag stays declined, and a modifier group cannot name it or any flag other than `i`, `m`
+  and `s`, which is the edition's grammar.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-245
+
+**Where:** the tokenizer's choice between a regular-expression literal and a division,
+`SliceTokenizer.RegularExpressionIsAllowedHere`, whose remarks named "the known-wrong cases".
+
+**What the plan said.** The previous significant token decides: after a value a `/` divides, and
+after an operator, a keyword or the start of input it opens a literal. A `)` and a `}` were always
+values, because "getting those right needs the parser's state". Every keyword kind opened a literal,
+the contextual ones among them.
+
+**What replaced it, observed on 2026-10-03.**
+- **A `)` and a `}` are told apart by what they closed**, which the tokenizer records as the tokens
+  go by, without asking the parser. A `)` closing the head of `if`, `while`, `for` or `with` is
+  followed by a literal. A `}` closing a block, or the body of a function or class declaration, ends
+  a statement and is followed by a literal. One closing an object literal, a function or class
+  expression or an arrow function's body ends a value and is followed by a division. Whether a `{`
+  opens a block or an object literal is read from the token before it; whether `function` or
+  `class` declares is read the same way.
+- **`get`, `set`, `async`, `static` and `let` before a `/` are values.** None of them begins
+  anything as a keyword there, so `get / 2` divides where it was refused. `of` is the keyword only
+  after a `for` head's binding, so `for (x of /a/g)` still reads a literal and `of / 2` divides.
+- **`yield` and `await` still open a literal**, which is what they do where they are keywords. As
+  names in sloppy code, `yield / 2` is still misread.
+- **test262:** over `test/language` and `test/annexB`, and again in the whole run JSC-246 records,
+  36 variants moved from failing to passing through this change and none moved back: `test/language/statementList`'s 32 regular-expression
+  cases after a block, a class, a function and through `eval`, and the 4 `no-magic-asi` division
+  cases.
+
+**What must not be read as repaired.**
+- A `:` that ends a conditional at the start of a statement is read as a label's, so an object
+  literal after it is taken for a block. What that misreads is refused, as before.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-246
+
+**Where:** `JsCompiler.CompileForIn`, the lowering of `for (let …  in …)` and `for (const … in …)`.
+
+**What the plan said.** Roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s
+lowering gives a `for … of` loop's lexical head a scope for the right-hand side and a per-turn copy
+of the body's scope. The `for … in` lowering pushed one scope after the object was evaluated and
+bound the key in it every turn.
+
+**What replaced it, observed on 2026-10-03.**
+- **Each turn binds a fresh copy**, as `for … of` does, so a closure in the body sees the key of its
+  own turn. Every closure made by `for (let k in o)` saw the last key before.
+- **The head's names are in their dead zone while the object is evaluated**, so
+  `for (let x in { x })` is a `ReferenceError` rather than a read of the outer `x`.
+- **test262:** over the whole pinned suite, 95,007 variants, against the whole run of 2026-10-03 that held
+  the floor, 353 variants moved from failing to passing and none moved back. Of those, 208 are JSC-243's
+  and JSC-244's, which that run predates, and the rest are this entry's and JSC-245 and JSC-247 to
+  JSC-250's, each named in its entry. One file, `staging/sm/regress/regress-1507322-deep-weakmap.js`,
+  was left out: run alone, it ran past two minutes without ending on this change and on the base
+  commit `304bd31` alike, where the base's whole run had recorded it as spending its wall-clock
+  allowance. Its two variants are not in the figure, and the rest of its shard was run by name. 16 variants moved from failing to passing through this change and none moved
+  back. They are the `for … in` head's dead-zone and scope cases, the per-iteration binding, and
+  `block-scope/syntax/for-in`'s mixed values.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-247
+
+**Where:** `JsObject.SetOwnProperty` and `DeleteOwnProperty`, the ordinary object's String-keyed
+storage, whose remarks say own-property order is "the order it was created".
+
+**What the plan said.** A deleted entry is tombstoned and keeps its index entry, so that order
+survives a delete.
+
+**What replaced it, observed on 2026-10-03.**
+- **A key deleted and defined again is a new property and comes last.** The tombstone kept the key in
+  the index, so defining it again revived it in its old place, and `Object.keys`, `for … in`,
+  `JSON.stringify` and `Object.assign` listed it there. A delete now drops the key from the index.
+- **The tombstones are compacted** once they outnumber the live entries, so deleting and defining one
+  key repeatedly holds memory in proportion to the object.
+- **test262:** in the same run, 16 variants moved from failing to passing through this change and none
+  moved back. They are the order cases of `Object.keys`, `values`, `entries`, `JSON.stringify` and
+  `for … in`, and three staging `object` files.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-248
+
+**Where:** the realm's `Object` and `Reflect` members that take a property key:
+`hasOwnProperty`, `propertyIsEnumerable`, `Object.hasOwn`, `getOwnPropertyDescriptor`,
+`defineProperty`, `fromEntries`, `groupBy`, the Annex B `__defineGetter__` family, and `Reflect`'s
+`get`, `set`, `has`, `deleteProperty`, `defineProperty` and `getOwnPropertyDescriptor`.
+
+**What the plan said.** Each member took the Symbol path for a Symbol argument and converted anything
+else with a String-only `ToPropertyKey`.
+
+**What replaced it, observed on 2026-10-03.**
+- **The key is converted by `ToPropertyKey` over both kinds**, so an object whose `toString` or
+  `Symbol.toPrimitive` answers a Symbol names that Symbol. It was a `TypeError`.
+- **`hasOwnProperty` and `propertyIsEnumerable` convert the key before the receiver**, and
+  `Object.defineProperty` before the descriptor, which is the edition's order.
+- **`Object.groupBy` keeps a Symbol key** a callback answers, where it was a `TypeError`.
+- **test262:** in the same run, 26 variants moved from failing to passing through this change and none
+  moved back. They are the `symbol_property_*` cases of `hasOwnProperty`, `propertyIsEnumerable` and
+  `Object.hasOwn`, `topropertykey_before_toobject`, and staging `Reflect/propertyKeys`,
+  `Symbol/symbol-object-not-unboxed-for-value-to-id` and `object/propertyIsEnumerable`.
+
+**What must not be read as repaired.**
+- `delete super[key]` still converts its key differently from the edition.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-249
+
+**Where:** four of the realm's built-ins: `Function.prototype.bind`'s `length`,
+`%Object.prototype%`'s `[[SetPrototypeOf]]`, the `Object.prototype.__proto__` setter, and
+`Function.prototype.toString`'s native rendering, whose row in roadmap
+[section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s declined table is
+corrected by this entry.
+
+**What the plan said.**
+- `bind` read the target's `length` through the prototype chain and clamped the result to an `int`.
+- `%Object.prototype%` was an ordinary object.
+- The `__proto__` setter answered `undefined` for every receiver that is not an object.
+- `toString` rendered `function <name>() { [native code] }` with any name.
+
+**What replaced it, observed on 2026-10-03.**
+- **`bind` reads only an own `length`**, as `HasOwnProperty` then `Get`. A target without one gives
+  0, and an inherited `length` is no longer read. The answer is a Number: `+∞` stays `+∞`, and
+  a length past 2^31 is kept rather than clamped.
+- **`%Object.prototype%` is an immutable prototype exotic object.** `Object.setPrototypeOf` throws
+  and `Reflect.setPrototypeOf` answers `false` for any value but its own `null`. Before, a program
+  could move the root of every chain.
+- **The `__proto__` setter applies `RequireObjectCoercible` first**, so an `undefined` or `null`
+  receiver is a `TypeError`.
+- **The native rendering leaves out a name that is not a property name.** A private method's `#m`
+  and a bound function's `bound f` are omitted, so every answer is a `NativeFunction`, as the edition
+  requires of a function whose source text is not kept.
+- **test262:** in the same run, 27 variants moved from failing to passing through this change and none
+  moved back. They are `bind`'s three `instance-length` files, the four private-method `toString`
+  files, `__proto__`'s `set-non-obj-coercible`, the two `setPrototypeOf-with-non-circular-values`
+  files, and four staging `Function` files.
+
+**What must not be read as repaired.**
+- Source text is still not kept. A method with a computed key still renders natively, so a key built
+  from another method's text differs from the comparison engine's.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-250
+
+**Where:** the parser's nested statement, `JsParser.ParseNestedStatement`, and `ParseWith`, which
+checked its body itself.
+
+**What the plan said.** A loop's, an `if`'s or a label's body refuses a declaration. A `with` body
+refused a `function`, a `class`, a `const` and a `let` declaration by a check of its own.
+
+**What replaced it, observed on 2026-10-03.**
+- **A `with` body is parsed as a nested statement** like a loop's. An async function declaration
+  there is a `SyntaxError`, and `let` before a line break is the identifier. The old check admitted
+  the first and refused the second.
+- **IsLabelledFunction is an early error.** A function declaration under one label or more may be a
+  label's item and nothing else's. As the body of `while`, `do`, `for`, `for … in`, `for … of`, `if`
+  or `with` it is refused, in sloppy code too.
+- **test262:** in the same run, 24 variants moved from failing to passing through this change and none
+  moved back. They are the `labelled-fn-stmt` cases of `do-while`, `for`, `for … in`, `for … of`,
+  `if`, `while` and `with`; `with`'s `decl-async-fun`, `decl-async-gen` and its two `let` cases; and
+  staging's Annex B `if` and label files.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-251
+
+**Where:**
+- the preamble, the file-split table and the contents of [the roadmap](roadmap.md);
+- roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+  allocation table and its table of declined surfaces;
+- roadmap [section 13](roadmap.md#13-realms-agents-and-the-host-boundary);
+- the delivery file's header and sections 20 and 25, and a new
+  [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile);
+- the head of each of the four proposal documents;
+- the ledger's paragraph after its `absent-globals` block;
+- dated notes in JSD-0002, JSD-0027, JSD-0028, JSD-0029, JSD-0030, JSD-0031 and the decisions
+  README.
+
+**What the plan said.**
+- **The preamble's present tense:** "this profile has two feature manifests and a source front end
+  for each, two format versions, a value and object model, a standard library and two host modes;
+  it has no suspension, no guest-initiated load and no snapshot". That had been untrue since
+  JS-7's and JS-8's work landed in September.
+- **Eight surfaces were declined:** section 6 declined six by name, and section 13 and JSD-0030 a
+  further two:
+  - `Error.prototype.stack`;
+  - `Intl` and `Temporal`, "deferred to their own manifests";
+  - `SharedArrayBuffer` and `Atomics`, "excluded deliberately";
+  - the RegExp `v` flag;
+  - `FinalizationRegistry` cleanup;
+  - a function's source text;
+  - nested realms and ShadowRealm (section 13 and JSD-0030).
+- **The ledger said two of its four absent globals were absent "DELIBERATELY".**
+- **No document said, in one place, which work was finished and in what order the rest would
+  come.** The milestones were ordered by section 20's diagram of 2026-08, and the four proposal
+  documents each ordered their own stages.
+
+**What replaced it, on 2026-10-03, at the request of the person directing this work.**
+- **Every declined surface is reopened and scheduled.** Section 6's table now reads "not yet
+  implemented", keeps what a program meets today, and names the phase that delivers each surface.
+  The allocation table reopens `broiler.javascript.intl` and `broiler.javascript.temporal` and
+  proposes `broiler.javascript.shared` and `broiler.javascript.shadowrealm`. Section 13 says that a
+  second realm and agents are scheduled.
+- **Section 26 is the reading order for what remains.** It:
+  - defines "full-featured": the whole pinned edition, ECMA-402, Temporal and ShadowRealm ahead of
+    the edition by record, and source text and stacks;
+  - summarises what is finished, by area and by proposal stage;
+  - lists the reopened surfaces against their governing records;
+  - orders the remainder into phases F1 to F9, each with an exit gate observable in this checkout,
+    beside an acceptance track and a performance track.
+- **The preamble states the present truthfully** and points at section 26 for the summary.
+- **Each proposal document opens with where it stands.** The hosting roadmap's "JSH-2 through
+  JSH-8 are written down and nothing more" is kept as written on its day, under a note saying what
+  has since landed.
+- **The ledger's paragraph says all four names are absent for want of work, each scheduled.** The
+  block itself is unchanged: a name leaves it in the change that publishes it.
+
+**What must not be read as repaired.**
+- **Nothing is implemented by this entry.** Every surface in section 6's table answers a program
+  exactly as it did the day before.
+- **No decision record is taken or signed, and no ledger row moves.** The reopening notes in the
+  records are unsigned directions.
+- **No milestone's gate changed**, and section 20's diagram is not rewritten.
+- **Ledger cells found stale and not edited here**, because the ledger's rows are its owner's to
+  correct with evidence:
+  - JS-3b's row says it has no retained bundle, while records JS-3B-001 and JS-3B-002 name it;
+  - JS-10's row says the suite revision is unpinned, while section 3 records it pinned on
+    2026-09-03;
+  - JS-2's row counts two blockers where section 3 holds one;
+  - JS-7's and JS-8's rows describe as missing behaviour that JSD-0024 and JSP-3's notes record as
+    landed.
+
+**Authority and date.** The direction of 2026-10-03 to reopen every declined surface and order the
+roadmap toward a full-featured profile. 2026-10-03.
+
+### JSC-252
+
+**Where:** phase F1 of [delivery section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile),
+the library half: `Number`, `String.prototype`, `Date`, `Error`, `Object`, `Promise.any`,
+`%AsyncFromSyncIteratorPrototype%`, the async generator's `return`, the RegExp matcher's grammar and
+nesting bound, `[[Construct]]` through a revoked proxy, and the host's rendering of a completion
+value.
+
+**What the plan said.** Nothing about any of these. Each was a defect against the edition, found by
+the whole-suite run section 26's F1 starts from.
+
+**What replaced it, observed on 2026-10-03.**
+- **`Number.parseInt` and `Number.parseFloat` are the global functions**, the same objects.
+- **`String.prototype.toString` and `valueOf` do not coerce their receiver.**
+- **`Date.prototype[Symbol.toPrimitive]` compares its hint without converting it.**
+- **`Date.parse` reads an expanded year**, `±YYYYYY`, refusing `-000000`.
+- **An Error's `cause` is asked through HasProperty**, so the prototype chain and a proxy's `has`
+  trap are consulted.
+- **`Object` reached by `super()` or `Reflect.construct` with another new target** makes a fresh
+  object and ignores its argument.
+- **A RegExp lists `lastIndex` before its other String keys.**
+- **`Object.fromEntries`, `Object.groupBy` and `Map.groupBy` iterate lazily** and close their
+  iterator when an entry or the callback throws, never when the iterator's own `next` does.
+- **`Promise.any` hands each element the capability's own `resolve`.**
+- **An async-from-sync iterator closes the sync iterator when PromiseResolve throws**, and an async
+  generator's `return` at a `yield` raises that throw inside the body, where `catch` sees it.
+- **Under `u`, `\c` followed by a digit or `_` in a class is an early error.** The regular
+  expression nesting bound rises from 128 to 512 groups, on the guest's 208 MB stack.
+- **A construction whose new target is a revoked proxy throws**, when that target's `prototype`
+  is not an object, as `GetFunctionRealm` requires.
+- **A script whose completion value cannot be converted completed normally.** The host renders it
+  by its class tag rather than reporting an uncaught error the script never threw.
+- **test262:** over the whole pinned suite, against the whole run JSC-246 records, 64 variants moved
+  from failing to passing through this entry and none moved back.
+
+**What must not be read as repaired.**
+- **`Function.prototype.caller` and `arguments` on a sloppy function**, the legacy reflection
+  other engines carry, still throw. A sloppy function still has neither as its own property.
+- **A WeakMap chain of about a hundred thousand entries still stalls the process in a garbage
+  collection** that no allowance can interrupt (`staging/sm/regress/regress-1507322-deep-weakmap.js`).
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-253
+
+**Where:** phase F1, the parser half: `JsParser`, `SliceTokenizer` and the module lowering in
+`JsCompiler`.
+
+**What the plan said.** Nothing; each was an early error missing or a program refused.
+
+**What replaced it, observed on 2026-10-03.**
+- **A contextual keyword written with an escape is not the keyword**: `as`, `from`,
+  `new.target` and `import.meta`.
+- **`yield`, `await` and `let` may be an arrow's one parameter where each is a name**, and remain
+  refused where each is reserved: strict code, and `await` in a static block or a module.
+- **`08` and `09` are refused in strict code**, as NonOctalDecimalIntegerLiterals.
+- **`let` before `await` or `yield` begins a declaration**, whose early error is the answer.
+- **`for (async of x)` is refused** by the head's lookahead.
+- **A parenthesised object or array literal is not an assignment target.**
+- **A class heritage is compiled before the class's private names are declared**, so it resolves
+  only outer ones.
+- **`#x in` is recognised only where a RelationalExpression begins**, so `#x in #x in o` is refused.
+- **`new C(1)?.a` is a chain** off the new object; only an argument-less `new a?.b` is refused.
+- **`?.` before a digit is a conditional**: `a ?.5 : b`.
+- **A numeric property key is spelled as `Number::toString` spells it**: `0.0000001` is `"1e-7"`,
+  where it was the platform's `"1E-07"`.
+- **Module early errors are refused:**
+  - a top-level `return`;
+  - a `var` and a function of one name;
+  - an import binding named `arguments` or `eval`;
+  - a string export name holding a lone surrogate;
+  - a string local name without `from`.
+- **The tokenizer tracks generator bodies**, so `yield / 2` divides outside one and `yield /re/` is
+  a literal inside one (JSC-245's open case).
+- **test262:** in the same run, 66 variants moved from failing to passing through this entry. Two
+  moved back, `arrow-function/static-init-await-binding`'s, through the `await` arrow parameter;
+  they were repaired before this entry was written, and a run of the arrow and class subtrees after
+  the repair moved nothing back.
+
+**What must not be read as repaired.**
+- **The source nesting bound of 64** is still the default, which refuses
+  `statements/function/S13.2.1_A1_T1`. It is a host policy (JSD-0022) a host may raise to 512.
+- **A parenthesised name as an assignment target still names an anonymous function**:
+  `(fn) = function () {}`.
+- **A strict assignment to an undeclared global still succeeds** when its right-hand side creates
+  the property.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-254
+
+**Where:** phase F1, the semantics half: synchronous `yield*`, `delete` of a `super` reference, the
+catch clause's scopes, and a `var` initialiser in a `with` body.
+
+**What the plan said.** Nothing; each was a defect against the edition.
+
+**What replaced it, observed on 2026-10-03.**
+- **A synchronous `yield*` yields the inner result object as it is** (GeneratorYield(innerResult)),
+  without reading its `value`, and the caller receives that very object.
+- **`delete super.x` and `delete super[k]` throw a `ReferenceError`** after the this binding and
+  the key expression are evaluated, and before the key is converted. The `ThrowReferenceError`
+  instruction's message is now neutral between this and Annex B's call target.
+- **A catch block's lexical names are hoisted before its first statement**, and a pattern
+  parameter's block is a scope of its own. A closure in a default sees the outer name, and a
+  closure created above a `let` sees that `let`.
+- **A `var` initialiser in a `with` body writes the reference resolved before it ran**, as an
+  assignment does since JSC-243.
+- **test262:** in the same run, 52 variants moved from failing to passing through this entry and
+  none moved back.
+
+**What must not be read as repaired.**
+- **The completion value of a `try` whose `finally` breaks** still differs from the edition's.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-255
+
+**Where:** phase F1, the module half: JSON modules and the import attribute `type: "json"`, the
+name of an anonymous class exported as the default, a name in parentheses as an assignment target,
+and the rendering of a thrown Symbol. Diagnostic registry revision 17.
+
+**What the plan said.** [Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+put JSON modules in phase F1. Every import attribute had been refused, statically with 2405
+`UnsupportedImportAttribute` and dynamically by a rejected promise, because no composition had a
+loader for a module type.
+
+**What replaced it, observed on 2026-10-04.**
+- **`type: "json"` is honoured, statically and through `import()`.** A typed request is a module of
+  its own: the type travels with the specifier through the artifact's request table, the run-time
+  lookup, the resolution request a composition confirms and the module request a provider answers.
+  The format spells the pair as the specifier, a NUL and the type (`JsFormat.TypedSpecifier`). A
+  composition that predates types resolves that string as a specifier, finds nothing and refuses.
+- **A JSON module is the synthetic module that exports the parsed document as `default`.** The
+  front end checks the text against the JSON grammar and writes the module as
+  `export default ( … );`. Every key is written computed, so `__proto__` is an own key. A text that
+  is not JSON is refused with the new seam code 2406 `InvalidJsonModule`, before any module of the
+  graph runs. The retained source `refuse-a-json-module-that-is-not-json.json` reaches that code.
+- **The conformance harness and the command-line host load typed requests.** The polyglot host and
+  the embedder's own loader seam are not offered them. For the first, a JSON import is refused as an
+  unresolvable specifier; for the second, `import()` goes to the provider.
+- **Every other attribute is still refused by name.** The retained 2405 source now asks for
+  `type: "css"`.
+- **An anonymous class exported as the default is named `default`**, as an anonymous function
+  already was.
+- **`(f) = function () {}` leaves the function anonymous.** A parenthesised name is not an
+  identifier reference for naming, and the parser now marks one.
+- **A thrown or rejected Symbol is rethrown as itself.** Rendering a thrown value for a message
+  called `ToString`, which throws for a Symbol, so `await Promise.reject(Symbol())` was caught as a
+  `TypeError`. A Symbol now renders as its descriptive string.
+- **test262:** over the whole pinned suite, against the run JSC-254 was measured on, 22 variants
+  moved from failing to passing and none moved back. Twenty are this entry's. The other two are
+  `static-init-await-binding`'s, repaired by JSC-253 after that run was taken.
+
+**What must not be read as repaired.**
+- **Rendering a thrown object still reads its `name` and `message`, getters included**, which the
+  language does not do on a throw. A retained check relies on that reading, so it stays until the
+  rendering is made lazy.
+- No other module type and no other attribute is honoured. `import bytes` and source-phase imports
+  are proposals and are not attempted.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-256
+
+**Where:** phase F1: proper tail calls in the interpreter, the Set methods' walk of their receiver,
+five parser rules, a `super` property as a destructuring target, and the conversion of a property
+key that is a Symbol wrapper or is deleted in strict code.
+
+**What the plan said.** [Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+put proper tail calls and the staging cluster in phase F1. Each item below was otherwise a defect
+against the edition.
+
+**What replaced it, observed on 2026-10-04.**
+- **A call in tail position of a strict function takes no frame, in the bytecode form.** The
+  interpreter recognises the position from the code, so the format does not change. A call is in
+  tail position when the instructions after it reach `Return` through jumps and scope pops alone,
+  and no exception region covers it. That is the edition's reading: a call in a `finally` block or
+  in a `catch` with no `finally` is in tail position, and one in a `try` block is not. The frame
+  hands the callee to the loop that entered it (`JsEngine.Invoke`), which enters it at the same
+  depth. Only a strict, ordinary call frame makes one, and only to an ordinary function, method or
+  arrow. A class constructor, a generator, an async function, a bound function, a proxy and a
+  built-in are called as before.
+- **A Set method walks its receiver live.** `intersection`, `difference`, `isSubsetOf` and
+  `isDisjointFrom` re-read the receiver's length after every call of the argument's `has`, as the
+  edition does. A member deleted and added again is visited twice.
+- **A private name binds nothing and labels nothing.** `var #a`, `function #a() {}`, a parameter
+  `#a` and `#a: ;` are syntax errors, as is `async await => 1`.
+- **`new.target` in a function's default parameter reads the call's**, also in a function declared
+  at the top level of a script. Before this the parameter list was outside the function for that
+  rule.
+- **A `super` property is a destructuring target and a `for … of` head.** The this binding and the
+  key are evaluated when the target is evaluated, and the value is written as `super.x = v` writes
+  it.
+- **A property key converts to a String or a Symbol once.** A Symbol wrapper is a key in `in`, in
+  an indexed read, write or definition, and in a computed member definition. A strict `delete`
+  that fails converts its key once and names the converted key.
+- **test262:** over the whole pinned suite, against the run JSC-255 was measured on, 54 variants
+  moved from failing to passing and none moved back. Thirty-four are tail calls.
+
+**What must not be read as repaired.**
+- **The emitted forms make every call nested.** A strict tail recursion past the call-depth bound
+  still throws a `RangeError` in the native and value forms. An unbounded strict tail recursion in
+  the bytecode form now spends its fuel instead of throwing that `RangeError`.
+- **Function source text is still not kept.** `Function.prototype.toString` renders every function
+  as native, so the staging cases that read it back or `eval` it still fail. That covers
+  `class/newTargetDefaults`, `regress-541455`, `regress-559438`, the async and generator `toString`
+  cases, and the getter `toString` case.
+- **`Date` parsing of the non-ISO forms** `staging/sm/Date/non-iso.js` asks for is the
+  implementation-defined fallback, and it is not attempted.
+- **An Annex B function declared in a block of direct eval code inside `with`** still does not
+  assign the enclosing function's binding.
+- The legacy `caller` and `arguments` properties, the staging cases that need a nested realm or a
+  collection hook, and the Annex B case above remain owed to F1 or to the phases that own them.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-257
+
+**Where:** phase F1: the legacy `caller` and `arguments` of a sloppy function, and the runner's
+hang on `staging/sm/regress/regress-1507322-deep-weakmap.js`.
+
+**What the plan said.** [Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+put the legacy reflection and the runner's one hang in phase F1.
+[JSC-252](roadmap.corrections.md#jsc-252) named both as not repaired.
+
+**What replaced it, observed on 2026-10-04.**
+- **A sloppy plain function has its own `caller` and `arguments`.** A plain function is a function
+  declaration or expression, or one the `Function` constructor made. Both properties are accessors
+  that are neither enumerable nor writable, and are configurable. They are made the first time
+  anything could observe them, so creating a closure costs nothing more. `caller` answers the
+  sloppy plain function that called the receiver's latest running call, looking through direct
+  eval code. It answers `null` when that call was made by a built-in, a strict function, a
+  generator, an async function or global code, and when the receiver is not running.
+  `arguments` answers an arguments object for that call, mapped onto simple parameters, or `null`.
+  The engine records only sloppy plain calls, together with the depth each runs at. A gap in the
+  depth is what tells it something else made the call. The value form's direct call records them as
+  `Invoke` does.
+- **A strict function and every other kind still have neither.** Reading them still reaches
+  `Function.prototype`'s poisoned pair and throws, as section 17.1 requires.
+- **The runner skips the suite's `host-gc-required` tests.** Those tests call `$262.gc`, a hook
+  this harness does not provide. All 15 of them failed at that call with a refusal about the
+  harness. One of them, the deep-weak-map case, first builds a chain of 99,999 weak-map entries.
+  The platform's collector cannot interrupt its marking of that chain, and the shard ran past every
+  allowance. They are now skipped by the suite's own tag, and counted, as a proposal is. A whole run
+  no longer needs a shard killed by hand.
+- **The general-surface differential probe's case 62 now agrees with both comparison engines.** Its
+  two divergence declarations are withdrawn.
+- **test262:** over the whole pinned suite, against the run JSC-256 was measured on, 35 variants
+  moved from failing to passing and none moved back. The 15 `host-gc-required` files are now 15
+  skipped results where they were 26 variants. Twenty of those failed. Six passed without the hook,
+  in three `*-detaching` files that never reached their call of it, and are no longer counted as
+  passes. The run finished without intervention: 94,996 variants, 82,857 passing, 4,213 failing, 42
+  exhausted and 7,884 skipped, and its own report says it may be retained.
+
+**What must not be read as repaired.**
+- **A weak-map chain of about a hundred thousand entries still stalls the process in a garbage
+  collection** that no allowance can interrupt. The runner no longer runs the one test that builds
+  one, and the engine's exposure to such a guest program is unchanged.
+- **In the value form, `f.arguments` reads a parameter the emitted code holds resident as it was
+  at entry.** The compiler cannot see a reflective read coming, so it does not keep such a function's
+  parameters in the record the mapping reads. `function m(x) { x = 9; return m.arguments[0]; }`
+  answers 9 in the bytecode, native and flat value forms, and 1 in the value form.
+- **The two properties stand after `prototype` in the key order**, where V8 puts them before it.
+  The language orders neither, because it defines neither.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-258
+
+**Where:** phase F1: receivers in optional chains, the conversion of a computed destructuring key,
+a private method installed twice, a literal after `.`, the object environment's store, and the
+completion value of a `finally` that breaks.
+
+**What the plan said.** [Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+put the single gaps named in [JSC-252](roadmap.corrections.md#jsc-252) to
+[JSC-257](roadmap.corrections.md#jsc-257) in phase F1. Each item below was a defect against the
+edition.
+
+**What replaced it, observed on 2026-10-04.**
+- **A parenthesised optional member keeps its base as the receiver.** `(a?.b)()` and
+  `(a?.b)?.()` call `a.b` against `a`, as `(a.b)()` does. After a short circuit the call is made
+  against `undefined` and throws, because its callee is `undefined`. `super.m?.()` is called against
+  `this`.
+- **A computed key in an object pattern is converted where it is evaluated**, by the existing
+  `ToPropertyKey` instruction, before the target is evaluated. A rest property's exclusion uses the
+  converted key, so the double conversion the lowering declared as a divergence is gone.
+- **A private method or accessor installed twice on one object throws a `TypeError`**, as a private
+  field already did. A getter and a setter of one name count as one element.
+- **A literal after `.` is a syntax error.** `o.""` and `o.1` were read as names.
+- **An object environment's store asks whether the name still exists, in sloppy code too.** That
+  is step 1 of `SetMutableBinding`, and a proxy sees the question. Only strict code throws when the
+  answer is no.
+- **A `break` or `continue` out of a `finally` carries the finaliser's value.** The `try`'s settled
+  value is set aside and the finaliser writes the completion from `undefined`. The settled value is
+  restored only where the finaliser falls through. `try { 39 } finally { 42; break; }` is 42, and
+  `finally { break; }` is `undefined`.
+- **test262:** over the whole pinned suite, against the run JSC-257 was measured on, 22 variants
+  moved from failing to passing. Four RegExp property-escape variants ran past their five-second
+  wall-clock allowance in that run, which shared the machine with the unit suites. All four pass
+  when run again alone on the same binaries, and the change touches no part of the matcher.
+
+**What must not be read as repaired.**
+- **A strict assignment to an undeclared global** is checked when it is written, not when the
+  reference is evaluated. So `undeclared = (this.undeclared = 5)` does not throw. The check before
+  the right-hand side needs an instruction the format does not have.
+- **An object rest property still asks a proxy for the descriptor of every key**, excluded ones
+  included. Copying with exclusions needs an instruction the format does not have.
+- **A `var` target in a `with` body is resolved after the value is read**, so a proxy's `has` for
+  it comes late (`destructuring/binding/keyed-…-with-bindings`).
+- **The parser's nesting bound of 64** still refuses `statements/function/S13.2.1_A1_T1.js`. It is
+  the measured limit `SliceParseOptions` documents.
+- **Function source text** is still not kept, which the computed-method-name `toString` case needs.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-259
+
+**Where:** phase F3: a function's source text, the artifact section that carries it, and the
+identity line of [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s F3.
+
+**What the plan said.** Roadmap section 6 said `Function.prototype.toString` answers
+`function name() { [native code] }` for every function, "because the artifact carries no source",
+and put the repair in phase F3. F3's identity line said: "a format-version increment if the record
+puts source in the artifact".
+
+**What replaced it, observed on 2026-10-04.**
+- **The artifact carries source text, in an optional section** (kind 16, `SourceText`), under the
+  proposed [JSD-0037](decisions/0037-the-source-text-section.md). A row names a code unit and a
+  span of one String constant that holds the whole source it was compiled from. Every compilation
+  writes it unless the request sets `KeepsSourceText` to `false`.
+- **`Function.prototype.toString` answers the span**: a declaration or expression from `function`
+  or `async` to its `}`, a method from its `get`, `set`, `async`, `*` or name (a static method's
+  text leaves out `static`), an arrow from its parameters, and a class's whole text. Comments and
+  whitespace are kept. The `Function` constructor's result answers the text the edition
+  synthesises, and code compiled by `eval` answers its own. A built-in, a bound function and a host
+  function keep the NativeFunction form.
+- **The format version is not incremented.** An artifact without the section reads as before, a
+  build that predates the section refuses one carrying it with `1101 UnknownSectionKind`, and
+  sections 13 to 15 were added the same way. The identity line is corrected in place.
+- **One verifier code, `1633 MalformedSourceText`**, at diagnostic registry revision 18, refuses a
+  row past the table, out of order or repeated, a text that is not a String, an empty span and a
+  span past its text. Seven retained `source-text-*` entries pin it, two of which verify and run.
+  Seven retained compiled entries changed bytes, because they now carry the section.
+- **The fixtures that pinned the native rendering are replaced.**
+  `runs/bound-length-and-the-immutable-root.js` answers `#m() {}` for the private method, and
+  `runs/function-source-text.js` pins every form above against the comparison engine. The
+  differential probe that declared a divergence for the rendering (`the-general-surface.js`, 313)
+  now agrees, and its `#diverges` line is removed.
+- **test262:** `test/built-ins/Function/prototype/toString` passes all 160 variants. Before, it
+  passed 158, because its harness accepts the NativeFunction form wherever it accepts the source;
+  the two failures were a computed method key. Over the whole pinned suite, against the run
+  [JSC-258](roadmap.corrections.md#jsc-258) was measured on, 22 variants moved from failing to
+  passing and none moved back. Four of them are the RegExp property-escape variants that ran past
+  their wall-clock allowance in that run's loaded machine, so 18 are this change's: the computed
+  method key and eight `staging/sm` files that compare a function's text. The run finished on its
+  own: 94,996 variants, 82,897 passing, 4,173 failing, 42 exhausted and 7,884 skipped.
+
+**What must not be read as repaired.**
+- **`Error.prototype.stack`** is still absent, and `runs/an-error-has-no-stack.js` still pins that.
+  It is F3's second record and second change.
+- **A composition that drops the text** answers the NativeFunction form for every function. That
+  departs from the edition, and JSD-0037 says a composition that does so may not claim
+  conformance on `toString`. No composition in the tree drops it.
+- **The record is proposed, not taken.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout, and the proposed
+JSD-0037. 2026-10-04.
+
+### JSC-260
+
+**Where:** the `WeakMap` built-in, and the runner's one former hang,
+`staging/sm/regress/regress-1507322-deep-weakmap.js`.
+
+**What the plan said.** [JSC-257](roadmap.corrections.md#jsc-257) ended the hang by skipping the
+suite's `host-gc-required` tests, and named what it did not repair: "a weak-map chain of about a
+hundred thousand entries still stalls the process in a garbage collection that no allowance can
+interrupt", and "the engine's exposure to such a guest program is unchanged".
+[Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s F1 repeats it: "the
+collector's stall over such a chain is still the engine's".
+
+**What replaced it, observed on 2026-10-04.**
+- **The cause is the runtime's ephemeron table, not the interpreter.** A `WeakMap` was a
+  `ConditionalWeakTable`, a set of dependent handles. The collector resolves a chain of them - each
+  key's value the next key - by rescanning the handle table once per link it can newly mark. The
+  99,999-link chain ran past 120 seconds; with a large enough first-generation budget to keep the
+  collector from running, the same program ended in under a second.
+- **The values now live on their keys.** Every object and every Symbol carries a reference to the
+  entries the WeakMaps hold under it, filed by a per-map token that holds its map weakly. A value is
+  reachable through its key and nothing else, so it dies with the key and a value that refers to
+  its own key pins nothing. The collector marks the chain in one ordinary walk. The map holds
+  nothing, which is possible because the language gives a WeakMap no size, no `clear` and no
+  iteration.
+- **A value may outlive its map.** When a map is collected and a key stays alive, the key keeps
+  that map's value until it next gains an entry, or until the key dies. The edition sets a floor on
+  what must stay alive and no ceiling, so this is retention, not a semantic change. `WeakSet` keeps
+  the runtime's table: its entries hold one shared, empty box and cannot form a chain.
+- **The chain ends.** 99,999 links are built and walked in about 1.2 seconds by the end-user host,
+  and 500,000 links stop in about 3 seconds at the live-bytes ceiling the meter already had. The
+  slice compiler's checks force a full collection over the 99,999-link chain from inside a run, and
+  check that a value dies with its key and that a collected map's value leaves a live key. Run
+  against the former table, those checks did not finish in 240 seconds. A fixture,
+  `runs/a-deep-weak-map-chain.js`, pins the chain against the comparison engine.
+- **test262:** over `built-ins/WeakMap`, `WeakSet`, `WeakRef` and `FinalizationRegistry` and
+  `staging/sm/extensions`, `regress` and `Symbol`, 949 variants answer exactly as in the whole run
+  [JSC-259](roadmap.corrections.md#jsc-259) records.
+
+**What must not be read as repaired.**
+- **The 15 `host-gc-required` tests are still skipped.** They call `$262.gc`, which the harness
+  still does not provide, so `regress-1507322-deep-weakmap.js` is still not run. What changed is
+  that running it would no longer stall.
+- **A collection is still not metered.** Fuel and the wall-clock allowance still cannot interrupt
+  one; this change removes the one guest-built structure known to make a collection superlinear.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-261
+
+**Where:** phase F3: an error's `stack`, the running frames it is captured from, the position rows
+it is placed by, and every place that said no error has one.
+
+**What the plan said.** Roadmap section 6 said: "`Error.prototype.stack` ... is not a member of the
+edition. `error.stack` reads `undefined`: no error has an own `stack` and nothing it inherits from
+carries one", and `runs/an-error-has-no-stack.js` pinned that
+([JSC-239](roadmap.corrections.md#jsc-239)). F3 asked for a record choosing the shape "from the
+comparison engines' common form and the position table the artifact already carries".
+
+**What replaced it, observed on 2026-10-04.**
+- **Every error has an own `stack`**, under the proposed
+  [JSD-0038](decisions/0038-the-error-stack.md): an accessor pair shared by every error, configurable
+  and not enumerable, defined before `message`. The frames are captured when the error is made - by
+  any `Error` constructor, by the engine, by disposal or by the clone carrier - and rendered on first
+  read as V8 renders them: the `Error.prototype.toString` header, then at most ten
+  `    at name (place:line:column)` lines, innermost first. A construction through `super()` leaves
+  out the constructors that reached `Error`. Assigning `stack` replaces it.
+- **The engine keeps a site per running frame**, and every instruction the dispatch loop runs
+  writes its offset there, beside the fuel charge. On a call-, loop- and property-heavy script five
+  runs of each build took 1.645 seconds against 1.638 before, inside the spread between runs. The
+  bytecode, baseline native and value forms render the same text; the emitted forms show a frame
+  that a strict tail call replaces in the bytecode form, because only that form has proper tail
+  calls ([JSC-256](roadmap.corrections.md#jsc-256)).
+- **The verifier keeps the position table**, and the lowering places a call, a construction and a
+  named member read again just before its instruction: a construction at its `new`, a method call
+  and a member read at the member's name. In the probes this change was measured with, every line
+  and column of a frame both engines show agrees, except the one case named below. Six retained compiled corpus entries changed bytes for these
+  rows and no other reason; nothing outside the corpus manifest names their hashes.
+- **The fixtures are replaced.** `runs/an-error-has-no-stack.js` is removed and
+  `runs/an-error-has-a-stack.js` pins the descriptor, the key order, the frames of a call, of a
+  `super()` construction and of an engine-raised `TypeError`, the ten-frame bound, the first-read
+  rendering and assignment, against the comparison engine. The general-surface differential probe 321
+  now agrees with it and its `#diverges` line is removed.
+- **The clone carrier admits an error of the new type**; a rebuilt error has a stack of its own,
+  captured where it is adopted, and the source's text is not carried, as JSD-0032 says.
+- **test262:** over the whole pinned suite, every one of the 94,996 variants answers as in the run
+  [JSC-259](roadmap.corrections.md#jsc-259) records: 82,897 passing, 4,173 failing, 42 exhausted and
+  7,884 skipped. The suite asks nothing of `stack`, so none was expected to move; what the run shows
+  is that the own property, the key order and the extra position rows broke nothing it checks.
+
+**What must not be read as repaired.**
+- **`stack` is still not a member of the edition**, and JSD-0038 is proposed, not taken. No
+  milestone or stage moves.
+- **What differs from V8 on purpose:** a method frame is not prefixed by its receiver's constructor,
+  a built-in has no frame, a frame a proper tail call replaced is gone, and there is no
+  `Error.captureStackTrace`, `stackTraceLimit` or `prepareStackTrace`. A call whose callee is not a
+  name or a member is placed at the callee's start rather than at its arguments.
+- **No async frames** (`at async f`): a resumed async function shows the frames running when it
+  resumed.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout, and the proposed
+JSD-0038. 2026-10-04.
+
+### JSC-262
+
+**Where:** phase F2: the RegExp `v` flag - the matcher, the front end's early error, the realm's
+flags, and the Unicode archive and generator that feed the properties of strings.
+
+**What the plan said.** Roadmap section 6 said: "A literal carrying it is refused at compile time, and
+the constructor throws a `SyntaxError` for it. `unicodeSets` answers `false` for every RegExp." The
+compiler's comment called the refusal deliberate under JSD-0031 section 12, and the matcher's said it
+had "no `v` flag, none of its set operations and none of the seven properties of strings".
+
+**What replaced it, observed on 2026-10-04.**
+- **The data.** `emoji-sequences.txt` and `emoji-zwj-sequences.txt` from the Unicode 17.0.0
+  release's `emoji/` directory are archived under `src/tests/unicode/pins/emoji-17.0.0/`, each
+  retrieved twice and found byte-identical, and pinned by length and digest; rule N22 reads their
+  version header. `UnicodeTableGenerator` writes a fifth file, `JsUnicodeStringProperties.g.cs`. Its
+  sequences spell code points through a frequency-ordered dictionary so that the tables stay under
+  the owner's 300 KB cap, which three-byte code points would have passed by 5,318 bytes
+  ([JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) section 14).
+- **The matcher.** Under `v` a class is a set of code points and strings: nested classes, `&&`,
+  `--`, `\q{...}`, the seven properties of strings, the class-set character and reserved
+  punctuator rules, and `MayContainStrings`' early errors. `MaybeSimpleCaseFolding` and
+  `CharacterComplement` follow the edition under `vi`, so `/\P{Ll}/iv.test("a")` is `false`. A class
+  that holds strings tries the longest first. Every other rule of `u` holds under `v`.
+- **The front end and the realm.** The early error naming `v` as unsupported is gone; `u` with `v`
+  is still a SyntaxError in both. `flags` orders them `dgimsuvy`, `unicodeSets` answers `true` for a
+  `v` pattern, and `JsRegExpMatcher.Compile` takes the flag as an optional argument (public API
+  baseline updated).
+- **Fixtures and probes.** `runs/the-v-flag.js` pins set operations, string literals, properties
+  of strings, `vi` folding, the early errors and the flags against the comparison engine.
+  `runs/the-edition-members-the-realm-lacked.js` now asserts `true` for `/a/v.unicodeSets` beside
+  `false` for `/a/u.unicodeSets`. The differential probes that declared the refusal as a divergence
+  (`the-unicode-lexical-grammar.js` 54, 55 and 61, `the-unicode-property-escapes.js` 60) agree with
+  it now, and their `#diverges` lines are removed.
+- **test262:** over `built-ins/RegExp`, `language/literals/regexp`, the six RegExp-reading
+  `String.prototype` methods and `annexB/built-ins/RegExp`, 282 variants moved from failing to
+  passing and none moved back. `RegExp/unicodeSets` passes 228 of 228, `CharacterClassEscapes` 24 of
+  24, and `property-escapes/generated/strings` 56 of 56. The 24 variants still failing there are the
+  `cross-realm` cases phase F5 owns. Over the whole pinned suite, against the run
+  [JSC-261](roadmap.corrections.md#jsc-261) records, the same 282 variants moved from failing to
+  passing: 94,996 variants, 83,177 passing, 3,891 failing, 44 exhausted and 7,884 skipped. Two
+  property-escape variants (`General_Category_-_Enclosing_Mark.js` strict, `Script_-_Lao.js`
+  sloppy) ran past their five-second wall-clock allowance in that run, which shared the machine
+  with builds and the unit suites; run again alone on the same binaries, all 938 variants of
+  `property-escapes/generated` pass, those two included.
+
+**What must not be read as repaired.**
+- **The identity is still `wide`.** F2's line names `broiler.javascript.regexp`, which needs a
+  person's decision (JSC-167) and was not minted.
+- **The properties of strings are the 17.0 lists**, archived; a later Unicode version is a new pin.
+- No milestone or stage moves; JSD-0031 is still proposed.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-263
+
+**Where:** phase F4: `FinalizationRegistry` cleanup - the engine's sweep, the registry, the two host
+drain paths, a new descriptor door, and the CLI and conformance compositions.
+
+**What the plan said.** Roadmap section 6 said: "A cleanup callback is never called, as JSD-0029
+records." The registry's own remarks called it "a declared divergence and not an unfinished feature",
+and its falsifier line read "a cleanup callback registered here is ever invoked, or any guest code runs
+from a CLR finalizer".
+
+**What replaced it, observed on 2026-10-04.**
+- **JSD-0029's D03-a is built as written** (its section 11). A composition that builds its
+  descriptor with `JavaScriptProfile.DescriptorSweepingFinalization` gets realms whose host drains
+  sweep: `#drain-jobs` once before its first job, `#step-jobs` before each turn's job. A sweep marks
+  the registrations whose targets the collector has taken and queues one ordinary cleanup job per
+  registry; the job removes each marked registration, then calls the callback with its held value.
+  Nothing runs from a CLR finalizer, nothing sweeps in `JsHostRealm.DrainJobs` or a script, and a guest
+  cannot cause a sweep. Every other door keeps the inert registry.
+- **The CLI and the conformance runner turn it on.** The CLI collects once before its drain, so a
+  callback for a target the program dropped arrives there; the conformance runner never collects.
+- **The registry's falsifier line is rewritten**, as D03-a owes, to "a cleanup callback runs outside a
+  host-requested drain, or any guest code runs from a CLR finalizer", and goes back to human review.
+- **Checks and a fixture.** Seven checks in the slice compiler hold a delivery at a drain and in a
+  step's turn and never in a script, a delegated drain that sweeps nothing, an `unregister` between the
+  sweep and the job, a throwing callback followed by the rest at the next drain, the inert default, and
+  - on the production path, with forced collections - a reachable target never reported. The
+  inert-default check runs the first check's program on a realm that does not sweep and gets no
+  callback, so the delivery checks are not met by an inert registry.
+  `runs/a-cleanup-callback-arrives.js` shows three callbacks
+  arriving in registration order at the CLI's drain, stable over 20 runs; the comparison engine
+  collects when it chooses, so its transcript is not the reference.
+- **test262:** `built-ins/FinalizationRegistry`, `WeakRef`, `WeakMap`, `WeakSet`, `Promise` and
+  `staging` answer exactly as before, 4,686 variants. The suite's cases that need cleanup to arrive
+  are its `host-gc-required` ones, still skipped. Over the whole pinned suite, against the run
+  [JSC-262](roadmap.corrections.md#jsc-262) records, no variant moved because of this change: 94,996
+  variants, 83,179 passing, 3,891 failing, 42 exhausted and 7,884 skipped. The two that did move are
+  the property-escape variants that ran past their wall-clock allowance in that loaded run and passed
+  when run again alone.
+
+**What must not be read as repaired.**
+- **When a callback arrives is the collector's.** Without a collection before the drain, a dropped
+  target may not be reported yet; in the value form its handle table can keep it reachable longer.
+- **The rewritten `Security=High` line needs the owner's review**, which JSD-0029 makes a condition
+  of D03-a counting as done; JSD-0029 is still proposed. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-264
+
+**Where:** phase F5's first half: the engine's realms (`JsEngine.Realms.cs`), every function's
+`[[Realm]]`, the agent's Symbols, `$262.createRealm`, the embedder's views of a realm, the
+built-in iterators' brand, and `super` assignment.
+
+**What the plan said.**
+- Roadmap section 13: "Today one realm is built per engine". Section 6's table: "`$262.createRealm`
+  throws a `TypeError` saying this profile creates no nested realm". Section 13's table of refusing
+  host members gave `createRealm`'s answer as "That this profile creates no nested realm", and
+  `runs/the-host-members-that-refuse.js` pinned it.
+- `JsRealm.Symbol.cs`: "The well-known Symbols are per-realm here, and the specification says they
+  are per-agent", and the `Symbol.for` registry "is per-realm for the same reason".
+- `JsRealm.Array.cs`, on `ArraySpeciesCreate`: "The cross-realm step is vacuous here."
+- `IJsHostSurface`: "The realm is handed over exactly once per instance, at instantiation".
+- [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) section 1: one realm per engine, no
+  realm on a function, Symbols per realm, `createRealm` refusing.
+- `JsEngine.SetSuper`'s remarks described a walk of the home object's chain; the walk read every
+  object on it as an ordinary one.
+
+**What replaced it, observed on 2026-10-04.**
+- **SR-1.** The fifteen well-known Symbols and the `Symbol.for` registry are the engine's
+  (`JsAgentSymbols`), shared by every realm it builds.
+- **SR-2.** Every function carries the realm that was running when it was made, and runs in it: a
+  frame's site saves and restores the running realm, and a built-in of another realm is entered in
+  its own. A sloppy function's `this` is its own realm's global; a class called without `new` throws
+  its own realm's `TypeError`; `GetPrototypeFromConstructor` falls back on the intrinsic of
+  `new.target`'s realm, found by constructor ordinal; `ArraySpeciesCreate` treats another realm's
+  `%Array%` as no species; a generator's fallback prototype is its function's realm's; a proxy's
+  traps are handed arrays and descriptors of the running realm; a built-in iterator's `next` checks
+  the kind it was made as, by name. Rule N26 holds the model.
+- **SR-7.** `$262.createRealm()` builds an ordinary new realm on the same engine from the same
+  surface set, charged 262,144 live bytes before it is built and 4,096 fuel, and answers its `$262`.
+  A composition's host surface is told of it through a view of its own that shares the engine's step
+  window; that view refuses a ref the first view minted, `ForeignRealm`. The conformance harness
+  installs its `$262` members in the new realm that way.
+- **`super.x = v` is the receiver-aware `[[Set]]`** every other write uses, so a proxy on the home
+  object's chain is asked through its `set` trap. Until today the walk stepped past it and the trap
+  never ran (`staging/sm/class/superPropProxies.js`).
+- **Records.** Proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md) records the model
+  and is the JSD-0018 record SR-7 asks for; JSD-0018, JSD-0024 and JSD-0030 carry dated sections;
+  roadmap sections 6 and 13, the delivery plan's F5 and the hosting roadmap's JSH-7 are amended.
+- **Checks and fixtures.** Five slice-compiler checks: the agent's Symbols shared by two realms, a
+  built-in running in its own realm, a function called through another realm's built-in running in
+  its own, the host surface told of a created realm and a foreign ref refused, and a loop creating
+  realms ending at the live-bytes ceiling. `runs/a-created-realm-is-a-realm-of-its-own.js` shows a
+  created realm's own global and intrinsics, the shared Symbols, its `TypeError`, `new.target`'s
+  realm's intrinsic, its sloppy `this` and the species rule in all three output forms;
+  `runs/the-host-members-that-refuse.js` no longer asks `createRealm`.
+- **test262.** Over the whole pinned suite, against the run [JSC-263](roadmap.corrections.md#jsc-263)
+  records: 94,996 variants, 83,676 passing, 3,394 failing, 42 exhausted and 7,884 skipped - 497
+  variants moved from failing to passing and none moved back, and the exhausted set is the same 42.
+  493 of the 497 are in the 281 files that call `$262.createRealm`, whose 534 variants now answer 493
+  passing, 30 failing and 11 skipped, where they answered 523 failing and 11 skipped; every one of the
+  30 needs `SharedArrayBuffer`, `Atomics` or `Intl`, and the 11 claim the `legacy-regexp` or
+  `ShadowRealm` proposal or `host-gc-required`. The other four are
+  `staging/sm/class/superPropNoOverwriting.js`, which the `super` assignment repair moves, and
+  `staging/sm/Proxy/revoked-get-function-realm-typeerror.js`, which `GetFunctionRealm` moves.
+
+**What must not be read as repaired.**
+- **ShadowRealm is still absent**; SR-3 to SR-5 are F5's second half.
+- **The cross-realm cases that need `SharedArrayBuffer`, `Atomics` or `Intl` still fail**; they are
+  phases F6 and F7's.
+- **A created realm shares the engine's module map**, so a dynamic `import()` from it answers the
+  instance the engine already holds; JSD-0039 leaves a map per realm undecided.
+- **An embedder cannot create a realm**, and JSH-7's realm on another thread is phase F6's.
+- **The engine still re-points a built-in's instance after its body runs**, so a `prototype` getter
+  on a `new.target` runs after the built-in's own argument conversions for the constructors that do
+  not read it themselves; that order is older than this change and not changed by it.
+- JSD-0039 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-265
+
+**Where:** phase F5's second half: `ShadowRealm` (`JsRealm.ShadowRealm.cs`, `JsEngine.ShadowRealm.cs`),
+the surface table, the descriptor builder, the conformance runner's proposal set and decline
+handling, and the charge for a realm.
+
+**What the plan said.**
+- Roadmap section 6's table: "`typeof ShadowRealm` answers `"undefined"`; it is a proposal the suite's
+  runner does not select." Section 13: "ShadowRealm and a second agent are still to come."
+- The allocation table: `broiler.javascript.shadowrealm` "Proposed 2026-10-03: phase F5, minted by
+  the record admitting the proposal".
+- [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) D1: "`ShadowRealm` stays undefined";
+  section 6, cases 3 and 4: the inner refusal "throws `SyntaxError`".
+- [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md) section 3 and
+  [JSC-264](roadmap.corrections.md#jsc-264): a created realm is charged "262,144 live bytes ... and
+  4,096 units of fuel", the first described as what an instantiation reports for its first realm.
+
+**What replaced it, observed on 2026-10-04.**
+- **`ShadowRealm` is built** under proposed [JSD-0040](decisions/0040-admitting-shadowrealm.md),
+  which admits the proposal at `9ff2a01f` and mints `broiler.javascript.shadowrealm`: the constructor,
+  `evaluate` (compiled in the caller's realm through the one mediator, run as the shadow realm's
+  global eval code, every exception a fresh `TypeError` of the caller's realm), wrapped functions with
+  `CopyNameAndLength`, and `importValue`. A shadow realm's global holds no `print`, `console`, `read`
+  or `$262`, and no host surface is told of it.
+- **The identity is admitted only with the dynamic surface**: a descriptor naming it alone is refused
+  when it is built, and the conformance runner's `--decline` of the dynamic surface declines it too.
+  The public surface gains `JavaScriptProfile.ShadowRealmManifest`, `JsSurfaces.ShadowRealm` and
+  `JsSurfaces.ShadowRealmGlobals`; the API baseline records them.
+- **The `--test262` command scores the `ShadowRealm` flag.** All 124 scored variants of
+  `test/built-ins/ShadowRealm` pass; before this change all were skipped as a proposal's.
+- **JSD-0030 section 6's cases are checks**: six as CLI host-surface checks with a provider that
+  counts and filters what it is asked, case 5 and the refused descriptor as slice-compiler checks.
+  Cases 3 and 4 answer a `TypeError`, not the `SyntaxError` section 6 wrote, because the refusal
+  crosses a wrapped function, which D4 makes a `TypeError`.
+- **A realm's cost is measured and its charge raised.** A realm built from every surface held
+  504,818 bytes of managed heap when `$262.createRealm` made it and 489,699 as a ShadowRealm's, over a
+  hundred held at once, and took about 2 ms - about 37,000 units of the interpreter's fuel on the same
+  machine. Both kinds are now charged 524,288 live bytes and 32,768 fuel; JSC-264's figures were half
+  and a ninth of the cost.
+- **A fixture**: `runs/a-shadow-realm-keeps-its-own-realm.js`, whose thirteen lines node 22 with
+  `--experimental-shadow-realm` answers the same.
+- **test262, whole pinned suite**, against the run [JSC-264](roadmap.corrections.md#jsc-264) records:
+  95,056 variants, 83,800 passing, 3,394 failing, 42 exhausted and 7,820 skipped. The 124 that moved
+  to passing are the ShadowRealm cases, which were skipped as a proposal's and counted then as one
+  variant per file; none moved anywhere else, and the failing and exhausted sets are the same
+  variants as before.
+
+**What must not be read as repaired.**
+- **A shadow realm shares the engine's module map**, where the proposal gives each its own
+  (JSD-0040 section 2).
+- **SR-4 and SR-6 are other repositories'** (Broiler.JSeal's coverage, Broiler.JS's child-context
+  compilation) and are not started.
+- **The measurement is one machine's**, of the Release build, and the 2 ms is wall-clock time.
+- JSD-0040 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-266
+
+**Where:** phase F6's first slice: `SharedArrayBuffer` and `Atomics` (`JsShared.cs`, `JsRealm.Shared.cs`,
+`JsEngine.Atomics.cs`), the buffer type, the surface table and descriptor builder, the host surface's
+agent policy, the host drain, the ledger's `absent-globals` block and the published globals.
+
+**What the plan said.**
+- The ledger's `absent-globals` block listed `Atomics` and `SharedArrayBuffer`, and roadmap section 6's
+  table said "the ledger's absent-globals block names the two globals, and `typeof` answers
+  `"undefined"` for each".
+- `JsBinary.cs`: "The bytes are a plain `byte[]` and are never shared between agents. A
+  `SharedArrayBuffer` is a different type for a reason ... and this profile does not build one."
+- The clone carrier's transfer list: "THIS REALM HAS NO SharedArrayBuffer (JSD-0028)".
+- The allocation table: `broiler.javascript.shared` "Proposed 2026-10-03: phase F6, minted by
+  JSD-0028's successor". The hosting roadmap's JSH-7 said the two globals "are absent, and absent
+  deliberately rather than incidentally".
+
+**What replaced it, observed on 2026-10-04.**
+- **`SharedArrayBuffer`** is built under proposed
+  [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) as the binary buffer type over a shared
+  block: the constructor with its options bag, `byteLength`, `growable`, `maxByteLength`, `grow`,
+  `slice` and the species. Every `ArrayBuffer.prototype` member refuses it, as every member of its own
+  prototype refuses an unshared buffer; `$262.detachArrayBuffer`, a transfer list and the clone
+  carrier refuse it.
+- **`Atomics`** is built: the eleven read, write and read-modify-write members over every integer
+  view, `wait`, `waitAsync`, `notify` and `pause`, in the edition's validation order. Four- and
+  eight-byte accesses are lock-free compare-and-swap loops; one- and two-byte ones take the block's
+  lock, so `isLockFree` answers `false` for 1 and 2, where node 22 answers `true`.
+- **`[[CanBlock]]` is the host surface's** (`IJsHostAgentPolicy`, public): the conformance runner
+  answers `true`, the CLI does not answer and its `Atomics.wait` is a `TypeError`. A blocking wait
+  sleeps in 20 ms slices and polls cancellation and the meter between them. **`waitAsync` settles only
+  at a host drain or step**, and a drain whose queue is empty waits for the earliest deadline, bounded
+  the same way.
+- **`broiler.javascript.shared`** is minted, owning both globals and admitted only with
+  `broiler.javascript.binary`; the runner's `--decline` of the binary surface declines it. The public
+  surface gains `JavaScriptProfile.SharedManifest`, `JsSurfaces.Shared`, `JsSurfaces.SharedGlobals` and
+  `IJsHostAgentPolicy`, which the API baseline records.
+- **The two names left the `absent-globals` block** in this change, and `docs/realm/globals.txt` is now
+  read from a realm admitting every surface that owns a global, so it publishes `Atomics`,
+  `SharedArrayBuffer` and `ShadowRealm`. The hosting roadmap's stale clause is marked as written.
+- **Checks and a fixture**: seven slice-compiler checks - an agent that may not block refuses `wait`;
+  one that may waits and times out; a wait with no timeout ends at a 300 ms wall clock; a `waitAsync`
+  stays pending through two scripts and settles at the drain; a `notify` wakes one asynchronous waiter
+  for the next drain; the shared surface alone is refused; a declined shared surface builds neither
+  global - and `runs/a-shared-buffer-and-atomics.js` in all three output forms.
+  `runs/a-typed-array-over-a-buffer.js`, whose last line pinned the two names' absence as
+  `undefined:undefined:function`, answers `function:object:function` and says why.
+- **test262**, by directory: `built-ins/SharedArrayBuffer` 208 of 208 variants pass; `ArrayBuffer`,
+  `DataView`, `TypedArray` and `TypedArrayConstructors` have no failing variant; `built-ins/Atomics`
+  passes 524 and fails 224, every one of them in a file that starts a second agent through
+  `$262.agent`.
+- **test262, whole pinned suite**, against the run [JSC-265](roadmap.corrections.md#jsc-265) records:
+  95,056 variants, 84,758 passing, 2,434 failing, 44 exhausted and 7,820 skipped. 960 moved from
+  failing to passing - 524 under `built-ins/Atomics`, 208 under `SharedArrayBuffer`, 108 under
+  `TypedArrayConstructors`, 78 under `DataView`, 18 under `ArrayBuffer`, 14 under `TypedArray`, and
+  12 elsewhere that construct a shared buffer in passing. None moved to failing. **Two moved from
+  passing to exhausted**: both variants of `staging/sm/TypedArray/sort_large_countingsort.js`, whose
+  shell harness sorts a shared copy of every typed-array constructor when `SharedArrayBuffer` exists,
+  so the test now does twice the work; under the whole run's load it spent its 5,000 ms wall clock,
+  and run alone both variants pass. The 224 failing `Atomics` variants are the ones that start an
+  agent: 106 under `waitAsync`, 86 under `wait` and 32 under `notify`.
+- **The run met a hang that is not this change's**: `staging/sm/Array/length-truncate-with-indexed.js`
+  held one shard for about twenty minutes, in an array-length truncation that walks every index
+  between the two lengths without charging or polling. It passed in this run and the one before;
+  the walk is corrected by [JSC-268](roadmap.corrections.md#jsc-268).
+
+**What must not be read as repaired.**
+- **No second agent runs**: `$262.agent` still refuses, and the cases that start an agent fail.
+- **A growable block replaces its array when it grows**, which a second agent writing during the
+  growth could lose a write to; with one agent nothing races it.
+- **The audit of the binary built-ins that read an element twice**, and JSD-0028 S2's architecture
+  rule over the plain element path, are owed before a second agent can write.
+- JSD-0041 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+
+### JSC-267
+
+**Where:** phase F6's second slice: a second agent. The host doors (`JsHostRealm.ShareBlock`,
+`AdoptBlock`, `JsHostSharedBlock`), the shared block and the engine's asynchronous waiters
+(`JsShared.cs`, `JsEngine.Atomics.cs`, `JsEngine.cs`), and the conformance runner's `$262.agent`
+(`Test262Agents.cs`, `Test262Host.cs`, `Test262Manifests.cs`, `Test262Run.cs`).
+
+**What the plan said.**
+- [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) section 5: "A second agent: `$262.agent`,
+  worker agents, a block held by several, and the `CanBlockIsFalse` cases that need an agent which may
+  not block. The suite's cases that start an agent still fail at `$262.agent.start`'s refusal."
+- JSD-0041 section 1: "the suite's `SharedArrayBuffer`, `Atomics`, `Atomics.waitAsync` and
+  `Atomics.pause` features are standard ones".
+- JSD-0041 section 2.4: a drain "whose queue is empty while a waiter of this agent has a deadline waits
+  for it"; `JsEngine.Atomics.cs` read every deadline on `Environment.TickCount64`.
+- `Test262Run.cs` skipped every `CanBlockIsFalse` file: "this agent's [[CanBlock]] is true".
+- `Test262Host.cs`: the profile's `$262` members "refuse with a `TypeError` naming what this profile
+  does not do - `createRealm`, `gc`, the `agent` API", a sentence `createRealm` had already left
+  under [JSC-264](roadmap.corrections.md#jsc-264).
+
+**What replaced it, observed on 2026-10-04.**
+- **A second agent is a runtime its host starts**, under proposed
+  [JSD-0042](decisions/0042-a-second-agent.md). A fixed-length block crosses between agents through
+  `JsHostRealm.ShareBlock` and `AdoptBlock`, which copy nothing; an `ArrayBuffer` and a growable block
+  are refused at the crossing, and a realm that declined `broiler.javascript.shared` adopts nothing.
+  The public surface gains the two members and `JsHostSharedBlock`, which the API baseline records.
+  The profile's own `$262.agent` still refuses, because the profile starts no agent.
+- **The conformance runner's `$262.agent` runs real agents**: `start` builds a runtime from the test's
+  manifest on a thread of its own, with the flow of the test's execution context suppressed; the
+  agents of one test share one aggregate budget sized at the test runtime's ceilings, with at most
+  eight live, and each adopts what is left of it; `broadcast` returns once every agent has taken the
+  block; `getReport` waits up to 100 ms for a running agent's report before answering `null`; every
+  agent is cancelled, joined and disposed when its test's verdict is reached.
+- **The suite's `CanBlockIsFalse` files run** under a host surface whose main agent may not block, and
+  pass; the slice-manifest ingestion translator still declines both `CanBlock` flags, and its reason
+  now names the slice manifest rather than the profile.
+- **Three corrections to JSD-0041's waiters, found by the agents' cases**: a drain settles a waiter
+  that is due between two jobs, not only once its queue is empty, so a queue that keeps refilling
+  itself - the suite's stand-in for `setTimeout` - no longer starves the timeouts it waits on; a drain
+  waits for a waiter with no deadline when its block has crossed to another agent, woken by the
+  notification's pulse, and still returns at once when nothing could ever notify it; and deadlines are
+  read on the high-resolution clock, because `TickCount64`'s granularity ended waits a few
+  milliseconds before their timeout by the clock a program measures them with.
+- **JSD-0041 section 1 was wrong about `Atomics.pause`**: the pinned suite's feature table lists it
+  among proposals, and the runner skips its six files as it does every proposal not admitted. The
+  member is built (JSC-266); whether to admit the proposal is not decided here.
+- **Checks**: three slice-compiler checks - two instances on two runtimes share one block, an
+  `Atomics.add` through one is seen by the other and a notification from one wakes the other's
+  blocking wait; only a fixed-length shared buffer is handed out; a realm that declined the shared
+  surface adopts no block.
+- **test262, `test/built-ins/Atomics`**: 752 of 752 scored variants pass, against 524 of 748 before,
+  in three consecutive runs; the 6 skipped are `Atomics.pause`'s.
+- **test262, whole pinned suite**, against the run [JSC-266](roadmap.corrections.md#jsc-266) records:
+  95,058 variants, 84,986 passing, 2,210 failing, 44 exhausted and 7,818 skipped. 228 moved to passing:
+  the 224 `Atomics` variants that start an agent - 106 under `waitAsync`, 86 under `wait`, 32 under
+  `notify` - and the four of the two `CanBlockIsFalse` files, which were one skipped case each and are
+  now two scored variants each. None moved anywhere else; the exhausted set is the same 44 variants,
+  `sort_large_countingsort.js`'s two among them, and `length-truncate-with-indexed.js` no longer held
+  its shard ([JSC-268](roadmap.corrections.md#jsc-268)).
+
+**What must not be read as repaired.**
+- **A growable block does not cross**, and retention follows the agent that made a block, not its
+  last holder; JSD-0028's S2 rule and audit and S5's carrier entry are owed (JSD-0042 section 5).
+- **The test's own runtime is not under its agents' aggregate**, so a test and its agents together may
+  spend two allowances.
+- **`getReport`'s wait is a harness choice** made against this profile's live-bytes charging of
+  promise jobs, not something the suite requires; a report that never comes still answers `null`.
+- JSD-0042 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-268
+
+**Where:** `JsArray.TrySetLength`, an array's length set below its old value.
+
+**What the plan said.** "A SHORTENING DELETES FROM THE TOP DOWN AND STOPS AT THE FIRST ELEMENT IT MAY
+NOT DELETE", implemented as a walk from the old length down to the new one, one index at a time,
+formatting each index as a key and looking it up.
+
+**What replaced it, observed on 2026-10-04.**
+- **The walk visits the indices the array holds**: the map's index keys at or past the new length,
+  highest first, stopping at the first that may not be deleted; the dense half above that point is cut
+  in one step. Only the map can refuse a deletion, so the result is the one the walk reached.
+- **Why it mattered**: `a[987654321] = 1; a.length = 8` made about a billion lookups that charged no
+  fuel and polled no clock, so the operation's wall clock could not end it.
+  `test/staging/sm/Array/length-truncate-with-indexed.js` held a shard of the whole run
+  [JSC-266](roadmap.corrections.md#jsc-266) records for about twenty minutes, and passed; it now
+  passes in under a second.
+- **test262**: `test/built-ins/Array`, `test/staging/sm/Array`, `Object/defineProperty`,
+  `Object/defineProperties` and `SharedArrayBuffer`, 10,011 variants, answer exactly as in that whole
+  run.
+
+**What must not be read as repaired.** Other loops bounded by a guest-controlled length rather than by
+what the object holds were not audited here.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-269
+
+**Where:** phase F7's I0 second half and I1. The data assembly `Broiler.VM.Profile.JavaScript.Intl`
+and its generator (`CldrTableGenerator`, rule N28); the format's `IJsIntlData` and
+`broiler.javascript.intl`; the profile's `JavaScriptProfile.DescriptorComposing`, `JsComposition`,
+`JsIntlTables`, `JsLocaleTag`, `JsCollationData`, `JsCollator` and `JsRealm.Intl.cs`; `localeCompare`
+and the locale-named case methods; the slice-compiler and conformance roots that hand the data over;
+the ledger's `absent-globals` block.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7: I0 is "the pinned CLDR input and
+  generator (section 5), the separate data assembly, `broiler.javascript.intl` minted with its
+  admission scope; locale canonicalization, likely subtags and negotiation as **internal**
+  operations. **Installs no global**"; I1 is "`Intl.Collator` and a locale-aware `localeCompare`" with
+  "`Intl` global appears here with only `Collator` and `getCanonicalLocales`".
+- JSD-0027's "I0, first half" section: "Nothing reads the archive yet: the generator, the data
+  assembly and the identity `broiler.javascript.intl` are the second half of I0."
+- The ledger's `absent-globals` block named `Intl`; JSD-0027 section 6's consumer limitation said
+  "`Intl` is absent".
+- Delivery F7's exit gate: "`test/intl402` is admitted by a JSD-0018 record and passes per slice".
+
+**What replaced it, observed on 2026-10-04.**
+- **The data is an assembly of its own that the profile reads and does not reference**, under
+  proposed [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md). It references the format
+  only; the profile reads it through `IJsIntlData`. ADR 0001's revision of 2026-10-04 takes the graph
+  from 31 projects and 113 edges to 32 and 116, and eleven assemblies now pack. The slice-compiler
+  and conformance roots reference it, and their retained closure listings and register rows name it.
+  Every other root's closure is unchanged.
+- **`broiler.javascript.intl` is admitted only with its data.** A door naming it without data is
+  refused when the descriptor is built. The one door that takes data is new,
+  `JavaScriptProfile.DescriptorComposing(JsComposition)`, and the API baseline records it. Every
+  existing door builds the realm it built before.
+- **I0 and I1 land together**, because the global I0 would not install is the one I1 installs, and
+  splitting them would have published a surface with nothing behind it for one change. `Intl` has
+  `getCanonicalLocales` and `Collator`. `localeCompare` routes through the realm's own
+  `%Intl.Collator%`, and `toLocaleUpperCase` and `toLocaleLowerCase` apply Turkish, Azeri and
+  Lithuanian casing. `Intl` left the `absent-globals` block in this change, `globals.txt` was
+  regenerated, and rule N24's witness now uses `Temporal` as its genuinely absent global.
+- **Rule N28 is minted**: the tables are what the generator writes from the two pinned archives,
+  under a provisional bound of 512 KiB. They measure 325,646 bytes. `THIRD_PARTY_NOTICES.md` carries
+  the CLDR licence text.
+- **The case of a tailored element is stated, not derived.** The retained German and English
+  orderings ([`src/tests/cldr/orderings/`](../../tests/cldr/orderings/README.md)), 27 collators over 81
+  words, first differed from ICU 77.1 on one line: German phonebook order under `caseFirst: 'upper'`
+  put `ä` before `Ä`. A tailored tertiary sits between two root weights, so it cannot carry case the
+  way a root one does. The generator now states it, as ICU's `setCaseBits` does, and every line
+  agrees.
+- **Soft_Dotted lives in the Intl data**, not in the UCD tables: adding it there made a 31st table
+  where rule N22 holds 30, and only Intl's Lithuanian casing reads it.
+- **The JSD-0018 admission is an amendment, not a mechanism**: the wide dialect has always selected
+  `test/intl402`.
+- **Checks**: seven slice-compiler checks, 625 in all: no data, no `Intl`; a door naming it without
+  data is refused; German phonebook and search order; alias replacement; both CollationTest files in
+  order; and the ICU orderings.
+- **test262, `test/intl402`**, against the whole run [JSC-267](#jsc-267) records: 312 of 4,418
+  variants pass, against 50. 262 moved to passing and none moved back. `Collator` passes 124 of 130,
+  `getCanonicalLocales` 74 of 76, and `String/prototype/localeCompare`, `toLocaleLowerCase` and
+  `toLocaleUpperCase` all 38. `test/built-ins/String` is unchanged.
+- **test262, whole pinned suite**, against the run [JSC-267](#jsc-267) records: 95,058 variants, 85,242
+  passing, 1,954 failing, 44 exhausted and 7,818 skipped. 262 moved to passing, all under
+  `test/intl402`. **Six moved to failing, three files under `test/staging/sm`**:
+  `String/internalUsage.js`, `extensions/quote-string-for-nul-character.js` and
+  `Proxy/revoked-get-function-realm-typeerror.js`. Each runs its `Intl` half only where `Intl` exists,
+  and that half needs `DateTimeFormat`, `NumberFormat`, `PluralRules` or `RelativeTimeFormat`. They
+  passed before because `Intl` was absent. JSD-0027 section 6 named this risk of a partial `Intl`:
+  feature detection that sees the namespace assumes its constructors. The slices that publish those
+  constructors are what passes them. The exhausted set is the same 44 variants.
+
+**What must not be read as repaired.**
+- **`NumberFormat`, `DateTimeFormat`, `Locale` and every other constructor are absent**, and so is
+  `Intl.supportedValuesOf`. 1,876 `intl402` variants fail, almost all of them for that reason. The
+  phase's exit gate is not met.
+- **Collations the data does not carry**: `eor`, and Thai's default `ignorePunctuation`.
+- **No size budget is set**; the 512 KiB bound is provisional, and owner decision (c) is open.
+- **The composition images carry no notice file**, for the CLDR data as for the UCD's.
+- JSD-0043 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-270
+
+**Where:** phase F7's slice I2. `Intl.NumberFormat` (`JsRealm.NumberFormat.cs`, `JsNumberFormatter.cs`,
+`JsDecimal.cs`, `JsNumberData.cs`, `JsPluralRule.cs`). `Number`, `BigInt`, `Array` and
+`%TypedArray%` `toLocaleString`. The CLDR archive and its pin, the generator's seven new tables, and
+the format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7: I2 is "`Intl.NumberFormat`
+  (decimal, percent, currency)" with "Digit options, rounding, grouping, `signDisplay`,
+  `formatToParts`; `Number.prototype.toLocaleString` routes through it. Units, compact and scientific
+  notation are a later slice". Its acceptance names "a retained `(locale, options, value) → string`
+  dataset covering `-0`, `NaN`, `±Infinity`, `1e21`, half-even/half-expand ties and grouping at 3, 4
+  and 5 digits".
+- [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) section 7: "`Intl.NumberFormat` (I2) ...
+  are later slices"; `Intl.supportedValuesOf` "arrives with I2 and I3".
+- `Array.prototype.toLocaleString` and `%TypedArray%.prototype.toLocaleString` called each element's
+  method with no arguments, which ECMA-262 states without ECMA-402.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.NumberFormat` is built whole**, under proposed [JSD-0044](decisions/0044-intl-numberformat.md):
+  every style, every notation, every option the current ECMA-402 draft reads, all six methods, and the
+  normative optional legacy constructor path. **Units, compact and scientific notation are in it**,
+  against JSD-0027's line. ECMA-402 admits those options on every format, so leaving them out would
+  have published the partial surface section 6 refused.
+- **Number and BigInt `toLocaleString` route through it, and Array and TypedArray
+  `toLocaleString` hand each element the locales and options**, where `Intl` is built.
+- **The archive grows under N27**: number, currency, unit and plural data from `cldr-numbers-full`,
+  `cldr-units-full` and `cldr-core` at 48.2.0, retrieved twice and compared. **N28's file grows by
+  seven tables**, to 438,831 bytes of data, still under the provisional 512 KiB bound. A currency
+  symbol's ends are classified from the pinned UCD for CLDR's currency spacing.
+- **Values are exact decimals** read as ToIntlMathematicalValue reads them, RoundMVResult's zero and
+  infinity included. They are rounded on their digit strings in time linear in their length.
+- **Two identifiers were renamed for rule X4**: the raw formats are `ToRawFixed` and
+  `ToRawPrecision`, as ECMA-402 names them. X4 confines the bare name `Fixed` to the native scan and
+  the lowering.
+- **The retained numbers dataset**
+  ([`src/tests/cldr/numbers/`](../../tests/cldr/numbers/README.md)) has 2,241 lines against Node
+  22.22.0's ICU 77.1. The profile answers all of them as ICU did but for 24 lines in four groups, each
+  checked against the draft and named in `divergences.txt`. It first differed in one more: a plural
+  range CLDR does not name now resolves to `other`, as ICU resolves it.
+- **ECMA-402 clause numbers in the code are the current draft's** (14th edition, read on
+  2026-10-04), for the I1 code too, which had mixed editions' numbers.
+- **Checks**: one new slice-compiler check, 626 in all. It holds the numbers dataset.
+- **test262**, against the run JSC-269 records: `test/intl402/NumberFormat` passes 280 of 324 scored
+  variants, from 2. The 44 failing are 22 files: 21 expect `ja-JP`, `ko-KR`, `zh-TW` or `en-IN`, and
+  `this-value-ignored.js` needs `DateTimeFormat`. `Number`, `BigInt`, `Array` and `TypedArray`
+  `toLocaleString` pass every variant under `intl402` and `test/built-ins`.
+- **test262, whole pinned suite**, against the run [JSC-269](#jsc-269) records: 95,058 variants, 85,538
+  passing, 1,658 failing, 44 exhausted and 7,818 skipped. 296 moved to passing, all under
+  `test/intl402`: 278 under `NumberFormat`, 10 under `BigInt`, 6 under `Number` and 2 under `Array`.
+  None moved to failing. `test/intl402` passes 608 of its 4,418 variants, against 312. The three
+  `test/staging/sm` files JSC-269 names still fail, because their `Intl` half also needs
+  `DateTimeFormat`, `PluralRules` or `RelativeTimeFormat`. The exhausted set is the same 44 variants.
+
+**What must not be read as repaired.**
+- **`ja`, `ko`, `zh-TW` and `en-IN` are not in the data**, and the tests that expect them fail.
+- **Numbering systems other than `latn` write the locale's `latn` symbols**, where ICU writes
+  `arab` and `arabext` with their own.
+- **`Intl.supportedValuesOf` waits for I3.** `DateTimeFormat`, `PluralRules`, `Locale` and the other
+  constructors are absent, and the phase's exit gate is not met.
+- JSD-0044 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-271
+
+**Where:** phase F7's slice I3. `Intl.DateTimeFormat` and `Intl.supportedValuesOf`
+(`JsRealm.DateTimeFormat.cs`, `JsDateTimeFormatter.cs`, `JsDatePatternGenerator.cs`,
+`JsDateIntervalFormat.cs`, `JsDateData.cs`), and `Date.prototype.toLocaleString`,
+`toLocaleDateString` and `toLocaleTimeString`. The CLDR archive and its pin, the generator's three new
+tables, and the format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7: I3 is "`Intl.DateTimeFormat`,
+  UTC and fixed offsets", with "Gregorian only, `dateStyle`/`timeStyle` and the component options the
+  section 5 locales need, `formatToParts`; the three `Date.prototype.toLocale*` methods route through
+  it; IANA names refused by name". Its acceptance is "test262 `intl402/DateTimeFormat` subset for the
+  admitted options, time-zone-name tests excluded by name; a retained dataset over the full
+  time-value range including year 0, negative years and ±8.64e15". Section 5 item 5 admits "`"UTC"`
+  and `±hh:mm` offset identifiers".
+- [JSD-0044](decisions/0044-intl-numberformat.md) section 7: "`Intl.supportedValuesOf` waits for I3".
+- The three `Date.prototype.toLocale*` methods answered the plain `toString` forms and ignored their
+  arguments, as JSD-0027 section 1 records.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.DateTimeFormat` is built whole for the Gregorian calendar**, under proposed
+  [JSD-0045](decisions/0045-intl-datetimeformat.md): every component in every width, both styles, the
+  four hour cycles, ranges and their parts, and the legacy constructor path. **Every component is
+  built**, against JSD-0027's "the component options the section 5 locales need", because ECMA-402
+  admits each on every format. **The best-fit matcher is ICU's DateTimePatternGenerator and the
+  ranges are ICU's DateIntervalFormat**, ported in the profile and reading CLDR's data.
+- **The `toLocale*` methods route through it** where `Intl` is built, and `Intl.supportedValuesOf`
+  answers all six keys.
+- **The archive grows under N27**: calendar, date field and zone name data from `cldr-dates-full`,
+  and the hour cycle and day period data from `cldr-core`, at 48.2.0, retrieved twice and compared.
+  **N28's file grows by three tables**, to 465,869 bytes of data, still under the provisional
+  512 KiB bound.
+- **Time zones are UTC and its IANA links, offset strings, and IANA's `Etc/GMT±N` zones.** The last
+  are wider than item 5's `±hh:mm`. They are fixed offsets by definition and need no database, so
+  JSD-0045 section 5 reads item 5's "fixed offsets" as admitting them. Every other name is a
+  `RangeError` that names the limitation.
+- **The retained dates dataset**
+  ([`src/tests/cldr/dates/`](../../tests/cldr/dates/README.md)) has 1,430 lines against Node
+  22.22.0's ICU 77.1. It runs from the first time value to the last, with the year 0 and 2 BC. The
+  profile answers all of them as ICU did but for 352 lines in three groups, each named in
+  `divergences.txt`:
+  - Node's `format` writes a space where its `formatToParts` writes ICU's U+202F;
+  - CLDR 48 changed German's `Bh` pattern;
+  - Node's `resolvedOptions` reads a quoted word as fields.
+
+  The first runs differed in two more groups, both corrected: a second added beside a fractional
+  second without a minute, and the GMT zone's name outside ICU's 1970 to 9999 metazone mapping.
+- **Checks**: one new slice-compiler check, 627 in all. It holds the dates dataset; the numbers check
+  now shares its comparison.
+- **test262**, against the run JSC-270 records: `test/intl402/DateTimeFormat` passes 326 of 350 scored
+  variants, from 6. The 24 failing are 12 files, which need another calendar (10), the `ja` locale or
+  the `arab` decimal separator. `test/intl402/Intl` passes 116 of 130, from 80, and the failing ones
+  need `Locale`, `DisplayNames` or `RelativeTimeFormat`. `test/intl402/Date` passes all 24. All of
+  `test/intl402` passes 1,016 variants, from 608, with none moving back. `test/built-ins/Date` is
+  unchanged, and `test/staging/sm/String/internalUsage.js`, one of the three files JSC-269 names, now
+  passes.
+- **test262, whole pinned suite**, against the run [JSC-270](#jsc-270) records: 95,058 variants, 85,946
+  passing, 1,248 failing, 46 exhausted and 7,818 skipped. 410 moved to passing:
+  - 408 under `test/intl402`: 320 under `DateTimeFormat`, 36 under `Intl`, 6 under `Date`, 2 each
+    under `Collator`, `NumberFormat` and `PluralRules`, and 40 from the 20 files at its top level. The
+    files at the top level and under the last three need every constructor, `DateTimeFormat` among
+    them;
+  - 2 from `test/staging/sm/String/internalUsage.js`.
+
+  None moved to failing. Two variants moved from passing to exhausted, both on the wall clock:
+  `Script_Extensions_-_Oriya.js` under `test/built-ins/RegExp/property-escapes/generated` (strict) and
+  `test/staging/sm/expressions/short-circuit-compound-assignment.js`. The run shared the machine with
+  builds and other runs. Run again on their own with the same binary, both directories pass every
+  variant, so the two are the machine's load, not a change. The other 44 exhausted are the set JSC-270
+  records.
+
+**What must not be read as repaired.**
+- **Calendars other than the Gregorian, IANA time zones and the locales outside section 5** are not
+  in the data, and the tests that need them fail.
+- **A fractional second in a numbering system other than `latn`** is separated by the language's
+  `latn` decimal symbol.
+- **`PluralRules`, `Locale`** and the other constructors are absent, and the phase's exit gate is not
+  met.
+- JSD-0045 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-272
+
+**Where:** phase F7's slice I4, its first part. `Intl.Locale` (`JsRealm.Locale.cs`, `JsLocaleInfo.cs`),
+the locale core's Add Likely Subtags, Remove Likely Subtags and `-u-` attribute order
+(`JsLocaleTag.cs`), and CanonicalizeLocaleList's reading of a Locale (`JsRealm.Intl.cs`). The CLDR
+archive and its pin, the generator's two new tables and its widened hour cycle table, and the
+format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7: "I4 and later" is
+  "PluralRules, ListFormat, RelativeTimeFormat, DisplayNames, Segmenter, DurationFormat, Locale,
+  tzdb-backed time zones, `toLocale*Case` tailoring for `tr`/`az`/`lt`", accepted "each opened by its
+  own consumer and its own card".
+- [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) section 3: the locale core's
+  canonicalization and likely subtags are UTS #35's. They were internal, and `Intl.getCanonicalLocales`
+  was their only guest-visible reader.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.Locale` is built whole**, under proposed [JSD-0046](decisions/0046-intl-locale.md): the
+  constructor with every option, the twelve accessors, `maximize`, `minimize`, `toString`, and the
+  draft's seven information methods. A Locale is any well-formed tag. Every list ECMA-402 takes reads
+  a Locale as its identifier.
+- **I4 is taken constructor by constructor**, each its own change and record, as section 7's "each
+  ... its own card" reads. Phase F7's own schedule is their consumer, as for I1 to I3. `Locale` is
+  first because the other constructors' tests construct Locales.
+- **Two of the locale core's operations are corrected to UTS #35.**
+  - Add Likely Subtags looked up the language with its region before the language with its script,
+    then fell back to `und`. It now takes UTS #35's current order and no fallback.
+  - `-u-` attributes were left in the tag's order, and are now sorted.
+
+  Remove Likely Subtags is new. No test262 variant and no slice check of I1 to I3 moved.
+- **The archive grows under N27**: `scriptMetadata.json` and `supplemental/weekData.json` from the
+  `cldr-core` 48.2.0 tarball slice I2 verified, retrieved twice more and compared. **N28's file grows
+  by two tables**, the weeks and the scripts' directions, and the hour cycle table covers every
+  region. The data is 472,562 bytes, still under the provisional 512 KiB bound.
+- **The retained Locale dataset**
+  ([`src/tests/cldr/locales/`](../../tests/cldr/locales/README.md)) has 780 lines against Node
+  22.22.0's ICU 77.1, over 65 tags. The profile answers all of them as ICU did but for 150 lines in
+  eight groups, each named in `divergences.txt`:
+  - Node 22 predates the draft's `firstDayOfWeek`, `variants` and `language` of `und`;
+  - the profile's data is narrower in calendars, collations, numbering systems and time zones;
+  - Node answers one hour cycle where CLDR allows several.
+
+  The first runs differed in two more groups, both corrected as above: the likely subtags' lookup
+  order and the attributes' order.
+- **Checks**: one new slice-compiler check, 628 in all, holds the Locale dataset.
+- **test262**, against the run JSC-271 records:
+  - `test/intl402/Locale` passes all 218 scored variants, from none. The suite tags 43 more files
+    `Intl.Locale-info`, a proposal, and the runner skips them. Run by hand under the profile, 41 pass.
+    The other two expect a collation for `en` and a time zone for `en-US`.
+  - `test/intl402/Intl` passes 124 of 130, from 116. The six failing need `DisplayNames` or
+    `RelativeTimeFormat`.
+  - All of `test/intl402` passes 1,242 variants, from 1,016, with none moving back.
+- **test262, whole pinned suite**, against the run [JSC-271](#jsc-271) records: 95,058 variants, 86,174
+  passing, 1,022 failing, 44 exhausted and 7,818 skipped. 228 moved to passing:
+  - 218 under `test/intl402/Locale` and 8 under `test/intl402/Intl`;
+  - the 2 variants JSC-271 records as exhausted by the machine's load, which pass again.
+
+  None moved to failing. The exhausted set is again the 44 variants JSC-270 records.
+
+**What must not be read as repaired.**
+- **The information methods answer from the profile's data**: `gregory` alone, German's `phonebk`
+  alone, and no time zone in use in any region.
+- **`PluralRules`, `ListFormat`, `RelativeTimeFormat`, `DisplayNames`, `Segmenter` and
+  `DurationFormat`** are absent, and the phase's exit gate is not met.
+- JSD-0046 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-273
+
+**Where:** phase F7's slice I4, its second part. `Intl.PluralRules` (`JsRealm.PluralRules.cs`), the
+number data's ordinal rules (`JsNumberData.cs`, `JsIntlTables.cs`), the CLDR archive and its pin, the
+generator's new table, and the format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists PluralRules first among
+  "I4 and later", accepted "each opened by its own consumer and its own card".
+- [JSD-0044](decisions/0044-intl-numberformat.md) carries the cardinal plural rules and ranges for the
+  number format's own use. The ordinal rules were not in the archive.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.PluralRules` is built whole**, under proposed
+  [JSD-0047](decisions/0047-intl-pluralrules.md): `select`, `selectRange`, `resolvedOptions` and
+  `supportedLocalesOf`, with `type`, `notation` and every digit option. **Its rounding is the number
+  format's**, so `select` reads the operands of the string a decimal `Intl.NumberFormat` with the same
+  options writes. An ordinal range reads CLDR's cardinal range data, as ICU's does.
+- **The archive grows under N27**: `supplemental/ordinals.json` from the `cldr-core` 48.2.0 tarball
+  slice I2 verified, retrieved twice more and checked against the registry's integrity. **N28's file
+  grows by one table**, the ordinal rules, to 472,689 bytes, still under the provisional 512 KiB bound.
+- **The retained plural dataset**
+  ([`src/tests/cldr/plurals/`](../../tests/cldr/plurals/README.md)) has 1,299 lines against Node
+  22.22.0's ICU 77.1. The profile answers all of them as ICU did but for 123 lines in four groups,
+  each named in `divergences.txt`:
+  - Node 22 predates the draft's BigInt argument and `notation` option;
+  - ICU resolves a range whose ends write one string by the range data, where the draft answers the
+    start's category;
+  - the resolved options differ in `notation`, the categories' order and V8's language-only locales.
+- **Checks**: one new slice-compiler check, 629 in all, holds the plural dataset.
+- **test262**, against the run JSC-272 records: `test/intl402/PluralRules` passes 78 of 82 scored
+  variants, from 4. The 4 failing are two files, and both need locales the data lacks. The suite tags
+  11 more files `Intl.NumberFormat-v3`, a proposal, and the runner skips them. Run by hand under the
+  profile, all 11 pass.
+- **test262, whole pinned suite**, against the run [JSC-272](#jsc-272) records: 95,058 variants, 86,239
+  passing, 948 failing, 53 exhausted and 7,818 skipped. 74 moved to passing, all under
+  `test/intl402/PluralRules`, and none moved to failing.
+
+  Nine variants under `test/built-ins/Atomics/waitAsync` moved from passing to exhausted, all
+  `no-spurious-wakeup-*` files, at the live-bytes allowance and not the wall clock. They are not this
+  change's. The container was replaced between the run JSC-272 records and this one. On the new
+  machine, the binary of JSC-272's run, untouched since, exhausts 12 variants of the same files when
+  their directory is run alone, and this change's binary also exhausts 12. The set differs from run
+  to run:
+  - each file awaits a report through the harness's `setTimeout` fallback, which re-queues a promise
+    job until a second has passed;
+  - this profile charges promise jobs to live bytes, as [JSC-267](#jsc-267) records for `getReport`;
+  - so how many jobs a second holds, and whether the allowance is reached, depends on the machine.
+
+  The other 44 exhausted are the set JSC-270 records.
+
+**What must not be read as repaired.**
+- **A promise job loop of a second can spend the live-bytes allowance** on a fast enough machine,
+  which is why the `waitAsync` variants above exhaust. That is the charging JSC-267 records, and this
+  change leaves it as it was.
+- **Plural rules exist for German and English only**, the section 5 locales. The tests that name other
+  languages fail.
+- **The exponent operands `c` and `e` are always 0.** No supported language's rules read them.
+- **`ListFormat`, `RelativeTimeFormat`, `DisplayNames`, `Segmenter` and `DurationFormat`** are absent,
+  and the phase's exit gate is not met.
+- JSD-0047 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-274
+
+**Where:** phase F7's slice I4, its third part. `Intl.ListFormat` (`JsRealm.ListFormat.cs`), the list
+patterns it reads (`JsLocaleInfo.cs`, `JsIntlTables.cs`), the CLDR archive and its pin, the
+generator's new table, and the format's `JsIntlTable`.
+
+**What the plan said.** [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists
+ListFormat among "I4 and later", accepted "each opened by its own consumer and its own card". The
+archive held no list patterns, and no package of CLDR's that has them.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.ListFormat` is built whole**, under proposed
+  [JSD-0048](decisions/0048-intl-listformat.md): `format`, `formatToParts`, `resolvedOptions` and
+  `supportedLocalesOf`, with every type and style. Its options go through GetOptionsObject, which the
+  profile already had for `Uint8Array`'s base64 methods, and any iterable of Strings is a list.
+- **The archive grows under N27 by a fourth CLDR package**, `cldr-misc-full` at 48.2.0, retrieved
+  twice, compared and checked against the registry's integrity: `listPatterns.json` for `de` and `en`.
+  **N28's file grows by one table**, the list patterns, to 473,642 bytes, still under the provisional
+  512 KiB bound.
+- **The retained list dataset**
+  ([`src/tests/cldr/lists/`](../../tests/cldr/lists/README.md)) has 481 lines against Node 22.22.0's
+  ICU 77.1. Every string agrees. 36 parts lines differ, in one group named in `divergences.txt`: ICU
+  leaves no part for an empty element, and the draft makes one.
+- **Checks**: one new slice-compiler check, 630 in all, holds the list dataset.
+- **test262**, against the run JSC-273 records: `test/intl402/ListFormat` passes 154 of 162 variants,
+  from 2. The 8 failing are four files, and all need Spanish.
+- **test262, whole pinned suite**, against the run [JSC-273](#jsc-273) records: 95,058 variants, 86,397
+  passing, 796 failing, 47 exhausted and 7,818 skipped. 152 moved from failing to passing, all under
+  `test/intl402/ListFormat`, and none moved to failing. The `Atomics.waitAsync`
+  `no-spurious-wakeup-*` variants JSC-273 records as machine-dependent moved again: 8 passed and 2
+  others ran out of live bytes. The 47 exhausted are JSC-270's 44 and those 3.
+
+**What must not be read as repaired.**
+- **Lists exist for German and English only**, the section 5 locales. A list in another language is
+  written in English.
+- **`RelativeTimeFormat`, `DisplayNames`, `Segmenter` and `DurationFormat`** are absent, and the
+  phase's exit gate is not met.
+- JSD-0048 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-275
+
+**Where:** phase F7's slice I4, its fourth part. `Intl.RelativeTimeFormat`
+(`JsRealm.RelativeTimeFormat.cs`), the relative time data it reads (`JsLocaleInfo.cs`,
+`JsIntlTables.cs`), the generator's new table, and the format's `JsIntlTable`.
+
+**What the plan said.** [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists
+RelativeTimeFormat among "I4 and later", accepted "each opened by its own consumer and its own card".
+[JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) section 4 sets a provisional bound of
+512 KiB on the generated data until the owner sets a budget.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.RelativeTimeFormat` is built whole**, under proposed
+  [JSD-0049](decisions/0049-intl-relativetimeformat.md): `format`, `formatToParts`, `resolvedOptions`
+  and `supportedLocalesOf`, in every style and numeric option, with a numbering system. Its number
+  format and plural rules are built by their own constructors, as the draft builds them.
+- **A past value is written with its magnitude**, as test262, ICU and every engine write it. The
+  draft passes the signed value to PartitionNumberPattern. JSD-0049 section 3 records the reading.
+- **The archive does not grow.** The data is in slice I3's `dateFields.json`. **N28's file grows by one
+  table**, to 483,743 bytes. That is 40,545 bytes under the provisional bound, less than
+  `DisplayNames`'s name tables would need, so the bound now decides that constructor's order.
+- **The retained relative time dataset**
+  ([`src/tests/cldr/relativetimes/`](../../tests/cldr/relativetimes/README.md)) has 2,460 lines against
+  Node 22.22.0's ICU 77.1. Every line agrees but 96, in one group named in `divergences.txt`: a value
+  that rounds to 0 under `numeric: 'auto'`, which ICU writes as the literal for 0.
+- **Checks**: one new slice-compiler check, 631 in all, holds the dataset.
+- **test262**, against the run JSC-274 records: `test/intl402/RelativeTimeFormat` passes 148 of 160
+  variants, from none, and the 12 failing need Polish. `test/intl402/Intl` passes 126 of 130, from
+  124, and the 4 failing need `DisplayNames`.
+- **test262, whole pinned suite**, against the run [JSC-274](#jsc-274) records: 95,058 variants, 86,550
+  passing, 642 failing, 48 exhausted and 7,818 skipped. 154 moved from failing to passing, and none
+  moved to failing:
+  - 148 under `test/intl402/RelativeTimeFormat` and 2 under `test/intl402/Intl`;
+  - 4 from `test/staging/sm/extensions/quote-string-for-nul-character.js` and
+    `test/staging/sm/Proxy/revoked-get-function-realm-typeerror.js`.
+
+  Those two staging files are the last of the three [JSC-269](#jsc-269) records as failing, so all
+  three now pass. The `Atomics.waitAsync` variants JSC-273 records as machine-dependent moved again,
+  3 passing and 4 others running out of live bytes. The 48 exhausted are JSC-270's 44 and those 4.
+
+**What must not be read as repaired.**
+- **Relative times exist for German and English only**, the section 5 locales.
+- **`DisplayNames`, `Segmenter` and `DurationFormat`** are absent, and the phase's exit gate is not
+  met. `DisplayNames` waits on the owner's size budget as well as its own change.
+- JSD-0049 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-276
+
+**Where:** phase F7's slice I4, its fifth part. `Intl.Segmenter` (`JsRealm.Segmenter.cs`), UAX #29's
+rules and the break data (`JsSegmenter.cs`, `JsIntlTables.cs`), the UCD archive and its pin, the CLDR
+generator's two new tables, and the format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists Segmenter among "I4 and
+  later", accepted "each opened by its own consumer and its own card".
+- [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) section 5 lists the UCD files the profile archives.
+  UAX #29's break properties are not among them.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.Segmenter` is built whole**, under proposed [JSD-0050](decisions/0050-intl-segmenter.md):
+  `segment`, Segments objects with `containing` and their iterators, `resolvedOptions` and
+  `supportedLocalesOf`, by grapheme, word and sentence. The boundaries are UAX #29's default rules
+  for Unicode 17.0.0, with no locale tailoring and no dictionary.
+- **The UCD archive grows under N22 by UAX #29's six `auxiliary/` files**, retrieved twice from the
+  same site and compared: the three break property files and their three conformance test files.
+- **The tables go to the Intl data assembly**, so a composition without `broiler.javascript.intl`
+  carries none. **N28's file grows by two tables**, the break properties as runs of the code space and
+  their value names, to 503,669 bytes, 20,619 under the provisional bound.
+- **Checks**: four new slice-compiler checks, 635 in all:
+  - three run the pinned conformance files through `Intl.Segmenter`, and every line of all three
+    passes (766 grapheme, 1,944 word, 512 sentence);
+  - one holds the retained segment dataset
+    ([`src/tests/cldr/segments/`](../../tests/cldr/segments/README.md)), 118 lines against Node
+    22.22.0's ICU 77.1. Every line agrees but 2, where ICU's dictionary joins Japanese ideographs
+    into words.
+- **test262**, against the run JSC-275 records: `test/intl402/Segmenter` passes 154 of 158 variants,
+  from 4, and the 4 failing need Serbian.
+- **test262, whole pinned suite**, against the run [JSC-275](#jsc-275) records: 95,058 variants, 86,701
+  passing, 492 failing, 47 exhausted and 7,818 skipped. 150 moved from failing to passing, all under
+  `test/intl402/Segmenter`, and none moved to failing. The `Atomics.waitAsync` variants JSC-273
+  records as machine-dependent moved again, 4 passing and 3 others running out of live bytes. The 47
+  exhausted are JSC-270's 44 and those 3.
+
+**What must not be read as repaired.**
+- **No dictionary segmentation**: Chinese, Japanese and the Southeast Asian scripts break by UAX #29's
+  defaults, an ideograph to a word.
+- **`DisplayNames` and `DurationFormat`** are absent, and the phase's exit gate is not met.
+  `DisplayNames` waits on the owner's size budget.
+- JSD-0050 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-277
+
+**Where:** phase F7's slice I4, its sixth part. `Intl.DurationFormat` (`JsRealm.DurationFormat.cs`);
+`JsNumberFormatter.cs`'s unit pattern lookup; the CLDR generator's number table, which gains the
+`durationUnit` patterns.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists DurationFormat among "I4
+  and later", accepted "each opened by its own consumer and its own card".
+- [JSD-0044](decisions/0044-intl-numberformat.md) chose a unit's pattern by searching the widths for
+  the plural category, and only then for `other`.
+
+**What replaced it, observed on 2026-10-05.**
+- **`Intl.DurationFormat` is built whole**, under proposed
+  [JSD-0051](decisions/0051-intl-durationformat.md): `format`, `formatToParts`, `resolvedOptions` and
+  `supportedLocalesOf`, in every style, with per-unit styles and displays, fractional digits and a
+  numbering system.
+  - Its numbers are `Intl.NumberFormat`s and its list an `Intl.ListFormat`, each built by its own
+    constructor.
+  - Its fractions are summed exactly, as BigIntegers of the smallest unit.
+  - Its separators and two-digit hours come from data slice I2 archived.
+- **A correction to the number format**: a unit's pattern falls back to the same width's `other` form
+  before a wider width, as ICU's does. German short nanoseconds were written with the long pattern.
+  Slice I2's retained numbers answer all 2,241 lines as before.
+- **The archive does not grow. N28's file carries three more patterns per language**, to 503,797 bytes,
+  20,491 under the provisional bound.
+- **The retained duration dataset**
+  ([`src/tests/cldr/durations/`](../../tests/cldr/durations/README.md)) has 553 lines against Node
+  22.22.0's ICU 77.1, which has DurationFormat only behind V8's `--harmony-intl-duration-format`
+  flag. 362 lines agree. 191 differ in three groups, each named in `divergences.txt`:
+  - Node's earlier stage, in seven named ways, each with the draft's clause;
+  - CLDR 48's changed German narrow hour and millisecond;
+  - the `arab` symbols.
+- **Checks**: one new slice-compiler check, 636 in all, holds the dataset.
+- **test262**, against the run JSC-276 records: `test/intl402/DurationFormat` passes 208 of 210 scored
+  variants, from none, and the 2 failing need Serbian. Six files take Temporal arguments and are
+  skipped.
+- **test262, whole pinned suite**, against the run [JSC-276](#jsc-276) records: 95,058 variants, 86,907
+  passing, 284 failing, 49 exhausted and 7,818 skipped. 208 moved from failing to passing, all under
+  `test/intl402/DurationFormat`, and none moved to failing. The `Atomics.waitAsync` variants JSC-273
+  records as machine-dependent moved again, 2 passing and 4 others running out of live bytes. The 49
+  exhausted are JSC-270's 44 and 5 of those.
+
+**What must not be read as repaired.**
+- **Temporal's Duration objects and duration strings** are not durations here until phase F8.
+- **`DisplayNames`** is absent, and it waits on the owner's size budget. With it, the phase's exit
+  gate is not met.
+- JSD-0051 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-278
+
+**Where:** phase F7's slice I4, its seventh and last part. `Intl.DisplayNames`
+(`JsRealm.DisplayNames.cs`); the CLDR pin, which gains `cldr-localenames-full`; the CLDR generator's
+new `DisplayNames` table; and rule N28's size test, which now holds the owner's budget.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists DisplayNames among "I4
+  and later", accepted "each opened by its own consumer and its own card".
+- JSD-0027's owner decision (c) asked for a size budget "from a measured prototype, not a guess".
+  [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) held the data under a provisional
+  512 KiB bound until one was set, and [JSC-275](#jsc-275) recorded that the bound left less than
+  `DisplayNames` needs.
+
+**What replaced it, observed on 2026-10-05.**
+- **The owner took decision (c)**: the repository owner set the Intl data budget at 768 KiB on
+  2026-10-05. Rule N28's size test holds it, under the name
+  `N28_The_Table_Data_Stays_Under_The_Budget`, and it replaces the provisional bound.
+- **`Intl.DisplayNames` is built whole**, under proposed
+  [JSD-0052](decisions/0052-intl-displaynames.md): `of`, `resolvedOptions` and `supportedLocalesOf`,
+  in every type, style, fallback and language display.
+  - A code's case is regularized as CanonicalCodeForDisplayNames states before it is named.
+  - A language is composed as ICU composes it: the whole code's dialect name, then the language,
+    script, region and variants in CLDR's locale pattern, and an unnamed part as its code under the
+    code fallback.
+  - The short styles take CLDR's `-alt-short` forms for languages and regions.
+- **The archive grew by a fifth CLDR package**, `cldr-localenames-full` at 48.2.0, retrieved twice,
+  byte-identical, and checked against its sha512 integrity. Its five name files for `de` and `en` are
+  pinned under N27.
+- **N28's file gains the `DisplayNames` table**, 68,227 bytes, so the data is 572,024 bytes in an
+  assembly of 583,680, 214,408 under the budget.
+- **The retained display-name dataset**
+  ([`src/tests/cldr/displaynames/`](../../tests/cldr/displaynames/README.md)) has 823 lines against
+  Node 22.22.0's ICU 77.1. 759 lines agree. 64 differ in four groups, each named in
+  `divergences.txt`:
+  - the case regularization V8 does not make;
+  - CLDR 48's renamed calendars;
+  - ICU's names for `sl-rozaj-biske` and `und`;
+  - the empty script code ECMA-402 refuses.
+- **Checks**: one new slice-compiler check, 637 in all, holds the dataset.
+- **test262**, against the run JSC-277 records: `test/intl402/DisplayNames` passes all 114 scored
+  variants, from 8, and `test/intl402/Intl` all 130, from 126.
+- **test262, whole pinned suite**, against the run [JSC-277](#jsc-277) records: 95,058 variants, 87,022
+  passing, 174 failing, 44 exhausted and 7,818 skipped. 110 moved from failing to passing, 106 under
+  `test/intl402/DisplayNames` and 4 under `test/intl402/Intl/supportedValuesOf`, and none moved to
+  failing. The 5 `Atomics.waitAsync` variants JSC-277 counted as exhausted passed this time, as
+  JSC-273 records they may. The 44 exhausted are JSC-270's.
+- **Phase F7's exit gate is met, as section 26 states it.** `test/intl402` is admitted by JSD-0018's
+  amendment of 2026-10-04, and every constructor JSD-0027 section 7 names is built and scored by its
+  directory. The variants still failing in them each need a locale, calendar or numbering system the
+  data does not carry, as each slice's record names. `Intl` left the `absent-globals` block with
+  slice I1. `test/intl402/Temporal` is phase F8's.
+
+**What must not be read as repaired.**
+- **Locales**: names exist for `de` and `en` only, as every F7 surface's data does.
+- **I4's time-zone data and the `tr`, `az` and `lt` case tailorings**, which JSD-0027 section 7 lists
+  beside the constructors, are not built. Time zones are phase F8's, under the owner's choice of
+  2026-10-05 to start it with tzdb.
+- JSD-0052 is proposed and unsigned, and so are the records of every slice of F7. The exit gate being
+  met moves no milestone or stage.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout, and the repository owner's
+budget decision of the same day. 2026-10-05.
+
+### JSC-279
+
+**Where:** phase F8, its first change. The IANA Time Zone Database archive and pin
+(`src/tests/tzdb/pins/`, rule N29); `TzdbCompiler` and `TzdbTableGenerator` and their generated file
+`JsTzdbTables.g.cs` (rule N30); the profile's `JsTimeZones.cs`; `Intl.DateTimeFormat`'s time zone,
+`Intl.supportedValuesOf("timeZone")` and `Intl.Locale.prototype.getTimeZones`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 5 item 5 kept the profile
+  without a time zone database, and its owner decision (d) asked "whether IANA tzdb is ever in
+  scope". [JSD-0045](decisions/0045-intl-datetimeformat.md) built `Intl.DateTimeFormat` for UTC,
+  offsets and the `Etc/GMT` zones only, and refused every other name.
+- Section 26's F8 is "a record admitting the proposal at a pinned revision, a time-zone data boundary
+  modelled on JSD-0031's (tzdb archived, generated, pinned), and the implementation".
+
+**What replaced it, observed on 2026-10-05.**
+- **The owner answered decision (d)**: on 2026-10-05 the repository owner chose to start F8 by
+  archiving and pinning tzdb.
+- **tzdb 2026e is archived and pinned** under proposed
+  [JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md): the data tarball, retrieved
+  twice and byte-identical, and the twelve members a generator reads, under the new rule N29.
+- **The zones are compiled as `zic` compiles them**, for offsets only, into tables in the Intl data
+  assembly under the new rule N30. A prototype of the compiler gave `zic`'s offsets for all 597
+  identifiers, at every transition and every 41 days from 1800 to 2500. The generated tables decode to
+  exactly the prototype's transitions.
+- **The primary identifiers are CLDR's `_iana` names**, from the CLDR archive's time zone keys, and
+  every identifier reads its primary identifier's offsets.
+- **The tables are 98,718 bytes**, and the Intl data 670,742, 115,690 under the owner's budget; N28's
+  budget test now counts both generated files.
+- **`Intl.DateTimeFormat` accepts every IANA name**, resolves it to its primary identifier, and formats
+  each instant at the offset then in force, a local mean time with its seconds.
+  `Intl.supportedValuesOf("timeZone")` lists the 445 primary identifiers, and
+  `Intl.Locale.prototype.getTimeZones` answers `zone.tab`'s zones.
+- **The retained time zone dataset** ([`src/tests/cldr/timezones/`](../../tests/cldr/timezones/README.md))
+  holds all 597 names at eight instants against Node 22.22.0's ICU 77.1 with tzdb 2025b. 559 of 610
+  lines agree. 51 are named: V8's older canonical names, Morocco's 2026 change, and the lists.
+- **The retained Locale dataset's 21 time zone divergences are now 3**, each the same naming.
+- **Checks**: one new slice-compiler check, 638 in all. The architecture suite has six new tests,
+  333 in all.
+- **test262**: `test/intl402` and `test/built-ins/Date` score exactly as in the run JSC-278 records.
+  The suite's cases that format IANA zones also take Temporal objects, and stay skipped.
+- **test262, whole pinned suite**, against the run [JSC-278](#jsc-278) records: 95,058 variants, 87,022
+  passing, 174 failing, 44 exhausted and 7,818 skipped - every variant's verdict the same.
+- **Temporal's admission is drawn, not built**: JSD-0053 pins `tc39/proposal-temporal` at
+  `e8cc03fc`, the Stage 4 draft of 2026-07-27. The identity `broiler.javascript.temporal`, admitted
+  only with the Intl surface, will be minted with the global. The `Temporal` flag will be scored from
+  the same change. The slices T1 to T4 are planned.
+
+**What must not be read as repaired.**
+- **`Temporal`** is still absent, and F8's exit gate is not met.
+- **Zone names** other than the localized GMT format need CLDR's metazones, which are not archived.
+- **The local time zone** stays UTC.
+- JSD-0053 is proposed and unsigned, beyond the owner's choice it records. No milestone or stage
+  moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout, and the repository owner's
+choice of the same day. 2026-10-05.
+
+### JSC-280
+
+**Where:** phase F8, slice T1. The profile's `JsTemporal*.cs` and `JsRealm.Temporal*.cs`; the
+surface identity `broiler.javascript.temporal` in `JsSurfaces.cs` and `JavaScriptProfile.cs`;
+`Intl.DurationFormat`'s input; the conformance runner's admitted proposals; the retained dataset
+`src/tests/temporal/`; the ledger's `absent-globals` block and rules N17 and N24.
+
+**What the plan said.**
+- [JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md) section 6 admitted Temporal at
+  `tc39/proposal-temporal` `e8cc03fc`, its identity admitted only with Intl and minted with the
+  global, and planned four slices: T1 the ISO arithmetic with `Instant`, `Duration` and `Now`; T2 the
+  plain types; T3 `ZonedDateTime`; T4 Intl and the other calendars.
+- Section 26's F8 exit gate: `test/built-ins/Temporal` and `test/intl402/Temporal` pass, and
+  `Temporal` leaves the `absent-globals` block in the change that publishes it.
+
+**What replaced it, observed on 2026-10-05.**
+- **`Temporal` is published** under proposed
+  [JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md): the eight types,
+  `Temporal.Now` and `Date.prototype.toTemporalInstant`, in the ISO 8601 and Gregorian calendars,
+  over JSD-0053's time zones, with the draft's grammar, exact arithmetic and relative rounding.
+- **The slices are three, not four.** `Duration`'s rounding reads a `PlainDate` or a `ZonedDateTime`,
+  so T1 took every type; T2 is Intl over Temporal objects, T3 the other calendars.
+- **`broiler.javascript.temporal` is minted**, admitted only with Intl and, newly, BigInt. The
+  `Temporal` flag is scored. `Temporal` left the `absent-globals` block, which is now empty, and rule
+  N17 allows it to be. N24's witness of a genuinely absent global is now `WebAssembly`.
+- **The draft's text fails in two places**, ISODateSurpasses and ComputeNudgeWindow, and the profile
+  follows the reference polyfill in both, as JSD-0054 section 4 names.
+- **`Intl.DurationFormat` reads a duration string** where Temporal is admitted, as the proposal amends
+  ECMA-402; the retained durations dataset names that one line.
+- **The retained Temporal dataset** agrees with the reference polyfill at `e8cc03fc` on all 1,629
+  lines.
+- **test262**: `test/built-ins/Temporal` passes all 9,156 scored variants. `test/intl402/Temporal`
+  passes 464 of 930; the 466 others are T2's `toLocaleString` (154) and T3's calendars (312). Of the
+  82 cases elsewhere that claim the flag, 52 variants pass and 108 fail, each an
+  `Intl.DateTimeFormat` case over a Temporal object (T2). Everything else under `test/intl402`,
+  `test/built-ins/Date` and `test/staging` scores as before.
+- **test262, whole pinned suite**, against the run [JSC-279](#jsc-279) records: 100,180 variants, 96,694
+  passing, 746 failing, 44 exhausted and 2,696 skipped. 5,122 skipped `Temporal` files became 10,244
+  scored variants: 9,672 pass and 572 fail, each a T2 or T3 case. Every variant scored before keeps
+  its verdict.
+- **Checks**: three new slice-compiler checks, 641 in all. The architecture suite is unchanged in
+  number, 333, with N17 and N24 amended.
+
+**What must not be read as repaired.**
+- **F8's exit gate is not met**: `test/intl402/Temporal` does not pass, and will not before T2 and T3.
+- **`toLocaleString`** of the plain types and `ZonedDateTime` writes the ISO string until T2, a
+  declared divergence from ECMA-402.
+- **`Intl.supportedValuesOf("calendar")`** does not list `iso8601` until T2.
+- JSD-0054 is proposed and unsigned, beyond the owner's choice of slices with whole runs. No milestone
+  or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-281
+
+**Where:** phase F8, slice T2. `Intl.DateTimeFormat` in `JsRealm.DateTimeFormat.cs`, the date data's
+ISO 8601 calendar in `JsIntlTables.cs` and `JsDateData.cs`, each Temporal type's `toLocaleString`, the
+CLDR archive's `common/main/root.xml` (rule N27) and the generated date table (rule N28), and the
+retained dataset `src/tests/temporal/intl/`.
+
+**What the plan said.**
+- [JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md) section 2: T2 is Intl over
+  Temporal objects, `toLocaleString` of the plain types and `ZonedDateTime`, and the `iso8601` calendar
+  in `Intl.supportedValuesOf` and the formatter. Section 5 declared the ISO-string `toLocaleString`
+  a divergence until T2.
+
+**What replaced it, observed on 2026-10-05.**
+- **`Intl.DateTimeFormat` formats every Temporal type but `ZonedDateTime`** under proposed
+  [JSD-0055](decisions/0055-intl-over-temporal-objects.md), each in its own format chosen as the
+  amended ECMA-402 states, a plain value at UTC, with the calendar checks.
+- **Every Temporal type's `toLocaleString` is ECMA-402's**; JSD-0054's declared divergence is gone.
+- **The `iso8601` calendar is formatted from CLDR's root**, archived under N27 as
+  `common/main/root.xml`, retrieved twice and byte-identical, its patterns generated into the date
+  table (148 lines). The data is 677,100 bytes, 109,332 under the budget. Its date-time glue is the
+  language's Gregorian one, as ICU's is.
+- **The retained dataset** holds 1,233 formattings against the reference polyfill on ICU 77.1: 1,150
+  agree and 83 are named in four groups.
+- **test262**: `test/intl402/Temporal` passes 598 of 930, 134 more; 330 of the 332 failing are T3's
+  calendars and 2 need metazones. Of the 82 cases elsewhere that claim the flag, 150 variants pass and
+  4 fail (a `dangi` calendar, an `ar-EG` locale). Across `test/intl402`, `test/built-ins/Date` and
+  `test/built-ins/Temporal`, 244 variants move to passing and none moves back.
+- **test262, whole pinned suite**, against the run [JSC-280](#jsc-280) records: 100,180 variants, 96,938
+  passing, 502 failing, 44 exhausted and 2,696 skipped - 244 variants moved from failing to passing,
+  and every other variant's verdict is the same.
+- **Checks**: one new slice-compiler check, 642 in all.
+
+**What must not be read as repaired.**
+- **F8's exit gate is not met** until T3's calendars are built.
+- **Zone names** beyond the GMT format still need metazones, and the data still carries `de` and `en`
+  only.
+- JSD-0055 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-282
+
+**Where:** phase F8, slice T3. The calendar arithmetic in `JsCalendars.cs`, the Intl era and month
+code proposal's calendar operations in `JsTemporal.CalendarNonIso.cs` and `JsTemporal.Calendar.cs`,
+the Intl data contract's `Calendars` table, the calendar crates archived under `src/tests/calendars/pins/`
+(new rule N31) and their generated table `JsCalendarTables.g.cs` (new rule N32), the conformance
+runner's admitted proposals, and the retained dataset `src/tests/temporal/calendars/`.
+
+**What the plan said.**
+- [JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md) section 2: T3 is the
+  calendars beyond ISO 8601 and Gregorian that CLDR's data carries, with their eras, month codes and
+  leap months. Section 7 left 312 failing variants and the `Intl.Era-monthcode` proposal's 1,551
+  skipped cases to it.
+
+**What replaced it, observed on 2026-10-05.**
+- **Temporal reckons in every calendar of the proposal's Table 1** under proposed
+  [JSD-0056](decisions/0056-temporal-in-the-cldr-calendars.md), by the proposal's section 4.1:
+  eras, month codes, leap months, reference years, NonISODateAdd and NonISODateUntil, the last
+  counted from estimates rather than one unit at a time.
+- **The published years are ICU4X's**: `icu_calendar` 2.3.0 and `calendrical_calculations` 0.2.4,
+  retrieved twice and byte-identical, their digests the crates.io index's, are archived under the new
+  rule N31; a generator reads their Chinese, Korean, Qing and Umm al-Qura tables and Persian
+  corrections into a 1,958-byte table under the new rule N32. The data is 679,058 bytes, 107,374 under
+  the budget, which now counts it.
+- **The retained dataset** holds 3,999 lines: 3,929 agree with the reference polyfill and 70 are named
+  in three groups, each a place where ICU4C, through which the polyfill computes, and ICU4X disagree;
+  all 2,055 conversion lines agree with ICU4X.
+- **test262**: the `Intl.Era-monthcode` flag is scored. `test/built-ins/Temporal` passes all 9,176 of
+  its scored variants; `test/intl402/Temporal` passes 3,962 of 3,982, where it passed 598 of 930 - 312
+  variants move to passing and 3,052 newly scored ones pass; its 20 failing variants, and the 10 newly
+  scored that fail under `test/intl402/DateTimeFormat`, format in a calendar the formatter does not
+  write or name a zone's long name. No variant scored before moves from passing.
+- **Checks**: two new slice-compiler checks, 644 in all; six new architecture tests, 339 in all.
+- **test262, whole pinned suite**, against the run [JSC-281](#jsc-281) records: 101,723 variants, 100,324 passing, 202 failing, 44 exhausted and 1,153 skipped. The 1,543
+  files the `Intl.Era-monthcode` flag skipped are scored, so the suite counts 1,543 more variants:
+  312 variants moved from failing to passing and 3,074 newly scored ones pass; the 12 newly scored that
+  fail are 10 under `test/intl402/DateTimeFormat` and 2 under `test/intl402/Intl/supportedValuesOf`,
+  each the formatter's calendars the record declares. Every other variant's verdict is the same.
+
+**What must not be read as repaired.**
+- **`Intl.DateTimeFormat` still formats in `gregory` and `iso8601` only**, and
+  `Intl.supportedValuesOf("calendar")` lists those two: a declared divergence from the proposal's
+  1.1.1 until the next slice adds the calendars' CLDR names and patterns, if the budget holds them.
+- **F8's exit gate is not met** while that slice is open.
+- JSD-0056 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-283
+
+**Where:** phase F8, slice T4. The formatter's calendars in `JsDateTimeFormatter.cs` and
+`JsRealm.DateTimeFormat.cs`, the calendar layers `JsIntlTables.cs` composes and `JsDateData.cs`
+lists, the CLDR generator `CldrTableGenerator` and its output `JsCldrTables.g.cs`, the CLDR archive
+under `src/tests/cldr/pins/` (rule N27), and the retained dataset `src/tests/temporal/calendars-intl/`.
+
+**What the plan said.**
+- [JSD-0056](decisions/0056-temporal-in-the-cldr-calendars.md) section 6: `Intl.DateTimeFormat`
+  resolves `gregory` and `iso8601` only, a declared divergence from the Intl era and month code
+  proposal's 1.1.1; the next slice adds CLDR's names and patterns for the other calendars if the
+  budget holds them, and puts the question to the owner if it does not.
+
+**What replaced it, observed on 2026-10-05.**
+- **The formatter writes every calendar of the proposal's Table 1** under proposed
+  [JSD-0057](decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md): each date's fields are the
+  calendar's Temporal fields, written with CLDR 48's month, era, cyclic year and leap month names and
+  patterns; `islamic` and `islamic-rgsa` fall back to `islamic-tbla`, and
+  `Intl.supportedValuesOf("calendar")` lists the sixteen calendars.
+- **The data holds them**: eleven `cldr-cal-*-full` packages and `ca-generic.json`, 43 files
+  retrieved twice and integrity-checked, are archived under rule N27; the generator writes each
+  calendar as a layer of the lines that differ from the one below it, 1,924 lines and 82,540 bytes.
+  The data is 761,598 bytes, 24,834 under the budget, so no question goes to the owner.
+- **The retained dataset** holds 5,951 lines: 4,556 agree with the reference polyfill and 1,395 are
+  named in four groups, 1,386 of them CLDR 48's era names where the polyfill's ICU reads CLDR 47's.
+- **test262**: `test/intl402/DateTimeFormat` passes 478 of 488 scored variants, where it passed 456;
+  `test/intl402/Temporal` 3,980 of 3,982, where it passed 3,962; `test/intl402/Intl` all 132, where
+  it passed 130. The 12 that fail under the three failed before: a locale other than `de` and `en`, a
+  date's digits in another numbering system, or a zone's long name. No variant scored before moves
+  from passing.
+- **Checks**: one new slice-compiler check, 645 in all; the architecture suite's 339 tests pass, the
+  regenerated tables among them.
+- **test262, whole pinned suite**, against the run [JSC-282](#jsc-282) records: 101,723 variants,
+  100,364 passing, 160 failing, 46 exhausted and 1,153 skipped. 42 variants moved from failing to
+  passing, all under `test/intl402` (20 under `DateTimeFormat/prototype`, 18 under `Temporal`, 2 under
+  `Intl/supportedValuesOf` and 2 in `DateTimeFormat/canonicalize-calendar.js`), and none moved to failing. Two
+  `Atomics.waitAsync` `no-spurious-wakeup-*` variants, the files [JSC-273](#jsc-273) records as
+  machine-dependent, ran out of live bytes while draining the job queue; run alone on the same binary,
+  both pass and another variant of the same files runs out instead. They do not touch `Intl`. The 46
+  exhausted are JSC-282's 44 and those 2.
+
+**What must not be read as repaired.**
+- **F8's exit gate is not met**: `test/intl402/Temporal` keeps two failing variants, one file asking
+  `ZonedDateTime`'s `toLocaleString` for a zone's long name, which needs CLDR's metazones; they are
+  not archived, and the 24,834 bytes left under the budget may not hold them. The next slice measures
+  that.
+- Locales other than `de` and `en` are not added.
+- JSD-0057 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-284
+
+**Where:** phase F8, slice T5. The zone names in `JsZoneNames.cs` and `JsDateTimeFormatter.cs`, the
+daylight flag in `JsTimeZones.cs` and rule N30's compiler and generator (`TzdbCompiler`,
+`TzdbTableGenerator`), the Intl data contract's `MetaZones` table and its generator in
+`CldrTableGenerator`, the CLDR archive under `src/tests/cldr/pins/` (rule N27), the data budget of
+rule N28, and the retained dataset `src/tests/temporal/zone-names/`.
+
+**What the plan said.**
+- [JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md) section 7 and
+  [JSC-283](#jsc-283): a zone is written in the localized GMT format; its specific and generic names
+  need CLDR's metazones, which the archive does not hold, and F8's exit gate waits on the two
+  `test/intl402/Temporal` variants that ask for one. The next slice measures them against the 24,834
+  bytes left under the budget.
+
+**What replaced it, observed on 2026-10-05.**
+- **The measurement**: about 62 KB of text, 30 KB even packed tightly. The repository owner chose to
+  raise the budget rather than compress the table or reduce the scope; it is 832 KiB.
+- **Zones are named as ICU names them** under proposed
+  [JSD-0058](decisions/0058-time-zone-names.md): specific names from the zone's own or its metazone's,
+  generic names with ICU's standard-name, partial-location and location rules, over CLDR 48's
+  `metaZones.json` and `primaryZones.json`, now archived, and the names slice I3 archived.
+- **The tzdb tables keep the daylight flag**, the rearguard one, and a change of the flag alone as a
+  transition Temporal skips; every zone's offsets are what they were.
+- **The data is 841,145 bytes, 10,823 under 832 KiB.**
+- **The retained dataset** holds 2,713 lines: 2,438 agree with the reference polyfill and 275 are named
+  in three groups - 17 of Node's spaces, and 258 of CLDR 48's data, which a build with CLDR 47's three
+  files answered as the polyfill does. The T2 dataset's divergence `MEZ` is gone.
+- **test262**: `test/intl402/Temporal` passes all 3,982 scored variants, where it passed 3,980;
+  `test/built-ins/Temporal` all 9,176, `test/built-ins/Date` all 1,188, `test/intl402/Intl` all 132,
+  `test/intl402/DateTimeFormat` 478 of 488 as before. No variant scored before moves from passing.
+- **F8's exit gate is met**: `test/built-ins/Temporal` and `test/intl402/Temporal` pass, and
+  `Temporal` left the `absent-globals` block in slice T1.
+- **Checks**: one new slice-compiler check, 646 in all; one new architecture test, 340 in all.
+- **test262, whole pinned suite**, against the run [JSC-283](#jsc-283) records: 101,723 variants,
+  100,368 passing, 158 failing, 44 exhausted and 1,153 skipped. The two variants of
+  `test/intl402/Temporal/ZonedDateTime/prototype/toLocaleString/options-timeZoneName-affects-instance-time-zone.js`
+  moved from failing to passing, and none moved to failing. The two `Atomics.waitAsync`
+  `no-spurious-wakeup-*` variants JSC-283 records as running out of live bytes passed this time, as
+  JSC-273's machine-dependent files do; they do not touch `Intl`.
+
+**What must not be read as repaired.**
+- Locales other than `de` and `en` are not added, and the ten failing variants under
+  `test/intl402/DateTimeFormat` stay failing.
+- JSD-0058 is proposed and unsigned, as are JSD-0053 to JSD-0057. The exit gate being met moves no
+  milestone or stage: the phase's records still wait on the owner.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-285
+
+**Where:** phase F9, slice R1. The conformance root's measurement children (`Measurement.cs`), the
+collection script `eng/measure-js-baselines.py`, the profile's baseline register `docs/baselines.md`,
+bundle `evidence/js-10-001/`, and rule N33 with its witnesses; JS-10's ledger row.
+
+**What the plan said.**
+- [Section 19](roadmap.delivery.md#js-10--baselines-packaging-the-support-table-and-the-release-gate)'s
+  JS-10: stand up the controlled measurement lane and take this component's own baselines, including
+  verification throughput per byte and cold-start cost, which sections 16 and 18 reopen against. The
+  ledger's row read `Not started`: no measurement lane, no baseline register.
+- [Section 26.4](roadmap.delivery.md#f9--the-release)'s F9: JS-10 over every surface above.
+
+**What replaced it, observed on 2026-10-05.**
+- **F9 is planned in four slices** under proposed
+  [JSD-0059](decisions/0059-the-release-under-the-mvp-programme.md), which separates what the slices
+  build - facts a rule or a bundle checks - from what the MVP programme leaves to the owner and a
+  named human: issuing the support table, claiming a RID, advertising a composition, publishing,
+  reviewing, appointing operational holders and accepting.
+- **The measurement lane exists**: measurement children in the conformance root and a collection
+  script that writes an immutable manifest before either arm runs and checks every child's effective
+  configuration, under roadmap section 17's eight rules.
+- **Bundle [JS-10-001](evidence/js-10-001/README.md)**, from a clean tree: verification costs 40.2643
+  ns per byte under the JIT and 49.1986 under Native AOT; a cold start 276,954,782.8 ns and 4,485,046.9.
+  Every figure resolves above its A/A lane.
+- **The baseline register exists**, and rule **N33** - rule L1's shape over the profile's own register
+  - holds it to the bundle's logs in both directions, with four witnesses. The architecture suite has
+  346 tests.
+- **Rule N28's register statement** named the provisional 512 KiB bound the owner's budget replaced;
+  it now names the 832 KiB budget JSD-0058 records.
+- **JS-10 is `In progress`.**
+
+**What must not be read as repaired.**
+- **Every clause JSD-0059 section 1 names as a human's or the owner's stays open**, and so does every
+  clause slices R2 to R4 take.
+- **Rules N29 to N32**, minted with the tzdb and calendar archives, are asserted by the architecture
+  suite but have no row in the rule register; this entry records that rather than repairing it.
+- One machine, one RID; no reviewer; nothing accepted.
+
+**Authority and date.** The implementation and the collection of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-286
+
+**Where:** phase F9, slice R2. The profile's support table `docs/support.md`, drafted and not issued;
+rules N34, N35 and N36 with their witnesses; roadmap section 9's table; the ledger's RID count and its
+statement that no measurement exists; JS-10's ledger row.
+
+**What the plan said.**
+- [Section 19](roadmap.delivery.md#js-10--baselines-packaging-the-support-table-and-the-release-gate)'s
+  JS-10 and release [gate 1](roadmap.gates.md#22-release-gates): a support table naming the
+  implemented and minimum core contract versions, the format range, the manifest set, the conformance
+  manifest, the pinned edition and suite, the amendment register's state, the extraction gate's state
+  checked for no verdict and no other profile's identifier, the declared-default vector, the varying
+  surfaces, every unimplemented capability's failure or exclusion with the `WebAssembly` host-object
+  surface named, and the RIDs, packages, operational holders and suppressions.
+- Roadmap section 9's table: `typeof Intl` and `typeof Temporal` answer `"undefined"`.
+- The ledger: two runtime identifiers recorded as published and run; no measurement exists.
+
+**What replaced it, observed on 2026-10-05.**
+- **The table is drafted in full and not issued**, under proposed
+  [JSD-0060](decisions/0060-the-support-table-drafted.md): twelve sections, every row an evidence cell,
+  the vocabulary never a bare yes. It says on its first line that it is not issued.
+- **Rule N34** holds every cell a mechanism can read to the source that declares it, the manifest set
+  and the amendment section to the checkout and roadmap section 18 in both directions, each default to
+  `Defaults()`, and every evidenced row to a rule or a file that exists. **Rule N35** is JS-10's scan of
+  the extraction-gate state. **Rule N36** holds the suppression inventory - none - to a scan of the
+  family's sources and projects. Six witnesses; the architecture suite has 356 tests.
+- **Roadmap section 9's `Intl` and `Temporal` rows are amended**: phases F7 and F8 installed both.
+- **The ledger's RID count is corrected to three**: bundle JS-7-001 published and ran every root on
+  `linux-x64`, and the sentence did not count it.
+- **The ledger's "no measurement exists" is amended**: bundle JS-10-001 is one.
+- **The parity roadmap's note that case conversion is one-to-one is amended**: `"\u00df".toUpperCase()`
+  answers `SS` since the full mappings landed under JSD-0031.
+
+**What must not be read as repaired.**
+- **Nothing is issued, claimed, advertised or appointed.** Six operational roles are recorded vacant.
+- **The rules hold cells to sources, not prose to truth**: a row's description is as true as its
+  evidence, and nobody has reviewed either.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-287
+
+**Where:** phase F9, slices R3 and R4. The JavaScript consumer sample and rule A14; the package
+baseline `docs/packages.md` and rule N37; bundles JS-10-002 and JS-10-003; the conformance root's
+`--effective-limits` mode; the release gate, its register `docs/release-gate.md` and rule N38; three
+family package descriptions; JS-10's ledger row.
+
+**What the plan said.**
+- Release [gate 8](roadmap.gates.md#22-release-gates): the packable set matches its dated budget,
+  produced metadata declares no foreign dependency, a pristine consumer restores and runs, rollback is
+  exercised, and the packable set is frozen in a baseline of its own compared in both directions.
+- Release gate 9: a release-candidate run from an exact commit with retained artifacts, the ratchet
+  not regressed, every claimed manifest with its own totals, the failure manifest generated from the
+  run, the effective limit vector published beside the totals, no aggregate percentage.
+- [Section 19](roadmap.delivery.md#js-10--baselines-packaging-the-support-table-and-the-release-gate)'s
+  JS-10: run the release gate that refuses the tree while any relevant unit lacks a human decision.
+- Rule A14: every sample references exactly the three core packages.
+
+**What replaced it, observed on 2026-10-05.**
+- **A pristine JavaScript consumer** under `samples/`, admitted by a revised rule A14 and a dated
+  revision of ADR 0001, and **bundle [JS-10-002](evidence/js-10-002/README.md)** from a clean tree:
+  the consumer restored and ran with upstream unreachable, rolled back to `0.1.0-preview.5` as
+  published and forward again, refused a version only nuget.org holds, and ran as Native AOT.
+- **The family's package baseline**, four packages, held by **rule N37** in both directions to the
+  checkout and the bundle's metadata, with no foreign dependency in any produced `.nuspec`. Proposed
+  [JSD-0061](decisions/0061-packages-consumers-and-the-release-candidate.md).
+- **Bundle [JS-10-003](evidence/js-10-003/README.md)**: four whole runs from one binary at a clean
+  commit - the wide manifest in the bytecode and native forms, the slice manifest, the numeric
+  manifest's native form - each with its totals, failure manifest and effective limit vector, read
+  back from a verified handle by the new `--effective-limits` mode. The bytecode floor holds.
+- **The release gate refuses**: gates 1 to 13 read from the checkout, each blocker named by its
+  declaration, held by **rule N38** to its register in both directions; a review headline or a support
+  table claiming more than the units record is itself named. Proposed
+  [JSD-0062](decisions/0062-the-release-gate-that-refuses.md).
+- **Three package descriptions are corrected**: the profile's said it implements only the slice
+  manifest, the format's that only format version 1 exists, the lowering's that it has no tokenizer.
+  Bundle JS-10-002 keeps the text as packed.
+- The architecture suite has 368 tests.
+
+**What must not be read as repaired.**
+- **The native form's ratchet is unchecked on `linux-x64`**: `test262-wide-native.floor` was set in
+  the `x86-64-win64` form and the runner will not compare two forms. The gate names it.
+- **One variant's verdict depends on timing**: `test/built-ins/Atomics/waitAsync/no-spurious-wakeup-on-add.js`
+  passed in run r32 and exhausted `LiveBytes` in JS-10-003's bytecode run; run alone six times it
+  exhausted once. What the main agent retains while it drains its job queue waiting on a second agent
+  depends on that agent's speed - a deterministic dimension deciding by wall time. Not repaired
+  here. *(Repaired the same day in the conformance host; [JSC-288](#jsc-288).)*
+- **The gate reads gates 3 to 6 through no mechanism** and names each as blocking for that reason.
+- **The collection script's summary** called the native run not retainable on its floor's exit code;
+  corrected after the collection, which the bundle records.
+- Nothing published, claimed, advertised, appointed or accepted.
+
+**Authority and date.** The implementation and the collections of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-288
+
+**Where:** the conformance root's host: `Test262Timers.cs`, its installation in `Test262Agents.cs`, and
+a harness check in `Test262Checks.cs`. The finding JSC-287 recorded and did not repair.
+
+**What the plan said.** Roadmap section 17 and the harness treat `LiveBytes` as a deterministic
+dimension: a variant that spends it spends it on every run. JSC-287 recorded that
+`test/built-ins/Atomics/waitAsync/no-spurious-wakeup-on-add.js` did not - it passed in run r32,
+exhausted `LiveBytes` in bundle JS-10-003, and exhausted once in six runs alone.
+
+**What replaced it, observed on 2026-10-05.**
+- **The cause.** The suite's `atomicsHelper.js` defines `setTimeout` only where the host has none,
+  as a promise chain that re-queues itself until `Date.now()` passes the deadline, and
+  `getReportAsync` waits on it for a second whenever an agent has not yet reported. The profile
+  charges every allocation of an operation to its live bytes, so that wait cost its wall time times
+  however fast the machine spun it, and whether the report was there depended on how quickly the
+  second agent ran.
+- **The repair is the host's.** The conformance root gives each test's main realm a `setTimeout`:
+  timers ordered by deadline, served by one pump job that steps behind queued jobs, sleeps at most a
+  millisecond while the queue is idle - so the drain still settles an `Atomics.waitAsync` deadline
+  between two jobs - and runs a callback when it is due. A wait now costs one small job per slice,
+  which the wall clock ends long before the live-byte ceiling. The profile is unchanged.
+- **A harness check holds it**: a 500 ms timer fires under a one-megabyte live-byte ceiling, and a
+  spinning promise loop of the stand-in's shape is refused on `LiveBytes` under the same ceiling.
+- **The runs.** Under load, six copies at once, the previous build exhausted the test once in 48 runs
+  and this one in none of 78. A whole wide-bytecode run with the repair differs from bundle
+  JS-10-003's in exactly one of 101,723 variants - this one, from exhausted to passed - and holds the
+  floor: 100,368 passed, 158 failed, 44 exhausted, 1,153 skipped, which are run r32's totals.
+
+**What must not be read as repaired.**
+- **The profile still charges allocation, not retention, to `LiveBytes`** within an operation. Any
+  guest that spins on the clock spends live bytes in proportion to time; the repair removes the one
+  spin the harness itself supplied, not the property.
+- **The timer is the conformance harness's**: no other composition defines `setTimeout`, and the realm
+  the profile builds publishes none.
+- **Bundle JS-10-003 is unchanged**: it records the run as taken, the exhaustion included.
+
+**Authority and date.** The implementation and the runs of 2026-10-05 in this checkout. 2026-10-05.

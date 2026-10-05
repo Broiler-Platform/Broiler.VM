@@ -413,7 +413,7 @@ internal sealed partial class JsEngine
     /// <param name="height">The operand height before it, whose top words the window decoded.</param>
     /// <param name="function">The callee, as <see cref="TryDirectCallee"/> answered it.</param>
     /// <param name="context">The callee context the call site reserved.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=0002A2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=C69D51
     // Broiler-Falsified-If: a direct call charges, checks, binds or opens other than the interpreter's call of the same function would, fills an entry other than the callee unit's in the caller's own payload, or a failure leaves a depth, a referrer or a region taken
     // Broiler-Human:        PENDING
     internal unsafe JsNativeActivation BeginDirectCall(
@@ -472,6 +472,20 @@ internal sealed partial class JsEngine
                 Frame(callee, context);
                 context->Entry = page.At(program.NativeSymbols[function.Unit].Offset);
                 context->EntryPc = callee.Pc;
+
+                // A SLOPPY PLAIN CALL IS RECORDED AS `ExecuteCall` RECORDS IT, last, so nothing above
+                // can fail with the record taken; `EndDirectCall` gives it back (JSC-257).
+                if (function.LegacyReflective)
+                {
+                    legacyFrames.Add(new LegacyFrame(function, arguments, environment, depth));
+                    callee.LegacyRecorded = true;
+                }
+
+                // THE CALLEE'S SITE, as `Execute` would have taken it, with the caller's placed at the
+                // call: emitted code made it without a step, so nothing else wrote the caller's
+                // instruction. `EndDirectCall` gives the callee's back (JSD-0038).
+                TopSite.Pc = pc;
+                PushSite(program, function.Unit, function, activeReferrer, false);
                 return callee;
             }
             catch
@@ -491,7 +505,7 @@ internal sealed partial class JsEngine
     /// Everything the interpreter does after a directly called function's emitted code returned, before the
     /// caller goes on: the region closed, the referrer restored and the depth given back.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=7C9518
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=9FE25D
     // Broiler-Falsified-If: a direct callee's region, referrer or depth outlives its return, or is given back twice
     // Broiler-Human:        PENDING
     internal void EndDirectCall(JsNativeActivation callee)
@@ -502,8 +516,16 @@ internal sealed partial class JsEngine
         }
         finally
         {
+            PopSite();
             activeReferrer = callee.CallerReferrer ?? string.Empty;
             callee.Caller = null;
+
+            if (callee.LegacyRecorded)
+            {
+                callee.LegacyRecorded = false;
+                legacyFrames.RemoveAt(legacyFrames.Count - 1);
+            }
+
             LeaveCall();
         }
     }

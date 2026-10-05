@@ -493,6 +493,106 @@ internal static class Test262Command
         return reason.Length == 0 ? string.Empty : "  " + reason;
     }
 
+    /// <summary>
+    /// The limit vector a run's variants are verified and instantiated under, read back from a
+    /// verified handle rather than restated (phase F9 slice R3, JSD-0061).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Release gate 9 asks for the effective vector beside a run's totals</b>, and a run states
+    /// only the two allowances it chose; every other dimension is whatever the composition and the
+    /// profile's defaults resolve to. So this mode builds the runtime exactly as a variant's is built
+    /// - the same manifest, the same declined surfaces, the same allowances, through
+    /// <see cref="Test262Run.Options"/> - verifies one script under it, and prints each dimension of
+    /// the ceilings the handle froze. A dimension at TOP is printed as <c>unconstrained</c>.
+    /// </para>
+    /// <para>
+    /// <b>Every manifest and form a run can name is read</b>, each by lowering one script with the
+    /// front end and request a variant under it is lowered with, so the vector printed is the one
+    /// that run's handles froze rather than another manifest's.
+    /// </para>
+    /// </remarks>
+    internal static int EffectiveLimits(string[] args)
+    {
+        if (!Test262Manifest.TryParse(
+                Argument(args, "--manifest"),
+                Repeated(args, "--decline"),
+                Argument(args, "--form"),
+                Argument(args, "--backend"),
+                out var manifest,
+                out var why))
+        {
+            Console.WriteLine("broiler-js-conformance: " + why);
+            return ExitCodes.Usage;
+        }
+
+        var fuel = Number(args, "--fuel", DefaultFuel);
+        var wallClock = Number(args, "--wall", DefaultWallClock);
+        const string Caller = "broiler-js-conformance://effective-limits";
+
+        // THE SAME FRONT END AND REQUEST A VARIANT IS LOWERED WITH, so the handle is the kind a
+        // variant's is: the wide front end under the manifest's compile request, or the slice's.
+        var artifactBytes = manifest.UsesWideFrontEnd
+            ? Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Compile(
+                [new Broiler.VM.Profile.JavaScript.Compiler.JsScriptUnit("main", "1 + 1", Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Script, false, Caller)],
+                [],
+                manifest.CompileRequest).Artifact
+            : Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.Compile("1 + 1", Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Script).Artifact;
+
+        if (artifactBytes is null)
+        {
+            Console.WriteLine("broiler-js-conformance: the lowering refused the one script this mode verifies");
+            return ExitCodes.HarnessDefect;
+        }
+
+        var created = Broiler.VM.VmRuntime.Create(manifest.Catalog, Test262Run.Options(manifest, fuel, wallClock, []));
+
+        if (!created.TryGetRuntime(out var runtime))
+        {
+            Console.WriteLine($"broiler-js-conformance: the runtime refused creation: {created.Outcome}/{created.Reason}");
+            return ExitCodes.HarnessDefect;
+        }
+
+        using (runtime)
+        {
+            var descriptor = new Broiler.VM.VmArtifactDescriptor(
+                JavaScriptProfile.Id,
+                manifest.FormatVersion,
+                manifest.Id,
+                default,
+                Broiler.VM.VmCallerIdentity.FromCanonicalIdentity(Caller));
+            var verified = runtime.Verify(in descriptor, artifactBytes, CancellationToken.None);
+
+            if (!verified.TryGetArtifact(out var artifact))
+            {
+                Console.WriteLine($"broiler-js-conformance: verification refused: {verified.Outcome}/{verified.Reason}");
+                return ExitCodes.HarnessDefect;
+            }
+
+            using (artifact)
+            {
+                Console.WriteLine(manifest.Describe());
+                Console.WriteLine(
+                    "allowance fuel=" + fuel.ToString(CultureInfo.InvariantCulture) +
+                    " wallClockMs=" + wallClock.ToString(CultureInfo.InvariantCulture) + " per variant");
+                Console.WriteLine("# limit|dimension|verification|instantiation");
+
+                foreach (var dimension in Broiler.VM.VmBudgetDimensions.All)
+                {
+                    Console.WriteLine(
+                        "limit|" + dimension + "|" +
+                        Ceiling(artifact.Identity.EffectiveCeilings.VerificationCeilings, dimension) + "|" +
+                        Ceiling(artifact.Identity.EffectiveCeilings.InstantiationCeilings, dimension));
+                }
+            }
+        }
+
+        return ExitCodes.Ok;
+
+        static string Ceiling(Broiler.VM.VmLimitVector vector, Broiler.VM.VmBudgetDimension dimension) =>
+            vector.IsUnconstrained(dimension) ? "unconstrained" : vector[dimension].ToString(CultureInfo.InvariantCulture);
+    }
+
     /// <summary>Every value a repeated option was given, in the order it was given.</summary>
     private static IReadOnlyList<string> Repeated(string[] args, string option)
     {

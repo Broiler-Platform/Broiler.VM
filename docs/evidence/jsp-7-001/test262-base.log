@@ -1,0 +1,26 @@
+$ python3 eng/run-test262.py --suite <scratch>/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --binary-directory <scratch>/base/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0 --jobs 3 --out <scratch>/test262-base --dir test/language --dir test/annexB --dir test/built-ins/Uint8Array --dir test/built-ins/JSON --dir test/built-ins/Error --dir test/built-ins/WeakMap --dir test/built-ins/RegExp --dir test/built-ins/String --dir test/built-ins/Date --dir test/built-ins/FinalizationRegistry --dir test/built-ins/Function
+ 47  upsert  e.g. test/built-ins/WeakMap/prototype/getOrInsert/adds-object-element.js [sloppy]
+#          43  Symbol  e.g. test/annexB/built-ins/Date/prototype/setYear/year-nan.js [sloppy]
+#          41  WeakMap  e.g. test/built-ins/WeakMap/prototype/getOrInsert/adds-object-element.js [sloppy]
+#          38  arrow-function  e.g. test/annexB/built-ins/Date/prototype/getYear/not-a-constructor.js [sloppy]
+#          34  tail-call-optimization  e.g. test/language/expressions/call/tco-call-args.js [strict]
+#          32  Reflect  e.g. test/built-ins/Date/proto-from-ctor-realm-one.js [sloppy]
+#          24  Error.isError  e.g. test/built-ins/Error/isError/bigints.js [sloppy]
+#          24  String.fromCodePoint  e.g. test/built-ins/RegExp/CharacterClassEscapes/character-class-digit-class-escape-negative-cases.js [sloppy]
+#          23  caller  e.g. test/built-ins/Function/15.3.5.4_2-12gs.js [sloppy]
+#          21  class-methods-private  e.g. test/built-ins/Function/prototype/toString/private-method-class-expression.js [sloppy]
+#          19  dynamic-import  e.g. test/language/expressions/dynamic-import/catch/nested-arrow-import-catch-eval-script-code-target.js [module]
+#          18  Proxy  e.g. test/built-ins/Function/internals/Construct/base-ctor-revoked-proxy-realm.js [sloppy]
+#          18  class-fields-private  e.g. test/language/expressions/class/elements/syntax/early-errors/grammar-private-environment-on-class-heritage-chained-usage.js [sloppy]
+#          16  class-fields-public  e.g. test/language/expressions/class/elements/syntax/early-errors/grammar-private-environment-on-class-heritage-chained-usage.js [sloppy]
+#          16  generators  e.g. test/built-ins/Function/prototype/toString/GeneratorFunction.js [sloppy]
+#          16  string-trimming  e.g. test/annexB/built-ins/String/prototype/trimLeft/length.js [sloppy]
+#          15  symbols-as-weakmap-keys  e.g. test/built-ins/WeakMap/prototype/getOrInsert/adds-symbol-element.js [sloppy]
+#          38  further row(s) not printed here; every one of them is in the report
+# test262 29681 files, 54845 variants: pass 52558, fail 1470, unsupported 0, exhausted 16, skipped 801
+coverage partial a named selection rather than the whole test tree: test/language test/annexB test/built-ins/Uint8Array test/built-ins/JSON test/built-ins/Error test/built-ins/WeakMap test/built-ins/RegExp test/built-ins/String test/built-ins/Date test/built-ins/FinalizationRegistry test/built-ins/Function
+# the whole-run report is <scratch>/test262-base/test262.report
+# the machine-readable report is <scratch>/test262-base/test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language test/annexB test/built-ins/Uint8Array test/built-ins/JSON test/built-ins/Error test/built-ins/WeakMap test/built-ins/RegExp test/built-ins/String test/built-ins/Date test/built-ins/FinalizationRegistry test/built-ins/Function
+# exit 1

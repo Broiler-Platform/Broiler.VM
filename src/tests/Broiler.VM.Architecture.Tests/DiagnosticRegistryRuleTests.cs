@@ -157,10 +157,21 @@ public sealed class DiagnosticRegistryRuleTests
         // compilation, and no source is refused for it. One code covers every clause of a row that
         // disagrees with itself or the function table, and the retained `script-referrers-*` entries
         // tell the clauses apart. It is published at no milestone.
-        Assert.Equal(71, Vocabulary.Count);
-        Assert.Equal(29, SeamVocabulary.Count);
+        //
+        // Revision 17 is ONE SEAM CODE and no core code (phase F1, JSC-255): `InvalidJsonModule`, a
+        // module loaded with `type: "json"` whose text is not JSON. The load is the front end's for
+        // a static import, so the refusal is a refusal of source and the core vocabulary does not
+        // grow. It is published at no milestone.
+        //
+        // Revision 18 is ONE CORE CODE, the source-text section (phase F3, the proposed JSD-0037,
+        // JSC-259), and THE SEAM HALF DOES NOT GROW: the section carries text the compilation was
+        // already given, and no source is refused for it. One code covers every clause of a row that
+        // disagrees with itself, the pool or the function table, and the retained `source-text-*`
+        // entries tell the clauses apart. It is published at no milestone.
+        Assert.Equal(72, Vocabulary.Count);
+        Assert.Equal(30, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(16, DiagnosticRegistry.Revision);
+        Assert.Equal(18, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -345,13 +356,15 @@ public sealed class DiagnosticRegistryRuleTests
                 StringComparison.Ordinal));
         // Sixty-seven since revision 13, whose two eval scope rows name retained entries, and
         // sixty-eight since revision 14, whose BigInt constant row names one, sixty-nine since
-        // revision 15, whose script-declarations row names one, and seventy since revision 16, whose
-        // script-referrers row names one.
+        // revision 15, whose script-declarations row names one, seventy since revision 16, whose
+        // script-referrers row names one, and seventy-one since revision 18, whose source-text
+        // row names one.
         Assert.Equal(
-            70,
+            71,
             Registry.Count(static row => row.Reachability == "corpus"));
+        // Twenty-nine since revision 17, whose JSON module row names a retained `.json` source.
         Assert.Equal(
-            28,
+            29,
             Registry.Count(static row => row.Reachability == "source"));
         // One seam row is defensive, and which one is the finding: the operand-stack ceiling
         // cannot be reached through this front end, because the parse depth bound refuses at about
@@ -673,7 +686,10 @@ public sealed class DiagnosticRegistryRuleTests
         //
         // THE THIRTIETH IS THE VALUE EMITTER (JSD-0035 stage JSV-2), which encodes a unit's value layout
         // with the same position and site arrays the baseline emitter keeps, and holds them the same way.
-        Assert.Equal(30, lowering.Length);
+        //
+        // THE THIRTY-FIRST IS THE JSON MODULE READING (phase F1, JSC-255), a reader over one text
+        // whose cursor lives in an instance made per call and nowhere longer.
+        Assert.Equal(31, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

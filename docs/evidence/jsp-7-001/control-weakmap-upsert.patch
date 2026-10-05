@@ -1,0 +1,16 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
+index 13c6e1d..4af1f02 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
+@@ -538,11 +538,6 @@ internal sealed partial class JsRealm
+ 
+             engine.Charge(1);
+ 
+-            if (map.Has(held))
+-            {
+-                return map.Get(held);
+-            }
+-
+             var value = ArgOfCollection(arguments, 1);
+             engine.Retain(CollectionEntryBytes);
+             map.Set(held, value);

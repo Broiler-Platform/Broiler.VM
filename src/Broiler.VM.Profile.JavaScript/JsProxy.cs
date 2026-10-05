@@ -658,7 +658,7 @@ internal sealed class JsProxy : JsObject
     /// otherwise turn a partial redefinition into a total one — so the fields are carried through
     /// with their presence flags intact rather than being expanded into six.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=47D047
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=341FEF
     // Broiler-Human:        PENDING
     internal bool ProxyDefineOwnProperty(JsValue key, JsRealm.ObjectDescriptorFields fields)
     {
@@ -680,7 +680,7 @@ internal sealed class JsProxy : JsObject
         var answered = Engine.Call(
             trap,
             JsValue.Object(Handler!),
-            [JsValue.Object(target), key, JsValue.Object(realm.DescriptorObjectOfFields(fields))]);
+            [JsValue.Object(target), key, JsValue.Object(Engine.Realm.DescriptorObjectOfFields(fields))]);
 
         if (!answered.ToBooleanValue())
         {
@@ -933,7 +933,7 @@ internal sealed class JsProxy : JsObject
     }
 
     /// <summary><c>[[Call]]</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=566E13
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=911824
     // Broiler-Human:        PENDING
     internal JsValue ProxyCall(JsValue thisValue, JsValue[] arguments)
     {
@@ -947,7 +947,7 @@ internal sealed class JsProxy : JsObject
         return Engine.Call(
             trap,
             JsValue.Object(Handler!),
-            [JsValue.Object(target), thisValue, JsValue.Object(realm.NewArray(arguments))]);
+            [JsValue.Object(target), thisValue, JsValue.Object(Engine.Realm.NewArray(arguments))]);
     }
 
     /// <summary><c>[[Construct]]</c>.</summary>
@@ -956,7 +956,7 @@ internal sealed class JsProxy : JsObject
     /// ordinary constructor returning a primitive gets the instance it was given instead; a trap has
     /// no instance to fall back on, because the whole point of the trap is that none was made.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=99CA78
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=96E938
     // Broiler-Human:        PENDING
     internal JsValue ProxyConstruct(JsValue[] arguments, JsValue newTarget)
     {
@@ -970,7 +970,7 @@ internal sealed class JsProxy : JsObject
         var made = Engine.Call(
             trap,
             JsValue.Object(Handler!),
-            [JsValue.Object(target), JsValue.Object(realm.NewArray(arguments)), newTarget]);
+            [JsValue.Object(target), JsValue.Object(Engine.Realm.NewArray(arguments)), newTarget]);
 
         if (!made.IsObject)
         {

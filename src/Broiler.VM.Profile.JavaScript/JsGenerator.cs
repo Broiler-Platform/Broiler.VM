@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           52
+// Exempt:           53
 // Human-reviewed:   0/17
 // IP risk:          None
 // Security risk:    High
@@ -247,6 +247,14 @@ internal sealed class JsFrame
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=0CD375
     // Broiler-Human:        PENDING
     internal bool Delegating { get; set; }
+
+    /// <summary>
+    /// The inner iterator's own result object, which a synchronous <c>yield*</c> hands to the
+    /// caller as it is rather than reading its <c>value</c> and wrapping it again; empty otherwise.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=255CB1
+    // Broiler-Human:        PENDING
+    internal JsValue DelegatedResult { get; set; } = JsValue.Empty;
 
     /// <summary>
     /// Where inside an ASYNC delegation the pending resumption re-enters, or zero.

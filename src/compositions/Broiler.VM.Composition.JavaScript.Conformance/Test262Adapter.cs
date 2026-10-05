@@ -62,7 +62,11 @@ internal static class Test262Adapter
     /// </remarks>
     internal const string StrictPrologue = "\"use strict\";\n";
 
-    /// <summary>The flags that need an agent, a shared buffer, or a clock this profile has none of.</summary>
+    /// <summary>
+    /// The flags that need an agent, a shared buffer, or a clock the slice manifest this translator
+    /// serves has none of. The <c>--test262</c> runner scores the first two over the wide manifest
+    /// (JSD-0041, JSD-0042).
+    /// </summary>
     private static readonly string[] AgentFlags =
         ["CanBlockIsFalse", "CanBlockIsTrue", "non-deterministic"];
 
@@ -171,7 +175,7 @@ internal static class Test262Adapter
         {
             if (front.Flags.Contains(flag, StringComparer.Ordinal))
             {
-                return $"declares `{flag}`, which needs an agent and a shared memory this profile has none of";
+                return $"declares `{flag}`, which needs an agent and a shared memory the slice manifest has none of";
             }
         }
 

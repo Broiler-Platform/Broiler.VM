@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
-// Exempt:           21
-// Human-reviewed:   0/10
+// Relevant units:   26
+// Annotated:        26/26
+// Exempt:           22
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       10
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -29,17 +29,12 @@ namespace Broiler.VM.Profile.JavaScript;
 /// Symbol is a key whose identity is the object, so only a program handed the Symbol can install it.
 /// </para>
 /// <para>
-/// <b>The well-known Symbols are per-realm here, and the specification says they are per-agent.</b>
-/// Two realms in one process would disagree about <c>Symbol.iterator</c>, so an object built in one
-/// would not iterate in the other. This profile builds one realm per instance and nothing crosses
-/// between them — there is no way for a value to travel from one realm to another, because there is
-/// no shape in which a host could carry one — so the difference is not observable. It is written
-/// down because it stops being unobservable the day an agent model exists.
-/// </para>
-/// <para>
-/// <b>The registry <c>Symbol.for</c> uses is per-realm for the same reason and with the same
-/// consequence.</b> The specification's is a per-AGENT list, deliberately shared across realms, and
-/// this one is not.
+/// <b>The well-known Symbols and the <c>Symbol.for</c> registry are the engine's, not a realm's</b>
+/// (<see cref="JsAgentSymbols"/>), because the specification makes both per-agent: every realm on
+/// one engine answers the same <c>Symbol.iterator</c>, so an object built in one iterates in
+/// another, and <c>Symbol.for</c> in any of them finds what another registered. Until 2026-10-04
+/// both were per-realm, which nothing could observe while an instance held one realm (JSD-0030
+/// SR-1, JSC-264).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=60DD8D
@@ -52,9 +47,9 @@ internal sealed partial class JsRealm
     internal JsObject SymbolPrototype { get; private set; } = null!;
 
     /// <summary>The Symbol every iterable answers its iterator factory under.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B2E21C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=457A66
     // Broiler-Human:        PENDING
-    internal JsSymbol IteratorSymbol { get; } = new("Symbol.iterator", described: true);
+    internal JsSymbol IteratorSymbol => agent.Iterator;
 
     /// <summary>The Symbol an asynchronous iterable would answer under.</summary>
     /// <remarks>
@@ -62,55 +57,54 @@ internal sealed partial class JsRealm
     /// answer: this surface has no asynchronous iteration. A realm that omitted the Symbol entirely
     /// would make <c>Symbol.asyncIterator</c> a <c>TypeError</c> rather than a question.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B953B3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4EFB4B
     // Broiler-Human:        PENDING
-    internal JsSymbol AsyncIteratorSymbol { get; } = new("Symbol.asyncIterator", described: true);
+    internal JsSymbol AsyncIteratorSymbol => agent.AsyncIterator;
 
     /// <summary>The Symbol <c>instanceof</c> consults before its ordinary behaviour.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FBA318
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5FED81
     // Broiler-Human:        PENDING
-    internal JsSymbol HasInstanceSymbol { get; } = new("Symbol.hasInstance", described: true);
+    internal JsSymbol HasInstanceSymbol => agent.HasInstance;
 
     /// <summary>The Symbol <c>ToPrimitive</c> consults before <c>valueOf</c> and <c>toString</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3B76E2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D568D8
     // Broiler-Human:        PENDING
-    internal JsSymbol ToPrimitiveSymbol { get; } = new("Symbol.toPrimitive", described: true);
+    internal JsSymbol ToPrimitiveSymbol => agent.ToPrimitive;
 
     /// <summary>The Symbol <c>Object.prototype.toString</c> reads a class name from.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D74BF7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CA87A3
     // Broiler-Human:        PENDING
-    internal JsSymbol ToStringTagSymbol { get; } = new("Symbol.toStringTag", described: true);
+    internal JsSymbol ToStringTagSymbol => agent.ToStringTag;
 
     /// <summary>The Symbol <c>Array.prototype.concat</c> consults about flattening.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ADC372
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=355756
     // Broiler-Human:        PENDING
-    internal JsSymbol IsConcatSpreadableSymbol { get; } = new("Symbol.isConcatSpreadable", described: true);
+    internal JsSymbol IsConcatSpreadableSymbol => agent.IsConcatSpreadable;
 
     /// <summary>The Symbol a built-in would read a derived constructor from.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6F8447
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0FD3C3
     // Broiler-Human:        PENDING
-    internal JsSymbol SpeciesSymbol { get; } = new("Symbol.species", described: true);
+    internal JsSymbol SpeciesSymbol => agent.Species;
 
     /// <summary>The Symbol <c>with</c> would read a blocklist from.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F98486
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A7BC66
     // Broiler-Human:        PENDING
-    internal JsSymbol UnscopablesSymbol { get; } = new("Symbol.unscopables", described: true);
+    internal JsSymbol UnscopablesSymbol => agent.Unscopables;
 
     /// <summary>The Symbol a synchronous disposer is registered under.</summary>
     /// <remarks>
     /// <c>DisposableStack.prototype.use</c> reads it when a resource is registered, not when the
     /// stack is disposed, so a program that replaces the member afterwards does not change what
-    /// runs. It is per-realm like every other well-known Symbol here, for the reason the header
-    /// gives.
+    /// runs. It is the agent's, like every other well-known Symbol here (<see cref="JsAgentSymbols"/>).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=43B309
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=99AED0
     // Broiler-Human:        PENDING
-    internal JsSymbol DisposeSymbol { get; } = new("Symbol.dispose", described: true);
+    internal JsSymbol DisposeSymbol => agent.Dispose;
 
     /// <summary>The Symbol an asynchronous disposer is registered under.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FCBDB0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0EFCEA
     // Broiler-Human:        PENDING
-    internal JsSymbol AsyncDisposeSymbol { get; } = new("Symbol.asyncDispose", described: true);
+    internal JsSymbol AsyncDisposeSymbol => agent.AsyncDispose;
 
     /// <summary>The four Symbols the String methods would dispatch a pattern object through.</summary>
     /// <remarks>
@@ -119,29 +113,29 @@ internal sealed partial class JsRealm
     /// <c>JsRealm.RegExp.cs</c>'s header records; the Symbols are minted anyway so that a program
     /// testing for them gets <c>undefined</c> rather than a <c>TypeError</c> on <c>Symbol.match</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B80358
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=499D0E
     // Broiler-Human:        PENDING
-    internal JsSymbol MatchSymbol { get; } = new("Symbol.match", described: true);
+    internal JsSymbol MatchSymbol => agent.Match;
 
     /// <summary>The Symbol <c>String.prototype.replace</c> would dispatch through.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=501FB1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CD8E74
     // Broiler-Human:        PENDING
-    internal JsSymbol ReplaceSymbol { get; } = new("Symbol.replace", described: true);
+    internal JsSymbol ReplaceSymbol => agent.Replace;
 
     /// <summary>The Symbol <c>String.prototype.search</c> would dispatch through.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F23166
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D0BD10
     // Broiler-Human:        PENDING
-    internal JsSymbol SearchSymbol { get; } = new("Symbol.search", described: true);
+    internal JsSymbol SearchSymbol => agent.Search;
 
     /// <summary>The Symbol <c>String.prototype.split</c> would dispatch through.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=47AE98
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FF2A61
     // Broiler-Human:        PENDING
-    internal JsSymbol SplitSymbol { get; } = new("Symbol.split", described: true);
+    internal JsSymbol SplitSymbol => agent.Split;
 
     /// <summary>The Symbol <c>String.prototype.matchAll</c> dispatches through.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1AAACF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=89B188
     // Broiler-Human:        PENDING
-    internal JsSymbol MatchAllSymbol { get; } = new("Symbol.matchAll", described: true);
+    internal JsSymbol MatchAllSymbol => agent.MatchAll;
 
     /// <summary>The prototype every built-in iterator this realm makes inherits from.</summary>
     /// <remarks>
@@ -153,14 +147,13 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsObject IteratorPrototype { get; private set; } = null!;
 
-    /// <summary>The registry <c>Symbol.for</c> and <c>Symbol.keyFor</c> share.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9F8017
+    /// <summary>The agent's Symbols this realm answers, the same object for every realm on one engine.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=90D7EE
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, JsSymbol> symbolRegistry =
-        new(System.StringComparer.Ordinal);
+    private readonly JsAgentSymbols agent;
 
     /// <summary>Builds the <c>Symbol</c> intrinsic and the iterators the realm's own types need.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B221B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=55C15C
     // Broiler-Human:        PENDING
     private void SetupSymbol()
     {
@@ -211,11 +204,11 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var key = engine.ToStringValue(SymbolArgument(arguments, 0));
-            var registry = engine.Realm.symbolRegistry;
+            var registry = engine.Symbols.Registry;
 
             if (!registry.TryGetValue(key, out var found))
             {
-                found = new JsSymbol(key, described: true);
+                found = new JsSymbol(key, described: true) { IsRegistered = true };
                 registry[key] = found;
             }
 
@@ -232,7 +225,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Symbol.keyFor requires a Symbol");
             }
 
-            foreach (var (key, candidate) in engine.Realm.symbolRegistry)
+            foreach (var (key, candidate) in engine.Symbols.Registry)
             {
                 if (ReferenceEquals(candidate, value.AsSymbol()))
                 {
@@ -322,7 +315,7 @@ internal sealed partial class JsRealm
     /// Symbol to key this with</b>, which is the same join the collection iterators are in.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=13EB2A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5BED82
     // Broiler-Human:        PENDING
     private void SetupDatePrimitive() =>
         DatePrototype.SetOwnSymbol(
@@ -336,9 +329,11 @@ internal sealed partial class JsRealm
                             "Date.prototype[Symbol.toPrimitive] is not generic");
                     }
 
-                    var hint = arguments.Length == 0
-                        ? string.Empty
-                        : engine.ToStringValue(arguments[0]);
+                    // The hint is compared as it is, never converted: a String wrapper or an object
+                    // whose `toString` answers "number" is not a hint (JSC-252).
+                    var hint = arguments.Length > 0 && arguments[0].IsString
+                        ? arguments[0].AsString()
+                        : string.Empty;
 
                     return hint switch
                     {
@@ -582,4 +577,99 @@ internal sealed partial class JsRealm
         throw engine.Error(
             "TypeError", "Symbol.prototype." + method + " requires that 'this' be a Symbol");
     }
+}
+
+/// <summary>
+/// The Symbols the specification makes per-agent: the well-known Symbols and the registry
+/// <c>Symbol.for</c> and <c>Symbol.keyFor</c> share (JSD-0030 D3, slice SR-1).
+/// </summary>
+/// <remarks>
+/// <b>One per engine, made before its first realm</b>, and handed to every realm the engine builds,
+/// so <c>Symbol.iterator</c> is one Symbol in all of them and a Symbol one realm registered is the one
+/// another finds.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EDEECA
+// Broiler-Human:        PENDING
+internal sealed class JsAgentSymbols
+{
+    /// <summary><c>Symbol.iterator</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D2E3DA
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol Iterator = new("Symbol.iterator", described: true);
+
+    /// <summary><c>Symbol.asyncIterator</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E31487
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol AsyncIterator = new("Symbol.asyncIterator", described: true);
+
+    /// <summary><c>Symbol.hasInstance</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=19F6B4
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol HasInstance = new("Symbol.hasInstance", described: true);
+
+    /// <summary><c>Symbol.toPrimitive</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=00E5C2
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol ToPrimitive = new("Symbol.toPrimitive", described: true);
+
+    /// <summary><c>Symbol.toStringTag</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CDC14E
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol ToStringTag = new("Symbol.toStringTag", described: true);
+
+    /// <summary><c>Symbol.isConcatSpreadable</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1921D8
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol IsConcatSpreadable = new("Symbol.isConcatSpreadable", described: true);
+
+    /// <summary><c>Symbol.species</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C18F76
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol Species = new("Symbol.species", described: true);
+
+    /// <summary><c>Symbol.unscopables</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F878E3
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol Unscopables = new("Symbol.unscopables", described: true);
+
+    /// <summary><c>Symbol.dispose</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=97AEF7
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol Dispose = new("Symbol.dispose", described: true);
+
+    /// <summary><c>Symbol.asyncDispose</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D27B91
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol AsyncDispose = new("Symbol.asyncDispose", described: true);
+
+    /// <summary><c>Symbol.match</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2C75B4
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol Match = new("Symbol.match", described: true);
+
+    /// <summary><c>Symbol.replace</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DEC417
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol Replace = new("Symbol.replace", described: true);
+
+    /// <summary><c>Symbol.search</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=77D1FC
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol Search = new("Symbol.search", described: true);
+
+    /// <summary><c>Symbol.split</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=216BA0
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol Split = new("Symbol.split", described: true);
+
+    /// <summary><c>Symbol.matchAll</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EE3B42
+    // Broiler-Human:        PENDING
+    internal readonly JsSymbol MatchAll = new("Symbol.matchAll", described: true);
+
+    /// <summary>The registry <c>Symbol.for</c> and <c>Symbol.keyFor</c> share, by key.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DE0884
+    // Broiler-Human:        PENDING
+    internal readonly System.Collections.Generic.Dictionary<string, JsSymbol> Registry =
+        new(System.StringComparer.Ordinal);
 }

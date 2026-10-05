@@ -132,3 +132,21 @@ ledger row rather than being left for someone to notice when the surface has alr
 - **The release-mode gate has never refused a publish of this profile**, because nothing here has
   been published. Its behaviour is asserted by the component's own group J rules over the
   component's tree, and JS-0 adds no new claim about it.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: record the carried clause as closed by JSD-0012.**
+
+- The clause carried the profile's public API out of rule M1's baseline until JS-1. JSD-0012
+  re-homed it: the profile family has its own frozen baseline at
+  `src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt`, regenerated and checked by the N10
+  family rule, and every public change in this checkout updated it in the same commit.
+- Amend the clause with a dated note pointing at JSD-0012 and the rule that enforces it. The three
+  recorded deviations stand as written.
+- **Separately:** the profile is now packable (see JSD-0001's recommendation), so M1's "packable
+  assemblies" subject now includes the profile. The owner should confirm that M1 and the profile's
+  own baseline do not both claim the same assemblies, or record which one governs them.

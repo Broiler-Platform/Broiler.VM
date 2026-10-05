@@ -1,0 +1,40 @@
+A PRODUCT TYPE OF THE JAVASCRIPT PROFILE THAT CACHES A REALM, so rule N26's rejecting direction is
+decided by an input rather than by a comment. It is written the way the regression would arrive: a
+helper that wants an intrinsic quickly keeps the realm it was made in and reads its prototypes
+later, and a built-in that wants "the" global reaches for the engine's first realm - both of which
+hand a guest of a realm it created the intrinsics of another, and both of which pass every test
+that runs in one realm.
+
+It also forwards the RUNNING realm through an expression-bodied property, and NAMES `FirstRealm`
+in a comment and in a string literal, none of which the rule may report: it reads declarations and
+member accesses, so prose that explains the prohibition is not a violation of it.
+
+```csharp
+namespace Broiler.VM.Profile.JavaScript;
+
+internal sealed class JsIntrinsicCache
+{
+    // Not FirstRealm: that is what the rule is about.
+    private const string Explanation = "engine.FirstRealm is the first realm, not the running one";
+
+    private readonly JsRealm made;
+
+    private readonly JsEngine engine;
+
+    internal JsIntrinsicCache(JsRealm realm, JsEngine owner)
+    {
+        made = realm;
+        engine = owner;
+    }
+
+    internal JsRealm Running => engine.Realm;
+
+    internal JsObject ArrayPrototype() => made.ArrayPrototype;
+
+    internal JsValue GlobalThis(JsEngine caller) => JsValue.Object(caller.FirstRealm.GlobalObject);
+}
+```
+
+This file is a witness and is never compiled. It lives here rather than in a product project for
+the reason every rejecting witness does: a file that would make the rule fail cannot live where the
+rule looks.

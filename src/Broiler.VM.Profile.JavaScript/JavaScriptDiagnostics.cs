@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           72
+// Exempt:           73
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9C4802
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EAD910
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -545,6 +545,18 @@ public enum JavaScriptDiagnosticCode
     /// is a name a resolver reads, and it grants nothing.
     /// </remarks>
     MalformedScriptReferrers = 1632,
+
+    /// <summary>
+    /// The source-text section disagrees with itself, with the function table or with the pool.
+    /// </summary>
+    /// <remarks>
+    /// <b>One code for every structural disagreement the bytes can show</b> (JSD-0037): a row for a
+    /// unit past the table, or for a unit not after the one before it; a text that is not a String
+    /// constant; and a span that is empty or runs past the end of its text. What it cannot say is
+    /// that the span is the one the function was defined from: it is text a program reads back, and
+    /// it grants nothing.
+    /// </remarks>
+    MalformedSourceText = 1633,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

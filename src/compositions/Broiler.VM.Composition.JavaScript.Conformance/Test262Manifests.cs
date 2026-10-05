@@ -112,14 +112,44 @@ internal sealed class Test262Manifest
         // and the profile installs it only where both are present. A run admitting no optional
         // surface at all keeps the plain descriptor, because the hosting door reads an empty list
         // as "every surface" and would widen what that run declined.
-        var descriptor = string.Equals(form, ValueStress, StringComparison.Ordinal)
-            ? JavaScriptProfile.DescriptorUnderHandleStress(
-                loadsHarness && surfaces.Length != 0 ? Test262Host.Instance : null, surfaces)
-            : loadsHarness && surfaces.Length != 0
-                ? JavaScriptProfile.DescriptorHostingRealms(Test262Host.Instance, surfaces)
-                : JavaScriptProfile.DescriptorAdmitting(surfaces);
+        //
+        // A RUN ADMITTING SURFACES SWEEPS ITS FINALIZATION REGISTRIES (phase F4, JSD-0029 D03-a), so
+        // a cleanup callback arrives at the drain this runner already invokes after the test. The
+        // runner never collects to make one arrive: no test's verdict may depend on when the
+        // collector ran, and the suite's `host-gc-required` tests stay skipped.
+        Catalog = CatalogWith(loadsHarness ? Test262Host.Instance : null, form, surfaces);
 
-        Catalog = VmCatalog.CreateBuilder()
+        // A `CanBlockIsFalse` TEST RUNS WHERE THE MAIN AGENT MAY NOT BLOCK (JSD-0042): the same
+        // composition, with the host surface that answers `[[CanBlock]]` false, as a browser's main
+        // thread does. The suite has two such files, and the runner skipped them before.
+        EventLoopCatalog = loadsHarness && surfaces.Length != 0
+            ? CatalogWith(Test262Host.EventLoop, form, surfaces)
+            : Catalog;
+    }
+
+    /// <summary>
+    /// The descriptor of a run admitting <paramref name="surfaces"/>: sweeping its finalization
+    /// registries, with <paramref name="host"/> as its host surface, and handed the
+    /// internationalization data, which <see cref="JsSurfaces.Intl"/> is built from (JSD-0043).
+    /// </summary>
+    internal static VmProfileDescriptor Descriptor(IJsHostSurface? host, string form, VmFeatureManifestId[] surfaces) =>
+        JavaScriptProfile.DescriptorComposing(new JsComposition
+        {
+            Surfaces = surfaces,
+            HostSurface = host,
+            HandleStress = string.Equals(form, ValueStress, StringComparison.Ordinal),
+            SweepsFinalization = true,
+            IntlData = Broiler.VM.Profile.JavaScript.Intl.JsCldrData.Instance,
+        });
+
+    /// <summary>The catalog of one composition of this run, with <paramref name="host"/> as its host surface.</summary>
+    private static VmCatalog CatalogWith(Test262Host? host, string form, VmFeatureManifestId[] surfaces)
+    {
+        var descriptor = surfaces.Length != 0
+            ? Descriptor(host, form, surfaces)
+            : JavaScriptProfile.DescriptorAdmitting(surfaces);
+
+        return VmCatalog.CreateBuilder()
             .Add(descriptor)
             .Build();
     }
@@ -159,6 +189,12 @@ internal sealed class Test262Manifest
 
     /// <summary>The catalog this run verifies and executes against.</summary>
     internal VmCatalog Catalog { get; }
+
+    /// <summary>
+    /// <see cref="Catalog"/> with a host surface whose main agent may not block, for the suite's
+    /// <c>CanBlockIsFalse</c> tests; the same catalog where this run loads no harness.
+    /// </summary>
+    internal VmCatalog EventLoopCatalog { get; }
 
     /// <summary>Whether this run is taken under the wide manifest.</summary>
     internal bool IsWide => Id == JavaScriptProfile.WideManifest;
@@ -361,6 +397,30 @@ internal sealed class Test262Manifest
 
                 return false;
             }
+        }
+
+        // DECLINING THE DYNAMIC SURFACE DECLINES THE SHADOWREALM ONE WITH IT (JSD-0040): the profile
+        // admits a ShadowRealm only beside `eval`, and a run that declined `eval` asked for neither.
+        if (declined.Contains(JsSurfaces.Dynamic, StringComparer.Ordinal) &&
+            !declined.Contains(JsSurfaces.ShadowRealm, StringComparer.Ordinal))
+        {
+            declined = [.. declined, JsSurfaces.ShadowRealm];
+        }
+
+        // AND DECLINING THE BINARY SURFACE DECLINES THE SHARED ONE (JSD-0041), whose buffers only the
+        // binary surface's views can read.
+        if (declined.Contains(JsSurfaces.Binary, StringComparer.Ordinal) &&
+            !declined.Contains(JsSurfaces.Shared, StringComparer.Ordinal))
+        {
+            declined = [.. declined, JsSurfaces.Shared];
+        }
+
+        // AND DECLINING INTL OR BIGINT DECLINES TEMPORAL (JSD-0054), whose time zones are Intl's data
+        // and whose epoch nanoseconds are BigInt values.
+        if ((declined.Contains(JsSurfaces.Intl, StringComparer.Ordinal) || declined.Contains(JsSurfaces.BigInt, StringComparer.Ordinal)) &&
+            !declined.Contains(JsSurfaces.Temporal, StringComparer.Ordinal))
+        {
+            declined = [.. declined, JsSurfaces.Temporal];
         }
 
         var admitted = ImmutableArray.CreateBuilder<string>();

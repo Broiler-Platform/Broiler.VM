@@ -10,8 +10,9 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>INTERPRETING.md makes <c>$262</c> the host's, and these are the three members of it this
-/// harness defines: <c>detachArrayBuffer</c>, <c>evalScript</c> and <c>IsHTMLDDA</c>.</b> The suite's <c>detachArrayBuffer.js</c> reaches it through
+/// <b>INTERPRETING.md makes <c>$262</c> the host's, and these are the four members of it this
+/// harness defines: <c>detachArrayBuffer</c>, <c>evalScript</c>, <c>IsHTMLDDA</c> and
+/// <c>agent</c>.</b> The suite's <c>detachArrayBuffer.js</c> reaches the first through
 /// <c>$DETACHBUFFER</c>, and before it existed every test including that file met the profile's
 /// refusing stub, a <c>TypeError</c> - several hundred variants over <c>ArrayBuffer</c>,
 /// <c>DataView</c> and the typed arrays scored as failures of the engine when what they measured was
@@ -35,13 +36,18 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// measure the annex's three changes, which only a host can switch on.
 /// </para>
 /// <para>
-/// <b>It replaces two members, adds one, and leaves the rest of the profile's <c>$262</c> as it
-/// was.</b> The
-/// realm already carries that object, and every function on it refuses with a <c>TypeError</c> naming
-/// what this profile does not do - <c>createRealm</c>, <c>gc</c>, the
-/// <c>agent</c> API - so a test that reaches one of those fails exactly as it did before this type
-/// existed. A member that answered plausibly without doing what the suite means would turn those
-/// failures into passes nobody earned.
+/// <b><c>agent</c> is the suite's agent API over real agents</b> (JSD-0042): each is a runtime of its
+/// own, on a thread of its own, built from the test's manifest, and a broadcast hands it the shared
+/// block itself. <see cref="Test262Agents"/> holds them for the test that started them and ends them
+/// with it.
+/// </para>
+/// <para>
+/// <b>It replaces three members, adds one, and leaves the rest of the profile's <c>$262</c> as it
+/// was.</b> The realm already carries that object: <c>global</c> and <c>createRealm</c> answer as
+/// the profile builds them (JSD-0039), and <c>gc</c> refuses with a <c>TypeError</c> naming what this
+/// profile does not do, so a test that reaches it fails exactly as it did before this type existed.
+/// A member that answered plausibly without doing what the suite means would turn those failures into
+/// passes nobody earned.
 /// </para>
 /// <para>
 /// <b>Ordinary guests never see it.</b> The members are installed only in realms of this harness's
@@ -51,27 +57,38 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// object there has an <c>[[IsHTMLDDA]]</c> slot.
 /// </para>
 /// <para>
-/// <b>It holds no state</b>, so one instance serves every runtime a process creates, in parallel if
-/// need be: what it installs lives in the realm it was handed and dies with it.
+/// <b>It holds no state but its <c>[[CanBlock]]</c> answer</b>, so one instance of each serves every
+/// runtime a process creates, in parallel if need be: what it installs lives in the realm it was
+/// handed and dies with it, and the agents a test starts are found through the test's own logical
+/// call, <see cref="Test262Agents.Current"/>.
 /// </para>
 /// </remarks>
-internal sealed class Test262Host : IJsHostSurface
+internal sealed class Test262Host : IJsHostSurface, IJsHostAgentPolicy
 {
-    /// <summary>The one instance a run's catalog is built with.</summary>
-    internal static Test262Host Instance { get; } = new();
+    /// <inheritdoc/>
+    /// <remarks>
+    /// <b>The runner's main agent may block</b>, as a shell's does, and runs the suite's
+    /// <c>CanBlockIsTrue</c> cases (JSD-0041) - except under <see cref="EventLoop"/>, whose main agent
+    /// may not, and which runs its <c>CanBlockIsFalse</c> ones (JSD-0042).
+    /// </remarks>
+    public bool CanBlock { get; }
 
-    private Test262Host()
-    {
-    }
+    /// <summary>The instance a run's catalog is built with: its main agent may block.</summary>
+    internal static Test262Host Instance { get; } = new(canBlock: true);
+
+    /// <summary>The instance a <c>CanBlockIsFalse</c> test's catalog is built with: its main agent may not block.</summary>
+    internal static Test262Host EventLoop { get; } = new(canBlock: false);
+
+    private Test262Host(bool canBlock) => CanBlock = canBlock;
 
     /// <inheritdoc/>
     /// <remarks>
-    /// The profile's realm already carries a <c>$262</c> whose every function refuses, so this replaces
-    /// two members of that object rather than the object: <c>global</c>, <c>agent</c>,
-    /// <c>createRealm</c> and <c>gc</c> keep answering the way the profile decided they should. The
-    /// replacements keep the refusing members' attributes - writable and configurable, not
-    /// enumerable - which are those of every built-in method, and <c>IsHTMLDDA</c> is added with the
-    /// same attributes.
+    /// The profile's realm already carries a <c>$262</c>, so this replaces members of that object
+    /// rather than the object: <c>global</c>, <c>createRealm</c> and <c>gc</c> keep answering the way
+    /// the profile decided they should, and <c>agent</c> is replaced only for a test the runner holds
+    /// agents for. The replacements keep the replaced members' attributes - writable and configurable,
+    /// not enumerable - which are those of every built-in method, and <c>IsHTMLDDA</c> is added with
+    /// the same attributes.
     /// </remarks>
     public void OnRealmCreated(JsHostRealm realm)
     {
@@ -94,6 +111,8 @@ internal sealed class Test262Host : IJsHostSurface
             "IsHTMLDDA",
             realm.NewHtmlDdaObject(),
             JsHostPropertyFlags.Writable | JsHostPropertyFlags.Configurable);
+
+        Test262Agents.Current.Value?.InstallMain(realm, harness);
     }
 
     /// <inheritdoc/>

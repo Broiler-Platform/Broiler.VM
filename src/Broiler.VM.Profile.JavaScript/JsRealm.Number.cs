@@ -76,7 +76,7 @@ internal sealed partial class JsRealm
         System.Globalization.CultureInfo.InvariantCulture;
 
     /// <summary>Builds <c>Number</c> and <c>Number.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=84A0EC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7D49EB
     // Broiler-Human:        PENDING
     private void SetupNumber()
     {
@@ -163,11 +163,17 @@ internal sealed partial class JsRealm
             return JsValue.String(text);
         });
 
-        // NO LOCALE. The manifest admits no Intl surface, so this is `toString` under another
-        // name - which is exactly what the specification permits an implementation without one
-        // to do, and is a declared limitation rather than a stub.
+        // WITHOUT INTL, NO LOCALE: `toString` under another name, which is what the specification
+        // permits an implementation without ECMA-402 to do. WITH IT, ECMA-402 s20.2.1: a number
+        // format from the locales and options, made by the realm's own %Intl.NumberFormat%.
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
-            JsValue.String(JsNumberFormat.ToJsString(NumberThisValue(engine, thisValue))));
+        {
+            var value = NumberThisValue(engine, thisValue);
+
+            return engine.Realm.NumberFormatConstructor is null
+                ? JsValue.String(JsNumberFormat.ToJsString(value))
+                : JsValue.String(ToLocaleNumberString(engine, JsDecimal.FromNumber(value), arguments));
+        });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>
             JsValue.Number(NumberThisValue(engine, thisValue)));

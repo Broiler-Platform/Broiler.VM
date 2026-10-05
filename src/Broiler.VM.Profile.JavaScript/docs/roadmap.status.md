@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-09-29 (JSP-8, JSP-10 and JSP-1 observations; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, phase F2's `v` flag, JSC-262, phase F4's finalization sweep, JSC-263, and phase F5's realms and ShadowRealm, JSC-264 and JSC-265, and phase F6's shared memory and second agent, JSC-266 to JSC-268; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -9,9 +9,10 @@ dated decision replaced something the roadmap used to say, the plan carries the 
 [the corrections and rejections](roadmap.corrections.md) carry what it replaced — **that file
 records no status and advances nothing here**.
 
-**At this snapshot, every row but JS-2 and JS-10 is `In progress`: JS-2 is blocked and JS-10 is
-`Not started`. JS-7 and JS-8 moved on 2026-09-05, JS-4, JS-5 and JS-6 on 2026-09-04, and
-JS-3b on 2026-09-03** — and this sentence named JS-7 and JS-8 as `Not started` for a day after the
+**At this snapshot, every row but JS-2 is `In progress`: JS-2 is blocked. JS-10 moved on
+2026-10-05, when phase F9's first slice retained its measurement lane's first bundle, and its
+second drafted the support table without issuing it; JS-7 and JS-8
+moved on 2026-09-05, JS-4, JS-5 and JS-6 on 2026-09-04, and JS-3b on 2026-09-03** — and this sentence named JS-7 and JS-8 as `Not started` for a day after the
 table stopped doing so, which is the reading a ledger's own summary is most likely to hold wrongly
 and the one nothing else contradicts. All of them moved without JS-2 moving: the slice front end and then
 the wide one were each written in this checkout rather than ingested. For the slice that is the
@@ -483,6 +484,419 @@ A run against Broiler.JS still reports findings outside the catalogue, not adjud
 unreviewed implementation and validation material, not accepted milestone evidence; JSP-9 has no
 owner and no milestone row advances.
 
+**JSP-4, JSP-5 and JSP-6 observation, 2026-10-03.** The clauses of the parity roadmap's JSP-4, JSP-5
+and JSP-6 gates that still did not hold have a change and a fixture each:
+- `apply` reads its list's length with `ToLength`; a `super[k]` read and then written converts `k`
+  once, through a new instruction; `delete` converts its base with `ToObject`
+  ([JSC-236](roadmap.corrections.md#jsc-236));
+- `for … in` asks for each name when it reaches it; a `String` object keeps its exotic keys in the
+  language's order; a keyed collection's constructor calls its own adder; a Symbol `Symbol.for` did
+  not make can be held weakly ([JSC-237](roadmap.corrections.md#jsc-237));
+- `Function.prototype[Symbol.hasInstance]` exists and cannot be changed; object spread and rest copy
+  Symbol keys; an anonymous function takes its name from a computed key and a class field
+  ([JSC-238](roadmap.corrections.md#jsc-238)).
+
+The rest of each gate already held. [Record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md)
+retains each change's control and the pinned test262 subtrees either side. This is unreviewed
+implementation and validation material, not accepted milestone evidence; the stages have no owner
+and no milestone row advances.
+
+**JSP-7 observation, 2026-10-03.** Every item of the parity roadmap's JSP-7 gate has a change and a
+fixture. The `Uint8Array` base64 and hex members and the reviver's source text are admitted; `Annex B`
+is admitted whole in the script goal, its members and its three syntax features with it; `cleanupSome`
+is removed; and `Error.prototype.stack` is declined by name in a new subsection of the roadmap's
+section 6, which states the `Annex B` rule and names every other surface of the edition the realm
+declines. A scan of the pinned edition found `Error.isError`, `WeakMap`'s `getOrInsert` pair and
+`RegExp.prototype.unicodeSets` missing too, and they are present
+([JSC-239](roadmap.corrections.md#jsc-239)). [Record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md)
+retains each change's control and the pinned test262 subtrees either side. This is unreviewed
+implementation and validation material, not accepted milestone evidence; JSP-7 has no owner and no
+milestone row advances.
+
+**JSP-10 observation, 2026-10-03.** The parity roadmap's JSP-10 clauses that were still open have a
+change and a fixture each. A call, a construction, a super call and a tagged template pass more than
+255 arguments written out. A function with more than 255 parameters, which the verifier refused as
+the host's own artifact, is refused at compile time naming the ceiling. The suspending constructors
+build from source wherever `Function` does. `read`'s and `Function`'s refusals say what is true of the
+realm, and the roadmap's section 13 states which host members are present and refusing, and why. The
+file-order clause already held ([JSC-240](roadmap.corrections.md#jsc-240)).
+[Record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md) retains each change's control. The
+allowance defaults stay a decision. This is unreviewed implementation and validation material, not
+accepted milestone evidence; JSP-10 has no owner and no milestone row advances.
+
+**JSD-0027 N2 and N3 observation, 2026-10-03.** The two ECMA-262 fallback defects JSD-0027 said
+were owed without `Intl` have a change each. `SpecialCasing.txt` is archived beside the pinned UCD
+files, `toUpperCase` and `toLowerCase` are the Unicode Default Case Conversion over generated tables
+with `Final_Sigma`, the non-`u` RegExp Canonicalize reads the full upper-case mapping, and
+`localeCompare` answers 0 for canonically equivalent strings. Over the pinned suite's `String`,
+`RegExp`, regular-expression-literal, Annex B `RegExp` and `intl402/String` subtrees, 18 variants
+moved from failing to passing and none moved back; every case-mapping and `localeCompare` case that
+still fails there is an `intl402` one ([JSC-242](roadmap.corrections.md#jsc-242)). This is unreviewed
+implementation and validation material, not accepted milestone evidence; no milestone row advances.
+
+**RegExp modifiers observation, 2026-10-03.** The pinned edition's modifier groups,
+`(?ims-ims:...)`, which the matcher refused as an invalid group without the profile declining them,
+set the `i`, `m` and `s` flags for their body, with the edition's early errors. Over the pinned
+suite's `RegExp`, regular-expression-literal and Annex B `RegExp` subtrees, 140 variants moved from
+failing to passing and none moved back ([JSC-244](roadmap.corrections.md#jsc-244)). This is
+unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
+advances.
+
+**Phase F1 observation, 2026-10-03.** The first three batches of roadmap
+[section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F1 have a change each.
+They cover the library, the parser and four semantics, and over the whole pinned suite 182 variants
+moved from failing to passing ([JSC-252](roadmap.corrections.md#jsc-252) to
+[JSC-254](roadmap.corrections.md#jsc-254)). Two moved back and were repaired before the entries
+were written. What F1 still owes is named in those entries' last sections and in section 26. This
+is unreviewed implementation and validation material, not accepted milestone evidence; no milestone
+row advances. *(Amended 2026-10-04: a fourth change,
+[JSC-255](roadmap.corrections.md#jsc-255), honours JSON modules and repairs three namings and
+renderings; 22 more variants moved from failing to passing and none moved back. A fifth,
+[JSC-256](roadmap.corrections.md#jsc-256), adds proper tail calls to the bytecode form and repairs
+a staging batch; 54 more moved and none moved back. A sixth,
+[JSC-257](roadmap.corrections.md#jsc-257), adds the legacy `caller` and `arguments` and ends the
+runner's hang; 35 more moved, none moved back, and a whole run now finishes on its own. A
+seventh, [JSC-258](roadmap.corrections.md#jsc-258), repairs six evaluation-order and completion
+gaps; 22 more moved. The F1 failures that remain each need an instruction the format lacks, are a
+declared limit, or belong to F3 and later, and that entry names them.)*
+
+**Phase F3 observation, 2026-10-04.** The artifact carries each function's source text in an
+optional section under the proposed [JSD-0037](decisions/0037-the-source-text-section.md), and
+`Function.prototype.toString` answers it; a built-in, a bound function and a host function keep the
+NativeFunction form ([JSC-259](roadmap.corrections.md#jsc-259)). Every variant of
+`test/built-ins/Function/prototype/toString` passes, and over the whole pinned suite 18 variants
+moved from failing to passing and none moved back. `Error.prototype.stack`, F3's other delivery,
+is still absent. This is unreviewed implementation and validation material, not accepted milestone
+evidence; no milestone row advances. *(Amended 2026-10-04: a WeakMap's values now live on their
+keys, so a collection over a 99,999-link chain no longer stalls the process; the
+`host-gc-required` tests are still skipped ([JSC-260](roadmap.corrections.md#jsc-260)).)*
+*(Amended 2026-10-04: F3's other delivery is in the tree. Every error has an own `stack` accessor
+in V8's shape under the proposed [JSD-0038](decisions/0038-the-error-stack.md), captured from the
+running frames and placed by the position table; `runs/an-error-has-no-stack.js` is replaced and
+roadmap section 6's two F3 rows have left the table ([JSC-261](roadmap.corrections.md#jsc-261)).
+Each clause of F3's exit gate is observed to hold; both records are unsigned, so no milestone row
+advances.)*
+
+**Phase F2 observation, 2026-10-04.** The RegExp `v` flag runs: set operations, nested classes,
+string literals and the seven properties of strings, generated from two emoji files archived under
+rule N22, with the edition's case folding under `vi`. Its three exit-gate subtrees pass all 308 of
+their variants, the early error naming the flag is gone, and over the RegExp-reading subtrees 282
+variants moved from failing to passing and none moved back
+([JSC-262](roadmap.corrections.md#jsc-262)). The identity `broiler.javascript.regexp` is not minted.
+This is unreviewed implementation and validation material, not accepted milestone evidence; no
+milestone row advances.
+
+**Phase F4 observation, 2026-10-04.** A composition may turn on JSD-0029's host-drained sweep, and the
+CLI and the conformance runner do: a `FinalizationRegistry`'s callbacks arrive as ordinary jobs at a
+host's `#drain-jobs` or `#step-jobs`, never from a finalizer and never inside a script. Seven checks
+hold the model through its eligibility seam, a fixture shows callbacks arriving at the CLI's drain, and
+rule N25 passes ([JSC-263](roadmap.corrections.md#jsc-263)). The rewritten `Security=High` falsifier
+line awaits the owner's review. This is unreviewed implementation and validation material, not
+accepted milestone evidence; no milestone row advances.
+
+**Phase F5 observation, 2026-10-04.** An engine holds several realms. The well-known Symbols and the
+`Symbol.for` registry are the engine's, every function carries its realm and runs in it, and
+`$262.createRealm` builds a second realm on the same engine, charged to the same allowance, telling
+a composition's host surface through a view of its own; rule N26 keeps a captured realm out of the
+tree. The suite's `cross-realm` cases score on what they measure, and every one outside phases F6 and
+F7 passes ([JSC-264](roadmap.corrections.md#jsc-264), proposed
+[JSD-0039](decisions/0039-a-second-realm-on-one-engine.md)). `ShadowRealm` followed behind
+`broiler.javascript.shadowrealm`, admitted only with the dynamic surface: all 124 scored variants of
+`test/built-ins/ShadowRealm` pass, and JSD-0030's policy-isolation cases are host-surface checks
+([JSC-265](roadmap.corrections.md#jsc-265), proposed
+[JSD-0040](decisions/0040-admitting-shadowrealm.md)). This is unreviewed implementation and
+validation material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F6 observation, 2026-10-04.** `SharedArrayBuffer` and `Atomics` are built for one agent behind
+`broiler.javascript.shared`, admitted only with the binary surface, and left the ledger's
+`absent-globals` block in the same change. `test/built-ins/SharedArrayBuffer` passes all 208 of its
+variants, and `ArrayBuffer`, `DataView`, `TypedArray` and `TypedArrayConstructors` have no failing
+variant; every one of the 224 failing variants under `test/built-ins/Atomics` starts a second agent,
+which is the phase's next slice ([JSC-266](roadmap.corrections.md#jsc-266), proposed
+[JSD-0041](decisions/0041-shared-memory-in-one-agent.md)). This is unreviewed implementation and
+validation material, not accepted milestone evidence; no milestone row advances.
+*(Amended 2026-10-04: the next slice is in the tree. A second agent is a runtime its host starts,
+holding a fixed-length block through `JsHostRealm.ShareBlock` and `AdoptBlock`; the conformance
+runner's `$262.agent` starts real agents and scores the `CanBlockIsFalse` files, and
+`test/built-ins/Atomics` passes all 752 of its scored variants
+([JSC-267](roadmap.corrections.md#jsc-267), proposed [JSD-0042](decisions/0042-a-second-agent.md)).
+An array-length truncation that walked every index between the two lengths now visits only the
+indices the array holds ([JSC-268](roadmap.corrections.md#jsc-268)). No milestone row advances.)*
+
+**Phase F7 observation, 2026-10-04.** `Intl` is built where a composition admits
+`broiler.javascript.intl` and hands over its data, and left the ledger's `absent-globals` block in
+the same change. The CLDR 48.2.0 tables are generated into an assembly of their own,
+`Broiler.VM.Profile.JavaScript.Intl`, which the profile reads through `IJsIntlData` and does not
+reference. Rule N28 holds the 325,646 bytes of table data to the generator under a provisional
+512 KiB bound. Only the slice-compiler and conformance roots reference it. `Intl.Collator` orders
+both UCA CollationTest files and the retained German and English orderings as ICU 77.1 does, and
+`localeCompare` routes through it. Under `test/intl402`, 312 of 4,418 variants pass, against 50,
+with none moving back; `Collator` passes 124 of its 130. Over the whole pinned suite 85,242 of 95,058
+variants pass. Six moved to failing: three `test/staging/sm` files whose `Intl` half needs a constructor
+of a later slice and which passed only while `Intl` was absent
+([JSC-269](roadmap.corrections.md#jsc-269), proposed
+[JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
+validation material, not accepted milestone evidence; no milestone row advances.
+
+**Conformance-host observation, a timer that waits, 2026-10-05.** The one variant whose verdict
+depended on timing, `Atomics/waitAsync/no-spurious-wakeup-on-add.js`, depended on it because the
+suite's `setTimeout` stand-in spins on the clock and every spin allocated. The conformance host now
+supplies a `setTimeout` that waits without spinning, a harness check holds its cost under a small
+live-byte ceiling that the spin exceeds, and a whole run with it differs from bundle JS-10-003's in that
+variant alone, now passed, holding the floor ([JSC-288](roadmap.corrections.md#jsc-288)). This is
+unreviewed implementation and validation material, not accepted milestone evidence.
+
+**Phase F9 observation, slices R3 and R4, packages, the release candidate and the gate,
+2026-10-05.** A pristine consumer of the JavaScript packages restores and runs from a local feed with
+upstream unreachable, rolls back to `0.1.0-preview.5` as published and forward again, and runs as
+Native AOT - bundle [JS-10-002](evidence/js-10-002/README.md) - and the family's four packages are
+frozen in a [baseline](packages.md) rule N37 holds in both directions. Four whole release-candidate
+runs from one clean commit - bundle [JS-10-003](evidence/js-10-003/README.md) - retain each
+manifest's and form's totals, failure manifest and effective limit vector; the bytecode floor holds,
+and the native floor, set in another calling convention, was not compared. The release gate reads
+gates 1 to 13 and **refuses**, naming each blocker in its [register](release-gate.md), which rule N38
+holds to it; it counts a human decision only from a unit's own line. Proposed
+[JSD-0061](decisions/0061-packages-consumers-and-the-release-candidate.md) and
+[JSD-0062](decisions/0062-the-release-gate-that-refuses.md);
+[JSC-287](roadmap.corrections.md#jsc-287). This is unreviewed implementation and validation
+material, not accepted milestone evidence.
+
+**Phase F9 observation, slice R2, the support table drafted, 2026-10-05.** The profile's support
+table, [`docs/support.md`](support.md), is written in full and **not issued**, under proposed
+[JSD-0060](decisions/0060-the-support-table-drafted.md): the identity cells release gate 1 names, the
+varying and fixed surfaces, the manifests, what a program meets where a capability is absent with the
+`WebAssembly` host-object surface first, the amendment register's state, the extraction gate's state,
+the declared defaults, the RIDs - none claimed - the packages, the operational holders - six vacant -
+and the suppressions, none. Rules N34, N35 and N36 hold it to the checkout with six witnesses. Drafting
+found three statements stale and amended them: roadmap section 9's `Intl` and `Temporal` rows, this
+ledger's RID count, and its "no measurement exists" ([JSC-286](roadmap.corrections.md#jsc-286)). This
+is unreviewed implementation and validation material, not accepted milestone evidence.
+
+**Phase F9 observation, slice R1, the measurement lane, 2026-10-05.** Phase F9 is planned under
+proposed [JSD-0059](decisions/0059-the-release-under-the-mvp-programme.md), which separates what its
+slices build from what the MVP programme leaves to the owner and a named human. Its first slice stands
+up the measurement lane JS-10 owns: measurement children in the conformance root, a collection script
+that writes an immutable manifest first and checks each child's effective configuration, and bundle
+[JS-10-001](evidence/js-10-001/README.md), whose four figures - verification at 40.2643 and 49.1986 ns
+per byte, a cold start at 276,954,782.8 and 4,485,046.9 ns, on the JIT and Native AOT arms - each
+resolve above their A/A lanes. The profile's [baseline register](baselines.md) quotes them and rule
+N33 holds it to the bundle in both directions. JS-10 is `In progress`
+([JSC-285](roadmap.corrections.md#jsc-285)). This is unreviewed implementation and validation
+material, not accepted milestone evidence.
+
+**Phase F8 observation, slice T5, the zones' names, 2026-10-05.** `Intl.DateTimeFormat` names an
+IANA zone as ICU does - its own or its metazone's specific and generic names, a standard name where
+the zone keeps no daylight time, a partial location or a location name otherwise - under proposed
+[JSD-0058](decisions/0058-time-zone-names.md), over CLDR 48's `metaZones.json` and `primaryZones.json`,
+archived under rule N27, and the names slice I3 archived. The time zone tables keep the rearguard
+daylight flag. The repository owner raised the data budget to 832 KiB; the data is 841,145 bytes. A
+retained dataset of 2,713 lines agrees with the reference polyfill on 2,438, the 275 others named:
+17 of Node's spaces and 258 of CLDR 48's data, which a build with CLDR 47's files answered as the
+polyfill does. `test/intl402/Temporal` passes all 3,982 scored variants and `test/built-ins/Temporal`
+all 9,176, so F8's exit gate is met; no variant scored before moves back. Over the whole pinned suite
+100,368 of 101,723 variants pass ([JSC-284](roadmap.corrections.md#jsc-284)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F8 observation, slice T4, the formatter's calendars, 2026-10-05.** `Intl.DateTimeFormat`
+resolves and writes every calendar of the Intl era and month code proposal's Table 1, and
+`Intl.supportedValuesOf("calendar")` lists the sixteen, under proposed
+[JSD-0057](decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md). Each date's fields are the
+calendar's Temporal fields; its names and patterns are CLDR 48's, from eleven `cldr-cal-*-full`
+packages and `ca-generic.json` archived under rule N27 and generated as layers over each language's
+Gregorian data; the data is 761,598 bytes. A retained dataset of 5,951 lines agrees with the
+reference polyfill on 4,556 lines, the 1,395 others named, 1,386 of them CLDR 48's era names against
+the CLDR 47 the polyfill's ICU reads. `test/intl402/DateTimeFormat` passes 478 of 488,
+`test/intl402/Temporal` 3,980 of 3,982 and `test/intl402/Intl` all 132; no variant scored before
+moves back. Over the whole pinned suite 100,364 of 101,723 variants pass, 40 more
+([JSC-283](roadmap.corrections.md#jsc-283)). F8's exit gate still waits on a zone's long
+name, which needs CLDR's metazones. This is unreviewed implementation and validation material, not
+accepted milestone evidence; no milestone row advances.
+
+**Phase F8 observation, slice T3, the CLDR calendars, 2026-10-05.** `Temporal` reckons in every
+calendar of the Intl era and month code proposal's Table 1 - eras, month codes, leap months, reference
+years, addition and difference as its section 4.1 states them - under proposed
+[JSD-0056](decisions/0056-temporal-in-the-cldr-calendars.md). The Chinese, Korean and Umm al-Qura
+years and the Persian corrections are ICU4X's, from two crates archived under the new rule N31 and
+generated into the Intl data assembly under the new rule N32; the data is 679,058 bytes. A retained
+dataset of 3,999 lines agrees with the reference polyfill on 3,929 lines, the 70 others named where
+ICU4C and ICU4X disagree, and with ICU4X on all 2,055 of its conversions. With the `Intl.Era-monthcode`
+flag scored, `test/built-ins/Temporal` passes all 9,176 scored variants and `test/intl402/Temporal`
+3,962 of 3,982; no variant scored before moves back. Over the whole pinned suite 100,324 of 101,723
+variants pass, 3,386 more, and the 12 newly scored that fail are the formatter's calendars
+([JSC-282](roadmap.corrections.md#jsc-282)).
+`Intl.DateTimeFormat` does not yet write these calendars, a divergence the record declares. This is
+unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
+advances.
+
+**Phase F8 observation, slice T2, Intl over Temporal, 2026-10-05.** `Intl.DateTimeFormat` formats
+Temporal objects as the proposal amends ECMA-402, each type in its own format and a plain value at
+UTC, and every Temporal type's `toLocaleString` is ECMA-402's, under proposed
+[JSD-0055](decisions/0055-intl-over-temporal-objects.md). The `iso8601` calendar is resolved and
+formatted from CLDR's `common/main/root.xml`, archived under rule N27; the data is 677,100 bytes. A
+retained dataset of 1,233 formattings agrees with the reference polyfill on ICU 77.1 on 1,150 lines,
+the 83 others named. `test/intl402/Temporal` passes 598 of 930 variants, and 244 variants across
+`test/intl402`, `test/built-ins/Date` and `test/built-ins/Temporal` move to passing with none moving
+back. Over the whole pinned suite 96,938 of 100,180 variants pass, and every other variant keeps its
+verdict ([JSC-281](roadmap.corrections.md#jsc-281)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F8 observation, slice T1, `Temporal`, 2026-10-05.** `Temporal` is published under proposed
+[JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md): its eight types,
+`Temporal.Now` and `Date.prototype.toTemporalInstant`, in the ISO 8601 and Gregorian calendars, over
+the archived time zones. The identity `broiler.javascript.temporal` is minted, admitted only with
+Intl and BigInt, and the suite's `Temporal` flag is scored. The name left the `absent-globals` block,
+which is now empty. A retained dataset of 1,629 operations agrees with the proposal's reference
+polyfill on every line. `test/built-ins/Temporal` passes all 9,156 scored variants.
+`test/intl402/Temporal` passes 464 of 930: the others need Intl over Temporal objects (T2) or the
+calendars beyond ISO and Gregorian (T3), as do the 108 failing `Intl.DateTimeFormat` variants that
+claim the flag elsewhere. Over the whole pinned suite 96,694 of 100,180 variants pass, and every
+variant scored before keeps its verdict ([JSC-280](roadmap.corrections.md#jsc-280)). This is unreviewed
+implementation and validation material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F8 observation, the time zone data, 2026-10-05.** The repository owner chose to start
+phase F8 by archiving and pinning the IANA Time Zone Database, which answers JSD-0027's decision (d).
+tzdb 2026e is archived under the new rule N29. Its zones are compiled as `zic` compiles them, for
+offsets only, into tables the new rule N30 holds, in the Intl data assembly. A prototype of the
+compiler gave `zic`'s offsets for every identifier from 1800 to 2500. The data is 670,742 bytes,
+115,690 under the budget. `Intl.DateTimeFormat` now accepts every IANA name and resolves it to CLDR's
+IANA primary identifier. `supportedValuesOf` lists the 445 primary identifiers, and `getTimeZones`
+answers `zone.tab`'s zones. A retained dataset of all 597 names at eight instants agrees with ICU 77.1
+on 559 of 610 lines, the 51 others named. test262 scores as before, every variant of the whole pinned
+suite with the same verdict, since the cases that format IANA zones also take Temporal objects. Temporal's admission is drawn at proposal revision `e8cc03fc`, and
+the global is not built ([JSC-279](roadmap.corrections.md#jsc-279), proposed
+[JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md)). This is unreviewed
+implementation and validation material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I4's `Intl.DisplayNames`, 2026-10-05.** The repository owner set the
+Intl data budget at 768 KiB, JSD-0027's decision (c), and rule N28 holds it in place of the
+provisional bound. `Intl.DisplayNames` is built as the current ECMA-402 draft states it, in all six
+types, over CLDR's locale display names from a fifth CLDR package the archive gained under N27. A
+language is composed as ICU composes it. The retained German and English display names agree with
+ICU 77.1 on 759 of 823 lines; the 64 others are named. The data is 572,024 bytes, 214,408 under the
+budget. `test/intl402/DisplayNames` passes all 114 scored variants and `test/intl402/Intl` all 130.
+Over the whole pinned suite 87,022 of 95,058 variants pass, 115 more, and none failed newly. Every
+constructor of slice I4 is built, and phase F7's exit gate is met
+([JSC-278](roadmap.corrections.md#jsc-278), proposed
+[JSD-0052](decisions/0052-intl-displaynames.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I4's `Intl.DurationFormat`, 2026-10-05.** `Intl.DurationFormat` is
+built as the current ECMA-402 draft states it, in every style and per-unit option. It writes over the
+profile's own number and list formats, its fractions exact. A unit lookup of the number format is
+corrected to fall back within a width as ICU does. The retained German and English durations agree
+with ICU 77.1's flagged implementation on 362 of 553 lines. The 191 others are named: where Node's
+earlier stage departs from the draft, where CLDR 48 changed German patterns, and `arab`'s symbols.
+`test/intl402/DurationFormat` passes 208 of 210 scored variants, and the failing ones need Serbian.
+Over the whole pinned suite 86,907 of 95,058 variants pass, 206 more, and none failed newly
+([JSC-277](roadmap.corrections.md#jsc-277), proposed
+[JSD-0051](decisions/0051-intl-durationformat.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I4's `Intl.Segmenter`, 2026-10-04.** `Intl.Segmenter` is built as the
+current ECMA-402 draft states it, by grapheme, word and sentence. It uses UAX #29's default rules over
+break tables generated into the Intl data assembly from six UCD files the archive gained under rule
+N22. Every line of the three pinned UAX #29 conformance files passes. The retained segments agree with
+ICU 77.1 but for 2 lines, where ICU's dictionary joins Japanese words. `test/intl402/Segmenter`
+passes 154 of 158 variants, and the failing ones need Serbian. Over the whole pinned suite 86,701 of
+95,058 variants pass, 151 more, and none failed newly. The generated data is 503,669 bytes,
+20,619 under the provisional bound ([JSC-276](roadmap.corrections.md#jsc-276), proposed
+[JSD-0050](decisions/0050-intl-segmenter.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I4's `Intl.RelativeTimeFormat`, 2026-10-04.** `Intl.RelativeTimeFormat`
+is built as the current ECMA-402 draft states it, in every style and numeric option. It writes its
+numbers with its own number format and chooses its patterns with its own plural rules, over the CLDR
+relative time data slice I3 archived. The retained German and English relative times agree with ICU
+77.1 on every line but 96, each named with the clause ICU's answer departs from.
+`test/intl402/RelativeTimeFormat` passes 148 of 160 variants, and the failing ones need Polish. Over
+the whole pinned suite 86,550 of 95,058 variants pass, 154 more, among them the last two
+`test/staging/sm` files JSC-269 records, and none failed newly. The generated data is 483,743 bytes,
+40,545 under the provisional bound
+([JSC-275](roadmap.corrections.md#jsc-275), proposed
+[JSD-0049](decisions/0049-intl-relativetimeformat.md)). This is unreviewed implementation and
+validation material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I4's `Intl.ListFormat`, 2026-10-04.** `Intl.ListFormat` is built as
+the current ECMA-402 draft states it, in every type and style, over CLDR list patterns from a package
+the archive gained under rule N27. The retained German and English lists agree with ICU 77.1 on every
+string. 36 parts lines differ, where ICU leaves out an empty element that the draft keeps.
+`test/intl402/ListFormat` passes 154 of 162 variants, and the failing ones need Spanish. Over the
+whole pinned suite 86,397 of 95,058 variants pass, 158 more, and none failed newly
+([JSC-274](roadmap.corrections.md#jsc-274), proposed
+[JSD-0048](decisions/0048-intl-listformat.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I4's `Intl.PluralRules`, 2026-10-04.** `Intl.PluralRules` is built as
+the current ECMA-402 draft states it, cardinal and ordinal, with every digit option and notation. It
+rounds as the number format rounds and selects by CLDR's rules, the ordinal ones gained under rule
+N27. The retained German and English plural categories agree with ICU 77.1 on every line but 123,
+each named with the clause ICU's answer departs from. `test/intl402/PluralRules` passes 78 of 82
+scored variants, and the failing ones need locales the data lacks. Over the whole pinned suite
+86,239 of 95,058 variants pass, 74 more. None failed newly, and 9 `Atomics.waitAsync` variants ran out
+of live bytes on the machine the run moved to, as the previous binary does there
+([JSC-273](roadmap.corrections.md#jsc-273), proposed
+[JSD-0047](decisions/0047-intl-pluralrules.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I4's `Intl.Locale`, 2026-10-04.** `Intl.Locale` is built as the
+current ECMA-402 draft states it: any well-formed tag, every option, the twelve accessors,
+`maximize` and `minimize` by UTS #35, and the seven information methods over CLDR week, script and
+hour cycle data the archive gained under rule N27. The locale core's likely subtags and attribute
+order are corrected to UTS #35. The retained Locale dataset agrees with ICU 77.1 on every line but
+150, each named with its reason. `test/intl402/Locale` passes all 218 scored variants, and all of
+`test/intl402` passes 1,242. Over the whole pinned suite 86,174 of 95,058 variants pass, 228 more,
+and none moved back ([JSC-272](roadmap.corrections.md#jsc-272), proposed
+[JSD-0046](decisions/0046-intl-locale.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I3, 2026-10-04.** `Intl.DateTimeFormat` is built for the Gregorian
+calendar with every component, both styles, the four hour cycles and ranges, its patterns chosen by
+a port of ICU's pattern generator and interval formats over CLDR calendar data the archive gained
+under rule N27. The `Date.prototype.toLocale*` methods go through it, and `Intl.supportedValuesOf`
+answers its six keys. The time zones are UTC, offset strings and IANA's `Etc/GMT` offsets; no other
+name is admitted. The retained German and English dates agree with ICU 77.1 on every line but 352,
+each named with its reason. `test/intl402/DateTimeFormat` passes 326 of 350 scored variants, and
+the failing ones need another calendar, the `ja` locale or the `arab` decimal separator. Over the
+whole pinned suite 85,946 of 95,058 variants pass, 410 more, and none moved back
+([JSC-271](roadmap.corrections.md#jsc-271), proposed
+[JSD-0045](decisions/0045-intl-datetimeformat.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Phase F7 observation, slice I2, 2026-10-04.** `Intl.NumberFormat` is built with every style,
+notation and option of the current ECMA-402 draft, over CLDR number, currency, unit and plural data
+the archive gained under rule N27. `Number`, `BigInt`, `Array` and `TypedArray` `toLocaleString` go
+through it. Values are exact decimals. The retained German and English numbers agree with ICU 77.1 on
+every line but 24, each named with the clause ICU's answer departs from. `test/intl402/NumberFormat`
+passes 280 of 324 scored variants, and the failing ones expect `ja-JP`, `ko-KR`, `zh-TW`, `en-IN` or
+`DateTimeFormat`. Over the whole pinned suite 85,538 of 95,058 variants pass, 296 more, and none moved
+back ([JSC-270](roadmap.corrections.md#jsc-270), proposed
+[JSD-0044](decisions/0044-intl-numberformat.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
+change each:
+- the tokenizer reads a `/` by what its bracket closed;
+- a `for … in` lexical binding is fresh each turn, with its head in the dead zone;
+- a key deleted and defined again goes last;
+- a property key may convert to a Symbol;
+- `bind`'s `length`, the immutable `Object.prototype`, the `__proto__` setter and the native
+  rendering follow the edition;
+- a labelled function or an async function is refused as a nested statement.
+
+Over the whole pinned suite, against the whole run that held the floor, 353 variants moved from
+failing to passing and none moved back; 208 of them are the `with` and RegExp modifier changes that
+run predates ([JSC-245](roadmap.corrections.md#jsc-245) to
+[JSC-250](roadmap.corrections.md#jsc-250)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**JSP-2 observation, 2026-10-03.** The parity roadmap's JSP-2 clauses that were still open have a
+change each. The source corpus retains the slice surface's refusal of a BigInt literal, an acceptance
+row asks the type half's whole list, and `--check` under both narrow manifests refuses the literal by
+name ([JSC-241](roadmap.corrections.md#jsc-241)).
+[Record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md) retains a control for each half. This
+is unreviewed implementation and validation material, not accepted milestone evidence; JSP-2 has no
+owner and no milestone row advances.
+
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:
 
@@ -581,7 +995,7 @@ evidence claim — it changes what a reader is told is schedulable today. The sp
 | [PARTIAL] | **JS-7 — suspension** | **In progress** | [Bundle JSW-10-001](evidence/jsw-10-001/README.md), which demonstrates **some** of this gate and names every unmet clause in its own exclusions. **Suspension exists and is exercised by a third-party corpus rather than only by fixtures written here.** A generator, an async function, an async generator and `for await` are all admitted, the frame a suspension saves itself into is the executor's own, and the three drivers are told apart by `JsFrame.Suspension` — written by the instruction that left the dispatch loop, because an async generator's body is the first that can suspend two ways into one frame and the two mean opposite things to the driver receiving the value. The whole-suite run in that bundle scores every subtree the suspension families reach with an **empty `unsupported` column** — a statement about the run of 2026-09-05 that is still exactly true of it, and one a reader must not carry forward to the tree: **from 2026-09-08 the wide surface refuses a BigInt literal by name, so a wide run over the whole suite does name an unsupported family** *(corrected 2026-09-08; [JSC-207](roadmap.corrections.md#jsc-207))*, and the whole-suite run taken 2026-09-08 on `win-x64` from a working tree answers the shape of that question without moving this row: its `unsupported` column is **1,990 variants and every one is the BigInt literal**, so a subtree the suspension families reach appears in that column only where such a literal sits inside it, and **no construct this milestone owns is unsupported in it**. That run is not a bundle, this column does not cite it, and the figures here remain JSW-10-001's. `EnterBody` makes a generator bind its non-simple parameter list at the CALL rather than at the first `next` *([JSC-159](roadmap.corrections.md#jsc-159))*. | **The fifth step kind is produced from 2026-09-06, and most of this gate is still open.** A reserved entry point steps the job queue one turn at a time and answers `Suspended` with a continuation while anything is left; `Resume` and `Unwind` are implemented, the second dropping the queue without calling any of it. [Bundle JS-7-001](evidence/js-7-001/README.md) retains cases for: two pauses each resumed with every job running once in order, a second resume refused as `ResumeTokenConsumed`, a parked operation disposed unresumed with its queue dropped, the live-suspension bound answering `SuspendedOperationLimitReached`, and a host asking to pause told `ExternalSuspensionNotDeclared`. **That last one is a declaration made and withdrawn in the same change**: at core contract version 1 an executor cannot see that a host has asked it to pause, so declaring the row would be a promise kept by luck, and what this profile makes is a **guest** suspension *([JSC-194](roadmap.corrections.md#jsc-194))*. **Still open**: asynchronous instantiation is not declared and no instantiation parks, so the top-level-await clause is untouched; the residency bound has no case; nothing reads the budget snapshot across a pause; and the awaitable and timer absence scans are unwritten. No reviewer decision exists and the release gate refuses; one machine and one runtime identifier scored the suite; and the asynchronous module graph has no evaluation-order model — `AsyncModuleExecutionFulfilled` and `[[AsyncEvaluationOrder]]` are not implemented, which four variants of `test/language/module-code` ask for and which [JSC-166](roadmap.corrections.md#jsc-166) records as belonging to this family rather than to the module goal. |
 | [PARTIAL] | **JS-8 — guest-initiated loads and the three compositions** | **In progress** | [Bundle JSW-10-001](evidence/jsw-10-001/README.md) — the same bundle, demonstrating **some** of this gate and naming every unmet clause in its own exclusions. **All four load shapes exist and each is refused where roadmap [section 11](roadmap.md#11-guest-initiated-loads-eval-the-function-constructor-dynamic-import-modules) says it should be**: `eval` and the `Function` constructor under `broiler.javascript.dynamic`, the module goal under `broiler.javascript.modules`, and a dynamic `import()` which is answered two ways — from the artifact's own request table when the specifier names a module the referrer already requested, so it is the same instance a static import got, and through the mediator otherwise *([JSC-161](roadmap.corrections.md#jsc-161))*. **The refusal for a declining composition happens at VERIFICATION with an invalid-artifact reason**, which is the clause bundle JS-4-001 recorded as unmet for `eval` and which section 3 of the new bundle demonstrates over three surfaces and three subtrees. | **Open, for what the bundle's exclusions name.** No reviewer decision, one machine, one runtime identifier. **A direct `eval` inside a function stays refused by name** — this profile resolves every binding at lowering, so evaluated source cannot see the calling frame — which is a published exclusion rather than a gap and is the largest cluster of the failing column that is not a defect. And a provider that answers two different compilations under one module key has answered two different modules: [JSC-161](roadmap.corrections.md#jsc-161) states that obligation rather than enforcing it, because enforcing it means comparing two compilations of a module this profile is not allowed to compile. |
 | [PARTIAL] | **JS-9 — adversarial input, agents, soak** | **In progress** | [Bundle JS-9-001](evidence/js-9/README.md): a **seeded mutation fuzz target over two of roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s four surfaces** — the verifier, and the executor over verified-but-adversarial artifacts — **which is not the guided target the section asks for**: it draws every mutant from the fixed retained corpus and takes no feedback from what a mutant reached, and this row and the bundle's own header called it coverage-guided until 2026-09-01, when both were corrected and no retained log was edited ([JSC-38](roadmap.corrections.md#jsc-38)). The target in the checkout takes feedback now and the retained sessions predate it, which the closing column states. Four retained sessions of 25,000 iterations each, seeded from the 60-entry manifest, with **no counterexample**: about four thousand mutants verified and were instantiated and invoked, and every fault the executor produced carried this profile's own typed payload. A session is a total function of its seed and its seed corpus — no wall clock, no thread count — and **a session that answers the same way every time, or that never reaches the executor, exits non-zero** rather than reporting clean iterations it did not earn. One fuzz control: the verifier's constant-index check removed, found at a named iteration, reverted. **[Bundle JS-9-002](evidence/js-9-002/README.md) adds the two host-level exercises**: two runtimes under one aggregate budget spend one total — 28 invocations completed and 100 refused, the parent spending exactly its allowance, and **which sibling was refused is deliberately not asserted** because the order is a race; disposing a parent with a live child is refused and accepted after; a sealed parent admits no further runtime; and a soak of **2,000 create-run-dispose cycles** reaches a heap plateau **under JIT and trimming and NOT under Native AOT**, where the same check on the same code grows by a factor of 2.30 against a band of 2.0 and the run exits 1. **Both bundles' READMEs summarised that run as “6 runs, all exit 0”, which their own `publish-and-run.log` contradicts**; each now carries a dated correction and the logs are unedited. **[Bundle JS-9-003](evidence/js-9-003/README.md)** adds the last clause of the gate that needs nothing unbuilt: a **mutated corpus entry** — one byte of a control entry and one of a malformed entry — is detected by the replay, which reports the changed triple *and* the hash mismatch, and is restored byte for byte. Every other control in this component injects into source; that one injects into the retained bytes, which is the direction that would otherwise be taken on trust. | **Both of the two unfuzzed surfaces are fuzzed from 2026-09-06, and the sentence that covered them was wrong about both.** It said they were unfuzzed BECAUSE ABSENT. The front end stopped being absent the day JS-3b wrote it ([JSC-47](roadmap.corrections.md#jsc-47)), and **the regular-expression matcher stopped being absent when the workload programme replaced the translation onto the platform's engine** — so what actually left both uncovered is that the retained sessions mutate ARTIFACTS while those two consume text a program wrote. **A source session now reaches the tokenizer, the parser and the lowering**: [bundle JS-7-001](evidence/js-7-001/README.md) retains two, run by the root that carries the lowering. **What they demonstrate is reach and not exploration**, and the bundle says so: every answer they produced was already reached by the seed corpus alone, so nothing was kept and the guidance loop never fired. **And the matcher is reached from 2026-09-06 too**, which retires the last of the four: it stopped being absent when the workload programme wrote one here, so the row's *waits on JS-6* had been wrong for as long as its sentence about the front end was *([JSC-196](roadmap.corrections.md#jsc-196))*. Both halves of its input are mutated, and unlike the source session its seed pool grows until it reaches its declared ceiling. [Bundle JS-9-005](evidence/js-9-005/README.md) retains it, **with the control that makes a clean session worth reading**: one declared refusal is turned into an ordinary exception and the session has to name the pattern and subject that reach it. **Reached is not explored** — a bounded number of iterations from stated seeds says nothing about a hand-written backtracking engine of some thousands of lines, and the bundle's exclusions say so. **And the artifact sessions are re-run over the corpus as it stands**, which is what update rule 5 asks of evidence taken over a different population — answered for those sessions and not for the earlier bundles, whose logs stay unedited. **The guidance clause is built in the checkout and is not closed.** No session was guided at all until 2026-09-01: the mutator drew from the retained corpus and nothing a mutant reached fed back into what it drew from next. It does now — a mutant whose published answer no seed artifact produces is kept as a further seed, the pool opens as the retained corpus and grows, and the declining host rotates through one vector per exhaustion dimension rather than tightening four at once, which is what lets a session reach the three arms it could not and attribute the four it could. **The signal is the answer this profile publishes and not an edge**, so two paths to one answer are one signal and a defect on a path that answers like its neighbour is invisible to the guidance; instrumenting for anything finer would put a coverage host in a published closure or change the assembly under test, and [JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md) records the refusal and what would falsify it ([JSC-42](roadmap.corrections.md#jsc-42)). **What a session judges about itself is its loop and not its growth**: how much a seed set grows is a fact about the corpus as much as about the mutator, so a session fails when it offered fewer mutants to the pool than it drew, and the composition asserts separately that the pool keeps a new answer and refuses a repeat. **Retained sessions are guided since 2026-09-02** ([Bundle JS-9-004](evidence/js-9-004/README.md)): four sessions of 25,000 iterations each, every one reporting what it kept. The four in [Bundle JS-9-001](evidence/js-9/README.md) were collected before any of this and their logs stay unedited. **Collecting it found the harness describing sessions that no longer existed** - the header written into every retained `fuzz.log` still said `NOT coverage-guided` and `no session in this log closes it`, four lines above sessions printing what they had kept, so a collection run before the fix would have retained a log denying its own output. That header has now been wrong in BOTH directions, having once claimed coverage-guidance the mutator did not have, and it says so. **And the yield is one or two answers per session**, which the bundle puts first rather than leaving a reader to assume: 25,000 iterations move the pool from 66 artifacts to 67 or 68, because the signal is the published answer and this profile's vocabulary of answers over a slice-scope corpus is small. Guidance being present is not guidance being effective, and only the former is claimed. **The corpus is still slice-scope, not full-format**; there is no retained-bytes report over an object model that does not exist; no agents; and no session or soak budget — the seeds, the iteration counts and the cycle count are stated so a run is reproducible, not because any of them is a number something justifies. The soak's plateau is a band and not a measurement. **And a second false signal in the same check was found on 2026-09-03 and removed** ([JSC-48](roadmap.corrections.md#jsc-48)): the plateau reading was coupled to what the process allocated BEFORE the soak, because two forced collections in a whole run leave the final number holding heap the collector has not returned. Growing this profile's retained corpus from 66 entries to 91 was enough to push it past the band on macOS under Native AOT, on both architectures, byte-identically across three runs, while `win-x64`, `linux-x64` and the Android head stayed flat. The check samples the heap sixteen times across the run now and prints the curve; **no band was widened and no threshold moved**, and the sampling makes the check stricter rather than kinder because a real leak grows live bytes whatever the collection frequency. **It closes nothing** — the plateau clause needs a retained bundle and none has been collected since. **The Native AOT failure this row carried is diagnosed and the check is corrected**, on 2026-09-01: it was **not** a per-cycle retention. Running 2,000, 8,000 and 16,000 cycles produced a final heap identical to the byte — eight times the work, same heap — and sampling out to 20,000 cycles showed one step and then a heap that did not move for 19,500 consecutive cycles. The growth is **one-time warm-up**, and the baseline was read before it finished: under Native AOT the heap settles at about cycle 1,000, where the check sampled at cycle 99. Under JIT the runtime's own allocation front-loads and the heap is already settled by cycle 99, which is why the same code read 0.95 there and 2.30 here. **The band was not widened** — the baseline moved to the midpoint of the run, so both readings are after warm-up in every publish mode, and the band was **tightened** from 2.0 to 1.20 because the midpoint form makes 2.0 unreachable by any linear leak. **A negative control now injects a per-cycle retention**, which nothing did before and whose absence is why the defect survived. Every figure above is an **observed repository-state fact** under section 1's third category: it explains the status and satisfies no gate. **The clause is not closed here** — closing it needs a retained bundle, which is JS-9's, and none has been collected since the correction. **Both composition roots are now published and run on every declared RID by the component's own CI lane, which also runs the four fuzz sessions, the corpus-integrity mutation and — since the correction — the soak itself, against the published image** — none of which it did when this failure reached two bundles unnoticed. The soak was briefly excluded from that lane on the ground that a heap reading on a shared runner attributes to nothing; that was true of the old check's absolute reading and is not true of the corrected check's ratio, which repeated dispatched runs across three operating systems settled rather than argued — the lane runs two of those three since 2026-09-01, when it was brought back to the component's declared RID matrix, and the third reading stands as a record of what ran rather than as a claim about a platform. **Those readings are cited nowhere as a figure and this ledger states none of them**, because they were taken in lane runs that retain nothing: under update rule 10 a number with no retained record behind it is not a number this file may carry, and what the checkout holds is the check, its band and the control that makes it fail. **The lane advances nothing here either**: it collects no bundle, so it is a regression signal between collections and never a row in this table, and **a green lane is not evidence that the plateau passes**. The corpus grows from JS-1 onward, which is why this could start before JS-8. **The seven-dimension clause this row opened on 2026-09-01 is now built in the checkout and is not closed.** Roadmap section 7 names **seven** budget dimensions a verification can answer `ResourceExhaustion` on — it named four until that date, and the verifier's allocator, work-charge and poll arms name three more ([JSC-39](roadmap.corrections.md#jsc-39)) — and asks for a corpus entry per dimension because an exhaustion answer carries no diagnostic code and the registry's both-directions binding therefore reaches none of them. Where the row previously reported one entry, an ordering assertion, two categories buried in a fuzz histogram and three dimensions reached by nothing, the checkout now holds: a manifest with a **dimension and scope column**, **seven entries**, one per dimension, each presenting the same well-formed program to a host that declined it on exactly one ceiling; and **rule N11**, which reads every resource-exhaustion answer out of the verifier's own source and holds it to an entry that pins it, in both directions and against the core's two enumerations — the clause rule N7 could not reach, for the answers that carry no code. Landing it **found that artifact bytes is not this profile's answer at all**: the core compares the payload length one call before the verifier is entered, so the verifier's two artifact-bytes arms are unreachable through any host ceiling and are defensive ([JSC-41](roadmap.corrections.md#jsc-41)). The scope column earns itself on the same evidence: the reader's ceilings answer at `Artifact` and the three allowances answer at `Runtime`, because the meter reports the level that refused, and a row recording the dimension alone would have hidden it. **The corpus grows from 60 entries to 66**, which is where a reader tracing the count across three rows meets this step. **None of that closes the clause**: closing it needs a retained bundle and none has been collected since, and under update rule 5 the four retained fuzz sessions are now evidence over a different population — they were seeded from the 60-entry manifest and this checkout holds 66, so they recertify nothing about the corpus as it stands and the next collection re-runs them. This milestone owns the clause, and the delivery file's exit gate carries it. |
-| [NONE] | **JS-10 — baselines, packaging, support table, release gate** | **Not started** | None. No measurement lane, no baseline register, no package, no support table, no human review decision on anything. **The language-specification edition is pinned and archived since 2026-09-03; the conformance-suite revision is not pinned at all** *(this cell said neither was pinned; corrected: [JSC-67](roadmap.corrections.md#jsc-67))*, and roadmap [section 24](roadmap.gates.md#24-specification-and-platform-references) asks for both by immutable identifier, retrieved, hashed and archived — see section 3, where the edition's row is now closed and the suite's is not. **Gate 1's support table needs both**, so one of the two is answered and this row waits on the other, on a measurement lane, on packaging, and on a human review of every relevant unit. | After JS-9, and after a named human has read every relevant unit — which is the largest single-owner task in the programme and must be scheduled, not assumed. |
+| [PARTIAL] | **JS-10 — baselines, packaging, support table, release gate** | **In progress** | [Bundle JS-10-001](evidence/js-10-001/README.md), phase F9's slice R1 under proposed [JSD-0059](decisions/0059-the-release-under-the-mvp-programme.md): **the measurement lane exists** - the conformance root's measurement children and `eng/measure-js-baselines.py`, under roadmap section 17's eight rules - and it has taken the two figures sections 16 and 18 reopen against, on a JIT and a Native AOT arm on `linux-x64`: verification costs 40.2643 and 49.1986 ns per byte, and a cold start 276,954,782.8 and 4,485,046.9 ns, each resolving above its A/A lane. **The baseline register exists**, [`docs/baselines.md`](baselines.md), and rule **N33** holds it to the bundle in both directions. **The support table is drafted and not issued** (slice R2, proposed [JSD-0060](decisions/0060-the-support-table-drafted.md)): [`docs/support.md`](support.md) carries every cell release gate 1 names, each row with an evidence cell, and rules **N34**, **N35** and **N36** hold the cells a mechanism can read to the checkout, the extraction-gate state to carrying no verdict and no other profile's identifier, and the suppression inventory - none - to a scan of the family's sources. **The packages are frozen and consumed** (slice R3, proposed [JSD-0061](decisions/0061-packages-consumers-and-the-release-candidate.md)): the family's four packages in a [baseline](packages.md) rule **N37** holds in both directions, and bundle [JS-10-002](evidence/js-10-002/README.md) shows a pristine consumer restoring and running with upstream unreachable, rolling back to the published `0.1.0-preview.5` and forward, and running as Native AOT. **A release-candidate run exists** from a clean commit, bundle [JS-10-003](evidence/js-10-003/README.md): four whole runs, one per manifest and form, each with its totals, failure manifest and effective limit vector; the bytecode floor holds. **The release gate refuses** (slice R4, proposed [JSD-0062](decisions/0062-the-release-gate-that-refuses.md)), naming each blocker in [its register](release-gate.md), which rule **N38** holds to it. The language-specification edition and the conformance-suite revision are both pinned by immutable identifier (section 3). | **Every clause the release gate names is open**: the table is not issued, no composition is advertised and no RID claimed, no relevant unit carries a human decision, two package versions were published before review, three notices rows are unconfirmed and the Intl data has none, six operational holders are vacant and there is no security intake, gates 3 to 6 are read by no mechanism, and the native form's ratchet was not compared on `linux-x64`. **What no slice may do stays open after all four**: no support table is issued, no RID is claimed, no composition is advertised, no package is published by this milestone, no operational role is filled by a document, and **no named human has recorded a decision on any relevant unit** - the largest single-owner task in the programme, which must be scheduled rather than assumed. One machine, one RID; no reviewer decision exists and nothing here is accepted. |
 
 ### What the construct census measured, and what it is not
 
@@ -1045,17 +1459,30 @@ running `Object.getOwnPropertyNames(globalThis)` in a verified artifact and writ
 fails when the two disagree in either direction. **The block is the claim; the file is the fact.**
 
 ```absent-globals
-Atomics
-Intl
-SharedArrayBuffer
-Temporal
 ```
 
-**Two of the four are absent DELIBERATELY rather than for want of work.** `SharedArrayBuffer` and
-`Atomics` are the multi-agent surface; they need the agent model of roadmap
-[section 13](roadmap.md#13-realms-agents-and-the-host-boundary), and folding them into the binary
-identity would let a composition that wanted an ordinary byte buffer admit cross-agent shared memory
-by accident. `BigInt64Array` and `BigUint64Array` left the block on 2026-09-22 (JSeal B07-B08,
+**The block is empty: the realm lacks no standard global.** *(Amended 2026-10-05, phase F8: `Temporal`,
+the last name on it, left the block in the change that publishes it, under proposed
+[JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md) and the identity
+`broiler.javascript.temporal` ([JSC-280](roadmap.corrections.md#jsc-280)). Rule N17 still compares the
+file with the block, so a global that left the realm would have to be named here. The sentence
+below is kept as written.)* **Both are absent for want of work, and each is scheduled.** *(Amended 2026-10-04, phase F7: `Intl`
+left the block in the change that publishes it, under proposed
+[JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) and the identity `broiler.javascript.intl`
+([JSC-269](roadmap.corrections.md#jsc-269)); `Temporal` is the one name left.)* *(Amended 2026-10-04: `SharedArrayBuffer`
+and `Atomics` left the block in the change that publishes them, phase F6's first slice, under
+proposed [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) and the identity
+`broiler.javascript.shared` ([JSC-266](roadmap.corrections.md#jsc-266)); the published file is now
+read from a realm admitting every surface that owns a global, so it lists `ShadowRealm` too. The
+paragraph below is kept as written.)* Until 2026-10-03 this paragraph
+said two of them, `SharedArrayBuffer` and `Atomics`, were absent deliberately. The plan reopened
+every declined surface that day ([JSC-251](roadmap.corrections.md#jsc-251)): the shared-memory pair
+is roadmap [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F6,
+after the agent model of roadmap [section 13](roadmap.md#13-realms-agents-and-the-host-boundary),
+and under an identity of its own, because folding them into the binary identity would let a
+composition that wanted an ordinary byte buffer admit cross-agent shared memory by accident. `Intl`
+is phase F7 and `Temporal` phase F8. **A name leaves this block in the change that publishes it,
+and not before**: the block states what the realm lacks, not what the plan intends. `BigInt64Array` and `BigUint64Array` left the block on 2026-09-22 (JSeal B07-B08,
 JSD-0033 section 8, proposed), a day after `BigInt` itself was admitted (JSeal B05, JSD-0033
 section 7, proposed); they are built wherever the BigInt and binary identities are both admitted.
 
@@ -1251,7 +1678,9 @@ import attribute clause (`with { type: "json" }` and the older `assert` spelling
 an async generator function. The first two are surfaces this stage did not open — a dynamic
 `import()` belongs to `broiler.javascript.dynamic` and needs an artifact provider, and an attribute
 clause needs a type this host has no reader for — and the last two are not the module goal's at all.
-Nothing on that list is partially admitted, and nothing on it is mis-run.
+Nothing on that list is partially admitted, and nothing on it is mis-run. *(Amended 2026-10-04: the
+attribute `type: "json"` is honoured since [JSC-255](roadmap.corrections.md#jsc-255), static and
+dynamic; every other attribute is still refused by name.)*
 
 **What none of this is.** **Native AOT was not published on the machine this was written on**,
 and the component's lane is the authority for what publishes — under section 1 a lane retains
@@ -1283,7 +1712,9 @@ Stated positively, because a table of empty rows invites a reader to fill them i
   each links the profile assembly that carries the arming path; that is a permission a closure can
   reach and not a run any of them has made. **Two runtime identifiers are recorded as published and run** -
   `win-x64`, and `android-x64` on an emulator - which is a record of what happened on two
-  machines and not a supported-RID claim;
+  machines and not a supported-RID claim *(corrected 2026-10-05: three - bundle JS-7-001 published
+  and ran every root on `linux-x64` with every exit zero, and this sentence did not count it;
+  [JSC-286](roadmap.corrections.md#jsc-286))*;
   claiming a RID is a release act and JS-10 owns it. **And no retained bundle shows that run
   clean in every mode**: the newest one records the execution-only root's Native AOT run exiting 1
   on the soak's plateau check. That check has since been corrected and the working tree passes in
@@ -1307,6 +1738,9 @@ Stated positively, because a table of empty rows invites a reader to fill them i
   benchmark through the ordinary command line, and what that lacks in order to be a measurement is
   everything JS-10 owns — a lane, a baseline register, and
   [section 17](roadmap.gates.md#17-measurement-discipline)'s rules applied to a retained figure.
+  *(Amended 2026-10-05: bundle [JS-10-001](evidence/js-10-001/README.md) is a measurement - the
+  lane, the [baseline register](baselines.md) and section 17's rules over two figures of this
+  component's own; a benchmark's score is still not one ([JSC-286](roadmap.corrections.md#jsc-286)).)*
 - **Nothing is reviewed.** No human has read anything here, and nothing that will be copied
   arrives reviewed.
 - **The seed has not been taken.** Section 4.1 of the roadmap records a candidate identity so the

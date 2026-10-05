@@ -1,0 +1,16 @@
+bundle JS-10-003
+evidence-class conformance
+decision Each run is recorded as this commit's release-candidate totals for its manifest and form; a run with a floor is recorded as not regressing it if the runner's --floor accepts it, and as regressing it otherwise. No other decision is taken, and no figure is combined across runs.
+collected 2026-10-05T12:10:49Z
+commit 6ac061e09f33e669e6406c0cb3b04a519bc8e83a
+tree clean
+sdk 10.0.401
+machine Linux-6.18.44-fc-v70-x86_64-with-glibc2.39 x86_64 cpus=4
+binary Broiler.VM.Composition.JavaScript.Conformance.dll sha256=3ca05f247042c11d6ef5670516cdb552b32912dd2dcb2d6b6ce80071a0cc0a41
+suite-pin src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+allowance fuel=100000000 wallClockMs=5000
+jobs 4
+run wide-bytecode (defaults) floor=test262-wide.floor
+run wide-native --form native floor=test262-wide-native.floor
+run slice-bytecode --manifest broiler.javascript.slice floor=none
+run numeric-native --manifest broiler.javascript.numeric --form native floor=none

@@ -748,10 +748,10 @@
       "id": "A14",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "Every project file in the checkout that none of the solutions in ComponentGraph.SolutionFiles lists sits under samples/, carries no ProjectReference at all, and references exactly the three Broiler.VM packages. The solution set is named in the test assembly rather than globbed, so a project cannot escape the group A rules by arriving with a solution of its own.",
+      "statement": "Every project file in the checkout that none of the solutions in ComponentGraph.SolutionFiles lists sits under samples/, carries no ProjectReference at all, and references exactly the three Broiler.VM packages - or, for the JavaScript profile's pristine consumer under samples/Broiler.VM.Sample.JavaScriptConsumer, exactly those three and the four packages the JavaScript family packs (ADR 0001's revision of 2026-10-05). The solution set is named in the test assembly rather than globbed, so a project cannot escape the group A rules by arriving with a solution of its own.",
       "evidence": "The checkout's project files against Broiler.VM.slnx",
       "activationMilestone": null,
-      "nonVacuousWhen": "One project is outside the solution at VM-6 - the pristine feed consumer - so both halves are over a real entry rather than over an empty list. The rule exists because VM-6 narrowed the group A rules to read the SOLUTION rather than glob the tree, which they had to: the feed consumer deliberately carries a Broiler package reference that rule A2 forbids, and it cannot be a solution project because restoring it requires a pack to have already happened. Narrowing a rule's subject is how a rule quietly stops covering things, so this is the complement: a project in neither the solution nor samples/ is governed by NOTHING, and would be invisible rather than allowed. The second half is what keeps the exemption honest - a sample may carry a package reference precisely because it may carry no project reference, and a sample that reached back into the repository would be a consumer of the build rather than of the packages. SECOND SOLUTION ADDED 2026-09-02: Broiler.VM.Mobile.slnx holds the mobile heads, whose target frameworks need a workload and, for iOS, Xcode - so folding them into Broiler.VM.slnx would make the build a contributor runs before pushing fail without an installation this component has never required. Both solutions feed one graph, so every group A rule governs the heads exactly as it governs a desktop root; what differs is which solution a lane builds on which operating system.",
+      "nonVacuousWhen": "One project is outside the solution at VM-6 - the pristine feed consumer - so both halves are over a real entry rather than over an empty list. The rule exists because VM-6 narrowed the group A rules to read the SOLUTION rather than glob the tree, which they had to: the feed consumer deliberately carries a Broiler package reference that rule A2 forbids, and it cannot be a solution project because restoring it requires a pack to have already happened. Narrowing a rule's subject is how a rule quietly stops covering things, so this is the complement: a project in neither the solution nor samples/ is governed by NOTHING, and would be invisible rather than allowed. The second half is what keeps the exemption honest - a sample may carry a package reference precisely because it may carry no project reference, and a sample that reached back into the repository would be a consumer of the build rather than of the packages. SECOND SOLUTION ADDED 2026-09-02: Broiler.VM.Mobile.slnx holds the mobile heads, whose target frameworks need a workload and, for iOS, Xcode - so folding them into Broiler.VM.slnx would make the build a contributor runs before pushing fail without an installation this component has never required. Both solutions feed one graph, so every group A rule governs the heads exactly as it governs a desktop root; what differs is which solution a lane builds on which operating system. SECOND SAMPLE ADDED 2026-10-05: the JavaScript profile's pristine consumer, admitted with the three core packages and the JavaScript family's four, so the second half is over two entries and two package sets.",
       "witness": "PackageRuleTests"
     },
     {
@@ -997,6 +997,106 @@
       "activationMilestone": null,
       "nonVacuousWhen": "The ledger, the parity roadmap and the workload roadmap, the three documents that make absence claims, must be among those read and the corrections file and the evidence bundles must not, and the published set must hold Proxy and Promise and not Intl, before an empty result is read. The rejecting direction is a witness with one injected stale claim per shape - Proxy and Reflect in clauses, Promise in a bullet under an absent heading, Object in a block - and four malformed markers, and exactly those eight findings are reported, while a genuinely absent Intl, a present Map inside a marked span, a Symbol said to have been absent and an Array bullet under a heading that is not about absence are not. STATED LIMIT: a claim phrased any other way, such as lacks or has no, is not seen. On the day it was minted the rule reported six stale claims in the parity and workload roadmaps, which were marked as written or corrected in the same change.",
       "witness": "witnesses/register/N24-a-document-says-a-present-global-is-absent.md.witness"
+    },
+    {
+      "id": "N25",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "No type in any of the JavaScript profile's product assemblies declares a finalizer: no destructor and no parameterless method named Finalize. A finalizer runs on the collector's thread at a moment no guest or host chose, outside the step that owns the realm and outside every budget the meter charges; decision JSD-0011's Row 2 keeps the profile's references rooted by the realm alone, and decision JSD-0029 rests its optional FinalizationRegistry cleanup model on guest-reachable work never running from one. JSD-0029's recommendation of 2026-10-03 asks for the rule ahead of the model, since it costs nothing and puts that claim under test while the model stays unscheduled.",
+      "evidence": "The JavaScript profile's product assemblies, read as Roslyn declarations; witnesses/register/N25-a-profile-type-that-declares-a-finalizer.cs.witness",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Each of the profile's product assemblies has to be represented and the file holding the FinalizationRegistry has to be among the sources by name before the empty result is read. The rejecting direction is a witness declaring a destructor and a Finalize method, and naming both again in a comment and a string literal, and exactly the two declarations are reported.",
+      "witness": "witnesses/register/N25-a-profile-type-that-declares-a-finalizer.cs.witness"
+    },
+    {
+      "id": "N26",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "No code of the JavaScript profile's product assemblies stores a realm outside the members that are the realm model - the engine's running realm and first realm, a function's [[Realm]], a frame's saved realm, an awaiting built-in's own realm (disposeAsync's run), an embedder view's realm and a proxy's maker - and none reads the engine's first realm except its constructor and the embedder's first view, the two places no frame is running. An engine holds several realms since decision JSD-0030's slices SR-2 and SR-7, and the right realm for anything a guest reaches is the running one; a realm captured once and read later would hand a guest of one realm another's intrinsics and pass every single-realm test. SR-2's acceptance asks for exactly this rule.",
+      "evidence": "The JavaScript profile's product assemblies, read as Roslyn declarations and identifier reads; witnesses/register/N26-a-profile-type-that-caches-a-realm.cs.witness",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The file declaring the running realm has to be among the sources by name, and every member of the rule's allowlist has to be found as a declared stored realm, so a renamed member fails rather than leaving its replacement unchecked. The rejecting direction is a witness caching a realm in a field and reading the first realm from a method, and also forwarding the running realm through an expression-bodied property and naming FirstRealm in a comment and a string literal, and exactly the two violations are reported.",
+      "witness": "witnesses/register/N26-a-profile-type-that-caches-a-realm.cs.witness"
+    },
+    {
+      "id": "N27",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The CLDR files src/tests/cldr/pins/cldr.pin names are the ones it describes, and it names every file archived beside it: each is present with its recorded length and SHA-256, a supplemental JSON file states the pinned CLDR major version 48, a package.json states 48.2.0, the UCA files state UCA version 17.0.0 - the UCD version rule N22 pins - the pin itself names 48.2.0, says archived and records the npm integrity of both packages, the archive is declared binary to git, and its README records the release. Decision JSD-0027 section 5 asks for CLDR pinned by release and digest in the shape JSD-0031 gave the UCD; the Intl data a later slice generates is only as trustworthy as the bytes it is generated from, and this rule is the mechanical statement about those bytes.",
+      "evidence": "The pin parsed as a generator parses it, every archived file hashed from its bytes, each JSON file's and UCA file's stated version read, the pin directory listed against the pin, and .gitattributes and the README read as text",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The pin is populated from 2026-10-04 with more than twenty entries, every one of which is read and hashed, and the directory listing must find each of them and nothing else. A changed byte of allkeys_CLDR.txt is made in memory against the real archive and reported for that file alone; a supplemental file stating CLDR 45 and a UCA file stating 16.0.0 are refused from witness files even under a pin recording exactly their bytes.",
+      "witness": "witnesses/register/N27-a-supplemental-file-of-another-release.json.witness, witnesses/register/N27-a-uca-file-of-another-version.txt.witness, CldrPinRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "N28",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript family's internationalization tables, src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs, are byte-identical to what CldrTableGenerator writes from the CLDR files src/tests/cldr/pins/cldr.pin names and the UCD files src/tests/unicode/pins/unicode.pin names, both verified against their pins before anything is generated; generation twice gives the same bytes; the table data stays under the budget the owner set as JSD-0027 decision (c), 768 x 1024 bytes on 2026-10-05 and 832 x 1024 bytes the same day for the time zones' names (JSD-0058), which replaced the provisional bound of 512 x 1024 bytes decision JSD-0043 recorded; and THIRD_PARTY_NOTICES.md carries the archived CLDR licence text and names the generated file. Decision JSD-0043 moves likely subtags, aliases, BCP 47 keys, the supported locales and the collation the Intl surface reads onto these tables; rule N27 is the statement about the archived bytes and this rule is the statement that the shipped tables are what those bytes generate.",
+      "evidence": "Both pins parsed as the generator parses them, both archives hashed from their bytes, the tables regenerated in memory by the same function that writes them and compared with the checked-in .g.cs file, the byte and text literals of that file counted, and THIRD_PARTY_NOTICES.md read as text",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The generated file is compared whole and must exceed a hundred thousand characters, name every table the profile reads, and hold over a hundred thousand bytes of binary table data counted independently from the literals. A hand edit to the generated file and a changed letter of likelySubtags.json are made in memory against the real output and the real archive, because a witness of either would be a second copy of it; the edit is reported as not current and the changed archive generates nothing.",
+      "witness": "CldrTablesRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "N33",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript profile's baseline register, src/Broiler.VM.Profile.JavaScript/docs/baselines.md, and the measurement logs of the bundle it names agree in both directions, on both arms: every measurement the register declares was logged by the JIT arm and by the Native AOT arm, every measurement either arm logged has a row in the register, each row's unit is the unit the arm measured it per, each row's figure for an arm equals the per-unit figure that arm logged, and no figure an arm refused to publish - its A/A lane exceeding its effect - is published. Phase F9's slice R1, decision JSD-0059, stands up the measurement lane JS-10 owns; a performance figure is the easiest claim to falsify by accident, and this rule is rule L1's statement over the profile's own register.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/baselines.md against measure-jit.log and measure-aot.log of the bundle it names",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Two measurements are declared and both arms logged both, so both directions are over real entries. The two arm figures are positional columns of one row, each checked against its own arm's log, so exchanging them fails twice; figures are compared as numbers and exactly, so a thousands separator is not a violation and a figure from another run is. The bundle is read from the register's own link, so a register that names another bundle is read against that one. THE SAME LIMIT AS L1: the rule reads the document against the logs and not the logs against the checkout, and a stale pair agrees with itself.",
+      "witness": "witnesses/js-baselines/N33-register-declares-an-unmeasured-row.md.witness, witnesses/js-baselines/N33-register-omits-a-measured-row.md.witness, witnesses/js-baselines/N33-register-exchanges-the-two-arms.md.witness, witnesses/js-baselines/N33-log-carries-a-refused-measurement.log.witness"
+    },
+    {
+      "id": "N34",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript profile's drafted support table, src/Broiler.VM.Profile.JavaScript/docs/support.md, says it is drafted and not issued and states what the checkout declares: the core contract version the descriptor authors, the minimum core contract version the core accepts, the accepted format-version range, the conformance manifest and its version, the pinned specification revision and digest, and the pinned suite revision and archive digest, each read from the source that declares it; the accepted manifest set equals, in both directions, every manifest identifier the format, the numeric manifest and JsSurfaces declare, and section 3 has a row for each; the WebAssembly host-object surface is named as not provided and the realm's globals do not name it; section 5 publishes a state for exactly the amendment rows roadmap section 18 carries, in both directions, and says the amendment procedure is unexecutable; each declared default equals what Defaults() sets; no runtime identifier is claimed; and every row of a table with an Evidence column names a registered or asserted rule or links a file that exists, and no cell is a bare yes. Phase F9's slice R2, decision JSD-0060, drafts the table release gate 1 asks for without issuing it.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/support.md against JavaScriptProfile.cs, VmCoreContract.cs, JavaScriptFormat.cs, JsFormat.cs, JsNumericManifest.cs, JsSurfaces.cs, specification/README.md, test262.pin, realm/globals.txt and roadmap.md section 18",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Every identity cell is read from source by a pattern that must match, so a declaration that moves fails the rule rather than passing it. Twelve manifest identifiers are declared and stated, eleven amendment rows are carried by the roadmap and published by the table, and fifteen defaults are set and quoted, so each both-directions comparison is over real entries. THE LIMIT: the rule holds the cells a mechanism can read and holds every other row to having evidence; it does not decide that a row's prose is true.",
+      "witness": "witnesses/js-support/N34-table-claims-core-contract-2.md.witness, witnesses/js-support/N34-table-omits-an-amendment-row.md.witness, witnesses/js-support/N34-table-misquotes-a-default.md.witness, witnesses/js-support/N34-table-has-a-bare-yes-and-no-evidence.md.witness"
+    },
+    {
+      "id": "N35",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "Section 6 of the JavaScript profile's drafted support table, src/Broiler.VM.Profile.JavaScript/docs/support.md, records the extraction gate's first condition and what would satisfy it, carries no verdict word - verdict, approved, rejected, extracted, extract it - and names no identifier of another profile component: no broiler. manifest but the JavaScript profile's, no Broiler.VM.Profile. namespace but JavaScript's, no com.example. identifier, and no WebAssembly or Wasm name. JS-10's exit gate asks for this scan over the extraction-gate state.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/support.md section 6",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The section exists and is read whole; a section that dropped either required phrase fails, and the witness carries both a verdict word and another profile's manifest identifier, each of which fails on its own.",
+      "witness": "witnesses/js-support/N35-section-carries-a-verdict.md.witness"
+    },
+    {
+      "id": "N36",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "Every warning suppression in a shipped source or project of the JavaScript family - every project under src named Broiler.VM.Profile.JavaScript*, Broiler.VM.Profile.MachineCode, and every JavaScript composition root - is inventoried by file in section 11 of the drafted support table, src/Broiler.VM.Profile.JavaScript/docs/support.md: a #pragma warning disable, a SuppressMessage or UnconditionalSuppressMessage attribute, a NoWarn or a WarningsNotAsErrors element; and when the scan finds none, the section says None.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/support.md section 11 against a scan of every .cs and .csproj file of the JavaScript family outside bin and obj",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The scan reads every source and project file of the family; it finds none today, so the rule holds the section to saying None, and the witness, a source carrying a pragma, is found by the same scan and fails against the same section.",
+      "witness": "witnesses/js-support/N36-source-suppresses-a-warning.cs.witness"
+    },
+    {
+      "id": "N37",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript family's package baseline, src/Broiler.VM.Profile.JavaScript/docs/packages.md, agrees in both directions with what the checkout packs and with what the candidate pack of the bundle it names produced: every package it names is a family project carrying IsPackable true and every such project has a row; each row's dependencies are exactly its project's references and exactly its retained .nuspec's dependencies; each row's files are exactly the files the retained package holds besides its .nuspec; no .nuspec the candidate pack produced declares a dependency outside Broiler.VM.; and the bundle's consumer transcript shows the pristine consumer passing every check against the candidate, after rolling back to the published previous set and after rolling forward again, and as Native AOT, and its negative control refused for a version only upstream holds with no other source searched. Release gate 8 asks that whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an addition and a removal each fail; phase F9's slice R3, decision JSD-0061.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/packages.md against the family's project files and the nuspecs.txt, contents.txt and consumer.log of the bundle it names",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Four packages are packable and stated, eleven .nuspec files are retained and read for foreign dependencies, and every comparison is a set difference taken both ways, so an addition and a removal each fail. The bundle is read from the baseline's own link. THE SAME LIMIT AS L1: the bundle's metadata is read against the document and the document against the project files; the pack is not re-run, and a stale pair agrees with itself.",
+      "witness": "witnesses/js-packages/N37-baseline-adds-a-package.md.witness, witnesses/js-packages/N37-baseline-omits-a-package.md.witness, witnesses/js-packages/N37-baseline-misstates-a-dependency.md.witness, witnesses/js-packages/N37-nuspecs-declare-a-foreign-dependency.txt.witness, witnesses/js-packages/N37-consumer-log-rollback-failed.log.witness"
+    },
+    {
+      "id": "N38",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript profile's release gate, which reads roadmap section 22's gates 1 to 13 from the checkout, answers a verdict and names every blocker by the declaration that states it, and the blockers it names are exactly the ones its register, src/Broiler.VM.Profile.JavaScript/docs/release-gate.md, records, in both directions, with the verdict the register states. A gate is held only by rules Active in the register, blocked by an act only the owner or a named human can take, or blocked because a clause is read by no mechanism; a human decision is counted only from a unit's own Broiler-Human line, so a review headline or a support table claiming more than the units record does not clear gate 11 and is itself named as a contradiction. Phase F9's slice R4, decision JSD-0062: JS-10's gate asks for the release gate that refuses the tree while any relevant unit lacks a human decision.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/release-gate.md against JsReleaseGate.Evaluate over the checkout",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Thirteen gates are evaluated and the gate refuses with blockers in most of them, so both directions are over real entries. The two witnesses replace the review headline and the support table with texts that claim every unit reviewed and the table issued; the gate still refuses and names the contradiction, which is what shows the headline and the table are read as claims to check rather than as decisions. THE LIMIT: an unread clause is named as blocking rather than read; the gate states what no mechanism here checks and does not check it.",
+      "witness": "witnesses/js-release-gate/N38-review-headline-claims-every-unit.md.witness, witnesses/js-release-gate/N38-support-table-reads-as-issued.md.witness"
     },
     {
       "id": "W1",

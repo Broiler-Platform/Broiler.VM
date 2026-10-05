@@ -1891,3 +1891,65 @@ decision. No composition root is packable, and section 1 of the composition
 register still advertises nothing. The graph's size is unchanged.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-10-04 - the JavaScript family's internationalization data, F7
+
+**What changes.** One project is added: `Broiler.VM.Profile.JavaScript.Intl`, at
+`src/Broiler.VM.Profile.JavaScript.Intl/`, a product project of the JavaScript
+family. It holds the tables generated from the pinned CLDR release and a single
+public class that hands them over, and it references
+`Broiler.VM.Profile.JavaScript.Format` and nothing else. Two composition roots
+gain a reference to it: `Broiler.VM.Composition.JavaScript.SliceCompiler` and
+`Broiler.VM.Composition.JavaScript.Conformance`, the two that admit the
+`broiler.javascript.intl` surface and hand the data to the profile. The profile
+itself does not reference it. It reads the tables through the format's
+`IJsIntlData` interface, as it reads emitted machine code through
+`IJsNativeEmitter`, so rule N1's reference set for the profile is unchanged.
+
+**Why a fourth assembly in the family.** It is a DEPLOYMENT boundary, the test
+this record applies to every assembly it authorises. JSD-0027 section 5 item 3
+requires that a composition declining `Intl` carry none of its data. The data is
+some 320 KB of tables. Inside the profile it would be in every composition's
+closure whether or not the surface is admitted, and a build switch inside one
+assembly is not a closure report. Inside the format it would be in the
+lowering's closure too. As its own assembly, a composition that does not
+reference it has none of it, and the closure report says so. Decision JSD-0043
+records the design.
+
+**The packable set grows by one.** The project is a family project, so rule N4
+holds it to the literal `IsPackable` true and no `PackageId`, and it packs under
+its assembly name. Eleven assemblies now pack: the three core assemblies,
+`Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode` and six profile-family projects.
+The binding rule that no Broiler.VM package is published without a completed
+review naming the reviewed commit is not revised. No composition root is
+packable, and section 1 of the composition register still advertises nothing.
+
+**What is now true.** The graph goes from 31 projects and 113 edges to 32 and 116.
+
+**What is not edited.** Every revision above stands as written.
+
+### 2026-10-05 - the JavaScript profile's pristine consumer, F9
+
+**What changes.** No project in either solution and no edge. One project is
+added outside them: `samples/Broiler.VM.Sample.JavaScriptConsumer`, the
+JavaScript profile's pristine feed consumer, which release gate 8 of the
+profile's roadmap asks for (phase F9 slice R3, decision JSD-0061). Rule A14 is
+revised. It read that every project outside the solutions "references exactly
+the three Broiler.VM packages"; it now admits this one sample with exactly those
+three and the four packages the JavaScript family packs -
+`Broiler.VM.Profile.JavaScript`, `.Format`, `.Compiler` and `.Intl` - and still
+holds every other sample to the three. The sample carries no project reference,
+restores from `samples/NuGet.config`'s one local source, and inherits the empty
+`samples/Directory.Build.props`, exactly as the core's consumer does.
+
+**Why a second sample rather than a wider first one.** The core's consumer is
+the evidence that the three core packages depend on nothing; a consumer that
+also referenced a profile would prove that about the union and nothing about the
+three. Two samples keep two claims apart.
+
+**What is now true.** The graph's size is unchanged. Two projects are outside
+the solutions, both under `samples/`. The packable set is unchanged at eleven.
+No composition root is packable, and section 1 of the composition register still
+advertises nothing.
+
+**What is not edited.** Every revision above stands as written.

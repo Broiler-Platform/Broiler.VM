@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+index 0995e2a..dba6667 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -4247,7 +4247,7 @@ internal sealed class JsParser
+                 // ANNEX B ADMITS A CALL AS THE TARGET OF `=` OR A COMPOUND OPERATOR IN NON-STRICT
+                 // CODE (JSP-7, JSC-239): it is evaluated and the write throws a ReferenceError at
+                 // run time. A logical assignment and strict code keep the early error.
+-                var callTarget = target is JsCallExpression && !strict &&
++                var callTarget = target is JsCallExpression && strict &&
+                     op is not (SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
+                         SliceTokenKind.QuestionQuestion);
+ 

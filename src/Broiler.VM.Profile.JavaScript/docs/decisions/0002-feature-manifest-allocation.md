@@ -82,3 +82,66 @@ No manifest is minted. No scope is reviewed. No corpus exists. No oracle exists,
 revision is pinned, and the language-specification edition is unpinned - which the status ledger
 carries as a named open dependency, because no manifest may be accepted against a moving
 document.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **Two allocation rows are reopened and two are proposed.** `broiler.javascript.intl` and
+  `broiler.javascript.temporal` are no longer deferred: they are phases F7 and F8 of the plan's
+  [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile). `broiler.javascript.shared` and `broiler.javascript.shadowrealm` are proposed in roadmap
+  section 6's table, each to be minted by the record that admits its surface (JSD-0028's successor,
+  and the record admitting ShadowRealm). This record's allocation is unchanged until those records
+  exist.
+
+## Minted 2026-10-04: `broiler.javascript.shadowrealm` (unsigned)
+
+*Recorded with phase F5's implementation; it signs nothing. Corrections entry
+[JSC-265](../roadmap.corrections.md#jsc-265).*
+
+- **`broiler.javascript.shadowrealm` is minted by proposed
+  [JSD-0040](0040-admitting-shadowrealm.md)**, the record admitting the proposal, as the reopened
+  section above said it would be. It owns the global `ShadowRealm`; a descriptor naming it without
+  `broiler.javascript.dynamic` is refused; every door that admits every surface admits it. This
+  record's admission criterion - a manifest with no retained run of its own is not accepted - binds
+  it like any other.
+
+## Minted 2026-10-04: `broiler.javascript.shared` (unsigned)
+
+*Recorded with phase F6's first slice; it signs nothing. Corrections entry
+[JSC-266](../roadmap.corrections.md#jsc-266).*
+
+- **`broiler.javascript.shared` is minted by proposed [JSD-0041](0041-shared-memory-in-one-agent.md)**,
+  JSD-0028's successor, as the reopened section above said. It owns `SharedArrayBuffer` and
+  `Atomics`; a descriptor naming it without `broiler.javascript.binary` is refused; every door that
+  admits every surface admits it.
+
+## Minted 2026-10-04: `broiler.javascript.intl` (unsigned)
+
+*Recorded with phase F7's first implementation; it signs nothing. Corrections entry
+[JSC-269](../roadmap.corrections.md#jsc-269).*
+
+- **`broiler.javascript.intl` is minted by proposed
+  [JSD-0043](0043-intl-data-boundary-and-collation.md)**, as the reopened section above said. It
+  owns the global `Intl`. **Unlike every other surface, it is built from data the composition hands
+  over**, so a descriptor naming it without an `IJsIntlData` is refused. A door that admits every
+  surface admits it only when data is handed over, which is only through
+  `JavaScriptProfile.DescriptorComposing`. Every existing door therefore builds the realm it built
+  before. This record's admission criterion binds it like any other.
+
+## Minted 2026-10-05: `broiler.javascript.temporal` (unsigned)
+
+*Recorded with phase F8's slice T1; it signs nothing. Corrections entry
+[JSC-280](../roadmap.corrections.md#jsc-280).*
+
+- **`broiler.javascript.temporal` is minted by proposed
+  [JSD-0054](0054-temporal-in-the-iso-and-gregorian-calendars.md)**, as the reopened section above
+  and [JSD-0053](0053-time-zone-data-and-temporal-admission.md) section 6 said. It owns the global
+  `Temporal` and `Date.prototype.toTemporalInstant`. A descriptor naming it without
+  `broiler.javascript.intl`, whose data holds its time zones, or without `broiler.javascript.bigint`,
+  whose values its epoch nanoseconds are, is refused. A door that admits every surface admits it only
+  when data is handed over, as it admits Intl. This record's admission criterion binds it like any
+  other.

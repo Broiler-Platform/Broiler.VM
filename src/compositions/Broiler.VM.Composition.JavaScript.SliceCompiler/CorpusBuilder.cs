@@ -378,6 +378,7 @@ internal static class CorpusBuilder
         //
         // Kept in a file of their own because they are one section's clauses (JSeal I12-upstream).
         ..ScriptReferrerCorpus.Build(),
+        ..SourceTextCorpus.Build(),
     ];
 
     private static CorpusEntry Ok(string name, byte[] bytes, string completion) =>
@@ -1155,6 +1156,9 @@ internal static class JavaScriptDiagnosticCodes
 
     /// <summary>The script-referrers section disagrees with itself or the function table.</summary>
     internal const int MalformedScriptReferrers = 1632;
+
+    /// <summary>The source-text section disagrees with itself, the pool or the function table.</summary>
+    internal const int MalformedSourceText = 1633;
 
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;

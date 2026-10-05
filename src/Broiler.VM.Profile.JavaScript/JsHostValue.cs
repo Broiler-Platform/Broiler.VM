@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   55
-// Annotated:        55/55
-// Exempt:           78
-// Human-reviewed:   0/55
+// Relevant units:   56
+// Annotated:        56/56
+// Exempt:           79
+// Human-reviewed:   0/56
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         9/9
 // Resource impact:  2/10 max
-// Unverified:       55
+// Unverified:       56
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -635,10 +635,15 @@ public sealed class JsHostTerminatedException : System.Exception
 /// <remarks>
 /// <para>
 /// <b>A composition supplies one of these and the profile calls it; there is no other door.</b> The
-/// realm is handed over exactly once per instance, at instantiation, and only when the composition
+/// first realm is handed over once per instance, at instantiation, and only when the composition
 /// also registered the host-surface capability - so the capability table is still the permission,
 /// and a composition that registered nothing gets a realm with no host object in it and a program
 /// naming one refused before it runs.
+/// </para>
+/// <para>
+/// <b>Every realm a guest creates afterwards is handed over too</b>, once, through a view of that
+/// realm, inside the step the guest's <c>$262.createRealm()</c> runs in (JSD-0039). The views of one
+/// instance share its step window, so each is current exactly when the first is.
 /// </para>
 /// <para>
 /// <b>It is called on the guest's own thread, inside the operation, with the meter live.</b> That is
@@ -647,6 +652,27 @@ public sealed class JsHostTerminatedException : System.Exception
 /// from outside a step has no meter to charge and no operation to fault.
 /// </para>
 /// </remarks>
+/// <summary>
+/// What a host surface may also say about the agent it embeds: whether <c>Atomics.wait</c> may block
+/// it (JSD-0041 section 4).
+/// </summary>
+/// <remarks>
+/// <b>The specification leaves <c>[[CanBlock]]</c> to the host, and so does this profile.</b> An agent
+/// whose host does not implement this, or answers <see langword="false"/>, is an event loop: its
+/// <c>Atomics.wait</c> is a <c>TypeError</c> and its <c>Atomics.waitAsync</c> still works. A host that
+/// answers <see langword="true"/> - a shell, the conformance runner - lets a wait suspend the guest's
+/// thread, bounded by the operation's allowance.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0DA65F
+// Broiler-Human:        PENDING
+public interface IJsHostAgentPolicy
+{
+    /// <summary>The agent's <c>[[CanBlock]]</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E776F1
+    // Broiler-Human:        PENDING
+    bool CanBlock { get; }
+}
+
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=8FEF7F
 // Broiler-Falsified-If: a realm is handed to a surface a composition did not register, or outside a step
 // Broiler-Human:        PENDING

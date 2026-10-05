@@ -88,7 +88,7 @@ internal sealed partial class JsRealm
     /// <c>SetupGlobal</c> published, and one entry in the realm's setup list is one place to keep
     /// that ordering constraint rather than three.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5B8C23
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8C9E0C
     // Broiler-Human:        PENDING
     private void SetupAsyncGenerator()
     {
@@ -147,18 +147,18 @@ internal sealed partial class JsRealm
             JsProperty.Data(
                 JsValue.String("AsyncGeneratorFunction"), JsPropertyAttributes.Configurable));
 
-        // THE CONSTRUCTOR EXISTS AND REFUSES, for the reason `Function`, `GeneratorFunction` and
-        // `AsyncFunction` do. It is three hops off an async generator function and is a global
-        // nowhere, but a program that walks there finds the intrinsic the specification says is
-        // there rather than an absence whose cause it has to guess.
+        // THE CONSTRUCTOR BUILDS AN ASYNC GENERATOR FROM SOURCE OR REFUSES, as `Function`,
+        // `GeneratorFunction` and `AsyncFunction` do, by whether the composition admitted
+        // broiler.javascript.dynamic (JSP-10, JSC-240).
         var constructor = new JsNativeFunction(
+            this,
             GlobalFunctionConstructor(),
             "AsyncGeneratorFunction",
             1,
             static (engine, thisValue, arguments) =>
-                engine.ThrowTypeError(AsyncGeneratorFunctionRefusal),
+                FromSourceOrRefuse(engine, arguments, "async function*", AsyncGeneratorFunctionRefusal),
             static (engine, thisValue, arguments) =>
-                engine.ThrowTypeError(AsyncGeneratorFunctionRefusal));
+                FromSourceOrRefuse(engine, arguments, "async function*", AsyncGeneratorFunctionRefusal));
 
         constructor.SetOwnProperty(
             "prototype",
@@ -173,12 +173,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>What a call or a construction of <c>AsyncGeneratorFunction</c> is told, and why.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B75E95
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=158676
     // Broiler-Human:        PENDING
     private const string AsyncGeneratorFunctionRefusal =
-        "AsyncGeneratorFunction: the broiler.javascript.wide manifest does not admit the " +
-        "AsyncGeneratorFunction constructor, because this profile declares no guest-initiated " +
-        "load and cannot turn source into code at run time";
+        "AsyncGeneratorFunction: this realm's composition did not admit broiler.javascript.dynamic, so no " +
+        "source is turned into code at run time";
 
     /// <summary>Builds an async generator object over a frame that has not started.</summary>
     /// <remarks>
@@ -186,14 +185,14 @@ internal sealed partial class JsRealm
     /// <c>new</c> reads it, which is what <c>OrdinaryCreateFromConstructor</c> does and what makes
     /// <c>Object.getPrototypeOf(g()) === g.prototype</c> a fact about the program.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6D2BD2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6DB680
     // Broiler-Human:        PENDING
     internal JsAsyncGenerator CreateAsyncGenerator(JsScriptFunction function, JsFrame frame)
     {
         var declared = engine.GetProperty(JsValue.Object(function), "prototype");
 
         return new JsAsyncGenerator(
-            declared.IsObject ? declared.AsObject() : AsyncGeneratorPrototype, frame);
+            declared.IsObject ? declared.AsObject() : function.Realm!.AsyncGeneratorPrototype, frame);
     }
 
     /// <summary>
@@ -404,7 +403,7 @@ internal sealed partial class JsRealm
     /// <c>return</c>; a <c>return</c> whose value rejects is already closing it, and closing it a
     /// second time would call <c>return</c> twice on an iterator that has been told once.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=92389F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=45F61C
     // Broiler-Human:        PENDING
     private JsValue AsyncFromSyncContinuation(
         JsEngine owner, JsValue step, JsIteratorRecord record, bool closeOnRejection)
@@ -417,7 +416,21 @@ internal sealed partial class JsRealm
             record.Done = true;
         }
 
-        var wrapped = PromiseResolveValue(owner, value);
+        // PromiseResolve can throw before any promise exists - a value whose `constructor` getter
+        // throws - and that abandons the iteration as a rejection does, so the synchronous
+        // iterator is closed for it under the same condition (27.1.6.4 step 6). Until 2026-10-03
+        // the throw reached the caller with the iterator left open (JSC-252).
+        JsPromiseObject wrapped;
+
+        try
+        {
+            wrapped = PromiseResolveValue(owner, value);
+        }
+        catch (JsThrow) when (!done && closeOnRejection)
+        {
+            owner.CloseIteratorQuietly(record);
+            throw;
+        }
 
         var onFulfil = JsValue.Object(Native("", 1, (inner, thisValue, arguments) =>
         {

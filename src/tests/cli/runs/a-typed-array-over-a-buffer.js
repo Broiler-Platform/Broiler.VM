@@ -14,6 +14,11 @@
 // (Amended 2026-09-22, JSeal B07. The same line also printed `typeof BigInt64Array` and expected
 // `undefined` while BigInt typed arrays were absent; they exist now wherever BigInt is admitted,
 // so its third field answers `function`. The first two, the deliberate absences, are unchanged.)
+//
+// (Amended 2026-10-04, JSC-266. The two are no longer absent: they are built behind their own
+// identity, `broiler.javascript.shared`, which the CLI admits with every other surface, so the first
+// two fields answer `function` and `object`. The separate identity is what the paragraph above asked for, and
+// a composition that declines it still meets `undefined` for both.)
 
 var bytes = new Uint8Array(4);
 bytes[0] = 255;

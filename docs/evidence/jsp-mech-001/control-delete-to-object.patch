@@ -1,0 +1,29 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+index aae816a..b56673f 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+@@ -8064,7 +8064,7 @@ internal sealed partial class JsEngine
+                             // `TypeError` and a primitive is asked through its wrapper, so
+                             // `delete "abc".length` is the refusal a String's own non-configurable
+                             // `length` gives and not a `true` nobody checked (JSC-236).
+-                            var went = ToObject(target).DeleteOwnProperty(key);
++                            var went = !target.IsObject || target.AsObject().DeleteOwnProperty(key);
+ 
+                             // A REFUSED DELETE ANSWERS `false` IN SLOPPY CODE AND THROWS IN STRICT
+                             // CODE, and the pair is the same rule the assignment above follows: an
+@@ -8094,11 +8094,10 @@ internal sealed partial class JsEngine
+ 
+                             // The base is converted before the key, as `delete` orders the two, so
+                             // `delete undefined[k]` throws without running `k`'s `toString`.
+-                            var holder = ToObject(target);
+-
+-                            var removed = key.IsSymbol
+-                                ? holder.DeleteOwnSymbol(key.AsSymbol())
+-                                : holder.DeleteOwnProperty(ToPropertyKey(key));
++                            var removed = !target.IsObject ||
++                                (key.IsSymbol
++                                    ? target.AsObject().DeleteOwnSymbol(key.AsSymbol())
++                                    : target.AsObject().DeleteOwnProperty(ToPropertyKey(key)));
+ 
+                             if (!removed && strict)
+                             {

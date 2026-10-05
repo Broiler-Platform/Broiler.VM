@@ -1,0 +1,7 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.ExecutionOnly.dll --corpus src/tests/corpus/js-1
+broiler-js-execution-only: 22 checks passed, core contract version 1
+# exit 0
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --write <scratch>/corpus
+broiler-js-slice-compiler: wrote 171 entries (53 of them well-formed controls, 25 of those compiled from retained source) to <scratch>/corpus
+# exit 0
+# re-derived entries whose bytes differ from the retained ones: 0

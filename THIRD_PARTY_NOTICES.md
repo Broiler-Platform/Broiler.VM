@@ -268,19 +268,27 @@ terms for Unicode-provided data.** The pattern is the one `Broiler.Unicode`'s ow
 `UnicodeData.txt`, `DerivedNormalizationProps.txt`, `NormalizationTest.txt` (test input only),
 `PropertyAliases.txt`, `PropertyValueAliases.txt`, `extracted/DerivedGeneralCategory.txt`,
 `extracted/DerivedBinaryProperties.txt`, `Scripts.txt`, `ScriptExtensions.txt`, `PropList.txt`,
-`DerivedCoreProperties.txt`, `emoji/emoji-data.txt` and `CaseFolding.txt`; and the licence text from
-`https://www.unicode.org/license.txt`. They are archived unmodified at
+`DerivedCoreProperties.txt`, `emoji/emoji-data.txt` and `CaseFolding.txt`, and since 2026-10-03
+`SpecialCasing.txt`; and the licence text from `https://www.unicode.org/license.txt`. They are archived unmodified at
 [`src/tests/unicode/pins/`](src/tests/unicode/pins/README.md), where `unicode.pin` records each
 file's length and SHA-256 and rule **N22** hashes them on every run of the architecture suite.
 Retrieved twice on 2026-09-22 by Claude with the owner's permission given in conversation; the two
-retrievals were byte-identical.
+retrievals were byte-identical. `SpecialCasing.txt` was retrieved the same way on 2026-10-03, while
+continuing the roadmap at the owner's request, with no permission specific to it (`unicode.pin` says
+so). `auxiliary/GraphemeBreakProperty.txt`, `auxiliary/WordBreakProperty.txt` and
+`auxiliary/SentenceBreakProperty.txt`, with the three matching `*BreakTest.txt` files (test input
+only), were retrieved the same way on 2026-10-04 for `Intl.Segmenter` (decision
+[JSD-0050](src/Broiler.VM.Profile.JavaScript/docs/decisions/0050-intl-segmenter.md)). Their tables are
+generated not here but by `CldrTableGenerator` into the Intl data assembly, described in the CLDR
+entry below.
 
 **What is derived, and where it ships.** `UnicodeTableGenerator` (architecture test project, not
-shipped) writes three source files of tables from those files:
+shipped) writes four source files of tables from those files:
 `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` and
 `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs`, compiled into
 **`Broiler.VM.Profile.JavaScript.Format.dll`**, and
-`src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs`, compiled into
+`src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` and, since 2026-10-03,
+`src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs`, compiled into
 **`Broiler.VM.Profile.JavaScript.dll`**. The derived tables therefore ship in:
 
 - **the packages** `Broiler.VM.Profile.JavaScript.Format` and `Broiler.VM.Profile.JavaScript`
@@ -365,3 +373,252 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 ```
+
+## CLDR data, and the tables derived from it
+
+**Added 2026-10-04 (phase F7, slices I0 and I1; decision
+[JSD-0043](src/Broiler.VM.Profile.JavaScript/docs/decisions/0043-intl-data-boundary-and-collation.md)).
+The second entry in this file whose material is compiled into a shipped assembly, and the first
+whose assembly holds nothing else.**
+
+This repository contains data files published by the Unicode Consortium's Common Locale Data
+Repository (CLDR) and tables generated from them. **Those data files and the tables derived from
+them remain subject to the [Unicode Terms of Use](https://www.unicode.org/terms_of_use.html), which
+apply the Unicode License v3 (SPDX `Unicode-3.0`) to data files. The Apache License 2.0 in
+[`LICENSE`](LICENSE) applies to Broiler's source code, the generator and the code that reads the
+tables included, and does not replace the Unicode terms for Unicode-provided data.** The pattern is
+the one the entry above uses for the UCD.
+
+**What was ingested.** CLDR 48.2.0: from the npm packages `cldr-core` and `cldr-bcp47`, the
+supplemental files `likelySubtags.json`, `aliases.json` and `parentLocales.json`, the files
+`availableLocales.json` and `defaultContent.json`, every `bcp47/*.json` file and both
+`package.json` files; and from the CLDR release's `common/` tree, `uca/allkeys_CLDR.txt`, the two
+short CollationTest files (test input only) and `collation/root.xml`, `de.xml` and `en.xml`, and (added 2026-10-05, phase F8's slice T2, JSD-0055)
+`main/root.xml`, whose ISO 8601 calendar patterns the date tables carry; and (added 2026-10-05,
+phase F8's slice T4, JSD-0057) from the npm packages `cldr-cal-buddhist-full`, `-chinese-`,
+`-coptic-`, `-dangi-`, `-ethiopic-`, `-hebrew-`, `-indian-`, `-islamic-`, `-japanese-`, `-persian-`
+and `-roc-full`, each one's `package.json` and its `ca-*.json` files for `de` and `en`, and from
+`cldr-dates-full` `ca-generic.json` for `de` and `en`; and (added 2026-10-05, phase F8's slice T5,
+JSD-0058) from `cldr-core` `supplemental/metaZones.json` and `supplemental/primaryZones.json`; and
+the licence text. They are archived unmodified at [`src/tests/cldr/pins/`](src/tests/cldr/pins/README.md),
+where `cldr.pin` records each file's length and SHA-256 and rule **N27** hashes them on every run of
+the architecture suite. The pin and its README record how and when they were retrieved. Since the
+same day, for `Intl.NumberFormat` (decision
+[JSD-0044](src/Broiler.VM.Profile.JavaScript/docs/decisions/0044-intl-numberformat.md)), the archive
+also holds from `cldr-numbers-full` `numbers.json` for `de`, `en` and `und` and `currencies.json` for
+`de` and `en`, from `cldr-units-full` `units.json` for `de` and `en`, and from `cldr-core`
+`currencyData.json`, `numberingSystems.json`, `plurals.json` and `pluralRanges.json`. Since the same
+day, for `Intl.DateTimeFormat` (decision
+[JSD-0045](src/Broiler.VM.Profile.JavaScript/docs/decisions/0045-intl-datetimeformat.md)), it also
+holds from `cldr-dates-full` `ca-gregorian.json`, `dateFields.json` and `timeZoneNames.json` for `de`
+and `en`, and from `cldr-core` `timeData.json` and `dayPeriods.json`. Since the same day, for
+`Intl.Locale` (decision
+[JSD-0046](src/Broiler.VM.Profile.JavaScript/docs/decisions/0046-intl-locale.md)), it also holds
+from `cldr-core` `scriptMetadata.json` and `weekData.json`, and for `Intl.PluralRules` (decision
+[JSD-0047](src/Broiler.VM.Profile.JavaScript/docs/decisions/0047-intl-pluralrules.md))
+`ordinals.json`. Since the same day, for `Intl.ListFormat` (decision
+[JSD-0048](src/Broiler.VM.Profile.JavaScript/docs/decisions/0048-intl-listformat.md)), it also
+holds from `cldr-misc-full` `listPatterns.json` for `de` and `en`. Since 2026-10-05, for
+`Intl.DisplayNames` (decision
+[JSD-0052](src/Broiler.VM.Profile.JavaScript/docs/decisions/0052-intl-displaynames.md)), it also
+holds from `cldr-localenames-full` `languages.json`, `territories.json`, `scripts.json`,
+`variants.json` and `localeDisplayNames.json` for `de` and `en`. Since the same day, for
+`Intl.DateTimeFormat` in the CLDR calendars (decision
+[JSD-0057](src/Broiler.VM.Profile.JavaScript/docs/decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md)),
+it also holds the eleven `cldr-cal-*-full` packages' calendar files and `ca-generic.json` for `de`
+and `en`. Since the same day, for the time zones' names (decision
+[JSD-0058](src/Broiler.VM.Profile.JavaScript/docs/decisions/0058-time-zone-names.md)), it also holds
+from `cldr-core` `metaZones.json` and `primaryZones.json`.
+
+**What is derived, and where it ships.** `CldrTableGenerator` (architecture test project, not
+shipped) writes one source file of tables from those files and the pinned UCD:
+`src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N28** holds to the generator byte for
+byte. It carries likely subtags, the language, script, region, variant and subdivision aliases, the
+BCP 47 keys and types, the supported locales, the root collation and three tailorings, the UCD's
+Soft_Dotted ranges, and since slice I2 each language's number patterns and symbols, currency names,
+unit patterns and plural rules, the currency fraction digits and the numbering systems' digits, and
+since slice I3 each language's Gregorian calendar names and patterns, date field names and UTC and GMT
+zone names, the hour cycles of the supported regions and the day period rules, and since slice I4
+the hour cycles and weeks of every region, the scripts' line directions, and each language's ordinal
+plural rules, list patterns, relative time patterns and duration patterns, and each language's names
+of languages, regions, scripts, variants, calendars and date fields, and from the UCD the break
+properties `Intl.Segmenter` reads, and since slice T4 each language's names and patterns in the
+calendars of the Intl era and month code proposal, as layers over its Gregorian data, and since
+slice T5 each language's metazone and zone names and exemplar cities, and the metazone periods,
+golden zones and primary zones those names are chosen by. The derived tables
+therefore ship in:
+
+- **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);
+- **the composition images that admit `Intl`**: the published outputs of
+  `Broiler.VM.Composition.JavaScript.SliceCompiler` and `Broiler.VM.Composition.JavaScript.Conformance`.
+  No other composition references the assembly, so no other image carries the data.
+
+**How the notice travels.** As for the UCD entry above: this file is packed into every package this
+repository produces, so the Intl package carries it, and the full CLDR licence text is reproduced
+verbatim below. Rule N28 asserts that it is the archived text, character for character. The
+generated file names the licence in a comment below its generated header. **For the composition
+images the notice is not yet carried**, for the reason the entry above records; that is owed rather
+than met.
+
+**Owner decisions, and what is not given.** JSD-0027's owner decision (c) asks for a size budget from
+a measured prototype. The tables measured 325,646 bytes of data on 2026-10-04, in an assembly of
+333,312 bytes, and 438,831 bytes in an assembly of 448,000 once slice I2's data joined them the same
+day. Rule N28 held them under a provisional bound of 512 KiB that JSD-0043 records, until the
+repository owner set the budget at 768 KiB on 2026-10-05, when `Intl.DisplayNames`'s names needed
+more. They measured 572,024 bytes that day, in an assembly of 583,680 bytes. **The release owner's
+co-signature this file requires for ingested material is not given.**
+
+The CLDR licence text, as archived at `src/tests/cldr/pins/cldr-LICENSE.txt`:
+
+```text
+UNICODE LICENSE V3
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright © 2004-2026 Unicode, Inc.
+
+NOTICE TO USER: Carefully read the following legal agreement. BY
+DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
+SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
+TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
+DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of data files and any associated documentation (the "Data Files") or
+software and any associated documentation (the "Software") to deal in the
+Data Files or Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, and/or sell
+copies of the Data Files or Software, and to permit persons to whom the
+Data Files or Software are furnished to do so, provided that either (a)
+this copyright and permission notice appear with all copies of the Data
+Files or Software, or (b) this copyright and permission notice appear in
+associated Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
+THIRD PARTY RIGHTS.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
+FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall
+not be used in advertising or otherwise to promote the sale, use or other
+dealings in these Data Files or Software without prior written
+authorization of the copyright holder.
+
+SPDX-License-Identifier: Unicode-3.0
+```
+
+## IANA Time Zone Database data, and the tables derived from it
+
+**Added 2026-10-05 (phase F8; decision
+[JSD-0053](src/Broiler.VM.Profile.JavaScript/docs/decisions/0053-time-zone-data-and-temporal-admission.md)).
+The third entry in this file whose material is compiled into a shipped assembly; it shares the CLDR
+entry's assembly.**
+
+This repository contains a release of the IANA Time Zone Database (tzdb) and tables generated from
+it. **The release's `LICENSE` states: "Unless specified below, all files in the tz code and data
+(including this LICENSE file) are in the public domain." The files it then names - `date.c`,
+`newstrftime.3` and `strftime.c` - are code, are not in the data tarball, and are not here.** No
+licence text therefore has to travel with the derived tables; this entry records where they come
+from all the same, so a reader finds every ingested input in one file.
+
+**What was ingested.** tzdb 2026e's data tarball, `tzdata2026e.tar.gz`, archived unmodified at
+[`src/tests/tzdb/pins/`](src/tests/tzdb/pins/README.md), where `tzdb.pin` records the tarball's
+length, SHA-256 and SHA-512 and the length and SHA-256 of the twelve members a generator reads - the
+source files `africa`, `antarctica`, `asia`, `australasia`, `europe`, `northamerica`,
+`southamerica`, `etcetera` and `backward`, and `zone.tab`, `version` and `LICENSE` - and rule **N29**
+checks them on every run of the architecture suite. The pin and its README record how and when the
+tarball was retrieved.
+
+**What is derived, and where it ships.** `TzdbTableGenerator` (architecture test project, not
+shipped) compiles the source files' zones into UTC offsets and writes
+`src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N30** holds to the generator byte for byte.
+It carries each zone's offsets and transitions, every Zone and Link name with its primary identifier,
+which is taken from CLDR's `bcp47/timezone.json` under the CLDR entry above, and `zone.tab`'s zones of
+each country. The tables therefore ship where the CLDR tables ship: in the package
+`Broiler.VM.Profile.JavaScript.Intl` and the composition images that admit `Intl`.
+
+**Owner decisions, and what is not given.** The repository owner chose on 2026-10-05 to start phase
+F8 by archiving and pinning tzdb, which answers JSD-0027's owner decision (d). The tables count
+against the Intl data budget of 768 KiB that the owner set the same day: with them the data measured
+670,742 bytes. **The release owner's co-signature this file requires for ingested material is not
+given.**
+
+## ICU4X's calendar crates, and the table derived from them
+
+**Added 2026-10-05 (phase F8, slice T3; decision
+[JSD-0056](src/Broiler.VM.Profile.JavaScript/docs/decisions/0056-temporal-in-the-cldr-calendars.md)).
+The fourth entry in this file whose material is compiled into a shipped assembly; it shares the CLDR
+entry's assembly.**
+
+This repository contains two crates of the ICU4X project, a table generated from them, and code
+ported from one of them:
+
+- **`icu_calendar` 2.3.0**, under the Unicode License v3 (SPDX `Unicode-3.0`), whose text the CLDR
+  entry above carries; its own copy is the crate's `LICENSE`, `Copyright © 2020-2024 Unicode, Inc.`
+- **`calendrical_calculations` 0.2.4**, under the Apache License 2.0, the licence of this
+  repository's own code. Its files state that they implement algorithms from *Calendrical
+  Calculations* by Reingold and Dershowitz (4th edition, 2018), which their authors released as Lisp
+  code under the Apache License 2.0. The crate carries no `NOTICE` file.
+
+**What was ingested.** Both crates as crates.io serves them, archived unmodified at
+[`src/tests/calendars/pins/`](src/tests/calendars/pins/README.md), where `calendars.pin` records each
+crate's length, SHA-256 and SHA-512 and the length and SHA-256 of the nine members a generator reads -
+`china_data.rs`, `korea_data.rs`, `qing_data.rs` and `ummalqura_data.rs` of `icu_calendar`, `persian.rs`
+of `calendrical_calculations`, and each crate's `Cargo.toml` and `LICENSE` - and rule **N31** checks
+them on every run of the architecture suite.
+
+**What is derived, and where it ships.** `CalendarTableGenerator` (architecture test project, not
+shipped) reads the Chinese, Korean, Qing-era and Umm al-Qura years those files state and the Persian
+calendar's 78 corrections, and writes `src/Broiler.VM.Profile.JavaScript.Intl/JsCalendarTables.g.cs`,
+compiled into **`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N32** holds to the generator
+byte for byte. **The years remain subject to the Unicode License v3**, and the corrections to the
+Apache License 2.0; the generated file says so. **One function of `icu_calendar` is ported**: the
+approximation of a Chinese or Korean year by mean new moons and mean solar terms
+(`src/cal/east_asian_traditional/simple.rs`), as `JsEastAsianCalendar.Approximate` in
+`src/Broiler.VM.Profile.JavaScript/JsCalendars.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.dll`**; that port is a derivative of Unicode-licensed software, and
+this entry is the notice the licence's condition (b) asks associated documentation to carry. The other
+calendars' arithmetic in that file is written from *Calendrical Calculations*' published formulas and
+the calendars' own rules.
+
+**Used to test, not shipped.** `src/tests/temporal/calendars/icu4x-reference.rs` is a program this
+repository wrote; built against the archived crates and the `icu_calendar_data` 2.3.0 crate, which is
+not archived, it wrote `temporal-calendars.icu4x-2.3.0.txt`, ICU4X's answers, which the slice
+compiler's check compares. `temporal-calendars.polyfill-e8cc03fc.txt` beside it is the reference
+polyfill's answer, under the next entry.
+
+**Owner decisions, and what is not given.** The repository owner asked on 2026-10-05 for phase F8's
+slices to be continued; JSD-0056 names the source. The table counts against the Intl data budget of
+768 KiB: with it the data measures 679,058 bytes. **The release owner's co-signature this file
+requires for ingested material is not given.**
+
+## The Temporal proposal's reference polyfill, whose answers are retained
+
+**Added 2026-10-05 (phase F8, slice T1; decision
+[JSD-0054](src/Broiler.VM.Profile.JavaScript/docs/decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md)).
+Nothing of it ships, and none of its code is in this repository.**
+
+`src/tests/temporal/temporal.polyfill-e8cc03fc.txt` is the output of a program this repository wrote,
+`src/tests/temporal/temporal.js`, run under the reference polyfill in `polyfill/lib` of
+[tc39/proposal-temporal](https://github.com/tc39/proposal-temporal) at
+`e8cc03fc970a65a3359e8870e3b35e687ac94e55`, which is licensed under the ISC licence. The polyfill and
+its three runtime dependencies were installed outside the repository for the run and are not
+archived. The file holds the answers the polyfill gave, one per line, as the slice compiler's check
+compares them; it reproduces none of the polyfill's code or text, so no licence text travels with it.
+This entry records the source so a reader finds every reference the tree's datasets were checked
+against in one file.
+
+The same holds for the answers of the slices that followed, each from a program of this repository's
+run under the same polyfill: `src/tests/temporal/intl/temporal-intl.polyfill-e8cc03fc.txt` (slice T2,
+JSD-0055), `src/tests/temporal/calendars/temporal-calendars.polyfill-e8cc03fc.txt` (slice T3,
+JSD-0056), `src/tests/temporal/calendars-intl/calendar-formats.polyfill-e8cc03fc.txt` (slice T4,
+JSD-0057) and `src/tests/temporal/zone-names/zone-names.polyfill-e8cc03fc.txt` (slice T5, JSD-0058).

@@ -1,0 +1,14 @@
+bundle JS-10-002
+evidence-class packaging
+decision The candidate set is recorded as this profile's packable baseline if every family package's metadata names only Broiler.VM packages, the pristine consumer restores and runs against it with upstream unreachable, rolls back to the published previous set and forward again, and the negative control fails to restore; otherwise the bundle records which step failed and no baseline is taken.
+collected 2026-10-05T12:09:44Z
+commit 6ac061e09f33e669e6406c0cb3b04a519bc8e83a
+tree clean
+sdk 10.0.401
+machine Linux-6.18.44-fc-v70-x86_64-with-glibc2.39 x86_64 cpus=4
+candidate 0.1.0-preview.6.f9-candidate
+previous 0.1.0-preview.5 from https://api.nuget.org/v3-flatcontainer/{id}/0.1.0-preview.5/{id}.0.1.0-preview.5.nupkg
+previous-packages Broiler.VM.Abstractions Broiler.VM.Binary Broiler.VM.Runtime Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Compiler
+negative-control 0.1.0-preview.4
+upstream-during-restore http://127.0.0.1:9
+aot-seeded microsoft.aspnetcore.app.runtime.linux-x64 microsoft.dotnet.ilcompiler microsoft.net.illink.tasks microsoft.netcore.app.runtime.linux-x64 microsoft.netcore.app.runtime.nativeaot.linux-x64 runtime.linux-x64.microsoft.dotnet.ilcompiler

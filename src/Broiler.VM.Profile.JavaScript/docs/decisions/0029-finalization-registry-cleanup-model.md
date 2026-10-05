@@ -335,3 +335,77 @@ weak symbol key existing and does not depend on D03-a.
 - **Human re-review of the `Security=High` falsifier line** for `JsFinalizationRegistryObject`
   (`JsCollections.cs`, `HUMAN_REVIEW.md` fingerprint `66E399`). D03-a rewrites that line (see its
   *Owes*), and D03-a does not count as done until the owner has reviewed the new line.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the record, keep the inert default, and leave D03-a unscheduled.**
+
+- **The model in section 4 is sound and worth fixing in writing now**, because it answers the
+  question the type's own remarks left open (when a target counts as collected) and forbids the two
+  dangerous shapes outright: guest code from a CLR finalizer, and a sweep at a moment the guest
+  chose.
+- **Do not schedule D03-a until an embedding needs cleanup to arrive.** No workload in `src/tests`
+  depends on it, and the inert registry is a declared, safe divergence.
+- **Two of the record's slices are already done:** D03-b (`cleanupSome` removed by JSP-7, JSC-239)
+  and D03-c (non-registered Symbols as weak targets and tokens, JSP-5, JSC-237). Mark both done when
+  signing.
+- **Switch location (4.1): a descriptor door beside `DescriptorHostingRealms`**, so the choice is the
+  composition's, fixed before the realm exists, and visible in the descriptor rather than in engine
+  options a host can change per run.
+- **Take D03-a's architecture test (7) on its own now:** a rule failing if any type in the
+  `Broiler.VM.Profile.JavaScript*` assemblies declares a finalizer. It costs nothing, needs no model,
+  and puts the record's main safety claim under test today.
+
+**Taken on 2026-10-03, ahead of the rest:** rule N25 (`N25NoFinalizerRuleTests`) fails when any
+type in the profile's product assemblies declares a destructor or a `Finalize` method, with a
+witness for the rejecting direction. It was watched failing against a destructor injected into
+`JsCollections.cs` and passing after the revert. This is D03-a's test (7) on its own; the model is
+still unscheduled and this record still unsigned.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **D03-a is scheduled**, as phase F4 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), and the plan proposes that the CLI and
+  conformance compositions turn the sweep on. The model in section 4 is unchanged, and rule N25
+  stays: no guest code from a CLR finalizer.
+
+## 11. 2026-10-04: D03-a performed (phase F4)
+
+*Recorded as the slice was performed. It signs nothing and takes nothing: this record keeps its
+status line, and the owner's review of the rewritten `Security=High` falsifier line is still owed
+(section 10). Corrections entry [JSC-263](../roadmap.corrections.md#jsc-263).*
+
+- **The switch is a descriptor door**, as the recommendation of 2026-10-03 proposed:
+  `JavaScriptProfile.DescriptorSweepingFinalization(surface, handleStress, surfaces)`. Every other door
+  builds the inert registry, unchanged.
+- **Sections 4.2 to 4.7 are built as written.** The engine keeps its registries weakly in creation
+  order. `#drain-jobs` sweeps once before its first job and `#step-jobs` before each turn's job, both
+  on the guest stack inside the host step; `JsHostRealm.DrainJobs`, a script and a job never sweep. A
+  sweep charges one unit per registry and per registration, marks every registration whose target the
+  eligibility answers collected, lets the dead reference go, and queues one cleanup job per registry
+  with marked registrations and none queued. The job removes each marked registration before calling
+  the callback with its held value, and stops at a throw, leaving the rest marked for the next sweep's
+  job. `unregister` removes a marked registration too. Dropping the queue at unwind forgets the queued
+  cleanups, so the marks survive for the next drain.
+- **The section 6 seam** is `IJsFinalizationEligibility`, internal, with a scripted implementation a
+  check installs through an internal `JsHostRealm` method reached by `UnsafeAccessor`. Seven checks
+  in the slice compiler's `--checks` hold acceptance items (1), (1a), (2), (3), the inert default and
+  (8) - the last on the production path, with forced collections. Item (7) is rule N25, taken on
+  2026-10-03. Items (4), (5) and (6) are held by the code paths named above and by no check of their
+  own.
+- **The model is on in the CLI and the conformance runner**, which D03-a's *Excludes* left to "its own
+  decision" and the plan's phase F4 proposes. The CLI collects once before its drain, which section 5
+  allows a host and the profile never does, so a callback for a target its program dropped arrives;
+  `runs/a-cleanup-callback-arrives.js` pins that. The conformance runner never collects, so no test's
+  verdict depends on the collector, and the suite's `host-gc-required` tests stay skipped.
+- **In the value form a dropped target can stay reachable** through the instance's handle table until
+  it compacts, so the same program delivers nothing there. That is the implementation-dependent
+  liveness section 5 names, not a defect of the model.

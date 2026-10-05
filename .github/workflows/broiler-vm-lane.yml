@@ -186,8 +186,12 @@ jobs:
           # Broiler.VM.Ubc and Broiler.VM.Emitter.Bytecode packable, because the packable
           # WebAssembly profile now references the first. This number was not moved with them
           # either, and every push of that milestone's branch failed here until it was.
-          test "$nupkg" -eq 10
-          test "$snupkg" -eq 10
+          # Eleven since 3fe2681 (2026-10-04), where JSD-0043 made the Intl data assembly,
+          # Broiler.VM.Profile.JavaScript.Intl, a packable project of its own, so that a
+          # composition admitting broiler.javascript.intl can reference it. This number was
+          # not moved with it, and every push of phase F7 failed here until it was.
+          test "$nupkg" -eq 11
+          test "$snupkg" -eq 11
 
       # The one check that cannot be done from inside the solution: a consumer with no project
       # reference, restoring from a feed whose only source is the packages just built.

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   29
-// Annotated:        29/29
-// Exempt:           35
-// Human-reviewed:   0/29
+// Relevant units:   38
+// Annotated:        38/38
+// Exempt:           38
+// Human-reviewed:   0/38
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         3/3
 // Resource impact:  2/10 max
-// Unverified:       29
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -212,12 +212,18 @@ internal sealed class JsEnvironment
 internal abstract class JsFunction : JsObject
 {
     /// <summary>Creates a function object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5BA6AC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1DA580
     // Broiler-Human:        PENDING
-    private protected JsFunction(JsObject? prototype)
-        : base(prototype, "Function")
-    {
-    }
+    private protected JsFunction(JsObject? prototype, JsRealm? realm)
+        : base(prototype, "Function") => Realm = realm;
+
+    /// <summary>
+    /// The function's <c>[[Realm]]</c>: the realm that was running when it was made, which runs
+    /// while it does (JSD-0030 SR-2). A bound function has none and is answered through its target.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1B976B
+    // Broiler-Human:        PENDING
+    internal JsRealm? Realm { get; }
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=24E030
@@ -260,11 +266,16 @@ internal sealed class JsNativeFunction : JsFunction
     private readonly JsNativeBody? construct;
 
     /// <summary>Creates a built-in.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3F38CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8318EF
     // Broiler-Human:        PENDING
     internal JsNativeFunction(
-        JsObject? prototype, string name, int arity, JsNativeBody body, JsNativeBody? construct = null)
-        : base(prototype)
+        JsRealm realm,
+        JsObject? prototype,
+        string name,
+        int arity,
+        JsNativeBody body,
+        JsNativeBody? construct = null)
+        : base(prototype, realm)
     {
         this.body = body;
         this.construct = construct;
@@ -275,7 +286,21 @@ internal sealed class JsNativeFunction : JsFunction
 
         SetOwnProperty(
             "name", JsProperty.Data(JsValue.String(name), JsPropertyAttributes.Configurable));
+
+        if (construct is not null)
+        {
+            IntrinsicOrdinal = realm.NoteIntrinsicConstructor(this);
+        }
     }
+
+    /// <summary>
+    /// Where this constructor stands among the constructors its realm built while it was being built,
+    /// or -1 for one made afterwards; the same built-in has the same ordinal in every realm of one
+    /// engine, which is how another realm's counterpart is found (<see cref="JsRealm.CounterpartOf"/>).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8C82D9
+    // Broiler-Human:        PENDING
+    internal int IntrinsicOrdinal { get; } = -1;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=67614C
@@ -342,11 +367,11 @@ internal sealed class JsNativeFunction : JsFunction
 internal sealed class JsScriptFunction : JsFunction
 {
     /// <summary>Creates a closure over <paramref name="environment"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C030F0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=55A16D
     // Broiler-Human:        PENDING
     internal JsScriptFunction(
-        JsObject? prototype, JsProgram program, int unit, JsEnvironment? environment)
-        : base(prototype)
+        JsRealm realm, JsObject? prototype, JsProgram program, int unit, JsEnvironment? environment)
+        : base(prototype, realm)
     {
         Program = program;
         Unit = unit;
@@ -360,6 +385,145 @@ internal sealed class JsScriptFunction : JsFunction
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9D1393
     // Broiler-Human:        PENDING
     internal JsProgram Program { get; }
+
+    /// <summary>
+    /// Whether this is a sloppy, plain function: the one kind the legacy <c>caller</c> and
+    /// <c>arguments</c> properties belong to.
+    /// </summary>
+    /// <remarks>
+    /// <b>Plain means constructible and not a class</b>: a function declaration or expression, or
+    /// one the <c>Function</c> constructor made. An arrow, a method, a generator and an async
+    /// function are none of these, and a strict function is forbidden the extension (17.1).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EF4324
+    // Broiler-Human:        PENDING
+    internal bool LegacyReflective
+    {
+        get
+        {
+            var row = Program.Functions[Unit];
+            return !row.IsStrict && !row.IsClassConstructor &&
+                (row.Flags & Format.JsFormat.FunctionFlags.Constructible) != 0;
+        }
+    }
+
+    /// <summary>
+    /// The two getters this function's own <c>caller</c> and <c>arguments</c> are made from, while
+    /// they have not been made yet.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The two properties are made when they are first needed, and not when the function is
+    /// created.</b> A sloppy closure is created far more often than its <c>caller</c> is read, and
+    /// two more own properties on every one would be paid by every program for a reflection almost
+    /// none uses. So they are made the first time anything could observe them: a read or a
+    /// definition of either name, any other definition, a listing of the keys, and the object
+    /// ceasing to be extensible. They then stand after the properties the function was created
+    /// with, as accessors that are neither enumerable nor writable and are configurable.
+    /// </para>
+    /// <para>
+    /// <b>Accessors and not data properties</b>, because the value changes with the call stack and
+    /// a data property that is not writable and not configurable may not change (the invariant of
+    /// 10.1.6.3). The getters are the realm's, and answer from the engine's record of the sloppy
+    /// frames that are running (<see cref="JsEngine.LegacyCaller"/>).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8B6217
+    // Broiler-Human:        PENDING
+    internal (JsObject Caller, JsObject Arguments)? LegacyAccessors { get; set; }
+
+    /// <summary>Makes the legacy properties, if they have not been made.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E62C24
+    // Broiler-Human:        PENDING
+    private void MakeLegacyProperties()
+    {
+        if (LegacyAccessors is not { } accessors)
+        {
+            return;
+        }
+
+        LegacyAccessors = null;
+        base.SetOwnProperty(
+            "arguments",
+            JsProperty.Accessor(accessors.Arguments, null, JsPropertyAttributes.Configurable));
+
+        base.SetOwnProperty(
+            "caller",
+            JsProperty.Accessor(accessors.Caller, null, JsPropertyAttributes.Configurable));
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=919813
+    // Broiler-Human:        PENDING
+    internal override bool TryGetOwnProperty(string key, out JsProperty property)
+    {
+        if (LegacyAccessors is not null && key is "caller" or "arguments")
+        {
+            MakeLegacyProperties();
+        }
+
+        return base.TryGetOwnProperty(key, out property);
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8B5873
+    // Broiler-Human:        PENDING
+    internal override void SetOwnProperty(string key, JsProperty property)
+    {
+        MakeLegacyProperties();
+        base.SetOwnProperty(key, property);
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A66556
+    // Broiler-Human:        PENDING
+    internal override bool DeleteOwnProperty(string key)
+    {
+        if (LegacyAccessors is not null && key is "caller" or "arguments")
+        {
+            MakeLegacyProperties();
+        }
+
+        return base.DeleteOwnProperty(key);
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E1AAA7
+    // Broiler-Human:        PENDING
+    internal override System.Collections.Generic.List<string> OwnPropertyNames()
+    {
+        MakeLegacyProperties();
+        return base.OwnPropertyNames();
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=569B82
+    // Broiler-Human:        PENDING
+    internal override int OwnPropertyCount
+    {
+        get
+        {
+            MakeLegacyProperties();
+            return base.OwnPropertyCount;
+        }
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=060D5A
+    // Broiler-Human:        PENDING
+    internal override bool Extensible
+    {
+        get => base.Extensible;
+        set
+        {
+            if (!value)
+            {
+                MakeLegacyProperties();
+            }
+
+            base.Extensible = value;
+        }
+    }
 
     /// <summary>Which code unit the body is.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=90B204
@@ -553,11 +717,11 @@ internal sealed class JsClassElement
 internal sealed class JsBoundFunction : JsFunction
 {
     /// <summary>Creates a bound function.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=83F8C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8846C1
     // Broiler-Human:        PENDING
     internal JsBoundFunction(
         JsObject? prototype, JsObject target, JsValue boundThis, JsValue[] boundArguments)
-        : base(prototype)
+        : base(prototype, null)
     {
         Target = target;
         BoundThis = boundThis;
@@ -654,26 +818,48 @@ internal sealed class JsPrimitiveWrapper : JsObject
         return base.DeleteOwnProperty(key);
     }
 
+    /// <summary>
+    /// Whether <paramref name="key"/> is one of the own properties a String wrapper synthesises:
+    /// <c>length</c>, or an index below it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=ED2D8B
+    // Broiler-Human:        PENDING
+    internal bool IsStringOwnKey(string key) =>
+        Primitive.IsString &&
+        (string.Equals(key, "length", System.StringComparison.Ordinal) ||
+            (IsArrayIndex(key, out var at) && at < Primitive.AsString().Length));
+
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=64CA9C
+    /// <remarks>
+    /// <b>The String exotic object's <c>[[OwnPropertyKeys]]</c></b>: the string's own indices, then
+    /// every other array index the object holds in ascending order, then <c>length</c>, then the
+    /// other String keys in the order they were made. An index added past the string's end sorted
+    /// after <c>length</c>, as though it were an ordinary name (JSP-5, JSC-237).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FB6B46
     // Broiler-Human:        PENDING
     internal override System.Collections.Generic.List<string> OwnPropertyNames()
     {
-        var names = new System.Collections.Generic.List<string>();
-
-        if (Primitive.IsString)
+        if (!Primitive.IsString)
         {
-            var text = Primitive.AsString();
-
-            for (var at = 0; at < text.Length; at++)
-            {
-                names.Add(JsNumberFormat.ToUintString((uint)at));
-            }
-
-            names.Add("length");
+            return base.OwnPropertyNames();
         }
 
-        names.AddRange(base.OwnPropertyNames());
+        var names = new System.Collections.Generic.List<string>();
+        var text = Primitive.AsString();
+
+        for (var at = 0; at < text.Length; at++)
+        {
+            names.Add(JsNumberFormat.ToUintString((uint)at));
+        }
+
+        var indices = new System.Collections.Generic.List<string>();
+        var rest = new System.Collections.Generic.List<string>();
+        CollectOwnNames(indices, rest);
+        SortIndexKeys(indices);
+        names.AddRange(indices);
+        names.Add("length");
+        names.AddRange(rest);
         return names;
     }
 }

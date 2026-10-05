@@ -239,6 +239,17 @@ internal static class WideHost
             var request = new VmInvocationRequest(
                 new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(name)));
 
+            // THIS HOST COLLECTS ONCE BEFORE ITS DRAIN, so a registration whose target the program
+            // let go is found collected when the drain sweeps and its cleanup callback runs. It is
+            // this host's choice and its cost: a collection is process-wide, and this process runs
+            // one program. The profile never collects (JSD-0029 section 5).
+            if (index == count)
+            {
+                System.GC.Collect();
+                System.GC.WaitForPendingFinalizers();
+                System.GC.Collect();
+            }
+
             var result = instance.Invoke(in request, CancellationToken.None);
 
             if (result.Outcome == VmOutcome.ResourceExhaustion)
@@ -293,8 +304,12 @@ internal static class WideHost
     }
 
     /// <summary>The catalog: one profile, arriving through its own static accessor.</summary>
+    /// <remarks>
+    /// <b>This host's realms sweep their finalization registries</b> (phase F4, JSD-0029 D03-a), so a
+    /// cleanup callback arrives at the drain this host invokes after its last script.
+    /// </remarks>
     private static VmCatalog Catalog(bool handleStress) => VmCatalog.CreateBuilder()
-        .Add(handleStress ? JavaScriptProfile.DescriptorUnderHandleStress(null) : JavaScriptProfile.Descriptor)
+        .Add(JavaScriptProfile.DescriptorSweepingFinalization(null, handleStress))
         .Build();
 
     /// <summary>

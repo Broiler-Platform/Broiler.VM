@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   427
-// Annotated:        427/427
+// Relevant units:   442
+// Annotated:        442/442
 // Exempt:           1
-// Human-reviewed:   0/427
+// Human-reviewed:   0/442
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         428/428
+// Criteria:         443/443
 // Resource impact:  4/10 max
-// Unverified:       427
+// Unverified:       442
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal static unsafe class JsValueHelpers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time a
     /// value-form instance asks for it and never in a process that runs no value form.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=2BED28
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=366577
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsValueHelpers()
@@ -206,6 +206,11 @@ internal static unsafe class JsValueHelpers
         slots[(int)JsOpcode.ToNumeric] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&ToNumeric;
         slots[(int)JsOpcode.Increment] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Increment;
         slots[(int)JsOpcode.Decrement] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Decrement;
+        slots[(int)JsOpcode.LoadSuperPropertyKeepKey] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&LoadSuperPropertyKeepKey;
+        slots[(int)JsOpcode.ThrowReferenceError] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&ThrowReferenceError;
+        slots[(int)JsOpcode.GetTemplateObjectWide] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&GetTemplateObjectWide;
+        slots[(int)JsOpcode.GetObjectBinding] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&GetObjectBinding;
+        slots[(int)JsOpcode.SetObjectBinding] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&SetObjectBinding;
 
         slots[JsValueAbi.SettleSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Settle;
         slots[JsValueAbi.PrepareSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, JsValueFrame*, int>)&Prepare;
@@ -1439,6 +1444,46 @@ internal static unsafe class JsValueHelpers
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int Decrement(JsValueFrame* frame, int pc) =>
         JsNativeActivation.StepValue<ArmDecrement>(frame, pc, JsOpcode.Decrement);
+
+    /// <summary>The entry point for <see cref="JsOpcode.LoadSuperPropertyKeepKey"/> (0xB3): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=776FBD
+    // Broiler-Falsified-If: this runs anything other than one LoadSuperPropertyKeepKey at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int LoadSuperPropertyKeepKey(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmLoadSuperPropertyKeepKey>(frame, pc, JsOpcode.LoadSuperPropertyKeepKey);
+
+    /// <summary>The entry point for <see cref="JsOpcode.ThrowReferenceError"/> (0xB4): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=4C9A58
+    // Broiler-Falsified-If: this runs anything other than one ThrowReferenceError at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int ThrowReferenceError(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmThrowReferenceError>(frame, pc, JsOpcode.ThrowReferenceError);
+
+    /// <summary>The entry point for <see cref="JsOpcode.GetTemplateObjectWide"/> (0xB5): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E0FAB1
+    // Broiler-Falsified-If: this runs anything other than one GetTemplateObjectWide at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int GetTemplateObjectWide(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmGetTemplateObjectWide>(frame, pc, JsOpcode.GetTemplateObjectWide);
+
+    /// <summary>The entry point for <see cref="JsOpcode.GetObjectBinding"/> (0xB6): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E5A5C6
+    // Broiler-Falsified-If: this runs anything other than one GetObjectBinding at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int GetObjectBinding(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmGetObjectBinding>(frame, pc, JsOpcode.GetObjectBinding);
+
+    /// <summary>The entry point for <see cref="JsOpcode.SetObjectBinding"/> (0xB7): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=CA4D4D
+    // Broiler-Falsified-If: this runs anything other than one SetObjectBinding at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int SetObjectBinding(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmSetObjectBinding>(frame, pc, JsOpcode.SetObjectBinding);
 
     /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.Nop"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=EE2A74
@@ -3957,6 +4002,96 @@ internal static unsafe class JsValueHelpers
             [System.Runtime.CompilerServices.MethodImpl(
                 System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => JsOpcode.Decrement;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.LoadSuperPropertyKeepKey"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=1B3D7C
+    // Broiler-Falsified-If: this mode names an opcode other than LoadSuperPropertyKeepKey
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmLoadSuperPropertyKeepKey : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.LoadSuperPropertyKeepKey"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D2B6FD
+        // Broiler-Falsified-If: this answers any opcode other than LoadSuperPropertyKeepKey
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.LoadSuperPropertyKeepKey;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.ThrowReferenceError"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=BAC3E4
+    // Broiler-Falsified-If: this mode names an opcode other than ThrowReferenceError
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmThrowReferenceError : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.ThrowReferenceError"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=72968C
+        // Broiler-Falsified-If: this answers any opcode other than ThrowReferenceError
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.ThrowReferenceError;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.GetTemplateObjectWide"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=9C792D
+    // Broiler-Falsified-If: this mode names an opcode other than GetTemplateObjectWide
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmGetTemplateObjectWide : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.GetTemplateObjectWide"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4A1EA7
+        // Broiler-Falsified-If: this answers any opcode other than GetTemplateObjectWide
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.GetTemplateObjectWide;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.GetObjectBinding"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CDD95E
+    // Broiler-Falsified-If: this mode names an opcode other than GetObjectBinding
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmGetObjectBinding : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.GetObjectBinding"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=9D13AD
+        // Broiler-Falsified-If: this answers any opcode other than GetObjectBinding
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.GetObjectBinding;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.SetObjectBinding"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D0865B
+    // Broiler-Falsified-If: this mode names an opcode other than SetObjectBinding
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmSetObjectBinding : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.SetObjectBinding"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A4190C
+        // Broiler-Falsified-If: this answers any opcode other than SetObjectBinding
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.SetObjectBinding;
         }
     }
 }

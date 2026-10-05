@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   41
-// Annotated:        41/41
+// Relevant units:   42
+// Annotated:        42/42
 // Exempt:           0
-// Human-reviewed:   0/41
+// Human-reviewed:   0/42
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       41
+// Unverified:       42
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -641,6 +641,29 @@ public static class JsArtifactWriter
         {
             JavaScriptArtifactWriter.WriteVarUInt(buffer, function);
             JavaScriptArtifactWriter.WriteVarUInt(buffer, referrer);
+        }
+
+        return buffer.ToArray();
+    }
+
+    /// <summary>Encodes the source-text section body (JSD-0037).</summary>
+    /// <remarks>
+    /// A count of rows, then per row the unit, the String constant holding the source, and the
+    /// span's offset and length in UTF-16 code units. Every figure is a variable-length integer.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=76F69C
+    // Broiler-Human:        PENDING
+    public static byte[] SourceText((uint FunctionIndex, uint TextConstant, uint Start, uint Length)[] rows)
+    {
+        var buffer = new System.Collections.Generic.List<byte>();
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)rows.Length);
+
+        foreach (var (function, text, start, length) in rows)
+        {
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, function);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, text);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, start);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, length);
         }
 
         return buffer.ToArray();

@@ -66,7 +66,7 @@ internal sealed partial class JsRealm
     internal JsObject GeneratorFunctionPrototype { get; private set; } = null!;
 
     /// <summary>Builds the generator intrinsics on top of the realm's own iteration protocol.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=16F3AD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3D4FB6
     // Broiler-Human:        PENDING
     private void SetupGenerator()
     {
@@ -116,16 +116,17 @@ internal sealed partial class JsRealm
             JsProperty.Data(
                 JsValue.String("GeneratorFunction"), JsPropertyAttributes.Configurable));
 
-        // THE CONSTRUCTOR EXISTS AND REFUSES, for the reason `Function` does. Reaching it needs two
-        // hops off a generator function and it is not a global anywhere, but a program that gets
-        // there finds the intrinsic the specification says is there, and what this manifest
-        // declines is the one thing it does: turning source into code at run time.
+        // THE CONSTRUCTOR BUILDS A GENERATOR FROM SOURCE WHERE `Function` BUILDS A FUNCTION, and
+        // refuses where `Function` does (JSP-10, JSC-240): a composition that admits
+        // broiler.javascript.dynamic has both, and one that declines it has neither. It refused in
+        // every realm, giving the dynamic surface's reason in a realm that had admitted the surface.
         var constructor = new JsNativeFunction(
+            this,
             GlobalFunctionConstructor(),
             "GeneratorFunction",
             1,
-            static (engine, thisValue, arguments) => engine.ThrowTypeError(GeneratorFunctionRefusal),
-            static (engine, thisValue, arguments) => engine.ThrowTypeError(GeneratorFunctionRefusal));
+            static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "function*", GeneratorFunctionRefusal),
+            static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "function*", GeneratorFunctionRefusal));
 
         constructor.SetOwnProperty(
             "prototype",
@@ -152,7 +153,7 @@ internal sealed partial class JsRealm
     /// <c>SetupGlobal</c> has already published. Two entries in the list would have been two places
     /// to keep that ordering constraint in, and the second one is the one that would drift.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=70974A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B6E295
     // Broiler-Human:        PENDING
     private void SetupAsyncFunction()
     {
@@ -162,16 +163,16 @@ internal sealed partial class JsRealm
             ToStringTagSymbol,
             JsProperty.Data(JsValue.String("AsyncFunction"), JsPropertyAttributes.Configurable));
 
-        // THE CONSTRUCTOR EXISTS AND REFUSES, for the reason `Function` and `GeneratorFunction` do.
-        // What this manifest declines is the one thing it does - turning source into code at run
-        // time - and a program that walks two hops off an async function finds the intrinsic the
-        // specification says is there rather than an absence it has to guess the cause of.
+        // THE CONSTRUCTOR BUILDS AN ASYNC FUNCTION FROM SOURCE OR REFUSES, as `Function` and
+        // `GeneratorFunction` do, by whether the composition admitted broiler.javascript.dynamic
+        // (JSP-10, JSC-240).
         var constructor = new JsNativeFunction(
+            this,
             GlobalFunctionConstructor(),
             "AsyncFunction",
             1,
-            static (engine, thisValue, arguments) => engine.ThrowTypeError(AsyncFunctionRefusal),
-            static (engine, thisValue, arguments) => engine.ThrowTypeError(AsyncFunctionRefusal));
+            static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "async function", AsyncFunctionRefusal),
+            static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "async function", AsyncFunctionRefusal));
 
         constructor.SetOwnProperty(
             "prototype",
@@ -183,20 +184,18 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>What a call or a construction of <c>AsyncFunction</c> is told, and why.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=70F01A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E786B3
     // Broiler-Human:        PENDING
     private const string AsyncFunctionRefusal =
-        "AsyncFunction: the broiler.javascript.wide manifest does not admit the AsyncFunction " +
-        "constructor, because this profile declares no guest-initiated load and cannot turn " +
-        "source into code at run time";
+        "AsyncFunction: this realm's composition did not admit broiler.javascript.dynamic, so no " +
+        "source is turned into code at run time";
 
     /// <summary>What a call or a construction of <c>GeneratorFunction</c> is told, and why.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=31EF54
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=61D545
     // Broiler-Human:        PENDING
     private const string GeneratorFunctionRefusal =
-        "GeneratorFunction: the broiler.javascript.wide manifest does not admit the " +
-        "GeneratorFunction constructor, because this profile declares no guest-initiated load and " +
-        "cannot turn source into code at run time";
+        "GeneratorFunction: this realm's composition did not admit broiler.javascript.dynamic, so no " +
+        "source is turned into code at run time";
 
     /// <summary>
     /// The realm's <c>Function</c> constructor, which <c>%GeneratorFunction%</c> inherits from.
@@ -241,15 +240,16 @@ internal sealed partial class JsRealm
     /// ordinary <c>new</c> reads it</b>, so a program that replaced that property sees the
     /// replacement - which is what the specification's <c>OrdinaryCreateFromConstructor</c> does
     /// and what makes <c>Object.getPrototypeOf(g()) === g.prototype</c> a fact about the program
-    /// rather than about this implementation.
+    /// rather than about this implementation. A <c>prototype</c> that is not an object answers the
+    /// intrinsic of the FUNCTION's realm, which the call runs in, not of the caller's.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2EB509
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1B1797
     // Broiler-Human:        PENDING
     internal JsGenerator CreateGenerator(JsScriptFunction function, JsFrame frame)
     {
         var declared = engine.GetProperty(JsValue.Object(function), "prototype");
 
         return new JsGenerator(
-            declared.IsObject ? declared.AsObject() : GeneratorPrototype, frame);
+            declared.IsObject ? declared.AsObject() : function.Realm!.GeneratorPrototype, frame);
     }
 }

@@ -1,0 +1,14 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
+index 13c6e1d..2afa42d 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
+@@ -782,6 +782,9 @@ internal sealed partial class JsRealm
+             return JsValue.Boolean(registry.Unregister(heldToken));
+         });
+ 
++        Method(FinalizationRegistryPrototype, "cleanupSome", 0, static (engine, thisValue, arguments) =>
++            JsValue.Undefined);
++
+         // THERE IS NO `cleanupSome` (JSP-7, JSC-239). It is a member of a proposal and not of the
+         // language, and a realm that has it answers `typeof registry.cleanupSome` with "function" where
+         // the language answers "undefined" - so a program that detects it takes a branch no engine

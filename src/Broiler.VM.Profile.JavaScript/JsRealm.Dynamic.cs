@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
+// Relevant units:   5
+// Annotated:        5/5
 // Exempt:           1
-// Human-reviewed:   0/4
+// Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         5/5
+// Criteria:         6/6
 // Resource impact:  7/10 max
-// Unverified:       4
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -119,6 +119,24 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
+    /// <c>%GeneratorFunction%</c>, <c>%AsyncFunction%</c> and <c>%AsyncGeneratorFunction%</c>: the
+    /// <c>Function</c> constructor's source assembly with their own keyword, where the composition
+    /// admitted broiler.javascript.dynamic, and <paramref name="refusal"/> where it did not.
+    /// </summary>
+    /// <remarks>
+    /// <b>The question is the one <c>Function</c> answers by being built or not</b>: this realm has
+    /// its own <c>eval</c> exactly when the surface was admitted (JSP-10, JSC-240).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=B996D0
+    // Broiler-Falsified-If: it turns source into code in a realm whose composition did not admit broiler.javascript.dynamic
+    // Broiler-Human:        PENDING
+    private static JsValue FromSourceOrRefuse(
+        JsEngine engine, JsValue[] arguments, string keyword, string refusal) =>
+        engine.Realm.EvalIntrinsic is null
+            ? engine.ThrowTypeError(refusal)
+            : FromSource(engine, arguments, keyword);
+
+    /// <summary>
     /// The <c>Function</c> constructor's one behaviour, which both call forms share.
     /// </summary>
     /// <remarks>
@@ -138,10 +156,10 @@ internal sealed partial class JsRealm
     /// value, which is what the constructor has to return.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=01B333
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=C2D765
     // Broiler-Falsified-If: the assembled source is evaluated anywhere but the global scope
     // Broiler-Human:        PENDING
-    private static JsValue FromSource(JsEngine engine, JsValue[] arguments)
+    private static JsValue FromSource(JsEngine engine, JsValue[] arguments, string keyword = "function")
     {
         var parameters = new System.Text.StringBuilder();
 
@@ -160,7 +178,9 @@ internal sealed partial class JsRealm
             : engine.ToStringValue(arguments[arguments.Length - 1]);
 
         var source = new System.Text.StringBuilder()
-            .Append("(function anonymous(")
+            .Append('(')
+            .Append(keyword)
+            .Append(" anonymous(")
             .Append(parameters)
             .Append("\n) {\n")
             .Append(body)

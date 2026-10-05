@@ -15,8 +15,8 @@ section 5 is the design this follows.
 |---|---|
 | Version | **Unicode 17.0.0**, the version the pinned test262 (`ccaac100`) measures and Node v24.17.0 reports |
 | Source | `https://www.unicode.org/Public/17.0.0/ucd/<path>`, and `https://www.unicode.org/license.txt` for the licence |
-| Files | the thirteen UCD files JSD-0031 section 5 lists, under [`ucd-17.0.0/`](ucd-17.0.0) at their UCD paths (`emoji/`, `extracted/` kept), and [`unicode-LICENSE.txt`](unicode-LICENSE.txt) |
-| Test-only | `NormalizationTest.txt`: no table is generated from it; it is the conformance input slice U3 (F08) runs `normalize` against |
+| Files | the thirteen UCD files JSD-0031 section 5 lists and `SpecialCasing.txt`, added on 2026-10-03 for the full case mappings, under [`ucd-17.0.0/`](ucd-17.0.0) at their UCD paths (`emoji/`, `extracted/` kept); `emoji-sequences.txt` and `emoji-zwj-sequences.txt`, added on 2026-10-04 for the `v` flag's properties of strings (phase F2), under [`emoji-17.0.0/`](emoji-17.0.0) because they come from the release's `emoji/` directory (`https://www.unicode.org/Public/17.0.0/emoji/`) rather than its `ucd/` one; `GraphemeBreakProperty.txt`, `WordBreakProperty.txt` and `SentenceBreakProperty.txt`, added on 2026-10-04 for `Intl.Segmenter` (JSD-0050), under [`ucd-17.0.0/auxiliary/`](ucd-17.0.0/auxiliary); and [`unicode-LICENSE.txt`](unicode-LICENSE.txt) |
+| Test-only | `NormalizationTest.txt`: no table is generated from it; it is the conformance input slice U3 (F08) runs `normalize` against. `GraphemeBreakTest.txt`, `WordBreakTest.txt` and `SentenceBreakTest.txt`, added on 2026-10-04 under `ucd-17.0.0/auxiliary/`: the conformance input `Intl.Segmenter` is checked against (JSD-0050) |
 | Retrieved | 2026-09-22, **twice**, into two directories; `diff -r` found them byte-identical, and the first copy is the one archived |
 | Not here | the three ECMAScript property tables the generator also reads - they are Ecma material and are archived beside the edition in [`docs/specification/`](../../../Broiler.VM.Profile.JavaScript/docs/specification/README.md); the pin records them by repository path |
 

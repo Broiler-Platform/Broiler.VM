@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           6
-// Human-reviewed:   0/27
+// Relevant units:   29
+// Annotated:        29/29
+// Exempt:           7
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       27
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -98,6 +98,11 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsObject WeakRefPrototype { get; private set; } = null!;
 
+    /// <summary>The cleanup job a sweep queues for a registry (phase F4); reachable from nothing else.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=91B60F
+    // Broiler-Human:        PENDING
+    internal JsNativeFunction FinalizationCleanupJob { get; private set; } = null!;
+
     /// <summary><c>FinalizationRegistry.prototype</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=417DD2
     // Broiler-Human:        PENDING
@@ -139,7 +144,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Map</c> and <c>Map.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=06C9C6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FDE822
     // Broiler-Human:        PENDING
     private void SetupMap()
     {
@@ -151,7 +156,11 @@ internal sealed partial class JsRealm
                 engine.ThrowTypeError("Constructor Map requires 'new'"),
             (engine, thisValue, arguments) =>
             {
-                var made = new JsMapObject(MapPrototype);
+                // THE INSTANCE IS MADE FROM `new.target` BEFORE ITS ADDER IS READ, which is the
+                // order `OrdinaryCreateFromConstructor` and then `Get(map, "set")` give: a
+                // subclass's own adder is the one the constructor calls (JSP-5, JSC-237). Built
+                // from the intrinsic and re-pointed afterwards, it was never found.
+                var made = new JsMapObject(BinaryPrototypeFrom(engine, thisValue, MapPrototype));
                 var source = ArgOfCollection(arguments, 0);
 
                 // AN ABSENT ARGUMENT AND `null` BOTH MEAN "EMPTY", and only those two. `new Map(0)`
@@ -209,7 +218,7 @@ internal sealed partial class JsRealm
             var made = new JsMapObject(MapPrototype);
             var at = 0;
 
-            foreach (var element in CollectionElements(engine, source))
+            foreach (var element in IterableElements(engine, source))
             {
                 engine.Charge(1);
                 engine.Retain(CollectionEntryBytes);
@@ -233,6 +242,7 @@ internal sealed partial class JsRealm
         // hashes the key twice and reads it twice, and a key whose hashing is expensive - a long
         // string, an object in a large table - pays for both. The pair also spells the intent, which
         // is why the language added them rather than leaving the idiom to the caller.
+        mapConstructor.BuildsFromNewTarget = true;
         SpeciesGetter(mapConstructor);
 
         Method(MapPrototype, "getOrInsert", 2, static (engine, thisValue, arguments) =>
@@ -339,7 +349,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Set</c> and <c>Set.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9E82CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=3395CC
     // Broiler-Human:        PENDING
     private void SetupSet()
     {
@@ -351,7 +361,11 @@ internal sealed partial class JsRealm
                 engine.ThrowTypeError("Constructor Set requires 'new'"),
             (engine, thisValue, arguments) =>
             {
-                var made = new JsSetObject(SetPrototype);
+                // THE INSTANCE IS MADE FROM `new.target` BEFORE ITS ADDER IS READ, which is the
+                // order `OrdinaryCreateFromConstructor` and then `Get(map, "set")` give: a
+                // subclass's own adder is the one the constructor calls (JSP-5, JSC-237). Built
+                // from the intrinsic and re-pointed afterwards, it was never found.
+                var made = new JsSetObject(BinaryPrototypeFrom(engine, thisValue, SetPrototype));
                 var source = ArgOfCollection(arguments, 0);
 
                 if (!source.IsNullish)
@@ -376,6 +390,7 @@ internal sealed partial class JsRealm
 
         SetupSetOperations();
 
+        setConstructor.BuildsFromNewTarget = true;
         SpeciesGetter(setConstructor);
 
         Method(SetPrototype, "has", 1, static (engine, thisValue, arguments) =>
@@ -430,11 +445,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>WeakMap</c> and <c>WeakMap.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=978CD6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=64F0C7
     // Broiler-Human:        PENDING
     private void SetupWeakMap()
     {
-        _ = Constructor(
+        var weakMapConstructor = Constructor(
             "WeakMap",
             0,
             WeakMapPrototype,
@@ -442,7 +457,11 @@ internal sealed partial class JsRealm
                 engine.ThrowTypeError("Constructor WeakMap requires 'new'"),
             (engine, thisValue, arguments) =>
             {
-                var made = new JsWeakMapObject(WeakMapPrototype);
+                // THE INSTANCE IS MADE FROM `new.target` BEFORE ITS ADDER IS READ, which is the
+                // order `OrdinaryCreateFromConstructor` and then `Get(map, "set")` give: a
+                // subclass's own adder is the one the constructor calls (JSP-5, JSC-237). Built
+                // from the intrinsic and re-pointed afterwards, it was never found.
+                var made = new JsWeakMapObject(BinaryPrototypeFrom(engine, thisValue, WeakMapPrototype));
                 var source = ArgOfCollection(arguments, 0);
 
                 if (!source.IsNullish)
@@ -474,6 +493,8 @@ internal sealed partial class JsRealm
                 return JsValue.Object(made);
             });
 
+        weakMapConstructor.BuildsFromNewTarget = true;
+
         // A PRIMITIVE KEY IS A MISS ON THE WAY OUT AND A THROW ON THE WAY IN, which is asymmetric
         // on purpose: a lookup that threw would force every caller to type-test before asking, and
         // a store that did not throw would silently drop the entry.
@@ -481,14 +502,14 @@ internal sealed partial class JsRealm
         {
             var map = CollectionThisWeakMap(engine, thisValue, "get");
             var key = ArgOfCollection(arguments, 0);
-            return key.AsObjectOrNull() is { } target ? map.Get(target) : JsValue.Undefined;
+            return CollectionHeldWeakly(key) is { } target ? map.Get(target) : JsValue.Undefined;
         });
 
         Method(WeakMapPrototype, "has", 1, static (engine, thisValue, arguments) =>
         {
             var map = CollectionThisWeakMap(engine, thisValue, "has");
             var key = ArgOfCollection(arguments, 0);
-            return JsValue.Boolean(key.AsObjectOrNull() is { } target && map.Has(target));
+            return JsValue.Boolean(CollectionHeldWeakly(key) is { } target && map.Has(target));
         });
 
         Method(WeakMapPrototype, "set", 2, static (engine, thisValue, arguments) =>
@@ -496,15 +517,71 @@ internal sealed partial class JsRealm
             var map = CollectionThisWeakMap(engine, thisValue, "set");
             var key = ArgOfCollection(arguments, 0);
 
-            if (!key.IsObject)
+            if (CollectionHeldWeakly(key) is not { } held)
             {
                 throw engine.Error("TypeError", "Invalid value used as weak map key");
             }
 
             engine.Charge(1);
             engine.Retain(CollectionEntryBytes);
-            map.Set(key.AsObject(), ArgOfCollection(arguments, 1));
+            map.Set(held, ArgOfCollection(arguments, 1));
             return thisValue;
+        });
+
+        // THE WEAK PAIR TO `Map`'S `getOrInsert` AND `getOrInsertComputed` (JSP-7, JSC-239): members
+        // of the edition the realm did not have. A key that cannot be held weakly is a TypeError
+        // before anything else is asked, and the callback's answer overwrites whatever the callback
+        // put under the key itself.
+        Method(WeakMapPrototype, "getOrInsert", 2, static (engine, thisValue, arguments) =>
+        {
+            var map = CollectionThisWeakMap(engine, thisValue, "getOrInsert");
+
+            if (CollectionHeldWeakly(ArgOfCollection(arguments, 0)) is not { } held)
+            {
+                throw engine.Error("TypeError", "Invalid value used as weak map key");
+            }
+
+            engine.Charge(1);
+
+            if (map.Has(held))
+            {
+                return map.Get(held);
+            }
+
+            var value = ArgOfCollection(arguments, 1);
+            engine.Retain(CollectionEntryBytes);
+            map.Set(held, value);
+            return value;
+        });
+
+        Method(WeakMapPrototype, "getOrInsertComputed", 2, static (engine, thisValue, arguments) =>
+        {
+            var map = CollectionThisWeakMap(engine, thisValue, "getOrInsertComputed");
+            var key = ArgOfCollection(arguments, 0);
+            var callback = ArgOfCollection(arguments, 1);
+
+            if (CollectionHeldWeakly(key) is not { } held)
+            {
+                throw engine.Error("TypeError", "Invalid value used as weak map key");
+            }
+
+            if (!callback.IsObject || !callback.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError(
+                    "WeakMap.prototype.getOrInsertComputed: the callback is not a function");
+            }
+
+            engine.Charge(1);
+
+            if (map.Has(held))
+            {
+                return map.Get(held);
+            }
+
+            var value = engine.Call(callback, JsValue.Undefined, [key]);
+            engine.Retain(CollectionEntryBytes);
+            map.Set(held, value);
+            return value;
         });
 
         Method(WeakMapPrototype, "delete", 1, static (engine, thisValue, arguments) =>
@@ -512,16 +589,16 @@ internal sealed partial class JsRealm
             var map = CollectionThisWeakMap(engine, thisValue, "delete");
             var key = ArgOfCollection(arguments, 0);
             engine.Charge(1);
-            return JsValue.Boolean(key.AsObjectOrNull() is { } target && map.Delete(target));
+            return JsValue.Boolean(CollectionHeldWeakly(key) is { } target && map.Delete(target));
         });
     }
 
     /// <summary>Builds <c>WeakSet</c> and <c>WeakSet.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B8A16A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=845FAD
     // Broiler-Human:        PENDING
     private void SetupWeakSet()
     {
-        _ = Constructor(
+        var weakSetConstructor = Constructor(
             "WeakSet",
             0,
             WeakSetPrototype,
@@ -529,7 +606,11 @@ internal sealed partial class JsRealm
                 engine.ThrowTypeError("Constructor WeakSet requires 'new'"),
             (engine, thisValue, arguments) =>
             {
-                var made = new JsWeakSetObject(WeakSetPrototype);
+                // THE INSTANCE IS MADE FROM `new.target` BEFORE ITS ADDER IS READ, which is the
+                // order `OrdinaryCreateFromConstructor` and then `Get(map, "set")` give: a
+                // subclass's own adder is the one the constructor calls (JSP-5, JSC-237). Built
+                // from the intrinsic and re-pointed afterwards, it was never found.
+                var made = new JsWeakSetObject(BinaryPrototypeFrom(engine, thisValue, WeakSetPrototype));
                 var source = ArgOfCollection(arguments, 0);
 
                 if (!source.IsNullish)
@@ -551,11 +632,13 @@ internal sealed partial class JsRealm
                 return JsValue.Object(made);
             });
 
+        weakSetConstructor.BuildsFromNewTarget = true;
+
         Method(WeakSetPrototype, "has", 1, static (engine, thisValue, arguments) =>
         {
             var set = CollectionThisWeakSet(engine, thisValue, "has");
             var member = ArgOfCollection(arguments, 0);
-            return JsValue.Boolean(member.AsObjectOrNull() is { } target && set.Has(target));
+            return JsValue.Boolean(CollectionHeldWeakly(member) is { } target && set.Has(target));
         });
 
         Method(WeakSetPrototype, "add", 1, static (engine, thisValue, arguments) =>
@@ -563,14 +646,14 @@ internal sealed partial class JsRealm
             var set = CollectionThisWeakSet(engine, thisValue, "add");
             var member = ArgOfCollection(arguments, 0);
 
-            if (!member.IsObject)
+            if (CollectionHeldWeakly(member) is not { } held)
             {
                 throw engine.Error("TypeError", "Invalid value used in weak set");
             }
 
             engine.Charge(1);
             engine.Retain(CollectionEntryBytes);
-            set.Add(member.AsObject());
+            set.Add(held);
             return thisValue;
         });
 
@@ -579,19 +662,18 @@ internal sealed partial class JsRealm
             var set = CollectionThisWeakSet(engine, thisValue, "delete");
             var member = ArgOfCollection(arguments, 0);
             engine.Charge(1);
-            return JsValue.Boolean(member.AsObjectOrNull() is { } target && set.Delete(target));
+            return JsValue.Boolean(CollectionHeldWeakly(member) is { } target && set.Delete(target));
         });
     }
 
     /// <summary>Builds <c>WeakRef</c> and <c>FinalizationRegistry</c>.</summary>
     /// <remarks>
     /// The two are built together because they are one feature: a program that wants to know when
-    /// something went away holds a <c>WeakRef</c> to ask and a registry to be told. Only the asking
-    /// half works here - see <see cref="JsFinalizationRegistryObject"/> for why the telling half is
-    /// inert, and note that a registry that never tells is exactly as useful as polling a
-    /// <c>WeakRef</c>, which is what a program should do on this profile.
+    /// something went away holds a <c>WeakRef</c> to ask and a registry to be told. The telling half
+    /// tells only where the composition turned the host-drained sweep on (phase F4); see
+    /// <see cref="JsFinalizationRegistryObject"/> for when, and for why it is inert everywhere else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D1507C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=200131
     // Broiler-Human:        PENDING
     private void SetupWeakReferences()
     {
@@ -605,20 +687,24 @@ internal sealed partial class JsRealm
             {
                 var target = ArgOfCollection(arguments, 0);
 
-                if (!target.IsObject)
+                if (CollectionHeldWeakly(target) is not { } held)
                 {
                     throw engine.Error("TypeError", "Invalid value used as weak ref target");
                 }
 
                 engine.Charge(1);
-                return JsValue.Object(new JsWeakRefObject(WeakRefPrototype, target.AsObject()));
+                return JsValue.Object(new JsWeakRefObject(WeakRefPrototype, held));
             });
 
         Method(WeakRefPrototype, "deref", 0, static (engine, thisValue, arguments) =>
         {
             var reference = CollectionThisWeakRef(engine, thisValue, "deref");
-            var target = reference.Deref();
-            return target is null ? JsValue.Undefined : JsValue.Object(target);
+            return reference.Deref() switch
+            {
+                JsObject target => JsValue.Object(target),
+                JsSymbol symbol => JsValue.Symbol(symbol),
+                _ => JsValue.Undefined,
+            };
         });
 
         _ = Constructor(
@@ -631,10 +717,9 @@ internal sealed partial class JsRealm
             {
                 var cleanup = ArgOfCollection(arguments, 0);
 
-                // THE CALLBACK IS VALIDATED THOUGH IT IS NEVER CALLED. A registry built over a
-                // non-function is a programming error the specification reports at construction,
-                // and a profile that skipped the check because it would never call the value would
-                // be hiding the error rather than diverging honestly about the call.
+                // THE CALLBACK IS VALIDATED AT CONSTRUCTION, as the specification says, whether or not
+                // this composition sweeps: a registry built over a non-function is a programming error,
+                // and an inert registry that skipped the check would be hiding it.
                 if (!cleanup.IsObject || !cleanup.AsObject().IsCallable)
                 {
                     throw engine.Error(
@@ -642,9 +727,37 @@ internal sealed partial class JsRealm
                 }
 
                 engine.Charge(1);
-                return JsValue.Object(
-                    new JsFinalizationRegistryObject(FinalizationRegistryPrototype, cleanup));
+                var registry = new JsFinalizationRegistryObject(FinalizationRegistryPrototype, cleanup);
+                engine.TrackRegistry(registry);
+                return JsValue.Object(registry);
             });
+
+        // THE CLEANUP JOB, which a host-requested sweep queues for a registry with collected
+        // registrations (JSD-0029 section 4.4, phase F4). It takes the marked registrations in order,
+        // removing each BEFORE calling the callback with its held value, and stops at a throw: the
+        // rest stay marked and the next sweep queues a fresh job for them. It is no global and no
+        // property; only the sweep reaches it.
+        FinalizationCleanupJob = Native(string.Empty, 1, static (engine, _, arguments) =>
+        {
+            if (arguments.Length == 0 || arguments[0].AsObjectOrNull() is not JsFinalizationRegistryObject registry)
+            {
+                return JsValue.Undefined;
+            }
+
+            try
+            {
+                while (registry.TakeMarked(out var held))
+                {
+                    _ = engine.Call(registry.Cleanup, JsValue.Undefined, [held]);
+                }
+            }
+            finally
+            {
+                registry.CleanupQueued = false;
+            }
+
+            return JsValue.Undefined;
+        });
 
         Method(FinalizationRegistryPrototype, "register", 2, static (engine, thisValue, arguments) =>
         {
@@ -653,7 +766,7 @@ internal sealed partial class JsRealm
             var held = ArgOfCollection(arguments, 1);
             var token = ArgOfCollection(arguments, 2);
 
-            if (!target.IsObject)
+            if (CollectionHeldWeakly(target) is not { } heldTarget)
             {
                 throw engine.Error(
                     "TypeError", "FinalizationRegistry.prototype.register: invalid target");
@@ -669,7 +782,9 @@ internal sealed partial class JsRealm
                     "FinalizationRegistry.prototype.register: target and holdings must not be same");
             }
 
-            if (token.Type != JsType.Undefined && !token.IsObject)
+            var heldToken = CollectionHeldWeakly(token);
+
+            if (token.Type != JsType.Undefined && heldToken is null)
             {
                 throw engine.Error(
                     "TypeError",
@@ -678,7 +793,7 @@ internal sealed partial class JsRealm
 
             engine.Charge(1);
             engine.Retain(CollectionEntryBytes);
-            registry.Register(target.AsObject(), held, token.AsObjectOrNull());
+            registry.Register(heldTarget, held, heldToken);
             return JsValue.Undefined;
         });
 
@@ -687,7 +802,7 @@ internal sealed partial class JsRealm
             var registry = CollectionThisRegistry(engine, thisValue, "unregister");
             var token = ArgOfCollection(arguments, 0);
 
-            if (!token.IsObject)
+            if (CollectionHeldWeakly(token) is not { } heldToken)
             {
                 throw engine.Error(
                     "TypeError",
@@ -695,31 +810,34 @@ internal sealed partial class JsRealm
             }
 
             engine.Charge((ulong)registry.Count + 1);
-            return JsValue.Boolean(registry.Unregister(token.AsObject()));
+            return JsValue.Boolean(registry.Unregister(heldToken));
         });
 
-        // `cleanupSome` IS PRESENT AND DOES NOTHING, and both halves are deliberate. It is present
-        // because a program written for a host that has it should not fail to load here; it does
-        // nothing because there is no sweep behind it and never calls the callback it accepts. It
-        // is also a DIVERGENCE IN THE OTHER DIRECTION from everything else in this file: the
-        // method is a stage-2 proposal that shipping engines do not expose by default, so
-        // `typeof registry.cleanupSome` answers "function" here and "undefined" in Node.
-        Method(FinalizationRegistryPrototype, "cleanupSome", 0, static (engine, thisValue, arguments) =>
-        {
-            var callback = ArgOfCollection(arguments, 0);
-
-            if (callback.Type != JsType.Undefined &&
-                (!callback.IsObject || !callback.AsObject().IsCallable))
-            {
-                throw engine.Error(
-                    "TypeError",
-                    "FinalizationRegistry.prototype.cleanupSome: invalid callback");
-            }
-
-            _ = CollectionThisRegistry(engine, thisValue, "cleanupSome");
-            return JsValue.Undefined;
-        });
+        // THERE IS NO `cleanupSome` (JSP-7, JSC-239). It is a member of a proposal and not of the
+        // language, and a realm that has it answers `typeof registry.cleanupSome` with "function" where
+        // the language answers "undefined" - so a program that detects it takes a branch no engine
+        // following the edition would take. It was present and inert until 2026-10-03, and decision
+        // record 0029's D03-b recommended this removal.
     }
+
+    /// <summary>
+    /// The specification's <c>CanBeHeldWeakly</c>: the reference a weak collection, a <c>WeakRef</c>
+    /// or a registry holds for <paramref name="value"/>, or <see langword="null"/> when it cannot be
+    /// held.
+    /// </summary>
+    /// <remarks>
+    /// An object can be held, and so can a Symbol, unless <c>Symbol.for</c> made it: a registered
+    /// Symbol is answered again for its key whenever it is asked for, so it never becomes
+    /// unreachable. Symbols were refused until 2026-10-03 (JSP-5, JSC-237).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7EB327
+    // Broiler-Human:        PENDING
+    private static object? CollectionHeldWeakly(JsValue value) =>
+        value.IsObject
+            ? value.AsObject()
+            : value.IsSymbol && !value.AsSymbol().IsRegistered && !value.AsSymbol().IsPrivateName
+                ? value.AsSymbol()
+                : null;
 
     /// <summary>Reads argument <paramref name="at"/>, which may not have been supplied.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6E8CBC
@@ -1171,25 +1289,82 @@ internal sealed partial class JsRealm
         }
     }
 
+    /// <summary>
+    /// The elements of an iterable, one at a time as the consumer asks for them, with the iterator
+    /// closed when the consumer stops abruptly.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is the iteration <c>Object.fromEntries</c> and the two <c>groupBy</c>s owe</b>, where
+    /// <see cref="CollectionElements"/> reads the whole iterable first: each element is processed
+    /// before the next is asked for, so a throwing entry stops the walk where it stands, and the
+    /// iterator is closed for it (IfAbruptCloseIterator). A throw from the iterator's own
+    /// <c>next</c>, or from reading its result, is not closed for, because the iterator is the one
+    /// that failed. Until 2026-10-03 those members read everything first and closed nothing
+    /// (JSC-252).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7030BC
+    // Broiler-Human:        PENDING
+    internal static System.Collections.Generic.IEnumerable<JsValue> IterableElements(
+        JsEngine engine, JsValue source)
+    {
+        var record = engine.GetIterator(source);
+        var settled = false;
+
+        try
+        {
+            while (true)
+            {
+                settled = true;
+
+                if (!engine.TryIterateNext(record, out var element))
+                {
+                    yield break;
+                }
+
+                settled = false;
+                engine.Charge(1);
+                yield return element;
+            }
+        }
+        finally
+        {
+            if (!settled)
+            {
+                engine.CloseIteratorQuietly(record);
+            }
+        }
+    }
+
     /// <summary>The receiver's members, in insertion order, as they stand WHEN EACH IS REACHED.</summary>
     /// <remarks>
     /// <b>A slot walk over the live table and not a snapshot of it.</b> The argument's <c>has</c> is
-    /// guest code and may delete from the receiver, and the language says a member deleted before
-    /// the walk reaches it is not visited - which a copy taken up front would visit anyway. The
-    /// bound is taken once, so a member APPENDED during the walk is not visited either.
+    /// guest code and may change the receiver, and the language walks the receiver's list as it
+    /// stands at each step: a member deleted before the walk reaches it is not visited, and a member
+    /// appended during the walk is - the edition re-reads the list's length after every call
+    /// (<c>Set thisSize to the number of elements in O.[[SetData]]</c>). So a member deleted and
+    /// added again is visited twice. Until 2026-10-04 the length was read once and an appended member
+    /// was not visited (JSC-256). The table is held in iteration while the walk runs, so a deletion
+    /// does not renumber the slots under it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A70D5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D6607C
     // Broiler-Human:        PENDING
     private static System.Collections.Generic.IEnumerable<JsValue> CollectionMembers(JsKeyedTable table)
     {
-        var bound = table.SlotCount;
+        table.EnterIteration();
 
-        for (var slot = 0; slot < bound; slot++)
+        try
         {
-            if (table.TryAt(slot, out var key, out _))
+            for (var slot = 0; slot < table.SlotCount; slot++)
             {
-                yield return key;
+                if (table.TryAt(slot, out var key, out _))
+                {
+                    yield return key;
+                }
             }
+        }
+        finally
+        {
+            table.ExitIteration();
         }
     }
 

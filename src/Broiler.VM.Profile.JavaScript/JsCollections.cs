@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   51
-// Annotated:        51/51
-// Exempt:           36
-// Human-reviewed:   0/51
+// Relevant units:   66
+// Annotated:        66/66
+// Exempt:           44
+// Human-reviewed:   0/66
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         1/1
+// Criteria:         2/2
 // Resource impact:  4/10 max
-// Unverified:       51
+// Unverified:       66
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -425,69 +425,322 @@ internal sealed class JsValueBox
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b><see cref="System.Runtime.CompilerServices.ConditionalWeakTable{TKey,TValue}"/> and not a
-/// list of <see cref="System.WeakReference{T}"/>, for one reason that decides it.</b> A WeakMap's
-/// hard requirement is EPHEMERON semantics: the value must not keep its own key alive. A list of
-/// weak references holding values strongly gets that exactly backwards - the overwhelmingly common
-/// <c>weak.set(node, { owner: node })</c> pins <c>node</c> for the life of the realm, which is the
-/// leak a WeakMap is bought to avoid, and it is invisible in every test that does not run a
-/// collector. The runtime's table is a real ephemeron table and gets it right. The list would also
-/// be O(n) per lookup and would need a sweep somebody has to decide when to run; the table is
-/// neither.
+/// <b>The map holds nothing; each KEY holds the values stored under it</b>, in its own
+/// <see cref="JsWeakEntries"/>, filed under this map's <see cref="JsWeakMapToken"/>. That is
+/// EPHEMERON semantics with ordinary references: a value is reachable through its key and through
+/// nothing else, so it lives exactly as long as the key does, and the overwhelmingly common
+/// <c>weak.set(node, { owner: node })</c> pins nothing - the cycle runs through the key and dies
+/// with it.
 /// </para>
 /// <para>
-/// <b>What this costs: there is no <c>size</c>, no <c>clear</c> and no iteration, and that is the
-/// language's decision rather than the table's limitation.</b> A WeakMap that could be counted or
-/// walked would let a program observe when the collector ran, which is a side channel out of the
-/// deterministic execution this profile is built to give. The specification omits all three for
-/// that reason and so does this.
+/// <b>It was a <see cref="System.Runtime.CompilerServices.ConditionalWeakTable{TKey,TValue}"/>
+/// until 2026-10-04, and the collector is why it is not (JSC-260).</b> The runtime's table is a set
+/// of dependent handles, and the collector resolves a chain of them - a key whose value is the next
+/// key, <c>m.set(k, next)</c> ninety-nine thousand times - by rescanning the handle table once per
+/// link it can newly mark. Test262's <c>regress-1507322-deep-weakmap</c> builds that chain, and one
+/// collection over it ran for minutes: no fuel or wall-clock allowance can interrupt a collection,
+/// so any guest program could stall its process. With the values on the key there is no handle to
+/// rescan, and the same chain is marked in one ordinary walk.
+/// </para>
+/// <para>
+/// <b>What it costs: a value may outlive its map.</b> When a map becomes unreachable while a key
+/// stays alive, the key still holds that map's value until the key's entries are next touched, when
+/// entries of collected maps are dropped, or until the key itself dies. The specification sets a
+/// floor on what must stay alive and no ceiling, so this is permitted retention rather than a
+/// semantic change, and it is bounded by the key's own lifetime. Every object and Symbol pays one
+/// reference field for the entries it will usually never have.
+/// </para>
+/// <para>
+/// <b>There is no <c>size</c>, no <c>clear</c> and no iteration, and that is the language's
+/// decision rather than the table's limitation.</b> A WeakMap that could be counted or walked would
+/// let a program observe when the collector ran. The specification omits all three for that reason
+/// and so does this - which is also what lets the map keep no list of its keys.
 /// </para>
 /// <para>
 /// <b>A primitive key is a <c>TypeError</c> on the way in and a miss on the way out.</b>
 /// <c>set</c> refuses one because there is nothing to hold weakly; <c>get</c>, <c>has</c> and
-/// <c>delete</c> answer <c>undefined</c>, <c>false</c> and <c>false</c> without throwing, which is
-/// what the specification says and what lets a caller probe a table without guarding every call.
-/// Symbols as keys - ES2023's registered-symbol carve-out - are not implemented here because this
-/// realm's collection surface predates its Symbols.
+/// <c>delete</c> answer <c>undefined</c>, <c>false</c> and <c>false</c> without throwing. <b>A key is
+/// an object or a Symbol that <c>Symbol.for</c> did not make</b>, which is the language's
+/// <c>CanBeHeldWeakly</c> since ES2023. Symbols were refused here until 2026-10-03 (JSP-5, JSC-237).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=826AB6
 // Broiler-Human:        PENDING
 internal sealed class JsWeakMapObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C76F51
-    // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<JsObject, JsValueBox> table =
-        new();
-
     /// <summary>Creates an empty WeakMap.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=09CEBB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D87AC1
     // Broiler-Human:        PENDING
     internal JsWeakMapObject(JsObject? prototype)
-        : base(prototype, "WeakMap")
-    {
-    }
+        : base(prototype, "WeakMap") =>
+        Token = new JsWeakMapToken(this);
+
+    /// <summary>The identity this map's entries are filed under on their keys.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4DD037
+    // Broiler-Human:        PENDING
+    internal JsWeakMapToken Token { get; }
 
     /// <summary>Reads the value under <paramref name="key"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=EA59C8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AE2BA7
     // Broiler-Human:        PENDING
-    internal JsValue Get(JsObject key) =>
-        table.TryGetValue(key, out var box) ? box.Value : JsValue.Undefined;
+    internal JsValue Get(object key) =>
+        Entries(key) is { } entries && entries.TryGet(Token, out var value) ? value : JsValue.Undefined;
 
     /// <summary>Whether <paramref name="key"/> is present.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DD952F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=75052A
     // Broiler-Human:        PENDING
-    internal bool Has(JsObject key) => table.TryGetValue(key, out _);
+    internal bool Has(object key) => Entries(key) is { } entries && entries.TryGet(Token, out _);
 
     /// <summary>Stores <paramref name="value"/> under <paramref name="key"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B1F28C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=25D5FB
     // Broiler-Human:        PENDING
-    internal void Set(JsObject key, JsValue value) => table.AddOrUpdate(key, new JsValueBox(value));
+    internal void Set(object key, JsValue value)
+    {
+        switch (key)
+        {
+            case JsObject target:
+                (target.WeakEntries ??= new JsWeakEntries()).Set(Token, value);
+                break;
+            case JsSymbol symbol:
+                (symbol.WeakEntries ??= new JsWeakEntries()).Set(Token, value);
+                break;
+            default:
+                throw new System.ArgumentException("a weak key is an object or a Symbol", nameof(key));
+        }
+    }
 
     /// <summary>Removes <paramref name="key"/>, answering whether it was there.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=63DB2E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=812AA6
     // Broiler-Human:        PENDING
-    internal bool Delete(JsObject key) => table.Remove(key);
+    internal bool Delete(object key) => Entries(key) is { } entries && entries.Remove(Token);
+
+    /// <summary>The entries <paramref name="key"/> carries, or <see langword="null"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2CC7CA
+    // Broiler-Human:        PENDING
+    private static JsWeakEntries? Entries(object key) => key switch
+    {
+        JsObject target => target.WeakEntries,
+        JsSymbol symbol => symbol.WeakEntries,
+        _ => null,
+    };
+}
+
+/// <summary>
+/// The identity of one <see cref="JsWeakMapObject"/> as its keys see it, which does not keep the map
+/// alive.
+/// </summary>
+/// <remarks>
+/// <b>One weak reference per map, not per entry</b>: a key's entries hold the token strongly, and
+/// the token answers whether its map has been collected, which is how a key drops the values of maps
+/// nobody can reach any more.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=00B0C5
+// Broiler-Human:        PENDING
+internal sealed class JsWeakMapToken
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E7AAD5
+    // Broiler-Human:        PENDING
+    private readonly System.WeakReference<JsWeakMapObject> map;
+
+    /// <summary>Creates the token of <paramref name="owner"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E5DF45
+    // Broiler-Human:        PENDING
+    internal JsWeakMapToken(JsWeakMapObject owner) => map = new System.WeakReference<JsWeakMapObject>(owner);
+
+    /// <summary>Whether the map this token names has been collected.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=247C7F
+    // Broiler-Human:        PENDING
+    internal bool IsCollected => !map.TryGetTarget(out _);
+}
+
+/// <summary>
+/// The values the WeakMaps hold under one key, by map.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>A short list first, and a dictionary only for a key many maps share.</b> Almost every key is
+/// in one map, so a pair of arrays searched by reference beats a hash table on size and on time; past
+/// <see cref="ListLimit"/> entries the list becomes a dictionary, so a key shared by a hundred
+/// thousand maps is not searched linearly by each of them.
+/// </para>
+/// <para>
+/// <b>Entries of collected maps are dropped when the list would grow</b>, before it grows, and when
+/// a new entry would take the dictionary past twice the size it had after its last sweep. That
+/// bounds what dead maps can leave on a live key by what has been added to it since, keeps the
+/// sweeping amortised over the additions, and costs a lookup nothing.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=93F726
+// Broiler-Human:        PENDING
+internal sealed class JsWeakEntries
+{
+    /// <summary>The most entries kept as a list.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F20A88
+    // Broiler-Human:        PENDING
+    private const int ListLimit = 8;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C1C452
+    // Broiler-Human:        PENDING
+    private JsWeakMapToken?[] tokens = new JsWeakMapToken?[1];
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D5D4F0
+    // Broiler-Human:        PENDING
+    private JsValue[] values = new JsValue[1];
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=71170F
+    // Broiler-Human:        PENDING
+    private int count;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=55B262
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.Dictionary<JsWeakMapToken, JsValue>? table;
+
+    /// <summary>The dictionary's size at which the next new entry first sweeps it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B498A8
+    // Broiler-Human:        PENDING
+    private int sweepAt = ListLimit * 4;
+
+    /// <summary>Reads the value <paramref name="token"/>'s map holds here.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0D0902
+    // Broiler-Human:        PENDING
+    internal bool TryGet(JsWeakMapToken token, out JsValue value)
+    {
+        if (table is not null)
+        {
+            return table.TryGetValue(token, out value);
+        }
+
+        var at = IndexOf(token);
+        value = at < 0 ? JsValue.Undefined : values[at];
+        return at >= 0;
+    }
+
+    /// <summary>Stores the value <paramref name="token"/>'s map holds here.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1E1A3A
+    // Broiler-Human:        PENDING
+    internal void Set(JsWeakMapToken token, JsValue value)
+    {
+        if (table is not null)
+        {
+            if (!table.ContainsKey(token) && table.Count >= sweepAt)
+            {
+                foreach (var held in System.Linq.Enumerable.ToArray(table.Keys))
+                {
+                    if (held.IsCollected)
+                    {
+                        table.Remove(held);
+                    }
+                }
+
+                sweepAt = System.Math.Max(ListLimit * 2, table.Count * 2);
+            }
+
+            table[token] = value;
+            return;
+        }
+
+        var at = IndexOf(token);
+
+        if (at >= 0)
+        {
+            values[at] = value;
+            return;
+        }
+
+        if (count == tokens.Length)
+        {
+            DropCollected();
+        }
+
+        if (count == tokens.Length)
+        {
+            if (count >= ListLimit)
+            {
+                table = new System.Collections.Generic.Dictionary<JsWeakMapToken, JsValue>(
+                    count * 2, System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+                for (var index = 0; index < count; index++)
+                {
+                    table.Add(tokens[index]!, values[index]);
+                }
+
+                table.Add(token, value);
+                tokens = [];
+                values = [];
+                count = 0;
+                return;
+            }
+
+            System.Array.Resize(ref tokens, count * 2);
+            System.Array.Resize(ref values, count * 2);
+        }
+
+        tokens[count] = token;
+        values[count] = value;
+        count++;
+    }
+
+    /// <summary>Removes the value <paramref name="token"/>'s map holds here.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D1A5DF
+    // Broiler-Human:        PENDING
+    internal bool Remove(JsWeakMapToken token)
+    {
+        if (table is not null)
+        {
+            return table.Remove(token);
+        }
+
+        var at = IndexOf(token);
+
+        if (at < 0)
+        {
+            return false;
+        }
+
+        RemoveAt(at);
+        return true;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AE8CC0
+    // Broiler-Human:        PENDING
+    private int IndexOf(JsWeakMapToken token)
+    {
+        for (var index = 0; index < count; index++)
+        {
+            if (ReferenceEquals(tokens[index], token))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>Removes the entry at <paramref name="at"/>, moving the last one into its place.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9EEEF2
+    // Broiler-Human:        PENDING
+    private void RemoveAt(int at)
+    {
+        count--;
+        tokens[at] = tokens[count];
+        values[at] = values[count];
+        tokens[count] = null;
+        values[count] = default;
+    }
+
+    /// <summary>Drops the entries of maps that have been collected.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=42C233
+    // Broiler-Human:        PENDING
+    private void DropCollected()
+    {
+        for (var index = count - 1; index >= 0; index--)
+        {
+            if (tokens[index]!.IsCollected)
+            {
+                RemoveAt(index);
+            }
+        }
+    }
 }
 
 /// <summary>
@@ -507,9 +760,9 @@ internal sealed class JsWeakSetObject : JsObject
     // Broiler-Human:        PENDING
     private static readonly JsValueBox Present = new(JsValue.Undefined);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C76F51
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A190B
     // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<JsObject, JsValueBox> table =
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, JsValueBox> table =
         new();
 
     /// <summary>Creates an empty WeakSet.</summary>
@@ -521,19 +774,19 @@ internal sealed class JsWeakSetObject : JsObject
     }
 
     /// <summary>Whether <paramref name="member"/> is present.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C337B8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=867E9D
     // Broiler-Human:        PENDING
-    internal bool Has(JsObject member) => table.TryGetValue(member, out _);
+    internal bool Has(object member) => table.TryGetValue(member, out _);
 
     /// <summary>Adds <paramref name="member"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=3B9E8A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DBF984
     // Broiler-Human:        PENDING
-    internal void Add(JsObject member) => table.AddOrUpdate(member, Present);
+    internal void Add(object member) => table.AddOrUpdate(member, Present);
 
     /// <summary>Removes <paramref name="member"/>, answering whether it was there.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F95280
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=88A5F0
     // Broiler-Human:        PENDING
-    internal bool Delete(JsObject member) => table.Remove(member);
+    internal bool Delete(object member) => table.Remove(member);
 }
 
 /// <summary>
@@ -572,24 +825,24 @@ internal sealed class JsWeakSetObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsWeakRefObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=ACDBC0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C3408D
     // Broiler-Human:        PENDING
-    private readonly System.WeakReference<JsObject> target;
+    private readonly System.WeakReference<object> target;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A87102
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8C17A5
     // Broiler-Human:        PENDING
-    private JsObject? kept;
+    private object? kept;
 
-    /// <summary>Creates a reference to <paramref name="value"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1E26D5
+    /// <summary>Creates a reference to <paramref name="value"/>: an object, or an unregistered Symbol.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B40433
     // Broiler-Human:        PENDING
-    internal JsWeakRefObject(JsObject? prototype, JsObject value)
-        : base(prototype, "WeakRef") => target = new System.WeakReference<JsObject>(value);
+    internal JsWeakRefObject(JsObject? prototype, object value)
+        : base(prototype, "WeakRef") => target = new System.WeakReference<object>(value);
 
     /// <summary>The target while it lives, or nothing once it is gone.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D9A589
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D4ECBE
     // Broiler-Human:        PENDING
-    internal JsObject? Deref()
+    internal object? Deref()
     {
         if (kept is not null)
         {
@@ -612,64 +865,79 @@ internal sealed class JsWeakRefObject : JsObject
 internal sealed class JsFinalizationRecord
 {
     /// <summary>Records one <c>register</c> call.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C1B7E3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E56860
     // Broiler-Human:        PENDING
-    internal JsFinalizationRecord(JsObject target, JsValue held, JsObject? token)
+    internal JsFinalizationRecord(object target, JsValue held, object? token)
     {
-        Target = new System.WeakReference<JsObject>(target);
+        Target = new System.WeakReference<object>(target);
         Held = held;
-        Token = token is null ? null : new System.WeakReference<JsObject>(token);
+        Token = token is null ? null : new System.WeakReference<object>(token);
     }
 
-    /// <summary>The object whose collection would, in a realm that ran cleanups, be reported.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2751C0
+    /// <summary>
+    /// The object whose collection is reported, until a sweep finds it collected and lets the
+    /// reference go (phase F4).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=93A2CC
     // Broiler-Human:        PENDING
-    internal System.WeakReference<JsObject> Target { get; }
+    internal System.WeakReference<object>? Target { get; private set; }
 
-    /// <summary>The value the cleanup callback would have been handed.</summary>
+    /// <summary>The value the cleanup callback is handed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C1BB99
     // Broiler-Human:        PENDING
     internal JsValue Held { get; }
 
     /// <summary>The token <c>unregister</c> matches on, when one was supplied.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7CF922
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1CD0BF
     // Broiler-Human:        PENDING
-    internal System.WeakReference<JsObject>? Token { get; }
+    internal System.WeakReference<object>? Token { get; }
+
+    /// <summary>Whether a sweep found the target collected; a marked record stays marked.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0396AA
+    // Broiler-Human:        PENDING
+    internal bool Collected { get; private set; }
+
+    /// <summary>Marks the record collected and lets the dead reference go.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CE5C27
+    // Broiler-Human:        PENDING
+    internal void MarkCollected()
+    {
+        Collected = true;
+        Target = null;
+    }
 }
 
 /// <summary>
-/// A <c>FinalizationRegistry</c> that records registrations and NEVER runs a cleanup callback.
+/// A <c>FinalizationRegistry</c>: registrations, and cleanup callbacks that arrive as ordinary jobs
+/// at a drain the host asked for, when the composition turned the sweep on.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>This is a declared divergence and not an unfinished feature, so read the reason before
-/// filing it as a bug.</b> Guest code in this profile runs only on a guest stack, inside a metered
-/// invocation, under an allowance a host granted and a meter is spending: every call goes through
-/// <see cref="JsEngine.Call"/>, which charges fuel, counts depth, polls for cancellation and has
-/// somewhere to put a thrown value. A CLR finalizer has none of those. It runs on the collector's
-/// own thread, at a moment nobody chose, outside every invocation, with no allowance to spend and
-/// no caller to report a throw to. Running a guest's cleanup callback from there would be running
-/// unmetered guest code on a thread this profile does not own - the single worst thing an isolate
-/// could do - and no amount of care inside the callback would fix the frame it was called on.
+/// <b>No guest code ever runs from a CLR finalizer, and that is why the callback is a job.</b> Guest
+/// code in this profile runs only on a guest stack, inside a metered invocation, under an allowance a
+/// host granted: every call goes through <see cref="JsEngine.Call"/>, which charges fuel, counts depth,
+/// polls for cancellation and has somewhere to put a thrown value. A CLR finalizer has none of those,
+/// so a callback run from one would be unmetered guest code on a thread this profile does not own. The
+/// registry declares no finalizer, and rule N25 fails the build if any type here does.
 /// </para>
 /// <para>
-/// <b>So the type exists, answers, and is inert.</b> <c>register</c> validates its arguments
-/// exactly as the specification says and records the registration; <c>unregister</c> removes what
-/// a token names and answers truthfully whether it removed anything; <c>cleanupSome</c> accepts
-/// its optional callback and does nothing. A program that uses a registry as a bookkeeping device -
-/// which is most of them - behaves identically. A program that WAITS for a cleanup waits for ever,
-/// and that is the observable difference, stated here rather than discovered.
+/// <b>Since phase F4 a composition may turn the sweep on</b> (JSD-0029 D03-a,
+/// <see cref="JavaScriptProfile.DescriptorSweepingFinalization"/>). Then a host's <c>#drain-jobs</c>
+/// or <c>#step-jobs</c> sweeps this registry: every registration whose target the collector has taken
+/// is marked, and one cleanup job is queued that removes each marked registration and then calls the
+/// callback with its held value. Off, which is the default every other composition keeps, the registry
+/// is the inert one it always was: <c>register</c> validates and records, <c>unregister</c> removes and
+/// answers truthfully, and no callback runs. There is no <c>cleanupSome</c>, which is a proposal's.
 /// </para>
 /// <para>
-/// <b>What would make this implementable is a job the host drains.</b> The queue is already there:
-/// a future revision could sweep collected targets at a drain point and enqueue the callback as an
-/// ordinary job, which puts it back on a metered guest stack inside an invocation the host asked
-/// for. That is the shape to build, and it is deliberately not built here, because the sweep needs
-/// a decision about WHEN a target counts as collected that this profile has not yet made.
+/// <b>When a target counts as collected is the collector's decision</b>, read only at a sweep and
+/// never again for a marked registration. A guest cannot make a sweep happen; an embedder that wants
+/// cleanup prompt collects before it drains, which is a cost it accepts for its process and the profile
+/// never imposes (JSD-0029 section 5).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=66E399
-// Broiler-Falsified-If: a cleanup callback registered here is ever invoked, or any guest code runs from a CLR finalizer
+// Broiler-Falsified-If: a cleanup callback runs outside a host-requested drain, or any guest code runs from a CLR finalizer
 // Broiler-Human:        PENDING
 internal sealed class JsFinalizationRegistryObject : JsObject
 {
@@ -677,16 +945,13 @@ internal sealed class JsFinalizationRegistryObject : JsObject
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<JsFinalizationRecord> records = [];
 
-    /// <summary>Creates a registry over <paramref name="cleanup"/>, which is never called.</summary>
+    /// <summary>Creates a registry over <paramref name="cleanup"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AB0C6D
     // Broiler-Human:        PENDING
     internal JsFinalizationRegistryObject(JsObject? prototype, JsValue cleanup)
         : base(prototype, "FinalizationRegistry") => Cleanup = cleanup;
 
-    /// <summary>
-    /// The callback the specification would call. It is held so that identity is preserved and
-    /// nothing else; see this type's remarks for why it is not called.
-    /// </summary>
+    /// <summary>The callback a cleanup job calls with each collected registration's held value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E2A8F8
     // Broiler-Human:        PENDING
     internal JsValue Cleanup { get; }
@@ -697,10 +962,67 @@ internal sealed class JsFinalizationRegistryObject : JsObject
     internal int Count => records.Count;
 
     /// <summary>Records one registration.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=655C95
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7930E7
     // Broiler-Human:        PENDING
-    internal void Register(JsObject target, JsValue held, JsObject? token) =>
+    internal void Register(object target, JsValue held, object? token) =>
         records.Add(new JsFinalizationRecord(target, held, token));
+
+    /// <summary>Whether a cleanup job for this registry is queued and has not finished.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=724224
+    // Broiler-Human:        PENDING
+    internal bool CleanupQueued { get; set; }
+
+    /// <summary>
+    /// Marks every registration whose target <paramref name="eligibility"/> answers collected,
+    /// charging one unit per registration, and answers whether any registration is marked.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=9A7FB3
+    // Broiler-Falsified-If: a registration is marked whose target the eligibility answered alive, or a marked registration is unmarked
+    // Broiler-Human:        PENDING
+    internal bool Mark(JsEngine engine, IJsFinalizationEligibility eligibility)
+    {
+        var marked = false;
+
+        foreach (var record in records)
+        {
+            engine.Charge(1);
+
+            if (!record.Collected && record.Target is { } target && eligibility.IsCollected(target))
+            {
+                record.MarkCollected();
+            }
+
+            marked |= record.Collected;
+        }
+
+        return marked;
+    }
+
+    /// <summary>
+    /// Removes the first marked registration, in registration order, and answers its held value; or
+    /// answers that none is left.
+    /// </summary>
+    /// <remarks>
+    /// The registration goes BEFORE its callback runs, as the specification's cleanup job removes the
+    /// cell and then calls, so a callback that unregisters or re-registers sees the list without it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F9A98A
+    // Broiler-Human:        PENDING
+    internal bool TakeMarked(out JsValue held)
+    {
+        for (var at = 0; at < records.Count; at++)
+        {
+            if (records[at].Collected)
+            {
+                held = records[at].Held;
+                records.RemoveAt(at);
+                return true;
+            }
+        }
+
+        held = JsValue.Undefined;
+        return false;
+    }
 
     /// <summary>
     /// Removes every registration <paramref name="token"/> names, answering whether it removed any.
@@ -708,12 +1030,13 @@ internal sealed class JsFinalizationRegistryObject : JsObject
     /// <remarks>
     /// One token may name several registrations and all of them go, which is the specification's
     /// wording and the reason this is a sweep rather than a lookup. A record whose token has been
-    /// collected can never be named again and is dropped on the way past, which is the only
-    /// pruning this list gets.
+    /// collected can never be named again and is dropped on the way past. Marked registrations are
+    /// removed here too when a token names them, so a callback whose job has not run yet never runs;
+    /// otherwise a cleanup job is what removes them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0EC68B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0A2ED3
     // Broiler-Human:        PENDING
-    internal bool Unregister(JsObject token)
+    internal bool Unregister(object token)
     {
         var removed = false;
 

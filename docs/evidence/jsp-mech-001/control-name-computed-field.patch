@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 4184154..e42764e 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -7425,7 +7425,7 @@ public sealed class JsCompiler
+                 member.Function.Body is [JsReturnStatement { Value: { } value }] &&
+                 NamedAtRunTime(value))
+             {
+-                flags |= JsOpcodes.ElementIsNamedValue;
++                flags |= 0;
+             }
+ 
+             Emit(

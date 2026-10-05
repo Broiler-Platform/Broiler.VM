@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   25
 // Annotated:        25/25
-// Exempt:           0
+// Exempt:           1
 // Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Medium
@@ -78,7 +78,7 @@ internal sealed partial class JsRealm
     private const string GlobalUriHexDigits = "0123456789ABCDEF";
 
     /// <summary>Builds the global object's non-constructor bindings.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CD15FE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A578B6
     // Broiler-Human:        PENDING
     private void SetupGlobal()
     {
@@ -96,8 +96,28 @@ internal sealed partial class JsRealm
         host.DefineBuiltIn("globalThis", JsValue.Object(host));
 
         SetupGlobalNumericFunctions(host);
+
+        // `Number.parseInt` and `Number.parseFloat` ARE the global functions, the same objects, not
+        // copies (21.1.2.12 and 21.1.2.13). `Number` is set up first and holds a placeholder in
+        // each slot, so writing the global's value over it keeps the key where it was. Until
+        // 2026-10-03 they were two pairs of functions (JSC-252).
+        if (host.TryGetOwnProperty("Number", out var number) && number.Value.AsObjectOrNull() is { } numberObject)
+        {
+            foreach (var shared in (string[])["parseFloat", "parseInt"])
+            {
+                host.TryGetOwnProperty(shared, out var global);
+                numberObject.SetOwnProperty(shared, global);
+            }
+        }
+
         SetupGlobalUriFunctions(host);
-        SetupGlobalHostFunctions(host);
+
+        // A SHADOW REALM'S GLOBAL HOLDS WHAT THE LANGUAGE DEFINES AND NOTHING A HOST ADDS
+        // (JSD-0030 D7): no `print`, `console`, `read` or `$262`.
+        if (!Shadow)
+        {
+            SetupGlobalHostFunctions(host);
+        }
     }
 
     /// <summary>Defines <c>parseInt</c>, <c>parseFloat</c>, <c>isNaN</c> and <c>isFinite</c>.</summary>
@@ -166,7 +186,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines <c>print</c>, <c>$262</c> and <c>console</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=723164
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6B957D
     // Broiler-Human:        PENDING
     private void SetupGlobalHostFunctions(JsObject host)
     {
@@ -204,19 +224,24 @@ internal sealed partial class JsRealm
         // realm has no reader unless somebody installed one *(corrected: JSC-212)*.
         //
         // The shape is `$262.agent`'s, one line below, and for the same stated reason: answering
-        // `undefined` would let a program proceed on a false premise.
+        // `undefined` would let a program proceed on a false premise. Its message said "no
+        // composition can register a reader", which the paragraph above had already retracted;
+        // it says what is true of the realm now (JSP-10, JSC-240), and section 13 of the roadmap
+        // states the choice of present-and-refusing over absent for every member here.
         GlobalRefuse(
             host,
             "read",
             1,
-            "read: this profile's host-capability surface cannot carry a file's contents back to a " +
-            "guest, so no composition can register a reader");
+            "read: no reader is installed in this realm - the host-capability table cannot carry " +
+            "a file's contents back to a guest, and this composition installed none through the " +
+            "host-object surface");
 
         var agent = new JsObject(ObjectPrototype);
 
-        // Every member of `$262.agent` refuses. The agent API is about workers sharing a buffer,
-        // and this profile has neither, so answering `undefined` would let a test proceed on a
-        // false premise and report a pass it did not earn.
+        // Every member of `$262.agent` refuses. A second agent is a runtime its host starts and
+        // hands a shared block to (JSD-0042), and this profile starts none, so answering
+        // `undefined` would let a test proceed on a false premise and report a pass it did not
+        // earn. A host that starts agents replaces the object, as the conformance harness does.
         GlobalRefuse(agent, "start", 1, "$262.agent.start: this profile runs no second agent");
         GlobalRefuse(agent, "broadcast", 1, "$262.agent.broadcast: this profile runs no second agent");
         GlobalRefuse(agent, "getReport", 0, "$262.agent.getReport: this profile runs no second agent");
@@ -228,7 +253,12 @@ internal sealed partial class JsRealm
         harness.DefineBuiltIn("global", JsValue.Object(host));
         harness.DefineBuiltIn("agent", JsValue.Object(agent));
 
-        GlobalRefuse(harness, "createRealm", 0, "$262.createRealm: this profile creates no nested realm");
+        // `createRealm` BUILDS AN ORDINARY NEW REALM ON THIS ENGINE AND ANSWERS ITS `$262`, as
+        // INTERPRETING.md defines it (JSD-0030 SR-7): a global object and intrinsics of its own, the
+        // same surface set, the agent's Symbols and job queue, and the cost charged to this
+        // allowance. Until 2026-10-04 it refused, because an engine held one realm (JSC-264).
+        Method(harness, "createRealm", 0, static (engine, thisValue, arguments) =>
+            JsValue.Object(engine.CreateRealm().Harness));
         // THE LANGUAGE MAKES DETACHMENT A HOST'S ACT, and a realm whose host installed none has no
         // way to perform it for a guest; `ArrayBuffer.prototype.transfer` is the language's own
         // door and needs no help from here. A composition that means to offer it replaces this
@@ -256,6 +286,7 @@ internal sealed partial class JsRealm
         GlobalRefuse(harness, "gc", 0, "$262.gc: this host exposes no collection hook");
 
         host.DefineBuiltIn("$262", JsValue.Object(harness));
+        Harness = harness;
 
         // NEITHER TARGET WORKLOAD NEEDS `console`. The conformance suite calls `print` and the
         // Octane harness calls neither, so this is here for one reason only: a person pointing the
@@ -271,6 +302,11 @@ internal sealed partial class JsRealm
 
         host.DefineBuiltIn("console", JsValue.Object(console));
     }
+
+    /// <summary>The realm's <c>$262</c>, which <c>createRealm</c> answers for a realm it built.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D4647
+    // Broiler-Human:        PENDING
+    internal JsObject Harness { get; private set; } = null!;
 
     /// <summary>Reads one argument, answering <c>undefined</c> past the end.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7DAE04

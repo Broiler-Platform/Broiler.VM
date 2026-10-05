@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
-// Exempt:           145
-// Human-reviewed:   0/23
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           150
+// Human-reviewed:   0/25
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       23
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=14CE45
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=391387
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -1374,6 +1374,71 @@ public enum JsOpcode : byte
     /// </summary>
     /// <remarks>The counterpart of <see cref="Increment"/>, with the same conversion.</remarks>
     Decrement = 0xB2,
+
+    /// <summary>
+    /// Pop a key; push it converted to a property key, and then what the active function's home
+    /// object inherits under it, read with the frame's <c>this</c> as the receiver.
+    /// </summary>
+    /// <remarks>
+    /// <b>The read half of a <c>super[k]</c> that is read and then written</b> - a compound, update
+    /// or logical assignment - in <see cref="LoadSuperProperty"/>'s order: the this binding, then the
+    /// base, then the key's conversion. Leaving the converted key under the value is what lets the
+    /// <see cref="StoreSuperProperty"/> that follows use the key the read used, so a key whose
+    /// <c>toString</c> counts is observed once, as the reference keeps it. A <c>super</c> reference
+    /// has no base on the stack to convert the key against, so <see cref="ToPropertyKey"/> cannot do
+    /// it, and converting first would read the base after a <c>toString</c> that re-points it.
+    /// </remarks>
+    LoadSuperPropertyKeepKey = 0xB3,
+
+    /// <summary>
+    /// Throw a <c>ReferenceError</c>: the write to a function call's result that non-strict code
+    /// may write and that has no reference to write through.
+    /// </summary>
+    /// <remarks>
+    /// <b>Annex B's runtime error for a call as an assignment target</b>: <c>f() = v</c>,
+    /// <c>f() += v</c>, <c>f()++</c> and <c>for (f() in o)</c> evaluate the call and then throw,
+    /// where strict code refuses each before it runs. Its stack effect is the value the assignment
+    /// would have left, so the lowering around it is an assignment's; it never completes.
+    /// </remarks>
+    ThrowReferenceError = 0xB4,
+
+    /// <summary>
+    /// Pop an Array of raw chunks and, under it, an Array of cooked chunks; push the template
+    /// object of the site at this instruction's offset.
+    /// </summary>
+    /// <remarks>
+    /// <b><see cref="GetTemplateObject"/> for a site with more chunks than its one-byte count can
+    /// say</b>, which is a tagged template with more than 254 substitutions. The chunks travel in
+    /// the two Arrays a call's spread arguments travel in, so the language's count is not the
+    /// operand's width. The object is built and cached exactly as <see cref="GetTemplateObject"/>
+    /// builds it, keyed by this instruction, and the Arrays are discarded after the first
+    /// evaluation.
+    /// </remarks>
+    GetTemplateObjectWide = 0xB5,
+
+    /// <summary>
+    /// Pop the object a <see cref="ResolveName"/> answered; push the value of the property named by
+    /// constant <c>u16</c> as an object environment record reads its binding.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>GetBindingValue</c> of an object environment record</b>: the property is asked for
+    /// again, and when a getter or a <c>Symbol.unscopables</c> lookup removed it since the search,
+    /// strict code meets a <c>ReferenceError</c> and sloppy code reads <c>undefined</c> - where
+    /// <see cref="GetProperty"/> would read through the prototype chain without asking.
+    /// </remarks>
+    GetObjectBinding = 0xB6,
+
+    /// <summary>
+    /// Pop a value and the object a <see cref="ResolveName"/> answered; write the property named by
+    /// constant <c>u16</c> as an object environment record writes its binding, and push the value.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>SetMutableBinding</c> of an object environment record</b>: when the property is gone
+    /// since the search, strict code meets a <c>ReferenceError</c>, and otherwise the write is
+    /// <c>Set</c> on that same object - so <c>with (o) { x *= 3 }</c> writes <c>o.x</c> even when
+    /// reading <c>x</c> deleted it, which re-resolving the name would not.
+    /// </remarks>
+    SetObjectBinding = 0xB7,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1444,10 +1509,25 @@ public static class JsOpcodes
     // Broiler-Human:        PENDING
     public const byte MemberIsEnumerable = 4;
 
-    /// <summary>Every operand bit <see cref="JsOpcode.DefineMethod"/> defines.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=CF6964
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineMethod"/> operand bit for a data member whose value is an
+    /// anonymous function definition the key names.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>{ [k]: function () {} }</c> names its function <c>k</c>'s value</b>, which is known only
+    /// when the literal is evaluated, so the naming is the definition's - as it is for a method - but
+    /// the value is not a method: it gets no home object, and it is never a getter or a setter
+    /// (JSP-6, JSC-238).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=0AD66A
     // Broiler-Human:        PENDING
-    public const byte MemberBits = MemberIsGetter | MemberIsSetter | MemberIsEnumerable;
+    public const byte MemberIsNamedValue = 8;
+
+    /// <summary>Every operand bit <see cref="JsOpcode.DefineMethod"/> defines.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C68008
+    // Broiler-Human:        PENDING
+    public const byte MemberBits =
+        MemberIsGetter | MemberIsSetter | MemberIsEnumerable | MemberIsNamedValue;
 
     /// <summary>
     /// The <see cref="JsOpcode.DefineClassElement"/> bit that puts the element on the constructor
@@ -1519,14 +1599,28 @@ public static class JsOpcodes
     // Broiler-Human:        PENDING
     public const byte ElementIsSetter = 32;
 
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineClassElement"/> bit for a field with a computed key whose
+    /// initialiser is an anonymous function definition.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>class C { [k] = function () {} }</c> names the function <c>k</c>'s value</b>, which the
+    /// class definition converted and the initialiser cannot see, so the executor names what the
+    /// initialiser answered before it defines the field. A literal or private key names it when it
+    /// is lowered and needs no bit (JSP-6, JSC-238).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=12EA0C
+    // Broiler-Human:        PENDING
+    public const byte ElementIsNamedValue = 64;
+
     /// <summary>Every operand bit <see cref="JsOpcode.DefineClassElement"/> defines.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A69539
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F6E1F8
     // Broiler-Human:        PENDING
     public const byte ElementBits = ElementIsStatic | ElementIsPrivate | ElementIsBlock |
-        ElementIsMethod | ElementIsGetter | ElementIsSetter;
+        ElementIsMethod | ElementIsGetter | ElementIsSetter | ElementIsNamedValue;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=506D9B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=126109
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1582,6 +1676,8 @@ public static class JsOpcodes
         JsOpcode.DisposeScope, JsOpcode.DisposeAdd, JsOpcode.DisposeFold, JsOpcode.DisposeStep,
         JsOpcode.DisposeEnd,
         JsOpcode.ToNumeric, JsOpcode.Increment, JsOpcode.Decrement,
+        JsOpcode.LoadSuperPropertyKeepKey, JsOpcode.ThrowReferenceError,
+        JsOpcode.GetTemplateObjectWide, JsOpcode.GetObjectBinding, JsOpcode.SetObjectBinding,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1630,7 +1726,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A6222A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=603319
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1664,7 +1760,9 @@ public static class JsOpcodes
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap or
         JsOpcode.EnterBody or JsOpcode.CallEvalSpread or JsOpcode.WithBaseObject or
         JsOpcode.DisposeScope or JsOpcode.DisposeFold or
-        JsOpcode.ToNumeric or JsOpcode.Increment or JsOpcode.Decrement
+        JsOpcode.ToNumeric or JsOpcode.Increment or JsOpcode.Decrement or
+        JsOpcode.LoadSuperPropertyKeepKey or JsOpcode.ThrowReferenceError or
+        JsOpcode.GetTemplateObjectWide
             => JsOperandShape.None,
 
         JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick or
@@ -1678,6 +1776,7 @@ public static class JsOpcodes
         JsOpcode.PushScope or JsOpcode.CopyScope or JsOpcode.DeclareGlobal or
         JsOpcode.NewArray or JsOpcode.ArrayHoles or
         JsOpcode.GetProperty or JsOpcode.SetProperty or JsOpcode.DefineField or
+        JsOpcode.GetObjectBinding or JsOpcode.SetObjectBinding or
         JsOpcode.DeleteProperty or JsOpcode.DefineGetter or JsOpcode.DefineSetter or
         JsOpcode.Closure or
         JsOpcode.LoadArgument or JsOpcode.RestArguments or JsOpcode.RequireCoercible or
@@ -1714,7 +1813,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B7D135
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C76FDE
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1764,6 +1863,7 @@ public static class JsOpcodes
             case JsOpcode.LoadEvalName:
             case JsOpcode.LoadEvalNameOrUndefined:
             case JsOpcode.DeleteEvalName:
+            case JsOpcode.ThrowReferenceError:
                 pushes = 1;
                 return true;
 
@@ -1771,6 +1871,12 @@ public static class JsOpcodes
             // in: exactly what a `with`-resolved callee's search leaves.
             case JsOpcode.DuplicateTwo:
             case JsOpcode.LoadEvalNameWithBase:
+                pushes = 2;
+                return true;
+
+            // The key goes and comes back converted, and the value read under it goes on top.
+            case JsOpcode.LoadSuperPropertyKeepKey:
+                pops = 1;
                 pushes = 2;
                 return true;
 
@@ -1813,6 +1919,7 @@ public static class JsOpcodes
 
             case JsOpcode.GetProperty:
             case JsOpcode.DeleteProperty:
+            case JsOpcode.GetObjectBinding:
             case JsOpcode.Negate:
             case JsOpcode.ToNumber:
             case JsOpcode.ToNumeric:
@@ -1842,6 +1949,7 @@ public static class JsOpcodes
             case JsOpcode.GetIndex:
             case JsOpcode.DeleteIndex:
             case JsOpcode.SetProperty:
+            case JsOpcode.SetObjectBinding:
             case JsOpcode.Add:
             case JsOpcode.Subtract:
             case JsOpcode.Multiply:
@@ -1927,6 +2035,12 @@ public static class JsOpcodes
             // Each chunk is on the stack twice, cooked and raw, and one object comes back.
             case JsOpcode.GetTemplateObject:
                 pops = checked((int)operand * 2);
+                pushes = 1;
+                return true;
+
+            // The two Arrays carry the count, so the effect is fixed where the narrow one's varies.
+            case JsOpcode.GetTemplateObjectWide:
+                pops = 2;
                 pushes = 1;
                 return true;
 

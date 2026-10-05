@@ -261,7 +261,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds an Error on this realm's prototype for the carried name.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DFD2C1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B6C764
     // Broiler-Human:        PENDING
     private JsObject CloneError(JsCloneRecord record)
     {
@@ -276,7 +276,10 @@ internal sealed partial class JsRealm
             prototype = held.Value.AsObject();
         }
 
-        var error = new JsObject(prototype, "Error");
+        // THE CLONE IS AN ERROR WITH A STACK OF ITS OWN, captured where it is adopted: the
+        // carrier does not carry the source's stack text, which names frames of another realm
+        // (JSD-0038).
+        var error = NewError(engine, prototype);
 
         // AN ABSENT MESSAGE STAYS ABSENT, so the clone of `new Error()` has no own `message` and
         // reads the empty string off its prototype, exactly as the original did.
@@ -650,7 +653,7 @@ internal sealed partial class JsRealm
         /// Nothing about a listed buffer's bytes is read here. HTML does not ask about detachment
         /// until the walk is over, and a getter can still detach a buffer after this loop.
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=D25FD2
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=987E5C
         // Broiler-Falsified-If: a transfer list naming a non-ArrayBuffer or one buffer twice is admitted
         // Broiler-Human:        PENDING
         private System.Collections.Generic.List<(JsArrayBuffer Buffer, JsCloneRecord Record)> CheckTransferList(
@@ -663,9 +666,9 @@ internal sealed partial class JsRealm
                 engine.Charge(4);
                 Count(1);
 
-                // THIS REALM HAS NO SharedArrayBuffer (JSD-0028) and no transferable platform
-                // object, so an entry is an ArrayBuffer or it is refused.
-                if (entry.AsObjectOrNull() is not JsArrayBuffer buffer)
+                // AN ENTRY IS AN ArrayBuffer OR IT IS REFUSED: there is no transferable platform
+                // object, and a SharedArrayBuffer cannot be transferred (JSD-0041).
+                if (entry.AsObjectOrNull() is not JsArrayBuffer { IsShared: false } buffer)
                 {
                     throw new JsCloneRefusedException(
                         JsCloneRefusal.NotTransferable, "only an ArrayBuffer can be transferred");
@@ -768,7 +771,7 @@ internal sealed partial class JsRealm
         }
 
         /// <summary>The record for one object: the one it already has, or a new one for its brand.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=1A9F4B
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=0942DC
         // Broiler-Falsified-If: an object whose brand is not in the matrix is recorded as any kind at all
         // Broiler-Human:        PENDING
         private int Record(JsObject source)
@@ -859,7 +862,9 @@ internal sealed partial class JsRealm
                     break;
             }
 
-            if (source.GetType() != typeof(JsObject))
+            // AN ERROR IS ITS OWN TYPE SINCE IT CARRIES A STACK (JSD-0038), and clones as the error it
+            // is; every other type that is not an ordinary object is a brand this carrier refuses.
+            if (source.GetType() != typeof(JsObject) && source is not JsErrorObject)
             {
                 throw new JsCloneRefusedException(
                     JsCloneRefusal.UnsupportedBrand, "a " + source.ClassName + " object could not be cloned");
@@ -975,11 +980,19 @@ internal sealed partial class JsRealm
         }
 
         /// <summary>A fixed-length buffer: its bytes, copied now, charged per byte.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=BF8169
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=6E7E72
         // Broiler-Falsified-If: the carrier holds the source buffer's own byte array, or a detached buffer serializes
         // Broiler-Human:        PENDING
         private int Buffer(JsObject source, JsArrayBuffer buffer)
         {
+            // A SHARED BLOCK IS NOT COPIED INTO A CARRIER, which holds data and never a live block
+            // (JSD-0032; JSD-0041 leaves sharing a block between agents to the agent slice).
+            if (buffer.IsShared)
+            {
+                throw new JsCloneRefusedException(
+                    JsCloneRefusal.UnsupportedBrand, "a SharedArrayBuffer could not be cloned");
+            }
+
             var data = buffer.Data ?? throw new JsCloneRefusedException(
                 JsCloneRefusal.DetachedBuffer, "a detached ArrayBuffer could not be cloned");
 

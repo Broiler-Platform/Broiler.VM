@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
+index 84795ca..97437f7 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
+@@ -806,7 +806,7 @@ internal sealed partial class JsRealm
+         }
+ 
+         return engine.Call(
+-            reviver, JsValue.Object(holder), [JsValue.String(key), value, JsValue.Object(context)]);
++            reviver, JsValue.Object(holder), [JsValue.String(key), value]);
+     }
+ 
+     /// <summary>Revives one member in place, deleting it when the reviver returns <c>undefined</c>.</summary>

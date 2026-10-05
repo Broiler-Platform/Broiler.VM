@@ -1,0 +1,36 @@
+$ git apply docs/evidence/jsp-7-001/control-uint8-codecs.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+t.csproj]
+<root>/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs(2366,18): warning CS8618: Non-nullable property 'Matcher' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [<root>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj]
+    3 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.21
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-7.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 10 command lines from artifacts/jsp-7-001/jsp-7.expected.txt
+ok   runs/annex-b-string-date-and-regexp-members.js
+ok   runs/html-like-comments-in-a-script.js
+ok   --module refused/an-html-like-comment-in-a-module.mjs
+ok   runs/a-for-in-initialiser.js
+ok   runs/a-call-as-an-assignment-target.js
+ok   refused/a-call-as-an-assignment-target-in-strict-code.js
+ok   runs/the-edition-members-the-realm-lacked.js
+FAIL runs/uint8array-base64-and-hex.js: exit 1, expected 0; output does not contain `SGn7/w== / SGn7_w / 4869fbff / 72,105,33 /  / SyntaxError / 72,105 / 5:2:72,105,0,0 / 0:0:0,0 / SyntaxError:72,105,0`
+       broiler-js: runs/uint8array-base64-and-hex.js: uncaught TypeError: undefined is not a function
+ok   runs/a-reviver-reads-the-source-text.js
+ok   runs/an-error-has-no-stack.js
+# 1 of 10 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-7-001/control-uint8-codecs.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+t.csproj]
+<root>/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs(2366,18): warning CS8618: Non-nullable property 'Matcher' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [<root>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj]
+    3 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.66
+# exit 0

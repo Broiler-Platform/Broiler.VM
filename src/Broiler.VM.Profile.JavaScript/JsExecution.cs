@@ -245,14 +245,16 @@ internal sealed class JsInstance : IVmInstanceState
 internal static class JsExecution
 {
     /// <summary>Builds an instance and its realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5AD403
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C41876
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Instantiate(
         JsProgram program,
         IVmExecutionEnvironment environment,
         IJsHostSurface? hostSurface,
         System.Threading.CancellationToken cancellationToken,
-        bool handleStress = false)
+        bool handleStress = false,
+        bool sweepsFinalization = false,
+        JsIntlTables? intl = null)
     {
         // A BASELINE ARTIFACT THIS PROCESS CANNOT ENTER IS REFUSED BEFORE ANYTHING IS CHARGED, and it
         // is a refusal and not a fallback. The bytecode is in the same artifact and this arm will not
@@ -280,7 +282,9 @@ internal static class JsExecution
             program.AdmittedSurfaces,
             nativeForm: native,
             valueForm: native && program.NativeValueForm,
-            handleStress: handleStress);
+            handleStress: handleStress,
+            sweepsFinalization: sweepsFinalization,
+            intl: intl);
 
         // THE PAGE IS MAPPED NOW AND NOT AT THE FIRST CALL, so a process that may not make memory
         // executable refuses the instance instead of faulting its first invocation.
@@ -392,7 +396,7 @@ internal static class JsExecution
     /// belongs.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=AA8194
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=FC5623
     // Broiler-Falsified-If: an embedder that throws leaves an instance a caller can obtain
     // Broiler-Human:        PENDING
     private static VmExecutionStep? InstallHostSurface(JsEngine engine, IJsHostSurface surface)
@@ -403,6 +407,13 @@ internal static class JsExecution
         // to install: an embedder that also answers imports is asked about them for this realm's
         // whole life, and one that does not leaves every import synchronous (JSD-0024 section 15).
         realm.ModuleLoader = surface as IJsHostModuleLoader;
+
+        // AND EVERY REALM A GUEST CREATES LATER IS ANNOUNCED TO THE SAME SURFACE (JSD-0030 SR-7).
+        engine.HostSurface = surface;
+
+        // THE SURFACE SAYS WHETHER THE AGENT MAY BLOCK, and an agent whose surface says nothing is an
+        // event loop (JSD-0041 section 4).
+        engine.CanBlock = surface is IJsHostAgentPolicy { CanBlock: true };
 
         try
         {
@@ -561,11 +572,32 @@ internal static class JsExecution
     /// <c>ToString</c> of a Symbol is a <c>TypeError</c>: a script whose last statement was
     /// <c>Symbol("x")</c> completed normally and was reported as an uncaught exception it never
     /// threw (VM-FIX-D). Every other value keeps the <c>ToString</c> it had.
+    /// <para>
+    /// <b>A value whose <c>ToString</c> throws completed normally all the same.</b> An object with no
+    /// prototype has no <c>toString</c> to call, and a guest <c>toString</c> may throw; either way the
+    /// script did not, so the value is rendered by its class tag, as <c>Object.prototype.toString</c>
+    /// would render it, and the throw is discarded. Until 2026-10-03 a script ending in
+    /// <c>Object.create(null)</c> was reported as uncaught (JSC-252).
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=870ED5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FBB7F1
     // Broiler-Human:        PENDING
-    private static string CompletionText(JsInstance instance, JsValue value) =>
-        value.IsSymbol ? value.AsSymbol().Rendered : instance.Engine.ToStringValue(value);
+    private static string CompletionText(JsInstance instance, JsValue value)
+    {
+        if (value.IsSymbol)
+        {
+            return value.AsSymbol().Rendered;
+        }
+
+        try
+        {
+            return instance.Engine.ToStringValue(value);
+        }
+        catch (JsThrow) when (value.IsObject)
+        {
+            return "[object " + value.AsObject().ClassName + "]";
+        }
+    }
 
     /// <summary>Runs every due job on the guest stack and reports what happened.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2FD85C
@@ -864,7 +896,7 @@ internal static class JsExecution
     /// capability this profile imports declares caller-thread affinity - which this satisfies: the
     /// thread that calls it is the thread the guest is running on.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=D9C81E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F6F6BF
     // Broiler-Falsified-If: guest code runs on the caller's stack, or an exception the guest raised does not reach the caller
     // Broiler-Human:        PENDING
     private static JsValue RunOnGuestStack(JsInstance instance, uint? unit)
@@ -890,9 +922,26 @@ internal static class JsExecution
                         // A DRAIN RUNS ON THE SAME STACK A SCRIPT DOES. A job is guest code and can
                         // recurse exactly as guest code does, so running it on the caller's stack
                         // would reintroduce the process termination JSC-79 records.
-                        completed = unit is { } entry
-                            ? instance.Engine.RunEntry(instance.Program, entry)
-                            : instance.Engine.DrainJobs();
+                        // A HOST DRAIN SWEEPS ONCE, AT ITS START AND BEFORE ANY GUEST CODE, and a
+                        // script never does (JSD-0029 section 4.2): this is one of the two points
+                        // the collector is read at.
+                        if (unit is { } entry)
+                        {
+                            completed = instance.Engine.RunEntry(instance.Program, entry);
+                        }
+                        else
+                        {
+                            instance.Engine.SweepFinalization();
+                            completed = instance.Engine.DrainJobs();
+
+                            // A DRAIN ALSO SETTLES THE AGENT'S ASYNCHRONOUS WAITERS, waiting for the
+                            // earliest deadline when nothing else is due, and runs what that queues
+                            // (JSD-0041 section 4).
+                            while (instance.Engine.SettleWaiters(wait: true))
+                            {
+                                completed = instance.Engine.DrainJobs();
+                            }
+                        }
                     }
                     finally
                     {
@@ -931,7 +980,7 @@ internal static class JsExecution
     /// carried out rather than raised, because a job that throws does not stop the stepping any
     /// more than it stops a drain.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=94AAA9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=9C9D6C
     // Broiler-Falsified-If: a job runs on the caller's stack, or a job that throws ends the stepping
     // Broiler-Human:        PENDING
     private static string RunOneJobOnGuestStack(JsInstance instance)
@@ -956,6 +1005,14 @@ internal static class JsExecution
 
                     try
                     {
+                        // A HOST STEP SWEEPS BEFORE ITS TURN'S JOB, the other of the two points the
+                        // collector is read at; a cleanup it queues is that turn's job when the
+                        // queue was empty (JSD-0029 section 4.2).
+                        instance.Engine.SweepFinalization();
+
+                        // AND SETTLES THE WAITERS THAT ARE DUE, without waiting for one that is not.
+                        _ = instance.Engine.SettleWaiters(wait: false);
+
                         if (instance.Engine.StepOneJob(out var thrown))
                         {
                             rendered = instance.Engine.Render(thrown);

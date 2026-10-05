@@ -55,8 +55,20 @@ internal static class RealmGlobals
         }
 
         var catalog = VmCatalog.CreateBuilder()
-            .Add(JavaScriptProfile.DescriptorAdmitting(
-                JavaScriptProfile.BigIntManifest, JavaScriptProfile.BinaryManifest, JavaScriptProfile.DynamicManifest))
+            .Add(JavaScriptProfile.DescriptorComposing(new JsComposition
+            {
+                Surfaces =
+                [
+                    JavaScriptProfile.BigIntManifest,
+                    JavaScriptProfile.BinaryManifest,
+                    JavaScriptProfile.DynamicManifest,
+                    JavaScriptProfile.IntlManifest,
+                    JavaScriptProfile.ShadowRealmManifest,
+                    JavaScriptProfile.SharedManifest,
+                    JavaScriptProfile.TemporalManifest,
+                ],
+                IntlData = Broiler.VM.Profile.JavaScript.Intl.JsCldrData.Instance,
+            }))
             .Build();
 
         var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();

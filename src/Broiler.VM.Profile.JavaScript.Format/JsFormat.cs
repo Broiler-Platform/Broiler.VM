@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   52
-// Annotated:        52/52
-// Exempt:           59
-// Human-reviewed:   0/52
+// Relevant units:   55
+// Annotated:        55/55
+// Exempt:           60
+// Human-reviewed:   0/55
 // IP risk:          None
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  1/10 max
-// Unverified:       52
+// Unverified:       55
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -63,7 +63,7 @@ public static class JsFormat
     /// version-1 meanings; their bodies are read under version 2's rules where those differ, and
     /// the two places they differ - the limits body and the exception-region body - say so.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9D29BE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=44A389
     // Broiler-Human:        PENDING
     public enum SectionKind : uint
     {
@@ -222,6 +222,27 @@ public static class JsFormat
         /// </para>
         /// </remarks>
         ScriptReferrers = 15,
+
+        /// <summary>
+        /// The source text: for each function compiled from source, the span of the source it was
+        /// defined from, which <c>Function.prototype.toString</c> answers (JSD-0037).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>One row per function, in ascending unit order</b>: the unit, a String constant holding
+        /// the whole source text the unit was parsed from, and the offset and length of the
+        /// function's span inside it. A source is one constant however many functions it defines, so
+        /// a nested function costs two integers rather than a second copy of its text.
+        /// </para>
+        /// <para>
+        /// <b>It is optional, and its absence means "no source text"</b>, which is what every
+        /// artifact written before the kind existed says and what a compilation that dropped it says:
+        /// such a function renders as a native one, as before. It is admitted beside every manifest
+        /// and <b>it grants nothing</b>: it is text a program can already read in the source it was
+        /// given.
+        /// </para>
+        /// </remarks>
+        SourceText = 16,
     }
 
     /// <summary>What one import entry binds its local name to.</summary>
@@ -1018,6 +1039,52 @@ public static class JsFormat
         payload[0] = ModuleRequestMark;
         System.Array.Copy(body, 0, payload, 1, body.Length);
         return payload;
+    }
+
+    /// <summary>The module type a JSON import names with <c>with { type: "json" }</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=0157D7
+    // Broiler-Human:        PENDING
+    public const string JsonModuleType = "json";
+
+    /// <summary>
+    /// The request specifier of a module imported under a type: the specifier, a NUL, and the type.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A module's identity is the specifier AND its type, and this is the one spelling of the
+    /// pair.</b> <c>import a from "./d.json" with { type: "json" }</c> and an untyped import of the
+    /// same specifier are two requests for two modules, and every layer that matches a request - the
+    /// artifact's request table, the run-time lookup a dynamic import makes, the resolution request
+    /// a composition confirms, the module request a provider answers - matches this one string. An
+    /// untyped request is its specifier unchanged, so nothing that existed before a type did reads
+    /// differently.
+    /// </para>
+    /// <para>
+    /// <b>The separator is a NUL for the reason <see cref="ModuleRequestMark"/> is one</b>: a
+    /// composition that predates types resolves the whole string as a specifier, finds no module it
+    /// names, and refuses - a legible failure rather than a JSON document loaded as a program.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=97B458
+    // Broiler-Human:        PENDING
+    public static string TypedSpecifier(string specifier, string type) =>
+        type.Length == 0 ? specifier : specifier + "\0" + type;
+
+    /// <summary>Splits what <see cref="TypedSpecifier"/> wrote into the specifier and its type.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=24A2ED
+    // Broiler-Human:        PENDING
+    public static string SplitTypedSpecifier(string typed, out string type)
+    {
+        var separator = typed.LastIndexOf('\0');
+
+        if (separator < 0)
+        {
+            type = string.Empty;
+            return typed;
+        }
+
+        type = typed[(separator + 1)..];
+        return typed[..separator];
     }
 
     /// <summary>Reads what <see cref="ModuleRequest"/> wrote, or answers false.</summary>

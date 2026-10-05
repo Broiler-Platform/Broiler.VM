@@ -666,3 +666,26 @@ signs nothing. Evidence: VM `docs/evidence/jseal-vm-module-gaps/README.md`.
   grew by `EvalScopeKind.Module` and `EvalBindingImport`, and `EvalBindingFlagBits` changed from 15
   to 31. `docs/api/public-api.txt` records all three. An artifact written before this change still
   verifies, and its module sites keep their refusal.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the record as amended by sections 12 to 15, and sign it.**
+
+- **Why take it now.** The design is no longer a proposal in any practical sense: steps 1 to 9 are in
+  the tree, `super`, private names and module-scoped sites have been answered since (sections 14 and
+  15), and every shape not yet made correct keeps the catchable refusal. Leaving the record unsigned
+  does not keep the code out; it leaves shipped behaviour with no approved specification behind it.
+  Refusing it would mean reverting V14 to V15, which reintroduces the function-scope `EvalError` for
+  ordinary programs.
+- **Take it with sections 12 to 15 as the binding text** where they differ from sections 2 to 11,
+  and say so in the signature line, so a reader does not have to reconcile the two.
+- **Review first, sign second.** The verifier's eval-scope checks (refusing with
+  `MalformedEvalScopes`, 1627) and the by-name `var` record are where a wrong decision becomes a scope
+  bug that presents as a correct program; the owner reads their falsifier lines in `HUMAN_REVIEW.md`
+  before signing, because that review is what a signature on this record claims.
+- **What would change this recommendation:** a direct `eval` observed resolving a name to a binding
+  other than the one the caller's scope map names, which is the record's own falsifier.

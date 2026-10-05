@@ -1187,7 +1187,132 @@ public sealed class ReviewRecordRuleTests
         // WasmReferenceNumerics.cs. Nothing executes through it, and it reads and writes a caller's
         // bytes at a guest-shaped address, which is a reason to read it. It is covered on the same terms
         // as every other product file, and nothing in it has been read by a human.
-        Assert.Equal(235, AssuranceSources.Files.Count);
+        //
+        // AND THE JAVASCRIPT PROFILE'S Uint8Array CODECS, JsRealm.Base64.cs, from the parity roadmap's
+        // JSP-7: the edition's base64 and hex members, which decode a guest's String into a guest's
+        // buffer and are therefore a parser over untrusted text. It is covered on the same terms as
+        // every other product file, and nothing in it has been read by a human.
+        //
+        // AND THE CASE CONVERSION (JSD-0027 slice N2, 2026-10-03): JsUnicodeCasing.g.cs, the fourth
+        // file UnicodeTableGenerator writes and rule N22 holds - the full case mappings from
+        // UnicodeData.txt and SpecialCasing.txt, and the Cased and Case_Ignorable ranges - and the
+        // hand-written JsUnicodeCasing.cs that reads it for toUpperCase and toLowerCase. Both are
+        // covered on the same terms as every other product file, and nothing in them has been read
+        // by a human.
+        //
+        // AND THE JSON MODULE READING (phase F1, 2026-10-04, JSC-255): JsJsonModule.cs, which reads a
+        // JSON module's text against the JSON grammar and writes the synthetic module that exports
+        // it - a parser over a composition's file. It is covered on the same terms as every other
+        // product file, and nothing in it has been read by a human.
+        //
+        // AND THE STACK (phase F3, 2026-10-04, JSD-0038): JsEngine.Stack.cs, the running frames'
+        // sites, the capture an error's `stack` is made from and its rendering. It is covered on the
+        // same terms as every other product file, and nothing in it has been read by a human.
+        //
+        // AND THE PROPERTIES OF STRINGS (phase F2, 2026-10-04): JsUnicodeStringProperties.g.cs, the fifth
+        // file UnicodeTableGenerator writes and rule N22 holds, and the hand-written
+        // JsUnicodeStringProperties.cs that reads it for the `v` flag's `\p{...}`. Both are covered on
+        // the same terms as every other product file, and nothing in them has been read by a human.
+        //
+        // AND THE FINALIZATION SWEEP (phase F4, 2026-10-04, JSD-0029 D03-a): JsEngine.Finalization.cs, the
+        // host-drained sweep, its eligibility seam and the registries it tracks. It is covered on the
+        // same terms as every other product file, and nothing in it has been read by a human.
+        //
+        // AND THE REALMS (phase F5, 2026-10-04, JSD-0030 SR-1, SR-2 and SR-7): JsEngine.Realms.cs, the
+        // running realm, GetFunctionRealm, the switch at a built-in of another realm and the realms a
+        // guest creates. It is covered on the same terms as every other product file, and nothing in
+        // it has been read by a human.
+        //
+        // AND THE SHADOWREALM (phase F5, 2026-10-04, JSD-0040): JsRealm.ShadowRealm.cs, the constructor
+        // and its two methods, and JsEngine.ShadowRealm.cs, the evaluation, the wrapping boundary and
+        // the import. Both are covered on the same terms as every other product file, and nothing in
+        // them has been read by a human.
+        //
+        // AND SHARED MEMORY (phase F6, 2026-10-04, JSD-0041): JsShared.cs, the shared block, its
+        // waiters and the atomic accesses; JsRealm.Shared.cs, SharedArrayBuffer and Atomics; and
+        // JsEngine.Atomics.cs, the blocking wait and the asynchronous waiters a host drain settles.
+        // All three are covered on the same terms as every other product file, and nothing in them
+        // has been read by a human.
+        //
+        // AND INTL (phase F7, 2026-10-04, JSD-0043): in the profile, JsIntlTables.cs, the decoded
+        // tables a composition hands over; JsLocaleTag.cs, the language tag's parse, canonicalization
+        // and likely subtags; JsCollationData.cs and JsCollator.cs, the collation elements and their
+        // comparison; JsRealm.Intl.cs, the Intl object and Intl.Collator; and JsComposition.cs, the
+        // composition the descriptor is built from. In the format, JsIntlData.cs, the interface the
+        // data is read through. And the new family assembly's two files: JsCldrData.cs, which hands
+        // the tables over, and JsCldrTables.g.cs, which CldrTableGenerator writes and rule N28
+        // holds. All nine are covered on the same terms as every other product file, and nothing in
+        // them has been read by a human.
+        //
+        // AND NUMBER FORMATTING (phase F7, 2026-10-04, JSD-0044): JsDecimal.cs, the exact decimal and
+        // its rounding; JsNumberData.cs, the decoded number data and the CLDR pattern reader;
+        // JsPluralRule.cs, the plural rule evaluator; JsNumberFormatter.cs, the formatting itself; and
+        // JsRealm.NumberFormat.cs, Intl.NumberFormat. All five are covered on the same terms as every
+        // other product file, and nothing in them has been read by a human.
+        //
+        // AND DATE FORMATTING (phase F7, 2026-10-04, JSD-0045): JsDateData.cs, the decoded calendar
+        // data; JsDatePatternGenerator.cs, ICU's skeleton matching; JsDateIntervalFormat.cs, ICU's
+        // range patterns; JsDateTimeFormatter.cs, the formatting itself; and JsRealm.DateTimeFormat.cs,
+        // Intl.DateTimeFormat and Intl.supportedValuesOf. All five are covered on the same terms as
+        // every other product file, and nothing in them has been read by a human.
+        //
+        // AND THE LOCALE (phase F7, 2026-10-04, JSD-0046): JsLocaleInfo.cs, the week and script data;
+        // and JsRealm.Locale.cs, Intl.Locale. Both are covered on the same terms as every other
+        // product file, and nothing in them has been read by a human.
+        //
+        // AND PLURAL RULES (phase F7, 2026-10-04, JSD-0047): JsRealm.PluralRules.cs,
+        // Intl.PluralRules over the number format's rounding. It is covered on the same terms as every
+        // other product file, and nothing in it has been read by a human.
+        //
+        // AND LISTS (phase F7, 2026-10-04, JSD-0048): JsRealm.ListFormat.cs, Intl.ListFormat over
+        // CLDR's list patterns. It is covered on the same terms as every other product file, and
+        // nothing in it has been read by a human.
+        //
+        // AND RELATIVE TIMES (phase F7, 2026-10-04, JSD-0049): JsRealm.RelativeTimeFormat.cs,
+        // Intl.RelativeTimeFormat over CLDR's relative time patterns. It is covered on the same terms
+        // as every other product file, and nothing in it has been read by a human.
+        //
+        // AND SEGMENTATION (phase F7, 2026-10-04, JSD-0050): JsSegmenter.cs, the break data and UAX
+        // #29's rules; and JsRealm.Segmenter.cs, Intl.Segmenter and its Segments and iterators. Both
+        // are covered on the same terms as every other product file, and nothing in them has been read
+        // by a human.
+        //
+        // AND DURATIONS (phase F7, 2026-10-05, JSD-0051): JsRealm.DurationFormat.cs,
+        // Intl.DurationFormat over the number and list formats. It is covered on the same terms as
+        // every other product file, and nothing in it has been read by a human.
+        //
+        // AND DISPLAY NAMES (phase F7, 2026-10-05, JSD-0052): JsRealm.DisplayNames.cs,
+        // Intl.DisplayNames over CLDR's locale display names. It is covered on the same terms as every
+        // other product file, and nothing in it has been read by a human.
+        //
+        // AND TIME ZONES (phase F8, 2026-10-05, JSD-0053): JsTimeZones.cs, the reader of the IANA Time
+        // Zone Database's identifiers and offsets; and JsTzdbTables.g.cs, which TzdbTableGenerator
+        // writes and rule N30 holds. Both are covered on the same terms as every other product file,
+        // and nothing in them has been read by a human.
+        //
+        // AND TEMPORAL (phase F8 slice T1, 2026-10-05, JSD-0054): sixteen files. Eight are the
+        // proposal's abstract operations, apart from any realm: JsTemporalCore.cs (records, units,
+        // rounding, ISO date arithmetic and the string forms), JsTemporalParser.cs (the ISO 8601 and
+        // RFC 9557 grammar), JsTemporalObjects.cs (the eight objects' internal slots),
+        // JsTemporal.Options.cs, JsTemporal.Zones.cs, JsTemporal.Calendar.cs (the ISO 8601 and Gregorian
+        // calendars), JsTemporal.Durations.cs (durations and rounding relative to a date) and
+        // JsTemporal.Conversions.cs. Eight are partial files of the realm: JsRealm.Temporal.cs (the
+        // namespace and what the types share) and one per type - Duration, Instant with Temporal.Now,
+        // PlainDate, PlainTime, PlainDateTime, ZonedDateTime, and PlainYearMonth with PlainMonthDay in
+        // one. All are covered on the same terms as every other product file, and nothing in them has
+        // been read by a human.
+        //
+        // AND THE CLDR CALENDARS (phase F8 slice T3, 2026-10-05, JSD-0056): three files.
+        // JsCalendars.cs, the arithmetic of the fifteen calendars beyond ISO 8601;
+        // JsTemporal.CalendarNonIso.cs, the Intl era and month code proposal's calendar operations
+        // over it; and JsCalendarTables.g.cs, which CalendarTableGenerator writes and rule N32 holds.
+        // All are covered on the same terms as every other product file, and nothing in them has been
+        // read by a human.
+        //
+        // AND THE TIME ZONES' NAMES (phase F8 slice T5, 2026-10-05, JSD-0058): JsZoneNames.cs, CLDR's
+        // metazones and ICU's algorithms that name a zone by them. It is covered on the same terms as
+        // every other product file, and nothing in it has been read by a human.
+        Assert.Equal(299, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

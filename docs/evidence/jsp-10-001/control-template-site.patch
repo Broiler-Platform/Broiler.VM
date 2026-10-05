@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+index 1e15acd..72f78b2 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+@@ -9172,6 +9172,7 @@ internal sealed partial class JsEngine
+                         {
+                             var raw = ArgumentsOf(stack[--sp]);
+                             var cooked = ArgumentsOf(stack[sp - 1]);
++                            templates.Remove(program);
+                             var strings = TemplateObject(
+                                 program,
+                                 pc,

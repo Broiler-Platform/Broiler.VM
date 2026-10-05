@@ -1,6 +1,5 @@
 #diverges node 16 the pinned edition admits every Script value PropertyValueAliases.txt lists, Hrkt and Katakana_Or_Hiragana included (UnicodeMatchPropertyValue); V8 refuses them
 #diverges node 46 WSpace is a UCD alias the specification's binary property table does not list, so UnicodeMatchProperty refuses it; V8 accepts it
-#diverges node 60 this realm refuses the v flag, and advertises neither it nor properties of strings (JSD-0031 section 7); V8 implements it
 1 true
 2 false
 3 true
@@ -60,7 +59,7 @@
 57 "true,true,true"
 58 SyntaxError
 59 SyntaxError
-60 SyntaxError
+60 true
 61 SyntaxError
 62 "28 pairs, 0 missed"
 63 "1414 pairs, 0 missed"

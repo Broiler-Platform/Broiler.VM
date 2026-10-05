@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
+// Relevant units:   20
+// Annotated:        20/20
 // Exempt:           0
-// Human-reviewed:   0/12
-// IP risk:          None
+// Human-reviewed:   0/20
+// IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  0/10 max
-// Unverified:       12
+// Resource impact:  1/10 max
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -174,6 +174,69 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public const string BigInt = "broiler.javascript.bigint";
 
+    /// <summary>
+    /// The ShadowRealm surface: the <c>ShadowRealm</c> constructor and the realms it makes (JSD-0040).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="Dynamic"/></b> (JSD-0030 section 8): a
+    /// ShadowRealm can do nothing but compile source into a realm of its own, so a composition that
+    /// declined the dynamic surface has no use for it, and a composition that admits <c>eval</c> can
+    /// still decline a second global environment. A program that names <c>ShadowRealm</c> declares
+    /// it, as one naming <c>eval</c> declares the dynamic surface.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1E0973
+    // Broiler-Human:        PENDING
+    public const string ShadowRealm = "broiler.javascript.shadowrealm";
+
+    /// <summary>
+    /// The shared-memory surface: <c>SharedArrayBuffer</c> and <c>Atomics</c> (JSD-0041).
+    /// </summary>
+    /// <remarks>
+    /// <b>Never folded into <see cref="Binary"/></b>, for the reason that surface's remarks give: a
+    /// composition that wants an ordinary byte buffer must not admit memory several agents write by
+    /// accident. It is admitted only together with the binary surface, whose views are how a shared
+    /// buffer is read at all.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C58E11
+    // Broiler-Human:        PENDING
+    public const string Shared = "broiler.javascript.shared";
+
+    /// <summary>
+    /// The internationalization surface: the <c>Intl</c> global and the ECMA-402 behaviour of the
+    /// locale-sensitive methods (JSD-0043).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the one surface whose data a composition supplies.</b> Its answers come from tables
+    /// generated from the pinned CLDR release, and those tables live in an assembly of their own that
+    /// only a composition admitting this surface references (JSD-0027 section 5), handed to the
+    /// profile as an <see cref="IJsIntlData"/>. So a door handed no data does not admit it even
+    /// when it admits every surface - "every" means every surface the composition can build - and a
+    /// door that names it without data is refused when it is built.
+    /// </para>
+    /// <para>
+    /// A program naming <c>Intl</c> declares it, as one naming <c>eval</c> declares the dynamic
+    /// surface; a composition that declines it refuses that program at verification.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4638BC
+    // Broiler-Human:        PENDING
+    public const string Intl = "broiler.javascript.intl";
+
+    /// <summary>
+    /// The Temporal surface: the <c>Temporal</c> namespace and <c>Date.prototype.toTemporalInstant</c>
+    /// (JSD-0054).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="Intl"/> and <see cref="BigInt"/></b>: its time
+    /// zones are the tzdb tables the internationalization data carries (JSD-0053), and an instant's
+    /// epoch nanoseconds are a BigInt. So a door handed no data does not admit it either, and a
+    /// program naming <c>Temporal</c> declares it, as one naming <c>Intl</c> declares that surface.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=415D78
+    // Broiler-Human:        PENDING
+    public const string Temporal = "broiler.javascript.temporal";
+
     /// <summary>Every optional surface this build knows, in ascending ordinal order.</summary>
     /// <remarks>
     /// An artifact declaring a name that is not here is refused as naming a surface this build does
@@ -181,10 +244,12 @@ public static class JsSurfaces
     /// carries a different diagnostic.
     /// <i>(Amended 2026-09-21. <see cref="BigInt"/> was for a while known and not here, so that the
     /// descriptor admitting every surface declined it; card B05 admitted it, and it is here.)</i>
+    /// <see cref="Intl"/> is here too, and a door admitting every surface admits it only when it was
+    /// handed the data it is built from (JSD-0043).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=622B1E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=CC3694
     // Broiler-Human:        PENDING
-    public static readonly string[] All = [BigInt, Binary, Dynamic, Modules, Native];
+    public static readonly string[] All = [BigInt, Binary, Dynamic, Intl, Modules, Native, ShadowRealm, Shared, Temporal];
 
     /// <summary>
     /// The global names the binary surface owns, in ascending ordinal order.
@@ -263,6 +328,26 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public static readonly string[] BigIntGlobals = ["BigInt", "BigInt64Array", "BigUint64Array"];
 
+    /// <summary>The global names the ShadowRealm surface owns.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6C74F3
+    // Broiler-Human:        PENDING
+    public static readonly string[] ShadowRealmGlobals = ["ShadowRealm"];
+
+    /// <summary>The global names the shared-memory surface owns.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7C52F9
+    // Broiler-Human:        PENDING
+    public static readonly string[] SharedGlobals = ["Atomics", "SharedArrayBuffer"];
+
+    /// <summary>The global names the internationalization surface owns.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B06A18
+    // Broiler-Human:        PENDING
+    public static readonly string[] IntlGlobals = ["Intl"];
+
+    /// <summary>The global names the Temporal surface owns.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F337E8
+    // Broiler-Human:        PENDING
+    public static readonly string[] TemporalGlobals = ["Temporal"];
+
     /// <summary>
     /// The surface that owns <paramref name="globalName"/>, or <see langword="false"/> when the
     /// name belongs to no optional surface.
@@ -273,7 +358,7 @@ public static class JsSurfaces
     /// surface for them, the first list it searches; a caller that records declarations reads
     /// <see cref="BigIntGlobals"/> as well. (Added 2026-09-22, JSeal B07.)
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=338E4D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=419169
     // Broiler-Human:        PENDING
     public static bool TryOwner(string globalName, out string manifestId)
     {
@@ -300,6 +385,42 @@ public static class JsSurfaces
             if (string.Equals(name, globalName, System.StringComparison.Ordinal))
             {
                 manifestId = BigInt;
+                return true;
+            }
+        }
+
+        foreach (var name in ShadowRealmGlobals)
+        {
+            if (string.Equals(name, globalName, System.StringComparison.Ordinal))
+            {
+                manifestId = ShadowRealm;
+                return true;
+            }
+        }
+
+        foreach (var name in SharedGlobals)
+        {
+            if (string.Equals(name, globalName, System.StringComparison.Ordinal))
+            {
+                manifestId = Shared;
+                return true;
+            }
+        }
+
+        foreach (var name in IntlGlobals)
+        {
+            if (string.Equals(name, globalName, System.StringComparison.Ordinal))
+            {
+                manifestId = Intl;
+                return true;
+            }
+        }
+
+        foreach (var name in TemporalGlobals)
+        {
+            if (string.Equals(name, globalName, System.StringComparison.Ordinal))
+            {
+                manifestId = Temporal;
                 return true;
             }
         }

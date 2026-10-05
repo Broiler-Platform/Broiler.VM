@@ -192,6 +192,74 @@ internal static partial class HostSurfaceChecks
             },
             second: "print('second=' + fromTurn + ':' + broilerHost.run('fromTurn.length + 3', 'again.js'));");
 
+        // JSD-0030 SECTION 6'S POLICY-ISOLATION CASES (JSD-0040): a ShadowRealm compiles through the
+        // one provider, as a guest, on every route, and nothing of the embedder's crosses into it but
+        // what the parent hands over, as a wrapper. Case 5 - a composition that declined the dynamic
+        // surface has no ShadowRealm - is the slice compiler's (realms/sr3/...).
+        failures += ScriptCheck(
+            "a restricted parent gains nothing by constructing a ShadowRealm (section 6, case 1)",
+            """
+            var sr = new ShadowRealm();
+            print('made=' + typeof sr);
+            try { sr.evaluate('6 * 7'); print('evaluate=ran'); } catch (e) { print('evaluate=' + e.name); }
+            print('counts=' + broilerHost.counts());
+            """,
+            ["made=object", "evaluate=SyntaxError", "counts=scripts:0,guest-answered:0,guest-refused:1"],
+            allowGuestEval: false);
+
+        failures += ScriptCheck(
+            "a host script's permit is not borrowed by the evaluate inside it (section 6, case 2)",
+            """
+            print('host=' + broilerHost.run("var r; try { r = new ShadowRealm().evaluate('1'); } catch (e) { r = e.name; } r", 'host.js'));
+            print('counts=' + broilerHost.counts());
+            """,
+            ["host=SyntaxError", "counts=scripts:1,guest-answered:0,guest-refused:1"],
+            allowGuestEval: false);
+
+        failures += ScriptCheck(
+            "a ShadowRealm's own eval asks the provider too, and its refusal crosses as a TypeError (section 6, case 3)",
+            """
+            var sr = new ShadowRealm();
+            var f = sr.evaluate('(s) => eval(s)');
+            try { print('inner=' + f('6*7')); } catch (e) { print('inner=' + e.name + ':' + (e instanceof TypeError)); }
+            print('counts=' + broilerHost.counts());
+            """,
+            ["inner=TypeError:true", "counts=scripts:0,guest-answered:1,guest-refused:1"],
+            allowGuestEval: false,
+            admits: static text => text == "(s) => eval(s)");
+
+        failures += ScriptCheck(
+            "a ShadowRealm nested inside one asks the provider too (section 6, case 4)",
+            """
+            var sr = new ShadowRealm();
+            var g = sr.evaluate('(s) => new ShadowRealm().evaluate(s)');
+            try { print('nested=' + g('1')); } catch (e) { print('nested=' + e.name); }
+            print('counts=' + broilerHost.counts());
+            """,
+            ["nested=TypeError", "counts=scripts:0,guest-answered:1,guest-refused:1"],
+            allowGuestEval: false,
+            admits: static text => text == "(s) => new ShadowRealm().evaluate(s)");
+
+        failures += ScriptCheck(
+            "no host object is visible in a ShadowRealm, and one handed over is refused (section 6, case 6)",
+            """
+            var sr = new ShadowRealm();
+            print('names=' + sr.evaluate("Object.getOwnPropertyNames(globalThis).filter(function (n) { return n === 'broilerHost' || n === 'print' || n === '$262'; }).join()"));
+            print('typeof=' + sr.evaluate('typeof broilerHost'));
+            try { sr.evaluate('(x) => 1')(broilerHost); print('handed=ran'); } catch (e) { print('handed=' + e.name); }
+            """,
+            ["names=", "typeof=undefined", "handed=TypeError"]);
+
+        failures += ScriptCheck(
+            "a host callable crosses only as a wrapper, and only when the parent hands it over (section 6, case 7)",
+            """
+            var sr = new ShadowRealm();
+            print('typeof=' + sr.evaluate('(f) => typeof f')(broilerHost.counts));
+            print('keys=' + sr.evaluate('(f) => Object.getOwnPropertyNames(f).join()')(broilerHost.counts));
+            print('call=' + sr.evaluate('(f) => f()')(broilerHost.counts));
+            """,
+            ["typeof=function", "keys=length,name", "call=scripts:0,guest-answered:3,guest-refused:0"]);
+
         return failures;
     }
 
@@ -204,12 +272,13 @@ internal static partial class HostSurfaceChecks
         string source,
         string[] expected,
         bool allowGuestEval = true,
+        System.Func<string, bool>? admits = null,
         VmOutcome outcome = VmOutcome.Normal,
         System.Action<JsHostRealm, List<string>>? turn = null,
         string? second = null)
     {
         var printed = new List<string>();
-        var provider = new PolicyProvider(allowGuestEval);
+        var provider = new PolicyProvider(allowGuestEval, admits);
         var surface = new ScriptSurface(provider);
 
         JsScriptUnit[] units = second is null
@@ -367,7 +436,7 @@ internal static partial class HostSurfaceChecks
     /// A provider with a guest-evaluation policy: every script request is answered, every other
     /// program request is answered or refused by the policy, and the last refusal is kept.
     /// </summary>
-    private sealed class PolicyProvider(bool allowGuestEval) : IVmArtifactProvider
+    private sealed class PolicyProvider(bool allowGuestEval, System.Func<string, bool>? admits = null) : IVmArtifactProvider
     {
         public VmCapabilityId CapabilityId => JavaScriptProfile.SourceProviderCapability.CapabilityId;
 
@@ -398,13 +467,17 @@ internal static partial class HostSurfaceChecks
             var payload = request.RequestPayload.Span;
             var hostScript = payload.Length != 0 && payload[0] == JsFormat.ScriptRequestMark;
 
-            if (!hostScript && !allowGuestEval)
+            // A SELECTIVE POLICY - a hash allowlist is the obvious one - admits a guest request by its
+            // text, which is what JSD-0030 section 6's cases 3 and 4 hold a ShadowRealm to.
+            var read = JsCompiler.TryReadProgramRequest(payload, out var script);
+
+            if (!hostScript && !allowGuestEval && !(read && admits is not null && admits(script.Text)))
             {
                 GuestRefused++;
                 return VmArtifactProviderAnswer.Refused(VmReason.ProviderRefused);
             }
 
-            if (!JsCompiler.TryReadProgramRequest(payload, out var script))
+            if (!read)
             {
                 return VmArtifactProviderAnswer.Refused(VmReason.MalformedEncoding);
             }

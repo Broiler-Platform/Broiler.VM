@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   38
-// Annotated:        38/38
+// Relevant units:   39
+// Annotated:        39/39
 // Exempt:           1
-// Human-reviewed:   0/38
+// Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       38
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -51,11 +51,12 @@ internal sealed partial class JsRealm
     internal JsValue IntrinsicArrayToString { get; private set; }
 
     /// <summary>Builds <c>Array</c>, its statics and <c>Array.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6B7E6A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0A1B0B
     // Broiler-Human:        PENDING
     private void SetupArray()
     {
         var constructor = Constructor("Array", 1, ArrayPrototype, ArrayBuild, ArrayBuild);
+        ArrayConstructor = constructor;
         SpeciesGetter(constructor);
 
         Method(constructor, "isArray", 1, (engine, thisValue, arguments) =>
@@ -913,7 +914,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>slice</c>, <c>concat</c>, <c>join</c>, <c>toString</c> and the three searches.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B4E0A5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A16EA7
     // Broiler-Human:        PENDING
     private void SetupArrayReaders()
     {
@@ -1021,9 +1022,10 @@ internal sealed partial class JsRealm
         // nullish, with no arguments and `,` as the separator. Inheriting Object.prototype's, which
         // is what this prototype did before, called `join` and so each element's `toString`
         // (decision JSD-0027, follow-up N1). A non-callable method is a TypeError from `Call`.
+        // WITH INTL, ECMA-402 s20.5.1 replaces it: each element is handed the locales and options.
         Method(ArrayPrototype, "toLocaleString", 0, (engine, thisValue, arguments) =>
         {
-            _ = arguments;
+            var passed = LocaleArguments(engine, arguments);
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
             var text = new System.Text.StringBuilder();
@@ -1043,8 +1045,7 @@ internal sealed partial class JsRealm
                 {
                     var method = engine.GetProperty(element, "toLocaleString");
 
-                    text.Append(engine.ToStringValue(
-                        engine.Call(method, element, System.Array.Empty<JsValue>())));
+                    text.Append(engine.ToStringValue(engine.Call(method, element, passed)));
                 }
             }
 
@@ -1787,14 +1788,13 @@ internal sealed partial class JsRealm
     /// exactly as a <c>new</c> written in the program would.
     /// </para>
     /// <para>
-    /// <b>The cross-realm step is vacuous here.</b> The specification replaces ANOTHER realm's
-    /// <c>%Array%</c> with undefined; an engine in this profile hosts one realm and
-    /// <c>$262.createRealm</c> refuses, so no constructor can come from another realm to be
-    /// replaced. The Test262 cases that need a second realm stay failing rather than being
-    /// counted as covered.
+    /// <b>Another realm's <c>%Array%</c> answers an ordinary Array of this one</b>, as the
+    /// specification says, so an array a guest built in a realm it created and handed back does not
+    /// make <c>map</c> build in that realm. Until 2026-10-04 the step was vacuous, because no
+    /// constructor could come from another realm (JSD-0030 SR-7, JSC-264).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=09DE0F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=58A9C3
     // Broiler-Human:        PENDING
     private JsValue ArraySpeciesCreate(JsEngine engine, JsValue original, double length)
     {
@@ -1811,6 +1811,17 @@ internal sealed partial class JsRealm
         }
 
         var constructor = engine.GetProperty(original, "constructor");
+
+        if (constructor.IsObject && constructor.AsObject().IsConstructor)
+        {
+            var realm = engine.FunctionRealm(constructor);
+
+            if (!ReferenceEquals(realm, engine.Realm) &&
+                ReferenceEquals(constructor.AsObject(), realm.ArrayConstructor))
+            {
+                constructor = JsValue.Undefined;
+            }
+        }
 
         if (constructor.IsObject)
         {
@@ -2069,4 +2080,15 @@ internal sealed partial class JsRealm
             items[at] = buffer[at];
         }
     }
+
+    /// <summary>
+    /// The arguments an element's <c>toLocaleString</c> is called with: none without Intl, as
+    /// ECMA-262 states; the locales and the options with it, as ECMA-402 s20.5.1 states.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.5.1; IP=Low; Security=Low; Resources=0; Fingerprint=56CE3A
+    // Broiler-Human:        PENDING
+    internal static JsValue[] LocaleArguments(JsEngine engine, JsValue[] arguments) =>
+        engine.Realm.NumberFormatConstructor is null
+            ? System.Array.Empty<JsValue>()
+            : [arguments.Length > 0 ? arguments[0] : JsValue.Undefined, arguments.Length > 1 ? arguments[1] : JsValue.Undefined];
 }

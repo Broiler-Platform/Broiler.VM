@@ -42,6 +42,26 @@ public sealed class PackageRuleTests
     ];
 
     /// <summary>
+    /// The JavaScript profile's pristine consumer, and the one other package set a sample may reference.
+    /// </summary>
+    /// <remarks>
+    /// Written out for the same reason <see cref="Packages"/> is. ADR 0001's revision of 2026-10-05
+    /// admits this sample under rule A14 with exactly the three core packages and the four the
+    /// JavaScript family packs (phase F9 slice R3, decision JSD-0061); any other sample still
+    /// references the three and nothing else.
+    /// </remarks>
+    private const string JavaScriptConsumer =
+        "samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj";
+
+    private static readonly string[] JavaScriptFamilyPackages =
+    [
+        "Broiler.VM.Profile.JavaScript",
+        "Broiler.VM.Profile.JavaScript.Compiler",
+        "Broiler.VM.Profile.JavaScript.Format",
+        "Broiler.VM.Profile.JavaScript.Intl",
+    ];
+
+    /// <summary>
     /// C1's clean direction: the pack produced exactly the three declared packages, with symbols.
     /// </summary>
     /// <remarks>
@@ -361,8 +381,14 @@ public sealed class PackageRuleTests
                 .OrderBy(static id => id, StringComparer.Ordinal)
                 .ToArray();
 
-            Assert.Equal(Packages.OrderBy(static name => name, StringComparer.Ordinal), referenced);
+            var expected = string.Equals(relative, JavaScriptConsumer, StringComparison.Ordinal)
+                ? Packages.Concat(JavaScriptFamilyPackages)
+                : Packages;
+
+            Assert.Equal(expected.OrderBy(static name => name, StringComparer.Ordinal), referenced);
         }
+
+        Assert.Contains(JavaScriptConsumer, ComponentGraph.ProjectsOutsideTheSolution, StringComparer.Ordinal);
     }
 
     [Fact]

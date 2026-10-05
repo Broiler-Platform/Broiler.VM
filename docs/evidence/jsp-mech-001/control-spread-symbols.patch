@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+index aae816a..7d01c01 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+@@ -4947,7 +4947,7 @@ internal sealed partial class JsEngine
+             {
+                 var symbol = key.AsSymbol();
+ 
+-                if (from.TryGetOwnSymbol(symbol, out var symbolProperty) && symbolProperty.Enumerable)
++                if (from.TryGetOwnSymbol(symbol, out var symbolProperty) && symbolProperty.Enumerable && false)
+                 {
+                     target.SetOwnSymbol(
+                         symbol,

@@ -1,0 +1,41 @@
+$ git apply docs/evidence/jsp-7-001/control-for-in-initialiser.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+  Broiler.VM.Profile.JavaScript.Compiler -> <root>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.05
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-7.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 10 command lines from artifacts/jsp-7-001/jsp-7.expected.txt
+ok   runs/annex-b-string-date-and-regexp-members.js
+ok   runs/html-like-comments-in-a-script.js
+ok   --module refused/an-html-like-comment-in-a-module.mjs
+FAIL runs/a-for-in-initialiser.js: exit 1, expected 0; output does not contain `1 / -1 / q / 0 / c`
+       broiler-js: runs/a-for-in-initialiser.js: uncaught TypeError: Cannot read properties of undefined (reading 'name')
+ok   runs/a-call-as-an-assignment-target.js
+ok   refused/a-call-as-an-assignment-target-in-strict-code.js
+ok   runs/the-edition-members-the-realm-lacked.js
+ok   runs/uint8array-base64-and-hex.js
+ok   runs/a-reviver-reads-the-source-text.js
+ok   runs/an-error-has-no-stack.js
+# 1 of 10 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-7-001/control-for-in-initialiser.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+0.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.89
+# exit 0

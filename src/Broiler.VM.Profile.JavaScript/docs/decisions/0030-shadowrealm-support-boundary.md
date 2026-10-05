@@ -279,3 +279,77 @@ observable single-realm behaviour; they may be taken earlier only if another fea
 - **The proposal changing its compilation hook.** If a later revision stops asking
   `HostEnsureCanCompileStrings` for `evaluate`, D5 still holds here, but the pin in section 2 would
   no longer be the text it rests on.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the deferral, with the trigger and identity below.**
+
+- **Trigger: the proposal returning to stage 3 at a revision a successor record pins, or a named
+  consumer.** A named consumer should be enough on its own, because the boundary in section 4 is
+  already specified and SR-3's acceptance is concrete; waiting for TC39 would leave a real consumer
+  with nothing.
+- **Surface identity: a separate `broiler.javascript.shadowrealm`, admitted only together with
+  `broiler.javascript.dynamic`.** A composition that wants `eval` but not nested realms is a
+  reasonable policy (a host admitting `eval` for one trusted script need not admit a second global
+  environment), and folding it into the dynamic surface would make that policy inexpressible.
+- **SR-1 and SR-2 may be taken early** if another feature needs them; JSH-7 (a second realm) and
+  SR-7 (`$262.createRealm`, which would score the suite's `cross-realm` cases) are the likely
+  callers. SR-7 is worth taking before ShadowRealm itself: every `proto-from-ctor-realm` case of the
+  function constructors still fails for want of a second realm (record JSP-10-001's run), and so do
+  the cross-realm cases of many other built-ins.
+- **SR-6 goes to Broiler.JS's owner** as a finding, with the probe in section 1.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The deferral is not taken.** SR-1, SR-2 and SR-7 are phase F5 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), with
+  JSH-7's second realm; SR-3 to SR-5 follow under `broiler.javascript.shadowrealm`, admitted only
+  with `broiler.javascript.dynamic`, as the recommendation above proposes.
+- **ShadowRealm is ahead of the pinned edition**, so a record admitting the proposal at a pinned
+  revision opens SR-3; the trigger in the recommendation is met by this direction.
+
+## Slices SR-1, SR-2 and SR-7 built, 2026-10-04 (unsigned)
+
+*Recorded with the implementation. It signs nothing and takes nothing: this record keeps its status
+line. Corrections entry [JSC-264](../roadmap.corrections.md#jsc-264).*
+
+- **SR-1, SR-2 and SR-7 are in the tree**, under proposed
+  [JSD-0039](0039-a-second-realm-on-one-engine.md), which also makes the JSD-0018 record SR-7 asks
+  for. The well-known Symbols and the `Symbol.for` registry are the engine's; every function has a
+  `[[Realm]]` and runs in it; `$262.createRealm` builds an ordinary new realm on the same engine under
+  D3 and D6 and answers its `$262`. Rule N26 is the architecture rule SR-2's acceptance names.
+- **Section 1's table is no longer what the tree says** for its rows on realm count, a function's
+  realm, the Symbols and `createRealm`; it is kept as written, as the state it verified.
+- **D1 holds for ShadowRealm only.** `typeof ShadowRealm` still answers `"undefined"`; SR-3 to SR-5
+  are not started, and the three ShadowRealm cases that claim `cross-realm` stay skipped with the rest
+  of the proposal's.
+- **SR-1's "baselines unchanged" holds in part.** No contract, API or conformance baseline file
+  moved, and the slice compiler's checks build two realms on one engine and show one
+  `Symbol.iterator` and one registry. Every scored `cross-realm` case did move, which is SR-7's and
+  is what it was for.
+
+## Slices SR-3 and SR-5 built, 2026-10-04 (unsigned)
+
+*Recorded with the implementation. It signs nothing and takes nothing: this record keeps its status
+line. Corrections entry [JSC-265](../roadmap.corrections.md#jsc-265).*
+
+- **`ShadowRealm` is in the tree** under proposed [JSD-0040](0040-admitting-shadowrealm.md), which
+  admits the proposal at section 2's pin and mints `broiler.javascript.shadowrealm`, admitted only
+  with `broiler.javascript.dynamic` as section 8 recommends. D1 no longer holds; D2 to D7 are built as
+  written; D8's `importValue` is built rather than refused, over the engine's one module map rather
+  than one per child realm, which JSD-0040 section 2 names as a departure.
+- **Section 7's acceptance.** All 124 scored variants of `test/built-ins/ShadowRealm` pass, the 12
+  `importValue` cases and the 3 `cross-realm` ones included; six of section 6's seven cases are CLI
+  host-surface checks and the fifth a slice-compiler check; a realm's construction cost is measured
+  and retained in JSD-0040 section 5. SR-4 and SR-6 are other repositories' and are not started.
+- **Section 6's cases 3 and 4 say `SyntaxError`, and the answer is a `TypeError`**: the refusal
+  crosses a wrapped function, which D4 makes a `TypeError` of the caller's realm (JSD-0040 section 3).
+

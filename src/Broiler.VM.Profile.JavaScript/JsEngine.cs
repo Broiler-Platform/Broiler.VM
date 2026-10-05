@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   208
-// Annotated:        208/208
-// Exempt:           33
-// Human-reviewed:   0/208
+// Relevant units:   216
+// Annotated:        216/216
+// Exempt:           35
+// Human-reviewed:   0/216
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         83/81
+// Criteria:         90/88
 // Resource impact:  7/10 max
-// Unverified:       208
+// Unverified:       216
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -21,7 +21,7 @@ using Broiler.VM.Profile.JavaScript.Format;
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
-/// The wide-surface engine: one realm, the abstract operations over it, and the dispatch loop.
+/// The wide-surface engine: its realms, the abstract operations over them, and the dispatch loop.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -100,7 +100,7 @@ internal sealed partial class JsEngine
     /// and one handle table rooted by it, the table under handle-stress when the composition asked for it
     /// (JSD-0035 sections 3 and 4). Every other engine allocates neither.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=284CF2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B03C84
     // Broiler-Human:        PENDING
     internal JsEngine(
         IVmMeter contractMeter,
@@ -109,13 +109,17 @@ internal sealed partial class JsEngine
         System.Collections.Immutable.ImmutableArray<string> admittedSurfaces = default,
         bool nativeForm = false,
         bool valueForm = false,
-        bool handleStress = false)
+        bool handleStress = false,
+        bool sweepsFinalization = false,
+        JsIntlTables? intl = null)
     {
         meter = contractMeter;
+        Intl = intl;
         cancellation = token;
         capabilities = invoker;
         this.nativeForm = nativeForm || valueForm;
         this.valueForm = valueForm;
+        SweepsFinalization = sweepsFinalization;
 
         if (valueForm)
         {
@@ -131,7 +135,7 @@ internal sealed partial class JsEngine
             ? System.Collections.Immutable.ImmutableArray<string>.Empty
             : admittedSurfaces;
 
-        Realm = new JsRealm(this);
+        FirstRealm = Realm = new JsRealm(this);
     }
 
     /// <summary>
@@ -206,7 +210,7 @@ internal sealed partial class JsEngine
     /// host through the return value rather than being swallowed, and the remaining jobs still run.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=4B5EB1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=21DD26
     // Broiler-Falsified-If: a job runs at a point the host did not ask for, or an endless queue is a hang rather than an exhaustion
     // Broiler-Human:        PENDING
     internal JsValue DrainJobs()
@@ -230,6 +234,13 @@ internal sealed partial class JsEngine
                     faulted = true;
                     first = thrown.Value;
                 }
+            }
+
+            // A WAITER THAT IS DUE IS SETTLED BETWEEN TWO JOBS, as a job the host enqueued: a queue
+            // that keeps refilling itself must not starve the timeouts it waits on (JSC-267).
+            if (asyncWaiters.Count != 0)
+            {
+                _ = SettleWaiters(wait: false);
             }
         }
 
@@ -322,13 +333,17 @@ internal sealed partial class JsEngine
     /// and the only way to promise that about a queue of guest callables is not to call them.
     /// Whatever they would have done is not done, which is what abandoning an operation means.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=459593
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=59F781
     // Broiler-Falsified-If: a queued job runs during an unwind
     // Broiler-Human:        PENDING
     internal int DropPendingJobs()
     {
         var dropped = jobs.Count;
         jobs.Clear();
+
+        // A DROPPED CLEANUP JOB LEAVES ITS REGISTRATIONS MARKED, and the next sweep - if the instance
+        // is ever drained again - queues a fresh one for them (JSD-0029 section 4.5).
+        ForgetQueuedCleanups();
         return dropped;
     }
 
@@ -336,6 +351,14 @@ internal sealed partial class JsEngine
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=486D64
     // Broiler-Human:        PENDING
     internal bool Admits(string manifestId) => surfaces.Contains(manifestId);
+
+    /// <summary>
+    /// The internationalization tables the composition handed over, or nothing; a realm builds
+    /// <c>Intl</c> only where the surface is admitted and these are present (JSD-0043).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=806EEF
+    // Broiler-Human:        PENDING
+    internal JsIntlTables? Intl { get; }
 
     /// <summary>
     /// The mediator this invocation may ask for further executable bytes through, or nothing.
@@ -1959,9 +1982,9 @@ internal sealed partial class JsEngine
     /// it - so the absence of an embedder is the absence of an object rather than an object with
     /// nothing in it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=53FBA5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=AEEA62
     // Broiler-Human:        PENDING
-    internal JsHostRealm HostRealm => hostRealm ??= new JsHostRealm(this);
+    internal JsHostRealm HostRealm => hostRealm ??= new JsHostRealm(this, FirstRealm, null);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FF6FDD
     // Broiler-Human:        PENDING
@@ -1982,10 +2005,6 @@ internal sealed partial class JsEngine
     // Broiler-Human:        PENDING
     internal JsAbort? EndHostStep() => hostRealm?.EndStep();
 
-    /// <summary>The realm this engine runs in.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B48D28
-    // Broiler-Human:        PENDING
-    internal JsRealm Realm { get; }
 
     /// <summary>Whatever the host wired to <c>print</c>, or nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=EED672
@@ -3100,17 +3119,19 @@ internal sealed partial class JsEngine
     /// <c>Object.prototype</c> and moved the object's prototype instead. The same difference shows
     /// against any setter, and against a read-only property inherited from a frozen prototype.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=339011
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4DBE17
     // Broiler-Human:        PENDING
     private void DefineByKey(JsObject host, JsValue key, JsValue value)
     {
+        key = ToPropertyKeyValue(key);
+
         if (key.IsSymbol)
         {
             host.SetOwnSymbol(key.AsSymbol(), JsProperty.Data(value, JsPropertyAttributes.Default));
             return;
         }
 
-        host.SetOwnProperty(ToPropertyKey(key), JsProperty.Data(value, JsPropertyAttributes.Default));
+        host.SetOwnProperty(key.AsString(), JsProperty.Data(value, JsPropertyAttributes.Default));
     }
 
     // ---- the reflective forms of the two above -------------------------------------------------
@@ -3410,7 +3431,7 @@ internal sealed partial class JsEngine
     /// the same name is replaced outright, which is what redeclaring it in a class body means.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=720A94
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=52B47F
     // Broiler-Human:        PENDING
     private void DefineMember(JsObject host, string key, JsValue member, byte flags)
     {
@@ -3435,7 +3456,13 @@ internal sealed partial class JsEngine
 
         if (member.IsObject && member.AsObject() is JsScriptFunction bodied)
         {
-            bodied.HomeObject = host;
+            // A NAMED VALUE IS NAMED AND IS NOT A METHOD: `{ [k]: function () {} }` gives the
+            // function `k`'s value as its name and no home object (JSP-6, JSC-238).
+            if ((flags & JsOpcodes.MemberIsNamedValue) == 0)
+            {
+                bodied.HomeObject = host;
+            }
+
             var label = getter ? "get " + key : setter ? "set " + key : key;
             bodied.FunctionName = label;
 
@@ -3478,7 +3505,7 @@ internal sealed partial class JsEngine
     /// there is nothing to put between the brackets.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=EB5634
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=6632D9
     // Broiler-Human:        PENDING
     private void DefineSymbolMember(JsObject host, JsSymbol key, JsValue member, byte flags)
     {
@@ -3497,8 +3524,12 @@ internal sealed partial class JsEngine
 
         if (member.IsObject && member.AsObject() is JsScriptFunction bodied)
         {
-            bodied.HomeObject = host;
-            var described = key.Described ? "[" + key.Description + "]" : string.Empty;
+            if ((flags & JsOpcodes.MemberIsNamedValue) == 0)
+            {
+                bodied.HomeObject = host;
+            }
+
+            var described = SymbolFunctionName(key);
             var label = getter ? "get " + described : setter ? "set " + described : described;
             bodied.FunctionName = label;
 
@@ -3525,6 +3556,15 @@ internal sealed partial class JsEngine
                 setter ? accessor : existing.IsAccessor ? existing.Setter : null,
                 attributes));
     }
+
+    /// <summary>
+    /// The name a function takes from a Symbol key: its description in brackets, or the empty
+    /// String for a Symbol with none.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B988B9
+    // Broiler-Human:        PENDING
+    private static string SymbolFunctionName(JsSymbol key) =>
+        key.Described ? "[" + key.Description + "]" : string.Empty;
 
     /// <summary>Builds the object graph a class definition is.</summary>
     /// <remarks>
@@ -3604,13 +3644,23 @@ internal sealed partial class JsEngine
     /// hide the first.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=23C0ED
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=24B57B
     // Broiler-Human:        PENDING
     private void RecordClassElement(
         JsScriptFunction target, JsObject prototype, JsValue key, JsValue body, byte flags)
     {
         Charge(4);
         var isStatic = (flags & JsOpcodes.ElementIsStatic) != 0;
+
+        // A FIELD'S COMPUTED KEY IS CONVERTED ONCE, WHEN THE CLASS IS DEFINED, which is where
+        // `ClassFieldDefinitionEvaluation` converts it: a key whose `toString` counts is asked once
+        // however many instances the class makes, and the name a computed field's function takes is
+        // the key it produced (JSP-6, JSC-238). A private name is already a key, and a static
+        // block has none.
+        if ((flags & JsOpcodes.ElementIsBlock) == 0 && !key.IsSymbol)
+        {
+            key = ToPropertyKeyValue(key);
+        }
 
         if (body.IsObject && body.AsObject() is JsScriptFunction bodied)
         {
@@ -3699,7 +3749,7 @@ internal sealed partial class JsEngine
     /// <c>class C { x = this.y }</c> reads the instance and <c>class C { static x = this.name }</c>
     /// reads the constructor - one rule, two objects, decided by which list the element was in.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7AB1A4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A67651
     // Broiler-Human:        PENDING
     private void ApplyClassElements(
         JsObject target,
@@ -3707,6 +3757,7 @@ internal sealed partial class JsEngine
         bool methods)
     {
         var receiver = JsValue.Object(target);
+        System.Collections.Generic.HashSet<JsSymbol>? installed = null;
 
         foreach (var element in elements)
         {
@@ -3721,7 +3772,22 @@ internal sealed partial class JsEngine
 
             if (isMethod)
             {
-                target.SetPrivate(element.Key.AsSymbol(), PrivateElementOf(element));
+                var method = element.Key.AsSymbol();
+
+                // A PRIVATE METHOD OR ACCESSOR INSTALLED TWICE ON ONE OBJECT IS A TypeError too
+                // (PrivateMethodOrAccessorAdd), reached the same way a field's is. A getter and a
+                // setter of one name are one element of the class and two rows here, so only the
+                // first row of a name in this pass asks. Until 2026-10-04 the second construction
+                // installed it again (JSC-258).
+                installed ??= [];
+
+                if (installed.Add(method) && target.HasPrivate(method))
+                {
+                    ThrowTypeError(
+                        "Cannot initialize " + method.Description + " twice on the same object");
+                }
+
+                target.SetPrivate(method, PrivateElementOf(element));
                 continue;
             }
 
@@ -3734,6 +3800,22 @@ internal sealed partial class JsEngine
             var value = element.Body.Type == JsType.Undefined
                 ? JsValue.Undefined
                 : Call(element.Body, receiver, System.Array.Empty<JsValue>());
+
+            // A COMPUTED FIELD'S ANONYMOUS FUNCTION TAKES THE KEY AS ITS NAME, which the initialiser
+            // cannot see: the class definition converted the key, and nothing runs between the
+            // function's creation and this (JSP-6, JSC-238).
+            if ((element.Flags & JsOpcodes.ElementIsNamedValue) != 0 &&
+                value.IsObject && value.AsObject() is JsScriptFunction anonymous)
+            {
+                var label = element.Key.IsSymbol
+                    ? SymbolFunctionName(element.Key.AsSymbol())
+                    : element.Key.AsString();
+
+                anonymous.FunctionName = label;
+
+                anonymous.SetOwnProperty(
+                    "name", JsProperty.Data(JsValue.String(label), JsPropertyAttributes.Configurable));
+            }
 
             if ((element.Flags & JsOpcodes.ElementIsPrivate) != 0)
             {
@@ -4024,95 +4106,28 @@ internal sealed partial class JsEngine
 
     /// <summary>Writes a property through the active method's home object.</summary>
     /// <remarks>
+    /// <para>
     /// The chain the write consults starts above the home object and the write itself lands on
     /// <c>this</c>: an inherited setter runs with <c>this</c> as its receiver, an inherited
     /// non-writable data property refuses the write, and anything else creates or replaces an own
     /// property of the instance rather than touching the prototype it was found on.
+    /// </para>
+    /// <para>
+    /// <b>It is the receiver-aware <c>[[Set]]</c> every other write uses</b>, so a proxy on the
+    /// chain is asked through its <c>set</c> trap, a typed array's element rule holds, and the
+    /// refusal is a strict write's <c>TypeError</c>. Until 2026-10-04 it walked the chain itself and
+    /// stepped past a proxy as an ordinary object, so the trap never ran (JSC-264).
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A8CBB6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=F791D3
     // Broiler-Human:        PENDING
     private void SetSuper(
         JsObject start, JsValue receiver, string key, JsValue value, bool strict)
     {
-        var current = start;
-
-        while (current is not null)
+        if (!SetWithReceiver(start, key, value, receiver) && strict)
         {
-            if (current.TryGetOwnProperty(key, out var found))
-            {
-                if (found.IsAccessor)
-                {
-                    if (found.Setter is null)
-                    {
-                        if (strict)
-                        {
-                            ThrowTypeError(
-                                "Cannot set property " + key + " which has only a getter");
-                        }
-
-                        return;
-                    }
-
-                    Call(JsValue.Object(found.Setter), receiver, [value]);
-                    return;
-                }
-
-                if (!found.Writable)
-                {
-                    if (strict)
-                    {
-                        ThrowTypeError("Cannot assign to read only property '" + key + "'");
-                    }
-
-                    return;
-                }
-
-                break;
-            }
-
-            current = current.Prototype;
+            ThrowTypeError("Cannot assign to read only property '" + key + "'");
         }
-
-        var instance = receiver.AsObjectOrNull();
-
-        if (instance is null)
-        {
-            if (strict)
-            {
-                ThrowTypeError("Cannot create property '" + key + "' on a primitive");
-            }
-
-            return;
-        }
-
-        if (instance.TryGetOwnProperty(key, out var own) && !own.IsAccessor)
-        {
-            if (!own.Writable)
-            {
-                if (strict)
-                {
-                    ThrowTypeError("Cannot assign to read only property '" + key + "'");
-                }
-
-                return;
-            }
-
-            own.Value = value;
-            instance.SetOwnProperty(key, own);
-            return;
-        }
-
-        if (!instance.Extensible)
-        {
-            if (strict)
-            {
-                ThrowTypeError("Cannot add property " + key + ", object is not extensible");
-            }
-
-            return;
-        }
-
-        instance.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
     }
 
     /// <summary>The <c>in</c> operator's lookup: does any object in the chain have the key.</summary>
@@ -4172,7 +4187,7 @@ internal sealed partial class JsEngine
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>Calls <paramref name="callee"/>, whatever kind of callable it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B42A80
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=86C600
     // Broiler-Human:        PENDING
     internal JsValue Call(JsValue callee, JsValue thisValue, JsValue[] arguments)
     {
@@ -4195,8 +4210,12 @@ internal sealed partial class JsEngine
                 case JsProxy proxy:
                     return proxy.ProxyCall(thisValue, arguments);
 
+                // A BUILT-IN RUNS IN ITS OWN REALM (JSD-0030 SR-2): another realm's is entered for
+                // the call, and the running one stays put for every call that does not cross.
                 case JsNativeFunction native:
-                    return native.Call(this, thisValue, arguments);
+                    return ReferenceEquals(native.Realm, Realm)
+                        ? native.Call(this, thisValue, arguments)
+                        : CallInRealm(native, thisValue, arguments);
 
                 case JsBoundFunction bound:
                     return Call(
@@ -4208,10 +4227,23 @@ internal sealed partial class JsEngine
                 // function - a call site, `Function.prototype.call`, a comparison function handed
                 // to `sort` - arrives at this switch, and a guard inside the constructor's own
                 // code would answer for none of them because the frame is never entered.
+                //
+                // The error is the CLASS's realm's (10.2.1 step 2: it is made in the callee's
+                // context), so a class of another realm called without `new` throws that realm's
+                // TypeError.
                 case JsScriptFunction script when script.IsClassConstructor:
-                    return ThrowTypeError(
-                        "Class constructor " + script.FunctionName +
-                        " cannot be invoked without 'new'");
+                    var outer = EnterRealm(script.Realm!);
+
+                    try
+                    {
+                        return ThrowTypeError(
+                            "Class constructor " + script.FunctionName +
+                            " cannot be invoked without 'new'");
+                    }
+                    finally
+                    {
+                        LeaveRealm(outer);
+                    }
 
                 case JsScriptFunction script:
                     return Invoke(script, thisValue, arguments, JsValue.Undefined, null);
@@ -4361,7 +4393,7 @@ internal sealed partial class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=78D681
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=FD2715
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -4388,7 +4420,26 @@ internal sealed partial class JsEngine
             // ignores the receiver slot on this path and goes on ignoring it; what changes is that
             // a body written by an embedder can now answer `new.target`, which is a question a
             // constructor is entitled to ask and had no way to.
-            var made = native.Construct(this, arguments, newTarget);
+            // A BUILT-IN REACHED THROUGH `super()` HIDES THE CONSTRUCTORS THAT REACHED IT from the
+            // stack an error it makes captures, down to the one `new` named, as V8 does: the trace
+            // of `new Failure()` starts where the program wrote that (JSD-0038).
+            var outerSkip = stackSkipUntil;
+            stackSkipUntil = ReferenceEquals(newTarget.AsObjectOrNull(), target)
+                ? null
+                : newTarget.AsObjectOrNull();
+
+            JsValue made;
+
+            try
+            {
+                made = ReferenceEquals(native.Realm, Realm)
+                    ? native.Construct(this, arguments, newTarget)
+                    : ConstructInRealm(native, arguments, newTarget);
+            }
+            finally
+            {
+                stackSkipUntil = outerSkip;
+            }
 
             // A BUILT-IN REACHED THROUGH `super()` MUST STILL MAKE AN INSTANCE OF THE DERIVED
             // CLASS. `class Failure extends Error { }` is the case that matters: the built-in
@@ -4406,6 +4457,18 @@ internal sealed partial class JsEngine
                 if (wanted.IsObject)
                 {
                     made.AsObject().Prototype = wanted.AsObject();
+                }
+                else if (made.AsObject().Prototype is { } built)
+                {
+                    // A `prototype` THAT IS NOT AN OBJECT ANSWERS THE INTRINSIC OF NEW.TARGET'S
+                    // REALM, which for a new target of another realm is not the one the built-in
+                    // used (JSD-0030 SR-7).
+                    made.AsObject().Prototype =
+                        FunctionRealm(newTarget).CounterpartOf(built, native.Realm!);
+                }
+                else
+                {
+                    FunctionRealm(newTarget);
                 }
             }
 
@@ -4434,7 +4497,7 @@ internal sealed partial class JsEngine
             var prototype = GetProperty(newTarget, "prototype");
 
             instance = new JsObject(
-                prototype.IsObject ? prototype.AsObject() : Realm.ObjectPrototype);
+                prototype.IsObject ? prototype.AsObject() : FunctionRealm(newTarget).ObjectPrototype);
 
             // THE FIELDS GO ON BEFORE THE BODY RUNS AND NOT AFTER IT, which is what makes
             // `class C { x = 1; constructor() { this.x += 1 } }` produce a `2`. The specification
@@ -4879,7 +4942,7 @@ internal sealed partial class JsEngine
     /// not do. A <c>null</c> or <c>undefined</c> source contributes nothing rather than throwing -
     /// <c>{...null}</c> is an empty object.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=ADD0F8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=137468
     // Broiler-Human:        PENDING
     internal void CopyDataProperties(JsObject target, JsValue source)
     {
@@ -4890,18 +4953,38 @@ internal sealed partial class JsEngine
 
         var from = ToObject(source);
 
-        foreach (var key in from.OwnPropertyNames())
+        // EVERY OWN KEY, STRING AND SYMBOL, in one `[[OwnPropertyKeys]]` (JSP-6, JSC-238): the
+        // spread of an object literal and the rest of an object pattern copy an enumerable
+        // Symbol-keyed property as they copy a String-keyed one, where only the Strings were
+        // asked for and every Symbol was dropped. One call, so a Proxy's `ownKeys` runs once.
+        foreach (var key in from.OwnKeys())
         {
             Charge(1);
 
-            if (!from.TryGetOwnProperty(key, out var property) || !property.Enumerable)
+            if (key.IsSymbol)
+            {
+                var symbol = key.AsSymbol();
+
+                if (from.TryGetOwnSymbol(symbol, out var symbolProperty) && symbolProperty.Enumerable)
+                {
+                    target.SetOwnSymbol(
+                        symbol,
+                        JsProperty.Data(GetSymbol(source, symbol), JsPropertyAttributes.Default));
+                }
+
+                continue;
+            }
+
+            var name = key.AsString();
+
+            if (!from.TryGetOwnProperty(name, out var property) || !property.Enumerable)
             {
                 continue;
             }
 
             target.SetOwnProperty(
-                key,
-                JsProperty.Data(GetProperty(source, key), JsPropertyAttributes.Default));
+                name,
+                JsProperty.Data(GetProperty(source, name), JsPropertyAttributes.Default));
         }
     }
 
@@ -5078,10 +5161,33 @@ internal sealed partial class JsEngine
     /// Nothing here reads a global, so a guest that replaced <c>Object.freeze</c> or
     /// <c>Object.defineProperty</c> sees no call and cannot change the object.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=CEE75C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=2BA6C8
     // Broiler-Falsified-If: two evaluations of one site answer different objects, two sites answer one object, or the answer is observably not frozen
     // Broiler-Human:        PENDING
-    private JsObject TemplateObject(JsProgram program, int site, JsValue[] stack, int at, int count)
+    private JsObject TemplateObject(JsProgram program, int site, JsValue[] stack, int at, int count) =>
+        TemplateObject(
+            program,
+            site,
+            new System.ReadOnlySpan<JsValue>(stack, at, count),
+            new System.ReadOnlySpan<JsValue>(stack, at + count, count));
+
+    /// <summary>
+    /// Answers the template object of the site at <paramref name="site"/> from its cooked and raw
+    /// chunks, building it the first time the site is evaluated.
+    /// </summary>
+    /// <remarks>
+    /// The one construction both <see cref="JsOpcode.GetTemplateObject"/> and
+    /// <see cref="JsOpcode.GetTemplateObjectWide"/> reach, so a site's object is the same thing
+    /// whichever width its count needed.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6BB548
+    // Broiler-Falsified-If: two evaluations of one site answer different objects, two sites answer one object, or the answer is observably not frozen
+    // Broiler-Human:        PENDING
+    private JsObject TemplateObject(
+        JsProgram program,
+        int site,
+        System.ReadOnlySpan<JsValue> cookedChunks,
+        System.ReadOnlySpan<JsValue> rawChunks)
     {
         var registry = templates.GetOrCreateValue(program);
 
@@ -5093,11 +5199,11 @@ internal sealed partial class JsEngine
         var cooked = new JsArray(Realm.ArrayPrototype);
         var raw = new JsArray(Realm.ArrayPrototype);
 
-        for (var index = 0; index < count; index++)
+        for (var index = 0; index < cookedChunks.Length; index++)
         {
             Charge(1);
-            cooked.Push(stack[at + index]);
-            raw.Push(stack[at + count + index]);
+            cooked.Push(cookedChunks[index]);
+            raw.Push(rawChunks[index]);
         }
 
         JsRealm.ObjectSetIntegrity(this, raw, freeze: true);
@@ -5671,13 +5777,13 @@ internal sealed partial class JsEngine
     /// reaches the guest; what it carries is the unit index and the scope chain the frame would
     /// otherwise have to be told twice.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A5152E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=FC8987
     // Broiler-Human:        PENDING
     private JsPromiseObject StartAsyncModule(
         JsProgram program, JsModuleRecord record, JsModuleInstance instance)
     {
         var body = new JsScriptFunction(
-            Realm.FunctionPrototype, program, (int)record.BodyUnit, instance.Environment)
+            Realm, Realm.FunctionPrototype, program, (int)record.BodyUnit, instance.Environment)
         {
             ScriptOrModule = record.Key,
         };
@@ -5796,7 +5902,7 @@ internal sealed partial class JsEngine
     /// <c>catch</c> can be written against.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=880ABC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=ADB554
     // Broiler-Falsified-If: this throws instead of rejecting, or a specifier reaches bytes without passing through the mediator or the artifact's own records
     // Broiler-Human:        PENDING
     internal JsValue DynamicImport(
@@ -5810,16 +5916,21 @@ internal sealed partial class JsEngine
             // THE SPECIFIER IS COERCED BEFORE THE OPTIONS ARE READ, which is the specification's
             // order and is observable: `import({toString(){throw a}}, {get with(){throw b}})`
             // rejects with `a`.
-            var specifier = ToStringValue(specifierValue);
-            RequireHonourableAttributes(optionsValue);
+            // A TYPED REQUEST IS A DIFFERENT MODULE FROM THE UNTYPED ONE, so the type is part of
+            // the string every lookup below matches (JsFormat.TypedSpecifier).
+            var type = HonourableAttributesType(optionsValue);
+            var specifier = JsFormat.TypedSpecifier(ToStringValue(specifierValue), type);
 
             if (!TryOwnRequest(program, referrer, specifier, out var found))
             {
                 // A SPECIFIER NOBODY RESOLVED BEFORE THE BYTES WERE WRITTEN MAY BE ANSWERED LATER.
                 // An embedder that loads its modules asynchronously takes the request here and
                 // completes it from a turn of its own; until then the promise is simply pending,
-                // and nothing on this path waits for it (JSD-0024 section 15).
-                if (hostRealm is { ModuleLoader: not null } seam &&
+                // and nothing on this path waits for it (JSD-0024 section 15). A typed request is
+                // not offered: the embedder's seam names a specifier and no type, and answering a
+                // JSON request with whatever that specifier loads as a program would be wrong.
+                if (type.Length == 0 &&
+                    hostRealm is { ModuleLoader: not null } seam &&
                     seam.OfferModuleRequest(referrer, specifier, promise))
                 {
                     return JsValue.Object(promise);
@@ -5977,32 +6088,31 @@ internal sealed partial class JsEngine
         JsValue.Object(Graph(program)[index].Namespace!);
 
     /// <summary>
-    /// Reads a dynamic import's second argument, and declines every attribute it carries.
+    /// Reads a dynamic import's second argument, and answers the module type it asks for: empty
+    /// for none, or <see cref="JsFormat.JsonModuleType"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The shape is checked in full before the attributes are declined</b>, and that order is
-    /// what a conformance suite grades: <c>import('./m', null)</c> and
-    /// <c>import('./m', {with: 1})</c> and <c>import('./m', {with: {type: 1}})</c> are three
-    /// different programs and the language rejects each of them for its own reason, none of which
-    /// is "this host has no loader for that type". A host that declined the whole argument on sight
-    /// would answer all three the same way and would be right about none.
+    /// <b>The shape is checked in full before any attribute is judged</b>, and that order is what
+    /// a conformance suite grades: <c>import('./m', null)</c> and <c>import('./m', {with: 1})</c>
+    /// and <c>import('./m', {with: {type: 1}})</c> are three different programs and the language
+    /// rejects each of them for its own reason, none of which is "this host has no loader for
+    /// that type". The attributes are the object's enumerable own string keys, read through its
+    /// own operations, so a proxy is asked exactly what <c>EnumerableOwnProperties</c> asks.
     /// </para>
     /// <para>
-    /// <b>And then every attribute is declined, because no composition of this profile has a loader
-    /// for one.</b> An attribute says what KIND of thing the specifier names — a JSON document, a
-    /// text file — and answering that is the loader's job; the static form of the same clause is
-    /// declined by the front end, where a static import is loaded, and this is the same refusal at
-    /// the moment a dynamic import is loaded.
+    /// <b><c>type: "json"</c> is honoured and every other attribute is declined</b>, as the static
+    /// form is in the front end: an attribute says what KIND of thing the specifier names, and the
+    /// JSON document is the one kind a composition of this profile can load besides a program.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D9090F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=07FAB5
     // Broiler-Human:        PENDING
-    private void RequireHonourableAttributes(JsValue options)
+    private string HonourableAttributesType(JsValue options)
     {
         if (options.Type == JsType.Undefined)
         {
-            return;
+            return string.Empty;
         }
 
         if (!options.IsObject)
@@ -6014,7 +6124,7 @@ internal sealed partial class JsEngine
 
         if (attributes.Type == JsType.Undefined)
         {
-            return;
+            return string.Empty;
         }
 
         if (!attributes.IsObject)
@@ -6024,6 +6134,7 @@ internal sealed partial class JsEngine
 
         var carrier = attributes.AsObject();
         var declined = string.Empty;
+        var type = string.Empty;
 
         foreach (var key in carrier.OwnPropertyNames())
         {
@@ -6034,9 +6145,18 @@ internal sealed partial class JsEngine
                 continue;
             }
 
-            if (!GetProperty(attributes, key).IsString)
+            var value = GetProperty(attributes, key);
+
+            if (!value.IsString)
             {
                 ThrowTypeError("the import attribute `" + key + "` is not a string");
+            }
+
+            if (string.Equals(key, "type", System.StringComparison.Ordinal) &&
+                string.Equals(value.AsString(), JsFormat.JsonModuleType, System.StringComparison.Ordinal))
+            {
+                type = JsFormat.JsonModuleType;
+                continue;
             }
 
             if (declined.Length == 0)
@@ -6051,6 +6171,8 @@ internal sealed partial class JsEngine
                 "no composition of this profile can honour the import attribute `" + declined +
                 "`, so the module this call names cannot be loaded");
         }
+
+        return type;
     }
 
     /// <summary>
@@ -6193,7 +6315,7 @@ internal sealed partial class JsEngine
     /// <param name="binding">
     /// The box a construction holds its <c>this</c> in, or <see langword="null"/> for a call.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C1EF9D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=620805
     // Broiler-Human:        PENDING
     private JsValue Invoke(
         JsScriptFunction function,
@@ -6272,17 +6394,238 @@ internal sealed partial class JsEngine
         // AN ARROW TAKES ALL THREE FROM WHERE IT WAS WRITTEN. It has no `this`, no `new.target`
         // and no `super` of its own, so what the call site supplies for any of them is discarded
         // here rather than being allowed to reach the frame.
-        return Execute(
-            program,
-            function.Unit,
+        var result = ExecuteCall(
+            function,
+            unit,
             environment,
             receiver,
             arguments,
-            function,
             unit.IsArrow ? function.LexicalNewTarget : newTarget,
-            unit.IsArrow ? function.LexicalThisBinding : binding,
-            null);
+            unit.IsArrow ? function.LexicalThisBinding : binding);
+
+        // A TAIL CALL IS MADE HERE, AFTER ITS CALLER'S FRAME HAS GONE (JSC-256). The frame that made
+        // it answered with no value and left the callee in `tail`; entering the callee from this loop
+        // rather than from inside that frame is what keeps a strict tail recursion at one native
+        // frame and one count of depth however deep it goes. Each turn is charged as a call is.
+        while (tail.Callee is { } next)
+        {
+            var nextArguments = tail.Arguments ?? System.Array.Empty<JsValue>();
+            var nextThis = tail.Receiver;
+            tail = default;
+            Charge(CallCharge);
+
+            var nextUnit = next.Program.Functions[next.Unit];
+            result = ExecuteCall(
+                next,
+                nextUnit,
+                CallEnvironment(next, nextUnit, nextArguments),
+                CallReceiver(next, nextUnit, nextThis),
+                nextArguments,
+                nextUnit.IsArrow ? next.LexicalNewTarget : JsValue.Undefined,
+                nextUnit.IsArrow ? next.LexicalThisBinding : null);
+        }
+
+        return result;
     }
+
+    /// <summary>
+    /// Runs one ordinary call frame, recording it while it runs when it is a sloppy plain
+    /// function's, for the legacy <c>caller</c> and <c>arguments</c> (JSC-257).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=9A151E
+    // Broiler-Falsified-If: a recorded frame outlives its call, or a frame that is not a sloppy plain function's is recorded
+    // Broiler-Human:        PENDING
+    private JsValue ExecuteCall(
+        JsScriptFunction function,
+        JsCodeUnit unit,
+        JsEnvironment environment,
+        JsValue receiver,
+        JsValue[] arguments,
+        JsValue newTarget,
+        JsCell? binding)
+    {
+        if (!function.LegacyReflective)
+        {
+            return Execute(
+                function.Program, function.Unit, environment, receiver, arguments, function,
+                newTarget, binding, null, tailCalls: true);
+        }
+
+        legacyFrames.Add(new LegacyFrame(function, arguments, environment, depth));
+
+        try
+        {
+            return Execute(
+                function.Program, function.Unit, environment, receiver, arguments, function,
+                newTarget, binding, null, tailCalls: true);
+        }
+        finally
+        {
+            legacyFrames.RemoveAt(legacyFrames.Count - 1);
+        }
+    }
+
+    /// <summary>One running call of a sloppy plain function, and the depth it runs at.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=927B5B
+    // Broiler-Human:        PENDING
+    private readonly record struct LegacyFrame(
+        JsScriptFunction Function, JsValue[] Arguments, JsEnvironment Environment, int Depth);
+
+    /// <summary>The running calls of sloppy plain functions, innermost last.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Only sloppy plain functions are recorded, and the depth says what is between them.</b>
+    /// Every call - of a built-in, a strict function, a generator's resumption - takes one count of
+    /// the depth, and direct eval code takes none. So the call that made a recorded one is the
+    /// recorded one directly beneath it exactly when that one runs one count shallower; anything
+    /// else between them - a built-in such as <c>Array.prototype.map</c> or <c>Reflect.apply</c>, a
+    /// strict function, a generator, an async function - leaves a gap, and the answer is
+    /// <c>null</c>, which is what the forbidden-extension rule and every engine's reading ask for.
+    /// Eval code is looked through because it takes no count, which is also what they ask.
+    /// </para>
+    /// <para>
+    /// <b>It costs a sloppy plain call one append and one removal</b>, and nothing else pays.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=99091E
+    // Broiler-Falsified-If: an entry stays after its call has ended, or the order of the entries is not the order of the calls
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<LegacyFrame> legacyFrames = [];
+
+    /// <summary>The legacy <c>caller</c> of <paramref name="function"/>'s latest running call.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=68336F
+    // Broiler-Falsified-If: it answers a strict function, a built-in, or a function that did not make the call
+    // Broiler-Human:        PENDING
+    internal JsValue LegacyCaller(JsScriptFunction function)
+    {
+        for (var at = legacyFrames.Count - 1; at >= 0; at--)
+        {
+            Charge(1);
+
+            if (!ReferenceEquals(legacyFrames[at].Function, function))
+            {
+                continue;
+            }
+
+            return at > 0 && legacyFrames[at - 1].Depth == legacyFrames[at].Depth - 1
+                ? JsValue.Object(legacyFrames[at - 1].Function)
+                : JsValue.Null;
+        }
+
+        return JsValue.Null;
+    }
+
+    /// <summary>
+    /// The legacy <c>arguments</c> of <paramref name="function"/>'s latest running call: an
+    /// arguments object for it, or <c>null</c> when it is not running.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A2A2A5
+    // Broiler-Falsified-If: it answers an object for a function that is not running, or for a call other than its latest
+    // Broiler-Human:        PENDING
+    internal JsValue LegacyArguments(JsScriptFunction function)
+    {
+        for (var at = legacyFrames.Count - 1; at >= 0; at--)
+        {
+            Charge(1);
+            var frame = legacyFrames[at];
+
+            if (!ReferenceEquals(frame.Function, function))
+            {
+                continue;
+            }
+
+            var unit = function.Program.Functions[function.Unit];
+
+            return JsValue.Object(
+                Realm.CreateArguments(
+                    frame.Arguments,
+                    function,
+                    false,
+                    unit.BindsParameters ? null : frame.Environment,
+                    (int)unit.ParameterCount));
+        }
+
+        return JsValue.Null;
+    }
+
+    /// <summary>A tail call a frame has handed to the loop that entered it, or none.</summary>
+    /// <remarks>
+    /// It is set by the frame's last act and read by <see cref="Invoke"/> before anything else runs,
+    /// so no guest code can observe or overwrite it in between.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4339E9
+    // Broiler-Falsified-If: a tail call is left pending when the frame that made it has been answered for, or is made by any loop but the one that entered that frame
+    // Broiler-Human:        PENDING
+    private (JsScriptFunction? Callee, JsValue Receiver, JsValue[] Arguments) tail;
+
+    /// <summary>
+    /// Whether a call in the instruction at <paramref name="current"/>, whose next instruction is
+    /// at <paramref name="next"/>, is in tail position of a frame that may make one, and to a
+    /// callee that may be entered from the loop.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The language's tail positions are recognised from the code rather than marked in it</b>,
+    /// so the format does not change. A call is in tail position when nothing of its frame runs
+    /// after it: the instructions after it reach <c>Return</c> through jumps and scope pops alone,
+    /// and no exception region covers it - a <c>try</c> would catch what the callee throws, and a
+    /// <c>finally</c> would run after it returns. That is the edition's own reading: a call in a
+    /// <c>finally</c> block or in a <c>catch</c> with no <c>finally</c> is in tail position, and a
+    /// call in a <c>try</c> block is not.
+    /// </para>
+    /// <para>
+    /// <b>Only a strict, ordinary call frame makes one</b>, and only the interpreter: the frame was
+    /// entered by <see cref="Invoke"/> as a call (the caller passes that), it is not a generator's or
+    /// an async function's, and it has no <c>new.target</c>. The callee is a function this engine
+    /// enters the same way - not a class constructor, a generator or an async function, a bound
+    /// function, a proxy or a built-in - so the loop that enters it needs nothing but its record.
+    /// The emitted forms make every call as an ordinary call, which JSC-256 names.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C72F91
+    // Broiler-Falsified-If: a call is made from the loop while its caller's frame still has an instruction to run, a handler to land in, or a value to construct
+    // Broiler-Human:        PENDING
+    private static bool InTailPosition(
+        JsProgram program, int unitIndex, int current, int next, JsValue callee)
+    {
+        if (!callee.IsObject ||
+            callee.AsObject() is not JsScriptFunction { IsClassConstructor: false } target)
+        {
+            return false;
+        }
+
+        var entered = target.Program.Functions[target.Unit];
+
+        if (entered.IsGenerator || entered.IsAsync)
+        {
+            return false;
+        }
+
+        var code = program.Code;
+
+        for (var hops = 0; hops < 16; hops++)
+        {
+            switch ((JsOpcode)code[next])
+            {
+                case JsOpcode.Return:
+                    return !TryFindHandler(program, unitIndex, current, out _);
+
+                case JsOpcode.PopScope:
+                    next += JsOpcodes.InstructionWidth(JsOpcode.PopScope);
+                    continue;
+
+                case JsOpcode.Jump:
+                    next = (int)U32(code, next);
+                    continue;
+
+                default:
+                    return false;
+            }
+        }
+
+        return false;
+    }
+
 
     /// <summary>The environment a call of <paramref name="function"/> enters with, its parameters copied in.</summary>
     /// <remarks>
@@ -6323,7 +6666,7 @@ internal sealed partial class JsEngine
 
     /// <summary>The receiver a call of <paramref name="function"/> runs with: its own, or the lexical one of an arrow.</summary>
     /// <remarks><b>Shared with the value form's direct call</b>, for <see cref="CallEnvironment"/>'s reason.</remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9ADE35
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7E311E
     // Broiler-Falsified-If: a sloppy non-arrow function is entered with a primitive or nullish receiver, or a strict or arrow one with any receiver but the one the call supplied or the lexical one
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -6334,10 +6677,10 @@ internal sealed partial class JsEngine
             : unit.IsStrict
                 ? thisValue
                 : thisValue.IsNullish
-                    ? JsValue.Object(Realm.GlobalObject)
+                    ? JsValue.Object(function.Realm!.GlobalObject)
                     : thisValue.IsObject
                         ? thisValue
-                        : JsValue.Object(ToObject(thisValue));
+                        : JsValue.Object(ToObjectIn(function.Realm!, thisValue));
 
     /// <summary>
     /// Runs a generator's parameter-binding prologue, at the call, and leaves the frame at the
@@ -6454,7 +6797,7 @@ internal sealed partial class JsEngine
     /// the difference between an answer and a terminated process.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=984439
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=17882E
     // Broiler-Falsified-If: a generator resumed while its own body is running re-enters that body, or a completed generator runs any instruction
     // Broiler-Human:        PENDING
     internal JsValue ResumeGenerator(JsValue receiver, JsResumeMode mode, JsValue sent, string method)
@@ -6538,6 +6881,14 @@ internal sealed partial class JsEngine
             {
                 generator.State = JsGeneratorState.SuspendedYield;
                 frame.Started = true;
+
+                if (!frame.DelegatedResult.IsEmpty)
+                {
+                    var delegated = frame.DelegatedResult;
+                    frame.DelegatedResult = JsValue.Empty;
+                    return delegated;
+                }
+
                 return JsValue.Object(Realm.IteratorResult(completed, done: false));
             }
 
@@ -6863,7 +7214,7 @@ internal sealed partial class JsEngine
     /// return into a throw at the same suspension point, which is why the callback below chooses
     /// between two modes rather than always raising a return.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A0B79D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A675D5
     // Broiler-Human:        PENDING
     private void ResumeAsyncGeneratorAtYield(
         JsAsyncGenerator generator, JsResumeMode mode, JsValue sent)
@@ -6876,11 +7227,29 @@ internal sealed partial class JsEngine
             return;
         }
 
-        Realm.AwaitOn(
-            this,
-            sent,
-            (engine, value, threw) => engine.ResumeAsyncGenerator(
-                generator, threw ? JsResumeMode.Throw : JsResumeMode.Return, value));
+        // The Await is the generator's own, at its `yield`: a value whose PromiseResolve throws -
+        // a promise with a throwing `constructor` getter - throws THERE, where the body's `catch`
+        // can see it (27.6.3.7 step 7). Until 2026-10-03 the throw escaped to the caller of
+        // `return` and the body never ran (JSC-252).
+        JsThrow? immediate = null;
+
+        try
+        {
+            Realm.AwaitOn(
+                this,
+                sent,
+                (engine, value, threw) => engine.ResumeAsyncGenerator(
+                    generator, threw ? JsResumeMode.Throw : JsResumeMode.Return, value));
+        }
+        catch (JsThrow thrown)
+        {
+            immediate = thrown;
+        }
+
+        if (immediate is not null)
+        {
+            ResumeAsyncGenerator(generator, JsResumeMode.Throw, immediate.Value);
+        }
     }
 
     /// <summary>
@@ -7171,7 +7540,7 @@ internal sealed partial class JsEngine
     /// native-only branch the importer removes; the native arm is a call that is never inlined.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=AAA100
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=0E08FB
     // Broiler-Falsified-If: a program whose form differs from the engine's reaches ExecuteCore or emitted code
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -7186,7 +7555,8 @@ internal sealed partial class JsEngine
         JsValue newTarget,
         JsCell? thisBinding,
         JsFrame? frame,
-        string? referrer = null)
+        string? referrer = null,
+        bool tailCalls = false)
     {
         if ((program.NativeCode.Length != 0) != nativeForm || program.NativeValueForm != valueForm)
         {
@@ -7198,6 +7568,14 @@ internal sealed partial class JsEngine
         // ends (JSD-0024 section 20): the one a caller states, else the function's own.
         var outerReferrer = activeReferrer;
         activeReferrer = referrer ?? self?.ScriptOrModule ?? string.Empty;
+
+        // THE FRAME'S SITE, which an error made while it runs reads its place from (JSD-0038).
+        PushSite(
+            program,
+            unitIndex,
+            self,
+            activeReferrer,
+            newTarget.Type != JsType.Undefined && !program.Functions[unitIndex].IsArrow);
 
         try
         {
@@ -7211,10 +7589,11 @@ internal sealed partial class JsEngine
                         thisBinding, frame)
                 : ExecuteCore<JsInterpreted>(
                     program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
-                    thisBinding, frame, null);
+                    thisBinding, frame, null, tailCalls);
         }
         finally
         {
+            PopSite();
             activeReferrer = outerReferrer;
         }
     }
@@ -7259,7 +7638,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=22A2EC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=2F53E9
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -7272,7 +7651,8 @@ internal sealed partial class JsEngine
         JsValue newTarget,
         JsCell? thisBinding,
         JsFrame? frame,
-        JsNativeActivation? act)
+        JsNativeActivation? act,
+        bool tailCalls = false)
         where TMode : struct, IJsExecutionMode
     {
         var unit = program.Functions[unitIndex];
@@ -7338,6 +7718,12 @@ internal sealed partial class JsEngine
         var current = pc;
         JsRegion region = default;
 
+        // WHETHER THIS FRAME MAY HAND A TAIL CALL TO THE LOOP THAT ENTERED IT (JSC-256): the
+        // interpreter's strict call frame, entered by `Invoke` as a call. See `InTailPosition`.
+        var tailing = typeof(TMode) == typeof(JsInterpreted) && tailCalls && strict &&
+            frame is null && newTarget.Type == JsType.Undefined &&
+            !unit.IsGenerator && !unit.IsAsync;
+
         // THE FUNCTION `super` BELONGS TO IS NOT ALWAYS THE ONE RUNNING. An arrow has no `super`
         // of its own and reaches the enclosing method's, so both halves of `super` - the home
         // object a property starts from and the superclass a call constructs - are read from here
@@ -7350,6 +7736,11 @@ internal sealed partial class JsEngine
         // is first asked about an instruction that has run, never about the value `current` starts
         // with.
         var stepped = typeof(TMode) == typeof(JsNativeEntry);
+
+        // THE FRAME'S SITE, which every instruction run here writes itself into (JSD-0038). The
+        // interpreter's is the one `Execute` took just before entering it; a step of emitted code
+        // runs for the innermost frame, whose site is the innermost one too.
+        var site = TopSite;
 
         while (true)
         {
@@ -7399,6 +7790,8 @@ internal sealed partial class JsEngine
 
                     current = pc;
                     Charge(FuelPerInstruction);
+
+                    site.Pc = current;
 
                     var opcode = typeof(TMode) == typeof(JsInterpreted) || typeof(TMode) == typeof(JsStepBlock)
                         ? (JsOpcode)code[pc]
@@ -7867,6 +8260,45 @@ internal sealed partial class JsEngine
                             break;
                         }
 
+                        // AN OBJECT ENVIRONMENT RECORD'S BINDING, read and written as the record
+                        // does it rather than as a property access: the property is asked for again,
+                        // and one a getter or `Symbol.unscopables` removed since the search is a
+                        // ReferenceError in strict code (GetBindingValue, SetMutableBinding).
+                        case JsOpcode.GetObjectBinding:
+                        {
+                            var name = names[U16(code, pc)];
+                            var holder = stack[sp - 1].AsObject();
+
+                            stack[sp - 1] = HasProperty(holder, name)
+                                ? GetProperty(stack[sp - 1], name)
+                                : strict
+                                    ? ThrowReferenceError(name + " is not defined")
+                                    : JsValue.Undefined;
+
+                            pc += 3;
+                            break;
+                        }
+
+                        case JsOpcode.SetObjectBinding:
+                        {
+                            var name = names[U16(code, pc)];
+                            var value = stack[--sp];
+                            var target = stack[--sp];
+
+                            // THE PROPERTY IS ASKED FOR IN SLOPPY CODE TOO, because `stillExists` is
+                            // step 1 of SetMutableBinding whatever the mode, and a proxy sees the
+                            // question. Until 2026-10-04 sloppy code skipped it (JSC-258).
+                            if (!HasProperty(target.AsObject(), name) && strict)
+                            {
+                                ThrowReferenceError(name + " is not defined");
+                            }
+
+                            SetProperty(target, name, value, strict);
+                            stack[sp++] = value;
+                            pc += 3;
+                            break;
+                        }
+
                         case JsOpcode.GetIndex:
                         {
                             var key = stack[--sp];
@@ -7994,7 +8426,12 @@ internal sealed partial class JsEngine
                         {
                             var target = stack[--sp];
                             var key = names[U16(code, pc)];
-                            var went = !target.IsObject || target.AsObject().DeleteOwnProperty(key);
+
+                            // `ToObject` OF THE BASE, AS THE OPERATOR SAYS: a nullish base is a
+                            // `TypeError` and a primitive is asked through its wrapper, so
+                            // `delete "abc".length` is the refusal a String's own non-configurable
+                            // `length` gives and not a `true` nobody checked (JSC-236).
+                            var went = ToObject(target).DeleteOwnProperty(key);
 
                             // A REFUSED DELETE ANSWERS `false` IN SLOPPY CODE AND THROWS IN STRICT
                             // CODE, and the pair is the same rule the assignment above follows: an
@@ -8022,18 +8459,26 @@ internal sealed partial class JsEngine
                             var key = stack[--sp];
                             var target = stack[--sp];
 
-                            var removed = !target.IsObject ||
-                                (key.IsSymbol
-                                    ? target.AsObject().DeleteOwnSymbol(key.AsSymbol())
-                                    : target.AsObject().DeleteOwnProperty(ToPropertyKey(key)));
+                            // The base is converted before the key, as `delete` orders the two, so
+                            // `delete undefined[k]` throws without running `k`'s `toString`.
+                            var holder = ToObject(target);
+
+                            // THE KEY IS CONVERTED ONCE, and the refusal names the converted key:
+                            // converting it again for the message ran its `toString` a second time
+                            // in strict code until 2026-10-04 (JSC-256).
+                            var property = ToPropertyKeyValue(key);
+
+                            var removed = property.IsSymbol
+                                ? holder.DeleteOwnSymbol(property.AsSymbol())
+                                : holder.DeleteOwnProperty(property.AsString());
 
                             if (!removed && strict)
                             {
                                 ThrowTypeError(
                                     "Cannot delete property '" +
-                                    (key.IsSymbol
-                                        ? "Symbol(" + key.AsSymbol().Description + ")"
-                                        : ToPropertyKey(key)) +
+                                    (property.IsSymbol
+                                        ? property.AsSymbol().Rendered
+                                        : property.AsString()) +
                                     "'");
                             }
 
@@ -8064,7 +8509,7 @@ internal sealed partial class JsEngine
                         case JsOpcode.DefineMethod:
                         {
                             var member = stack[--sp];
-                            var key = stack[--sp];
+                            var key = ToPropertyKeyValue(stack[--sp]);
                             var host = stack[sp - 1].AsObject();
 
                             if (key.IsSymbol)
@@ -8073,7 +8518,7 @@ internal sealed partial class JsEngine
                             }
                             else
                             {
-                                DefineMember(host, ToPropertyKey(key), member, code[pc + 1]);
+                                DefineMember(host, key.AsString(), member, code[pc + 1]);
                             }
 
                             pc += 2;
@@ -8127,6 +8572,30 @@ internal sealed partial class JsEngine
                             }
 
                             stack[sp++] = value;
+                            pc++;
+                            break;
+                        }
+
+                        // THE READ HALF OF A `super[k]` THAT IS READ AND THEN WRITTEN, in the order
+                        // LoadSuperProperty keeps - this binding, base, key - and leaving the key it
+                        // converted under the value. `super[k] += v`, `super[k]++` and
+                        // `super[k] ||= v` then hand StoreSuperProperty a String or a Symbol, so the
+                        // conversion `GetValue` performs runs once and the write uses its answer, as
+                        // the reference keeps it (JSC-236).
+                        case JsOpcode.LoadSuperPropertyKeepKey:
+                        {
+                            var receiver = thisBinding is null
+                                ? thisValue
+                                : ThisBinding(thisBinding);
+
+                            var start = SuperBase(active);
+                            var key = ToPropertyKeyValue(stack[sp - 1]);
+                            stack[sp - 1] = key;
+
+                            stack[sp++] = key.IsSymbol
+                                ? GetSymbolWithReceiver(start, key.AsSymbol(), receiver)
+                                : Lookup(start, key.AsString(), receiver);
+
                             pc++;
                             break;
                         }
@@ -8266,6 +8735,13 @@ internal sealed partial class JsEngine
 
                             var receiver = stack[--sp];
                             var callee = stack[--sp];
+
+                            if (tailing && InTailPosition(program, unitIndex, current, pc + 2, callee))
+                            {
+                                tail = (callee.AsObject() as JsScriptFunction, receiver, arguments);
+                                return default;
+                            }
+
                             stack[sp++] = Call(callee, receiver, arguments);
                             pc += 2;
                             break;
@@ -8286,7 +8762,14 @@ internal sealed partial class JsEngine
 
                             // THE SPELLING SAYS DIRECT; THE VALUE DECIDES WHETHER IT IS. A program
                             // may assign to the global `eval`, and a call to whatever it now holds
-                            // is an ordinary call however it is written.
+                            // is an ordinary call however it is written - in tail position too.
+                            if (tailing && !Realm.IsEvalIntrinsic(callee) &&
+                                InTailPosition(program, unitIndex, current, pc + 2, callee))
+                            {
+                                tail = (callee.AsObject() as JsScriptFunction, receiver, arguments);
+                                return default;
+                            }
+
                             stack[sp++] = Realm.IsEvalIntrinsic(callee)
                                 ? EvaluateDirect(
                                     program, unitIndex, current, scopes, arguments,
@@ -8337,6 +8820,13 @@ internal sealed partial class JsEngine
                             var spread = ArgumentsOf(stack[--sp]);
                             var receiver = stack[--sp];
                             var callee = stack[--sp];
+
+                            if (tailing && InTailPosition(program, unitIndex, current, pc + 1, callee))
+                            {
+                                tail = (callee.AsObject() as JsScriptFunction, receiver, spread);
+                                return default;
+                            }
+
                             stack[sp++] = Call(callee, receiver, spread);
                             pc++;
                             break;
@@ -8529,10 +9019,12 @@ internal sealed partial class JsEngine
                                 ThrowTypeError("Cannot use 'in' operator to search for a key");
                             }
 
+                            var tested = ToPropertyKeyValue(left);
+
                             stack[sp++] = JsValue.Boolean(
-                                left.IsSymbol
-                                    ? HasSymbol(right.AsObject(), left.AsSymbol())
-                                    : HasProperty(right.AsObject(), ToPropertyKey(left)));
+                                tested.IsSymbol
+                                    ? HasSymbol(right.AsObject(), tested.AsSymbol())
+                                    : HasProperty(right.AsObject(), tested.AsString()));
 
                             pc++;
                             break;
@@ -8724,6 +9216,14 @@ internal sealed partial class JsEngine
                             ThrowTypeError(
                                 "Assignment to constant variable '" + names[U16(code, pc)] + "'");
 
+                            break;
+
+                        // A CALL WRITTEN AS AN ASSIGNMENT TARGET IN NON-STRICT CODE (JSP-7, JSC-239):
+                        // the call has run, and the write it asks for has no reference to go
+                        // through, which Annex B makes a ReferenceError here rather than an early
+                        // error.
+                        case JsOpcode.ThrowReferenceError:
+                            ThrowReferenceError("this reference cannot be assigned to or deleted");
                             break;
 
                         // THE SEAM BETWEEN THE PARAMETER LIST AND THE BODY, WHICH ONLY ONE OF THE
@@ -9040,6 +9540,21 @@ internal sealed partial class JsEngine
                             break;
                         }
 
+                        case JsOpcode.GetTemplateObjectWide:
+                        {
+                            var raw = ArgumentsOf(stack[--sp]);
+                            var cooked = ArgumentsOf(stack[sp - 1]);
+                            var strings = TemplateObject(
+                                program,
+                                pc,
+                                new System.ReadOnlySpan<JsValue>(cooked),
+                                new System.ReadOnlySpan<JsValue>(raw));
+
+                            stack[sp - 1] = JsValue.Object(strings);
+                            pc++;
+                            break;
+                        }
+
                         default:
                             throw new JsAbort(
                                 JsAbortKind.InternalDefect, "a verified opcode had no case here");
@@ -9215,7 +9730,7 @@ internal sealed partial class JsEngine
     /// silently getting its own exception back.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=E53DC7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=7787AD
     // Broiler-Falsified-If: a `return` or a `throw` that arrives while a `yield*` is suspended is not offered to the inner iterator first
     // Broiler-Human:        PENDING
     private JsValue Delegate(JsFrame frame, JsValue[] stack, ref int sp, int pc)
@@ -9292,21 +9807,12 @@ internal sealed partial class JsEngine
 
             default:
             {
-                // THE ONE PATH THAT IS THE ORDINARY PROTOCOL, so it is the ordinary helper: the
-                // record's `next` is the function read once at acquisition, the sent value is
-                // forwarded as its argument, and the inner iterator's own COMPLETION VALUE is what
+                // THE ORDINARY PROTOCOL: the record's `next`, read once at acquisition, is called
+                // with the sent value, and the inner iterator's own COMPLETION VALUE is what
                 // `yield*` evaluates to - the half of delegation a loop written by hand forgets.
-                if (!TryIterateNext(record, [sent], out var element, out var completed, wantsCompleted: true))
-                {
-                    frame.Delegate = null;
-                    return completed;
-                }
-
-                frame.Delegating = true;
-                frame.Sp = sp;
-                frame.Pc = pc;
-                frame.Suspended = true;
-                return element;
+                Charge(1);
+                step = Call(record.Next, record.Iterator, [sent]);
+                break;
             }
         }
 
@@ -9322,12 +9828,17 @@ internal sealed partial class JsEngine
             return GetProperty(step, "value");
         }
 
+        // THE INNER RESULT OBJECT IS YIELDED AS IT IS (27.5.3.4: GeneratorYield(innerResult)), so
+        // its `value` is not read here and the caller receives the very object the inner iterator
+        // answered. Until 2026-10-03 the value was read and wrapped in a new result, which a getter
+        // on `value` could count (JSC-254).
+        frame.DelegatedResult = step;
         frame.Delegating = true;
         frame.Sp = sp;
         frame.Pc = pc;
         frame.Suspended = true;
         frame.Suspension = JsSuspension.Yield;
-        return GetProperty(step, "value");
+        return JsValue.Undefined;
     }
 
     /// <summary>
@@ -10172,34 +10683,65 @@ internal sealed partial class JsEngine
         parsed is not null &&
         CompareBigInts(value, parsed) == 0;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D3DBFB
+    /// <summary>The specification's <c>InstanceofOperator</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4752A7
     // Broiler-Human:        PENDING
     private bool InstanceOf(JsValue left, JsValue right)
     {
-        // `Symbol.hasInstance` COMES FIRST AND IS CONSULTED ON ANY OBJECT, callable or not. That
-        // ordering is what lets a plain object answer `instanceof` at all, and checking callability
-        // before it would refuse the one case the Symbol exists for.
-        if (right.IsObject && TryGetSymbolMethod(right, Realm.HasInstanceSymbol, out var custom))
+        if (!right.IsObject)
         {
-            return Call(custom, right, [left]).ToBooleanValue();
+            ThrowTypeError("Right-hand side of 'instanceof' is not an object");
         }
 
-        if (!right.IsObject || !right.AsObject().IsCallable)
+        // `Symbol.hasInstance` COMES FIRST AND IS CONSULTED ON ANY OBJECT, callable or not. That
+        // ordering is what lets a plain object answer `instanceof` at all, and checking callability
+        // before it would refuse the one case the Symbol exists for. Every function inherits the
+        // realm's own `Function.prototype[Symbol.hasInstance]` (JSP-6, JSC-238), and calling it is
+        // `OrdinaryHasInstance` with nothing observable in between, so it is answered here directly.
+        if (TryGetSymbolMethod(right, Realm.HasInstanceSymbol, out var custom))
+        {
+            return custom.IsObject && ReferenceEquals(custom.AsObject(), Realm.HasInstanceFunction)
+                ? OrdinaryHasInstance(right, left)
+                : Call(custom, right, [left]).ToBooleanValue();
+        }
+
+        if (!right.AsObject().IsCallable)
         {
             ThrowTypeError("Right-hand side of 'instanceof' is not callable");
         }
 
-        if (right.AsObject() is JsBoundFunction bound)
-        {
-            return InstanceOf(left, JsValue.Object(bound.Target));
-        }
+        return OrdinaryHasInstance(right, left);
+    }
 
-        if (!left.IsObject)
+    /// <summary>
+    /// The specification's <c>OrdinaryHasInstance</c>: whether <paramref name="constructor"/>'s
+    /// <c>prototype</c> is on <paramref name="value"/>'s chain.
+    /// </summary>
+    /// <remarks>
+    /// A constructor that is not callable answers <see langword="false"/> rather than throwing - the
+    /// throw is <c>instanceof</c>'s, for a right-hand side with no <c>Symbol.hasInstance</c> - and a
+    /// bound function answers for its target through <c>instanceof</c> again.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=FCA9E9
+    // Broiler-Human:        PENDING
+    internal bool OrdinaryHasInstance(JsValue constructor, JsValue value)
+    {
+        if (!constructor.IsObject || !constructor.AsObject().IsCallable)
         {
             return false;
         }
 
-        var prototype = GetProperty(right, "prototype");
+        if (constructor.AsObject() is JsBoundFunction bound)
+        {
+            return InstanceOf(value, JsValue.Object(bound.Target));
+        }
+
+        if (!value.IsObject)
+        {
+            return false;
+        }
+
+        var prototype = GetProperty(constructor, "prototype");
 
         if (!prototype.IsObject)
         {
@@ -10207,7 +10749,7 @@ internal sealed partial class JsEngine
         }
 
         var target = prototype.AsObject();
-        var walk = left.AsObject().Prototype;
+        var walk = value.AsObject().Prototype;
 
         while (walk is not null)
         {
@@ -10223,7 +10765,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Reads an indexed property, with the fast path an Array element deserves.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=383EFA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=250E86
     // Broiler-Human:        PENDING
     internal JsValue GetIndexed(JsValue target, JsValue key)
     {
@@ -10271,12 +10813,17 @@ internal sealed partial class JsEngine
             }
         }
 
-        if (key.IsSymbol)
+        // THE KEY IS CONVERTED TO A STRING OR A SYMBOL, and a Symbol wrapper converts to its
+        // Symbol: `o[Object(s)]` reads `o[s]`. Until 2026-10-04 the wrapper was converted to a
+        // String, which throws (JSC-256).
+        var property = ToPropertyKeyValue(key);
+
+        if (property.IsSymbol)
         {
-            return GetSymbol(target, key.AsSymbol());
+            return GetSymbol(target, property.AsSymbol());
         }
 
-        return GetProperty(target, ToPropertyKey(key));
+        return GetProperty(target, property.AsString());
     }
 
     /// <summary>Reads a Symbol-keyed property, walking the prototype chain the same way.</summary>
@@ -10454,7 +11001,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Writes an indexed property, with the fast path an Array element deserves.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DAF660
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=0A93A3
     // Broiler-Human:        PENDING
     internal void SetIndexed(JsValue target, JsValue key, JsValue value, bool strict)
     {
@@ -10513,13 +11060,15 @@ internal sealed partial class JsEngine
             }
         }
 
-        if (key.IsSymbol)
+        var property = ToPropertyKeyValue(key);
+
+        if (property.IsSymbol)
         {
-            SetSymbol(target, key.AsSymbol(), value, strict);
+            SetSymbol(target, property.AsSymbol(), value, strict);
             return;
         }
 
-        SetProperty(target, ToPropertyKey(key), value, strict);
+        SetProperty(target, property.AsString(), value, strict);
     }
 
     /// <summary>
@@ -10605,13 +11154,22 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Renders a thrown value for a host that has to describe it in one line.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1C82D0
+    /// <remarks>
+    /// <b>A Symbol renders as its descriptive string and never through <c>ToString</c></b>, which
+    /// throws for one. Every re-throw - an awaited rejection, a generator resumed with
+    /// <c>throw</c> - renders the value it carries, so a rendering that threw replaced the guest's
+    /// value with a <c>TypeError</c> of its own: <c>await Promise.reject(Symbol())</c> was caught as
+    /// "Cannot convert a Symbol value to a string" until 2026-10-04 (JSC-255). An object's
+    /// <c>name</c> and <c>message</c> are still read here, getters included, which the language does
+    /// not do on a throw and which that record names as not repaired.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D177E
     // Broiler-Human:        PENDING
     internal string Render(JsValue value)
     {
         if (!value.IsObject)
         {
-            return value.IsString ? value.AsString() : ToStringValue(value);
+            return RenderPart(value);
         }
 
         var name = GetProperty(value, "name");
@@ -10619,12 +11177,17 @@ internal sealed partial class JsEngine
 
         if (!name.IsNullish || !message.IsNullish)
         {
-            var head = name.IsNullish ? "Error" : ToStringValue(name);
-            var tail = message.IsNullish ? string.Empty : ToStringValue(message);
+            var head = name.IsNullish ? "Error" : RenderPart(name);
+            var tail = message.IsNullish ? string.Empty : RenderPart(message);
             return tail.Length == 0 ? head : head + ": " + tail;
         }
 
         return ToStringValue(value);
+
+        string RenderPart(JsValue part) =>
+            part.IsString
+                ? part.AsString()
+                : part.Type == JsType.Symbol ? part.AsSymbol().Rendered : ToStringValue(part);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C54D2D

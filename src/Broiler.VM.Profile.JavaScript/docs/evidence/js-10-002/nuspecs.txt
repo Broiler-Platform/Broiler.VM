@@ -1,0 +1,267 @@
+=== Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Abstractions.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Abstractions</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>Profile-neutral Broiler.VM contracts and the core contract version: descriptors, identities, limit vectors, budget vocabulary, transfer types, lifecycle objects and the operation-result envelopes. No runtime, no format, no semantics.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0" />
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Binary.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Binary</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>Bounded binary-reading and bounded-allocation primitives shared by the Broiler.VM core envelope and by every profile verifier: checked readers, canonical-only LEB128, section framing, guarded declared counts and allocation guards. No format, no schema, no semantics.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0" />
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Emitter.Bytecode.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Emitter.Bytecode</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>The universal bytecode's bytecode emitter: an emitting half that emits nothing, and an executing half that interprets verified universal bytecode in one dispatch loop generic over the family. It names no family and no language; a family's handlers reach it through the contracts of Broiler.VM.Ubc.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Abstractions" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Binary" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Ubc" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Profile.JavaScript.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Profile.JavaScript</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>The Broiler.VM JavaScript language profile: descriptor, verifier, executor, value and object model, standard library, host imports and payload projections. At this milestone it implements one feature manifest, broiler.javascript.slice, which is deliberately not JavaScript anyone would ship; the status ledger is the authority for what exists.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Abstractions" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Binary" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Profile.JavaScript.Format" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Profile.JavaScript.Compiler.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Profile.JavaScript.Compiler</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>The JavaScript profile's lowering: tokenizer, syntax tree, static semantics and source-to-bytecode translation. A sibling of the profile, not a part of it. At this milestone it carries a hand-written slice lowering and no tokenizer or static semantics; the status ledger is the authority for what exists.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Abstractions" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Profile.JavaScript.Format" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Profile.JavaScript.Format.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Profile.JavaScript.Format</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>The JavaScript profile's bytecode format: opcodes, schema, encoder, decoder and the format-version range. Format version 1 is defined; the status ledger is the authority for what it admits.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0" />
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Profile.JavaScript.Intl.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Profile.JavaScript.Intl</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>The JavaScript profile's internationalization data: tables generated from the pinned CLDR release, which a composition admitting broiler.javascript.intl hands to the profile. A composition that does not reference this assembly carries none of it.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Profile.JavaScript.Format" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Profile.MachineCode.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Profile.MachineCode</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>The Broiler.VM MachineCode output profile: native memory page arming, native execution frames, and machine-code profile executor.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Abstractions" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Binary" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Profile.WebAssembly.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Profile.WebAssembly</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>The Broiler.VM WebAssembly language profile. It carries an identity, a decoder for the binary format, a validator, a translator of a validated module into universal bytecode, and the universal bytecode family that runs it over the four numeric types, locals, globals, one linear memory, structured control flow, direct and indirect calls. It has no linker and admits no import, no manifest has been scored against the specification's own conformance suite, and the status ledger under docs/ is the authority for what exists.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Abstractions" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Binary" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Ubc" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Runtime.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Runtime</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>Broiler.VM builder, immutable profile catalog, bounded load and execute lifecycle, resource authority and diagnostics. Profile-neutral: it stores no value, inspects no frame and knows no opcode.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Abstractions" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Binary" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.nupkg :: Broiler.VM.Ubc.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Ubc</id>
+    <version>0.1.0-preview.6.f9-candidate</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>The universal bytecode: one instruction encoding, container, common family, family instruction-table schema, primitive table and verifier walk for every Broiler.VM language profile, with every language instruction's meaning owned by the family that declares it. Not part of the Broiler.VM core contract, referenced by nothing in the core, and admitted by the extraction record ADR 0013.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM" branch="refs/heads/claude/compassionate-ptolemy-99b5dw" commit="6ac061e09f33e669e6406c0cb3b04a519bc8e83a" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Abstractions" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Binary" version="0.1.0-preview.6.f9-candidate" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

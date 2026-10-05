@@ -1,0 +1,5 @@
+# comparison engine v22.22.0
+# 213 findings on the base, 212 on the change
+# added by the change: 0
+# removed by the change: 1
+  the-json-date-and-regexp-surface.js: undeclared divergence node/123: host='"absent"', comparison='"has-anchor"'

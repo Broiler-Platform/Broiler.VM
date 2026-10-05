@@ -1,0 +1,66 @@
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-10.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 61 command lines from artifacts/jsp-10-001/jsp-10.expected.txt
+ok   modules/a-top-level-await-in-a-template.mjs
+ok   limits/an-ordinary-loop-past-the-default-allowance.js
+ok   --fuel 1000000000 limits/an-ordinary-loop-past-the-default-allowance.js
+ok   --help
+ok   --help
+ok   encoding/utf-16le-with-a-byte-order-mark.js
+ok   encoding/utf-16be-with-a-byte-order-mark.js
+ok   runs/a-legacy-octal-escape-in-sloppy-code.js
+ok   refused/a-legacy-octal-escape-in-strict-code.js
+ok   refused/a-legacy-octal-escape-before-use-strict.js
+ok   refused/a-non-octal-decimal-escape-in-a-class-body.js
+ok   refused/a-legacy-octal-escape-in-a-class-element-name.js
+ok   runs/a-tagged-template-with-an-invalid-escape.js
+ok   refused/an-octal-escape-in-an-untagged-template.js
+ok   refused/a-second-constructor.js
+ok   refused/a-second-constructor.js
+ok   runs/a-class-with-one-constructor-and-a-static-one.js
+ok   refused/a-label-nested-in-itself.js
+ok   refused/a-label-nested-in-itself.js
+ok   runs/a-label-reused-where-it-is-not-in-force.js
+ok   runs/yield-and-await-as-labels.js
+ok   refused/a-coalesce-beside-an-or.js
+ok   refused/a-coalesce-beside-an-or.js
+ok   runs/a-coalesce-mixed-with-parentheses.js
+ok   refused/a-line-break-before-an-arrow.js
+ok   refused/a-line-break-before-an-arrow.js
+ok   runs/an-arrow-body-on-the-next-line.js
+ok   refused/a-restricted-name-as-a-function-name-under-its-directive.js
+ok   refused/a-future-reserved-word-as-a-class-name.js
+ok   refused/eval-as-a-parameter-under-a-body-directive.js
+ok   refused/a-unary-operand-of-exponentiation.js
+ok   refused/a-unary-operand-of-exponentiation.js
+ok   dead-zone/a-read-before-the-initialiser-in-a-function-body.js
+ok   runs/apply-reads-its-length-with-tolength.js
+ok   runs/a-super-key-converted-once.js
+ok   runs/delete-through-a-primitive-base.js
+ok   runs/a-for-in-that-observes-deletion.js
+ok   runs/a-string-object-keeps-its-own-keys.js
+ok   runs/a-collection-subclass-uses-its-own-adder.js
+ok   runs/a-symbol-held-weakly.js
+ok   runs/function-prototype-has-instance.js
+ok   runs/an-object-spread-copies-symbol-keys.js
+ok   runs/a-function-named-by-a-computed-key-or-a-field.js
+ok   runs/annex-b-string-date-and-regexp-members.js
+ok   runs/html-like-comments-in-a-script.js
+ok   --module refused/an-html-like-comment-in-a-module.mjs
+ok   runs/a-for-in-initialiser.js
+ok   runs/a-call-as-an-assignment-target.js
+ok   refused/a-call-as-an-assignment-target-in-strict-code.js
+ok   runs/the-edition-members-the-realm-lacked.js
+ok   runs/uint8array-base64-and-hex.js
+ok   runs/a-reviver-reads-the-source-text.js
+ok   runs/an-error-has-no-stack.js
+ok   runs/a-call-past-the-operand-width.js
+ok   refused/a-function-with-three-hundred-parameters.js
+ok   runs/the-suspending-function-constructors.js
+ok   runs/the-host-members-that-refuse.js
+ok   runs/the-host-members-that-refuse.js
+ok   runs/the-host-members-that-refuse.js
+ok   runs/the-host-members-that-refuse.js
+ok   one-realm/a-second-script-the-owed-job-outlives.js one-realm/a-first-script-that-leaves-a-job-owed.js
+# 61 of 61 command lines answered as declared
+# exit 0

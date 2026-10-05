@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   166
-// Annotated:        166/166
+// Relevant units:   172
+// Annotated:        172/172
 // Exempt:           25
-// Human-reviewed:   0/166
+// Human-reviewed:   0/172
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       166
+// Unverified:       172
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -425,7 +425,7 @@ internal sealed class JsParser
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5D3148
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A113E0
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -549,6 +549,17 @@ internal sealed class JsParser
                 {
                     _ = RefuseEscapedReservedWord(Current);
                     RefuseStrictReservedIdentifier(span, Current);
+
+                    // A PRIVATE NAME IS NOT A LABEL: `#a: ;` is a syntax error. Until 2026-10-04 it
+                    // labelled the statement (JSC-256).
+                    if (IsPrivateName(Current))
+                    {
+                        Refuse(
+                            span,
+                            SliceSourceDiagnosticCode.UnexpectedToken,
+                            "a private name belongs to a class body and cannot be a label");
+                    }
+
                     var label = Current.RawText;
                     Advance();
                     Advance();
@@ -981,18 +992,21 @@ internal sealed class JsParser
             span, JsExportKind.All, from, specifiers, null, null, attributes);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E39779
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=269559
     // Broiler-Human:        PENDING
     private JsStatement ParseExportClause(SliceSourceSpan span)
     {
         Advance();
         var specifiers = new System.Collections.Generic.List<JsExportSpecifier>();
 
+        System.Collections.Generic.List<SliceSourceSpan>? stringLocals = null;
+
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
             diagnostics.Count == 0)
         {
             var at = Span();
+            var localIsString = Current.Kind == SliceTokenKind.StringLiteral;
             var local = ModuleExportName();
             var exported = local;
 
@@ -1000,6 +1014,12 @@ internal sealed class JsParser
             {
                 Advance();
                 exported = ModuleExportName();
+            }
+
+            if (localIsString)
+            {
+                stringLocals ??= [];
+                stringLocals.Add(at);
             }
 
             specifiers.Add(new JsExportSpecifier(at, local, exported));
@@ -1021,6 +1041,16 @@ internal sealed class JsParser
             Advance();
             from = ModuleSpecifier();
             attributes = Attributes();
+        }
+        else if (stringLocals is not null)
+        {
+            // Without `from` a specifier's first name is a binding of THIS module, and a string
+            // names no binding (16.2.3.1). Until 2026-10-03 `export { "foo" as "bar" }` compiled
+            // (JSC-253).
+            Refuse(
+                stringLocals[0],
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a string names no local binding, so it is exported only with `from`");
         }
 
         Semicolon();
@@ -1299,6 +1329,26 @@ internal sealed class JsParser
         return false;
     }
 
+    /// <summary>Whether <paramref name="text"/> holds no lone surrogate.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=B9C1FD
+    // Broiler-Human:        PENDING
+    private static bool IsWellFormed(string text)
+    {
+        for (var at = 0; at < text.Length; at++)
+        {
+            if (char.IsHighSurrogate(text[at]) && at + 1 < text.Length && char.IsLowSurrogate(text[at + 1]))
+            {
+                at++;
+            }
+            else if (char.IsSurrogate(text[at]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Reads a name an <c>import</c> or <c>export</c> clause may use on either side of <c>as</c>.
     /// </summary>
@@ -1308,13 +1358,25 @@ internal sealed class JsParser
     /// only the LOCAL side of a binding has to be a name the goal admits as an identifier. The
     /// string form is admitted too, because <c>export { x as "a b" }</c> is in the grammar.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6F84A0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B5DE19
     // Broiler-Human:        PENDING
     private string ModuleExportName()
     {
         if (Current.Kind == SliceTokenKind.StringLiteral)
         {
             var text = Current.StringValue;
+
+            // A string export name is well-formed Unicode or it is an early error (16.2.1.1,
+            // IsStringWellFormedUnicode): a lone surrogate names nothing another module could ask
+            // for. Until 2026-10-03 one compiled, and the verifier refused the result (JSC-253).
+            if (!IsWellFormed(text))
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "an export name holds a lone surrogate, which is not well-formed Unicode");
+            }
+
             Advance();
             return text;
         }
@@ -1334,13 +1396,25 @@ internal sealed class JsParser
         return "#invalid";
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F682E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CAAEB6
     // Broiler-Human:        PENDING
     private string ModuleSpecifier()
     {
         if (Current.Kind == SliceTokenKind.StringLiteral)
         {
             var text = Current.StringValue;
+
+            // A string export name is well-formed Unicode or it is an early error (16.2.1.1,
+            // IsStringWellFormedUnicode): a lone surrogate names nothing another module could ask
+            // for. Until 2026-10-03 one compiled, and the verifier refused the result (JSC-253).
+            if (!IsWellFormed(text))
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "an export name holds a lone surrogate, which is not well-formed Unicode");
+            }
+
             Advance();
             return text;
         }
@@ -1355,12 +1429,18 @@ internal sealed class JsParser
     }
 
     /// <summary>Whether the current token is the contextual keyword <paramref name="word"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C69905
+    /// <remarks>
+    /// A contextual keyword written with an escape is not the keyword: `\u0061s` is the name `as`
+    /// and never the `as` of an export specifier (12.7.2, the escaped-keyword early errors).
+    /// Until 2026-10-03 an escaped one was read as the keyword (JSC-253).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=574AC4
     // Broiler-Human:        PENDING
     private bool IsContextual(string word) =>
         Current.Kind is SliceTokenKind.Identifier or SliceTokenKind.Of or SliceTokenKind.Get or
             SliceTokenKind.Set or SliceTokenKind.Async or SliceTokenKind.Static or
             SliceTokenKind.Let &&
+        !Current.IsEscaped &&
         string.Equals(Current.RawText, word, System.StringComparison.Ordinal);
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1A1D77
@@ -1688,7 +1768,7 @@ internal sealed class JsParser
     /// enclosing scope is the object environment record would have nowhere to put its slot.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=061AA1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BB48A5
     // Broiler-Human:        PENDING
     private JsStatement ParseWith()
     {
@@ -1709,19 +1789,10 @@ internal sealed class JsParser
         var target = ParseExpression();
         Expect(SliceTokenKind.CloseParen, ")");
 
-        if (Current.Kind is SliceTokenKind.Function or SliceTokenKind.Class or
-                SliceTokenKind.Const ||
-            (Current.Kind == SliceTokenKind.Let && BeginsLetDeclaration()))
-        {
-            Refuse(
-                Span(),
-                SliceSourceDiagnosticCode.UnexpectedToken,
-                "a declaration is not a statement, so it cannot be the body of a `with`");
-
-            return new JsEmptyStatement(span);
-        }
-
-        return new JsWithStatement(span, target, ParseStatement());
+        // The body is a nested statement like a loop's, so an async function and a labelled
+        // function are refused there too, and a `let` before a line break is the identifier. Until
+        // 2026-10-03 the `with` body had a check of its own that knew neither (JSC-250).
+        return new JsWithStatement(span, target, ParseNestedStatement("a `with`"));
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5E3C87
@@ -1756,7 +1827,7 @@ internal sealed class JsParser
         return new JsDoWhileStatement(span, body, test);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7742F9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=8901EF
     // Broiler-Human:        PENDING
     private JsStatement ParseFor()
     {
@@ -1899,7 +1970,7 @@ internal sealed class JsParser
                         iterated, isAwait, resource)
                     : new JsForInStatement(
                         span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
-                        iterated);
+                        iterated, declarators[0].Initialiser);
             }
 
             if (resource != JsUsing.None && !ValidateResources(declarators, requireInitialiser: true))
@@ -1913,11 +1984,25 @@ internal sealed class JsParser
         else
         {
             var headSpan = Span();
+            var startsAsyncOf = Current.Kind == SliceTokenKind.Async && !Current.IsEscaped &&
+                Peek(1).Kind == SliceTokenKind.Of;
             var expression = ParseExpression(noIn: true);
 
             if (Current.Kind is SliceTokenKind.In or SliceTokenKind.Of)
             {
                 var isOf = Current.Kind == SliceTokenKind.Of;
+
+                // `for (async of x)` is excluded by the head's lookahead, `[lookahead ≠ async of]`,
+                // because `async of =>` would begin an arrow; `for await (async of x)` is allowed
+                // (14.7.5). Until 2026-10-03 the first ran (JSC-253).
+                if (isOf && startsAsyncOf && !isAwait && expression is JsIdentifier)
+                {
+                    Refuse(
+                        headSpan,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "a `for … of` head may not begin with `async of`");
+                }
+
                 Advance();
 
                 // A LITERAL IN A HEAD IS A PATTERN AND NOT A VALUE. `for ([a, b] of pairs)` reached
@@ -2187,7 +2272,7 @@ internal sealed class JsParser
 
     // ---- functions -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CEE0CE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2CF54B
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionRest(
         SliceSourceSpan span, bool declaration, bool isAsync = false)
@@ -2224,6 +2309,17 @@ internal sealed class JsParser
         if (IsIdentifierName(Current.Kind))
         {
             _ = RefuseEscapedReservedWord(Current);
+
+            // A PRIVATE NAME NAMES NO FUNCTION: `function #a() {}` is a syntax error. Until
+            // 2026-10-04 it declared one (JSC-256).
+            if (IsPrivateName(Current))
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`" + Current.RawText + "` is a private name and not a binding name");
+            }
+
             name = Current.RawText;
             Advance();
         }
@@ -2323,13 +2419,24 @@ internal sealed class JsParser
     /// <b>A rest parameter ends the list</b>, and breaking rather than looping again is what makes
     /// <c>f(...a, b)</c> answer "`)` was expected" at <c>,</c> instead of silently accepting a
     /// parameter after the one that takes everything.
+    /// <para>
+    /// <b>A function's parameters are inside the function</b>, so <c>new.target</c> in a default
+    /// reads the call's: <c>function f(a = new.target) {}</c> is a program at the top level of a
+    /// script. An arrow's parameters are not, and an arrow passes <paramref name="arrow"/>. Until
+    /// 2026-10-04 the depth counted only the body, and the default was refused (JSC-256).
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D6EE24
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D9A023
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<JsParameter> ParseParameters()
+    private System.Collections.Generic.List<JsParameter> ParseParameters(bool arrow = false)
     {
         var outerParameters = inParameters;
         inParameters = true;
+
+        if (!arrow)
+        {
+            functionDepth++;
+        }
 
         try
         {
@@ -2338,6 +2445,11 @@ internal sealed class JsParser
         finally
         {
             inParameters = outerParameters;
+
+            if (!arrow)
+            {
+                functionDepth--;
+            }
         }
     }
 
@@ -2605,7 +2717,7 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=58FD64
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BB468C
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
@@ -2698,8 +2810,48 @@ internal sealed class JsParser
         inParameters = outerArrowParameters;
 
         return new JsFunctionNode(
-            span, name, parameters, body, isArrow, inner, directives, isGenerator, isAsync);
+            span, name, parameters, body, isArrow, inner, directives, isGenerator, isAsync)
+        {
+            SourceStart = OffsetAt(span),
+            SourceEnd = PreviousEnd,
+        };
     }
+
+    /// <summary>
+    /// The source offset of the token that starts at <paramref name="span"/>, or -1 when no token
+    /// does.
+    /// </summary>
+    /// <remarks>
+    /// <b>A node is located by its span, and the span names a token</b>: every production records
+    /// the line and column of the token it began at. The table from positions to offsets is built
+    /// once per parser, the first time a function asks, so a source with no function pays nothing
+    /// (JSD-0037).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=2; Fingerprint=CA95AB
+    // Broiler-Human:        PENDING
+    private int OffsetAt(SliceSourceSpan span)
+    {
+        if (offsets is null)
+        {
+            offsets = new System.Collections.Generic.Dictionary<(int, int), int>(tokens.Length);
+
+            foreach (var token in tokens)
+            {
+                offsets.TryAdd((token.Line, token.Column), token.Offset);
+            }
+        }
+
+        return offsets.TryGetValue((span.Line, span.Column), out var offset) ? offset : -1;
+    }
+
+    /// <summary>The source offset just past the last token this parser consumed.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=BD0A12
+    // Broiler-Human:        PENDING
+    private int PreviousEnd => at > 0 ? tokens[at - 1].End : 0;
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=879453
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.Dictionary<(int, int), int>? offsets;
 
     // ---- classes -------------------------------------------------------------------------------
 
@@ -2718,7 +2870,7 @@ internal sealed class JsParser
     /// why <c>class D extends a.b() { }</c> parses and <c>class D extends a = b { }</c> does not.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B7CB47
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=159C3D
     // Broiler-Human:        PENDING
     private JsClassNode ParseClass(SliceSourceSpan span, bool declaration)
     {
@@ -2798,7 +2950,11 @@ internal sealed class JsParser
         Expect(SliceTokenKind.CloseBrace, "}");
         strict = outer;
         ValidateClassBody(members);
-        return new JsClassNode(span, name, heritage, hasHeritage, members);
+        return new JsClassNode(span, name, heritage, hasHeritage, members)
+        {
+            SourceStart = OffsetAt(span),
+            SourceEnd = PreviousEnd,
+        };
     }
 
     /// <summary>Rules on the names a class body may not give its elements.</summary>
@@ -2973,7 +3129,7 @@ internal sealed class JsParser
     /// <c>static m() { }</c> is a static method - and reading the key first would have made the
     /// second one a field called <c>static</c> followed by a surprise.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F89CED
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1BBD71
     // Broiler-Human:        PENDING
     private JsClassMember? ParseClassMember()
     {
@@ -2992,6 +3148,10 @@ internal sealed class JsParser
             Advance();
         }
 
+        // THE METHOD'S SOURCE TEXT BEGINS AFTER `static`: the specification's
+        // `MethodDefinition` is the production after the modifier, so `toString` on a static
+        // method answers the text that starts at its `get`, `async`, `*` or name.
+        var sourceStart = Current.Offset;
         var isGenerator = false;
         var isAsync = false;
 
@@ -3084,7 +3244,10 @@ internal sealed class JsParser
         }
 
         var body = ParseFunctionBody(
-            span, key, parameters, isArrow: false, isGenerator, isAsync, uniqueParameters: true);
+            span, key, parameters, isArrow: false, isGenerator, isAsync, uniqueParameters: true) with
+        {
+            SourceStart = sourceStart,
+        };
 
         yieldIsOperator = outerOperator;
         awaitIsOperator = outerAwait;
@@ -4099,7 +4262,7 @@ internal sealed class JsParser
     /// Whether a plain function declaration is admitted here, which is true for an <c>if</c> clause
     /// and a labelled item in sloppy code and false everywhere else.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D2B436
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=04B9C6
     // Broiler-Human:        PENDING
     private JsStatement ParseNestedStatement(string position, bool functionAllowed = false)
     {
@@ -4119,7 +4282,23 @@ internal sealed class JsParser
         if (!BeginsRefusedDeclaration(functionAllowed) &&
             !BeginsUsingDeclaration() && !BeginsAwaitUsingDeclaration())
         {
-            return ParseStatement();
+            var start = Span();
+            var parsed = ParseStatement();
+
+            // IsLabelledFunction: a function declaration under any number of labels may be a
+            // label's item and nothing else's, so `while (x) a: function f() {}` is a syntax error
+            // in sloppy code too. Until 2026-10-03 it was admitted (JSC-250).
+            if (position != "a label" && IsLabelledFunction(parsed))
+            {
+                Refuse(
+                    start,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "a labelled function declaration cannot be the body of " + position);
+
+                return new JsEmptyStatement(start);
+            }
+
+            return parsed;
         }
 
         var span = Span();
@@ -4130,6 +4309,24 @@ internal sealed class JsParser
             "a declaration is not a statement, so it cannot be the body of " + position);
 
         return new JsEmptyStatement(span);
+    }
+
+    /// <summary>Whether <paramref name="statement"/> is a function declaration under one label or more.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=4668E2
+    // Broiler-Human:        PENDING
+    private static bool IsLabelledFunction(JsStatement statement)
+    {
+        if (statement is not JsLabelledStatement)
+        {
+            return false;
+        }
+
+        while (statement is JsLabelledStatement labelled)
+        {
+            statement = labelled.Body;
+        }
+
+        return statement is JsFunctionDeclaration;
     }
 
     /// <summary>Whether the token at the cursor begins a declaration this position refuses.</summary>
@@ -4186,7 +4383,7 @@ internal sealed class JsParser
         return new JsSequenceExpression(span, all);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5D9CD7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=032666
     // Broiler-Human:        PENDING
     private JsExpression ParseAssignment(bool noIn = false)
     {
@@ -4227,6 +4424,14 @@ internal sealed class JsParser
                 // resolved, and it is the only place a literal turns into a pattern.
                 if (target is JsArrayLiteral or JsObjectLiteral)
                 {
+                    if (parenthesised.Contains(target))
+                    {
+                        Refuse(
+                            span,
+                            SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                            "a parenthesised literal is not an assignment target");
+                    }
+
                     if (op != SliceTokenKind.Equals)
                     {
                         Refuse(
@@ -4244,8 +4449,15 @@ internal sealed class JsParser
                 // ordinary assignment whose target happens to be stored somewhere other than the
                 // property table, and leaving it off this list refused the write at the parse -
                 // before any of the three passes that know what a private name is could see it.
+                // ANNEX B ADMITS A CALL AS THE TARGET OF `=` OR A COMPOUND OPERATOR IN NON-STRICT
+                // CODE (JSP-7, JSC-239): it is evaluated and the write throws a ReferenceError at
+                // run time. A logical assignment and strict code keep the early error.
+                var callTarget = target is JsCallExpression && !strict &&
+                    op is not (SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
+                        SliceTokenKind.QuestionQuestion);
+
                 if (target is not JsIdentifier and not JsMemberExpression and
-                    not JsSuperMemberExpression and not JsPrivateMemberExpression)
+                    not JsSuperMemberExpression and not JsPrivateMemberExpression && !callTarget)
                 {
                     Refuse(
                         span,
@@ -4268,7 +4480,10 @@ internal sealed class JsParser
 
                 Advance();
                 var value = ParseAssignment(noIn);
-                return new JsAssignmentExpression(span, op, target, value);
+                return new JsAssignmentExpression(span, op, target, value)
+                {
+                    ParenthesisedTarget = target is JsIdentifier && parenthesised.Contains(target),
+                };
             }
 
             return target;
@@ -4397,13 +4612,19 @@ internal sealed class JsParser
     /// predicate rather than three copies is also what stops the next name added to the identifier
     /// set from being added to two of the three.
     /// </para>
+    /// <para>
+    /// <b>`let` before `await` or `yield` begins a declaration wherever it stands</b>, even where the
+    /// word is an operator and so not a binding name: the declaration is the parse, and its early
+    /// error is the answer (14.3.1). Until 2026-10-03 `let` followed by a line break and `await 0`
+    /// in an async function read as an expression statement and ran (JSC-253).
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0086A7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B121D2
     // Broiler-Human:        PENDING
     private bool BeginsLetDeclaration() =>
         IsIdentifierName(Peek(1).Kind) ||
-        Peek(1).Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace ||
-        (awaitIsReserved && Peek(1).Kind == SliceTokenKind.Await);
+        Peek(1).Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace or
+            SliceTokenKind.Await or SliceTokenKind.Yield;
 
     /// <summary>
     /// Recognises an arrow function, which the grammar cannot see coming from its first token.
@@ -4416,7 +4637,7 @@ internal sealed class JsParser
     /// expression and allocates nothing, so a source with many parenthesised expressions costs a
     /// bracket count each and not a speculative parse.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=335E47
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6CEB2C
     // Broiler-Human:        PENDING
     private bool TryParseArrow(SliceSourceSpan span, out JsExpression arrow)
     {
@@ -4452,7 +4673,10 @@ internal sealed class JsParser
                             IsRest: false),
                     };
 
-                    if (!IsIdentifierName(Current.Kind))
+                    // `await` IS NOT A NAME HERE HOWEVER IT IS SPELLED: `async aw\u0061it => 1` binds
+                    // the word the arrow reserves. Until 2026-10-04 the escaped spelling did (JSC-256).
+                    if (!IsIdentifierName(Current.Kind) || IsPrivateName(Current) ||
+                        Current.RawText == "await")
                     {
                         Refuse(
                             Span(),
@@ -4481,12 +4705,27 @@ internal sealed class JsParser
             }
         }
 
+        // `yield`, `await` and `let` are names where they are not operators, and a name may be an
+        // arrow's one parameter: `yield => 1` in sloppy code outside a generator. Until 2026-10-03
+        // the three were refused there (JSC-253); where each is reserved the binding check below
+        // still refuses it.
         if (Current.Kind is SliceTokenKind.Identifier or SliceTokenKind.Get or SliceTokenKind.Set or
-            SliceTokenKind.Of or SliceTokenKind.Static)
+                SliceTokenKind.Of or SliceTokenKind.Static ||
+            (Current.Kind == SliceTokenKind.Yield && !yieldIsOperator) ||
+            (Current.Kind == SliceTokenKind.Await && !awaitIsOperator && !awaitIsReserved) ||
+            Current.Kind == SliceTokenKind.Let)
         {
             if (Peek(1).Kind != SliceTokenKind.EqualsGreaterThan)
             {
                 return false;
+            }
+
+            if (Current.Kind is SliceTokenKind.Yield or SliceTokenKind.Let && strict)
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`" + Current.RawText + "` is reserved in strict code and is not a binding name");
             }
 
             var single = new System.Collections.Generic.List<JsParameter>
@@ -4554,10 +4793,10 @@ internal sealed class JsParser
     /// half is the early error this flag exists for, stated where the operator is recognised.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=7804D2
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=D843FF
     // Broiler-Falsified-If: an arrow's parameter list is parsed with the enclosing `[Await]` context cleared
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<JsParameter> ParseArrowParameters() => ParseParameters();
+    private System.Collections.Generic.List<JsParameter> ParseArrowParameters() => ParseParameters(arrow: true);
 
     /// <summary>
     /// Answers whether an <c>async</c> at the cursor begins an arrow function rather than an
@@ -4608,7 +4847,7 @@ internal sealed class JsParser
         return tokens[scan].Kind == SliceTokenKind.EqualsGreaterThan;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=852CA3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E53604
     // Broiler-Human:        PENDING
     private JsExpression ParseArrowBody(
         SliceSourceSpan span,
@@ -4665,7 +4904,11 @@ internal sealed class JsParser
             return new JsFunctionExpression(
                 span,
                 new JsFunctionNode(
-                    span, string.Empty, parameters, body, true, strict, [], false, isAsync));
+                    span, string.Empty, parameters, body, true, strict, [], false, isAsync)
+                {
+                    SourceStart = OffsetAt(span),
+                    SourceEnd = PreviousEnd,
+                });
         }
         finally
         {
@@ -4695,7 +4938,7 @@ internal sealed class JsParser
         return new JsConditionalExpression(span, test, whenTrue, whenFalse);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F3FE5C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F2DF18
     // Broiler-Human:        PENDING
     private JsExpression ParseBinary(int minimum, bool noIn)
     {
@@ -4708,7 +4951,12 @@ internal sealed class JsParser
         // no instruction of this profile can do and no other position of the grammar asks for; the
         // result then rejoins the loop as an ordinary left operand, so `#x in a === b` associates
         // the way the precedence table already says it does.
-        if (IsPrivateName(Current) && Peek(1).Kind == SliceTokenKind.In && !noIn)
+        //
+        // It is recognised only where a RelationalExpression may begin. Its right side is a
+        // ShiftExpression, so `#x in #x in o` reaches this method for that right side at a higher
+        // level, where `#x` begins nothing and is refused; until 2026-10-03 the check ignored the
+        // level and read it as `#x in (#x in o)` (JSC-253).
+        if (minimum <= Relational && IsPrivateName(Current) && Peek(1).Kind == SliceTokenKind.In && !noIn)
         {
             var privateName = Current.RawText;
             Advance();
@@ -5077,7 +5325,7 @@ internal sealed class JsParser
     }
 
     /// <summary>The call-chain parse itself, inside the bound its caller entered.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=66FEF2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E9BD85
     // Broiler-Human:        PENDING
     private JsExpression ParseCallChainCore()
     {
@@ -5101,7 +5349,8 @@ internal sealed class JsParser
             {
                 var callee = ParseMemberOnly();
 
-                var arguments = Current.Kind == SliceTokenKind.OpenParen
+                var hasArguments = Current.Kind == SliceTokenKind.OpenParen;
+                var arguments = hasArguments
                     ? ParseArguments()
                     : [];
 
@@ -5111,7 +5360,11 @@ internal sealed class JsParser
                 // `new` expression, and the reason is that `new` needs a reference the chain has
                 // already agreed may not exist. Saying so here is the honest answer; letting the
                 // loop below take it would silently produce `(new a)?.b()`, a different program.
-                if (Current.Kind == SliceTokenKind.QuestionDot)
+                //
+                // With an argument list the `new` is a MemberExpression and a chain may begin at it:
+                // `new C(1)?.a` reads `a` off the new object. Until 2026-10-03 that was refused too
+                // (JSC-253).
+                if (!hasArguments && Current.Kind == SliceTokenKind.QuestionDot)
                 {
                     Refuse(
                         Span(),
@@ -5295,14 +5548,14 @@ internal sealed class JsParser
     /// the module-goal code rather than as a construct outside the manifest, because the manifest
     /// is not what forbids it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D5F63F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3AA56F
     // Broiler-Human:        PENDING
     private JsExpression ParseImportMeta(SliceSourceSpan span)
     {
         Advance();
         Advance();
 
-        if (!string.Equals(Current.RawText, "meta", System.StringComparison.Ordinal))
+        if (Current.IsEscaped || !string.Equals(Current.RawText, "meta", System.StringComparison.Ordinal))
         {
             Refuse(
                 Span(),
@@ -5337,13 +5590,13 @@ internal sealed class JsParser
     /// unexpected token rather than as a construct outside the manifest is the point: the manifest
     /// is not what forbids it, the language is.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B6B03F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1619EC
     // Broiler-Human:        PENDING
     private JsExpression ParseNewTarget(SliceSourceSpan span)
     {
         Advance();
 
-        if (!string.Equals(Current.RawText, "target", System.StringComparison.Ordinal))
+        if (Current.IsEscaped || !string.Equals(Current.RawText, "target", System.StringComparison.Ordinal))
         {
             Refuse(
                 Span(),
@@ -5459,7 +5712,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=821ABD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3DD643
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -5631,7 +5884,16 @@ internal sealed class JsParser
                 // A LOGICAL EXPRESSION IN PARENTHESES MAY STAND BESIDE `??`, and the tree keeps no
                 // parentheses, so the ones that had them are remembered by identity for the check
                 // in Continue.
-                if (inner is JsLogicalExpression)
+                //
+                // A LITERAL IN PARENTHESES IS NOT A PATTERN: `({}) = 1` and `([a]) = b` are early
+                // errors, because only an unparenthesised literal is reinterpreted (13.15.1).
+                // Until 2026-10-03 both destructured (JSC-253).
+                //
+                // A NAME IN PARENTHESES IS NOT AN IDENTIFIER REFERENCE for naming: `(f) = function
+                // () {}` assigns `f` and leaves the function anonymous, because IsIdentifierRef of
+                // a parenthesised expression is false (13.15.2). Until 2026-10-04 it was named
+                // `f` (JSC-255).
+                if (inner is JsLogicalExpression or JsArrayLiteral or JsObjectLiteral or JsIdentifier)
                 {
                     parenthesised.Add(inner);
                 }
@@ -5950,13 +6212,27 @@ internal sealed class JsParser
     /// single node would have had to re-derive the difference from the first character of a string
     /// at every use.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=8DB9AA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5E2762
     // Broiler-Human:        PENDING
     private JsExpression AfterDot(SliceSourceSpan span, JsExpression target, bool optional)
     {
+        // AN IdentifierName FOLLOWS THE DOT, and a literal is not one: `o."x"` and `o.1` are syntax
+        // errors. Until 2026-10-04 the literal's text was taken as the name (JSC-258).
+        if (Current.Kind is SliceTokenKind.StringLiteral or SliceTokenKind.NumericLiteral ||
+            Current.RawText.Length == 0 ||
+            !(char.IsLetter(Current.RawText[0]) || Current.RawText[0] is '_' or '$' or '\\' or '#' ||
+                Current.RawText[0] > 0x7F))
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a property name after `.` is an identifier name, and `" + Current.RawText + "` is not one");
+        }
+
         if (!IsPrivateName(Current))
         {
-            return new JsMemberExpression(span, target, MemberName(), null, optional);
+            var nameSpan = Span();
+            return new JsMemberExpression(span, target, MemberName(), null, optional) { NameSpan = nameSpan };
         }
 
         var name = Current.RawText;
@@ -6135,13 +6411,105 @@ internal sealed class JsParser
         return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=673640
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=ECF818
     // Broiler-Human:        PENDING
     private static string NumberKey(double value) =>
         value == System.Math.Floor(value) && !double.IsInfinity(value) &&
         value >= 0 && value < 4294967295
             ? ((uint)value).ToString(System.Globalization.CultureInfo.InvariantCulture)
-            : value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+            : NumberText(value);
+
+    /// <summary>
+    /// The specification's <c>Number::toString</c> in radix 10, which is what a numeric property
+    /// key names: <c>{ 0.0000001: 1 }</c> has the key <c>"1e-7"</c>.
+    /// </summary>
+    /// <remarks>
+    /// The digits are the shortest that round-trip, read off the platform's <c>"R"</c> form, and
+    /// placed by the specification's rules rather than the platform's: until 2026-10-03 a key was
+    /// the platform's spelling, <c>"1E-07"</c>, which names a different property (JSC-253).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=29D624
+    // Broiler-Human:        PENDING
+    private static string NumberText(double value)
+    {
+        if (double.IsNaN(value))
+        {
+            return "NaN";
+        }
+
+        if (value == 0)
+        {
+            return "0";
+        }
+
+        if (double.IsInfinity(value))
+        {
+            return value > 0 ? "Infinity" : "-Infinity";
+        }
+
+        if (value < 0)
+        {
+            return "-" + NumberText(-value);
+        }
+
+        var round = value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+        string digits;
+        int point;
+        var e = round.IndexOfAny(['E', 'e']);
+
+        if (e >= 0)
+        {
+            var mantissa = round[..e];
+            var exponent = int.Parse(round[(e + 1)..], System.Globalization.CultureInfo.InvariantCulture);
+            var dot = mantissa.IndexOf('.');
+            digits = mantissa.Replace(".", string.Empty, System.StringComparison.Ordinal);
+            point = (dot < 0 ? mantissa.Length : dot) + exponent;
+        }
+        else
+        {
+            var dot = round.IndexOf('.');
+            var whole = dot < 0 ? round : round[..dot];
+            var fraction = dot < 0 ? string.Empty : round[(dot + 1)..];
+            digits = whole + fraction;
+            point = whole.Length;
+        }
+
+        var lead = 0;
+
+        while (lead < digits.Length - 1 && digits[lead] == '0')
+        {
+            lead++;
+        }
+
+        digits = digits[lead..].TrimEnd('0');
+        point -= lead;
+
+        var k = digits.Length;
+        var n = point;
+
+        if (k <= n && n <= 21)
+        {
+            return digits + new string('0', n - k);
+        }
+
+        if (0 < n && n <= 21)
+        {
+            return digits[..n] + "." + digits[n..];
+        }
+
+        if (-6 < n && n <= 0)
+        {
+            return "0." + new string('0', -n) + digits;
+        }
+
+        var shown = n - 1;
+        var sign = shown < 0 ? "-" : "+";
+        var magnitude = System.Math.Abs(shown).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        return k == 1
+            ? digits + "e" + sign + magnitude
+            : digits[..1] + "." + digits[1..] + "e" + sign + magnitude;
+    }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC0C0B
     // Broiler-Human:        PENDING
@@ -6310,11 +6678,24 @@ internal sealed class JsParser
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EEBE60
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=677E50
     // Broiler-Human:        PENDING
     private string BindingName()
     {
         var token = Current;
+
+        // A PRIVATE NAME BINDS NOTHING: `var #a`, `function #a() {}` and a parameter `#a` are syntax
+        // errors. Until 2026-10-04 each bound a name no reference could reach (JSC-256).
+        if (IsPrivateName(token))
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                "`" + token.RawText + "` is a private name and not a binding name");
+
+            Advance();
+            return "#invalid";
+        }
 
         if (IsIdentifierName(token.Kind))
         {
@@ -6392,7 +6773,7 @@ internal sealed class JsParser
     /// break is regardless of how the file was saved.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C7F08F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FC3985
     // Broiler-Human:        PENDING
     private JsTemplateLiteral ParseTemplate(bool tagged)
     {
@@ -6455,7 +6836,8 @@ internal sealed class JsParser
                 var innerEnd = System.Math.Max(innerStart, reader.At - 1);
 
                 substitutions.Add(
-                    ParseInterpolation(reader.Slice(innerStart, innerEnd), innerLine, innerColumn));
+                    ParseInterpolation(
+                        reader.Slice(innerStart, innerEnd), innerLine, innerColumn, token.Offset + innerStart));
 
                 chunkStart = reader.At;
                 continue;
@@ -6667,11 +7049,11 @@ internal sealed class JsParser
     /// encloses it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=57D77F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A69224
     // Broiler-Human:        PENDING
-    private JsExpression ParseInterpolation(string text, int line, int column)
+    private JsExpression ParseInterpolation(string text, int line, int column, int offset)
     {
-        var tokenizer = new SliceTokenizer(text);
+        var tokenizer = new SliceTokenizer(text) { HtmlLikeComments = options.Goal != SliceGoal.Module };
         var stream = tokenizer.Tokenize();
 
         if (tokenizer.Diagnostics.Count != 0)
@@ -6691,7 +7073,13 @@ internal sealed class JsParser
         {
             var token = stream[index];
             var moved = Move(new SliceSourceSpan(token.Line, token.Column), line, column);
-            stream[index] = token with { Line = moved.Line, Column = moved.Column };
+            stream[index] = token with
+            {
+                Line = moved.Line,
+                Column = moved.Column,
+                Offset = token.Offset + offset,
+                End = token.End + offset,
+            };
         }
 
         var inner = new JsParser(
@@ -6780,7 +7168,7 @@ internal sealed class JsParser
     /// point from <see cref="ParseBindingPattern"/> rather than a flag on it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=540EC4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9A8E7A
     // Broiler-Human:        PENDING
     private JsPattern ToPattern(JsExpression expression)
     {
@@ -6894,6 +7282,9 @@ internal sealed class JsParser
             // so a program could write `this.#x = o.a` and not the destructuring that means the
             // same thing.
             case JsPrivateMemberExpression:
+
+            // AND SO IS `[super.x] = v`, which was refused here until 2026-10-04 (JSC-256).
+            case JsSuperMemberExpression:
                 return new JsTargetPattern(expression.Span, expression);
 
             default:

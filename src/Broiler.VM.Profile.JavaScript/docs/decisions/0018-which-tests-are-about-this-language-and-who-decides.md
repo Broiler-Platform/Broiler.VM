@@ -125,3 +125,32 @@ error was in the direction that never complains: it reported 1,201 passes where 
 this language, and the 117 difference was an engine agreeing with tests by refusing everything.
 **After it, the totals fell and nothing was repaired to make them fall** — which is the only
 direction a correction to a self-scored number can honestly go.
+
+## Amended 2026-10-04: the `cross-realm` harness feature (unsigned)
+
+*Recorded with phase F5's implementation; it signs nothing. Corrections entry
+[JSC-264](../roadmap.corrections.md#jsc-264).*
+
+- **Section 2's "unselectable" is the slice dialect's.** A case claiming a test-harness feature needs
+  a call into `$262`, which `broiler.javascript.slice` does not admit, and that is still so; no case
+  that dialect scores claims one. The wide dialect (`--test262`) never excluded such cases: it
+  selected the 281 files that call `$262.createRealm` and scored them as failures of its refusal.
+- **`cross-realm` is now a feature the wide host provides.** `$262.createRealm` builds a second realm
+  under proposed [JSD-0039](0039-a-second-realm-on-one-engine.md), which is the record JSD-0030's
+  SR-7 asks for under this one, and the conformance harness gives the new realm's `$262` its
+  `evalScript`, `detachArrayBuffer` and `IsHTMLDDA`. Nothing in either dialect's selection changes;
+  the cases score on what they measure. `IsHTMLDDA`, the other test-harness feature, is unchanged.
+
+## Amended 2026-10-04: `test/intl402` (unsigned)
+
+*Recorded with phase F7's first implementation; it signs nothing. Corrections entry
+[JSC-269](../roadmap.corrections.md#jsc-269).*
+
+- **The wide dialect has always selected `test/intl402`.** It scored the tree's 4,418 variants
+  in the whole run [JSC-267](../roadmap.corrections.md#jsc-267) records, the cases needing a
+  constructor this profile lacks as failures. Its proposed features, `Temporal` among them, are
+  excluded by `features.txt` as section 1 decides. This record's mechanism therefore needs no change
+  to admit the tree, and the delivery plan's F7 exit gate reads this amendment as that admission.
+- **From phase F7 the harness's realm admits `broiler.javascript.intl`**, built with the data
+  proposed [JSD-0043](0043-intl-data-boundary-and-collation.md) hands over, so each slice's cases
+  score on what they measure. Nothing in either dialect's selection changes.

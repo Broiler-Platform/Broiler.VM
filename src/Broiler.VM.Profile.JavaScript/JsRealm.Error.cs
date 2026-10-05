@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
-// Exempt:           1
-// Human-reviewed:   0/8
+// Relevant units:   9
+// Annotated:        9/9
+// Exempt:           3
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       8
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds the Error constructor, its prototype and the six native subtypes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7C4D41
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=05698E
     // Broiler-Human:        PENDING
     private void SetupError()
     {
@@ -52,6 +52,38 @@ internal sealed partial class JsRealm
 
         basePrototype.DefineBuiltIn("name", JsValue.String("Error"));
         basePrototype.DefineBuiltIn("message", JsValue.String(string.Empty));
+
+        // THE STACK'S ONE ACCESSOR PAIR, shared by every error (JSD-0038). The getter renders the
+        // frames the error was made with the first time it is read and answers that text from then
+        // on; the setter replaces it. Neither does anything for a receiver that is not an error.
+        StackGetter = Native("stack", 0, static (engine, thisValue, _) =>
+        {
+            if (thisValue.AsObjectOrNull() is not JsErrorObject error)
+            {
+                return JsValue.Undefined;
+            }
+
+            if (error.Frames is { } frames)
+            {
+                // CLEARED BEFORE IT IS RENDERED, so a `name` or `message` getter that reads the
+                // stack while the header is built answers what is there rather than recursing.
+                error.Frames = null;
+                error.StackValue = JsValue.String(engine.FormatStack(error, frames));
+            }
+
+            return error.StackValue;
+        });
+
+        StackSetter = Native("stack", 1, static (_, thisValue, arguments) =>
+        {
+            if (thisValue.AsObjectOrNull() is JsErrorObject error)
+            {
+                error.Frames = null;
+                error.StackValue = arguments.Length > 0 ? arguments[0] : JsValue.Undefined;
+            }
+
+            return JsValue.Undefined;
+        });
 
         Method(basePrototype, "toString", 0, static (engine, thisValue, _) =>
         {
@@ -97,6 +129,17 @@ internal sealed partial class JsRealm
 
         ErrorConstructors["Error"] = baseConstructor;
 
+        // `Error.isError` ASKS FOR THE SLOT AND NOT THE CHAIN (JSP-7, JSC-239): an object an Error
+        // constructor made answers `true` whatever its prototype became, and an object that only
+        // inherits from `Error.prototype` - `Error.prototype` itself, a Proxy over an error -
+        // answers `false`. It is a member of the edition the realm did not have.
+        Method(baseConstructor, "isError", 1, static (engine, _, arguments) =>
+            JsValue.Boolean(
+                arguments.Length > 0 &&
+                arguments[0].AsObjectOrNull() is { } candidate &&
+                candidate is not JsProxy &&
+                string.Equals(candidate.ClassName, "Error", System.StringComparison.Ordinal)));
+
         ErrorIntrinsicInstall("EvalError", baseConstructor);
         ErrorIntrinsicInstall("RangeError", baseConstructor);
         ErrorIntrinsicInstall("ReferenceError", baseConstructor);
@@ -105,6 +148,38 @@ internal sealed partial class JsRealm
         ErrorIntrinsicInstall("URIError", baseConstructor);
         ErrorIntrinsicInstallAggregate(baseConstructor);
         ErrorIntrinsicInstallSuppressed(baseConstructor);
+    }
+
+    /// <summary>The getter every error's own <c>stack</c> shares (JSD-0038).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B9E2CC
+    // Broiler-Human:        PENDING
+    internal JsNativeFunction StackGetter { get; private set; } = null!;
+
+    /// <summary>The setter every error's own <c>stack</c> shares (JSD-0038).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1CA2C8
+    // Broiler-Human:        PENDING
+    internal JsNativeFunction StackSetter { get; private set; } = null!;
+
+    /// <summary>
+    /// Makes an error on <paramref name="prototype"/> with its stack captured and its own
+    /// <c>stack</c> defined, before any other own property (JSD-0038).
+    /// </summary>
+    /// <remarks>
+    /// <b>The accessor is the error's first own property</b>, so <c>getOwnPropertyNames</c> answers
+    /// <c>stack</c> before <c>message</c>, as V8 does; it is configurable and not enumerable, so
+    /// <c>Object.keys</c>, <c>JSON.stringify</c> and spreading do not see it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=73B598
+    // Broiler-Human:        PENDING
+    internal JsErrorObject NewError(JsEngine engine, JsObject prototype)
+    {
+        var error = new JsErrorObject(prototype) { Frames = engine.CaptureStack() };
+
+        error.SetOwnProperty(
+            "stack",
+            JsProperty.Accessor(StackGetter, StackSetter, JsPropertyAttributes.Configurable));
+
+        return error;
     }
 
     /// <summary><c>SuppressedError.prototype</c>, which disposal builds its combined errors on.</summary>
@@ -157,13 +232,13 @@ internal sealed partial class JsRealm
     /// into: no message, the new throw as <c>error</c> and the one already in flight as
     /// <c>suppressed</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=593B85
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FB4519
     // Broiler-Human:        PENDING
     internal JsValue NewSuppressedError(JsEngine engine, JsValue error, JsValue suppressed)
     {
         engine.Charge(4);
 
-        var made = new JsObject(SuppressedErrorPrototype, "Error");
+        var made = NewError(engine, SuppressedErrorPrototype);
         made.DefineBuiltIn("error", error);
         made.DefineBuiltIn("suppressed", suppressed);
         return JsValue.Object(made);
@@ -228,14 +303,14 @@ internal sealed partial class JsRealm
     /// Builds one error object on <paramref name="prototype"/>, the specification's
     /// <c>OrdinaryCreateFromConstructor</c> followed by the message and cause installation.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=86BA81
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=32A136
     // Broiler-Human:        PENDING
     private static JsObject ErrorIntrinsicCreate(
         JsEngine engine, JsObject prototype, JsValue message, JsValue options)
     {
         engine.Charge(4);
 
-        var error = new JsObject(prototype, "Error");
+        var error = engine.Realm.NewError(engine, prototype);
 
         // A MISSING MESSAGE LEAVES NO OWN PROPERTY AT ALL, so `new Error().message` reads the
         // empty string off the prototype and `hasOwnProperty("message")` answers false. Defining
@@ -247,7 +322,9 @@ internal sealed partial class JsRealm
             error.DefineBuiltIn("message", JsValue.String(text));
         }
 
-        if (options.IsObject && options.AsObject().HasOwnProperty("cause"))
+        // InstallErrorCause asks HasProperty, which reads the prototype chain and asks a proxy
+        // through its `has` trap; an own-property test did neither until 2026-10-03 (JSC-252).
+        if (options.IsObject && engine.HasProperty(options.AsObject(), "cause"))
         {
             error.DefineBuiltIn("cause", engine.GetProperty(options, "cause"));
         }

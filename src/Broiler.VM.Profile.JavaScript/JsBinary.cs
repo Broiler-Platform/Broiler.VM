@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   53
-// Annotated:        53/53
-// Exempt:           27
-// Human-reviewed:   0/53
+// Relevant units:   56
+// Annotated:        56/56
+// Exempt:           28
+// Human-reviewed:   0/56
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  4/10 max
-// Unverified:       53
+// Unverified:       56
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -684,10 +684,13 @@ internal static class JsFloat16
 /// no length that says zero while an array is still there to read.
 /// </para>
 /// <para>
-/// <b>The bytes are a plain <c>byte[]</c> and are never shared between agents.</b> A
-/// <c>SharedArrayBuffer</c> is a different type for a reason - it admits concurrent readers - and
-/// this profile does not build one. A composition that wants a byte buffer gets exactly a byte
-/// buffer.
+/// <b>An <c>ArrayBuffer</c>'s bytes are a plain <c>byte[]</c> it alone holds.</b> A
+/// <c>SharedArrayBuffer</c> is the same type over a <see cref="JsSharedBlock"/> instead (JSD-0041):
+/// its bytes are the block's, it can never be detached, and every <c>ArrayBuffer.prototype</c> member
+/// refuses it, as every <c>SharedArrayBuffer.prototype</c> member refuses an unshared buffer - so a
+/// composition that wants a byte buffer still gets exactly a byte buffer.
+/// <i>(Amended 2026-10-04, JSC-266: until then this paragraph said the profile builds no
+/// <c>SharedArrayBuffer</c>.)</i>
 /// </para>
 /// <para>
 /// <b>A resizable buffer REPLACES its array on every resize, and <c>Data.Length</c> is always the
@@ -707,14 +710,40 @@ internal static class JsFloat16
 internal sealed class JsArrayBuffer : JsObject
 {
     /// <summary>Creates a zero-filled buffer of <paramref name="byteLength"/> bytes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E88D9A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AA52AE
     // Broiler-Human:        PENDING
     internal JsArrayBuffer(JsObject? prototype, int byteLength)
         : base(prototype, "ArrayBuffer")
     {
-        Data = new byte[byteLength];
+        data = new byte[byteLength];
         RetainedByteLength = byteLength;
     }
+
+    /// <summary>Creates a <c>SharedArrayBuffer</c> over <paramref name="block"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A1449B
+    // Broiler-Human:        PENDING
+    internal JsArrayBuffer(JsObject? prototype, JsSharedBlock block)
+        : base(prototype, "SharedArrayBuffer")
+    {
+        Block = block;
+        MaxByteLength = block.MaxByteLength;
+        RetainedByteLength = block.Bytes.Length;
+    }
+
+    /// <summary>An unshared buffer's bytes; a shared one reads its block's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FDDE53
+    // Broiler-Human:        PENDING
+    private byte[]? data;
+
+    /// <summary>The block a <c>SharedArrayBuffer</c>'s bytes live in, or nothing for an <c>ArrayBuffer</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=317EE0
+    // Broiler-Human:        PENDING
+    internal JsSharedBlock? Block { get; }
+
+    /// <summary>Whether this is a <c>SharedArrayBuffer</c>: the specification's <c>IsSharedArrayBuffer</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=764E63
+    // Broiler-Human:        PENDING
+    internal bool IsShared => Block is not null;
 
     /// <summary>
     /// Creates a zero-filled RESIZABLE buffer of <paramref name="byteLength"/> bytes that may grow
@@ -731,9 +760,9 @@ internal sealed class JsArrayBuffer : JsObject
         : this(prototype, byteLength) => MaxByteLength = maxByteLength;
 
     /// <summary>The bytes, or <see langword="null"/> once the buffer has been detached.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=18F504
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FF8E76
     // Broiler-Human:        PENDING
-    internal byte[]? Data { get; private set; }
+    internal byte[]? Data => Block is { } block ? block.Bytes : data;
 
     /// <summary>
     /// The specification's <c>[[ArrayBufferMaxByteLength]]</c>, or <see langword="null"/> for a
@@ -785,12 +814,18 @@ internal sealed class JsArrayBuffer : JsObject
     /// buffer without copying them twice. Returning them also makes the transfer atomic from the
     /// guest's view: there is no instant at which both buffers can be read.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7F5B7A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E7A924
     // Broiler-Human:        PENDING
     internal byte[]? Detach()
     {
-        var released = Data;
-        Data = null;
+        // A SHARED BLOCK CANNOT BE DETACHED: every caller refuses a shared buffer before this.
+        if (Block is not null)
+        {
+            return null;
+        }
+
+        var released = data;
+        data = null;
         return released;
     }
 
@@ -813,7 +848,7 @@ internal sealed class JsArrayBuffer : JsObject
     /// never holds it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=B340C3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=81F25D
     // Broiler-Falsified-If: a resize is committed on a fixed-length or detached buffer, past the maximum, or loses a byte of the common prefix or exposes a stale byte past it
     // Broiler-Human:        PENDING
     internal bool TryReplaceStorage(byte[] storage)
@@ -826,7 +861,15 @@ internal sealed class JsArrayBuffer : JsObject
         }
 
         System.Array.Copy(bytes, storage, System.Math.Min(bytes.Length, storage.Length));
-        Data = storage;
+
+        if (Block is { } block)
+        {
+            block.Bytes = storage;
+        }
+        else
+        {
+            data = storage;
+        }
 
         if (storage.Length > RetainedByteLength)
         {

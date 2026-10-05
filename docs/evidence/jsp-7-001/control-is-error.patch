@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs
+index caac194..c15a6a2 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs
+@@ -106,7 +106,7 @@ internal sealed partial class JsRealm
+                 arguments.Length > 0 &&
+                 arguments[0].AsObjectOrNull() is { } candidate &&
+                 candidate is not JsProxy &&
+-                string.Equals(candidate.ClassName, "Error", System.StringComparison.Ordinal)));
++                engine.OrdinaryHasInstance(engine.GetProperty(JsValue.Object(engine.Realm.GlobalObject), "Error"), arguments[0])));
+ 
+         ErrorIntrinsicInstall("EvalError", baseConstructor);
+         ErrorIntrinsicInstall("RangeError", baseConstructor);

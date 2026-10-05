@@ -42,11 +42,12 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds <c>Proxy</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=75A1AE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DD0D84
     // Broiler-Human:        PENDING
     private void SetupProxy()
     {
         var constructor = new JsNativeFunction(
+            this,
             FunctionPrototype,
             "Proxy",
             2,

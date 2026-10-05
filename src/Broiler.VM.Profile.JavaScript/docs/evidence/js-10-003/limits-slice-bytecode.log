@@ -1,0 +1,19 @@
+manifest broiler.javascript.slice at format version 1; harness not loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+allowance fuel=100000000 wallClockMs=5000 per variant
+# limit|dimension|verification|instantiation
+limit|Fuel|100000000|100000000
+limit|WallClock|5000|5000
+limit|AllocatedBytes|67108864|67108864
+limit|HostCalls|1000000|1000000
+limit|NestedLoadFanOut|4096|4096
+limit|NestedLoadBytes|16777216|16777216
+limit|VerifierWork|100000000|100000000
+limit|LiveBytes|33554432|33554432
+limit|CallDepth|6144|6144
+limit|NestedLoadDepth|4|4
+limit|ArtifactBytes|33554432|33554432
+limit|SectionCount|64|64
+limit|DeclaredCount|4194304|4194304
+limit|StructuralDepth|256|256
+limit|LiveRuntimes|4096|4096
+exit code: 0

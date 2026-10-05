@@ -1609,11 +1609,40 @@ public sealed class AssuranceRuleTests
         // the generator byte for byte. So the fact asserted here moved with the tree: every use in
         // the product is one of those members stating that reason - nothing hand-written uses it -
         // and the report counts and names each one.
+        //
+        // (Revised 2026-10-04: and the CLDR tables. Decision JSD-0043 chose the same hatch for the
+        // Intl data's generated file, whose every table member carries the reason
+        // CldrTableGenerator writes, and rule N28 holds that file to the generator byte for byte.
+        // A use is one of the two generators' members stating that generator's reason.)
+        //
+        // (Revised 2026-10-05: and the time zone tables. Decision JSD-0053 chose the hatch again for
+        // the tzdb tables' generated file, held to TzdbTableGenerator byte for byte by rule N30.)
+        //
+        // (Revised 2026-10-05: and the calendar table. Decision JSD-0056 chose it for the published
+        // calendar years' generated file, held to CalendarTableGenerator byte for byte by rule N32.)
         var declared = AssuranceScanner.DeclaredExemptions(ProductUnits);
 
         Assert.NotEmpty(declared);
         Assert.All(declared, static unit =>
         {
+            if (string.Equals(unit.File.RelativePath, CldrTableGenerator.OutputPath, StringComparison.Ordinal))
+            {
+                Assert.Equal(CldrTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                return;
+            }
+
+            if (string.Equals(unit.File.RelativePath, TzdbTableGenerator.OutputPath, StringComparison.Ordinal))
+            {
+                Assert.Equal(TzdbTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                return;
+            }
+
+            if (string.Equals(unit.File.RelativePath, CalendarTableGenerator.OutputPath, StringComparison.Ordinal))
+            {
+                Assert.Equal(CalendarTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                return;
+            }
+
             Assert.Contains(unit.File.RelativePath, UnicodeTableGenerator.OutputPaths);
             Assert.Equal(UnicodeTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
         });

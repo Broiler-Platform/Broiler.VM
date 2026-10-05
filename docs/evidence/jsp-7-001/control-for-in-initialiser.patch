@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 581c036..9e82ae5 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -5710,7 +5710,7 @@ public sealed class JsCompiler
+         // ANNEX B'S INITIALISER IS EVALUATED AND STORED ONCE, BEFORE THE OBJECT IS (JSP-7, JSC-239):
+         // `for (var a = 0 in stored = a, o)` reads `a` as 0, and an anonymous function takes the
+         // name. The parser admitted the form and this lowering dropped the value.
+-        if (loop.Initialiser is { } initialiser)
++        if (loop.Initialiser is { } initialiser && initialiser.Span.Line < 0)
+         {
+             CompileNamedValue(initialiser, loop.Name);
+             StoreName(loop.Span, loop.Name);

@@ -1,0 +1,28 @@
+$ git apply docs/evidence/jsp-10-001/control-function-message.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler -c Release
+roiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.11
+# exit 0
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --checks --verbose
+FAIL the suspending constructors give a declining realm's reason: Function:TypeError:false,GeneratorFunction:TypeError:true,AsyncFunction:TypeError:true,AsyncGeneratorFunction:TypeError:true
+broiler-js-slice-compiler: 1 of 591 checks FAILED, 3 not run on this machine and claimed by nothing
+# exit 1
+$ git apply -R docs/evidence/jsp-10-001/control-function-message.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler -c Release
+roiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.41
+# exit 0

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Profile.JavaScript.Intl</RootNamespace>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Intl</AssemblyName>
+    <Description>The JavaScript profile's internationalization data: tables generated from the pinned CLDR release, which a composition admitting broiler.javascript.intl hands to the profile. A composition that does not reference this assembly carries none of it.</Description>
+
+    <!-- Packable, as every project of a profile family is (rule N4, the owner's decision of
+         2026-09-19), and under its assembly name. -->
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <!-- The data references the format alone, for the one interface it implements: the profile reads
+       it through that interface and references nothing here, so a composition that declines the
+       surface carries no byte of it (JSD-0027 section 5 item 3, JSD-0043). -->
+  <ItemGroup>
+    <ProjectReference Include="../Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj" />
+  </ItemGroup>
+
+</Project>

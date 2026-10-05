@@ -25,6 +25,15 @@ excludes it by name. The retained focused cases are cases 30-39 of the different
 `src/tests/differential/the-reference-key-and-exponent-edges.js`. The consumer limitation in
 section 6 no longer lists the `Array.prototype.toLocaleString` defect.
 
+**Amendment, 2026-10-03 (slices N2 and N3; local validation, not accepted).** `SpecialCasing.txt`
+is archived beside the UCD files JSD-0031 pinned, and `toUpperCase`, `toLowerCase` and the two
+`toLocale…Case` methods are the Unicode Default Case Conversion over generated tables, with
+`Final_Sigma`: `'ß'.toUpperCase()` is `"SS"`, `'ΑΣ'.toLowerCase()` is `"ας"`, and no answer depends on
+the host's Unicode version. `localeCompare` is ordinal over the canonical decompositions, so
+`'\u00e4'.localeCompare('a\u0308')` is `0`. The consumer limitation in section 6 loses both entries of
+its known-defects sentence; the rest of it stands. Language-sensitive casing stays out, as section 6
+says. Corrections entry [JSC-242](../roadmap.corrections.md#jsc-242).
+
 **Owner:** MaiRat. **Co-signer:** none. **Both roles are held by one person**, and this record
 does not claim the co-signature is independent — there is no second signature to claim it of.
 
@@ -210,6 +219,7 @@ needs a measured prototype of I0 below, not a guess; (d) whether IANA tzdb is ev
   ignore and never coerce its arguments, check its receiver, and be added to this FIXED row in the
   same change. The `BigInt` typed arrays of card B07 inherit `%TypedArray%.prototype.toLocaleString`
   and so its N1 behaviour.
+<!-- as-written, superseded 2026-10-04 -->
 - **The consumer limitation, stated once so a consumer can quote it:**
 
   > The Broiler.VM JavaScript profile does not implement ECMA-402. `Intl` is absent. Locale and
@@ -221,7 +231,14 @@ needs a measured prototype of I0 below, not a guess; (d) whether IANA tzdb is ev
   > one-to-one (`'ß'.toUpperCase()` stays `"ß"`, no final sigma, no `İ`/`ı` special cases),
   > and `localeCompare` does not treat canonically equivalent strings as equal. Code that needs
   > locale-correct formatting or collation must format on the host side and pass strings in.
-
+<!-- /as-written -->
+- *(Superseded 2026-10-04: the limitation above now holds only for a composition that does not admit
+  `broiler.javascript.intl`, which is every composition but the slice compiler and the conformance
+  harness. Where it is admitted, `Intl` exists with `Collator` and `getCanonicalLocales`, and
+  `localeCompare` and the locale-named case methods answer as ECMA-402 requires; numbers and dates
+  still format as stated until I2 and I3. Case mapping is full and `localeCompare` equates
+  canonically equivalent strings since N2 and N3. Proposed [JSD-0043](0043-intl-data-boundary-and-collation.md),
+  [JSC-269](../roadmap.corrections.md#jsc-269).)*
 - **What reopens the deferral:** a named consumer with a workload that needs a specific
   constructor, recorded on the roadmap. None exists today: JSeal's tracked non-documentation files
   contain no `Intl.`, `toLocale…(` or `localeCompare(` call. When one appears, it schedules the
@@ -269,3 +286,233 @@ none implying the next:
   unminted.**
 - **A consumer with a real locale workload that this record's limitation text did not warn**,
   which would mean the limitation was not where a consumer reads.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the deferral, and schedule N2 and N3 now rather than with `Intl`.**
+
+- **(Deferral) Take section 6 as written.** No consumer needs ECMA-402 today, an empty or partial
+  `Intl` would mislead feature detection, and the fixed locale row is already true of the tree.
+- **(a) Data source: generate in-tree from pinned CLDR JSON**, when a consumer triggers I0. The
+  generator, rule N22 and the archive layout JSD-0031 built for the UCD are the template, and
+  `UnicodeCldr.LocaleData` still lacks collation data, date-time skeletons and a published CLDR
+  version.
+- **(b) Licence: accept Unicode License v3 for CLDR on the terms already taken for the UCD** in
+  JSD-0031 section 9.2, in the same `THIRD_PARTY_NOTICES.md` entry pattern. It is the same licence
+  and the same notice obligation.
+- **(c) Size budget: do not set a figure now.** Set it from I0's measured prototype, as section 5
+  says; until then, record that a composition declining `broiler.javascript.intl` carries zero bytes,
+  which is the property that matters.
+- **(d) IANA tzdb: out of scope until a consumer asks for a named time zone.** UTC and fixed offsets
+  cover I3.
+- **N2 and N3 are ECMA-262 defects and are owed now** (probe at `caef66a`: `'ß'.toUpperCase()` answers
+  `"ß"`, and `'\u00e4'.localeCompare('a\u0308')` answers `1` where the language requires `0`). N3 is
+  cheap since JSD-0031's U3 built normalization: compare NFD forms. N2 needs `SpecialCasing.txt`
+  archived beside the UCD files JSD-0031 pinned, which JSD-0031 section 12 records as the one input
+  still missing. Recommended order: archive `SpecialCasing.txt`, then N3, then N2.
+- The amendment's open N1 test (`detached-buffer.js`) should be re-run: VM-FIX-A gave the conformance
+  harness a real `$262.detachArrayBuffer`, so it may already pass.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The deferral in section 6 is not taken.** `Intl` is scheduled as phase F7 of the plan's
+  [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), without waiting for the named consumer section 6 asked for.
+- **The slices are unchanged and become the phase**: I0, then I1 to I3, then I4 and later. The data
+  and licence choices in the recommendation above stand as the starting point.
+- **What a program meets today does not change** until I0 publishes `Intl`; the ledger's
+  `absent-globals` block keeps the name until then, and N24's assertion about it changes in the same
+  change.
+
+## I0, first half: the archive, 2026-10-04 (unsigned)
+
+*Recorded with the first change of phase F7; it signs nothing and this record keeps its status line.*
+
+- **CLDR 48.2.0 is archived and pinned** under
+  [`src/tests/cldr/pins/`](../../../tests/cldr/pins/README.md), as section 5 item 2 asks and in the shape
+  JSD-0031 gave the UCD: the cldr-json packages `cldr-core` and `cldr-bcp47` (likely subtags, aliases,
+  parent locales, available locales, default content, every `bcp47` file), the root collation in
+  DUCET form (`allkeys_CLDR.txt`) with the root, German and English collation sources, the two UCA
+  conformance files, and the licence. Its UCA version is 17.0.0, the UCD version JSD-0031 pins, so
+  normalization, casing and collation read one UCD.
+- **Rule N27** holds the archive to its pin by length, SHA-256 and stated release, and the pin to the
+  directory. Nothing reads the archive yet: the generator, the data assembly and the identity
+  `broiler.javascript.intl` are the second half of I0.
+- **Owner decisions (a) and (b)** are taken here as the recommendation above proposes - in-tree
+  generation from pinned CLDR JSON, and the Unicode License v3 for CLDR on the UCD's terms - and
+  nobody has signed them; (c), the size budget, waits for the measured tables; (d), tzdb, is not
+  touched.
+
+## I0, second half, and I1: the data assembly and the collator, 2026-10-04 (unsigned)
+
+*Recorded with the change that publishes `Intl`; it signs nothing and this record keeps its status
+line. Corrections entry [JSC-269](../roadmap.corrections.md#jsc-269).*
+
+- **The generator, the data assembly and `broiler.javascript.intl` are built** under proposed
+  [JSD-0043](0043-intl-data-boundary-and-collation.md), as section 5 items 1 to 4 propose: the
+  default locale `en-US`, the locale list `de`, `de-DE`, `en`, `en-US` with `und` as the root, and
+  tables generated from the archive rule N27 holds, which rule N28 holds to the generator. A
+  composition that declines the surface does not reference the assembly.
+- **I1 is built**: `Intl` with `getCanonicalLocales` and `Collator`, and `localeCompare` routed
+  through it. The acceptance this record's section 7 names is met as JSD-0043 section 6 records:
+  both CollationTest files are in order, and the retained German and English orderings agree with
+  ICU 77.1 on every line.
+- **Owner decision (c), the size budget, now has its measurement**: 325,646 bytes of table data, in
+  an assembly of 333,312 bytes. A provisional bound of 512 KiB holds it until a budget is set.
+  Nobody has set one. Decisions (a) and (b) stay as the first half of I0 records them, and (d) is not
+  touched.
+- **Section 1's fixed answers now hold only where `Intl` is not built**, which is every composition
+  but the two JSD-0043 names. Where it is built, `localeCompare` and the locale-named case methods
+  answer as ECMA-402 requires.
+
+## I2: Intl.NumberFormat, 2026-10-04 (unsigned)
+
+*Recorded with the change that publishes `Intl.NumberFormat`; it signs nothing and this record keeps
+its status line. Corrections entry [JSC-270](../roadmap.corrections.md#jsc-270).*
+
+- **I2 is built under proposed [JSD-0044](0044-intl-numberformat.md), wider than section 7 drew it**:
+  units, compact and scientific notation are in it. ECMA-402 admits them on every format, so a slice
+  without them would be the partial surface section 6 refused.
+- **The acceptance section 7 names is met** as JSD-0044 section 6 records. The retained `(locale,
+  options, value)` dataset covers `-0`, `NaN`, both infinities, `1e21`, ties under every rounding
+  mode, and grouping at 3 to 9 digits. Every line agrees with ICU 77.1 but 24 named divergences.
+- **The archive grew** by the number, currency, unit and plural files, under N27. The measured data is
+  now 438,831 bytes, still under the provisional bound, and no budget is set.
+
+## I3: Intl.DateTimeFormat, 2026-10-04 (unsigned)
+
+*Recorded with the change that publishes `Intl.DateTimeFormat`; it signs nothing and this record keeps
+its status line. Corrections entry [JSC-271](../roadmap.corrections.md#jsc-271).*
+
+- **I3 is built under proposed [JSD-0045](0045-intl-datetimeformat.md), wider than section 7 drew
+  it**: every component option, not only those the section 5 locales need, and ranges. ECMA-402
+  admits both on every format.
+- **Section 5 item 5 is read, not widened**: besides `"UTC"` and offset strings, IANA's `Etc/GMT+N`
+  and `Etc/GMT-N` zones are admitted, because they are fixed offsets by definition and need no
+  database. Every other IANA name is still refused by name, and decision (d) is untouched.
+- **The acceptance section 7 names is met** as JSD-0045 section 6 records. The retained dataset runs
+  over the full time-value range, from -8.64e15 to 8.64e15 with the year 0 and 2 BC, and agrees with
+  ICU 77.1 but for 352 named lines.
+- **The archive grew** by the Gregorian calendar, date field, zone name, hour cycle and day period
+  files, under N27. The measured data is now 465,869 bytes, still under the provisional bound, and no
+  budget is set.
+
+## I4: Intl.Locale, 2026-10-04 (unsigned)
+
+*Recorded with the change that publishes `Intl.Locale`; it signs nothing and this record keeps its
+status line. Corrections entry [JSC-272](../roadmap.corrections.md#jsc-272).*
+
+- **I4 is taken one constructor at a time**, each its own change and record, as section 7's "each
+  opened by its own consumer and its own card" reads. `Locale` is first, under proposed
+  [JSD-0046](0046-intl-locale.md), because the other constructors' tests construct Locales.
+- **I0's locale core is corrected, not widened** ([JSD-0043](0043-intl-data-boundary-and-collation.md)
+  section 3): Add Likely Subtags takes UTS #35's current lookup order, `-u-` attributes are sorted,
+  and Remove Likely Subtags is added. Section 5's supported locales and default are unchanged.
+- **Its acceptance is a retained dataset like I1 to I3's**: 780 lines over 65 tags of every shape,
+  agreeing with ICU 77.1 but for 150 named lines. `test/intl402/Locale` passes every scored variant.
+- **The archive grew** by the week and script metadata files, under N27. The measured data is now
+  472,562 bytes, still under the provisional bound, and no budget is set. Decision (d) holds:
+  `getTimeZones` answers no zone for any region.
+- **`PluralRules` is second**, under proposed [JSD-0047](0047-intl-pluralrules.md), recorded in
+  [JSC-273](../roadmap.corrections.md#jsc-273). It rounds as I2's `NumberFormat` rounds. The archive
+  grew by the ordinal rules, and the data is now 472,689 bytes. Its retained dataset of 1,299 lines
+  agrees with ICU 77.1 but for 123 named lines.
+- **`ListFormat` is third**, under proposed [JSD-0048](0048-intl-listformat.md), recorded in
+  [JSC-274](../roadmap.corrections.md#jsc-274). The archive grew by a fourth CLDR package,
+  `cldr-misc-full`, for its list patterns, and the data is now 473,642 bytes. Its retained dataset of
+  481 lines agrees with ICU 77.1 on every string.
+- **`RelativeTimeFormat` is fourth**, under proposed [JSD-0049](0049-intl-relativetimeformat.md),
+  recorded in [JSC-275](../roadmap.corrections.md#jsc-275). Its data is from slice I3's archive. The
+  generated data is now 483,743 bytes, 40,545 under the provisional bound. That is less than
+  `DisplayNames`'s name tables need, so **decision (c), the size budget, is now a precondition of
+  `DisplayNames`**.
+- **`Segmenter` is fifth**, under proposed [JSD-0050](0050-intl-segmenter.md), recorded in
+  [JSC-276](../roadmap.corrections.md#jsc-276). Its data is UAX #29's, from six UCD files the Unicode
+  archive gained, and its tables are generated into the Intl data assembly like the rest of Intl's.
+  The generated data is now 503,669 bytes, 20,619 under the provisional bound.
+- **`DurationFormat` is sixth**, under proposed [JSD-0051](0051-intl-durationformat.md), recorded in
+  [JSC-277](../roadmap.corrections.md#jsc-277). It needs no new archive file, and it corrects a unit
+  lookup of I2's number format. **Every constructor section 7 names for I4 is now built but
+  `DisplayNames`**, and the size budget decides when it can be.
+
+## Decision (c) taken, and I4's DisplayNames, 2026-10-05
+
+*Recorded with the change that publishes `Intl.DisplayNames`. The budget below is the repository
+owner's decision; the rest signs nothing, and this record keeps its status line. Corrections entry
+[JSC-278](../roadmap.corrections.md#jsc-278).*
+
+- **Owner decision (c) is taken: the Intl data's budget is 768 KiB**, set by the repository owner on
+  2026-10-05 from the measured data, 503,797 bytes that day, and `DisplayNames`'s estimated names. It
+  replaces JSD-0043's provisional 512 KiB bound, and rule N28's size test holds it. Growth past it is
+  a new owner decision, not a drift.
+- **`DisplayNames` is seventh and last**, under proposed [JSD-0052](0052-intl-displaynames.md). The
+  archive grew by a fifth CLDR package, `cldr-localenames-full`, under N27, and the generated data is
+  now 572,024 bytes, 214,408 under the budget. Its retained dataset of 823 lines agrees with ICU 77.1
+  but for 64 named lines.
+- **Every constructor section 7 names for I4 is built**, and phase F7's exit gate is met. Section 7's
+  tzdb-backed time zones wait for phase F8. Decision (d), whether IANA tzdb is ever in scope, was
+  answered by the owner the same day: phase F8 starts by archiving and pinning it. Section 7's `tr`, `az`
+  and `lt` case tailorings are not built.
+
+## Decision (d) answered: the IANA Time Zone Database, 2026-10-05
+
+*Recorded with the change that archives tzdb. The answer is the repository owner's; the rest signs
+nothing, and this record keeps its status line. Corrections entry
+[JSC-279](../roadmap.corrections.md#jsc-279).*
+
+- **Owner decision (d) is answered: IANA tzdb is in scope.** The repository owner chose on 2026-10-05
+  to start phase F8 by archiving and pinning it. Section 5 item 5's "no time zone database" no longer
+  holds.
+- **tzdb 2026e is archived and pinned** under proposed
+  [JSD-0053](0053-time-zone-data-and-temporal-admission.md), rule N29, and compiled into tables in
+  the Intl data assembly under rule N30. The data is now 670,742 bytes, 115,690 under decision (c)'s
+  budget. Section 7's "tzdb-backed time zones" are built for `Intl.DateTimeFormat`, and the
+  primary identifiers are CLDR's, as ECMA-402 6.5 recommends.
+- **Zone names other than the GMT format** need CLDR's metazones, which are not archived.
+
+## Amended 2026-10-05: calendar years in the data (unsigned)
+
+*Recorded with phase F8's slice T3; it signs nothing. Corrections entry
+[JSC-282](../roadmap.corrections.md#jsc-282).*
+
+- **The Intl data assembly carries a calendar table** under proposed
+  [JSD-0056](0056-temporal-in-the-cldr-calendars.md): the Chinese, Korean and Umm al-Qura years and
+  the Persian corrections, generated from two ICU4X crates archived under the new rule N31 and held
+  to their generator by the new rule N32. Decision (c)'s budget counts it: the data is 679,058 bytes,
+  107,374 under it. No CLDR file is added; formatting in these calendars, which needs CLDR's names
+  for them, is the next slice's, and it will put any growth past the budget to the owner.
+
+## Amended 2026-10-05: the CLDR calendars in the data (unsigned)
+
+*Recorded with phase F8's slice T4; it signs nothing. Corrections entry
+[JSC-283](../roadmap.corrections.md#jsc-283).*
+
+- **The archive gains eleven `cldr-cal-*-full` packages and `ca-generic.json`** under rule N27, for
+  `Intl.DateTimeFormat` in every calendar of the Intl era and month code proposal under proposed
+  [JSD-0057](0057-intl-datetimeformat-in-the-cldr-calendars.md): each package's `ca-*.json` files for
+  `de` and `en`, 43 files in all.
+- **The date tables carry each calendar as a layer** over the language's Gregorian data, only the
+  lines that differ: 1,924 lines and 82,540 bytes. Decision (c)'s budget holds them: **the data is
+  761,598 bytes, 24,834 under it**, so nothing is put to the owner. The room left is small; a later
+  slice that adds data will measure it first.
+
+## Amended 2026-10-05: the budget raised to 832 KiB for the zones' names (unsigned)
+
+*Recorded with phase F8's slice T5; it records the owner's choice and signs nothing else. Corrections
+entry [JSC-284](../roadmap.corrections.md#jsc-284).*
+
+- **Decision (c)'s budget is 832 KiB.** The time zones' names, under proposed
+  [JSD-0058](0058-time-zone-names.md), measured about 62 KB of text against 24,834 bytes left under
+  768 KiB. Asked on 2026-10-05 whether to compress that table, raise the budget or reduce the scope,
+  the repository owner chose to raise the budget; 832 KiB is the figure the question named, and
+  rule N28 holds it.
+- **The archive gains `metaZones.json` and `primaryZones.json`** from `cldr-core` 48.2.0 under rule
+  N27. **The data is 841,145 bytes, 10,823 under the budget.**

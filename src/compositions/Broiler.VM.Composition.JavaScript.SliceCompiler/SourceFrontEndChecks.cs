@@ -347,7 +347,7 @@ internal static class SourceFrontEndChecks
             var compiled = program.Options.Goal == SliceGoal.Module
                 ? JsCompiler.Compile(
                     [],
-                    [new JsModuleUnit("retained", program.Source, program.Options)])
+                    [new JsModuleUnit("retained", program.Source, program.Options) { Type = program.ModuleType }])
                 : JsCompiler.Compile(program.Source, program.Options);
 
             if (compiled.Succeeded)

@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
+index 84795ca..be5f71f 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
+@@ -1047,7 +1047,7 @@ internal sealed partial class JsRealm
+             // replacer and unwrapping a BigInt object. Falling through would answer "not
+             // serialisable" and OMIT the value, a plausible wrong answer.
+             case JsType.BigInt:
+-                throw engine.Error("TypeError", "Do not know how to serialize a BigInt");
++                return "null";
+ 
+             default:
+                 break;

@@ -652,7 +652,10 @@ guest-visible half against the comparison engine.
 host-visible module status. An embedder that needs one reads it from the evaluation promise: it is
 pending while the graph is under way, fulfilled when it finished and rejected with the evaluation
 error when any module of the graph failed, whichever route evaluated it first. *(Amended
-2026-09-22: section 20.1 adds `TryGetModuleState`, which answers the status itself.)*
+2026-09-22: section 20.1 adds `TryGetModuleState`, which answers the status itself.)* *(Amended
+2026-10-04: the profile honours the attribute `type: "json"` since JSC-255, through the artifact
+provider and the module graph a composition loads. The embedder's own loader seam is not offered a
+typed request: it names a specifier and no type, so a JSON import goes to the provider.)*
 
 ### 15.4 Addendum 2026-09-21: the specification's async evaluation (JSeal I11-async)
 
@@ -1229,3 +1232,23 @@ top-level `await`, or one compiled with it true refuses one; an `import()` in ev
 `Function` body - including one a promise job calls directly - is offered a referrer other than
 `GetActiveScriptOrModule()`'s, or a non-empty one where no script or module is on the stack; a `ScriptReferrers` row naming anything but a placed
 script body verifies; or `JsHostValue.Missing` reaches guest code as anything but `undefined`.
+
+## Amended 2026-10-04: a view per realm (unsigned)
+
+*Recorded with phase F5's implementation; it signs nothing. Corrections entry
+[JSC-264](../roadmap.corrections.md#jsc-264).*
+
+- **An engine may hold several realms** since `$262.createRealm` builds one under proposed
+  [JSD-0039](0039-a-second-realm-on-one-engine.md), and **each has its own `JsHostRealm`**: the first
+  is made as before; a created realm's is made when the guest creates it, and the composition's
+  surface is told of it through `OnRealmCreated`, inside the step the guest's call runs in. The
+  views of one engine share its step window, so each is current exactly when the first is, and a
+  latched abort is the engine's.
+- **A ref one view minted is refused by another, by name** (`JsHostRefusal.ForeignRealm`), on one
+  engine as the refusal was written for: the slice compiler's checks offer a created realm's view
+  the first realm's global and see that refusal.
+- **A view evaluates in its own realm**: `EvaluateScript` makes the view's realm the running one for
+  the script, whichever realm was running when it was asked.
+- No signature changed: `IJsHostSurface`'s remarks now say a surface is told of every realm, not
+  only the first.
+

@@ -1,0 +1,11 @@
+# collected at bfd6f0c291d31986d1455ab0324474fa8449039b
+# base a7e69c79e4ac3d8c08cb9e7151cb862feecd6d33
+# comparison engine v22.22.0
+$ dotnet build Broiler.VM.slnx -c Release -warnaserror
+t contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [<root>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj]
+<root>/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs(2366,18): error CS8618: Non-nullable property 'Matcher' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [<root>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj]
+    0 Warning(s)
+    3 Error(s)
+
+Time Elapsed 00:00:26.37
+# exit 1

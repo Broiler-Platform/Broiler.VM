@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+index df339f4..4629668 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+@@ -150,8 +150,6 @@ internal sealed partial class JsRealm
+ 
+         HasInstanceFunction = hasInstance;
+ 
+-        functionPrototype.SetOwnSymbol(
+-            HasInstanceSymbol, JsProperty.Data(JsValue.Object(hasInstance), JsPropertyAttributes.None));
+ 
+         Method(functionPrototype, "toString", 0, static (engine, thisValue, arguments) =>
+         {

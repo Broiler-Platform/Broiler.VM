@@ -1,0 +1,14 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs
+index 68b2448..10de68f 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs
+@@ -275,8 +275,7 @@ internal sealed partial class JsRealm
+                 return JsValue.Number(double.NaN);
+             }
+ 
+-            var whole = JsValue.ToInteger(year);
+-            var full = whole is >= 0 and <= 99 ? 1900 + whole : year;
++            var full = year;
+ 
+             var day = DateMakeDay(full, DateMonthFromTime(time), DateDateFromTime(time));
+             var clipped = DateTimeClip(DateMakeDate(day, DateTimeWithinDay(time)));

@@ -1,0 +1,24 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.cs
+index cf23d6e..a317c15 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.cs
+@@ -73,11 +73,18 @@ internal sealed class JsEnumerator : JsObject
+             {
+                 var name = names[at++];
+ 
+-                if (visited.Contains(name) || !current.TryGetOwnProperty(name, out var property))
++                if (visited.Contains(name))
+                 {
+                     continue;
+                 }
+ 
++                if (!current.TryGetOwnProperty(name, out var property))
++                {
++                    visited.Add(name);
++                    key = name;
++                    return true;
++                }
++
+                 visited.Add(name);
+ 
+                 if (property.Enumerable)

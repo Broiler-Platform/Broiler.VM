@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   2
 // Annotated:        2/2
-// Exempt:           4
+// Exempt:           6
 // Human-reviewed:   0/2
 // IP risk:          Low
 // Security risk:    Medium
@@ -96,4 +96,22 @@ internal sealed class JsSymbol
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8FB764
     // Broiler-Human:        PENDING
     internal bool IsPrivateName { get; init; }
+
+    /// <summary>Whether <c>Symbol.for</c> made this Symbol, so that its registry entry names it.</summary>
+    /// <remarks>
+    /// <b>A registered Symbol cannot be held weakly</b>, because <c>Symbol.for</c> answers the same one
+    /// again for its key whenever a program asks: it is never unreachable, and a weak entry over it
+    /// could never be collected. Every other Symbol can (JSP-5, JSC-237).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7108D5
+    // Broiler-Human:        PENDING
+    internal bool IsRegistered { get; init; }
+
+    /// <summary>
+    /// The values every <c>WeakMap</c> holds under this Symbol as its key, or <see langword="null"/>
+    /// while it is the key of none (JSC-260).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=75767A
+    // Broiler-Human:        PENDING
+    internal JsWeakEntries? WeakEntries;
 }

@@ -1,0 +1,32 @@
+# comparison engine v22.22.0
+runs/annex-b-string-date-and-regexp-members.js  [same] agrees as declared
+  host   exit 0: <a name="a&quot;b">x</a><big>x</big><blink>x</blink><b>x</b><tt>x</tt><font color="red">x</font><font size="7">x</font><i>x</i><a href="u">x</a><small>x</small><strike>x</strike><sub>x</sub><sup>x</sup> / true / trimEnd / 120 1999 / true / true b+ i 0
+  engine exit 0: <a name="a&quot;b">x</a><big>x</big><blink>x</blink><b>x</b><tt>x</tt><font color="red">x</font><font size="7">x</font><i>x</i><a href="u">x</a><small>x</small><strike>x</strike><sub>x</sub><sup>x</sup> / true / trimEnd / 120 1999 / true / true b+ i 0
+runs/html-like-comments-in-a-script.js  [same] agrees as declared
+  host   exit 0: 1 / 5 / 7
+  engine exit 0: 1 / 5 / 7
+--module refused/an-html-like-comment-in-a-module.mjs  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/an-html-like-comment-in-a-module.mjs: 2205:InvalidAssignmentTarget at 3:20: the operand of an update operator is not a reference
+  engine exit 1: SyntaxError: HTML comments are not allowed in modules
+runs/a-for-in-initialiser.js  [same] agrees as declared
+  host   exit 0: 1 / -1 / q / 0 / c
+  engine exit 0: 1 / -1 / q / 0 / c
+runs/a-call-as-an-assignment-target.js  [same] agrees as declared
+  host   exit 0: ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f
+  engine exit 0: ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f
+refused/a-call-as-an-assignment-target-in-strict-code.js  [early] agrees as declared
+  host   exit 3: broiler-js: refused/a-call-as-an-assignment-target-in-strict-code.js: 2205:InvalidAssignmentTarget at 9:1: the left-hand side of an assignment is not a reference
+  engine exit 1: ReferenceError: Invalid left-hand side in assignment
+runs/the-edition-members-the-realm-lacked.js  [lacks] agrees as declared
+  host   exit 0: true,true,false,false / 1,1,symbol / function false / undefined
+  engine exit 1:     Error.isError(new TypeError()),
+runs/uint8array-base64-and-hex.js  [lacks] agrees as declared
+  host   exit 0: SGn7/w== / SGn7_w / 4869fbff / 72,105,33 /  / SyntaxError / 72,105 / 5:2:72,105,0,0 / 0:0:0,0 / SyntaxError:72,105,0
+  engine exit 1: TypeError: into.setFromBase64 is not a function
+runs/a-reviver-reads-the-source-text.js  [same] agrees as declared
+  host   exit 0: a=1.50 0="\u0041" 1=-0 2=1e3 b=- c=- =-
+  engine exit 0: a=1.50 0="\u0041" 1=-0 2=1e3 b=- c=- =-
+runs/an-error-has-no-stack.js  [differs] agrees as declared
+  host   exit 0: undefined / false / message
+  engine exit 0: string / true / stack,message
+# 0 of 10 fixtures do not agree as declared

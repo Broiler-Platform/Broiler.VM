@@ -396,10 +396,40 @@ public sealed class RuleRegisterTests
         // profile calls a global absent that the realm publishes, in a block, a clause or a bullet
         // under an absent heading, with text kept as written marked and dated. Active when minted;
         // no other count moves.
-        Assert.Equal(107, byStatus["Active"]);
+        // Decision JSD-0029's recommendation adds N25 ahead of its cleanup model: no type of the
+        // JavaScript profile declares a finalizer, so no guest-reachable work can run on the
+        // collector's thread. Active when minted; no other count moves.
+        // Decision JSD-0030's slice SR-2 adds N26 when an engine starts holding several realms: no
+        // profile code stores a realm outside the realm model's own members, and none reads the
+        // engine's first realm where a frame may be running. Active when minted; no other count moves.
+        // Phase F7's first slice adds N27 beside N22: the archived CLDR files are the ones their pin
+        // describes, by hash and by stated release, and the pin names every file beside it. Active
+        // when minted; no other count moves.
+        // Phase F7's second slice adds N28 beside N27: the Intl data's generated tables are what the
+        // generator writes from the two pinned archives, under a provisional size bound, with the
+        // CLDR licence in the notices. Active when minted; no other count moves.
+        // Phase F9's first slice adds N33, rule L1's shape over the JavaScript profile's own
+        // baseline register: the register and the measurement logs of the bundle it names agree in
+        // both directions, on both arms (decision JSD-0059). Active when minted; no other count moves.
+        // Phase F9's second slice adds N34, N35 and N36 over the drafted support table (decision
+        // JSD-0060): N34 holds every cell release gate 1 names to where the checkout declares it, the
+        // amendment section to roadmap section 18 in both directions and every evidenced row to a rule
+        // or a retained file; N35 is JS-10's scan of the extraction-gate state for a verdict or another
+        // profile's identifier; N36 holds the suppression inventory to a scan of the family's sources.
+        // All three Active when minted; no other count moves.
+        // Phase F9's third slice adds N37, release gate 8's baseline of its own: the JavaScript
+        // family's package baseline against the packable projects and their references, and against
+        // the candidate pack's retained metadata, in both directions, with no foreign dependency and a
+        // consumer transcript that restored, rolled back and forward, and refused what only upstream
+        // holds (decision JSD-0061). Active when minted; no other count moves.
+        // Phase F9's fourth slice adds N38, the release gate that refuses: gates 1 to 13 read from
+        // the checkout, every blocker named by its declaration and held to the gate's register in both
+        // directions, with a review headline and a support table that claim more than the units
+        // record shown not to clear it (decision JSD-0062). Active when minted; no other count moves.
+        Assert.Equal(117, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(109, Loaded.Rules.Count);
+        Assert.Equal(119, Loaded.Rules.Count);
     }
 
     private static Register Load()

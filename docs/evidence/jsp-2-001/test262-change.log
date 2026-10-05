@@ -1,0 +1,31 @@
+$ python3 eng/run-test262.py --suite <scratch>/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --binary-directory <root>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0 --jobs 3 --out <scratch>/test262-change --dir test/built-ins/BigInt --dir test/language/literals/bigint --dir test/built-ins/JSON/stringify --dir test/language/expressions/typeof --dir test/language/expressions/equals --dir test/language/expressions/strict-equals --dir test/language/expressions/addition
+009.log
+--- shard 11 of 12 exited 0; <scratch>/test262-change/logs/shard-0011.log
+json <scratch>/test262-change/test262.json
+broiler-js-conformance: merged 12 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.modules, broiler.javascript.native; declined (none)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 12 shards
+selection candidates=343 selected=343 merged=343
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 8 failing variant(s)
+#   by kind: 2 distinct, 8 variants
+#           6  an uncaught TypeError  e.g. test/built-ins/BigInt/prototype/valueOf/cross-realm.js [sloppy]
+#           2  an uncaught Test262Error  e.g. test/built-ins/JSON/stringify/property-order.js [sloppy]
+#   by area: 2 distinct, 8 variants
+#           6  test/built-ins/JSON/stringify  e.g. test/built-ins/JSON/stringify/property-order.js [sloppy]
+#           2  test/built-ins/BigInt/prototype  e.g. test/built-ins/BigInt/prototype/valueOf/cross-realm.js [sloppy]
+#   by declared feature (8 of 8 failing variants declare one; a variant with two is in two rows): 4 distinct, 14 taggings over 8 variants
+#           6  cross-realm  e.g. test/built-ins/BigInt/prototype/valueOf/cross-realm.js [sloppy]
+#           4  BigInt  e.g. test/built-ins/BigInt/prototype/valueOf/cross-realm.js [sloppy]
+#           2  Proxy  e.g. test/built-ins/JSON/stringify/replacer-array-proxy-revoked-realm.js [sloppy]
+#           2  for-in-order  e.g. test/built-ins/JSON/stringify/property-order.js [sloppy]
+# test262 343 files, 683 variants: pass 675, fail 8, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/built-ins/BigInt test/language/literals/bigint test/built-ins/JSON/stringify test/language/expressions/typeof test/language/expressions/equals test/language/expressions/strict-equals test/language/expressions/addition
+# the whole-run report is <scratch>/test262-change/test262.report
+# the machine-readable report is <scratch>/test262-change/test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/built-ins/BigInt test/language/literals/bigint test/built-ins/JSON/stringify test/language/expressions/typeof test/language/expressions/equals test/language/expressions/strict-equals test/language/expressions/addition
+# exit 1

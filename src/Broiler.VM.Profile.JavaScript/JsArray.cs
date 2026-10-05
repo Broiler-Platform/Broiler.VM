@@ -141,14 +141,24 @@ internal sealed class JsArray : JsObject
 
     /// <summary>Sets the length, and answers whether it got all the way there.</summary>
     /// <remarks>
+    /// <para>
     /// <b>A SHORTENING DELETES FROM THE TOP DOWN AND STOPS AT THE FIRST ELEMENT IT MAY NOT
     /// DELETE.</b> `Object.defineProperty(a, "1", {configurable: false})` makes index 1 permanent,
     /// and the language says a later `a.length = 0` deletes index 2, fails at index 1, and leaves
     /// the length at 2 — a partial result rather than either extreme. Truncating regardless would
     /// destroy a property the program was promised, and refusing outright would leave a length
     /// nobody could shrink at all.
+    /// </para>
+    /// <para>
+    /// <b>IT VISITS THE INDICES THE ARRAY HOLDS, NOT EVERY INDEX BETWEEN THE TWO LENGTHS</b>
+    /// <i>(corrected: JSC-268)</i>. It walked down from the old length one index at a time, formatting
+    /// each as a key, so `a[987654321] = 1; a.length = 8` made about a billion lookups that charged
+    /// no fuel and polled no clock - an operation its wall clock could not end. Only a property the
+    /// map holds can refuse deletion, so the highest such index at or past the new length is where
+    /// the walk would have stopped; everything above it goes, and the result is the same.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=28839C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=08D0D0
     // Broiler-Human:        PENDING
     internal bool TrySetLength(uint value)
     {
@@ -158,33 +168,42 @@ internal sealed class JsArray : JsObject
             return true;
         }
 
+        // THE MAP'S INDICES AT OR PAST THE NEW LENGTH, lowest first. The dense half has no
+        // attributes to consult: an element still in it is an ordinary configurable data property,
+        // and one that was given attributes has already moved into the map underneath - leaving a
+        // HOLE in the dense half at that index. Only the map can refuse.
+        var keys = new System.Collections.Generic.List<string>();
+        CollectOwnNames(keys, []);
+
+        var mapped = new System.Collections.Generic.List<uint>();
+
+        foreach (var key in keys)
+        {
+            if (IsArrayIndex(key, out var at) && at >= value && at < length)
+            {
+                mapped.Add(at);
+            }
+        }
+
+        mapped.Sort();
+
         var reached = value;
 
-        for (var candidate = length; candidate > value; candidate--)
+        for (var index = mapped.Count - 1; index >= 0; index--)
         {
-            var at = candidate - 1;
-            var key = JsNumberFormat.ToUintString(at);
-
-            // THE DENSE HALF HAS NO ATTRIBUTES TO CONSULT: an element that is still in it is an
-            // ordinary configurable data property, and one that was given attributes has already
-            // moved into the map underneath - leaving a HOLE in the dense half at that index, which
-            // is why the test is on the slot being empty rather than on the index being past the
-            // end. Only the map can refuse.
-            var dense = at < elements.Count && !elements[(int)at].IsEmpty;
-
-            if (!dense && base.TryGetOwnProperty(key, out var held) && !held.Configurable)
+            if (base.TryGetOwnProperty(JsNumberFormat.ToUintString(mapped[index]), out var held) &&
+                !held.Configurable)
             {
-                reached = at + 1;
+                reached = mapped[index] + 1;
                 break;
             }
+        }
 
-            if (dense)
+        foreach (var at in mapped)
+        {
+            if (at >= reached)
             {
-                elements[(int)at] = JsValue.Empty;
-            }
-            else
-            {
-                base.DeleteOwnProperty(key);
+                base.DeleteOwnProperty(JsNumberFormat.ToUintString(at));
             }
         }
 

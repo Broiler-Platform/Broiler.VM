@@ -191,13 +191,23 @@ internal static class Test262Run
             }
         }
 
-        if (flags.Contains("CanBlockIsFalse"))
+        // A TEST THAT NEEDS THE HOST'S COLLECTION HOOK IS NOT ONE THIS HARNESS CAN RUN. The suite
+        // tags a test that calls `$262.gc` with `host-gc-required`, and this harness provides no
+        // such hook, so every one of them failed at that call with a refusal about the harness
+        // rather than about the engine. One of them, `regress-1507322-deep-weakmap`, also built a
+        // chain of 99,999 weak-map entries before the call, whose marking the platform's collector
+        // cannot interrupt, and held its shard past every allowance. They are skipped by the
+        // suite's own tag, and counted, as a proposal is (JSC-257). The collector's stall over such a
+        // chain was the engine's, and ended when a WeakMap's values moved onto their keys (JSC-260);
+        // the skip stays because the hook is still absent.
+        if (frontmatter.Features.Contains("host-gc-required"))
         {
             return
             [
                 new Test262Outcome(
                     relativePath, "-", Test262Verdict.Skipped,
-                    "this agent's [[CanBlock]] is true",
+                    "the test requires the host's collection hook `$262.gc`, which this harness " +
+                        "does not provide",
                     Features: string.Join(",", frontmatter.Features)),
             ];
         }
@@ -361,8 +371,11 @@ internal static class Test262Run
         }
 
         var printed = new List<string>();
+        // THE SUITE'S `CanBlockIsFalse` TESTS RUN WHERE THE MAIN AGENT IS AN EVENT LOOP; every other
+        // test runs where it may block, as a shell's does (JSD-0041, JSD-0042).
         var created = VmRuntime.Create(
-            manifest.Catalog, Options(manifest, fuel, wallClock, printed));
+            flags.Contains("CanBlockIsFalse") ? manifest.EventLoopCatalog : manifest.Catalog,
+            Options(manifest, fuel, wallClock, printed));
 
         if (created.Outcome == VmOutcome.ResourceExhaustion)
         {
@@ -378,17 +391,30 @@ internal static class Test262Run
 
         using (runtime)
         {
-            return Judge(
-                runtime,
-                artifact,
-                scripts,
-                modules.Count != 0,
-                relativePath,
-                variant,
-                negative,
-                flags,
-                printed,
-                manifest);
+            // `$262.agent`'S AGENTS ARE THIS TEST'S (JSD-0042): `Test262Host` finds them through the
+            // logical call when it builds the test's realm, and they are cancelled, joined and
+            // disposed once its verdict is reached, before the runtime they share blocks with.
+            using var agents = manifest.LoadsHarness ? new Test262Agents(manifest, fuel, wallClock, runtime) : null;
+            Test262Agents.Current.Value = agents;
+
+            try
+            {
+                return Judge(
+                    runtime,
+                    artifact,
+                    scripts,
+                    modules.Count != 0,
+                    relativePath,
+                    variant,
+                    negative,
+                    flags,
+                    printed,
+                    manifest);
+            }
+            finally
+            {
+                Test262Agents.Current.Value = null;
+            }
         }
     }
 
@@ -754,13 +780,30 @@ internal static class Test262Run
         return System.Text.Encoding.UTF8.GetString(bytes, start, bytes.Length - start);
     }
 
-    private static VmRuntimeCreationOptions Options(
-        Test262Manifest manifest, ulong fuel, ulong wallClock, List<string> printed)
+    /// <summary>
+    /// The runtime options of one test - or of one agent it starts, which is built under the same
+    /// manifest, ceilings and capabilities.
+    /// </summary>
+    internal static VmRuntimeCreationOptions Options(
+        Test262Manifest manifest,
+        ulong fuel,
+        ulong wallClock,
+        List<string> printed,
+        VmAggregateBudget? aggregate = null)
     {
         var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();
 
         foreach (var dimension in VmBudgetDimensions.All)
         {
+            // AN AGENT TAKES WHAT ITS TEST'S AGENTS HAVE LEFT, NOT AN ALLOWANCE OF ITS OWN (JSD-0042):
+            // under the agents' aggregate every dimension it carries is adopted from the parent's
+            // remaining, which is what makes the ceiling shared rather than multiplied.
+            if (aggregate is not null && VmBudgetDimensions.CarriesAggregateScope(dimension))
+            {
+                ceilings.Add(VmCeilingSpec.AdoptParentRemaining(dimension));
+                continue;
+            }
+
             ceilings.Add(dimension switch
             {
                 VmBudgetDimension.LiveRuntimes => VmCeilingSpec.AdoptParentRemaining(dimension),
@@ -824,7 +867,7 @@ internal static class Test262Run
         }
 
         return new VmRuntimeCreationOptions(
-            aggregateBudget: null,
+            aggregateBudget: aggregate,
             ceilings: ceilings.ToImmutable(),
             maxSuspendedResidency: TimeSpan.FromMinutes(1),
             maxLiveSuspendedOperations: 1,

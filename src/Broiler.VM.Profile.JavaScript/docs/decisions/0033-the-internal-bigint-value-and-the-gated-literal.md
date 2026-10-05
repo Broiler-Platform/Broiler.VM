@@ -362,3 +362,24 @@ unsigned; nothing here advances a milestone.
    element write ends the invocation where the language owes a catchable `TypeError` or a stored
    value. Evidence:
    `docs/evidence/jseal-b07-b08/README.md`.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the record as amended by sections 6, 7 and 8, and correct its status line
+when signing.**
+
+- **BigInt is public and admitted** (section 7, JSeal B05), its typed arrays and accessors too
+  (section 8), and JSP-2's gate is now covered with controls ([record JSP-2-001](../../../../docs/evidence/jsp-2-001/README.md)).
+  The status line still describes the B01 to B04 state ("the wide manifest still refuses a BigInt
+  literal by name, there is no `BigInt` global"); the signature should replace it with the B05 to
+  B08 state, keeping the old text as a dated correction.
+- **Keep the 65,536-bit value ceiling and the declinable `broiler.javascript.bigint` surface.** A
+  composition that wants Numbers only can still decline it, and the ceiling bounds every operation's
+  cost.
+- **Section 5's open cost item is closed by section 6:** B03 charges the size-squared term for
+  multiplication and formats by divide and conquer with each step charged. Mark section 5's bullet
+  closed when signing, as its first bullet already is.

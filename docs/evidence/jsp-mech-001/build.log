@@ -1,0 +1,15 @@
+# collected at a7e69c79e4ac3d8c08cb9e7151cb862feecd6d33
+# base 30529e073a3a4190969e8d0b6409af05c75b31bd
+# comparison engine v22.22.0
+$ dotnet build Broiler.VM.slnx -c Release -warnaserror
+WebAssembly.Execution.dll
+  Broiler.VM.Composition.PolyglotCli -> <root>/src/compositions/Broiler.VM.Composition.PolyglotCli/bin/Release/net10.0/Broiler.VM.Composition.PolyglotCli.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+  Broiler.VM.Composition.Ubc.Fixture -> <root>/src/compositions/Broiler.VM.Composition.Ubc.Fixture/bin/Release/net10.0/Broiler.VM.Composition.Ubc.Fixture.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:19.61
+# exit 0

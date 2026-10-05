@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   36
-// Annotated:        36/36
-// Exempt:           6
-// Human-reviewed:   0/36
+// Relevant units:   39
+// Annotated:        39/39
+// Exempt:           10
+// Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       36
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -154,7 +154,7 @@ internal sealed partial class JsRealm
     /// around it. The parse itself is the ordinary reader, so a raw number or string is held to the
     /// same grammar <c>JSON.parse</c> is.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=19CDFC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B5ED57
     // Broiler-Human:        PENDING
     private JsValue JsonRawJsonEntry(JsEngine engine, JsValue[] arguments)
     {
@@ -180,7 +180,7 @@ internal sealed partial class JsRealm
         // only to refuse text that is not one JSON primitive. Nothing it can reach creates an object,
         // because no character allowed first is `{` or `[`.
         var at = 0;
-        _ = JsonParseValue(engine, text, ref at, 0);
+        _ = JsonParseValue(engine, text, ref at, 0, false, out _);
 
         if (at != text.Length)
         {
@@ -211,15 +211,23 @@ internal sealed partial class JsRealm
     // ---- reading -----------------------------------------------------------------------------
 
     /// <summary><c>JSON.parse</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1335C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8E77B1
     // Broiler-Human:        PENDING
     private JsValue JsonParseEntry(JsEngine engine, JsValue[] arguments)
     {
         var text = engine.ToStringValue(JsonArgument(arguments, 0));
         var at = 0;
 
+        // THE PARSE IS RECORDED ONLY WHEN THERE IS A REVIVER TO HAND IT TO, which is the JSON Parse
+        // Record the specification builds for one: the source text of every primitive value and the
+        // record of every element and member, so a reviver is told what was written as well as what
+        // it was read as (JSP-7, JSC-239). Reading the reviver first is unobservable: it is an
+        // argument, and only its callability is asked.
+        var reviver = JsonArgument(arguments, 1);
+        var recording = reviver.IsObject && reviver.AsObject().IsCallable;
+
         JsonSkipSpace(engine, text, ref at);
-        var parsed = JsonParseValue(engine, text, ref at, 0);
+        var parsed = JsonParseValue(engine, text, ref at, 0, recording, out var snapshot);
         JsonSkipSpace(engine, text, ref at);
 
         if (at != text.Length)
@@ -227,9 +235,7 @@ internal sealed partial class JsRealm
             throw JsonUnexpected(engine, text, at);
         }
 
-        var reviver = JsonArgument(arguments, 1);
-
-        if (!reviver.IsObject || !reviver.AsObject().IsCallable)
+        if (!recording)
         {
             return parsed;
         }
@@ -238,7 +244,7 @@ internal sealed partial class JsRealm
         // so the root value is revived by exactly the same rule as every value inside it.
         var root = new JsObject(ObjectPrototype);
         root.DefineOrdinary(string.Empty, parsed);
-        return JsonInternalize(engine, root, string.Empty, reviver, 0);
+        return JsonInternalize(engine, root, string.Empty, reviver, 0, snapshot);
     }
 
     /// <summary>Consumes the four characters JSON calls whitespace, and no others.</summary>
@@ -260,11 +266,80 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads one JSON value, whatever kind it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=32BA96
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5E713D
     // Broiler-Human:        PENDING
-    private JsValue JsonParseValue(JsEngine engine, string text, ref int at, int depth)
+    private JsValue JsonParseValue(
+        JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
+    {
+        var value = JsonParseUnrecorded(engine, text, ref at, depth, recording, out record);
+
+        // A PRIMITIVE'S RECORD IS ITS TEXT, exactly as written - the escapes of a string, the
+        // exponent of a number, the sign of `-0` - with nothing around it. A container records its
+        // members while it is read.
+        if (recording && record is null)
+        {
+            record = new JsonRecord(value) { Source = text[JsonValueStart(text, at, value)..at] };
+        }
+
+        return value;
+    }
+
+    /// <summary>Where the primitive that ended at <paramref name="end"/> began.</summary>
+    /// <remarks>
+    /// A primitive is one token, and the reader stopped on its last character; walking back over the
+    /// characters a token of its kind can hold finds its first. A string walks back to the quote
+    /// that opened it, past every escaped quote inside.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8BD31D
+    // Broiler-Human:        PENDING
+    private static int JsonValueStart(string text, int end, JsValue value)
+    {
+        if (value.IsString)
+        {
+            var start = end - 2;
+
+            while (start > 0)
+            {
+                if (text[start] == '"')
+                {
+                    var slashes = 0;
+
+                    while (start - 1 - slashes >= 0 && text[start - 1 - slashes] == '\\')
+                    {
+                        slashes++;
+                    }
+
+                    if (slashes % 2 == 0)
+                    {
+                        break;
+                    }
+                }
+
+                start--;
+            }
+
+            return start;
+        }
+
+        var first = end - 1;
+
+        while (first > 0 && text[first - 1] is (>= '0' and <= '9') or '.' or 'e' or 'E' or '+' or '-' or
+            (>= 'a' and <= 'z'))
+        {
+            first--;
+        }
+
+        return first;
+    }
+
+    /// <summary>Reads one JSON value, whatever kind it is.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FD4D00
+    // Broiler-Human:        PENDING
+    private JsValue JsonParseUnrecorded(
+        JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
     {
         engine.Charge(1);
+        record = null;
 
         if (depth > JsonMaximumDepth)
         {
@@ -279,10 +354,10 @@ internal sealed partial class JsRealm
         switch (text[at])
         {
             case '{':
-                return JsonParseObject(engine, text, ref at, depth);
+                return JsonParseObject(engine, text, ref at, depth, recording, out record);
 
             case '[':
-                return JsonParseArray(engine, text, ref at, depth);
+                return JsonParseArray(engine, text, ref at, depth, recording, out record);
 
             case '"':
                 return JsValue.String(JsonParseString(engine, text, ref at));
@@ -310,12 +385,14 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads an object literal into an ordinary object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=32B99F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B1BDD1
     // Broiler-Human:        PENDING
-    private JsValue JsonParseObject(JsEngine engine, string text, ref int at, int depth)
+    private JsValue JsonParseObject(
+        JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
     {
         at++;
         var target = new JsObject(ObjectPrototype);
+        record = recording ? new JsonRecord(JsValue.Object(target)) { Entries = [] } : null;
         JsonSkipSpace(engine, text, ref at);
 
         if (at < text.Length && text[at] == '}')
@@ -344,12 +421,18 @@ internal sealed partial class JsRealm
             at++;
             engine.Charge(1);
             JsonSkipSpace(engine, text, ref at);
-            var value = JsonParseValue(engine, text, ref at, depth + 1);
+            var value = JsonParseValue(engine, text, ref at, depth + 1, recording, out var member);
 
             // An unchecked define, which is what CreateDataProperty is here: a key of "__proto__"
             // becomes an own data property rather than reaching Object.prototype's setter, and a
-            // repeated key replaces the earlier one in the earlier one's position.
+            // repeated key replaces the earlier one in the earlier one's position. Its record is the
+            // last one too, which is the member the specification's record names.
             target.DefineOrdinary(key, value);
+
+            if (record?.Entries is { } entries)
+            {
+                entries[key] = member!;
+            }
             JsonSkipSpace(engine, text, ref at);
 
             if (at < text.Length && text[at] == ',')
@@ -370,12 +453,14 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads an array literal into an Array.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5B295D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0BAB7F
     // Broiler-Human:        PENDING
-    private JsValue JsonParseArray(JsEngine engine, string text, ref int at, int depth)
+    private JsValue JsonParseArray(
+        JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
     {
         at++;
         var target = NewArray();
+        record = recording ? new JsonRecord(JsValue.Object(target)) { Elements = [] } : null;
         JsonSkipSpace(engine, text, ref at);
 
         if (at < text.Length && text[at] == ']')
@@ -387,7 +472,8 @@ internal sealed partial class JsRealm
         while (true)
         {
             JsonSkipSpace(engine, text, ref at);
-            target.Push(JsonParseValue(engine, text, ref at, depth + 1));
+            target.Push(JsonParseValue(engine, text, ref at, depth + 1, recording, out var element));
+            record?.Elements!.Add(element!);
             JsonSkipSpace(engine, text, ref at);
 
             if (at < text.Length && text[at] == ',')
@@ -652,10 +738,10 @@ internal sealed partial class JsRealm
     /// rewritten children rather than the raw ones. A reviver that returns <c>undefined</c> deletes
     /// the property, which is the only way it can remove one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B2A289
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A6E0FA
     // Broiler-Human:        PENDING
     private static JsValue JsonInternalize(
-        JsEngine engine, JsObject holder, string key, JsValue reviver, int depth)
+        JsEngine engine, JsObject holder, string key, JsValue reviver, int depth, JsonRecord? record)
     {
         engine.Charge(1);
 
@@ -665,6 +751,23 @@ internal sealed partial class JsRealm
         }
 
         var value = engine.GetProperty(JsValue.Object(holder), key);
+
+        // THE THIRD ARGUMENT: a context object, holding the text a primitive was read from while the
+        // value is still the one the parse produced (JSP-7, JSC-239). A value a reviver already
+        // replaced has no source, and neither have its members.
+        var context = new JsObject(engine.Realm.ObjectPrototype);
+
+        if (record is not null && ObjectSameValue(record.Value, value))
+        {
+            if (!value.IsObject)
+            {
+                context.DefineOrdinary("source", JsValue.String(record.Source!));
+            }
+        }
+        else
+        {
+            record = null;
+        }
 
         if (value.IsObject)
         {
@@ -679,7 +782,12 @@ internal sealed partial class JsRealm
                 for (double at = 0; at < length; at++)
                 {
                     engine.Charge(1);
-                    JsonReviveInto(engine, target, ArrayKeyOf(at), reviver, depth);
+
+                    var element = record?.Elements is { } elements && at < elements.Count
+                        ? elements[(int)at]
+                        : null;
+
+                    JsonReviveInto(engine, target, ArrayKeyOf(at), reviver, depth, element);
                 }
             }
             else
@@ -688,12 +796,17 @@ internal sealed partial class JsRealm
                 // EnumerableOwnPropertyNames is: a reviver that adds keys does not extend the walk.
                 foreach (var name in JsonOwnEnumerableKeys(engine, target))
                 {
-                    JsonReviveInto(engine, target, name, reviver, depth);
+                    var member = record?.Entries is { } entries && entries.TryGetValue(name, out var found)
+                        ? found
+                        : null;
+
+                    JsonReviveInto(engine, target, name, reviver, depth, member);
                 }
             }
         }
 
-        return engine.Call(reviver, JsValue.Object(holder), [JsValue.String(key), value]);
+        return engine.Call(
+            reviver, JsValue.Object(holder), [JsValue.String(key), value, JsValue.Object(context)]);
     }
 
     /// <summary>Revives one member in place, deleting it when the reviver returns <c>undefined</c>.</summary>
@@ -710,12 +823,12 @@ internal sealed partial class JsRealm
     /// trap runs and its throw propagates, and a <c>false</c> answer is ignored, as
     /// <c>InternalizeJSONProperty</c> says (checked for JSeal VM-FIX-I).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=73DF6C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D0AE81
     // Broiler-Human:        PENDING
     private static void JsonReviveInto(
-        JsEngine engine, JsObject target, string name, JsValue reviver, int depth)
+        JsEngine engine, JsObject target, string name, JsValue reviver, int depth, JsonRecord? record)
     {
-        var revived = JsonInternalize(engine, target, name, reviver, depth + 1);
+        var revived = JsonInternalize(engine, target, name, reviver, depth + 1, record);
 
         if (revived.Type == JsType.Undefined)
         {
@@ -1212,5 +1325,34 @@ internal sealed partial class JsRealm
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// The specification's JSON Parse Record: a value as the parse produced it, the text a primitive
+    /// was read from, and the records of an Array's elements or an object's members.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=156748
+    // Broiler-Human:        PENDING
+    private sealed class JsonRecord(JsValue value)
+    {
+        /// <summary>The value the parse produced, which a reviver may since have replaced.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E50CDA
+        // Broiler-Human:        PENDING
+        internal JsValue Value { get; } = value;
+
+        /// <summary>The text a primitive was read from, exactly as written.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=48F450
+        // Broiler-Human:        PENDING
+        internal string? Source { get; init; }
+
+        /// <summary>An Array's elements' records, in order.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=912B4D
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<JsonRecord>? Elements { get; init; }
+
+        /// <summary>An object's members' records, by key, the last of a repeated key kept.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=64F211
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.Dictionary<string, JsonRecord>? Entries { get; init; }
     }
 }

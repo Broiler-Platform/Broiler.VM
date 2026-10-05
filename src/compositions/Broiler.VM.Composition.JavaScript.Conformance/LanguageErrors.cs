@@ -133,6 +133,12 @@ internal static class LanguageErrors
         SliceSourceDiagnosticCode.ExportNameNotDeclared => RefusalClass.EarlyError,
         SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal => RefusalClass.EarlyError,
 
+        // A JSON MODULE THAT IS NOT JSON IS A `SyntaxError` OF THE LOAD, before any module of the
+        // graph is evaluated, and for a static import the load is this front end - so the refusal
+        // is the language's answer at the language's moment, which is a `resolution`-phase
+        // negative's expectation.
+        SliceSourceDiagnosticCode.InvalidJsonModule => RefusalClass.EarlyError,
+
         // ---- The manifest, which is not the language. -----------------------------------------
         SliceSourceDiagnosticCode.ConstructOutsideManifest => RefusalClass.OutsideManifest,
 
@@ -226,6 +232,7 @@ internal static class LanguageErrors
             SliceSourceDiagnosticCode.ExportNameNotDeclared,
             SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
             SliceSourceDiagnosticCode.UnsupportedImportAttribute,
+            SliceSourceDiagnosticCode.InvalidJsonModule,
         };
 
     /// <summary>
