@@ -105,6 +105,9 @@ internal sealed class Test262Agents : System.IDisposable
 
         realm.DefineValue(
             harness, "agent", agent, JsHostPropertyFlags.Writable | JsHostPropertyFlags.Configurable);
+
+        // THE HOST'S TIMER (JSC-288): the suite's helper defers to it, and waits on it without spinning.
+        Test262Timers.Install(realm, stopping.Token);
     }
 
     /// <summary>Installs a worker's <c>$262.agent</c>, whose callback and reports belong to <paramref name="worker"/>.</summary>

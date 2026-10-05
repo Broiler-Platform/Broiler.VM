@@ -52,7 +52,173 @@ internal static class Test262Checks
         ANativeRunNamingTheSliceManifestIsRefused(),
         AReportOfTheNativeFormRoundTripsItsFormRow(),
         AWholeRunFloorIsNeverComparedAcrossAnOutputForm(),
+        TheHostTimerWaitsWithoutSpendingLiveBytesAsTheClockPasses(),
     ];
+
+    /// <summary>The live-byte ceiling the timer check runs under: far above a timer's cost, far below a spin's.</summary>
+    private const ulong TimerLiveBytes = 1_048_576;
+
+    /// <summary>How long the timer check waits, in milliseconds.</summary>
+    private const int TimerDelay = 500;
+
+    /// <summary>
+    /// The host's <c>setTimeout</c> waits half a second under a one-megabyte live-byte ceiling and
+    /// fires; a promise chain that re-queues itself until the clock passes - the shape of the suite's
+    /// stand-in - is refused on <c>LiveBytes</c> under the same ceiling (JSC-288).
+    /// </summary>
+    /// <remarks>
+    /// <b>Both halves, because each alone proves nothing.</b> The host timer passing shows its wait
+    /// costs less than the ceiling; the spin being refused shows the ceiling is low enough to tell a
+    /// wait that allocates per slice from one that allocates per turn of the clock. Together they are
+    /// the reason <c>Atomics/waitAsync/no-spurious-wakeup-on-add.js</c> stopped deciding on
+    /// <c>LiveBytes</c> by how long a second agent took.
+    /// </remarks>
+    private static (string, bool, string) TheHostTimerWaitsWithoutSpendingLiveBytesAsTheClockPasses()
+    {
+        const string Name = "test262/the-host-timer-waits-without-spending-live-bytes-as-the-clock-passes";
+
+        var timer = Wait($"setTimeout(function () {{ $timerFired(); }}, {TimerDelay});", installTimer: true);
+        var spin = Wait(
+            "(function (callback, delay) {" +
+            "  var p = Promise.resolve(); var end = Date.now() + delay;" +
+            "  function check() { if (end - Date.now() > 0) { p.then(check); } else { callback(); } }" +
+            "  p.then(check);" +
+            $"}})(function () {{ $timerFired(); }}, {TimerDelay});",
+            installTimer: false);
+
+        return (
+            Name,
+            timer == "fired" && spin == "exhausted LiveBytes",
+            $"the host timer answered `{timer}` and the spinning stand-in `{spin}` under a {TimerLiveBytes}-byte live-byte ceiling");
+    }
+
+    /// <summary>Runs <paramref name="source"/> and the drain after it, answering whether the timer fired or which dimension was spent.</summary>
+    private static string Wait(string source, bool installTimer)
+    {
+        var fired = new System.Runtime.CompilerServices.StrongBox<bool>();
+        var compiled = JsCompiler.Compile(
+            [new JsScriptUnit("main", source, SliceParseOptions.Script, false, "broiler-js-conformance://timer-check")],
+            [],
+            new JsCompileRequest());
+
+        if (!compiled.Succeeded || compiled.Artifact is null)
+        {
+            return "the source was refused";
+        }
+
+        var ceilings = System.Collections.Immutable.ImmutableArray.CreateBuilder<VmCeilingSpec>();
+
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            ceilings.Add(dimension switch
+            {
+                VmBudgetDimension.LiveRuntimes => VmCeilingSpec.AdoptParentRemaining(dimension),
+                VmBudgetDimension.LiveBytes => VmCeilingSpec.Value(dimension, TimerLiveBytes),
+                VmBudgetDimension.Fuel => VmCeilingSpec.Value(dimension, 2_000_000_000),
+                VmBudgetDimension.WallClock => VmCeilingSpec.Value(dimension, 10_000),
+                _ => VmCeilingSpec.AdoptProfileDefault(dimension),
+            });
+        }
+
+        var created = VmRuntime.Create(
+            VmCatalog.CreateBuilder().Add(JavaScriptProfile.DescriptorHostingRealms(new TimerSurface(installTimer, fired))).Build(),
+            new VmRuntimeCreationOptions(
+                aggregateBudget: null,
+                ceilings: ceilings.ToImmutable(),
+                maxSuspendedResidency: TimeSpan.FromMinutes(1),
+                maxLiveSuspendedOperations: 1,
+                guestLoadBounds: VmGuestLoadBoundsSpec.AdoptProfileMaxima,
+                externalSuspension: VmExternalSuspensionMode.Disabled,
+                capabilities:
+                [
+                    // THE SURFACE IS INSTALLED ONLY WHERE ITS CAPABILITY IS REGISTERED, as a run's is.
+                    VmCapabilityRegistration.Value(
+                        JavaScriptProfile.HostSurfaceCapability,
+                        (VmBytes argument, out VmOpaqueRef result) =>
+                        {
+                            result = default;
+                            return VmHostCallOutcome.Completed;
+                        }),
+                ]));
+
+        if (!created.TryGetRuntime(out var runtime))
+        {
+            return $"the runtime refused creation: {created.Outcome}/{created.Reason}";
+        }
+
+        using (runtime)
+        {
+            var descriptor = new VmArtifactDescriptor(
+                JavaScriptProfile.Id,
+                Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
+                JavaScriptProfile.WideManifest,
+                default,
+                VmCallerIdentity.FromCanonicalIdentity("broiler-js-conformance://timer-check"));
+            var verified = runtime.Verify(in descriptor, compiled.Artifact, CancellationToken.None);
+
+            if (!verified.TryGetArtifact(out var artifact))
+            {
+                return $"verification refused: {verified.Outcome}/{verified.Reason}";
+            }
+
+            using (artifact)
+            {
+                var instantiated = runtime.Instantiate(artifact, CancellationToken.None);
+
+                if (!instantiated.TryGetInstance(out var instance))
+                {
+                    return $"instantiation refused: {instantiated.Outcome}/{instantiated.Reason}";
+                }
+
+                using (instance)
+                {
+                    foreach (var entry in new[] { "main", JavaScriptProfile.DrainEntryPoint })
+                    {
+                        var request = new VmInvocationRequest(new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(entry)));
+                        var result = instance.Invoke(in request, CancellationToken.None);
+
+                        if (result.Outcome == VmOutcome.ResourceExhaustion)
+                        {
+                            return "exhausted " + result.Diagnostics.ExhaustedDimension;
+                        }
+
+                        if (JavaScriptProfile.TryGetUncaught(in result, out var uncaught))
+                        {
+                            return $"{entry} threw {uncaught.Message}";
+                        }
+                    }
+
+                    return fired.Value ? "fired" : "did not fire";
+                }
+            }
+        }
+    }
+
+    /// <summary>A host surface that defines <c>$timerFired</c>, and <c>setTimeout</c> when asked to.</summary>
+    private sealed class TimerSurface(bool installTimer, System.Runtime.CompilerServices.StrongBox<bool> fired) : IJsHostSurface
+    {
+        public void OnRealmCreated(JsHostRealm realm)
+        {
+            realm.DefineValue(
+                realm.Global,
+                "$timerFired",
+                realm.NewMethod("$timerFired", (_, _, _) =>
+                {
+                    fired.Value = true;
+                    return JsHostValue.Undefined;
+                }),
+                JsHostPropertyFlags.Writable | JsHostPropertyFlags.Configurable);
+
+            if (installTimer)
+            {
+                Test262Timers.Install(realm, CancellationToken.None);
+            }
+        }
+
+        public void OnTurn(JsHostRealm realm)
+        {
+        }
+    }
 
     private static (string, bool, string) ANativeRunNamingNoManifestIsTakenUnderTheWideManifestWithTheHarness()
     {
