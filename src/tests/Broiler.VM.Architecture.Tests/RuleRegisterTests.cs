@@ -411,10 +411,16 @@ public sealed class RuleRegisterTests
         // Phase F9's first slice adds N33, rule L1's shape over the JavaScript profile's own
         // baseline register: the register and the measurement logs of the bundle it names agree in
         // both directions, on both arms (decision JSD-0059). Active when minted; no other count moves.
-        Assert.Equal(112, byStatus["Active"]);
+        // Phase F9's second slice adds N34, N35 and N36 over the drafted support table (decision
+        // JSD-0060): N34 holds every cell release gate 1 names to where the checkout declares it, the
+        // amendment section to roadmap section 18 in both directions and every evidenced row to a rule
+        // or a retained file; N35 is JS-10's scan of the extraction-gate state for a verdict or another
+        // profile's identifier; N36 holds the suppression inventory to a scan of the family's sources.
+        // All three Active when minted; no other count moves.
+        Assert.Equal(115, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(114, Loaded.Rules.Count);
+        Assert.Equal(117, Loaded.Rules.Count);
     }
 
     private static Register Load()

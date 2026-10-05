@@ -932,8 +932,8 @@ column is what a program meets, and it is as true as it was when the surface was
 | Surface | What a program meets today | Phase |
 |---|---|---|
 | Agents | `$262.agent`'s members throw, so a program cannot start a second agent and a shared buffer has one agent to share with. *(Amended 2026-10-04: `SharedArrayBuffer` and `Atomics` left this row; they are built behind `broiler.javascript.shared` under proposed [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) ([JSC-266](roadmap.corrections.md#jsc-266)). Amended again the same day: a host may start agents and hand them a block, and the conformance runner does, under proposed [JSD-0042](decisions/0042-a-second-agent.md) ([JSC-267](roadmap.corrections.md#jsc-267)); the profile's own `$262.agent` still refuses, because the profile starts none.)* | F6 |
-| `Intl` | The same block names it, and `typeof Intl` answers `"undefined"`; the locale-named methods answer as [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) records. | F7 |
-| `Temporal` | The same block names it, and `typeof Temporal` answers `"undefined"`. | F8 |
+| `Intl` | The same block names it, and `typeof Intl` answers `"undefined"`; the locale-named methods answer as [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) records. *(Amended 2026-10-05: phase F7 landed - `Intl` is installed behind `broiler.javascript.intl` in `de` and `en`, and the row stays only as the record of what it said; [JSC-286](roadmap.corrections.md#jsc-286).)* | F7 |
+| `Temporal` | The same block names it, and `typeof Temporal` answers `"undefined"`. *(Amended 2026-10-05: phase F8 landed - `Temporal` is installed behind `broiler.javascript.temporal` and its exit gate is met; [JSC-286](roadmap.corrections.md#jsc-286).)* | F8 |
 
 *(Amended 2026-10-04: the realms row left this table. `$262.createRealm` builds a second realm under
 proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md) ([JSC-264](roadmap.corrections.md#jsc-264)),

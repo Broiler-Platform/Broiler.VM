@@ -335,6 +335,9 @@ JSeal slices added about half of it from 2026-09-21 on, under proposed, unsigned
 - **Of the Unicode paragraph:** `normalize` and the `u`-mode property escapes now run on Unicode
   17.0.0 tables generated from archived files (F07-F09). Case conversion is still the one-to-one
   mapping, so `"\u00df".toUpperCase()` answers `ß` where the language answers `SS`.
+  *(Amended 2026-10-05: the full mappings landed with `SpecialCasing.txt` under
+  [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md), and `"\u00df".toUpperCase()` answers
+  `SS`; [JSC-286](roadmap.corrections.md#jsc-286).)*
 
 Rule N24 reads this section, and the survey above is inside a span marked as written, because it
 states in the present tense names the realm now publishes.

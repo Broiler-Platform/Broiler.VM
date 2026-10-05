@@ -1418,6 +1418,11 @@ bundle [JS-10-001](evidence/js-10-001/README.md), whose verification and cold-st
 profile's [baseline register](baselines.md) quotes and rule N33 holds to the bundle. JS-10 is `In
 progress` ([JSC-285](roadmap.corrections.md#jsc-285)).*
 
+*Progress, 2026-10-05, slice R2: the support table is drafted in full and not issued under proposed
+[JSD-0060](decisions/0060-the-support-table-drafted.md) - [`docs/support.md`](support.md), every cell
+release gate 1 names with an evidence cell - and rules N34, N35 and N36 hold it to the checkout
+([JSC-286](roadmap.corrections.md#jsc-286)).*
+
 ### 26.5 What runs beside the phases
 
 **The acceptance track.** None of the work above advances a ledger row on its own. Beside every

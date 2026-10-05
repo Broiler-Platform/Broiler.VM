@@ -1,0 +1,8 @@
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static class JsWitness
+{
+#pragma warning disable CA1822 // a suppression the support table does not inventory
+    public static int Answer() => 42;
+#pragma warning restore CA1822
+}

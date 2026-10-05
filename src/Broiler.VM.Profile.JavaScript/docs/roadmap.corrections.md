@@ -12624,3 +12624,43 @@ bundle `evidence/js-10-001/`, and rule N33 with its witnesses; JS-10's ledger ro
 - One machine, one RID; no reviewer; nothing accepted.
 
 **Authority and date.** The implementation and the collection of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-286
+
+**Where:** phase F9, slice R2. The profile's support table `docs/support.md`, drafted and not issued;
+rules N34, N35 and N36 with their witnesses; roadmap section 9's table; the ledger's RID count and its
+statement that no measurement exists; JS-10's ledger row.
+
+**What the plan said.**
+- [Section 19](roadmap.delivery.md#js-10--baselines-packaging-the-support-table-and-the-release-gate)'s
+  JS-10 and release [gate 1](roadmap.gates.md#22-release-gates): a support table naming the
+  implemented and minimum core contract versions, the format range, the manifest set, the conformance
+  manifest, the pinned edition and suite, the amendment register's state, the extraction gate's state
+  checked for no verdict and no other profile's identifier, the declared-default vector, the varying
+  surfaces, every unimplemented capability's failure or exclusion with the `WebAssembly` host-object
+  surface named, and the RIDs, packages, operational holders and suppressions.
+- Roadmap section 9's table: `typeof Intl` and `typeof Temporal` answer `"undefined"`.
+- The ledger: two runtime identifiers recorded as published and run; no measurement exists.
+
+**What replaced it, observed on 2026-10-05.**
+- **The table is drafted in full and not issued**, under proposed
+  [JSD-0060](decisions/0060-the-support-table-drafted.md): twelve sections, every row an evidence cell,
+  the vocabulary never a bare yes. It says on its first line that it is not issued.
+- **Rule N34** holds every cell a mechanism can read to the source that declares it, the manifest set
+  and the amendment section to the checkout and roadmap section 18 in both directions, each default to
+  `Defaults()`, and every evidenced row to a rule or a file that exists. **Rule N35** is JS-10's scan of
+  the extraction-gate state. **Rule N36** holds the suppression inventory - none - to a scan of the
+  family's sources and projects. Six witnesses; the architecture suite has 356 tests.
+- **Roadmap section 9's `Intl` and `Temporal` rows are amended**: phases F7 and F8 installed both.
+- **The ledger's RID count is corrected to three**: bundle JS-7-001 published and ran every root on
+  `linux-x64`, and the sentence did not count it.
+- **The ledger's "no measurement exists" is amended**: bundle JS-10-001 is one.
+- **The parity roadmap's note that case conversion is one-to-one is amended**: `"\u00df".toUpperCase()`
+  answers `SS` since the full mappings landed under JSD-0031.
+
+**What must not be read as repaired.**
+- **Nothing is issued, claimed, advertised or appointed.** Six operational roles are recorded vacant.
+- **The rules hold cells to sources, not prose to truth**: a row's description is as true as its
+  evidence, and nobody has reviewed either.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.

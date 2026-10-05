@@ -1049,6 +1049,36 @@
       "witness": "witnesses/js-baselines/N33-register-declares-an-unmeasured-row.md.witness, witnesses/js-baselines/N33-register-omits-a-measured-row.md.witness, witnesses/js-baselines/N33-register-exchanges-the-two-arms.md.witness, witnesses/js-baselines/N33-log-carries-a-refused-measurement.log.witness"
     },
     {
+      "id": "N34",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript profile's drafted support table, src/Broiler.VM.Profile.JavaScript/docs/support.md, says it is drafted and not issued and states what the checkout declares: the core contract version the descriptor authors, the minimum core contract version the core accepts, the accepted format-version range, the conformance manifest and its version, the pinned specification revision and digest, and the pinned suite revision and archive digest, each read from the source that declares it; the accepted manifest set equals, in both directions, every manifest identifier the format, the numeric manifest and JsSurfaces declare, and section 3 has a row for each; the WebAssembly host-object surface is named as not provided and the realm's globals do not name it; section 5 publishes a state for exactly the amendment rows roadmap section 18 carries, in both directions, and says the amendment procedure is unexecutable; each declared default equals what Defaults() sets; no runtime identifier is claimed; and every row of a table with an Evidence column names a registered or asserted rule or links a file that exists, and no cell is a bare yes. Phase F9's slice R2, decision JSD-0060, drafts the table release gate 1 asks for without issuing it.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/support.md against JavaScriptProfile.cs, VmCoreContract.cs, JavaScriptFormat.cs, JsFormat.cs, JsNumericManifest.cs, JsSurfaces.cs, specification/README.md, test262.pin, realm/globals.txt and roadmap.md section 18",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Every identity cell is read from source by a pattern that must match, so a declaration that moves fails the rule rather than passing it. Twelve manifest identifiers are declared and stated, eleven amendment rows are carried by the roadmap and published by the table, and fifteen defaults are set and quoted, so each both-directions comparison is over real entries. THE LIMIT: the rule holds the cells a mechanism can read and holds every other row to having evidence; it does not decide that a row's prose is true.",
+      "witness": "witnesses/js-support/N34-table-claims-core-contract-2.md.witness, witnesses/js-support/N34-table-omits-an-amendment-row.md.witness, witnesses/js-support/N34-table-misquotes-a-default.md.witness, witnesses/js-support/N34-table-has-a-bare-yes-and-no-evidence.md.witness"
+    },
+    {
+      "id": "N35",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "Section 6 of the JavaScript profile's drafted support table, src/Broiler.VM.Profile.JavaScript/docs/support.md, records the extraction gate's first condition and what would satisfy it, carries no verdict word - verdict, approved, rejected, extracted, extract it - and names no identifier of another profile component: no broiler. manifest but the JavaScript profile's, no Broiler.VM.Profile. namespace but JavaScript's, no com.example. identifier, and no WebAssembly or Wasm name. JS-10's exit gate asks for this scan over the extraction-gate state.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/support.md section 6",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The section exists and is read whole; a section that dropped either required phrase fails, and the witness carries both a verdict word and another profile's manifest identifier, each of which fails on its own.",
+      "witness": "witnesses/js-support/N35-section-carries-a-verdict.md.witness"
+    },
+    {
+      "id": "N36",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "Every warning suppression in a shipped source or project of the JavaScript family - every project under src named Broiler.VM.Profile.JavaScript*, Broiler.VM.Profile.MachineCode, and every JavaScript composition root - is inventoried by file in section 11 of the drafted support table, src/Broiler.VM.Profile.JavaScript/docs/support.md: a #pragma warning disable, a SuppressMessage or UnconditionalSuppressMessage attribute, a NoWarn or a WarningsNotAsErrors element; and when the scan finds none, the section says None.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/support.md section 11 against a scan of every .cs and .csproj file of the JavaScript family outside bin and obj",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The scan reads every source and project file of the family; it finds none today, so the rule holds the section to saying None, and the witness, a source carrying a pragma, is found by the same scan and fails against the same section.",
+      "witness": "witnesses/js-support/N36-source-suppresses-a-warning.cs.witness"
+    },
+    {
       "id": "W1",
       "owningAdr": "0011",
       "status": "Active",
