@@ -394,8 +394,11 @@ supplemental files `likelySubtags.json`, `aliases.json` and `parentLocales.json`
 `availableLocales.json` and `defaultContent.json`, every `bcp47/*.json` file and both
 `package.json` files; and from the CLDR release's `common/` tree, `uca/allkeys_CLDR.txt`, the two
 short CollationTest files (test input only) and `collation/root.xml`, `de.xml` and `en.xml`, and (added 2026-10-05, phase F8's slice T2, JSD-0055)
-`main/root.xml`, whose ISO 8601 calendar patterns the date tables carry; and the
-licence text. They are archived unmodified at [`src/tests/cldr/pins/`](src/tests/cldr/pins/README.md),
+`main/root.xml`, whose ISO 8601 calendar patterns the date tables carry; and (added 2026-10-05,
+phase F8's slice T4, JSD-0057) from the npm packages `cldr-cal-buddhist-full`, `-chinese-`,
+`-coptic-`, `-dangi-`, `-ethiopic-`, `-hebrew-`, `-indian-`, `-islamic-`, `-japanese-`, `-persian-`
+and `-roc-full`, each one's `package.json` and its `ca-*.json` files for `de` and `en`, and from
+`cldr-dates-full` `ca-generic.json` for `de` and `en`; and the licence text. They are archived unmodified at [`src/tests/cldr/pins/`](src/tests/cldr/pins/README.md),
 where `cldr.pin` records each file's length and SHA-256 and rule **N27** hashes them on every run of
 the architecture suite. The pin and its README record how and when they were retrieved. Since the
 same day, for `Intl.NumberFormat` (decision
@@ -417,7 +420,11 @@ holds from `cldr-misc-full` `listPatterns.json` for `de` and `en`. Since 2026-10
 `Intl.DisplayNames` (decision
 [JSD-0052](src/Broiler.VM.Profile.JavaScript/docs/decisions/0052-intl-displaynames.md)), it also
 holds from `cldr-localenames-full` `languages.json`, `territories.json`, `scripts.json`,
-`variants.json` and `localeDisplayNames.json` for `de` and `en`.
+`variants.json` and `localeDisplayNames.json` for `de` and `en`. Since the same day, for
+`Intl.DateTimeFormat` in the CLDR calendars (decision
+[JSD-0057](src/Broiler.VM.Profile.JavaScript/docs/decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md)),
+it also holds the eleven `cldr-cal-*-full` packages' calendar files and `ca-generic.json` for `de`
+and `en`.
 
 **What is derived, and where it ships.** `CldrTableGenerator` (architecture test project, not
 shipped) writes one source file of tables from those files and the pinned UCD:
@@ -432,7 +439,8 @@ zone names, the hour cycles of the supported regions and the day period rules, a
 the hour cycles and weeks of every region, the scripts' line directions, and each language's ordinal
 plural rules, list patterns, relative time patterns and duration patterns, and each language's names
 of languages, regions, scripts, variants, calendars and date fields, and from the UCD the break
-properties `Intl.Segmenter` reads. The derived tables
+properties `Intl.Segmenter` reads, and since slice T4 each language's names and patterns in the
+calendars of the Intl era and month code proposal, as layers over its Gregorian data. The derived tables
 therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);
@@ -605,5 +613,6 @@ against in one file.
 
 The same holds for the answers of the slices that followed, each from a program of this repository's
 run under the same polyfill: `src/tests/temporal/intl/temporal-intl.polyfill-e8cc03fc.txt` (slice T2,
-JSD-0055) and `src/tests/temporal/calendars/temporal-calendars.polyfill-e8cc03fc.txt` (slice T3,
-JSD-0056).
+JSD-0055), `src/tests/temporal/calendars/temporal-calendars.polyfill-e8cc03fc.txt` (slice T3,
+JSD-0056) and `src/tests/temporal/calendars-intl/calendar-formats.polyfill-e8cc03fc.txt` (slice T4,
+JSD-0057).

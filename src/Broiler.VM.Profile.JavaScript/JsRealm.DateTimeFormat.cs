@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   34
-// Annotated:        34/34
+// Relevant units:   36
+// Annotated:        36/36
 // Exempt:           15
-// Human-reviewed:   0/34
+// Human-reviewed:   0/36
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       34
+// Unverified:       36
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -206,8 +206,32 @@ internal sealed partial class JsRealm
             JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
+    /// <summary>
+    /// The calendars the formatter writes, sorted (the Intl era and month code proposal's
+    /// AvailableCalendars, JSD-0057): every calendar type of its Table 1 but the aliases.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3EEE3A
+    // Broiler-Human:        PENDING
+    internal static readonly string[] FormatterCalendars =
+    [
+        "buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "gregory", "hebrew", "indian",
+        "islamic-civil", "islamic-tbla", "islamic-umalqura", "iso8601", "japanese", "persian", "roc",
+    ];
+
+    /// <summary>
+    /// The locale data's <c>ca</c> values: the Gregorian calendar first, as every supported locale's
+    /// default, then the others, and the deprecated Hijri types the constructor falls back from.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7BD64C
+    // Broiler-Human:        PENDING
+    private static readonly string?[] CalendarKeyValues =
+    [
+        "gregory", "buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "hebrew", "indian", "islamic",
+        "islamic-civil", "islamic-rgsa", "islamic-tbla", "islamic-umalqura", "iso8601", "japanese", "persian", "roc",
+    ];
+
     /// <summary>ECMA-402's <c>Intl.supportedValuesOf</c>: the values this data supports for a key, sorted.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=66AD55
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=A55F08
     // Broiler-Human:        PENDING
     private static JsValue SupportedValuesOf(JsEngine engine, JsValue key)
     {
@@ -218,8 +242,7 @@ internal sealed partial class JsRealm
         switch (name)
         {
             case "calendar":
-                values.Add("gregory");
-                values.Add("iso8601");
+                values.AddRange(FormatterCalendars);
                 break;
             case "collation":
                 values.Add("phonebk");
@@ -534,7 +557,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CreateDateTimeFormat (s11.1.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D90C5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C06998
     // Broiler-Human:        PENDING
     internal static JsDateTimeFormatObject CreateDateTimeFormat(
         JsEngine engine,
@@ -595,7 +618,7 @@ internal sealed partial class JsRealm
             ["ca", "hc", "nu"],
             (locale, key) => key switch
             {
-                "ca" => ["gregory", "iso8601"],
+                "ca" => CalendarKeyValues,
                 "hc" => [null, "h11", "h12", "h23", "h24"],
                 "nu" => nuValues,
                 _ => [null],
@@ -665,8 +688,17 @@ internal sealed partial class JsRealm
         var decimalSymbol = numbers.Value(language, "symbols.decimal") ?? ".";
         var resolvedCalendar = resolved.Keys["ca"] ?? "gregory";
 
-        // THE ISO 8601 CALENDAR'S DATA is the language's names under its own patterns (JSD-0055).
-        var dataLanguage = resolvedCalendar == "iso8601" ? language + JsDateData.Iso8601 : language;
+        // THE DEPRECATED HIJRI CALENDARS FALL BACK to the astronomical tabular one (the Intl era and
+        // month code proposal's amendment of CreateDateTimeFormat).
+        if (resolvedCalendar is "islamic" or "islamic-rgsa")
+        {
+            resolvedCalendar = "islamic-tbla";
+        }
+
+        // A CALENDAR'S DATA is the language's under its own layer: the ISO 8601 calendar's patterns
+        // (JSD-0055), or CLDR's names and patterns of another calendar (JSD-0057).
+        var dataLanguage = resolvedCalendar == "gregory" ? language : language + "@" + resolvedCalendar;
+        var calendarSystem = resolvedCalendar is "gregory" or "iso8601" ? null : tables.Calendars.For(resolvedCalendar);
         var generator = dates.Generator(dataLanguage, resolved.Keys["hc"] is { } keyword ? CharOfHourCycle(keyword) : preferred, decimalSymbol);
         var explicitComponents = new System.Collections.Generic.Dictionary<string, string>(components, System.StringComparer.Ordinal);
         string pattern;
@@ -737,7 +769,8 @@ internal sealed partial class JsRealm
             kind,
             pattern,
             () => new JsDateIntervalFormat(dates, dataLanguage, dates.Generator(dataLanguage, intervalChar, decimalSymbol), JsDatePatternGenerator.SkeletonOf(pattern)),
-            zone);
+            zone,
+            calendarSystem);
 
         // THE FORMATS OF TEMPORAL'S OBJECTS (the proposal's amendment of CreateDateTimeFormat), built
         // when one is first formatted and only where the realm has Temporal.
@@ -760,7 +793,8 @@ internal sealed partial class JsRealm
                     plain ? JsZoneKind.Utc : kind,
                     formatPattern,
                     () => new JsDateIntervalFormat(dates, dataLanguage, dates.Generator(dataLanguage, cycle, decimalSymbol), JsDatePatternGenerator.SkeletonOf(formatPattern)),
-                    plain ? null : zone);
+                    plain ? null : zone,
+                    calendarSystem);
             }
 
             string Best(System.Collections.Generic.Dictionary<string, string> formatOptions) =>

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           14
-// Human-reviewed:   0/25
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -333,7 +333,31 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>Decodes the date tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F3181
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DD2261
+    // Broiler-Human:        PENDING
+    /// <summary>A layer of date data over the data below it: its values set, and its <c>-</c> keys removed.</summary>
+    private static System.Collections.Generic.Dictionary<string, string> Layered(
+        System.Collections.Generic.Dictionary<string, string> below,
+        System.Collections.Generic.Dictionary<string, string> layer)
+    {
+        var result = new System.Collections.Generic.Dictionary<string, string>(below, System.StringComparer.Ordinal);
+
+        foreach (var (key, value) in layer)
+        {
+            if (key.StartsWith('-'))
+            {
+                result.Remove(key[1..]);
+            }
+            else
+            {
+                result[key] = value;
+            }
+        }
+
+        return result;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E8D3E
     // Broiler-Human:        PENDING
     private JsDateData ReadDates()
     {
@@ -359,7 +383,7 @@ internal sealed class JsIntlTables
         {
             foreach (var language in new System.Collections.Generic.List<string>(data.Locales.Keys))
             {
-                if (language[0] == '@')
+                if (language.Contains('@', System.StringComparison.Ordinal))
                 {
                     continue;
                 }
@@ -383,6 +407,27 @@ internal sealed class JsIntlTables
                 }
 
                 data.Locales[language + JsDateData.Iso8601] = calendar;
+            }
+        }
+
+        // EACH LANGUAGE'S OTHER CALENDARS (JSD-0057) are layers: CLDR's generic patterns over the
+        // language's Gregorian data, and each calendar over the generic layer or its parent's. A layer's
+        // key beginning with `-` removes the key below it.
+        foreach (var language in new System.Collections.Generic.List<string>(data.Locales.Keys))
+        {
+            if (language.Contains('@', System.StringComparison.Ordinal) || !data.Locales.TryGetValue(language + "@generic", out var genericDiff))
+            {
+                continue;
+            }
+
+            var generic = Layered(data.Locales[language], genericDiff);
+            data.Locales.Remove(language + "@generic");
+
+            // A LAYER THE TABLE HOLDS NO LINE OF is its parent's data unchanged.
+            foreach (var (calendar, parent) in JsDateData.CalendarLayers)
+            {
+                var diff = data.Locales.TryGetValue(language + "@" + calendar, out var lines) ? lines : [];
+                data.Locales[language + "@" + calendar] = Layered(parent is null ? generic : data.Locales[language + "@" + parent], diff);
             }
         }
 

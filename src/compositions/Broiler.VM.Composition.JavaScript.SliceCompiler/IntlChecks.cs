@@ -56,6 +56,7 @@ internal static class IntlChecks
         IntlOverTemporalMatchesTheReferencePolyfill(),
         CalendarsMatchTheReferencePolyfill(),
         CalendarConversionsMatchIcu4x(),
+        CalendarFormatsMatchTheReferencePolyfill(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -311,6 +312,20 @@ internal static class IntlChecks
             "temporal-calendars.polyfill-e8cc03fc.txt",
             "the reference polyfill",
             3500);
+
+    /// <summary>
+    /// The retained answers of Intl.DateTimeFormat in the CLDR calendars (phase F8 T4, JSD-0057): the
+    /// program under <c>src/tests/temporal/calendars-intl</c>, run here, answers every line the
+    /// reference polyfill answered through ICU 77.1, but for the lines <c>divergences.txt</c> names.
+    /// </summary>
+    private static (string, bool, string) CalendarFormatsMatchTheReferencePolyfill() =>
+        RetainedMatches(
+            "temporal/t4/calendar-formats-match-the-reference-polyfill",
+            "src/tests/temporal/calendars-intl",
+            "calendar-formats",
+            "calendar-formats.polyfill-e8cc03fc.txt",
+            "the reference polyfill",
+            5500);
 
     /// <summary>
     /// The same program's conversion lines against ICU4X 2.3.0's (JSD-0056): every line ICU4X wrote is

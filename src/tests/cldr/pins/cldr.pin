@@ -64,6 +64,17 @@
 # calendar. It was retrieved twice on 2026-10-05 and found byte-identical by `cmp`; it carries no
 # version and is held by its hash alone. No permission specific to this retrieval was given either.
 
+# EXTENDED 2026-10-05 FOR PHASE F8, SLICE T4. Intl.DateTimeFormat in the calendars the Intl era and
+# month code proposal requires reads their names and patterns from eleven more npm packages, the
+# cldr-cal-*-full packages at 48.2.0 for the Buddhist, Chinese, Coptic, Dangi, Ethiopic, Hebrew, Indian,
+# Islamic, Japanese, Persian and ROC calendars: each tarball retrieved twice on 2026-10-05, found
+# byte-identical by `cmp`, and checked against the registry's sha512 integrity; from each its
+# package.json and its ca-*.json files for de and en, but ca-islamic-rgsa.json, a calendar Temporal
+# refuses. From the cldr-dates-full tarball verified for slice I3, retrieved twice more and found
+# byte-identical to it, ca-generic.json for de and en, whose patterns the calendars without their own
+# inherit. The repository owner asked that day for slice T4 to be continued; no permission specific
+# to this retrieval was given either.
+
 data unicode-common-locale-data-repository
 version 48.2.0
 cldr-major 48
@@ -76,6 +87,17 @@ json-integrity cldr-units-full sha512-BjDC7V46eeXzgalnIumrJ1XQDk8wJaOxNLME4hmkBT
 json-integrity cldr-dates-full sha512-zMrKvjMO414HDftLr6vKH1fNQHakFNe+F1h4S0eg+zmL4WRi9pI41fxB3UrTJDY42MEM87jCuAw/qlqCgYKcAQ==
 json-integrity cldr-misc-full sha512-dSc2Tr53dQcUGwsTinamEeoP2YXOhQrIZ+SyeuUrv4MzJOSjT/Q0qkSmX11ZwfcTbYSkIqbrgALQLhAm1yf5fA==
 json-integrity cldr-localenames-full sha512-4o0paYDz0UXhfhChAVFkmVl2CP0YTSEqE6WrC0fNafaSC5u5DAXphxH3SZ1Ujczarikr8DToKZfiok6EqWLdNQ==
+json-integrity cldr-cal-buddhist-full sha512-bdc08W3e/uGGypQYUCNIrM2TldixnIQpW0Ybr2ynxQkojmqgkPk9f6FpOR370eblCMTO57SEgSx59ZXYaBE/og==
+json-integrity cldr-cal-chinese-full sha512-sGKamCWxdYLx8o215sSfYkX/Nwq56nU5osVI2eLafpZlNGA0rferEGmlTg6Y2Dn+G5BSTsP6SXEIB84ktVhYhQ==
+json-integrity cldr-cal-coptic-full sha512-7M5D01WMan8VyISCdZmqMDpjUmaYM/7W7Vry4M5SNejZn5F3RfTxSx67XFtHT8gqPgy6t2TUIypCcKFEsJsm2Q==
+json-integrity cldr-cal-dangi-full sha512-4UDwj+PEE9Ki1ydwoz+e9rT98LlVXwLNBzbLI1Rbi6Qn1QIUpbGBZINfbBJ5MFVocVF4/5i7Mceko2XsEt77mw==
+json-integrity cldr-cal-ethiopic-full sha512-u/zKRom3PAk2LIk3o/iS30dgg8EHsYhVlbYY6uWq3JtWz6y8tGBO6gR3CVjPmVneoS7PRrB9GE5HIk+x8yM1Lw==
+json-integrity cldr-cal-hebrew-full sha512-9Aubz8V76RsZwNFKsFCN6wIubV9gLJ0EGKIvROdfPgt7ip50KuhVz3AYlDiZZKbac8pV3L/AcA3zFP6h4IrNPA==
+json-integrity cldr-cal-indian-full sha512-nNDa0YRmDQQLDpnNp2mKTUBhQkmovOWiZIb1i1DpOlZ0IovJ0ZR6gFrc7VkF9CYyWqgEEZlE4jkjiGyaai/2Dw==
+json-integrity cldr-cal-islamic-full sha512-iMu/LMaU/hN8u7RiD9toZD7UkhaeeqCwWta56RJRENpvS10VWEzYXvOOfcqrJUPzs2PsN4KqYX/9plouOrsVqA==
+json-integrity cldr-cal-japanese-full sha512-9qmtZGuiulBpFO7TZsujRZcgswEmeaxLuzEZwH5G2mlc7AOga6ra0TkjLrYBH4TWxaPKlymT9FJsTOYxAz99Zg==
+json-integrity cldr-cal-persian-full sha512-U3p2xvA1aDgcinhWgM+P3aQtsAV4S2nb1fjcutcS71FID1IjhqfVet54QNjAw6HrSjy+y0QP60KCiwUA7u9EnQ==
+json-integrity cldr-cal-roc-full sha512-olySft80D0auJfNSn+qVYqh3Oq4FVO2Fe+1uRQkcz2TXEzfRyqIPf9M1paGsQARkrB6t2pclRoOHtXHFBZFgtg==
 repository-source https://raw.githubusercontent.com/unicode-org/cldr/release-48-2/
 retrieved 2026-10-04
 retrievals 2 byte-identical
@@ -103,6 +125,47 @@ file cldr-48.2.0/json/cldr-bcp47/bcp47/transform_mt.json 650 85468510811e9ec4d85
 file cldr-48.2.0/json/cldr-bcp47/bcp47/transform_private_use.json 481 6ba8cf2a5a8973eed1a8856623e8982e15a7b75e64e02c31a38e6afdd715bbe3
 file cldr-48.2.0/json/cldr-bcp47/bcp47/variant.json 1513 d7c128971823aabd0f204349175302608f028e360161f74bfddc25d8e2db2497
 file cldr-48.2.0/json/cldr-bcp47/package.json 649 ce19cc06282d7d8cf2ff74b53b939d979e8c6fc78d07a109acc0c95c1220abae
+file cldr-48.2.0/json/cldr-cal-buddhist-full/main/de/ca-buddhist.json 17893 f45a438a5f306abf83cbb61479cd38008e712e220b9278eeecd9aa7feda2d38a
+file cldr-48.2.0/json/cldr-cal-buddhist-full/main/en/ca-buddhist.json 18573 dd2126c0dacf0b836c46f4e6cefad85e4ff3c4d6ab949f5bc5b01510ca933f06
+file cldr-48.2.0/json/cldr-cal-buddhist-full/package.json 740 f0c4cff1581c80c75265d25af7ac452d868b3727712b712007d9a2acb9e9380b
+file cldr-48.2.0/json/cldr-cal-chinese-full/main/de/ca-chinese.json 43290 0abe06bf607236681e43337ccb7a1edb9dd34bdf9c3fe7a03b2d3ab82b1dae24
+file cldr-48.2.0/json/cldr-cal-chinese-full/main/en/ca-chinese.json 44592 6c31661ca6c53d832d21f0739757a66e3d8938180ed3e4c27139875e3a30baab
+file cldr-48.2.0/json/cldr-cal-chinese-full/package.json 738 5a722514b86400daa3e5ce9abe752942b6e9d6385c765786d3e7cad5b2f819ba
+file cldr-48.2.0/json/cldr-cal-coptic-full/main/de/ca-coptic.json 18145 6a5cd41bfb9be9d453038d0e58f202fa666ebde373e965a46ac078568abcbb4e
+file cldr-48.2.0/json/cldr-cal-coptic-full/main/en/ca-coptic.json 18824 ff40c767f320874a0dc0cab6e7198c901459fd22f2c71e603dbb50d06389c176
+file cldr-48.2.0/json/cldr-cal-coptic-full/package.json 736 32d1754d33954e2d9cca2e7d0540233d1af005b77f585231b20462a631b1d293
+file cldr-48.2.0/json/cldr-cal-dangi-full/main/de/ca-dangi.json 43288 4795cff81cd05a72b635a84d02f76d941aad4a3c4dd51647b03a7d1976bc55b0
+file cldr-48.2.0/json/cldr-cal-dangi-full/main/en/ca-dangi.json 44590 492ec5255b19e1057efa5a6826d6dd9b185d8a8bf1c2b2385140521c62797e1e
+file cldr-48.2.0/json/cldr-cal-dangi-full/package.json 734 8c93780b32c47cf0162bdca18672fc3e785d3fad6303ad8083fb006fb279689e
+file cldr-48.2.0/json/cldr-cal-ethiopic-full/main/de/ca-ethiopic-amete-alem.json 18266 49800978d0b5e19a0062cbff36555518794140bbbc5258a9998eadb9b68abd9c
+file cldr-48.2.0/json/cldr-cal-ethiopic-full/main/de/ca-ethiopic.json 18336 23fa292eb6afc40df2a960c8a0450f92fb3635ae913f3dba4fb9788e55ed8d91
+file cldr-48.2.0/json/cldr-cal-ethiopic-full/main/en/ca-ethiopic-amete-alem.json 18850 e364f01bbd61f25243649fd2c455304796ed882e730b7c5d29a89895a172ad18
+file cldr-48.2.0/json/cldr-cal-ethiopic-full/main/en/ca-ethiopic.json 18920 49a417444e63c96d51a44760818206a87944f67abd0a9e45ff13603f31dc9cc0
+file cldr-48.2.0/json/cldr-cal-ethiopic-full/package.json 740 daa9f56f0326253277034560f8e3dd41d6d28a79661b33781377823c8c567cdd
+file cldr-48.2.0/json/cldr-cal-hebrew-full/main/de/ca-hebrew.json 18397 2b4bf7fd34760ef1bba31c65526bfe6ede96efb80c330db47253633d01f0985b
+file cldr-48.2.0/json/cldr-cal-hebrew-full/main/en/ca-hebrew.json 19357 331e8f33d46ab145ca445c97f0d3c2083446211cdac3bb163591343a20b35460
+file cldr-48.2.0/json/cldr-cal-hebrew-full/package.json 736 36415baf0ff097ee3d87f8b5bef32538f69f6d967cf8d58ee77f2d531acf018c
+file cldr-48.2.0/json/cldr-cal-indian-full/main/de/ca-indian.json 18042 58a4a4d609bc2f1877f28201b6fd307005abbca427eb7a230fba1840a7ae6f32
+file cldr-48.2.0/json/cldr-cal-indian-full/main/en/ca-indian.json 18698 de15d21535dbe30ff992a3b1634490c30870feb6b96baac4e3c9d351a4b991c3
+file cldr-48.2.0/json/cldr-cal-indian-full/package.json 736 c7c5fdb9829094f1a99c2c332a87b56877e3a62ece7f99a6329bffaa5ad7d99c
+file cldr-48.2.0/json/cldr-cal-islamic-full/main/de/ca-islamic-civil.json 18109 dc5a9d02308250da9bfeb1904429a9cb1f5be101e1ae8bdcd60728f97993a879
+file cldr-48.2.0/json/cldr-cal-islamic-full/main/de/ca-islamic-tbla.json 18108 e0e2547d0ced2c133df317406bda5ae98573a71a31f62ec15905f94c487762e0
+file cldr-48.2.0/json/cldr-cal-islamic-full/main/de/ca-islamic-umalqura.json 18112 38aa8e75d10b2f25e77504ddfca3a9033db08aebab6a606a6eb1d51d1c9f4554
+file cldr-48.2.0/json/cldr-cal-islamic-full/main/de/ca-islamic.json 18103 1c398f84d901b1733e0c2c84f269e92aacb42e28db483d4d8c17573ed4e54ca8
+file cldr-48.2.0/json/cldr-cal-islamic-full/main/en/ca-islamic-civil.json 18806 ee307ce354c51bee02b639efe442feb294ae4e4bd029f0657b70e268e97c7337
+file cldr-48.2.0/json/cldr-cal-islamic-full/main/en/ca-islamic-tbla.json 18805 04d9585de4081b913929707bb6533c0d83efbbaf18ae3c5c6b48fff5897a58f4
+file cldr-48.2.0/json/cldr-cal-islamic-full/main/en/ca-islamic-umalqura.json 18809 e45eb8808395571b4866ca6d110bcb02ff238ddda6763b99567159f21a42686f
+file cldr-48.2.0/json/cldr-cal-islamic-full/main/en/ca-islamic.json 18800 c3b6c8d7376a29b7634c6ed2289db819254f3ea1b7189cda1d92eaaa6c66c54c
+file cldr-48.2.0/json/cldr-cal-islamic-full/package.json 738 7441475b4406452755d04a60b7d370b937a2286a9d3d505cb337e324e355616f
+file cldr-48.2.0/json/cldr-cal-japanese-full/main/de/ca-japanese.json 50540 ab52e47d85f2e348ea5d682f8c12d4ff3bf6536357530ac4541d1fca40ffd851
+file cldr-48.2.0/json/cldr-cal-japanese-full/main/en/ca-japanese.json 51569 cf92f9a8293b528ae1046693db12a25cc8b31c5de70fe7622e9516bf4c72bf85
+file cldr-48.2.0/json/cldr-cal-japanese-full/package.json 740 3937b04a459d1ada1bc4fa191d05e81abc28863c909bf97efe1a39444b913929
+file cldr-48.2.0/json/cldr-cal-persian-full/main/de/ca-persian.json 17990 59ca685fbf5941ea6d7f15c750f11e68ebc04de6f09de0f16a18d14a8722e857
+file cldr-48.2.0/json/cldr-cal-persian-full/main/en/ca-persian.json 18646 09e6002b430b5b8683946e6fad95baac96aff03fcf90baa4792b80af92ee4e50
+file cldr-48.2.0/json/cldr-cal-persian-full/package.json 738 9cb47a6134171baf4fe31bddb9f56f16ead889455922d4b7039cbdbe517317c1
+file cldr-48.2.0/json/cldr-cal-roc-full/main/de/ca-roc.json 18011 bddcde263f61d20846388d26ed97f6434eb3122398b0d7a0019353edee47a807
+file cldr-48.2.0/json/cldr-cal-roc-full/main/en/ca-roc.json 18679 2627d46a7bb9dfee76c76300c0b6c3d7b0b0a6284167c7f423aad42d652d410c
+file cldr-48.2.0/json/cldr-cal-roc-full/package.json 730 11422eafa97211dfc0ae9d8c870a35748c95cdf52f0ecd3db432f2a149a5d43b
 file cldr-48.2.0/json/cldr-core/availableLocales.json 11175 2961ccc06b437a732c689ad59e891b563e6618546b4c4cda7216549d8a0b4528
 file cldr-48.2.0/json/cldr-core/defaultContent.json 5125 ceeae676236ada8b2c9610c417447280230c1355260a78a2452541e2e1ac6e6c
 file cldr-48.2.0/json/cldr-core/package.json 661 584c01d774ba40135929130a897741ae826597af8bc53735509e6a047abda816
@@ -118,9 +181,11 @@ file cldr-48.2.0/json/cldr-core/supplemental/pluralRanges.json 24710 fb56214321f
 file cldr-48.2.0/json/cldr-core/supplemental/plurals.json 76105 6c0a48e9bcfc25856f90202f703c2c7f89c105d6868f7712a943a6ed2dcbe8f4
 file cldr-48.2.0/json/cldr-core/supplemental/timeData.json 22206 2962960c14e40ffb09526e33832fe60ff932ba1b41a01f4964c601c2274ac61d
 file cldr-48.2.0/json/cldr-core/supplemental/weekData.json 11204 b28ea2cedf6da29e9b93d7492e0f0a8a6852fe49f7990c58f9fc57531bf7c6b3
+file cldr-48.2.0/json/cldr-dates-full/main/de/ca-generic.json 35537 6a5540475088d90f2a5aa70e292e0ecc4e2555cc502c17d402b632d3c3d836fe
 file cldr-48.2.0/json/cldr-dates-full/main/de/ca-gregorian.json 18792 afa871ef7f2b4b9a7d680342e18dcf6a37a910e81af8d7d9561722d790b6d20b
 file cldr-48.2.0/json/cldr-dates-full/main/de/dateFields.json 27239 80b32cf55be64c7e5b0c2b909789bf7ed4f633e5a90dd2b11e52f30a2662fb19
 file cldr-48.2.0/json/cldr-dates-full/main/de/timeZoneNames.json 49972 de8f2c65e357c3498960dcb1667bb475a15d2df6f253f31cad3a0d55562cf507
+file cldr-48.2.0/json/cldr-dates-full/main/en/ca-generic.json 36440 91b5afb2569069cdd826563f8ed50e75ed677049db45206deb4027dd0853d571
 file cldr-48.2.0/json/cldr-dates-full/main/en/ca-gregorian.json 19266 099b5dadb358c1d951f228ad97758467dac872af845cada3019cf56ce5455c9c
 file cldr-48.2.0/json/cldr-dates-full/main/en/dateFields.json 26073 4fcaa5f74d743a0bc734a556638c687ee7607824cc763be0f746a20d36e9cb0c
 file cldr-48.2.0/json/cldr-dates-full/main/en/timeZoneNames.json 44939 db04305a4bac1389b965e71974adf174adc4130f38b86dfcf1f4e2eec343a174

@@ -933,7 +933,207 @@ internal static class CldrTableGenerator
         }
 
         lines.AddRange(Iso8601Patterns(cldr));
+        lines.AddRange(CalendarLocales(cldr));
         return lines.Order(StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// The calendars a formatter writes besides the Gregorian and the ISO 8601 ones, each as a layer
+    /// over the one it inherits from, by language (JSD-0057): <c>language@generic</c>, CLDR's generic
+    /// calendar's patterns over the language's Gregorian ones; and <c>language@calendar</c>, a calendar's
+    /// names and patterns over the Gregorian names and the generic patterns, or over its parent's layer
+    /// (the Umm al-Qura, civil and astronomical Hijri calendars over <c>islamic</c>, Korean over Chinese,
+    /// Ethiopian Amete Alem over Ethiopian).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A layer holds only what differs</b>: a value the calendar states otherwise than the layer
+    /// below it, and a pattern key the layer below holds and the calendar does not, as a line whose
+    /// key begins with <c>-</c> and whose value is empty. A name the calendar does not state is the
+    /// layer below's.
+    /// </para>
+    /// <para>
+    /// <b>Besides the Gregorian keys</b>, a layer carries the leap month patterns
+    /// (<c>monthPatterns</c>) and the years' cyclic names (<c>cyclic.years</c>) of the Chinese
+    /// calendar. The Japanese calendar carries its eras from Meiji on, which Temporal's eras are
+    /// (JSD-0056); before Meiji its dates are written in the Gregorian eras below it.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> CalendarLocales(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var lines = new List<string>();
+        (string Id, string Package, string File, string? Parent)[] calendars =
+        [
+            ("buddhist", "cldr-cal-buddhist-full", "ca-buddhist", null),
+            ("chinese", "cldr-cal-chinese-full", "ca-chinese", null),
+            ("coptic", "cldr-cal-coptic-full", "ca-coptic", null),
+            ("dangi", "cldr-cal-dangi-full", "ca-dangi", "chinese"),
+            ("ethiopic", "cldr-cal-ethiopic-full", "ca-ethiopic", null),
+            ("ethioaa", "cldr-cal-ethiopic-full", "ca-ethiopic-amete-alem", "ethiopic"),
+            ("hebrew", "cldr-cal-hebrew-full", "ca-hebrew", null),
+            ("indian", "cldr-cal-indian-full", "ca-indian", null),
+            ("islamic", "cldr-cal-islamic-full", "ca-islamic", null),
+            ("islamic-civil", "cldr-cal-islamic-full", "ca-islamic-civil", "islamic"),
+            ("islamic-tbla", "cldr-cal-islamic-full", "ca-islamic-tbla", "islamic"),
+            ("islamic-umalqura", "cldr-cal-islamic-full", "ca-islamic-umalqura", "islamic"),
+            ("japanese", "cldr-cal-japanese-full", "ca-japanese", null),
+            ("persian", "cldr-cal-persian-full", "ca-persian", null),
+            ("roc", "cldr-cal-roc-full", "ca-roc", null),
+        ];
+
+        foreach (var language in NumberLanguages)
+        {
+            JsonElement Calendar(string package, string file) =>
+                Json(cldr, $"json/{package}/main/{language}/{file}.json").GetProperty("main").GetProperty(language).GetProperty("dates").GetProperty("calendars")
+                    .GetProperty(file["ca-".Length..]);
+
+            var gregorian = CalendarMap(Calendar("cldr-dates-full", "ca-gregorian"));
+            var generic = CalendarMap(Calendar("cldr-dates-full", "ca-generic"));
+
+            // THE GENERIC LAYER: its patterns over the Gregorian ones; the names stay the Gregorian ones.
+            var genericLayer = new Dictionary<string, string>(StringComparer.Ordinal);
+
+            foreach (var (key, value) in gregorian)
+            {
+                if (!IsPattern(key))
+                {
+                    genericLayer[key] = value;
+                }
+            }
+
+            foreach (var (key, value) in generic)
+            {
+                if (IsPattern(key))
+                {
+                    genericLayer[key] = value;
+                }
+            }
+
+            Layer(language + "@generic", gregorian, genericLayer, lines);
+            var layers = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
+
+            foreach (var (id, package, file, parent) in calendars)
+            {
+                var below = parent is null ? genericLayer : layers[parent];
+                var own = CalendarMap(Calendar(package, file));
+
+                if (id == "japanese")
+                {
+                    foreach (var key in own.Keys.Where(static key => key.StartsWith("eras.", StringComparison.Ordinal) &&
+                        int.Parse(key[(key.LastIndexOf('.') + 1)..], CultureInfo.InvariantCulture) < 232).ToList())
+                    {
+                        own.Remove(key);
+                    }
+                }
+
+                // A NAME THE CALENDAR DOES NOT STATE IS THE LAYER BELOW'S.
+                var layer = new Dictionary<string, string>(own, StringComparer.Ordinal);
+
+                foreach (var (key, value) in below)
+                {
+                    if (!IsPattern(key))
+                    {
+                        layer.TryAdd(key, value);
+                    }
+                }
+
+                Layer(language + "@" + id, below, layer, lines);
+                layers[id] = layer;
+            }
+        }
+
+        return lines;
+    }
+
+    /// <summary>The lines that turn <paramref name="below"/> into <paramref name="layer"/>: changed values and removed keys.</summary>
+    private static void Layer(string name, Dictionary<string, string> below, Dictionary<string, string> layer, List<string> lines)
+    {
+        foreach (var (key, value) in layer)
+        {
+            if (!below.TryGetValue(key, out var under) || under != value)
+            {
+                lines.Add($"{name}|{key}|{Escape(value)}");
+            }
+        }
+
+        foreach (var key in below.Keys)
+        {
+            if (!layer.ContainsKey(key))
+            {
+                lines.Add($"{name}|-{key}|");
+            }
+        }
+    }
+
+    private static bool IsPattern(string key) =>
+        key.StartsWith("dateFormats.", StringComparison.Ordinal) || key.StartsWith("timeFormats.", StringComparison.Ordinal) ||
+        key.StartsWith("dateTime.", StringComparison.Ordinal) || key.StartsWith("atTime.", StringComparison.Ordinal) ||
+        key.StartsWith("available.", StringComparison.Ordinal) || key.StartsWith("append.", StringComparison.Ordinal) ||
+        key.StartsWith("interval.", StringComparison.Ordinal);
+
+    /// <summary>A calendar's names and patterns, flattened to the date table's keys, unescaped.</summary>
+    private static Dictionary<string, string> CalendarMap(JsonElement calendar)
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        void Flatten(string key, JsonElement value)
+        {
+            if (value.ValueKind != JsonValueKind.Object)
+            {
+                map[key] = value.GetString()!;
+                return;
+            }
+
+            foreach (var property in value.EnumerateObject())
+            {
+                if (!property.Name.Contains("-alt-", StringComparison.Ordinal) && !property.Name.Contains("-count-", StringComparison.Ordinal))
+                {
+                    Flatten(key + "." + property.Name, property.Value);
+                }
+            }
+        }
+
+        foreach (var name in new[] { "months", "days", "dayPeriods", "eras", "monthPatterns", "dateFormats", "timeFormats" })
+        {
+            if (calendar.TryGetProperty(name, out var value))
+            {
+                Flatten(name, value);
+            }
+        }
+
+        if (calendar.TryGetProperty("cyclicNameSets", out var cyclic))
+        {
+            Flatten("cyclic.years", cyclic.GetProperty("years").GetProperty("format"));
+        }
+
+        var dateTime = calendar.GetProperty("dateTimeFormats");
+
+        foreach (var style in new[] { "full", "long", "medium", "short" })
+        {
+            map["dateTime." + style] = dateTime.GetProperty(style).GetString()!;
+
+            if (calendar.TryGetProperty("dateTimeFormats-atTime", out var atTime))
+            {
+                map["atTime." + style] = atTime.GetProperty("standard").GetProperty(style).GetString()!;
+            }
+        }
+
+        Flatten("available", dateTime.GetProperty("availableFormats"));
+        Flatten("append", dateTime.GetProperty("appendItems"));
+
+        foreach (var entry in dateTime.GetProperty("intervalFormats").EnumerateObject())
+        {
+            if (entry.Name == "intervalFormatFallback")
+            {
+                map["interval.fallback"] = entry.Value.GetString()!;
+            }
+            else if (!entry.Name.Contains("-alt-", StringComparison.Ordinal))
+            {
+                Flatten("interval." + entry.Name, entry.Value);
+            }
+        }
+
+        return map;
     }
 
     /// <summary>

@@ -1381,6 +1381,15 @@ The plan gains a slice T4, `Intl.DateTimeFormat` in these calendars, which is ne
 gate if the owner's budget holds CLDR's names for them. Over the whole pinned suite 100,324 of 101,723
 variants pass, none moving back ([JSC-282](roadmap.corrections.md#jsc-282)).*
 
+*Progress, 2026-10-05, slice T4: `Intl.DateTimeFormat` writes every calendar of the Intl era and
+month code proposal's Table 1 from CLDR 48's names and patterns, archived under N27 and generated as
+layers over each language's Gregorian data, under proposed
+[JSD-0057](decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md); the data is 761,598 bytes,
+under the owner's budget. `test/intl402/Temporal` passes 3,980 of 3,982 and `test/intl402/Intl` all
+132. The exit gate is not yet met: the two variants left ask for a zone's long name, which needs
+CLDR's metazones; a slice T5 measures them against the 24,834 bytes left and is next
+([JSC-283](roadmap.corrections.md#jsc-283)).*
+
 #### F9 — The release
 
 - **Delivers:** JS-10 over every surface above.

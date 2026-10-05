@@ -489,3 +489,17 @@ nothing, and this record keeps its status line. Corrections entry
   to their generator by the new rule N32. Decision (c)'s budget counts it: the data is 679,058 bytes,
   107,374 under it. No CLDR file is added; formatting in these calendars, which needs CLDR's names
   for them, is the next slice's, and it will put any growth past the budget to the owner.
+
+## Amended 2026-10-05: the CLDR calendars in the data (unsigned)
+
+*Recorded with phase F8's slice T4; it signs nothing. Corrections entry
+[JSC-283](../roadmap.corrections.md#jsc-283).*
+
+- **The archive gains eleven `cldr-cal-*-full` packages and `ca-generic.json`** under rule N27, for
+  `Intl.DateTimeFormat` in every calendar of the Intl era and month code proposal under proposed
+  [JSD-0057](0057-intl-datetimeformat-in-the-cldr-calendars.md): each package's `ca-*.json` files for
+  `de` and `en`, 43 files in all.
+- **The date tables carry each calendar as a layer** over the language's Gregorian data, only the
+  lines that differ: 1,924 lines and 82,540 bytes. Decision (c)'s budget holds them: **the data is
+  761,598 bytes, 24,834 under it**, so nothing is put to the owner. The room left is small; a later
+  slice that adds data will measure it first.

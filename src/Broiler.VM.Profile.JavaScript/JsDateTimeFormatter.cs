@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
-// Exempt:           15
-// Human-reviewed:   0/23
+// Relevant units:   27
+// Annotated:        27/27
+// Exempt:           22
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       23
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -49,13 +49,99 @@ internal enum JsZoneKind
 // Broiler-Human:        PENDING
 internal readonly record struct JsLocalTime(long Year, int Month, int Day, int Weekday, int Hour, int Minute, int Second, int Millisecond, int DayOfYear, long Utc)
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=85BDA5
+    /// <summary>The CLDR era index of a calendar's era; null for the Gregorian calendar's, which the year decides.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DEC1A7
     // Broiler-Human:        PENDING
-    internal int Era => Year <= 0 ? 0 : 1;
+    internal string? CalendarEra { get; init; }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=019FCC
+    /// <summary>A calendar's era year; null for the Gregorian calendar's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9F4E20
     // Broiler-Human:        PENDING
-    internal long EraYear => Year <= 0 ? 1 - Year : Year;
+    internal long? CalendarEraYear { get; init; }
+
+    /// <summary>The CLDR key of a calendar's month name, where it is not the month's number.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D5F619
+    // Broiler-Human:        PENDING
+    internal string? MonthKey { get; init; }
+
+    /// <summary>The number a calendar writes for its month, where it is not the ordinal: a Chinese month's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D67A1B
+    // Broiler-Human:        PENDING
+    internal int? MonthNumber { get; init; }
+
+    /// <summary>Whether the month is a leap month that CLDR's month patterns mark (the Chinese calendars').</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A47384
+    // Broiler-Human:        PENDING
+    internal bool LeapMonth { get; init; }
+
+    /// <summary>The year of the sixty-year cycle (ICU's <c>y</c> in the Chinese calendars); null elsewhere.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BCC859
+    // Broiler-Human:        PENDING
+    internal int? CyclicYear { get; init; }
+
+    /// <summary>The CLDR era index: the calendar's, or the Gregorian one the year decides.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=745584
+    // Broiler-Human:        PENDING
+    internal string Era => CalendarEra ?? (Year <= 0 ? "0" : "1");
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1BA541
+    // Broiler-Human:        PENDING
+    internal long EraYear => CalendarEraYear ?? (Year <= 0 ? 1 - Year : Year);
+
+    /// <summary>
+    /// The same time's fields in a calendar other than the Gregorian one (JSD-0057): its arithmetic
+    /// year, ordinal month, day and day of the year, its era as CLDR numbers it, and how its month is
+    /// named and numbered.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1596FF
+    // Broiler-Human:        PENDING
+    internal JsLocalTime InCalendar(JsCalendarSystem system)
+    {
+        var days = JsTemporalCore.EpochDays(Year, Month, Day);
+        var (year, month, day) = system.FromEpochDays(days);
+        var (era, eraYear) = system.EraOf(year.Year, days);
+        var code = JsCalendarSystem.MonthCode(year, month);
+        var number = ((code[1] - '0') * 10) + (code[2] - '0');
+        var lunisolar = system.Id is "chinese" or "dangi";
+
+        string? monthKey = system.Id switch
+        {
+            "hebrew" => code == "M05L" ? "6" : code == "M06" && year.LeapMonth != 0 ? "7-yeartype-leap" : (number < 6 ? number : number + 1).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            "chinese" or "dangi" => number.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            _ => null,
+        };
+
+        return this with
+        {
+            Year = year.Year,
+            Month = month,
+            Day = day,
+            DayOfYear = (int)(days - year.Start) + 1,
+            CalendarEra = lunisolar ? string.Empty : EraIndex(system.Id, era!),
+            CalendarEraYear = lunisolar ? year.Year : eraYear,
+            MonthKey = monthKey,
+            MonthNumber = lunisolar ? number : null,
+            LeapMonth = lunisolar && code.Length == 4,
+            CyclicYear = lunisolar ? (int)((((year.Year - 4) % 60) + 60) % 60) + 1 : null,
+        };
+    }
+
+    /// <summary>The index CLDR gives a Temporal era of a calendar (the Intl era and month code proposal's Table 2).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=43DD64
+    // Broiler-Human:        PENDING
+    private static string EraIndex(string calendar, string era) => (calendar, era) switch
+    {
+        ("japanese", "meiji") => "232",
+        ("japanese", "taisho") => "233",
+        ("japanese", "showa") => "234",
+        ("japanese", "heisei") => "235",
+        ("japanese", "reiwa") => "236",
+        (_, "bce" or "broc") => "0",
+        (_, "ce" or "roc") => "1",
+        (_, "bh") => "1",
+        ("coptic" or "ethiopic", "am") => "1",
+        _ => "0",
+    };
 
     /// <summary>The fields of <paramref name="time"/>, an integral time value, <paramref name="offsetMinutes"/> from UTC.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=227A46
@@ -136,7 +222,7 @@ internal sealed class JsDateTimeFormatter
     // Broiler-Human:        PENDING
     private JsDateIntervalFormat? interval;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2FE5CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C7BA00
     // Broiler-Human:        PENDING
     internal JsDateTimeFormatter(
         JsDateData data,
@@ -147,9 +233,11 @@ internal sealed class JsDateTimeFormatter
         JsZoneKind zoneKind,
         string pattern,
         System.Func<JsDateIntervalFormat> intervals,
-        JsZone? zone = null)
+        JsZone? zone = null,
+        JsCalendarSystem? calendar = null)
     {
         this.zone = zone;
+        this.calendar = calendar;
         this.data = data;
         this.language = language;
         this.digits = digits;
@@ -164,6 +252,20 @@ internal sealed class JsDateTimeFormatter
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B6CCEC
     // Broiler-Human:        PENDING
     private readonly JsZone? zone;
+
+    /// <summary>The calendar the fields are written in, or nothing for the Gregorian and ISO 8601 ones (JSD-0057).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2174A5
+    // Broiler-Human:        PENDING
+    private readonly JsCalendarSystem? calendar;
+
+    /// <summary>A time value's local fields, in the format's calendar.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A8FC8F
+    // Broiler-Human:        PENDING
+    internal JsLocalTime LocalTime(double time)
+    {
+        var local = JsLocalTime.From(time, OffsetSecondsAt(time));
+        return calendar is null ? local : local.InCalendar(calendar);
+    }
 
     /// <summary>The time zone's identifier: <c>UTC</c>, an offset such as <c>+05:30</c>, or an IANA primary identifier.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9A6046
@@ -192,13 +294,13 @@ internal sealed class JsDateTimeFormatter
     internal string Pattern { get; }
 
     /// <summary>The parts of <paramref name="time"/>, an integral time value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2EC27B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=81FCB4
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.List<JsDatePart> Parts(JsEngine engine, double time, string? source)
     {
         var text = new System.Text.StringBuilder();
         var fields = new System.Collections.Generic.List<JsDateField>();
-        FormatPattern(Pattern, JsLocalTime.From(time, OffsetSecondsAt(time)), text, fields);
+        FormatPattern(Pattern, LocalTime(time), text, fields);
         engine.Charge((ulong)text.Length);
         return ToParts(text.ToString(), fields, source is null ? null : (_, _) => source);
     }
@@ -208,7 +310,7 @@ internal sealed class JsDateTimeFormatter
     /// its parts' sources from the spans of the fields it repeats, or <paramref name="x"/> alone,
     /// shared, where it writes one date.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=553C3E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9B1FF7
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.List<JsDatePart> RangeParts(JsEngine engine, double x, double y)
     {
@@ -216,7 +318,7 @@ internal sealed class JsDateTimeFormatter
 
         var text = new System.Text.StringBuilder();
         var fields = new System.Collections.Generic.List<JsDateField>();
-        var first = interval.Format(JsLocalTime.From(x, OffsetSecondsAt(x)), JsLocalTime.From(y, OffsetSecondsAt(y)), this, text, fields);
+        var first = interval.Format(LocalTime(x), LocalTime(y), this, text, fields);
         engine.Charge((ulong)text.Length);
 
         // THE SPANS ARE ICU'S: the first and second occurrences of each repeated field.
@@ -389,7 +491,7 @@ internal sealed class JsDateTimeFormatter
     }
 
     /// <summary>Writes one field; whether the letter is one this formatter writes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=692DA1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AC523A
     // Broiler-Human:        PENDING
     private bool Field(char c, int count, JsLocalTime time, bool hasMinute, bool hasSecond, System.Text.StringBuilder text)
     {
@@ -399,19 +501,31 @@ internal sealed class JsDateTimeFormatter
                 text.Append(Name("eras." + (count <= 3 ? "eraAbbr" : count == 4 ? "eraNames" : "eraNarrow") + "." + time.Era));
                 return true;
             case 'y':
-                Number(text, count == 2 ? time.EraYear % 100 : time.EraYear, count);
+                var year = time.CyclicYear ?? time.EraYear;
+                Number(text, count == 2 ? year % 100 : year, count);
                 return true;
-            case 'Y' or 'u':
-                Number(text, c == 'u' ? time.Year : time.EraYear, count);
+            case 'Y' or 'u' or 'r':
+                Number(text, c == 'Y' ? time.EraYear : time.Year, count);
+                return true;
+            case 'U':
+                text.Append(time.CyclicYear is { } cyclic
+                    ? Name("cyclic.years." + (count <= 3 ? "abbreviated" : count == 4 ? "wide" : "narrow") + "." + cyclic.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                    : time.Year.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 return true;
             case 'M' or 'L':
+                var context = c == 'M' ? "format" : "stand-alone";
+                var monthStart = text.Length;
+
                 if (count <= 2)
                 {
-                    Number(text, time.Month, count);
+                    Number(text, time.MonthNumber ?? time.Month, count);
+                    Leap(text, monthStart, "monthPatterns.numeric.all.leap", time);
                 }
                 else
                 {
-                    text.Append(Name("months." + (c == 'M' ? "format" : "stand-alone") + "." + Width(count) + "." + time.Month.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    var key = time.MonthKey ?? time.Month.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    text.Append(Name("months." + context + "." + Width(count) + "." + key));
+                    Leap(text, monthStart, "monthPatterns." + context + "." + Width(count) + ".leap", time);
                 }
 
                 return true;
@@ -484,6 +598,21 @@ internal sealed class JsDateTimeFormatter
     // Broiler-Human:        PENDING
     private static string Width(int count) => count switch { <= 3 => "abbreviated", 4 => "wide", _ => "narrow" };
 
+    /// <summary>A leap month's text written from <paramref name="start"/> on, put in CLDR's month pattern for it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=759487
+    // Broiler-Human:        PENDING
+    private void Leap(System.Text.StringBuilder text, int start, string patternKey, JsLocalTime time)
+    {
+        if (!time.LeapMonth || data.Value(language, patternKey) is not { } pattern)
+        {
+            return;
+        }
+
+        var month = text.ToString(start, text.Length - start);
+        text.Length = start;
+        text.Append(pattern.Replace("{0}", month, System.StringComparison.Ordinal));
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F3F6FF
     // Broiler-Human:        PENDING
     private string Name(string key) => data.Value(language, key) ?? string.Empty;
@@ -515,7 +644,7 @@ internal sealed class JsDateTimeFormatter
     /// exact time where the language names them, midnight written as the period it falls in, and the
     /// language's period for the hour; AM or PM where none is named.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3B8090
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8F2349
     // Broiler-Human:        PENDING
     private string FlexibleDayPeriod(char c, int count, JsLocalTime time, bool hasMinute, bool hasSecond)
     {
@@ -525,7 +654,7 @@ internal sealed class JsDateTimeFormatter
         var amPm = Name("dayPeriods.format." + width + "." + (time.Hour < 12 ? "am" : "pm"));
 
         // A CALENDAR'S DATA IS ITS LANGUAGE'S FOR DAY PERIODS, which belong to no calendar (JSD-0055).
-        var rulesLanguage = language.EndsWith(JsDateData.Iso8601, System.StringComparison.Ordinal) ? language[..^JsDateData.Iso8601.Length] : language;
+        var rulesLanguage = JsDateData.LanguageOf(language);
 
         if (!data.DayPeriods.TryGetValue(rulesLanguage, out var rules))
         {

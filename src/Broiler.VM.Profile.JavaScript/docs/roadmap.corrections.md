@@ -12483,3 +12483,46 @@ runner's admitted proposals, and the retained dataset `src/tests/temporal/calend
 - JSD-0056 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-283
+
+**Where:** phase F8, slice T4. The formatter's calendars in `JsDateTimeFormatter.cs` and
+`JsRealm.DateTimeFormat.cs`, the calendar layers `JsIntlTables.cs` composes and `JsDateData.cs`
+lists, the CLDR generator `CldrTableGenerator` and its output `JsCldrTables.g.cs`, the CLDR archive
+under `src/tests/cldr/pins/` (rule N27), and the retained dataset `src/tests/temporal/calendars-intl/`.
+
+**What the plan said.**
+- [JSD-0056](decisions/0056-temporal-in-the-cldr-calendars.md) section 6: `Intl.DateTimeFormat`
+  resolves `gregory` and `iso8601` only, a declared divergence from the Intl era and month code
+  proposal's 1.1.1; the next slice adds CLDR's names and patterns for the other calendars if the
+  budget holds them, and puts the question to the owner if it does not.
+
+**What replaced it, observed on 2026-10-05.**
+- **The formatter writes every calendar of the proposal's Table 1** under proposed
+  [JSD-0057](decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md): each date's fields are the
+  calendar's Temporal fields, written with CLDR 48's month, era, cyclic year and leap month names and
+  patterns; `islamic` and `islamic-rgsa` fall back to `islamic-tbla`, and
+  `Intl.supportedValuesOf("calendar")` lists the sixteen calendars.
+- **The data holds them**: eleven `cldr-cal-*-full` packages and `ca-generic.json`, 43 files
+  retrieved twice and integrity-checked, are archived under rule N27; the generator writes each
+  calendar as a layer of the lines that differ from the one below it, 1,924 lines and 82,540 bytes.
+  The data is 761,598 bytes, 24,834 under the budget, so no question goes to the owner.
+- **The retained dataset** holds 5,951 lines: 4,556 agree with the reference polyfill and 1,395 are
+  named in four groups, 1,386 of them CLDR 48's era names where the polyfill's ICU reads CLDR 47's.
+- **test262**: `test/intl402/DateTimeFormat` passes 478 of 488 scored variants, where it passed 456;
+  `test/intl402/Temporal` 3,980 of 3,982, where it passed 3,962; `test/intl402/Intl` all 132, where
+  it passed 130. The 12 that fail under the three failed before: a locale other than `de` and `en`, a
+  date's digits in another numbering system, or a zone's long name. No variant scored before moves
+  from passing.
+- **Checks**: one new slice-compiler check, 645 in all; the architecture suite's 339 tests pass, the
+  regenerated tables among them.
+
+**What must not be read as repaired.**
+- **F8's exit gate is not met**: `test/intl402/Temporal` keeps two failing variants, one file asking
+  `ZonedDateTime`'s `toLocaleString` for a zone's long name, which needs CLDR's metazones; they are
+  not archived, and the 24,834 bytes left under the budget may not hold them. The next slice measures
+  that.
+- Locales other than `de` and `en` are not added.
+- JSD-0057 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.

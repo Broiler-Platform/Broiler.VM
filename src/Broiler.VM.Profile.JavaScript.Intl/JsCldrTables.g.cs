@@ -16045,6 +16045,979 @@ internal static class JsCldrTables
         @iso8601|timeFormats.long|HH:mm:ss z
         @iso8601|timeFormats.medium|HH:mm:ss
         @iso8601|timeFormats.short|HH:mm
+        de@buddhist|eras.eraAbbr.0|BE
+        de@buddhist|eras.eraNames.0|B.E.
+        de@buddhist|eras.eraNarrow.0|BE
+        de@chinese|-available.EHms|
+        de@chinese|-available.EHm|
+        de@chinese|-available.Ehms|
+        de@chinese|-available.Ehm|
+        de@chinese|-available.Eh|
+        de@chinese|-available.GyMEd|
+        de@chinese|-available.GyMd|
+        de@chinese|-available.GyM|
+        de@chinese|-interval.Gy.G|
+        de@chinese|-interval.Gy.y|
+        de@chinese|-interval.GyM.G|
+        de@chinese|-interval.GyM.M|
+        de@chinese|-interval.GyM.y|
+        de@chinese|-interval.GyMEd.G|
+        de@chinese|-interval.GyMEd.M|
+        de@chinese|-interval.GyMEd.d|
+        de@chinese|-interval.GyMEd.y|
+        de@chinese|-interval.GyMMM.G|
+        de@chinese|-interval.GyMMM.M|
+        de@chinese|-interval.GyMMM.y|
+        de@chinese|-interval.GyMMMEd.G|
+        de@chinese|-interval.GyMMMEd.M|
+        de@chinese|-interval.GyMMMEd.d|
+        de@chinese|-interval.GyMMMEd.y|
+        de@chinese|-interval.GyMMMd.G|
+        de@chinese|-interval.GyMMMd.M|
+        de@chinese|-interval.GyMMMd.d|
+        de@chinese|-interval.GyMMMd.y|
+        de@chinese|-interval.GyMd.G|
+        de@chinese|-interval.GyMd.M|
+        de@chinese|-interval.GyMd.d|
+        de@chinese|-interval.GyMd.y|
+        de@chinese|-interval.MMMM.M|
+        de@chinese|atTime.full|{1} {0}
+        de@chinese|atTime.long|{1} {0}
+        de@chinese|atTime.medium|{1} {0}
+        de@chinese|atTime.short|{1} {0}
+        de@chinese|available.Bh|h B
+        de@chinese|available.GyMMMEd|E, d. MMM U
+        de@chinese|available.GyMMMMEd|E, d. MMMM U
+        de@chinese|available.GyMMMMd|d. MMMM U
+        de@chinese|available.GyMMMM|r(U) MMMM
+        de@chinese|available.GyMMMd|d. MMM U
+        de@chinese|available.GyMMM|MMM U
+        de@chinese|available.Gy|U
+        de@chinese|available.Hv|HH v
+        de@chinese|available.UMMMd|U MMM d
+        de@chinese|available.UMMM|U MMM
+        de@chinese|available.UMd|U MM-d
+        de@chinese|available.UM|U MM
+        de@chinese|available.h|h\u202Fa
+        de@chinese|available.yyyyMEd|E, d.M.y
+        de@chinese|available.yyyyMMMEd|E, d. MMM U
+        de@chinese|available.yyyyMMMMEd|E, d. MMMM U
+        de@chinese|available.yyyyMMMMd|d. MMMM U
+        de@chinese|available.yyyyMMMM|MMMM U
+        de@chinese|available.yyyyMMMd|d. MMM U
+        de@chinese|available.yyyyMMM|MMM U
+        de@chinese|available.yyyyMd|d.M.y
+        de@chinese|available.yyyyM|M.y
+        de@chinese|available.yyyyQQQQ|QQQQ U
+        de@chinese|available.yyyyQQQ|QQQ U
+        de@chinese|available.yyyy|U
+        de@chinese|available.y|U
+        de@chinese|cyclic.years.abbreviated.10|gui-you
+        de@chinese|cyclic.years.abbreviated.11|jia-xu
+        de@chinese|cyclic.years.abbreviated.12|yi-hai
+        de@chinese|cyclic.years.abbreviated.13|bing-zi
+        de@chinese|cyclic.years.abbreviated.14|ding-chou
+        de@chinese|cyclic.years.abbreviated.15|wu-yin
+        de@chinese|cyclic.years.abbreviated.16|ji-mao
+        de@chinese|cyclic.years.abbreviated.17|geng-chen
+        de@chinese|cyclic.years.abbreviated.18|xin-si
+        de@chinese|cyclic.years.abbreviated.19|ren-wu
+        de@chinese|cyclic.years.abbreviated.1|jia-zi
+        de@chinese|cyclic.years.abbreviated.20|gui-wei
+        de@chinese|cyclic.years.abbreviated.21|jia-shen
+        de@chinese|cyclic.years.abbreviated.22|yi-you
+        de@chinese|cyclic.years.abbreviated.23|bing-xu
+        de@chinese|cyclic.years.abbreviated.24|ding-hai
+        de@chinese|cyclic.years.abbreviated.25|wu-zi
+        de@chinese|cyclic.years.abbreviated.26|ji-chou
+        de@chinese|cyclic.years.abbreviated.27|geng-yin
+        de@chinese|cyclic.years.abbreviated.28|xin-mao
+        de@chinese|cyclic.years.abbreviated.29|ren-chen
+        de@chinese|cyclic.years.abbreviated.2|yi-chou
+        de@chinese|cyclic.years.abbreviated.30|gui-si
+        de@chinese|cyclic.years.abbreviated.31|jia-wu
+        de@chinese|cyclic.years.abbreviated.32|yi-wei
+        de@chinese|cyclic.years.abbreviated.33|bing-shen
+        de@chinese|cyclic.years.abbreviated.34|ding-you
+        de@chinese|cyclic.years.abbreviated.35|wu-xu
+        de@chinese|cyclic.years.abbreviated.36|ji-hai
+        de@chinese|cyclic.years.abbreviated.37|geng-zi
+        de@chinese|cyclic.years.abbreviated.38|xin-chou
+        de@chinese|cyclic.years.abbreviated.39|ren-yin
+        de@chinese|cyclic.years.abbreviated.3|bing-yin
+        de@chinese|cyclic.years.abbreviated.40|gui-mao
+        de@chinese|cyclic.years.abbreviated.41|jia-chen
+        de@chinese|cyclic.years.abbreviated.42|yi-si
+        de@chinese|cyclic.years.abbreviated.43|bing-wu
+        de@chinese|cyclic.years.abbreviated.44|ding-wei
+        de@chinese|cyclic.years.abbreviated.45|wu-shen
+        de@chinese|cyclic.years.abbreviated.46|ji-you
+        de@chinese|cyclic.years.abbreviated.47|geng-xu
+        de@chinese|cyclic.years.abbreviated.48|xin-hai
+        de@chinese|cyclic.years.abbreviated.49|ren-zi
+        de@chinese|cyclic.years.abbreviated.4|ding-mao
+        de@chinese|cyclic.years.abbreviated.50|gui-chou
+        de@chinese|cyclic.years.abbreviated.51|jia-yin
+        de@chinese|cyclic.years.abbreviated.52|yi-mao
+        de@chinese|cyclic.years.abbreviated.53|bing-chen
+        de@chinese|cyclic.years.abbreviated.54|ding-si
+        de@chinese|cyclic.years.abbreviated.55|wu-wu
+        de@chinese|cyclic.years.abbreviated.56|ji-wei
+        de@chinese|cyclic.years.abbreviated.57|geng-shen
+        de@chinese|cyclic.years.abbreviated.58|xin-you
+        de@chinese|cyclic.years.abbreviated.59|ren-xu
+        de@chinese|cyclic.years.abbreviated.5|wu-chen
+        de@chinese|cyclic.years.abbreviated.60|gui-hai
+        de@chinese|cyclic.years.abbreviated.6|ji-si
+        de@chinese|cyclic.years.abbreviated.7|geng-wu
+        de@chinese|cyclic.years.abbreviated.8|xin-wei
+        de@chinese|cyclic.years.abbreviated.9|ren-shen
+        de@chinese|cyclic.years.narrow.10|gui-you
+        de@chinese|cyclic.years.narrow.11|jia-xu
+        de@chinese|cyclic.years.narrow.12|yi-hai
+        de@chinese|cyclic.years.narrow.13|bing-zi
+        de@chinese|cyclic.years.narrow.14|ding-chou
+        de@chinese|cyclic.years.narrow.15|wu-yin
+        de@chinese|cyclic.years.narrow.16|ji-mao
+        de@chinese|cyclic.years.narrow.17|geng-chen
+        de@chinese|cyclic.years.narrow.18|xin-si
+        de@chinese|cyclic.years.narrow.19|ren-wu
+        de@chinese|cyclic.years.narrow.1|jia-zi
+        de@chinese|cyclic.years.narrow.20|gui-wei
+        de@chinese|cyclic.years.narrow.21|jia-shen
+        de@chinese|cyclic.years.narrow.22|yi-you
+        de@chinese|cyclic.years.narrow.23|bing-xu
+        de@chinese|cyclic.years.narrow.24|ding-hai
+        de@chinese|cyclic.years.narrow.25|wu-zi
+        de@chinese|cyclic.years.narrow.26|ji-chou
+        de@chinese|cyclic.years.narrow.27|geng-yin
+        de@chinese|cyclic.years.narrow.28|xin-mao
+        de@chinese|cyclic.years.narrow.29|ren-chen
+        de@chinese|cyclic.years.narrow.2|yi-chou
+        de@chinese|cyclic.years.narrow.30|gui-si
+        de@chinese|cyclic.years.narrow.31|jia-wu
+        de@chinese|cyclic.years.narrow.32|yi-wei
+        de@chinese|cyclic.years.narrow.33|bing-shen
+        de@chinese|cyclic.years.narrow.34|ding-you
+        de@chinese|cyclic.years.narrow.35|wu-xu
+        de@chinese|cyclic.years.narrow.36|ji-hai
+        de@chinese|cyclic.years.narrow.37|geng-zi
+        de@chinese|cyclic.years.narrow.38|xin-chou
+        de@chinese|cyclic.years.narrow.39|ren-yin
+        de@chinese|cyclic.years.narrow.3|bing-yin
+        de@chinese|cyclic.years.narrow.40|gui-mao
+        de@chinese|cyclic.years.narrow.41|jia-chen
+        de@chinese|cyclic.years.narrow.42|yi-si
+        de@chinese|cyclic.years.narrow.43|bing-wu
+        de@chinese|cyclic.years.narrow.44|ding-wei
+        de@chinese|cyclic.years.narrow.45|wu-shen
+        de@chinese|cyclic.years.narrow.46|ji-you
+        de@chinese|cyclic.years.narrow.47|geng-xu
+        de@chinese|cyclic.years.narrow.48|xin-hai
+        de@chinese|cyclic.years.narrow.49|ren-zi
+        de@chinese|cyclic.years.narrow.4|ding-mao
+        de@chinese|cyclic.years.narrow.50|gui-chou
+        de@chinese|cyclic.years.narrow.51|jia-yin
+        de@chinese|cyclic.years.narrow.52|yi-mao
+        de@chinese|cyclic.years.narrow.53|bing-chen
+        de@chinese|cyclic.years.narrow.54|ding-si
+        de@chinese|cyclic.years.narrow.55|wu-wu
+        de@chinese|cyclic.years.narrow.56|ji-wei
+        de@chinese|cyclic.years.narrow.57|geng-shen
+        de@chinese|cyclic.years.narrow.58|xin-you
+        de@chinese|cyclic.years.narrow.59|ren-xu
+        de@chinese|cyclic.years.narrow.5|wu-chen
+        de@chinese|cyclic.years.narrow.60|gui-hai
+        de@chinese|cyclic.years.narrow.6|ji-si
+        de@chinese|cyclic.years.narrow.7|geng-wu
+        de@chinese|cyclic.years.narrow.8|xin-wei
+        de@chinese|cyclic.years.narrow.9|ren-shen
+        de@chinese|cyclic.years.wide.10|gui-you
+        de@chinese|cyclic.years.wide.11|jia-xu
+        de@chinese|cyclic.years.wide.12|yi-hai
+        de@chinese|cyclic.years.wide.13|bing-zi
+        de@chinese|cyclic.years.wide.14|ding-chou
+        de@chinese|cyclic.years.wide.15|wu-yin
+        de@chinese|cyclic.years.wide.16|ji-mao
+        de@chinese|cyclic.years.wide.17|geng-chen
+        de@chinese|cyclic.years.wide.18|xin-si
+        de@chinese|cyclic.years.wide.19|ren-wu
+        de@chinese|cyclic.years.wide.1|jia-zi
+        de@chinese|cyclic.years.wide.20|gui-wei
+        de@chinese|cyclic.years.wide.21|jia-shen
+        de@chinese|cyclic.years.wide.22|yi-you
+        de@chinese|cyclic.years.wide.23|bing-xu
+        de@chinese|cyclic.years.wide.24|ding-hai
+        de@chinese|cyclic.years.wide.25|wu-zi
+        de@chinese|cyclic.years.wide.26|ji-chou
+        de@chinese|cyclic.years.wide.27|geng-yin
+        de@chinese|cyclic.years.wide.28|xin-mao
+        de@chinese|cyclic.years.wide.29|ren-chen
+        de@chinese|cyclic.years.wide.2|yi-chou
+        de@chinese|cyclic.years.wide.30|gui-si
+        de@chinese|cyclic.years.wide.31|jia-wu
+        de@chinese|cyclic.years.wide.32|yi-wei
+        de@chinese|cyclic.years.wide.33|bing-shen
+        de@chinese|cyclic.years.wide.34|ding-you
+        de@chinese|cyclic.years.wide.35|wu-xu
+        de@chinese|cyclic.years.wide.36|ji-hai
+        de@chinese|cyclic.years.wide.37|geng-zi
+        de@chinese|cyclic.years.wide.38|xin-chou
+        de@chinese|cyclic.years.wide.39|ren-yin
+        de@chinese|cyclic.years.wide.3|bing-yin
+        de@chinese|cyclic.years.wide.40|gui-mao
+        de@chinese|cyclic.years.wide.41|jia-chen
+        de@chinese|cyclic.years.wide.42|yi-si
+        de@chinese|cyclic.years.wide.43|bing-wu
+        de@chinese|cyclic.years.wide.44|ding-wei
+        de@chinese|cyclic.years.wide.45|wu-shen
+        de@chinese|cyclic.years.wide.46|ji-you
+        de@chinese|cyclic.years.wide.47|geng-xu
+        de@chinese|cyclic.years.wide.48|xin-hai
+        de@chinese|cyclic.years.wide.49|ren-zi
+        de@chinese|cyclic.years.wide.4|ding-mao
+        de@chinese|cyclic.years.wide.50|gui-chou
+        de@chinese|cyclic.years.wide.51|jia-yin
+        de@chinese|cyclic.years.wide.52|yi-mao
+        de@chinese|cyclic.years.wide.53|bing-chen
+        de@chinese|cyclic.years.wide.54|ding-si
+        de@chinese|cyclic.years.wide.55|wu-wu
+        de@chinese|cyclic.years.wide.56|ji-wei
+        de@chinese|cyclic.years.wide.57|geng-shen
+        de@chinese|cyclic.years.wide.58|xin-you
+        de@chinese|cyclic.years.wide.59|ren-xu
+        de@chinese|cyclic.years.wide.5|wu-chen
+        de@chinese|cyclic.years.wide.60|gui-hai
+        de@chinese|cyclic.years.wide.6|ji-si
+        de@chinese|cyclic.years.wide.7|geng-wu
+        de@chinese|cyclic.years.wide.8|xin-wei
+        de@chinese|cyclic.years.wide.9|ren-shen
+        de@chinese|dateFormats.full|EEEE, d. MMMM U
+        de@chinese|dateFormats.long|d. MMMM U
+        de@chinese|dateFormats.medium|dd.MM U
+        de@chinese|dateFormats.short|dd.MM.yy
+        de@chinese|dateTime.full|{1} {0}
+        de@chinese|dateTime.long|{1} {0}
+        de@chinese|dateTime.medium|{1} {0}
+        de@chinese|dateTime.short|{1} {0}
+        de@chinese|interval.H.H|HH\u2013HH
+        de@chinese|interval.Hv.H|HH\u2013HH v
+        de@chinese|interval.M.M|MM\u2013MM
+        de@chinese|interval.MEd.M|MM-dd, E\u2009\u2013\u2009MM-dd, E
+        de@chinese|interval.MEd.d|MM-dd, E\u2009\u2013\u2009MM-dd, E
+        de@chinese|interval.MMM.M|LLL\u2013LLL
+        de@chinese|interval.MMMEd.M|MMM d, E\u2009\u2013\u2009MMM d, E
+        de@chinese|interval.MMMEd.d|MMM d, E\u2009\u2013\u2009MMM d, E
+        de@chinese|interval.MMMd.M|MMM d\u2009\u2013\u2009MMM d
+        de@chinese|interval.MMMd.d|MMM d\u2013d
+        de@chinese|interval.Md.M|MM-dd\u2009\u2013\u2009MM-dd
+        de@chinese|interval.Md.d|MM-dd\u2009\u2013\u2009MM-dd
+        de@chinese|interval.d.d|d\u2013d
+        de@chinese|interval.hm.a|h:mm a\u2009\u2013\u2009h:mm a
+        de@chinese|interval.hm.h|h:mm\u2013h:mm a
+        de@chinese|interval.hm.m|h:mm\u2013h:mm a
+        de@chinese|interval.hmv.a|h:mm a\u2009\u2013\u2009h:mm a v
+        de@chinese|interval.hmv.h|h:mm\u2013h:mm a v
+        de@chinese|interval.hmv.m|h:mm\u2013h:mm a v
+        de@chinese|interval.y.y|U\u2013U
+        de@chinese|interval.yM.M|y-MM\u2009\u2013\u2009y-MM
+        de@chinese|interval.yM.y|y-MM\u2009\u2013\u2009y-MM
+        de@chinese|interval.yMEd.M|y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        de@chinese|interval.yMEd.d|y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        de@chinese|interval.yMEd.y|y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        de@chinese|interval.yMMM.M|U MMM\u2013MMM
+        de@chinese|interval.yMMM.y|U MMM\u2009\u2013\u2009U MMM
+        de@chinese|interval.yMMMEd.M|U MMM d, E\u2009\u2013\u2009MMM d, E
+        de@chinese|interval.yMMMEd.d|U MMM d, E\u2009\u2013\u2009MMM d, E
+        de@chinese|interval.yMMMEd.y|U MMM d, E\u2009\u2013\u2009U MMM d, E
+        de@chinese|interval.yMMMM.M|U MMMM\u2013MMMM
+        de@chinese|interval.yMMMM.y|U MMMM\u2009\u2013\u2009U MMMM
+        de@chinese|interval.yMMMd.M|U MMM d\u2009\u2013\u2009MMM d
+        de@chinese|interval.yMMMd.d|U MMM d\u2013d
+        de@chinese|interval.yMMMd.y|U MMM d\u2009\u2013\u2009U MMM d
+        de@chinese|interval.yMd.M|y-MM-dd\u2009\u2013\u2009y-MM-dd
+        de@chinese|interval.yMd.d|y-MM-dd\u2009\u2013\u2009y-MM-dd
+        de@chinese|interval.yMd.y|y-MM-dd\u2009\u2013\u2009y-MM-dd
+        de@chinese|monthPatterns.format.abbreviated.leap|{0}bis
+        de@chinese|monthPatterns.format.narrow.leap|{0}b
+        de@chinese|monthPatterns.format.wide.leap|{0}bis
+        de@chinese|monthPatterns.numeric.all.leap|{0}bis
+        de@chinese|monthPatterns.stand-alone.abbreviated.leap|{0}bis
+        de@chinese|monthPatterns.stand-alone.narrow.leap|{0}b
+        de@chinese|monthPatterns.stand-alone.wide.leap|{0}bis
+        de@chinese|months.format.abbreviated.10|M10
+        de@chinese|months.format.abbreviated.11|M11
+        de@chinese|months.format.abbreviated.12|M12
+        de@chinese|months.format.abbreviated.1|M01
+        de@chinese|months.format.abbreviated.2|M02
+        de@chinese|months.format.abbreviated.3|M03
+        de@chinese|months.format.abbreviated.4|M04
+        de@chinese|months.format.abbreviated.5|M05
+        de@chinese|months.format.abbreviated.6|M06
+        de@chinese|months.format.abbreviated.7|M07
+        de@chinese|months.format.abbreviated.8|M08
+        de@chinese|months.format.abbreviated.9|M09
+        de@chinese|months.format.narrow.10|10
+        de@chinese|months.format.narrow.11|11
+        de@chinese|months.format.narrow.12|12
+        de@chinese|months.format.narrow.1|1
+        de@chinese|months.format.narrow.2|2
+        de@chinese|months.format.narrow.3|3
+        de@chinese|months.format.narrow.4|4
+        de@chinese|months.format.narrow.5|5
+        de@chinese|months.format.narrow.6|6
+        de@chinese|months.format.narrow.7|7
+        de@chinese|months.format.narrow.8|8
+        de@chinese|months.format.narrow.9|9
+        de@chinese|months.format.wide.10|M10
+        de@chinese|months.format.wide.11|M11
+        de@chinese|months.format.wide.12|M12
+        de@chinese|months.format.wide.1|M01
+        de@chinese|months.format.wide.2|M02
+        de@chinese|months.format.wide.3|M03
+        de@chinese|months.format.wide.4|M04
+        de@chinese|months.format.wide.5|M05
+        de@chinese|months.format.wide.6|M06
+        de@chinese|months.format.wide.7|M07
+        de@chinese|months.format.wide.8|M08
+        de@chinese|months.format.wide.9|M09
+        de@chinese|months.stand-alone.abbreviated.10|M10
+        de@chinese|months.stand-alone.abbreviated.11|M11
+        de@chinese|months.stand-alone.abbreviated.12|M12
+        de@chinese|months.stand-alone.abbreviated.1|M01
+        de@chinese|months.stand-alone.abbreviated.2|M02
+        de@chinese|months.stand-alone.abbreviated.3|M03
+        de@chinese|months.stand-alone.abbreviated.4|M04
+        de@chinese|months.stand-alone.abbreviated.5|M05
+        de@chinese|months.stand-alone.abbreviated.6|M06
+        de@chinese|months.stand-alone.abbreviated.7|M07
+        de@chinese|months.stand-alone.abbreviated.8|M08
+        de@chinese|months.stand-alone.abbreviated.9|M09
+        de@chinese|months.stand-alone.narrow.10|10
+        de@chinese|months.stand-alone.narrow.11|11
+        de@chinese|months.stand-alone.narrow.12|12
+        de@chinese|months.stand-alone.narrow.1|1
+        de@chinese|months.stand-alone.narrow.2|2
+        de@chinese|months.stand-alone.narrow.3|3
+        de@chinese|months.stand-alone.narrow.4|4
+        de@chinese|months.stand-alone.narrow.5|5
+        de@chinese|months.stand-alone.narrow.6|6
+        de@chinese|months.stand-alone.narrow.7|7
+        de@chinese|months.stand-alone.narrow.8|8
+        de@chinese|months.stand-alone.narrow.9|9
+        de@chinese|months.stand-alone.wide.10|M10
+        de@chinese|months.stand-alone.wide.11|M11
+        de@chinese|months.stand-alone.wide.12|M12
+        de@chinese|months.stand-alone.wide.1|M01
+        de@chinese|months.stand-alone.wide.2|M02
+        de@chinese|months.stand-alone.wide.3|M03
+        de@chinese|months.stand-alone.wide.4|M04
+        de@chinese|months.stand-alone.wide.5|M05
+        de@chinese|months.stand-alone.wide.6|M06
+        de@chinese|months.stand-alone.wide.7|M07
+        de@chinese|months.stand-alone.wide.8|M08
+        de@chinese|months.stand-alone.wide.9|M09
+        de@coptic|eras.eraAbbr.1|AM
+        de@coptic|eras.eraNames.1|AM
+        de@coptic|eras.eraNarrow.1|AM
+        de@coptic|months.format.abbreviated.10|Paoni
+        de@coptic|months.format.abbreviated.11|Epip
+        de@coptic|months.format.abbreviated.12|Mesori
+        de@coptic|months.format.abbreviated.13|Nasie
+        de@coptic|months.format.abbreviated.1|Thout
+        de@coptic|months.format.abbreviated.2|Paopi
+        de@coptic|months.format.abbreviated.3|Hathor
+        de@coptic|months.format.abbreviated.4|Koiak
+        de@coptic|months.format.abbreviated.5|Tobi
+        de@coptic|months.format.abbreviated.6|Meschir
+        de@coptic|months.format.abbreviated.7|Paremhat
+        de@coptic|months.format.abbreviated.8|Paremoude
+        de@coptic|months.format.abbreviated.9|Paschons
+        de@coptic|months.format.narrow.10|10
+        de@coptic|months.format.narrow.11|11
+        de@coptic|months.format.narrow.12|12
+        de@coptic|months.format.narrow.13|13
+        de@coptic|months.format.narrow.1|1
+        de@coptic|months.format.narrow.2|2
+        de@coptic|months.format.narrow.3|3
+        de@coptic|months.format.narrow.4|4
+        de@coptic|months.format.narrow.5|5
+        de@coptic|months.format.narrow.6|6
+        de@coptic|months.format.narrow.7|7
+        de@coptic|months.format.narrow.8|8
+        de@coptic|months.format.narrow.9|9
+        de@coptic|months.format.wide.10|Paoni
+        de@coptic|months.format.wide.11|Epip
+        de@coptic|months.format.wide.12|Mesori
+        de@coptic|months.format.wide.13|Nasie
+        de@coptic|months.format.wide.1|Thout
+        de@coptic|months.format.wide.2|Paopi
+        de@coptic|months.format.wide.3|Hathor
+        de@coptic|months.format.wide.4|Koiak
+        de@coptic|months.format.wide.5|Tobi
+        de@coptic|months.format.wide.6|Meschir
+        de@coptic|months.format.wide.7|Paremhat
+        de@coptic|months.format.wide.8|Paremoude
+        de@coptic|months.format.wide.9|Paschons
+        de@coptic|months.stand-alone.abbreviated.10|Paoni
+        de@coptic|months.stand-alone.abbreviated.11|Epip
+        de@coptic|months.stand-alone.abbreviated.12|Mesori
+        de@coptic|months.stand-alone.abbreviated.13|Nasie
+        de@coptic|months.stand-alone.abbreviated.1|Thout
+        de@coptic|months.stand-alone.abbreviated.2|Paopi
+        de@coptic|months.stand-alone.abbreviated.3|Hathor
+        de@coptic|months.stand-alone.abbreviated.4|Koiak
+        de@coptic|months.stand-alone.abbreviated.5|Tobi
+        de@coptic|months.stand-alone.abbreviated.6|Meschir
+        de@coptic|months.stand-alone.abbreviated.7|Paremhat
+        de@coptic|months.stand-alone.abbreviated.8|Paremoude
+        de@coptic|months.stand-alone.abbreviated.9|Paschons
+        de@coptic|months.stand-alone.narrow.10|10
+        de@coptic|months.stand-alone.narrow.11|11
+        de@coptic|months.stand-alone.narrow.12|12
+        de@coptic|months.stand-alone.narrow.13|13
+        de@coptic|months.stand-alone.narrow.1|1
+        de@coptic|months.stand-alone.narrow.2|2
+        de@coptic|months.stand-alone.narrow.3|3
+        de@coptic|months.stand-alone.narrow.4|4
+        de@coptic|months.stand-alone.narrow.5|5
+        de@coptic|months.stand-alone.narrow.6|6
+        de@coptic|months.stand-alone.narrow.7|7
+        de@coptic|months.stand-alone.narrow.8|8
+        de@coptic|months.stand-alone.narrow.9|9
+        de@coptic|months.stand-alone.wide.10|Paoni
+        de@coptic|months.stand-alone.wide.11|Epip
+        de@coptic|months.stand-alone.wide.12|Mesori
+        de@coptic|months.stand-alone.wide.13|Nasie
+        de@coptic|months.stand-alone.wide.1|Thout
+        de@coptic|months.stand-alone.wide.2|Paopi
+        de@coptic|months.stand-alone.wide.3|Hathor
+        de@coptic|months.stand-alone.wide.4|Koiak
+        de@coptic|months.stand-alone.wide.5|Tobi
+        de@coptic|months.stand-alone.wide.6|Meschir
+        de@coptic|months.stand-alone.wide.7|Paremhat
+        de@coptic|months.stand-alone.wide.8|Paremoude
+        de@coptic|months.stand-alone.wide.9|Paschons
+        de@ethiopic|eras.eraAbbr.0|AA
+        de@ethiopic|eras.eraAbbr.1|AM
+        de@ethiopic|eras.eraNames.0|AA
+        de@ethiopic|eras.eraNames.1|AM
+        de@ethiopic|eras.eraNarrow.0|AA
+        de@ethiopic|eras.eraNarrow.1|AM
+        de@ethiopic|months.format.abbreviated.10|S\u00E4ne
+        de@ethiopic|months.format.abbreviated.11|\u1E24amle
+        de@ethiopic|months.format.abbreviated.12|N\u00E4hase
+        de@ethiopic|months.format.abbreviated.13|\u1E56agumen
+        de@ethiopic|months.format.abbreviated.1|M\u00E4sk\u00E4r\u00E4m
+        de@ethiopic|months.format.abbreviated.2|\u1E6C\u0259q\u0259mt
+        de@ethiopic|months.format.abbreviated.3|\u1E2A\u0259dar
+        de@ethiopic|months.format.abbreviated.4|Ta\u1E2B\u015Ba\u015B
+        de@ethiopic|months.format.abbreviated.5|\u1E6C\u0259rr
+        de@ethiopic|months.format.abbreviated.6|Y\u00E4katit
+        de@ethiopic|months.format.abbreviated.7|M\u00E4gabit
+        de@ethiopic|months.format.abbreviated.8|Miyazya
+        de@ethiopic|months.format.abbreviated.9|G\u0259nbot
+        de@ethiopic|months.format.narrow.10|10
+        de@ethiopic|months.format.narrow.11|11
+        de@ethiopic|months.format.narrow.12|12
+        de@ethiopic|months.format.narrow.13|13
+        de@ethiopic|months.format.narrow.1|1
+        de@ethiopic|months.format.narrow.2|2
+        de@ethiopic|months.format.narrow.3|3
+        de@ethiopic|months.format.narrow.4|4
+        de@ethiopic|months.format.narrow.5|5
+        de@ethiopic|months.format.narrow.6|6
+        de@ethiopic|months.format.narrow.7|7
+        de@ethiopic|months.format.narrow.8|8
+        de@ethiopic|months.format.narrow.9|9
+        de@ethiopic|months.format.wide.10|S\u00E4ne
+        de@ethiopic|months.format.wide.11|\u1E24amle
+        de@ethiopic|months.format.wide.12|N\u00E4hase
+        de@ethiopic|months.format.wide.13|\u1E56agumen
+        de@ethiopic|months.format.wide.1|M\u00E4sk\u00E4r\u00E4m
+        de@ethiopic|months.format.wide.2|\u1E6C\u0259q\u0259mt
+        de@ethiopic|months.format.wide.3|\u1E2A\u0259dar
+        de@ethiopic|months.format.wide.4|Ta\u1E2B\u015Ba\u015B
+        de@ethiopic|months.format.wide.5|\u1E6C\u0259rr
+        de@ethiopic|months.format.wide.6|Y\u00E4katit
+        de@ethiopic|months.format.wide.7|M\u00E4gabit
+        de@ethiopic|months.format.wide.8|Miyazya
+        de@ethiopic|months.format.wide.9|G\u0259nbot
+        de@ethiopic|months.stand-alone.abbreviated.10|S\u00E4ne
+        de@ethiopic|months.stand-alone.abbreviated.11|\u1E24amle
+        de@ethiopic|months.stand-alone.abbreviated.12|N\u00E4hase
+        de@ethiopic|months.stand-alone.abbreviated.13|\u1E56agumen
+        de@ethiopic|months.stand-alone.abbreviated.1|M\u00E4sk\u00E4r\u00E4m
+        de@ethiopic|months.stand-alone.abbreviated.2|\u1E6C\u0259q\u0259mt
+        de@ethiopic|months.stand-alone.abbreviated.3|\u1E2A\u0259dar
+        de@ethiopic|months.stand-alone.abbreviated.4|Ta\u1E2B\u015Ba\u015B
+        de@ethiopic|months.stand-alone.abbreviated.5|\u1E6C\u0259rr
+        de@ethiopic|months.stand-alone.abbreviated.6|Y\u00E4katit
+        de@ethiopic|months.stand-alone.abbreviated.7|M\u00E4gabit
+        de@ethiopic|months.stand-alone.abbreviated.8|Miyazya
+        de@ethiopic|months.stand-alone.abbreviated.9|G\u0259nbot
+        de@ethiopic|months.stand-alone.narrow.10|10
+        de@ethiopic|months.stand-alone.narrow.11|11
+        de@ethiopic|months.stand-alone.narrow.12|12
+        de@ethiopic|months.stand-alone.narrow.13|13
+        de@ethiopic|months.stand-alone.narrow.1|1
+        de@ethiopic|months.stand-alone.narrow.2|2
+        de@ethiopic|months.stand-alone.narrow.3|3
+        de@ethiopic|months.stand-alone.narrow.4|4
+        de@ethiopic|months.stand-alone.narrow.5|5
+        de@ethiopic|months.stand-alone.narrow.6|6
+        de@ethiopic|months.stand-alone.narrow.7|7
+        de@ethiopic|months.stand-alone.narrow.8|8
+        de@ethiopic|months.stand-alone.narrow.9|9
+        de@ethiopic|months.stand-alone.wide.10|S\u00E4ne
+        de@ethiopic|months.stand-alone.wide.11|\u1E24amle
+        de@ethiopic|months.stand-alone.wide.12|N\u00E4hase
+        de@ethiopic|months.stand-alone.wide.13|\u1E56agumen
+        de@ethiopic|months.stand-alone.wide.1|M\u00E4sk\u00E4r\u00E4m
+        de@ethiopic|months.stand-alone.wide.2|\u1E6C\u0259q\u0259mt
+        de@ethiopic|months.stand-alone.wide.3|\u1E2A\u0259dar
+        de@ethiopic|months.stand-alone.wide.4|Ta\u1E2B\u015Ba\u015B
+        de@ethiopic|months.stand-alone.wide.5|\u1E6C\u0259rr
+        de@ethiopic|months.stand-alone.wide.6|Y\u00E4katit
+        de@ethiopic|months.stand-alone.wide.7|M\u00E4gabit
+        de@ethiopic|months.stand-alone.wide.8|Miyazya
+        de@ethiopic|months.stand-alone.wide.9|G\u0259nbot
+        de@generic|-available.Hmsv|
+        de@generic|-available.Hmv|
+        de@generic|-available.MMMMEd|
+        de@generic|-available.MMdd|
+        de@generic|-available.MMd|
+        de@generic|-available.hmsv|
+        de@generic|-available.hmv|
+        de@generic|-available.yMEd|
+        de@generic|-available.yMMMEd|
+        de@generic|-available.yMMMM|
+        de@generic|-available.yMMMd|
+        de@generic|-available.yMMM|
+        de@generic|-available.yMMdd|
+        de@generic|-available.yMM|
+        de@generic|-available.yMd|
+        de@generic|-available.yM|
+        de@generic|-available.yQQQQ|
+        de@generic|-available.yQQQ|
+        de@generic|available.EBhms|E h:mm:ss B
+        de@generic|available.EBhm|E h:mm B
+        de@generic|available.EBh|E h B
+        de@generic|available.EHms|E HH:mm:ss
+        de@generic|available.EHm|E HH:mm
+        de@generic|available.Ehms|E h:mm:ss\u202Fa
+        de@generic|available.Eh|E h\u202Fa
+        de@generic|available.GyMEd|E, d.M.y G
+        de@generic|available.GyMd|d.M.y GGGGG
+        de@generic|available.GyM|y-MM G
+        de@generic|available.h|h 'Uhr' B
+        de@generic|available.yyyyMEd|E, d.M.y GGGGG
+        de@generic|available.yyyyMMMEd|E, d. MMM y G
+        de@generic|available.yyyyMMMM|MMMM y G
+        de@generic|available.yyyyMMMd|d. MMM y G
+        de@generic|available.yyyyMMM|MMM y G
+        de@generic|available.yyyyMd|d.M.y GGGGG
+        de@generic|available.yyyyM|M/y GGGGG
+        de@generic|available.yyyyQQQQ|QQQQ y G
+        de@generic|available.yyyyQQQ|QQQ y G
+        de@generic|available.yyyy|y G
+        de@generic|available.y|y G
+        de@generic|dateFormats.full|EEEE, d. MMMM y G
+        de@generic|dateFormats.long|d. MMMM y G
+        de@generic|dateFormats.medium|dd.MM.y G
+        de@generic|dateFormats.short|dd.MM.yy GGGGG
+        de@generic|interval.Bh.B|h B\u2009\u2013\u2009h B
+        de@generic|interval.Bh.h|h\u2013h B
+        de@generic|interval.Bhm.B|h:mm B\u2009\u2013\u2009h:mm B
+        de@generic|interval.Bhm.h|h:mm\u2013h:mm B
+        de@generic|interval.Bhm.m|h:mm\u2013h:mm B
+        de@generic|interval.Gy.G|G y\u2009\u2013\u2009G y
+        de@generic|interval.Gy.y|G y\u2013y
+        de@generic|interval.GyM.G|G y-MM\u2009\u2013\u2009G y-MM
+        de@generic|interval.GyM.M|G y-MM\u2009\u2013\u2009y-MM
+        de@generic|interval.GyM.y|G y-MM\u2009\u2013\u2009y-MM
+        de@generic|interval.GyMEd.G|G y-MM-dd, E\u2009\u2013\u2009G y-MM-dd, E
+        de@generic|interval.GyMEd.M|G y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        de@generic|interval.GyMEd.d|G y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        de@generic|interval.GyMEd.y|G y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        de@generic|interval.GyMMM.G|G y MMM\u2009\u2013\u2009G y MMM
+        de@generic|interval.GyMMM.M|G y MMM\u2013MMM
+        de@generic|interval.GyMMM.y|G y MMM\u2009\u2013\u2009y MMM
+        de@generic|interval.GyMMMEd.G|G y MMM d, E\u2009\u2013\u2009G y MMM d, E
+        de@generic|interval.GyMMMEd.M|G y MMM d, E\u2009\u2013\u2009MMM d, E
+        de@generic|interval.GyMMMEd.d|G y MMM d, E\u2009\u2013\u2009MMM d, E
+        de@generic|interval.GyMMMEd.y|G y MMM d, E\u2009\u2013\u2009y MMM d, E
+        de@generic|interval.GyMMMd.G|G y MMM d\u2009\u2013\u2009G y MMM d
+        de@generic|interval.GyMMMd.M|G y MMM d\u2009\u2013\u2009MMM d
+        de@generic|interval.GyMMMd.d|G y MMM d\u2013d
+        de@generic|interval.GyMMMd.y|G y MMM d\u2009\u2013\u2009y MMM d
+        de@generic|interval.GyMd.G|G y-MM-dd\u2009\u2013\u2009G y-MM-dd
+        de@generic|interval.GyMd.M|G y-MM-dd\u2009\u2013\u2009y-MM-dd
+        de@generic|interval.GyMd.d|G y-MM-dd\u2009\u2013\u2009y-MM-dd
+        de@generic|interval.GyMd.y|G y-MM-dd\u2009\u2013\u2009y-MM-dd
+        de@generic|interval.Hm.H|HH:mm\u2013HH:mm
+        de@generic|interval.Hm.m|HH:mm\u2013HH:mm
+        de@generic|interval.Hmv.H|HH:mm\u2013HH:mm v
+        de@generic|interval.Hmv.m|HH:mm\u2013HH:mm v
+        de@generic|interval.M.M|M.\u2013M.
+        de@generic|interval.MEd.d|E, dd.MM.\u2009\u2013\u2009E, dd.MM.
+        de@generic|interval.Md.d|dd.MM.\u2009\u2013\u2009dd.MM.
+        de@generic|interval.h.h|h\u2013h\u202Fa
+        de@generic|interval.y.y|y\u2013y G
+        de@generic|interval.yM.M|M/y\u2009\u2013\u2009M/y G
+        de@generic|interval.yM.y|M/y\u2009\u2013\u2009M/y G
+        de@generic|interval.yMEd.M|E, dd.MM.y\u2009\u2013\u2009E, dd.MM.y G
+        de@generic|interval.yMEd.d|E, dd.MM.y\u2009\u2013\u2009E, dd.MM.y G
+        de@generic|interval.yMEd.y|E, dd.MM.y\u2009\u2013\u2009E, dd.MM.y G
+        de@generic|interval.yMMM.M|MMM\u2013MMM y G
+        de@generic|interval.yMMM.y|MMM y\u2009\u2013\u2009MMM y G
+        de@generic|interval.yMMMEd.M|E, d. MMM\u2009\u2013\u2009E, d. MMM y G
+        de@generic|interval.yMMMEd.d|E, d.\u2009\u2013\u2009E, d. MMM y G
+        de@generic|interval.yMMMEd.y|E, d. MMM y\u2009\u2013\u2009E, d. MMM y G
+        de@generic|interval.yMMMM.M|MMMM\u2013MMMM y G
+        de@generic|interval.yMMMM.y|MMMM y\u2009\u2013\u2009MMMM y G
+        de@generic|interval.yMMMd.M|d. MMM\u2009\u2013\u2009d. MMM y G
+        de@generic|interval.yMMMd.d|d.\u2013d. MMM y G
+        de@generic|interval.yMMMd.y|d. MMM y\u2009\u2013\u2009d. MMM y G
+        de@generic|interval.yMd.M|dd.MM.y\u2009\u2013\u2009dd.MM.y G
+        de@generic|interval.yMd.d|dd.MM.y\u2009\u2013\u2009dd.MM.y G
+        de@generic|interval.yMd.y|dd.MM.y\u2009\u2013\u2009dd.MM.y G
+        de@hebrew|eras.eraAbbr.0|AM
+        de@hebrew|eras.eraNames.0|AM
+        de@hebrew|eras.eraNarrow.0|AM
+        de@hebrew|months.format.abbreviated.10|Siwan
+        de@hebrew|months.format.abbreviated.11|Tammus
+        de@hebrew|months.format.abbreviated.12|Aw
+        de@hebrew|months.format.abbreviated.13|Elul
+        de@hebrew|months.format.abbreviated.1|Tischri
+        de@hebrew|months.format.abbreviated.2|Cheschwan
+        de@hebrew|months.format.abbreviated.3|Kislew
+        de@hebrew|months.format.abbreviated.4|Tevet
+        de@hebrew|months.format.abbreviated.5|Schevat
+        de@hebrew|months.format.abbreviated.6|Adar I
+        de@hebrew|months.format.abbreviated.7-yeartype-leap|Adar II
+        de@hebrew|months.format.abbreviated.7|Adar
+        de@hebrew|months.format.abbreviated.8|Nisan
+        de@hebrew|months.format.abbreviated.9|Ijjar
+        de@hebrew|months.format.narrow.10|10
+        de@hebrew|months.format.narrow.11|11
+        de@hebrew|months.format.narrow.12|12
+        de@hebrew|months.format.narrow.13|13
+        de@hebrew|months.format.narrow.1|1
+        de@hebrew|months.format.narrow.2|2
+        de@hebrew|months.format.narrow.3|3
+        de@hebrew|months.format.narrow.4|4
+        de@hebrew|months.format.narrow.5|5
+        de@hebrew|months.format.narrow.6|6
+        de@hebrew|months.format.narrow.7-yeartype-leap|7
+        de@hebrew|months.format.narrow.7|7
+        de@hebrew|months.format.narrow.8|8
+        de@hebrew|months.format.narrow.9|9
+        de@hebrew|months.format.wide.10|Siwan
+        de@hebrew|months.format.wide.11|Tammus
+        de@hebrew|months.format.wide.12|Aw
+        de@hebrew|months.format.wide.13|Elul
+        de@hebrew|months.format.wide.1|Tischri
+        de@hebrew|months.format.wide.2|Cheschwan
+        de@hebrew|months.format.wide.3|Kislew
+        de@hebrew|months.format.wide.4|Tevet
+        de@hebrew|months.format.wide.5|Schevat
+        de@hebrew|months.format.wide.6|Adar I
+        de@hebrew|months.format.wide.7-yeartype-leap|Adar II
+        de@hebrew|months.format.wide.7|Adar
+        de@hebrew|months.format.wide.8|Nisan
+        de@hebrew|months.format.wide.9|Ijjar
+        de@hebrew|months.stand-alone.abbreviated.10|Siwan
+        de@hebrew|months.stand-alone.abbreviated.11|Tammus
+        de@hebrew|months.stand-alone.abbreviated.12|Aw
+        de@hebrew|months.stand-alone.abbreviated.13|Elul
+        de@hebrew|months.stand-alone.abbreviated.1|Tischri
+        de@hebrew|months.stand-alone.abbreviated.2|Cheschwan
+        de@hebrew|months.stand-alone.abbreviated.3|Kislew
+        de@hebrew|months.stand-alone.abbreviated.4|Tevet
+        de@hebrew|months.stand-alone.abbreviated.5|Schevat
+        de@hebrew|months.stand-alone.abbreviated.6|Adar I
+        de@hebrew|months.stand-alone.abbreviated.7-yeartype-leap|Adar II
+        de@hebrew|months.stand-alone.abbreviated.7|Adar
+        de@hebrew|months.stand-alone.abbreviated.8|Nisan
+        de@hebrew|months.stand-alone.abbreviated.9|Ijjar
+        de@hebrew|months.stand-alone.narrow.10|10
+        de@hebrew|months.stand-alone.narrow.11|11
+        de@hebrew|months.stand-alone.narrow.12|12
+        de@hebrew|months.stand-alone.narrow.13|13
+        de@hebrew|months.stand-alone.narrow.1|1
+        de@hebrew|months.stand-alone.narrow.2|2
+        de@hebrew|months.stand-alone.narrow.3|3
+        de@hebrew|months.stand-alone.narrow.4|4
+        de@hebrew|months.stand-alone.narrow.5|5
+        de@hebrew|months.stand-alone.narrow.6|6
+        de@hebrew|months.stand-alone.narrow.7-yeartype-leap|7
+        de@hebrew|months.stand-alone.narrow.7|7
+        de@hebrew|months.stand-alone.narrow.8|8
+        de@hebrew|months.stand-alone.narrow.9|9
+        de@hebrew|months.stand-alone.wide.10|Siwan
+        de@hebrew|months.stand-alone.wide.11|Tammus
+        de@hebrew|months.stand-alone.wide.12|Aw
+        de@hebrew|months.stand-alone.wide.13|Elul
+        de@hebrew|months.stand-alone.wide.1|Tischri
+        de@hebrew|months.stand-alone.wide.2|Cheschwan
+        de@hebrew|months.stand-alone.wide.3|Kislew
+        de@hebrew|months.stand-alone.wide.4|Tevet
+        de@hebrew|months.stand-alone.wide.5|Schevat
+        de@hebrew|months.stand-alone.wide.6|Adar I
+        de@hebrew|months.stand-alone.wide.7-yeartype-leap|Adar II
+        de@hebrew|months.stand-alone.wide.7|Adar
+        de@hebrew|months.stand-alone.wide.8|Nisan
+        de@hebrew|months.stand-alone.wide.9|Ijjar
+        de@indian|eras.eraAbbr.0|\u015Aaka
+        de@indian|eras.eraNames.0|\u015Aaka
+        de@indian|eras.eraNarrow.0|\u015Aaka
+        de@indian|months.format.abbreviated.10|Pausha
+        de@indian|months.format.abbreviated.11|Magha
+        de@indian|months.format.abbreviated.12|Phalguna
+        de@indian|months.format.abbreviated.1|Chaitra
+        de@indian|months.format.abbreviated.2|Vaisakha
+        de@indian|months.format.abbreviated.3|Jyaishtha
+        de@indian|months.format.abbreviated.4|Ashadha
+        de@indian|months.format.abbreviated.5|Sravana
+        de@indian|months.format.abbreviated.6|Bhadrapada
+        de@indian|months.format.abbreviated.7|Ashvina
+        de@indian|months.format.abbreviated.8|Kartika
+        de@indian|months.format.abbreviated.9|Margasirsha
+        de@indian|months.format.narrow.10|10
+        de@indian|months.format.narrow.11|11
+        de@indian|months.format.narrow.12|12
+        de@indian|months.format.narrow.1|1
+        de@indian|months.format.narrow.2|2
+        de@indian|months.format.narrow.3|3
+        de@indian|months.format.narrow.4|4
+        de@indian|months.format.narrow.5|5
+        de@indian|months.format.narrow.6|6
+        de@indian|months.format.narrow.7|7
+        de@indian|months.format.narrow.8|8
+        de@indian|months.format.narrow.9|9
+        de@indian|months.format.wide.10|Pausha
+        de@indian|months.format.wide.11|Magha
+        de@indian|months.format.wide.12|Phalguna
+        de@indian|months.format.wide.1|Chaitra
+        de@indian|months.format.wide.2|Vaisakha
+        de@indian|months.format.wide.3|Jyaishtha
+        de@indian|months.format.wide.4|Ashadha
+        de@indian|months.format.wide.5|Sravana
+        de@indian|months.format.wide.6|Bhadrapada
+        de@indian|months.format.wide.7|Ashvina
+        de@indian|months.format.wide.8|Kartika
+        de@indian|months.format.wide.9|Margasirsha
+        de@indian|months.stand-alone.abbreviated.10|Pausha
+        de@indian|months.stand-alone.abbreviated.11|Magha
+        de@indian|months.stand-alone.abbreviated.12|Phalguna
+        de@indian|months.stand-alone.abbreviated.1|Chaitra
+        de@indian|months.stand-alone.abbreviated.2|Vaisakha
+        de@indian|months.stand-alone.abbreviated.3|Jyaishtha
+        de@indian|months.stand-alone.abbreviated.4|Ashadha
+        de@indian|months.stand-alone.abbreviated.5|Sravana
+        de@indian|months.stand-alone.abbreviated.6|Bhadrapada
+        de@indian|months.stand-alone.abbreviated.7|Ashvina
+        de@indian|months.stand-alone.abbreviated.8|Kartika
+        de@indian|months.stand-alone.abbreviated.9|Margasirsha
+        de@indian|months.stand-alone.narrow.10|10
+        de@indian|months.stand-alone.narrow.11|11
+        de@indian|months.stand-alone.narrow.12|12
+        de@indian|months.stand-alone.narrow.1|1
+        de@indian|months.stand-alone.narrow.2|2
+        de@indian|months.stand-alone.narrow.3|3
+        de@indian|months.stand-alone.narrow.4|4
+        de@indian|months.stand-alone.narrow.5|5
+        de@indian|months.stand-alone.narrow.6|6
+        de@indian|months.stand-alone.narrow.7|7
+        de@indian|months.stand-alone.narrow.8|8
+        de@indian|months.stand-alone.narrow.9|9
+        de@indian|months.stand-alone.wide.10|Pausha
+        de@indian|months.stand-alone.wide.11|Magha
+        de@indian|months.stand-alone.wide.12|Phalguna
+        de@indian|months.stand-alone.wide.1|Chaitra
+        de@indian|months.stand-alone.wide.2|Vaisakha
+        de@indian|months.stand-alone.wide.3|Jyaishtha
+        de@indian|months.stand-alone.wide.4|Ashadha
+        de@indian|months.stand-alone.wide.5|Sravana
+        de@indian|months.stand-alone.wide.6|Bhadrapada
+        de@indian|months.stand-alone.wide.7|Ashvina
+        de@indian|months.stand-alone.wide.8|Kartika
+        de@indian|months.stand-alone.wide.9|Margasirsha
+        de@islamic|eras.eraAbbr.0|AH
+        de@islamic|eras.eraAbbr.1|BH
+        de@islamic|eras.eraNames.0|AH
+        de@islamic|eras.eraNames.1|BH
+        de@islamic|eras.eraNarrow.0|AH
+        de@islamic|eras.eraNarrow.1|BH
+        de@islamic|months.format.abbreviated.10|Shaw.
+        de@islamic|months.format.abbreviated.11|Dhu\u02BBl-Q.
+        de@islamic|months.format.abbreviated.12|Dhu\u02BBl-H.
+        de@islamic|months.format.abbreviated.1|Muh.
+        de@islamic|months.format.abbreviated.2|Saf.
+        de@islamic|months.format.abbreviated.3|Rab. I
+        de@islamic|months.format.abbreviated.4|Rab. II
+        de@islamic|months.format.abbreviated.5|Jum. I
+        de@islamic|months.format.abbreviated.6|Jum. II
+        de@islamic|months.format.abbreviated.7|Raj.
+        de@islamic|months.format.abbreviated.8|Sha.
+        de@islamic|months.format.abbreviated.9|Ram.
+        de@islamic|months.format.narrow.10|10
+        de@islamic|months.format.narrow.11|11
+        de@islamic|months.format.narrow.12|12
+        de@islamic|months.format.narrow.1|1
+        de@islamic|months.format.narrow.2|2
+        de@islamic|months.format.narrow.3|3
+        de@islamic|months.format.narrow.4|4
+        de@islamic|months.format.narrow.5|5
+        de@islamic|months.format.narrow.6|6
+        de@islamic|months.format.narrow.7|7
+        de@islamic|months.format.narrow.8|8
+        de@islamic|months.format.narrow.9|9
+        de@islamic|months.format.wide.10|Shawwal
+        de@islamic|months.format.wide.11|Dhu l-qa\u02BFda
+        de@islamic|months.format.wide.12|Dhu l-Hiddscha
+        de@islamic|months.format.wide.1|Muharram
+        de@islamic|months.format.wide.2|Safar
+        de@islamic|months.format.wide.3|Rabi\u02BB I
+        de@islamic|months.format.wide.4|Rabi\u02BB II
+        de@islamic|months.format.wide.5|Dschumada I
+        de@islamic|months.format.wide.6|Dschumada II
+        de@islamic|months.format.wide.7|Radschab
+        de@islamic|months.format.wide.8|Sha\u02BBban
+        de@islamic|months.format.wide.9|Ramadan
+        de@islamic|months.stand-alone.abbreviated.10|Shaw.
+        de@islamic|months.stand-alone.abbreviated.11|Dhu\u02BBl-Q.
+        de@islamic|months.stand-alone.abbreviated.12|Dhu\u02BBl-H.
+        de@islamic|months.stand-alone.abbreviated.1|Muh.
+        de@islamic|months.stand-alone.abbreviated.2|Saf.
+        de@islamic|months.stand-alone.abbreviated.3|Rab. I
+        de@islamic|months.stand-alone.abbreviated.4|Rab. II
+        de@islamic|months.stand-alone.abbreviated.5|Jum. I
+        de@islamic|months.stand-alone.abbreviated.6|Jum. II
+        de@islamic|months.stand-alone.abbreviated.7|Raj.
+        de@islamic|months.stand-alone.abbreviated.8|Sha.
+        de@islamic|months.stand-alone.abbreviated.9|Ram.
+        de@islamic|months.stand-alone.narrow.10|10
+        de@islamic|months.stand-alone.narrow.11|11
+        de@islamic|months.stand-alone.narrow.12|12
+        de@islamic|months.stand-alone.narrow.1|1
+        de@islamic|months.stand-alone.narrow.2|2
+        de@islamic|months.stand-alone.narrow.3|3
+        de@islamic|months.stand-alone.narrow.4|4
+        de@islamic|months.stand-alone.narrow.5|5
+        de@islamic|months.stand-alone.narrow.6|6
+        de@islamic|months.stand-alone.narrow.7|7
+        de@islamic|months.stand-alone.narrow.8|8
+        de@islamic|months.stand-alone.narrow.9|9
+        de@islamic|months.stand-alone.wide.10|Shawwal
+        de@islamic|months.stand-alone.wide.11|Dhu l-qa\u02BFda
+        de@islamic|months.stand-alone.wide.12|Dhu l-Hiddscha
+        de@islamic|months.stand-alone.wide.1|Muharram
+        de@islamic|months.stand-alone.wide.2|Safar
+        de@islamic|months.stand-alone.wide.3|Rabi\u02BB I
+        de@islamic|months.stand-alone.wide.4|Rabi\u02BB II
+        de@islamic|months.stand-alone.wide.5|Dschumada I
+        de@islamic|months.stand-alone.wide.6|Dschumada II
+        de@islamic|months.stand-alone.wide.7|Radschab
+        de@islamic|months.stand-alone.wide.8|Sha\u02BBban
+        de@islamic|months.stand-alone.wide.9|Ramadan
+        de@japanese|eras.eraAbbr.232|Meiji
+        de@japanese|eras.eraAbbr.233|Taish\u014D
+        de@japanese|eras.eraAbbr.234|Sh\u014Dwa
+        de@japanese|eras.eraAbbr.235|Heisei
+        de@japanese|eras.eraAbbr.236|Reiwa
+        de@japanese|eras.eraNames.232|Meiji
+        de@japanese|eras.eraNames.233|Taish\u014D
+        de@japanese|eras.eraNames.234|Sh\u014Dwa
+        de@japanese|eras.eraNames.235|Heisei
+        de@japanese|eras.eraNames.236|Reiwa
+        de@japanese|eras.eraNarrow.232|M
+        de@japanese|eras.eraNarrow.233|T
+        de@japanese|eras.eraNarrow.234|S
+        de@japanese|eras.eraNarrow.235|H
+        de@japanese|eras.eraNarrow.236|R
+        de@persian|eras.eraAbbr.0|AP
+        de@persian|eras.eraNames.0|AP
+        de@persian|eras.eraNarrow.0|AP
+        de@persian|months.format.abbreviated.10|D\u00E9i
+        de@persian|months.format.abbreviated.11|Bahman
+        de@persian|months.format.abbreviated.12|Essfand
+        de@persian|months.format.abbreviated.1|Farwardin
+        de@persian|months.format.abbreviated.2|Ordibehescht
+        de@persian|months.format.abbreviated.3|Chord\u0101d
+        de@persian|months.format.abbreviated.4|Tir
+        de@persian|months.format.abbreviated.5|Mord\u0101d
+        de@persian|months.format.abbreviated.6|Schahriwar
+        de@persian|months.format.abbreviated.7|Mehr
+        de@persian|months.format.abbreviated.8|\u0100b\u0101n
+        de@persian|months.format.abbreviated.9|\u0100sar
+        de@persian|months.format.narrow.10|10
+        de@persian|months.format.narrow.11|11
+        de@persian|months.format.narrow.12|12
+        de@persian|months.format.narrow.1|1
+        de@persian|months.format.narrow.2|2
+        de@persian|months.format.narrow.3|3
+        de@persian|months.format.narrow.4|4
+        de@persian|months.format.narrow.5|5
+        de@persian|months.format.narrow.6|6
+        de@persian|months.format.narrow.7|7
+        de@persian|months.format.narrow.8|8
+        de@persian|months.format.narrow.9|9
+        de@persian|months.format.wide.10|D\u00E9i
+        de@persian|months.format.wide.11|Bahman
+        de@persian|months.format.wide.12|Essfand
+        de@persian|months.format.wide.1|Farwardin
+        de@persian|months.format.wide.2|Ordibehescht
+        de@persian|months.format.wide.3|Chord\u0101d
+        de@persian|months.format.wide.4|Tir
+        de@persian|months.format.wide.5|Mord\u0101d
+        de@persian|months.format.wide.6|Schahriwar
+        de@persian|months.format.wide.7|Mehr
+        de@persian|months.format.wide.8|\u0100b\u0101n
+        de@persian|months.format.wide.9|\u0100sar
+        de@persian|months.stand-alone.abbreviated.10|D\u00E9i
+        de@persian|months.stand-alone.abbreviated.11|Bahman
+        de@persian|months.stand-alone.abbreviated.12|Essfand
+        de@persian|months.stand-alone.abbreviated.1|Farwardin
+        de@persian|months.stand-alone.abbreviated.2|Ordibehescht
+        de@persian|months.stand-alone.abbreviated.3|Chord\u0101d
+        de@persian|months.stand-alone.abbreviated.4|Tir
+        de@persian|months.stand-alone.abbreviated.5|Mord\u0101d
+        de@persian|months.stand-alone.abbreviated.6|Schahriwar
+        de@persian|months.stand-alone.abbreviated.7|Mehr
+        de@persian|months.stand-alone.abbreviated.8|\u0100b\u0101n
+        de@persian|months.stand-alone.abbreviated.9|\u0100sar
+        de@persian|months.stand-alone.narrow.10|10
+        de@persian|months.stand-alone.narrow.11|11
+        de@persian|months.stand-alone.narrow.12|12
+        de@persian|months.stand-alone.narrow.1|1
+        de@persian|months.stand-alone.narrow.2|2
+        de@persian|months.stand-alone.narrow.3|3
+        de@persian|months.stand-alone.narrow.4|4
+        de@persian|months.stand-alone.narrow.5|5
+        de@persian|months.stand-alone.narrow.6|6
+        de@persian|months.stand-alone.narrow.7|7
+        de@persian|months.stand-alone.narrow.8|8
+        de@persian|months.stand-alone.narrow.9|9
+        de@persian|months.stand-alone.wide.10|D\u00E9i
+        de@persian|months.stand-alone.wide.11|Bahman
+        de@persian|months.stand-alone.wide.12|Essfand
+        de@persian|months.stand-alone.wide.1|Farwardin
+        de@persian|months.stand-alone.wide.2|Ordibehescht
+        de@persian|months.stand-alone.wide.3|Chord\u0101d
+        de@persian|months.stand-alone.wide.4|Tir
+        de@persian|months.stand-alone.wide.5|Mord\u0101d
+        de@persian|months.stand-alone.wide.6|Schahriwar
+        de@persian|months.stand-alone.wide.7|Mehr
+        de@persian|months.stand-alone.wide.8|\u0100b\u0101n
+        de@persian|months.stand-alone.wide.9|\u0100sar
+        de@roc|eras.eraAbbr.0|BROC
+        de@roc|eras.eraAbbr.1|Minguo
+        de@roc|eras.eraNames.0|vor Volksrepublik China
+        de@roc|eras.eraNames.1|Minguo
+        de@roc|eras.eraNarrow.0|v. VR China
+        de@roc|eras.eraNarrow.1|Minguo
         de|append.Day-Of-Week|{0} {1}
         de|append.Day|{0} ({2}: {1})
         de|append.Era|{1} {0}
@@ -16414,6 +17387,957 @@ internal static class JsCldrTables
         de|zone.hourFormat|+HH:mm;-HH:mm
         de|zone.utc.long|Koordinierte Weltzeit
         de|zone.utc.short|UTC
+        en@buddhist|eras.eraAbbr.0|BE
+        en@buddhist|eras.eraNames.0|BE
+        en@buddhist|eras.eraNarrow.0|BE
+        en@chinese|-available.GyMEd|
+        en@chinese|-available.GyMd|
+        en@chinese|-available.GyM|
+        en@chinese|-interval.Gy.G|
+        en@chinese|-interval.Gy.y|
+        en@chinese|-interval.GyM.G|
+        en@chinese|-interval.GyM.M|
+        en@chinese|-interval.GyM.y|
+        en@chinese|-interval.GyMEd.G|
+        en@chinese|-interval.GyMEd.M|
+        en@chinese|-interval.GyMEd.d|
+        en@chinese|-interval.GyMEd.y|
+        en@chinese|-interval.GyMMM.G|
+        en@chinese|-interval.GyMMM.M|
+        en@chinese|-interval.GyMMM.y|
+        en@chinese|-interval.GyMMMEd.G|
+        en@chinese|-interval.GyMMMEd.M|
+        en@chinese|-interval.GyMMMEd.d|
+        en@chinese|-interval.GyMMMEd.y|
+        en@chinese|-interval.GyMMMd.G|
+        en@chinese|-interval.GyMMMd.M|
+        en@chinese|-interval.GyMMMd.d|
+        en@chinese|-interval.GyMMMd.y|
+        en@chinese|-interval.GyMd.G|
+        en@chinese|-interval.GyMd.M|
+        en@chinese|-interval.GyMd.d|
+        en@chinese|-interval.GyMd.y|
+        en@chinese|append.Era|{1} {0}
+        en@chinese|append.Year|{1} {0}
+        en@chinese|available.GyMMMEd|E, MMM d, r
+        en@chinese|available.GyMMMMEd|E, MMMM d, r(U)
+        en@chinese|available.GyMMMMd|MMMM d, r(U)
+        en@chinese|available.GyMMMM|MMMM r(U)
+        en@chinese|available.GyMMMd|MMM d, r
+        en@chinese|available.GyMMM|MMM r
+        en@chinese|available.Gy|r(U)
+        en@chinese|available.UMMMd|MMM d, U
+        en@chinese|available.UMMM|MMM U
+        en@chinese|available.UMd|M/d/U
+        en@chinese|available.UM|M/U
+        en@chinese|available.yyyyMEd|E, M/d/r
+        en@chinese|available.yyyyMMMEd|E, MMM d, r
+        en@chinese|available.yyyyMMMMEd|E, MMMM d, r(U)
+        en@chinese|available.yyyyMMMMd|MMMM d, r(U)
+        en@chinese|available.yyyyMMMM|MMMM r(U)
+        en@chinese|available.yyyyMMMd|MMM d, r
+        en@chinese|available.yyyyMMM|MMM r
+        en@chinese|available.yyyyMd|M/d/r
+        en@chinese|available.yyyyM|M/r
+        en@chinese|available.yyyyQQQQ|QQQQ r(U)
+        en@chinese|available.yyyyQQQ|QQQ r(U)
+        en@chinese|available.yyyy|r(U)
+        en@chinese|available.y|r(U)
+        en@chinese|cyclic.years.abbreviated.10|gui-you
+        en@chinese|cyclic.years.abbreviated.11|jia-xu
+        en@chinese|cyclic.years.abbreviated.12|yi-hai
+        en@chinese|cyclic.years.abbreviated.13|bing-zi
+        en@chinese|cyclic.years.abbreviated.14|ding-chou
+        en@chinese|cyclic.years.abbreviated.15|wu-yin
+        en@chinese|cyclic.years.abbreviated.16|ji-mao
+        en@chinese|cyclic.years.abbreviated.17|geng-chen
+        en@chinese|cyclic.years.abbreviated.18|xin-si
+        en@chinese|cyclic.years.abbreviated.19|ren-wu
+        en@chinese|cyclic.years.abbreviated.1|jia-zi
+        en@chinese|cyclic.years.abbreviated.20|gui-wei
+        en@chinese|cyclic.years.abbreviated.21|jia-shen
+        en@chinese|cyclic.years.abbreviated.22|yi-you
+        en@chinese|cyclic.years.abbreviated.23|bing-xu
+        en@chinese|cyclic.years.abbreviated.24|ding-hai
+        en@chinese|cyclic.years.abbreviated.25|wu-zi
+        en@chinese|cyclic.years.abbreviated.26|ji-chou
+        en@chinese|cyclic.years.abbreviated.27|geng-yin
+        en@chinese|cyclic.years.abbreviated.28|xin-mao
+        en@chinese|cyclic.years.abbreviated.29|ren-chen
+        en@chinese|cyclic.years.abbreviated.2|yi-chou
+        en@chinese|cyclic.years.abbreviated.30|gui-si
+        en@chinese|cyclic.years.abbreviated.31|jia-wu
+        en@chinese|cyclic.years.abbreviated.32|yi-wei
+        en@chinese|cyclic.years.abbreviated.33|bing-shen
+        en@chinese|cyclic.years.abbreviated.34|ding-you
+        en@chinese|cyclic.years.abbreviated.35|wu-xu
+        en@chinese|cyclic.years.abbreviated.36|ji-hai
+        en@chinese|cyclic.years.abbreviated.37|geng-zi
+        en@chinese|cyclic.years.abbreviated.38|xin-chou
+        en@chinese|cyclic.years.abbreviated.39|ren-yin
+        en@chinese|cyclic.years.abbreviated.3|bing-yin
+        en@chinese|cyclic.years.abbreviated.40|gui-mao
+        en@chinese|cyclic.years.abbreviated.41|jia-chen
+        en@chinese|cyclic.years.abbreviated.42|yi-si
+        en@chinese|cyclic.years.abbreviated.43|bing-wu
+        en@chinese|cyclic.years.abbreviated.44|ding-wei
+        en@chinese|cyclic.years.abbreviated.45|wu-shen
+        en@chinese|cyclic.years.abbreviated.46|ji-you
+        en@chinese|cyclic.years.abbreviated.47|geng-xu
+        en@chinese|cyclic.years.abbreviated.48|xin-hai
+        en@chinese|cyclic.years.abbreviated.49|ren-zi
+        en@chinese|cyclic.years.abbreviated.4|ding-mao
+        en@chinese|cyclic.years.abbreviated.50|gui-chou
+        en@chinese|cyclic.years.abbreviated.51|jia-yin
+        en@chinese|cyclic.years.abbreviated.52|yi-mao
+        en@chinese|cyclic.years.abbreviated.53|bing-chen
+        en@chinese|cyclic.years.abbreviated.54|ding-si
+        en@chinese|cyclic.years.abbreviated.55|wu-wu
+        en@chinese|cyclic.years.abbreviated.56|ji-wei
+        en@chinese|cyclic.years.abbreviated.57|geng-shen
+        en@chinese|cyclic.years.abbreviated.58|xin-you
+        en@chinese|cyclic.years.abbreviated.59|ren-xu
+        en@chinese|cyclic.years.abbreviated.5|wu-chen
+        en@chinese|cyclic.years.abbreviated.60|gui-hai
+        en@chinese|cyclic.years.abbreviated.6|ji-si
+        en@chinese|cyclic.years.abbreviated.7|geng-wu
+        en@chinese|cyclic.years.abbreviated.8|xin-wei
+        en@chinese|cyclic.years.abbreviated.9|ren-shen
+        en@chinese|cyclic.years.narrow.10|gui-you
+        en@chinese|cyclic.years.narrow.11|jia-xu
+        en@chinese|cyclic.years.narrow.12|yi-hai
+        en@chinese|cyclic.years.narrow.13|bing-zi
+        en@chinese|cyclic.years.narrow.14|ding-chou
+        en@chinese|cyclic.years.narrow.15|wu-yin
+        en@chinese|cyclic.years.narrow.16|ji-mao
+        en@chinese|cyclic.years.narrow.17|geng-chen
+        en@chinese|cyclic.years.narrow.18|xin-si
+        en@chinese|cyclic.years.narrow.19|ren-wu
+        en@chinese|cyclic.years.narrow.1|jia-zi
+        en@chinese|cyclic.years.narrow.20|gui-wei
+        en@chinese|cyclic.years.narrow.21|jia-shen
+        en@chinese|cyclic.years.narrow.22|yi-you
+        en@chinese|cyclic.years.narrow.23|bing-xu
+        en@chinese|cyclic.years.narrow.24|ding-hai
+        en@chinese|cyclic.years.narrow.25|wu-zi
+        en@chinese|cyclic.years.narrow.26|ji-chou
+        en@chinese|cyclic.years.narrow.27|geng-yin
+        en@chinese|cyclic.years.narrow.28|xin-mao
+        en@chinese|cyclic.years.narrow.29|ren-chen
+        en@chinese|cyclic.years.narrow.2|yi-chou
+        en@chinese|cyclic.years.narrow.30|gui-si
+        en@chinese|cyclic.years.narrow.31|jia-wu
+        en@chinese|cyclic.years.narrow.32|yi-wei
+        en@chinese|cyclic.years.narrow.33|bing-shen
+        en@chinese|cyclic.years.narrow.34|ding-you
+        en@chinese|cyclic.years.narrow.35|wu-xu
+        en@chinese|cyclic.years.narrow.36|ji-hai
+        en@chinese|cyclic.years.narrow.37|geng-zi
+        en@chinese|cyclic.years.narrow.38|xin-chou
+        en@chinese|cyclic.years.narrow.39|ren-yin
+        en@chinese|cyclic.years.narrow.3|bing-yin
+        en@chinese|cyclic.years.narrow.40|gui-mao
+        en@chinese|cyclic.years.narrow.41|jia-chen
+        en@chinese|cyclic.years.narrow.42|yi-si
+        en@chinese|cyclic.years.narrow.43|bing-wu
+        en@chinese|cyclic.years.narrow.44|ding-wei
+        en@chinese|cyclic.years.narrow.45|wu-shen
+        en@chinese|cyclic.years.narrow.46|ji-you
+        en@chinese|cyclic.years.narrow.47|geng-xu
+        en@chinese|cyclic.years.narrow.48|xin-hai
+        en@chinese|cyclic.years.narrow.49|ren-zi
+        en@chinese|cyclic.years.narrow.4|ding-mao
+        en@chinese|cyclic.years.narrow.50|gui-chou
+        en@chinese|cyclic.years.narrow.51|jia-yin
+        en@chinese|cyclic.years.narrow.52|yi-mao
+        en@chinese|cyclic.years.narrow.53|bing-chen
+        en@chinese|cyclic.years.narrow.54|ding-si
+        en@chinese|cyclic.years.narrow.55|wu-wu
+        en@chinese|cyclic.years.narrow.56|ji-wei
+        en@chinese|cyclic.years.narrow.57|geng-shen
+        en@chinese|cyclic.years.narrow.58|xin-you
+        en@chinese|cyclic.years.narrow.59|ren-xu
+        en@chinese|cyclic.years.narrow.5|wu-chen
+        en@chinese|cyclic.years.narrow.60|gui-hai
+        en@chinese|cyclic.years.narrow.6|ji-si
+        en@chinese|cyclic.years.narrow.7|geng-wu
+        en@chinese|cyclic.years.narrow.8|xin-wei
+        en@chinese|cyclic.years.narrow.9|ren-shen
+        en@chinese|cyclic.years.wide.10|gui-you
+        en@chinese|cyclic.years.wide.11|jia-xu
+        en@chinese|cyclic.years.wide.12|yi-hai
+        en@chinese|cyclic.years.wide.13|bing-zi
+        en@chinese|cyclic.years.wide.14|ding-chou
+        en@chinese|cyclic.years.wide.15|wu-yin
+        en@chinese|cyclic.years.wide.16|ji-mao
+        en@chinese|cyclic.years.wide.17|geng-chen
+        en@chinese|cyclic.years.wide.18|xin-si
+        en@chinese|cyclic.years.wide.19|ren-wu
+        en@chinese|cyclic.years.wide.1|jia-zi
+        en@chinese|cyclic.years.wide.20|gui-wei
+        en@chinese|cyclic.years.wide.21|jia-shen
+        en@chinese|cyclic.years.wide.22|yi-you
+        en@chinese|cyclic.years.wide.23|bing-xu
+        en@chinese|cyclic.years.wide.24|ding-hai
+        en@chinese|cyclic.years.wide.25|wu-zi
+        en@chinese|cyclic.years.wide.26|ji-chou
+        en@chinese|cyclic.years.wide.27|geng-yin
+        en@chinese|cyclic.years.wide.28|xin-mao
+        en@chinese|cyclic.years.wide.29|ren-chen
+        en@chinese|cyclic.years.wide.2|yi-chou
+        en@chinese|cyclic.years.wide.30|gui-si
+        en@chinese|cyclic.years.wide.31|jia-wu
+        en@chinese|cyclic.years.wide.32|yi-wei
+        en@chinese|cyclic.years.wide.33|bing-shen
+        en@chinese|cyclic.years.wide.34|ding-you
+        en@chinese|cyclic.years.wide.35|wu-xu
+        en@chinese|cyclic.years.wide.36|ji-hai
+        en@chinese|cyclic.years.wide.37|geng-zi
+        en@chinese|cyclic.years.wide.38|xin-chou
+        en@chinese|cyclic.years.wide.39|ren-yin
+        en@chinese|cyclic.years.wide.3|bing-yin
+        en@chinese|cyclic.years.wide.40|gui-mao
+        en@chinese|cyclic.years.wide.41|jia-chen
+        en@chinese|cyclic.years.wide.42|yi-si
+        en@chinese|cyclic.years.wide.43|bing-wu
+        en@chinese|cyclic.years.wide.44|ding-wei
+        en@chinese|cyclic.years.wide.45|wu-shen
+        en@chinese|cyclic.years.wide.46|ji-you
+        en@chinese|cyclic.years.wide.47|geng-xu
+        en@chinese|cyclic.years.wide.48|xin-hai
+        en@chinese|cyclic.years.wide.49|ren-zi
+        en@chinese|cyclic.years.wide.4|ding-mao
+        en@chinese|cyclic.years.wide.50|gui-chou
+        en@chinese|cyclic.years.wide.51|jia-yin
+        en@chinese|cyclic.years.wide.52|yi-mao
+        en@chinese|cyclic.years.wide.53|bing-chen
+        en@chinese|cyclic.years.wide.54|ding-si
+        en@chinese|cyclic.years.wide.55|wu-wu
+        en@chinese|cyclic.years.wide.56|ji-wei
+        en@chinese|cyclic.years.wide.57|geng-shen
+        en@chinese|cyclic.years.wide.58|xin-you
+        en@chinese|cyclic.years.wide.59|ren-xu
+        en@chinese|cyclic.years.wide.5|wu-chen
+        en@chinese|cyclic.years.wide.60|gui-hai
+        en@chinese|cyclic.years.wide.6|ji-si
+        en@chinese|cyclic.years.wide.7|geng-wu
+        en@chinese|cyclic.years.wide.8|xin-wei
+        en@chinese|cyclic.years.wide.9|ren-shen
+        en@chinese|dateFormats.full|EEEE, MMMM d, r(U)
+        en@chinese|dateFormats.long|MMMM d, r(U)
+        en@chinese|dateFormats.medium|MMM d, r
+        en@chinese|dateFormats.short|M/d/r
+        en@chinese|interval.y.y|U\u2009\u2013\u2009U
+        en@chinese|interval.yM.M|M/y\u2009\u2013\u2009M/y
+        en@chinese|interval.yM.y|M/y\u2009\u2013\u2009M/y
+        en@chinese|interval.yMEd.M|E, M/d/y\u2009\u2013\u2009E, M/d/y
+        en@chinese|interval.yMEd.d|E, M/d/y\u2009\u2013\u2009E, M/d/y
+        en@chinese|interval.yMEd.y|E, M/d/y\u2009\u2013\u2009E, M/d/y
+        en@chinese|interval.yMMM.M|MMM\u2009\u2013\u2009MMM U
+        en@chinese|interval.yMMM.y|MMM U\u2009\u2013\u2009MMM U
+        en@chinese|interval.yMMMEd.M|E, MMM d\u2009\u2013\u2009E, MMM d, U
+        en@chinese|interval.yMMMEd.d|E, MMM d\u2009\u2013\u2009E, MMM d, U
+        en@chinese|interval.yMMMEd.y|E, MMM d, U\u2009\u2013\u2009E, MMM d, U
+        en@chinese|interval.yMMMM.M|MMMM\u2009\u2013\u2009MMMM U
+        en@chinese|interval.yMMMM.y|MMMM U\u2009\u2013\u2009MMMM U
+        en@chinese|interval.yMMMd.M|MMM d\u2009\u2013\u2009MMM d, U
+        en@chinese|interval.yMMMd.d|MMM d\u2009\u2013\u2009d, U
+        en@chinese|interval.yMMMd.y|MMM d, U\u2009\u2013\u2009MMM d, U
+        en@chinese|interval.yMd.M|M/d/y\u2009\u2013\u2009M/d/y
+        en@chinese|interval.yMd.d|M/d/y\u2009\u2013\u2009M/d/y
+        en@chinese|interval.yMd.y|M/d/y\u2009\u2013\u2009M/d/y
+        en@chinese|monthPatterns.format.abbreviated.leap|{0}bis
+        en@chinese|monthPatterns.format.narrow.leap|{0}b
+        en@chinese|monthPatterns.format.wide.leap|{0}bis
+        en@chinese|monthPatterns.numeric.all.leap|{0}bis
+        en@chinese|monthPatterns.stand-alone.abbreviated.leap|{0}bis
+        en@chinese|monthPatterns.stand-alone.narrow.leap|{0}b
+        en@chinese|monthPatterns.stand-alone.wide.leap|{0}bis
+        en@chinese|months.format.abbreviated.10|Mo10
+        en@chinese|months.format.abbreviated.11|Mo11
+        en@chinese|months.format.abbreviated.12|Mo12
+        en@chinese|months.format.abbreviated.1|Mo1
+        en@chinese|months.format.abbreviated.2|Mo2
+        en@chinese|months.format.abbreviated.3|Mo3
+        en@chinese|months.format.abbreviated.4|Mo4
+        en@chinese|months.format.abbreviated.5|Mo5
+        en@chinese|months.format.abbreviated.6|Mo6
+        en@chinese|months.format.abbreviated.7|Mo7
+        en@chinese|months.format.abbreviated.8|Mo8
+        en@chinese|months.format.abbreviated.9|Mo9
+        en@chinese|months.format.narrow.10|10
+        en@chinese|months.format.narrow.11|11
+        en@chinese|months.format.narrow.12|12
+        en@chinese|months.format.narrow.1|1
+        en@chinese|months.format.narrow.2|2
+        en@chinese|months.format.narrow.3|3
+        en@chinese|months.format.narrow.4|4
+        en@chinese|months.format.narrow.5|5
+        en@chinese|months.format.narrow.6|6
+        en@chinese|months.format.narrow.7|7
+        en@chinese|months.format.narrow.8|8
+        en@chinese|months.format.narrow.9|9
+        en@chinese|months.format.wide.10|Tenth Month
+        en@chinese|months.format.wide.11|Eleventh Month
+        en@chinese|months.format.wide.12|Twelfth Month
+        en@chinese|months.format.wide.1|First Month
+        en@chinese|months.format.wide.2|Second Month
+        en@chinese|months.format.wide.3|Third Month
+        en@chinese|months.format.wide.4|Fourth Month
+        en@chinese|months.format.wide.5|Fifth Month
+        en@chinese|months.format.wide.6|Sixth Month
+        en@chinese|months.format.wide.7|Seventh Month
+        en@chinese|months.format.wide.8|Eighth Month
+        en@chinese|months.format.wide.9|Ninth Month
+        en@chinese|months.stand-alone.abbreviated.10|Mo10
+        en@chinese|months.stand-alone.abbreviated.11|Mo11
+        en@chinese|months.stand-alone.abbreviated.12|Mo12
+        en@chinese|months.stand-alone.abbreviated.1|Mo1
+        en@chinese|months.stand-alone.abbreviated.2|Mo2
+        en@chinese|months.stand-alone.abbreviated.3|Mo3
+        en@chinese|months.stand-alone.abbreviated.4|Mo4
+        en@chinese|months.stand-alone.abbreviated.5|Mo5
+        en@chinese|months.stand-alone.abbreviated.6|Mo6
+        en@chinese|months.stand-alone.abbreviated.7|Mo7
+        en@chinese|months.stand-alone.abbreviated.8|Mo8
+        en@chinese|months.stand-alone.abbreviated.9|Mo9
+        en@chinese|months.stand-alone.narrow.10|10
+        en@chinese|months.stand-alone.narrow.11|11
+        en@chinese|months.stand-alone.narrow.12|12
+        en@chinese|months.stand-alone.narrow.1|1
+        en@chinese|months.stand-alone.narrow.2|2
+        en@chinese|months.stand-alone.narrow.3|3
+        en@chinese|months.stand-alone.narrow.4|4
+        en@chinese|months.stand-alone.narrow.5|5
+        en@chinese|months.stand-alone.narrow.6|6
+        en@chinese|months.stand-alone.narrow.7|7
+        en@chinese|months.stand-alone.narrow.8|8
+        en@chinese|months.stand-alone.narrow.9|9
+        en@chinese|months.stand-alone.wide.10|Tenth Month
+        en@chinese|months.stand-alone.wide.11|Eleventh Month
+        en@chinese|months.stand-alone.wide.12|Twelfth Month
+        en@chinese|months.stand-alone.wide.1|First Month
+        en@chinese|months.stand-alone.wide.2|Second Month
+        en@chinese|months.stand-alone.wide.3|Third Month
+        en@chinese|months.stand-alone.wide.4|Fourth Month
+        en@chinese|months.stand-alone.wide.5|Fifth Month
+        en@chinese|months.stand-alone.wide.6|Sixth Month
+        en@chinese|months.stand-alone.wide.7|Seventh Month
+        en@chinese|months.stand-alone.wide.8|Eighth Month
+        en@chinese|months.stand-alone.wide.9|Ninth Month
+        en@coptic|eras.eraAbbr.1|AM
+        en@coptic|eras.eraNames.1|Anno Martyrum
+        en@coptic|eras.eraNarrow.1|AM
+        en@coptic|months.format.abbreviated.10|Paona
+        en@coptic|months.format.abbreviated.11|Epep
+        en@coptic|months.format.abbreviated.12|Mesra
+        en@coptic|months.format.abbreviated.13|Nasie
+        en@coptic|months.format.abbreviated.1|Tout
+        en@coptic|months.format.abbreviated.2|Baba
+        en@coptic|months.format.abbreviated.3|Hator
+        en@coptic|months.format.abbreviated.4|Kiahk
+        en@coptic|months.format.abbreviated.5|Toba
+        en@coptic|months.format.abbreviated.6|Amshir
+        en@coptic|months.format.abbreviated.7|Baramhat
+        en@coptic|months.format.abbreviated.8|Baramouda
+        en@coptic|months.format.abbreviated.9|Bashans
+        en@coptic|months.format.narrow.10|10
+        en@coptic|months.format.narrow.11|11
+        en@coptic|months.format.narrow.12|12
+        en@coptic|months.format.narrow.13|13
+        en@coptic|months.format.narrow.1|1
+        en@coptic|months.format.narrow.2|2
+        en@coptic|months.format.narrow.3|3
+        en@coptic|months.format.narrow.4|4
+        en@coptic|months.format.narrow.5|5
+        en@coptic|months.format.narrow.6|6
+        en@coptic|months.format.narrow.7|7
+        en@coptic|months.format.narrow.8|8
+        en@coptic|months.format.narrow.9|9
+        en@coptic|months.format.wide.10|Paona
+        en@coptic|months.format.wide.11|Epep
+        en@coptic|months.format.wide.12|Mesra
+        en@coptic|months.format.wide.13|Nasie
+        en@coptic|months.format.wide.1|Tout
+        en@coptic|months.format.wide.2|Baba
+        en@coptic|months.format.wide.3|Hator
+        en@coptic|months.format.wide.4|Kiahk
+        en@coptic|months.format.wide.5|Toba
+        en@coptic|months.format.wide.6|Amshir
+        en@coptic|months.format.wide.7|Baramhat
+        en@coptic|months.format.wide.8|Baramouda
+        en@coptic|months.format.wide.9|Bashans
+        en@coptic|months.stand-alone.abbreviated.10|Paona
+        en@coptic|months.stand-alone.abbreviated.11|Epep
+        en@coptic|months.stand-alone.abbreviated.12|Mesra
+        en@coptic|months.stand-alone.abbreviated.13|Nasie
+        en@coptic|months.stand-alone.abbreviated.1|Tout
+        en@coptic|months.stand-alone.abbreviated.2|Baba
+        en@coptic|months.stand-alone.abbreviated.3|Hator
+        en@coptic|months.stand-alone.abbreviated.4|Kiahk
+        en@coptic|months.stand-alone.abbreviated.5|Toba
+        en@coptic|months.stand-alone.abbreviated.6|Amshir
+        en@coptic|months.stand-alone.abbreviated.7|Baramhat
+        en@coptic|months.stand-alone.abbreviated.8|Baramouda
+        en@coptic|months.stand-alone.abbreviated.9|Bashans
+        en@coptic|months.stand-alone.narrow.10|10
+        en@coptic|months.stand-alone.narrow.11|11
+        en@coptic|months.stand-alone.narrow.12|12
+        en@coptic|months.stand-alone.narrow.13|13
+        en@coptic|months.stand-alone.narrow.1|1
+        en@coptic|months.stand-alone.narrow.2|2
+        en@coptic|months.stand-alone.narrow.3|3
+        en@coptic|months.stand-alone.narrow.4|4
+        en@coptic|months.stand-alone.narrow.5|5
+        en@coptic|months.stand-alone.narrow.6|6
+        en@coptic|months.stand-alone.narrow.7|7
+        en@coptic|months.stand-alone.narrow.8|8
+        en@coptic|months.stand-alone.narrow.9|9
+        en@coptic|months.stand-alone.wide.10|Paona
+        en@coptic|months.stand-alone.wide.11|Epep
+        en@coptic|months.stand-alone.wide.12|Mesra
+        en@coptic|months.stand-alone.wide.13|Nasie
+        en@coptic|months.stand-alone.wide.1|Tout
+        en@coptic|months.stand-alone.wide.2|Baba
+        en@coptic|months.stand-alone.wide.3|Hator
+        en@coptic|months.stand-alone.wide.4|Kiahk
+        en@coptic|months.stand-alone.wide.5|Toba
+        en@coptic|months.stand-alone.wide.6|Amshir
+        en@coptic|months.stand-alone.wide.7|Baramhat
+        en@coptic|months.stand-alone.wide.8|Baramouda
+        en@coptic|months.stand-alone.wide.9|Bashans
+        en@ethiopic|eras.eraAbbr.0|AA
+        en@ethiopic|eras.eraAbbr.1|AM
+        en@ethiopic|eras.eraNames.0|AA
+        en@ethiopic|eras.eraNames.1|AM
+        en@ethiopic|eras.eraNarrow.0|AA
+        en@ethiopic|eras.eraNarrow.1|AM
+        en@ethiopic|months.format.abbreviated.10|Sene
+        en@ethiopic|months.format.abbreviated.11|Hamle
+        en@ethiopic|months.format.abbreviated.12|Nehasse
+        en@ethiopic|months.format.abbreviated.13|Pagumen
+        en@ethiopic|months.format.abbreviated.1|Meskerem
+        en@ethiopic|months.format.abbreviated.2|Tekemt
+        en@ethiopic|months.format.abbreviated.3|Hedar
+        en@ethiopic|months.format.abbreviated.4|Tahsas
+        en@ethiopic|months.format.abbreviated.5|Ter
+        en@ethiopic|months.format.abbreviated.6|Yekatit
+        en@ethiopic|months.format.abbreviated.7|Megabit
+        en@ethiopic|months.format.abbreviated.8|Miazia
+        en@ethiopic|months.format.abbreviated.9|Genbot
+        en@ethiopic|months.format.narrow.10|10
+        en@ethiopic|months.format.narrow.11|11
+        en@ethiopic|months.format.narrow.12|12
+        en@ethiopic|months.format.narrow.13|13
+        en@ethiopic|months.format.narrow.1|1
+        en@ethiopic|months.format.narrow.2|2
+        en@ethiopic|months.format.narrow.3|3
+        en@ethiopic|months.format.narrow.4|4
+        en@ethiopic|months.format.narrow.5|5
+        en@ethiopic|months.format.narrow.6|6
+        en@ethiopic|months.format.narrow.7|7
+        en@ethiopic|months.format.narrow.8|8
+        en@ethiopic|months.format.narrow.9|9
+        en@ethiopic|months.format.wide.10|Sene
+        en@ethiopic|months.format.wide.11|Hamle
+        en@ethiopic|months.format.wide.12|Nehasse
+        en@ethiopic|months.format.wide.13|Pagumen
+        en@ethiopic|months.format.wide.1|Meskerem
+        en@ethiopic|months.format.wide.2|Tekemt
+        en@ethiopic|months.format.wide.3|Hedar
+        en@ethiopic|months.format.wide.4|Tahsas
+        en@ethiopic|months.format.wide.5|Ter
+        en@ethiopic|months.format.wide.6|Yekatit
+        en@ethiopic|months.format.wide.7|Megabit
+        en@ethiopic|months.format.wide.8|Miazia
+        en@ethiopic|months.format.wide.9|Genbot
+        en@ethiopic|months.stand-alone.abbreviated.10|Sene
+        en@ethiopic|months.stand-alone.abbreviated.11|Hamle
+        en@ethiopic|months.stand-alone.abbreviated.12|Nehasse
+        en@ethiopic|months.stand-alone.abbreviated.13|Pagumen
+        en@ethiopic|months.stand-alone.abbreviated.1|Meskerem
+        en@ethiopic|months.stand-alone.abbreviated.2|Tekemt
+        en@ethiopic|months.stand-alone.abbreviated.3|Hedar
+        en@ethiopic|months.stand-alone.abbreviated.4|Tahsas
+        en@ethiopic|months.stand-alone.abbreviated.5|Ter
+        en@ethiopic|months.stand-alone.abbreviated.6|Yekatit
+        en@ethiopic|months.stand-alone.abbreviated.7|Megabit
+        en@ethiopic|months.stand-alone.abbreviated.8|Miazia
+        en@ethiopic|months.stand-alone.abbreviated.9|Genbot
+        en@ethiopic|months.stand-alone.narrow.10|10
+        en@ethiopic|months.stand-alone.narrow.11|11
+        en@ethiopic|months.stand-alone.narrow.12|12
+        en@ethiopic|months.stand-alone.narrow.13|13
+        en@ethiopic|months.stand-alone.narrow.1|1
+        en@ethiopic|months.stand-alone.narrow.2|2
+        en@ethiopic|months.stand-alone.narrow.3|3
+        en@ethiopic|months.stand-alone.narrow.4|4
+        en@ethiopic|months.stand-alone.narrow.5|5
+        en@ethiopic|months.stand-alone.narrow.6|6
+        en@ethiopic|months.stand-alone.narrow.7|7
+        en@ethiopic|months.stand-alone.narrow.8|8
+        en@ethiopic|months.stand-alone.narrow.9|9
+        en@ethiopic|months.stand-alone.wide.10|Sene
+        en@ethiopic|months.stand-alone.wide.11|Hamle
+        en@ethiopic|months.stand-alone.wide.12|Nehasse
+        en@ethiopic|months.stand-alone.wide.13|Pagumen
+        en@ethiopic|months.stand-alone.wide.1|Meskerem
+        en@ethiopic|months.stand-alone.wide.2|Tekemt
+        en@ethiopic|months.stand-alone.wide.3|Hedar
+        en@ethiopic|months.stand-alone.wide.4|Tahsas
+        en@ethiopic|months.stand-alone.wide.5|Ter
+        en@ethiopic|months.stand-alone.wide.6|Yekatit
+        en@ethiopic|months.stand-alone.wide.7|Megabit
+        en@ethiopic|months.stand-alone.wide.8|Miazia
+        en@ethiopic|months.stand-alone.wide.9|Genbot
+        en@generic|-available.Hmsv|
+        en@generic|-available.Hmv|
+        en@generic|-available.hmsv|
+        en@generic|-available.hmv|
+        en@generic|-available.yMEd|
+        en@generic|-available.yMMMEd|
+        en@generic|-available.yMMMM|
+        en@generic|-available.yMMMd|
+        en@generic|-available.yMMM|
+        en@generic|-available.yMd|
+        en@generic|-available.yM|
+        en@generic|-available.yQQQQ|
+        en@generic|-available.yQQQ|
+        en@generic|available.yyyyMEd|E, M/d/y G
+        en@generic|available.yyyyMMMEd|E, MMM d, y G
+        en@generic|available.yyyyMMMM|MMMM y G
+        en@generic|available.yyyyMMMd|MMM d, y G
+        en@generic|available.yyyyMMM|MMM y G
+        en@generic|available.yyyyMd|M/d/y G
+        en@generic|available.yyyyM|M/y G
+        en@generic|available.yyyyQQQQ|QQQQ y G
+        en@generic|available.yyyyQQQ|QQQ y G
+        en@generic|available.yyyy|y G
+        en@generic|available.y|y G
+        en@generic|dateFormats.full|EEEE, MMMM d, y G
+        en@generic|dateFormats.long|MMMM d, y G
+        en@generic|dateFormats.medium|MMM d, y G
+        en@generic|dateFormats.short|M/d/y G
+        en@generic|interval.y.y|y\u2009\u2013\u2009y G
+        en@generic|interval.yM.M|M/y\u2009\u2013\u2009M/y G
+        en@generic|interval.yM.y|M/y\u2009\u2013\u2009M/y G
+        en@generic|interval.yMEd.M|E, M/d/y\u2009\u2013\u2009E, M/d/y G
+        en@generic|interval.yMEd.d|E, M/d/y\u2009\u2013\u2009E, M/d/y G
+        en@generic|interval.yMEd.y|E, M/d/y\u2009\u2013\u2009E, M/d/y G
+        en@generic|interval.yMMM.M|MMM\u2009\u2013\u2009MMM y G
+        en@generic|interval.yMMM.y|MMM y\u2009\u2013\u2009MMM y G
+        en@generic|interval.yMMMEd.M|E, MMM d\u2009\u2013\u2009E, MMM d, y G
+        en@generic|interval.yMMMEd.d|E, MMM d\u2009\u2013\u2009E, MMM d, y G
+        en@generic|interval.yMMMEd.y|E, MMM d, y\u2009\u2013\u2009E, MMM d, y G
+        en@generic|interval.yMMMM.M|MMMM\u2009\u2013\u2009MMMM y G
+        en@generic|interval.yMMMM.y|MMMM y\u2009\u2013\u2009MMMM y G
+        en@generic|interval.yMMMd.M|MMM d\u2009\u2013\u2009MMM d, y G
+        en@generic|interval.yMMMd.d|MMM d\u2009\u2013\u2009d, y G
+        en@generic|interval.yMMMd.y|MMM d, y\u2009\u2013\u2009MMM d, y G
+        en@generic|interval.yMd.M|M/d/y\u2009\u2013\u2009M/d/y G
+        en@generic|interval.yMd.d|M/d/y\u2009\u2013\u2009M/d/y G
+        en@generic|interval.yMd.y|M/d/y\u2009\u2013\u2009M/d/y G
+        en@hebrew|available.GyMMMEd|E, d MMM y G
+        en@hebrew|available.GyMMMd|d MMM y G
+        en@hebrew|available.GyMd|d MMM y G
+        en@hebrew|available.MEd|E, d MMM
+        en@hebrew|available.MMMEd|E, d MMM
+        en@hebrew|available.MMMMd|d MMMM
+        en@hebrew|available.MMMd|d MMM
+        en@hebrew|available.Md|d MMM
+        en@hebrew|available.yMEd|E, d MMM y
+        en@hebrew|available.yMMMEd|E, d MMM y
+        en@hebrew|available.yMMMM|MMMM y
+        en@hebrew|available.yMMMd|d MMM y
+        en@hebrew|available.yMMM|MMM y
+        en@hebrew|available.yMd|d MMM y
+        en@hebrew|available.yM|MMM y
+        en@hebrew|available.yQQQQ|QQQQ y
+        en@hebrew|available.yQQQ|QQQ y
+        en@hebrew|available.y|y
+        en@hebrew|dateFormats.full|EEEE, d MMMM y
+        en@hebrew|dateFormats.long|d MMMM y
+        en@hebrew|dateFormats.medium|d MMM y
+        en@hebrew|dateFormats.short|d MMM y
+        en@hebrew|eras.eraAbbr.0|AM
+        en@hebrew|eras.eraNames.0|AM
+        en@hebrew|eras.eraNarrow.0|AM
+        en@hebrew|interval.M.M|MMM\u2009\u2013\u2009MMM
+        en@hebrew|interval.MEd.M|E, d MMM\u2009\u2013\u2009E, d MMM
+        en@hebrew|interval.MEd.d|E, d MMM\u2009\u2013\u2009E, d MMM
+        en@hebrew|interval.MMMEd.M|E, d MMM\u2009\u2013\u2009E, d MMM
+        en@hebrew|interval.MMMEd.d|E, d MMM\u2009\u2013\u2009E, d MMM
+        en@hebrew|interval.MMMd.M|d MMM\u2009\u2013\u2009d MMM
+        en@hebrew|interval.MMMd.d|d\u2009\u2013\u2009d MMM
+        en@hebrew|interval.Md.M|d MMM\u2009\u2013\u2009d MMM
+        en@hebrew|interval.Md.d|d\u2009\u2013\u2009d MMM
+        en@hebrew|interval.yM.M|MMM\u2009\u2013\u2009MMM y
+        en@hebrew|interval.yM.y|MMM y\u2009\u2013\u2009MMM y
+        en@hebrew|interval.yMEd.M|E, d MMM\u2009\u2013\u2009E, d MMM y
+        en@hebrew|interval.yMEd.d|E, d MMM\u2009\u2013\u2009E, d MMM y
+        en@hebrew|interval.yMEd.y|E, d MMM y\u2009\u2013\u2009E, d MMM y
+        en@hebrew|interval.yMMM.M|MMM\u2009\u2013\u2009MMM y
+        en@hebrew|interval.yMMM.y|MMM y\u2009\u2013\u2009MMM y
+        en@hebrew|interval.yMMMEd.M|E, d MMM\u2009\u2013\u2009E, d MMM y
+        en@hebrew|interval.yMMMEd.d|E, d MMM\u2009\u2013\u2009E, d MMM y
+        en@hebrew|interval.yMMMEd.y|E, d MMM y\u2009\u2013\u2009E, d MMM y
+        en@hebrew|interval.yMMMM.M|MMMM\u2009\u2013\u2009MMMM y
+        en@hebrew|interval.yMMMM.y|MMMM y\u2009\u2013\u2009MMMM y
+        en@hebrew|interval.yMMMd.M|d MMM\u2009\u2013\u2009d MMM y
+        en@hebrew|interval.yMMMd.d|d\u2009\u2013\u2009d MMM y
+        en@hebrew|interval.yMMMd.y|d MMM y\u2009\u2013\u2009d MMM y
+        en@hebrew|interval.yMd.M|d MMM\u2009\u2013\u2009d MMM y
+        en@hebrew|interval.yMd.d|d\u2009\u2013\u2009d MMM y
+        en@hebrew|interval.yMd.y|d MMM y\u2009\u2013\u2009d MMM y
+        en@hebrew|months.format.abbreviated.10|Sivan
+        en@hebrew|months.format.abbreviated.11|Tamuz
+        en@hebrew|months.format.abbreviated.12|Av
+        en@hebrew|months.format.abbreviated.13|Elul
+        en@hebrew|months.format.abbreviated.1|Tishri
+        en@hebrew|months.format.abbreviated.2|Heshvan
+        en@hebrew|months.format.abbreviated.3|Kislev
+        en@hebrew|months.format.abbreviated.4|Tevet
+        en@hebrew|months.format.abbreviated.5|Shevat
+        en@hebrew|months.format.abbreviated.6|Adar I
+        en@hebrew|months.format.abbreviated.7-yeartype-leap|Adar II
+        en@hebrew|months.format.abbreviated.7|Adar
+        en@hebrew|months.format.abbreviated.8|Nisan
+        en@hebrew|months.format.abbreviated.9|Iyar
+        en@hebrew|months.format.narrow.10|10
+        en@hebrew|months.format.narrow.11|11
+        en@hebrew|months.format.narrow.12|12
+        en@hebrew|months.format.narrow.13|13
+        en@hebrew|months.format.narrow.1|1
+        en@hebrew|months.format.narrow.2|2
+        en@hebrew|months.format.narrow.3|3
+        en@hebrew|months.format.narrow.4|4
+        en@hebrew|months.format.narrow.5|5
+        en@hebrew|months.format.narrow.6|6
+        en@hebrew|months.format.narrow.7-yeartype-leap|7
+        en@hebrew|months.format.narrow.7|7
+        en@hebrew|months.format.narrow.8|8
+        en@hebrew|months.format.narrow.9|9
+        en@hebrew|months.format.wide.10|Sivan
+        en@hebrew|months.format.wide.11|Tamuz
+        en@hebrew|months.format.wide.12|Av
+        en@hebrew|months.format.wide.13|Elul
+        en@hebrew|months.format.wide.1|Tishri
+        en@hebrew|months.format.wide.2|Heshvan
+        en@hebrew|months.format.wide.3|Kislev
+        en@hebrew|months.format.wide.4|Tevet
+        en@hebrew|months.format.wide.5|Shevat
+        en@hebrew|months.format.wide.6|Adar I
+        en@hebrew|months.format.wide.7-yeartype-leap|Adar II
+        en@hebrew|months.format.wide.7|Adar
+        en@hebrew|months.format.wide.8|Nisan
+        en@hebrew|months.format.wide.9|Iyar
+        en@hebrew|months.stand-alone.abbreviated.10|Sivan
+        en@hebrew|months.stand-alone.abbreviated.11|Tamuz
+        en@hebrew|months.stand-alone.abbreviated.12|Av
+        en@hebrew|months.stand-alone.abbreviated.13|Elul
+        en@hebrew|months.stand-alone.abbreviated.1|Tishri
+        en@hebrew|months.stand-alone.abbreviated.2|Heshvan
+        en@hebrew|months.stand-alone.abbreviated.3|Kislev
+        en@hebrew|months.stand-alone.abbreviated.4|Tevet
+        en@hebrew|months.stand-alone.abbreviated.5|Shevat
+        en@hebrew|months.stand-alone.abbreviated.6|Adar I
+        en@hebrew|months.stand-alone.abbreviated.7-yeartype-leap|Adar II
+        en@hebrew|months.stand-alone.abbreviated.7|Adar
+        en@hebrew|months.stand-alone.abbreviated.8|Nisan
+        en@hebrew|months.stand-alone.abbreviated.9|Iyar
+        en@hebrew|months.stand-alone.narrow.10|10
+        en@hebrew|months.stand-alone.narrow.11|11
+        en@hebrew|months.stand-alone.narrow.12|12
+        en@hebrew|months.stand-alone.narrow.13|13
+        en@hebrew|months.stand-alone.narrow.1|1
+        en@hebrew|months.stand-alone.narrow.2|2
+        en@hebrew|months.stand-alone.narrow.3|3
+        en@hebrew|months.stand-alone.narrow.4|4
+        en@hebrew|months.stand-alone.narrow.5|5
+        en@hebrew|months.stand-alone.narrow.6|6
+        en@hebrew|months.stand-alone.narrow.7-yeartype-leap|7
+        en@hebrew|months.stand-alone.narrow.7|7
+        en@hebrew|months.stand-alone.narrow.8|8
+        en@hebrew|months.stand-alone.narrow.9|9
+        en@hebrew|months.stand-alone.wide.10|Sivan
+        en@hebrew|months.stand-alone.wide.11|Tamuz
+        en@hebrew|months.stand-alone.wide.12|Av
+        en@hebrew|months.stand-alone.wide.13|Elul
+        en@hebrew|months.stand-alone.wide.1|Tishri
+        en@hebrew|months.stand-alone.wide.2|Heshvan
+        en@hebrew|months.stand-alone.wide.3|Kislev
+        en@hebrew|months.stand-alone.wide.4|Tevet
+        en@hebrew|months.stand-alone.wide.5|Shevat
+        en@hebrew|months.stand-alone.wide.6|Adar I
+        en@hebrew|months.stand-alone.wide.7-yeartype-leap|Adar II
+        en@hebrew|months.stand-alone.wide.7|Adar
+        en@hebrew|months.stand-alone.wide.8|Nisan
+        en@hebrew|months.stand-alone.wide.9|Iyar
+        en@indian|eras.eraAbbr.0|\u015Aaka
+        en@indian|eras.eraNames.0|\u015Aaka
+        en@indian|eras.eraNarrow.0|\u015Aaka
+        en@indian|months.format.abbreviated.10|Pausa
+        en@indian|months.format.abbreviated.11|Magha
+        en@indian|months.format.abbreviated.12|Phalguna
+        en@indian|months.format.abbreviated.1|Chaitra
+        en@indian|months.format.abbreviated.2|Vaisakha
+        en@indian|months.format.abbreviated.3|Jyaistha
+        en@indian|months.format.abbreviated.4|Asadha
+        en@indian|months.format.abbreviated.5|Sravana
+        en@indian|months.format.abbreviated.6|Bhadra
+        en@indian|months.format.abbreviated.7|Asvina
+        en@indian|months.format.abbreviated.8|Kartika
+        en@indian|months.format.abbreviated.9|Agrahayana
+        en@indian|months.format.narrow.10|10
+        en@indian|months.format.narrow.11|11
+        en@indian|months.format.narrow.12|12
+        en@indian|months.format.narrow.1|1
+        en@indian|months.format.narrow.2|2
+        en@indian|months.format.narrow.3|3
+        en@indian|months.format.narrow.4|4
+        en@indian|months.format.narrow.5|5
+        en@indian|months.format.narrow.6|6
+        en@indian|months.format.narrow.7|7
+        en@indian|months.format.narrow.8|8
+        en@indian|months.format.narrow.9|9
+        en@indian|months.format.wide.10|Pausa
+        en@indian|months.format.wide.11|Magha
+        en@indian|months.format.wide.12|Phalguna
+        en@indian|months.format.wide.1|Chaitra
+        en@indian|months.format.wide.2|Vaisakha
+        en@indian|months.format.wide.3|Jyaistha
+        en@indian|months.format.wide.4|Asadha
+        en@indian|months.format.wide.5|Sravana
+        en@indian|months.format.wide.6|Bhadra
+        en@indian|months.format.wide.7|Asvina
+        en@indian|months.format.wide.8|Kartika
+        en@indian|months.format.wide.9|Agrahayana
+        en@indian|months.stand-alone.abbreviated.10|Pausa
+        en@indian|months.stand-alone.abbreviated.11|Magha
+        en@indian|months.stand-alone.abbreviated.12|Phalguna
+        en@indian|months.stand-alone.abbreviated.1|Chaitra
+        en@indian|months.stand-alone.abbreviated.2|Vaisakha
+        en@indian|months.stand-alone.abbreviated.3|Jyaistha
+        en@indian|months.stand-alone.abbreviated.4|Asadha
+        en@indian|months.stand-alone.abbreviated.5|Sravana
+        en@indian|months.stand-alone.abbreviated.6|Bhadra
+        en@indian|months.stand-alone.abbreviated.7|Asvina
+        en@indian|months.stand-alone.abbreviated.8|Kartika
+        en@indian|months.stand-alone.abbreviated.9|Agrahayana
+        en@indian|months.stand-alone.narrow.10|10
+        en@indian|months.stand-alone.narrow.11|11
+        en@indian|months.stand-alone.narrow.12|12
+        en@indian|months.stand-alone.narrow.1|1
+        en@indian|months.stand-alone.narrow.2|2
+        en@indian|months.stand-alone.narrow.3|3
+        en@indian|months.stand-alone.narrow.4|4
+        en@indian|months.stand-alone.narrow.5|5
+        en@indian|months.stand-alone.narrow.6|6
+        en@indian|months.stand-alone.narrow.7|7
+        en@indian|months.stand-alone.narrow.8|8
+        en@indian|months.stand-alone.narrow.9|9
+        en@indian|months.stand-alone.wide.10|Pausa
+        en@indian|months.stand-alone.wide.11|Magha
+        en@indian|months.stand-alone.wide.12|Phalguna
+        en@indian|months.stand-alone.wide.1|Chaitra
+        en@indian|months.stand-alone.wide.2|Vaisakha
+        en@indian|months.stand-alone.wide.3|Jyaistha
+        en@indian|months.stand-alone.wide.4|Asadha
+        en@indian|months.stand-alone.wide.5|Sravana
+        en@indian|months.stand-alone.wide.6|Bhadra
+        en@indian|months.stand-alone.wide.7|Asvina
+        en@indian|months.stand-alone.wide.8|Kartika
+        en@indian|months.stand-alone.wide.9|Agrahayana
+        en@islamic|eras.eraAbbr.0|AH
+        en@islamic|eras.eraAbbr.1|BH
+        en@islamic|eras.eraNames.0|Anno Hegirae
+        en@islamic|eras.eraNames.1|Before Hijrah
+        en@islamic|eras.eraNarrow.0|AH
+        en@islamic|eras.eraNarrow.1|BH
+        en@islamic|months.format.abbreviated.10|Shaw.
+        en@islamic|months.format.abbreviated.11|Dhu\u02BBl-Q.
+        en@islamic|months.format.abbreviated.12|Dhu\u02BBl-H.
+        en@islamic|months.format.abbreviated.1|Muh.
+        en@islamic|months.format.abbreviated.2|Saf.
+        en@islamic|months.format.abbreviated.3|Rab. I
+        en@islamic|months.format.abbreviated.4|Rab. II
+        en@islamic|months.format.abbreviated.5|Jum. I
+        en@islamic|months.format.abbreviated.6|Jum. II
+        en@islamic|months.format.abbreviated.7|Raj.
+        en@islamic|months.format.abbreviated.8|Sha.
+        en@islamic|months.format.abbreviated.9|Ram.
+        en@islamic|months.format.narrow.10|10
+        en@islamic|months.format.narrow.11|11
+        en@islamic|months.format.narrow.12|12
+        en@islamic|months.format.narrow.1|1
+        en@islamic|months.format.narrow.2|2
+        en@islamic|months.format.narrow.3|3
+        en@islamic|months.format.narrow.4|4
+        en@islamic|months.format.narrow.5|5
+        en@islamic|months.format.narrow.6|6
+        en@islamic|months.format.narrow.7|7
+        en@islamic|months.format.narrow.8|8
+        en@islamic|months.format.narrow.9|9
+        en@islamic|months.format.wide.10|Shawwal
+        en@islamic|months.format.wide.11|Dhu\u02BBl-Qi\u02BBdah
+        en@islamic|months.format.wide.12|Dhu\u02BBl-Hijjah
+        en@islamic|months.format.wide.1|Muharram
+        en@islamic|months.format.wide.2|Safar
+        en@islamic|months.format.wide.3|Rabi\u02BB I
+        en@islamic|months.format.wide.4|Rabi\u02BB II
+        en@islamic|months.format.wide.5|Jumada I
+        en@islamic|months.format.wide.6|Jumada II
+        en@islamic|months.format.wide.7|Rajab
+        en@islamic|months.format.wide.8|Sha\u02BBban
+        en@islamic|months.format.wide.9|Ramadan
+        en@islamic|months.stand-alone.abbreviated.10|Shaw.
+        en@islamic|months.stand-alone.abbreviated.11|Dhu\u02BBl-Q.
+        en@islamic|months.stand-alone.abbreviated.12|Dhu\u02BBl-H.
+        en@islamic|months.stand-alone.abbreviated.1|Muh.
+        en@islamic|months.stand-alone.abbreviated.2|Saf.
+        en@islamic|months.stand-alone.abbreviated.3|Rab. I
+        en@islamic|months.stand-alone.abbreviated.4|Rab. II
+        en@islamic|months.stand-alone.abbreviated.5|Jum. I
+        en@islamic|months.stand-alone.abbreviated.6|Jum. II
+        en@islamic|months.stand-alone.abbreviated.7|Raj.
+        en@islamic|months.stand-alone.abbreviated.8|Sha.
+        en@islamic|months.stand-alone.abbreviated.9|Ram.
+        en@islamic|months.stand-alone.narrow.10|10
+        en@islamic|months.stand-alone.narrow.11|11
+        en@islamic|months.stand-alone.narrow.12|12
+        en@islamic|months.stand-alone.narrow.1|1
+        en@islamic|months.stand-alone.narrow.2|2
+        en@islamic|months.stand-alone.narrow.3|3
+        en@islamic|months.stand-alone.narrow.4|4
+        en@islamic|months.stand-alone.narrow.5|5
+        en@islamic|months.stand-alone.narrow.6|6
+        en@islamic|months.stand-alone.narrow.7|7
+        en@islamic|months.stand-alone.narrow.8|8
+        en@islamic|months.stand-alone.narrow.9|9
+        en@islamic|months.stand-alone.wide.10|Shawwal
+        en@islamic|months.stand-alone.wide.11|Dhu\u02BBl-Qi\u02BBdah
+        en@islamic|months.stand-alone.wide.12|Dhu\u02BBl-Hijjah
+        en@islamic|months.stand-alone.wide.1|Muharram
+        en@islamic|months.stand-alone.wide.2|Safar
+        en@islamic|months.stand-alone.wide.3|Rabi\u02BB I
+        en@islamic|months.stand-alone.wide.4|Rabi\u02BB II
+        en@islamic|months.stand-alone.wide.5|Jumada I
+        en@islamic|months.stand-alone.wide.6|Jumada II
+        en@islamic|months.stand-alone.wide.7|Rajab
+        en@islamic|months.stand-alone.wide.8|Sha\u02BBban
+        en@islamic|months.stand-alone.wide.9|Ramadan
+        en@japanese|available.EEEEd|EEEE d
+        en@japanese|available.GyMEd|E, M/d/y GGGGG
+        en@japanese|available.GyMMMEEEEd|EEEE, MMM d, y G
+        en@japanese|available.GyMd|M/d/y GGGGG
+        en@japanese|available.GyM|M/y GGGGG
+        en@japanese|available.MEEEEd|EEEE, M/d
+        en@japanese|available.MMMEEEEd|EEEE, MMM d
+        en@japanese|available.yyyyMEEEEd|EEEE, MMMM d, y G
+        en@japanese|available.yyyyMEd|E, M/d/y GGGGG
+        en@japanese|available.yyyyMMMEEEEd|EEEE, MMMM d, y G
+        en@japanese|available.yyyyMM|MM y GGGGG
+        en@japanese|available.yyyyMd|M/d/y GGGGG
+        en@japanese|available.yyyyM|M/y GGGGG
+        en@japanese|dateFormats.short|M/d/y GGGGG
+        en@japanese|dateTime.full|{1} 'at' {0}
+        en@japanese|dateTime.long|{1} 'at' {0}
+        en@japanese|eras.eraAbbr.232|Meiji
+        en@japanese|eras.eraAbbr.233|Taish\u014D
+        en@japanese|eras.eraAbbr.234|Sh\u014Dwa
+        en@japanese|eras.eraAbbr.235|Heisei
+        en@japanese|eras.eraAbbr.236|Reiwa
+        en@japanese|eras.eraNames.232|Meiji
+        en@japanese|eras.eraNames.233|Taish\u014D
+        en@japanese|eras.eraNames.234|Sh\u014Dwa
+        en@japanese|eras.eraNames.235|Heisei
+        en@japanese|eras.eraNames.236|Reiwa
+        en@japanese|eras.eraNarrow.232|M
+        en@japanese|eras.eraNarrow.233|T
+        en@japanese|eras.eraNarrow.234|S
+        en@japanese|eras.eraNarrow.235|H
+        en@japanese|eras.eraNarrow.236|R
+        en@persian|eras.eraAbbr.0|AP
+        en@persian|eras.eraNames.0|AP
+        en@persian|eras.eraNarrow.0|AP
+        en@persian|months.format.abbreviated.10|Dey
+        en@persian|months.format.abbreviated.11|Bahman
+        en@persian|months.format.abbreviated.12|Esfand
+        en@persian|months.format.abbreviated.1|Farvardin
+        en@persian|months.format.abbreviated.2|Ordibehesht
+        en@persian|months.format.abbreviated.3|Khordad
+        en@persian|months.format.abbreviated.4|Tir
+        en@persian|months.format.abbreviated.5|Mordad
+        en@persian|months.format.abbreviated.6|Shahrivar
+        en@persian|months.format.abbreviated.7|Mehr
+        en@persian|months.format.abbreviated.8|Aban
+        en@persian|months.format.abbreviated.9|Azar
+        en@persian|months.format.narrow.10|10
+        en@persian|months.format.narrow.11|11
+        en@persian|months.format.narrow.12|12
+        en@persian|months.format.narrow.1|1
+        en@persian|months.format.narrow.2|2
+        en@persian|months.format.narrow.3|3
+        en@persian|months.format.narrow.4|4
+        en@persian|months.format.narrow.5|5
+        en@persian|months.format.narrow.6|6
+        en@persian|months.format.narrow.7|7
+        en@persian|months.format.narrow.8|8
+        en@persian|months.format.narrow.9|9
+        en@persian|months.format.wide.10|Dey
+        en@persian|months.format.wide.11|Bahman
+        en@persian|months.format.wide.12|Esfand
+        en@persian|months.format.wide.1|Farvardin
+        en@persian|months.format.wide.2|Ordibehesht
+        en@persian|months.format.wide.3|Khordad
+        en@persian|months.format.wide.4|Tir
+        en@persian|months.format.wide.5|Mordad
+        en@persian|months.format.wide.6|Shahrivar
+        en@persian|months.format.wide.7|Mehr
+        en@persian|months.format.wide.8|Aban
+        en@persian|months.format.wide.9|Azar
+        en@persian|months.stand-alone.abbreviated.10|Dey
+        en@persian|months.stand-alone.abbreviated.11|Bahman
+        en@persian|months.stand-alone.abbreviated.12|Esfand
+        en@persian|months.stand-alone.abbreviated.1|Farvardin
+        en@persian|months.stand-alone.abbreviated.2|Ordibehesht
+        en@persian|months.stand-alone.abbreviated.3|Khordad
+        en@persian|months.stand-alone.abbreviated.4|Tir
+        en@persian|months.stand-alone.abbreviated.5|Mordad
+        en@persian|months.stand-alone.abbreviated.6|Shahrivar
+        en@persian|months.stand-alone.abbreviated.7|Mehr
+        en@persian|months.stand-alone.abbreviated.8|Aban
+        en@persian|months.stand-alone.abbreviated.9|Azar
+        en@persian|months.stand-alone.narrow.10|10
+        en@persian|months.stand-alone.narrow.11|11
+        en@persian|months.stand-alone.narrow.12|12
+        en@persian|months.stand-alone.narrow.1|1
+        en@persian|months.stand-alone.narrow.2|2
+        en@persian|months.stand-alone.narrow.3|3
+        en@persian|months.stand-alone.narrow.4|4
+        en@persian|months.stand-alone.narrow.5|5
+        en@persian|months.stand-alone.narrow.6|6
+        en@persian|months.stand-alone.narrow.7|7
+        en@persian|months.stand-alone.narrow.8|8
+        en@persian|months.stand-alone.narrow.9|9
+        en@persian|months.stand-alone.wide.10|Dey
+        en@persian|months.stand-alone.wide.11|Bahman
+        en@persian|months.stand-alone.wide.12|Esfand
+        en@persian|months.stand-alone.wide.1|Farvardin
+        en@persian|months.stand-alone.wide.2|Ordibehesht
+        en@persian|months.stand-alone.wide.3|Khordad
+        en@persian|months.stand-alone.wide.4|Tir
+        en@persian|months.stand-alone.wide.5|Mordad
+        en@persian|months.stand-alone.wide.6|Shahrivar
+        en@persian|months.stand-alone.wide.7|Mehr
+        en@persian|months.stand-alone.wide.8|Aban
+        en@persian|months.stand-alone.wide.9|Azar
+        en@roc|eras.eraAbbr.0|B.R.O.C.
+        en@roc|eras.eraAbbr.1|Minguo
+        en@roc|eras.eraNames.0|B.R.O.C.
+        en@roc|eras.eraNames.1|Minguo
+        en@roc|eras.eraNarrow.0|B.R.O.C.
+        en@roc|eras.eraNarrow.1|Minguo
         en|append.Day-Of-Week|{0} {1}
         en|append.Day|{0} ({2}: {1})
         en|append.Era|{0} {1}

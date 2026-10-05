@@ -163,3 +163,17 @@ each line:
 - A calendar table byte that is not what the generator writes from the archived crates, or a year
   the generator reads that is not the crate's.
 - A difference between two dates in a calendar that the proposal's loops would count otherwise.
+
+## Amended 2026-10-05: the formatter's calendars built (unsigned)
+
+*Recorded with phase F8's slice T4; it signs nothing. Corrections entry
+[JSC-283](../roadmap.corrections.md#jsc-283).*
+
+- **Section 6's declared divergence is gone** under proposed
+  [JSD-0057](0057-intl-datetimeformat-in-the-cldr-calendars.md): `Intl.DateTimeFormat` resolves and
+  writes every calendar of Table 1, `Intl.supportedValuesOf("calendar")` lists them, a Hebrew date's
+  `toLocaleString` formats in the Hebrew calendar, and `-u-ca-hebrew` resolves to `hebrew`. CLDR's
+  names and patterns for the calendars fit under the budget: the data is 761,598 bytes, 24,834 under
+  it.
+- The formatter reads each date's fields from this record's calendars, so a date formats with the
+  year, month, day and era its Temporal getters answer. Sections 1 to 5 and 7 are kept as written.

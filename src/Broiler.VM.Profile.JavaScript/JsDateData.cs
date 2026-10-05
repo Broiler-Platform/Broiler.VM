@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           5
-// Human-reviewed:   0/7
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       7
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -67,6 +67,28 @@ internal sealed class JsDateData
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B2F82B
     // Broiler-Human:        PENDING
     internal const string Iso8601 = "@iso8601";
+
+    /// <summary>
+    /// The calendars whose data is a layer of the date table (JSD-0057), each after the one it is a
+    /// layer over; null for the layer of CLDR's generic patterns. <c>islamic</c> is a parent only.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BE93D6
+    // Broiler-Human:        PENDING
+    internal static readonly (string Calendar, string? Parent)[] CalendarLayers =
+    [
+        ("buddhist", null), ("chinese", null), ("coptic", null), ("dangi", "chinese"), ("ethiopic", null), ("ethioaa", "ethiopic"),
+        ("hebrew", null), ("indian", null), ("islamic", null), ("islamic-civil", "islamic"), ("islamic-tbla", "islamic"),
+        ("islamic-umalqura", "islamic"), ("japanese", null), ("persian", null), ("roc", null),
+    ];
+
+    /// <summary>The language a calendar's data language is of: <c>en</c> for <c>en@hebrew</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E53C2
+    // Broiler-Human:        PENDING
+    internal static string LanguageOf(string dataLanguage)
+    {
+        var at = dataLanguage.IndexOf('@', System.StringComparison.Ordinal);
+        return at < 0 ? dataLanguage : dataLanguage[..at];
+    }
 
     /// <summary>Whether a key is one of a calendar's patterns rather than one of its names.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D3D1C3

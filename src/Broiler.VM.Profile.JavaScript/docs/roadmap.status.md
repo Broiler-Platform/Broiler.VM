@@ -637,6 +637,20 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F8 observation, slice T4, the formatter's calendars, 2026-10-05.** `Intl.DateTimeFormat`
+resolves and writes every calendar of the Intl era and month code proposal's Table 1, and
+`Intl.supportedValuesOf("calendar")` lists the sixteen, under proposed
+[JSD-0057](decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md). Each date's fields are the
+calendar's Temporal fields; its names and patterns are CLDR 48's, from eleven `cldr-cal-*-full`
+packages and `ca-generic.json` archived under rule N27 and generated as layers over each language's
+Gregorian data; the data is 761,598 bytes. A retained dataset of 5,951 lines agrees with the
+reference polyfill on 4,556 lines, the 1,395 others named, 1,386 of them CLDR 48's era names against
+the CLDR 47 the polyfill's ICU reads. `test/intl402/DateTimeFormat` passes 478 of 488,
+`test/intl402/Temporal` 3,980 of 3,982 and `test/intl402/Intl` all 132; no variant scored before
+moves back ([JSC-283](roadmap.corrections.md#jsc-283)). F8's exit gate still waits on a zone's long
+name, which needs CLDR's metazones. This is unreviewed implementation and validation material, not
+accepted milestone evidence; no milestone row advances.
+
 **Phase F8 observation, slice T3, the CLDR calendars, 2026-10-05.** `Temporal` reckons in every
 calendar of the Intl era and month code proposal's Table 1 - eras, month codes, leap months, reference
 years, addition and difference as its section 4.1 states them - under proposed

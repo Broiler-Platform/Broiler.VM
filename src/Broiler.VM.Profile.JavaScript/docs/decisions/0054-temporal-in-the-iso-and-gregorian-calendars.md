@@ -183,3 +183,14 @@ is commented in the code:
   `test/built-ins/Temporal`. The Gregorian calendar's eras are now the proposal's general ones, and an
   era name is matched exactly, as CanonicalizeEraInCalendar compares it. Sections 1 to 8 are kept as
   written.
+
+## Amended 2026-10-05: slice T4 built (unsigned)
+
+*Recorded with phase F8's slice T4; it signs nothing. Corrections entry
+[JSC-283](../roadmap.corrections.md#jsc-283).*
+
+- **T4 is built** under proposed [JSD-0057](0057-intl-datetimeformat-in-the-cldr-calendars.md):
+  `Intl.DateTimeFormat` writes every calendar of the Intl era and month code proposal's Table 1 from
+  CLDR's names and patterns, and `Intl.supportedValuesOf("calendar")` lists them. Every type's
+  `toLocaleString` in those calendars now formats. `test/intl402/Temporal` passes 3,980 of 3,982
+  scored variants; the two left write a zone's long name. Sections 1 to 8 are kept as written.
