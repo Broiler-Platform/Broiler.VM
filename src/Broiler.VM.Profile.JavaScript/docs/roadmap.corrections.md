@@ -12664,3 +12664,56 @@ statement that no measurement exists; JS-10's ledger row.
   evidence, and nobody has reviewed either.
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-287
+
+**Where:** phase F9, slices R3 and R4. The JavaScript consumer sample and rule A14; the package
+baseline `docs/packages.md` and rule N37; bundles JS-10-002 and JS-10-003; the conformance root's
+`--effective-limits` mode; the release gate, its register `docs/release-gate.md` and rule N38; three
+family package descriptions; JS-10's ledger row.
+
+**What the plan said.**
+- Release [gate 8](roadmap.gates.md#22-release-gates): the packable set matches its dated budget,
+  produced metadata declares no foreign dependency, a pristine consumer restores and runs, rollback is
+  exercised, and the packable set is frozen in a baseline of its own compared in both directions.
+- Release gate 9: a release-candidate run from an exact commit with retained artifacts, the ratchet
+  not regressed, every claimed manifest with its own totals, the failure manifest generated from the
+  run, the effective limit vector published beside the totals, no aggregate percentage.
+- [Section 19](roadmap.delivery.md#js-10--baselines-packaging-the-support-table-and-the-release-gate)'s
+  JS-10: run the release gate that refuses the tree while any relevant unit lacks a human decision.
+- Rule A14: every sample references exactly the three core packages.
+
+**What replaced it, observed on 2026-10-05.**
+- **A pristine JavaScript consumer** under `samples/`, admitted by a revised rule A14 and a dated
+  revision of ADR 0001, and **bundle [JS-10-002](evidence/js-10-002/README.md)** from a clean tree:
+  the consumer restored and ran with upstream unreachable, rolled back to `0.1.0-preview.5` as
+  published and forward again, refused a version only nuget.org holds, and ran as Native AOT.
+- **The family's package baseline**, four packages, held by **rule N37** in both directions to the
+  checkout and the bundle's metadata, with no foreign dependency in any produced `.nuspec`. Proposed
+  [JSD-0061](decisions/0061-packages-consumers-and-the-release-candidate.md).
+- **Bundle [JS-10-003](evidence/js-10-003/README.md)**: four whole runs from one binary at a clean
+  commit - the wide manifest in the bytecode and native forms, the slice manifest, the numeric
+  manifest's native form - each with its totals, failure manifest and effective limit vector, read
+  back from a verified handle by the new `--effective-limits` mode. The bytecode floor holds.
+- **The release gate refuses**: gates 1 to 13 read from the checkout, each blocker named by its
+  declaration, held by **rule N38** to its register in both directions; a review headline or a support
+  table claiming more than the units record is itself named. Proposed
+  [JSD-0062](decisions/0062-the-release-gate-that-refuses.md).
+- **Three package descriptions are corrected**: the profile's said it implements only the slice
+  manifest, the format's that only format version 1 exists, the lowering's that it has no tokenizer.
+  Bundle JS-10-002 keeps the text as packed.
+- The architecture suite has 368 tests.
+
+**What must not be read as repaired.**
+- **The native form's ratchet is unchecked on `linux-x64`**: `test262-wide-native.floor` was set in
+  the `x86-64-win64` form and the runner will not compare two forms. The gate names it.
+- **One variant's verdict depends on timing**: `test/built-ins/Atomics/waitAsync/no-spurious-wakeup-on-add.js`
+  passed in run r32 and exhausted `LiveBytes` in JS-10-003's bytecode run; run alone six times it
+  exhausted once. What the main agent retains while it drains its job queue waiting on a second agent
+  depends on that agent's speed - a deterministic dimension deciding by wall time. Not repaired.
+- **The gate reads gates 3 to 6 through no mechanism** and names each as blocking for that reason.
+- **The collection script's summary** called the native run not retainable on its floor's exit code;
+  corrected after the collection, which the bundle records.
+- Nothing published, claimed, advertised, appointed or accepted.
+
+**Authority and date.** The implementation and the collections of 2026-10-05 in this checkout. 2026-10-05.

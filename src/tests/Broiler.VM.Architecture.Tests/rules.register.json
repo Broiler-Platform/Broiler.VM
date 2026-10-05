@@ -1089,6 +1089,16 @@
       "witness": "witnesses/js-packages/N37-baseline-adds-a-package.md.witness, witnesses/js-packages/N37-baseline-omits-a-package.md.witness, witnesses/js-packages/N37-baseline-misstates-a-dependency.md.witness, witnesses/js-packages/N37-nuspecs-declare-a-foreign-dependency.txt.witness, witnesses/js-packages/N37-consumer-log-rollback-failed.log.witness"
     },
     {
+      "id": "N38",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript profile's release gate, which reads roadmap section 22's gates 1 to 13 from the checkout, answers a verdict and names every blocker by the declaration that states it, and the blockers it names are exactly the ones its register, src/Broiler.VM.Profile.JavaScript/docs/release-gate.md, records, in both directions, with the verdict the register states. A gate is held only by rules Active in the register, blocked by an act only the owner or a named human can take, or blocked because a clause is read by no mechanism; a human decision is counted only from a unit's own Broiler-Human line, so a review headline or a support table claiming more than the units record does not clear gate 11 and is itself named as a contradiction. Phase F9's slice R4, decision JSD-0062: JS-10's gate asks for the release gate that refuses the tree while any relevant unit lacks a human decision.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/release-gate.md against JsReleaseGate.Evaluate over the checkout",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Thirteen gates are evaluated and the gate refuses with blockers in most of them, so both directions are over real entries. The two witnesses replace the review headline and the support table with texts that claim every unit reviewed and the table issued; the gate still refuses and names the contradiction, which is what shows the headline and the table are read as claims to check rather than as decisions. THE LIMIT: an unread clause is named as blocking rather than read; the gate states what no mechanism here checks and does not check it.",
+      "witness": "witnesses/js-release-gate/N38-review-headline-claims-every-unit.md.witness, witnesses/js-release-gate/N38-support-table-reads-as-issued.md.witness"
+    },
+    {
       "id": "W1",
       "owningAdr": "0011",
       "status": "Active",

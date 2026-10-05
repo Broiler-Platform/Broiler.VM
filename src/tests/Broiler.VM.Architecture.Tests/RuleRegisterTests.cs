@@ -422,10 +422,14 @@ public sealed class RuleRegisterTests
         // the candidate pack's retained metadata, in both directions, with no foreign dependency and a
         // consumer transcript that restored, rolled back and forward, and refused what only upstream
         // holds (decision JSD-0061). Active when minted; no other count moves.
-        Assert.Equal(116, byStatus["Active"]);
+        // Phase F9's fourth slice adds N38, the release gate that refuses: gates 1 to 13 read from
+        // the checkout, every blocker named by its declaration and held to the gate's register in both
+        // directions, with a review headline and a support table that claim more than the units
+        // record shown not to clear it (decision JSD-0062). Active when minted; no other count moves.
+        Assert.Equal(117, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(118, Loaded.Rules.Count);
+        Assert.Equal(119, Loaded.Rules.Count);
     }
 
     private static Register Load()

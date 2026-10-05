@@ -1423,6 +1423,15 @@ progress` ([JSC-285](roadmap.corrections.md#jsc-285)).*
 release gate 1 names with an evidence cell - and rules N34, N35 and N36 hold it to the checkout
 ([JSC-286](roadmap.corrections.md#jsc-286)).*
 
+*Progress, 2026-10-05, slices R3 and R4: the family's packages are frozen in a [baseline](packages.md)
+and consumed by a pristine consumer with a rollback to the published set (bundle
+[JS-10-002](evidence/js-10-002/README.md)); a release-candidate run of the pinned suite is retained
+per manifest and form (bundle [JS-10-003](evidence/js-10-003/README.md)); and the release gate
+refuses, naming each blocker in [its register](release-gate.md). Every slice of F9 is built; **F9's
+exit leaves JS-10 `In progress`**, as JSD-0059 section 1 said it would, with the gate's register as
+the list of what the owner and a named human must do
+([JSC-287](roadmap.corrections.md#jsc-287)).*
+
 ### 26.5 What runs beside the phases
 
 **The acceptance track.** None of the work above advances a ledger row on its own. Beside every

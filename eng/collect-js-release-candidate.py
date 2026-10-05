@@ -189,7 +189,10 @@ def main():
     shutil.rmtree(binaries, ignore_errors=True)
 
     for name, code in verdicts:
-        print("%s: runner exit %d%s" % (name, code, "" if code in ACCEPTED else " - NOT RETAINABLE AS TAKEN"))
+        note = ("" if code in ACCEPTED
+                else " - its floor does not hold, or could not be compared with it" if code == 4
+                else " - NOT RETAINABLE AS TAKEN")
+        print("%s: runner exit %d%s" % (name, code, note))
     return 0 if all(code in ACCEPTED for _, code in verdicts) else 1
 
 

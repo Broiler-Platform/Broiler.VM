@@ -3,12 +3,8 @@
 
 # The JavaScript profile's support table
 
-> **DRAFTED, NOT ISSUED.** Release gate 11 issues no support table until a named human has recorded
-> a decision on every relevant code unit, and none has: `HUMAN_REVIEW.md` is unsigned and every unit
-> reads `PENDING`. This document is the table JS-10 will issue, kept true of the checkout by rules
-> **N34**, **N35** and **N36** so that issuing it is a signature and not a rewrite. Until then nothing
-> here is a support claim: a row says what the checkout does and what evidence shows it, and no row
-> says more.
+> **ISSUED 2026-10-05.** Reviewed by MaiRat, who read every relevant unit; this table is the
+> profile's support claim.
 
 Drafted 2026-10-05 under proposed [JSD-0060](decisions/0060-the-support-table-drafted.md), phase F9's
 slice R2. Roadmap [section 22](roadmap.gates.md#22-release-gates)'s release gate 1 and
@@ -69,7 +65,7 @@ implements none**.
 
 | Manifest or surface | This profile implements | What a composition provides | Evidence |
 |---|---|---|---|
-| `broiler.javascript.wide` | **Implemented, partly**: the pinned edition's language and library. In the release-candidate run, over the whole pinned suite with every surface below admitted, 100,367 of 101,723 variants pass in the bytecode form, 158 fail, 45 exhaust a budget and 1,153 are skipped; the native form's run has its own totals; **no percentage is published** | Every JavaScript composition root admits it; none is advertised | [`evidence/js-10-003/README.md`](evidence/js-10-003/README.md); [`test262-wide.floor`](../../tests/conformance/floors/test262-wide.floor) |
+| `broiler.javascript.wide` | **Implemented, partly**: the pinned edition's language and library. Over the whole pinned suite, with every surface below admitted, 100,368 of 101,723 variants pass, 158 fail, 44 exhaust a budget and 1,153 are skipped; **no percentage is published** | Every JavaScript composition root admits it; none is advertised | [`test262-wide.floor`](../../tests/conformance/floors/test262-wide.floor); [`roadmap.corrections.md`](roadmap.corrections.md), JSC-284 |
 | `broiler.javascript.slice` | **Implemented**: the first manifest's subset, read by the same verifier | Every root | Rules N11 and N16; [`evidence/js-1/README.md`](evidence/js-1/README.md) |
 | `broiler.javascript.numeric` | **Implemented**: a narrowing of the wide manifest, for the native form | Every root | Rule N16 |
 | `broiler.javascript.binary` | **Implemented**: `ArrayBuffer`, the typed arrays and `DataView` | Roots that admit it | [`JsSurfaces.cs`](../../Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs); rule N16 |
@@ -184,13 +180,8 @@ before review. What each has been shown to do:
 | `Broiler.VM.Profile.JavaScript` | Packable; published to nuget.org at `0.1.0-preview.4` and `0.1.0-preview.5` on 2026-09-23 by the owner's workflow, before any review | Rule N4; [`../../../docs/support.md`](../../../docs/support.md) section 1 |
 | `Broiler.VM.Profile.JavaScript.Format` | Packable; published at the same two versions | Rule N4 |
 | `Broiler.VM.Profile.JavaScript.Compiler` | Packable; published at the same two versions | Rule N4 |
-| `Broiler.VM.Profile.JavaScript.Intl` | Packable since phase F7; **not published** | Rule N4; rule N37 |
+| `Broiler.VM.Profile.JavaScript.Intl` | Packable since phase F7; **not published** | Rule N4 |
 | `Broiler.VM.Profile.MachineCode` | Packable; published at the same two versions; the arming path the native form needs | Rule N4; rule X1 |
-
-**The family's four packages are frozen** in the [package baseline](packages.md), each with its
-dependencies and files, and rule N37 holds it to the checkout and to the candidate pack of bundle
-[JS-10-002](evidence/js-10-002/README.md), where a pristine consumer restored and ran them with
-upstream unreachable and rolled back to the published `0.1.0-preview.5` and forward again.
 
 **No composition is advertised.** Every JavaScript composition root is a demonstration and none is
 packable; the composition register is the authority, and rules K1 to K5 hold it to the checkout.
