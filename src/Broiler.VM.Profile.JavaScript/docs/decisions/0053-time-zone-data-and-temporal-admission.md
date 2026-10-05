@@ -169,3 +169,15 @@ only with the Intl surface (section 6), so a composition that has the zones has 
   `ZonedDateTime`, so the first slice could not stop at `Instant`, `Duration` and `Now`. T1 built
   every type in the ISO 8601 and Gregorian calendars; T2 is Intl over Temporal objects; T3 the other
   calendars (JSD-0054 section 2). Section 6 is kept as written.
+
+## Amended 2026-10-05: the daylight flag kept, and the zones named (unsigned)
+
+*Recorded with phase F8's slice T5; it signs nothing. Corrections entry
+[JSC-284](../roadmap.corrections.md#jsc-284).*
+
+- **Section 7's zone names are built** under proposed [JSD-0058](0058-time-zone-names.md): a zone's
+  specific and generic names from CLDR's metazones, as ICU writes them, where the localized GMT format
+  served.
+- **The tables keep each offset's daylight flag**, the rearguard one ICU's data carries, and a change
+  of the flag alone as a transition, which the reader skips where Temporal asks for a change of
+  offset. Rule N30's compiler gives every zone the offsets it gave before.

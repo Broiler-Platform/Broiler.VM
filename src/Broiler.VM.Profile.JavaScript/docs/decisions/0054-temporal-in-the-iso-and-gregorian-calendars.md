@@ -194,3 +194,13 @@ is commented in the code:
   CLDR's names and patterns, and `Intl.supportedValuesOf("calendar")` lists them. Every type's
   `toLocaleString` in those calendars now formats. `test/intl402/Temporal` passes 3,980 of 3,982
   scored variants; the two left write a zone's long name. Sections 1 to 8 are kept as written.
+
+## Amended 2026-10-05: slice T5 built, the exit gate met (unsigned)
+
+*Recorded with phase F8's slice T5; it signs nothing. Corrections entry
+[JSC-284](../roadmap.corrections.md#jsc-284).*
+
+- **T5 is built** under proposed [JSD-0058](0058-time-zone-names.md): a zone's specific and generic
+  names from CLDR's metazones. `test/intl402/Temporal` passes all 3,982 scored variants and
+  `test/built-ins/Temporal` all 9,176, which is phase F8's exit gate. Sections 1 to 8 are kept as
+  written.

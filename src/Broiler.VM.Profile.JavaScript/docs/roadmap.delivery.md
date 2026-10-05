@@ -1391,6 +1391,13 @@ CLDR's metazones; a slice T5 measures them against the 24,834 bytes left and is 
 pinned suite 100,364 of 101,723 variants pass, none moving to failing
 ([JSC-283](roadmap.corrections.md#jsc-283)).*
 
+*Progress, 2026-10-05, slice T5: a zone's specific and generic names are CLDR's metazones', composed
+as ICU composes them, under proposed [JSD-0058](decisions/0058-time-zone-names.md); the repository
+owner raised the Intl data budget to 832 KiB for them, and the data is 841,145 bytes. The time zone
+tables keep the daylight flag the names read. `test/intl402/Temporal` passes all 3,982 scored
+variants and `test/built-ins/Temporal` all 9,176: **the exit gate is met**. F9, the release, is next
+([JSC-284](roadmap.corrections.md#jsc-284)).*
+
 #### F9 — The release
 
 - **Delivers:** JS-10 over every surface above.

@@ -90,7 +90,8 @@ internal static class TzdbTableGenerator
 
     /// <summary>
     /// The binary zone table: a count of zones, then each zone as a zig-zag first offset, its palette
-    /// of offsets, its transitions as a time delta and a palette index, and its recurring rules.
+    /// of offsets, each twice the offset and one more where it is daylight time, its transitions as a
+    /// time delta and a palette index, and its recurring rules.
     /// </summary>
     /// <remarks>
     /// A time delta is in minutes where it is a whole number of them, its low bit clear, and in
@@ -108,23 +109,23 @@ internal static class TzdbTableGenerator
         {
             Signed(bytes, zone.InitialOffset);
 
-            var palette = zone.Transitions.Select(static transition => transition.Offset).Distinct().ToList();
+            var palette = zone.Transitions.Select(static transition => (transition.Offset, transition.Daylight)).Distinct().ToList();
             Unsigned(bytes, (ulong)palette.Count);
 
-            foreach (var offset in palette)
+            foreach (var (offset, daylight) in palette)
             {
-                Signed(bytes, offset);
+                Signed(bytes, (offset * 2L) + (daylight ? 1 : 0));
             }
 
             Unsigned(bytes, (ulong)zone.Transitions.Count);
             var previous = 0L;
 
-            foreach (var (at, offset) in zone.Transitions)
+            foreach (var (at, offset, daylight) in zone.Transitions)
             {
                 var delta = at - previous;
                 previous = at;
                 Unsigned(bytes, delta % 60 == 0 ? ZigZag(delta / 60) << 1 : (ZigZag(delta) << 1) | 1);
-                bytes.Add(checked((byte)palette.IndexOf(offset)));
+                bytes.Add(checked((byte)palette.IndexOf((offset, daylight))));
             }
 
             if (zone.Final is not { } final)

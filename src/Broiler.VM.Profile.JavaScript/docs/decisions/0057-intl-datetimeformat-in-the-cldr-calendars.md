@@ -141,3 +141,12 @@ the profile reads CLDR 48.2. The dataset's divergences file names each line, in 
   that fails for a reason other than section 6 names.
 - A layer line of the generated tables that is not what the generator writes from the archived
   files, or a composed calendar whose names or patterns differ from the CLDR file's.
+
+## Amended 2026-10-05: zone long names (unsigned)
+
+*Recorded with phase F8's slice T5; it signs nothing. Corrections entry
+[JSC-284](../roadmap.corrections.md#jsc-284).*
+
+- **Section 6's zone long names are built** under proposed [JSD-0058](0058-time-zone-names.md), and
+  `test/intl402/Temporal` passes all 3,982 scored variants. The data budget is 832 KiB, which the
+  owner set for them.

@@ -398,7 +398,9 @@ short CollationTest files (test input only) and `collation/root.xml`, `de.xml` a
 phase F8's slice T4, JSD-0057) from the npm packages `cldr-cal-buddhist-full`, `-chinese-`,
 `-coptic-`, `-dangi-`, `-ethiopic-`, `-hebrew-`, `-indian-`, `-islamic-`, `-japanese-`, `-persian-`
 and `-roc-full`, each one's `package.json` and its `ca-*.json` files for `de` and `en`, and from
-`cldr-dates-full` `ca-generic.json` for `de` and `en`; and the licence text. They are archived unmodified at [`src/tests/cldr/pins/`](src/tests/cldr/pins/README.md),
+`cldr-dates-full` `ca-generic.json` for `de` and `en`; and (added 2026-10-05, phase F8's slice T5,
+JSD-0058) from `cldr-core` `supplemental/metaZones.json` and `supplemental/primaryZones.json`; and
+the licence text. They are archived unmodified at [`src/tests/cldr/pins/`](src/tests/cldr/pins/README.md),
 where `cldr.pin` records each file's length and SHA-256 and rule **N27** hashes them on every run of
 the architecture suite. The pin and its README record how and when they were retrieved. Since the
 same day, for `Intl.NumberFormat` (decision
@@ -424,7 +426,9 @@ holds from `cldr-localenames-full` `languages.json`, `territories.json`, `script
 `Intl.DateTimeFormat` in the CLDR calendars (decision
 [JSD-0057](src/Broiler.VM.Profile.JavaScript/docs/decisions/0057-intl-datetimeformat-in-the-cldr-calendars.md)),
 it also holds the eleven `cldr-cal-*-full` packages' calendar files and `ca-generic.json` for `de`
-and `en`.
+and `en`. Since the same day, for the time zones' names (decision
+[JSD-0058](src/Broiler.VM.Profile.JavaScript/docs/decisions/0058-time-zone-names.md)), it also holds
+from `cldr-core` `metaZones.json` and `primaryZones.json`.
 
 **What is derived, and where it ships.** `CldrTableGenerator` (architecture test project, not
 shipped) writes one source file of tables from those files and the pinned UCD:
@@ -440,7 +444,9 @@ the hour cycles and weeks of every region, the scripts' line directions, and eac
 plural rules, list patterns, relative time patterns and duration patterns, and each language's names
 of languages, regions, scripts, variants, calendars and date fields, and from the UCD the break
 properties `Intl.Segmenter` reads, and since slice T4 each language's names and patterns in the
-calendars of the Intl era and month code proposal, as layers over its Gregorian data. The derived tables
+calendars of the Intl era and month code proposal, as layers over its Gregorian data, and since
+slice T5 each language's metazone and zone names and exemplar cities, and the metazone periods,
+golden zones and primary zones those names are chosen by. The derived tables
 therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);
@@ -614,5 +620,5 @@ against in one file.
 The same holds for the answers of the slices that followed, each from a program of this repository's
 run under the same polyfill: `src/tests/temporal/intl/temporal-intl.polyfill-e8cc03fc.txt` (slice T2,
 JSD-0055), `src/tests/temporal/calendars/temporal-calendars.polyfill-e8cc03fc.txt` (slice T3,
-JSD-0056) and `src/tests/temporal/calendars-intl/calendar-formats.polyfill-e8cc03fc.txt` (slice T4,
-JSD-0057).
+JSD-0056), `src/tests/temporal/calendars-intl/calendar-formats.polyfill-e8cc03fc.txt` (slice T4,
+JSD-0057) and `src/tests/temporal/zone-names/zone-names.polyfill-e8cc03fc.txt` (slice T5, JSD-0058).

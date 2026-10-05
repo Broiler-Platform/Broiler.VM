@@ -23,13 +23,17 @@ This is the dataset slice T2's record keeps, decision
   reference polyfill at `e8cc03fc`, the same one [`../README.md`](../README.md) describes, which
   formats through Node 22.22.0's `Intl.DateTimeFormat`, ICU 77.1 with CLDR 47. It ran on 2026-10-05
   by the command that README gives, with this program's name.
-- [`divergences.txt`](divergences.txt) names the 83 lines on which the profile answers otherwise, in
-  four groups, each under its reason:
+- [`divergences.txt`](divergences.txt) names the 82 lines on which the profile answers otherwise, in
+  three groups, each under its reason:
   - Node writes a space where ICU writes U+202F before a day period (74 lines);
   - the polyfill fakes `dateStyle` for a year-month or month-day with fixed options, where the
     draft's AdjustDateTimeStyleFormat keeps the style's own fields (6);
-  - CLDR 48's new available format `GyM`, which CLDR 47 lacks (2);
-  - a specific zone name, which needs CLDR's metazones (1).
+  - CLDR 48's new available format `GyM`, which CLDR 47 lacks (2).
+
+  Until slice T5 a fourth group named one line, a specific zone name the profile wrote in the GMT
+  format; since CLDR's metazones are read
+  ([JSD-0058](../../../Broiler.VM.Profile.JavaScript/docs/decisions/0058-time-zone-names.md)) the
+  profile answers it as the polyfill does.
 
 The slice compiler's check `temporal/t2/intl-over-temporal-matches-the-reference-polyfill` runs the
 program and compares every line: the polyfill's, or the divergence that replaces it.

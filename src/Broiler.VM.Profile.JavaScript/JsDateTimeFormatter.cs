@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   27
 // Annotated:        27/27
-// Exempt:           22
+// Exempt:           23
 // Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Low
@@ -222,7 +222,7 @@ internal sealed class JsDateTimeFormatter
     // Broiler-Human:        PENDING
     private JsDateIntervalFormat? interval;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C7BA00
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=387351
     // Broiler-Human:        PENDING
     internal JsDateTimeFormatter(
         JsDateData data,
@@ -234,10 +234,12 @@ internal sealed class JsDateTimeFormatter
         string pattern,
         System.Func<JsDateIntervalFormat> intervals,
         JsZone? zone = null,
-        JsCalendarSystem? calendar = null)
+        JsCalendarSystem? calendar = null,
+        JsZoneNaming? naming = null)
     {
         this.zone = zone;
         this.calendar = calendar;
+        this.naming = naming;
         this.data = data;
         this.language = language;
         this.digits = digits;
@@ -257,6 +259,11 @@ internal sealed class JsDateTimeFormatter
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2174A5
     // Broiler-Human:        PENDING
     private readonly JsCalendarSystem? calendar;
+
+    /// <summary>What an IANA zone is named with, or nothing where it is written in the GMT format alone (JSD-0058).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6DEFB6
+    // Broiler-Human:        PENDING
+    private readonly JsZoneNaming? naming;
 
     /// <summary>A time value's local fields, in the format's calendar.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A8FC8F
@@ -695,11 +702,12 @@ internal sealed class JsDateTimeFormatter
     }
 
     /// <summary>
-    /// A zone field: CLDR's name for UTC or GMT where the field asks for one, otherwise CLDR's GMT
-    /// format. The GMT zone's name is its metazone's, which ICU maps only from 1970-01-01T00:00Z to
-    /// before 9999-12-31T23:59Z; outside those bounds the zone has no name and the GMT format serves.
+    /// A zone field: CLDR's name for UTC or GMT, or an IANA zone's specific or generic name (JSD-0058),
+    /// where the field asks for one, otherwise CLDR's GMT format. The GMT zone's name is its metazone's,
+    /// which ICU maps only from 1970-01-01T00:00Z to before 9999-12-31T23:59Z; outside those bounds the
+    /// zone has no name and the GMT format serves.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E164EB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3113D2
     // Broiler-Human:        PENDING
     private string ZoneName(char c, int count, long utc)
     {
@@ -709,10 +717,17 @@ internal sealed class JsDateTimeFormatter
         {
             JsZoneKind.Utc => data.Value(language, "zone.utc." + width),
             JsZoneKind.Gmt when metazone => data.Value(language, "zone.gmt." + width),
+            JsZoneKind.Named when naming is not null && zone is not null => naming.Names.Specific(data, language, TimeZone, zone, utc, width == "long"),
             _ => null,
         };
 
-        string? Generic(string width) => metazone ? data.Value(language, "zone.gmt." + width) : null;
+        string? Generic(string width) => ZoneKind switch
+        {
+            JsZoneKind.Gmt when metazone => data.Value(language, "zone.gmt." + width),
+            JsZoneKind.Named when naming is not null && zone is not null =>
+                naming.Names.Generic(data, language, naming.Region, naming.RegionName, TimeZone, zone, utc, width == "long"),
+            _ => null,
+        };
 
         var offset = OffsetSecondsAt(utc);
 

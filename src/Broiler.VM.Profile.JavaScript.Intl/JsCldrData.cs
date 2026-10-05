@@ -54,7 +54,7 @@ public sealed class JsCldrData : IJsIntlData
     public string CldrVersion => JsCldrTables.Version;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=73FBAA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9B4B1A
     // Broiler-Human:        PENDING
     public System.ReadOnlySpan<byte> Table(JsIntlTable table) => table switch
     {
@@ -87,6 +87,7 @@ public sealed class JsCldrData : IJsIntlData
         JsIntlTable.TimeZoneIds => JsTzdbTables.TimeZoneIds,
         JsIntlTable.TimeZoneRegions => JsTzdbTables.TimeZoneRegions,
         JsIntlTable.Calendars => JsCalendarTables.Calendars,
+        JsIntlTable.MetaZones => JsCldrTables.MetaZones,
         _ => default,
     };
 }

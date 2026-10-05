@@ -57,6 +57,7 @@ internal static class IntlChecks
         CalendarsMatchTheReferencePolyfill(),
         CalendarConversionsMatchIcu4x(),
         CalendarFormatsMatchTheReferencePolyfill(),
+        ZoneNamesMatchTheReferencePolyfill(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -326,6 +327,20 @@ internal static class IntlChecks
             "calendar-formats.polyfill-e8cc03fc.txt",
             "the reference polyfill",
             5500);
+
+    /// <summary>
+    /// The retained answers of the time zones' names (phase F8 T5, JSD-0058): the program under
+    /// <c>src/tests/temporal/zone-names</c>, run here, answers every line the reference polyfill answered
+    /// through ICU 77.1, but for the lines <c>divergences.txt</c> names.
+    /// </summary>
+    private static (string, bool, string) ZoneNamesMatchTheReferencePolyfill() =>
+        RetainedMatches(
+            "temporal/t5/zone-names-match-the-reference-polyfill",
+            "src/tests/temporal/zone-names",
+            "zone-names",
+            "zone-names.polyfill-e8cc03fc.txt",
+            "the reference polyfill",
+            2600);
 
     /// <summary>
     /// The same program's conversion lines against ICU4X 2.3.0's (JSD-0056): every line ICU4X wrote is

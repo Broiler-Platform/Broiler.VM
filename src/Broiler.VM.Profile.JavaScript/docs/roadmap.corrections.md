@@ -12534,3 +12534,46 @@ under `src/tests/cldr/pins/` (rule N27), and the retained dataset `src/tests/tem
 - JSD-0057 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-284
+
+**Where:** phase F8, slice T5. The zone names in `JsZoneNames.cs` and `JsDateTimeFormatter.cs`, the
+daylight flag in `JsTimeZones.cs` and rule N30's compiler and generator (`TzdbCompiler`,
+`TzdbTableGenerator`), the Intl data contract's `MetaZones` table and its generator in
+`CldrTableGenerator`, the CLDR archive under `src/tests/cldr/pins/` (rule N27), the data budget of
+rule N28, and the retained dataset `src/tests/temporal/zone-names/`.
+
+**What the plan said.**
+- [JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md) section 7 and
+  [JSC-283](#jsc-283): a zone is written in the localized GMT format; its specific and generic names
+  need CLDR's metazones, which the archive does not hold, and F8's exit gate waits on the two
+  `test/intl402/Temporal` variants that ask for one. The next slice measures them against the 24,834
+  bytes left under the budget.
+
+**What replaced it, observed on 2026-10-05.**
+- **The measurement**: about 62 KB of text, 30 KB even packed tightly. The repository owner chose to
+  raise the budget rather than compress the table or reduce the scope; it is 832 KiB.
+- **Zones are named as ICU names them** under proposed
+  [JSD-0058](decisions/0058-time-zone-names.md): specific names from the zone's own or its metazone's,
+  generic names with ICU's standard-name, partial-location and location rules, over CLDR 48's
+  `metaZones.json` and `primaryZones.json`, now archived, and the names slice I3 archived.
+- **The tzdb tables keep the daylight flag**, the rearguard one, and a change of the flag alone as a
+  transition Temporal skips; every zone's offsets are what they were.
+- **The data is 841,145 bytes, 10,823 under 832 KiB.**
+- **The retained dataset** holds 2,713 lines: 2,438 agree with the reference polyfill and 275 are named
+  in three groups - 17 of Node's spaces, and 258 of CLDR 48's data, which a build with CLDR 47's three
+  files answered as the polyfill does. The T2 dataset's divergence `MEZ` is gone.
+- **test262**: `test/intl402/Temporal` passes all 3,982 scored variants, where it passed 3,980;
+  `test/built-ins/Temporal` all 9,176, `test/built-ins/Date` all 1,188, `test/intl402/Intl` all 132,
+  `test/intl402/DateTimeFormat` 478 of 488 as before. No variant scored before moves from passing.
+- **F8's exit gate is met**: `test/built-ins/Temporal` and `test/intl402/Temporal` pass, and
+  `Temporal` left the `absent-globals` block in slice T1.
+- **Checks**: one new slice-compiler check, 646 in all; one new architecture test, 340 in all.
+
+**What must not be read as repaired.**
+- Locales other than `de` and `en` are not added, and the ten failing variants under
+  `test/intl402/DateTimeFormat` stay failing.
+- JSD-0058 is proposed and unsigned, as are JSD-0053 to JSD-0057. The exit gate being met moves no
+  milestone or stage: the phase's records still wait on the owner.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.

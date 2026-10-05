@@ -163,4 +163,36 @@ public sealed class TzdbRuleTests
         Assert.Equal(0, TzdbCompiler.OffsetAt(zones["Etc/UTC"], Utc(2026, 1, 1, 0)));
         Assert.Null(zones["Asia/Kolkata"].Final);
     }
+
+    /// <summary>
+    /// The daylight flag the tables keep for CLDR's names (JSD-0058) is the rearguard one: Ireland's and
+    /// Morocco's summers are daylight time though their winters save a negative amount, Namibia's
+    /// summer is until its negative saves end in 2017, and a zone that moves to standard time at its
+    /// daylight offset (America/Chihuahua in 2022, Europe/Istanbul in 2016) keeps that change.
+    /// </summary>
+    [Fact]
+    public void N30_The_Daylight_Flag_Is_The_Rearguard_One()
+    {
+        var source = TzdbCompiler.Parse(TzdbPin.Load().ReadArchive());
+        var zones = TzdbTableGenerator.Zones(source).ToDictionary(static zone => zone.Name, static zone => zone.Zone, StringComparer.Ordinal);
+
+        bool Daylight(string zone, int year, int month)
+        {
+            var at = (TzdbCompiler.DaysFromCivil(year, month, 15) * 86400) + (12 * 3600);
+            var listed = zones[zone].Transitions.Where(transition => transition.At <= at).ToList();
+            return listed.Count > 0 && listed[^1].Daylight;
+        }
+
+        Assert.True(Daylight("Europe/Dublin", 1990, 7));
+        Assert.False(Daylight("Europe/Dublin", 1990, 1));
+        Assert.True(Daylight("Africa/Windhoek", 2010, 1));
+        Assert.False(Daylight("Africa/Windhoek", 2010, 7));
+        Assert.False(Daylight("Africa/Windhoek", 2020, 1));
+        Assert.True(Daylight("Africa/Casablanca", 2024, 1));
+        Assert.False(Daylight("Africa/Casablanca", 1995, 7));
+        Assert.True(Daylight("America/Chihuahua", 2022, 7));
+        Assert.False(Daylight("America/Chihuahua", 2023, 7));
+        Assert.False(Daylight("Europe/Istanbul", 2024, 7));
+        Assert.True(Daylight("Europe/London", 1990, 7));
+    }
 }

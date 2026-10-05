@@ -1308,7 +1308,11 @@ public sealed class ReviewRecordRuleTests
         // over it; and JsCalendarTables.g.cs, which CalendarTableGenerator writes and rule N32 holds.
         // All are covered on the same terms as every other product file, and nothing in them has been
         // read by a human.
-        Assert.Equal(298, AssuranceSources.Files.Count);
+        //
+        // AND THE TIME ZONES' NAMES (phase F8 slice T5, 2026-10-05, JSD-0058): JsZoneNames.cs, CLDR's
+        // metazones and ICU's algorithms that name a zone by them. It is covered on the same terms as
+        // every other product file, and nothing in it has been read by a human.
+        Assert.Equal(299, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -503,3 +503,16 @@ nothing, and this record keeps its status line. Corrections entry
   lines that differ: 1,924 lines and 82,540 bytes. Decision (c)'s budget holds them: **the data is
   761,598 bytes, 24,834 under it**, so nothing is put to the owner. The room left is small; a later
   slice that adds data will measure it first.
+
+## Amended 2026-10-05: the budget raised to 832 KiB for the zones' names (unsigned)
+
+*Recorded with phase F8's slice T5; it records the owner's choice and signs nothing else. Corrections
+entry [JSC-284](../roadmap.corrections.md#jsc-284).*
+
+- **Decision (c)'s budget is 832 KiB.** The time zones' names, under proposed
+  [JSD-0058](0058-time-zone-names.md), measured about 62 KB of text against 24,834 bytes left under
+  768 KiB. Asked on 2026-10-05 whether to compress that table, raise the budget or reduce the scope,
+  the repository owner chose to raise the budget; 832 KiB is the figure the question named, and
+  rule N28 holds it.
+- **The archive gains `metaZones.json` and `primaryZones.json`** from `cldr-core` 48.2.0 under rule
+  N27. **The data is 841,145 bytes, 10,823 under the budget.**

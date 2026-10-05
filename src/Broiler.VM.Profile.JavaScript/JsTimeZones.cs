@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   28
-// Annotated:        28/28
-// Exempt:           12
-// Human-reviewed:   0/28
+// Relevant units:   31
+// Annotated:        31/31
+// Exempt:           13
+// Human-reviewed:   0/31
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       28
+// Unverified:       31
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -33,7 +33,7 @@ internal sealed record JsTimeZoneId(string Identifier, string Primary, int Zone)
 /// <remarks>
 /// <para>
 /// <b>The zone table's layout</b> is the generator's: a zone count, then per zone a zig-zag first
-/// offset, a palette of offsets, a transition count and each transition as a time delta - minutes
+/// offset, a palette of offsets (each twice the offset, and one more where it is daylight time), a transition count and each transition as a time delta - minutes
 /// with the low bit clear, seconds with it set - and a palette index, then a count of recurring rules
 /// and the rules. Every integer is a LEB128 varint, and a signed one zig-zag encoded.
 /// </para>
@@ -142,6 +142,11 @@ internal sealed class JsTimeZones
         return identifiers.TryGetValue(identifier, out var record) ? record : null;
     }
 
+    /// <summary>The regions <c>zone.tab</c> lists zones for.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B0A0E6
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.IEnumerable<string> Regions => regions.Keys;
+
     /// <summary>The zones <c>zone.tab</c> lists for a region, in ordinal order, or nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8730C0
     // Broiler-Human:        PENDING
@@ -202,13 +207,14 @@ internal sealed class JsZone
     // Broiler-Human:        PENDING
     private const double SecondsPerYear = 31556952.0;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=231FB2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DDF2ED
     // Broiler-Human:        PENDING
-    private JsZone(int initial, long[] at, int[] offsets, int standard, int lastListedYear, JsZoneRule[] rules)
+    private JsZone(int initial, long[] at, int[] offsets, bool[] daylight, int standard, int lastListedYear, JsZoneRule[] rules)
     {
         Initial = initial;
         Transitions = at;
         Offsets = offsets;
+        Daylight = daylight;
         Standard = standard;
         LastListedYear = lastListedYear;
         Rules = rules;
@@ -228,6 +234,11 @@ internal sealed class JsZone
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C6A241
     // Broiler-Human:        PENDING
     internal int[] Offsets { get; }
+
+    /// <summary>Whether the offset after each listed transition is daylight time, as CLDR's names read it (JSD-0058).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=761D5F
+    // Broiler-Human:        PENDING
+    internal bool[] Daylight { get; }
 
     /// <summary>The standard offset the recurring rules add their saves to.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=787E01
@@ -302,21 +313,23 @@ internal sealed class JsZone
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=349055
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=254978
     // Broiler-Human:        PENDING
     internal static JsZone Decode(byte[] table, int at)
     {
         var initial = (int)JsTimeZones.Signed(table, ref at);
-        var palette = new int[(int)JsTimeZones.Unsigned(table, ref at)];
+        // A PALETTE ENTRY IS TWICE THE OFFSET, and one more where it is daylight time.
+        var palette = new long[(int)JsTimeZones.Unsigned(table, ref at)];
 
         for (var i = 0; i < palette.Length; i++)
         {
-            palette[i] = (int)JsTimeZones.Signed(table, ref at);
+            palette[i] = JsTimeZones.Signed(table, ref at);
         }
 
         var count = (int)JsTimeZones.Unsigned(table, ref at);
         var times = new long[count];
         var offsets = new int[count];
+        var daylight = new bool[count];
         var previous = 0L;
 
         for (var i = 0; i < count; i++)
@@ -326,14 +339,16 @@ internal sealed class JsZone
             var delta = (long)(zigzag >> 1) ^ -(long)(zigzag & 1);
             previous += (code & 1) == 0 ? delta * 60 : delta;
             times[i] = previous;
-            offsets[i] = palette[table[at++]];
+            var entry = palette[table[at++]];
+            offsets[i] = (int)(entry >> 1);
+            daylight[i] = (entry & 1) != 0;
         }
 
         var ruleCount = table[at++];
 
         if (ruleCount == 0)
         {
-            return new JsZone(initial, times, offsets, 0, 0, []);
+            return new JsZone(initial, times, offsets, daylight, 0, 0, []);
         }
 
         var standard = (int)JsTimeZones.Signed(table, ref at);
@@ -348,7 +363,7 @@ internal sealed class JsZone
             rules[i] = new JsZoneRule(month, kind, weekday, day, atTime, atKind, (int)JsTimeZones.Signed(table, ref at));
         }
 
-        return new JsZone(initial, times, offsets, standard, lastListed, rules);
+        return new JsZone(initial, times, offsets, daylight, standard, lastListed, rules);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C1EA48
@@ -370,6 +385,32 @@ internal sealed class JsZone
         return index < 0 ? Initial : Offsets[index];
     }
 
+    /// <summary>
+    /// Whether the offset at an instant in seconds since the epoch is daylight time, as CLDR's names
+    /// read it: the listed transition's flag, or after them a recurring save greater than the rules'
+    /// least, which is standard time where it is negative (JSD-0058).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=15061B
+    // Broiler-Human:        PENDING
+    internal bool DaylightAt(long seconds)
+    {
+        if (Rules.Length > 0 && YearOf(seconds) > LastListedYear)
+        {
+            var least = 0;
+
+            foreach (var rule in Rules)
+            {
+                least = System.Math.Min(least, rule.Save);
+            }
+
+            return RecurringOffsetAt(seconds) - Standard > least;
+        }
+
+        var index = System.Array.BinarySearch(Transitions, seconds);
+        index = index >= 0 ? index : ~index - 1;
+        return index >= 0 && Daylight[index];
+    }
+
     /// <summary>The UTC offset, in milliseconds, at an instant in milliseconds since the epoch.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DF13E1
     // Broiler-Human:        PENDING
@@ -377,21 +418,26 @@ internal sealed class JsZone
         OffsetAt((long)System.Math.Floor(milliseconds / 1000)) * 1000.0;
 
     /// <summary>
-    /// The first instant after <paramref name="seconds"/> at which the offset changes, or nothing;
-    /// <paramref name="limit"/> bounds the years a recurring zone is searched.
+    /// The first instant after <paramref name="seconds"/> at which the offset changes, or, where
+    /// <paramref name="daylight"/> asks, the daylight flag alone, or nothing; <paramref name="limit"/>
+    /// bounds the years a recurring zone is searched.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D3C2AF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=629E79
     // Broiler-Human:        PENDING
-    internal long? NextTransition(long seconds, long limit)
+    internal long? NextTransition(long seconds, long limit, bool daylight = false)
     {
         var index = System.Array.BinarySearch(Transitions, seconds);
         index = index >= 0 ? index + 1 : ~index;
 
         // THE LISTED TRANSITIONS ARE AUTHORITATIVE through the last listed year; the recurring rules
-        // answer only for the years after it.
-        if (index < Transitions.Length)
+        // answer only for the years after it. A change of the daylight flag alone is no change of
+        // offset.
+        for (; index < Transitions.Length; index++)
         {
-            return Transitions[index];
+            if (Changes(index, daylight))
+            {
+                return Transitions[index];
+            }
         }
 
         if (!RulesChangeOffset)
@@ -413,10 +459,13 @@ internal sealed class JsZone
         return null;
     }
 
-    /// <summary>The last instant before <paramref name="seconds"/> at which the offset changes, or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=69036F
+    /// <summary>
+    /// The last instant before <paramref name="seconds"/> at which the offset changes, or, where
+    /// <paramref name="daylight"/> asks, the daylight flag alone, or nothing.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=560BF0
     // Broiler-Human:        PENDING
-    internal long? PreviousTransition(long seconds)
+    internal long? PreviousTransition(long seconds, bool daylight = false)
     {
         if (RulesChangeOffset)
         {
@@ -438,7 +487,25 @@ internal sealed class JsZone
 
         var index = System.Array.BinarySearch(Transitions, seconds);
         index = index >= 0 ? index - 1 : ~index - 1;
-        return index >= 0 ? Transitions[index] : null;
+
+        for (; index >= 0; index--)
+        {
+            if (Changes(index, daylight))
+            {
+                return Transitions[index];
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>Whether a listed transition changes the offset, or, where asked, the daylight flag.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A712B5
+    // Broiler-Human:        PENDING
+    private bool Changes(int index, bool daylight)
+    {
+        var (offset, flag) = index == 0 ? (Initial, false) : (Offsets[index - 1], Daylight[index - 1]);
+        return Offsets[index] != offset || (daylight && Daylight[index] != flag);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F28844

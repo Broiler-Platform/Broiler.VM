@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           31
+// Exempt:           32
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=44AFCA
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EBD5C1
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -181,4 +181,11 @@ public enum JsIntlTable
     /// calendar's corrections to its 33-year rule, binary.
     /// </summary>
     Calendars = 29,
+
+    /// <summary>
+    /// CLDR's metazone data (JSD-0058): <c>z</c>, a zone, the start and end of a period and the
+    /// metazone it uses then; <c>g</c>, a metazone, a region and its golden zone there; <c>p</c>, a
+    /// country and its primary zone.
+    /// </summary>
+    MetaZones = 30,
 }

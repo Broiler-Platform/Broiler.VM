@@ -637,6 +637,19 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F8 observation, slice T5, the zones' names, 2026-10-05.** `Intl.DateTimeFormat` names an
+IANA zone as ICU does - its own or its metazone's specific and generic names, a standard name where
+the zone keeps no daylight time, a partial location or a location name otherwise - under proposed
+[JSD-0058](decisions/0058-time-zone-names.md), over CLDR 48's `metaZones.json` and `primaryZones.json`,
+archived under rule N27, and the names slice I3 archived. The time zone tables keep the rearguard
+daylight flag. The repository owner raised the data budget to 832 KiB; the data is 841,145 bytes. A
+retained dataset of 2,713 lines agrees with the reference polyfill on 2,438, the 275 others named:
+17 of Node's spaces and 258 of CLDR 48's data, which a build with CLDR 47's files answered as the
+polyfill does. `test/intl402/Temporal` passes all 3,982 scored variants and `test/built-ins/Temporal`
+all 9,176, so F8's exit gate is met; no variant scored before moves back
+([JSC-284](roadmap.corrections.md#jsc-284)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F8 observation, slice T4, the formatter's calendars, 2026-10-05.** `Intl.DateTimeFormat`
 resolves and writes every calendar of the Intl era and month code proposal's Table 1, and
 `Intl.supportedValuesOf("calendar")` lists the sixteen, under proposed

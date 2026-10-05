@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           26
+// Exempt:           27
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -17377,14 +17377,492 @@ internal static class JsCldrTables
         de|months.stand-alone.wide.7|Juli
         de|months.stand-alone.wide.8|August
         de|months.stand-alone.wide.9|September
+        de|mz.Acre.ld|Acre-Sommerzeit
+        de|mz.Acre.lg|Acre-Zeit
+        de|mz.Acre.ls|Acre-Normalzeit
+        de|mz.Afghanistan.ls|Afghanistan-Zeit
+        de|mz.Africa_Central.ls|Zentralafrikanische Zeit
+        de|mz.Africa_Eastern.ls|Ostafrikanische Zeit
+        de|mz.Africa_Southern.ls|S\u00FCdafrikanische Zeit
+        de|mz.Africa_Western.ls|Westafrikanische Zeit
+        de|mz.Alaska.ld|Alaska-Sommerzeit
+        de|mz.Alaska.lg|Alaska-Zeit
+        de|mz.Alaska.ls|Alaska-Normalzeit
+        de|mz.Almaty.ld|Almaty-Sommerzeit
+        de|mz.Almaty.lg|Almaty-Zeit
+        de|mz.Almaty.ls|Almaty-Normalzeit
+        de|mz.Amazon.ld|Amazonas-Sommerzeit
+        de|mz.Amazon.lg|Amazonas-Zeit
+        de|mz.Amazon.ls|Amazonas-Normalzeit
+        de|mz.America_Central.ld|Nordamerikanische Zentral-Sommerzeit
+        de|mz.America_Central.lg|Nordamerikanische Zentralzeit
+        de|mz.America_Central.ls|Nordamerikanische Zentral-Normalzeit
+        de|mz.America_Eastern.ld|Nordamerikanische Ostk\u00FCsten-Sommerzeit
+        de|mz.America_Eastern.lg|Nordamerikanische Ostk\u00FCstenzeit
+        de|mz.America_Eastern.ls|Nordamerikanische Ostk\u00FCsten-Normalzeit
+        de|mz.America_Mountain.ld|Rocky-Mountains-Sommerzeit
+        de|mz.America_Mountain.lg|Rocky-Mountains-Zeit
+        de|mz.America_Mountain.ls|Rocky-Mountains-Normalzeit
+        de|mz.America_Pacific.ld|Nordamerikanische Westk\u00FCsten-Sommerzeit
+        de|mz.America_Pacific.lg|Nordamerikanische Westk\u00FCstenzeit
+        de|mz.America_Pacific.ls|Nordamerikanische Westk\u00FCsten-Normalzeit
+        de|mz.Anadyr.ld|Anadyr Sommerzeit
+        de|mz.Anadyr.lg|Anadyr Zeit
+        de|mz.Anadyr.ls|Anadyr Normalzeit
+        de|mz.Apia.ld|Apia-Sommerzeit
+        de|mz.Apia.lg|Apia-Zeit
+        de|mz.Apia.ls|Apia-Normalzeit
+        de|mz.Aqtau.ld|Aqtau-Sommerzeit
+        de|mz.Aqtau.lg|Aqtau-Zeit
+        de|mz.Aqtau.ls|Aqtau-Normalzeit
+        de|mz.Aqtobe.ld|Aqt\u00F6be-Sommerzeit
+        de|mz.Aqtobe.lg|Aqt\u00F6be-Zeit
+        de|mz.Aqtobe.ls|Aqt\u00F6be-Normalzeit
+        de|mz.Arabian.ld|Arabische Sommerzeit
+        de|mz.Arabian.lg|Arabische Zeit
+        de|mz.Arabian.ls|Arabische Normalzeit
+        de|mz.Argentina.ld|Argentinische Sommerzeit
+        de|mz.Argentina.lg|Argentinische Zeit
+        de|mz.Argentina.ls|Argentinische Normalzeit
+        de|mz.Argentina_Western.ld|Westargentinische Sommerzeit
+        de|mz.Argentina_Western.lg|Westargentinische Zeit
+        de|mz.Argentina_Western.ls|Westargentinische Normalzeit
+        de|mz.Armenia.ld|Armenische Sommerzeit
+        de|mz.Armenia.lg|Armenische Zeit
+        de|mz.Armenia.ls|Armenische Normalzeit
+        de|mz.Atlantic.ld|Atlantik-Sommerzeit
+        de|mz.Atlantic.lg|Atlantik-Zeit
+        de|mz.Atlantic.ls|Atlantik-Normalzeit
+        de|mz.Australia_Central.ld|Zentralaustralische Sommerzeit
+        de|mz.Australia_Central.lg|Zentralaustralische Zeit
+        de|mz.Australia_Central.ls|Zentralaustralische Normalzeit
+        de|mz.Australia_CentralWestern.ld|Zentral-/Westaustralische Sommerzeit
+        de|mz.Australia_CentralWestern.lg|Zentral-/Westaustralische Zeit
+        de|mz.Australia_CentralWestern.ls|Zentral-/Westaustralische Normalzeit
+        de|mz.Australia_Eastern.ld|Ostaustralische Sommerzeit
+        de|mz.Australia_Eastern.lg|Ostaustralische Zeit
+        de|mz.Australia_Eastern.ls|Ostaustralische Normalzeit
+        de|mz.Australia_Western.ld|Westaustralische Sommerzeit
+        de|mz.Australia_Western.lg|Westaustralische Zeit
+        de|mz.Australia_Western.ls|Westaustralische Normalzeit
+        de|mz.Azerbaijan.ld|Aserbaidschanische Sommerzeit
+        de|mz.Azerbaijan.lg|Aserbaidschanische Zeit
+        de|mz.Azerbaijan.ls|Aserbeidschanische Normalzeit
+        de|mz.Azores.ld|Azoren-Sommerzeit
+        de|mz.Azores.lg|Azoren-Zeit
+        de|mz.Azores.ls|Azoren-Normalzeit
+        de|mz.Bangladesh.ld|Bangladesch-Sommerzeit
+        de|mz.Bangladesh.lg|Bangladesch-Zeit
+        de|mz.Bangladesh.ls|Bangladesch-Normalzeit
+        de|mz.Bhutan.ls|Bhutan-Zeit
+        de|mz.Bolivia.ls|Bolivianische Zeit
+        de|mz.Brasilia.ld|Bras\u00EDlia-Sommerzeit
+        de|mz.Brasilia.lg|Bras\u00EDlia-Zeit
+        de|mz.Brasilia.ls|Bras\u00EDlia-Normalzeit
+        de|mz.Brunei.ls|Brunei-Darussalam-Zeit
+        de|mz.Cape_Verde.ld|Cabo-Verde-Sommerzeit
+        de|mz.Cape_Verde.lg|Cabo-Verde-Zeit
+        de|mz.Cape_Verde.ls|Cabo-Verde-Normalzeit
+        de|mz.Casey.ls|Casey-Zeit
+        de|mz.Chamorro.ls|Chamorro-Zeit
+        de|mz.Chatham.ld|Chatham-Sommerzeit
+        de|mz.Chatham.lg|Chatham-Zeit
+        de|mz.Chatham.ls|Chatham-Normalzeit
+        de|mz.Chile.ld|Chilenische Sommerzeit
+        de|mz.Chile.lg|Chilenische Zeit
+        de|mz.Chile.ls|Chilenische Normalzeit
+        de|mz.China.ld|Chinesische Sommerzeit
+        de|mz.China.lg|Chinesische Zeit
+        de|mz.China.ls|Chinesische Normalzeit
+        de|mz.Christmas.ls|Weihnachtsinsel-Zeit
+        de|mz.Cocos.ls|Kokosinseln-Zeit
+        de|mz.Colombia.ld|Kolumbianische Sommerzeit
+        de|mz.Colombia.lg|Kolumbianische Zeit
+        de|mz.Colombia.ls|Kolumbianische Normalzeit
+        de|mz.Cook.ld|Cookinseln-Sommerzeit
+        de|mz.Cook.lg|Cookinseln-Zeit
+        de|mz.Cook.ls|Cookinseln-Normalzeit
+        de|mz.Cuba.ld|Kubanische Sommerzeit
+        de|mz.Cuba.lg|Kubanische Zeit
+        de|mz.Cuba.ls|Kubanische Normalzeit
+        de|mz.Davis.ls|Davis-Zeit
+        de|mz.DumontDUrville.ls|Dumont-d\u2019Urville-Zeit
+        de|mz.East_Timor.ls|Osttimor-Zeit
+        de|mz.Easter.ld|Osterinsel-Sommerzeit
+        de|mz.Easter.lg|Osterinsel-Zeit
+        de|mz.Easter.ls|Osterinsel-Normalzeit
+        de|mz.Ecuador.ls|Ecuadorianische Zeit
+        de|mz.Europe_Central.ld|Mitteleurop\u00E4ische Sommerzeit
+        de|mz.Europe_Central.lg|Mitteleurop\u00E4ische Zeit
+        de|mz.Europe_Central.ls|Mitteleurop\u00E4ische Normalzeit
+        de|mz.Europe_Central.sd|MESZ
+        de|mz.Europe_Central.sg|MEZ
+        de|mz.Europe_Central.ss|MEZ
+        de|mz.Europe_Eastern.ld|Osteurop\u00E4ische Sommerzeit
+        de|mz.Europe_Eastern.lg|Osteurop\u00E4ische Zeit
+        de|mz.Europe_Eastern.ls|Osteurop\u00E4ische Normalzeit
+        de|mz.Europe_Eastern.sd|OESZ
+        de|mz.Europe_Eastern.sg|OEZ
+        de|mz.Europe_Eastern.ss|OEZ
+        de|mz.Europe_Further_Eastern.ls|Kaliningrader Zeit
+        de|mz.Europe_Western.ld|Westeurop\u00E4ische Sommerzeit
+        de|mz.Europe_Western.lg|Westeurop\u00E4ische Zeit
+        de|mz.Europe_Western.ls|Westeurop\u00E4ische Normalzeit
+        de|mz.Europe_Western.sd|WESZ
+        de|mz.Europe_Western.sg|WEZ
+        de|mz.Europe_Western.ss|WEZ
+        de|mz.Falkland.ld|Falklandinseln-Sommerzeit
+        de|mz.Falkland.lg|Falklandinseln-Zeit
+        de|mz.Falkland.ls|Falklandinseln-Normalzeit
+        de|mz.Fiji.ld|Fidschi-Sommerzeit
+        de|mz.Fiji.lg|Fidschi-Zeit
+        de|mz.Fiji.ls|Fidschi-Normalzeit
+        de|mz.French_Guiana.ls|Franz\u00F6sisch-Guayana-Zeit
+        de|mz.French_Southern.ls|Franz\u00F6sische-S\u00FCd-und-Antarktisgebiete-Zeit
+        de|mz.GMT.ls|Mittlere Greenwich-Zeit
+        de|mz.Galapagos.ls|Galapagos-Zeit
+        de|mz.Gambier.ls|Gambier-Zeit
+        de|mz.Georgia.ld|Georgische Sommerzeit
+        de|mz.Georgia.lg|Georgische Zeit
+        de|mz.Georgia.ls|Georgische Normalzeit
+        de|mz.Gilbert_Islands.ls|Gilbert-Inseln-Zeit
+        de|mz.Greenland_Eastern.ld|Ostgr\u00F6nland-Sommerzeit
+        de|mz.Greenland_Eastern.lg|Ostgr\u00F6nland-Zeit
+        de|mz.Greenland_Eastern.ls|Ostgr\u00F6nland-Normalzeit
+        de|mz.Greenland_Western.ld|Westgr\u00F6nland-Sommerzeit
+        de|mz.Greenland_Western.lg|Westgr\u00F6nland-Zeit
+        de|mz.Greenland_Western.ls|Westgr\u00F6nland-Normalzeit
+        de|mz.Guam.ls|Guam-Zeit
+        de|mz.Gulf.ls|Golf-Zeit
+        de|mz.Guyana.ls|Guyana-Zeit
+        de|mz.Hawaii.ls|Hawaii-Aleuten-Normalzeit
+        de|mz.Hawaii_Aleutian.ld|Hawaii-Aleuten-Sommerzeit
+        de|mz.Hawaii_Aleutian.lg|Hawaii-Aleuten-Zeit
+        de|mz.Hawaii_Aleutian.ls|Hawaii-Aleuten-Normalzeit
+        de|mz.Hong_Kong.ld|Hongkong-Sommerzeit
+        de|mz.Hong_Kong.lg|Hongkong-Zeit
+        de|mz.Hong_Kong.ls|Hongkong-Normalzeit
+        de|mz.Hovd.ld|Chowd-Sommerzeit
+        de|mz.Hovd.lg|Chowd-Zeit
+        de|mz.Hovd.ls|Chowd-Normalzeit
+        de|mz.India.ls|Indische Normalzeit
+        de|mz.Indian_Ocean.ls|Indischer-Ozean-Zeit
+        de|mz.Indochina.ls|Indochina-Zeit
+        de|mz.Indonesia_Central.ls|Zentralindonesische Zeit
+        de|mz.Indonesia_Eastern.ls|Ostindonesische Zeit
+        de|mz.Indonesia_Western.ls|Westindonesische Zeit
+        de|mz.Iran.ld|Iranische Sommerzeit
+        de|mz.Iran.lg|Iranische Zeit
+        de|mz.Iran.ls|Iranische Normalzeit
+        de|mz.Irkutsk.ld|Irkutsker Sommerzeit
+        de|mz.Irkutsk.lg|Irkutsker Zeit
+        de|mz.Irkutsk.ls|Irkutsker Normalzeit
+        de|mz.Israel.ld|Israelische Sommerzeit
+        de|mz.Israel.lg|Israelische Zeit
+        de|mz.Israel.ls|Israelische Normalzeit
+        de|mz.Japan.ld|Japanische Sommerzeit
+        de|mz.Japan.lg|Japanische Zeit
+        de|mz.Japan.ls|Japanische Normalzeit
+        de|mz.Kamchatka.ld|Kamtschatka-Sommerzeit
+        de|mz.Kamchatka.lg|Kamtschatka-Zeit
+        de|mz.Kamchatka.ls|Kamtschatka-Normalzeit
+        de|mz.Kazakhstan.ls|Kasachische Zeit
+        de|mz.Kazakhstan_Eastern.ls|Ostkasachische Zeit
+        de|mz.Kazakhstan_Western.ls|Westkasachische Zeit
+        de|mz.Korea.ld|Koreanische Sommerzeit
+        de|mz.Korea.lg|Koreanische Zeit
+        de|mz.Korea.ls|Koreanische Normalzeit
+        de|mz.Kosrae.ls|Kosrae-Zeit
+        de|mz.Krasnoyarsk.ld|Krasnojarsker Sommerzeit
+        de|mz.Krasnoyarsk.lg|Krasnojarsker Zeit
+        de|mz.Krasnoyarsk.ls|Krasnojarsker Normalzeit
+        de|mz.Kyrgystan.ls|Kirgisische Zeit
+        de|mz.Lanka.ls|Sri-Lanka-Zeit
+        de|mz.Line_Islands.ls|Linieninseln-Zeit
+        de|mz.Lord_Howe.ld|Lord-Howe-Sommerzeit
+        de|mz.Lord_Howe.lg|Lord-Howe-Zeit
+        de|mz.Lord_Howe.ls|Lord-Howe-Normalzeit
+        de|mz.Macau.ld|Macau-Sommerzeit
+        de|mz.Macau.lg|Macau-Zeit
+        de|mz.Macau.ls|Macau-Normalzeit
+        de|mz.Magadan.ld|Magadan-Sommerzeit
+        de|mz.Magadan.lg|Magadan-Zeit
+        de|mz.Magadan.ls|Magadan-Normalzeit
+        de|mz.Malaysia.ls|Malaysische Zeit
+        de|mz.Maldives.ls|Malediven-Zeit
+        de|mz.Marquesas.ls|Marquesas-Zeit
+        de|mz.Marshall_Islands.ls|Marshallinseln-Zeit
+        de|mz.Mauritius.ld|Mauritius-Sommerzeit
+        de|mz.Mauritius.lg|Mauritius-Zeit
+        de|mz.Mauritius.ls|Mauritius-Normalzeit
+        de|mz.Mawson.ls|Mawson-Zeit
+        de|mz.Mexico_Pacific.ld|Mexikanische Pazifik-Sommerzeit
+        de|mz.Mexico_Pacific.lg|Mexikanische Pazifikzeit
+        de|mz.Mexico_Pacific.ls|Mexikanische Pazifik-Normalzeit
+        de|mz.Mongolia.ld|Ulaanbaatar-Sommerzeit
+        de|mz.Mongolia.lg|Ulaanbaatar-Zeit
+        de|mz.Mongolia.ls|Ulaanbaatar-Normalzeit
+        de|mz.Moscow.ld|Moskauer Sommerzeit
+        de|mz.Moscow.lg|Moskauer Zeit
+        de|mz.Moscow.ls|Moskauer Normalzeit
+        de|mz.Myanmar.ls|Myanmar-Zeit
+        de|mz.Nauru.ls|Nauru-Zeit
+        de|mz.Nepal.ls|Nepalesische Zeit
+        de|mz.New_Caledonia.ld|Neukaledonische Sommerzeit
+        de|mz.New_Caledonia.lg|Neukaledonische Zeit
+        de|mz.New_Caledonia.ls|Neukaledonische Normalzeit
+        de|mz.New_Zealand.ld|Neuseeland-Sommerzeit
+        de|mz.New_Zealand.lg|Neuseeland-Zeit
+        de|mz.New_Zealand.ls|Neuseeland-Normalzeit
+        de|mz.Newfoundland.ld|Neufundland-Sommerzeit
+        de|mz.Newfoundland.lg|Neufundland-Zeit
+        de|mz.Newfoundland.ls|Neufundland-Normalzeit
+        de|mz.Niue.ls|Niue-Zeit
+        de|mz.Norfolk.ld|Norfolkinsel-Sommerzeit
+        de|mz.Norfolk.lg|Norfolkinsel-Zeit
+        de|mz.Norfolk.ls|Norfolkinsel-Normalzeit
+        de|mz.Noronha.ld|Fernando-de-Noronha-Sommerzeit
+        de|mz.Noronha.lg|Fernando-de-Noronha-Zeit
+        de|mz.Noronha.ls|Fernando-de-Noronha-Normalzeit
+        de|mz.North_Mariana.ls|N\u00F6rdliche-Marianen-Zeit
+        de|mz.Novosibirsk.ld|Nowosibirsker Sommerzeit
+        de|mz.Novosibirsk.lg|Nowosibirsker Zeit
+        de|mz.Novosibirsk.ls|Nowosibirsker Normalzeit
+        de|mz.Omsk.ld|Omsker Sommerzeit
+        de|mz.Omsk.lg|Omsker Zeit
+        de|mz.Omsk.ls|Omsker Normalzeit
+        de|mz.Pakistan.ld|Pakistanische Sommerzeit
+        de|mz.Pakistan.lg|Pakistanische Zeit
+        de|mz.Pakistan.ls|Pakistanische Normalzeit
+        de|mz.Palau.ls|Palau-Zeit
+        de|mz.Papua_New_Guinea.ls|Papua-Neuguinea-Zeit
+        de|mz.Paraguay.ld|Paraguayische Sommerzeit
+        de|mz.Paraguay.lg|Paraguayische Zeit
+        de|mz.Paraguay.ls|Paraguayische Normalzeit
+        de|mz.Peru.ld|Peruanische Sommerzeit
+        de|mz.Peru.lg|Peruanische Zeit
+        de|mz.Peru.ls|Peruanische Normalzeit
+        de|mz.Philippines.ld|Philippinische Sommerzeit
+        de|mz.Philippines.lg|Philippinische Zeit
+        de|mz.Philippines.ls|Philippinische Normalzeit
+        de|mz.Phoenix_Islands.ls|Phoenixinseln-Zeit
+        de|mz.Pierre_Miquelon.ld|St.-Pierre-und-Miquelon-Sommerzeit
+        de|mz.Pierre_Miquelon.lg|St.-Pierre-und-Miquelon-Zeit
+        de|mz.Pierre_Miquelon.ls|St.-Pierre-und-Miquelon-Normalzeit
+        de|mz.Pitcairn.ls|Pitcairninseln-Zeit
+        de|mz.Ponape.ls|Pohnpei-Zeit
+        de|mz.Pyongyang.ls|Pj\u00F6ngjang-Zeit
+        de|mz.Qyzylorda.ld|Qysylorda-Sommerzeit
+        de|mz.Qyzylorda.lg|Quysylorda-Zeit
+        de|mz.Qyzylorda.ls|Quysylorda-Normalzeit
+        de|mz.Reunion.ls|R\u00E9union-Zeit
+        de|mz.Rothera.ls|Rothera-Zeit
+        de|mz.Sakhalin.ld|Sachalin-Sommerzeit
+        de|mz.Sakhalin.lg|Sachalin-Zeit
+        de|mz.Sakhalin.ls|Sachalin-Normalzeit
+        de|mz.Samara.ld|Samara-Sommerzeit
+        de|mz.Samara.lg|Samara-Zeit
+        de|mz.Samara.ls|Samara-Normalzeit
+        de|mz.Samoa.ld|Samoa-Sommerzeit
+        de|mz.Samoa.lg|Samoa-Zeit
+        de|mz.Samoa.ls|Samoa-Normalzeit
+        de|mz.Seychelles.ls|Seychellen-Zeit
+        de|mz.Singapore.ls|Singapurische Normalzeit
+        de|mz.Solomon.ls|Salomonen-Zeit
+        de|mz.South_Georgia.ls|S\u00FCdgeorgische Zeit
+        de|mz.Suriname.ls|Suriname-Zeit
+        de|mz.Syowa.ls|Syowa-Zeit
+        de|mz.Tahiti.ls|Tahiti-Zeit
+        de|mz.Taipei.ld|Taipeh-Sommerzeit
+        de|mz.Taipei.lg|Taipeh-Zeit
+        de|mz.Taipei.ls|Taipeh-Normalzeit
+        de|mz.Tajikistan.ls|Tadschikische Zeit
+        de|mz.Tokelau.ls|Tokelau-Zeit
+        de|mz.Tonga.ld|Tongaische Sommerzeit
+        de|mz.Tonga.lg|Tongaische Zeit
+        de|mz.Tonga.ls|Tongaische Normalzeit
+        de|mz.Truk.ls|Chuuk-Zeit
+        de|mz.Turkey.ld|T\u00FCrkische Sommerzeit
+        de|mz.Turkey.lg|T\u00FCrkische Zeit
+        de|mz.Turkey.ls|T\u00FCrkische Normalzeit
+        de|mz.Turkmenistan.ld|Turkmenische Sommerzeit
+        de|mz.Turkmenistan.lg|Turkmenistan-Zeit
+        de|mz.Turkmenistan.ls|Turkmenische Normalzeit
+        de|mz.Tuvalu.ls|Tuvalu-Zeit
+        de|mz.Uruguay.ld|Uruguayische Sommerzeit
+        de|mz.Uruguay.lg|Uruguayische Zeit
+        de|mz.Uruguay.ls|Uruguayische Normalzeit
+        de|mz.Uzbekistan.ld|Usbekische Sommerzeit
+        de|mz.Uzbekistan.lg|Usbekische Zeit
+        de|mz.Uzbekistan.ls|Usbekische Normalzeit
+        de|mz.Vanuatu.ld|Vanuatu-Sommerzeit
+        de|mz.Vanuatu.lg|Vanuatu-Zeit
+        de|mz.Vanuatu.ls|Vanuatu-Normalzeit
+        de|mz.Venezuela.ls|Venezuela-Zeit
+        de|mz.Vladivostok.ld|Wladiwostoker Sommerzeit
+        de|mz.Vladivostok.lg|Wladiwostoker Zeit
+        de|mz.Vladivostok.ls|Wladiwostoker Normalzeit
+        de|mz.Volgograd.ld|Wolgograder Sommerzeit
+        de|mz.Volgograd.lg|Wolgograder Zeit
+        de|mz.Volgograd.ls|Wolgograder Normalzeit
+        de|mz.Vostok.ls|Wostok-Zeit
+        de|mz.Wake.ls|Wake-Insel-Zeit
+        de|mz.Wallis.ls|Wallis-und-Futuna-Zeit
+        de|mz.Yakutsk.ld|Jakutsker Sommerzeit
+        de|mz.Yakutsk.lg|Jakutsker Zeit
+        de|mz.Yakutsk.ls|Jakutsker Normalzeit
+        de|mz.Yekaterinburg.ld|Jekaterinburger Sommerzeit
+        de|mz.Yekaterinburg.lg|Jekaterinburger Zeit
+        de|mz.Yekaterinburg.ls|Jekaterinburger Normalzeit
+        de|mz.Yukon.ls|Yukon-Zeit
         de|timeFormats.full|HH:mm:ss zzzz
         de|timeFormats.long|HH:mm:ss z
         de|timeFormats.medium|HH:mm:ss
         de|timeFormats.short|HH:mm
+        de|tz.Africa/Addis_Ababa.city|Addis Abeba
+        de|tz.Africa/Algiers.city|Algier
+        de|tz.Africa/Cairo.city|Kairo
+        de|tz.Africa/Dar_es_Salaam.city|Daressalam
+        de|tz.Africa/Djibouti.city|Dschibuti
+        de|tz.Africa/El_Aaiun.city|El Aai\u00FAn
+        de|tz.Africa/Khartoum.city|Khartum
+        de|tz.Africa/Lome.city|Lom\u00E9
+        de|tz.Africa/Mogadishu.city|Mogadischu
+        de|tz.Africa/Ndjamena.city|N\u2019Djamena
+        de|tz.Africa/Porto-Novo.city|Porto Novo
+        de|tz.Africa/Sao_Tome.city|S\u00E3o Tom\u00E9
+        de|tz.Africa/Tripoli.city|Tripolis
+        de|tz.America/Araguaina.city|Aragua\u00EDna
+        de|tz.America/Argentina/Cordoba.city|C\u00F3rdoba
+        de|tz.America/Argentina/Rio_Gallegos.city|R\u00EDo Gallegos
+        de|tz.America/Argentina/Tucuman.city|Tucum\u00E1n
+        de|tz.America/Asuncion.city|Asunci\u00F3n
+        de|tz.America/Belem.city|Bel\u00E9m
+        de|tz.America/Bogota.city|Bogot\u00E1
+        de|tz.America/Cancun.city|Canc\u00FAn
+        de|tz.America/Cayman.city|Kaimaninseln
+        de|tz.America/Ciudad_Juarez.city|Ciudad Ju\u00E1rez
+        de|tz.America/Cuiaba.city|Cuiab\u00E1
+        de|tz.America/Curacao.city|Cura\u00E7ao
+        de|tz.America/Eirunepe.city|Eirunep\u00E9
+        de|tz.America/Havana.city|Havanna
+        de|tz.America/Indiana/Knox.city|Knox, Indiana
+        de|tz.America/Indiana/Marengo.city|Marengo, Indiana
+        de|tz.America/Indiana/Petersburg.city|Petersburg, Indiana
+        de|tz.America/Indiana/Tell_City.city|Tell City, Indiana
+        de|tz.America/Indiana/Vevay.city|Vevay, Indiana
+        de|tz.America/Indiana/Vincennes.city|Vincennes, Indiana
+        de|tz.America/Indiana/Winamac.city|Winamac, Indiana
+        de|tz.America/Jamaica.city|Jamaika
+        de|tz.America/Kentucky/Monticello.city|Monticello, Kentucky
+        de|tz.America/Lower_Princes.city|Lower Prince\u2019s Quarter
+        de|tz.America/Maceio.city|Macei\u00F3
+        de|tz.America/Mazatlan.city|Mazatl\u00E1n
+        de|tz.America/Mexico_City.city|Mexiko-Stadt
+        de|tz.America/Miquelon.city|Saint-Pierre
+        de|tz.America/Noronha.city|Fernando de Noronha
+        de|tz.America/North_Dakota/Beulah.city|Beulah, North Dakota
+        de|tz.America/North_Dakota/Center.city|Center, North Dakota
+        de|tz.America/North_Dakota/New_Salem.city|New Salem, North Dakota
+        de|tz.America/Santarem.city|Santar\u00E9m
+        de|tz.America/Sao_Paulo.city|S\u00E3o Paulo
+        de|tz.America/Scoresbysund.city|Ittoqqortoormiit
+        de|tz.America/St_Barthelemy.city|Saint-Barth\u00E9lemy
+        de|tz.America/St_Johns.city|St. John\u2019s
+        de|tz.America/St_Kitts.city|St. Kitts
+        de|tz.America/St_Lucia.city|St. Lucia
+        de|tz.America/St_Thomas.city|St. Thomas
+        de|tz.America/St_Vincent.city|St. Vincent
+        de|tz.Antarctica/DumontDUrville.city|Dumont-d\u2019Urville
+        de|tz.Antarctica/Syowa.city|Showa
+        de|tz.Antarctica/Vostok.city|Wostok
+        de|tz.Asia/Aqtobe.city|Aktobe
+        de|tz.Asia/Ashgabat.city|A\u015Fgabat
+        de|tz.Asia/Baghdad.city|Bagdad
+        de|tz.Asia/Bishkek.city|Bischkek
+        de|tz.Asia/Brunei.city|Brunei Darussalam
+        de|tz.Asia/Chita.city|Tschita
+        de|tz.Asia/Damascus.city|Damaskus
+        de|tz.Asia/Dushanbe.city|Duschanbe
+        de|tz.Asia/Ho_Chi_Minh.city|Ho-Chi-Minh-Stadt
+        de|tz.Asia/Hong_Kong.city|Hongkong
+        de|tz.Asia/Hovd.city|Chowd
+        de|tz.Asia/Kamchatka.city|Kamtschatka
+        de|tz.Asia/Karachi.city|Karatschi
+        de|tz.Asia/Khandyga.city|Chandyga
+        de|tz.Asia/Kolkata.city|Kalkutta
+        de|tz.Asia/Krasnoyarsk.city|Krasnojarsk
+        de|tz.Asia/Muscat.city|Maskat
+        de|tz.Asia/Nicosia.city|Nikosia
+        de|tz.Asia/Novokuznetsk.city|Nowokuznetsk
+        de|tz.Asia/Novosibirsk.city|Nowosibirsk
+        de|tz.Asia/Pyongyang.city|Pj\u00F6ngjang
+        de|tz.Asia/Qatar.city|Katar
+        de|tz.Asia/Qostanay.city|Qostanai
+        de|tz.Asia/Qyzylorda.city|Qysylorda
+        de|tz.Asia/Riyadh.city|Riad
+        de|tz.Asia/Sakhalin.city|Sachalin
+        de|tz.Asia/Singapore.city|Singapur
+        de|tz.Asia/Taipei.city|Taipeh
+        de|tz.Asia/Tashkent.city|Taschkent
+        de|tz.Asia/Tbilisi.city|Tiflis
+        de|tz.Asia/Tehran.city|Teheran
+        de|tz.Asia/Tokyo.city|Tokio
+        de|tz.Asia/Urumqi.city|\u00DCr\u00FCmqi
+        de|tz.Asia/Vladivostok.city|Wladiwostok
+        de|tz.Asia/Yakutsk.city|Jakutsk
+        de|tz.Asia/Yangon.city|Rangun
+        de|tz.Asia/Yekaterinburg.city|Jekaterinburg
+        de|tz.Asia/Yerevan.city|Eriwan
+        de|tz.Atlantic/Azores.city|Azoren
+        de|tz.Atlantic/Canary.city|Kanaren
+        de|tz.Atlantic/Cape_Verde.city|Cabo Verde
+        de|tz.Atlantic/Faroe.city|F\u00E4r\u00F6er
+        de|tz.Atlantic/Reykjavik.city|Reyk\u00ADja\u00ADv\u00EDk
+        de|tz.Atlantic/South_Georgia.city|S\u00FCdgeorgien
+        de|tz.Atlantic/St_Helena.city|St. Helena
+        de|tz.Europe/Astrakhan.city|Astrachan
+        de|tz.Europe/Athens.city|Athen
+        de|tz.Europe/Belgrade.city|Belgrad
+        de|tz.Europe/Brussels.city|Br\u00FCssel
+        de|tz.Europe/Bucharest.city|Bukarest
+        de|tz.Europe/Busingen.city|B\u00FCsingen
+        de|tz.Europe/Chisinau.city|Chi\u0219in\u0103u
+        de|tz.Europe/Copenhagen.city|Kopenhagen
+        de|tz.Europe/Dublin.ld|Irische Sommerzeit
+        de|tz.Europe/Kirov.city|Kirow
+        de|tz.Europe/Kyiv.city|Kiew
+        de|tz.Europe/Lisbon.city|Lissabon
+        de|tz.Europe/London.ld|Britische Sommerzeit
+        de|tz.Europe/Luxembourg.city|Luxemburg
+        de|tz.Europe/Moscow.city|Moskau
+        de|tz.Europe/Prague.city|Prag
+        de|tz.Europe/Rome.city|Rom
+        de|tz.Europe/Saratov.city|Saratow
+        de|tz.Europe/Tirane.city|Tirana
+        de|tz.Europe/Ulyanovsk.city|Uljanowsk
+        de|tz.Europe/Vatican.city|Vatikan
+        de|tz.Europe/Vienna.city|Wien
+        de|tz.Europe/Volgograd.city|Wolgograd
+        de|tz.Europe/Warsaw.city|Warschau
+        de|tz.Europe/Zurich.city|Z\u00FCrich
+        de|tz.Indian/Christmas.city|Weihnachtsinsel
+        de|tz.Indian/Comoro.city|Komoren
+        de|tz.Indian/Mahe.city|Mah\u00E9
+        de|tz.Indian/Maldives.city|Malediven
+        de|tz.Indian/Reunion.city|R\u00E9union
+        de|tz.Pacific/Easter.city|Osterinsel
+        de|tz.Pacific/Fiji.city|Fidschi
+        de|tz.Pacific/Galapagos.city|Gal\u00E1pagos
+        de|tz.Pacific/Kanton.city|Canton
+        de|tz.Pacific/Noumea.city|Noum\u00E9a
+        de|tz.Pacific/Wallis.city|Wallis & Futuna
+        de|zone.fallbackFormat|{1} ({0})
         de|zone.gmt.long|Mittlere Greenwich-Zeit
         de|zone.gmtFormat|GMT{0}
         de|zone.gmtZeroFormat|GMT
         de|zone.hourFormat|+HH:mm;-HH:mm
+        de|zone.regionFormat|{0} (Ortszeit)
         de|zone.utc.long|Koordinierte Weltzeit
         de|zone.utc.short|UTC
         en@buddhist|eras.eraAbbr.0|BE
@@ -18685,17 +19163,1482 @@ internal static class JsCldrTables
         en|months.stand-alone.wide.7|July
         en|months.stand-alone.wide.8|August
         en|months.stand-alone.wide.9|September
+        en|mz.Acre.ld|Acre Summer Time
+        en|mz.Acre.lg|Acre Time
+        en|mz.Acre.ls|Acre Standard Time
+        en|mz.Afghanistan.ls|Afghanistan Time
+        en|mz.Africa_Central.ls|Central Africa Time
+        en|mz.Africa_Eastern.ls|East Africa Time
+        en|mz.Africa_Southern.ls|South Africa Standard Time
+        en|mz.Africa_Western.ls|West Africa Time
+        en|mz.Alaska.ld|Alaska Daylight Time
+        en|mz.Alaska.lg|Alaska Time
+        en|mz.Alaska.ls|Alaska Standard Time
+        en|mz.Alaska.sd|AKDT
+        en|mz.Alaska.sg|AKT
+        en|mz.Alaska.ss|AKST
+        en|mz.Almaty.ld|Almaty Summer Time
+        en|mz.Almaty.lg|Almaty Time
+        en|mz.Almaty.ls|Almaty Standard Time
+        en|mz.Amazon.ld|Amazon Summer Time
+        en|mz.Amazon.lg|Amazon Time
+        en|mz.Amazon.ls|Amazon Standard Time
+        en|mz.America_Central.ld|Central Daylight Time
+        en|mz.America_Central.lg|Central Time
+        en|mz.America_Central.ls|Central Standard Time
+        en|mz.America_Central.sd|CDT
+        en|mz.America_Central.sg|CT
+        en|mz.America_Central.ss|CST
+        en|mz.America_Eastern.ld|Eastern Daylight Time
+        en|mz.America_Eastern.lg|Eastern Time
+        en|mz.America_Eastern.ls|Eastern Standard Time
+        en|mz.America_Eastern.sd|EDT
+        en|mz.America_Eastern.sg|ET
+        en|mz.America_Eastern.ss|EST
+        en|mz.America_Mountain.ld|Mountain Daylight Time
+        en|mz.America_Mountain.lg|Mountain Time
+        en|mz.America_Mountain.ls|Mountain Standard Time
+        en|mz.America_Mountain.sd|MDT
+        en|mz.America_Mountain.sg|MT
+        en|mz.America_Mountain.ss|MST
+        en|mz.America_Pacific.ld|Pacific Daylight Time
+        en|mz.America_Pacific.lg|Pacific Time
+        en|mz.America_Pacific.ls|Pacific Standard Time
+        en|mz.America_Pacific.sd|PDT
+        en|mz.America_Pacific.sg|PT
+        en|mz.America_Pacific.ss|PST
+        en|mz.Anadyr.ld|Anadyr Summer Time
+        en|mz.Anadyr.lg|Anadyr Time
+        en|mz.Anadyr.ls|Anadyr Standard Time
+        en|mz.Apia.ld|Samoa Daylight Time
+        en|mz.Apia.lg|Samoa Time
+        en|mz.Apia.ls|Samoa Standard Time
+        en|mz.Aqtau.ld|Aqtau Summer Time
+        en|mz.Aqtau.lg|Aqtau Time
+        en|mz.Aqtau.ls|Aqtau Standard Time
+        en|mz.Aqtobe.ld|Aqtobe Summer Time
+        en|mz.Aqtobe.lg|Aqtobe Time
+        en|mz.Aqtobe.ls|Aqtobe Standard Time
+        en|mz.Arabian.ld|Arabian Daylight Time
+        en|mz.Arabian.lg|Arabian Time
+        en|mz.Arabian.ls|Arabian Standard Time
+        en|mz.Argentina.ld|Argentina Summer Time
+        en|mz.Argentina.lg|Argentina Time
+        en|mz.Argentina.ls|Argentina Standard Time
+        en|mz.Argentina_Western.ld|Western Argentina Summer Time
+        en|mz.Argentina_Western.lg|Western Argentina Time
+        en|mz.Argentina_Western.ls|Western Argentina Standard Time
+        en|mz.Armenia.ld|Armenia Summer Time
+        en|mz.Armenia.lg|Armenia Time
+        en|mz.Armenia.ls|Armenia Standard Time
+        en|mz.Atlantic.ld|Atlantic Daylight Time
+        en|mz.Atlantic.lg|Atlantic Time
+        en|mz.Atlantic.ls|Atlantic Standard Time
+        en|mz.Atlantic.sd|ADT
+        en|mz.Atlantic.sg|AT
+        en|mz.Atlantic.ss|AST
+        en|mz.Australia_Central.ld|Australian Central Daylight Time
+        en|mz.Australia_Central.lg|Australian Central Time
+        en|mz.Australia_Central.ls|Australian Central Standard Time
+        en|mz.Australia_CentralWestern.ld|Australian Central Western Daylight Time
+        en|mz.Australia_CentralWestern.lg|Australian Central Western Time
+        en|mz.Australia_CentralWestern.ls|Australian Central Western Standard Time
+        en|mz.Australia_Eastern.ld|Australian Eastern Daylight Time
+        en|mz.Australia_Eastern.lg|Australian Eastern Time
+        en|mz.Australia_Eastern.ls|Australian Eastern Standard Time
+        en|mz.Australia_Western.ld|Australian Western Daylight Time
+        en|mz.Australia_Western.lg|Australian Western Time
+        en|mz.Australia_Western.ls|Australian Western Standard Time
+        en|mz.Azerbaijan.ld|Azerbaijan Summer Time
+        en|mz.Azerbaijan.lg|Azerbaijan Time
+        en|mz.Azerbaijan.ls|Azerbaijan Standard Time
+        en|mz.Azores.ld|Azores Summer Time
+        en|mz.Azores.lg|Azores Time
+        en|mz.Azores.ls|Azores Standard Time
+        en|mz.Bangladesh.ld|Bangladesh Summer Time
+        en|mz.Bangladesh.lg|Bangladesh Time
+        en|mz.Bangladesh.ls|Bangladesh Standard Time
+        en|mz.Bhutan.ls|Bhutan Time
+        en|mz.Bolivia.ls|Bolivia Time
+        en|mz.Brasilia.ld|Brasilia Summer Time
+        en|mz.Brasilia.lg|Brasilia Time
+        en|mz.Brasilia.ls|Brasilia Standard Time
+        en|mz.Brunei.ls|Brunei Time
+        en|mz.Cape_Verde.ld|Cape Verde Summer Time
+        en|mz.Cape_Verde.lg|Cape Verde Time
+        en|mz.Cape_Verde.ls|Cape Verde Standard Time
+        en|mz.Casey.ls|Casey Time
+        en|mz.Chamorro.ls|Chamorro Standard Time
+        en|mz.Chatham.ld|Chatham Daylight Time
+        en|mz.Chatham.lg|Chatham Time
+        en|mz.Chatham.ls|Chatham Standard Time
+        en|mz.Chile.ld|Chile Summer Time
+        en|mz.Chile.lg|Chile Time
+        en|mz.Chile.ls|Chile Standard Time
+        en|mz.China.ld|China Daylight Time
+        en|mz.China.lg|China Time
+        en|mz.China.ls|China Standard Time
+        en|mz.Christmas.ls|Christmas Island Time
+        en|mz.Cocos.ls|Cocos Islands Time
+        en|mz.Colombia.ld|Colombia Summer Time
+        en|mz.Colombia.lg|Colombia Time
+        en|mz.Colombia.ls|Colombia Standard Time
+        en|mz.Cook.ld|Cook Islands Summer Time
+        en|mz.Cook.lg|Cook Islands Time
+        en|mz.Cook.ls|Cook Islands Standard Time
+        en|mz.Cuba.ld|Cuba Daylight Time
+        en|mz.Cuba.lg|Cuba Time
+        en|mz.Cuba.ls|Cuba Standard Time
+        en|mz.Davis.ls|Davis Time
+        en|mz.DumontDUrville.ls|Dumont d\u2019Urville Time
+        en|mz.East_Timor.ls|Timor-Leste Time
+        en|mz.Easter.ld|Easter Island Summer Time
+        en|mz.Easter.lg|Easter Island Time
+        en|mz.Easter.ls|Easter Island Standard Time
+        en|mz.Ecuador.ls|Ecuador Time
+        en|mz.Europe_Central.ld|Central European Summer Time
+        en|mz.Europe_Central.lg|Central European Time
+        en|mz.Europe_Central.ls|Central European Standard Time
+        en|mz.Europe_Eastern.ld|Eastern European Summer Time
+        en|mz.Europe_Eastern.lg|Eastern European Time
+        en|mz.Europe_Eastern.ls|Eastern European Standard Time
+        en|mz.Europe_Further_Eastern.ls|Further-eastern European Time
+        en|mz.Europe_Western.ld|Western European Summer Time
+        en|mz.Europe_Western.lg|Western European Time
+        en|mz.Europe_Western.ls|Western European Standard Time
+        en|mz.Falkland.ld|Falkland Islands Summer Time
+        en|mz.Falkland.lg|Falkland Islands Time
+        en|mz.Falkland.ls|Falkland Islands Standard Time
+        en|mz.Fiji.ld|Fiji Summer Time
+        en|mz.Fiji.lg|Fiji Time
+        en|mz.Fiji.ls|Fiji Standard Time
+        en|mz.French_Guiana.ls|French Guiana Time
+        en|mz.French_Southern.ls|French Southern & Antarctic Time
+        en|mz.GMT.ls|Greenwich Mean Time
+        en|mz.GMT.ss|GMT
+        en|mz.Galapagos.ls|Galapagos Time
+        en|mz.Gambier.ls|Gambier Time
+        en|mz.Georgia.ld|Georgia Summer Time
+        en|mz.Georgia.lg|Georgia Time
+        en|mz.Georgia.ls|Georgia Standard Time
+        en|mz.Gilbert_Islands.ls|Gilbert Islands Time
+        en|mz.Greenland.ld|Greenland Summer Time
+        en|mz.Greenland.lg|Greenland Time
+        en|mz.Greenland.ls|Greenland Standard Time
+        en|mz.Greenland_Eastern.ld|East Greenland Summer Time
+        en|mz.Greenland_Eastern.lg|East Greenland Time
+        en|mz.Greenland_Eastern.ls|East Greenland Standard Time
+        en|mz.Greenland_Western.ld|West Greenland Summer Time
+        en|mz.Greenland_Western.lg|West Greenland Time
+        en|mz.Greenland_Western.ls|West Greenland Standard Time
+        en|mz.Guam.ls|Guam Standard Time
+        en|mz.Gulf.ls|Gulf Standard Time
+        en|mz.Guyana.ls|Guyana Time
+        en|mz.Hawaii.ls|Hawaii-Aleutian Standard Time
+        en|mz.Hawaii.ss|HST
+        en|mz.Hawaii_Aleutian.ld|Hawaii-Aleutian Daylight Time
+        en|mz.Hawaii_Aleutian.lg|Hawaii-Aleutian Time
+        en|mz.Hawaii_Aleutian.ls|Hawaii-Aleutian Standard Time
+        en|mz.Hawaii_Aleutian.sd|HADT
+        en|mz.Hawaii_Aleutian.sg|HAT
+        en|mz.Hawaii_Aleutian.ss|HAST
+        en|mz.Hong_Kong.ld|Hong Kong Summer Time
+        en|mz.Hong_Kong.lg|Hong Kong Time
+        en|mz.Hong_Kong.ls|Hong Kong Standard Time
+        en|mz.Hovd.ld|Khovd Summer Time
+        en|mz.Hovd.lg|Khovd Time
+        en|mz.Hovd.ls|Khovd Standard Time
+        en|mz.India.ls|India Standard Time
+        en|mz.Indian_Ocean.ls|Indian Ocean Time
+        en|mz.Indochina.ls|Indochina Time
+        en|mz.Indonesia_Central.ls|Central Indonesia Time
+        en|mz.Indonesia_Eastern.ls|Eastern Indonesia Time
+        en|mz.Indonesia_Western.ls|Western Indonesia Time
+        en|mz.Iran.ld|Iran Daylight Time
+        en|mz.Iran.lg|Iran Time
+        en|mz.Iran.ls|Iran Standard Time
+        en|mz.Irkutsk.ld|Irkutsk Summer Time
+        en|mz.Irkutsk.lg|Irkutsk Time
+        en|mz.Irkutsk.ls|Irkutsk Standard Time
+        en|mz.Israel.ld|Israel Daylight Time
+        en|mz.Israel.lg|Israel Time
+        en|mz.Israel.ls|Israel Standard Time
+        en|mz.Japan.ld|Japan Daylight Time
+        en|mz.Japan.lg|Japan Time
+        en|mz.Japan.ls|Japan Standard Time
+        en|mz.Kamchatka.ld|Kamchatka Summer Time
+        en|mz.Kamchatka.lg|Kamchatka Time
+        en|mz.Kamchatka.ls|Kamchatka Standard Time
+        en|mz.Kazakhstan.ls|Kazakhstan Time
+        en|mz.Kazakhstan_Eastern.ls|East Kazakhstan Time
+        en|mz.Kazakhstan_Western.ls|West Kazakhstan Time
+        en|mz.Korea.ld|Korean Daylight Time
+        en|mz.Korea.lg|Korean Time
+        en|mz.Korea.ls|Korean Standard Time
+        en|mz.Kosrae.ls|Kosrae Time
+        en|mz.Krasnoyarsk.ld|Krasnoyarsk Summer Time
+        en|mz.Krasnoyarsk.lg|Krasnoyarsk Time
+        en|mz.Krasnoyarsk.ls|Krasnoyarsk Standard Time
+        en|mz.Kyrgystan.ls|Kyrgyzstan Time
+        en|mz.Lanka.ls|Lanka Time
+        en|mz.Line_Islands.ls|Line Islands Time
+        en|mz.Lord_Howe.ld|Lord Howe Daylight Time
+        en|mz.Lord_Howe.lg|Lord Howe Time
+        en|mz.Lord_Howe.ls|Lord Howe Standard Time
+        en|mz.Macau.ld|Macao Summer Time
+        en|mz.Macau.lg|Macao Time
+        en|mz.Macau.ls|Macao Standard Time
+        en|mz.Magadan.ld|Magadan Summer Time
+        en|mz.Magadan.lg|Magadan Time
+        en|mz.Magadan.ls|Magadan Standard Time
+        en|mz.Malaysia.ls|Malaysia Time
+        en|mz.Maldives.ls|Maldives Time
+        en|mz.Marquesas.ls|Marquesas Time
+        en|mz.Marshall_Islands.ls|Marshall Islands Time
+        en|mz.Mauritius.ld|Mauritius Summer Time
+        en|mz.Mauritius.lg|Mauritius Time
+        en|mz.Mauritius.ls|Mauritius Standard Time
+        en|mz.Mawson.ls|Mawson Time
+        en|mz.Mexico_Pacific.ld|Mexican Pacific Daylight Time
+        en|mz.Mexico_Pacific.lg|Mexican Pacific Time
+        en|mz.Mexico_Pacific.ls|Mexican Pacific Standard Time
+        en|mz.Mongolia.ld|Ulaanbaatar Summer Time
+        en|mz.Mongolia.lg|Ulaanbaatar Time
+        en|mz.Mongolia.ls|Ulaanbaatar Standard Time
+        en|mz.Moscow.ld|Moscow Summer Time
+        en|mz.Moscow.lg|Moscow Time
+        en|mz.Moscow.ls|Moscow Standard Time
+        en|mz.Myanmar.ls|Myanmar Time
+        en|mz.Nauru.ls|Nauru Time
+        en|mz.Nepal.ls|Nepal Time
+        en|mz.New_Caledonia.ld|New Caledonia Summer Time
+        en|mz.New_Caledonia.lg|New Caledonia Time
+        en|mz.New_Caledonia.ls|New Caledonia Standard Time
+        en|mz.New_Zealand.ld|New Zealand Daylight Time
+        en|mz.New_Zealand.lg|New Zealand Time
+        en|mz.New_Zealand.ls|New Zealand Standard Time
+        en|mz.Newfoundland.ld|Newfoundland Daylight Time
+        en|mz.Newfoundland.lg|Newfoundland Time
+        en|mz.Newfoundland.ls|Newfoundland Standard Time
+        en|mz.Niue.ls|Niue Time
+        en|mz.Norfolk.ld|Norfolk Island Daylight Time
+        en|mz.Norfolk.lg|Norfolk Island Time
+        en|mz.Norfolk.ls|Norfolk Island Standard Time
+        en|mz.Noronha.ld|Fernando de Noronha Summer Time
+        en|mz.Noronha.lg|Fernando de Noronha Time
+        en|mz.Noronha.ls|Fernando de Noronha Standard Time
+        en|mz.North_Mariana.ls|Northern Mariana Islands Time
+        en|mz.Novosibirsk.ld|Novosibirsk Summer Time
+        en|mz.Novosibirsk.lg|Novosibirsk Time
+        en|mz.Novosibirsk.ls|Novosibirsk Standard Time
+        en|mz.Omsk.ld|Omsk Summer Time
+        en|mz.Omsk.lg|Omsk Time
+        en|mz.Omsk.ls|Omsk Standard Time
+        en|mz.Pakistan.ld|Pakistan Summer Time
+        en|mz.Pakistan.lg|Pakistan Time
+        en|mz.Pakistan.ls|Pakistan Standard Time
+        en|mz.Palau.ls|Palau Time
+        en|mz.Papua_New_Guinea.ls|Papua New Guinea Time
+        en|mz.Paraguay.ld|Paraguay Summer Time
+        en|mz.Paraguay.lg|Paraguay Time
+        en|mz.Paraguay.ls|Paraguay Standard Time
+        en|mz.Peru.ld|Peru Summer Time
+        en|mz.Peru.lg|Peru Time
+        en|mz.Peru.ls|Peru Standard Time
+        en|mz.Philippines.ld|Philippine Summer Time
+        en|mz.Philippines.lg|Philippine Time
+        en|mz.Philippines.ls|Philippine Standard Time
+        en|mz.Phoenix_Islands.ls|Phoenix Islands Time
+        en|mz.Pierre_Miquelon.ld|St. Pierre & Miquelon Daylight Time
+        en|mz.Pierre_Miquelon.lg|St. Pierre & Miquelon Time
+        en|mz.Pierre_Miquelon.ls|St. Pierre & Miquelon Standard Time
+        en|mz.Pitcairn.ls|Pitcairn Time
+        en|mz.Ponape.ls|Pohnpei Time
+        en|mz.Pyongyang.ls|North Korea Time
+        en|mz.Qyzylorda.ld|Kyzylorda Summer Time
+        en|mz.Qyzylorda.lg|Kyzylorda Time
+        en|mz.Qyzylorda.ls|Kyzylorda Standard Time
+        en|mz.Reunion.ls|R\u00E9union Time
+        en|mz.Rothera.ls|Rothera Time
+        en|mz.Sakhalin.ld|Sakhalin Summer Time
+        en|mz.Sakhalin.lg|Sakhalin Time
+        en|mz.Sakhalin.ls|Sakhalin Standard Time
+        en|mz.Samara.ld|Samara Summer Time
+        en|mz.Samara.lg|Samara Time
+        en|mz.Samara.ls|Samara Standard Time
+        en|mz.Samoa.ld|American Samoa Daylight Time
+        en|mz.Samoa.lg|American Samoa Time
+        en|mz.Samoa.ls|American Samoa Standard Time
+        en|mz.Seychelles.ls|Seychelles Time
+        en|mz.Singapore.ls|Singapore Standard Time
+        en|mz.Solomon.ls|Solomon Islands Time
+        en|mz.South_Georgia.ls|South Georgia Time
+        en|mz.Suriname.ls|Suriname Time
+        en|mz.Syowa.ls|Syowa Time
+        en|mz.Tahiti.ls|Tahiti Time
+        en|mz.Taipei.ld|Taiwan Daylight Time
+        en|mz.Taipei.lg|Taiwan Time
+        en|mz.Taipei.ls|Taiwan Standard Time
+        en|mz.Tajikistan.ls|Tajikistan Time
+        en|mz.Tokelau.ls|Tokelau Time
+        en|mz.Tonga.ld|Tonga Summer Time
+        en|mz.Tonga.lg|Tonga Time
+        en|mz.Tonga.ls|Tonga Standard Time
+        en|mz.Truk.ls|Chuuk Time
+        en|mz.Turkey.ld|T\u00FCrkiye Summer Time
+        en|mz.Turkey.lg|T\u00FCrkiye Time
+        en|mz.Turkey.ls|T\u00FCrkiye Standard Time
+        en|mz.Turkmenistan.ld|Turkmenistan Summer Time
+        en|mz.Turkmenistan.lg|Turkmenistan Time
+        en|mz.Turkmenistan.ls|Turkmenistan Standard Time
+        en|mz.Tuvalu.ls|Tuvalu Time
+        en|mz.Uruguay.ld|Uruguay Summer Time
+        en|mz.Uruguay.lg|Uruguay Time
+        en|mz.Uruguay.ls|Uruguay Standard Time
+        en|mz.Uzbekistan.ld|Uzbekistan Summer Time
+        en|mz.Uzbekistan.lg|Uzbekistan Time
+        en|mz.Uzbekistan.ls|Uzbekistan Standard Time
+        en|mz.Vanuatu.ld|Vanuatu Summer Time
+        en|mz.Vanuatu.lg|Vanuatu Time
+        en|mz.Vanuatu.ls|Vanuatu Standard Time
+        en|mz.Venezuela.ls|Venezuela Time
+        en|mz.Vladivostok.ld|Vladivostok Summer Time
+        en|mz.Vladivostok.lg|Vladivostok Time
+        en|mz.Vladivostok.ls|Vladivostok Standard Time
+        en|mz.Volgograd.ld|Volgograd Summer Time
+        en|mz.Volgograd.lg|Volgograd Time
+        en|mz.Volgograd.ls|Volgograd Standard Time
+        en|mz.Vostok.ls|Vostok Time
+        en|mz.Wake.ls|Wake Island Time
+        en|mz.Wallis.ls|Wallis & Futuna Time
+        en|mz.Yakutsk.ld|Yakutsk Summer Time
+        en|mz.Yakutsk.lg|Yakutsk Time
+        en|mz.Yakutsk.ls|Yakutsk Standard Time
+        en|mz.Yekaterinburg.ld|Yekaterinburg Summer Time
+        en|mz.Yekaterinburg.lg|Yekaterinburg Time
+        en|mz.Yekaterinburg.ls|Yekaterinburg Standard Time
+        en|mz.Yukon.ls|Yukon Time
         en|timeFormats.full|h:mm:ss\u202Fa zzzz
         en|timeFormats.long|h:mm:ss\u202Fa z
         en|timeFormats.medium|h:mm:ss\u202Fa
         en|timeFormats.short|h:mm\u202Fa
+        en|tz.Africa/El_Aaiun.city|El Aai\u00FAn
+        en|tz.Africa/Lome.city|Lom\u00E9
+        en|tz.Africa/Ndjamena.city|N\u2019Djamena
+        en|tz.Africa/Sao_Tome.city|S\u00E3o Tom\u00E9
+        en|tz.America/Araguaina.city|Aragua\u00EDna
+        en|tz.America/Argentina/Cordoba.city|C\u00F3rdoba
+        en|tz.America/Argentina/Rio_Gallegos.city|R\u00EDo Gallegos
+        en|tz.America/Argentina/Tucuman.city|Tucum\u00E1n
+        en|tz.America/Asuncion.city|Asunci\u00F3n
+        en|tz.America/Bahia_Banderas.city|Bah\u00EDa de Banderas
+        en|tz.America/Belem.city|Bel\u00E9m
+        en|tz.America/Bogota.city|Bogot\u00E1
+        en|tz.America/Cancun.city|Canc\u00FAn
+        en|tz.America/Ciudad_Juarez.city|Ciudad Ju\u00E1rez
+        en|tz.America/Cuiaba.city|Cuiab\u00E1
+        en|tz.America/Curacao.city|Cura\u00E7ao
+        en|tz.America/Eirunepe.city|Eirunep\u00E9
+        en|tz.America/Indiana/Knox.city|Knox, Indiana
+        en|tz.America/Indiana/Marengo.city|Marengo, Indiana
+        en|tz.America/Indiana/Petersburg.city|Petersburg, Indiana
+        en|tz.America/Indiana/Tell_City.city|Tell City, Indiana
+        en|tz.America/Indiana/Vevay.city|Vevay, Indiana
+        en|tz.America/Indiana/Vincennes.city|Vincennes, Indiana
+        en|tz.America/Indiana/Winamac.city|Winamac, Indiana
+        en|tz.America/Kentucky/Monticello.city|Monticello, Kentucky
+        en|tz.America/Lower_Princes.city|Lower Prince\u2019s Quarter
+        en|tz.America/Maceio.city|Macei\u00F3
+        en|tz.America/Mazatlan.city|Mazatl\u00E1n
+        en|tz.America/Merida.city|M\u00E9rida
+        en|tz.America/Miquelon.city|Saint-Pierre
+        en|tz.America/Noronha.city|Fernando de Noronha
+        en|tz.America/North_Dakota/Beulah.city|Beulah, North Dakota
+        en|tz.America/North_Dakota/Center.city|Center, North Dakota
+        en|tz.America/North_Dakota/New_Salem.city|New Salem, North Dakota
+        en|tz.America/Santarem.city|Santar\u00E9m
+        en|tz.America/Sao_Paulo.city|S\u00E3o Paulo
+        en|tz.America/Scoresbysund.city|Ittoqqortoormiit
+        en|tz.America/St_Barthelemy.city|St. Barth\u00E9lemy
+        en|tz.America/St_Johns.city|St. John\u2019s
+        en|tz.America/St_Kitts.city|St. Kitts
+        en|tz.America/St_Lucia.city|St. Lucia
+        en|tz.America/St_Thomas.city|St. Thomas
+        en|tz.America/St_Vincent.city|St. Vincent
+        en|tz.Antarctica/Casey.city|Casey Station
+        en|tz.Antarctica/DumontDUrville.city|Dumont d\u2019Urville Station
+        en|tz.Antarctica/Macquarie.city|Macquarie Island
+        en|tz.Antarctica/Mawson.city|Mawson Station
+        en|tz.Antarctica/McMurdo.city|McMurdo Station
+        en|tz.Antarctica/Palmer.city|Palmer Land
+        en|tz.Antarctica/Rothera.city|Rothera Station
+        en|tz.Antarctica/Syowa.city|Showa Station
+        en|tz.Antarctica/Troll.city|Troll Station
+        en|tz.Antarctica/Vostok.city|Vostok Station
+        en|tz.Asia/Aqtau.city|Aktau
+        en|tz.Asia/Ho_Chi_Minh.city|Ho Chi Minh City
+        en|tz.Asia/Hovd.city|Khovd
+        en|tz.Asia/Macau.city|Macao
+        en|tz.Asia/Qostanay.city|Kostanay
+        en|tz.Asia/Qyzylorda.city|Kyzylorda
+        en|tz.Asia/Urumqi.city|\u00DCr\u00FCmqi
+        en|tz.Atlantic/Canary.city|Canaries
+        en|tz.Atlantic/Faroe.city|Faroes
+        en|tz.Atlantic/St_Helena.city|St. Helena
+        en|tz.Australia/Lord_Howe.city|Lord Howe Island
+        en|tz.Europe/Busingen.city|B\u00FCsingen
+        en|tz.Europe/Chisinau.city|Chi\u0219in\u0103u
+        en|tz.Europe/Dublin.ld|Irish Standard Time
+        en|tz.Europe/London.ld|British Summer Time
+        en|tz.Europe/Tirane.city|Tirana
+        en|tz.Indian/Chagos.city|Chagos Archipelago
+        en|tz.Indian/Christmas.city|Christmas Island
+        en|tz.Indian/Cocos.city|Cocos Islands
+        en|tz.Indian/Comoro.city|Comoros
+        en|tz.Indian/Kerguelen.city|Kerguelen Islands
+        en|tz.Indian/Mahe.city|Mah\u00E9
+        en|tz.Indian/Reunion.city|R\u00E9union
+        en|tz.Pacific/Chatham.city|Chatham Islands
+        en|tz.Pacific/Easter.city|Easter Island
+        en|tz.Pacific/Galapagos.city|Gal\u00E1pagos Islands
+        en|tz.Pacific/Kanton.city|Canton Island
+        en|tz.Pacific/Kwajalein.city|Kwajalein Atoll
+        en|tz.Pacific/Marquesas.city|Marquesas Islands
+        en|tz.Pacific/Midway.city|Midway Atoll
+        en|tz.Pacific/Norfolk.city|Norfolk Island
+        en|tz.Pacific/Noumea.city|Noum\u00E9a
+        en|tz.Pacific/Pitcairn.city|Pitcairn Islands
+        en|tz.Pacific/Wake.city|Wake Island
+        en|tz.Pacific/Wallis.city|Wallis & Futuna
+        en|zone.fallbackFormat|{1} ({0})
         en|zone.gmt.long|Greenwich Mean Time
         en|zone.gmt.short|GMT
         en|zone.gmtFormat|GMT{0}
         en|zone.gmtZeroFormat|GMT
         en|zone.hourFormat|+HH:mm;-HH:mm
+        en|zone.regionFormat|{0} Time
         en|zone.utc.long|Coordinated Universal Time
         en|zone.utc.short|UTC
+        """u8;
+
+    /// <summary>Which metazone each zone uses when (z: zone, from, to, metazone), each metazone's golden zone in a region (g: metazone, region, zone), and a country's primary zone (p: region, zone), by primary identifier.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> MetaZones =>
+        """
+        g|Acre|001|America/Rio_Branco
+        g|Afghanistan|001|Asia/Kabul
+        g|Africa_Central|001|Africa/Maputo
+        g|Africa_Central|BI|Africa/Bujumbura
+        g|Africa_Central|BW|Africa/Gaborone
+        g|Africa_Central|CD|Africa/Lubumbashi
+        g|Africa_Central|MW|Africa/Blantyre
+        g|Africa_Central|RW|Africa/Kigali
+        g|Africa_Central|ZM|Africa/Lusaka
+        g|Africa_Central|ZW|Africa/Harare
+        g|Africa_Eastern|001|Africa/Nairobi
+        g|Africa_Eastern|DJ|Africa/Djibouti
+        g|Africa_Eastern|ER|Africa/Asmara
+        g|Africa_Eastern|ET|Africa/Addis_Ababa
+        g|Africa_Eastern|KM|Indian/Comoro
+        g|Africa_Eastern|MG|Indian/Antananarivo
+        g|Africa_Eastern|SO|Africa/Mogadishu
+        g|Africa_Eastern|TZ|Africa/Dar_es_Salaam
+        g|Africa_Eastern|UG|Africa/Kampala
+        g|Africa_Eastern|YT|Indian/Mayotte
+        g|Africa_FarWestern|001|Africa/El_Aaiun
+        g|Africa_Southern|001|Africa/Johannesburg
+        g|Africa_Southern|LS|Africa/Maseru
+        g|Africa_Southern|SZ|Africa/Mbabane
+        g|Africa_Western|001|Africa/Lagos
+        g|Africa_Western|AO|Africa/Luanda
+        g|Africa_Western|BJ|Africa/Porto-Novo
+        g|Africa_Western|CD|Africa/Kinshasa
+        g|Africa_Western|CF|Africa/Bangui
+        g|Africa_Western|CG|Africa/Brazzaville
+        g|Africa_Western|CM|Africa/Douala
+        g|Africa_Western|GA|Africa/Libreville
+        g|Africa_Western|GQ|Africa/Malabo
+        g|Africa_Western|NE|Africa/Niamey
+        g|Africa_Western|TD|Africa/Ndjamena
+        g|Aktyubinsk|001|Asia/Aqtobe
+        g|Alaska_Hawaii|001|America/Anchorage
+        g|Alaska|001|America/Juneau
+        g|Almaty|001|Asia/Almaty
+        g|Amazon|001|America/Manaus
+        g|America_Central|001|America/Chicago
+        g|America_Central|BZ|America/Belize
+        g|America_Central|CA|America/Winnipeg
+        g|America_Central|CR|America/Costa_Rica
+        g|America_Central|GT|America/Guatemala
+        g|America_Central|HN|America/Tegucigalpa
+        g|America_Central|MX|America/Mexico_City
+        g|America_Central|SV|America/El_Salvador
+        g|America_Eastern|001|America/New_York
+        g|America_Eastern|BS|America/Nassau
+        g|America_Eastern|CA|America/Toronto
+        g|America_Eastern|HT|America/Port-au-Prince
+        g|America_Eastern|JM|America/Jamaica
+        g|America_Eastern|KY|America/Cayman
+        g|America_Eastern|PA|America/Panama
+        g|America_Mountain|001|America/Denver
+        g|America_Mountain|CA|America/Edmonton
+        g|America_Pacific|001|America/Los_Angeles
+        g|America_Pacific|CA|America/Vancouver
+        g|America_Pacific|MX|America/Tijuana
+        g|Anadyr|001|Asia/Anadyr
+        g|Apia|001|Pacific/Apia
+        g|Aqtau|001|Asia/Aqtau
+        g|Aqtobe|001|Asia/Aqtobe
+        g|Arabian|001|Asia/Riyadh
+        g|Arabian|BH|Asia/Bahrain
+        g|Arabian|IQ|Asia/Baghdad
+        g|Arabian|KW|Asia/Kuwait
+        g|Arabian|QA|Asia/Qatar
+        g|Arabian|YE|Asia/Aden
+        g|Argentina_Western|001|America/Argentina/San_Luis
+        g|Argentina|001|America/Argentina/Buenos_Aires
+        g|Armenia|001|Asia/Yerevan
+        g|Ashkhabad|001|Asia/Ashgabat
+        g|Atlantic|001|America/Halifax
+        g|Atlantic|AG|America/Antigua
+        g|Atlantic|AI|America/Anguilla
+        g|Atlantic|AW|America/Aruba
+        g|Atlantic|BB|America/Barbados
+        g|Atlantic|BM|Atlantic/Bermuda
+        g|Atlantic|BQ|America/Kralendijk
+        g|Atlantic|CW|America/Curacao
+        g|Atlantic|DM|America/Dominica
+        g|Atlantic|GD|America/Grenada
+        g|Atlantic|GL|America/Thule
+        g|Atlantic|GP|America/Guadeloupe
+        g|Atlantic|KN|America/St_Kitts
+        g|Atlantic|LC|America/St_Lucia
+        g|Atlantic|MF|America/Marigot
+        g|Atlantic|MQ|America/Martinique
+        g|Atlantic|MS|America/Montserrat
+        g|Atlantic|PR|America/Puerto_Rico
+        g|Atlantic|SX|America/Lower_Princes
+        g|Atlantic|TT|America/Port_of_Spain
+        g|Atlantic|VC|America/St_Vincent
+        g|Atlantic|VG|America/Tortola
+        g|Atlantic|VI|America/St_Thomas
+        g|Australia_CentralWestern|001|Australia/Eucla
+        g|Australia_Central|001|Australia/Adelaide
+        g|Australia_Eastern|001|Australia/Sydney
+        g|Australia_Western|001|Australia/Perth
+        g|Azerbaijan|001|Asia/Baku
+        g|Azores|001|Atlantic/Azores
+        g|Baku|001|Asia/Baku
+        g|Bangladesh|001|Asia/Dhaka
+        g|Bering|001|America/Adak
+        g|Bhutan|001|Asia/Thimphu
+        g|Bolivia|001|America/La_Paz
+        g|Borneo|001|Asia/Kuching
+        g|Brasilia|001|America/Sao_Paulo
+        g|British|001|Europe/London
+        g|Brunei|001|Asia/Brunei
+        g|Cape_Verde|001|Atlantic/Cape_Verde
+        g|Casey|001|Antarctica/Casey
+        g|Chamorro|001|Pacific/Saipan
+        g|Chamorro|GU|Pacific/Guam
+        g|Chatham|001|Pacific/Chatham
+        g|Chile|001|America/Santiago
+        g|China|001|Asia/Shanghai
+        g|Christmas|001|Indian/Christmas
+        g|Cocos|001|Indian/Cocos
+        g|Colombia|001|America/Bogota
+        g|Cook|001|Pacific/Rarotonga
+        g|Cuba|001|America/Havana
+        g|Dacca|001|Asia/Dhaka
+        g|Davis|001|Antarctica/Davis
+        g|Dominican|001|America/Santo_Domingo
+        g|DumontDUrville|001|Antarctica/DumontDUrville
+        g|Dushanbe|001|Asia/Dushanbe
+        g|Dutch_Guiana|001|America/Paramaribo
+        g|East_Timor|001|Asia/Dili
+        g|Easter|001|Pacific/Easter
+        g|Ecuador|001|America/Guayaquil
+        g|Europe_Central|001|Europe/Paris
+        g|Europe_Central|AD|Europe/Andorra
+        g|Europe_Central|AL|Europe/Tirane
+        g|Europe_Central|AT|Europe/Vienna
+        g|Europe_Central|BA|Europe/Sarajevo
+        g|Europe_Central|BE|Europe/Brussels
+        g|Europe_Central|CH|Europe/Zurich
+        g|Europe_Central|CZ|Europe/Prague
+        g|Europe_Central|DE|Europe/Berlin
+        g|Europe_Central|DK|Europe/Copenhagen
+        g|Europe_Central|ES|Europe/Madrid
+        g|Europe_Central|GI|Europe/Gibraltar
+        g|Europe_Central|HR|Europe/Zagreb
+        g|Europe_Central|HU|Europe/Budapest
+        g|Europe_Central|IT|Europe/Rome
+        g|Europe_Central|LI|Europe/Vaduz
+        g|Europe_Central|LU|Europe/Luxembourg
+        g|Europe_Central|MC|Europe/Monaco
+        g|Europe_Central|ME|Europe/Podgorica
+        g|Europe_Central|MK|Europe/Skopje
+        g|Europe_Central|MT|Europe/Malta
+        g|Europe_Central|NL|Europe/Amsterdam
+        g|Europe_Central|NO|Europe/Oslo
+        g|Europe_Central|PL|Europe/Warsaw
+        g|Europe_Central|RS|Europe/Belgrade
+        g|Europe_Central|SE|Europe/Stockholm
+        g|Europe_Central|SI|Europe/Ljubljana
+        g|Europe_Central|SJ|Arctic/Longyearbyen
+        g|Europe_Central|SK|Europe/Bratislava
+        g|Europe_Central|SM|Europe/San_Marino
+        g|Europe_Central|TN|Africa/Tunis
+        g|Europe_Central|VA|Europe/Vatican
+        g|Europe_Central|XK|Europe/Belgrade
+        g|Europe_Eastern|001|Europe/Bucharest
+        g|Europe_Eastern|AX|Europe/Mariehamn
+        g|Europe_Eastern|BG|Europe/Sofia
+        g|Europe_Eastern|CY|Asia/Nicosia
+        g|Europe_Eastern|EG|Africa/Cairo
+        g|Europe_Eastern|FI|Europe/Helsinki
+        g|Europe_Eastern|GR|Europe/Athens
+        g|Europe_Eastern|LB|Asia/Beirut
+        g|Europe_Further_Eastern|001|Europe/Minsk
+        g|Europe_Further_Eastern|RU|Europe/Kaliningrad
+        g|Europe_Western|001|Atlantic/Canary
+        g|Europe_Western|FO|Atlantic/Faroe
+        g|Falkland|001|Atlantic/Stanley
+        g|Fiji|001|Pacific/Fiji
+        g|French_Guiana|001|America/Cayenne
+        g|French_Southern|001|Indian/Kerguelen
+        g|Frunze|001|Asia/Bishkek
+        g|GMT|001|Atlantic/Reykjavik
+        g|GMT|BF|Africa/Ouagadougou
+        g|GMT|CI|Africa/Abidjan
+        g|GMT|GB|Europe/London
+        g|GMT|GH|Africa/Accra
+        g|GMT|GM|Africa/Banjul
+        g|GMT|GN|Africa/Conakry
+        g|GMT|IE|Europe/Dublin
+        g|GMT|ML|Africa/Bamako
+        g|GMT|MR|Africa/Nouakchott
+        g|GMT|SH|Atlantic/St_Helena
+        g|GMT|SL|Africa/Freetown
+        g|GMT|SN|Africa/Dakar
+        g|GMT|TG|Africa/Lome
+        g|Galapagos|001|Pacific/Galapagos
+        g|Gambier|001|Pacific/Gambier
+        g|Georgia|001|Asia/Tbilisi
+        g|Gilbert_Islands|001|Pacific/Tarawa
+        g|Goose_Bay|001|America/Goose_Bay
+        g|Greenland_Central|001|America/Scoresbysund
+        g|Greenland_Eastern|001|America/Scoresbysund
+        g|Greenland_Western|001|America/Nuuk
+        g|Greenland|001|America/Nuuk
+        g|Guam|001|Pacific/Guam
+        g|Gulf|001|Asia/Dubai
+        g|Gulf|OM|Asia/Muscat
+        g|Guyana|001|America/Guyana
+        g|Hawaii_Aleutian|001|America/Adak
+        g|Hawaii|001|Pacific/Honolulu
+        g|Hong_Kong|001|Asia/Hong_Kong
+        g|Hovd|001|Asia/Hovd
+        g|Indian_Ocean|001|Indian/Chagos
+        g|India|001|Asia/Kolkata
+        g|India|LK|Asia/Colombo
+        g|Indochina|001|Asia/Bangkok
+        g|Indochina|KH|Asia/Phnom_Penh
+        g|Indochina|LA|Asia/Vientiane
+        g|Indonesia_Central|001|Asia/Makassar
+        g|Indonesia_Eastern|001|Asia/Jayapura
+        g|Indonesia_Western|001|Asia/Jakarta
+        g|Iran|001|Asia/Tehran
+        g|Irish|001|Europe/Dublin
+        g|Irkutsk|001|Asia/Irkutsk
+        g|Israel|001|Asia/Jerusalem
+        g|Japan|001|Asia/Tokyo
+        g|Kamchatka|001|Asia/Kamchatka
+        g|Karachi|001|Asia/Karachi
+        g|Kazakhstan_Eastern|001|Asia/Almaty
+        g|Kazakhstan_Western|001|Asia/Aqtobe
+        g|Kazakhstan|001|Asia/Almaty
+        g|Kizilorda|001|Asia/Qyzylorda
+        g|Korea|001|Asia/Seoul
+        g|Kosrae|001|Pacific/Kosrae
+        g|Krasnoyarsk|001|Asia/Krasnoyarsk
+        g|Kuybyshev|001|Europe/Samara
+        g|Kwajalein|001|Pacific/Kwajalein
+        g|Kyrgystan|001|Asia/Bishkek
+        g|Lanka|001|Asia/Colombo
+        g|Liberia|001|Africa/Monrovia
+        g|Line_Islands|001|Pacific/Kiritimati
+        g|Lord_Howe|001|Australia/Lord_Howe
+        g|Macau|001|Asia/Macau
+        g|Magadan|001|Asia/Magadan
+        g|Malaya|001|Asia/Kuala_Lumpur
+        g|Malaysia|001|Asia/Kuching
+        g|Maldives|001|Indian/Maldives
+        g|Marquesas|001|Pacific/Marquesas
+        g|Marshall_Islands|001|Pacific/Majuro
+        g|Mauritius|001|Indian/Mauritius
+        g|Mawson|001|Antarctica/Mawson
+        g|Mexico_Pacific|001|America/Mazatlan
+        g|Mongolia|001|Asia/Ulaanbaatar
+        g|Moscow|001|Europe/Moscow
+        g|Myanmar|001|Asia/Yangon
+        g|Nauru|001|Pacific/Nauru
+        g|Nepal|001|Asia/Kathmandu
+        g|New_Caledonia|001|Pacific/Noumea
+        g|New_Zealand|001|Pacific/Auckland
+        g|New_Zealand|AQ|Antarctica/McMurdo
+        g|Newfoundland|001|America/St_Johns
+        g|Niue|001|Pacific/Niue
+        g|Norfolk|001|Pacific/Norfolk
+        g|Noronha|001|America/Noronha
+        g|North_Mariana|001|Pacific/Saipan
+        g|Novosibirsk|001|Asia/Novosibirsk
+        g|Omsk|001|Asia/Omsk
+        g|Oral|001|Asia/Oral
+        g|Pakistan|001|Asia/Karachi
+        g|Palau|001|Pacific/Palau
+        g|Papua_New_Guinea|001|Pacific/Port_Moresby
+        g|Paraguay|001|America/Asuncion
+        g|Peru|001|America/Lima
+        g|Philippines|001|Asia/Manila
+        g|Phoenix_Islands|001|Pacific/Kanton
+        g|Pierre_Miquelon|001|America/Miquelon
+        g|Pitcairn|001|Pacific/Pitcairn
+        g|Ponape|001|Pacific/Pohnpei
+        g|Pyongyang|001|Asia/Pyongyang
+        g|Qyzylorda|001|Asia/Qyzylorda
+        g|Reunion|001|Indian/Reunion
+        g|Rothera|001|Antarctica/Rothera
+        g|Sakhalin|001|Asia/Sakhalin
+        g|Samara|001|Europe/Samara
+        g|Samarkand|001|Asia/Samarkand
+        g|Samoa|001|Pacific/Pago_Pago
+        g|Seychelles|001|Indian/Mahe
+        g|Shevchenko|001|Asia/Aqtau
+        g|Singapore|001|Asia/Singapore
+        g|Solomon|001|Pacific/Guadalcanal
+        g|South_Georgia|001|Atlantic/South_Georgia
+        g|Suriname|001|America/Paramaribo
+        g|Sverdlovsk|001|Asia/Yekaterinburg
+        g|Syowa|001|Antarctica/Syowa
+        g|Tahiti|001|Pacific/Tahiti
+        g|Taipei|001|Asia/Taipei
+        g|Tajikistan|001|Asia/Dushanbe
+        g|Tashkent|001|Asia/Tashkent
+        g|Tbilisi|001|Asia/Tbilisi
+        g|Tokelau|001|Pacific/Fakaofo
+        g|Tonga|001|Pacific/Tongatapu
+        g|Truk|001|Pacific/Chuuk
+        g|Turkey|001|Europe/Istanbul
+        g|Turkmenistan|001|Asia/Ashgabat
+        g|Tuvalu|001|Pacific/Funafuti
+        g|Uralsk|001|Asia/Oral
+        g|Uruguay|001|America/Montevideo
+        g|Urumqi|001|Asia/Urumqi
+        g|Uzbekistan|001|Asia/Tashkent
+        g|Vanuatu|001|Pacific/Efate
+        g|Venezuela|001|America/Caracas
+        g|Vladivostok|001|Asia/Vladivostok
+        g|Volgograd|001|Europe/Volgograd
+        g|Vostok|001|Antarctica/Vostok
+        g|Wake|001|Pacific/Wake
+        g|Wallis|001|Pacific/Wallis
+        g|Yakutsk|001|Asia/Yakutsk
+        g|Yekaterinburg|001|Asia/Yekaterinburg
+        g|Yerevan|001|Asia/Yerevan
+        g|Yukon|001|America/Whitehorse
+        p|CL|America/Santiago
+        p|CN|Asia/Shanghai
+        p|DE|Europe/Berlin
+        p|EC|America/Guayaquil
+        p|ES|Europe/Madrid
+        p|MH|Pacific/Majuro
+        p|MY|Asia/Kuala_Lumpur
+        p|NZ|Pacific/Auckland
+        p|PT|Europe/Lisbon
+        p|UA|Europe/Kyiv
+        p|UZ|Asia/Tashkent
+        z|Africa/Abidjan|||GMT
+        z|Africa/Accra|||GMT
+        z|Africa/Addis_Ababa|||Africa_Eastern
+        z|Africa/Algiers|1977-10-20 23:00|1979-10-25 23:00|Europe_Central
+        z|Africa/Algiers|1979-10-25 23:00|1981-05-01 00:00|Europe_Western
+        z|Africa/Algiers|1981-05-01 00:00||Europe_Central
+        z|Africa/Algiers||1977-10-20 23:00|Europe_Western
+        z|Africa/Asmara|||Africa_Eastern
+        z|Africa/Bamako|||GMT
+        z|Africa/Bangui|||Africa_Western
+        z|Africa/Banjul|||GMT
+        z|Africa/Bissau|1975-01-01 01:00||GMT
+        z|Africa/Bissau||1975-01-01 01:00|Africa_FarWestern
+        z|Africa/Blantyre|||Africa_Central
+        z|Africa/Brazzaville|||Africa_Western
+        z|Africa/Bujumbura|||Africa_Central
+        z|Africa/Cairo|||Europe_Eastern
+        z|Africa/Casablanca|1984-03-16 00:00|1985-12-31 23:00|Europe_Central
+        z|Africa/Casablanca|1985-12-31 23:00|2018-10-28 02:00|Europe_Western
+        z|Africa/Casablanca||1984-03-16 00:00|Europe_Western
+        z|Africa/Ceuta|1984-03-16 00:00||Europe_Central
+        z|Africa/Ceuta||1984-03-16 00:00|Europe_Western
+        z|Africa/Conakry|||GMT
+        z|Africa/Dakar|||GMT
+        z|Africa/Dar_es_Salaam|||Africa_Eastern
+        z|Africa/Djibouti|||Africa_Eastern
+        z|Africa/Douala|||Africa_Western
+        z|Africa/El_Aaiun|1976-04-14 01:00|2018-10-28 02:00|Europe_Western
+        z|Africa/El_Aaiun||1976-04-14 01:00|Africa_FarWestern
+        z|Africa/Freetown|||GMT
+        z|Africa/Gaborone|||Africa_Central
+        z|Africa/Harare|||Africa_Central
+        z|Africa/Johannesburg|||Africa_Southern
+        z|Africa/Juba|2000-01-15 10:00|2021-01-31 21:00|Africa_Eastern
+        z|Africa/Juba|2021-01-31 21:00||Africa_Central
+        z|Africa/Juba||2000-01-15 10:00|Africa_Central
+        z|Africa/Kampala|||Africa_Eastern
+        z|Africa/Khartoum|2000-01-15 10:00|2017-10-31 21:00|Africa_Eastern
+        z|Africa/Khartoum|2017-10-31 21:00||Africa_Central
+        z|Africa/Khartoum||2000-01-15 10:00|Africa_Central
+        z|Africa/Kigali|||Africa_Central
+        z|Africa/Kinshasa|||Africa_Western
+        z|Africa/Lagos|||Africa_Western
+        z|Africa/Libreville|||Africa_Western
+        z|Africa/Lome|||GMT
+        z|Africa/Luanda|||Africa_Western
+        z|Africa/Lubumbashi|||Africa_Central
+        z|Africa/Lusaka|||Africa_Central
+        z|Africa/Malabo|||Africa_Western
+        z|Africa/Maputo|||Africa_Central
+        z|Africa/Maseru|||Africa_Southern
+        z|Africa/Mbabane|||Africa_Southern
+        z|Africa/Mogadishu|||Africa_Eastern
+        z|Africa/Monrovia|1972-01-07 00:45||GMT
+        z|Africa/Monrovia||1972-01-07 00:45|Liberia
+        z|Africa/Nairobi|||Africa_Eastern
+        z|Africa/Ndjamena|||Africa_Western
+        z|Africa/Niamey|||Africa_Western
+        z|Africa/Nouakchott|||GMT
+        z|Africa/Ouagadougou|||GMT
+        z|Africa/Porto-Novo|||Africa_Western
+        z|Africa/Sao_Tome|2018-01-01 01:00|2019-01-01 01:00|Africa_Western
+        z|Africa/Sao_Tome|2019-01-01 01:00||GMT
+        z|Africa/Sao_Tome||2018-01-01 01:00|GMT
+        z|Africa/Tripoli|1981-12-31 22:00|1990-05-03 23:00|Europe_Central
+        z|Africa/Tripoli|1990-05-03 23:00|1996-09-29 22:00|Europe_Eastern
+        z|Africa/Tripoli|1996-09-29 22:00|1997-10-03 22:00|Europe_Central
+        z|Africa/Tripoli|1997-10-03 22:00|2012-11-10 00:00|Europe_Eastern
+        z|Africa/Tripoli|2012-11-10 00:00|2013-10-25 00:00|Europe_Central
+        z|Africa/Tripoli|2013-10-25 00:00||Europe_Eastern
+        z|Africa/Tripoli||1981-12-31 22:00|Europe_Eastern
+        z|Africa/Tunis|||Europe_Central
+        z|Africa/Windhoek|1990-03-20 22:00|1994-03-20 22:00|Africa_Central
+        z|Africa/Windhoek|1994-03-20 22:00|2017-10-23 22:00|Africa_Western
+        z|Africa/Windhoek|2017-10-23 22:00||Africa_Central
+        z|Africa/Windhoek||1990-03-20 22:00|Africa_Southern
+        z|America/Adak|1983-11-30 10:00||Hawaii_Aleutian
+        z|America/Adak||1983-10-30 12:00|Bering
+        z|America/Anchorage|1983-11-30 09:00||Alaska
+        z|America/Anchorage||1983-10-30 11:00|Alaska_Hawaii
+        z|America/Anguilla|||Atlantic
+        z|America/Antigua|||Atlantic
+        z|America/Araguaina|||Brasilia
+        z|America/Argentina/Buenos_Aires|||Argentina
+        z|America/Argentina/Catamarca|1991-10-20 04:00|2004-06-01 03:00|Argentina
+        z|America/Argentina/Catamarca|2004-06-01 03:00|2004-06-20 04:00|Argentina_Western
+        z|America/Argentina/Catamarca|2004-06-20 04:00||Argentina
+        z|America/Argentina/Catamarca||1991-03-03 02:00|Argentina
+        z|America/Argentina/Cordoba|1991-10-20 04:00||Argentina
+        z|America/Argentina/Cordoba||1991-03-03 02:00|Argentina
+        z|America/Argentina/Jujuy|1991-10-06 04:00||Argentina
+        z|America/Argentina/Jujuy||1990-03-04 02:00|Argentina
+        z|America/Argentina/La_Rioja|1991-03-01 02:00|1991-05-07 04:00|Argentina_Western
+        z|America/Argentina/La_Rioja|1991-05-07 04:00|2004-06-01 03:00|Argentina
+        z|America/Argentina/La_Rioja|2004-06-01 03:00|2004-06-20 04:00|Argentina_Western
+        z|America/Argentina/La_Rioja|2004-06-20 04:00||Argentina
+        z|America/Argentina/La_Rioja||1991-03-01 02:00|Argentina
+        z|America/Argentina/Mendoza|1992-10-18 04:00|2004-05-23 03:00|Argentina
+        z|America/Argentina/Mendoza|2004-09-26 04:00||Argentina
+        z|America/Argentina/Mendoza||1990-03-04 02:00|Argentina
+        z|America/Argentina/Rio_Gallegos|2004-06-01 03:00|2004-06-20 04:00|Argentina_Western
+        z|America/Argentina/Rio_Gallegos|2004-06-20 04:00||Argentina
+        z|America/Argentina/Rio_Gallegos||2004-06-01 03:00|Argentina
+        z|America/Argentina/Salta|1991-10-20 04:00||Argentina
+        z|America/Argentina/Salta||1991-03-03 02:00|Argentina
+        z|America/Argentina/San_Juan|1991-03-01 02:00|1991-05-07 04:00|Argentina_Western
+        z|America/Argentina/San_Juan|1991-05-07 04:00|2004-05-31 03:00|Argentina
+        z|America/Argentina/San_Juan|2004-05-31 03:00|2004-07-25 04:00|Argentina_Western
+        z|America/Argentina/San_Juan|2004-07-25 04:00||Argentina
+        z|America/Argentina/San_Juan||1991-03-01 02:00|Argentina
+        z|America/Argentina/San_Luis|1990-03-14 02:00|1991-06-01 04:00|Argentina_Western
+        z|America/Argentina/San_Luis|1991-06-01 04:00|1999-10-03 03:00|Argentina
+        z|America/Argentina/San_Luis|1999-10-03 03:00|2000-03-03 03:00|Argentina_Western
+        z|America/Argentina/San_Luis|2000-03-03 03:00|2004-05-31 03:00|Argentina
+        z|America/Argentina/San_Luis|2004-05-31 03:00|2004-07-25 04:00|Argentina_Western
+        z|America/Argentina/San_Luis|2004-07-25 04:00|2008-01-21 02:00|Argentina
+        z|America/Argentina/San_Luis|2008-01-21 02:00|2009-10-11 04:00|Argentina_Western
+        z|America/Argentina/San_Luis|2009-10-11 04:00||Argentina
+        z|America/Argentina/San_Luis||1990-03-14 02:00|Argentina
+        z|America/Argentina/Tucuman|1991-10-20 04:00|2004-06-01 03:00|Argentina
+        z|America/Argentina/Tucuman|2004-06-01 03:00|2004-06-13 04:00|Argentina_Western
+        z|America/Argentina/Tucuman|2004-06-13 04:00||Argentina
+        z|America/Argentina/Tucuman||1991-03-03 02:00|Argentina
+        z|America/Argentina/Ushuaia|2004-06-20 04:00||Argentina
+        z|America/Argentina/Ushuaia||2004-05-30 03:00|Argentina
+        z|America/Aruba|||Atlantic
+        z|America/Asuncion|||Paraguay
+        z|America/Atikokan|||America_Eastern
+        z|America/Bahia_Banderas|2010-04-04 09:00||America_Central
+        z|America/Bahia_Banderas||2010-04-04 09:00|America_Mountain
+        z|America/Bahia|||Brasilia
+        z|America/Barbados|||Atlantic
+        z|America/Belem|||Brasilia
+        z|America/Belize|||America_Central
+        z|America/Blanc-Sablon|||Atlantic
+        z|America/Boa_Vista|||Amazon
+        z|America/Bogota|||Colombia
+        z|America/Boise|||America_Mountain
+        z|America/Cambridge_Bay|1999-10-31 08:00|2000-10-29 07:00|America_Central
+        z|America/Cambridge_Bay|2000-10-29 07:00|2000-11-05 05:00|America_Eastern
+        z|America/Cambridge_Bay|2000-11-05 05:00|2001-04-01 09:00|America_Central
+        z|America/Cambridge_Bay|2001-04-01 09:00||America_Mountain
+        z|America/Cambridge_Bay||1999-10-31 08:00|America_Mountain
+        z|America/Campo_Grande|||Amazon
+        z|America/Cancun|1981-12-26 08:00|1983-01-04 05:00|America_Eastern
+        z|America/Cancun|1983-01-04 05:00|1997-10-26 07:00|America_Central
+        z|America/Cancun|1997-10-26 07:00|1998-08-02 06:00|America_Eastern
+        z|America/Cancun|1998-08-02 06:00|2015-02-01 08:00|America_Central
+        z|America/Cancun|2015-02-01 08:00||America_Eastern
+        z|America/Cancun||1981-12-26 08:00|America_Central
+        z|America/Caracas|||Venezuela
+        z|America/Cayenne|||French_Guiana
+        z|America/Cayman|||America_Eastern
+        z|America/Chicago|||America_Central
+        z|America/Chihuahua|1998-04-05 09:00|2022-10-30 08:00|Mexico_Pacific
+        z|America/Chihuahua|2022-10-30 08:00||America_Central
+        z|America/Chihuahua||1998-04-05 09:00|America_Central
+        z|America/Ciudad_Juarez|1998-04-05 09:00|2022-10-30 08:00|Mexico_Pacific
+        z|America/Ciudad_Juarez|2022-10-30 08:00|2022-11-30 06:00|America_Central
+        z|America/Ciudad_Juarez|2022-11-30 06:00||America_Mountain
+        z|America/Ciudad_Juarez||1998-04-05 09:00|America_Central
+        z|America/Costa_Rica|||America_Central
+        z|America/Coyhaique||2025-03-20 03:00|Chile
+        z|America/Creston|||America_Mountain
+        z|America/Cuiaba|||Amazon
+        z|America/Curacao|||Atlantic
+        z|America/Danmarkshavn|1996-01-01 03:00||GMT
+        z|America/Danmarkshavn||1996-01-01 03:00|Greenland_Western
+        z|America/Dawson_Creek|1972-08-30 09:00||America_Mountain
+        z|America/Dawson_Creek||1972-08-30 09:00|America_Pacific
+        z|America/Dawson|1973-10-28 09:00|2020-11-01 07:00|America_Pacific
+        z|America/Dawson|2020-11-01 07:00||Yukon
+        z|America/Denver|||America_Mountain
+        z|America/Detroit|||America_Eastern
+        z|America/Dominica|||Atlantic
+        z|America/Edmonton|||America_Mountain
+        z|America/Eirunepe|2008-06-24 05:00|2013-11-10 04:00|Amazon
+        z|America/Eirunepe|2013-11-10 04:00||Acre
+        z|America/Eirunepe||2008-06-24 05:00|Acre
+        z|America/El_Salvador|||America_Central
+        z|America/Fort_Nelson|2015-03-08 10:00||America_Mountain
+        z|America/Fort_Nelson||2015-03-08 10:00|America_Pacific
+        z|America/Fortaleza|||Brasilia
+        z|America/Glace_Bay|||Atlantic
+        z|America/Goose_Bay|1988-04-03 04:01|1988-10-30 02:01|Goose_Bay
+        z|America/Goose_Bay|1988-10-30 02:01||Atlantic
+        z|America/Goose_Bay||1988-04-03 04:01|Atlantic
+        z|America/Grand_Turk|2015-03-08 07:00|2018-03-11 07:00|Atlantic
+        z|America/Grand_Turk|2018-03-11 07:00||America_Eastern
+        z|America/Grand_Turk||2015-03-08 07:00|America_Eastern
+        z|America/Grenada|||Atlantic
+        z|America/Guadeloupe|||Atlantic
+        z|America/Guatemala|||America_Central
+        z|America/Guayaquil|||Ecuador
+        z|America/Guyana|||Guyana
+        z|America/Halifax|||Atlantic
+        z|America/Havana|||Cuba
+        z|America/Hermosillo|||Mexico_Pacific
+        z|America/Indiana/Indianapolis|||America_Eastern
+        z|America/Indiana/Knox|1991-10-27 07:00|2006-04-02 07:00|America_Eastern
+        z|America/Indiana/Knox|2006-04-02 07:00||America_Central
+        z|America/Indiana/Knox||1991-10-27 07:00|America_Central
+        z|America/Indiana/Marengo|1974-01-06 07:00|1974-10-27 07:00|America_Central
+        z|America/Indiana/Marengo|1974-10-27 07:00||America_Eastern
+        z|America/Indiana/Marengo||1974-01-06 07:00|America_Eastern
+        z|America/Indiana/Petersburg|1977-10-30 07:00|2006-04-02 07:00|America_Eastern
+        z|America/Indiana/Petersburg|2006-04-02 07:00|2007-11-04 07:00|America_Central
+        z|America/Indiana/Petersburg|2007-11-04 07:00||America_Eastern
+        z|America/Indiana/Petersburg||1977-10-30 07:00|America_Central
+        z|America/Indiana/Tell_City|2006-04-02 07:00||America_Central
+        z|America/Indiana/Tell_City||2006-04-02 07:00|America_Eastern
+        z|America/Indiana/Vevay|||America_Eastern
+        z|America/Indiana/Vincennes|2006-04-02 07:00|2007-11-04 07:00|America_Central
+        z|America/Indiana/Vincennes|2007-11-04 07:00||America_Eastern
+        z|America/Indiana/Vincennes||2006-04-02 07:00|America_Eastern
+        z|America/Indiana/Winamac|2006-04-02 07:00|2007-03-11 08:00|America_Central
+        z|America/Indiana/Winamac|2007-03-11 08:00||America_Eastern
+        z|America/Indiana/Winamac||2006-04-02 07:00|America_Eastern
+        z|America/Inuvik|1979-04-29 10:00||America_Mountain
+        z|America/Inuvik||1979-04-29 10:00|America_Pacific
+        z|America/Iqaluit|1999-10-31 06:00|2000-10-29 07:00|America_Central
+        z|America/Iqaluit|2000-10-29 07:00||America_Eastern
+        z|America/Iqaluit||1999-10-31 06:00|America_Eastern
+        z|America/Jamaica|||America_Eastern
+        z|America/Juneau|1980-10-26 10:00|1983-10-30 09:00|America_Pacific
+        z|America/Juneau|1983-11-30 09:00||Alaska
+        z|America/Juneau||1980-04-27 10:00|America_Pacific
+        z|America/Kentucky/Louisville|1974-01-06 07:00|1974-10-27 07:00|America_Central
+        z|America/Kentucky/Louisville|1974-10-27 07:00||America_Eastern
+        z|America/Kentucky/Louisville||1974-01-06 07:00|America_Eastern
+        z|America/Kentucky/Monticello|2000-10-29 07:00||America_Eastern
+        z|America/Kentucky/Monticello||2000-10-29 07:00|America_Central
+        z|America/Kralendijk|||Atlantic
+        z|America/La_Paz|||Bolivia
+        z|America/Lima|||Peru
+        z|America/Los_Angeles|||America_Pacific
+        z|America/Lower_Princes|||Atlantic
+        z|America/Maceio|||Brasilia
+        z|America/Managua|1973-05-01 06:00|1975-02-16 05:00|America_Eastern
+        z|America/Managua|1975-02-16 05:00|1992-01-01 10:00|America_Central
+        z|America/Managua|1992-01-01 10:00|1992-09-24 05:00|America_Eastern
+        z|America/Managua|1992-09-24 05:00|1993-01-01 06:00|America_Central
+        z|America/Managua|1993-01-01 06:00|1997-01-01 05:00|America_Eastern
+        z|America/Managua|1997-01-01 05:00||America_Central
+        z|America/Managua||1973-05-01 06:00|America_Central
+        z|America/Manaus|||Amazon
+        z|America/Marigot|||Atlantic
+        z|America/Martinique|||Atlantic
+        z|America/Matamoros|||America_Central
+        z|America/Mazatlan|||Mexico_Pacific
+        z|America/Menominee|1973-04-29 07:00||America_Central
+        z|America/Menominee||1973-04-29 07:00|America_Eastern
+        z|America/Merida|1981-12-26 08:00|1982-11-02 07:00|America_Eastern
+        z|America/Merida|1982-11-02 07:00||America_Central
+        z|America/Merida||1981-12-26 08:00|America_Central
+        z|America/Metlakatla|2015-11-01 10:00|2018-11-04 10:00|Alaska
+        z|America/Metlakatla|2018-11-04 10:00|2019-01-20 10:00|America_Pacific
+        z|America/Metlakatla|2019-01-20 10:00||Alaska
+        z|America/Metlakatla||2015-11-01 10:00|America_Pacific
+        z|America/Mexico_City|||America_Central
+        z|America/Miquelon|1980-05-01 04:00||Pierre_Miquelon
+        z|America/Miquelon||1980-05-01 04:00|Atlantic
+        z|America/Moncton|||Atlantic
+        z|America/Monterrey|||America_Central
+        z|America/Montevideo|||Uruguay
+        z|America/Montserrat|||Atlantic
+        z|America/Nassau|||America_Eastern
+        z|America/New_York|||America_Eastern
+        z|America/Nome|1983-11-30 09:00||Alaska
+        z|America/Nome||1983-10-30 12:00|Bering
+        z|America/Noronha|||Noronha
+        z|America/North_Dakota/Beulah|2010-11-07 08:00||America_Central
+        z|America/North_Dakota/Beulah||2010-11-07 08:00|America_Mountain
+        z|America/North_Dakota/Center|1992-10-25 08:00||America_Central
+        z|America/North_Dakota/Center||1992-10-25 08:00|America_Mountain
+        z|America/North_Dakota/New_Salem|2003-10-26 08:00||America_Central
+        z|America/North_Dakota/New_Salem||2003-10-26 08:00|America_Mountain
+        z|America/Nuuk|2024-03-26 01:00||Greenland
+        z|America/Nuuk||2024-03-26 01:00|Greenland_Western
+        z|America/Ojinaga|1998-04-05 09:00|2022-10-30 08:00|America_Mountain
+        z|America/Ojinaga|2022-10-30 08:00||America_Central
+        z|America/Ojinaga||1998-04-05 09:00|America_Central
+        z|America/Panama|||America_Eastern
+        z|America/Paramaribo|1975-11-20 03:30||Suriname
+        z|America/Paramaribo||1975-11-20 03:30|Dutch_Guiana
+        z|America/Phoenix|||America_Mountain
+        z|America/Port-au-Prince|||America_Eastern
+        z|America/Port_of_Spain|||Atlantic
+        z|America/Porto_Velho|||Amazon
+        z|America/Puerto_Rico|||Atlantic
+        z|America/Punta_Arenas||2016-12-03 23:00|Chile
+        z|America/Rankin_Inlet|2000-10-29 07:00|2001-04-01 08:00|America_Eastern
+        z|America/Rankin_Inlet|2001-04-01 08:00||America_Central
+        z|America/Rankin_Inlet||2000-10-29 07:00|America_Central
+        z|America/Recife|||Brasilia
+        z|America/Regina|||America_Central
+        z|America/Resolute|2000-10-29 07:00|2001-04-01 08:00|America_Eastern
+        z|America/Resolute|2001-04-01 08:00|2006-10-29 07:00|America_Central
+        z|America/Resolute|2006-10-29 07:00|2007-03-11 08:00|America_Eastern
+        z|America/Resolute|2007-03-11 08:00||America_Central
+        z|America/Resolute||2000-10-29 07:00|America_Central
+        z|America/Rio_Branco|2008-06-24 05:00|2013-11-10 04:00|Amazon
+        z|America/Rio_Branco|2013-11-10 04:00||Acre
+        z|America/Rio_Branco||2008-06-24 05:00|Acre
+        z|America/Santarem|2008-06-24 04:00||Brasilia
+        z|America/Santarem||2008-06-24 04:00|Amazon
+        z|America/Santiago|||Chile
+        z|America/Santo_Domingo|1974-10-27 05:00|2000-10-29 06:00|Atlantic
+        z|America/Santo_Domingo|2000-10-29 06:00|2000-12-03 06:00|America_Eastern
+        z|America/Santo_Domingo|2000-12-03 06:00||Atlantic
+        z|America/Santo_Domingo||1974-10-27 05:00|Dominican
+        z|America/Sao_Paulo|||Brasilia
+        z|America/Scoresbysund|1981-03-29 02:00|2024-03-31 01:00|Greenland_Eastern
+        z|America/Scoresbysund|2024-03-31 01:00||Greenland
+        z|America/Scoresbysund||1981-03-29 02:00|Greenland_Central
+        z|America/Sitka|1983-11-30 09:00||Alaska
+        z|America/Sitka||1983-10-30 09:00|America_Pacific
+        z|America/St_Barthelemy|||Atlantic
+        z|America/St_Johns|||Newfoundland
+        z|America/St_Kitts|||Atlantic
+        z|America/St_Lucia|||Atlantic
+        z|America/St_Thomas|||Atlantic
+        z|America/St_Vincent|||Atlantic
+        z|America/Swift_Current|1972-04-30 09:00||America_Central
+        z|America/Swift_Current||1972-04-30 09:00|America_Mountain
+        z|America/Tegucigalpa|||America_Central
+        z|America/Thule|||Atlantic
+        z|America/Tijuana|||America_Pacific
+        z|America/Toronto|||America_Eastern
+        z|America/Tortola|||Atlantic
+        z|America/Vancouver|||America_Pacific
+        z|America/Whitehorse|2020-11-01 07:00||Yukon
+        z|America/Whitehorse||2020-11-01 07:00|America_Pacific
+        z|America/Winnipeg|||America_Central
+        z|America/Yakutat|1983-11-30 09:00||Alaska
+        z|Antarctica/Casey|2009-10-17 18:00|2010-03-04 15:00|Casey
+        z|Antarctica/Casey|2010-03-04 15:00|2011-10-27 18:00|Australia_Western
+        z|Antarctica/Casey|2011-10-27 18:00|2012-02-21 17:00|Casey
+        z|Antarctica/Casey|2012-02-21 17:00|2016-10-21 16:00|Australia_Western
+        z|Antarctica/Casey|2016-10-21 16:00|2018-03-10 17:00|Casey
+        z|Antarctica/Casey|2018-03-10 17:00|2018-10-06 20:00|Australia_Western
+        z|Antarctica/Casey|2018-10-06 20:00|2019-03-16 16:00|Casey
+        z|Antarctica/Casey|2019-03-16 16:00|2019-10-03 19:00|Australia_Western
+        z|Antarctica/Casey|2019-10-03 19:00|2020-03-07 16:00|Casey
+        z|Antarctica/Casey|2020-03-07 16:00|2020-10-03 16:01|Australia_Western
+        z|Antarctica/Casey|2020-10-03 16:01|2021-03-13 13:00|Casey
+        z|Antarctica/Casey|2021-03-13 13:00|2021-10-02 16:01|Australia_Western
+        z|Antarctica/Casey|2021-10-02 16:01|2022-03-12 13:00|Casey
+        z|Antarctica/Casey|2022-03-12 13:00|2022-10-01 16:01|Australia_Western
+        z|Antarctica/Casey|2022-10-01 16:01|2023-03-08 16:00|Casey
+        z|Antarctica/Casey|2023-03-08 16:00||Australia_Western
+        z|Antarctica/Casey||2009-10-17 18:00|Australia_Western
+        z|Antarctica/Davis|||Davis
+        z|Antarctica/DumontDUrville|||DumontDUrville
+        z|Antarctica/Macquarie|||Australia_Eastern
+        z|Antarctica/Mawson|||Mawson
+        z|Antarctica/McMurdo|||New_Zealand
+        z|Antarctica/Palmer|1982-05-01 03:00|2016-12-04 03:00|Chile
+        z|Antarctica/Palmer||1982-05-01 03:00|Argentina
+        z|Antarctica/Rothera|||Rothera
+        z|Antarctica/Syowa|||Syowa
+        z|Antarctica/Troll|||GMT
+        z|Antarctica/Vostok|||Vostok
+        z|Arctic/Longyearbyen|||Europe_Central
+        z|Asia/Aden|||Arabian
+        z|Asia/Almaty|2004-10-30 20:00|2024-02-29 18:00|Kazakhstan_Eastern
+        z|Asia/Almaty|2024-02-29 18:00||Kazakhstan
+        z|Asia/Almaty||2004-10-30 20:00|Almaty
+        z|Asia/Amman||2022-10-27 22:00|Europe_Eastern
+        z|Asia/Anadyr|2010-03-27 14:00|2011-03-26 15:00|Magadan
+        z|Asia/Anadyr|2011-03-26 15:00||Kamchatka
+        z|Asia/Anadyr||2010-03-27 14:00|Anadyr
+        z|Asia/Aqtau|1991-12-15 19:00|2004-10-30 22:00|Aqtau
+        z|Asia/Aqtau|2004-10-30 22:00|2024-02-29 18:00|Kazakhstan_Western
+        z|Asia/Aqtau|2024-02-29 18:00||Kazakhstan
+        z|Asia/Aqtau||1991-12-15 19:00|Shevchenko
+        z|Asia/Aqtobe|1991-12-15 19:00|2004-10-30 21:00|Aqtobe
+        z|Asia/Aqtobe|2004-10-30 21:00|2024-02-29 18:00|Kazakhstan_Western
+        z|Asia/Aqtobe|2024-02-29 18:00||Kazakhstan
+        z|Asia/Aqtobe||1991-12-15 19:00|Aktyubinsk
+        z|Asia/Ashgabat|1992-01-18 22:00||Turkmenistan
+        z|Asia/Ashgabat||1992-01-18 22:00|Ashkhabad
+        z|Asia/Atyrau|2004-10-30 22:00|2024-02-29 18:00|Kazakhstan_Western
+        z|Asia/Atyrau|2024-02-29 18:00||Kazakhstan
+        z|Asia/Baghdad|||Arabian
+        z|Asia/Bahrain|1972-05-31 20:00||Arabian
+        z|Asia/Bahrain||1972-05-31 20:00|Gulf
+        z|Asia/Baku|1991-03-30 22:00||Azerbaijan
+        z|Asia/Baku||1991-03-30 22:00|Baku
+        z|Asia/Bangkok|||Indochina
+        z|Asia/Barnaul|2016-03-26 20:00||Krasnoyarsk
+        z|Asia/Beirut|||Europe_Eastern
+        z|Asia/Bishkek|1991-03-30 20:00||Kyrgystan
+        z|Asia/Bishkek||1991-03-30 20:00|Frunze
+        z|Asia/Brunei|||Brunei
+        z|Asia/Chita|2014-10-25 17:00|2016-03-26 18:00|Irkutsk
+        z|Asia/Chita|2016-03-26 18:00||Yakutsk
+        z|Asia/Chita||2014-10-25 16:00|Yakutsk
+        z|Asia/Colombo|1996-05-24 18:30|2006-04-14 18:30|Lanka
+        z|Asia/Colombo|2006-04-14 18:30||India
+        z|Asia/Colombo||1996-05-24 18:30|India
+        z|Asia/Damascus||2022-10-27 21:00|Europe_Eastern
+        z|Asia/Dhaka|1971-03-25 18:00||Bangladesh
+        z|Asia/Dhaka||1971-03-25 18:00|Dacca
+        z|Asia/Dili|1976-05-02 15:00|2000-09-16 16:00|Indonesia_Central
+        z|Asia/Dili|2000-09-16 16:00||East_Timor
+        z|Asia/Dili||1976-05-02 15:00|East_Timor
+        z|Asia/Dubai|||Gulf
+        z|Asia/Dushanbe|1991-09-08 21:00||Tajikistan
+        z|Asia/Dushanbe||1991-09-08 21:00|Dushanbe
+        z|Asia/Famagusta|2017-10-29 01:00||Europe_Eastern
+        z|Asia/Famagusta||2016-09-07 21:00|Europe_Eastern
+        z|Asia/Gaza|1995-12-31 22:00||Europe_Eastern
+        z|Asia/Gaza||1995-12-31 22:00|Israel
+        z|Asia/Hebron|1995-12-31 22:00||Europe_Eastern
+        z|Asia/Hebron||1995-12-31 22:00|Israel
+        z|Asia/Ho_Chi_Minh|1975-06-12 16:00||Indochina
+        z|Asia/Hong_Kong|||Hong_Kong
+        z|Asia/Hovd|||Hovd
+        z|Asia/Irkutsk|||Irkutsk
+        z|Asia/Jakarta|||Indonesia_Western
+        z|Asia/Jayapura|||Indonesia_Eastern
+        z|Asia/Jerusalem|||Israel
+        z|Asia/Kabul|||Afghanistan
+        z|Asia/Kamchatka|||Kamchatka
+        z|Asia/Karachi|1971-03-25 19:00||Pakistan
+        z|Asia/Karachi||1971-03-25 19:00|Karachi
+        z|Asia/Kathmandu|||Nepal
+        z|Asia/Khandyga|2003-12-31 15:00|2011-09-12 13:00|Vladivostok
+        z|Asia/Khandyga|2011-09-12 13:00||Yakutsk
+        z|Asia/Khandyga||2003-12-31 15:00|Yakutsk
+        z|Asia/Kolkata|||India
+        z|Asia/Krasnoyarsk|||Krasnoyarsk
+        z|Asia/Kuala_Lumpur|1981-12-31 16:00||Malaysia
+        z|Asia/Kuala_Lumpur||1981-12-31 16:00|Malaya
+        z|Asia/Kuching|1981-12-31 16:00||Malaysia
+        z|Asia/Kuching||1981-12-31 16:00|Borneo
+        z|Asia/Kuwait|||Arabian
+        z|Asia/Macau|1999-12-19 16:00||China
+        z|Asia/Macau||1999-12-19 16:00|Macau
+        z|Asia/Magadan|||Magadan
+        z|Asia/Makassar|||Indonesia_Central
+        z|Asia/Manila|||Philippines
+        z|Asia/Muscat|||Gulf
+        z|Asia/Nicosia|||Europe_Eastern
+        z|Asia/Novokuznetsk|2010-03-27 19:00|2014-10-25 19:00|Novosibirsk
+        z|Asia/Novokuznetsk|2014-10-25 19:00||Krasnoyarsk
+        z|Asia/Novokuznetsk||2010-03-27 19:00|Krasnoyarsk
+        z|Asia/Novosibirsk|2016-07-23 20:00||Krasnoyarsk
+        z|Asia/Novosibirsk||2016-07-23 20:00|Novosibirsk
+        z|Asia/Omsk|||Omsk
+        z|Asia/Oral|1991-12-15 20:00|2004-10-30 22:00|Oral
+        z|Asia/Oral|2004-10-30 22:00|2024-02-29 18:00|Kazakhstan_Western
+        z|Asia/Oral|2024-02-29 18:00||Kazakhstan
+        z|Asia/Oral||1991-12-15 20:00|Uralsk
+        z|Asia/Phnom_Penh|||Indochina
+        z|Asia/Pontianak|1987-12-31 16:00||Indonesia_Western
+        z|Asia/Pontianak||1987-12-31 16:00|Indonesia_Central
+        z|Asia/Pyongyang|2015-08-14 15:00|2018-05-04 15:00|Pyongyang
+        z|Asia/Pyongyang|2018-05-04 15:00||Korea
+        z|Asia/Pyongyang||2015-08-14 15:00|Korea
+        z|Asia/Qatar|1972-05-31 20:00||Arabian
+        z|Asia/Qatar||1972-05-31 20:00|Gulf
+        z|Asia/Qostanay|2004-10-30 21:00|2024-02-29 18:00|Kazakhstan_Eastern
+        z|Asia/Qostanay|2024-02-29 18:00||Kazakhstan
+        z|Asia/Qyzylorda|1991-12-15 19:00|2004-10-30 21:00|Qyzylorda
+        z|Asia/Qyzylorda|2004-10-30 21:00|2018-12-20 18:00|Kazakhstan_Eastern
+        z|Asia/Qyzylorda|2018-12-20 18:00|2024-02-29 18:00|Kazakhstan_Western
+        z|Asia/Qyzylorda|2024-02-29 18:00||Kazakhstan
+        z|Asia/Qyzylorda||1991-12-15 19:00|Kizilorda
+        z|Asia/Riyadh|||Arabian
+        z|Asia/Sakhalin|2014-10-25 15:00|2016-03-26 16:00|Magadan
+        z|Asia/Sakhalin|2016-04-26 16:00||Magadan
+        z|Asia/Sakhalin||2014-10-25 15:00|Sakhalin
+        z|Asia/Samarkand|1981-09-30 18:00|1982-03-31 18:00|Tashkent
+        z|Asia/Samarkand|1982-03-31 18:00|1991-08-31 18:00|Samarkand
+        z|Asia/Samarkand|1991-08-31 18:00||Uzbekistan
+        z|Asia/Samarkand||1981-09-30 18:00|Samarkand
+        z|Asia/Seoul|||Korea
+        z|Asia/Shanghai|||China
+        z|Asia/Singapore|||Singapore
+        z|Asia/Srednekolymsk|2016-04-23 16:00||Magadan
+        z|Asia/Srednekolymsk||2014-10-25 14:00|Magadan
+        z|Asia/Taipei|||Taipei
+        z|Asia/Tashkent|1991-03-30 20:00||Uzbekistan
+        z|Asia/Tashkent||1991-03-30 20:00|Tashkent
+        z|Asia/Tbilisi|1991-03-30 22:00||Georgia
+        z|Asia/Tbilisi||1991-03-30 22:00|Tbilisi
+        z|Asia/Tehran|||Iran
+        z|Asia/Thimphu|1987-09-30 18:30||Bhutan
+        z|Asia/Thimphu||1987-09-30 18:30|India
+        z|Asia/Tokyo|||Japan
+        z|Asia/Tomsk|2016-05-28 20:00||Krasnoyarsk
+        z|Asia/Ulaanbaatar|||Mongolia
+        z|Asia/Urumqi|||Urumqi
+        z|Asia/Ust-Nera|1981-03-31 15:00|2011-09-12 12:00|Magadan
+        z|Asia/Ust-Nera|2011-09-12 12:00||Vladivostok
+        z|Asia/Ust-Nera||1981-03-31 15:00|Yakutsk
+        z|Asia/Vientiane|||Indochina
+        z|Asia/Vladivostok|||Vladivostok
+        z|Asia/Yakutsk|||Yakutsk
+        z|Asia/Yangon|||Myanmar
+        z|Asia/Yekaterinburg|1992-01-18 22:00||Yekaterinburg
+        z|Asia/Yekaterinburg||1992-01-18 22:00|Sverdlovsk
+        z|Asia/Yerevan|1991-03-30 22:00||Armenia
+        z|Asia/Yerevan||1991-03-30 22:00|Yerevan
+        z|Atlantic/Azores|1992-12-27 02:00|1993-06-17 01:00|Europe_Western
+        z|Atlantic/Azores|1993-06-17 01:00||Azores
+        z|Atlantic/Azores||1992-12-27 02:00|Azores
+        z|Atlantic/Bermuda|||Atlantic
+        z|Atlantic/Canary|||Europe_Western
+        z|Atlantic/Cape_Verde|||Cape_Verde
+        z|Atlantic/Faroe|||Europe_Western
+        z|Atlantic/Madeira|||Europe_Western
+        z|Atlantic/Reykjavik|||GMT
+        z|Atlantic/South_Georgia|||South_Georgia
+        z|Atlantic/St_Helena|||GMT
+        z|Atlantic/Stanley|||Falkland
+        z|Australia/Adelaide|||Australia_Central
+        z|Australia/Brisbane|||Australia_Eastern
+        z|Australia/Broken_Hill|||Australia_Central
+        z|Australia/Darwin|||Australia_Central
+        z|Australia/Eucla|||Australia_CentralWestern
+        z|Australia/Hobart|||Australia_Eastern
+        z|Australia/Lindeman|||Australia_Eastern
+        z|Australia/Lord_Howe|1981-02-28 14:00||Lord_Howe
+        z|Australia/Lord_Howe||1981-02-28 14:00|Australia_Eastern
+        z|Australia/Melbourne|||Australia_Eastern
+        z|Australia/Perth|||Australia_Western
+        z|Australia/Sydney|||Australia_Eastern
+        z|Europe/Amsterdam|||Europe_Central
+        z|Europe/Andorra|||Europe_Central
+        z|Europe/Astrakhan|1992-03-28 22:00|2016-03-26 23:00|Moscow
+        z|Europe/Astrakhan|2016-03-26 23:00||Samara
+        z|Europe/Athens|||Europe_Eastern
+        z|Europe/Belgrade|||Europe_Central
+        z|Europe/Berlin|||Europe_Central
+        z|Europe/Bratislava|||Europe_Central
+        z|Europe/Brussels|||Europe_Central
+        z|Europe/Bucharest|||Europe_Eastern
+        z|Europe/Budapest|||Europe_Central
+        z|Europe/Busingen|||Europe_Central
+        z|Europe/Chisinau|1990-05-05 22:00||Europe_Eastern
+        z|Europe/Chisinau||1990-05-05 22:00|Moscow
+        z|Europe/Copenhagen|||Europe_Central
+        z|Europe/Dublin|1971-10-31 02:00||GMT
+        z|Europe/Dublin||1971-10-31 02:00|Irish
+        z|Europe/Gibraltar|||Europe_Central
+        z|Europe/Guernsey|1971-10-31 02:00||GMT
+        z|Europe/Guernsey||1971-10-31 02:00|British
+        z|Europe/Helsinki|||Europe_Eastern
+        z|Europe/Isle_of_Man|1971-10-31 02:00||GMT
+        z|Europe/Isle_of_Man||1971-10-31 02:00|British
+        z|Europe/Istanbul|1978-06-28 21:00|1984-10-31 23:00|Turkey
+        z|Europe/Istanbul|1984-10-31 23:00|2016-09-06 21:00|Europe_Eastern
+        z|Europe/Istanbul|2016-09-06 21:00||Turkey
+        z|Europe/Istanbul||1978-06-28 21:00|Europe_Eastern
+        z|Europe/Jersey|1971-10-31 02:00||GMT
+        z|Europe/Jersey||1971-10-31 02:00|British
+        z|Europe/Kaliningrad|1989-03-25 23:00|2011-03-27 00:00|Europe_Eastern
+        z|Europe/Kaliningrad|2011-03-27 00:00|2014-10-25 23:00|Europe_Further_Eastern
+        z|Europe/Kaliningrad|2014-10-25 23:00||Europe_Eastern
+        z|Europe/Kaliningrad||1989-03-25 23:00|Moscow
+        z|Europe/Kirov|2014-10-25 22:00||Moscow
+        z|Europe/Kyiv|1990-06-30 22:00||Europe_Eastern
+        z|Europe/Kyiv||1990-06-30 22:00|Moscow
+        z|Europe/Lisbon|1976-09-26 00:00|1992-09-27 01:00|Europe_Western
+        z|Europe/Lisbon|1992-09-27 01:00|1996-03-31 01:00|Europe_Central
+        z|Europe/Lisbon|1996-03-31 01:00||Europe_Western
+        z|Europe/Lisbon||1976-09-26 00:00|Europe_Central
+        z|Europe/Ljubljana|||Europe_Central
+        z|Europe/London|1971-10-31 02:00||GMT
+        z|Europe/London||1971-10-31 02:00|British
+        z|Europe/Luxembourg|||Europe_Central
+        z|Europe/Madrid|||Europe_Central
+        z|Europe/Malta|||Europe_Central
+        z|Europe/Mariehamn|||Europe_Eastern
+        z|Europe/Minsk|1991-03-30 23:00|2011-03-27 00:00|Europe_Eastern
+        z|Europe/Minsk|2011-03-27 00:00|2014-10-26 22:00|Europe_Further_Eastern
+        z|Europe/Minsk|2014-10-26 22:00||Moscow
+        z|Europe/Minsk||1991-03-30 23:00|Moscow
+        z|Europe/Monaco|||Europe_Central
+        z|Europe/Moscow|1991-03-30 23:00|1992-01-19 00:00|Europe_Eastern
+        z|Europe/Moscow|1992-01-19 00:00||Moscow
+        z|Europe/Moscow||1991-03-30 23:00|Moscow
+        z|Europe/Oslo|||Europe_Central
+        z|Europe/Paris|||Europe_Central
+        z|Europe/Podgorica|||Europe_Central
+        z|Europe/Prague|||Europe_Central
+        z|Europe/Riga|1989-03-25 23:00||Europe_Eastern
+        z|Europe/Riga||1989-03-25 23:00|Moscow
+        z|Europe/Rome|||Europe_Central
+        z|Europe/Samara|1989-03-25 22:00|1991-03-30 23:00|Moscow
+        z|Europe/Samara|1991-03-30 23:00|1991-09-29 00:00|Europe_Eastern
+        z|Europe/Samara|1991-09-29 00:00||Samara
+        z|Europe/Samara||1989-03-25 22:00|Kuybyshev
+        z|Europe/San_Marino|||Europe_Central
+        z|Europe/Sarajevo|||Europe_Central
+        z|Europe/Saratov|1992-03-28 22:00|2016-12-03 23:00|Moscow
+        z|Europe/Saratov|2016-12-03 23:00||Samara
+        z|Europe/Simferopol|1990-06-30 23:00|1994-04-30 21:00|Europe_Eastern
+        z|Europe/Simferopol|1994-04-30 21:00|1997-03-30 01:00|Moscow
+        z|Europe/Simferopol|1997-03-30 01:00|2014-03-30 00:00|Europe_Eastern
+        z|Europe/Simferopol|2014-03-30 00:00||Moscow
+        z|Europe/Simferopol||1990-06-30 23:00|Moscow
+        z|Europe/Skopje|||Europe_Central
+        z|Europe/Sofia|||Europe_Eastern
+        z|Europe/Stockholm|||Europe_Central
+        z|Europe/Tallinn|1989-03-25 23:00||Europe_Eastern
+        z|Europe/Tallinn||1989-03-25 23:00|Moscow
+        z|Europe/Tirane|||Europe_Central
+        z|Europe/Ulyanovsk|1992-01-19 00:00|2016-03-26 23:00|Moscow
+        z|Europe/Ulyanovsk|2016-03-26 23:00||Samara
+        z|Europe/Vaduz|||Europe_Central
+        z|Europe/Vatican|||Europe_Central
+        z|Europe/Vienna|||Europe_Central
+        z|Europe/Vilnius|1989-03-25 23:00|1998-03-29 01:00|Europe_Eastern
+        z|Europe/Vilnius|1998-03-29 01:00|1999-10-31 01:00|Europe_Central
+        z|Europe/Vilnius|1999-10-31 01:00||Europe_Eastern
+        z|Europe/Vilnius||1989-03-25 23:00|Moscow
+        z|Europe/Volgograd|2020-12-26 22:00||Moscow
+        z|Europe/Volgograd||2020-12-26 22:00|Volgograd
+        z|Europe/Warsaw|||Europe_Central
+        z|Europe/Zagreb|||Europe_Central
+        z|Europe/Zurich|||Europe_Central
+        z|Indian/Antananarivo|||Africa_Eastern
+        z|Indian/Chagos|||Indian_Ocean
+        z|Indian/Christmas|||Christmas
+        z|Indian/Cocos|||Cocos
+        z|Indian/Comoro|||Africa_Eastern
+        z|Indian/Kerguelen|||French_Southern
+        z|Indian/Mahe|||Seychelles
+        z|Indian/Maldives|||Maldives
+        z|Indian/Mauritius|||Mauritius
+        z|Indian/Mayotte|||Africa_Eastern
+        z|Indian/Reunion|||Reunion
+        z|Pacific/Apia|||Apia
+        z|Pacific/Auckland|||New_Zealand
+        z|Pacific/Bougainville||2014-12-27 16:00|Papua_New_Guinea
+        z|Pacific/Chatham|||Chatham
+        z|Pacific/Chuuk|||Truk
+        z|Pacific/Easter|||Easter
+        z|Pacific/Efate|||Vanuatu
+        z|Pacific/Fakaofo|||Tokelau
+        z|Pacific/Fiji|||Fiji
+        z|Pacific/Funafuti|||Tuvalu
+        z|Pacific/Galapagos|1986-01-01 05:00||Galapagos
+        z|Pacific/Galapagos||1986-01-01 05:00|Ecuador
+        z|Pacific/Gambier|||Gambier
+        z|Pacific/Guadalcanal|||Solomon
+        z|Pacific/Guam|2000-12-22 14:00||Chamorro
+        z|Pacific/Guam||2000-12-22 14:00|Guam
+        z|Pacific/Honolulu|||Hawaii
+        z|Pacific/Kanton|||Phoenix_Islands
+        z|Pacific/Kiritimati|||Line_Islands
+        z|Pacific/Kosrae|||Kosrae
+        z|Pacific/Kwajalein|1993-08-21 12:00||Marshall_Islands
+        z|Pacific/Kwajalein||1993-08-21 12:00|Kwajalein
+        z|Pacific/Majuro|||Marshall_Islands
+        z|Pacific/Marquesas|||Marquesas
+        z|Pacific/Midway|1983-10-30 12:00||Samoa
+        z|Pacific/Midway||1983-10-30 12:00|Bering
+        z|Pacific/Nauru|||Nauru
+        z|Pacific/Niue|||Niue
+        z|Pacific/Norfolk|||Norfolk
+        z|Pacific/Noumea|||New_Caledonia
+        z|Pacific/Pago_Pago|1983-10-30 12:00||Samoa
+        z|Pacific/Pago_Pago||1983-10-30 12:00|Bering
+        z|Pacific/Palau|||Palau
+        z|Pacific/Pitcairn|||Pitcairn
+        z|Pacific/Pohnpei|||Ponape
+        z|Pacific/Port_Moresby|||Papua_New_Guinea
+        z|Pacific/Rarotonga|||Cook
+        z|Pacific/Saipan|2000-12-22 14:00||Chamorro
+        z|Pacific/Saipan||2000-12-22 14:00|North_Mariana
+        z|Pacific/Tahiti|||Tahiti
+        z|Pacific/Tarawa|||Gilbert_Islands
+        z|Pacific/Tongatapu|||Tonga
+        z|Pacific/Wake|||Wake
+        z|Pacific/Wallis|||Wallis
         """u8;
 
     /// <summary>The hour cycles allowed and preferred in each region: region, allowed, preferred.</summary>

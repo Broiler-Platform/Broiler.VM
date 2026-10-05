@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 298 |
-| Files carrying an annotation | 298 |
-| Code units | 12279 |
-| Relevant | 7100 |
-| Exempt by predicate | 5179 |
-| Annotated | 7100 of 7100 (100%) |
-| Human reviewed | 0 of 7100 (0%) |
-| Unverified | 7100 |
+| Files scanned | 299 |
+| Files carrying an annotation | 299 |
+| Code units | 12312 |
+| Relevant | 7122 |
+| Exempt by predicate | 5190 |
+| Annotated | 7122 of 7122 (100%) |
+| Human reviewed | 0 of 7122 (0%) |
+| Unverified | 7122 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 7100 |
+| HUMAN_PENDING | 7122 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5179 |
+| EXEMPT | 5190 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1636 |
-| Low | 7024 |
+| Low | 7055 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,7 +50,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 2235 |
+| Low | 2266 |
 | Medium | 4616 |
 | High | 1637 |
 | Critical | 253 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.6 / 10 |
-| Units scored | 7100 |
+| Units scored | 7122 |
 
 ## High-security review areas
 
@@ -1989,21 +1989,21 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1673 |
+| TrivialPropertyOrAccessor | 1674 |
 | ParameterAssigningConstructor | 174 |
 | TrivialExpressionBodiedMember | 80 |
 | CompilerSuppliedRecordOrEnumMember | 30 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 960 |
-| EnumMemberOfADeclaredVocabulary | 2063 |
-| DeclaredInSource | 78 |
+| FieldDeclaringStorage | 968 |
+| EnumMemberOfADeclaredVocabulary | 2064 |
+| DeclaredInSource | 79 |
 
 ## Per-unit exemptions
 
 | Metric | Value |
 |---|---:|
-| Per-unit exemptions | 78 |
+| Per-unit exemptions | 79 |
 
 A per-unit `EXEMPT=<reason>` line exempts one unit by a reason a human wrote, for what the
 predicate cannot see. Nothing mechanical checks that the reason is true, that it describes
@@ -2065,6 +2065,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.SegmentBreaks` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Units` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.DateLocales` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.MetaZones` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.TimeData` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.DayPeriods` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.WeekData` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
@@ -2093,7 +2094,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-12279 of them, exempt and relevant alike - with the fingerprint of its declaration.
+12312 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2101,7 +2102,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 298 of them - with a
+Beside the units it lists **every covered file** - 299 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

@@ -106,6 +106,7 @@ internal static class CldrTableGenerator
         ByteTable(text, "SegmentBreaks", "Unicode 17.0.0's Grapheme_Cluster_Break, Word_Break, Sentence_Break, Extended_Pictographic, Indic_Conjunct_Break, and Ideographic or Hiragana, over the code space: the distinct combinations, then the runs.", SegmentBreaks(ucd));
         TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
         TextTable(text, "DateLocales", "The Gregorian calendar, date field and zone name data of each supported language, flattened: language, key, value.", DateLocales(cldr));
+        TextTable(text, "MetaZones", "Which metazone each zone uses when (z: zone, from, to, metazone), each metazone's golden zone in a region (g: metazone, region, zone), and a country's primary zone (p: region, zone), by primary identifier.", MetaZones(cldr));
         TextTable(text, "TimeData", "The hour cycles allowed and preferred in each region: region, allowed, preferred.", TimeData(cldr));
         TextTable(text, "DayPeriods", "The day period rules of each supported language: language, period, at or from, before.", DayPeriods(cldr));
         TextTable(text, "WeekData", "Each region's week: region, first day, weekend start, weekend end, minimal days; empty where the world's applies.", WeekData(cldr));
@@ -857,6 +858,190 @@ internal static class CldrTableGenerator
     }
 
     /// <summary>
+    /// The primary identifier of each name CLDR's time zone keys list (JSD-0053's): the key's
+    /// <c>_iana</c> name, or its first alias where it states none.
+    /// </summary>
+    internal static Dictionary<string, string> ZonePrimaries(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var primaries = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var key in Json(cldr, "json/cldr-bcp47/bcp47/timezone.json").GetProperty("keyword").GetProperty("u").GetProperty("tz").EnumerateObject())
+        {
+            if (key.Value.ValueKind != JsonValueKind.Object || !key.Value.TryGetProperty("_alias", out var alias))
+            {
+                continue;
+            }
+
+            var names = alias.GetString()!.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var primary = key.Value.TryGetProperty("_iana", out var iana) ? iana.GetString()! : names[0];
+
+            foreach (var name in names)
+            {
+                primaries[name] = primary;
+            }
+        }
+
+        return primaries;
+    }
+
+    /// <summary>
+    /// ICU's default exemplar city of a zone identifier: its last segment, underscores as spaces, or
+    /// nothing for an <c>Etc/</c> zone or an identifier without a slash.
+    /// </summary>
+    internal static string? DefaultCity(string zone) =>
+        zone.StartsWith("Etc/", StringComparison.Ordinal) || !zone.Contains('/', StringComparison.Ordinal)
+            ? null
+            : zone[(zone.LastIndexOf('/') + 1)..].Replace('_', ' ');
+
+    /// <summary>
+    /// A language's time zone names (JSD-0058), by primary identifier: the region and fallback formats;
+    /// each metazone's names (<c>mz.Name.lg</c>: long or short, generic, standard or daylight); each
+    /// zone's own names (<c>tz.Zone.ld</c>); and each zone's exemplar city (<c>tz.Zone.city</c>) where it
+    /// is not the default one of its primary identifier.
+    /// </summary>
+    internal static IEnumerable<string> ZoneNames(IReadOnlyDictionary<string, byte[]> cldr, string language, JsonElement zones)
+    {
+        var primaries = ZonePrimaries(cldr);
+        var lines = new List<string>
+        {
+            $"{language}|zone.regionFormat|{Escape(zones.GetProperty("regionFormat").GetString()!)}",
+            $"{language}|zone.fallbackFormat|{Escape(zones.GetProperty("fallbackFormat").GetString()!)}",
+        };
+
+        void Names(string prefix, JsonElement names)
+        {
+            foreach (var width in new[] { "long", "short" })
+            {
+                if (!names.TryGetProperty(width, out var named))
+                {
+                    continue;
+                }
+
+                foreach (var type in new[] { "generic", "standard", "daylight" })
+                {
+                    if (named.TryGetProperty(type, out var name))
+                    {
+                        lines.Add($"{language}|{prefix}.{width[0]}{type[0]}|{Escape(name.GetString()!)}");
+                    }
+                }
+            }
+        }
+
+        foreach (var metazone in zones.GetProperty("metazone").EnumerateObject())
+        {
+            Names("mz." + metazone.Name, metazone.Value);
+        }
+
+        var cities = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        void Walk(string path, JsonElement node)
+        {
+            if (node.TryGetProperty("exemplarCity", out _) || node.TryGetProperty("long", out _) || node.TryGetProperty("short", out _))
+            {
+                if (path.StartsWith("Etc/", StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                var primary = primaries.TryGetValue(path, out var known) ? known : path;
+                Names("tz." + primary, node);
+
+                if (node.TryGetProperty("exemplarCity", out var city))
+                {
+                    cities[primary] = city.GetString()!;
+                }
+
+                return;
+            }
+
+            foreach (var child in node.EnumerateObject())
+            {
+                if (child.Value.ValueKind == JsonValueKind.Object)
+                {
+                    Walk(path.Length == 0 ? child.Name : path + "/" + child.Name, child.Value);
+                }
+            }
+        }
+
+        Walk(string.Empty, zones.GetProperty("zone"));
+
+        // A ZONE'S EXEMPLAR CITY is CLDR's, or the default one of its canonical name, which may not be
+        // its primary identifier's (Asia/Saigon's, not Asia/Ho_Chi_Minh's): only one that the reader
+        // cannot derive from the primary identifier is written.
+        foreach (var canonical in primaries.GroupBy(static pair => pair.Value, static pair => pair.Key))
+        {
+            var primary = canonical.Key;
+            var city = cities.TryGetValue(primary, out var named) ? named : DefaultCity(canonical.First());
+
+            if (city is not null && city != DefaultCity(primary))
+            {
+                lines.Add($"{language}|tz.{primary}.city|{Escape(city)}");
+            }
+        }
+
+        return lines;
+    }
+
+    /// <summary>
+    /// The metazone data of CLDR's <c>metaZones.json</c> and <c>primaryZones.json</c>, by primary
+    /// identifier: each zone's periods in a metazone (<c>z|zone|from|to|metazone</c>, a missing bound
+    /// empty), each metazone's golden zone in a region (<c>g|metazone|region|zone</c>), and the primary
+    /// zone of a country with several (<c>p|region|zone</c>). <c>Etc/</c> zones are left out: UTC's and
+    /// a fixed offset's names are the date data's own.
+    /// </summary>
+    internal static IEnumerable<string> MetaZones(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var primaries = ZonePrimaries(cldr);
+        var metaZones = Json(cldr, "json/cldr-core/supplemental/metaZones.json").GetProperty("supplemental").GetProperty("metaZones");
+        var lines = new List<string>();
+
+        string Primary(string zone) => primaries.TryGetValue(zone, out var primary)
+            ? primary
+            : throw new InvalidDataException($"metaZones.json names {zone}, which no time zone key lists");
+
+        void Walk(string path, JsonElement node)
+        {
+            if (node.ValueKind == JsonValueKind.Array)
+            {
+                if (path.StartsWith("Etc/", StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                foreach (var period in node.EnumerateArray())
+                {
+                    var uses = period.GetProperty("usesMetazone");
+                    var from = uses.TryGetProperty("_from", out var start) ? start.GetString()! : string.Empty;
+                    var to = uses.TryGetProperty("_to", out var end) ? end.GetString()! : string.Empty;
+                    lines.Add($"z|{Primary(path)}|{from}|{to}|{uses.GetProperty("_mzone").GetString()}");
+                }
+
+                return;
+            }
+
+            foreach (var child in node.EnumerateObject())
+            {
+                Walk(path.Length == 0 ? child.Name : path + "/" + child.Name, child.Value);
+            }
+        }
+
+        Walk(string.Empty, metaZones.GetProperty("metazoneInfo").GetProperty("timezone"));
+
+        foreach (var entry in metaZones.GetProperty("metazones").EnumerateArray())
+        {
+            var map = entry.GetProperty("mapZone");
+            lines.Add($"g|{map.GetProperty("_other").GetString()}|{map.GetProperty("_territory").GetString()}|{Primary(map.GetProperty("_type").GetString()!)}");
+        }
+
+        foreach (var region in Json(cldr, "json/cldr-core/supplemental/primaryZones.json").GetProperty("supplemental").GetProperty("primaryZones").EnumerateObject())
+        {
+            lines.Add($"p|{region.Name}|{Primary(region.Value.GetString()!)}");
+        }
+
+        return lines.Order(StringComparer.Ordinal);
+    }
+
+    /// <summary>
     /// Each language's Gregorian calendar data and the zone names a UTC or fixed-offset zone uses,
     /// flattened to dotted keys: the month, day, day period and era names; the date, time and
     /// date-time patterns; the available formats, append items and interval formats; the date
@@ -915,6 +1100,8 @@ internal static class CldrTableGenerator
             {
                 lines.Add($"{language}|zone.{name}|{Escape(zones.GetProperty(name).GetString()!)}");
             }
+
+            lines.AddRange(ZoneNames(cldr, language, zones));
 
             foreach (var (key, names) in new[]
             {

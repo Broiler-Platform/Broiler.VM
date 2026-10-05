@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
-// Exempt:           14
-// Human-reviewed:   0/26
+// Relevant units:   27
+// Annotated:        27/27
+// Exempt:           15
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       26
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -89,7 +89,11 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly System.Lazy<JsCalendars> calendars;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50BBCF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F30CF4
+    // Broiler-Human:        PENDING
+    private readonly System.Lazy<JsZoneNames> zoneNames;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EAA1ED
     // Broiler-Human:        PENDING
     internal JsIntlTables(Format.IJsIntlData data)
     {
@@ -108,6 +112,7 @@ internal sealed class JsIntlTables
         timeZones = new(() => new JsTimeZones(
             Lines(Format.JsIntlTable.TimeZoneIds), Lines(Format.JsIntlTable.TimeZoneRegions), data.Table(Format.JsIntlTable.TimeZones)));
         calendars = new(() => new JsCalendars(data.Table(Format.JsIntlTable.Calendars)));
+        zoneNames = new(() => new JsZoneNames(Lines(Format.JsIntlTable.MetaZones), TimeZones));
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -129,6 +134,11 @@ internal sealed class JsIntlTables
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F73E47
     // Broiler-Human:        PENDING
     internal JsCalendars Calendars => calendars.Value;
+
+    /// <summary>CLDR's metazones and the algorithms that name a zone by them, built the first time a zone is named (JSD-0058).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0A74FA
+    // Broiler-Human:        PENDING
+    internal JsZoneNames ZoneNames => zoneNames.Value;
 
     /// <summary>The collation data.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B35C2E

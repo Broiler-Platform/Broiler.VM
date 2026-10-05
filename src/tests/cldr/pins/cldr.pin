@@ -75,6 +75,15 @@
 # inherit. The repository owner asked that day for slice T4 to be continued; no permission specific
 # to this retrieval was given either.
 
+# EXTENDED 2026-10-05 FOR PHASE F8, SLICE T5. Intl.DateTimeFormat's time zone names read which metazone
+# each zone uses when, each metazone's golden zone in each region, and the primary zone of a country
+# with several, from two more files of the cldr-core 48.2.0 package: supplemental/metaZones.json and
+# supplemental/primaryZones.json. The tarball was retrieved twice on 2026-10-05, found byte-identical
+# by `cmp`, and checked against the registry's sha512 integrity, the one this pin already states for
+# cldr-core. The names themselves are in the timeZoneNames.json files slice I3 archived. The repository
+# owner asked that day for slice T5 to be continued and chose to raise the Intl data budget for it; no
+# permission specific to this retrieval was given either.
+
 data unicode-common-locale-data-repository
 version 48.2.0
 cldr-major 48
@@ -174,11 +183,13 @@ file cldr-48.2.0/json/cldr-core/supplemental/aliases.json 137469 b7011c866f27502
 file cldr-48.2.0/json/cldr-core/supplemental/currencyData.json 71126 e50315091b1f34428480f82970be64159ad207af0bdcebe7faa6260d3e34c8a6
 file cldr-48.2.0/json/cldr-core/supplemental/dayPeriods.json 86320 6ed3b0e88ea0b8b2a045da6880951812f0ffb256d38156432b10f583c06a28b8
 file cldr-48.2.0/json/cldr-core/supplemental/likelySubtags.json 220093 38345946ad457213fb39e9645ab50f36b61681bf674b2eef2979a3b58d04afc8
+file cldr-48.2.0/json/cldr-core/supplemental/metaZones.json 196424 676a5731516b925a2866910994c5c1d5ae92ecda03ce55e73b311ce5fc125cbf
 file cldr-48.2.0/json/cldr-core/supplemental/numberingSystems.json 10695 0efb69a00dbae5950195b077e0cc6c7f319d3a1e8a81401083ec4f42c14b0014
 file cldr-48.2.0/json/cldr-core/supplemental/ordinals.json 18839 8a945afc483a4f677fb5641f08a2ccc62948ee05f316d21996be6561c2f83155
 file cldr-48.2.0/json/cldr-core/supplemental/parentLocales.json 5890 5a3f056a70ff52af7a25681a670ec860d785d98894934d3a9e5332508c23651e
 file cldr-48.2.0/json/cldr-core/supplemental/pluralRanges.json 24710 fb56214321fb18675196eda503779b8576fe785084bc0573e1def41dd0e39027
 file cldr-48.2.0/json/cldr-core/supplemental/plurals.json 76105 6c0a48e9bcfc25856f90202f703c2c7f89c105d6868f7712a943a6ed2dcbe8f4
+file cldr-48.2.0/json/cldr-core/supplemental/primaryZones.json 473 7b2251943ad1344bd2c008a0e33d6138c7eeb44d8baaba3fe220e41b139def2a
 file cldr-48.2.0/json/cldr-core/supplemental/timeData.json 22206 2962960c14e40ffb09526e33832fe60ff932ba1b41a01f4964c601c2274ac61d
 file cldr-48.2.0/json/cldr-core/supplemental/weekData.json 11204 b28ea2cedf6da29e9b93d7492e0f0a8a6852fe49f7990c58f9fc57531bf7c6b3
 file cldr-48.2.0/json/cldr-dates-full/main/de/ca-generic.json 35537 6a5540475088d90f2a5aa70e292e0ecc4e2555cc502c17d402b632d3c3d836fe

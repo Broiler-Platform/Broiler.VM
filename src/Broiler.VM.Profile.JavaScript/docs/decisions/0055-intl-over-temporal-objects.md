@@ -98,3 +98,13 @@ held by one person**, and it does not claim the co-signature is independent.
 - A Temporal value that a format writes in another time zone than UTC (a plain one) or its own (an
   instant), or a type whose format writes a field the type does not have.
 - A formatter that resolves a calendar it cannot write, or an `iso8601` pattern that is not root's.
+
+## Amended 2026-10-05: zone names (unsigned)
+
+*Recorded with phase F8's slice T5; it signs nothing. Corrections entry
+[JSC-284](../roadmap.corrections.md#jsc-284).*
+
+- **Section 6's zone names are built** under proposed [JSD-0058](0058-time-zone-names.md). The
+  dataset's fourth group of divergences, `MEZ`, is gone: the profile answers that line as the
+  polyfill does, and the dataset names 82 lines in three groups. The two `toLocaleString` variants
+  that wrote a zone's long name pass.

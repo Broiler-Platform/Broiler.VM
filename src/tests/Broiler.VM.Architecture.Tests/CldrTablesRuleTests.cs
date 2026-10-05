@@ -16,17 +16,19 @@ namespace Broiler.VM.Architecture.Tests;
 /// <para>
 /// <b>The size is budgeted.</b> JSD-0027's owner decision (c) asked for a size budget from a measured
 /// prototype, and JSD-0043's provisional 512 KiB bound held the data until the owner set one: 768 KiB,
-/// on 2026-10-05, when Intl.DisplayNames needed more than the bound left. Growth past it is a
-/// decision rather than a drift.
+/// on 2026-10-05, when Intl.DisplayNames needed more than the bound left, then 832 KiB the same day,
+/// when the time zones' names needed more than 768 KiB left (JSD-0058). Growth past it is a decision
+/// rather than a drift.
 /// </para>
 /// </remarks>
 public sealed class CldrTablesRuleTests
 {
     /// <summary>
-    /// The budget on the generated data, in bytes: 768 KiB, which the repository owner set on
-    /// 2026-10-05 as JSD-0027 decision (c), replacing JSD-0043's provisional 512 KiB bound.
+    /// The budget on the generated data, in bytes: 832 KiB, to which the repository owner raised on
+    /// 2026-10-05 the 768 KiB set that day as JSD-0027 decision (c), replacing JSD-0043's provisional
+    /// 512 KiB bound.
     /// </summary>
-    internal const int Budget = 768 * 1024;
+    internal const int Budget = 832 * 1024;
 
     /// <summary>The gate, and in write mode the generator.</summary>
     [Fact]

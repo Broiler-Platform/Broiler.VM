@@ -17,9 +17,13 @@ internal sealed record TzdbZoneLine(int StandardOffset, string Rules, string[] U
 internal sealed record TzdbFinalRules(int StandardOffset, int LastListedYear, IReadOnlyList<TzdbRule> Rules);
 
 /// <summary>A compiled zone: its first offset, each later change of offset, and the rules that continue it.</summary>
-/// <param name="Transitions">Each instant, in seconds since the epoch, at which the UTC offset changes, and the offset after it.</param>
+/// <param name="Transitions">
+/// Each instant, in seconds since the epoch, at which the UTC offset changes, the offset after it,
+/// and whether that offset is daylight saving time as CLDR names it (the rearguard reading, in which
+/// a negative save makes the other time of the year the daylight one).
+/// </param>
 /// <param name="Final">The rules for every year after the listed transitions, or null when the last offset holds for ever.</param>
-internal sealed record TzdbZone(int InitialOffset, IReadOnlyList<(long At, int Offset)> Transitions, TzdbFinalRules? Final);
+internal sealed record TzdbZone(int InitialOffset, IReadOnlyList<(long At, int Offset, bool Daylight)> Transitions, TzdbFinalRules? Final);
 
 /// <summary>
 /// A compiler of tzdb source into UTC offsets, as <c>zic</c> compiles it (decision JSD-0053): each
@@ -28,10 +32,14 @@ internal sealed record TzdbZone(int InitialOffset, IReadOnlyList<(long At, int O
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Offsets only.</b> Temporal and <c>Intl.DateTimeFormat</c> read a zone's UTC offset at an
-/// instant and the instants at which it changes; abbreviations and the daylight saving flag are not
-/// kept, and a change of either alone is no transition (Temporal's GetNamedTimeZoneNextTransition).
-/// The flag is tracked while compiling, because <c>zic</c>'s merge compares whole types.
+/// <b>Offsets, and the daylight flag CLDR's names read.</b> Temporal and <c>Intl.DateTimeFormat</c>
+/// read a zone's UTC offset at an instant and the instants at which it changes; abbreviations are not
+/// kept. A change of the daylight flag alone is kept as a transition for the names, and the reader
+/// skips it where Temporal asks for the next or previous change of offset
+/// (GetNamedTimeZoneNextTransition). <c>zic</c>'s own flag, a save other than zero, is tracked while
+/// compiling, because its merge compares whole types; the flag kept is the rearguard one ICU and
+/// CLDR's names read (JSD-0058): where a line's rules save a negative amount, the larger save is the
+/// daylight one.
 /// </para>
 /// <para>
 /// <b>Checked against <c>zic</c></b>: on 2026-10-05 every one of 2026e's 597 identifiers gave the
@@ -271,13 +279,13 @@ internal static class TzdbCompiler
     /// <summary>Compiles one zone's lines against the rule sets.</summary>
     internal static TzdbZone Compile(IReadOnlyList<TzdbZoneLine> lines, IReadOnlyDictionary<string, List<TzdbRule>> rules)
     {
-        var raw = new List<(long At, int Offset, bool Daylight)>();
+        var raw = new List<(long At, int Offset, bool Daylight, bool Named)>();
         int? initial = null;
         long? start = null;
         TzdbFinalRules? final = null;
         var fixedForever = false;
 
-        void Emit(long at, int offset, int standard)
+        void Emit(long at, int offset, int standard, bool named)
         {
             if (initial is null)
             {
@@ -285,7 +293,7 @@ internal static class TzdbCompiler
                 return;
             }
 
-            raw.Add((at, offset, offset != standard));
+            raw.Add((at, offset, offset != standard, named));
         }
 
         foreach (var line in lines)
@@ -296,7 +304,7 @@ internal static class TzdbCompiler
             if (line.Rules == "-" || char.IsAsciiDigit(line.Rules[0]) || line.Rules[0] == '-')
             {
                 var save = line.Rules == "-" ? 0 : Time(line.Rules).Seconds;
-                Emit(start ?? long.MinValue, standard + save, standard);
+                Emit(start ?? long.MinValue, standard + save, standard, save > 0);
 
                 if (last)
                 {
@@ -326,6 +334,20 @@ internal static class TzdbCompiler
 
             var events = Events(set, firstYear, lastYear);
 
+            // THE REARGUARD DAYLIGHT FLAG: a negative save still to come on the line is its standard
+            // time, and a larger save until then is daylight time (Ireland's summer, Namibia's until
+            // 2017); a save with no negative one after it is daylight only where it is positive.
+            // Only the line's own events count: one after its UNTIL is another line's.
+            var recurringLeast = last ? set.Where(static rule => rule.To is null).Select(static rule => rule.Save).DefaultIfEmpty(0).Min() : 0;
+            var least = new int[events.Count + 1];
+            least[events.Count] = Math.Min(0, recurringLeast);
+            var untilLocal = last ? long.MaxValue : UntilLocal(line.Until).Local;
+
+            for (var i = events.Count - 1; i >= 0; i--)
+            {
+                least[i] = events[i].Local < untilLocal ? Math.Min(least[i + 1], events[i].Save) : least[i + 1];
+            }
+
             // THE SAVE IN FORCE AT THE LINE'S START is the latest rule's at or before it, however
             // many years before, as zic's start offset is; with none, standard time.
             var current = 0;
@@ -344,7 +366,7 @@ internal static class TzdbCompiler
                 }
             }
 
-            Emit(start ?? long.MinValue, standard + current, standard);
+            Emit(start ?? long.MinValue, standard + current, standard, current > least[next]);
 
             for (; next < events.Count; next++)
             {
@@ -355,7 +377,7 @@ internal static class TzdbCompiler
                     break;
                 }
 
-                Emit(at, standard + events[next].Save, standard);
+                Emit(at, standard + events[next].Save, standard, events[next].Save > least[next]);
                 current = events[next].Save;
             }
 
@@ -383,7 +405,7 @@ internal static class TzdbCompiler
         // transition its type and is dropped; and a transition to the type already in force is no
         // transition.
         var first = initial ?? throw new InvalidDataException("a zone without lines");
-        var merged = new List<(long At, int Offset, bool Daylight)>();
+        var merged = new List<(long At, int Offset, bool Daylight, bool Named)>();
 
         foreach (var entry in raw.Select(static (e, i) => (e, i)).OrderBy(static p => p.e.At).ThenBy(static p => p.i).Select(static p => p.e))
         {
@@ -394,7 +416,7 @@ internal static class TzdbCompiler
 
                 if (entry.At + before <= merged[^1].At + beforePrevious)
                 {
-                    merged[^1] = (merged[^1].At, entry.Offset, entry.Daylight);
+                    merged[^1] = (merged[^1].At, entry.Offset, entry.Daylight, entry.Named);
                     continue;
                 }
             }
@@ -407,13 +429,15 @@ internal static class TzdbCompiler
             }
         }
 
-        var transitions = new List<(long At, int Offset)>();
+        var transitions = new List<(long At, int Offset, bool Daylight)>();
 
-        foreach (var (at, offset, _) in merged)
+        // A CHANGE OF OFFSET OR OF THE NAMED DAYLIGHT FLAG is kept: a zone that moves to standard time
+        // at its daylight offset (America/Chihuahua in 2022) is named for standard time after it.
+        foreach (var (at, offset, _, named) in merged)
         {
-            if (offset != (transitions.Count > 0 ? transitions[^1].Offset : first))
+            if ((offset, named) != (transitions.Count > 0 ? (transitions[^1].Offset, transitions[^1].Daylight) : (first, false)))
             {
-                transitions.Add((at, offset));
+                transitions.Add((at, offset, named));
             }
         }
 

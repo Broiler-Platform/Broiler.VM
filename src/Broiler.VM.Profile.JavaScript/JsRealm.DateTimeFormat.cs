@@ -557,7 +557,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CreateDateTimeFormat (s11.1.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C06998
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=570C8D
     // Broiler-Human:        PENDING
     internal static JsDateTimeFormatObject CreateDateTimeFormat(
         JsEngine engine,
@@ -760,6 +760,12 @@ internal sealed partial class JsRealm
         var patternCycle = HourCycleOf(pattern);
         var intervalChar = patternCycle is null ? preferred : hcChar;
 
+        // AN IANA ZONE'S NAMES (JSD-0058) are read with the locale's region's golden zones and names.
+        var displayNames = tables.LocaleInfo.DisplayNames;
+        var naming = kind == JsZoneKind.Named
+            ? new JsZoneNaming(tables.ZoneNames, region, code => displayNames.TryGetValue(language + "|region|" + code, out var name) ? name : null)
+            : null;
+
         var formatter = new JsDateTimeFormatter(
             dates,
             dataLanguage,
@@ -770,7 +776,8 @@ internal sealed partial class JsRealm
             pattern,
             () => new JsDateIntervalFormat(dates, dataLanguage, dates.Generator(dataLanguage, intervalChar, decimalSymbol), JsDatePatternGenerator.SkeletonOf(pattern)),
             zone,
-            calendarSystem);
+            calendarSystem,
+            naming);
 
         // THE FORMATS OF TEMPORAL'S OBJECTS (the proposal's amendment of CreateDateTimeFormat), built
         // when one is first formatted and only where the realm has Temporal.
@@ -794,7 +801,8 @@ internal sealed partial class JsRealm
                     formatPattern,
                     () => new JsDateIntervalFormat(dates, dataLanguage, dates.Generator(dataLanguage, cycle, decimalSymbol), JsDatePatternGenerator.SkeletonOf(formatPattern)),
                     plain ? null : zone,
-                    calendarSystem);
+                    calendarSystem,
+                    plain ? null : naming);
             }
 
             string Best(System.Collections.Generic.Dictionary<string, string> formatOptions) =>
