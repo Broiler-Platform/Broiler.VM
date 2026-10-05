@@ -399,7 +399,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's ToTemporalYearMonth (s9.5.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7EA162
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=32E9CD
     // Broiler-Human:        PENDING
     internal static JsPlainYearMonthObject ToYearMonth(JsEngine engine, JsValue item, JsValue options = default)
     {
@@ -434,12 +434,12 @@ internal static partial class JsTemporal
             throw engine.Error("RangeError", "Temporal: the year-month is outside the representable range");
         }
 
-        var canonical = YearMonthFromFields(engine, parsedCalendar, DateToFields(parsedCalendar, isoDate, FieldsType.YearMonth), reject: false);
+        var canonical = YearMonthFromFields(engine, parsedCalendar, DateToFields(engine, parsedCalendar, isoDate, FieldsType.YearMonth), reject: false);
         return CreateYearMonth(engine, canonical, parsedCalendar);
     }
 
     /// <summary>The proposal's ToTemporalMonthDay (s10.5.1).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CEE284
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=562D0E
     // Broiler-Human:        PENDING
     internal static JsPlainMonthDayObject ToMonthDay(JsEngine engine, JsValue item, JsValue options = default)
     {
@@ -480,7 +480,7 @@ internal static partial class JsTemporal
             throw engine.Error("RangeError", "Temporal: the month-day is outside the representable range");
         }
 
-        var canonical = MonthDayFromFields(engine, parsedCalendar, DateToFields(parsedCalendar, isoDate, FieldsType.MonthDay), reject: false);
+        var canonical = MonthDayFromFields(engine, parsedCalendar, DateToFields(engine, parsedCalendar, isoDate, FieldsType.MonthDay), reject: false);
         return CreateMonthDay(engine, canonical, parsedCalendar);
     }
 

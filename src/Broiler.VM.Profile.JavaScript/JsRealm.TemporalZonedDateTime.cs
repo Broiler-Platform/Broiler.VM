@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4068D9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4C16E5
     // Broiler-Human:        PENDING
     private void SetupTemporalZonedDateTime(JsObject temporal)
     {
@@ -118,7 +118,7 @@ internal sealed partial class JsRealm
             var calendar = zoned.Calendar;
             var offsetNs = JsTemporal.OffsetNanosecondsFor(engine, timeZone, zoned.EpochNanoseconds);
             var dateTime = JsTemporal.IsoDateTimeFor(engine, timeZone, zoned.EpochNanoseconds);
-            var fields = JsTemporal.DateToFields(calendar, dateTime.Date, JsTemporal.FieldsType.Date);
+            var fields = JsTemporal.DateToFields(engine, calendar, dateTime.Date, JsTemporal.FieldsType.Date);
             SetTimeFields(fields, dateTime.Time);
             fields.Offset = JsTemporalCore.FormatOffsetNs(offsetNs);
             var partialFields = JsTemporal.PrepareFields(

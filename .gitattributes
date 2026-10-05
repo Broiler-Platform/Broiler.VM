@@ -117,5 +117,9 @@ src/tests/unicode/pins/unicode-LICENSE.txt binary
 # JSD-0027 slice I0).
 src/tests/cldr/pins/cldr-48.2.0/** binary
 src/tests/cldr/pins/cldr-LICENSE.txt binary
+# THE CALENDAR DATA CRATES, two gzipped tarballs `calendars.pin` hashes (rule N31) and the generator of
+# the calendar tables reads (rule N32). Declared 2026-10-05 in the change that archived them (phase F8,
+# JSD-0056).
+src/tests/calendars/pins/*.crate binary
 
 *.png                     binary

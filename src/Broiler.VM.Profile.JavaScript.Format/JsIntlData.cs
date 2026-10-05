@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           30
+// Exempt:           31
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8FD30D
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=44AFCA
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -175,4 +175,10 @@ public enum JsIntlTable
 
     /// <summary>The zones of each country, from <c>zone.tab</c>: <c>region</c>, then its zones.</summary>
     TimeZoneRegions = 28,
+
+    /// <summary>
+    /// The published years of the Chinese, Korean and Umm al-Qura calendars and the Persian
+    /// calendar's corrections to its 33-year rule, binary.
+    /// </summary>
+    Calendars = 29,
 }

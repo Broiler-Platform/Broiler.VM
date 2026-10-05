@@ -166,7 +166,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Temporal.Duration.compare (s7.2.3).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AEEC14
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1AA970
     // Broiler-Human:        PENDING
     private static double DurationCompare(JsEngine engine, JsValue[] arguments)
     {
@@ -202,8 +202,8 @@ internal sealed partial class JsRealm
                 throw engine.Error("RangeError", "Temporal.Duration.compare: comparing years, months or weeks needs a relativeTo date");
             }
 
-            days1 = JsTemporal.DateDurationDays(engine, duration1.Date, relativeTo.PlainDate!.Value);
-            days2 = JsTemporal.DateDurationDays(engine, duration2.Date, relativeTo.PlainDate!.Value);
+            days1 = JsTemporal.DateDurationDays(engine, relativeTo.Calendar, duration1.Date, relativeTo.PlainDate!.Value);
+            days2 = JsTemporal.DateDurationDays(engine, relativeTo.Calendar, duration2.Date, relativeTo.PlainDate!.Value);
         }
         else
         {
@@ -262,7 +262,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Temporal.Duration.prototype.round (s7.3.20).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F4E6FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8749A3
     // Broiler-Human:        PENDING
     private static JsDurationObject DurationRound(JsEngine engine, JsDurationObject duration, JsValue argument)
     {
@@ -339,7 +339,7 @@ internal sealed partial class JsRealm
             var targetTime = JsTemporalCore.AddTime(JsTimeRecord.Midnight, internalDuration.Time);
             var dateDuration = JsTemporal.AdjustDate(engine, internalDuration.Date, targetTime.Days);
             var plain = relativeTo.PlainDate!.Value;
-            var targetDate = JsTemporal.DateAdd(engine, plain, dateDuration, reject: false);
+            var targetDate = JsTemporal.DateAdd(engine, relativeTo.Calendar, plain, dateDuration, reject: false);
             internalDuration = JsTemporal.DifferencePlainDateTimeWithRounding(
                 engine,
                 new JsIsoDateTime(plain, JsTimeRecord.Midnight),
@@ -375,7 +375,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Temporal.Duration.prototype.total (s7.3.21).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E4863
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A1E2A2
     // Broiler-Human:        PENDING
     private static double DurationTotal(JsEngine engine, JsDurationObject duration, JsValue argument)
     {
@@ -398,7 +398,7 @@ internal sealed partial class JsRealm
             var targetTime = JsTemporalCore.AddTime(JsTimeRecord.Midnight, internalDuration.Time);
             var dateDuration = JsTemporal.AdjustDate(engine, internalDuration.Date, targetTime.Days);
             var plain = relativeTo.PlainDate!.Value;
-            var targetDate = JsTemporal.DateAdd(engine, plain, dateDuration, reject: false);
+            var targetDate = JsTemporal.DateAdd(engine, relativeTo.Calendar, plain, dateDuration, reject: false);
             return JsTemporal.DifferencePlainDateTimeWithTotal(
                 engine,
                 new JsIsoDateTime(plain, JsTimeRecord.Midnight),

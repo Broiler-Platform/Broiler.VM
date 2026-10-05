@@ -1617,6 +1617,9 @@ public sealed class AssuranceRuleTests
         //
         // (Revised 2026-10-05: and the time zone tables. Decision JSD-0053 chose the hatch again for
         // the tzdb tables' generated file, held to TzdbTableGenerator byte for byte by rule N30.)
+        //
+        // (Revised 2026-10-05: and the calendar table. Decision JSD-0056 chose it for the published
+        // calendar years' generated file, held to CalendarTableGenerator byte for byte by rule N32.)
         var declared = AssuranceScanner.DeclaredExemptions(ProductUnits);
 
         Assert.NotEmpty(declared);
@@ -1631,6 +1634,12 @@ public sealed class AssuranceRuleTests
             if (string.Equals(unit.File.RelativePath, TzdbTableGenerator.OutputPath, StringComparison.Ordinal))
             {
                 Assert.Equal(TzdbTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                return;
+            }
+
+            if (string.Equals(unit.File.RelativePath, CalendarTableGenerator.OutputPath, StringComparison.Ordinal))
+            {
+                Assert.Equal(CalendarTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
                 return;
             }
 

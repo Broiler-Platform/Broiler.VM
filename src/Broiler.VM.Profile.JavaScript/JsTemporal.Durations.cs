@@ -498,7 +498,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's AddZonedDateTime (s6.5.5).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4AF8FC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1D19B9
     // Broiler-Human:        PENDING
     internal static BigInteger AddZonedDateTime(JsEngine engine, BigInteger epochNs, string timeZone, string calendar, JsInternalDuration duration, bool reject)
     {
@@ -508,7 +508,7 @@ internal static partial class JsTemporal
         }
 
         var dateTime = IsoDateTimeFor(engine, timeZone, epochNs);
-        var added = DateAdd(engine, dateTime.Date, duration.Date, reject);
+        var added = DateAdd(engine, calendar, dateTime.Date, duration.Date, reject);
         var intermediate = new JsIsoDateTime(added, dateTime.Time);
 
         if (!JsTemporalCore.DateTimeWithinLimits(intermediate))
@@ -521,9 +521,9 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's DifferenceISODateTime (s5.5.12).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8941B5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C3C2CB
     // Broiler-Human:        PENDING
-    internal static JsInternalDuration DifferenceIsoDateTime(JsEngine engine, JsIsoDateTime one, JsIsoDateTime two, TemporalUnit largestUnit)
+    internal static JsInternalDuration DifferenceIsoDateTime(JsEngine engine, string calendar, JsIsoDateTime one, JsIsoDateTime two, TemporalUnit largestUnit)
     {
         var time = JsTemporalCore.DifferenceTime(one.Time, two.Time);
         var timeSign = time.Sign;
@@ -537,7 +537,7 @@ internal static partial class JsTemporal
         }
 
         var dateLargest = JsTemporalCore.Larger(TemporalUnit.Day, largestUnit);
-        var date = DateUntil(one.Date, adjusted, dateLargest);
+        var date = DateUntil(engine, calendar, one.Date, adjusted, dateLargest);
 
         if (largestUnit != dateLargest)
         {
@@ -549,7 +549,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's DifferencePlainDateTimeWithRounding (s5.5.13).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=122324
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6F3BED
     // Broiler-Human:        PENDING
     internal static JsInternalDuration DifferencePlainDateTimeWithRounding(
         JsEngine engine, JsIsoDateTime one, JsIsoDateTime two, string calendar, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, TemporalRounding mode)
@@ -564,7 +564,7 @@ internal static partial class JsTemporal
             throw engine.Error("RangeError", "Temporal: a date-time is outside the representable range");
         }
 
-        var difference = DifferenceIsoDateTime(engine, one, two, largestUnit);
+        var difference = DifferenceIsoDateTime(engine, calendar, one, two, largestUnit);
 
         if (smallestUnit == TemporalUnit.Nanosecond && increment == 1)
         {
@@ -576,7 +576,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's DifferencePlainDateTimeWithTotal (s5.5.14).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2E43BB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A503ED
     // Broiler-Human:        PENDING
     internal static JsFraction DifferencePlainDateTimeWithTotal(JsEngine engine, JsIsoDateTime one, JsIsoDateTime two, string calendar, TemporalUnit unit)
     {
@@ -590,7 +590,7 @@ internal static partial class JsTemporal
             throw engine.Error("RangeError", "Temporal: a date-time is outside the representable range");
         }
 
-        var difference = DifferenceIsoDateTime(engine, one, two, unit);
+        var difference = DifferenceIsoDateTime(engine, calendar, one, two, unit);
 
         if (unit == TemporalUnit.Nanosecond)
         {
@@ -601,7 +601,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's DifferenceZonedDateTime (s6.5.6).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BE5737
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CFF555
     // Broiler-Human:        PENDING
     internal static JsInternalDuration DifferenceZonedDateTime(JsEngine engine, BigInteger ns1, BigInteger ns2, string timeZone, string calendar, TemporalUnit largestUnit)
     {
@@ -647,7 +647,7 @@ internal static partial class JsTemporal
         }
 
         var dateLargest = JsTemporalCore.Larger(largestUnit, TemporalUnit.Day);
-        var date = DateUntil(start.Date, intermediate.Date, dateLargest);
+        var date = DateUntil(engine, calendar, start.Date, intermediate.Date, dateLargest);
         return new JsInternalDuration(date, time);
     }
 
@@ -689,9 +689,9 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's DateDurationDays (s7.5.29).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5B1153
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2EA63D
     // Broiler-Human:        PENDING
-    internal static double DateDurationDays(JsEngine engine, JsDateDuration date, JsIsoDate relativeTo)
+    internal static double DateDurationDays(JsEngine engine, string calendar, JsDateDuration date, JsIsoDate relativeTo)
     {
         var yearsMonthsWeeks = date with { Days = 0 };
 
@@ -700,7 +700,7 @@ internal static partial class JsTemporal
             return date.Days;
         }
 
-        var later = DateAdd(engine, relativeTo, yearsMonthsWeeks, reject: false);
+        var later = DateAdd(engine, calendar, relativeTo, yearsMonthsWeeks, reject: false);
         return date.Days + (JsTemporalCore.EpochDays(later) - JsTemporalCore.EpochDays(relativeTo));
     }
 
@@ -717,7 +717,7 @@ internal static partial class JsTemporal
         timeZone is null ? JsTemporalCore.UtcEpochNs(dateTime) : EpochNsFor(engine, timeZone, dateTime, "compatible");
 
     /// <summary>The proposal's ComputeNudgeWindow (s7.5.33).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A38517
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C5571
     // Broiler-Human:        PENDING
     private static NudgeWindow ComputeNudgeWindow(
         JsEngine engine, int sign, JsInternalDuration duration, BigInteger originEpochNs, JsIsoDateTime dateTime,
@@ -748,9 +748,9 @@ internal static partial class JsTemporal
 
             case TemporalUnit.Week:
                 var yearsMonths = duration.Date with { Weeks = 0, Days = 0 };
-                var weeksStart = DateAdd(engine, dateTime.Date, yearsMonths, reject: false);
+                var weeksStart = DateAdd(engine, calendar, dateTime.Date, yearsMonths, reject: false);
                 var weeksEnd = JsTemporalCore.AddDays(weeksStart, (long)duration.Date.Days);
-                var until = DateUntil(weeksStart, weeksEnd, TemporalUnit.Week);
+                var until = DateUntil(engine, calendar, weeksStart, weeksEnd, TemporalUnit.Week);
                 var weeks = (long)JsTemporalCore.RoundToIncrement(JsTemporalCore.Exact(duration.Date.Weeks + until.Weeks), increment, TemporalRounding.Trunc);
                 r1 = weeks;
                 r2 = weeks + (increment * sign);
@@ -778,11 +778,11 @@ internal static partial class JsTemporal
         }
         else
         {
-            var start = DateAdd(engine, dateTime.Date, startDate, reject: false);
+            var start = DateAdd(engine, calendar, dateTime.Date, startDate, reject: false);
             startEpochNs = EpochFor(engine, timeZone, new JsIsoDateTime(start, dateTime.Time));
         }
 
-        var end = DateAdd(engine, dateTime.Date, endDate, reject: false);
+        var end = DateAdd(engine, calendar, dateTime.Date, endDate, reject: false);
         var endEpochNs = EpochFor(engine, timeZone, new JsIsoDateTime(end, dateTime.Time));
 
         return new NudgeWindow(r1, r2, startEpochNs, endEpochNs, new JsInternalDuration(startDate, 0), new JsInternalDuration(endDate, 0));
@@ -848,13 +848,13 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's NudgeToZonedTime (s7.5.35).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BD237F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=873106
     // Broiler-Human:        PENDING
     private static JsNudge NudgeToZonedTime(
         JsEngine engine, int sign, JsInternalDuration duration, JsIsoDateTime dateTime, string timeZone, string calendar,
         long increment, TemporalUnit unit, TemporalRounding mode)
     {
-        var start = DateAdd(engine, dateTime.Date, duration.Date, reject: false);
+        var start = DateAdd(engine, calendar, dateTime.Date, duration.Date, reject: false);
         var startDateTime = new JsIsoDateTime(start, dateTime.Time);
         var endDate = JsTemporalCore.AddDays(start, sign);
         var endDateTime = new JsIsoDateTime(endDate, dateTime.Time);
@@ -915,7 +915,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's BubbleRelativeDuration (s7.5.37).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E9E229
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BB0ACB
     // Broiler-Human:        PENDING
     private static JsInternalDuration BubbleRelativeDuration(
         JsEngine engine, int sign, JsInternalDuration duration, BigInteger nudgedEpochNs, JsIsoDateTime dateTime,
@@ -948,7 +948,7 @@ internal static partial class JsTemporal
                 endDuration = AdjustDate(engine, duration.Date, 0, duration.Date.Weeks + sign);
             }
 
-            var end = DateAdd(engine, dateTime.Date, endDuration, reject: false);
+            var end = DateAdd(engine, calendar, dateTime.Date, endDuration, reject: false);
             var endEpochNs = EpochFor(engine, timeZone, new JsIsoDateTime(end, dateTime.Time));
             var beyondEnd = nudgedEpochNs - endEpochNs;
 

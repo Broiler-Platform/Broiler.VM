@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   34
-// Annotated:        34/34
+// Relevant units:   36
+// Annotated:        36/36
 // Exempt:           31
-// Human-reviewed:   0/34
+// Human-reviewed:   0/36
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       34
+// Unverified:       36
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -144,7 +144,7 @@ internal sealed class JsCalendarFields
 }
 
 /// <summary>A Calendar Date Record (s12.3.1).</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8B89E5
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=316060
 // Broiler-Human:        PENDING
 internal readonly record struct JsCalendarDate(
     string? Era,
@@ -159,6 +159,7 @@ internal readonly record struct JsCalendarDate(
     long? YearOfWeek,
     int DaysInMonth,
     int DaysInYear,
+    int MonthsInYear,
     bool InLeapYear);
 
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9FF4AD
@@ -171,15 +172,19 @@ internal static partial class JsTemporal
         ["era", "eraYear", "year", "month", "monthCode", "day", "hour", "minute", "second", "millisecond", "microsecond", "nanosecond", "offset", "timeZone"];
 
     /// <summary>
-    /// The calendars Temporal and Intl.DateTimeFormat support (s12.1.2): the ISO 8601 calendar, and
-    /// the Gregorian calendar with its two eras.
+    /// The calendars Temporal supports (s12.1.2, as the Intl era and month code proposal's 1.1.1
+    /// amends it): every calendar type of its Table 1, with its two aliases (JSD-0056).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DA754A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EC3CEC
     // Broiler-Human:        PENDING
-    internal static readonly string[] AvailableCalendars = ["gregory", "iso8601"];
+    internal static readonly string[] AvailableCalendars =
+    [
+        "buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "ethiopic-amete-alem", "gregory", "hebrew", "indian",
+        "islamic-civil", "islamic-tbla", "islamic-umalqura", "islamicc", "iso8601", "japanese", "persian", "roc",
+    ];
 
-    /// <summary>The proposal's CanonicalizeCalendar (s12.1.1).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBDD16
+    /// <summary>The proposal's CanonicalizeCalendar (s12.1.1), with CLDR's preferred values of the two aliases.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F79C24
     // Broiler-Human:        PENDING
     internal static string CanonicalizeCalendar(JsEngine engine, string id)
     {
@@ -190,8 +195,23 @@ internal static partial class JsTemporal
             throw engine.Error("RangeError", "Temporal: the calendar " + id + " is not supported");
         }
 
-        return lower;
+        return lower switch
+        {
+            "ethiopic-amete-alem" => "ethioaa",
+            "islamicc" => "islamic-civil",
+            _ => lower,
+        };
     }
+
+    /// <summary>The arithmetic of a calendar other than <c>iso8601</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D05D69
+    // Broiler-Human:        PENDING
+    internal static JsCalendarSystem SystemOf(JsEngine engine, string calendar) => engine.Intl!.Calendars.For(calendar);
+
+    /// <summary>CalendarSupportsEra (Intl era and month code proposal, s4.1.1).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3B4923
+    // Broiler-Human:        PENDING
+    internal static bool SupportsEra(string calendar) => calendar is not ("iso8601" or "chinese" or "dangi");
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EF1A13
     // Broiler-Human:        PENDING
@@ -285,10 +305,10 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarExtraFields (s12.3.27).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9DD221
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DF7B52
     // Broiler-Human:        PENDING
     private static CalendarField[] ExtraFields(string calendar, CalendarField[] fields) =>
-        calendar == "gregory" && System.Array.IndexOf(fields, CalendarField.Year) >= 0
+        SupportsEra(calendar) && System.Array.IndexOf(fields, CalendarField.Year) >= 0
             ? [CalendarField.Era, CalendarField.EraYear]
             : [];
 
@@ -413,7 +433,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarFieldKeysToIgnore (s12.3.29).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=77D295
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C2A2E0
     // Broiler-Human:        PENDING
     private static System.Collections.Generic.HashSet<CalendarField> KeysToIgnore(string calendar, System.Collections.Generic.IEnumerable<CalendarField> keys)
     {
@@ -432,11 +452,18 @@ internal static partial class JsTemporal
                 ignored.Add(CalendarField.Month);
             }
 
-            if (calendar == "gregory" && key is CalendarField.Era or CalendarField.EraYear or CalendarField.Year)
+            if (SupportsEra(calendar) && key is CalendarField.Era or CalendarField.EraYear or CalendarField.Year)
             {
                 ignored.Add(CalendarField.Era);
                 ignored.Add(CalendarField.EraYear);
                 ignored.Add(CalendarField.Year);
+            }
+
+            // NonISOFieldKeysToIgnore (s4.1.23): a day or month can move a date across a regnal era.
+            if (calendar == "japanese" && key is CalendarField.Day or CalendarField.Month or CalendarField.MonthCode)
+            {
+                ignored.Add(CalendarField.Era);
+                ignored.Add(CalendarField.EraYear);
             }
         }
 
@@ -487,37 +514,18 @@ internal static partial class JsTemporal
         MonthDay,
     }
 
-    /// <summary>The proposal's CalendarResolveFields (s12.3.31), with the Gregorian calendar's eras.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A8B61E
+    /// <summary>
+    /// The proposal's CalendarResolveFields (s12.3.31); a calendar other than ISO 8601 resolves by the
+    /// Intl era and month code proposal's NonISOResolveFields.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3AA013
     // Broiler-Human:        PENDING
     internal static void ResolveFields(JsEngine engine, string calendar, JsCalendarFields fields, FieldsType type)
     {
-        if (calendar == "gregory")
+        if (calendar != "iso8601")
         {
-            if ((fields.Era is null) != (fields.EraYear is null))
-            {
-                throw engine.Error("TypeError", "Temporal: era and eraYear must be given together");
-            }
-
-            if (fields.Era is not null)
-            {
-                var eraYear = fields.EraYear!.Value;
-                var year = AsciiLower(fields.Era) switch
-                {
-                    "ce" or "ad" => eraYear,
-                    "bce" or "bc" => 1 - eraYear,
-                    _ => throw engine.Error("RangeError", "Temporal: " + fields.Era + " is not an era of the gregory calendar"),
-                };
-
-                if (fields.Year is { } given && given != year)
-                {
-                    throw engine.Error("RangeError", "Temporal: the year and the era year disagree");
-                }
-
-                fields.Year = year;
-                fields.Era = null;
-                fields.EraYear = null;
-            }
+            NonIsoResolveFields(engine, calendar, fields, type);
+            return;
         }
 
         var needsYear = type is FieldsType.Date or FieldsType.YearMonth;
@@ -536,11 +544,6 @@ internal static partial class JsTemporal
         if (fields.Month is null && fields.MonthCode is null)
         {
             throw engine.Error("TypeError", "Temporal: the month or monthCode property is required");
-        }
-
-        if (calendar == "gregory" && type == FieldsType.MonthDay && fields.MonthCode is null && fields.Year is null)
-        {
-            throw engine.Error("TypeError", "Temporal: a month-day in the gregory calendar needs a monthCode or a year");
         }
 
         if (fields.MonthCode is { } code)
@@ -602,12 +605,12 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarDateFromFields (s12.3.12).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F7125
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0F0D8B
     // Broiler-Human:        PENDING
     internal static JsIsoDate DateFromFields(JsEngine engine, string calendar, JsCalendarFields fields, bool reject)
     {
         ResolveFields(engine, calendar, fields, FieldsType.Date);
-        var result = DateToIso(engine, fields, reject);
+        var result = calendar == "iso8601" ? DateToIso(engine, fields, reject) : NonIsoDateToIso(engine, calendar, fields, reject);
 
         if (!JsTemporalCore.DateWithinLimits(result))
         {
@@ -618,13 +621,13 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarYearMonthFromFields (s12.3.13).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B3AE88
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B77E8F
     // Broiler-Human:        PENDING
     internal static JsIsoDate YearMonthFromFields(JsEngine engine, string calendar, JsCalendarFields fields, bool reject)
     {
         fields.Day = 1;
         ResolveFields(engine, calendar, fields, FieldsType.YearMonth);
-        var result = DateToIso(engine, fields, reject);
+        var result = calendar == "iso8601" ? DateToIso(engine, fields, reject) : NonIsoDateToIso(engine, calendar, fields, reject);
 
         if (!JsTemporalCore.YearMonthWithinLimits(result))
         {
@@ -635,15 +638,15 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarMonthDayFromFields (s12.3.14) and CalendarMonthDayToISOReferenceDate (s12.3.24).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E112EB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=15432F
     // Broiler-Human:        PENDING
     internal static JsIsoDate MonthDayFromFields(JsEngine engine, string calendar, JsCalendarFields fields, bool reject)
     {
         ResolveFields(engine, calendar, fields, FieldsType.MonthDay);
 
-        if (calendar != "iso8601" && fields.Year is { } y && (y < -271821 || y > 275760))
+        if (calendar != "iso8601")
         {
-            throw engine.Error("RangeError", "Temporal: the year is outside the representable range");
+            return NonIsoMonthDayToReferenceDate(engine, calendar, fields, reject);
         }
 
         var year = fields.Year ?? 1972;
@@ -657,15 +660,20 @@ internal static partial class JsTemporal
         return new JsIsoDate(1972, regulated.Month, regulated.Day);
     }
 
-    /// <summary>The proposal's CalendarDateAdd (s12.3.7); the Gregorian calendar adds as the ISO one does.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5D69E2
+    /// <summary>The proposal's CalendarDateAdd (s12.3.7); another calendar adds by NonISODateAdd.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E9DB8B
     // Broiler-Human:        PENDING
-    internal static JsIsoDate DateAdd(JsEngine engine, JsIsoDate date, JsDateDuration duration, bool reject)
+    internal static JsIsoDate DateAdd(JsEngine engine, string calendar, JsIsoDate date, JsDateDuration duration, bool reject)
     {
         if (System.Math.Abs(duration.Years) > 1e9 || System.Math.Abs(duration.Months) > 1e10 ||
             System.Math.Abs(duration.Weeks) > 1e10 || System.Math.Abs(duration.Days) > 1e11)
         {
             throw engine.Error("RangeError", "Temporal: the result is outside the representable range");
+        }
+
+        if (calendar != "iso8601")
+        {
+            return NonIsoDateAdd(engine, calendar, date, duration, reject);
         }
 
         var (year, month) = JsTemporalCore.BalanceYearMonth(date.Year + (long)duration.Years, date.Month + (long)duration.Months);
@@ -735,15 +743,20 @@ internal static partial class JsTemporal
     /// than by counting up one at a time; then the weeks and days between the constrained
     /// intermediate date and the second date.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AFDFD4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AF1573
     // Broiler-Human:        PENDING
-    internal static JsDateDuration DateUntil(JsIsoDate one, JsIsoDate two, TemporalUnit largestUnit)
+    internal static JsDateDuration DateUntil(JsEngine engine, string calendar, JsIsoDate one, JsIsoDate two, TemporalUnit largestUnit)
     {
         var sign = -JsTemporalCore.Compare(one, two);
 
         if (sign == 0)
         {
             return default;
+        }
+
+        if (calendar != "iso8601")
+        {
+            return NonIsoDateUntil(engine, calendar, one, two, largestUnit, sign);
         }
 
         long Largest(long estimate, System.Func<long, bool> surpasses)
@@ -792,35 +805,40 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarISOToDate (s12.3.26).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E7A98E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=58DE38
     // Broiler-Human:        PENDING
-    internal static JsCalendarDate IsoToDate(string calendar, JsIsoDate date)
+    internal static JsCalendarDate IsoToDate(JsEngine engine, string calendar, JsIsoDate date)
     {
-        var gregory = calendar == "gregory";
+        if (calendar != "iso8601")
+        {
+            return NonIsoToDate(engine, calendar, date);
+        }
+
         var (week, weekYear) = JsTemporalCore.WeekOfYear(date);
 
         return new JsCalendarDate(
-            gregory ? (date.Year > 0 ? "ce" : "bce") : null,
-            gregory ? (date.Year > 0 ? date.Year : 1 - date.Year) : null,
+            null,
+            null,
             date.Year,
             date.Month,
             "M" + JsTemporalCore.Padded(date.Month, 2),
             date.Day,
             JsTemporalCore.DayOfWeek(date),
             JsTemporalCore.DayOfYear(date),
-            gregory ? null : week,
-            gregory ? null : weekYear,
+            week,
+            weekYear,
             JsTemporalCore.DaysInMonth(date.Year, date.Month),
             JsTemporalCore.DaysInYear(date.Year),
+            12,
             JsTemporalCore.IsLeapYear(date.Year));
     }
 
     /// <summary>The proposal's ISODateToFields (s13.42).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EEE2C8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=48D02A
     // Broiler-Human:        PENDING
-    internal static JsCalendarFields DateToFields(string calendar, JsIsoDate date, FieldsType type)
+    internal static JsCalendarFields DateToFields(JsEngine engine, string calendar, JsIsoDate date, FieldsType type)
     {
-        var parts = IsoToDate(calendar, date);
+        var parts = IsoToDate(engine, calendar, date);
         var fields = new JsCalendarFields { MonthCode = parts.MonthCode };
 
         if (type is FieldsType.MonthDay or FieldsType.Date)

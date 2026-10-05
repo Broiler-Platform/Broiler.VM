@@ -76,6 +76,8 @@ internal sealed record SuiteFeatures(
     /// wrapped functions and <c>importValue</c> were built, on 2026-10-04. Temporal was admitted by
     /// JSD-0054 when its eight types, <c>Temporal.Now</c> and the tzdb time zones were built, on
     /// 2026-10-05, ahead of the calendars beyond ISO 8601 and Gregorian that its later slices add.
+    /// The Intl era and month code proposal was admitted by JSD-0056 the same day, when Temporal's
+    /// arithmetic in every calendar its Table 1 lists was built.
     /// </para>
     /// <para>
     /// <b>An entry needs a record, and the record is named beside it</b>, so this set cannot grow
@@ -91,6 +93,7 @@ internal sealed record SuiteFeatures(
             ["explicit-resource-management"] = "JSD-0034",
             ["ShadowRealm"] = "JSD-0040",
             ["Temporal"] = "JSD-0054",
+            ["Intl.Era-monthcode"] = "JSD-0056",
         };
 
     /// <summary>The proposed flags a <c>--test262</c> run skips: every proposal not admitted.</summary>

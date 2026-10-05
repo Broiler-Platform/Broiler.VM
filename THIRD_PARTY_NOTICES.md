@@ -538,6 +538,55 @@ against the Intl data budget of 768 KiB that the owner set the same day: with th
 670,742 bytes. **The release owner's co-signature this file requires for ingested material is not
 given.**
 
+## ICU4X's calendar crates, and the table derived from them
+
+**Added 2026-10-05 (phase F8, slice T3; decision
+[JSD-0056](src/Broiler.VM.Profile.JavaScript/docs/decisions/0056-temporal-in-the-cldr-calendars.md)).
+The fourth entry in this file whose material is compiled into a shipped assembly; it shares the CLDR
+entry's assembly.**
+
+This repository contains two crates of the ICU4X project, a table generated from them, and code
+ported from one of them:
+
+- **`icu_calendar` 2.3.0**, under the Unicode License v3 (SPDX `Unicode-3.0`), whose text the CLDR
+  entry above carries; its own copy is the crate's `LICENSE`, `Copyright © 2020-2024 Unicode, Inc.`
+- **`calendrical_calculations` 0.2.4**, under the Apache License 2.0, the licence of this
+  repository's own code. Its files state that they implement algorithms from *Calendrical
+  Calculations* by Reingold and Dershowitz (4th edition, 2018), which their authors released as Lisp
+  code under the Apache License 2.0. The crate carries no `NOTICE` file.
+
+**What was ingested.** Both crates as crates.io serves them, archived unmodified at
+[`src/tests/calendars/pins/`](src/tests/calendars/pins/README.md), where `calendars.pin` records each
+crate's length, SHA-256 and SHA-512 and the length and SHA-256 of the nine members a generator reads -
+`china_data.rs`, `korea_data.rs`, `qing_data.rs` and `ummalqura_data.rs` of `icu_calendar`, `persian.rs`
+of `calendrical_calculations`, and each crate's `Cargo.toml` and `LICENSE` - and rule **N31** checks
+them on every run of the architecture suite.
+
+**What is derived, and where it ships.** `CalendarTableGenerator` (architecture test project, not
+shipped) reads the Chinese, Korean, Qing-era and Umm al-Qura years those files state and the Persian
+calendar's 78 corrections, and writes `src/Broiler.VM.Profile.JavaScript.Intl/JsCalendarTables.g.cs`,
+compiled into **`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N32** holds to the generator
+byte for byte. **The years remain subject to the Unicode License v3**, and the corrections to the
+Apache License 2.0; the generated file says so. **One function of `icu_calendar` is ported**: the
+approximation of a Chinese or Korean year by mean new moons and mean solar terms
+(`src/cal/east_asian_traditional/simple.rs`), as `JsEastAsianCalendar.Approximate` in
+`src/Broiler.VM.Profile.JavaScript/JsCalendars.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.dll`**; that port is a derivative of Unicode-licensed software, and
+this entry is the notice the licence's condition (b) asks associated documentation to carry. The other
+calendars' arithmetic in that file is written from *Calendrical Calculations*' published formulas and
+the calendars' own rules.
+
+**Used to test, not shipped.** `src/tests/temporal/calendars/icu4x-reference.rs` is a program this
+repository wrote; built against the archived crates and the `icu_calendar_data` 2.3.0 crate, which is
+not archived, it wrote `temporal-calendars.icu4x-2.3.0.txt`, ICU4X's answers, which the slice
+compiler's check compares. `temporal-calendars.polyfill-e8cc03fc.txt` beside it is the reference
+polyfill's answer, under the next entry.
+
+**Owner decisions, and what is not given.** The repository owner asked on 2026-10-05 for phase F8's
+slices to be continued; JSD-0056 names the source. The table counts against the Intl data budget of
+768 KiB: with it the data measures 679,058 bytes. **The release owner's co-signature this file
+requires for ingested material is not given.**
+
 ## The Temporal proposal's reference polyfill, whose answers are retained
 
 **Added 2026-10-05 (phase F8, slice T1; decision
@@ -553,3 +602,8 @@ archived. The file holds the answers the polyfill gave, one per line, as the sli
 compares them; it reproduces none of the polyfill's code or text, so no licence text travels with it.
 This entry records the source so a reader finds every reference the tree's datasets were checked
 against in one file.
+
+The same holds for the answers of the slices that followed, each from a program of this repository's
+run under the same polyfill: `src/tests/temporal/intl/temporal-intl.polyfill-e8cc03fc.txt` (slice T2,
+JSD-0055) and `src/tests/temporal/calendars/temporal-calendars.polyfill-e8cc03fc.txt` (slice T3,
+JSD-0056).

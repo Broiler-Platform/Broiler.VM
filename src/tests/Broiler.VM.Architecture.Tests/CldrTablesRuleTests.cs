@@ -110,13 +110,13 @@ public sealed class CldrTablesRuleTests
 
     /// <summary>
     /// The table data, counted from the generated literals, stays under the owner's budget: the CLDR
-    /// tables and, since phase F8, the time zone tables rule N30 holds, which ship in the same
-    /// assembly (JSD-0053).
+    /// tables and, since phase F8, the time zone tables rule N30 holds and the calendar table rule N32
+    /// holds, which ship in the same assembly (JSD-0053, JSD-0056).
     /// </summary>
     [Fact]
     public void N28_The_Table_Data_Stays_Under_The_Budget()
     {
-        var text = CldrTableGenerator.Current.Desired + TzdbTableGenerator.Current.Desired;
+        var text = CldrTableGenerator.Current.Desired + TzdbTableGenerator.Current.Desired + CalendarTableGenerator.Current.Desired;
 
         var bytes = Regex.Matches(text, @"new byte\[\]\s*\{(?<body>[^}]*)\}")
             .Sum(static match => match.Groups["body"].Value.Count(static c => c == ','));

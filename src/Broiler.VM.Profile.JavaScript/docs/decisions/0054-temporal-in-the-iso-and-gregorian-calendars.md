@@ -171,3 +171,15 @@ is commented in the code:
   formatter and `Intl.supportedValuesOf`. Section 5's declared divergence, the ISO string written by
   the plain types' and `ZonedDateTime`'s `toLocaleString`, is gone. Sections 5 to 7 are kept as
   written.
+
+## Amended 2026-10-05: slice T3 built (unsigned)
+
+*Recorded with phase F8's slice T3; it signs nothing. Corrections entry
+[JSC-282](../roadmap.corrections.md#jsc-282).*
+
+- **T3 is built** under proposed [JSD-0056](0056-temporal-in-the-cldr-calendars.md): Temporal in every
+  calendar of the Intl era and month code proposal's Table 1, and that proposal's `Intl.Era-monthcode`
+  flag scored. Section 7's 312 variants of T3's now pass, and so does every scored variant under
+  `test/built-ins/Temporal`. The Gregorian calendar's eras are now the proposal's general ones, and an
+  era name is matched exactly, as CanonicalizeEraInCalendar compares it. Sections 1 to 8 are kept as
+  written.

@@ -22,7 +22,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F846D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F652AC
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainDateTime(JsObject temporal)
     {
@@ -87,7 +87,7 @@ internal sealed partial class JsRealm
             var dateTime = TemporalThis<JsPlainDateTimeObject>(engine, thisValue, "PlainDateTime", "with");
             var partial = PartialTemporalObject(engine, TemporalArgument(arguments, 0), "PlainDateTime");
             var calendar = dateTime.Calendar;
-            var fields = JsTemporal.DateToFields(calendar, dateTime.DateTime.Date, JsTemporal.FieldsType.Date);
+            var fields = JsTemporal.DateToFields(engine, calendar, dateTime.DateTime.Date, JsTemporal.FieldsType.Date);
             SetTimeFields(fields, dateTime.DateTime.Time);
             var partialDateTime = JsTemporal.PrepareFields(
                 engine,
@@ -242,7 +242,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The proposal's AddDurationToDateTime (s5.5.16).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=61A643
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=34E330
     // Broiler-Human:        PENDING
     private static JsPlainDateTimeObject AddDurationToDateTime(JsEngine engine, JsPlainDateTimeObject dateTime, JsValue[] arguments, bool subtract)
     {
@@ -251,7 +251,7 @@ internal sealed partial class JsRealm
         var internalDuration = JsTemporalCore.ToInternalWith24HourDays(fields);
         var timeResult = JsTemporalCore.AddTime(dateTime.DateTime.Time, internalDuration.Time);
         var dateDuration = JsTemporal.AdjustDate(engine, internalDuration.Date, timeResult.Days);
-        var added = JsTemporal.DateAdd(engine, dateTime.DateTime.Date, dateDuration, reject);
+        var added = JsTemporal.DateAdd(engine, dateTime.Calendar, dateTime.DateTime.Date, dateDuration, reject);
         return JsTemporal.CreatePlainDateTime(engine, new JsIsoDateTime(added, timeResult), dateTime.Calendar);
     }
 

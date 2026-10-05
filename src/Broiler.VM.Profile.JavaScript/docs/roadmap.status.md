@@ -637,6 +637,20 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F8 observation, slice T3, the CLDR calendars, 2026-10-05.** `Temporal` reckons in every
+calendar of the Intl era and month code proposal's Table 1 - eras, month codes, leap months, reference
+years, addition and difference as its section 4.1 states them - under proposed
+[JSD-0056](decisions/0056-temporal-in-the-cldr-calendars.md). The Chinese, Korean and Umm al-Qura
+years and the Persian corrections are ICU4X's, from two crates archived under the new rule N31 and
+generated into the Intl data assembly under the new rule N32; the data is 679,058 bytes. A retained
+dataset of 3,999 lines agrees with the reference polyfill on 3,929 lines, the 70 others named where
+ICU4C and ICU4X disagree, and with ICU4X on all 2,055 of its conversions. With the `Intl.Era-monthcode`
+flag scored, `test/built-ins/Temporal` passes all 9,176 scored variants and `test/intl402/Temporal`
+3,962 of 3,982; no variant scored before moves back ([JSC-282](roadmap.corrections.md#jsc-282)).
+`Intl.DateTimeFormat` does not yet write these calendars, a divergence the record declares. This is
+unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
+advances.
+
 **Phase F8 observation, slice T2, Intl over Temporal, 2026-10-05.** `Intl.DateTimeFormat` formats
 Temporal objects as the proposal amends ECMA-402, each type in its own format and a plain value at
 UTC, and every Temporal type's `toLocaleString` is ECMA-402's, under proposed

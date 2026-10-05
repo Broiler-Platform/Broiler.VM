@@ -171,7 +171,7 @@ internal sealed partial class JsRealm
     /// Defines the calendar getters the date-bearing types share (s3.3.3 to s3.3.18 and their
     /// counterparts), each reading CalendarISOToDate of the receiver.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DED038
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=42303D
     // Broiler-Human:        PENDING
     private void TemporalCalendarGetters(JsObject prototype, string[] names, TemporalDateReceiver receiver)
     {
@@ -187,7 +187,7 @@ internal sealed partial class JsRealm
                     return JsValue.String(calendar);
                 }
 
-                var parts = JsTemporal.IsoToDate(calendar, date);
+                var parts = JsTemporal.IsoToDate(engine, calendar, date);
                 return member switch
                 {
                     "era" => parts.Era is null ? JsValue.Undefined : JsValue.String(parts.Era),
@@ -203,7 +203,7 @@ internal sealed partial class JsRealm
                     "daysInWeek" => JsValue.Number(7),
                     "daysInMonth" => JsValue.Number(parts.DaysInMonth),
                     "daysInYear" => JsValue.Number(parts.DaysInYear),
-                    "monthsInYear" => JsValue.Number(12),
+                    "monthsInYear" => JsValue.Number(parts.MonthsInYear),
                     _ => JsValue.Boolean(parts.InLeapYear),
                 };
             });

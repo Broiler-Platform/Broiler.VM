@@ -1301,7 +1301,14 @@ public sealed class ReviewRecordRuleTests
         // PlainDate, PlainTime, PlainDateTime, ZonedDateTime, and PlainYearMonth with PlainMonthDay in
         // one. All are covered on the same terms as every other product file, and nothing in them has
         // been read by a human.
-        Assert.Equal(295, AssuranceSources.Files.Count);
+        //
+        // AND THE CLDR CALENDARS (phase F8 slice T3, 2026-10-05, JSD-0056): three files.
+        // JsCalendars.cs, the arithmetic of the fifteen calendars beyond ISO 8601;
+        // JsTemporal.CalendarNonIso.cs, the Intl era and month code proposal's calendar operations
+        // over it; and JsCalendarTables.g.cs, which CalendarTableGenerator writes and rule N32 holds.
+        // All are covered on the same terms as every other product file, and nothing in them has been
+        // read by a human.
+        Assert.Equal(298, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

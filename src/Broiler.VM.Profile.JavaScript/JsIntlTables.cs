@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
-// Exempt:           13
-// Human-reviewed:   0/24
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           14
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       24
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -85,7 +85,11 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly System.Lazy<JsTimeZones> timeZones;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=046CE6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3AA84F
+    // Broiler-Human:        PENDING
+    private readonly System.Lazy<JsCalendars> calendars;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50BBCF
     // Broiler-Human:        PENDING
     internal JsIntlTables(Format.IJsIntlData data)
     {
@@ -103,6 +107,7 @@ internal sealed class JsIntlTables
         breaks = new(() => new JsBreakData(Lines(Format.JsIntlTable.SegmentBreakValues), data.Table(Format.JsIntlTable.SegmentBreaks)));
         timeZones = new(() => new JsTimeZones(
             Lines(Format.JsIntlTable.TimeZoneIds), Lines(Format.JsIntlTable.TimeZoneRegions), data.Table(Format.JsIntlTable.TimeZones)));
+        calendars = new(() => new JsCalendars(data.Table(Format.JsIntlTable.Calendars)));
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -119,6 +124,11 @@ internal sealed class JsIntlTables
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5A12A5
     // Broiler-Human:        PENDING
     internal JsTimeZones TimeZones => timeZones.Value;
+
+    /// <summary>The calendars other than ISO 8601, built the first time Temporal names one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F73E47
+    // Broiler-Human:        PENDING
+    internal JsCalendars Calendars => calendars.Value;
 
     /// <summary>The collation data.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B35C2E

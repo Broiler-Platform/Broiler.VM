@@ -54,6 +54,8 @@ internal static class IntlChecks
         TemporalWithoutIntlAndBigIntIsRefused(),
         TemporalMatchesTheReferencePolyfill(),
         IntlOverTemporalMatchesTheReferencePolyfill(),
+        CalendarsMatchTheReferencePolyfill(),
+        CalendarConversionsMatchIcu4x(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -295,6 +297,47 @@ internal static class IntlChecks
             "temporal-intl.polyfill-e8cc03fc.txt",
             "the reference polyfill",
             1200);
+
+    /// <summary>
+    /// The retained answers of Temporal in the CLDR calendars (phase F8 T3, JSD-0056): the program under
+    /// <c>src/tests/temporal/calendars</c>, run here, answers every line the reference polyfill answered
+    /// through ICU4C 77.1, but for the lines <c>divergences.txt</c> names.
+    /// </summary>
+    private static (string, bool, string) CalendarsMatchTheReferencePolyfill() =>
+        RetainedMatches(
+            "temporal/t3/calendars-match-the-reference-polyfill",
+            "src/tests/temporal/calendars",
+            "temporal-calendars",
+            "temporal-calendars.polyfill-e8cc03fc.txt",
+            "the reference polyfill",
+            3500);
+
+    /// <summary>
+    /// The same program's conversion lines against ICU4X 2.3.0's (JSD-0056): every line ICU4X wrote is
+    /// one the profile answers, the divergences from the polyfill included.
+    /// </summary>
+    private static (string, bool, string) CalendarConversionsMatchIcu4x()
+    {
+        const string Name = "temporal/t3/calendar-conversions-match-icu4x";
+
+        if (Archived("src/tests/temporal/calendars/temporal-calendars.js") is not { } program ||
+            Archived("src/tests/temporal/calendars/temporal-calendars.icu4x-2.3.0.txt") is not { } retained)
+        {
+            return ("not-run/" + Name, false, "the retained calendar conversions are not under this working directory");
+        }
+
+        var answered = new System.Collections.Generic.HashSet<string>(
+            Evaluate(System.IO.File.ReadAllText(program), Composing()).Split('\n'), System.StringComparer.Ordinal);
+        var expected = System.IO.File.ReadAllText(retained).TrimEnd('\n').Split('\n');
+        var missing = System.Array.FindAll(expected, line => !answered.Contains(line));
+
+        return (
+            Name,
+            missing.Length == 0 && expected.Length > 2000,
+            missing.Length == 0
+                ? $"all {expected.Length} conversions answer as ICU4X 2.3.0 did"
+                : $"{missing.Length} of {expected.Length} conversions differ, first `{missing[0]}`");
+    }
 
     /// <summary>
     /// A retained dataset under <c>src/tests/cldr/<paramref name="dataset"/></c>: its program, run

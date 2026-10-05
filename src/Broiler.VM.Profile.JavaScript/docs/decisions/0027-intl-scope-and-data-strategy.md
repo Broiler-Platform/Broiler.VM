@@ -477,3 +477,15 @@ nothing, and this record keeps its status line. Corrections entry
   budget. Section 7's "tzdb-backed time zones" are built for `Intl.DateTimeFormat`, and the
   primary identifiers are CLDR's, as ECMA-402 6.5 recommends.
 - **Zone names other than the GMT format** need CLDR's metazones, which are not archived.
+
+## Amended 2026-10-05: calendar years in the data (unsigned)
+
+*Recorded with phase F8's slice T3; it signs nothing. Corrections entry
+[JSC-282](../roadmap.corrections.md#jsc-282).*
+
+- **The Intl data assembly carries a calendar table** under proposed
+  [JSD-0056](0056-temporal-in-the-cldr-calendars.md): the Chinese, Korean and Umm al-Qura years and
+  the Persian corrections, generated from two ICU4X crates archived under the new rule N31 and held
+  to their generator by the new rule N32. Decision (c)'s budget counts it: the data is 679,058 bytes,
+  107,374 under it. No CLDR file is added; formatting in these calendars, which needs CLDR's names
+  for them, is the next slice's, and it will put any growth past the budget to the owner.

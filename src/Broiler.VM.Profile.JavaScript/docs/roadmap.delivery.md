@@ -1371,6 +1371,15 @@ under N27, under proposed [JSD-0055](decisions/0055-intl-over-temporal-objects.m
 Over the whole pinned suite 96,938 of 100,180 variants pass, none moving back
 ([JSC-281](roadmap.corrections.md#jsc-281)).*
 
+*Progress, 2026-10-05, slice T3: `Temporal` reckons in every calendar of the Intl era and month code
+proposal's Table 1 under proposed [JSD-0056](decisions/0056-temporal-in-the-cldr-calendars.md), the
+Chinese, Korean and Umm al-Qura years and the Persian corrections taken from ICU4X's crates, archived
+under a new rule N31 and generated under a new rule N32, and the `Intl.Era-monthcode` flag is scored.
+`test/built-ins/Temporal` passes all 9,176 scored variants and `test/intl402/Temporal` 3,962 of 3,982;
+the 20 left format in a calendar `Intl.DateTimeFormat` does not yet write, or name a zone's long name.
+The plan gains a slice T4, `Intl.DateTimeFormat` in these calendars, which is next and closes the exit
+gate if the owner's budget holds CLDR's names for them ([JSC-282](roadmap.corrections.md#jsc-282)).*
+
 #### F9 — The release
 
 - **Delivers:** JS-10 over every surface above.

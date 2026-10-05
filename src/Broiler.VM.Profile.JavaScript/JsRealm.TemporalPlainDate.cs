@@ -22,7 +22,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=235B02
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=38E527
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainDate(JsObject temporal)
     {
@@ -63,14 +63,14 @@ internal sealed partial class JsRealm
         Method(prototype, "toPlainYearMonth", 0, static (engine, thisValue, arguments) =>
         {
             var date = TemporalThis<JsPlainDateObject>(engine, thisValue, "PlainDate", "toPlainYearMonth");
-            var fields = JsTemporal.DateToFields(date.Calendar, date.Date, JsTemporal.FieldsType.Date);
+            var fields = JsTemporal.DateToFields(engine, date.Calendar, date.Date, JsTemporal.FieldsType.Date);
             return JsValue.Object(JsTemporal.CreateYearMonth(engine, JsTemporal.YearMonthFromFields(engine, date.Calendar, fields, reject: false), date.Calendar));
         });
 
         Method(prototype, "toPlainMonthDay", 0, static (engine, thisValue, arguments) =>
         {
             var date = TemporalThis<JsPlainDateObject>(engine, thisValue, "PlainDate", "toPlainMonthDay");
-            var fields = JsTemporal.DateToFields(date.Calendar, date.Date, JsTemporal.FieldsType.Date);
+            var fields = JsTemporal.DateToFields(engine, date.Calendar, date.Date, JsTemporal.FieldsType.Date);
             return JsValue.Object(JsTemporal.CreateMonthDay(engine, JsTemporal.MonthDayFromFields(engine, date.Calendar, fields, reject: false), date.Calendar));
         });
 
@@ -84,7 +84,7 @@ internal sealed partial class JsRealm
         {
             var date = TemporalThis<JsPlainDateObject>(engine, thisValue, "PlainDate", "with");
             var partial = PartialTemporalObject(engine, TemporalArgument(arguments, 0), "PlainDate");
-            var fields = JsTemporal.DateToFields(date.Calendar, date.Date, JsTemporal.FieldsType.Date);
+            var fields = JsTemporal.DateToFields(engine, date.Calendar, date.Date, JsTemporal.FieldsType.Date);
             var partialDate = JsTemporal.PrepareFields(
                 engine, date.Calendar, partial, [CalendarField.Year, CalendarField.Month, CalendarField.MonthCode, CalendarField.Day], [], null, partial: true);
             fields = JsTemporal.MergeFields(date.Calendar, fields, partialDate);
@@ -219,18 +219,18 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The proposal's AddDurationToDate (s3.5.15).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7485F7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F986C6
     // Broiler-Human:        PENDING
     private static JsPlainDateObject AddDurationToDate(JsEngine engine, JsPlainDateObject date, JsValue[] arguments, bool subtract)
     {
         var fields = SignedDuration(engine, TemporalArgument(arguments, 0), subtract);
         var dateDuration = DateDurationWithoutTime(engine, fields);
         var reject = JsTemporal.Reject(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
-        return JsTemporal.CreatePlainDate(engine, JsTemporal.DateAdd(engine, date.Date, dateDuration, reject), date.Calendar);
+        return JsTemporal.CreatePlainDate(engine, JsTemporal.DateAdd(engine, date.Calendar, date.Date, dateDuration, reject), date.Calendar);
     }
 
     /// <summary>The proposal's DifferenceTemporalPlainDate (s3.5.14).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=69BA1A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AB9961
     // Broiler-Human:        PENDING
     private static JsDurationObject DifferenceTemporalPlainDate(JsEngine engine, JsPlainDateObject date, JsValue[] arguments, bool since)
     {
@@ -244,7 +244,7 @@ internal sealed partial class JsRealm
             return JsTemporal.CreateDuration(engine, new double[10]);
         }
 
-        var duration = new JsInternalDuration(JsTemporal.DateUntil(date.Date, other.Date, settings.LargestUnit), 0);
+        var duration = new JsInternalDuration(JsTemporal.DateUntil(engine, date.Calendar, date.Date, other.Date, settings.LargestUnit), 0);
 
         if (settings.SmallestUnit != TemporalUnit.Day || settings.RoundingIncrement != 1)
         {

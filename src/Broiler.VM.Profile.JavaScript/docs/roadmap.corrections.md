@@ -12435,3 +12435,46 @@ retained dataset `src/tests/temporal/intl/`.
 - JSD-0055 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-282
+
+**Where:** phase F8, slice T3. The calendar arithmetic in `JsCalendars.cs`, the Intl era and month
+code proposal's calendar operations in `JsTemporal.CalendarNonIso.cs` and `JsTemporal.Calendar.cs`,
+the Intl data contract's `Calendars` table, the calendar crates archived under `src/tests/calendars/pins/`
+(new rule N31) and their generated table `JsCalendarTables.g.cs` (new rule N32), the conformance
+runner's admitted proposals, and the retained dataset `src/tests/temporal/calendars/`.
+
+**What the plan said.**
+- [JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md) section 2: T3 is the
+  calendars beyond ISO 8601 and Gregorian that CLDR's data carries, with their eras, month codes and
+  leap months. Section 7 left 312 failing variants and the `Intl.Era-monthcode` proposal's 1,551
+  skipped cases to it.
+
+**What replaced it, observed on 2026-10-05.**
+- **Temporal reckons in every calendar of the proposal's Table 1** under proposed
+  [JSD-0056](decisions/0056-temporal-in-the-cldr-calendars.md), by the proposal's section 4.1:
+  eras, month codes, leap months, reference years, NonISODateAdd and NonISODateUntil, the last
+  counted from estimates rather than one unit at a time.
+- **The published years are ICU4X's**: `icu_calendar` 2.3.0 and `calendrical_calculations` 0.2.4,
+  retrieved twice and byte-identical, their digests the crates.io index's, are archived under the new
+  rule N31; a generator reads their Chinese, Korean, Qing and Umm al-Qura tables and Persian
+  corrections into a 1,958-byte table under the new rule N32. The data is 679,058 bytes, 107,374 under
+  the budget, which now counts it.
+- **The retained dataset** holds 3,999 lines: 3,929 agree with the reference polyfill and 70 are named
+  in three groups, each a place where ICU4C, through which the polyfill computes, and ICU4X disagree;
+  all 2,055 conversion lines agree with ICU4X.
+- **test262**: the `Intl.Era-monthcode` flag is scored. `test/built-ins/Temporal` passes all 9,176 of
+  its scored variants; `test/intl402/Temporal` passes 3,962 of 3,982, where it passed 598 of 930 - 312
+  variants move to passing and 3,052 newly scored ones pass; its 20 failing variants, and the 10 newly
+  scored that fail under `test/intl402/DateTimeFormat`, format in a calendar the formatter does not
+  write or name a zone's long name. No variant scored before moves from passing.
+- **Checks**: two new slice-compiler checks, 644 in all; six new architecture tests, 339 in all.
+
+**What must not be read as repaired.**
+- **`Intl.DateTimeFormat` still formats in `gregory` and `iso8601` only**, and
+  `Intl.supportedValuesOf("calendar")` lists those two: a declared divergence from the proposal's
+  1.1.1 until the next slice adds the calendars' CLDR names and patterns, if the budget holds them.
+- **F8's exit gate is not met** while that slice is open.
+- JSD-0056 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.

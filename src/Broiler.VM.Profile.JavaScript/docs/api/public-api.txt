@@ -1906,6 +1906,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow.op_Equality(Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow left, Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow.op_Inequality(Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow left, Broiler.VM.Profile.JavaScript.Format.JsIndirectExportRow right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Aliases : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 2
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Calendars : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 29
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.CollationRoot : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 5
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.CollationTailorings : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 6
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Currencies : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 9
