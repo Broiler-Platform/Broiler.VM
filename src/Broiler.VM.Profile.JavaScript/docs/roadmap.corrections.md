@@ -12206,6 +12206,11 @@ generator's two new tables, and the format's `JsIntlTable`.
 - **test262**, against the run JSC-276 records: `test/intl402/DurationFormat` passes 208 of 210 scored
   variants, from none, and the 2 failing need Serbian. Six files take Temporal arguments and are
   skipped.
+- **test262, whole pinned suite**, against the run [JSC-276](#jsc-276) records: 95,058 variants, 86,907
+  passing, 284 failing, 49 exhausted and 7,818 skipped. 208 moved from failing to passing, all under
+  `test/intl402/DurationFormat`, and none moved to failing. The `Atomics.waitAsync` variants JSC-273
+  records as machine-dependent moved again, 2 passing and 4 others running out of live bytes. The 49
+  exhausted are JSC-270's 44 and 5 of those.
 
 **What must not be read as repaired.**
 - **Temporal's Duration objects and duration strings** are not durations here until phase F8.

@@ -643,7 +643,8 @@ profile's own number and list formats, its fractions exact. A unit lookup of the
 corrected to fall back within a width as ICU does. The retained German and English durations agree
 with ICU 77.1's flagged implementation on 362 of 553 lines. The 191 others are named: where Node's
 earlier stage departs from the draft, where CLDR 48 changed German patterns, and `arab`'s symbols.
-`test/intl402/DurationFormat` passes 208 of 210 scored variants, and the failing ones need Serbian
+`test/intl402/DurationFormat` passes 208 of 210 scored variants, and the failing ones need Serbian.
+Over the whole pinned suite 86,907 of 95,058 variants pass, 206 more, and none failed newly
 ([JSC-277](roadmap.corrections.md#jsc-277), proposed
 [JSD-0051](decisions/0051-intl-durationformat.md)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.
