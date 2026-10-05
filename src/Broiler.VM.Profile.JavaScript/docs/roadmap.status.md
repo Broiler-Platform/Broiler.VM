@@ -646,8 +646,8 @@ which is now empty. A retained dataset of 1,629 operations agrees with the propo
 polyfill on every line. `test/built-ins/Temporal` passes all 9,156 scored variants.
 `test/intl402/Temporal` passes 464 of 930: the others need Intl over Temporal objects (T2) or the
 calendars beyond ISO and Gregorian (T3), as do the 108 failing `Intl.DateTimeFormat` variants that
-claim the flag elsewhere. Every other variant under `test/intl402`, `test/built-ins/Date` and
-`test/staging` scores as before ([JSC-280](roadmap.corrections.md#jsc-280)). This is unreviewed
+claim the flag elsewhere. Over the whole pinned suite 96,694 of 100,180 variants pass, and every
+variant scored before keeps its verdict ([JSC-280](roadmap.corrections.md#jsc-280)). This is unreviewed
 implementation and validation material, not accepted milestone evidence; no milestone row advances.
 
 **Phase F8 observation, the time zone data, 2026-10-05.** The repository owner chose to start

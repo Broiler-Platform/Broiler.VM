@@ -1361,7 +1361,8 @@ and Gregorian calendars, and the identity `broiler.javascript.temporal` is minte
 Intl and BigInt. The plan is now three slices: T2 is Intl over Temporal objects and T3 the other
 calendars. `Temporal` left the `absent-globals` block. `test/built-ins/Temporal` passes all 9,156
 scored variants; `test/intl402/Temporal` passes 464 of 930, its failures T2's and T3's, so the exit
-gate is not yet met ([JSC-280](roadmap.corrections.md#jsc-280)).*
+gate is not yet met. Over the whole pinned suite 96,694 of 100,180 variants pass, and every variant
+scored before keeps its verdict ([JSC-280](roadmap.corrections.md#jsc-280)).*
 
 #### F9 — The release
 

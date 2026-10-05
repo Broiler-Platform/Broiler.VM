@@ -131,6 +131,10 @@ is commented in the code:
   the run [JSC-279](../roadmap.corrections.md#jsc-279) records, but for three `test/staging/sm` variants
   that ran out of wall time under the run's load and pass alone.
 
+  The whole pinned suite, run after the change: 100,180 variants, 96,694 passing, 746 failing, 44
+  exhausted and 2,696 skipped, every variant scored before with the same verdict
+  ([JSC-280](../roadmap.corrections.md#jsc-280)).
+
   The run found two defects before this record was written, each fixed: a tie under `halfEven` rounded
   by the remainder's parity rather than the quotient's (instants and `ZonedDateTime` strings), and a
   named zone's possible instants checked a day range the draft checks only for offsets, which refused

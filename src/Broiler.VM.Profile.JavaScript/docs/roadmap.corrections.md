@@ -12378,6 +12378,10 @@ surface identity `broiler.javascript.temporal` in `JsSurfaces.cs` and `JavaScrip
   82 cases elsewhere that claim the flag, 52 variants pass and 108 fail, each an
   `Intl.DateTimeFormat` case over a Temporal object (T2). Everything else under `test/intl402`,
   `test/built-ins/Date` and `test/staging` scores as before.
+- **test262, whole pinned suite**, against the run [JSC-279](#jsc-279) records: 100,180 variants, 96,694
+  passing, 746 failing, 44 exhausted and 2,696 skipped. 5,122 skipped `Temporal` files became 10,244
+  scored variants: 9,672 pass and 572 fail, each a T2 or T3 case. Every variant scored before keeps
+  its verdict.
 - **Checks**: three new slice-compiler checks, 641 in all. The architecture suite is unchanged in
   number, 333, with N17 and N24 amended.
 
