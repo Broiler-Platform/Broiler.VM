@@ -1280,7 +1280,11 @@ public sealed class ReviewRecordRuleTests
         // AND DURATIONS (phase F7, 2026-10-05, JSD-0051): JsRealm.DurationFormat.cs,
         // Intl.DurationFormat over the number and list formats. It is covered on the same terms as
         // every other product file, and nothing in it has been read by a human.
-        Assert.Equal(276, AssuranceSources.Files.Count);
+        //
+        // AND DISPLAY NAMES (phase F7, 2026-10-05, JSD-0052): JsRealm.DisplayNames.cs,
+        // Intl.DisplayNames over CLDR's locale display names. It is covered on the same terms as every
+        // other product file, and nothing in it has been read by a human.
+        Assert.Equal(277, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

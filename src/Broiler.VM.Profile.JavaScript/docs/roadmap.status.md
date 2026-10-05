@@ -637,6 +637,18 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F7 observation, slice I4's `Intl.DisplayNames`, 2026-10-05.** The repository owner set the
+Intl data budget at 768 KiB, JSD-0027's decision (c), and rule N28 holds it in place of the
+provisional bound. `Intl.DisplayNames` is built as the current ECMA-402 draft states it, in all six
+types, over CLDR's locale display names from a fifth CLDR package the archive gained under N27. A
+language is composed as ICU composes it. The retained German and English display names agree with
+ICU 77.1 on 759 of 823 lines; the 64 others are named. The data is 572,024 bytes, 214,408 under the
+budget. `test/intl402/DisplayNames` passes all 114 scored variants and `test/intl402/Intl` all 130.
+Every constructor of slice I4 is built, and phase F7's exit gate is met
+([JSC-278](roadmap.corrections.md#jsc-278), proposed
+[JSD-0052](decisions/0052-intl-displaynames.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F7 observation, slice I4's `Intl.DurationFormat`, 2026-10-05.** `Intl.DurationFormat` is
 built as the current ECMA-402 draft states it, in every style and per-unit option. It writes over the
 profile's own number and list formats, its fractions exact. A unit lookup of the number format is

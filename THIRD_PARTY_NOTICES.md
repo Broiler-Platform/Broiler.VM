@@ -412,7 +412,11 @@ from `cldr-core` `scriptMetadata.json` and `weekData.json`, and for `Intl.Plural
 [JSD-0047](src/Broiler.VM.Profile.JavaScript/docs/decisions/0047-intl-pluralrules.md))
 `ordinals.json`. Since the same day, for `Intl.ListFormat` (decision
 [JSD-0048](src/Broiler.VM.Profile.JavaScript/docs/decisions/0048-intl-listformat.md)), it also
-holds from `cldr-misc-full` `listPatterns.json` for `de` and `en`.
+holds from `cldr-misc-full` `listPatterns.json` for `de` and `en`. Since 2026-10-05, for
+`Intl.DisplayNames` (decision
+[JSD-0052](src/Broiler.VM.Profile.JavaScript/docs/decisions/0052-intl-displaynames.md)), it also
+holds from `cldr-localenames-full` `languages.json`, `territories.json`, `scripts.json`,
+`variants.json` and `localeDisplayNames.json` for `de` and `en`.
 
 **What is derived, and where it ships.** `CldrTableGenerator` (architecture test project, not
 shipped) writes one source file of tables from those files and the pinned UCD:
@@ -425,8 +429,9 @@ unit patterns and plural rules, the currency fraction digits and the numbering s
 since slice I3 each language's Gregorian calendar names and patterns, date field names and UTC and GMT
 zone names, the hour cycles of the supported regions and the day period rules, and since slice I4
 the hour cycles and weeks of every region, the scripts' line directions, and each language's ordinal
-plural rules, list patterns, relative time patterns and duration patterns, and from the UCD the
-break properties `Intl.Segmenter` reads. The derived tables
+plural rules, list patterns, relative time patterns and duration patterns, and each language's names
+of languages, regions, scripts, variants, calendars and date fields, and from the UCD the break
+properties `Intl.Segmenter` reads. The derived tables
 therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);
@@ -444,8 +449,10 @@ than met.
 **Owner decisions, and what is not given.** JSD-0027's owner decision (c) asks for a size budget from
 a measured prototype. The tables measured 325,646 bytes of data on 2026-10-04, in an assembly of
 333,312 bytes, and 438,831 bytes in an assembly of 448,000 once slice I2's data joined them the same
-day. Rule N28 holds them under a provisional bound of 512 KiB that JSD-0043 records. **Nobody has signed a budget, and the
-release owner's co-signature this file requires for ingested material is not given.**
+day. Rule N28 held them under a provisional bound of 512 KiB that JSD-0043 records, until the
+repository owner set the budget at 768 KiB on 2026-10-05, when `Intl.DisplayNames`'s names needed
+more. They measured 572,024 bytes that day, in an assembly of 583,680 bytes. **The release owner's
+co-signature this file requires for ingested material is not given.**
 
 The CLDR licence text, as archived at `src/tests/cldr/pins/cldr-LICENSE.txt`:
 

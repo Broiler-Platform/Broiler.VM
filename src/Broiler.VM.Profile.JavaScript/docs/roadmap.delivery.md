@@ -1325,6 +1325,14 @@ still waits on the size budget ([JSC-276](roadmap.corrections.md#jsc-276)).*
 and passes 208 of 210 scored `intl402` variants; the failing ones need Serbian. Every constructor of
 slice I4 is built but `DisplayNames`, which waits on the owner's size budget (JSD-0027 decision (c))
 ([JSC-277](roadmap.corrections.md#jsc-277)).*
+*Progress, 2026-10-05: the repository owner set the Intl data budget at 768 KiB (JSD-0027 decision
+(c)), and `Intl.DisplayNames` is built under proposed
+[JSD-0052](decisions/0052-intl-displaynames.md), over CLDR's locale display names. The retained
+display names agree with ICU 77.1 but for 64 named divergences. `DisplayNames` passes all 114 scored
+`intl402` variants, and `Intl` all 130. **Every constructor of slice I4 is built, and the exit gate
+is met**: `test/intl402` is admitted and scored per slice, each failing variant needing a locale,
+calendar or numbering system the data does not carry. F8 (Temporal) is next, starting with tzdb, as
+the owner chose ([JSC-278](roadmap.corrections.md#jsc-278)).*
 
 #### F8 — Temporal
 

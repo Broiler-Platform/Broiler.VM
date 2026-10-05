@@ -50,6 +50,12 @@
 # EXTENDED 2026-10-04 FOR SLICE I4, A THIRD TIME. Intl.ListFormat's patterns come from one more npm
 # package, cldr-misc-full at 48.2.0: its tarball, retrieved twice, byte-identical, and checked against
 # the registry's sha512 integrity; from it listPatterns.json for de and en and its package.json.
+#
+# EXTENDED 2026-10-05 FOR SLICE I4, A FOURTH TIME. Intl.DisplayNames reads one more npm package,
+# cldr-localenames-full at 48.2.0, after the repository owner set the Intl data budget to 768 KiB
+# that day (JSD-0027 decision (c)): its tarball, retrieved twice, byte-identical, and checked against
+# the registry's sha512 integrity; from it languages.json, territories.json, scripts.json,
+# variants.json and localeDisplayNames.json for de and en, and its package.json.
 
 data unicode-common-locale-data-repository
 version 48.2.0
@@ -62,6 +68,7 @@ json-integrity cldr-numbers-full sha512-0EQ+UkVDsyXOlxnWnL1RIENVZFqCnb04D1Yrku0o
 json-integrity cldr-units-full sha512-BjDC7V46eeXzgalnIumrJ1XQDk8wJaOxNLME4hmkBT9Q0hnzxn3XgtavigPUwnljk7FxlNQW9Wx+hbFrARPrQg==
 json-integrity cldr-dates-full sha512-zMrKvjMO414HDftLr6vKH1fNQHakFNe+F1h4S0eg+zmL4WRi9pI41fxB3UrTJDY42MEM87jCuAw/qlqCgYKcAQ==
 json-integrity cldr-misc-full sha512-dSc2Tr53dQcUGwsTinamEeoP2YXOhQrIZ+SyeuUrv4MzJOSjT/Q0qkSmX11ZwfcTbYSkIqbrgALQLhAm1yf5fA==
+json-integrity cldr-localenames-full sha512-4o0paYDz0UXhfhChAVFkmVl2CP0YTSEqE6WrC0fNafaSC5u5DAXphxH3SZ1Ujczarikr8DToKZfiok6EqWLdNQ==
 repository-source https://raw.githubusercontent.com/unicode-org/cldr/release-48-2/
 retrieved 2026-10-04
 retrievals 2 byte-identical
@@ -110,6 +117,17 @@ file cldr-48.2.0/json/cldr-dates-full/main/en/ca-gregorian.json 19266 099b5dadb3
 file cldr-48.2.0/json/cldr-dates-full/main/en/dateFields.json 26073 4fcaa5f74d743a0bc734a556638c687ee7607824cc763be0f746a20d36e9cb0c
 file cldr-48.2.0/json/cldr-dates-full/main/en/timeZoneNames.json 44939 db04305a4bac1389b965e71974adf174adc4130f38b86dfcf1f4e2eec343a174
 file cldr-48.2.0/json/cldr-dates-full/package.json 771 cc651f93556ff63f4ef820c0a4a7ad973e31299764b3118ebfc8b2194dfcdf27
+file cldr-48.2.0/json/cldr-localenames-full/main/de/languages.json 19782 86f24c579d26d91e0a8176f2b2509bb224c97a538097d2cfa197f310c2c2b5b1
+file cldr-48.2.0/json/cldr-localenames-full/main/de/localeDisplayNames.json 8384 a8d1c4a88dd9dd65b61fea8799735f1c13b822be3f579dcdcdf98767c185d72e
+file cldr-48.2.0/json/cldr-localenames-full/main/de/scripts.json 5699 7ab0abf1661713dbdf79d9ff5be14b15e3a2e6b84c796268174d32922849c497
+file cldr-48.2.0/json/cldr-localenames-full/main/de/territories.json 9892 e5b7a831cd70afeaad10a56360c08e2d970e9fe79f254ee8d937a7dfa13686b7
+file cldr-48.2.0/json/cldr-localenames-full/main/de/variants.json 1568 7e9699a584e0b8c5fe9b50ab3ccde8d4ce99ce92a2249b1d5800a18b97931666
+file cldr-48.2.0/json/cldr-localenames-full/main/en/languages.json 20815 a5960d2371bc7d982da7fcfd9a0e237429d3467a5cc76f680bc3af5bcef9fb4e
+file cldr-48.2.0/json/cldr-localenames-full/main/en/localeDisplayNames.json 17470 29b07edcff9a65505c0b543e6c2dba90eea217cf1080232b37d3b461420ae078
+file cldr-48.2.0/json/cldr-localenames-full/main/en/scripts.json 7102 48ce7e6cf85ca719ec04850786e778bb93fb7c83067a417f56f02d2fa882448b
+file cldr-48.2.0/json/cldr-localenames-full/main/en/territories.json 9956 158c1d575308f7e46912edbeda435c8fe2ef5dad280798231f3a432e406b1807
+file cldr-48.2.0/json/cldr-localenames-full/main/en/variants.json 2663 75ce116f956fb64e456e6dffaad1607a0dcc2ed0960453cb1c9963122f018c93
+file cldr-48.2.0/json/cldr-localenames-full/package.json 799 646ed69efd8ea7589f7cb51e6c2adaf69a86211e8eab63163b0775fd5d555731
 file cldr-48.2.0/json/cldr-misc-full/main/de/listPatterns.json 1695 d010586775f0e6db1f8c3e8dc76c3a34476c0623332a1f4076a9f490557e2e26
 file cldr-48.2.0/json/cldr-misc-full/main/en/listPatterns.json 1665 e68b0612a0c0f129836460c150bf58045a60a7516c9705e147f2192fce0449e8
 file cldr-48.2.0/json/cldr-misc-full/package.json 730 42e2a38e57b3a731403121ba1f0cc7552461232e2d7da974e882303e438b2d1a

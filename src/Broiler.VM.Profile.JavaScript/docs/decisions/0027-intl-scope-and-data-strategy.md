@@ -442,3 +442,22 @@ status line. Corrections entry [JSC-272](../roadmap.corrections.md#jsc-272).*
   [JSC-277](../roadmap.corrections.md#jsc-277). It needs no new archive file, and it corrects a unit
   lookup of I2's number format. **Every constructor section 7 names for I4 is now built but
   `DisplayNames`**, and the size budget decides when it can be.
+
+## Decision (c) taken, and I4's DisplayNames, 2026-10-05
+
+*Recorded with the change that publishes `Intl.DisplayNames`. The budget below is the repository
+owner's decision; the rest signs nothing, and this record keeps its status line. Corrections entry
+[JSC-278](../roadmap.corrections.md#jsc-278).*
+
+- **Owner decision (c) is taken: the Intl data's budget is 768 KiB**, set by the repository owner on
+  2026-10-05 from the measured data, 503,797 bytes that day, and `DisplayNames`'s estimated names. It
+  replaces JSD-0043's provisional 512 KiB bound, and rule N28's size test holds it. Growth past it is
+  a new owner decision, not a drift.
+- **`DisplayNames` is seventh and last**, under proposed [JSD-0052](0052-intl-displaynames.md). The
+  archive grew by a fifth CLDR package, `cldr-localenames-full`, under N27, and the generated data is
+  now 572,024 bytes, 214,408 under the budget. Its retained dataset of 823 lines agrees with ICU 77.1
+  but for 64 named lines.
+- **Every constructor section 7 names for I4 is built**, and phase F7's exit gate is met. Section 7's
+  tzdb-backed time zones wait for phase F8. Decision (d), whether IANA tzdb is ever in scope, was
+  answered by the owner the same day: phase F8 starts by archiving and pinning it. Section 7's `tr`, `az`
+  and `lt` case tailorings are not built.

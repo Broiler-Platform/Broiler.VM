@@ -12219,3 +12219,62 @@ generator's two new tables, and the format's `JsIntlTable`.
 - JSD-0051 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-278
+
+**Where:** phase F7's slice I4, its seventh and last part. `Intl.DisplayNames`
+(`JsRealm.DisplayNames.cs`); the CLDR pin, which gains `cldr-localenames-full`; the CLDR generator's
+new `DisplayNames` table; and rule N28's size test, which now holds the owner's budget.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists DisplayNames among "I4
+  and later", accepted "each opened by its own consumer and its own card".
+- JSD-0027's owner decision (c) asked for a size budget "from a measured prototype, not a guess".
+  [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) held the data under a provisional
+  512 KiB bound until one was set, and [JSC-275](#jsc-275) recorded that the bound left less than
+  `DisplayNames` needs.
+
+**What replaced it, observed on 2026-10-05.**
+- **The owner took decision (c)**: the repository owner set the Intl data budget at 768 KiB on
+  2026-10-05. Rule N28's size test holds it, under the name
+  `N28_The_Table_Data_Stays_Under_The_Budget`, and it replaces the provisional bound.
+- **`Intl.DisplayNames` is built whole**, under proposed
+  [JSD-0052](decisions/0052-intl-displaynames.md): `of`, `resolvedOptions` and `supportedLocalesOf`,
+  in every type, style, fallback and language display.
+  - A code's case is regularized as CanonicalCodeForDisplayNames states before it is named.
+  - A language is composed as ICU composes it: the whole code's dialect name, then the language,
+    script, region and variants in CLDR's locale pattern, and an unnamed part as its code under the
+    code fallback.
+  - The short styles take CLDR's `-alt-short` forms for languages and regions.
+- **The archive grew by a fifth CLDR package**, `cldr-localenames-full` at 48.2.0, retrieved twice,
+  byte-identical, and checked against its sha512 integrity. Its five name files for `de` and `en` are
+  pinned under N27.
+- **N28's file gains the `DisplayNames` table**, 68,227 bytes, so the data is 572,024 bytes in an
+  assembly of 583,680, 214,408 under the budget.
+- **The retained display-name dataset**
+  ([`src/tests/cldr/displaynames/`](../../tests/cldr/displaynames/README.md)) has 823 lines against
+  Node 22.22.0's ICU 77.1. 759 lines agree. 64 differ in four groups, each named in
+  `divergences.txt`:
+  - the case regularization V8 does not make;
+  - CLDR 48's renamed calendars;
+  - ICU's names for `sl-rozaj-biske` and `und`;
+  - the empty script code ECMA-402 refuses.
+- **Checks**: one new slice-compiler check, 637 in all, holds the dataset.
+- **test262**, against the run JSC-277 records: `test/intl402/DisplayNames` passes all 114 scored
+  variants, from 8, and `test/intl402/Intl` all 130, from 126.
+- **Phase F7's exit gate is met, as section 26 states it.** `test/intl402` is admitted by JSD-0018's
+  amendment of 2026-10-04, and every constructor JSD-0027 section 7 names is built and scored by its
+  directory. The variants still failing in them each need a locale, calendar or numbering system the
+  data does not carry, as each slice's record names. `Intl` left the `absent-globals` block with
+  slice I1. `test/intl402/Temporal` is phase F8's.
+
+**What must not be read as repaired.**
+- **Locales**: names exist for `de` and `en` only, as every F7 surface's data does.
+- **I4's time-zone data and the `tr`, `az` and `lt` case tailorings**, which JSD-0027 section 7 lists
+  beside the constructors, are not built. Time zones are phase F8's, under the owner's choice of
+  2026-10-05 to start it with tzdb.
+- JSD-0052 is proposed and unsigned, and so are the records of every slice of F7. The exit gate being
+  met moves no milestone or stage.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout, and the repository owner's
+budget decision of the same day. 2026-10-05.

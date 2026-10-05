@@ -359,7 +359,7 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>Decodes the week and script tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B41B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=330A35
     // Broiler-Human:        PENDING
     private JsLocaleInfo ReadLocaleInfo()
     {
@@ -388,6 +388,12 @@ internal sealed class JsIntlTables
         {
             var fields = line.Split('|');
             info.RelativeTimes[fields[0] + "|" + fields[1] + "|" + fields[2]] = Unescape(fields[3]);
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.DisplayNames))
+        {
+            var fields = line.Split('|');
+            info.DisplayNames[fields[0] + "|" + fields[1] + "|" + fields[2]] = Unescape(fields[3]);
         }
 
         return info;

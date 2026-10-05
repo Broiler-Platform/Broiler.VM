@@ -101,6 +101,7 @@ internal static class CldrTableGenerator
         TextTable(text, "Ordinals", "The ordinal plural rules of each supported language: language, category, rule.", Ordinals(cldr));
         TextTable(text, "ListPatterns", "The list patterns of each supported language: language, type, start, middle, end, pair.", ListPatterns(cldr));
         TextTable(text, "RelativeTimes", "The relative time patterns of each supported language: language, field, key, pattern.", RelativeTimes(cldr));
+        TextTable(text, "DisplayNames", "The display names of each supported language: language, kind, code, name.", DisplayNames(cldr));
         TextTable(text, "SegmentBreakValues", "The values of the break properties Intl.Segmenter reads, in the order their codes number them: property, values.", SegmentBreakValues.Select(static property => property.Name + "|" + string.Join('|', property.Values)));
         ByteTable(text, "SegmentBreaks", "Unicode 17.0.0's Grapheme_Cluster_Break, Word_Break, Sentence_Break, Extended_Pictographic, Indic_Conjunct_Break, and Ideographic or Hiragana, over the code space: the distinct combinations, then the runs.", SegmentBreaks(ucd));
         TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
@@ -680,6 +681,88 @@ internal static class CldrTableGenerator
         }
 
         return [.. data];
+    }
+
+    /// <summary>The date-time field codes of ECMA-402's table 19, and the CLDR date field each names.</summary>
+    private static readonly (string Code, string Field)[] DateTimeFieldCodes =
+    [
+        ("era", "era"), ("year", "year"), ("quarter", "quarter"), ("month", "month"), ("weekOfYear", "week"),
+        ("weekday", "weekday"), ("day", "day"), ("dayPeriod", "dayperiod"), ("hour", "hour"), ("minute", "minute"),
+        ("second", "second"), ("timeZoneName", "zone"),
+    ];
+
+    /// <summary>
+    /// Each supported language's display names (JSD-0052): its names of languages, regions, scripts
+    /// and variants with their alternate forms but the menu ones; its locale patterns; its calendar
+    /// names under their BCP 47 identifiers; and its date-time field names in three widths.
+    /// </summary>
+    internal static IEnumerable<string> DisplayNames(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var calendars = Json(cldr, "json/cldr-bcp47/bcp47/calendar.json")
+            .GetProperty("keyword").GetProperty("u").GetProperty("ca");
+
+        foreach (var language in NumberLanguages)
+        {
+            var lines = new List<string>();
+
+            foreach (var (file, kind) in new[] { ("languages", "language"), ("territories", "region"), ("scripts", "script"), ("variants", "variant") })
+            {
+                var names = Json(cldr, $"json/cldr-localenames-full/main/{language}/{file}.json")
+                    .GetProperty("main").GetProperty(language).GetProperty("localeDisplayNames").GetProperty(file);
+
+                foreach (var entry in names.EnumerateObject())
+                {
+                    if (!entry.Name.EndsWith("-alt-menu", StringComparison.Ordinal))
+                    {
+                        lines.Add($"{language}|{kind}|{entry.Name}|{Escape(entry.Value.GetString()!)}");
+                    }
+                }
+            }
+
+            var display = Json(cldr, $"json/cldr-localenames-full/main/{language}/localeDisplayNames.json")
+                .GetProperty("main").GetProperty(language).GetProperty("localeDisplayNames");
+
+            foreach (var pattern in new[] { "localePattern", "localeSeparator" })
+            {
+                lines.Add($"{language}|pattern|{pattern}|{Escape(display.GetProperty("localeDisplayPattern").GetProperty(pattern).GetString()!)}");
+            }
+
+            var calendarNames = display.GetProperty("types").GetProperty("calendar");
+
+            foreach (var calendar in calendars.EnumerateObject())
+            {
+                if (calendar.Name.StartsWith('_'))
+                {
+                    continue;
+                }
+
+                var key = calendar.Value.TryGetProperty("_alias", out var alias) ? alias.GetString()! : calendar.Name;
+
+                if (calendarNames.TryGetProperty(key, out var name) || calendarNames.TryGetProperty(calendar.Name, out name))
+                {
+                    lines.Add($"{language}|calendar|{calendar.Name}|{Escape(name.GetString()!)}");
+                }
+            }
+
+            var fields = Json(cldr, $"json/cldr-dates-full/main/{language}/dateFields.json")
+                .GetProperty("main").GetProperty(language).GetProperty("dates").GetProperty("fields");
+
+            foreach (var (code, field) in DateTimeFieldCodes)
+            {
+                foreach (var (width, suffix) in new[] { ("long", ""), ("short", "-short"), ("narrow", "-narrow") })
+                {
+                    if (fields.TryGetProperty(field + suffix, out var named) && named.TryGetProperty("displayName", out var value))
+                    {
+                        lines.Add($"{language}|field|{code}-{width}|{Escape(value.GetString()!)}");
+                    }
+                }
+            }
+
+            foreach (var line in lines.Order(StringComparer.Ordinal))
+            {
+                yield return line;
+            }
+        }
     }
 
     /// <summary>Each supported language's rules of one plural type, without their samples.</summary>

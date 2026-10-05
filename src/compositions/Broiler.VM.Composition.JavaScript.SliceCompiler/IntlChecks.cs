@@ -48,6 +48,7 @@ internal static class IntlChecks
         RelativeTimesMatchIcu(),
         SegmentsMatchIcu(),
         DurationsMatchIcu(),
+        DisplayNamesMatchIcu(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -200,6 +201,14 @@ internal static class IntlChecks
     /// </summary>
     private static (string, bool, string) DurationsMatchIcu() =>
         RetainedMatchesIcu("intl/i4/german-and-english-durations-match-icu", "durations", 500);
+
+    /// <summary>
+    /// The retained German and English display names (slice I4, JSD-0052): the program under
+    /// <c>src/tests/cldr/displaynames</c>, run here, answers every line Node answered, but for the
+    /// lines <c>divergences.txt</c> names.
+    /// </summary>
+    private static (string, bool, string) DisplayNamesMatchIcu() =>
+        RetainedMatchesIcu("intl/i4/german-and-english-display-names-match-icu", "displaynames", 800);
 
     /// <summary>
     /// A retained dataset under <c>src/tests/cldr/<paramref name="dataset"/></c>: its program, run

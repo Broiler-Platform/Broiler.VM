@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           25
+// Exempt:           26
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -11741,6 +11741,2561 @@ internal static class JsCldrTables
         en|year-narrow|future.other|in {0}y
         en|year-narrow|past.one|{0}y ago
         en|year-narrow|past.other|{0}y ago
+        """u8;
+
+    /// <summary>The display names of each supported language: language, kind, code, name.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> DisplayNames =>
+        """
+        de|calendar|buddhist|Buddhistischer Kalender
+        de|calendar|chinese|Chinesischer Kalender
+        de|calendar|coptic|Koptischer Kalender
+        de|calendar|dangi|Dangi-Kalender
+        de|calendar|ethioaa|\u00C4thiopischer Am\u00E4t\u00E4-Al\u00E4m-Kalender
+        de|calendar|ethiopic|\u00C4thiopischer Kalender
+        de|calendar|gregory|Gregorianischer Kalender
+        de|calendar|hebrew|J\u00FCdischer Kalender
+        de|calendar|indian|Indischer Nationalkalender
+        de|calendar|islamic-civil|Hidschra-Kalender (tabellarisch, nicht-astronomisch)
+        de|calendar|islamic-umalqura|Hidschra-Kalender (Umm al-Qura)
+        de|calendar|islamicc|Hidschra-Kalender (tabellarisch, nicht-astronomisch)
+        de|calendar|islamic|Hidschra-Kalender
+        de|calendar|iso8601|ISO-8601-Kalender
+        de|calendar|japanese|Japanischer Kalender
+        de|calendar|persian|Persischer Kalender
+        de|calendar|roc|Minguo-Kalender
+        de|field|day-long|Tag
+        de|field|day-narrow|Tag
+        de|field|day-short|Tag
+        de|field|dayPeriod-long|Tagesh\u00E4lfte
+        de|field|dayPeriod-narrow|Tagesh.
+        de|field|dayPeriod-short|Tagesh\u00E4lfte
+        de|field|era-long|Epoche
+        de|field|era-narrow|E
+        de|field|era-short|Ep.
+        de|field|hour-long|Stunde
+        de|field|hour-narrow|Std.
+        de|field|hour-short|Std.
+        de|field|minute-long|Minute
+        de|field|minute-narrow|Min.
+        de|field|minute-short|Min.
+        de|field|month-long|Monat
+        de|field|month-narrow|M
+        de|field|month-short|Mon.
+        de|field|quarter-long|Quartal
+        de|field|quarter-narrow|Q
+        de|field|quarter-short|Quart.
+        de|field|second-long|Sekunde
+        de|field|second-narrow|Sek.
+        de|field|second-short|Sek.
+        de|field|timeZoneName-long|Zeitzone
+        de|field|timeZoneName-narrow|Zeitz.
+        de|field|timeZoneName-short|Zeitzone
+        de|field|weekOfYear-long|Woche
+        de|field|weekOfYear-narrow|W
+        de|field|weekOfYear-short|Woche
+        de|field|weekday-long|Wochentag
+        de|field|weekday-narrow|Wochent.
+        de|field|weekday-short|Wochentag
+        de|field|year-long|Jahr
+        de|field|year-narrow|J
+        de|field|year-short|Jahr
+        de|language|aa|Afar
+        de|language|ab|Abchasisch
+        de|language|ace|Aceh
+        de|language|ach|Acholi
+        de|language|ada|Adangme
+        de|language|ady|Adygeisch
+        de|language|aeb|Tunesisches Arabisch
+        de|language|ae|Avestisch
+        de|language|afh|Afrihili
+        de|language|af|Afrikaans
+        de|language|agq|Aghem
+        de|language|ain|Ainu
+        de|language|akk|Akkadisch
+        de|language|akz|Alabama
+        de|language|ak|Akan
+        de|language|ale|Aleutisch
+        de|language|aln|Gegisch
+        de|language|alt|S\u00FCd-Altaisch
+        de|language|am|Amharisch
+        de|language|ang|Altenglisch
+        de|language|ann|Obolo
+        de|language|anp|Angika
+        de|language|an|Aragonesisch
+        de|language|ar-001|Modernes Hocharabisch
+        de|language|arc|Aram\u00E4isch
+        de|language|arn|Mapudungun
+        de|language|aro|Araona
+        de|language|arp|Arapaho
+        de|language|arq|Algerisches Arabisch
+        de|language|ars|Arabisch (Nadschd)
+        de|language|arw|Arawak
+        de|language|ary|Marokkanisches Arabisch
+        de|language|arz|\u00C4gyptisches Arabisch
+        de|language|ar|Arabisch
+        de|language|asa|Asu
+        de|language|ase|Amerikanische Geb\u00E4rdensprache
+        de|language|ast|Asturisch
+        de|language|as|Assamesisch
+        de|language|atj|Atikamekw
+        de|language|avk|Kotava
+        de|language|av|Awarisch
+        de|language|awa|Awadhi
+        de|language|ay|Aymara
+        de|language|az|Aserbaidschanisch
+        de|language|bal|Belutschisch
+        de|language|ban|Balinesisch
+        de|language|bar|Bairisch
+        de|language|bas|Bassa
+        de|language|bax|Bamun
+        de|language|ba|Baschkirisch
+        de|language|bbc|Batak Toba
+        de|language|bbj|Ghomala
+        de|language|bej|Bedauye
+        de|language|bem|Bemba
+        de|language|bew|Betawi
+        de|language|bez|Bena
+        de|language|be|Belarussisch
+        de|language|bfd|Bafut
+        de|language|bfq|Badaga
+        de|language|bgc|Haryanvi
+        de|language|bgn|Westliches Belutschi
+        de|language|bg|Bulgarisch
+        de|language|bho|Bhodschpuri
+        de|language|bik|Bikol
+        de|language|bin|Bini
+        de|language|bi|Bislama
+        de|language|bjn|Banjaresisch
+        de|language|bkm|Kom
+        de|language|bla|Blackfoot
+        de|language|blo|Anii
+        de|language|bm|Bambara
+        de|language|bn|Bengalisch
+        de|language|bo|Tibetisch
+        de|language|bpy|Bishnupriya
+        de|language|bqi|Bachtiarisch
+        de|language|bra|Braj-Bhakha
+        de|language|brh|Brahui
+        de|language|brx|Bodo
+        de|language|br|Bretonisch
+        de|language|bss|Akoose
+        de|language|bs|Bosnisch
+        de|language|bua|Burjatisch
+        de|language|bug|Buginesisch
+        de|language|bum|Bulu
+        de|language|byn|Blin
+        de|language|byv|Medumba
+        de|language|cad|Caddo
+        de|language|car|Karibisch
+        de|language|cay|Cayuga
+        de|language|ca|Katalanisch
+        de|language|cch|Atsam
+        de|language|ccp|Chakma
+        de|language|ceb|Cebuano
+        de|language|ce|Tschetschenisch
+        de|language|cgg|Rukiga
+        de|language|chb|Chibcha
+        de|language|chg|Tschagataisch
+        de|language|chk|Chuukesisch
+        de|language|chm|Mari
+        de|language|chn|Chinook
+        de|language|cho|Choctaw
+        de|language|chp|Chipewyan
+        de|language|chr|Cherokee
+        de|language|chy|Cheyenne
+        de|language|ch|Chamorro
+        de|language|ckb|Zentralkurdisch
+        de|language|clc|Chilcotin
+        de|language|cop|Koptisch
+        de|language|co|Korsisch
+        de|language|cps|Capiznon
+        de|language|crg|Michif
+        de|language|crh|Krimtatarisch
+        de|language|crj|S\u00FCdost-Cree
+        de|language|crk|Plains-Cree
+        de|language|crl|Northern East Cree
+        de|language|crm|Moose Cree
+        de|language|crr|Carolina-Algonkin
+        de|language|crs|Seychellenkreol
+        de|language|cr|Cree
+        de|language|csb|Kaschubisch
+        de|language|csw|Swampy Cree
+        de|language|cs|Tschechisch
+        de|language|cu|Kirchenslawisch
+        de|language|cv|Tschuwaschisch
+        de|language|cy|Walisisch
+        de|language|dak|Dakota
+        de|language|dar|Darginisch
+        de|language|dav|Taita
+        de|language|da|D\u00E4nisch
+        de|language|de-AT|\u00D6sterreichisches Deutsch
+        de|language|de-CH|Schweizer Hochdeutsch
+        de|language|del|Delaware
+        de|language|den|Slave
+        de|language|de|Deutsch
+        de|language|dgr|Dogrib
+        de|language|din|Dinka
+        de|language|dje|Zarma
+        de|language|doi|Dogri
+        de|language|dsb|Niedersorbisch
+        de|language|dtp|Zentral-Dusun
+        de|language|dua|Duala
+        de|language|dum|Mittelniederl\u00E4ndisch
+        de|language|dv|Dhivehi
+        de|language|dyo|Diola
+        de|language|dyu|Dyula
+        de|language|dzg|Dazaga
+        de|language|dz|Dzongkha
+        de|language|ebu|Embu
+        de|language|ee|Ewe
+        de|language|efi|Efik
+        de|language|egl|Emilianisch
+        de|language|egy|\u00C4gyptisch
+        de|language|eka|Ekajuk
+        de|language|elx|Elamisch
+        de|language|el|Griechisch
+        de|language|en-GB-alt-short|Englisch (GB)
+        de|language|enm|Mittelenglisch
+        de|language|en|Englisch
+        de|language|eo|Esperanto
+        de|language|esu|Zentral-Alaska-Yupik
+        de|language|es|Spanisch
+        de|language|et|Estnisch
+        de|language|eu|Baskisch
+        de|language|ewo|Ewondo
+        de|language|ext|Extremadurisch
+        de|language|fa-AF|Dari
+        de|language|fan|Pangwe
+        de|language|fat|Fanti
+        de|language|fa|Persisch
+        de|language|ff|Ful
+        de|language|fil|Filipino
+        de|language|fit|Me\u00E4nkieli
+        de|language|fi|Finnisch
+        de|language|fj|Fidschi
+        de|language|fon|Fon
+        de|language|fo|F\u00E4r\u00F6isch
+        de|language|frc|Cajun
+        de|language|frm|Mittelfranz\u00F6sisch
+        de|language|fro|Altfranz\u00F6sisch
+        de|language|frp|Frankoprovenzalisch
+        de|language|frr|Nordfriesisch
+        de|language|frs|Ostfriesisch
+        de|language|fr|Franz\u00F6sisch
+        de|language|fur|Friaulisch
+        de|language|fy|Westfriesisch
+        de|language|gaa|Ga
+        de|language|gag|Gagausisch
+        de|language|gan|Gan
+        de|language|gay|Gayo
+        de|language|ga|Irisch
+        de|language|gba|Gbaya
+        de|language|gbz|Gabri
+        de|language|gd|G\u00E4lisch (Schottland)
+        de|language|gez|Geez
+        de|language|gil|Kiribatisch
+        de|language|glk|Gilaki
+        de|language|gl|Galicisch
+        de|language|gmh|Mittelhochdeutsch
+        de|language|gn|Guaran\u00ED
+        de|language|goh|Althochdeutsch
+        de|language|gon|Gondi
+        de|language|gor|Mongondou
+        de|language|got|Gotisch
+        de|language|grb|Grebo
+        de|language|grc|Altgriechisch
+        de|language|gsw|Schweizerdeutsch
+        de|language|guc|Way\u00FAu
+        de|language|gur|Farefare
+        de|language|guz|Gusii
+        de|language|gu|Gujarati
+        de|language|gv|Manx
+        de|language|gwi|Kutchin
+        de|language|hai|Haida
+        de|language|hak|Hakka
+        de|language|haw|Hawaiisch
+        de|language|hax|S\u00FCd-Haida
+        de|language|ha|Haussa
+        de|language|he|Hebr\u00E4isch
+        de|language|hi-Latn-alt-variant|Hinglish
+        de|language|hi-Latn|Hindi (lateinisch)
+        de|language|hif|Fidschi-Hindi
+        de|language|hil|Hiligaynon
+        de|language|hit|Hethitisch
+        de|language|hi|Hindi
+        de|language|hmn|Miao
+        de|language|ho|Hiri-Motu
+        de|language|hr|Kroatisch
+        de|language|hsb|Obersorbisch
+        de|language|hsn|Xiang
+        de|language|ht|Haiti-Kreolisch
+        de|language|hup|Hupa
+        de|language|hur|Halkomelem
+        de|language|hu|Ungarisch
+        de|language|hy|Armenisch
+        de|language|hz|Herero
+        de|language|ia|Interlingua
+        de|language|iba|Iban
+        de|language|ibb|Ibibio
+        de|language|id|Indonesisch
+        de|language|ie|Interlingue
+        de|language|ig|Igbo
+        de|language|ii|Yi
+        de|language|ikt|Westkanadisches Inuktitut
+        de|language|ik|Inupiak
+        de|language|ilo|Ilokano
+        de|language|inh|Inguschisch
+        de|language|io|Ido
+        de|language|is|Isl\u00E4ndisch
+        de|language|it|Italienisch
+        de|language|iu|Inuktitut
+        de|language|izh|Ischorisch
+        de|language|jam|Jamaikanisch-Kreolisch
+        de|language|ja|Japanisch
+        de|language|jbo|Lojban
+        de|language|jgo|Ngomba
+        de|language|jmc|Machame
+        de|language|jpr|J\u00FCdisch-Persisch
+        de|language|jrb|J\u00FCdisch-Arabisch
+        de|language|jut|J\u00FCtisch
+        de|language|jv|Javanisch
+        de|language|kaa|Karakalpakisch
+        de|language|kab|Kabylisch
+        de|language|kac|Kachin
+        de|language|kaj|Jju
+        de|language|kam|Kamba
+        de|language|kaw|Kawi
+        de|language|ka|Georgisch
+        de|language|kbd|Kabardinisch
+        de|language|kbl|Kanembu
+        de|language|kcg|Tyap
+        de|language|kde|Makonde
+        de|language|kea|Kabuverdianu
+        de|language|ken|Kenyang
+        de|language|kfo|Koro
+        de|language|kgp|Kaingang
+        de|language|kg|Kongolesisch
+        de|language|kha|Khasi
+        de|language|kho|Sakisch
+        de|language|khq|Koyra Chiini
+        de|language|khw|Khowar
+        de|language|kiu|Kirmanjki
+        de|language|ki|Kikuyu
+        de|language|kj|Kwanyama
+        de|language|kkj|Kako
+        de|language|kk|Kasachisch
+        de|language|kln|Kalenjin
+        de|language|kl|Gr\u00F6nl\u00E4ndisch
+        de|language|kmb|Kimbundu
+        de|language|km|Khmer
+        de|language|kn|Kannada
+        de|language|koi|Komi-Permjakisch
+        de|language|kok|Konkani
+        de|language|kos|Kosraeanisch
+        de|language|ko|Koreanisch
+        de|language|kpe|Kpelle
+        de|language|krc|Karatschaiisch-Balkarisch
+        de|language|kri|Krio
+        de|language|krj|Kinaray-a
+        de|language|krl|Karelisch
+        de|language|kru|Oraon
+        de|language|kr|Kanuri
+        de|language|ksb|Shambala
+        de|language|ksf|Bafia
+        de|language|ksh|K\u00F6lsch
+        de|language|ks|Kaschmiri
+        de|language|ku-menu-core|Kurdisch
+        de|language|ku-menu-extension|Kurmandschi
+        de|language|kum|Kum\u00FCkisch
+        de|language|kut|Kutenai
+        de|language|ku|Kurdisch
+        de|language|kv|Komi
+        de|language|kwk|Kwak\u02BCwala
+        de|language|kw|Kornisch
+        de|language|kxv|Kuvi
+        de|language|ky|Kirgisisch
+        de|language|lad|Ladino
+        de|language|lag|Langi
+        de|language|lah|Lahnda
+        de|language|lam|Lamba
+        de|language|la|Latein
+        de|language|lb|Luxemburgisch
+        de|language|lez|Lesgisch
+        de|language|lfn|Lingua Franca Nova
+        de|language|lg|Ganda
+        de|language|lij|Ligurisch
+        de|language|lil|Lillooet
+        de|language|liv|Livisch
+        de|language|li|Limburgisch
+        de|language|lkt|Lakota
+        de|language|lmo|Lombardisch
+        de|language|ln|Lingala
+        de|language|lol|Mongo
+        de|language|lou|Kreol (Louisiana)
+        de|language|loz|Lozi
+        de|language|lo|Laotisch
+        de|language|lrc|N\u00F6rdliches Luri
+        de|language|lsm|Saamia
+        de|language|ltg|Lettgallisch
+        de|language|lt|Litauisch
+        de|language|lua|Luba-Lulua
+        de|language|lui|Luiseno
+        de|language|lun|Lunda
+        de|language|luo|Luo
+        de|language|lus|Lushai
+        de|language|luy|Luhya
+        de|language|lu|Luba-Katanga
+        de|language|lv|Lettisch
+        de|language|lzh|Klassisches Chinesisch
+        de|language|lzz|Lasisch
+        de|language|mad|Maduresisch
+        de|language|maf|Mafa
+        de|language|mag|Khotta
+        de|language|mai|Maithili
+        de|language|mak|Makassarisch
+        de|language|man|Malinke
+        de|language|mas|Massai
+        de|language|mde|Maba
+        de|language|mdf|Mokschanisch
+        de|language|mdr|Mandaresisch
+        de|language|men|Mende
+        de|language|mer|Meru
+        de|language|mfe|Morisyen
+        de|language|mga|Mittelirisch
+        de|language|mgh|Makhuwa-Meetto
+        de|language|mgo|Meta\u2019
+        de|language|mg|Malagasy
+        de|language|mh|Marschallesisch
+        de|language|mic|Micmac
+        de|language|min|Minangkabau
+        de|language|mi|M\u0101ori
+        de|language|mk|Mazedonisch
+        de|language|ml|Malayalam
+        de|language|mnc|Mandschurisch
+        de|language|mni|Meithei
+        de|language|mn|Mongolisch
+        de|language|moe|Innu-Aimun
+        de|language|moh|Mohawk
+        de|language|mos|Mossi
+        de|language|mrj|Bergmari
+        de|language|mr|Marathi
+        de|language|ms|Malaiisch
+        de|language|mt|Maltesisch
+        de|language|mua|Mundang
+        de|language|mul|Mehrsprachig
+        de|language|mus|Muskogee
+        de|language|mwl|Mirandesisch
+        de|language|mwr|Marwari
+        de|language|mwv|Mentawai
+        de|language|mye|Myene
+        de|language|myv|Ersja-Mordwinisch
+        de|language|my|Birmanisch
+        de|language|mzn|Masanderanisch
+        de|language|nan|Min Nan
+        de|language|nap|Neapolitanisch
+        de|language|naq|Nama
+        de|language|na|Nauruisch
+        de|language|nb|Norwegisch (Bokm\u00E5l)
+        de|language|nds-NL|Nieders\u00E4chsisch
+        de|language|nds|Niederdeutsch
+        de|language|nd|Nord-Ndebele
+        de|language|new|Newari
+        de|language|ne|Nepalesisch
+        de|language|ng|Ndonga
+        de|language|nia|Nias
+        de|language|niu|Niue
+        de|language|njo|Ao-Naga
+        de|language|nl-BE|Fl\u00E4misch
+        de|language|nl|Niederl\u00E4ndisch
+        de|language|nmg|Kwasio
+        de|language|nnh|Ngiemboon
+        de|language|nn|Norwegisch (Nynorsk)
+        de|language|nog|Nogai
+        de|language|non|Altnordisch
+        de|language|nov|Novial
+        de|language|no|Norwegisch
+        de|language|nqo|N\u2019Ko
+        de|language|nr|S\u00FCd-Ndebele
+        de|language|nso|Nord-Sotho
+        de|language|nus|Nuer
+        de|language|nv|Navajo
+        de|language|nwc|Alt-Newari
+        de|language|nym|Nyamwezi
+        de|language|nyn|Nyankole
+        de|language|nyo|Nyoro
+        de|language|ny|Nyanja
+        de|language|nzi|Nzima
+        de|language|oc|Okzitanisch
+        de|language|ojb|Nordwest-Ojibwe
+        de|language|ojc|Zentral-Ojibwe
+        de|language|ojs|Oji-Cree
+        de|language|ojw|West-Ojibwe
+        de|language|oj|Ojibwa
+        de|language|oka|Okanagan
+        de|language|om|Oromo
+        de|language|or|Oriya
+        de|language|osa|Osage
+        de|language|os|Ossetisch
+        de|language|ota|Osmanisch
+        de|language|pag|Pangasinan
+        de|language|pal|Mittelpersisch
+        de|language|pam|Pampanggan
+        de|language|pap|Papiamento
+        de|language|pau|Palau
+        de|language|pa|Punjabi
+        de|language|pcd|Picardisch
+        de|language|pcm|Nigerianisches Pidgin
+        de|language|pdc|Pennsylvaniadeutsch
+        de|language|pdt|Plautdietsch
+        de|language|peo|Altpersisch
+        de|language|pfl|Pf\u00E4lzisch
+        de|language|phn|Ph\u00F6nizisch
+        de|language|pis|Pijin
+        de|language|pi|Pali
+        de|language|pl|Polnisch
+        de|language|pms|Piemontesisch
+        de|language|pnt|Pontisch
+        de|language|pon|Ponapeanisch
+        de|language|pqm|Maliseet-Passamaquoddy
+        de|language|prg|Altpreu\u00DFisch
+        de|language|pro|Altprovenzalisch
+        de|language|ps|Paschtu
+        de|language|pt|Portugiesisch
+        de|language|quc|K\u2019iche\u2019
+        de|language|qug|Chimborazo Hochland-Quechua
+        de|language|qu|Quechua
+        de|language|raj|Rajasthani
+        de|language|rap|Rapanui
+        de|language|rar|Rarotonganisch
+        de|language|rgn|Romagnol
+        de|language|rhg|Rohingyalisch
+        de|language|rif|Tarifit
+        de|language|rm|R\u00E4toromanisch
+        de|language|rn|Rundi
+        de|language|ro-MD|Moldauisch
+        de|language|rof|Rombo
+        de|language|rom|Romani
+        de|language|ro|Rum\u00E4nisch
+        de|language|rtm|Rotumanisch
+        de|language|rue|Russinisch
+        de|language|rug|Roviana
+        de|language|rup|Aromunisch
+        de|language|ru|Russisch
+        de|language|rwk|Rwa
+        de|language|rw|Kinyarwanda
+        de|language|sad|Sandawe
+        de|language|sah|Jakutisch
+        de|language|sam|Samaritanisch
+        de|language|saq|Samburu
+        de|language|sas|Sasak
+        de|language|sat|Santali
+        de|language|saz|Saurashtra
+        de|language|sa|Sanskrit
+        de|language|sba|Ngambay
+        de|language|sbp|Sangu
+        de|language|scn|Sizilianisch
+        de|language|sco|Schottisch
+        de|language|sc|Sardisch
+        de|language|sdc|Sassarisch
+        de|language|sdh|S\u00FCdkurdisch
+        de|language|sd|Sindhi
+        de|language|see|Seneca
+        de|language|seh|Sena
+        de|language|sei|Seri
+        de|language|sel|Selkupisch
+        de|language|ses|Koyra Senni
+        de|language|se|Nordsamisch
+        de|language|sga|Altirisch
+        de|language|sgs|Samogitisch
+        de|language|sg|Sango
+        de|language|shi|Taschelhit
+        de|language|shn|Schan
+        de|language|shu|Tschadisch-Arabisch
+        de|language|sh|Serbo-Kroatisch
+        de|language|sid|Sidamo
+        de|language|si|Singhalesisch
+        de|language|sk|Slowakisch
+        de|language|slh|S\u00FCd-Lushootseed
+        de|language|sli|Schlesisch (Niederschlesisch)
+        de|language|sly|Selayar
+        de|language|sl|Slowenisch
+        de|language|sma|S\u00FCdsamisch
+        de|language|smj|Lule-Samisch
+        de|language|smn|Inari-Samisch
+        de|language|sms|Skolt-Samisch
+        de|language|sm|Samoanisch
+        de|language|snk|Soninke
+        de|language|sn|Shona
+        de|language|sog|Sogdisch
+        de|language|so|Somali
+        de|language|sq|Albanisch
+        de|language|srn|Srananisch
+        de|language|srr|Serer
+        de|language|sr|Serbisch
+        de|language|ssy|Saho
+        de|language|ss|Swazi
+        de|language|stq|Saterfriesisch
+        de|language|str|Straits Salish
+        de|language|st|S\u00FCd-Sotho
+        de|language|suk|Sukuma
+        de|language|sus|Susu
+        de|language|sux|Sumerisch
+        de|language|su|Sundanesisch
+        de|language|sv|Schwedisch
+        de|language|sw-CD|Kongo-Swahili
+        de|language|swb|Komorisch
+        de|language|sw|Suaheli
+        de|language|syc|Altsyrisch
+        de|language|syr|Syrisch
+        de|language|szl|Schlesisch (Wasserpolnisch)
+        de|language|ta|Tamil
+        de|language|tce|S\u00FCdliches Tutchone
+        de|language|tcy|Tulu
+        de|language|tem|Temne
+        de|language|teo|Teso
+        de|language|ter|Tereno
+        de|language|tet|Tetum
+        de|language|te|Telugu
+        de|language|tgx|Tagish
+        de|language|tg|Tadschikisch
+        de|language|tht|Tahltan
+        de|language|th|Thail\u00E4ndisch
+        de|language|tig|Tigre
+        de|language|tiv|Tiv
+        de|language|ti|Tigrinya
+        de|language|tkl|Tokelauanisch
+        de|language|tkr|Tsachurisch
+        de|language|tk|Turkmenisch
+        de|language|tlh|Klingonisch
+        de|language|tli|Tlingit
+        de|language|tly|Talisch
+        de|language|tl|Tagalog
+        de|language|tmh|Tamaseq
+        de|language|tn|Tswana
+        de|language|tog|Nyasa Tonga
+        de|language|tok|Toki Pona
+        de|language|to|Tongaisch
+        de|language|tpi|Neumelanesisch
+        de|language|tru|Turoyo
+        de|language|trv|Taroko
+        de|language|tr|T\u00FCrkisch
+        de|language|tsd|Tsakonisch
+        de|language|tsi|Tsimshian
+        de|language|ts|Tsonga
+        de|language|ttm|N\u00F6rdliches Tutchone
+        de|language|ttt|Tatisch
+        de|language|tt|Tatarisch
+        de|language|tum|Tumbuka
+        de|language|tvl|Tuvaluisch
+        de|language|twq|Tasawaq
+        de|language|tw|Twi
+        de|language|tyv|Tuwinisch
+        de|language|ty|Tahitisch
+        de|language|tzm|Zentralatlas-Tamazight
+        de|language|udm|Udmurtisch
+        de|language|uga|Ugaritisch
+        de|language|ug|Uigurisch
+        de|language|uk|Ukrainisch
+        de|language|umb|Umbundu
+        de|language|und|Unbekannte Sprache
+        de|language|ur|Urdu
+        de|language|uz|Usbekisch
+        de|language|vai|Vai
+        de|language|vec|Venetisch
+        de|language|vep|Wepsisch
+        de|language|ve|Venda
+        de|language|vi|Vietnamesisch
+        de|language|vls|Westfl\u00E4misch
+        de|language|vmf|Mainfr\u00E4nkisch
+        de|language|vmw|Makua
+        de|language|vot|Wotisch
+        de|language|vo|Volap\u00FCk
+        de|language|vro|V\u00F5ro
+        de|language|vun|Vunjo
+        de|language|wae|Walliserdeutsch
+        de|language|wal|Walamo
+        de|language|war|Waray
+        de|language|was|Washo
+        de|language|wa|Wallonisch
+        de|language|wbp|Warlpiri
+        de|language|wo|Wolof
+        de|language|wuu|Wu
+        de|language|xal|Kalm\u00FCckisch
+        de|language|xh|Xhosa
+        de|language|xmf|Mingrelisch
+        de|language|xnr|Kangri
+        de|language|xog|Soga
+        de|language|yao|Yao
+        de|language|yap|Yapesisch
+        de|language|yav|Yangben
+        de|language|ybb|Yemba
+        de|language|yi|Jiddisch
+        de|language|yo|Yoruba
+        de|language|yrl|Nheengatu
+        de|language|yue|Kantonesisch
+        de|language|zap|Zapotekisch
+        de|language|za|Zhuang
+        de|language|zbl|Bliss-Symbole
+        de|language|zea|Seel\u00E4ndisch
+        de|language|zen|Zenaga
+        de|language|zgh|Tamazight
+        de|language|zh-Hans-alt-long|Mandarin (Vereinfacht)
+        de|language|zh-Hans|Chinesisch (vereinfacht)
+        de|language|zh-Hant-alt-long|Mandarin (traditionell)
+        de|language|zh-Hant|Chinesisch (traditionell)
+        de|language|zh|Chinesisch
+        de|language|zun|Zuni
+        de|language|zu|Zulu
+        de|language|zxx|Keine Sprachinhalte
+        de|language|zza|Zaza
+        de|pattern|localePattern|{0} ({1})
+        de|pattern|localeSeparator|{0}, {1}
+        de|region|001|Welt
+        de|region|002|Afrika
+        de|region|003|Nordamerika
+        de|region|005|S\u00FCdamerika
+        de|region|009|Ozeanien
+        de|region|011|Westafrika
+        de|region|013|Mittelamerika
+        de|region|014|Ostafrika
+        de|region|015|Nordafrika
+        de|region|017|Zentralafrika
+        de|region|018|S\u00FCdliches Afrika
+        de|region|019|Amerika
+        de|region|021|N\u00F6rdliches Amerika
+        de|region|029|Karibik
+        de|region|030|Ostasien
+        de|region|034|S\u00FCdasien
+        de|region|035|S\u00FCdostasien
+        de|region|039|S\u00FCdeuropa
+        de|region|053|Australasien
+        de|region|054|Melanesien
+        de|region|057|Mikronesisches Inselgebiet
+        de|region|061|Polynesien
+        de|region|142|Asien
+        de|region|143|Zentralasien
+        de|region|145|Westasien
+        de|region|150|Europa
+        de|region|151|Osteuropa
+        de|region|154|Nordeuropa
+        de|region|155|Westeuropa
+        de|region|202|Subsahara-Afrika
+        de|region|419|Lateinamerika
+        de|region|AC|Ascension
+        de|region|AD|Andorra
+        de|region|AE|Vereinigte Arabische Emirate
+        de|region|AF|Afghanistan
+        de|region|AG|Antigua und Barbuda
+        de|region|AI|Anguilla
+        de|region|AL|Albanien
+        de|region|AM|Armenien
+        de|region|AO|Angola
+        de|region|AQ|Antarktis
+        de|region|AR|Argentinien
+        de|region|AS|Amerikanisch-Samoa
+        de|region|AT|\u00D6sterreich
+        de|region|AU|Australien
+        de|region|AW|Aruba
+        de|region|AX|\u00C5landinseln
+        de|region|AZ|Aserbaidschan
+        de|region|BA|Bosnien und Herzegowina
+        de|region|BB|Barbados
+        de|region|BD|Bangladesch
+        de|region|BE|Belgien
+        de|region|BF|Burkina Faso
+        de|region|BG|Bulgarien
+        de|region|BH|Bahrain
+        de|region|BI|Burundi
+        de|region|BJ|Benin
+        de|region|BL|St. Barth\u00E9lemy
+        de|region|BM|Bermuda
+        de|region|BN|Brunei Darussalam
+        de|region|BO|Bolivien
+        de|region|BQ|Karibische Niederlande
+        de|region|BR|Brasilien
+        de|region|BS|Bahamas
+        de|region|BT|Bhutan
+        de|region|BV|Bouvetinsel
+        de|region|BW|Botsuana
+        de|region|BY|Belarus
+        de|region|BZ|Belize
+        de|region|CA|Kanada
+        de|region|CC|Kokosinseln
+        de|region|CD-alt-variant|Kongo (Demokratische Republik)
+        de|region|CD|Kongo-Kinshasa
+        de|region|CF|Zentralafrikanische Republik
+        de|region|CG-alt-variant|Kongo (Republik)
+        de|region|CG|Kongo-Brazzaville
+        de|region|CH|Schweiz
+        de|region|CI-alt-variant|Elfenbeink\u00FCste
+        de|region|CI|C\u00F4te d\u2019Ivoire
+        de|region|CK|Cookinseln
+        de|region|CL|Chile
+        de|region|CM|Kamerun
+        de|region|CN|China
+        de|region|CO|Kolumbien
+        de|region|CP|Clipperton-Insel
+        de|region|CQ|Sark
+        de|region|CR|Costa Rica
+        de|region|CU|Kuba
+        de|region|CV|Cabo Verde
+        de|region|CW|Cura\u00E7ao
+        de|region|CX|Weihnachtsinsel
+        de|region|CY|Zypern
+        de|region|CZ-alt-variant|Tschechische Republik
+        de|region|CZ|Tschechien
+        de|region|DE|Deutschland
+        de|region|DG|Diego Garcia
+        de|region|DJ|Dschibuti
+        de|region|DK|D\u00E4nemark
+        de|region|DM|Dominica
+        de|region|DO|Dominikanische Republik
+        de|region|DZ|Algerien
+        de|region|EA|Ceuta und Melilla
+        de|region|EC|Ecuador
+        de|region|EE|Estland
+        de|region|EG|\u00C4gypten
+        de|region|EH|Westsahara
+        de|region|ER|Eritrea
+        de|region|ES|Spanien
+        de|region|ET|\u00C4thiopien
+        de|region|EU|Europ\u00E4ische Union
+        de|region|EZ|Eurozone
+        de|region|FI|Finnland
+        de|region|FJ|Fidschi
+        de|region|FK-alt-variant|Falklandinseln (Malwinen)
+        de|region|FK|Falklandinseln
+        de|region|FM|Mikronesien
+        de|region|FO|F\u00E4r\u00F6er
+        de|region|FR|Frankreich
+        de|region|GA|Gabun
+        de|region|GB-alt-short|UK
+        de|region|GB|Vereinigtes K\u00F6nigreich
+        de|region|GD|Grenada
+        de|region|GE|Georgien
+        de|region|GF|Franz\u00F6sisch-Guayana
+        de|region|GG|Guernsey
+        de|region|GH|Ghana
+        de|region|GI|Gibraltar
+        de|region|GL|Gr\u00F6nland
+        de|region|GM|Gambia
+        de|region|GN|Guinea
+        de|region|GP|Guadeloupe
+        de|region|GQ|\u00C4quatorialguinea
+        de|region|GR|Griechenland
+        de|region|GS|S\u00FCdgeorgien und die S\u00FCdlichen Sandwichinseln
+        de|region|GT|Guatemala
+        de|region|GU|Guam
+        de|region|GW|Guinea-Bissau
+        de|region|GY|Guyana
+        de|region|HK-alt-short|Hongkong
+        de|region|HK|Sonderverwaltungsregion Hongkong
+        de|region|HM|Heard und McDonaldinseln
+        de|region|HN|Honduras
+        de|region|HR|Kroatien
+        de|region|HT|Haiti
+        de|region|HU|Ungarn
+        de|region|IC|Kanarische Inseln
+        de|region|ID|Indonesien
+        de|region|IE|Irland
+        de|region|IL|Israel
+        de|region|IM|Isle of Man
+        de|region|IN|Indien
+        de|region|IO-alt-chagos|Chagos-Archipel
+        de|region|IO|Britisches Territorium im Indischen Ozean
+        de|region|IQ|Irak
+        de|region|IR|Iran
+        de|region|IS|Island
+        de|region|IT|Italien
+        de|region|JE|Jersey
+        de|region|JM|Jamaika
+        de|region|JO|Jordanien
+        de|region|JP|Japan
+        de|region|KE|Kenia
+        de|region|KG|Kirgisistan
+        de|region|KH|Kambodscha
+        de|region|KI|Kiribati
+        de|region|KM|Komoren
+        de|region|KN|St. Kitts und Nevis
+        de|region|KP|Nordkorea
+        de|region|KR|S\u00FCdkorea
+        de|region|KW|Kuwait
+        de|region|KY|Kaimaninseln
+        de|region|KZ|Kasachstan
+        de|region|LA|Laos
+        de|region|LB|Libanon
+        de|region|LC|St. Lucia
+        de|region|LI|Liechtenstein
+        de|region|LK|Sri Lanka
+        de|region|LR|Liberia
+        de|region|LS|Lesotho
+        de|region|LT|Litauen
+        de|region|LU|Luxemburg
+        de|region|LV|Lettland
+        de|region|LY|Libyen
+        de|region|MA|Marokko
+        de|region|MC|Monaco
+        de|region|MD|Republik Moldau
+        de|region|ME|Montenegro
+        de|region|MF|St. Martin
+        de|region|MG|Madagaskar
+        de|region|MH|Marshallinseln
+        de|region|MK|Nordmazedonien
+        de|region|ML|Mali
+        de|region|MM|Myanmar
+        de|region|MN|Mongolei
+        de|region|MO-alt-short|Macau
+        de|region|MO|Sonderverwaltungsregion Macau
+        de|region|MP|N\u00F6rdliche Marianen
+        de|region|MQ|Martinique
+        de|region|MR|Mauretanien
+        de|region|MS|Montserrat
+        de|region|MT|Malta
+        de|region|MU|Mauritius
+        de|region|MV|Malediven
+        de|region|MW|Malawi
+        de|region|MX|Mexiko
+        de|region|MY|Malaysia
+        de|region|MZ|Mosambik
+        de|region|NA|Namibia
+        de|region|NC|Neukaledonien
+        de|region|NE|Niger
+        de|region|NF|Norfolkinsel
+        de|region|NG|Nigeria
+        de|region|NI|Nicaragua
+        de|region|NL|Niederlande
+        de|region|NO|Norwegen
+        de|region|NP|Nepal
+        de|region|NR|Nauru
+        de|region|NU|Niue
+        de|region|NZ-alt-variant|Aotearoa (Neuseeland)
+        de|region|NZ|Neuseeland
+        de|region|OM|Oman
+        de|region|PA|Panama
+        de|region|PE|Peru
+        de|region|PF|Franz\u00F6sisch-Polynesien
+        de|region|PG|Papua-Neuguinea
+        de|region|PH|Philippinen
+        de|region|PK|Pakistan
+        de|region|PL|Polen
+        de|region|PM|St. Pierre und Miquelon
+        de|region|PN|Pitcairninseln
+        de|region|PR|Puerto Rico
+        de|region|PS-alt-short|Pal\u00E4stina
+        de|region|PS|Pal\u00E4stinensische Autonomiegebiete
+        de|region|PT|Portugal
+        de|region|PW|Palau
+        de|region|PY|Paraguay
+        de|region|QA|Katar
+        de|region|QO|\u00C4u\u00DFeres Ozeanien
+        de|region|RE|R\u00E9union
+        de|region|RO|Rum\u00E4nien
+        de|region|RS|Serbien
+        de|region|RU|Russland
+        de|region|RW|Ruanda
+        de|region|SA|Saudi-Arabien
+        de|region|SB|Salomonen
+        de|region|SC|Seychellen
+        de|region|SD|Sudan
+        de|region|SE|Schweden
+        de|region|SG|Singapur
+        de|region|SH|St. Helena
+        de|region|SI|Slowenien
+        de|region|SJ|Spitzbergen und Jan Mayen
+        de|region|SK|Slowakei
+        de|region|SL|Sierra Leone
+        de|region|SM|San Marino
+        de|region|SN|Senegal
+        de|region|SO|Somalia
+        de|region|SR|Suriname
+        de|region|SS|S\u00FCdsudan
+        de|region|ST|S\u00E3o Tom\u00E9 und Pr\u00EDncipe
+        de|region|SV|El Salvador
+        de|region|SX|Sint Maarten
+        de|region|SY|Syrien
+        de|region|SZ-alt-variant|Swasiland
+        de|region|SZ|Eswatini
+        de|region|TA|Tristan da Cunha
+        de|region|TC|Turks- und Caicosinseln
+        de|region|TD|Tschad
+        de|region|TF|Franz\u00F6sische S\u00FCd- und Antarktisgebiete
+        de|region|TG|Togo
+        de|region|TH|Thailand
+        de|region|TJ|Tadschikistan
+        de|region|TK|Tokelau
+        de|region|TL-alt-variant|Osttimor
+        de|region|TL|Timor-Leste
+        de|region|TM|Turkmenistan
+        de|region|TN|Tunesien
+        de|region|TO|Tonga
+        de|region|TR|T\u00FCrkei
+        de|region|TT|Trinidad und Tobago
+        de|region|TV|Tuvalu
+        de|region|TW|Taiwan
+        de|region|TZ|Tansania
+        de|region|UA|Ukraine
+        de|region|UG|Uganda
+        de|region|UM|Amerikanische \u00DCberseeinseln
+        de|region|UN-alt-short|UN
+        de|region|UN|Vereinte Nationen
+        de|region|US-alt-short|USA
+        de|region|US|Vereinigte Staaten
+        de|region|UY|Uruguay
+        de|region|UZ|Usbekistan
+        de|region|VA|Vatikanstadt
+        de|region|VC|St. Vincent und die Grenadinen
+        de|region|VE|Venezuela
+        de|region|VG|Britische Jungferninseln
+        de|region|VI|Amerikanische Jungferninseln
+        de|region|VN|Vietnam
+        de|region|VU|Vanuatu
+        de|region|WF|Wallis und Futuna
+        de|region|WS|Samoa
+        de|region|XA|Pseudo-Akzente
+        de|region|XB|Pseudo-Bidi
+        de|region|XK|Kosovo
+        de|region|YE|Jemen
+        de|region|YT|Mayotte
+        de|region|ZA|S\u00FCdafrika
+        de|region|ZM|Sambia
+        de|region|ZW|Simbabwe
+        de|region|ZZ|Unbekannte Region
+        de|script|Adlm|Adlam
+        de|script|Afak|Afaka
+        de|script|Aghb|Kaukasisch-Albanisch
+        de|script|Arab-alt-variant|Persisch
+        de|script|Arab|Arabisch
+        de|script|Aran|Nastaliq
+        de|script|Armn|Armenisch
+        de|script|Avst|Avestisch
+        de|script|Bali|Balinesisch
+        de|script|Bamu|Bamun
+        de|script|Bass|Bassa
+        de|script|Batk|Battakisch
+        de|script|Beng|Bengalisch
+        de|script|Blis|Bliss-Symbole
+        de|script|Bopo|Bopomofo
+        de|script|Brah|Brahmi
+        de|script|Brai|Braille
+        de|script|Bugi|Buginesisch
+        de|script|Buhd|Buhid
+        de|script|Cakm|Chakma
+        de|script|Cans|Kanadische Aborigine-Silbenschrift
+        de|script|Cari|Karisch
+        de|script|Cher|Cherokee
+        de|script|Cirt|Cirth
+        de|script|Copt|Koptisch
+        de|script|Cprt|Zypriotisch
+        de|script|Cyrl|Kyrillisch
+        de|script|Cyrs|Altkirchenslawisch
+        de|script|Deva|Devanagari
+        de|script|Dsrt|Deseret
+        de|script|Dupl|Duployanisch
+        de|script|Egyd|\u00C4gyptisch - Demotisch
+        de|script|Egyh|\u00C4gyptisch - Hieratisch
+        de|script|Egyp|\u00C4gyptische Hieroglyphen
+        de|script|Elba|Elbasanisch
+        de|script|Ethi|\u00C4thiopisch
+        de|script|Geok|Khutsuri
+        de|script|Geor|Georgisch
+        de|script|Glag|Glagolitisch
+        de|script|Goth|Gotisch
+        de|script|Gran|Grantha
+        de|script|Grek|Griechisch
+        de|script|Gujr|Gujarati
+        de|script|Guru|Gurmukhi
+        de|script|Hanb|Han mit Bopomofo
+        de|script|Hang|Hangul
+        de|script|Hani|Chinesisch
+        de|script|Hano|Hanunoo
+        de|script|Hans-alt-stand-alone|Vereinfachtes Chinesisch
+        de|script|Hans|Vereinfacht
+        de|script|Hant-alt-stand-alone|Traditionelles Chinesisch
+        de|script|Hant|Traditionell
+        de|script|Hebr|Hebr\u00E4isch
+        de|script|Hira|Hiragana
+        de|script|Hluw|Hieroglyphen-Luwisch
+        de|script|Hmng|Pahawh Hmong
+        de|script|Hrkt|Japanische Silbenschrift
+        de|script|Hung|Altungarisch
+        de|script|Inds|Indus-Schrift
+        de|script|Ital|Altitalisch
+        de|script|Java|Javanesisch
+        de|script|Jpan|Japanisch
+        de|script|Jurc|Jurchen
+        de|script|Kali|Kayah Li
+        de|script|Kana|Katakana
+        de|script|Khar|Kharoshthi
+        de|script|Khmr|Khmer
+        de|script|Khoj|Khojki
+        de|script|Knda|Kannada
+        de|script|Kore|Koreanisch
+        de|script|Kpel|Kpelle
+        de|script|Kthi|Kaithi
+        de|script|Lana|Lanna
+        de|script|Laoo|Laotisch
+        de|script|Latf|Lateinisch - Fraktur-Variante
+        de|script|Latg|Lateinisch - G\u00E4lische Variante
+        de|script|Latn|Lateinisch
+        de|script|Lepc|Lepcha
+        de|script|Limb|Limbu
+        de|script|Lina|Linear A
+        de|script|Linb|Linear B
+        de|script|Lisu|Fraser
+        de|script|Loma|Loma
+        de|script|Lyci|Lykisch
+        de|script|Lydi|Lydisch
+        de|script|Mahj|Mahajani
+        de|script|Mand|Mand\u00E4isch
+        de|script|Mani|Manich\u00E4isch
+        de|script|Maya|Maya-Hieroglyphen
+        de|script|Mend|Mende
+        de|script|Merc|Meroitisch kursiv
+        de|script|Mero|Meroitisch
+        de|script|Mlym|Malayalam
+        de|script|Mong|Mongolisch
+        de|script|Moon|Moon
+        de|script|Mroo|Mro
+        de|script|Mtei|Meitei-Mayek
+        de|script|Mymr|Birmanisch
+        de|script|Narb|Altnordarabisch
+        de|script|Nbat|Nabat\u00E4isch
+        de|script|Nkgb|Geba
+        de|script|Nkoo|N\u2019Ko
+        de|script|Nshu|Frauenschrift
+        de|script|Ogam|Ogham
+        de|script|Olck|Ol Chiki
+        de|script|Orkh|Orchon-Runen
+        de|script|Orya|Oriya
+        de|script|Osma|Osmanisch
+        de|script|Palm|Palmyrenisch
+        de|script|Pauc|Pau Cin Hau
+        de|script|Perm|Altpermisch
+        de|script|Phag|Phags-pa
+        de|script|Phli|Buch-Pahlavi
+        de|script|Phlp|Psalter-Pahlavi
+        de|script|Phlv|Pahlavi
+        de|script|Phnx|Ph\u00F6nizisch
+        de|script|Plrd|Pollard Phonetisch
+        de|script|Prti|Parthisch
+        de|script|Qaag|Zawgyi
+        de|script|Rjng|Rejang
+        de|script|Rohg|Hanifi Rohingya
+        de|script|Roro|Rongorongo
+        de|script|Runr|Runenschrift
+        de|script|Samr|Samaritanisch
+        de|script|Sara|Sarati
+        de|script|Sarb|Alts\u00FCdarabisch
+        de|script|Saur|Saurashtra
+        de|script|Sgnw|Geb\u00E4rdensprache
+        de|script|Shaw|Shaw-Alphabet
+        de|script|Shrd|Sharada
+        de|script|Sidd|Siddham
+        de|script|Sind|Khudawadi
+        de|script|Sinh|Singhalesisch
+        de|script|Sora|Sora Sompeng
+        de|script|Sund|Sundanesisch
+        de|script|Sylo|Syloti Nagri
+        de|script|Syrc|Syrisch
+        de|script|Syre|Syrisch - Estrangelo-Variante
+        de|script|Syrj|Westsyrisch
+        de|script|Syrn|Ostsyrisch
+        de|script|Tagb|Tagbanwa
+        de|script|Takr|Takri
+        de|script|Tale|Tai Le
+        de|script|Talu|Tai Lue
+        de|script|Taml|Tamilisch
+        de|script|Tang|Xixia
+        de|script|Tavt|Tai-Viet
+        de|script|Telu|Telugu
+        de|script|Teng|Tengwar
+        de|script|Tfng|Tifinagh
+        de|script|Tglg|Tagalog
+        de|script|Thaa|Thaana
+        de|script|Tibt|Tibetisch
+        de|script|Tirh|Tirhuta
+        de|script|Ugar|Ugaritisch
+        de|script|Vaii|Vai
+        de|script|Visp|Sichtbare Sprache
+        de|script|Wara|Varang Kshiti
+        de|script|Wole|Woleaianisch
+        de|script|Xpeo|Altpersisch
+        de|script|Xsux|Sumerisch-akkadische Keilschrift
+        de|script|Yiii|Yi
+        de|script|Zinh|Geerbter Schriftwert
+        de|script|Zmth|Mathematische Notation
+        de|script|Zsye|Emoji
+        de|script|Zsym|Symbole
+        de|script|Zxxx|Schriftlos
+        de|script|Zyyy|Unbestimmt
+        de|script|Zzzz|Unbekannte Schrift
+        de|variant|1606NICT|Sp\u00E4tes Mittelfranz\u00F6sisch
+        de|variant|1694ACAD|Klassisches Franz\u00F6sisch
+        de|variant|1901|Alte deutsche Rechtschreibung
+        de|variant|1959ACAD|Akademisch
+        de|variant|1994|Standardisierte Resianische Rechtschreibung
+        de|variant|1996|Neue deutsche Rechtschreibung
+        de|variant|AREVELA|Ostarmenisch
+        de|variant|AREVMDA|Westarmenisch
+        de|variant|BAKU1926|Einheitliches T\u00FCrkisches Alphabet
+        de|variant|BISKE|Bela-Dialekt
+        de|variant|BOONT|Boontling
+        de|variant|FONIPA|IPA Phonetisch
+        de|variant|FONUPA|Phonetisch (UPA)
+        de|variant|KKCOR|Allgemeine Rechtschreibung
+        de|variant|LIPAW|Lipovaz-Dialekt
+        de|variant|MONOTON|Monotonisch
+        de|variant|NEDIS|Natisone-Dialekt
+        de|variant|NJIVA|Njiva-Dialekt
+        de|variant|OSOJS|Osojane-Dialekt
+        de|variant|PINYIN|Pinyin
+        de|variant|POLYTON|Polytonisch
+        de|variant|POSIX|Posix
+        de|variant|REVISED|Revidierte Rechtschreibung
+        de|variant|ROZAJ|Resianisch
+        de|variant|SAAHO|Saho
+        de|variant|SCOTLAND|Schottisches Standardenglisch
+        de|variant|SCOUSE|Scouse-Dialekt
+        de|variant|SOLBA|Solbica-Dialekt
+        de|variant|TARASK|Taraskievica-Orthographie
+        de|variant|UCCOR|Vereinheitlichte Rechtschreibung
+        de|variant|UCRCOR|Vereinheitlichte \u00FCberarbeitete Rechtschreibung
+        de|variant|VALENCIA|Valencianisch
+        de|variant|WADEGILE|Wade-Giles
+        en|calendar|buddhist|Buddhist Calendar
+        en|calendar|chinese|Chinese Calendar
+        en|calendar|coptic|Coptic Calendar
+        en|calendar|dangi|Dangi Calendar
+        en|calendar|ethioaa|Ethiopic Amete Alem Calendar
+        en|calendar|ethiopic|Ethiopic Calendar
+        en|calendar|gregory|Gregorian Calendar
+        en|calendar|hebrew|Hebrew Calendar
+        en|calendar|indian|Indian National Calendar
+        en|calendar|islamic-civil|Hijri Calendar (tabular, civil epoch)
+        en|calendar|islamic-rgsa|Hijri Calendar (Saudi Arabia, sighting)
+        en|calendar|islamic-tbla|Hijri Calendar (tabular, astronomical epoch)
+        en|calendar|islamic-umalqura|Hijri Calendar (Umm al-Qura)
+        en|calendar|islamicc|Hijri Calendar (tabular, civil epoch)
+        en|calendar|islamic|Hijri Calendar
+        en|calendar|iso8601|Gregorian Calendar (ISO 8601 Weeks)
+        en|calendar|japanese|Japanese Calendar
+        en|calendar|persian|Persian Calendar
+        en|calendar|roc|Minguo Calendar
+        en|field|day-long|day
+        en|field|day-narrow|day
+        en|field|day-short|day
+        en|field|dayPeriod-long|AM/PM
+        en|field|dayPeriod-narrow|AM/PM
+        en|field|dayPeriod-short|AM/PM
+        en|field|era-long|era
+        en|field|era-narrow|era
+        en|field|era-short|era
+        en|field|hour-long|hour
+        en|field|hour-narrow|hr
+        en|field|hour-short|hr.
+        en|field|minute-long|minute
+        en|field|minute-narrow|min
+        en|field|minute-short|min.
+        en|field|month-long|month
+        en|field|month-narrow|mo
+        en|field|month-short|mo.
+        en|field|quarter-long|quarter
+        en|field|quarter-narrow|qtr
+        en|field|quarter-short|qtr.
+        en|field|second-long|second
+        en|field|second-narrow|sec
+        en|field|second-short|sec.
+        en|field|timeZoneName-long|time zone
+        en|field|timeZoneName-narrow|zone
+        en|field|timeZoneName-short|zone
+        en|field|weekOfYear-long|week
+        en|field|weekOfYear-narrow|wk
+        en|field|weekOfYear-short|wk.
+        en|field|weekday-long|day of the week
+        en|field|weekday-narrow|day of wk.
+        en|field|weekday-short|day of wk.
+        en|field|year-long|year
+        en|field|year-narrow|yr
+        en|field|year-short|yr.
+        en|language|aa|Afar
+        en|language|ab|Abkhazian
+        en|language|ace|Acehnese
+        en|language|ach|Acoli
+        en|language|ada|Adangme
+        en|language|ady|Adyghe
+        en|language|aeb|Tunisian Arabic
+        en|language|ae|Avestan
+        en|language|afh|Afrihili
+        en|language|af|Afrikaans
+        en|language|agq|Aghem
+        en|language|ain|Ainu
+        en|language|akk|Akkadian
+        en|language|akz|Alabama
+        en|language|ak|Akan
+        en|language|ale|Aleut
+        en|language|aln|Gheg Albanian
+        en|language|alt|Southern Altai
+        en|language|am|Amharic
+        en|language|ang|Old English
+        en|language|ann|Obolo
+        en|language|anp|Angika
+        en|language|an|Aragonese
+        en|language|ar-001|Modern Standard Arabic
+        en|language|arc|Aramaic
+        en|language|arn|Mapuche
+        en|language|aro|Araona
+        en|language|arp|Arapaho
+        en|language|arq|Algerian Arabic
+        en|language|ars|Najdi Arabic
+        en|language|arw|Arawak
+        en|language|ary|Moroccan Arabic
+        en|language|arz|Egyptian Arabic
+        en|language|ar|Arabic
+        en|language|asa|Asu
+        en|language|ase|American Sign Language
+        en|language|ast|Asturian
+        en|language|as|Assamese
+        en|language|atj|Atikamekw
+        en|language|avk|Kotava
+        en|language|av|Avaric
+        en|language|awa|Awadhi
+        en|language|ay|Aymara
+        en|language|az-alt-short|Azeri
+        en|language|az|Azerbaijani
+        en|language|bal|Baluchi
+        en|language|ban|Balinese
+        en|language|bar|Bavarian
+        en|language|bas|Basaa
+        en|language|bax|Bamun
+        en|language|ba|Bashkir
+        en|language|bbc|Batak Toba
+        en|language|bbj|Ghomala
+        en|language|bej|Beja
+        en|language|bem|Bemba
+        en|language|bew|Betawi
+        en|language|bez|Bena
+        en|language|be|Belarusian
+        en|language|bfd|Bafut
+        en|language|bfq|Badaga
+        en|language|bgc|Haryanvi
+        en|language|bgn|Western Balochi
+        en|language|bg|Bulgarian
+        en|language|bho|Bhojpuri
+        en|language|bik|Bikol
+        en|language|bin|Bini
+        en|language|bi|Bislama
+        en|language|bjn|Banjar
+        en|language|bkm|Kom
+        en|language|bla|Siksik\u00E1
+        en|language|blo|Anii
+        en|language|blt|Tai Dam
+        en|language|bm|Bambara
+        en|language|bn|Bangla
+        en|language|bo|Tibetan
+        en|language|bpy|Bishnupriya
+        en|language|bqi-alt-variant|Luri Bakhtiari
+        en|language|bqi|Bakhtiari
+        en|language|bra|Braj
+        en|language|brh|Brahui
+        en|language|brx|Bodo
+        en|language|br|Breton
+        en|language|bss|Akoose
+        en|language|bs|Bosnian
+        en|language|bua|Buriat
+        en|language|bug|Buginese
+        en|language|bum|Bulu
+        en|language|byn|Blin
+        en|language|byv|Medumba
+        en|language|cad|Caddo
+        en|language|car|Carib
+        en|language|cay|Cayuga
+        en|language|ca|Catalan
+        en|language|cch|Atsam
+        en|language|ccp|Chakma
+        en|language|ceb|Cebuano
+        en|language|ce|Chechen
+        en|language|cgg|Chiga
+        en|language|chb|Chibcha
+        en|language|chg|Chagatai
+        en|language|chk|Chuukese
+        en|language|chm|Mari
+        en|language|chn|Chinook Jargon
+        en|language|cho|Choctaw
+        en|language|chp|Chipewyan
+        en|language|chr|Cherokee
+        en|language|chy|Cheyenne
+        en|language|ch|Chamorro
+        en|language|cic|Chickasaw
+        en|language|ckb-alt-variant|Kurdish, Sorani
+        en|language|ckb-menu-core|Kurdish
+        en|language|ckb-menu-extension|Central
+        en|language|ckb|Central Kurdish
+        en|language|clc|Chilcotin
+        en|language|cop|Coptic
+        en|language|co|Corsican
+        en|language|cps|Capiznon
+        en|language|cr-alt-long|Woods Cree
+        en|language|crg|Michif
+        en|language|crh|Crimean Tatar
+        en|language|crj|Southern East Cree
+        en|language|crk|Plains Cree
+        en|language|crl|Northern East Cree
+        en|language|crm|Moose Cree
+        en|language|crr|Carolina Algonquian
+        en|language|crs|Seselwa Creole French
+        en|language|cr|Cree
+        en|language|csb|Kashubian
+        en|language|csw|Swampy Cree
+        en|language|cs|Czech
+        en|language|cu|Church Slavic
+        en|language|cv|Chuvash
+        en|language|cy|Welsh
+        en|language|dak|Dakota
+        en|language|dar|Dargwa
+        en|language|dav|Taita
+        en|language|da|Danish
+        en|language|de-AT|Austrian German
+        en|language|de-CH|Swiss High German
+        en|language|del|Delaware
+        en|language|den|Slave
+        en|language|de|German
+        en|language|dgr|Dogrib
+        en|language|din|Dinka
+        en|language|dje|Zarma
+        en|language|doi|Dogri
+        en|language|dsb|Lower Sorbian
+        en|language|dtp|Central Dusun
+        en|language|dua|Duala
+        en|language|dum|Middle Dutch
+        en|language|dv|Divehi
+        en|language|dyo|Jola-Fonyi
+        en|language|dyu|Dyula
+        en|language|dzg|Dazaga
+        en|language|dz|Dzongkha
+        en|language|ebu|Embu
+        en|language|ee|Ewe
+        en|language|efi|Efik
+        en|language|egl|Emilian
+        en|language|egy|Ancient Egyptian
+        en|language|eka|Ekajuk
+        en|language|elx|Elamite
+        en|language|el|Greek
+        en|language|en-AU|Australian English
+        en|language|en-CA|Canadian English
+        en|language|en-GB-alt-short|UK English
+        en|language|en-GB|British English
+        en|language|en-US-alt-short|US English
+        en|language|en-US|American English
+        en|language|enm|Middle English
+        en|language|en|English
+        en|language|eo|Esperanto
+        en|language|es-419|Latin American Spanish
+        en|language|es-ES|European Spanish
+        en|language|es-MX|Mexican Spanish
+        en|language|esu|Central Yupik
+        en|language|es|Spanish
+        en|language|et|Estonian
+        en|language|eu|Basque
+        en|language|ewo|Ewondo
+        en|language|ext|Extremaduran
+        en|language|fa-AF|Dari
+        en|language|fan|Fang
+        en|language|fat|Fanti
+        en|language|fa|Persian
+        en|language|ff|Fula
+        en|language|fil|Filipino
+        en|language|fit|Tornedalen Finnish
+        en|language|fi|Finnish
+        en|language|fj|Fijian
+        en|language|fon|Fon
+        en|language|fo|Faroese
+        en|language|fr-CA|Canadian French
+        en|language|fr-CH|Swiss French
+        en|language|frc|Cajun French
+        en|language|frm|Middle French
+        en|language|fro|Old French
+        en|language|frp|Arpitan
+        en|language|frr|Northern Frisian
+        en|language|frs|Eastern Frisian
+        en|language|fr|French
+        en|language|fur|Friulian
+        en|language|fy|Western Frisian
+        en|language|gaa|Ga
+        en|language|gag|Gagauz
+        en|language|gan|Gan Chinese
+        en|language|gay|Gayo
+        en|language|ga|Irish
+        en|language|gba|Gbaya
+        en|language|gbz|Zoroastrian Dari
+        en|language|gd|Scottish Gaelic
+        en|language|gez|Geez
+        en|language|gil|Gilbertese
+        en|language|glk|Gilaki
+        en|language|gl|Galician
+        en|language|gmh|Middle High German
+        en|language|gn|Guarani
+        en|language|goh|Old High German
+        en|language|gon|Gondi
+        en|language|gor|Gorontalo
+        en|language|got|Gothic
+        en|language|grb|Grebo
+        en|language|grc|Ancient Greek
+        en|language|gsw|Swiss German
+        en|language|guc|Wayuu
+        en|language|gur|Frafra
+        en|language|guz|Gusii
+        en|language|gu|Gujarati
+        en|language|gv|Manx
+        en|language|gwi|Gwich\u02BCin
+        en|language|hai|Haida
+        en|language|hak|Hakka Chinese
+        en|language|haw|Hawaiian
+        en|language|hax|Southern Haida
+        en|language|ha|Hausa
+        en|language|he|Hebrew
+        en|language|hi-Latn-alt-variant|Hinglish
+        en|language|hi-Latn|Hindi (Latin)
+        en|language|hif|Fiji Hindi
+        en|language|hil|Hiligaynon
+        en|language|hit|Hittite
+        en|language|hi|Hindi
+        en|language|hmn|Hmong
+        en|language|hnj|Hmong Njua
+        en|language|ho|Hiri Motu
+        en|language|hr|Croatian
+        en|language|hsb|Upper Sorbian
+        en|language|hsn|Xiang Chinese
+        en|language|ht|Haitian Creole
+        en|language|hup|Hupa
+        en|language|hur|Halkomelem
+        en|language|hu|Hungarian
+        en|language|hy|Armenian
+        en|language|hz|Herero
+        en|language|ia|Interlingua
+        en|language|iba|Iban
+        en|language|ibb|Ibibio
+        en|language|id|Indonesian
+        en|language|ie|Interlingue
+        en|language|ig|Igbo
+        en|language|ii|Sichuan Yi
+        en|language|ikt|Western Canadian Inuktitut
+        en|language|ik|Inupiaq
+        en|language|ilo|Iloko
+        en|language|inh|Ingush
+        en|language|io|Ido
+        en|language|is|Icelandic
+        en|language|it|Italian
+        en|language|iu|Inuktitut
+        en|language|izh|Ingrian
+        en|language|jam|Jamaican Creole English
+        en|language|ja|Japanese
+        en|language|jbo|Lojban
+        en|language|jgo|Ngomba
+        en|language|jmc|Machame
+        en|language|jpr|Judeo-Persian
+        en|language|jrb|Judeo-Arabic
+        en|language|jut|Jutish
+        en|language|jv|Javanese
+        en|language|kaa|Kara-Kalpak
+        en|language|kab|Kabyle
+        en|language|kac|Kachin
+        en|language|kaj|Jju
+        en|language|kam|Kamba
+        en|language|kaw|Kawi
+        en|language|ka|Georgian
+        en|language|kbd|Kabardian
+        en|language|kbl|Kanembu
+        en|language|kcg|Tyap
+        en|language|kde|Makonde
+        en|language|kea|Kabuverdianu
+        en|language|kek|Q\u02BCeqchi\u02BC
+        en|language|ken|Kenyang
+        en|language|kfo|Koro
+        en|language|kgp|Kaingang
+        en|language|kg|Kongo
+        en|language|kha|Khasi
+        en|language|kho|Khotanese
+        en|language|khq|Koyra Chiini
+        en|language|khw|Khowar
+        en|language|kiu|Kirmanjki
+        en|language|ki|Kikuyu
+        en|language|kj|Kuanyama
+        en|language|kkj|Kako
+        en|language|kk|Kazakh
+        en|language|kln|Kalenjin
+        en|language|kl|Kalaallisut
+        en|language|kmb|Kimbundu
+        en|language|km|Khmer
+        en|language|kn|Kannada
+        en|language|koi|Komi-Permyak
+        en|language|kok|Konkani
+        en|language|kos|Kosraean
+        en|language|ko|Korean
+        en|language|kpe|Kpelle
+        en|language|krc|Karachay-Balkar
+        en|language|kri|Krio
+        en|language|krj|Kinaray-a
+        en|language|krl|Karelian
+        en|language|kru|Kurukh
+        en|language|kr|Kanuri
+        en|language|ksb|Shambala
+        en|language|ksf|Bafia
+        en|language|ksh|Colognian
+        en|language|ks|Kashmiri
+        en|language|ku-menu-core|Kurdish
+        en|language|ku-menu-extension|Kurmanji
+        en|language|kum|Kumyk
+        en|language|kut|Kutenai
+        en|language|ku|Kurdish
+        en|language|kv|Komi
+        en|language|kwk|Kwak\u02BCwala
+        en|language|kw|Cornish
+        en|language|kxv|Kuvi
+        en|language|ky-alt-variant|Kirghiz
+        en|language|ky|Kyrgyz
+        en|language|lad|Ladino
+        en|language|lag|Langi
+        en|language|lah|Western Panjabi
+        en|language|lam|Lamba
+        en|language|la|Latin
+        en|language|lb|Luxembourgish
+        en|language|lez|Lezghian
+        en|language|lfn|Lingua Franca Nova
+        en|language|lg|Ganda
+        en|language|lij|Ligurian
+        en|language|lil|Lillooet
+        en|language|liv|Livonian
+        en|language|li|Limburgish
+        en|language|lkt|Lakota
+        en|language|lmo|Lombard
+        en|language|ln|Lingala
+        en|language|lol|Mongo
+        en|language|lou|Louisiana Creole
+        en|language|loz|Lozi
+        en|language|lo|Lao
+        en|language|lrc|Northern Luri
+        en|language|lsm|Saamia
+        en|language|ltg|Latgalian
+        en|language|lt|Lithuanian
+        en|language|lua|Luba-Lulua
+        en|language|lui|Luiseno
+        en|language|lun|Lunda
+        en|language|luo|Luo
+        en|language|lus|Mizo
+        en|language|luy|Luyia
+        en|language|lu|Luba-Katanga
+        en|language|lv|Latvian
+        en|language|lzh|Literary Chinese
+        en|language|lzz|Laz
+        en|language|mad|Madurese
+        en|language|maf|Mafa
+        en|language|mag|Magahi
+        en|language|mai|Maithili
+        en|language|mak|Makasar
+        en|language|man|Mandingo
+        en|language|mas|Masai
+        en|language|mde|Maba
+        en|language|mdf|Moksha
+        en|language|mdr|Mandar
+        en|language|men|Mende
+        en|language|mer|Meru
+        en|language|mfe|Morisyen
+        en|language|mga|Middle Irish
+        en|language|mgh|Makhuwa-Meetto
+        en|language|mgo|Meta\u02BC
+        en|language|mg|Malagasy
+        en|language|mh|Marshallese
+        en|language|mic|Mi'kmaw
+        en|language|min|Minangkabau
+        en|language|mi|M\u0101ori
+        en|language|mk|Macedonian
+        en|language|ml|Malayalam
+        en|language|mnc|Manchu
+        en|language|mni|Manipuri
+        en|language|mn|Mongolian
+        en|language|moe|Innu-aimun
+        en|language|moh|Mohawk
+        en|language|mos|Mossi
+        en|language|mrj|Western Mari
+        en|language|mr|Marathi
+        en|language|ms|Malay
+        en|language|mt|Maltese
+        en|language|mua|Mundang
+        en|language|mul|Multiple languages
+        en|language|mus-alt-official|Mvskoke
+        en|language|mus|Muscogee
+        en|language|mwl|Mirandese
+        en|language|mwr|Marwari
+        en|language|mwv|Mentawai
+        en|language|my-alt-variant|Myanmar Language
+        en|language|mye|Myene
+        en|language|myv|Erzya
+        en|language|my|Burmese
+        en|language|mzn|Mazanderani
+        en|language|nan|Min Nan Chinese
+        en|language|nap|Neapolitan
+        en|language|naq|Nama
+        en|language|na|Nauru
+        en|language|nb|Norwegian Bokm\u00E5l
+        en|language|nds-NL|Low Saxon
+        en|language|nds|Low German
+        en|language|nd|North Ndebele
+        en|language|new|Newari
+        en|language|ne|Nepali
+        en|language|ng|Ndonga
+        en|language|nia|Nias
+        en|language|niu|Niuean
+        en|language|njo|Ao Naga
+        en|language|nl-BE|Flemish
+        en|language|nl|Dutch
+        en|language|nmg|Kwasio
+        en|language|nnh|Ngiemboon
+        en|language|nn|Norwegian Nynorsk
+        en|language|nog|Nogai
+        en|language|non|Old Norse
+        en|language|nov|Novial
+        en|language|no|Norwegian
+        en|language|nqo|N\u2019Ko
+        en|language|nr|South Ndebele
+        en|language|nso|Northern Sotho
+        en|language|nus|Nuer
+        en|language|nv|Navajo
+        en|language|nwc|Classical Newari
+        en|language|nym|Nyamwezi
+        en|language|nyn|Nyankole
+        en|language|nyo|Nyoro
+        en|language|ny|Nyanja
+        en|language|nzi|Nzima
+        en|language|oc|Occitan
+        en|language|ojb|Northwestern Ojibwa
+        en|language|ojc|Central Ojibwa
+        en|language|ojs|Oji-Cree
+        en|language|ojw|Western Ojibwa
+        en|language|oj|Ojibwa
+        en|language|oka-alt-variant|Colville Salish
+        en|language|oka|Okanagan
+        en|language|om|Oromo
+        en|language|or|Odia
+        en|language|osa|Osage
+        en|language|os|Ossetic
+        en|language|ota|Ottoman Turkish
+        en|language|pag|Pangasinan
+        en|language|pal|Pahlavi
+        en|language|pam|Pampanga
+        en|language|pap|Papiamento
+        en|language|pau|Palauan
+        en|language|pa|Punjabi
+        en|language|pcd|Picard
+        en|language|pcm|Nigerian Pidgin
+        en|language|pdc|Pennsylvania German
+        en|language|pdt|Plautdietsch
+        en|language|peo|Old Persian
+        en|language|pfl|Palatine German
+        en|language|phn|Phoenician
+        en|language|pi-alt-variant|P\u0101li
+        en|language|pis|Pijin
+        en|language|pi|Pali
+        en|language|pl|Polish
+        en|language|pms|Piedmontese
+        en|language|pnt|Pontic
+        en|language|pon|Pohnpeian
+        en|language|pqm|Maliseet-Passamaquoddy
+        en|language|prg|Prussian
+        en|language|pro|Old Proven\u00E7al
+        en|language|ps-alt-variant|Pushto
+        en|language|ps|Pashto
+        en|language|pt-BR|Brazilian Portuguese
+        en|language|pt-PT|European Portuguese
+        en|language|pt|Portuguese
+        en|language|quc|K\u02BCiche\u02BC
+        en|language|qug|Chimborazo Highland Quichua
+        en|language|qu|Quechua
+        en|language|raj|Rajasthani
+        en|language|rap|Rapanui
+        en|language|rar|Rarotongan
+        en|language|rgn|Romagnol
+        en|language|rhg|Rohingya
+        en|language|rif|Riffian
+        en|language|rm|Romansh
+        en|language|rn|Rundi
+        en|language|ro-MD|Moldavian
+        en|language|rof|Rombo
+        en|language|rom|Romany
+        en|language|ro|Romanian
+        en|language|rtm|Rotuman
+        en|language|rue|Rusyn
+        en|language|rug|Roviana
+        en|language|rup|Aromanian
+        en|language|ru|Russian
+        en|language|rwk|Rwa
+        en|language|rw|Kinyarwanda
+        en|language|sad|Sandawe
+        en|language|sah|Yakut
+        en|language|sam|Samaritan Aramaic
+        en|language|saq|Samburu
+        en|language|sas|Sasak
+        en|language|sat|Santali
+        en|language|saz-alt-variant|Saurashtra
+        en|language|saz|Sourashtra
+        en|language|sa|Sanskrit
+        en|language|sba|Ngambay
+        en|language|sbp|Sangu
+        en|language|scn|Sicilian
+        en|language|sco|Scots
+        en|language|sc|Sardinian
+        en|language|sdc|Sassarese Sardinian
+        en|language|sdh-menu-core|Kurdish
+        en|language|sdh-menu-extension|Southern
+        en|language|sdh|Southern Kurdish
+        en|language|sd|Sindhi
+        en|language|see|Seneca
+        en|language|seh|Sena
+        en|language|sei|Seri
+        en|language|sel|Selkup
+        en|language|ses|Koyraboro Senni
+        en|language|se|Northern Sami
+        en|language|sga|Old Irish
+        en|language|sgs|Samogitian
+        en|language|sg|Sango
+        en|language|shi|Tachelhit
+        en|language|shn|Shan
+        en|language|shu|Chadian Arabic
+        en|language|sh|Serbo-Croatian
+        en|language|sid|Sidamo
+        en|language|si|Sinhala
+        en|language|sk|Slovak
+        en|language|slh|Southern Lushootseed
+        en|language|sli|Lower Silesian
+        en|language|sly|Selayar
+        en|language|sl|Slovenian
+        en|language|sma|Southern Sami
+        en|language|smj|Lule Sami
+        en|language|smn|Inari Sami
+        en|language|sms|Skolt Sami
+        en|language|sm|Samoan
+        en|language|snk|Soninke
+        en|language|sn|Shona
+        en|language|sog|Sogdien
+        en|language|so|Somali
+        en|language|sq|Albanian
+        en|language|sr-ME|Montenegrin
+        en|language|srn|Sranan Tongo
+        en|language|srr|Serer
+        en|language|sr|Serbian
+        en|language|ssy|Saho
+        en|language|ss|Swati
+        en|language|stq|Saterland Frisian
+        en|language|str|Straits Salish
+        en|language|st|Southern Sotho
+        en|language|suk|Sukuma
+        en|language|sus|Susu
+        en|language|sux|Sumerian
+        en|language|su|Sundanese
+        en|language|sv|Swedish
+        en|language|sw-CD|Congo Swahili
+        en|language|swb|Comorian
+        en|language|sw|Swahili
+        en|language|syc|Classical Syriac
+        en|language|syr|Syriac
+        en|language|szl|Silesian
+        en|language|ta|Tamil
+        en|language|tce|Southern Tutchone
+        en|language|tcy|Tulu
+        en|language|tem|Timne
+        en|language|teo|Teso
+        en|language|ter|Tereno
+        en|language|tet|Tetum
+        en|language|te|Telugu
+        en|language|tgx|Tagish
+        en|language|tg|Tajik
+        en|language|tht|Tahltan
+        en|language|th|Thai
+        en|language|tig|Tigre
+        en|language|tiv|Tiv
+        en|language|ti|Tigrinya
+        en|language|tkl|Tokelauan
+        en|language|tkr|Tsakhur
+        en|language|tk|Turkmen
+        en|language|tlh|Klingon
+        en|language|tli|Tlingit
+        en|language|tly|Talysh
+        en|language|tl|Tagalog
+        en|language|tmh|Tamashek
+        en|language|tn|Tswana
+        en|language|tog|Nyasa Tonga
+        en|language|tok|Toki Pona
+        en|language|to|Tongan
+        en|language|tpi|Tok Pisin
+        en|language|tru|Turoyo
+        en|language|trv|Taroko
+        en|language|trw|Torwali
+        en|language|tr|Turkish
+        en|language|tsd|Tsakonian
+        en|language|tsi|Tsimshian
+        en|language|ts|Tsonga
+        en|language|ttm|Northern Tutchone
+        en|language|ttt|Muslim Tat
+        en|language|tt|Tatar
+        en|language|tum|Tumbuka
+        en|language|tvl|Tuvalu
+        en|language|twq|Tasawaq
+        en|language|tw|Twi
+        en|language|tyv|Tuvinian
+        en|language|ty|Tahitian
+        en|language|tzm|Central Atlas Tamazight
+        en|language|udm|Udmurt
+        en|language|ug-alt-variant|Uighur
+        en|language|uga|Ugaritic
+        en|language|ug|Uyghur
+        en|language|uk|Ukrainian
+        en|language|umb|Umbundu
+        en|language|und|Unknown language
+        en|language|ur|Urdu
+        en|language|uz|Uzbek
+        en|language|vai|Vai
+        en|language|vec|Venetian
+        en|language|vep|Veps
+        en|language|ve|Venda
+        en|language|vi|Vietnamese
+        en|language|vls|West Flemish
+        en|language|vmf|Main-Franconian
+        en|language|vmw|Makhuwa
+        en|language|vot|Votic
+        en|language|vo|Volap\u00FCk
+        en|language|vro|V\u00F5ro
+        en|language|vun|Vunjo
+        en|language|wae|Walser
+        en|language|wal|Wolaytta
+        en|language|war|Waray
+        en|language|was|Washo
+        en|language|wa|Walloon
+        en|language|wbp|Warlpiri
+        en|language|wo|Wolof
+        en|language|wuu|Wu Chinese
+        en|language|xal|Kalmyk
+        en|language|xh|Xhosa
+        en|language|xmf|Mingrelian
+        en|language|xnr|Kangri
+        en|language|xog|Soga
+        en|language|yao|Yao
+        en|language|yap|Yapese
+        en|language|yav|Yangben
+        en|language|ybb|Yemba
+        en|language|yi|Yiddish
+        en|language|yo|Yoruba
+        en|language|yrl|Nheengatu
+        en|language|yue|Cantonese
+        en|language|zap|Zapotec
+        en|language|za|Zhuang
+        en|language|zbl|Blissymbols
+        en|language|zea|Zeelandic
+        en|language|zen|Zenaga
+        en|language|zgh|Standard Moroccan Tamazight
+        en|language|zh-Hans-alt-long|Simplified Mandarin Chinese
+        en|language|zh-Hans|Simplified Chinese
+        en|language|zh-Hant-alt-long|Traditional Mandarin Chinese
+        en|language|zh-Hant|Traditional Chinese
+        en|language|zh-alt-long|Mandarin Chinese
+        en|language|zh|Chinese
+        en|language|zun|Zuni
+        en|language|zu|Zulu
+        en|language|zxx|No linguistic content
+        en|language|zza|Zaza
+        en|pattern|localePattern|{0} ({1})
+        en|pattern|localeSeparator|{0}, {1}
+        en|region|001|world
+        en|region|002|Africa
+        en|region|003|North America
+        en|region|005|South America
+        en|region|009|Oceania
+        en|region|011|Western Africa
+        en|region|013|Central America
+        en|region|014|Eastern Africa
+        en|region|015|Northern Africa
+        en|region|017|Middle Africa
+        en|region|018|Southern Africa
+        en|region|019|Americas
+        en|region|021|Northern America
+        en|region|029|Caribbean
+        en|region|030|Eastern Asia
+        en|region|034|Southern Asia
+        en|region|035|Southeast Asia
+        en|region|039|Southern Europe
+        en|region|053|Australasia
+        en|region|054|Melanesia
+        en|region|057|Micronesian Region
+        en|region|061|Polynesia
+        en|region|142|Asia
+        en|region|143|Central Asia
+        en|region|145|Western Asia
+        en|region|150|Europe
+        en|region|151|Eastern Europe
+        en|region|154|Northern Europe
+        en|region|155|Western Europe
+        en|region|202|Sub-Saharan Africa
+        en|region|419|Latin America
+        en|region|AC|Ascension Island
+        en|region|AD|Andorra
+        en|region|AE|United Arab Emirates
+        en|region|AF|Afghanistan
+        en|region|AG|Antigua & Barbuda
+        en|region|AI|Anguilla
+        en|region|AL|Albania
+        en|region|AM|Armenia
+        en|region|AO|Angola
+        en|region|AQ|Antarctica
+        en|region|AR|Argentina
+        en|region|AS|American Samoa
+        en|region|AT|Austria
+        en|region|AU|Australia
+        en|region|AW|Aruba
+        en|region|AX|\u00C5land Islands
+        en|region|AZ|Azerbaijan
+        en|region|BA-alt-short|Bosnia
+        en|region|BA|Bosnia & Herzegovina
+        en|region|BB|Barbados
+        en|region|BD|Bangladesh
+        en|region|BE|Belgium
+        en|region|BF|Burkina Faso
+        en|region|BG|Bulgaria
+        en|region|BH|Bahrain
+        en|region|BI|Burundi
+        en|region|BJ|Benin
+        en|region|BL|St. Barth\u00E9lemy
+        en|region|BM|Bermuda
+        en|region|BN|Brunei
+        en|region|BO|Bolivia
+        en|region|BQ|Caribbean Netherlands
+        en|region|BR|Brazil
+        en|region|BS|Bahamas
+        en|region|BT|Bhutan
+        en|region|BV|Bouvet Island
+        en|region|BW|Botswana
+        en|region|BY|Belarus
+        en|region|BZ|Belize
+        en|region|CA|Canada
+        en|region|CC-alt-short|Cocos Islands
+        en|region|CC|Cocos (Keeling) Islands
+        en|region|CD-alt-variant|Congo (DRC)
+        en|region|CD|Congo - Kinshasa
+        en|region|CF|Central African Republic
+        en|region|CG-alt-variant|Congo (Republic)
+        en|region|CG|Congo - Brazzaville
+        en|region|CH|Switzerland
+        en|region|CI-alt-variant|Ivory Coast
+        en|region|CI|C\u00F4te d\u2019Ivoire
+        en|region|CK|Cook Islands
+        en|region|CL|Chile
+        en|region|CM|Cameroon
+        en|region|CN|China
+        en|region|CO|Colombia
+        en|region|CP|Clipperton Island
+        en|region|CQ|Sark
+        en|region|CR|Costa Rica
+        en|region|CU|Cuba
+        en|region|CV-alt-variant|Cabo Verde
+        en|region|CV|Cape Verde
+        en|region|CW|Cura\u00E7ao
+        en|region|CX|Christmas Island
+        en|region|CY|Cyprus
+        en|region|CZ-alt-variant|Czech Republic
+        en|region|CZ|Czechia
+        en|region|DE|Germany
+        en|region|DG|Diego Garcia
+        en|region|DJ|Djibouti
+        en|region|DK|Denmark
+        en|region|DM|Dominica
+        en|region|DO|Dominican Republic
+        en|region|DZ|Algeria
+        en|region|EA|Ceuta & Melilla
+        en|region|EC|Ecuador
+        en|region|EE|Estonia
+        en|region|EG|Egypt
+        en|region|EH|Western Sahara
+        en|region|ER|Eritrea
+        en|region|ES|Spain
+        en|region|ET|Ethiopia
+        en|region|EU|European Union
+        en|region|EZ|Eurozone
+        en|region|FI|Finland
+        en|region|FJ|Fiji
+        en|region|FK-alt-variant|Falkland Islands (Islas Malvinas)
+        en|region|FK|Falkland Islands
+        en|region|FM|Micronesia
+        en|region|FO|Faroe Islands
+        en|region|FR|France
+        en|region|GA|Gabon
+        en|region|GB-alt-short|UK
+        en|region|GB|United Kingdom
+        en|region|GD|Grenada
+        en|region|GE|Georgia
+        en|region|GF|French Guiana
+        en|region|GG|Guernsey
+        en|region|GH|Ghana
+        en|region|GI|Gibraltar
+        en|region|GL|Greenland
+        en|region|GM|Gambia
+        en|region|GN|Guinea
+        en|region|GP|Guadeloupe
+        en|region|GQ|Equatorial Guinea
+        en|region|GR|Greece
+        en|region|GS|South Georgia & South Sandwich Islands
+        en|region|GT|Guatemala
+        en|region|GU|Guam
+        en|region|GW|Guinea-Bissau
+        en|region|GY|Guyana
+        en|region|HK-alt-short|Hong Kong
+        en|region|HK|Hong Kong SAR China
+        en|region|HM|Heard & McDonald Islands
+        en|region|HN|Honduras
+        en|region|HR|Croatia
+        en|region|HT|Haiti
+        en|region|HU|Hungary
+        en|region|IC|Canary Islands
+        en|region|ID|Indonesia
+        en|region|IE|Ireland
+        en|region|IL|Israel
+        en|region|IM|Isle of Man
+        en|region|IN|India
+        en|region|IO-alt-chagos|Chagos Archipelago
+        en|region|IO|British Indian Ocean Territory
+        en|region|IQ|Iraq
+        en|region|IR|Iran
+        en|region|IS|Iceland
+        en|region|IT|Italy
+        en|region|JE|Jersey
+        en|region|JM|Jamaica
+        en|region|JO|Jordan
+        en|region|JP|Japan
+        en|region|KE|Kenya
+        en|region|KG|Kyrgyzstan
+        en|region|KH|Cambodia
+        en|region|KI|Kiribati
+        en|region|KM|Comoros
+        en|region|KN|St. Kitts & Nevis
+        en|region|KP|North Korea
+        en|region|KR|South Korea
+        en|region|KW|Kuwait
+        en|region|KY|Cayman Islands
+        en|region|KZ|Kazakhstan
+        en|region|LA|Laos
+        en|region|LB|Lebanon
+        en|region|LC|St. Lucia
+        en|region|LI|Liechtenstein
+        en|region|LK|Sri Lanka
+        en|region|LR|Liberia
+        en|region|LS|Lesotho
+        en|region|LT|Lithuania
+        en|region|LU|Luxembourg
+        en|region|LV|Latvia
+        en|region|LY|Libya
+        en|region|MA|Morocco
+        en|region|MC|Monaco
+        en|region|MD|Moldova
+        en|region|ME|Montenegro
+        en|region|MF|St. Martin
+        en|region|MG|Madagascar
+        en|region|MH|Marshall Islands
+        en|region|MK|North Macedonia
+        en|region|ML|Mali
+        en|region|MM-alt-short|Myanmar
+        en|region|MM|Myanmar (Burma)
+        en|region|MN|Mongolia
+        en|region|MO-alt-short|Macao
+        en|region|MO|Macao SAR China
+        en|region|MP|Northern Mariana Islands
+        en|region|MQ|Martinique
+        en|region|MR|Mauritania
+        en|region|MS|Montserrat
+        en|region|MT|Malta
+        en|region|MU|Mauritius
+        en|region|MV|Maldives
+        en|region|MW|Malawi
+        en|region|MX|Mexico
+        en|region|MY|Malaysia
+        en|region|MZ|Mozambique
+        en|region|NA|Namibia
+        en|region|NC|New Caledonia
+        en|region|NE|Niger
+        en|region|NF|Norfolk Island
+        en|region|NG|Nigeria
+        en|region|NI|Nicaragua
+        en|region|NL|Netherlands
+        en|region|NO|Norway
+        en|region|NP|Nepal
+        en|region|NR|Nauru
+        en|region|NU|Niue
+        en|region|NZ-alt-variant|Aotearoa New Zealand
+        en|region|NZ|New Zealand
+        en|region|OM|Oman
+        en|region|PA|Panama
+        en|region|PE|Peru
+        en|region|PF|French Polynesia
+        en|region|PG|Papua New Guinea
+        en|region|PH|Philippines
+        en|region|PK|Pakistan
+        en|region|PL|Poland
+        en|region|PM|St. Pierre & Miquelon
+        en|region|PN-alt-short|Pitcairn
+        en|region|PN|Pitcairn Islands
+        en|region|PR|Puerto Rico
+        en|region|PS-alt-short|Palestine
+        en|region|PS|Palestinian Territories
+        en|region|PT|Portugal
+        en|region|PW|Palau
+        en|region|PY|Paraguay
+        en|region|QA|Qatar
+        en|region|QO|Outlying Oceania
+        en|region|RE|R\u00E9union
+        en|region|RO|Romania
+        en|region|RS|Serbia
+        en|region|RU|Russia
+        en|region|RW|Rwanda
+        en|region|SA|Saudi Arabia
+        en|region|SB|Solomon Islands
+        en|region|SC|Seychelles
+        en|region|SD|Sudan
+        en|region|SE|Sweden
+        en|region|SG|Singapore
+        en|region|SH|St. Helena
+        en|region|SI|Slovenia
+        en|region|SJ|Svalbard & Jan Mayen
+        en|region|SK|Slovakia
+        en|region|SL|Sierra Leone
+        en|region|SM|San Marino
+        en|region|SN|Senegal
+        en|region|SO|Somalia
+        en|region|SR|Suriname
+        en|region|SS|South Sudan
+        en|region|ST|S\u00E3o Tom\u00E9 & Pr\u00EDncipe
+        en|region|SV|El Salvador
+        en|region|SX|Sint Maarten
+        en|region|SY|Syria
+        en|region|SZ-alt-variant|Swaziland
+        en|region|SZ|Eswatini
+        en|region|TA|Tristan da Cunha
+        en|region|TC|Turks & Caicos Islands
+        en|region|TD|Chad
+        en|region|TF|French Southern Territories
+        en|region|TG|Togo
+        en|region|TH|Thailand
+        en|region|TJ|Tajikistan
+        en|region|TK|Tokelau
+        en|region|TL-alt-variant|East Timor
+        en|region|TL|Timor-Leste
+        en|region|TM|Turkmenistan
+        en|region|TN|Tunisia
+        en|region|TO|Tonga
+        en|region|TR-alt-variant|Turkey
+        en|region|TR|T\u00FCrkiye
+        en|region|TT|Trinidad & Tobago
+        en|region|TV|Tuvalu
+        en|region|TW|Taiwan
+        en|region|TZ|Tanzania
+        en|region|UA|Ukraine
+        en|region|UG|Uganda
+        en|region|UM|U.S. Outlying Islands
+        en|region|UN-alt-short|UN
+        en|region|UN|United Nations
+        en|region|US-alt-short|US
+        en|region|US|United States
+        en|region|UY|Uruguay
+        en|region|UZ|Uzbekistan
+        en|region|VA|Vatican City
+        en|region|VC|St. Vincent & Grenadines
+        en|region|VE|Venezuela
+        en|region|VG|British Virgin Islands
+        en|region|VI|U.S. Virgin Islands
+        en|region|VN|Vietnam
+        en|region|VU|Vanuatu
+        en|region|WF|Wallis & Futuna
+        en|region|WS|Samoa
+        en|region|XA|Pseudo-Accents
+        en|region|XB|Pseudo-Bidi
+        en|region|XK|Kosovo
+        en|region|YE|Yemen
+        en|region|YT|Mayotte
+        en|region|ZA|South Africa
+        en|region|ZM|Zambia
+        en|region|ZW|Zimbabwe
+        en|region|ZZ|Unknown Region
+        en|script|Adlm|Adlam
+        en|script|Afak|Afaka
+        en|script|Aghb|Caucasian Albanian
+        en|script|Ahom|Ahom
+        en|script|Arab-alt-variant|Perso-Arabic
+        en|script|Arab|Arabic
+        en|script|Aran|Nastaliq
+        en|script|Armi|Imperial Aramaic
+        en|script|Armn|Armenian
+        en|script|Avst|Avestan
+        en|script|Bali|Balinese
+        en|script|Bamu|Bamum
+        en|script|Bass|Bassa Vah
+        en|script|Batk|Batak
+        en|script|Beng|Bangla
+        en|script|Berf|Beria Erfe
+        en|script|Bhks|Bhaiksuki
+        en|script|Blis|Blissymbols
+        en|script|Bopo|Bopomofo
+        en|script|Brah|Brahmi
+        en|script|Brai|Braille
+        en|script|Bugi|Buginese
+        en|script|Buhd|Buhid
+        en|script|Cakm|Chakma
+        en|script|Cans-alt-short|UCAS
+        en|script|Cans|Unified Canadian Aboriginal Syllabics
+        en|script|Cari|Carian
+        en|script|Cham|Cham
+        en|script|Cher|Cherokee
+        en|script|Chrs|Chorasmian
+        en|script|Cirt|Cirth
+        en|script|Copt|Coptic
+        en|script|Cpmn|Cypro-Minoan
+        en|script|Cprt|Cypriot
+        en|script|Cyrl|Cyrillic
+        en|script|Cyrs|Old Church Slavonic Cyrillic
+        en|script|Deva|Devanagari
+        en|script|Diak|Dives Akuru
+        en|script|Dogr|Dogra
+        en|script|Dsrt|Deseret
+        en|script|Dupl|Duployan shorthand
+        en|script|Egyd|Egyptian demotic
+        en|script|Egyh|Egyptian hieratic
+        en|script|Egyp|Egyptian hieroglyphs
+        en|script|Elba|Elbasan
+        en|script|Elym|Elymaic
+        en|script|Ethi|Ethiopic
+        en|script|Gara|Garay
+        en|script|Geok|Georgian Khutsuri
+        en|script|Geor|Georgian
+        en|script|Glag|Glagolitic
+        en|script|Gong|Gunjala Gondi
+        en|script|Gonm|Masaram Gondi
+        en|script|Goth|Gothic
+        en|script|Gran|Grantha
+        en|script|Grek|Greek
+        en|script|Gujr|Gujarati
+        en|script|Gukh|Gurung Khema
+        en|script|Guru|Gurmukhi
+        en|script|Hanb|Han with Bopomofo
+        en|script|Hang|Hangul
+        en|script|Hani|Han
+        en|script|Hano|Hanunoo
+        en|script|Hans-alt-stand-alone|Simplified Han
+        en|script|Hans|Simplified
+        en|script|Hant-alt-stand-alone|Traditional Han
+        en|script|Hant|Traditional
+        en|script|Hatr|Hatran
+        en|script|Hebr|Hebrew
+        en|script|Hira|Hiragana
+        en|script|Hluw|Anatolian Hieroglyphs
+        en|script|Hmng|Pahawh Hmong
+        en|script|Hmnp|Nyiakeng Puachue Hmong
+        en|script|Hrkt|Japanese syllabaries
+        en|script|Hung|Old Hungarian
+        en|script|Inds|Indus
+        en|script|Ital|Old Italic
+        en|script|Jamo|Jamo
+        en|script|Java|Javanese
+        en|script|Jpan|Japanese
+        en|script|Jurc|Jurchen
+        en|script|Kali|Kayah Li
+        en|script|Kana|Katakana
+        en|script|Kawi|Kawi
+        en|script|Khar|Kharoshthi
+        en|script|Khmr|Khmer
+        en|script|Khoj|Khojki
+        en|script|Kits|Khitan small script
+        en|script|Knda|Kannada
+        en|script|Kore|Korean
+        en|script|Kpel|Kpelle
+        en|script|Krai|Kirat Rai
+        en|script|Kthi|Kaithi
+        en|script|Lana|Lanna
+        en|script|Laoo|Lao
+        en|script|Latf|Fraktur Latin
+        en|script|Latg|Gaelic Latin
+        en|script|Latn|Latin
+        en|script|Lepc|Lepcha
+        en|script|Limb|Limbu
+        en|script|Lina|Linear A
+        en|script|Linb|Linear B
+        en|script|Lisu|Fraser
+        en|script|Loma|Loma
+        en|script|Lyci|Lycian
+        en|script|Lydi|Lydian
+        en|script|Mahj|Mahajani
+        en|script|Maka|Makasar
+        en|script|Mand|Mandaean
+        en|script|Mani|Manichaean
+        en|script|Marc|Marchen
+        en|script|Maya|Mayan hieroglyphs
+        en|script|Medf|Medefaidrin
+        en|script|Mend|Mende
+        en|script|Merc|Meroitic Cursive
+        en|script|Mero|Meroitic
+        en|script|Mlym|Malayalam
+        en|script|Modi|Modi
+        en|script|Mong|Mongolian
+        en|script|Moon|Moon
+        en|script|Mroo|Mro
+        en|script|Mtei|Meitei Mayek
+        en|script|Mult|Multani
+        en|script|Mymr|Myanmar
+        en|script|Nagm|Nag Mundari
+        en|script|Nand|Nandinagari
+        en|script|Narb|Old North Arabian
+        en|script|Nbat|Nabataean
+        en|script|Newa|Newa
+        en|script|Nkgb|Naxi Geba
+        en|script|Nkoo|N\u2019Ko
+        en|script|Nshu|N\u00FCshu
+        en|script|Ogam|Ogham
+        en|script|Olck|Ol Chiki
+        en|script|Onao|Ol Onal
+        en|script|Orkh|Orkhon
+        en|script|Orya|Odia
+        en|script|Osge|Osage
+        en|script|Osma|Osmanya
+        en|script|Ougr|Old Uyghur
+        en|script|Palm|Palmyrene
+        en|script|Pauc|Pau Cin Hau
+        en|script|Perm|Old Permic
+        en|script|Phag|Phags-pa
+        en|script|Phli|Inscriptional Pahlavi
+        en|script|Phlp|Psalter Pahlavi
+        en|script|Phlv|Book Pahlavi
+        en|script|Phnx|Phoenician
+        en|script|Plrd|Pollard Phonetic
+        en|script|Prti|Inscriptional Parthian
+        en|script|Qaag|Zawgyi
+        en|script|Rjng|Rejang
+        en|script|Rohg-alt-stand-alone|Hanifi Rohingya
+        en|script|Rohg|Hanifi
+        en|script|Roro|Rongorongo
+        en|script|Runr|Runic
+        en|script|Samr|Samaritan
+        en|script|Sara|Sarati
+        en|script|Sarb|Old South Arabian
+        en|script|Saur-alt-variant|Saurashtra
+        en|script|Saur|Sourashtra
+        en|script|Sgnw|SignWriting
+        en|script|Shaw|Shavian
+        en|script|Shrd|Sharada
+        en|script|Sidd|Siddham
+        en|script|Sidt|Sidetic
+        en|script|Sind|Khudawadi
+        en|script|Sinh|Sinhala
+        en|script|Sogd|Sogdian
+        en|script|Sogo|Old Sogdian
+        en|script|Sora|Sora Sompeng
+        en|script|Soyo|Soyombo
+        en|script|Sund|Sundanese
+        en|script|Sunu|Sunuwar
+        en|script|Sylo|Syloti Nagri
+        en|script|Syrc|Syriac
+        en|script|Syre|Estrangelo Syriac
+        en|script|Syrj|Western Syriac
+        en|script|Syrn|Eastern Syriac
+        en|script|Tagb|Tagbanwa
+        en|script|Takr|Takri
+        en|script|Tale|Tai Le
+        en|script|Talu|New Tai Lue
+        en|script|Taml|Tamil
+        en|script|Tang|Tangut
+        en|script|Tavt|Tai Viet
+        en|script|Tayo|Tai Yo
+        en|script|Telu|Telugu
+        en|script|Teng|Tengwar
+        en|script|Tfng|Tifinagh
+        en|script|Tglg|Tagalog
+        en|script|Thaa|Thaana
+        en|script|Thai|Thai
+        en|script|Tibt|Tibetan
+        en|script|Tirh|Tirhuta
+        en|script|Tnsa|Tangsa
+        en|script|Todr|Todhri
+        en|script|Tols|Tolong Siki
+        en|script|Toto|Toto
+        en|script|Tutg|Tulu-Tigalari
+        en|script|Ugar|Ugaritic
+        en|script|Vaii|Vai
+        en|script|Visp|Visible Speech
+        en|script|Vith|Vithkuqi
+        en|script|Wara|Varang Kshiti
+        en|script|Wcho|Wancho
+        en|script|Wole|Woleai
+        en|script|Xpeo|Old Persian
+        en|script|Xsux-alt-short|S-A Cuneiform
+        en|script|Xsux|Sumero-Akkadian Cuneiform
+        en|script|Yezi|Yezidi
+        en|script|Yiii|Yi
+        en|script|Zanb|Zanabazar Square
+        en|script|Zinh|Inherited
+        en|script|Zmth|Mathematical Notation
+        en|script|Zsye|Emoji
+        en|script|Zsym|Symbols
+        en|script|Zxxx|Unwritten
+        en|script|Zyyy|Common
+        en|script|Zzzz|Unknown Script
+        en|variant|1606NICT|Late Middle French to 1606
+        en|variant|1694ACAD|Early Modern French
+        en|variant|1901|Traditional German orthography
+        en|variant|1959ACAD|Academic
+        en|variant|1994|Standardized Resian orthography
+        en|variant|1996|German orthography of 1996
+        en|variant|ABL1943|Orthographic formulation of 1943
+        en|variant|ALALC97|ALA-LC Romanization, 1997 edition
+        en|variant|ALUKU|Aluku dialect
+        en|variant|AO1990|Portuguese Language Orthographic Agreement of 1990
+        en|variant|AREVELA|Eastern Armenian
+        en|variant|AREVMDA|Western Armenian
+        en|variant|BAKU1926|Unified Turkic Latin Alphabet
+        en|variant|BALANKA|Balanka dialect of Anii
+        en|variant|BARLA|Barlavento dialect group of Kabuverdianu
+        en|variant|BISKE|San Giorgio/Bila dialect
+        en|variant|BOHORIC|Bohori\u010D alphabet
+        en|variant|BOONT|Boontling
+        en|variant|COLB1945|Portuguese-Brazilian Orthographic Convention of 1945
+        en|variant|DAJNKO|Dajnko alphabet
+        en|variant|EKAVSK|Serbian with Ekavian pronunciation
+        en|variant|EMODENG|Early Modern English
+        en|variant|FONIPA|IPA Phonetics
+        en|variant|FONUPA|UPA Phonetics
+        en|variant|HEPBURN|Hepburn romanization
+        en|variant|IJEKAVSK|Serbian with Ijekavian pronunciation
+        en|variant|KKCOR|Common Orthography
+        en|variant|KSCOR|Standard Orthography
+        en|variant|LIPAW|The Lipovaz dialect of Resian
+        en|variant|METELKO|Metelko alphabet
+        en|variant|MONOTON|Monotonic
+        en|variant|NDYUKA|Ndyuka dialect
+        en|variant|NEDIS|Natisone dialect
+        en|variant|NJIVA|Gniva/Njiva dialect
+        en|variant|NULIK|Modern Volap\u00FCk
+        en|variant|OSOJS|Oseacco/Osojane dialect
+        en|variant|OXENDICT|Oxford English Dictionary spelling
+        en|variant|PAMAKA|Pamaka dialect
+        en|variant|PINYIN|Pinyin romanization
+        en|variant|POLYTON|Polytonic
+        en|variant|POSIX|Computer
+        en|variant|REVISED|Revised Orthography
+        en|variant|RIGIK|Classic Volap\u00FCk
+        en|variant|ROZAJ|Resian
+        en|variant|SAAHO|Saho
+        en|variant|SCOTLAND|Scottish Standard English
+        en|variant|SCOUSE|Scouse
+        en|variant|SOLBA|Stolvizza/Solbica dialect
+        en|variant|SOTAV|Sotavento dialect group of Kabuverdianu
+        en|variant|TARASK|Taraskievica orthography
+        en|variant|UCCOR|Unified Orthography
+        en|variant|UCRCOR|Unified Revised Orthography
+        en|variant|UNIFON|Unifon phonetic alphabet
+        en|variant|VALENCIA|Valencian
+        en|variant|WADEGILE|Wade-Giles romanization
         """u8;
 
     /// <summary>The values of the break properties Intl.Segmenter reads, in the order their codes number them: property, values.</summary>

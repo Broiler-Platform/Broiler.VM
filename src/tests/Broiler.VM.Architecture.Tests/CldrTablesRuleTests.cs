@@ -14,15 +14,19 @@ namespace Broiler.VM.Architecture.Tests;
 /// output, as N22's hand-edit witness is.
 /// </para>
 /// <para>
-/// <b>The size is measured, not budgeted.</b> JSD-0027's owner decision (c) asks for a size budget
-/// from a measured prototype; until one is set, the rule bounds the data at the figure JSD-0043
-/// records as provisional, so growth past it is a decision rather than a drift.
+/// <b>The size is budgeted.</b> JSD-0027's owner decision (c) asked for a size budget from a measured
+/// prototype, and JSD-0043's provisional 512 KiB bound held the data until the owner set one: 768 KiB,
+/// on 2026-10-05, when Intl.DisplayNames needed more than the bound left. Growth past it is a
+/// decision rather than a drift.
 /// </para>
 /// </remarks>
 public sealed class CldrTablesRuleTests
 {
-    /// <summary>The provisional bound on the generated data, in bytes (JSD-0043 section 4).</summary>
-    internal const int ProvisionalBound = 512 * 1024;
+    /// <summary>
+    /// The budget on the generated data, in bytes: 768 KiB, which the repository owner set on
+    /// 2026-10-05 as JSD-0027 decision (c), replacing JSD-0043's provisional 512 KiB bound.
+    /// </summary>
+    internal const int Budget = 768 * 1024;
 
     /// <summary>The gate, and in write mode the generator.</summary>
     [Fact]
@@ -32,7 +36,7 @@ public sealed class CldrTablesRuleTests
 
         Assert.True(artefact.Desired.Length > 100_000, "the generated tables are not the size of the archive's data");
 
-        foreach (var table in new[] { "LikelySubtags", "Aliases", "Extensions", "Locales", "SoftDotted", "NumberLocales", "Currencies", "CurrencyDigits", "NumberingSystems", "Plurals", "PluralRanges", "Ordinals", "ListPatterns", "RelativeTimes", "SegmentBreakValues", "SegmentBreaks", "Units", "DateLocales", "TimeData", "DayPeriods", "WeekData", "Scripts", "CollationRoot", "CollationTailorings" })
+        foreach (var table in new[] { "LikelySubtags", "Aliases", "Extensions", "Locales", "SoftDotted", "NumberLocales", "Currencies", "CurrencyDigits", "NumberingSystems", "Plurals", "PluralRanges", "Ordinals", "ListPatterns", "RelativeTimes", "DisplayNames", "SegmentBreakValues", "SegmentBreaks", "Units", "DateLocales", "TimeData", "DayPeriods", "WeekData", "Scripts", "CollationRoot", "CollationTailorings" })
         {
             Assert.Contains($"internal static ReadOnlySpan<byte> {table} =>", artefact.Desired, StringComparison.Ordinal);
         }
@@ -104,9 +108,9 @@ public sealed class CldrTablesRuleTests
         Assert.Contains(CldrTableGenerator.OutputPath, notices, StringComparison.Ordinal);
     }
 
-    /// <summary>The table data, counted from the generated literals, stays under the provisional bound.</summary>
+    /// <summary>The table data, counted from the generated literals, stays under the owner's budget.</summary>
     [Fact]
-    public void N28_The_Table_Data_Stays_Under_The_Provisional_Bound()
+    public void N28_The_Table_Data_Stays_Under_The_Budget()
     {
         var text = CldrTableGenerator.Current.Desired;
 
@@ -119,6 +123,6 @@ public sealed class CldrTablesRuleTests
             .Sum(static match => match.Groups["body"].Value.Split('\n').Sum(static line => line.TrimStart(' ').Length + 1) - 1);
 
         Assert.True(bytes > 100_000, $"the binary tables hold {bytes} bytes, fewer than the root collation needs");
-        Assert.True(bytes + textBytes < ProvisionalBound, $"the tables hold {bytes + textBytes} bytes, past the provisional bound of {ProvisionalBound}");
+        Assert.True(bytes + textBytes < Budget, $"the tables hold {bytes + textBytes} bytes, past the budget of {Budget}");
     }
 }
