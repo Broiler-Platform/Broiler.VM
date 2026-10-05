@@ -1408,6 +1408,16 @@ suite 100,368 of 101,723 variants pass, none moving to failing. F9, the release,
 - **Identity:** every one above.
 - **Exit gate:** section 19's JS-10 gate.
 
+*Progress, 2026-10-05, slice R1: phase F9 is planned in four slices under proposed
+[JSD-0059](decisions/0059-the-release-under-the-mvp-programme.md), which builds every clause of the
+gate that is a fact - the measurement lane (R1), the support table drafted and not issued (R2),
+packages, consumers and a release-candidate run (R3), and a release gate that refuses naming its
+blockers (R4) - and leaves to the owner and a named human what the MVP programme defers: issuing,
+claiming, advertising, publishing, reviewing and accepting. R1 is built: the measurement lane and
+bundle [JS-10-001](evidence/js-10-001/README.md), whose verification and cold-start figures the
+profile's [baseline register](baselines.md) quotes and rule N33 holds to the bundle. JS-10 is `In
+progress` ([JSC-285](roadmap.corrections.md#jsc-285)).*
+
 ### 26.5 What runs beside the phases
 
 **The acceptance track.** None of the work above advances a ledger row on its own. Beside every

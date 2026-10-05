@@ -408,10 +408,13 @@ public sealed class RuleRegisterTests
         // Phase F7's second slice adds N28 beside N27: the Intl data's generated tables are what the
         // generator writes from the two pinned archives, under a provisional size bound, with the
         // CLDR licence in the notices. Active when minted; no other count moves.
-        Assert.Equal(111, byStatus["Active"]);
+        // Phase F9's first slice adds N33, rule L1's shape over the JavaScript profile's own
+        // baseline register: the register and the measurement logs of the bundle it names agree in
+        // both directions, on both arms (decision JSD-0059). Active when minted; no other count moves.
+        Assert.Equal(112, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(113, Loaded.Rules.Count);
+        Assert.Equal(114, Loaded.Rules.Count);
     }
 
     private static Register Load()

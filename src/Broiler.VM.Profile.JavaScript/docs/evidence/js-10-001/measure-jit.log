@@ -1,0 +1,22 @@
+# manifest sha256 9d2fd4828aec6cc15f51b01fc89b75bb0e8597d743f275d0546a3f635ec1eb0d
+# arm jit, binary sha256 9224811136ceb453d642031c6f3d4e8abbdd8e17d427ce6c7c777c5596ca38ee
+configuration rid=linux-x64 arch=X64 gc=workstation concurrent=default tiered=default aot=no
+workload source=the-statement-and-object-surface.js source-bytes=64486 artifact-bytes=170465 artifact-sha256=15000b4ed82e2a701757a8c68d2b990a630fe5b854a7b069182c278c070be5e5
+measurement verify-throughput unit=byte candidate-ns=7094735.0 control-ns=231075.0 difference-ns=6863660.0 per-byte-ns=40.2643 aa-ns=317440.0 valid=yes iterations=20 repetitions=7
+  rep verify-throughput 0 candidate-ns=14059930.0 control-ns=231075.0 aa-ns=9088310.0
+  rep verify-throughput 1 candidate-ns=9556470.0 control-ns=241015.0 aa-ns=8061500.0
+  rep verify-throughput 2 candidate-ns=7037280.0 control-ns=261210.0 aa-ns=7175915.0
+  rep verify-throughput 3 candidate-ns=7094735.0 control-ns=220215.0 aa-ns=7412175.0
+  rep verify-throughput 4 candidate-ns=8520320.0 control-ns=215870.0 aa-ns=8570575.0
+  rep verify-throughput 5 candidate-ns=6601470.0 control-ns=202070.0 aa-ns=6469010.0
+  rep verify-throughput 6 candidate-ns=6945435.0 control-ns=562275.0 aa-ns=6793120.0
+configuration cold-start completion=2 rid=linux-x64 arch=X64 gc=workstation concurrent=default tiered=default aot=no
+control-configuration cold-start-control rid=linux-x64 arch=X64 gc=workstation concurrent=default tiered=default aot=no
+measurement cold-start unit=process candidate-ns=359997937.9 control-ns=83043155.1 difference-ns=276954782.8 per-process-ns=276954782.8000 aa-ns=15787255.5 valid=yes iterations=10 repetitions=7
+  rep cold-start 0 candidate-ns=359855477.9 control-ns=74161256.0 aa-ns=375785193.4
+  rep cold-start 1 candidate-ns=382934107.1 control-ns=84013027.9 aa-ns=378601166.1
+  rep cold-start 2 candidate-ns=367720364.5 control-ns=81632179.8 aa-ns=376433417.3
+  rep cold-start 3 candidate-ns=368809962.9 control-ns=84970221.4 aa-ns=350503208.1
+  rep cold-start 4 candidate-ns=359997937.9 control-ns=74776285.3 aa-ns=387320112.6
+  rep cold-start 5 candidate-ns=343439145.2 control-ns=83043155.1 aa-ns=373034054.5
+  rep cold-start 6 candidate-ns=352088153.5 control-ns=89840042.2 aa-ns=358594447.2

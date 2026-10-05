@@ -1,0 +1,29 @@
+bundle JS-10-001
+written 2026-10-05T11:31:58+00:00
+evidence-class baseline
+decision Each figure is recorded as this profile's baseline on its arm if its candidate-versus-control difference exceeds its A/A difference, and as below resolution otherwise. No other decision is taken: the persistence question (roadmap section 16) and the in-process producer row (section 18) reopen only against a host's stated latency budget, and no host has stated one.
+commit d9012fed9fba8fac16be57e0ba26828320edd059
+submodules (none)
+tree clean
+restore exit 0
+dependency project Broiler.VM.Abstractions/0.1.0-preview.1 -
+dependency project Broiler.VM.Binary/0.1.0-preview.1 -
+dependency project Broiler.VM.Profile.JavaScript.Compiler/0.1.0-preview.1 -
+dependency project Broiler.VM.Profile.JavaScript.Format/0.1.0-preview.1 -
+dependency project Broiler.VM.Profile.JavaScript.Intl/0.1.0-preview.1 -
+dependency project Broiler.VM.Profile.JavaScript/0.1.0-preview.1 -
+dependency project Broiler.VM.Profile.MachineCode/0.1.0-preview.1 -
+dependency project Broiler.VM.Runtime/0.1.0-preview.1 -
+dependency package Microsoft.NET.ILLink.Tasks/10.0.12 xi+BDjFpW+Sb+MHFHaH6Y/gV9I8BluFwRXc1QyCdoZbIK26eNiBeFuMTe/FMwc33G1wdHCyDg7CVTmb8OdQrMQ==
+sdk 10.0.401
+runtime Microsoft.AspNetCore.App 10.0.12 [/root/.dotnet/shared/Microsoft.AspNetCore.App]
+runtime Microsoft.NETCore.App 10.0.12 [/root/.dotnet/shared/Microsoft.NETCore.App]
+machine Linux-6.18.44-fc-v70-x86_64-with-glibc2.39 x86_64 processors=4
+python 3.11.15
+rid linux-x64
+repetitions 7
+cold-start-launches-per-lane 10
+workload verify-throughput src/tests/differential/the-statement-and-object-surface.js sha256 ab4b6bd985d4d75969c86e79005eab4d19d517cfa35bf325446c25828fb49682
+workload cold-start the one-statement script `1 + 1`, which must complete with 2
+arm jit publish -p:PublishAot=false --self-contained true expect rid=linux-x64 arch=X64 gc=workstation aot=no
+arm aot publish -p:PublishAot=true expect rid=linux-x64 arch=X64 gc=workstation aot=yes

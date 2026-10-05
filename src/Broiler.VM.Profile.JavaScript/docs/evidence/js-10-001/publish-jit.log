@@ -1,0 +1,15 @@
+# manifest sha256 9d2fd4828aec6cc15f51b01fc89b75bb0e8597d743f275d0546a3f635ec1eb0d
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Profile.JavaScript.Intl -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Intl/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Intl.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.MachineCode -> /home/user/Broiler.VM/src/Broiler.VM.Profile.MachineCode/bin/Release/net10.0/Broiler.VM.Profile.MachineCode.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Conformance.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/artifacts/measure/JS-10-001/jit/
+exit 0

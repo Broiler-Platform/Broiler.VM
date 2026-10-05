@@ -12583,3 +12583,44 @@ rule N28, and the retained dataset `src/tests/temporal/zone-names/`.
   milestone or stage: the phase's records still wait on the owner.
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-285
+
+**Where:** phase F9, slice R1. The conformance root's measurement children (`Measurement.cs`), the
+collection script `eng/measure-js-baselines.py`, the profile's baseline register `docs/baselines.md`,
+bundle `evidence/js-10-001/`, and rule N33 with its witnesses; JS-10's ledger row.
+
+**What the plan said.**
+- [Section 19](roadmap.delivery.md#js-10--baselines-packaging-the-support-table-and-the-release-gate)'s
+  JS-10: stand up the controlled measurement lane and take this component's own baselines, including
+  verification throughput per byte and cold-start cost, which sections 16 and 18 reopen against. The
+  ledger's row read `Not started`: no measurement lane, no baseline register.
+- [Section 26.4](roadmap.delivery.md#f9--the-release)'s F9: JS-10 over every surface above.
+
+**What replaced it, observed on 2026-10-05.**
+- **F9 is planned in four slices** under proposed
+  [JSD-0059](decisions/0059-the-release-under-the-mvp-programme.md), which separates what the slices
+  build - facts a rule or a bundle checks - from what the MVP programme leaves to the owner and a
+  named human: issuing the support table, claiming a RID, advertising a composition, publishing,
+  reviewing, appointing operational holders and accepting.
+- **The measurement lane exists**: measurement children in the conformance root and a collection
+  script that writes an immutable manifest before either arm runs and checks every child's effective
+  configuration, under roadmap section 17's eight rules.
+- **Bundle [JS-10-001](evidence/js-10-001/README.md)**, from a clean tree: verification costs 40.2643
+  ns per byte under the JIT and 49.1986 under Native AOT; a cold start 276,954,782.8 ns and 4,485,046.9.
+  Every figure resolves above its A/A lane.
+- **The baseline register exists**, and rule **N33** - rule L1's shape over the profile's own register
+  - holds it to the bundle's logs in both directions, with four witnesses. The architecture suite has
+  346 tests.
+- **Rule N28's register statement** named the provisional 512 KiB bound the owner's budget replaced;
+  it now names the 832 KiB budget JSD-0058 records.
+- **JS-10 is `In progress`.**
+
+**What must not be read as repaired.**
+- **Every clause JSD-0059 section 1 names as a human's or the owner's stays open**, and so does every
+  clause slices R2 to R4 take.
+- **Rules N29 to N32**, minted with the tzdb and calendar archives, are asserted by the architecture
+  suite but have no row in the rule register; this entry records that rather than repairing it.
+- One machine, one RID; no reviewer; nothing accepted.
+
+**Authority and date.** The implementation and the collection of 2026-10-05 in this checkout. 2026-10-05.

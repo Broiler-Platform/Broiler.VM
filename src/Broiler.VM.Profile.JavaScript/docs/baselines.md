@@ -1,0 +1,86 @@
+<!-- SPDX-FileCopyrightText: 2026 Broiler Platform contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# The JavaScript profile's baselines
+
+> **No figure here is compared with any other engine or component, in either direction, and none
+> may be.** Every figure is this profile's own, measured on one machine against a control that is
+> the same workload minus the thing measured. Roadmap
+> [section 17](roadmap.gates.md#17-measurement-discipline) forbids the comparison and release gate
+> 10 fails a release that makes one.
+
+What this profile costs a host at the two points roadmap sections 16 and 18 open their questions
+against: **verifying an artifact**, per byte, and **starting**, per process. The figures are produced
+by the conformance composition's measurement children and `eng/measure-js-baselines.py`, and retained
+in **bundle [JS-10-001](evidence/js-10-001/README.md)**. Rule **N33** holds this document and that
+bundle's logs to each other in both directions: a measurement declared here that a log does not carry
+fails, a measurement a log carries that is not declared here fails, a figure quoted here that a log
+contradicts fails, and a figure a log refused to publish may not appear.
+
+Core contract version 1. Decision [JSD-0059](decisions/0059-the-release-under-the-mvp-programme.md)
+records the lane.
+
+---
+
+## 1. How a figure is made
+
+Roadmap section 17's eight rules, each applied by the lane rather than by a reader:
+
+| | Rule | Where the lane applies it |
+|---|---|---|
+| 1 | **A control that is the same workload minus the thing measured.** | Verifying the artifact against a checksum pass over the same bytes; a process that starts, composes and runs a script against the same process that starts and does none of that. |
+| 2 | **Interleaved lanes.** | Candidate, control and A/A alternate inside every repetition. |
+| 3 | **An A/A lane**, and a difference smaller than it reported **below resolution**. | The candidate is measured a second time in every repetition; the log prints `valid=no` and an upper bound where the difference does not exceed it. |
+| 4 | **Every repetition retained**, with no outlier policy and no statistical model. | Seven repetitions per lane, every one printed; the figure is the median. A cold-start repetition is the mean of ten launches. |
+| 5 | **A condition checked before and after every lane.** | The artifact must still verify after each lane; every cold-start candidate must exit 0 having completed `1 + 1` with `2`. |
+| 6 | **An immutable manifest written before either arm runs.** | `manifest.txt`: the commit and a clean tree, the submodules, the resolved dependency graph, the SDK and runtimes, the machine, the workloads with their digests, the arms and the decision. It is made read-only before the first publish, and its digest heads every log. |
+| 7 | **Effective, not requested, configuration.** | Every child prints the RID, the process architecture, the GC mode, the concurrency and tiering settings and whether it is Native AOT; the lane fails an arm whose child reports anything but what the arm asked for. |
+| 8 | **Exactly one evidence class, one predeclared decision.** | Class `baseline`. The decision: each figure is recorded as this profile's baseline on its arm if it resolves above its A/A lane, and as below resolution otherwise. |
+
+**Two arms**: `jit`, a trimmed self-contained publish under the runtime's default tiering, and `aot`,
+a Native AOT publish, both for `linux-x64` with workstation GC.
+
+---
+
+## 2. The measurements
+
+Two, each against the control it is attributed to. Figures are the per-unit differences of the
+medians bundle JS-10-001's `measure-jit.log` and `measure-aot.log` retain, in nanoseconds, on a
+four-processor `linux-x64` machine. **They are properties of that machine**; the ratio between the
+two arms travels further than either absolute value does.
+
+| Measurement | Unit | Candidate | Control | JIT | Native AOT |
+|---|---|---|---|---|---|
+| `verify-throughput` | byte | Verifying the 170,465-byte artifact the lowering writes for `src/tests/differential/the-statement-and-object-surface.js` | An FNV-1a pass over the same bytes | 40.2643 | 49.1986 |
+| `cold-start` | process | A process that composes the runtime, lowers `1 + 1`, verifies it, instantiates it and runs it to its completion | The same process doing none of that | 276,954,782.8 | 4,485,046.9 |
+
+**Both resolve on both arms**: every candidate-versus-control difference exceeds its A/A difference.
+
+### Reading them
+
+- **Verifying costs about 40 to 50 nanoseconds a byte**, some 20 to 25 megabytes a second, over an
+  artifact that carries a whole program's source text beside its bytecode (decision JSD-0037's
+  source section). A host that verifies what it compiles pays that once per artifact, and a mediated
+  `eval` pays it for each string it compiles.
+- **Starting costs about 277 milliseconds under the JIT and about 4.5 under Native AOT.** The JIT
+  figure is mostly the compilation of the lowering, the verifier, the executor and the realm's
+  intrinsics before the first script runs; the Native AOT figure is the same work already compiled.
+  It is the whole start a host pays before its first answer, with the process's own start - which
+  the control also pays - taken out.
+- **What they reopen, and what they do not.** Roadmap section 16's persistence question and section
+  18's in-process producer row reopen against these figures when **a host states a latency budget
+  that they miss by a stated margin**. No host has stated one, so both stay held, and this register
+  is the number they will be reopened against rather than an argument for either.
+
+---
+
+## 3. What this register does not say
+
+- **Nothing about a workload's speed.** Neither figure measures how fast a program runs once it has
+  started; the representative workloads' scores are the workload roadmap's, and none is quoted here.
+- **Nothing about another machine, RID or configuration.** One machine, one RID, workstation GC,
+  default tiering. A host on another platform has no figure here until a bundle collects one there.
+- **Nothing about the core's own cost.** The core's baseline register is the core's; none of its
+  figures appears here, and none of these appears there.
+- **Nothing reviewed.** The bundle names no reviewer, and release gate 11 publishes nothing that a
+  named human has not read.
