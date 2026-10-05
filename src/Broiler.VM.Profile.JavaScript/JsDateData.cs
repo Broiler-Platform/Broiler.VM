@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
+// Relevant units:   7
+// Annotated:        7/7
 // Exempt:           5
-// Human-reviewed:   0/5
+// Human-reviewed:   0/7
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       5
+// Unverified:       7
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -59,6 +59,26 @@ internal sealed class JsDateData
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<JsDayPeriodRule>> DayPeriods { get; } =
         new(System.StringComparer.Ordinal);
+
+    /// <summary>
+    /// The pseudo-locale of the ISO 8601 calendar's patterns, and the suffix of each language's data
+    /// in that calendar (JSD-0055).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B2F82B
+    // Broiler-Human:        PENDING
+    internal const string Iso8601 = "@iso8601";
+
+    /// <summary>Whether a key is one of a calendar's patterns rather than one of its names.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D3D1C3
+    // Broiler-Human:        PENDING
+    internal static bool IsPatternKey(string key) =>
+        key.StartsWith("dateFormats.", System.StringComparison.Ordinal) ||
+        key.StartsWith("timeFormats.", System.StringComparison.Ordinal) ||
+        key.StartsWith("dateTime.", System.StringComparison.Ordinal) ||
+        key.StartsWith("atTime.", System.StringComparison.Ordinal) ||
+        key.StartsWith("available.", System.StringComparison.Ordinal) ||
+        key.StartsWith("append.", System.StringComparison.Ordinal) ||
+        key.StartsWith("interval.", System.StringComparison.Ordinal);
 
     /// <summary>A language's value for a key, or nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E99C1

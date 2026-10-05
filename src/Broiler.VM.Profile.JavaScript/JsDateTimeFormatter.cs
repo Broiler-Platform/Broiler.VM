@@ -515,7 +515,7 @@ internal sealed class JsDateTimeFormatter
     /// exact time where the language names them, midnight written as the period it falls in, and the
     /// language's period for the hour; AM or PM where none is named.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=748C34
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3B8090
     // Broiler-Human:        PENDING
     private string FlexibleDayPeriod(char c, int count, JsLocalTime time, bool hasMinute, bool hasSecond)
     {
@@ -524,7 +524,10 @@ internal sealed class JsDateTimeFormatter
         var width = Width(count);
         var amPm = Name("dayPeriods.format." + width + "." + (time.Hour < 12 ? "am" : "pm"));
 
-        if (!data.DayPeriods.TryGetValue(language, out var rules))
+        // A CALENDAR'S DATA IS ITS LANGUAGE'S FOR DAY PERIODS, which belong to no calendar (JSD-0055).
+        var rulesLanguage = language.EndsWith(JsDateData.Iso8601, System.StringComparison.Ordinal) ? language[..^JsDateData.Iso8601.Length] : language;
+
+        if (!data.DayPeriods.TryGetValue(rulesLanguage, out var rules))
         {
             return amPm;
         }

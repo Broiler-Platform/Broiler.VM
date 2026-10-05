@@ -56,6 +56,13 @@
 # that day (JSD-0027 decision (c)): its tarball, retrieved twice, byte-identical, and checked against
 # the registry's sha512 integrity; from it languages.json, territories.json, scripts.json,
 # variants.json and localeDisplayNames.json for de and en, and its package.json.
+#
+# EXTENDED 2026-10-05 FOR PHASE F8, SLICE T2. Intl.DateTimeFormat's iso8601 calendar, which the Temporal
+# proposal's amendment of ECMA-402 requires among the available calendars, reads its patterns from one
+# more file of the CLDR repository at the tag release-48-2, common/main/root.xml: the only locale file
+# of the release that defines the iso8601 calendar, whose names it takes from each locale's Gregorian
+# calendar. It was retrieved twice on 2026-10-05 and found byte-identical by `cmp`; it carries no
+# version and is held by its hash alone. No permission specific to this retrieval was given either.
 
 data unicode-common-locale-data-repository
 version 48.2.0
@@ -76,6 +83,7 @@ archived yes
 file cldr-48.2.0/common/collation/de.xml 3557 81c4992984f284f771c449a761926bf15e90e1f133b47a1a695df8096cb7871e
 file cldr-48.2.0/common/collation/en.xml 460 593948669f284ed65c798778b82b8eafae492f759c48a17a4551421d18e4d665
 file cldr-48.2.0/common/collation/root.xml 52735 af6784292b2ec2576efcfdc5e1073f272edc1265a2dc5286ba9bd16b2d7a1ed9
+file cldr-48.2.0/common/main/root.xml 290870 f69ab139130793ab721b6d1be8c1385b9a051e0b7c5893615533bcfa7bab0448
 file cldr-48.2.0/common/uca/CollationTest_CLDR_NON_IGNORABLE_SHORT.txt 2245489 7063c05ad292803f8d4269abc64e2ce50ab96d0038f799670ed325f9a5e20bb8
 file cldr-48.2.0/common/uca/CollationTest_CLDR_SHIFTED_SHORT.txt 2482352 51a2f9d9d0ed4a54bb123c72df7211e9f3b83ca15249ad350cd8780f8ccbf7c5
 file cldr-48.2.0/common/uca/allkeys_CLDR.txt 2304450 f6f8961f6c51373bdc00b09fb61cc8c07bec4122bc4b8bcb50ff71c4b0901ab5

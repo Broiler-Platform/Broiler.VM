@@ -15897,6 +15897,154 @@ internal static class JsCldrTables
     // Broiler-Human:        PENDING
     internal static ReadOnlySpan<byte> DateLocales =>
         """
+        @iso8601|append.Day-Of-Week|{0} {1}
+        @iso8601|append.Day|{0} ({2}: {1})
+        @iso8601|append.Era|{1} {0}
+        @iso8601|append.Hour|{0} ({2}: {1})
+        @iso8601|append.Minute|{0} ({2}: {1})
+        @iso8601|append.Month|{0} ({2}: {1})
+        @iso8601|append.Quarter|{0} ({2}: {1})
+        @iso8601|append.Second|{0} ({2}: {1})
+        @iso8601|append.Timezone|{0} {1}
+        @iso8601|append.Week|{0} ({2}: {1})
+        @iso8601|append.Year|{1} {0}
+        @iso8601|atTime.full|{1} {0}
+        @iso8601|atTime.long|{1} {0}
+        @iso8601|atTime.medium|{1} {0}
+        @iso8601|atTime.short|{1} {0}
+        @iso8601|available.Bhms|h:mm:ss B
+        @iso8601|available.Bhm|h:mm B
+        @iso8601|available.Bh|h B
+        @iso8601|available.EBhms|E h:mm:ss B
+        @iso8601|available.EBhm|E h:mm B
+        @iso8601|available.EHms|E HH:mm:ss
+        @iso8601|available.EHm|E HH:mm
+        @iso8601|available.Ed|d, E
+        @iso8601|available.Ehms|E h:mm:ss\u202Fa
+        @iso8601|available.Ehm|E h:mm\u202Fa
+        @iso8601|available.E|ccc
+        @iso8601|available.GyMMMEd|G y MMM d, E
+        @iso8601|available.GyMMMd|G y MMM d
+        @iso8601|available.GyMMM|G y MMM
+        @iso8601|available.GyMd|G y-MM-dd
+        @iso8601|available.Gy|G y
+        @iso8601|available.Hmsv|HH:mm:ss v
+        @iso8601|available.Hms|HH:mm:ss
+        @iso8601|available.Hmv|HH:mm v
+        @iso8601|available.Hm|HH:mm
+        @iso8601|available.H|HH
+        @iso8601|available.MEd|MM-dd, E
+        @iso8601|available.MMMEd|MMM d, E
+        @iso8601|available.MMMMd|MMMM d
+        @iso8601|available.MMMd|MMM d
+        @iso8601|available.MMM|LLL
+        @iso8601|available.Md|MM-dd
+        @iso8601|available.M|L
+        @iso8601|available.d|d
+        @iso8601|available.hmsv|h:mm:ss\u202Fa v
+        @iso8601|available.hms|h:mm:ss\u202Fa
+        @iso8601|available.hmv|h:mm\u202Fa v
+        @iso8601|available.hm|h:mm\u202Fa
+        @iso8601|available.h|h\u202Fa
+        @iso8601|available.ms|mm:ss
+        @iso8601|available.yMEd|y-MM-dd, E
+        @iso8601|available.yMMMEd|y MMM d, E
+        @iso8601|available.yMMMM|y MMMM
+        @iso8601|available.yMMMd|y MMM d
+        @iso8601|available.yMMM|y MMM
+        @iso8601|available.yMd|y-MM-dd
+        @iso8601|available.yM|y-MM
+        @iso8601|available.yQQQQ|y QQQQ
+        @iso8601|available.yQQQ|y QQQ
+        @iso8601|available.y|y
+        @iso8601|dateFormats.full|y MMMM d, EEEE
+        @iso8601|dateFormats.long|y MMMM d
+        @iso8601|dateFormats.medium|y MMM d
+        @iso8601|dateFormats.short|y-MM-dd
+        @iso8601|dateTime.full|{1} {0}
+        @iso8601|dateTime.long|{1} {0}
+        @iso8601|dateTime.medium|{1} {0}
+        @iso8601|dateTime.short|{1} {0}
+        @iso8601|interval.Bh.B|h B\u2009\u2013\u2009h B
+        @iso8601|interval.Bh.h|h\u2013h B
+        @iso8601|interval.Bhm.B|h:mm B\u2009\u2013\u2009h:mm B
+        @iso8601|interval.Bhm.h|h:mm\u2013h:mm B
+        @iso8601|interval.Bhm.m|h:mm\u2013h:mm B
+        @iso8601|interval.Gy.G|G y\u2009\u2013\u2009G y
+        @iso8601|interval.Gy.y|y\u2013y
+        @iso8601|interval.GyM.G|G y-MM\u2009\u2013\u2009G y-MM
+        @iso8601|interval.GyM.M|G y-MM\u2009\u2013\u2009y-MM
+        @iso8601|interval.GyM.y|G y-MM\u2009\u2013\u2009y-MM
+        @iso8601|interval.GyMEd.G|G y-MM-dd, E\u2009\u2013\u2009G y-MM-dd, E
+        @iso8601|interval.GyMEd.M|G y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        @iso8601|interval.GyMEd.d|G y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        @iso8601|interval.GyMEd.y|G y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        @iso8601|interval.GyMMM.G|G y MMM\u2009\u2013\u2009G y MMM
+        @iso8601|interval.GyMMM.M|G y MMM\u2013MMM
+        @iso8601|interval.GyMMM.y|G y MMM\u2009\u2013\u2009y MMM
+        @iso8601|interval.GyMMMEd.G|G y MMM d, E\u2009\u2013\u2009G y MMM d, E
+        @iso8601|interval.GyMMMEd.M|G y MMM d, E\u2009\u2013\u2009MMM d, E
+        @iso8601|interval.GyMMMEd.d|G y MMM d, E\u2009\u2013\u2009MMM d, E
+        @iso8601|interval.GyMMMEd.y|G y MMM d, E\u2009\u2013\u2009y MMM d, E
+        @iso8601|interval.GyMMMd.G|G y MMM d\u2009\u2013\u2009G y MMM d
+        @iso8601|interval.GyMMMd.M|G y MMM d\u2009\u2013\u2009MMM d
+        @iso8601|interval.GyMMMd.d|G y MMM d\u2013d
+        @iso8601|interval.GyMMMd.y|G y MMM d\u2009\u2013\u2009y MMM d
+        @iso8601|interval.GyMd.G|G y-MM-dd\u2009\u2013\u2009G y-MM-dd
+        @iso8601|interval.GyMd.M|G y-MM-dd\u2009\u2013\u2009y-MM-dd
+        @iso8601|interval.GyMd.d|G y-MM-dd\u2009\u2013\u2009y-MM-dd
+        @iso8601|interval.GyMd.y|G y-MM-dd\u2009\u2013\u2009y-MM-dd
+        @iso8601|interval.H.H|HH\u2013HH
+        @iso8601|interval.Hm.H|HH:mm\u2013HH:mm
+        @iso8601|interval.Hm.m|HH:mm\u2013HH:mm
+        @iso8601|interval.Hmv.H|HH:mm\u2013HH:mm v
+        @iso8601|interval.Hmv.m|HH:mm\u2013HH:mm v
+        @iso8601|interval.Hv.H|HH\u2013HH v
+        @iso8601|interval.M.M|MM\u2013MM
+        @iso8601|interval.MEd.M|MM-dd, E\u2009\u2013\u2009MM-dd, E
+        @iso8601|interval.MEd.d|MM-dd, E\u2009\u2013\u2009MM-dd, E
+        @iso8601|interval.MMM.M|LLL\u2013LLL
+        @iso8601|interval.MMMEd.M|MMM d, E\u2009\u2013\u2009MMM d, E
+        @iso8601|interval.MMMEd.d|MMM d, E\u2009\u2013\u2009MMM d, E
+        @iso8601|interval.MMMd.M|MMM d\u2009\u2013\u2009MMM d
+        @iso8601|interval.MMMd.d|MMM d\u2013d
+        @iso8601|interval.Md.M|MM-dd\u2009\u2013\u2009MM-dd
+        @iso8601|interval.Md.d|MM-dd\u2009\u2013\u2009MM-dd
+        @iso8601|interval.d.d|d\u2013d
+        @iso8601|interval.fallback|{0}\u2009\u2013\u2009{1}
+        @iso8601|interval.h.a|h\u202Fa\u2009\u2013\u2009h\u202Fa
+        @iso8601|interval.h.h|h\u2013h\u202Fa
+        @iso8601|interval.hm.a|h:mm\u202Fa\u2009\u2013\u2009h:mm\u202Fa
+        @iso8601|interval.hm.h|h:mm\u2013h:mm\u202Fa
+        @iso8601|interval.hm.m|h:mm\u2013h:mm\u202Fa
+        @iso8601|interval.hmv.a|h:mm\u202Fa\u2009\u2013\u2009h:mm\u202Fa v
+        @iso8601|interval.hmv.h|h:mm\u2013h:mm\u202Fa v
+        @iso8601|interval.hmv.m|h:mm\u2013h:mm\u202Fa v
+        @iso8601|interval.hv.a|h\u202Fa\u2009\u2013\u2009h\u202Fa v
+        @iso8601|interval.hv.h|h\u2013h\u202Fa v
+        @iso8601|interval.y.y|y\u2013y
+        @iso8601|interval.yM.M|y-MM\u2009\u2013\u2009y-MM
+        @iso8601|interval.yM.y|y-MM\u2009\u2013\u2009y-MM
+        @iso8601|interval.yMEd.M|y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        @iso8601|interval.yMEd.d|y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        @iso8601|interval.yMEd.y|y-MM-dd, E\u2009\u2013\u2009y-MM-dd, E
+        @iso8601|interval.yMMM.M|y MMM\u2013MMM
+        @iso8601|interval.yMMM.y|y MMM\u2009\u2013\u2009y MMM
+        @iso8601|interval.yMMMEd.M|y MMM d, E\u2009\u2013\u2009MMM d, E
+        @iso8601|interval.yMMMEd.d|y MMM d, E\u2009\u2013\u2009MMM d, E
+        @iso8601|interval.yMMMEd.y|y MMM d, E\u2009\u2013\u2009y MMM d, E
+        @iso8601|interval.yMMMM.M|y MMMM\u2013MMMM
+        @iso8601|interval.yMMMM.y|y MMMM\u2009\u2013\u2009y MMMM
+        @iso8601|interval.yMMMd.M|y MMM d\u2009\u2013\u2009MMM d
+        @iso8601|interval.yMMMd.d|y MMM d\u2013d
+        @iso8601|interval.yMMMd.y|y MMM d\u2009\u2013\u2009y MMM d
+        @iso8601|interval.yMd.M|y-MM-dd\u2009\u2013\u2009y-MM-dd
+        @iso8601|interval.yMd.d|y-MM-dd\u2009\u2013\u2009y-MM-dd
+        @iso8601|interval.yMd.y|y-MM-dd\u2009\u2013\u2009y-MM-dd
+        @iso8601|timeFormats.full|HH:mm:ss zzzz
+        @iso8601|timeFormats.long|HH:mm:ss z
+        @iso8601|timeFormats.medium|HH:mm:ss
+        @iso8601|timeFormats.short|HH:mm
         de|append.Day-Of-Week|{0} {1}
         de|append.Day|{0} ({2}: {1})
         de|append.Era|{1} {0}

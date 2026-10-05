@@ -12394,3 +12394,41 @@ surface identity `broiler.javascript.temporal` in `JsSurfaces.cs` and `JavaScrip
   or stage moves.
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-281
+
+**Where:** phase F8, slice T2. `Intl.DateTimeFormat` in `JsRealm.DateTimeFormat.cs`, the date data's
+ISO 8601 calendar in `JsIntlTables.cs` and `JsDateData.cs`, each Temporal type's `toLocaleString`, the
+CLDR archive's `common/main/root.xml` (rule N27) and the generated date table (rule N28), and the
+retained dataset `src/tests/temporal/intl/`.
+
+**What the plan said.**
+- [JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md) section 2: T2 is Intl over
+  Temporal objects, `toLocaleString` of the plain types and `ZonedDateTime`, and the `iso8601` calendar
+  in `Intl.supportedValuesOf` and the formatter. Section 5 declared the ISO-string `toLocaleString`
+  a divergence until T2.
+
+**What replaced it, observed on 2026-10-05.**
+- **`Intl.DateTimeFormat` formats every Temporal type but `ZonedDateTime`** under proposed
+  [JSD-0055](decisions/0055-intl-over-temporal-objects.md), each in its own format chosen as the
+  amended ECMA-402 states, a plain value at UTC, with the calendar checks.
+- **Every Temporal type's `toLocaleString` is ECMA-402's**; JSD-0054's declared divergence is gone.
+- **The `iso8601` calendar is formatted from CLDR's root**, archived under N27 as
+  `common/main/root.xml`, retrieved twice and byte-identical, its patterns generated into the date
+  table (148 lines). The data is 677,100 bytes, 109,332 under the budget. Its date-time glue is the
+  language's Gregorian one, as ICU's is.
+- **The retained dataset** holds 1,233 formattings against the reference polyfill on ICU 77.1: 1,150
+  agree and 83 are named in four groups.
+- **test262**: `test/intl402/Temporal` passes 598 of 930, 134 more; 330 of the 332 failing are T3's
+  calendars and 2 need metazones. Of the 82 cases elsewhere that claim the flag, 150 variants pass and
+  4 fail (a `dangi` calendar, an `ar-EG` locale). Across `test/intl402`, `test/built-ins/Date` and
+  `test/built-ins/Temporal`, 244 variants move to passing and none moves back.
+- **Checks**: one new slice-compiler check, 642 in all.
+
+**What must not be read as repaired.**
+- **F8's exit gate is not met** until T3's calendars are built.
+- **Zone names** beyond the GMT format still need metazones, and the data still carries `de` and `en`
+  only.
+- JSD-0055 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.

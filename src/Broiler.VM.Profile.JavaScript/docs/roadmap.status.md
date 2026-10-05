@@ -637,6 +637,17 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F8 observation, slice T2, Intl over Temporal, 2026-10-05.** `Intl.DateTimeFormat` formats
+Temporal objects as the proposal amends ECMA-402, each type in its own format and a plain value at
+UTC, and every Temporal type's `toLocaleString` is ECMA-402's, under proposed
+[JSD-0055](decisions/0055-intl-over-temporal-objects.md). The `iso8601` calendar is resolved and
+formatted from CLDR's `common/main/root.xml`, archived under rule N27; the data is 677,100 bytes. A
+retained dataset of 1,233 formattings agrees with the reference polyfill on ICU 77.1 on 1,150 lines,
+the 83 others named. `test/intl402/Temporal` passes 598 of 930 variants, and 244 variants across
+`test/intl402`, `test/built-ins/Date` and `test/built-ins/Temporal` move to passing with none moving
+back ([JSC-281](roadmap.corrections.md#jsc-281)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F8 observation, slice T1, `Temporal`, 2026-10-05.** `Temporal` is published under proposed
 [JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md): its eight types,
 `Temporal.Now` and `Date.prototype.toTemporalInstant`, in the ISO 8601 and Gregorian calendars, over

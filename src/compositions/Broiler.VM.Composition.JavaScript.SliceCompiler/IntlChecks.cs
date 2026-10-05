@@ -53,6 +53,7 @@ internal static class IntlChecks
         ADoorHandedNoDataBuildsNoTemporal(),
         TemporalWithoutIntlAndBigIntIsRefused(),
         TemporalMatchesTheReferencePolyfill(),
+        IntlOverTemporalMatchesTheReferencePolyfill(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -280,6 +281,20 @@ internal static class IntlChecks
             "temporal.polyfill-e8cc03fc.txt",
             "the reference polyfill",
             1500);
+
+    /// <summary>
+    /// The retained answers of Intl over Temporal objects (phase F8 T2, JSD-0055): the program under
+    /// <c>src/tests/temporal/intl</c>, run here, answers every line the reference polyfill answered
+    /// through ICU 77.1, but for the lines <c>divergences.txt</c> names.
+    /// </summary>
+    private static (string, bool, string) IntlOverTemporalMatchesTheReferencePolyfill() =>
+        RetainedMatches(
+            "temporal/t2/intl-over-temporal-matches-the-reference-polyfill",
+            "src/tests/temporal/intl",
+            "temporal-intl",
+            "temporal-intl.polyfill-e8cc03fc.txt",
+            "the reference polyfill",
+            1200);
 
     /// <summary>
     /// A retained dataset under <c>src/tests/cldr/<paramref name="dataset"/></c>: its program, run

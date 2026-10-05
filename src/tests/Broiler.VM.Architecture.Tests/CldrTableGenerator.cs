@@ -932,7 +932,70 @@ internal static class CldrTableGenerator
             }
         }
 
+        lines.AddRange(Iso8601Patterns(cldr));
         return lines.Order(StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// The ISO 8601 calendar's patterns, from <c>common/main/root.xml</c>, under the pseudo-locale
+    /// <c>@iso8601</c>, flattened to the Gregorian data's keys: the date, time and date-time patterns,
+    /// the available formats, append items and interval formats. Its names are aliases of each
+    /// locale's Gregorian names, so none is carried; and no locale of the release overrides its
+    /// patterns (JSD-0055).
+    /// </summary>
+    internal static IEnumerable<string> Iso8601Patterns(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        const string Language = "@iso8601";
+        var root = System.Xml.Linq.XDocument.Parse(Encoding.UTF8.GetString(cldr[Root + "common/main/root.xml"]));
+        var calendar = root.Descendants("calendar").Single(static element => (string?)element.Attribute("type") == "iso8601");
+        var lines = new List<string>();
+
+        static bool Plain(System.Xml.Linq.XElement element) =>
+            element.Attribute("alt") is null && element.Attribute("count") is null;
+
+        foreach (var (group, length, kind) in new[] { ("dateFormats", "dateFormatLength", "dateFormat"), ("timeFormats", "timeFormatLength", "timeFormat") })
+        {
+            foreach (var style in calendar.Element(group)!.Elements(length))
+            {
+                var pattern = style.Element(kind)!.Elements("pattern").Single(Plain).Value;
+                lines.Add($"{Language}|{group}.{(string)style.Attribute("type")!}|{Escape(pattern)}");
+            }
+        }
+
+        var dateTime = calendar.Element("dateTimeFormats")!;
+
+        foreach (var style in dateTime.Elements("dateTimeFormatLength"))
+        {
+            var type = (string)style.Attribute("type")!;
+            var standard = style.Elements("dateTimeFormat").Single(static element => element.Attribute("type") is null).Element("pattern")!.Value;
+
+            // THE atTime FORM IS AN ALIAS OF THE STANDARD ONE in this calendar, so both keys hold it.
+            lines.Add($"{Language}|dateTime.{type}|{Escape(standard)}");
+            lines.Add($"{Language}|atTime.{type}|{Escape(standard)}");
+        }
+
+        foreach (var item in dateTime.Element("availableFormats")!.Elements("dateFormatItem").Where(Plain))
+        {
+            lines.Add($"{Language}|available.{(string)item.Attribute("id")!}|{Escape(item.Value)}");
+        }
+
+        foreach (var item in dateTime.Element("appendItems")!.Elements("appendItem"))
+        {
+            lines.Add($"{Language}|append.{(string)item.Attribute("request")!}|{Escape(item.Value)}");
+        }
+
+        var intervals = dateTime.Element("intervalFormats")!;
+        lines.Add($"{Language}|interval.fallback|{Escape(intervals.Element("intervalFormatFallback")!.Value)}");
+
+        foreach (var item in intervals.Elements("intervalFormatItem").Where(Plain))
+        {
+            foreach (var difference in item.Elements("greatestDifference").Where(Plain))
+            {
+                lines.Add($"{Language}|interval.{(string)item.Attribute("id")!}.{(string)difference.Attribute("id")!}|{Escape(difference.Value)}");
+            }
+        }
+
+        return lines;
     }
 
     private static void FlattenDates(string language, string key, JsonElement value, List<string> lines)

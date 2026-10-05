@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8E8851
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4068D9
     // Broiler-Human:        PENDING
     private void SetupTemporalZonedDateTime(JsObject temporal)
     {
@@ -224,7 +224,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
             var zoned = TemporalThis<JsZonedDateTimeObject>(engine, thisValue, "ZonedDateTime", "toLocaleString");
-            return JsValue.String(JsTemporal.ZonedDateTimeString(engine, zoned, JsTemporalCore.PrecisionAuto, "auto", "auto", "auto"));
+            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, "any", "all", zoned.TimeZone));
         });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>

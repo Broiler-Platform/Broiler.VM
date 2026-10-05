@@ -160,3 +160,14 @@ is commented in the code:
 - A realm admitting the surface without Intl's data or without BigInt, or a `Temporal` in a realm
   whose composition did not admit it.
 - A place where the profile follows the polyfill against the draft that section 4 does not name.
+
+## Amended 2026-10-05: slice T2 built (unsigned)
+
+*Recorded with phase F8's slice T2; it signs nothing. Corrections entry
+[JSC-281](../roadmap.corrections.md#jsc-281).*
+
+- **T2 is built** under proposed [JSD-0055](0055-intl-over-temporal-objects.md): `Intl.DateTimeFormat`
+  over Temporal objects, ECMA-402's `toLocaleString` for every type, and the `iso8601` calendar in the
+  formatter and `Intl.supportedValuesOf`. Section 5's declared divergence, the ISO string written by
+  the plain types' and `ZonedDateTime`'s `toLocaleString`, is gone. Sections 5 to 7 are kept as
+  written.

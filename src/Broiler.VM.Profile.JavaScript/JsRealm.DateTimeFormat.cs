@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
-// Exempt:           10
-// Human-reviewed:   0/25
+// Relevant units:   34
+// Annotated:        34/34
+// Exempt:           15
+// Human-reviewed:   0/34
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       25
+// Unverified:       34
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -67,7 +67,7 @@ internal sealed partial class JsRealm
         ("timeZoneName", ["short", "long", "shortOffset", "longOffset", "shortGeneric", "longGeneric"]),
     ];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F0D032
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=949803
     // Broiler-Human:        PENDING
     private void SetupDateTimeFormat(JsObject intl)
     {
@@ -115,9 +115,8 @@ internal sealed partial class JsRealm
                             1,
                             (inner, receiver, values) =>
                             {
-                                var date = Argument(values, 0);
-                                var x = date.Type == JsType.Undefined ? DateCurrentTime() : inner.ToNumber(date);
-                                return JsValue.String(Joined(format.Formatter.Parts(inner, ClippedTime(inner, x), null)));
+                                var (formatter, x) = DateTimeValue(inner, format, Argument(values, 0));
+                                return JsValue.String(Joined(formatter.Parts(inner, x, null)));
                             });
                     }
 
@@ -129,23 +128,22 @@ internal sealed partial class JsRealm
         Method(prototype, "formatToParts", 1, static (engine, thisValue, arguments) =>
         {
             var format = DateTimeFormatOfThis(engine, thisValue, "formatToParts");
-            var date = Argument(arguments, 0);
-            var x = date.Type == JsType.Undefined ? DateCurrentTime() : engine.ToNumber(date);
-            return DatePartsArray(engine, format.Formatter.Parts(engine, ClippedTime(engine, x), null));
+            var (formatter, x) = DateTimeValue(engine, format, Argument(arguments, 0));
+            return DatePartsArray(engine, formatter.Parts(engine, x, null));
         });
 
         Method(prototype, "formatRange", 2, static (engine, thisValue, arguments) =>
         {
             var format = DateTimeFormatOfThis(engine, thisValue, "formatRange");
-            var (x, y) = DateRangeValues(engine, arguments);
-            return JsValue.String(Joined(format.Formatter.RangeParts(engine, x, y)));
+            var (formatter, x, y) = DateRangeValues(engine, format, arguments);
+            return JsValue.String(Joined(formatter.RangeParts(engine, x, y)));
         });
 
         Method(prototype, "formatRangeToParts", 2, static (engine, thisValue, arguments) =>
         {
             var format = DateTimeFormatOfThis(engine, thisValue, "formatRangeToParts");
-            var (x, y) = DateRangeValues(engine, arguments);
-            return DatePartsArray(engine, format.Formatter.RangeParts(engine, x, y));
+            var (formatter, x, y) = DateRangeValues(engine, format, arguments);
+            return DatePartsArray(engine, formatter.RangeParts(engine, x, y));
         });
 
         Method(prototype, "resolvedOptions", 0, static (engine, thisValue, arguments) =>
@@ -209,7 +207,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's <c>Intl.supportedValuesOf</c>: the values this data supports for a key, sorted.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=64EB63
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=66AD55
     // Broiler-Human:        PENDING
     private static JsValue SupportedValuesOf(JsEngine engine, JsValue key)
     {
@@ -221,6 +219,7 @@ internal sealed partial class JsRealm
         {
             case "calendar":
                 values.Add("gregory");
+                values.Add("iso8601");
                 break;
             case "collation":
                 values.Add("phonebk");
@@ -285,10 +284,13 @@ internal sealed partial class JsRealm
         return clipped;
     }
 
-    /// <summary>The two ends of a range: both present, both numbers, both times.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F70F1D
+    /// <summary>
+    /// The start and end a range method formats: each read by ToDateTimeFormattable, two Temporal
+    /// objects of one type or two times, and the format they are written in.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=985C7F
     // Broiler-Human:        PENDING
-    private static (double X, double Y) DateRangeValues(JsEngine engine, JsValue[] arguments)
+    private static (JsDateTimeFormatter Formatter, double X, double Y) DateRangeValues(JsEngine engine, JsDateTimeFormatObject format, JsValue[] arguments)
     {
         var start = Argument(arguments, 0);
         var end = Argument(arguments, 1);
@@ -298,9 +300,128 @@ internal sealed partial class JsRealm
             throw engine.Error("TypeError", "Intl.DateTimeFormat: a range needs a start and an end");
         }
 
-        var x = engine.ToNumber(start);
-        var y = engine.ToNumber(end);
-        return (ClippedTime(engine, x), ClippedTime(engine, y));
+        var x = DateTimeFormattable(engine, format, start);
+        var y = DateTimeFormattable(engine, format, end);
+
+        if (x.IsObject || y.IsObject)
+        {
+            if (!(x.IsObject && y.IsObject && x.AsObject().GetType() == y.AsObject().GetType()))
+            {
+                throw engine.Error("TypeError", "Intl.DateTimeFormat: a range's start and end must be two Temporal objects of one type, or two times");
+            }
+        }
+
+        var (formatter, xTime) = HandleDateTimeValue(engine, format, x);
+        var (_, yTime) = HandleDateTimeValue(engine, format, y);
+        return (formatter, xTime, yTime);
+    }
+
+    /// <summary>The value format and the time of one argument of format or formatToParts: now when it is undefined.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8EA9FE
+    // Broiler-Human:        PENDING
+    private static (JsDateTimeFormatter Formatter, double Time) DateTimeValue(JsEngine engine, JsDateTimeFormatObject format, JsValue date) =>
+        date.Type == JsType.Undefined
+            ? (format.Formatter, DateCurrentTime())
+            : HandleDateTimeValue(engine, format, DateTimeFormattable(engine, format, date));
+
+    /// <summary>
+    /// The proposal's ToDateTimeFormattable (amended ECMA-402 s15.6.11): a Temporal object as itself
+    /// where the realm has Temporal, anything else as a Number.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=53087C
+    // Broiler-Human:        PENDING
+    private static JsValue DateTimeFormattable(JsEngine engine, JsDateTimeFormatObject format, JsValue value) =>
+        format.Temporal is not null && IsFormattableTemporal(value) ? value : JsValue.Number(engine.ToNumber(value));
+
+    /// <summary>The proposal's IsTemporalObject (amended ECMA-402 s15.6.12).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=040218
+    // Broiler-Human:        PENDING
+    private static bool IsFormattableTemporal(JsValue value) =>
+        value.AsObjectOrNull() is JsPlainDateObject or JsPlainTimeObject or JsPlainDateTimeObject or JsZonedDateTimeObject
+            or JsPlainYearMonthObject or JsPlainMonthDayObject or JsInstantObject;
+
+    /// <summary>
+    /// The proposal's HandleDateTimeValue (amended ECMA-402 s15.6.22): the format a value is written
+    /// in and its time in milliseconds; a plain value's format is written at UTC, so no zone moves it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=121763
+    // Broiler-Human:        PENDING
+    private static (JsDateTimeFormatter Formatter, double Time) HandleDateTimeValue(JsEngine engine, JsDateTimeFormatObject format, JsValue x)
+    {
+        if (!x.IsObject)
+        {
+            return (format.Formatter, ClippedTime(engine, x.AsNumber()));
+        }
+
+        var temporal = format.Temporal!;
+
+        JsDateTimeFormatter Required(string kind, string type) =>
+            temporal.For(kind) ??
+            throw engine.Error("TypeError", "Intl.DateTimeFormat: the options give no field of a Temporal." + type);
+
+        void SameCalendar(string calendar, bool isoAllowed, string type)
+        {
+            if (calendar != format.Calendar && !(isoAllowed && calendar == "iso8601"))
+            {
+                throw engine.Error("RangeError", "Intl.DateTimeFormat: a Temporal." + type + " in the " + calendar + " calendar cannot be formatted in the " + format.Calendar + " calendar");
+            }
+        }
+
+        static double Milliseconds(System.Numerics.BigInteger epochNs)
+        {
+            var quotient = System.Numerics.BigInteger.DivRem(epochNs, 1_000_000, out var remainder);
+            return (double)(remainder.Sign < 0 ? quotient - 1 : quotient);
+        }
+
+        double Noon(JsIsoDate date) => Milliseconds(JsTemporalCore.UtcEpochNs(new JsIsoDateTime(date, JsTimeRecord.Noon)));
+
+        switch (x.AsObject())
+        {
+            case JsPlainDateObject date:
+                SameCalendar(date.Calendar, isoAllowed: true, "PlainDate");
+                return (Required("date", "PlainDate"), Noon(date.Date));
+            case JsPlainYearMonthObject yearMonth:
+                SameCalendar(yearMonth.Calendar, isoAllowed: false, "PlainYearMonth");
+                return (Required("year-month", "PlainYearMonth"), Noon(yearMonth.Date));
+            case JsPlainMonthDayObject monthDay:
+                SameCalendar(monthDay.Calendar, isoAllowed: false, "PlainMonthDay");
+                return (Required("month-day", "PlainMonthDay"), Noon(monthDay.Date));
+            case JsPlainTimeObject time:
+                return (Required("time", "PlainTime"), Milliseconds(JsTemporalCore.UtcEpochNs(new JsIsoDateTime(new JsIsoDate(1970, 1, 1), time.Time))));
+            case JsPlainDateTimeObject dateTime:
+                SameCalendar(dateTime.Calendar, isoAllowed: true, "PlainDateTime");
+                return (Required("date-time", "PlainDateTime"), Milliseconds(JsTemporalCore.UtcEpochNs(dateTime.DateTime)));
+            case JsInstantObject instant:
+                return (Required("instant", "Instant"), Milliseconds(instant.EpochNanoseconds));
+            default:
+                throw engine.Error("TypeError", "Intl.DateTimeFormat: a Temporal.ZonedDateTime cannot be formatted; use its toLocaleString, or format its toInstant()");
+        }
+    }
+
+    /// <summary>
+    /// ECMA-402's toLocaleString of a Temporal object (as the proposal amends s15.11): a date-time
+    /// format made for the call, which writes the object.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B6BB9F
+    // Broiler-Human:        PENDING
+    internal static string TemporalToLocaleString(
+        JsEngine engine, JsValue value, JsValue[] arguments, string required, string defaults, string? timeZone = null)
+    {
+        var format = CreateDateTimeFormat(
+            engine, engine.Realm.DateTimeFormatPrototype!, Argument(arguments, 0), Argument(arguments, 1), required, defaults, timeZone);
+
+        if (value.AsObjectOrNull() is JsZonedDateTimeObject zoned)
+        {
+            if (zoned.Calendar != "iso8601" && zoned.Calendar != format.Calendar)
+            {
+                throw engine.Error("RangeError", "Temporal.ZonedDateTime.prototype.toLocaleString: a value in the " + zoned.Calendar + " calendar cannot be formatted in the " + format.Calendar + " calendar");
+            }
+
+            value = JsValue.Object(JsTemporal.CreateInstant(engine, zoned.EpochNanoseconds));
+        }
+
+        var (formatter, time) = HandleDateTimeValue(engine, format, value);
+        return Joined(formatter.Parts(engine, time, null));
     }
 
     /// <summary>An array of <c>{ type, value }</c> objects, with <c>source</c> where a part has one.</summary>
@@ -413,7 +534,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CreateDateTimeFormat (s11.1.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=85683F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D90C5
     // Broiler-Human:        PENDING
     internal static JsDateTimeFormatObject CreateDateTimeFormat(
         JsEngine engine,
@@ -421,7 +542,8 @@ internal sealed partial class JsRealm
         JsValue locales,
         JsValue optionsValue,
         string required,
-        string defaults)
+        string defaults,
+        string? toLocaleStringTimeZone = null)
     {
         var requested = CanonicalizeLocaleList(engine, locales);
         var options = CoerceOptionsToObject(engine, optionsValue);
@@ -473,7 +595,7 @@ internal sealed partial class JsRealm
             ["ca", "hc", "nu"],
             (locale, key) => key switch
             {
-                "ca" => ["gregory"],
+                "ca" => ["gregory", "iso8601"],
                 "hc" => [null, "h11", "h12", "h23", "h24"],
                 "nu" => nuValues,
                 _ => [null],
@@ -494,7 +616,21 @@ internal sealed partial class JsRealm
             null => resolved.Keys["hc"] ?? defaultCycle,
         };
 
-        var (timeZone, offset, kind, zone) = ResolveTimeZone(engine, engine.GetProperty(options, "timeZone"));
+        // TEMPORAL'S ZonedDateTime.prototype.toLocaleString NAMES ITS OWN ZONE (the proposal's
+        // amendment of CreateDateTimeFormat), and refuses one the options name as well.
+        var timeZoneOption = engine.GetProperty(options, "timeZone");
+
+        if (toLocaleStringTimeZone is not null)
+        {
+            if (timeZoneOption.Type != JsType.Undefined)
+            {
+                throw engine.Error("TypeError", "Temporal.ZonedDateTime.prototype.toLocaleString: the timeZone option cannot be given; the value's own zone is used");
+            }
+
+            timeZoneOption = JsValue.String(toLocaleStringTimeZone);
+        }
+
+        var (timeZone, offset, kind, zone) = ResolveTimeZone(engine, timeZoneOption);
 
         var components = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
         var hasExplicitComponents = false;
@@ -527,7 +663,12 @@ internal sealed partial class JsRealm
 
         var hcChar = hc switch { "h11" => 'K', "h12" => 'h', "h24" => 'k', _ => 'H' };
         var decimalSymbol = numbers.Value(language, "symbols.decimal") ?? ".";
-        var generator = dates.Generator(language, resolved.Keys["hc"] is { } keyword ? CharOfHourCycle(keyword) : preferred, decimalSymbol);
+        var resolvedCalendar = resolved.Keys["ca"] ?? "gregory";
+
+        // THE ISO 8601 CALENDAR'S DATA is the language's names under its own patterns (JSD-0055).
+        var dataLanguage = resolvedCalendar == "iso8601" ? language + JsDateData.Iso8601 : language;
+        var generator = dates.Generator(dataLanguage, resolved.Keys["hc"] is { } keyword ? CharOfHourCycle(keyword) : preferred, decimalSymbol);
+        var explicitComponents = new System.Collections.Generic.Dictionary<string, string>(components, System.StringComparer.Ordinal);
         string pattern;
 
         if (dateStyle is not null || timeStyle is not null)
@@ -547,7 +688,7 @@ internal sealed partial class JsRealm
                 throw engine.Error("TypeError", "Intl.DateTimeFormat: a time format cannot have a dateStyle");
             }
 
-            pattern = StylePattern(dates, language, dateStyle, timeStyle, hc, hcChar, generator);
+            pattern = StylePattern(dates, dataLanguage, dateStyle, timeStyle, hc, hcChar, generator);
         }
         else
         {
@@ -589,24 +730,202 @@ internal sealed partial class JsRealm
 
         var formatter = new JsDateTimeFormatter(
             dates,
-            language,
+            dataLanguage,
             digitsOfSystem,
             timeZone,
             offset,
             kind,
             pattern,
-            () => new JsDateIntervalFormat(dates, language, dates.Generator(language, intervalChar, decimalSymbol), JsDatePatternGenerator.SkeletonOf(pattern)),
+            () => new JsDateIntervalFormat(dates, dataLanguage, dates.Generator(dataLanguage, intervalChar, decimalSymbol), JsDatePatternGenerator.SkeletonOf(pattern)),
             zone);
+
+        // THE FORMATS OF TEMPORAL'S OBJECTS (the proposal's amendment of CreateDateTimeFormat), built
+        // when one is first formatted and only where the realm has Temporal.
+        JsTemporalDateFormats? temporal = null;
+
+        if (engine.Realm.TemporalDurationPrototype is not null)
+        {
+            var stylePattern = dateStyle is not null || timeStyle is not null ? pattern : null;
+            var zoned = toLocaleStringTimeZone is not null;
+
+            JsDateTimeFormatter Formatter(string formatPattern, bool plain)
+            {
+                var cycle = HourCycleOf(formatPattern) is null ? preferred : hcChar;
+                return new JsDateTimeFormatter(
+                    dates,
+                    dataLanguage,
+                    digitsOfSystem,
+                    plain ? "UTC" : timeZone,
+                    plain ? 0 : offset,
+                    plain ? JsZoneKind.Utc : kind,
+                    formatPattern,
+                    () => new JsDateIntervalFormat(dates, dataLanguage, dates.Generator(dataLanguage, cycle, decimalSymbol), JsDatePatternGenerator.SkeletonOf(formatPattern)),
+                    plain ? null : zone);
+            }
+
+            string Best(System.Collections.Generic.Dictionary<string, string> formatOptions) =>
+                ReplaceHourCycle(generator.BestPattern(SkeletonOfComponents(formatOptions, hcChar), JsDatePatternGenerator.MatchHourLength), hcChar);
+
+            temporal = new JsTemporalDateFormats(kindOfValue =>
+            {
+                string? formatPattern;
+
+                if (stylePattern is not null)
+                {
+                    formatPattern = kindOfValue switch
+                    {
+                        "date" => dateStyle is null ? null : AdjustStylePattern(stylePattern, ["weekday", "era", "year", "month", "day"], Best),
+                        "year-month" => dateStyle is null ? null : AdjustStylePattern(stylePattern, ["era", "year", "month"], Best),
+                        "month-day" => dateStyle is null ? null : AdjustStylePattern(stylePattern, ["month", "day"], Best),
+                        "time" => timeStyle is null ? null : AdjustStylePattern(stylePattern, ["dayPeriod", "hour", "minute", "second", "fractionalSecondDigits"], Best),
+                        "date-time" => AdjustStylePattern(stylePattern, ["weekday", "era", "year", "month", "day", "dayPeriod", "hour", "minute", "second", "fractionalSecondDigits"], Best),
+                        _ => stylePattern,
+                    };
+                }
+                else
+                {
+                    formatPattern = kindOfValue switch
+                    {
+                        "date" => TemporalFormatPattern(explicitComponents, "date", "date", inheritAll: false, Best),
+                        "year-month" => TemporalFormatPattern(explicitComponents, "year-month", "year-month", inheritAll: false, Best),
+                        "month-day" => TemporalFormatPattern(explicitComponents, "month-day", "month-day", inheritAll: false, Best),
+                        "time" => TemporalFormatPattern(explicitComponents, "time", "time", inheritAll: false, Best),
+                        "date-time" => TemporalFormatPattern(explicitComponents, "any", "all", inheritAll: false, Best),
+                        _ => TemporalFormatPattern(explicitComponents, "any", zoned ? "zoned-date-time" : "all", inheritAll: true, Best),
+                    };
+                }
+
+                return formatPattern is null ? null : Formatter(formatPattern, plain: kindOfValue != "instant");
+            });
+        }
 
         return new JsDateTimeFormatObject(prototype, formatter)
         {
             Locale = resolved.Locale,
-            Calendar = resolved.Keys["ca"] ?? "gregory",
+            Calendar = resolvedCalendar,
+            Temporal = temporal,
             NumberingSystem = resolved.Keys["nu"] ?? "latn",
             HourCycle = patternCycle is null ? null : hc,
             DateStyle = dateStyle,
             TimeStyle = timeStyle,
         };
+    }
+
+    /// <summary>
+    /// The proposal's GetDateTimeFormat (amended ECMA-402 s15.6.1) over the explicitly requested
+    /// components: the pattern a Temporal type is written in, or nothing where the options name
+    /// components and none of the type's own.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FBF173
+    // Broiler-Human:        PENDING
+    private static string? TemporalFormatPattern(
+        System.Collections.Generic.Dictionary<string, string> options,
+        string required,
+        string defaults,
+        bool inheritAll,
+        System.Func<System.Collections.Generic.Dictionary<string, string>, string> best)
+    {
+        string[] requiredOptions = required switch
+        {
+            "date" => ["weekday", "year", "month", "day"],
+            "time" => ["dayPeriod", "hour", "minute", "second", "fractionalSecondDigits"],
+            "year-month" => ["year", "month"],
+            "month-day" => ["month", "day"],
+            _ => ["weekday", "year", "month", "day", "dayPeriod", "hour", "minute", "second", "fractionalSecondDigits"],
+        };
+
+        string[] defaultOptions = defaults switch
+        {
+            "date" => ["year", "month", "day"],
+            "time" => ["hour", "minute", "second"],
+            "year-month" => ["year", "month"],
+            "month-day" => ["month", "day"],
+            _ => ["year", "month", "day", "hour", "minute", "second"],
+        };
+
+        var formatOptions = inheritAll
+            ? new System.Collections.Generic.Dictionary<string, string>(options, System.StringComparer.Ordinal)
+            : new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+
+        if (!inheritAll && required is "date" or "year-month" or "any" && options.TryGetValue("era", out var era))
+        {
+            formatOptions["era"] = era;
+        }
+
+        var anyPresent = false;
+
+        foreach (var name in new[] { "weekday", "year", "month", "day", "dayPeriod", "hour", "minute", "second", "fractionalSecondDigits" })
+        {
+            anyPresent |= options.ContainsKey(name);
+        }
+
+        var needDefaults = true;
+
+        foreach (var name in requiredOptions)
+        {
+            if (options.TryGetValue(name, out var value))
+            {
+                formatOptions[name] = value;
+                needDefaults = false;
+            }
+        }
+
+        if (needDefaults)
+        {
+            if (anyPresent && !inheritAll)
+            {
+                return null;
+            }
+
+            foreach (var name in defaultOptions)
+            {
+                formatOptions[name] = "numeric";
+            }
+
+            if (defaults == "zoned-date-time" && !formatOptions.ContainsKey("timeZoneName"))
+            {
+                formatOptions["timeZoneName"] = "short";
+            }
+        }
+
+        return best(formatOptions);
+    }
+
+    /// <summary>
+    /// The proposal's AdjustDateTimeStyleFormat (amended ECMA-402 s15.6.2): the style's pattern where
+    /// it writes only fields the type has, else the best pattern for those of its fields the type has.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=730B5D
+    // Broiler-Human:        PENDING
+    private static string AdjustStylePattern(
+        string stylePattern,
+        string[] allowed,
+        System.Func<System.Collections.Generic.Dictionary<string, string>, string> best)
+    {
+        var components = ComponentsOf(stylePattern);
+        var conflicting = false;
+
+        foreach (var name in components.Keys)
+        {
+            conflicting |= System.Array.IndexOf(allowed, name) < 0;
+        }
+
+        if (!conflicting)
+        {
+            return stylePattern;
+        }
+
+        var formatOptions = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+
+        foreach (var name in allowed)
+        {
+            if (components.TryGetValue(name, out var value))
+            {
+                formatOptions[name] = value;
+            }
+        }
+
+        return best(formatOptions);
     }
 
     /// <summary>The hour cycle a CLDR hour letter writes.</summary>
@@ -1036,4 +1355,49 @@ internal sealed class JsDateTimeFormatObject : JsObject
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0782CD
     // Broiler-Human:        PENDING
     internal JsNativeFunction? BoundFormat { get; set; }
+
+    /// <summary>The formats of Temporal's objects, or nothing where the realm has no Temporal.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D2035E
+    // Broiler-Human:        PENDING
+    internal JsTemporalDateFormats? Temporal { get; init; }
+}
+
+/// <summary>
+/// The [[TemporalPlainDateFormat]] to [[TemporalInstantFormat]] slots of a date-time format: each
+/// built when first asked for, and nothing where the options exclude the type (JSD-0055).
+/// </summary>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDA35F
+// Broiler-Human:        PENDING
+internal sealed class JsTemporalDateFormats
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EAD48E
+    // Broiler-Human:        PENDING
+    private readonly System.Func<string, JsDateTimeFormatter?> build;
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9E6407
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.Dictionary<string, JsDateTimeFormatter?> built = new(System.StringComparer.Ordinal);
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=328C44
+    // Broiler-Human:        PENDING
+    private readonly object gate = new();
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=181FF5
+    // Broiler-Human:        PENDING
+    internal JsTemporalDateFormats(System.Func<string, JsDateTimeFormatter?> build) => this.build = build;
+
+    /// <summary>The format of <c>date</c>, <c>year-month</c>, <c>month-day</c>, <c>time</c>, <c>date-time</c> or <c>instant</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FEE5F4
+    // Broiler-Human:        PENDING
+    internal JsDateTimeFormatter? For(string kind)
+    {
+        lock (gate)
+        {
+            if (!built.TryGetValue(kind, out var formatter))
+            {
+                formatter = build(kind);
+                built[kind] = formatter;
+            }
+
+            return formatter;
+        }
+    }
 }

@@ -393,7 +393,8 @@ the one the entry above uses for the UCD.
 supplemental files `likelySubtags.json`, `aliases.json` and `parentLocales.json`, the files
 `availableLocales.json` and `defaultContent.json`, every `bcp47/*.json` file and both
 `package.json` files; and from the CLDR release's `common/` tree, `uca/allkeys_CLDR.txt`, the two
-short CollationTest files (test input only) and `collation/root.xml`, `de.xml` and `en.xml`; and the
+short CollationTest files (test input only) and `collation/root.xml`, `de.xml` and `en.xml`, and (added 2026-10-05, phase F8's slice T2, JSD-0055)
+`main/root.xml`, whose ISO 8601 calendar patterns the date tables carry; and the
 licence text. They are archived unmodified at [`src/tests/cldr/pins/`](src/tests/cldr/pins/README.md),
 where `cldr.pin` records each file's length and SHA-256 and rule **N27** hashes them on every run of
 the architecture suite. The pin and its README record how and when they were retrieved. Since the

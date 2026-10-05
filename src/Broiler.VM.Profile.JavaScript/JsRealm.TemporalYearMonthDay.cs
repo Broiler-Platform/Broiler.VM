@@ -22,7 +22,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3BE108
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E2433
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainYearMonth(JsObject temporal)
     {
@@ -105,8 +105,8 @@ internal sealed partial class JsRealm
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
-            var yearMonth = TemporalThis<JsPlainYearMonthObject>(engine, thisValue, "PlainYearMonth", "toLocaleString");
-            return JsValue.String(JsTemporal.YearMonthString(yearMonth.Date, yearMonth.Calendar, "auto"));
+            _ = TemporalThis<JsPlainYearMonthObject>(engine, thisValue, "PlainYearMonth", "toLocaleString");
+            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, "date", "date"));
         });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
@@ -209,7 +209,7 @@ internal sealed partial class JsRealm
 
     // ---- Temporal.PlainMonthDay -----------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BB812F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=57CB25
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainMonthDay(JsObject temporal)
     {
@@ -270,8 +270,8 @@ internal sealed partial class JsRealm
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
-            var monthDay = TemporalThis<JsPlainMonthDayObject>(engine, thisValue, "PlainMonthDay", "toLocaleString");
-            return JsValue.String(JsTemporal.MonthDayString(monthDay.Date, monthDay.Calendar, "auto"));
+            _ = TemporalThis<JsPlainMonthDayObject>(engine, thisValue, "PlainMonthDay", "toLocaleString");
+            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, "date", "date"));
         });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>

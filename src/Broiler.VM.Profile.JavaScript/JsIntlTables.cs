@@ -323,7 +323,7 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>Decodes the date tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3020F2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F3181
     // Broiler-Human:        PENDING
     private JsDateData ReadDates()
     {
@@ -340,6 +340,40 @@ internal sealed class JsIntlTables
             }
 
             locale[fields[1]] = Unescape(fields[2]);
+        }
+
+        // EACH LANGUAGE'S ISO 8601 CALENDAR (JSD-0055) is its Gregorian names under root's ISO 8601
+        // patterns, as CLDR's aliases make it: `<language>@iso8601`. The date-time glue stays the
+        // language's Gregorian one, as ICU resolves it, where root's would be "{1} {0}".
+        if (data.Locales.TryGetValue(JsDateData.Iso8601, out var iso8601))
+        {
+            foreach (var language in new System.Collections.Generic.List<string>(data.Locales.Keys))
+            {
+                if (language[0] == '@')
+                {
+                    continue;
+                }
+
+                var calendar = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+
+                foreach (var (key, value) in data.Locales[language])
+                {
+                    if (!JsDateData.IsPatternKey(key) || key.StartsWith("dateTime.", System.StringComparison.Ordinal) || key.StartsWith("atTime.", System.StringComparison.Ordinal))
+                    {
+                        calendar[key] = value;
+                    }
+                }
+
+                foreach (var (key, value) in iso8601)
+                {
+                    if (!key.StartsWith("dateTime.", System.StringComparison.Ordinal) && !key.StartsWith("atTime.", System.StringComparison.Ordinal))
+                    {
+                        calendar[key] = value;
+                    }
+                }
+
+                data.Locales[language + JsDateData.Iso8601] = calendar;
+            }
         }
 
         foreach (var line in Lines(Format.JsIntlTable.TimeData))

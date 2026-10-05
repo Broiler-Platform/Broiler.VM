@@ -26,7 +26,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] TimeFieldNames = ["hour", "minute", "second", "millisecond", "microsecond", "nanosecond"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=485E4A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=650CAB
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainTime(JsObject temporal)
     {
@@ -133,8 +133,10 @@ internal sealed partial class JsRealm
         });
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
-            JsValue.String(JsTemporalCore.TimeToString(
-                TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "toLocaleString").Time, JsTemporalCore.PrecisionAuto)));
+        {
+            _ = TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "toLocaleString");
+            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, "time", "time"));
+        });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
             JsValue.String(JsTemporalCore.TimeToString(

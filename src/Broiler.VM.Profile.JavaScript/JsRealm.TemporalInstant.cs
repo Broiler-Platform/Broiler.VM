@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5514CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FFF0A9
     // Broiler-Human:        PENDING
     private void SetupTemporalInstant(JsObject temporal)
     {
@@ -122,12 +122,11 @@ internal sealed partial class JsRealm
         });
 
         // ECMA-402'S DEFINITION (s15.11.2.1): the instant written by an Intl.DateTimeFormat made for
-        // the call, at its millisecond.
+        // the call.
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
-            var instant = TemporalThis<JsInstantObject>(engine, thisValue, "Instant", "toLocaleString");
-            var milliseconds = (double)FloorDivide(instant.EpochNanoseconds, 1_000_000);
-            return JsValue.String(ToLocaleDateString(engine, milliseconds, arguments, "any", "all"));
+            _ = TemporalThis<JsInstantObject>(engine, thisValue, "Instant", "toLocaleString");
+            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, "any", "all"));
         });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
