@@ -646,7 +646,9 @@ generated into the Intl data assembly under the new rule N32; the data is 679,05
 dataset of 3,999 lines agrees with the reference polyfill on 3,929 lines, the 70 others named where
 ICU4C and ICU4X disagree, and with ICU4X on all 2,055 of its conversions. With the `Intl.Era-monthcode`
 flag scored, `test/built-ins/Temporal` passes all 9,176 scored variants and `test/intl402/Temporal`
-3,962 of 3,982; no variant scored before moves back ([JSC-282](roadmap.corrections.md#jsc-282)).
+3,962 of 3,982; no variant scored before moves back. Over the whole pinned suite 100,324 of 101,723
+variants pass, 3,386 more, and the 12 newly scored that fail are the formatter's calendars
+([JSC-282](roadmap.corrections.md#jsc-282)).
 `Intl.DateTimeFormat` does not yet write these calendars, a divergence the record declares. This is
 unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
 advances.

@@ -1378,7 +1378,8 @@ under a new rule N31 and generated under a new rule N32, and the `Intl.Era-month
 `test/built-ins/Temporal` passes all 9,176 scored variants and `test/intl402/Temporal` 3,962 of 3,982;
 the 20 left format in a calendar `Intl.DateTimeFormat` does not yet write, or name a zone's long name.
 The plan gains a slice T4, `Intl.DateTimeFormat` in these calendars, which is next and closes the exit
-gate if the owner's budget holds CLDR's names for them ([JSC-282](roadmap.corrections.md#jsc-282)).*
+gate if the owner's budget holds CLDR's names for them. Over the whole pinned suite 100,324 of 101,723
+variants pass, none moving back ([JSC-282](roadmap.corrections.md#jsc-282)).*
 
 #### F9 — The release
 

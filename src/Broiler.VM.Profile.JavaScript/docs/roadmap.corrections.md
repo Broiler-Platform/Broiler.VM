@@ -12469,6 +12469,11 @@ runner's admitted proposals, and the retained dataset `src/tests/temporal/calend
   scored that fail under `test/intl402/DateTimeFormat`, format in a calendar the formatter does not
   write or name a zone's long name. No variant scored before moves from passing.
 - **Checks**: two new slice-compiler checks, 644 in all; six new architecture tests, 339 in all.
+- **test262, whole pinned suite**, against the run [JSC-281](#jsc-281) records: 101,723 variants, 100,324 passing, 202 failing, 44 exhausted and 1,153 skipped. The 1,543
+  files the `Intl.Era-monthcode` flag skipped are scored, so the suite counts 1,543 more variants:
+  312 variants moved from failing to passing and 3,074 newly scored ones pass; the 12 newly scored that
+  fail are 10 under `test/intl402/DateTimeFormat` and 2 under `test/intl402/Intl/supportedValuesOf`,
+  each the formatter's calendars the record declares. Every other variant's verdict is the same.
 
 **What must not be read as repaired.**
 - **`Intl.DateTimeFormat` still formats in `gregory` and `iso8601` only**, and

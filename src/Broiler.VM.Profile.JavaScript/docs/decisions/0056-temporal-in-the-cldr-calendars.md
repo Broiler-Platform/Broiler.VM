@@ -127,7 +127,11 @@ each line:
   - `test/intl402/DateTimeFormat` passes 456 of 488: the 10 newly scored variants that fail format in
     the Chinese, Korean or another calendar's names (section 6);
   - no variant scored before moves from passing.
-- **The whole pinned suite**, run after the change, is recorded with the corrections entry.
+- **The whole pinned suite**, run after the change: 101,723 variants, 100,324 passing, 202 failing, 44 exhausted and 1,153 skipped. With the flag's 1,543 files scored,
+  312 variants moved from failing to passing and 3,074 newly scored ones pass; the 12 newly scored
+  that fail - 10 under `test/intl402/DateTimeFormat` and 2 asking `Intl.supportedValuesOf` for every
+  calendar - are section 6's divergence. Every other variant's verdict is the same
+  ([JSC-282](../roadmap.corrections.md#jsc-282)).
 - **The slice compiler's checks**: two new, 644 in all - the dataset against the polyfill, and its
   conversions against ICU4X.
 - **Rules N31 and N32**: six new architecture tests - the archives are the pinned ones, a changed byte
