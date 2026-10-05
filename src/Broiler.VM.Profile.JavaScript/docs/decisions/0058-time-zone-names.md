@@ -112,8 +112,9 @@ CLDR 47, as CLDR 48 does.
   - no variant scored before moves from passing.
 - **F8's exit gate is met**: `test/built-ins/Temporal` and `test/intl402/Temporal` pass, and
   `Temporal` left the `absent-globals` block in slice T1.
-- **The whole pinned suite**, run after the change: recorded in
-  [JSC-284](../roadmap.corrections.md#jsc-284).
+- **The whole pinned suite**, run after the change: 101,723 variants, 100,368 passing, 158 failing,
+  44 exhausted and 1,153 skipped. The two variants above moved from failing to passing and none moved
+  to failing ([JSC-284](../roadmap.corrections.md#jsc-284)).
 - **The slice compiler's checks**: one new, 646 in all; the tzdb check holds the profile's offsets to
   Node's as before.
 - **Rules N27, N28 and N30**: the archive, the regenerated tables and the budget; one new architecture

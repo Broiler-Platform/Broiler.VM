@@ -646,8 +646,8 @@ daylight flag. The repository owner raised the data budget to 832 KiB; the data 
 retained dataset of 2,713 lines agrees with the reference polyfill on 2,438, the 275 others named:
 17 of Node's spaces and 258 of CLDR 48's data, which a build with CLDR 47's files answered as the
 polyfill does. `test/intl402/Temporal` passes all 3,982 scored variants and `test/built-ins/Temporal`
-all 9,176, so F8's exit gate is met; no variant scored before moves back
-([JSC-284](roadmap.corrections.md#jsc-284)). This is unreviewed implementation and validation
+all 9,176, so F8's exit gate is met; no variant scored before moves back. Over the whole pinned suite
+100,368 of 101,723 variants pass ([JSC-284](roadmap.corrections.md#jsc-284)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.
 
 **Phase F8 observation, slice T4, the formatter's calendars, 2026-10-05.** `Intl.DateTimeFormat`

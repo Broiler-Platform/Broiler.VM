@@ -1395,7 +1395,8 @@ pinned suite 100,364 of 101,723 variants pass, none moving to failing
 as ICU composes them, under proposed [JSD-0058](decisions/0058-time-zone-names.md); the repository
 owner raised the Intl data budget to 832 KiB for them, and the data is 841,145 bytes. The time zone
 tables keep the daylight flag the names read. `test/intl402/Temporal` passes all 3,982 scored
-variants and `test/built-ins/Temporal` all 9,176: **the exit gate is met**. F9, the release, is next
+variants and `test/built-ins/Temporal` all 9,176: **the exit gate is met**. Over the whole pinned
+suite 100,368 of 101,723 variants pass, none moving to failing. F9, the release, is next
 ([JSC-284](roadmap.corrections.md#jsc-284)).*
 
 #### F9 — The release

@@ -12569,6 +12569,12 @@ rule N28, and the retained dataset `src/tests/temporal/zone-names/`.
 - **F8's exit gate is met**: `test/built-ins/Temporal` and `test/intl402/Temporal` pass, and
   `Temporal` left the `absent-globals` block in slice T1.
 - **Checks**: one new slice-compiler check, 646 in all; one new architecture test, 340 in all.
+- **test262, whole pinned suite**, against the run [JSC-283](#jsc-283) records: 101,723 variants,
+  100,368 passing, 158 failing, 44 exhausted and 1,153 skipped. The two variants of
+  `test/intl402/Temporal/ZonedDateTime/prototype/toLocaleString/options-timeZoneName-affects-instance-time-zone.js`
+  moved from failing to passing, and none moved to failing. The two `Atomics.waitAsync`
+  `no-spurious-wakeup-*` variants JSC-283 records as running out of live bytes passed this time, as
+  JSC-273's machine-dependent files do; they do not touch `Intl`.
 
 **What must not be read as repaired.**
 - Locales other than `de` and `en` are not added, and the ten failing variants under
