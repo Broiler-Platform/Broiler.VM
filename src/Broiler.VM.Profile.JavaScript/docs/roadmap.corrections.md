@@ -12325,6 +12325,8 @@ budget decision of the same day. 2026-10-05.
   333 in all.
 - **test262**: `test/intl402` and `test/built-ins/Date` score exactly as in the run JSC-278 records.
   The suite's cases that format IANA zones also take Temporal objects, and stay skipped.
+- **test262, whole pinned suite**, against the run [JSC-278](#jsc-278) records: 95,058 variants, 87,022
+  passing, 174 failing, 44 exhausted and 7,818 skipped - every variant's verdict the same.
 - **Temporal's admission is drawn, not built**: JSD-0053 pins `tc39/proposal-temporal` at
   `e8cc03fc`, the Stage 4 draft of 2026-07-27. The identity `broiler.javascript.temporal`, admitted
   only with the Intl surface, will be minted with the global. The `Temporal` flag will be scored from

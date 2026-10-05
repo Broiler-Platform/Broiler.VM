@@ -645,8 +645,8 @@ compiler gave `zic`'s offsets for every identifier from 1800 to 2500. The data i
 115,690 under the budget. `Intl.DateTimeFormat` now accepts every IANA name and resolves it to CLDR's
 IANA primary identifier. `supportedValuesOf` lists the 445 primary identifiers, and `getTimeZones`
 answers `zone.tab`'s zones. A retained dataset of all 597 names at eight instants agrees with ICU 77.1
-on 559 of 610 lines, the 51 others named. test262 scores as before, since the cases that format IANA
-zones also take Temporal objects. Temporal's admission is drawn at proposal revision `e8cc03fc`, and
+on 559 of 610 lines, the 51 others named. test262 scores as before, every variant of the whole pinned
+suite with the same verdict, since the cases that format IANA zones also take Temporal objects. Temporal's admission is drawn at proposal revision `e8cc03fc`, and
 the global is not built ([JSC-279](roadmap.corrections.md#jsc-279), proposed
 [JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md)). This is unreviewed
 implementation and validation material, not accepted milestone evidence; no milestone row advances.

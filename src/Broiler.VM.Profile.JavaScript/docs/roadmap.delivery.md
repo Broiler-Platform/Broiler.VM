@@ -1349,7 +1349,8 @@ the owner chose ([JSC-278](roadmap.corrections.md#jsc-278)).*
 time-zone data boundary is built under proposed
 [JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md): tzdb 2026e archived and pinned
 (rule N29), compiled as `zic` compiles it into tables in the Intl data assembly (rule N30), and read by
-`Intl.DateTimeFormat`, `supportedValuesOf` and `getTimeZones`. The same record pins the proposal at
+`Intl.DateTimeFormat`, `supportedValuesOf` and `getTimeZones`; the whole pinned suite scores as before.
+The same record pins the proposal at
 `tc39/proposal-temporal` `e8cc03fc`, the Stage 4 draft of 2026-07-27, and plans `Temporal` in four
 slices. T1 (the ISO arithmetic, `Instant`, `Duration` and `Now`) is next
 ([JSC-279](roadmap.corrections.md#jsc-279)).*
