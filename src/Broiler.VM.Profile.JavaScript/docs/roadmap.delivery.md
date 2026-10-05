@@ -1320,6 +1320,11 @@ bytes under the provisional bound, less than `DisplayNames` needs, so `Segmenter
 into the Intl data assembly. It passes every line of the three pinned conformance files, and 154 of
 158 `intl402` variants; the failing ones need Serbian. `DurationFormat` is next, and `DisplayNames`
 still waits on the size budget ([JSC-276](roadmap.corrections.md#jsc-276)).*
+*Progress, 2026-10-05: `Intl.DurationFormat` is built under proposed
+[JSD-0051](decisions/0051-intl-durationformat.md), over the profile's own number and list formats,
+and passes 208 of 210 scored `intl402` variants; the failing ones need Serbian. Every constructor of
+slice I4 is built but `DisplayNames`, which waits on the owner's size budget (JSD-0027 decision (c))
+([JSC-277](roadmap.corrections.md#jsc-277)).*
 
 #### F8 — Temporal
 

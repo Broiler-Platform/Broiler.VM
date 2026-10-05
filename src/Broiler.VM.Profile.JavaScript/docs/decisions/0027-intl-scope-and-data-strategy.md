@@ -438,3 +438,7 @@ status line. Corrections entry [JSC-272](../roadmap.corrections.md#jsc-272).*
   [JSC-276](../roadmap.corrections.md#jsc-276). Its data is UAX #29's, from six UCD files the Unicode
   archive gained, and its tables are generated into the Intl data assembly like the rest of Intl's.
   The generated data is now 503,669 bytes, 20,619 under the provisional bound.
+- **`DurationFormat` is sixth**, under proposed [JSD-0051](0051-intl-durationformat.md), recorded in
+  [JSC-277](../roadmap.corrections.md#jsc-277). It needs no new archive file, and it corrects a unit
+  lookup of I2's number format. **Every constructor section 7 names for I4 is now built but
+  `DisplayNames`**, and the size budget decides when it can be.

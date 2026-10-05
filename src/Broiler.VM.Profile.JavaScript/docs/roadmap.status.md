@@ -637,6 +637,17 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F7 observation, slice I4's `Intl.DurationFormat`, 2026-10-05.** `Intl.DurationFormat` is
+built as the current ECMA-402 draft states it, in every style and per-unit option. It writes over the
+profile's own number and list formats, its fractions exact. A unit lookup of the number format is
+corrected to fall back within a width as ICU does. The retained German and English durations agree
+with ICU 77.1's flagged implementation on 362 of 553 lines. The 191 others are named: where Node's
+earlier stage departs from the draft, where CLDR 48 changed German patterns, and `arab`'s symbols.
+`test/intl402/DurationFormat` passes 208 of 210 scored variants, and the failing ones need Serbian
+([JSC-277](roadmap.corrections.md#jsc-277), proposed
+[JSD-0051](decisions/0051-intl-durationformat.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F7 observation, slice I4's `Intl.Segmenter`, 2026-10-04.** `Intl.Segmenter` is built as the
 current ECMA-402 draft states it, by grapheme, word and sentence. It uses UAX #29's default rules over
 break tables generated into the Intl data assembly from six UCD files the archive gained under rule

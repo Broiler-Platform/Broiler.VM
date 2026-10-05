@@ -1276,7 +1276,11 @@ public sealed class ReviewRecordRuleTests
         // #29's rules; and JsRealm.Segmenter.cs, Intl.Segmenter and its Segments and iterators. Both
         // are covered on the same terms as every other product file, and nothing in them has been read
         // by a human.
-        Assert.Equal(275, AssuranceSources.Files.Count);
+        //
+        // AND DURATIONS (phase F7, 2026-10-05, JSD-0051): JsRealm.DurationFormat.cs,
+        // Intl.DurationFormat over the number and list formats. It is covered on the same terms as
+        // every other product file, and nothing in it has been read by a human.
+        Assert.Equal(276, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

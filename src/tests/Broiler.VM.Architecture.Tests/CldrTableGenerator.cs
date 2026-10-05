@@ -392,6 +392,16 @@ internal static class CldrTableGenerator
                     Flatten(language, key, property.Value, lines);
                 }
             }
+
+            // THE DURATION PATTERNS, which say whether a digital duration writes its hours with two
+            // digits (Intl.DurationFormat's [[TwoDigitHours]], JSD-0051).
+            var units = Json(cldr, $"json/cldr-units-full/main/{language}/units.json")
+                .GetProperty("main").GetProperty(language).GetProperty("units");
+
+            foreach (var type in new[] { "hm", "hms", "ms" })
+            {
+                lines.Add($"{language}|duration.{type}|{Escape(units.GetProperty("durationUnit-type-" + type).GetProperty("durationUnitPattern").GetString()!)}");
+            }
         }
 
         return lines.Order(StringComparer.Ordinal);

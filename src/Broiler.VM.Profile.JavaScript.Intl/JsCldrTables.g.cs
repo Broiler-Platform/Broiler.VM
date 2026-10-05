@@ -10443,6 +10443,9 @@ internal static class JsCldrTables
         de|decimal.short.decimalFormat.100000000000000-count-other|000\u00A0Bio'.'
         de|decimal.standard|#,##0.###
         de|defaultNumberingSystem|latn
+        de|duration.hms|h:mm:ss
+        de|duration.hm|h:mm
+        de|duration.ms|m:ss
         de|minimumGroupingDigits|1
         de|misc.approximately|\u2248{0}
         de|misc.atLeast|{0}+
@@ -10576,6 +10579,9 @@ internal static class JsCldrTables
         en|decimal.short.decimalFormat.100000000000000-count-other|000T
         en|decimal.standard|#,##0.###
         en|defaultNumberingSystem|latn
+        en|duration.hms|h:mm:ss
+        en|duration.hm|h:mm
+        en|duration.ms|m:ss
         en|minimumGroupingDigits|1
         en|misc.approximately|~{0}
         en|misc.atLeast|{0}+

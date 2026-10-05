@@ -12168,3 +12168,49 @@ generator's two new tables, and the format's `JsIntlTable`.
 - JSD-0050 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-277
+
+**Where:** phase F7's slice I4, its sixth part. `Intl.DurationFormat` (`JsRealm.DurationFormat.cs`);
+`JsNumberFormatter.cs`'s unit pattern lookup; the CLDR generator's number table, which gains the
+`durationUnit` patterns.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists DurationFormat among "I4
+  and later", accepted "each opened by its own consumer and its own card".
+- [JSD-0044](decisions/0044-intl-numberformat.md) chose a unit's pattern by searching the widths for
+  the plural category, and only then for `other`.
+
+**What replaced it, observed on 2026-10-05.**
+- **`Intl.DurationFormat` is built whole**, under proposed
+  [JSD-0051](decisions/0051-intl-durationformat.md): `format`, `formatToParts`, `resolvedOptions` and
+  `supportedLocalesOf`, in every style, with per-unit styles and displays, fractional digits and a
+  numbering system.
+  - Its numbers are `Intl.NumberFormat`s and its list an `Intl.ListFormat`, each built by its own
+    constructor.
+  - Its fractions are summed exactly, as BigIntegers of the smallest unit.
+  - Its separators and two-digit hours come from data slice I2 archived.
+- **A correction to the number format**: a unit's pattern falls back to the same width's `other` form
+  before a wider width, as ICU's does. German short nanoseconds were written with the long pattern.
+  Slice I2's retained numbers answer all 2,241 lines as before.
+- **The archive does not grow. N28's file carries three more patterns per language**, to 503,797 bytes,
+  20,491 under the provisional bound.
+- **The retained duration dataset**
+  ([`src/tests/cldr/durations/`](../../tests/cldr/durations/README.md)) has 553 lines against Node
+  22.22.0's ICU 77.1, which has DurationFormat only behind V8's `--harmony-intl-duration-format`
+  flag. 362 lines agree. 191 differ in three groups, each named in `divergences.txt`:
+  - Node's earlier stage, in seven named ways, each with the draft's clause;
+  - CLDR 48's changed German narrow hour and millisecond;
+  - the `arab` symbols.
+- **Checks**: one new slice-compiler check, 636 in all, holds the dataset.
+- **test262**, against the run JSC-276 records: `test/intl402/DurationFormat` passes 208 of 210 scored
+  variants, from none, and the 2 failing need Serbian. Six files take Temporal arguments and are
+  skipped.
+
+**What must not be read as repaired.**
+- **Temporal's Duration objects and duration strings** are not durations here until phase F8.
+- **`DisplayNames`** is absent, and it waits on the owner's size budget. With it, the phase's exit
+  gate is not met.
+- JSD-0051 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.

@@ -619,7 +619,7 @@ internal sealed class JsNumberFormatter
     /// or the numerator's pattern inside the denominator's per-unit pattern or the width's compound
     /// pattern.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 2 s6.1; IP=Low; Security=Low; Resources=2; Fingerprint=8C8303
+    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 2 s6.1; IP=Low; Security=Low; Resources=2; Fingerprint=6BDC09
     // Broiler-Human:        PENDING
     private string? UnitPattern(string unit, string width, string plural)
     {
@@ -636,8 +636,21 @@ internal sealed class JsNumberFormatter
             return null;
         }
 
-        string? Pattern(string id) =>
-            Field(id, "unitPattern-count-" + plural) ?? Field(id, "unitPattern-count-other");
+        // A WIDTH'S OWN OTHER FORM BEFORE A WIDER WIDTH: CLDR gives German's short nanosecond only
+        // `{0} ns`, and one nanosecond is `1 ns`, as ICU writes it, not the long `1 Nanosekunde`.
+        string? Pattern(string id)
+        {
+            foreach (var w in width == "narrow" ? new[] { "narrow", "short", "long" } : width == "short" ? ["short", "long"] : ["long"])
+            {
+                if (data.Units.TryGetValue(language + "|" + w + "|" + id + "|unitPattern-count-" + plural, out var value) ||
+                    data.Units.TryGetValue(language + "|" + w + "|" + id + "|unitPattern-count-other", out value))
+                {
+                    return value;
+                }
+            }
+
+            return null;
+        }
 
         if (Pattern(unit) is { } direct)
         {

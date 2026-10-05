@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 275 |
-| Files carrying an annotation | 275 |
-| Code units | 11505 |
-| Relevant | 6536 |
-| Exempt by predicate | 4969 |
-| Annotated | 6536 of 6536 (100%) |
-| Human reviewed | 0 of 6536 (0%) |
-| Unverified | 6536 |
+| Files scanned | 276 |
+| Files carrying an annotation | 276 |
+| Code units | 11533 |
+| Relevant | 6555 |
+| Exempt by predicate | 4978 |
+| Annotated | 6555 of 6555 (100%) |
+| Human reviewed | 0 of 6555 (0%) |
+| Unverified | 6555 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6536 |
+| HUMAN_PENDING | 6555 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4969 |
+| EXEMPT | 4978 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1636 |
-| Low | 6314 |
+| Low | 6342 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,7 +50,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1525 |
+| Low | 1553 |
 | Medium | 4616 |
 | High | 1637 |
 | Critical | 253 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6536 |
+| Units scored | 6555 |
 
 ## High-security review areas
 
@@ -1989,7 +1989,7 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1596 |
+| TrivialPropertyOrAccessor | 1605 |
 | ParameterAssigningConstructor | 170 |
 | TrivialExpressionBodiedMember | 65 |
 | CompilerSuppliedRecordOrEnumMember | 24 |
@@ -2087,7 +2087,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11505 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11533 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2095,7 +2095,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 275 of them - with a
+Beside the units it lists **every covered file** - 276 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.
