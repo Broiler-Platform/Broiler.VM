@@ -41,8 +41,12 @@ internal static class IntlChecks
         GermanAndEnglishDatesMatchIcu(),
         LocalesMatchIcu(),
         PluralsMatchIcu(),
+        BreakTestFile("grapheme", "GraphemeBreakTest.txt", 700),
+        BreakTestFile("word", "WordBreakTest.txt", 1800),
+        BreakTestFile("sentence", "SentenceBreakTest.txt", 500),
         ListsMatchIcu(),
         RelativeTimesMatchIcu(),
+        SegmentsMatchIcu(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -180,6 +184,13 @@ internal static class IntlChecks
     /// </summary>
     private static (string, bool, string) RelativeTimesMatchIcu() =>
         RetainedMatchesIcu("intl/i4/german-and-english-relative-times-match-icu", "relativetimes", 2400);
+
+    /// <summary>
+    /// The retained segments (slice I4, JSD-0050): the program under <c>src/tests/cldr/segments</c>,
+    /// run here, answers every line Node answered, but for the lines <c>divergences.txt</c> names.
+    /// </summary>
+    private static (string, bool, string) SegmentsMatchIcu() =>
+        RetainedMatchesIcu("intl/i4/segments-match-icu", "segments", 110);
 
     /// <summary>
     /// A retained dataset under <c>src/tests/cldr/<paramref name="dataset"/></c>: its program, run
@@ -321,6 +332,92 @@ internal static class IntlChecks
             failures.Count == 0
                 ? $"{compared} consecutive pairs of {file} compared in order under {options}"
                 : $"{failures.Count} pairs out of order, first {string.Join("; ", failures.GetRange(0, System.Math.Min(5, failures.Count)))}");
+    }
+
+    /// <summary>
+    /// A UAX #29 conformance file of the pinned UCD (slice I4, JSD-0050): every line's string,
+    /// segmented by an <c>Intl.Segmenter</c> of the granularity, begins its segments at exactly the
+    /// boundaries the line marks with a division sign.
+    /// </summary>
+    private static (string, bool, string) BreakTestFile(string granularity, string file, int least)
+    {
+        var name = $"intl/i4/the-segmenter-passes-{granularity}-break-test";
+
+        if (Archived("src/tests/unicode/pins/ucd-17.0.0/auxiliary/" + file) is not { } path)
+        {
+            return ("not-run/" + name, false, "the archived break test file is not under this working directory");
+        }
+
+        var cases = new System.Collections.Generic.List<(string Literal, string Boundaries, string Line)>();
+
+        foreach (var raw in System.IO.File.ReadLines(path))
+        {
+            var line = raw.Split('#')[0].Trim();
+
+            if (line.Length == 0)
+            {
+                continue;
+            }
+
+            var literal = new System.Text.StringBuilder("'");
+            var boundaries = new System.Collections.Generic.List<int>();
+            var units = 0;
+
+            foreach (var token in line.Split(' ', System.StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (token == "\u00F7")
+                {
+                    boundaries.Add(units);
+                }
+                else if (token != "\u00D7")
+                {
+                    var codePoint = int.Parse(token, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture);
+                    literal.Append("\\u{").Append(token).Append('}');
+                    units += codePoint > 0xFFFF ? 2 : 1;
+                }
+            }
+
+            cases.Add((literal.Append('\'').ToString(), string.Join(',', boundaries), line));
+        }
+
+        var failures = new System.Collections.Generic.List<string>();
+
+        for (var start = 0; start < cases.Count; start += Chunk)
+        {
+            var chunk = cases.GetRange(start, System.Math.Min(Chunk, cases.Count - start));
+            var source =
+                $"var g = new Intl.Segmenter('en', {{ granularity: '{granularity}' }});" +
+                $"var t = [{string.Join(',', chunk.ConvertAll(static c => "[" + c.Literal + ",'" + c.Boundaries + "']"))}];" +
+                "var bad = []; for (var i = 0; i < t.length; i++) { var s = t[i][0]; var b = [];" +
+                " for (var x of g.segment(s)) b.push(x.index); b.push(s.length);" +
+                " if (b.join(',') !== t[i][1] && bad.length < 5) bad.push(i + ':' + b.join(',')); }" +
+                "bad.join(' ');";
+
+            var answer = Evaluate(source, Composing());
+
+            if (answer.Length != 0)
+            {
+                foreach (var entry in answer.Split(' '))
+                {
+                    var colon = entry.IndexOf(':');
+
+                    if (colon < 0 || !int.TryParse(entry[..colon], out var at))
+                    {
+                        failures.Add(answer);
+                        break;
+                    }
+
+                    failures.Add($"{chunk[at].Line} gave {entry[(colon + 1)..]}");
+                }
+            }
+        }
+
+        return (
+            name,
+            failures.Count == 0 && cases.Count >= least,
+            failures.Count == 0
+                ? $"{cases.Count} lines of {file} segmented at the boundaries they mark"
+                : $"{failures.Count} lines differ, first: {string.Join("; ", failures.GetRange(0, System.Math.Min(5, failures.Count)))}");
     }
 
     /// <summary>A file under the checkout this process runs in, found by walking up from the working directory.</summary>

@@ -41,9 +41,11 @@ public sealed class UnicodePinRuleTests
         // Non-vacuous: five files, every one of them non-trivial, from a pin naming every input the
         // decision lists - thirteen UCD files, the licence and three specification tables - and
         // SpecialCasing.txt, added on 2026-10-03 for the full case mappings (JSD-0027 N2), and the two
-        // emoji sequence files, added on 2026-10-04 for the properties of strings (phase F2).
+        // emoji sequence files, added on 2026-10-04 for the properties of strings (phase F2), and the
+        // six auxiliary/ files of UAX #29, added the same day for Intl.Segmenter (JSD-0050), whose
+        // tables the CLDR generator writes into the Intl data assembly.
         Assert.Equal(UnicodeTableGenerator.OutputPaths, generation.Artefacts.Select(static artefact => artefact.RelativePath));
-        Assert.Equal(20, UnicodePin.Load().Entries.Count);
+        Assert.Equal(26, UnicodePin.Load().Entries.Count);
         Assert.All(generation.Artefacts, static artefact => Assert.True(artefact.Desired.Length > 10_000));
 
         // And the probes slice U3 runs through the end-user host: every part of

@@ -101,6 +101,8 @@ internal static class CldrTableGenerator
         TextTable(text, "Ordinals", "The ordinal plural rules of each supported language: language, category, rule.", Ordinals(cldr));
         TextTable(text, "ListPatterns", "The list patterns of each supported language: language, type, start, middle, end, pair.", ListPatterns(cldr));
         TextTable(text, "RelativeTimes", "The relative time patterns of each supported language: language, field, key, pattern.", RelativeTimes(cldr));
+        TextTable(text, "SegmentBreakValues", "The values of the break properties Intl.Segmenter reads, in the order their codes number them: property, values.", SegmentBreakValues.Select(static property => property.Name + "|" + string.Join('|', property.Values)));
+        ByteTable(text, "SegmentBreaks", "Unicode 17.0.0's Grapheme_Cluster_Break, Word_Break, Sentence_Break, Extended_Pictographic, Indic_Conjunct_Break, and Ideographic or Hiragana, over the code space: the distinct combinations, then the runs.", SegmentBreaks(ucd));
         TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
         TextTable(text, "DateLocales", "The Gregorian calendar, date field and zone name data of each supported language, flattened: language, key, value.", DateLocales(cldr));
         TextTable(text, "TimeData", "The hour cycles allowed and preferred in each region: region, allowed, preferred.", TimeData(cldr));
@@ -538,6 +540,136 @@ internal static class CldrTableGenerator
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// The break properties <c>Intl.Segmenter</c> reads (UAX #29), each with its values in code order:
+    /// code 0 is the value a code point the file does not list has.
+    /// </summary>
+    internal static readonly (string Name, string[] Values)[] SegmentBreakValues =
+    [
+        ("gcb", ["Other", "CR", "LF", "Control", "Extend", "ZWJ", "Regional_Indicator", "Prepend", "SpacingMark", "L", "V", "T", "LV", "LVT"]),
+        ("wb", ["Other", "CR", "LF", "Newline", "Extend", "ZWJ", "Regional_Indicator", "Format", "Katakana", "Hebrew_Letter", "ALetter", "Single_Quote", "Double_Quote", "MidNumLet", "MidLetter", "MidNum", "Numeric", "ExtendNumLet", "WSegSpace"]),
+        ("sb", ["Other", "CR", "LF", "Extend", "Sep", "Format", "Sp", "Lower", "Upper", "OLetter", "Numeric", "ATerm", "SContinue", "STerm", "Close"]),
+        ("ep", ["No", "Yes"]),
+        ("incb", ["None", "Linker", "Consonant", "Extend"]),
+        ("ideo", ["No", "Yes"]),
+    ];
+
+    /// <summary>
+    /// The five break properties over the whole code space, and whether a code point is Ideographic or
+    /// of the Hiragana script, which <c>isWordLike</c> reads, as one table: a byte giving the number
+    /// of distinct combinations, each combination as six value codes, a four-byte little-endian count
+    /// of runs, and each run as its first code point (three bytes, little-endian) and the index of its
+    /// combination. A run lasts to the next run's first code point.
+    /// </summary>
+    internal static byte[] SegmentBreaks(IReadOnlyDictionary<string, byte[]> ucd)
+    {
+        var properties = new byte[6][];
+
+        for (var p = 0; p < 6; p++)
+        {
+            properties[p] = new byte[0x110000];
+        }
+
+        void Read(int property, string file, Func<string[], string?> value)
+        {
+            var codes = SegmentBreakValues[property].Values;
+
+            foreach (var raw in UnicodePin.Decode(ucd[file]).Split('\n'))
+            {
+                var line = raw.Split('#')[0].Trim();
+
+                if (line.Length == 0)
+                {
+                    continue;
+                }
+
+                var fields = line.Split(';').Select(static field => field.Trim()).ToArray();
+
+                if (value(fields) is not { } name)
+                {
+                    continue;
+                }
+
+                var code = Array.IndexOf(codes, name);
+
+                if (code <= 0)
+                {
+                    throw new InvalidDataException($"{file} names a value the table does not code: {name}");
+                }
+
+                var range = fields[0].Split("..");
+                var first = int.Parse(range[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                var last = range.Length == 1 ? first : int.Parse(range[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+
+                for (var c = first; c <= last; c++)
+                {
+                    properties[property][c] = (byte)code;
+                }
+            }
+        }
+
+        Read(0, "ucd-17.0.0/auxiliary/GraphemeBreakProperty.txt", static fields => fields[1]);
+        Read(1, "ucd-17.0.0/auxiliary/WordBreakProperty.txt", static fields => fields[1]);
+        Read(2, "ucd-17.0.0/auxiliary/SentenceBreakProperty.txt", static fields => fields[1]);
+        Read(3, "ucd-17.0.0/emoji/emoji-data.txt", static fields => fields[1] == "Extended_Pictographic" ? "Yes" : null);
+        Read(4, "ucd-17.0.0/DerivedCoreProperties.txt", static fields => fields.Length == 3 && fields[1] == "InCB" ? fields[2] : null);
+        Read(5, "ucd-17.0.0/PropList.txt", static fields => fields[1] == "Ideographic" ? "Yes" : null);
+        Read(5, "ucd-17.0.0/Scripts.txt", static fields => fields[1] == "Hiragana" ? "Yes" : null);
+
+        var combinations = new List<int>();
+        var runs = new List<(int First, int Combination)>();
+
+        for (var c = 0; c < 0x110000; c++)
+        {
+            var key = 0;
+
+            for (var p = 0; p < 6; p++)
+            {
+                key = (key << 5) | properties[p][c];
+            }
+
+            var index = combinations.IndexOf(key);
+
+            if (index < 0)
+            {
+                index = combinations.Count;
+                combinations.Add(key);
+            }
+
+            if (runs.Count == 0 || runs[^1].Combination != index)
+            {
+                runs.Add((c, index));
+            }
+        }
+
+        if (combinations.Count > 255)
+        {
+            throw new InvalidDataException($"{combinations.Count} combinations do not fit in a byte");
+        }
+
+        var data = new List<byte> { (byte)combinations.Count };
+
+        foreach (var key in combinations)
+        {
+            for (var p = 5; p >= 0; p--)
+            {
+                data.Add((byte)((key >> (5 * p)) & 0x1F));
+            }
+        }
+
+        data.AddRange(BitConverter.GetBytes(runs.Count));
+
+        foreach (var (first, combination) in runs)
+        {
+            data.Add((byte)(first & 0xFF));
+            data.Add((byte)((first >> 8) & 0xFF));
+            data.Add((byte)(first >> 16));
+            data.Add((byte)combination);
+        }
+
+        return [.. data];
     }
 
     /// <summary>Each supported language's rules of one plural type, without their samples.</summary>

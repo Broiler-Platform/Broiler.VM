@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   22
-// Annotated:        22/22
-// Exempt:           11
-// Human-reviewed:   0/22
+// Relevant units:   23
+// Annotated:        23/23
+// Exempt:           12
+// Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       22
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -77,7 +77,11 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly System.Lazy<JsLocaleInfo> localeInfo;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ECEC57
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=215679
+    // Broiler-Human:        PENDING
+    private readonly System.Lazy<JsBreakData> breaks;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DEE813
     // Broiler-Human:        PENDING
     internal JsIntlTables(Format.IJsIntlData data)
     {
@@ -92,6 +96,7 @@ internal sealed class JsIntlTables
         numbers = new(ReadNumbers);
         dates = new(ReadDates);
         localeInfo = new(ReadLocaleInfo);
+        breaks = new(() => new JsBreakData(Lines(Format.JsIntlTable.SegmentBreakValues), data.Table(Format.JsIntlTable.SegmentBreaks)));
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -192,6 +197,11 @@ internal sealed class JsIntlTables
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F90F89
     // Broiler-Human:        PENDING
     internal JsLocaleInfo LocaleInfo => localeInfo.Value;
+
+    /// <summary>The break properties <c>Intl.Segmenter</c> reads, decoded the first time a string is segmented.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=82FD5A
+    // Broiler-Human:        PENDING
+    internal JsBreakData Breaks => breaks.Value;
 
     /// <summary>A table value with its <c>\uXXXX</c> escapes resolved.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=771818

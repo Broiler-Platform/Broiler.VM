@@ -434,3 +434,7 @@ status line. Corrections entry [JSC-272](../roadmap.corrections.md#jsc-272).*
   generated data is now 483,743 bytes, 40,545 under the provisional bound. That is less than
   `DisplayNames`'s name tables need, so **decision (c), the size budget, is now a precondition of
   `DisplayNames`**.
+- **`Segmenter` is fifth**, under proposed [JSD-0050](0050-intl-segmenter.md), recorded in
+  [JSC-276](../roadmap.corrections.md#jsc-276). Its data is UAX #29's, from six UCD files the Unicode
+  archive gained, and its tables are generated into the Intl data assembly like the rest of Intl's.
+  The generated data is now 503,669 bytes, 20,619 under the provisional bound.

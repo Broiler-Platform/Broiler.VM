@@ -275,7 +275,12 @@ file's length and SHA-256 and rule **N22** hashes them on every run of the archi
 Retrieved twice on 2026-09-22 by Claude with the owner's permission given in conversation; the two
 retrievals were byte-identical. `SpecialCasing.txt` was retrieved the same way on 2026-10-03, while
 continuing the roadmap at the owner's request, with no permission specific to it (`unicode.pin` says
-so).
+so). `auxiliary/GraphemeBreakProperty.txt`, `auxiliary/WordBreakProperty.txt` and
+`auxiliary/SentenceBreakProperty.txt`, with the three matching `*BreakTest.txt` files (test input
+only), were retrieved the same way on 2026-10-04 for `Intl.Segmenter` (decision
+[JSD-0050](src/Broiler.VM.Profile.JavaScript/docs/decisions/0050-intl-segmenter.md)). Their tables are
+generated not here but by `CldrTableGenerator` into the Intl data assembly, described in the CLDR
+entry below.
 
 **What is derived, and where it ships.** `UnicodeTableGenerator` (architecture test project, not
 shipped) writes four source files of tables from those files:
@@ -420,7 +425,8 @@ unit patterns and plural rules, the currency fraction digits and the numbering s
 since slice I3 each language's Gregorian calendar names and patterns, date field names and UTC and GMT
 zone names, the hour cycles of the supported regions and the day period rules, and since slice I4
 the hour cycles and weeks of every region, the scripts' line directions, and each language's ordinal
-plural rules, list patterns and relative time patterns. The derived tables
+plural rules, list patterns and relative time patterns, and from the UCD the break properties
+`Intl.Segmenter` reads. The derived tables
 therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);

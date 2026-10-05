@@ -12122,3 +12122,44 @@ RelativeTimeFormat among "I4 and later", accepted "each opened by its own consum
 - JSD-0049 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-276
+
+**Where:** phase F7's slice I4, its fifth part. `Intl.Segmenter` (`JsRealm.Segmenter.cs`), UAX #29's
+rules and the break data (`JsSegmenter.cs`, `JsIntlTables.cs`), the UCD archive and its pin, the CLDR
+generator's two new tables, and the format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7 lists Segmenter among "I4 and
+  later", accepted "each opened by its own consumer and its own card".
+- [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) section 5 lists the UCD files the profile archives.
+  UAX #29's break properties are not among them.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.Segmenter` is built whole**, under proposed [JSD-0050](decisions/0050-intl-segmenter.md):
+  `segment`, Segments objects with `containing` and their iterators, `resolvedOptions` and
+  `supportedLocalesOf`, by grapheme, word and sentence. The boundaries are UAX #29's default rules
+  for Unicode 17.0.0, with no locale tailoring and no dictionary.
+- **The UCD archive grows under N22 by UAX #29's six `auxiliary/` files**, retrieved twice from the
+  same site and compared: the three break property files and their three conformance test files.
+- **The tables go to the Intl data assembly**, so a composition without `broiler.javascript.intl`
+  carries none. **N28's file grows by two tables**, the break properties as runs of the code space and
+  their value names, to 503,669 bytes, 20,619 under the provisional bound.
+- **Checks**: four new slice-compiler checks, 635 in all:
+  - three run the pinned conformance files through `Intl.Segmenter`, and every line of all three
+    passes (766 grapheme, 1,944 word, 512 sentence);
+  - one holds the retained segment dataset
+    ([`src/tests/cldr/segments/`](../../tests/cldr/segments/README.md)), 118 lines against Node
+    22.22.0's ICU 77.1. Every line agrees but 2, where ICU's dictionary joins Japanese ideographs
+    into words.
+- **test262**, against the run JSC-275 records: `test/intl402/Segmenter` passes 154 of 158 variants,
+  from none, and the 4 failing need Serbian.
+
+**What must not be read as repaired.**
+- **No dictionary segmentation**: Chinese, Japanese and the Southeast Asian scripts break by UAX #29's
+  defaults, an ideograph to a word.
+- **`DisplayNames` and `DurationFormat`** are absent, and the phase's exit gate is not met.
+  `DisplayNames` waits on the owner's size budget.
+- JSD-0050 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

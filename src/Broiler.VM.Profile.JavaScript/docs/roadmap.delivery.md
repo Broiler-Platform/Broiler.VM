@@ -1315,6 +1315,11 @@ The retained relative times agree with ICU 77.1 but for 96 named divergences. `R
 passes 148 of 160 `intl402` variants, and the failing ones need Polish. The generated data is 40,545
 bytes under the provisional bound, less than `DisplayNames` needs, so `Segmenter` is next and
 `DisplayNames` waits on the owner's size budget ([JSC-275](roadmap.corrections.md#jsc-275)).*
+*Progress, 2026-10-04: `Intl.Segmenter` is built under proposed
+[JSD-0050](decisions/0050-intl-segmenter.md), by UAX #29's default rules over UCD break data generated
+into the Intl data assembly. It passes every line of the three pinned conformance files, and 154 of
+158 `intl402` variants; the failing ones need Serbian. `DurationFormat` is next, and `DisplayNames`
+still waits on the size budget ([JSC-276](roadmap.corrections.md#jsc-276)).*
 
 #### F8 — Temporal
 

@@ -1271,7 +1271,12 @@ public sealed class ReviewRecordRuleTests
         // AND RELATIVE TIMES (phase F7, 2026-10-04, JSD-0049): JsRealm.RelativeTimeFormat.cs,
         // Intl.RelativeTimeFormat over CLDR's relative time patterns. It is covered on the same terms
         // as every other product file, and nothing in it has been read by a human.
-        Assert.Equal(273, AssuranceSources.Files.Count);
+        //
+        // AND SEGMENTATION (phase F7, 2026-10-04, JSD-0050): JsSegmenter.cs, the break data and UAX
+        // #29's rules; and JsRealm.Segmenter.cs, Intl.Segmenter and its Segments and iterators. Both
+        // are covered on the same terms as every other product file, and nothing in them has been read
+        // by a human.
+        Assert.Equal(275, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
