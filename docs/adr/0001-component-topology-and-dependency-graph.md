@@ -1927,3 +1927,29 @@ packable, and section 1 of the composition register still advertises nothing.
 **What is now true.** The graph goes from 31 projects and 113 edges to 32 and 116.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-10-05 - the JavaScript profile's pristine consumer, F9
+
+**What changes.** No project in either solution and no edge. One project is
+added outside them: `samples/Broiler.VM.Sample.JavaScriptConsumer`, the
+JavaScript profile's pristine feed consumer, which release gate 8 of the
+profile's roadmap asks for (phase F9 slice R3, decision JSD-0061). Rule A14 is
+revised. It read that every project outside the solutions "references exactly
+the three Broiler.VM packages"; it now admits this one sample with exactly those
+three and the four packages the JavaScript family packs -
+`Broiler.VM.Profile.JavaScript`, `.Format`, `.Compiler` and `.Intl` - and still
+holds every other sample to the three. The sample carries no project reference,
+restores from `samples/NuGet.config`'s one local source, and inherits the empty
+`samples/Directory.Build.props`, exactly as the core's consumer does.
+
+**Why a second sample rather than a wider first one.** The core's consumer is
+the evidence that the three core packages depend on nothing; a consumer that
+also referenced a profile would prove that about the union and nothing about the
+three. Two samples keep two claims apart.
+
+**What is now true.** The graph's size is unchanged. Two projects are outside
+the solutions, both under `samples/`. The packable set is unchanged at eleven.
+No composition root is packable, and section 1 of the composition register still
+advertises nothing.
+
+**What is not edited.** Every revision above stands as written.

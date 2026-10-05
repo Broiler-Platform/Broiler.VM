@@ -163,6 +163,13 @@ internal static class Program
                 return Measurement.ColdStartControl();
             }
 
+            // THE LIMIT VECTOR A RUN IS OBTAINED UNDER (JSD-0061), read back from a verified handle
+            // built as a variant's is, so a release-candidate bundle publishes it beside its totals.
+            if (args.Contains("--effective-limits", StringComparer.Ordinal))
+            {
+                return Test262Command.EffectiveLimits(args);
+            }
+
             // THE SCHEMA IS ASKED FOR WITHOUT A RUN, because a consumer writing a reader has no run
             // yet. It is generated from the same member list the renderer walks, so what it prints
             // is the contract this build actually emits rather than a description of one.

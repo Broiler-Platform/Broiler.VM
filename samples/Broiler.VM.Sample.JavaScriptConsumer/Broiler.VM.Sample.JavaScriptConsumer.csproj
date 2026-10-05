@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Sample.JavaScriptConsumer</RootNamespace>
+    <AssemblyName>Broiler.VM.Sample.JavaScriptConsumer</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <!-- A consumer's own warning policy, as the core's feed consumer states it: a warning a package
+         emits into a consumer's build stops this sample rather than scrolling past. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <!--
+    THE JAVASCRIPT PROFILE, REACHED ONLY THROUGH ITS PACKAGES (phase F9 slice R3, JSD-0059).
+    PackageReference, never ProjectReference, and samples/NuGet.config clears every source but the
+    local feed, so a restore that succeeds is a restore that found everything this sample needs in
+    that feed and nowhere else. The version is supplied by the build, so the same sample is pointed
+    at the previous package set unchanged to exercise a rollback.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Broiler.VM.Abstractions" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Binary" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Runtime" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Profile.JavaScript" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Profile.JavaScript.Format" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Profile.JavaScript.Compiler" Version="$(BroilerVmVersion)" />
+  </ItemGroup>
+
+  <!--
+    THE INTERNATIONALIZATION DATA, which a package set before phase F7 does not carry. It is on by
+    default; a rollback to such a set passes BroilerVmIntl=false, which drops this reference and the
+    checks that need it, so the rolled-back run says which half it could not exercise rather than
+    failing to restore a package that set never had.
+  -->
+  <PropertyGroup>
+    <BroilerVmIntl Condition="'$(BroilerVmIntl)' == ''">true</BroilerVmIntl>
+    <DefineConstants Condition="'$(BroilerVmIntl)' == 'true'">$(DefineConstants);BROILER_VM_INTL</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(BroilerVmIntl)' == 'true'">
+    <PackageReference Include="Broiler.VM.Profile.JavaScript.Intl" Version="$(BroilerVmVersion)" />
+  </ItemGroup>
+
+</Project>
