@@ -12423,6 +12423,9 @@ retained dataset `src/tests/temporal/intl/`.
   calendars and 2 need metazones. Of the 82 cases elsewhere that claim the flag, 150 variants pass and
   4 fail (a `dangi` calendar, an `ar-EG` locale). Across `test/intl402`, `test/built-ins/Date` and
   `test/built-ins/Temporal`, 244 variants move to passing and none moves back.
+- **test262, whole pinned suite**, against the run [JSC-280](#jsc-280) records: 100,180 variants, 96,938
+  passing, 502 failing, 44 exhausted and 2,696 skipped - 244 variants moved from failing to passing,
+  and every other variant's verdict is the same.
 - **Checks**: one new slice-compiler check, 642 in all.
 
 **What must not be read as repaired.**

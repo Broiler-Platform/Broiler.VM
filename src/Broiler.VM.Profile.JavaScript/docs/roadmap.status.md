@@ -645,7 +645,8 @@ formatted from CLDR's `common/main/root.xml`, archived under rule N27; the data 
 retained dataset of 1,233 formattings agrees with the reference polyfill on ICU 77.1 on 1,150 lines,
 the 83 others named. `test/intl402/Temporal` passes 598 of 930 variants, and 244 variants across
 `test/intl402`, `test/built-ins/Date` and `test/built-ins/Temporal` move to passing with none moving
-back ([JSC-281](roadmap.corrections.md#jsc-281)). This is unreviewed implementation and validation
+back. Over the whole pinned suite 96,938 of 100,180 variants pass, and every other variant keeps its
+verdict ([JSC-281](roadmap.corrections.md#jsc-281)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.
 
 **Phase F8 observation, slice T1, `Temporal`, 2026-10-05.** `Temporal` is published under proposed

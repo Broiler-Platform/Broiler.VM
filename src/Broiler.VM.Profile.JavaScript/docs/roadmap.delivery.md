@@ -1367,7 +1367,8 @@ scored before keeps its verdict ([JSC-280](roadmap.corrections.md#jsc-280)).*
 *Progress, 2026-10-05, slice T2: `Intl.DateTimeFormat` formats Temporal objects, every type's
 `toLocaleString` is ECMA-402's, and the `iso8601` calendar is formatted from CLDR's root, archived
 under N27, under proposed [JSD-0055](decisions/0055-intl-over-temporal-objects.md).
-`test/intl402/Temporal` passes 598 of 930; nearly all the rest is T3's calendars, which is next
+`test/intl402/Temporal` passes 598 of 930; nearly all the rest is T3's calendars, which is next.
+Over the whole pinned suite 96,938 of 100,180 variants pass, none moving back
 ([JSC-281](roadmap.corrections.md#jsc-281)).*
 
 #### F9 — The release

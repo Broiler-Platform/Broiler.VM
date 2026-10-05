@@ -80,6 +80,9 @@ held by one person**, and it does not claim the co-signature is independent.
     (T3), and Arabic-Indic digits for `ar-EG`, a locale the data does not carry;
   - every variant under `test/intl402`, `test/built-ins/Date` and `test/built-ins/Temporal` scored
     before keeps its verdict or moves to passing: 244 move.
+- **The whole pinned suite**, run after the change: 100,180 variants, 96,938 passing, 502 failing, 44
+  exhausted and 2,696 skipped; the 244 variants above moved from failing to passing, and every other
+  variant's verdict is the same ([JSC-281](../roadmap.corrections.md#jsc-281)).
 - **The slice compiler's checks**: one new, 642 in all, the dataset above.
 
 ## 4. What is not done
