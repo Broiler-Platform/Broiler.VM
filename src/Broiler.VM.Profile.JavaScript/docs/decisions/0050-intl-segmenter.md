@@ -83,7 +83,7 @@ emoji, spaces and punctuation are not word-like, and `a_b` is.
   words by a dictionary, where UAX #29's default rules make each ideograph a word. ICU 77.1
   implements Unicode 16.0's rules, and the conformance files hold the profile to 17.0's.
 - **test262**, against the pinned suite: `test/intl402/Segmenter` passes 154 of 158 variants, from
-  none. The 4 failing are two files, and both need the Serbian locale: `locales-valid.js` and
+  4. The 4 failing are two files, and both need the Serbian locale: `locales-valid.js` and
   `supportedLocalesOf/locales-specific.js`.
 
 ## 5. What is not done

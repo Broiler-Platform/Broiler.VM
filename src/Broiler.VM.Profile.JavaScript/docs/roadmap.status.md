@@ -642,7 +642,8 @@ current ECMA-402 draft states it, by grapheme, word and sentence. It uses UAX #2
 break tables generated into the Intl data assembly from six UCD files the archive gained under rule
 N22. Every line of the three pinned UAX #29 conformance files passes. The retained segments agree with
 ICU 77.1 but for 2 lines, where ICU's dictionary joins Japanese words. `test/intl402/Segmenter`
-passes 154 of 158 variants, and the failing ones need Serbian. The generated data is 503,669 bytes,
+passes 154 of 158 variants, and the failing ones need Serbian. Over the whole pinned suite 86,701 of
+95,058 variants pass, 151 more, and none failed newly. The generated data is 503,669 bytes,
 20,619 under the provisional bound ([JSC-276](roadmap.corrections.md#jsc-276), proposed
 [JSD-0050](decisions/0050-intl-segmenter.md)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.

@@ -12153,7 +12153,12 @@ generator's two new tables, and the format's `JsIntlTable`.
     22.22.0's ICU 77.1. Every line agrees but 2, where ICU's dictionary joins Japanese ideographs
     into words.
 - **test262**, against the run JSC-275 records: `test/intl402/Segmenter` passes 154 of 158 variants,
-  from none, and the 4 failing need Serbian.
+  from 4, and the 4 failing need Serbian.
+- **test262, whole pinned suite**, against the run [JSC-275](#jsc-275) records: 95,058 variants, 86,701
+  passing, 492 failing, 47 exhausted and 7,818 skipped. 150 moved from failing to passing, all under
+  `test/intl402/Segmenter`, and none moved to failing. The `Atomics.waitAsync` variants JSC-273
+  records as machine-dependent moved again, 4 passing and 3 others running out of live bytes. The 47
+  exhausted are JSC-270's 44 and those 3.
 
 **What must not be read as repaired.**
 - **No dictionary segmentation**: Chinese, Japanese and the Southeast Asian scripts break by UAX #29's
