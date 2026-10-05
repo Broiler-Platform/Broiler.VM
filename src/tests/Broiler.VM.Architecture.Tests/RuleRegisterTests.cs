@@ -417,10 +417,15 @@ public sealed class RuleRegisterTests
         // or a retained file; N35 is JS-10's scan of the extraction-gate state for a verdict or another
         // profile's identifier; N36 holds the suppression inventory to a scan of the family's sources.
         // All three Active when minted; no other count moves.
-        Assert.Equal(115, byStatus["Active"]);
+        // Phase F9's third slice adds N37, release gate 8's baseline of its own: the JavaScript
+        // family's package baseline against the packable projects and their references, and against
+        // the candidate pack's retained metadata, in both directions, with no foreign dependency and a
+        // consumer transcript that restored, rolled back and forward, and refused what only upstream
+        // holds (decision JSD-0061). Active when minted; no other count moves.
+        Assert.Equal(116, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(117, Loaded.Rules.Count);
+        Assert.Equal(118, Loaded.Rules.Count);
     }
 
     private static Register Load()

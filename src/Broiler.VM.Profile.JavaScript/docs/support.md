@@ -184,8 +184,13 @@ before review. What each has been shown to do:
 | `Broiler.VM.Profile.JavaScript` | Packable; published to nuget.org at `0.1.0-preview.4` and `0.1.0-preview.5` on 2026-09-23 by the owner's workflow, before any review | Rule N4; [`../../../docs/support.md`](../../../docs/support.md) section 1 |
 | `Broiler.VM.Profile.JavaScript.Format` | Packable; published at the same two versions | Rule N4 |
 | `Broiler.VM.Profile.JavaScript.Compiler` | Packable; published at the same two versions | Rule N4 |
-| `Broiler.VM.Profile.JavaScript.Intl` | Packable since phase F7; **not published** | Rule N4 |
+| `Broiler.VM.Profile.JavaScript.Intl` | Packable since phase F7; **not published** | Rule N4; rule N37 |
 | `Broiler.VM.Profile.MachineCode` | Packable; published at the same two versions; the arming path the native form needs | Rule N4; rule X1 |
+
+**The family's four packages are frozen** in the [package baseline](packages.md), each with its
+dependencies and files, and rule N37 holds it to the checkout and to the candidate pack of bundle
+[JS-10-002](evidence/js-10-002/README.md), where a pristine consumer restored and ran them with
+upstream unreachable and rolled back to the published `0.1.0-preview.5` and forward again.
 
 **No composition is advertised.** Every JavaScript composition root is a demonstration and none is
 packable; the composition register is the authority, and rules K1 to K5 hold it to the checkout.

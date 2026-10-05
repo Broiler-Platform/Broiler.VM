@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Broiler.VM.Profile.JavaScript</RootNamespace>
     <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
-    <Description>The Broiler.VM JavaScript language profile: descriptor, verifier, executor, value and object model, standard library, host imports and payload projections. At this milestone it implements one feature manifest, broiler.javascript.slice, which is deliberately not JavaScript anyone would ship; the status ledger is the authority for what exists.</Description>
+    <Description>The Broiler.VM JavaScript language profile: descriptor, verifier, executor, value and object model, standard library, host imports and payload projections. It implements the pinned ECMA-262 edition under the manifest broiler.javascript.wide, with the optional surfaces a composition admits beside it; the profile's support table, drafted and not issued, and its status ledger are the authority for what exists.</Description>
 
     <!-- JS-0 declares no package; see the Format project for why. -->
     <IsPackable>true</IsPackable>
