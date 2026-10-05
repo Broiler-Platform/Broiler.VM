@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 277 |
-| Files carrying an annotation | 277 |
-| Code units | 11554 |
-| Relevant | 6565 |
-| Exempt by predicate | 4989 |
-| Annotated | 6565 of 6565 (100%) |
-| Human reviewed | 0 of 6565 (0%) |
-| Unverified | 6565 |
+| Files scanned | 279 |
+| Files carrying an annotation | 279 |
+| Code units | 11605 |
+| Relevant | 6594 |
+| Exempt by predicate | 5011 |
+| Annotated | 6594 of 6594 (100%) |
+| Human reviewed | 0 of 6594 (0%) |
+| Unverified | 6594 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6565 |
+| HUMAN_PENDING | 6594 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4989 |
+| EXEMPT | 5011 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1636 |
-| Low | 6361 |
+| Low | 6404 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,7 +50,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1572 |
+| Low | 1615 |
 | Medium | 4616 |
 | High | 1637 |
 | Critical | 253 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6565 |
+| Units scored | 6594 |
 
 ## High-security review areas
 
@@ -1989,21 +1989,21 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1614 |
+| TrivialPropertyOrAccessor | 1620 |
 | ParameterAssigningConstructor | 170 |
 | TrivialExpressionBodiedMember | 65 |
 | CompilerSuppliedRecordOrEnumMember | 24 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 916 |
-| EnumMemberOfADeclaredVocabulary | 2006 |
-| DeclaredInSource | 73 |
+| FieldDeclaringStorage | 924 |
+| EnumMemberOfADeclaredVocabulary | 2010 |
+| DeclaredInSource | 77 |
 
 ## Per-unit exemptions
 
 | Metric | Value |
 |---|---:|
-| Per-unit exemptions | 73 |
+| Per-unit exemptions | 77 |
 
 A per-unit `EXEMPT=<reason>` line exempts one unit by a reason a human wrote, for what the
 predicate cannot see. Nothing mechanical checks that the reason is true, that it describes
@@ -2070,6 +2070,10 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Scripts` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.CollationRoot` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.CollationTailorings` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+- `Broiler.VM.Profile.JavaScript.Intl.JsTzdbTables.Version` in `src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs` - tzdb 2026e table data written by TzdbTableGenerator from the members tzdb.pin names, compared byte for byte by rule N30
+- `Broiler.VM.Profile.JavaScript.Intl.JsTzdbTables.TimeZones` in `src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs` - tzdb 2026e table data written by TzdbTableGenerator from the members tzdb.pin names, compared byte for byte by rule N30
+- `Broiler.VM.Profile.JavaScript.Intl.JsTzdbTables.TimeZoneIds` in `src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs` - tzdb 2026e table data written by TzdbTableGenerator from the members tzdb.pin names, compared byte for byte by rule N30
+- `Broiler.VM.Profile.JavaScript.Intl.JsTzdbTables.TimeZoneRegions` in `src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs` - tzdb 2026e table data written by TzdbTableGenerator from the members tzdb.pin names, compared byte for byte by rule N30
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.MaxMappingLength` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.UpperIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
 - `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.LowerIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
@@ -2088,7 +2092,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11554 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11605 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2096,7 +2100,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 277 of them - with a
+Beside the units it lists **every covered file** - 279 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

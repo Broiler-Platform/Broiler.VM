@@ -1284,7 +1284,12 @@ public sealed class ReviewRecordRuleTests
         // AND DISPLAY NAMES (phase F7, 2026-10-05, JSD-0052): JsRealm.DisplayNames.cs,
         // Intl.DisplayNames over CLDR's locale display names. It is covered on the same terms as every
         // other product file, and nothing in it has been read by a human.
-        Assert.Equal(277, AssuranceSources.Files.Count);
+        //
+        // AND TIME ZONES (phase F8, 2026-10-05, JSD-0053): JsTimeZones.cs, the reader of the IANA Time
+        // Zone Database's identifiers and offsets; and JsTzdbTables.g.cs, which TzdbTableGenerator
+        // writes and rule N30 holds. Both are covered on the same terms as every other product file,
+        // and nothing in them has been read by a human.
+        Assert.Equal(279, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

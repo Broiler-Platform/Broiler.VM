@@ -637,6 +637,20 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F8 observation, the time zone data, 2026-10-05.** The repository owner chose to start
+phase F8 by archiving and pinning the IANA Time Zone Database, which answers JSD-0027's decision (d).
+tzdb 2026e is archived under the new rule N29. Its zones are compiled as `zic` compiles them, for
+offsets only, into tables the new rule N30 holds, in the Intl data assembly. A prototype of the
+compiler gave `zic`'s offsets for every identifier from 1800 to 2500. The data is 670,742 bytes,
+115,690 under the budget. `Intl.DateTimeFormat` now accepts every IANA name and resolves it to CLDR's
+IANA primary identifier. `supportedValuesOf` lists the 445 primary identifiers, and `getTimeZones`
+answers `zone.tab`'s zones. A retained dataset of all 597 names at eight instants agrees with ICU 77.1
+on 559 of 610 lines, the 51 others named. test262 scores as before, since the cases that format IANA
+zones also take Temporal objects. Temporal's admission is drawn at proposal revision `e8cc03fc`, and
+the global is not built ([JSC-279](roadmap.corrections.md#jsc-279), proposed
+[JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md)). This is unreviewed
+implementation and validation material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F7 observation, slice I4's `Intl.DisplayNames`, 2026-10-05.** The repository owner set the
 Intl data budget at 768 KiB, JSD-0027's decision (c), and rule N28 holds it in place of the
 provisional bound. `Intl.DisplayNames` is built as the current ECMA-402 draft states it, in all six

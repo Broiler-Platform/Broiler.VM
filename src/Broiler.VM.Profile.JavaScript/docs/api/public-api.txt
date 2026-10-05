@@ -1928,6 +1928,9 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.SegmentBreaks : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 24
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.SoftDotted : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 7
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.TimeData : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 16
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.TimeZoneIds : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 27
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.TimeZoneRegions : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 28
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.TimeZones : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 26
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.Units : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 14
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.WeekData : const Broiler.VM.Profile.JavaScript.Format.JsIntlTable = 18
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsIntlTable.value__ : System.Int32

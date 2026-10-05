@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
+// Relevant units:   25
+// Annotated:        25/25
 // Exempt:           10
-// Human-reviewed:   0/26
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       26
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -28,10 +28,11 @@ namespace Broiler.VM.Profile.JavaScript;
 /// from a style takes CLDR's style patterns; both are written with the resolved hour cycle's letter.
 /// </para>
 /// <para>
-/// <b>Only UTC and fixed offsets are time zones here</b> (JSD-0027 section 5 item 5). The names
-/// IANA links to UTC resolve to <c>UTC</c>, an offset to its <c>+HH:MM</c> or <c>-HH:MM</c> form,
-/// IANA's <c>Etc/GMT+N</c> and <c>Etc/GMT-N</c> zones to themselves, and every other name is a
-/// <c>RangeError</c> that says so; the profile carries no time-zone database.
+/// <b>The time zones are the IANA Time Zone Database's</b> (JSD-0053), from tzdb 2026e. An offset
+/// resolves to its <c>+HH:MM</c> or <c>-HH:MM</c> form, and a name, in any ASCII case, to its primary
+/// identifier: a name resolving to UTC to <c>UTC</c>, IANA's <c>Etc/GMT+N</c> and <c>Etc/GMT-N</c>
+/// zones to themselves as fixed offsets, and any other to its zone, whose offset is read at each
+/// instant formatted. Any other name is a <c>RangeError</c>.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
@@ -47,15 +48,6 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60BC36
     // Broiler-Human:        PENDING
     internal JsNativeFunction? DateTimeFormatConstructor { get; private set; }
-
-    /// <summary>The names IANA links to UTC, each an available named time zone whose primary identifier is <c>UTC</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A4DC33
-    // Broiler-Human:        PENDING
-    private static readonly string[] UtcNames =
-    [
-        "UTC", "Etc/UTC", "Etc/UCT", "UCT", "Etc/Universal", "Universal", "Etc/Zulu", "Zulu", "Etc/GMT", "GMT",
-        "Etc/GMT0", "GMT0", "Etc/GMT+0", "GMT+0", "Etc/GMT-0", "GMT-0", "Etc/Greenwich", "Greenwich",
-    ];
 
     /// <summary>ECMA-402's table of date-time components, in table order, with the values each admits.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=55DD20
@@ -217,7 +209,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's <c>Intl.supportedValuesOf</c>: the values this data supports for a key, sorted.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=E28D5E
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=64EB63
     // Broiler-Human:        PENDING
     private static JsValue SupportedValuesOf(JsEngine engine, JsValue key)
     {
@@ -249,13 +241,8 @@ internal sealed partial class JsRealm
                 values.AddRange(tables.Numbers.NumberingSystems.Keys);
                 break;
             case "timeZone":
-                values.Add("UTC");
-
-                foreach (var zone in EtcGmtZones())
-                {
-                    values.Add(zone.Name);
-                }
-
+                // ECMA-402 6.5.3: every primary identifier the time zone data names (JSD-0053).
+                values.AddRange(tables.TimeZones.PrimaryIdentifiers);
                 break;
             case "unit":
                 values.AddRange(SanctionedUnits);
@@ -426,7 +413,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CreateDateTimeFormat (s11.1.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B3AEAF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=85683F
     // Broiler-Human:        PENDING
     internal static JsDateTimeFormatObject CreateDateTimeFormat(
         JsEngine engine,
@@ -507,7 +494,7 @@ internal sealed partial class JsRealm
             null => resolved.Keys["hc"] ?? defaultCycle,
         };
 
-        var (timeZone, offset, kind) = ResolveTimeZone(engine, engine.GetProperty(options, "timeZone"));
+        var (timeZone, offset, kind, zone) = ResolveTimeZone(engine, engine.GetProperty(options, "timeZone"));
 
         var components = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
         var hasExplicitComponents = false;
@@ -608,7 +595,8 @@ internal sealed partial class JsRealm
             offset,
             kind,
             pattern,
-            () => new JsDateIntervalFormat(dates, language, dates.Generator(language, intervalChar, decimalSymbol), JsDatePatternGenerator.SkeletonOf(pattern)));
+            () => new JsDateIntervalFormat(dates, language, dates.Generator(language, intervalChar, decimalSymbol), JsDatePatternGenerator.SkeletonOf(pattern)),
+            zone);
 
         return new JsDateTimeFormatObject(prototype, formatter)
         {
@@ -842,17 +830,18 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// The time zone an option names: UTC by default, an offset string by its <c>+HH:MM</c> or <c>-HH:MM</c> form, a
-    /// name IANA links to UTC as <c>UTC</c>; any other name is refused, because the profile has no
-    /// time-zone database (JSD-0027 section 5 item 5).
+    /// The time zone an option names: UTC by default, an offset string by its <c>+HH:MM</c> or <c>-HH:MM</c> form,
+    /// and otherwise an IANA Zone or Link name, matched without regard to ASCII case and resolved to its
+    /// primary identifier (ECMA-402 11.1.2 steps 29 to 36, JSD-0053): a name resolving to UTC as
+    /// <c>UTC</c>, an <c>Etc/GMT</c> zone with an hour as its fixed offset, and any other as the zone.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D6F030
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65FECD
     // Broiler-Human:        PENDING
-    private static (string Identifier, int Offset, JsZoneKind Kind) ResolveTimeZone(JsEngine engine, JsValue value)
+    private static (string Identifier, int Offset, JsZoneKind Kind, JsZone? Zone) ResolveTimeZone(JsEngine engine, JsValue value)
     {
         if (value.Type == JsType.Undefined)
         {
-            return ("UTC", 0, JsZoneKind.Utc);
+            return ("UTC", 0, JsZoneKind.Utc, null);
         }
 
         var text = engine.ToStringValue(value);
@@ -867,29 +856,29 @@ internal sealed partial class JsRealm
             var identifier = (minutes < 0 ? "-" : "+") +
                 (System.Math.Abs(minutes) / 60).ToString("00", System.Globalization.CultureInfo.InvariantCulture) + ":" +
                 (System.Math.Abs(minutes) % 60).ToString("00", System.Globalization.CultureInfo.InvariantCulture);
-            return (identifier, minutes, minutes == 0 ? JsZoneKind.Gmt : JsZoneKind.Offset);
+            return (identifier, minutes, minutes == 0 ? JsZoneKind.Gmt : JsZoneKind.Offset, null);
         }
 
-        foreach (var name in UtcNames)
+        if (engine.Intl!.TimeZones.Find(text) is not { } record)
         {
-            if (string.Equals(name, text, System.StringComparison.OrdinalIgnoreCase))
-            {
-                return ("UTC", 0, JsZoneKind.Utc);
-            }
+            throw engine.Error("RangeError", "Intl.DateTimeFormat: " + text + " is not an available time zone");
+        }
+
+        if (record.Primary == "UTC")
+        {
+            return ("UTC", 0, JsZoneKind.Utc, null);
         }
 
         // IANA'S ETC/GMT ZONES WITH AN HOUR ARE FIXED OFFSETS by definition, with POSIX's inverted sign.
         foreach (var zone in EtcGmtZones())
         {
-            if (string.Equals(zone.Name, text, System.StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(zone.Name, record.Primary, System.StringComparison.Ordinal))
             {
-                return (zone.Name, zone.Offset, JsZoneKind.Offset);
+                return (zone.Name, zone.Offset, JsZoneKind.Offset, null);
             }
         }
 
-        throw engine.Error(
-            "RangeError",
-            "Intl.DateTimeFormat: the time zone " + text + " is not available; this profile admits only UTC and fixed offsets (JSD-0027)");
+        return (record.Primary, 0, JsZoneKind.Named, engine.Intl.TimeZones.Zone(record));
     }
 
     /// <summary>IANA's <c>Etc/GMT+1</c> to <c>Etc/GMT+12</c> and <c>Etc/GMT-1</c> to <c>Etc/GMT-14</c>, with each one's offset in minutes.</summary>

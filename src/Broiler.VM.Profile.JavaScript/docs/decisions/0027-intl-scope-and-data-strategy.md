@@ -461,3 +461,19 @@ owner's decision; the rest signs nothing, and this record keeps its status line.
   tzdb-backed time zones wait for phase F8. Decision (d), whether IANA tzdb is ever in scope, was
   answered by the owner the same day: phase F8 starts by archiving and pinning it. Section 7's `tr`, `az`
   and `lt` case tailorings are not built.
+
+## Decision (d) answered: the IANA Time Zone Database, 2026-10-05
+
+*Recorded with the change that archives tzdb. The answer is the repository owner's; the rest signs
+nothing, and this record keeps its status line. Corrections entry
+[JSC-279](../roadmap.corrections.md#jsc-279).*
+
+- **Owner decision (d) is answered: IANA tzdb is in scope.** The repository owner chose on 2026-10-05
+  to start phase F8 by archiving and pinning it. Section 5 item 5's "no time zone database" no longer
+  holds.
+- **tzdb 2026e is archived and pinned** under proposed
+  [JSD-0053](0053-time-zone-data-and-temporal-admission.md), rule N29, and compiled into tables in
+  the Intl data assembly under rule N30. The data is now 670,742 bytes, 115,690 under decision (c)'s
+  budget. Section 7's "tzdb-backed time zones" are built for `Intl.DateTimeFormat`, and the
+  primary identifiers are CLDR's, as ECMA-402 6.5 recommends.
+- **Zone names other than the GMT format** need CLDR's metazones, which are not archived.

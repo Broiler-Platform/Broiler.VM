@@ -499,3 +499,40 @@ authorization of the copyright holder.
 
 SPDX-License-Identifier: Unicode-3.0
 ```
+
+## IANA Time Zone Database data, and the tables derived from it
+
+**Added 2026-10-05 (phase F8; decision
+[JSD-0053](src/Broiler.VM.Profile.JavaScript/docs/decisions/0053-time-zone-data-and-temporal-admission.md)).
+The third entry in this file whose material is compiled into a shipped assembly; it shares the CLDR
+entry's assembly.**
+
+This repository contains a release of the IANA Time Zone Database (tzdb) and tables generated from
+it. **The release's `LICENSE` states: "Unless specified below, all files in the tz code and data
+(including this LICENSE file) are in the public domain." The files it then names - `date.c`,
+`newstrftime.3` and `strftime.c` - are code, are not in the data tarball, and are not here.** No
+licence text therefore has to travel with the derived tables; this entry records where they come
+from all the same, so a reader finds every ingested input in one file.
+
+**What was ingested.** tzdb 2026e's data tarball, `tzdata2026e.tar.gz`, archived unmodified at
+[`src/tests/tzdb/pins/`](src/tests/tzdb/pins/README.md), where `tzdb.pin` records the tarball's
+length, SHA-256 and SHA-512 and the length and SHA-256 of the twelve members a generator reads - the
+source files `africa`, `antarctica`, `asia`, `australasia`, `europe`, `northamerica`,
+`southamerica`, `etcetera` and `backward`, and `zone.tab`, `version` and `LICENSE` - and rule **N29**
+checks them on every run of the architecture suite. The pin and its README record how and when the
+tarball was retrieved.
+
+**What is derived, and where it ships.** `TzdbTableGenerator` (architecture test project, not
+shipped) compiles the source files' zones into UTC offsets and writes
+`src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N30** holds to the generator byte for byte.
+It carries each zone's offsets and transitions, every Zone and Link name with its primary identifier,
+which is taken from CLDR's `bcp47/timezone.json` under the CLDR entry above, and `zone.tab`'s zones of
+each country. The tables therefore ship where the CLDR tables ship: in the package
+`Broiler.VM.Profile.JavaScript.Intl` and the composition images that admit `Intl`.
+
+**Owner decisions, and what is not given.** The repository owner chose on 2026-10-05 to start phase
+F8 by archiving and pinning tzdb, which answers JSD-0027's owner decision (d). The tables count
+against the Intl data budget of 768 KiB that the owner set the same day: with them the data measured
+670,742 bytes. **The release owner's co-signature this file requires for ingested material is not
+given.**

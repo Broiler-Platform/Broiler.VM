@@ -49,6 +49,7 @@ internal static class IntlChecks
         SegmentsMatchIcu(),
         DurationsMatchIcu(),
         DisplayNamesMatchIcu(),
+        TimeZonesMatchIcu(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -209,6 +210,13 @@ internal static class IntlChecks
     /// </summary>
     private static (string, bool, string) DisplayNamesMatchIcu() =>
         RetainedMatchesIcu("intl/i4/german-and-english-display-names-match-icu", "displaynames", 800);
+
+    /// <summary>
+    /// The retained time zones (phase F8, JSD-0053): the program under <c>src/tests/cldr/timezones</c>,
+    /// run here, answers every line Node answered, but for the lines <c>divergences.txt</c> names.
+    /// </summary>
+    private static (string, bool, string) TimeZonesMatchIcu() =>
+        RetainedMatchesIcu("tzdb/time-zone-offsets-match-icu", "timezones", 600);
 
     /// <summary>
     /// A retained dataset under <c>src/tests/cldr/<paramref name="dataset"/></c>: its program, run

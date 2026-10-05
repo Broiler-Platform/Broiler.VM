@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           27
+// Exempt:           30
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=835E15
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8FD30D
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -159,4 +159,20 @@ public enum JsIntlTable
     /// pattern, calendar or field), <c>code</c>, and the name.
     /// </summary>
     DisplayNames = 25,
+
+    /// <summary>
+    /// The IANA Time Zone Database's zones' UTC offsets (JSD-0053): a zone count, then each zone's
+    /// first offset, offset palette, transitions and recurring rules, in the layout <c>JsTimeZones</c>
+    /// reads.
+    /// </summary>
+    TimeZones = 26,
+
+    /// <summary>
+    /// Every IANA Zone and Link name: <c>identifier</c>, the index of the zone whose offsets it reads,
+    /// and its primary identifier where that is another.
+    /// </summary>
+    TimeZoneIds = 27,
+
+    /// <summary>The zones of each country, from <c>zone.tab</c>: <c>region</c>, then its zones.</summary>
+    TimeZoneRegions = 28,
 }

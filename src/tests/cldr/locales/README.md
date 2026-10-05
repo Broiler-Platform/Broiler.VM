@@ -25,12 +25,15 @@ little: the suite scores the information methods as a proposal.
   node -e "const fs=require('fs');process.stdout.write((0,eval)(fs.readFileSync('locales.js','utf8'))+'\n')" > locales.icu-77.1.txt
   ```
 
-- [`divergences.txt`](divergences.txt) names the 150 of its 780 lines on which the profile answers
+- [`divergences.txt`](divergences.txt) names the 132 of its 780 lines on which the profile answers
   otherwise, in eight groups, each under its reason:
   - Node 22 predates three of the draft's features: `firstDayOfWeek` (8 lines), `variants` (5) and
     `language` for `und` (8).
-  - The profile's data is narrower than ICU's in four ways: calendars (21), collations (28),
-    numbering systems (2) and time zones (21).
+  - The profile's data is narrower than ICU's in three ways: calendars (21), collations (28) and
+    numbering systems (2).
+  - A region's time zones are IANA Zone names, where Node answers CLDR's older names (3). Until
+    2026-10-05, when JSD-0053 archived the IANA Time Zone Database, the profile answered no zones,
+    and this group named 21 lines.
   - The profile lists every hour cycle in common use where Node lists one (57).
 
   Each line is the profile's answer.

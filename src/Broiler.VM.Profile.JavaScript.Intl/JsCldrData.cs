@@ -54,7 +54,7 @@ public sealed class JsCldrData : IJsIntlData
     public string CldrVersion => JsCldrTables.Version;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=49490A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D5B376
     // Broiler-Human:        PENDING
     public System.ReadOnlySpan<byte> Table(JsIntlTable table) => table switch
     {
@@ -83,6 +83,9 @@ public sealed class JsCldrData : IJsIntlData
         JsIntlTable.SegmentBreakValues => JsCldrTables.SegmentBreakValues,
         JsIntlTable.SegmentBreaks => JsCldrTables.SegmentBreaks,
         JsIntlTable.DisplayNames => JsCldrTables.DisplayNames,
+        JsIntlTable.TimeZones => JsTzdbTables.TimeZones,
+        JsIntlTable.TimeZoneIds => JsTzdbTables.TimeZoneIds,
+        JsIntlTable.TimeZoneRegions => JsTzdbTables.TimeZoneRegions,
         _ => default,
     };
 }

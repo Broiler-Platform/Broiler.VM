@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
-// Exempt:           12
-// Human-reviewed:   0/23
+// Relevant units:   24
+// Annotated:        24/24
+// Exempt:           13
+// Human-reviewed:   0/24
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       23
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -81,7 +81,11 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly System.Lazy<JsBreakData> breaks;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DEE813
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9311F4
+    // Broiler-Human:        PENDING
+    private readonly System.Lazy<JsTimeZones> timeZones;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=046CE6
     // Broiler-Human:        PENDING
     internal JsIntlTables(Format.IJsIntlData data)
     {
@@ -97,6 +101,8 @@ internal sealed class JsIntlTables
         dates = new(ReadDates);
         localeInfo = new(ReadLocaleInfo);
         breaks = new(() => new JsBreakData(Lines(Format.JsIntlTable.SegmentBreakValues), data.Table(Format.JsIntlTable.SegmentBreaks)));
+        timeZones = new(() => new JsTimeZones(
+            Lines(Format.JsIntlTable.TimeZoneIds), Lines(Format.JsIntlTable.TimeZoneRegions), data.Table(Format.JsIntlTable.TimeZones)));
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -108,6 +114,11 @@ internal sealed class JsIntlTables
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F9D74C
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.IReadOnlyList<string> Locales => locales.Value;
+
+    /// <summary>The IANA Time Zone Database's identifiers and offsets, decoded the first time a zone is named.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5A12A5
+    // Broiler-Human:        PENDING
+    internal JsTimeZones TimeZones => timeZones.Value;
 
     /// <summary>The collation data.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B35C2E

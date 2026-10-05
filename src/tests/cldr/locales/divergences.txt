@@ -91,29 +91,13 @@
 63 en {"firstDayOfWeek":"tue"} collations => []
 64 ja-JP {"region":"US"} collations => [emoji,eor]
 
-# The profile carries no time-zone database (JSD-0027 decision (d)), so no zone it admits is one in
-# use in a region, and a locale with a region answers an empty list where Node lists IANA's zones.
-2 en-US timeZones => []
-3 en-GB timeZones => []
-8 de-AT timeZones => []
-9 de-CH timeZones => []
-11 fr-CA timeZones => []
-13 pt-BR timeZones => []
-15 ar-EG timeZones => []
-17 fa-IR timeZones => []
-22 zh-TW timeZones => []
-23 zh-Hans-SG timeZones => []
-31 und-AQ timeZones => []
-32 und-Latn-AQ timeZones => []
-33 und-Cyrl-RO timeZones => []
-36 und-AT timeZones => []
-39 in-ID timeZones => []
-46 es-ES-preeuro timeZones => []
-48 hy-SU timeZones => []
-49 ru-SU timeZones => []
-61 en-US {"language":"fr","script":"Cyrl","region":"BE","variants":"Fonipa-1996"} timeZones => []
-64 ja-JP {"region":"US"} timeZones => []
-65 he-IL {"script":"Latn"} timeZones => []
+# A region's time zones are tzdb 2026e's zone.tab entries for it (JSD-0053), which are IANA Zone
+# names, as ECMA-402 (15.5.13 TimeZonesOfLocale) asks. Node 22 answers CLDR's older canonical names
+# where they differ: America/Indianapolis for America/Indiana/Indianapolis, America/Coral_Harbour for
+# America/Atikokan.
+2 en-US timeZones => [America/Adak,America/Anchorage,America/Boise,America/Chicago,America/Denver,America/Detroit,America/Indiana/Indianapolis,America/Indiana/Knox,America/Indiana/Marengo,America/Indiana/Petersburg,America/Indiana/Tell_City,America/Indiana/Vevay,America/Indiana/Vincennes,America/Indiana/Winamac,America/Juneau,America/Kentucky/Louisville,America/Kentucky/Monticello,America/Los_Angeles,America/Menominee,America/Metlakatla,America/New_York,America/Nome,America/North_Dakota/Beulah,America/North_Dakota/Center,America/North_Dakota/New_Salem,America/Phoenix,America/Sitka,America/Yakutat,Pacific/Honolulu]
+11 fr-CA timeZones => [America/Atikokan,America/Blanc-Sablon,America/Cambridge_Bay,America/Creston,America/Dawson,America/Dawson_Creek,America/Edmonton,America/Fort_Nelson,America/Glace_Bay,America/Goose_Bay,America/Halifax,America/Inuvik,America/Iqaluit,America/Moncton,America/Rankin_Inlet,America/Regina,America/Resolute,America/St_Johns,America/Swift_Current,America/Toronto,America/Vancouver,America/Whitehorse,America/Winnipeg]
+64 ja-JP {"region":"US"} timeZones => [America/Adak,America/Anchorage,America/Boise,America/Chicago,America/Denver,America/Detroit,America/Indiana/Indianapolis,America/Indiana/Knox,America/Indiana/Marengo,America/Indiana/Petersburg,America/Indiana/Tell_City,America/Indiana/Vevay,America/Indiana/Vincennes,America/Indiana/Winamac,America/Juneau,America/Kentucky/Louisville,America/Kentucky/Monticello,America/Los_Angeles,America/Menominee,America/Metlakatla,America/New_York,America/Nome,America/North_Dakota/Beulah,America/North_Dakota/Center,America/North_Dakota/New_Salem,America/Phoenix,America/Sitka,America/Yakutat,Pacific/Honolulu]
 
 # ECMA-402 (15.5.11 HourCyclesOfLocale) answers the hour cycles in common use in the region, most
 # preferred first; the profile reads them from CLDR's time data, the preferred cycle and then the

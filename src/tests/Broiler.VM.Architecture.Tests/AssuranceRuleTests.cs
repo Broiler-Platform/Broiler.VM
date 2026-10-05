@@ -1614,6 +1614,9 @@ public sealed class AssuranceRuleTests
         // Intl data's generated file, whose every table member carries the reason
         // CldrTableGenerator writes, and rule N28 holds that file to the generator byte for byte.
         // A use is one of the two generators' members stating that generator's reason.)
+        //
+        // (Revised 2026-10-05: and the time zone tables. Decision JSD-0053 chose the hatch again for
+        // the tzdb tables' generated file, held to TzdbTableGenerator byte for byte by rule N30.)
         var declared = AssuranceScanner.DeclaredExemptions(ProductUnits);
 
         Assert.NotEmpty(declared);
@@ -1622,6 +1625,12 @@ public sealed class AssuranceRuleTests
             if (string.Equals(unit.File.RelativePath, CldrTableGenerator.OutputPath, StringComparison.Ordinal))
             {
                 Assert.Equal(CldrTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                return;
+            }
+
+            if (string.Equals(unit.File.RelativePath, TzdbTableGenerator.OutputPath, StringComparison.Ordinal))
+            {
+                Assert.Equal(TzdbTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
                 return;
             }
 

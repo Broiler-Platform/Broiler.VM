@@ -30,9 +30,8 @@ namespace Broiler.VM.Profile.JavaScript;
 /// <para>
 /// <b>The information methods answer from the data the profile holds</b>: the calendars and numbering
 /// systems it formats, the collations <c>Intl.Collator</c> offers, CLDR's hour cycles and weeks for
-/// every region and its line direction for every script. Time zones in use in a region need the
-/// time-zone database the profile does not carry, so <c>getTimeZones</c> answers an empty list for a
-/// locale with a region.
+/// every region and its line direction for every script. Since JSD-0053 the time zones in use in a
+/// region are the IANA Time Zone Database's <c>zone.tab</c> entries for it.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
@@ -59,7 +58,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] WeekdayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=05E2FB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=602D97
     // Broiler-Human:        PENDING
     private void SetupLocale(JsObject intl)
     {
@@ -176,9 +175,11 @@ internal sealed partial class JsRealm
         {
             var locale = LocaleOfThis(engine, thisValue, "getTimeZones");
 
-            // THE ZONES IN USE IN A REGION are the time-zone database's knowledge, which the profile
-            // does not carry (JSD-0027 decision (d)); of the zones it admits, none is a region's.
-            return Tag(locale.Locale).Region is null ? JsValue.Undefined : StringArray(engine, []);
+            // THE ZONES IN USE IN A REGION are zone.tab's for it, each a primary identifier
+            // (ECMA-402 6.5 and 15.5.13, JSD-0053), in ordinal order.
+            return Tag(locale.Locale).Region is not { } region
+                ? JsValue.Undefined
+                : StringArray(engine, [.. engine.Intl!.TimeZones.Region(region)]);
         });
 
         Method(prototype, "getTextInfo", 0, static (engine, thisValue, arguments) =>

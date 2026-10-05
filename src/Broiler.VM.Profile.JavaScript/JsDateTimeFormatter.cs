@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   22
-// Annotated:        22/22
-// Exempt:           13
-// Human-reviewed:   0/22
+// Relevant units:   23
+// Annotated:        23/23
+// Exempt:           15
+// Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       22
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -27,14 +27,18 @@ internal sealed record JsDatePart(string Type, string Value, string? Source);
 // Broiler-Human:        PENDING
 internal readonly record struct JsDateField(char Letter, int Start, int End);
 
-/// <summary>What a time zone a format admits is: UTC, the zero offset ICU names GMT, or another offset.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=07686E
+/// <summary>
+/// What a time zone a format admits is: UTC, the zero offset ICU names GMT, another offset, or an IANA
+/// zone whose offset changes (JSD-0053).
+/// </summary>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8005BA
 // Broiler-Human:        PENDING
 internal enum JsZoneKind
 {
     Utc,
     Gmt,
     Offset,
+    Named,
 }
 
 /// <summary>
@@ -54,11 +58,11 @@ internal readonly record struct JsLocalTime(long Year, int Month, int Day, int W
     internal long EraYear => Year <= 0 ? 1 - Year : Year;
 
     /// <summary>The fields of <paramref name="time"/>, an integral time value, <paramref name="offsetMinutes"/> from UTC.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FD1251
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=227A46
     // Broiler-Human:        PENDING
-    internal static JsLocalTime From(double time, int offsetMinutes)
+    internal static JsLocalTime From(double time, int offsetSeconds)
     {
-        var local = (long)time + (offsetMinutes * 60_000L);
+        var local = (long)time + (offsetSeconds * 1_000L);
         var days = local >= 0 ? local / 86_400_000L : -((-local + 86_399_999L) / 86_400_000L);
         var within = local - (days * 86_400_000L);
 
@@ -132,7 +136,7 @@ internal sealed class JsDateTimeFormatter
     // Broiler-Human:        PENDING
     private JsDateIntervalFormat? interval;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9E6E79
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2FE5CD
     // Broiler-Human:        PENDING
     internal JsDateTimeFormatter(
         JsDateData data,
@@ -142,8 +146,10 @@ internal sealed class JsDateTimeFormatter
         int offsetMinutes,
         JsZoneKind zoneKind,
         string pattern,
-        System.Func<JsDateIntervalFormat> intervals)
+        System.Func<JsDateIntervalFormat> intervals,
+        JsZone? zone = null)
     {
+        this.zone = zone;
         this.data = data;
         this.language = language;
         this.digits = digits;
@@ -154,15 +160,26 @@ internal sealed class JsDateTimeFormatter
         Pattern = pattern;
     }
 
-    /// <summary>The time zone's identifier: <c>UTC</c> or an offset such as <c>+05:30</c>.</summary>
+    /// <summary>The IANA zone whose offsets apply, or nothing for UTC and a fixed offset.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B6CCEC
+    // Broiler-Human:        PENDING
+    private readonly JsZone? zone;
+
+    /// <summary>The time zone's identifier: <c>UTC</c>, an offset such as <c>+05:30</c>, or an IANA primary identifier.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9A6046
     // Broiler-Human:        PENDING
     internal string TimeZone { get; }
 
-    /// <summary>The zone's offset from UTC, in minutes.</summary>
+    /// <summary>The zone's offset from UTC, in minutes, where it is fixed; zero for an IANA zone.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=02B42A
     // Broiler-Human:        PENDING
     internal int OffsetMinutes { get; }
+
+    /// <summary>The offset, in seconds, in force at a time value: the fixed one, or the IANA zone's then.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=519DF9
+    // Broiler-Human:        PENDING
+    internal int OffsetSecondsAt(double time) =>
+        zone is null ? OffsetMinutes * 60 : zone.OffsetAt((long)System.Math.Floor(time / 1000));
 
     /// <summary>Which kind of zone it is.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=39D641
@@ -175,13 +192,13 @@ internal sealed class JsDateTimeFormatter
     internal string Pattern { get; }
 
     /// <summary>The parts of <paramref name="time"/>, an integral time value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B55BB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2EC27B
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.List<JsDatePart> Parts(JsEngine engine, double time, string? source)
     {
         var text = new System.Text.StringBuilder();
         var fields = new System.Collections.Generic.List<JsDateField>();
-        FormatPattern(Pattern, JsLocalTime.From(time, OffsetMinutes), text, fields);
+        FormatPattern(Pattern, JsLocalTime.From(time, OffsetSecondsAt(time)), text, fields);
         engine.Charge((ulong)text.Length);
         return ToParts(text.ToString(), fields, source is null ? null : (_, _) => source);
     }
@@ -191,7 +208,7 @@ internal sealed class JsDateTimeFormatter
     /// its parts' sources from the spans of the fields it repeats, or <paramref name="x"/> alone,
     /// shared, where it writes one date.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=12E5DD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=553C3E
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.List<JsDatePart> RangeParts(JsEngine engine, double x, double y)
     {
@@ -199,7 +216,7 @@ internal sealed class JsDateTimeFormatter
 
         var text = new System.Text.StringBuilder();
         var fields = new System.Collections.Generic.List<JsDateField>();
-        var first = interval.Format(JsLocalTime.From(x, OffsetMinutes), JsLocalTime.From(y, OffsetMinutes), this, text, fields);
+        var first = interval.Format(JsLocalTime.From(x, OffsetSecondsAt(x)), JsLocalTime.From(y, OffsetSecondsAt(y)), this, text, fields);
         engine.Charge((ulong)text.Length);
 
         // THE SPANS ARE ICU'S: the first and second occurrences of each repeated field.
@@ -550,7 +567,7 @@ internal sealed class JsDateTimeFormatter
     /// format. The GMT zone's name is its metazone's, which ICU maps only from 1970-01-01T00:00Z to
     /// before 9999-12-31T23:59Z; outside those bounds the zone has no name and the GMT format serves.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AEA7AF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E164EB
     // Broiler-Human:        PENDING
     private string ZoneName(char c, int count, long utc)
     {
@@ -565,32 +582,38 @@ internal sealed class JsDateTimeFormatter
 
         string? Generic(string width) => metazone ? data.Value(language, "zone.gmt." + width) : null;
 
+        var offset = OffsetSecondsAt(utc);
+
         return c switch
         {
-            'z' => (count < 4 ? Named("short") ?? Gmt(longForm: false) : Named("long") ?? Gmt(longForm: true)),
-            'v' => (count < 4 ? Generic("short") ?? Gmt(longForm: false) : Generic("long") ?? Gmt(longForm: true)),
-            'O' => Gmt(longForm: count >= 4),
-            'Z' => count == 4 ? Gmt(longForm: true) : count == 5 ? Iso(extended: true, zulu: true) : Iso(extended: false, zulu: false),
-            'X' => Iso(extended: count >= 3, zulu: true),
-            'x' => Iso(extended: count >= 3, zulu: false),
-            _ => count == 2 ? TimeZone : Gmt(longForm: true),
+            'z' => (count < 4 ? Named("short") ?? Gmt(offset, longForm: false) : Named("long") ?? Gmt(offset, longForm: true)),
+            'v' => (count < 4 ? Generic("short") ?? Gmt(offset, longForm: false) : Generic("long") ?? Gmt(offset, longForm: true)),
+            'O' => Gmt(offset, longForm: count >= 4),
+            'Z' => count == 4 ? Gmt(offset, longForm: true) : count == 5 ? Iso(offset, extended: true, zulu: true) : Iso(offset, extended: false, zulu: false),
+            'X' => Iso(offset, extended: count >= 3, zulu: true),
+            'x' => Iso(offset, extended: count >= 3, zulu: false),
+            _ => count == 2 ? TimeZone : Gmt(offset, longForm: true),
         };
     }
 
-    /// <summary>CLDR's localized GMT format of the offset, long (<c>GMT+05:30</c>) or short (<c>GMT+5:30</c>).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=408BD4
+    /// <summary>
+    /// CLDR's localized GMT format of the offset, long (<c>GMT+05:30</c>) or short (<c>GMT+5:30</c>),
+    /// with its seconds after the minutes where it has any, as ICU writes a local mean time.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A6765B
     // Broiler-Human:        PENDING
-    private string Gmt(bool longForm)
+    private string Gmt(int offsetSeconds, bool longForm)
     {
-        if (OffsetMinutes == 0)
+        if (offsetSeconds == 0)
         {
             return Name("zone.gmtZeroFormat");
         }
 
         var formats = Name("zone.hourFormat").Split(';');
-        var format = OffsetMinutes > 0 || formats.Length < 2 ? formats[0] : formats[1];
-        var hours = System.Math.Abs(OffsetMinutes) / 60;
-        var minutes = System.Math.Abs(OffsetMinutes) % 60;
+        var format = offsetSeconds > 0 || formats.Length < 2 ? formats[0] : formats[1];
+        var hours = System.Math.Abs(offsetSeconds) / 3600;
+        var minutes = System.Math.Abs(offsetSeconds) / 60 % 60;
+        var seconds = System.Math.Abs(offsetSeconds) % 60;
         var offset = new System.Text.StringBuilder();
         var at = 0;
 
@@ -610,12 +633,18 @@ internal sealed class JsDateTimeFormatter
             }
             else if (c == 'm')
             {
-                if (longForm || minutes != 0)
+                if (longForm || minutes != 0 || seconds != 0)
                 {
                     Number(offset, minutes, count);
+
+                    if (seconds != 0)
+                    {
+                        offset.Append(':');
+                        Number(offset, seconds, 2);
+                    }
                 }
             }
-            else if (!longForm && minutes == 0 && at + count < format.Length && format[at + count] == 'm')
+            else if (!longForm && minutes == 0 && seconds == 0 && at + count < format.Length && format[at + count] == 'm')
             {
                 // THE SEPARATOR BEFORE THE MINUTES GOES WITH THEM in the short form.
             }
@@ -631,18 +660,20 @@ internal sealed class JsDateTimeFormatter
     }
 
     /// <summary>An ISO 8601 offset: <c>+0530</c>, or <c>+05:30</c> extended, or <c>Z</c> for zero where asked.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F64D83
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=492D63
     // Broiler-Human:        PENDING
-    private string Iso(bool extended, bool zulu)
+    private string Iso(int offsetSeconds, bool extended, bool zulu)
     {
-        if (OffsetMinutes == 0 && zulu)
+        var offsetMinutes = offsetSeconds / 60;
+
+        if (offsetMinutes == 0 && zulu)
         {
             return "Z";
         }
 
-        var hours = System.Math.Abs(OffsetMinutes) / 60;
-        var minutes = System.Math.Abs(OffsetMinutes) % 60;
-        return (OffsetMinutes < 0 ? "-" : "+") +
+        var hours = System.Math.Abs(offsetMinutes) / 60;
+        var minutes = System.Math.Abs(offsetMinutes) % 60;
+        return (offsetMinutes < 0 ? "-" : "+") +
             hours.ToString("00", System.Globalization.CultureInfo.InvariantCulture) +
             (extended ? ":" : string.Empty) +
             minutes.ToString("00", System.Globalization.CultureInfo.InvariantCulture);

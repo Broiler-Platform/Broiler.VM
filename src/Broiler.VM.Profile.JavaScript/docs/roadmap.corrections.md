@@ -12283,3 +12283,59 @@ new `DisplayNames` table; and rule N28's size test, which now holds the owner's 
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout, and the repository owner's
 budget decision of the same day. 2026-10-05.
+
+### JSC-279
+
+**Where:** phase F8, its first change. The IANA Time Zone Database archive and pin
+(`src/tests/tzdb/pins/`, rule N29); `TzdbCompiler` and `TzdbTableGenerator` and their generated file
+`JsTzdbTables.g.cs` (rule N30); the profile's `JsTimeZones.cs`; `Intl.DateTimeFormat`'s time zone,
+`Intl.supportedValuesOf("timeZone")` and `Intl.Locale.prototype.getTimeZones`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 5 item 5 kept the profile
+  without a time zone database, and its owner decision (d) asked "whether IANA tzdb is ever in
+  scope". [JSD-0045](decisions/0045-intl-datetimeformat.md) built `Intl.DateTimeFormat` for UTC,
+  offsets and the `Etc/GMT` zones only, and refused every other name.
+- Section 26's F8 is "a record admitting the proposal at a pinned revision, a time-zone data boundary
+  modelled on JSD-0031's (tzdb archived, generated, pinned), and the implementation".
+
+**What replaced it, observed on 2026-10-05.**
+- **The owner answered decision (d)**: on 2026-10-05 the repository owner chose to start F8 by
+  archiving and pinning tzdb.
+- **tzdb 2026e is archived and pinned** under proposed
+  [JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md): the data tarball, retrieved
+  twice and byte-identical, and the twelve members a generator reads, under the new rule N29.
+- **The zones are compiled as `zic` compiles them**, for offsets only, into tables in the Intl data
+  assembly under the new rule N30. A prototype of the compiler gave `zic`'s offsets for all 597
+  identifiers, at every transition and every 41 days from 1800 to 2500. The generated tables decode to
+  exactly the prototype's transitions.
+- **The primary identifiers are CLDR's `_iana` names**, from the CLDR archive's time zone keys, and
+  every identifier reads its primary identifier's offsets.
+- **The tables are 98,718 bytes**, and the Intl data 670,742, 115,690 under the owner's budget; N28's
+  budget test now counts both generated files.
+- **`Intl.DateTimeFormat` accepts every IANA name**, resolves it to its primary identifier, and formats
+  each instant at the offset then in force, a local mean time with its seconds.
+  `Intl.supportedValuesOf("timeZone")` lists the 445 primary identifiers, and
+  `Intl.Locale.prototype.getTimeZones` answers `zone.tab`'s zones.
+- **The retained time zone dataset** ([`src/tests/cldr/timezones/`](../../tests/cldr/timezones/README.md))
+  holds all 597 names at eight instants against Node 22.22.0's ICU 77.1 with tzdb 2025b. 559 of 610
+  lines agree. 51 are named: V8's older canonical names, Morocco's 2026 change, and the lists.
+- **The retained Locale dataset's 21 time zone divergences are now 3**, each the same naming.
+- **Checks**: one new slice-compiler check, 638 in all. The architecture suite has six new tests,
+  333 in all.
+- **test262**: `test/intl402` and `test/built-ins/Date` score exactly as in the run JSC-278 records.
+  The suite's cases that format IANA zones also take Temporal objects, and stay skipped.
+- **Temporal's admission is drawn, not built**: JSD-0053 pins `tc39/proposal-temporal` at
+  `e8cc03fc`, the Stage 4 draft of 2026-07-27. The identity `broiler.javascript.temporal`, admitted
+  only with the Intl surface, will be minted with the global. The `Temporal` flag will be scored from
+  the same change. The slices T1 to T4 are planned.
+
+**What must not be read as repaired.**
+- **`Temporal`** is still absent, and F8's exit gate is not met.
+- **Zone names** other than the localized GMT format need CLDR's metazones, which are not archived.
+- **The local time zone** stays UTC.
+- JSD-0053 is proposed and unsigned, beyond the owner's choice it records. No milestone or stage
+  moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout, and the repository owner's
+choice of the same day. 2026-10-05.
