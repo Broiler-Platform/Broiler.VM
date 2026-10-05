@@ -83,6 +83,9 @@ to exhausted on `LiveBytes`. Run alone six times afterwards from the same build,
 passed five times: what the main agent retains while it drains its job queue waiting on a second
 agent depends on how long that agent takes. It is a finding, recorded in
 [JSC-287](../../roadmap.corrections.md#jsc-287), and the floor deliberately holds no exhaustion.
+*(Repaired after this collection, 2026-10-05: the conformance host now supplies a `setTimeout` that
+waits without spinning, and a whole run with it differs from this one in this variant alone, now
+passed; [JSC-288](../../roadmap.corrections.md#jsc-288). This bundle records the run as taken.)*
 
 ## 4. The two floors
 

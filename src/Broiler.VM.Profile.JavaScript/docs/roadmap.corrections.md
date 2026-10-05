@@ -12710,10 +12710,50 @@ family package descriptions; JS-10's ledger row.
 - **One variant's verdict depends on timing**: `test/built-ins/Atomics/waitAsync/no-spurious-wakeup-on-add.js`
   passed in run r32 and exhausted `LiveBytes` in JS-10-003's bytecode run; run alone six times it
   exhausted once. What the main agent retains while it drains its job queue waiting on a second agent
-  depends on that agent's speed - a deterministic dimension deciding by wall time. Not repaired.
+  depends on that agent's speed - a deterministic dimension deciding by wall time. Not repaired
+  here. *(Repaired the same day in the conformance host; [JSC-288](#jsc-288).)*
 - **The gate reads gates 3 to 6 through no mechanism** and names each as blocking for that reason.
 - **The collection script's summary** called the native run not retainable on its floor's exit code;
   corrected after the collection, which the bundle records.
 - Nothing published, claimed, advertised, appointed or accepted.
 
 **Authority and date.** The implementation and the collections of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-288
+
+**Where:** the conformance root's host: `Test262Timers.cs`, its installation in `Test262Agents.cs`, and
+a harness check in `Test262Checks.cs`. The finding JSC-287 recorded and did not repair.
+
+**What the plan said.** Roadmap section 17 and the harness treat `LiveBytes` as a deterministic
+dimension: a variant that spends it spends it on every run. JSC-287 recorded that
+`test/built-ins/Atomics/waitAsync/no-spurious-wakeup-on-add.js` did not - it passed in run r32,
+exhausted `LiveBytes` in bundle JS-10-003, and exhausted once in six runs alone.
+
+**What replaced it, observed on 2026-10-05.**
+- **The cause.** The suite's `atomicsHelper.js` defines `setTimeout` only where the host has none,
+  as a promise chain that re-queues itself until `Date.now()` passes the deadline, and
+  `getReportAsync` waits on it for a second whenever an agent has not yet reported. The profile
+  charges every allocation of an operation to its live bytes, so that wait cost its wall time times
+  however fast the machine spun it, and whether the report was there depended on how quickly the
+  second agent ran.
+- **The repair is the host's.** The conformance root gives each test's main realm a `setTimeout`:
+  timers ordered by deadline, served by one pump job that steps behind queued jobs, sleeps at most a
+  millisecond while the queue is idle - so the drain still settles an `Atomics.waitAsync` deadline
+  between two jobs - and runs a callback when it is due. A wait now costs one small job per slice,
+  which the wall clock ends long before the live-byte ceiling. The profile is unchanged.
+- **A harness check holds it**: a 500 ms timer fires under a one-megabyte live-byte ceiling, and a
+  spinning promise loop of the stand-in's shape is refused on `LiveBytes` under the same ceiling.
+- **The runs.** Under load, six copies at once, the previous build exhausted the test once in 48 runs
+  and this one in none of 78. A whole wide-bytecode run with the repair differs from bundle
+  JS-10-003's in exactly one of 101,723 variants - this one, from exhausted to passed - and holds the
+  floor: 100,368 passed, 158 failed, 44 exhausted, 1,153 skipped, which are run r32's totals.
+
+**What must not be read as repaired.**
+- **The profile still charges allocation, not retention, to `LiveBytes`** within an operation. Any
+  guest that spins on the clock spends live bytes in proportion to time; the repair removes the one
+  spin the harness itself supplied, not the property.
+- **The timer is the conformance harness's**: no other composition defines `setTimeout`, and the realm
+  the profile builds publishes none.
+- **Bundle JS-10-003 is unchanged**: it records the run as taken, the exhaustion included.
+
+**Authority and date.** The implementation and the runs of 2026-10-05 in this checkout. 2026-10-05.

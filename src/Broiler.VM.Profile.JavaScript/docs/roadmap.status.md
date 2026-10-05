@@ -638,6 +638,14 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Conformance-host observation, a timer that waits, 2026-10-05.** The one variant whose verdict
+depended on timing, `Atomics/waitAsync/no-spurious-wakeup-on-add.js`, depended on it because the
+suite's `setTimeout` stand-in spins on the clock and every spin allocated. The conformance host now
+supplies a `setTimeout` that waits without spinning, a harness check holds its cost under a small
+live-byte ceiling that the spin exceeds, and a whole run with it differs from bundle JS-10-003's in that
+variant alone, now passed, holding the floor ([JSC-288](roadmap.corrections.md#jsc-288)). This is
+unreviewed implementation and validation material, not accepted milestone evidence.
+
 **Phase F9 observation, slices R3 and R4, packages, the release candidate and the gate,
 2026-10-05.** A pristine consumer of the JavaScript packages restores and runs from a local feed with
 upstream unreachable, rolls back to `0.1.0-preview.5` as published and forward again, and runs as
