@@ -190,7 +190,7 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C2A089
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=83DC64
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner, bool shadow = false)
     {
@@ -287,6 +287,13 @@ internal sealed partial class JsRealm
         if (owner.Admits(Format.JsSurfaces.Intl) && owner.Intl is not null)
         {
             SetupIntl();
+
+            // TEMPORAL AFTER INTL (JSD-0054): its time zones are Intl's data, and its Duration's
+            // toLocaleString builds an Intl.DurationFormat.
+            if (owner.Admits(Format.JsSurfaces.Temporal))
+            {
+                SetupTemporal();
+            }
         }
 
         // EVERY CONSTRUCTOR BUILT FROM HERE ON IS NOT AN INTRINSIC: an embedder's, or one a guest

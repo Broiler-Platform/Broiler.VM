@@ -80,8 +80,9 @@ public sealed class N17RealmGlobalsRuleTests
         var published = new HashSet<string>(Published(), StringComparer.Ordinal);
         var absent = Absent();
 
-        Assert.NotEmpty(absent);
-
+        // THE BLOCK MAY BE EMPTY, and has been since phase F8 published `Temporal`, the last name on it
+        // (JSC-280): the realm now lacks no standard global. The rule stays non-vacuous through the
+        // witness below, which must still be reported.
         var disagreements = absent.Where(published.Contains).ToArray();
 
         Assert.Empty(disagreements);

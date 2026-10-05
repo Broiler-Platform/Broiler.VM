@@ -12341,3 +12341,52 @@ budget decision of the same day. 2026-10-05.
 
 **Authority and date.** The implementation of 2026-10-05 in this checkout, and the repository owner's
 choice of the same day. 2026-10-05.
+
+### JSC-280
+
+**Where:** phase F8, slice T1. The profile's `JsTemporal*.cs` and `JsRealm.Temporal*.cs`; the
+surface identity `broiler.javascript.temporal` in `JsSurfaces.cs` and `JavaScriptProfile.cs`;
+`Intl.DurationFormat`'s input; the conformance runner's admitted proposals; the retained dataset
+`src/tests/temporal/`; the ledger's `absent-globals` block and rules N17 and N24.
+
+**What the plan said.**
+- [JSD-0053](decisions/0053-time-zone-data-and-temporal-admission.md) section 6 admitted Temporal at
+  `tc39/proposal-temporal` `e8cc03fc`, its identity admitted only with Intl and minted with the
+  global, and planned four slices: T1 the ISO arithmetic with `Instant`, `Duration` and `Now`; T2 the
+  plain types; T3 `ZonedDateTime`; T4 Intl and the other calendars.
+- Section 26's F8 exit gate: `test/built-ins/Temporal` and `test/intl402/Temporal` pass, and
+  `Temporal` leaves the `absent-globals` block in the change that publishes it.
+
+**What replaced it, observed on 2026-10-05.**
+- **`Temporal` is published** under proposed
+  [JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md): the eight types,
+  `Temporal.Now` and `Date.prototype.toTemporalInstant`, in the ISO 8601 and Gregorian calendars,
+  over JSD-0053's time zones, with the draft's grammar, exact arithmetic and relative rounding.
+- **The slices are three, not four.** `Duration`'s rounding reads a `PlainDate` or a `ZonedDateTime`,
+  so T1 took every type; T2 is Intl over Temporal objects, T3 the other calendars.
+- **`broiler.javascript.temporal` is minted**, admitted only with Intl and, newly, BigInt. The
+  `Temporal` flag is scored. `Temporal` left the `absent-globals` block, which is now empty, and rule
+  N17 allows it to be. N24's witness of a genuinely absent global is now `WebAssembly`.
+- **The draft's text fails in two places**, ISODateSurpasses and ComputeNudgeWindow, and the profile
+  follows the reference polyfill in both, as JSD-0054 section 4 names.
+- **`Intl.DurationFormat` reads a duration string** where Temporal is admitted, as the proposal amends
+  ECMA-402; the retained durations dataset names that one line.
+- **The retained Temporal dataset** agrees with the reference polyfill at `e8cc03fc` on all 1,629
+  lines.
+- **test262**: `test/built-ins/Temporal` passes all 9,156 scored variants. `test/intl402/Temporal`
+  passes 464 of 930; the 466 others are T2's `toLocaleString` (154) and T3's calendars (312). Of the
+  82 cases elsewhere that claim the flag, 52 variants pass and 108 fail, each an
+  `Intl.DateTimeFormat` case over a Temporal object (T2). Everything else under `test/intl402`,
+  `test/built-ins/Date` and `test/staging` scores as before.
+- **Checks**: three new slice-compiler checks, 641 in all. The architecture suite is unchanged in
+  number, 333, with N17 and N24 amended.
+
+**What must not be read as repaired.**
+- **F8's exit gate is not met**: `test/intl402/Temporal` does not pass, and will not before T2 and T3.
+- **`toLocaleString`** of the plain types and `ZonedDateTime` writes the ISO string until T2, a
+  declared divergence from ECMA-402.
+- **`Intl.supportedValuesOf("calendar")`** does not list `iso8601` until T2.
+- JSD-0054 is proposed and unsigned, beyond the owner's choice of slices with whole runs. No milestone
+  or stage moves.
+
+**Authority and date.** The implementation of 2026-10-05 in this checkout. 2026-10-05.

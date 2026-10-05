@@ -415,6 +415,14 @@ internal sealed class Test262Manifest
             declined = [.. declined, JsSurfaces.Shared];
         }
 
+        // AND DECLINING INTL OR BIGINT DECLINES TEMPORAL (JSD-0054), whose time zones are Intl's data
+        // and whose epoch nanoseconds are BigInt values.
+        if ((declined.Contains(JsSurfaces.Intl, StringComparer.Ordinal) || declined.Contains(JsSurfaces.BigInt, StringComparer.Ordinal)) &&
+            !declined.Contains(JsSurfaces.Temporal, StringComparer.Ordinal))
+        {
+            declined = [.. declined, JsSurfaces.Temporal];
+        }
+
         var admitted = ImmutableArray.CreateBuilder<string>();
 
         foreach (var surface in JsSurfaces.All)

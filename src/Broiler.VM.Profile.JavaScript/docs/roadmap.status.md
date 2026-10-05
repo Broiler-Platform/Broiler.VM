@@ -637,6 +637,19 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F8 observation, slice T1, `Temporal`, 2026-10-05.** `Temporal` is published under proposed
+[JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md): its eight types,
+`Temporal.Now` and `Date.prototype.toTemporalInstant`, in the ISO 8601 and Gregorian calendars, over
+the archived time zones. The identity `broiler.javascript.temporal` is minted, admitted only with
+Intl and BigInt, and the suite's `Temporal` flag is scored. The name left the `absent-globals` block,
+which is now empty. A retained dataset of 1,629 operations agrees with the proposal's reference
+polyfill on every line. `test/built-ins/Temporal` passes all 9,156 scored variants.
+`test/intl402/Temporal` passes 464 of 930: the others need Intl over Temporal objects (T2) or the
+calendars beyond ISO and Gregorian (T3), as do the 108 failing `Intl.DateTimeFormat` variants that
+claim the flag elsewhere. Every other variant under `test/intl402`, `test/built-ins/Date` and
+`test/staging` scores as before ([JSC-280](roadmap.corrections.md#jsc-280)). This is unreviewed
+implementation and validation material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F8 observation, the time zone data, 2026-10-05.** The repository owner chose to start
 phase F8 by archiving and pinning the IANA Time Zone Database, which answers JSD-0027's decision (d).
 tzdb 2026e is archived under the new rule N29. Its zones are compiled as `zic` compiles them, for
@@ -1343,10 +1356,14 @@ running `Object.getOwnPropertyNames(globalThis)` in a verified artifact and writ
 fails when the two disagree in either direction. **The block is the claim; the file is the fact.**
 
 ```absent-globals
-Temporal
 ```
 
-**Both are absent for want of work, and each is scheduled.** *(Amended 2026-10-04, phase F7: `Intl`
+**The block is empty: the realm lacks no standard global.** *(Amended 2026-10-05, phase F8: `Temporal`,
+the last name on it, left the block in the change that publishes it, under proposed
+[JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md) and the identity
+`broiler.javascript.temporal` ([JSC-280](roadmap.corrections.md#jsc-280)). Rule N17 still compares the
+file with the block, so a global that left the realm would have to be named here. The sentence
+below is kept as written.)* **Both are absent for want of work, and each is scheduled.** *(Amended 2026-10-04, phase F7: `Intl`
 left the block in the change that publishes it, under proposed
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md) and the identity `broiler.javascript.intl`
 ([JSC-269](roadmap.corrections.md#jsc-269)); `Temporal` is the one name left.)* *(Amended 2026-10-04: `SharedArrayBuffer`

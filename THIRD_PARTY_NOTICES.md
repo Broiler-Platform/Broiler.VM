@@ -536,3 +536,19 @@ F8 by archiving and pinning tzdb, which answers JSD-0027's owner decision (d). T
 against the Intl data budget of 768 KiB that the owner set the same day: with them the data measured
 670,742 bytes. **The release owner's co-signature this file requires for ingested material is not
 given.**
+
+## The Temporal proposal's reference polyfill, whose answers are retained
+
+**Added 2026-10-05 (phase F8, slice T1; decision
+[JSD-0054](src/Broiler.VM.Profile.JavaScript/docs/decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md)).
+Nothing of it ships, and none of its code is in this repository.**
+
+`src/tests/temporal/temporal.polyfill-e8cc03fc.txt` is the output of a program this repository wrote,
+`src/tests/temporal/temporal.js`, run under the reference polyfill in `polyfill/lib` of
+[tc39/proposal-temporal](https://github.com/tc39/proposal-temporal) at
+`e8cc03fc970a65a3359e8870e3b35e687ac94e55`, which is licensed under the ISC licence. The polyfill and
+its three runtime dependencies were installed outside the repository for the run and are not
+archived. The file holds the answers the polyfill gave, one per line, as the slice compiler's check
+compares them; it reproduces none of the polyfill's code or text, so no licence text travels with it.
+This entry records the source so a reader finds every reference the tree's datasets were checked
+against in one file.

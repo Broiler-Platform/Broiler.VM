@@ -1355,6 +1355,14 @@ The same record pins the proposal at
 slices. T1 (the ISO arithmetic, `Instant`, `Duration` and `Now`) is next
 ([JSC-279](roadmap.corrections.md#jsc-279)).*
 
+*Progress, 2026-10-05, slice T1: `Temporal` is published under proposed
+[JSD-0054](decisions/0054-temporal-in-the-iso-and-gregorian-calendars.md), every type in the ISO 8601
+and Gregorian calendars, and the identity `broiler.javascript.temporal` is minted, admitted only with
+Intl and BigInt. The plan is now three slices: T2 is Intl over Temporal objects and T3 the other
+calendars. `Temporal` left the `absent-globals` block. `test/built-ins/Temporal` passes all 9,156
+scored variants; `test/intl402/Temporal` passes 464 of 930, its failures T2's and T3's, so the exit
+gate is not yet met ([JSC-280](roadmap.corrections.md#jsc-280)).*
+
 #### F9 — The release
 
 - **Delivers:** JS-10 over every surface above.

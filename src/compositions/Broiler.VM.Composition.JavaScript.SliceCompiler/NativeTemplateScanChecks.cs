@@ -3388,11 +3388,12 @@ unit 3 at 512
 
     /// <summary>
     /// Every surface this build implements that a door handed no data can build: all but
-    /// <see cref="JsSurfaces.Intl"/>, whose tables these checks do not carry (JSD-0043).
+    /// <see cref="JsSurfaces.Intl"/>, whose tables these checks do not carry (JSD-0043), and
+    /// <see cref="JsSurfaces.Temporal"/>, whose time zones are those tables (JSD-0054).
     /// </summary>
     private static VmFeatureManifestId[] EverySurface() =>
         [.. System.Linq.Enumerable.Select(
-            System.Linq.Enumerable.Where(JsSurfaces.All, static surface => surface != JsSurfaces.Intl),
+            System.Linq.Enumerable.Where(JsSurfaces.All, static surface => surface != JsSurfaces.Intl && surface != JsSurfaces.Temporal),
             static surface => VmFeatureManifestId.Parse(surface))];
 
     /// <summary>Verifies wide artifacts under one descriptor, one runtime for all of them.</summary>

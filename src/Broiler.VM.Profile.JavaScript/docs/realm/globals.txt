@@ -52,6 +52,7 @@ String
 SuppressedError
 Symbol
 SyntaxError
+Temporal
 TypeError
 URIError
 Uint16Array

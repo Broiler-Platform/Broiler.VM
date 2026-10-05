@@ -486,11 +486,12 @@ internal static class NativeLifecycle
 
     /// <summary>
     /// Every surface this build implements that a door handed no data can build: all but
-    /// <see cref="JsSurfaces.Intl"/>, whose tables these checks do not carry (JSD-0043).
+    /// <see cref="JsSurfaces.Intl"/>, whose tables these checks do not carry (JSD-0043), and
+    /// <see cref="JsSurfaces.Temporal"/>, whose time zones are those tables (JSD-0054).
     /// </summary>
     private static VmFeatureManifestId[] EverySurface() =>
         [.. System.Linq.Enumerable.Select(
-            System.Linq.Enumerable.Where(JsSurfaces.All, static surface => surface != JsSurfaces.Intl),
+            System.Linq.Enumerable.Where(JsSurfaces.All, static surface => surface != JsSurfaces.Intl && surface != JsSurfaces.Temporal),
             static surface => VmFeatureManifestId.Parse(surface))];
 
     /// <summary>The source provider a wide run registers: it compiles an <c>eval</c> with the run's own request.</summary>

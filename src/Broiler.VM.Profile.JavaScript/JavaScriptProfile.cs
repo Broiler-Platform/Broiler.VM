@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   30
 // Annotated:        30/30
-// Exempt:           17
+// Exempt:           18
 // Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    High
@@ -265,6 +265,19 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     public static VmFeatureManifestId IntlManifest { get; } =
         VmFeatureManifestId.Parse(Format.JsSurfaces.Intl);
+
+    /// <summary>
+    /// The Temporal surface: the <c>Temporal</c> namespace, admitted at proposal revision
+    /// <c>e8cc03fc</c> (JSD-0054).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="IntlManifest"/> and <see cref="BigIntManifest"/></b>:
+    /// a descriptor naming it without either is refused when it is built.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BAD2A7
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId TemporalManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Temporal);
 
     /// <summary>
     /// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor.
@@ -659,7 +672,7 @@ public static class JavaScriptProfile
     /// this build implements, less <see cref="Format.JsSurfaces.Intl"/> when it was handed no data
     /// (JSD-0043).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ADD171
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BC0349
     // Broiler-Human:        PENDING
     private static ImmutableArray<string> EverySurfaceWith(Format.IJsIntlData? intl)
     {
@@ -667,7 +680,10 @@ public static class JavaScriptProfile
 
         foreach (var surface in Format.JsSurfaces.All)
         {
-            if (intl is not null || !string.Equals(surface, Format.JsSurfaces.Intl, System.StringComparison.Ordinal))
+            // TEMPORAL READS ITS TIME ZONES FROM THE SAME DATA (JSD-0054), so it goes with Intl.
+            if (intl is not null ||
+                !(string.Equals(surface, Format.JsSurfaces.Intl, System.StringComparison.Ordinal) ||
+                  string.Equals(surface, Format.JsSurfaces.Temporal, System.StringComparison.Ordinal)))
             {
                 surfaces.Add(surface);
             }
@@ -886,7 +902,7 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=2B40BE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=BBB011
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
@@ -931,6 +947,16 @@ public static class JavaScriptProfile
         {
             throw new System.ArgumentException(
                 Format.JsSurfaces.Shared + " is admitted only together with " + Format.JsSurfaces.Binary,
+                nameof(admittedSurfaces));
+        }
+
+        // AND THE TEMPORAL SURFACE NEEDS BOTH INTL, whose data holds its time zones, AND BIGINT,
+        // whose values its epoch nanoseconds are (JSD-0054).
+        if (admittedSurfaces.Contains(Format.JsSurfaces.Temporal) &&
+            !(admittedSurfaces.Contains(Format.JsSurfaces.Intl) && admittedSurfaces.Contains(Format.JsSurfaces.BigInt)))
+        {
+            throw new System.ArgumentException(
+                Format.JsSurfaces.Temporal + " is admitted only together with " + Format.JsSurfaces.Intl + " and " + Format.JsSurfaces.BigInt,
                 nameof(admittedSurfaces));
         }
 

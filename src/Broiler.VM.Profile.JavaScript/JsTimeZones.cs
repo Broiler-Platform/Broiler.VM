@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
+// Relevant units:   28
+// Annotated:        28/28
 // Exempt:           12
-// Human-reviewed:   0/27
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       27
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -244,6 +244,25 @@ internal sealed class JsZone
     // Broiler-Human:        PENDING
     internal JsZoneRule[] Rules { get; }
 
+    /// <summary>Whether the recurring rules change the offset at all: they do where two of them save differently.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3D0555
+    // Broiler-Human:        PENDING
+    private bool RulesChangeOffset
+    {
+        get
+        {
+            for (var i = 1; i < Rules.Length; i++)
+            {
+                if (Rules[i].Save != Rules[0].Save)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8F7900
     // Broiler-Human:        PENDING
     internal static void Skip(byte[] table, ref int at)
@@ -361,30 +380,30 @@ internal sealed class JsZone
     /// The first instant after <paramref name="seconds"/> at which the offset changes, or nothing;
     /// <paramref name="limit"/> bounds the years a recurring zone is searched.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C6D60E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D3C2AF
     // Broiler-Human:        PENDING
     internal long? NextTransition(long seconds, long limit)
     {
         var index = System.Array.BinarySearch(Transitions, seconds);
         index = index >= 0 ? index + 1 : ~index;
 
-        if (index < Transitions.Length && (Rules.Length == 0 || YearOf(Transitions[index]) <= LastListedYear))
+        // THE LISTED TRANSITIONS ARE AUTHORITATIVE through the last listed year; the recurring rules
+        // answer only for the years after it.
+        if (index < Transitions.Length)
         {
             return Transitions[index];
         }
 
-        if (Rules.Length == 0)
+        if (!RulesChangeOffset)
         {
             return null;
         }
 
-        var year = System.Math.Max(YearOf(seconds), LastListedYear + 1);
-
-        for (; year <= YearOf(limit) + 1; year++)
+        for (var year = System.Math.Max(YearOf(seconds) - 1, LastListedYear + 1); year <= YearOf(limit) + 1; year++)
         {
             foreach (var (at, before, after) in RecurringTransitions(year))
             {
-                if (at > seconds && before != after && YearOf(at) > LastListedYear)
+                if (at > seconds && before != after)
                 {
                     return at;
                 }
@@ -395,13 +414,13 @@ internal sealed class JsZone
     }
 
     /// <summary>The last instant before <paramref name="seconds"/> at which the offset changes, or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=630CC2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=69036F
     // Broiler-Human:        PENDING
     internal long? PreviousTransition(long seconds)
     {
-        if (Rules.Length > 0 && YearOf(seconds) > LastListedYear)
+        if (RulesChangeOffset)
         {
-            for (var year = YearOf(seconds); year > LastListedYear; year--)
+            for (var year = YearOf(seconds) + 1; year > LastListedYear; year--)
             {
                 var transitions = RecurringTransitions(year);
 
@@ -409,7 +428,7 @@ internal sealed class JsZone
                 {
                     var (at, before, after) = transitions[i];
 
-                    if (at < seconds && before != after && YearOf(at) > LastListedYear)
+                    if (at < seconds && before != after)
                     {
                         return at;
                     }

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
+// Relevant units:   20
+// Annotated:        20/20
 // Exempt:           9
-// Human-reviewed:   0/19
+// Human-reviewed:   0/20
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       19
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -71,7 +71,7 @@ internal sealed partial class JsRealm
     private static readonly string[] DurationFieldsRead =
         ["days", "hours", "microseconds", "milliseconds", "minutes", "months", "nanoseconds", "seconds", "weeks", "years"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AD4C63
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=01E229
     // Broiler-Human:        PENDING
     private void SetupDurationFormat(JsObject intl)
     {
@@ -105,7 +105,7 @@ internal sealed partial class JsRealm
         Method(prototype, "format", 1, static (engine, thisValue, arguments) =>
         {
             var format = DurationFormatOfThis(engine, thisValue, "format");
-            var record = ToDurationRecord(engine, Argument(arguments, 0));
+            var record = DurationFormatInput(engine, Argument(arguments, 0));
             var text = new System.Text.StringBuilder();
 
             foreach (var part in PartitionDurationFormatPattern(engine, format, record))
@@ -119,7 +119,7 @@ internal sealed partial class JsRealm
         Method(prototype, "formatToParts", 1, static (engine, thisValue, arguments) =>
         {
             var format = DurationFormatOfThis(engine, thisValue, "formatToParts");
-            var record = ToDurationRecord(engine, Argument(arguments, 0));
+            var record = DurationFormatInput(engine, Argument(arguments, 0));
             var values = new System.Collections.Generic.List<JsValue>();
 
             foreach (var (type, value, unit) in PartitionDurationFormatPattern(engine, format, record))
@@ -330,6 +330,15 @@ internal sealed partial class JsRealm
 
         return (style, display);
     }
+
+    /// <summary>
+    /// The duration format and formatToParts read: with Temporal admitted, ToTemporalDuration (the
+    /// proposal's amendment of s15.10.1, which takes a string too); without it, ToDurationRecord.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D80BE2
+    // Broiler-Human:        PENDING
+    private static double[] DurationFormatInput(JsEngine engine, JsValue input) =>
+        engine.Realm.TemporalDurationPrototype is not null ? JsTemporal.ToDuration(engine, input) : ToDurationRecord(engine, input);
 
     /// <summary>
     /// ECMA-402's ToDurationRecord (s13.5.3): the ten fields read in alphabetical order, each an

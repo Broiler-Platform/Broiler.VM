@@ -50,6 +50,9 @@ internal static class IntlChecks
         DurationsMatchIcu(),
         DisplayNamesMatchIcu(),
         TimeZonesMatchIcu(),
+        ADoorHandedNoDataBuildsNoTemporal(),
+        TemporalWithoutIntlAndBigIntIsRefused(),
+        TemporalMatchesTheReferencePolyfill(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -218,16 +221,84 @@ internal static class IntlChecks
     private static (string, bool, string) TimeZonesMatchIcu() =>
         RetainedMatchesIcu("tzdb/time-zone-offsets-match-icu", "timezones", 600);
 
+    /// <summary>A composition handed no data builds no <c>Temporal</c> either (JSD-0054): its time zones are that data.</summary>
+    private static (string, bool, string) ADoorHandedNoDataBuildsNoTemporal()
+    {
+        const string Name = "temporal/t1/a-door-handed-no-data-builds-no-temporal";
+        var answer = Evaluate(
+            "typeof Temporal + ':' + typeof Date.prototype.toTemporalInstant;",
+            JavaScriptProfile.DescriptorHostingRealms(new QuietSurface()));
+
+        return (Name, answer == "undefined:undefined", $"answered `{answer}`: every surface the composition could build, and Temporal is not one without the data");
+    }
+
+    /// <summary>JSD-0054: a descriptor naming the Temporal surface without Intl or without BigInt is refused.</summary>
+    private static (string, bool, string) TemporalWithoutIntlAndBigIntIsRefused()
+    {
+        const string Name = "temporal/t1/temporal-without-intl-and-bigint-is-refused";
+        var refusals = 0;
+
+        foreach (var surfaces in new[]
+        {
+            new[] { JavaScriptProfile.TemporalManifest, JavaScriptProfile.BigIntManifest },
+            new[] { JavaScriptProfile.TemporalManifest, JavaScriptProfile.IntlManifest },
+        })
+        {
+            try
+            {
+                _ = JavaScriptProfile.DescriptorComposing(new JsComposition { Surfaces = surfaces, IntlData = JsCldrData.Instance });
+            }
+            catch (System.ArgumentException refused) when (refused.Message.Contains("broiler.javascript.temporal", System.StringComparison.Ordinal))
+            {
+                refusals++;
+            }
+        }
+
+        var answer = Evaluate(
+            "typeof Temporal.Instant.from('2020-01-01T00:00Z').epochNanoseconds;",
+            JavaScriptProfile.DescriptorComposing(new JsComposition
+            {
+                Surfaces = [JavaScriptProfile.TemporalManifest, JavaScriptProfile.IntlManifest, JavaScriptProfile.BigIntManifest],
+                IntlData = JsCldrData.Instance,
+            }));
+
+        return (
+            Name,
+            refusals == 2 && answer == "bigint",
+            $"{refusals} of the 2 descriptors lacking Intl or BigInt were refused, and one naming all three answered `{answer}`");
+    }
+
+    /// <summary>
+    /// The retained Temporal answers (phase F8 T1, JSD-0054): the program under <c>src/tests/temporal</c>,
+    /// run here, answers every line the reference polyfill at the pinned proposal revision answered.
+    /// </summary>
+    private static (string, bool, string) TemporalMatchesTheReferencePolyfill() =>
+        RetainedMatches(
+            "temporal/t1/temporal-matches-the-reference-polyfill",
+            "src/tests/temporal",
+            "temporal",
+            "temporal.polyfill-e8cc03fc.txt",
+            "the reference polyfill",
+            1500);
+
     /// <summary>
     /// A retained dataset under <c>src/tests/cldr/<paramref name="dataset"/></c>: its program, run
     /// here, answers every line of its ICU 77.1 answers, but for the lines its <c>divergences.txt</c>
     /// names, each of which must be used.
     /// </summary>
-    private static (string, bool, string) RetainedMatchesIcu(string name, string dataset, int least)
+    private static (string, bool, string) RetainedMatchesIcu(string name, string dataset, int least) =>
+        RetainedMatches(name, $"src/tests/cldr/{dataset}", dataset, $"{dataset}.icu-77.1.txt", "ICU 77.1", least);
+
+    /// <summary>
+    /// A retained dataset under <paramref name="directory"/>: its program, run here, answers every
+    /// line of the answers <paramref name="reference"/> gave, but for the lines its
+    /// <c>divergences.txt</c> names, each of which must be used.
+    /// </summary>
+    private static (string, bool, string) RetainedMatches(string name, string directory, string dataset, string answers, string reference, int least)
     {
-        if (Archived($"src/tests/cldr/{dataset}/{dataset}.js") is not { } program ||
-            Archived($"src/tests/cldr/{dataset}/{dataset}.icu-77.1.txt") is not { } retained ||
-            Archived($"src/tests/cldr/{dataset}/divergences.txt") is not { } divergences)
+        if (Archived($"{directory}/{dataset}.js") is not { } program ||
+            Archived($"{directory}/{answers}") is not { } retained ||
+            Archived($"{directory}/divergences.txt") is not { } divergences)
         {
             return ("not-run/" + name, false, $"the retained {dataset} are not under this working directory");
         }
@@ -276,7 +347,7 @@ internal static class IntlChecks
             name,
             differing.Count == 0 && used == replaced.Count && expected.Length > least,
             differing.Count == 0
-                ? $"all {expected.Length} lines answer as ICU 77.1 did, {used} of them as the divergences name"
+                ? $"all {expected.Length} lines answer as {reference} did, {used} of them as the divergences name"
                 : $"{differing.Count} of {expected.Length} lines differ, first {differing[0]}");
     }
 

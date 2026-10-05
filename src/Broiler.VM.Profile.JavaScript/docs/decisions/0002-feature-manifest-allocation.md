@@ -131,3 +131,17 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
   surface admits it only when data is handed over, which is only through
   `JavaScriptProfile.DescriptorComposing`. Every existing door therefore builds the realm it built
   before. This record's admission criterion binds it like any other.
+
+## Minted 2026-10-05: `broiler.javascript.temporal` (unsigned)
+
+*Recorded with phase F8's slice T1; it signs nothing. Corrections entry
+[JSC-280](../roadmap.corrections.md#jsc-280).*
+
+- **`broiler.javascript.temporal` is minted by proposed
+  [JSD-0054](0054-temporal-in-the-iso-and-gregorian-calendars.md)**, as the reopened section above
+  and [JSD-0053](0053-time-zone-data-and-temporal-admission.md) section 6 said. It owns the global
+  `Temporal` and `Date.prototype.toTemporalInstant`. A descriptor naming it without
+  `broiler.javascript.intl`, whose data holds its time zones, or without `broiler.javascript.bigint`,
+  whose values its epoch nanoseconds are, is refused. A door that admits every surface admits it only
+  when data is handed over, as it admits Intl. This record's admission criterion binds it like any
+  other.

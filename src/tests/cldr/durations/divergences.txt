@@ -217,3 +217,8 @@ de {"style":"short","numberingSystem":"arab"} {"hours":-1,"minutes":-2,"seconds"
 de {"style":"short","numberingSystem":"arab"} {"minutes":-5,"seconds":0} => -\u0665 Min.
 de {"style":"short","numberingSystem":"arab"} {"days":1000,"hours":12345} => \u0661.\u0660\u0660\u0660 Tg., \u0661\u0662.\u0663\u0664\u0665 Std.
 de {"style":"short","numberingSystem":"arab"} resolvedOptions => {"locale":"de","numberingSystem":"arab","style":"short","years":"short","yearsDisplay":"auto","months":"short","monthsDisplay":"auto","weeks":"short","weeksDisplay":"auto","days":"short","daysDisplay":"auto","hours":"short","hoursDisplay":"auto","minutes":"short","minutesDisplay":"auto","seconds":"short","secondsDisplay":"auto","milliseconds":"short","millisecondsDisplay":"auto","microseconds":"short","microsecondsDisplay":"auto","nanoseconds":"short","nanosecondsDisplay":"auto"}
+
+# The profile admits Temporal (JSD-0054), and the proposal amends format and formatToParts to read
+# their argument with ToTemporalDuration, which takes an ISO 8601 duration string; Node 22 does
+# not, and throws for a string as ECMA-402 alone says.
+string => 1 hr

@@ -153,3 +153,19 @@ only with the Intl surface (section 6), so a composition that has the zones has 
   name, or a divergence whose reason the release's data does not bear out.
 - A table byte that is not the generator's, which N30 would report, or the data past the owner's
   budget, which N28 would.
+
+## Amended 2026-10-05: slice T1 built, and the plan of section 6 revised (unsigned)
+
+*Recorded with phase F8's slice T1; it signs nothing. Corrections entry
+[JSC-280](../roadmap.corrections.md#jsc-280).*
+
+- **`Temporal` is published** under proposed
+  [JSD-0054](0054-temporal-in-the-iso-and-gregorian-calendars.md), and the identity
+  `broiler.javascript.temporal` is minted with it. The `Temporal` flag is scored from the same change,
+  and the name has left the `absent-globals` block.
+- **The identity is admitted only together with Intl and BigInt.** Section 6 named Intl alone;
+  JSD-0054 section 3 adds BigInt, whose values an instant's epoch nanoseconds are.
+- **The four slices of section 6 are three.** `Duration`'s rounding reads a `PlainDate` or a
+  `ZonedDateTime`, so the first slice could not stop at `Instant`, `Duration` and `Now`. T1 built
+  every type in the ISO 8601 and Gregorian calendars; T2 is Intl over Temporal objects; T3 the other
+  calendars (JSD-0054 section 2). Section 6 is kept as written.

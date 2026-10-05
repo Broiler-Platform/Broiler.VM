@@ -5,21 +5,21 @@ claim below that calls one of them absent is an injected stale claim, one per sh
 
 ## The clause shape
 
-`Proxy` is absent from the realm, so a program that traps property access cannot run. `Temporal` and
-`Reflect` are still absent as well. `Temporal` is absent too, and that one is true. `Symbol` was
+`Proxy` is absent from the realm, so a program that traps property access cannot run. `WebAssembly` and
+`Reflect` are still absent as well. `WebAssembly` is absent too, and that one is true. `Symbol` was
 absent once, which is history rather than a claim, and `Symbol` is present now.
 
 ## The surfaces that are absent
 
 - **`Promise`**, which a benchmark harness reaches for first.
-- **`Temporal`**, deferred by name.
+- **`WebAssembly`**, outside the language.
 
 ## The surfaces that run
 
 - **`Array`**, which is not called absent by being listed here.
 
 ```absent-globals
-Temporal
+WebAssembly
 Object
 ```
 

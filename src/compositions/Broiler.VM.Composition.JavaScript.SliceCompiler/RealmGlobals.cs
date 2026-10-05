@@ -65,6 +65,7 @@ internal static class RealmGlobals
                     JavaScriptProfile.IntlManifest,
                     JavaScriptProfile.ShadowRealmManifest,
                     JavaScriptProfile.SharedManifest,
+                    JavaScriptProfile.TemporalManifest,
                 ],
                 IntlData = Broiler.VM.Profile.JavaScript.Intl.JsCldrData.Instance,
             }))

@@ -1289,7 +1289,19 @@ public sealed class ReviewRecordRuleTests
         // Zone Database's identifiers and offsets; and JsTzdbTables.g.cs, which TzdbTableGenerator
         // writes and rule N30 holds. Both are covered on the same terms as every other product file,
         // and nothing in them has been read by a human.
-        Assert.Equal(279, AssuranceSources.Files.Count);
+        //
+        // AND TEMPORAL (phase F8 slice T1, 2026-10-05, JSD-0054): sixteen files. Eight are the
+        // proposal's abstract operations, apart from any realm: JsTemporalCore.cs (records, units,
+        // rounding, ISO date arithmetic and the string forms), JsTemporalParser.cs (the ISO 8601 and
+        // RFC 9557 grammar), JsTemporalObjects.cs (the eight objects' internal slots),
+        // JsTemporal.Options.cs, JsTemporal.Zones.cs, JsTemporal.Calendar.cs (the ISO 8601 and Gregorian
+        // calendars), JsTemporal.Durations.cs (durations and rounding relative to a date) and
+        // JsTemporal.Conversions.cs. Eight are partial files of the realm: JsRealm.Temporal.cs (the
+        // namespace and what the types share) and one per type - Duration, Instant with Temporal.Now,
+        // PlainDate, PlainTime, PlainDateTime, ZonedDateTime, and PlainYearMonth with PlainMonthDay in
+        // one. All are covered on the same terms as every other product file, and nothing in them has
+        // been read by a human.
+        Assert.Equal(295, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
