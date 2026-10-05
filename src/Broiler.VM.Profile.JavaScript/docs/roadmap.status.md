@@ -644,7 +644,8 @@ types, over CLDR's locale display names from a fifth CLDR package the archive ga
 language is composed as ICU composes it. The retained German and English display names agree with
 ICU 77.1 on 759 of 823 lines; the 64 others are named. The data is 572,024 bytes, 214,408 under the
 budget. `test/intl402/DisplayNames` passes all 114 scored variants and `test/intl402/Intl` all 130.
-Every constructor of slice I4 is built, and phase F7's exit gate is met
+Over the whole pinned suite 87,022 of 95,058 variants pass, 115 more, and none failed newly. Every
+constructor of slice I4 is built, and phase F7's exit gate is met
 ([JSC-278](roadmap.corrections.md#jsc-278), proposed
 [JSD-0052](decisions/0052-intl-displaynames.md)). This is unreviewed implementation and validation
 material, not accepted milestone evidence; no milestone row advances.

@@ -12262,6 +12262,11 @@ new `DisplayNames` table; and rule N28's size test, which now holds the owner's 
 - **Checks**: one new slice-compiler check, 637 in all, holds the dataset.
 - **test262**, against the run JSC-277 records: `test/intl402/DisplayNames` passes all 114 scored
   variants, from 8, and `test/intl402/Intl` all 130, from 126.
+- **test262, whole pinned suite**, against the run [JSC-277](#jsc-277) records: 95,058 variants, 87,022
+  passing, 174 failing, 44 exhausted and 7,818 skipped. 110 moved from failing to passing, 106 under
+  `test/intl402/DisplayNames` and 4 under `test/intl402/Intl/supportedValuesOf`, and none moved to
+  failing. The 5 `Atomics.waitAsync` variants JSC-277 counted as exhausted passed this time, as
+  JSC-273 records they may. The 44 exhausted are JSC-270's.
 - **Phase F7's exit gate is met, as section 26 states it.** `test/intl402` is admitted by JSD-0018's
   amendment of 2026-10-04, and every constructor JSD-0027 section 7 names is built and scored by its
   directory. The variants still failing in them each need a locale, calendar or numbering system the
