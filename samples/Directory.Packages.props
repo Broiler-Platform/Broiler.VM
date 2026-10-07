@@ -1,0 +1,25 @@
+<Project>
+
+  <!--
+    Central package versions for the pristine package consumers under samples/, kept apart from
+    the component's own Directory.Packages.props for the reason samples/Directory.Build.props
+    gives.
+
+    The version is still supplied by the build (-p:BroilerVmVersion=...), so the same samples can
+    be pointed at a rolled-back package set without editing a file.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Broiler.VM.Abstractions" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Binary" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Runtime" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Profile.JavaScript" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Format" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Compiler" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Intl" Version="$(BroilerVmVersion)" />
+  </ItemGroup>
+
+</Project>

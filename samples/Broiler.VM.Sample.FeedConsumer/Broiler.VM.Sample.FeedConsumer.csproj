@@ -31,9 +31,9 @@
     package set without editing a file - which is how the rollback evidence is collected.
   -->
   <ItemGroup>
-    <PackageReference Include="Broiler.VM.Abstractions" Version="$(BroilerVmVersion)" />
-    <PackageReference Include="Broiler.VM.Binary" Version="$(BroilerVmVersion)" />
-    <PackageReference Include="Broiler.VM.Runtime" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Abstractions" />
+    <PackageReference Include="Broiler.VM.Binary" />
+    <PackageReference Include="Broiler.VM.Runtime" />
   </ItemGroup>
 
 </Project>

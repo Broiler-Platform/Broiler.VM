@@ -25,12 +25,12 @@
     at the previous package set unchanged to exercise a rollback.
   -->
   <ItemGroup>
-    <PackageReference Include="Broiler.VM.Abstractions" Version="$(BroilerVmVersion)" />
-    <PackageReference Include="Broiler.VM.Binary" Version="$(BroilerVmVersion)" />
-    <PackageReference Include="Broiler.VM.Runtime" Version="$(BroilerVmVersion)" />
-    <PackageReference Include="Broiler.VM.Profile.JavaScript" Version="$(BroilerVmVersion)" />
-    <PackageReference Include="Broiler.VM.Profile.JavaScript.Format" Version="$(BroilerVmVersion)" />
-    <PackageReference Include="Broiler.VM.Profile.JavaScript.Compiler" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Abstractions" />
+    <PackageReference Include="Broiler.VM.Binary" />
+    <PackageReference Include="Broiler.VM.Runtime" />
+    <PackageReference Include="Broiler.VM.Profile.JavaScript" />
+    <PackageReference Include="Broiler.VM.Profile.JavaScript.Format" />
+    <PackageReference Include="Broiler.VM.Profile.JavaScript.Compiler" />
   </ItemGroup>
 
   <!--
@@ -45,7 +45,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(BroilerVmIntl)' == 'true'">
-    <PackageReference Include="Broiler.VM.Profile.JavaScript.Intl" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Profile.JavaScript.Intl" />
   </ItemGroup>
 
 </Project>
