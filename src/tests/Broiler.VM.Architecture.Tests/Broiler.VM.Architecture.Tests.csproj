@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="xunit" Version="2.5.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
 
     <!-- The Broiler Code Assurance scanner parses the product sources with Roslyn, because the
          policy asks for a fingerprint over syntax rather than over file text.
@@ -25,7 +25,7 @@
          constrains Abstractions and Binary and this project is neither; NuGet.config clears every
          source and lists nuget.org, where this package resolves. No product project may acquire
          it - a parser in a shipping assembly would be a dependency the component does not have. -->
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
 
     <!-- Reflection over an assembly this project may not reference and must not run.
 
@@ -43,7 +43,7 @@
 
          THIS PROJECT ONLY, like the Roslyn reference above, and for the same reason: a reflection
          host in a shipping assembly would be a dependency this component does not have. -->
-    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.0.0" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,18 @@
+<Project>
+
+  <!--
+    Central package versions for Broiler.VM.HyperV. Like its Directory.Build.props, this file
+    stops the lookup here, so a checkout of this component resolves the same versions wherever it
+    sits on disk. The library itself references no package; these are for the test host.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+  </ItemGroup>
+
+</Project>
