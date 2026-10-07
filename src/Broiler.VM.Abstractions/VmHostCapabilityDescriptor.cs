@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>What a host capability answers with.</summary>
 /// <remarks>
@@ -137,52 +139,36 @@ public enum VmHostCallOutcome
 /// capability.
 /// </para>
 /// </remarks>
+/// <remarks>Creates a capability description.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=910B5D
 // Broiler-Human:        PENDING
-public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapabilityDescriptor>
+public readonly struct VmHostCapabilityDescriptor(VmCapabilityId capabilityId, int version, VmCapabilitySignatureId signatureId, VmCapabilityKind kind,
+    VmCapabilityReentrancy reentrancy, VmCapabilityThreadAffinity threadAffinity, VmExceptionTranslation exceptionTranslation) : IEquatable<VmHostCapabilityDescriptor>
 {
-    /// <summary>Creates a capability description.</summary>
-    public VmHostCapabilityDescriptor(
-        VmCapabilityId capabilityId,
-        int version,
-        VmCapabilitySignatureId signatureId,
-        VmCapabilityKind kind,
-        VmCapabilityReentrancy reentrancy,
-        VmCapabilityThreadAffinity threadAffinity,
-        VmExceptionTranslation exceptionTranslation)
-    {
-        CapabilityId = capabilityId;
-        Version = version;
-        SignatureId = signatureId;
-        Kind = kind;
-        Reentrancy = reentrancy;
-        ThreadAffinity = threadAffinity;
-        ExceptionTranslation = exceptionTranslation;
-    }
 
     /// <summary>F1: the stable, non-localized, namespaced identity.</summary>
-    public VmCapabilityId CapabilityId { get; }
+    public VmCapabilityId CapabilityId { get; } = capabilityId;
 
     /// <summary>
     /// F2: one exact version. No range, no "or later", no negotiation - a host supporting two
     /// versions registers two capabilities, so what a profile bound to is never ambiguous.
     /// </summary>
-    public int Version { get; }
+    public int Version { get; } = version;
 
     /// <summary>F3: the identity of the parameter and return shape, compared at binding.</summary>
-    public VmCapabilitySignatureId SignatureId { get; }
+    public VmCapabilitySignatureId SignatureId { get; } = signatureId;
 
     /// <summary>F4: value or artifact provider.</summary>
-    public VmCapabilityKind Kind { get; }
+    public VmCapabilityKind Kind { get; } = kind;
 
     /// <summary>F5: whether the capability may re-enter the invoking runtime.</summary>
-    public VmCapabilityReentrancy Reentrancy { get; }
+    public VmCapabilityReentrancy Reentrancy { get; } = reentrancy;
 
     /// <summary>F6: which thread it runs on.</summary>
-    public VmCapabilityThreadAffinity ThreadAffinity { get; }
+    public VmCapabilityThreadAffinity ThreadAffinity { get; } = threadAffinity;
 
     /// <summary>F7: how a thrown exception is translated.</summary>
-    public VmExceptionTranslation ExceptionTranslation { get; }
+    public VmExceptionTranslation ExceptionTranslation { get; } = exceptionTranslation;
 
     /// <summary>Whether every field is present and internally consistent.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5CE517
@@ -216,20 +202,15 @@ public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapa
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=850367
     // Broiler-Human:        PENDING
-    public override int GetHashCode() =>
-        System.HashCode.Combine(
-            CapabilityId, Version, SignatureId, (int)Kind, (int)Reentrancy,
-            (int)ThreadAffinity, (int)ExceptionTranslation);
+    public override int GetHashCode() => HashCode.Combine(CapabilityId, Version, SignatureId, (int)Kind, (int)Reentrancy, (int)ThreadAffinity, (int)ExceptionTranslation);
 
     /// <summary>Value equality.</summary>
-    public static bool operator ==(VmHostCapabilityDescriptor left, VmHostCapabilityDescriptor right) =>
-        left.Equals(right);
+    public static bool operator ==(VmHostCapabilityDescriptor left, VmHostCapabilityDescriptor right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2E7664
     // Broiler-Human:        PENDING
-    public static bool operator !=(VmHostCapabilityDescriptor left, VmHostCapabilityDescriptor right) =>
-        !left.Equals(right);
+    public static bool operator !=(VmHostCapabilityDescriptor left, VmHostCapabilityDescriptor right) => !left.Equals(right);
 }
 
 /// <summary>What a VM profile declares it needs from its host.</summary>
@@ -238,28 +219,21 @@ public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapa
 /// signature and the declared reentrancy and translation modes are what binding compares. A profile
 /// that named only an ID would be asking for whatever the host happened to register under it.
 /// </remarks>
+/// <remarks>Creates an import declaration.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=78DEED
 // Broiler-Human:        PENDING
-public readonly struct VmCapabilityImport : System.IEquatable<VmCapabilityImport>
+public readonly struct VmCapabilityImport(VmHostCapabilityDescriptor descriptor, VmCapabilityImportKind importKind) : IEquatable<VmCapabilityImport>
 {
-    /// <summary>Creates an import declaration.</summary>
-    public VmCapabilityImport(VmHostCapabilityDescriptor descriptor, VmCapabilityImportKind importKind)
-    {
-        Descriptor = descriptor;
-        ImportKind = importKind;
-    }
-
     /// <summary>The shape the profile expects.</summary>
-    public VmHostCapabilityDescriptor Descriptor { get; }
+    public VmHostCapabilityDescriptor Descriptor { get; } = descriptor;
 
     /// <summary>Whether the import is required for the runtime to be created.</summary>
-    public VmCapabilityImportKind ImportKind { get; }
+    public VmCapabilityImportKind ImportKind { get; } = importKind;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=05324A
     // Broiler-Human:        PENDING
-    public bool Equals(VmCapabilityImport other) =>
-        Descriptor.Equals(other.Descriptor) && ImportKind == other.ImportKind;
+    public bool Equals(VmCapabilityImport other) => Descriptor.Equals(other.Descriptor) && ImportKind == other.ImportKind;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmCapabilityImport other && Equals(other);
@@ -267,7 +241,7 @@ public readonly struct VmCapabilityImport : System.IEquatable<VmCapabilityImport
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=3F2523
     // Broiler-Human:        PENDING
-    public override int GetHashCode() => System.HashCode.Combine(Descriptor, (int)ImportKind);
+    public override int GetHashCode() => HashCode.Combine(Descriptor, (int)ImportKind);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmCapabilityImport left, VmCapabilityImport right) => left.Equals(right);
@@ -289,52 +263,35 @@ public readonly struct VmCapabilityImport : System.IEquatable<VmCapabilityImport
 /// <see cref="VmHostCapabilityDescriptor.ThreadAffinity"/> is deliberately absent - it is a
 /// runtime-identity input, not a cache-key input.
 /// </remarks>
+/// <remarks>Creates an assumption record.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7C53D
 // Broiler-Human:        PENDING
-public readonly struct VmHostSignatureAssumption : System.IEquatable<VmHostSignatureAssumption>
+public readonly struct VmHostSignatureAssumption(VmCapabilityId capabilityId, int version, VmCapabilitySignatureId signatureId, VmCapabilityKind kind,
+    VmCapabilityReentrancy reentrancy, VmExceptionTranslation exceptionTranslation, bool optionalImportBound) : IEquatable<VmHostSignatureAssumption>
 {
-    /// <summary>Creates an assumption record.</summary>
-    public VmHostSignatureAssumption(
-        VmCapabilityId capabilityId,
-        int version,
-        VmCapabilitySignatureId signatureId,
-        VmCapabilityKind kind,
-        VmCapabilityReentrancy reentrancy,
-        VmExceptionTranslation exceptionTranslation,
-        bool optionalImportBound)
-    {
-        CapabilityId = capabilityId;
-        Version = version;
-        SignatureId = signatureId;
-        Kind = kind;
-        Reentrancy = reentrancy;
-        ExceptionTranslation = exceptionTranslation;
-        OptionalImportBound = optionalImportBound;
-    }
-
     /// <summary>The capability identity assumed.</summary>
-    public VmCapabilityId CapabilityId { get; }
+    public VmCapabilityId CapabilityId { get; } = capabilityId;
 
     /// <summary>The exact version assumed.</summary>
-    public int Version { get; }
+    public int Version { get; } = version;
 
     /// <summary>The signature identity assumed.</summary>
-    public VmCapabilitySignatureId SignatureId { get; }
+    public VmCapabilitySignatureId SignatureId { get; } = signatureId;
 
     /// <summary>The kind assumed.</summary>
-    public VmCapabilityKind Kind { get; }
+    public VmCapabilityKind Kind { get; } = kind;
 
     /// <summary>The reentrancy declaration assumed.</summary>
-    public VmCapabilityReentrancy Reentrancy { get; }
+    public VmCapabilityReentrancy Reentrancy { get; } = reentrancy;
 
     /// <summary>The translation mode assumed.</summary>
-    public VmExceptionTranslation ExceptionTranslation { get; }
+    public VmExceptionTranslation ExceptionTranslation { get; } = exceptionTranslation;
 
     /// <summary>
     /// Whether an optional import was actually bound at verification time. It is part of the
     /// assumption because a verifier may specialise differently depending on the answer.
     /// </summary>
-    public bool OptionalImportBound { get; }
+    public bool OptionalImportBound { get; } = optionalImportBound;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=141740
@@ -354,18 +311,13 @@ public readonly struct VmHostSignatureAssumption : System.IEquatable<VmHostSigna
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=A24466
     // Broiler-Human:        PENDING
-    public override int GetHashCode() =>
-        System.HashCode.Combine(
-            CapabilityId, Version, SignatureId, (int)Kind, (int)Reentrancy,
-            (int)ExceptionTranslation, OptionalImportBound);
+    public override int GetHashCode() => HashCode.Combine(CapabilityId, Version, SignatureId, (int)Kind, (int)Reentrancy, (int)ExceptionTranslation, OptionalImportBound);
 
     /// <summary>Value equality.</summary>
-    public static bool operator ==(VmHostSignatureAssumption left, VmHostSignatureAssumption right) =>
-        left.Equals(right);
+    public static bool operator ==(VmHostSignatureAssumption left, VmHostSignatureAssumption right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=14E94A
     // Broiler-Human:        PENDING
-    public static bool operator !=(VmHostSignatureAssumption left, VmHostSignatureAssumption right) =>
-        !left.Equals(right);
+    public static bool operator !=(VmHostSignatureAssumption left, VmHostSignatureAssumption right) => !left.Equals(right);
 }

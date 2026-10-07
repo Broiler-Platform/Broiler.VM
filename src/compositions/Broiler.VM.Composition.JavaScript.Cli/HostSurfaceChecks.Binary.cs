@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
 

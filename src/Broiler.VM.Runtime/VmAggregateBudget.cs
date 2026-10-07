@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM;
 
 /// <summary>The identity of one aggregate budget.</summary>

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM.Ubc;
 
 /// <summary>A family's registration, carrying the family's <see cref="IUbcFamily"/> struct as its type argument.</summary>

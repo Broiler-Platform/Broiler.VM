@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Com.Example.Calculator;
 using System.Collections.Immutable;
 

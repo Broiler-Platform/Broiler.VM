@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM.Ubc;
 
 /// <summary>What kind of answer a <see cref="UbcRefusal"/> carries.</summary>

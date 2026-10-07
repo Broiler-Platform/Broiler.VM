@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>The four kinds a control operation can answer with.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=970DEC
@@ -82,8 +84,7 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
     /// <summary>The request is not legal from the current state, for the given lifecycle reason.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=738825
     // Broiler-Human:        PENDING
-    public static VmControlResult InvalidState(VmReason reason) =>
-        new(VmControlOutcome.InvalidState, reason);
+    public static VmControlResult InvalidState(VmReason reason) => new(VmControlOutcome.InvalidState, reason);
 
     /// <summary>
     /// The capability was not declared or not enabled. The reason names which of the two, so a
@@ -91,8 +92,7 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DF3206
     // Broiler-Human:        PENDING
-    public static VmControlResult Unsupported(VmReason missingDeclaration) =>
-        new(VmControlOutcome.Unsupported, missingDeclaration);
+    public static VmControlResult Unsupported(VmReason missingDeclaration) => new(VmControlOutcome.Unsupported, missingDeclaration);
 
     /// <summary>Which of the four kinds this is.</summary>
     public VmControlOutcome Kind { get; }
@@ -121,8 +121,7 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8B436E
     // Broiler-Human:        PENDING
-    public override string ToString() =>
-        Reason is VmReason.None ? Kind.ToString() : Kind + "/" + Reason;
+    public override string ToString() => Reason is VmReason.None ? Kind.ToString() : Kind + "/" + Reason;
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmControlResult left, VmControlResult right) => left.Equals(right);
@@ -152,21 +151,17 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=98445A
 // Broiler-Human:        PENDING
-public sealed class VmCoreDefectException : System.Exception
+public sealed class VmCoreDefectException : Exception
 {
     /// <summary>Creates a defect report naming the runtime that was poisoned.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6AF01B
     // Broiler-Human:        PENDING
-    public VmCoreDefectException(string message, VmObjectId runtimeId)
-        : base(message) => RuntimeId = runtimeId;
+    public VmCoreDefectException(string message, VmObjectId runtimeId) : base(message) => RuntimeId = runtimeId;
 
     /// <summary>Creates a defect report with no runtime attributed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AB41C2
     // Broiler-Human:        PENDING
-    public VmCoreDefectException(string message)
-        : base(message)
-    {
-    }
+    public VmCoreDefectException(string message) : base(message) { }
 
     /// <summary>The runtime that was poisoned, or the empty identity where none was.</summary>
     public VmObjectId RuntimeId { get; }

@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Fixtures;
 using Broiler.VM.Ubc;
 

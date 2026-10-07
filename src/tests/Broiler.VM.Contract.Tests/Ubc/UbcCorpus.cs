@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Text;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Fixtures;
 using Broiler.VM.Ubc;
 using F = Broiler.VM.Contract.Tests.UbcCorpusFamily;

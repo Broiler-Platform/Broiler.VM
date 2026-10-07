@@ -16,7 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Collections.Immutable;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Profile.MachineCode;
 

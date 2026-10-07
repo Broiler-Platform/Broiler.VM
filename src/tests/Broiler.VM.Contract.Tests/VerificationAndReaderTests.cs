@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Fixtures;
 
 namespace Broiler.VM.Contract.Tests;

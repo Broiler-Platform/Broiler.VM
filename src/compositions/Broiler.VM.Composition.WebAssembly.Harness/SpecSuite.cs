@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;

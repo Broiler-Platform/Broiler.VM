@@ -6,7 +6,7 @@
 // indefinitely, so a broken drain fails the test instead of hanging the suite.
 #pragma warning disable xUnit1031
 
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Fixtures;
 
 namespace Broiler.VM.Contract.Tests;

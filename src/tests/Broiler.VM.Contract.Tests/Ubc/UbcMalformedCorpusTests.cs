@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Fixtures;
 using Broiler.VM.Ubc;
 

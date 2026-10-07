@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.VM.Abstractions;
 using Broiler.VM.Ubc;
 
 namespace Broiler.VM.Emitter.Bytecode;

@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Fixtures;
 
 namespace Broiler.VM.Contract.Tests;
@@ -270,8 +270,8 @@ public sealed class LifecycleTests
         using var runtime = FixtureComposition.Runtime(FixtureComposition.AlphaCatalog());
         var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
 
-        Assert.Equal(VmCoreContract.Version, artifact.DiagnosticsBase.CoreContractVersion);
-        Assert.Equal(VmReasonRegistry.Revision, artifact.DiagnosticsBase.ReasonRegistryRevision);
+        Assert.Equal(VmCoreContract.Version, VmDiagnostics.CoreContractVersion);
+        Assert.Equal(VmReasonRegistry.Revision, VmDiagnostics.ReasonRegistryRevision);
     }
 
     [Fact]

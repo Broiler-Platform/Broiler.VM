@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM;
 
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A8E51B

@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using Broiler.VM;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Broiler.VM.Ubc;
+using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Contract.Tests;
 

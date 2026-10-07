@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Ubc;
 using F = Broiler.VM.Contract.Tests.UbcCorpusFamily;
 using O = Broiler.VM.Ubc.UbcOpcode;

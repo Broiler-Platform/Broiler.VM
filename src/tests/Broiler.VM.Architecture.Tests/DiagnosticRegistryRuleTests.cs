@@ -1,3 +1,5 @@
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
@@ -689,7 +691,8 @@ public sealed class DiagnosticRegistryRuleTests
         //
         // THE THIRTY-FIRST IS THE JSON MODULE READING (phase F1, JSC-255), a reader over one text
         // whose cursor lives in an instance made per call and nowhere longer.
-        Assert.Equal(31, lowering.Length);
+        // The compiler's split adds nineteen partial files; every part remains in this scan.
+        Assert.Equal(50, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

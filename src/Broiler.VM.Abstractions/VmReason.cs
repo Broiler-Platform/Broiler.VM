@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// The core-owned, profile-neutral reason code every operation result carries beside its outcome

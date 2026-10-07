@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Ubc;
 using System.Collections.Generic;
 using System.Collections.Immutable;

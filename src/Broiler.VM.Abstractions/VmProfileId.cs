@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// A validated VM profile identity: an ASCII, dot-separated, case-preserved token.
@@ -52,7 +54,7 @@ namespace Broiler.VM;
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CB7A1C
 // Broiler-Falsified-If: Equals, ==, CompareTo or GetHashCode folds case, or a stored id is not the text the caller supplied
 // Broiler-Human:        PENDING
-public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.IComparable<VmProfileId>
+public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProfileId>
 {
     /// <summary>The fewest labels a well-formed ID may have.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=None; Security=Medium; Resources=0; Fingerprint=A29732
@@ -132,7 +134,7 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// <summary>The ID as a span, without allocating.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
     // Broiler-Human:        PENDING
-    public System.ReadOnlySpan<char> AsSpan() => System.MemoryExtensions.AsSpan(text);
+    public ReadOnlySpan<char> AsSpan() => MemoryExtensions.AsSpan(text);
 
     /// <summary>
     /// Parses <paramref name="candidate"/>, returning <see langword="false"/> rather than throwing
@@ -141,7 +143,7 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=745304
     // Broiler-Falsified-If: an id is returned for a candidate the grammar rejects, or it stores anything but the candidate
     // Broiler-Human:        PENDING
-    public static bool TryParse(System.ReadOnlySpan<char> candidate, out VmProfileId id)
+    public static bool TryParse(ReadOnlySpan<char> candidate, out VmProfileId id)
     {
         id = default;
 
@@ -158,15 +160,15 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// Parses <paramref name="candidate"/> or throws. Intended for composition-root literals,
     /// where a malformed ID is a programming error rather than untrusted input.
     /// </summary>
-    /// <exception cref="System.ArgumentException">The candidate does not satisfy the grammar.</exception>
+    /// <exception cref="ArgumentException">The candidate does not satisfy the grammar.</exception>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=AA7040
     // Broiler-Falsified-If: it accepts a candidate TryParse refuses, or its message names bounds the constants above do not
     // Broiler-Human:        PENDING
-    public static VmProfileId Parse(System.ReadOnlySpan<char> candidate)
+    public static VmProfileId Parse(ReadOnlySpan<char> candidate)
     {
         if (!TryParse(candidate, out var id))
         {
-            throw new System.ArgumentException(
+            throw new ArgumentException(
                 "The value is not a well-formed VM profile ID: it must be two to eight " +
                 "dot-separated ASCII labels, each one to sixty-four alphanumeric characters " +
                 "with interior hyphens only, the first character an ASCII letter, three to one " +
@@ -181,8 +183,7 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// Ordinal, case-sensitive equality: the MATCHING rule. This is what a descriptor-to-catalog
     /// lookup, a handle-sharing identity check and an envelope dispatch use.
     /// </summary>
-    public bool Equals(VmProfileId other) =>
-        string.Equals(text, other.text, System.StringComparison.Ordinal);
+    public bool Equals(VmProfileId other) => string.Equals(text, other.text, StringComparison.Ordinal);
 
     /// <summary>
     /// ASCII-folded equality: the UNIQUENESS rule, used only for collision detection at
@@ -221,8 +222,7 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EA157F
     // Broiler-Human:        PENDING
-    public int CompareTo(VmProfileId other) =>
-        string.CompareOrdinal(text ?? string.Empty, other.text ?? string.Empty);
+    public int CompareTo(VmProfileId other) => string.CompareOrdinal(text ?? string.Empty, other.text ?? string.Empty);
 
     /// <summary>The ID verbatim. It is never trimmed, re-cased or otherwise rewritten.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
@@ -235,8 +235,7 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
     // Broiler-Human:        PENDING
-    public override int GetHashCode() =>
-        text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
+    public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
     /// <summary>Ordinal, case-sensitive equality.</summary>
     public static bool operator ==(VmProfileId left, VmProfileId right) => left.Equals(right);
@@ -259,8 +258,7 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Medium; Resources=0; Fingerprint=89F121
     // Broiler-Falsified-If: it changes a character outside A-Z, or a second copy of this rule exists in the component
     // Broiler-Human:        PENDING
-    public static char FoldAscii(char value) =>
-        value is >= 'A' and <= 'Z' ? (char)(value | 0x20) : value;
+    public static char FoldAscii(char value) => value is >= 'A' and <= 'Z' ? (char)(value | 0x20) : value;
 
     /// <summary>
     /// Validates the frozen grammar. Shared with <see cref="VmFeatureManifestId"/> and
@@ -269,13 +267,7 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=A4118A
     // Broiler-Falsified-If: a label count, label length or total length outside its bound validates, or an empty label does
     // Broiler-Human:        PENDING
-    internal static bool TryValidateGrammar(
-        System.ReadOnlySpan<char> candidate,
-        int minimumLabels,
-        int maximumLabels,
-        int minimumLength,
-        int maximumLength,
-        out byte labelCount)
+    internal static bool TryValidateGrammar(ReadOnlySpan<char> candidate, int minimumLabels, int maximumLabels, int minimumLength, int maximumLength, out byte labelCount)
     {
         labelCount = 0;
 
@@ -365,14 +357,8 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=7D6A16
     // Broiler-Falsified-If: it passes bounds other than the five constants above, or the label count is not dots plus one
     // Broiler-Human:        PENDING
-    private static bool TryValidate(System.ReadOnlySpan<char> candidate, out byte labelCount) =>
-        TryValidateGrammar(
-            candidate,
-            MinimumLabelCount,
-            MaximumLabelCount,
-            MinimumLength,
-            MaximumLength,
-            out labelCount);
+    private static bool TryValidate(ReadOnlySpan<char> candidate, out byte labelCount) =>
+        TryValidateGrammar(candidate, MinimumLabelCount, MaximumLabelCount, MinimumLength, MaximumLength, out labelCount);
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=0; Fingerprint=C1992B
     // Broiler-Falsified-If: true is returned for a character outside A-Z and a-z - try the neighbours '@', '[', '`' and '{'
@@ -388,12 +374,12 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Low; Resources=1; Fingerprint=129175
     // Broiler-Human:        PENDING
-    private static System.ReadOnlySpan<char> FirstLabel(string value)
+    private static ReadOnlySpan<char> FirstLabel(string value)
     {
         var dot = value.IndexOf('.');
 
         return dot < 0
-            ? System.MemoryExtensions.AsSpan(value)
-            : System.MemoryExtensions.AsSpan(value, 0, dot);
+            ? MemoryExtensions.AsSpan(value)
+            : MemoryExtensions.AsSpan(value, 0, dot);
     }
 }

@@ -15,7 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+using System.Threading;
+using System.Globalization;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// The inclusive range of profile-format versions one VM profile accepts.
@@ -26,22 +30,16 @@ namespace Broiler.VM;
 /// <see langword="default"/> is therefore <c>(0,0)</c>, which is not well formed - no separate
 /// sentinel is added, because a second way to spell "unset" is a second thing to check.
 /// </remarks>
+/// <remarks>Creates an inclusive range.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A2D356
 // Broiler-Human:        PENDING
-public readonly struct VmFormatVersionRange : System.IEquatable<VmFormatVersionRange>
+public readonly struct VmFormatVersionRange(uint min, uint max) : IEquatable<VmFormatVersionRange>
 {
-    /// <summary>Creates an inclusive range.</summary>
-    public VmFormatVersionRange(uint min, uint max)
-    {
-        Min = min;
-        Max = max;
-    }
-
     /// <summary>The lowest accepted profile-format version.</summary>
-    public uint Min { get; }
+    public uint Min { get; } = min;
 
     /// <summary>The highest accepted profile-format version.</summary>
-    public uint Max { get; }
+    public uint Max { get; } = max;
 
     /// <summary>True when <c>1 &lt;= Min &lt;= Max</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AD921D
@@ -62,7 +60,7 @@ public readonly struct VmFormatVersionRange : System.IEquatable<VmFormatVersionR
     public override bool Equals(object? obj) => obj is VmFormatVersionRange other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => System.HashCode.Combine(Min, Max);
+    public override int GetHashCode() => HashCode.Combine(Min, Max);
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1B721B
@@ -89,8 +87,7 @@ public readonly struct VmFormatVersionRange : System.IEquatable<VmFormatVersionR
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=85EDC9
 // Broiler-Human:        PENDING
-public readonly struct VmCapabilityId
-    : System.IEquatable<VmCapabilityId>, System.IComparable<VmCapabilityId>
+public readonly struct VmCapabilityId : IEquatable<VmCapabilityId>, IComparable<VmCapabilityId>
 {
     private readonly string? text;
 
@@ -115,15 +112,15 @@ public readonly struct VmCapabilityId
 
             var dot = text.IndexOf('.');
             var first = dot < 0
-                ? System.MemoryExtensions.AsSpan(text)
-                : System.MemoryExtensions.AsSpan(text, 0, dot);
+                ? MemoryExtensions.AsSpan(text)
+                : MemoryExtensions.AsSpan(text, 0, dot);
 
             if (first.Length != 7)
             {
                 return false;
             }
 
-            System.ReadOnlySpan<char> reserved = "broiler";
+            ReadOnlySpan<char> reserved = "broiler";
 
             for (var index = 0; index < 7; index++)
             {
@@ -140,12 +137,12 @@ public readonly struct VmCapabilityId
     /// <summary>The ID as a span, without allocating.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
     // Broiler-Human:        PENDING
-    public System.ReadOnlySpan<char> AsSpan() => System.MemoryExtensions.AsSpan(text);
+    public ReadOnlySpan<char> AsSpan() => MemoryExtensions.AsSpan(text);
 
     /// <summary>Parses <paramref name="candidate"/>, returning <see langword="false"/> when it does not satisfy the grammar.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=2; Fingerprint=ABDB48
     // Broiler-Human:        PENDING
-    public static bool TryParse(System.ReadOnlySpan<char> candidate, out VmCapabilityId id)
+    public static bool TryParse(ReadOnlySpan<char> candidate, out VmCapabilityId id)
     {
         id = default;
 
@@ -165,14 +162,14 @@ public readonly struct VmCapabilityId
     }
 
     /// <summary>Parses <paramref name="candidate"/> or throws.</summary>
-    /// <exception cref="System.ArgumentException">The candidate does not satisfy the grammar.</exception>
+    /// <exception cref="ArgumentException">The candidate does not satisfy the grammar.</exception>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=2; Fingerprint=BE68B5
     // Broiler-Human:        PENDING
-    public static VmCapabilityId Parse(System.ReadOnlySpan<char> candidate)
+    public static VmCapabilityId Parse(ReadOnlySpan<char> candidate)
     {
         if (!TryParse(candidate, out var id))
         {
-            throw new System.ArgumentException(
+            throw new ArgumentException(
                 "The value is not a well-formed capability ID; the grammar is the profile-ID grammar.",
                 nameof(candidate));
         }
@@ -181,14 +178,12 @@ public readonly struct VmCapabilityId
     }
 
     /// <inheritdoc/>
-    public bool Equals(VmCapabilityId other) =>
-        string.Equals(text, other.text, System.StringComparison.Ordinal);
+    public bool Equals(VmCapabilityId other) => string.Equals(text, other.text, StringComparison.Ordinal);
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=862A8D
     // Broiler-Human:        PENDING
-    public int CompareTo(VmCapabilityId other) =>
-        string.CompareOrdinal(text ?? string.Empty, other.text ?? string.Empty);
+    public int CompareTo(VmCapabilityId other) => string.CompareOrdinal(text ?? string.Empty, other.text ?? string.Empty);
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
@@ -201,8 +196,7 @@ public readonly struct VmCapabilityId
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
     // Broiler-Human:        PENDING
-    public override int GetHashCode() =>
-        text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
+    public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
     /// <summary>Ordinal equality.</summary>
     public static bool operator ==(VmCapabilityId left, VmCapabilityId right) => left.Equals(right);
@@ -223,7 +217,7 @@ public readonly struct VmCapabilityId
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DB6159
 // Broiler-Human:        PENDING
-public readonly struct VmCapabilitySignatureId : System.IEquatable<VmCapabilitySignatureId>
+public readonly struct VmCapabilitySignatureId : IEquatable<VmCapabilitySignatureId>
 {
     private readonly string? text;
 
@@ -240,12 +234,11 @@ public readonly struct VmCapabilitySignatureId : System.IEquatable<VmCapabilityS
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=1C6F58
     // Broiler-Human:        PENDING
-    public static VmCapabilitySignatureId FromCanonicalDescription(System.ReadOnlySpan<char> canonical) =>
+    public static VmCapabilitySignatureId FromCanonicalDescription(ReadOnlySpan<char> canonical) =>
         canonical.IsEmpty ? default : new VmCapabilitySignatureId(canonical.ToString());
 
     /// <inheritdoc/>
-    public bool Equals(VmCapabilitySignatureId other) =>
-        string.Equals(text, other.text, System.StringComparison.Ordinal);
+    public bool Equals(VmCapabilitySignatureId other) => string.Equals(text, other.text, StringComparison.Ordinal);
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
@@ -258,8 +251,7 @@ public readonly struct VmCapabilitySignatureId : System.IEquatable<VmCapabilityS
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
     // Broiler-Human:        PENDING
-    public override int GetHashCode() =>
-        text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
+    public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
     /// <summary>Ordinal equality.</summary>
     public static bool operator ==(VmCapabilitySignatureId left, VmCapabilitySignatureId right) => left.Equals(right);
@@ -279,7 +271,7 @@ public readonly struct VmCapabilitySignatureId : System.IEquatable<VmCapabilityS
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E12AD3
 // Broiler-Human:        PENDING
-public readonly struct VmConformanceManifestId : System.IEquatable<VmConformanceManifestId>
+public readonly struct VmConformanceManifestId : IEquatable<VmConformanceManifestId>
 {
     private readonly string? text;
 
@@ -293,12 +285,10 @@ public readonly struct VmConformanceManifestId : System.IEquatable<VmConformance
     /// <summary>Creates an identity from an opaque token.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=5B451A
     // Broiler-Human:        PENDING
-    public static VmConformanceManifestId Create(System.ReadOnlySpan<char> token) =>
-        token.IsEmpty ? default : new VmConformanceManifestId(token.ToString());
+    public static VmConformanceManifestId Create(ReadOnlySpan<char> token) => token.IsEmpty ? default : new VmConformanceManifestId(token.ToString());
 
     /// <inheritdoc/>
-    public bool Equals(VmConformanceManifestId other) =>
-        string.Equals(text, other.text, System.StringComparison.Ordinal);
+    public bool Equals(VmConformanceManifestId other) => string.Equals(text, other.text, StringComparison.Ordinal);
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
@@ -311,8 +301,7 @@ public readonly struct VmConformanceManifestId : System.IEquatable<VmConformance
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
     // Broiler-Human:        PENDING
-    public override int GetHashCode() =>
-        text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
+    public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
     /// <summary>Ordinal equality.</summary>
     public static bool operator ==(VmConformanceManifestId left, VmConformanceManifestId right) => left.Equals(right);
@@ -332,7 +321,7 @@ public readonly struct VmConformanceManifestId : System.IEquatable<VmConformance
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=623658
 // Broiler-Human:        PENDING
-public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsIdentity>
+public readonly struct VmDiagnosticsIdentity : IEquatable<VmDiagnosticsIdentity>
 {
     private readonly string? text;
 
@@ -349,10 +338,7 @@ public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsId
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C5A15C
     // Broiler-Human:        PENDING
-    public static bool TryCreate(
-        VmProfileId owner,
-        System.ReadOnlySpan<char> token,
-        out VmDiagnosticsIdentity identity)
+    public static bool TryCreate(VmProfileId owner, ReadOnlySpan<char> token, out VmDiagnosticsIdentity identity)
     {
         identity = default;
 
@@ -363,9 +349,7 @@ public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsId
 
         var ownerSpan = owner.AsSpan();
 
-        if (token.Length <= ownerSpan.Length + 1 ||
-            !System.MemoryExtensions.SequenceEqual(token[..ownerSpan.Length], ownerSpan) ||
-            token[ownerSpan.Length] != '.')
+        if (token.Length <= ownerSpan.Length + 1 || !MemoryExtensions.SequenceEqual(token[..ownerSpan.Length], ownerSpan) || token[ownerSpan.Length] != '.')
         {
             return false;
         }
@@ -375,8 +359,7 @@ public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsId
     }
 
     /// <inheritdoc/>
-    public bool Equals(VmDiagnosticsIdentity other) =>
-        string.Equals(text, other.text, System.StringComparison.Ordinal);
+    public bool Equals(VmDiagnosticsIdentity other) => string.Equals(text, other.text, StringComparison.Ordinal);
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
@@ -389,8 +372,7 @@ public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsId
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
     // Broiler-Human:        PENDING
-    public override int GetHashCode() =>
-        text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
+    public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
     /// <summary>Ordinal equality.</summary>
     public static bool operator ==(VmDiagnosticsIdentity left, VmDiagnosticsIdentity right) => left.Equals(right);
@@ -411,26 +393,19 @@ public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsId
 /// identity, precisely because these are inert data the core neither stores as an identity nor
 /// matches on.
 /// </remarks>
+/// <remarks>Creates a package identity. No part may be empty.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0CB78D
 // Broiler-Human:        PENDING
-public readonly struct VmPackageIdentity : System.IEquatable<VmPackageIdentity>
+public readonly struct VmPackageIdentity(string packageId, string packageVersion, string ownerTag) : IEquatable<VmPackageIdentity>
 {
-    /// <summary>Creates a package identity. No part may be empty.</summary>
-    public VmPackageIdentity(string packageId, string packageVersion, string ownerTag)
-    {
-        PackageId = packageId;
-        PackageVersion = packageVersion;
-        OwnerTag = ownerTag;
-    }
-
     /// <summary>The package ID the profile ships under.</summary>
-    public string PackageId { get; }
+    public string PackageId { get; } = packageId;
 
     /// <summary>The package version. It participates in nothing mechanical.</summary>
-    public string PackageVersion { get; }
+    public string PackageVersion { get; } = packageVersion;
 
     /// <summary>An owner tag used in support tables and evidence.</summary>
-    public string OwnerTag { get; }
+    public string OwnerTag { get; } = ownerTag;
 
     /// <summary>True when every part is present and non-blank.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=920C45
@@ -442,15 +417,15 @@ public readonly struct VmPackageIdentity : System.IEquatable<VmPackageIdentity>
 
     /// <inheritdoc/>
     public bool Equals(VmPackageIdentity other) =>
-        string.Equals(PackageId, other.PackageId, System.StringComparison.Ordinal) &&
-        string.Equals(PackageVersion, other.PackageVersion, System.StringComparison.Ordinal) &&
-        string.Equals(OwnerTag, other.OwnerTag, System.StringComparison.Ordinal);
+        string.Equals(PackageId, other.PackageId, StringComparison.Ordinal) &&
+        string.Equals(PackageVersion, other.PackageVersion, StringComparison.Ordinal) &&
+        string.Equals(OwnerTag, other.OwnerTag, StringComparison.Ordinal);
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmPackageIdentity other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => System.HashCode.Combine(PackageId, PackageVersion, OwnerTag);
+    public override int GetHashCode() => HashCode.Combine(PackageId, PackageVersion, OwnerTag);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmPackageIdentity left, VmPackageIdentity right) => left.Equals(right);
@@ -471,7 +446,7 @@ public readonly struct VmPackageIdentity : System.IEquatable<VmPackageIdentity>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6B27DF
 // Broiler-Human:        PENDING
-public readonly struct VmObjectId : System.IEquatable<VmObjectId>
+public readonly struct VmObjectId : IEquatable<VmObjectId>
 {
     private readonly ulong value;
 
@@ -489,9 +464,7 @@ public readonly struct VmObjectId : System.IEquatable<VmObjectId>
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=61001C
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static VmObjectId Mint() =>
-        new(unchecked((ulong)System.Threading.Interlocked.Increment(ref counter)));
+    public static VmObjectId Mint() => new(unchecked((ulong)Interlocked.Increment(ref counter)));
 
     private static long counter;
 
@@ -507,7 +480,7 @@ public readonly struct VmObjectId : System.IEquatable<VmObjectId>
     public override int GetHashCode() => value.GetHashCode();
 
     /// <inheritdoc/>
-    public override string ToString() => value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    public override string ToString() => value.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmObjectId left, VmObjectId right) => left.Equals(right);
@@ -536,19 +509,11 @@ public readonly struct VmObjectId : System.IEquatable<VmObjectId>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=699201
 // Broiler-Human:        PENDING
-public readonly struct VmOpaqueRef : System.IEquatable<VmOpaqueRef>
+public readonly struct VmOpaqueRef(ulong runtime, ulong generation, ulong slot) : IEquatable<VmOpaqueRef>
 {
-    private readonly ulong runtime;
-    private readonly ulong generation;
-    private readonly ulong slot;
-
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public VmOpaqueRef(ulong runtime, ulong generation, ulong slot)
-    {
-        this.runtime = runtime;
-        this.generation = generation;
-        this.slot = slot;
-    }
+    private readonly ulong runtime = runtime;
+    private readonly ulong generation = generation;
+    private readonly ulong slot = slot;
 
     /// <summary>True when this is <see langword="default"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F433C3
@@ -558,15 +523,12 @@ public readonly struct VmOpaqueRef : System.IEquatable<VmOpaqueRef>
     /// <summary>The identity of the runtime this reference belongs to.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=262C25
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public ulong OwningRuntime => runtime;
 
     /// <summary>The generation stamp that makes a stale reference detectable.</summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public ulong Generation => generation;
 
     /// <summary>The slot within the owning runtime. It is not an address and is not dereferenceable.</summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public ulong Slot => slot;
 
     /// <inheritdoc/>
@@ -579,7 +541,7 @@ public readonly struct VmOpaqueRef : System.IEquatable<VmOpaqueRef>
     public override bool Equals(object? obj) => obj is VmOpaqueRef other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => System.HashCode.Combine(runtime, generation, slot);
+    public override int GetHashCode() => HashCode.Combine(runtime, generation, slot);
 
     /// <summary>Identity equality.</summary>
     public static bool operator ==(VmOpaqueRef left, VmOpaqueRef right) => left.Equals(right);

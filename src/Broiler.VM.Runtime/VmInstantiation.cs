@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM;
 
 /// <summary>What the runtime hands an executor when it creates one.</summary>

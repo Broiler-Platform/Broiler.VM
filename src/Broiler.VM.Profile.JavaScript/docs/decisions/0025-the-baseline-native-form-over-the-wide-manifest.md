@@ -5,6 +5,19 @@
 
 **Status:** Taken. 2026-09-15.
 
+**Implementation note, 2026-10-07:** the per-instruction granularity in section 2 and the
+alternative table in section 3 describe the original decision, not the current execution path.
+`JsX64BaselineEmitter` now uses `JsBaselineBlocks` to emit a call per block; `JsBaselineHandlers`
+selects block or run-alone handlers, and `JsNativeActivation.Step` re-enters
+`JsEngine.ExecuteCore`. Baseline native execution therefore still runs instruction semantics in
+the interpreter. Emitting every code unit and invoking its native entry once do not remove that
+dispatch. The separate value form emits selected semantics but still has interpreter helpers;
+[JSD-0035](0035-the-value-form-emitted-semantics-over-nan-boxed-values.md) records its opt-in,
+unadopted status. The [current execution table](../roadmap.backends.md#current-execution-behavior-2026-10-07)
+describes all forms. This note records observed code and changes no decision status or gate.
+The original decision text is preserved below; [JSC-289](../roadmap.corrections.md#jsc-289)
+records the documentation correction.
+
 **Owner:** MaiRat, as this profile's owner. **Co-signer:** MaiRat, as the core's contract and
 security owner, which are the roles [MVP-7](../../../../docs/mvp.md#5-routes-taken-without-a-decision)
 names as the deciders beside this profile's owner. **Both roles are held by one person**, and this

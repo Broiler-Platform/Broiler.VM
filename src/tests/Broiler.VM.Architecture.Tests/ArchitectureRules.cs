@@ -1,4 +1,5 @@
 using System.Xml.Linq;
+using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Architecture.Tests;
 

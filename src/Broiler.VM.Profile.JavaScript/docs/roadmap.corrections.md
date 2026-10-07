@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-09-08
+**Last updated:** 2026-10-07 (JSC-289: current native execution behavior and documentation drift)
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -12757,3 +12757,40 @@ exhausted `LiveBytes` in bundle JS-10-003, and exhausted once in six runs alone.
 - **Bundle JS-10-003 is unchanged**: it records the run as taken, the exhaustion included.
 
 **Authority and date.** The implementation and the runs of 2026-10-05 in this checkout. 2026-10-05.
+
+### JSC-289
+
+**Where:** the backend roadmap's current execution description; roadmap section 1's native-form
+amendment; JSD-0025's implementation note; the profile support table; the repository README;
+and the universal-bytecode concept's description of the existing JavaScript forms.
+
+**What the records said.** The baseline form was described as one interpreter call per instruction,
+although the emitter and handlers now operate on blocks, with some instructions running alone.
+The README also said every universal-bytecode milestone was `Not started`, although that programme's
+[ledger](../../../docs/universal-bytecode.status.md) already recorded implementation and retained
+evidence. The descriptions did not put the
+distinction between whole-artifact emission and execution without interpreter dispatch where a
+reader looking for JavaScript-to-machine-code execution could find it directly.
+
+**What replaced it.** The [execution-mode table](roadmap.backends.md#current-execution-behavior-2026-10-07)
+states the current default bytecode, baseline native, numeric native, value and value-flat paths.
+The numeric backend computes directly for its admitted subset. The wide baseline calls interpreter
+blocks, and the value form still calls interpreter helpers for operations not emitted inline.
+One host invocation and Native AOT compilation of the host imply neither general native guest
+semantics nor the removal of interpreter dispatch. JSD-0025's original decision is preserved and
+explicitly distinguished from current implementation; JSD-0035's unadopted status is unchanged.
+The README now agrees with the universal-bytecode ledger, including the unfinished JavaScript
+migration and shared native-emitter work.
+
+The separate [BMC compiler task](../../../docs/tasks/repair-or-retire-js-native-compiler.md)
+records the focused reproduction of its Entries-section exception and wide-manifest refusal,
+corrects its defect count, and distinguishes that broken converter from the CLI's native path.
+The repair task stays open. No code, decision status, milestone acceptance, retained evidence
+bundle, support claim or performance claim changes.
+
+**Authority and date.** The implementation inspected and focused working-tree checks performed on
+2026-10-07, and the repository owner's request to correct the Markdown to match those findings.
+The current-code note in [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
+[JSD-0035](decisions/0035-the-value-form-emitted-semantics-over-nan-boxed-values.md) and the
+[universal-bytecode ledger](../../../docs/universal-bytecode.status.md) are the records this
+correction follows. These checks are not a full conformance run and are not a retained evidence bundle.

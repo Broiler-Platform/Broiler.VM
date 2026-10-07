@@ -15,6 +15,15 @@ slice R2. Roadmap [section 22](roadmap.gates.md#22-release-gates)'s release gate
 [section 19](roadmap.delivery.md#js-10--baselines-packaging-the-support-table-and-the-release-gate)'s
 JS-10 name what it must carry.
 
+**Execution clarification, 2026-10-07:** the default form is interpreted bytecode. The wide
+manifest's baseline native form emits control flow between interpreter blocks; it does not remove
+interpreter dispatch. Direct native computation exists for the restricted numeric form. The value
+form emits selected operations directly and uses interpreter helpers for others; it remains an
+unadopted, opt-in form under [JSD-0035](decisions/0035-the-value-form-emitted-semantics-over-nan-boxed-values.md).
+See the [execution-mode table](roadmap.backends.md#current-execution-behavior-2026-10-07) for the
+compile options and platform limits. A single host invocation and a Native AOT host are neither
+evidence of general JavaScript execution without interpreter dispatch nor a support claim.
+
 **Its vocabulary never reads as a bare yes.** A row is one of: **Implemented** (the checkout does it,
 and the evidence cell names what shows it), **Implemented, partly** (with what is missing named),
 **Not provided** (with the deterministic failure a program or a host meets), **Excluded** (by a named

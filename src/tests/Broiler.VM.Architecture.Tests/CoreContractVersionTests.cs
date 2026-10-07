@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Architecture.Tests;
 

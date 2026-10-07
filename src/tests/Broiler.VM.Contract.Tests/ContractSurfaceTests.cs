@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Fixtures;
 using System.Reflection;
 
@@ -29,7 +29,7 @@ public sealed class ContractSurfaceTests
         Assert.Equal(1, VmCoreContract.Version);
         Assert.Equal(1, VmCoreContract.MinimumSupportedVersion);
         Assert.Equal(VmCoreContract.Version, artifact.Identity.CoreContractVersion);
-        Assert.Equal(VmCoreContract.Version, invocation.Diagnostics.CoreContractVersion);
+        Assert.Equal(VmCoreContract.Version, VmDiagnostics.CoreContractVersion);
     }
 
     [Fact]

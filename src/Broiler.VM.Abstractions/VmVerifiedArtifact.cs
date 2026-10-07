@@ -15,7 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+using System.Collections.Immutable;
+using System.Threading;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>The three states of a verified artifact handle.</summary>
 /// <remarks>
@@ -47,59 +51,40 @@ public enum VmVerifiedArtifactState
 /// capability instance is reachable from here: component 7 records the <em>shape</em> the verifier
 /// assumed, never a binding.
 /// </remarks>
+/// <remarks>Creates an identity.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4C239B
 // Broiler-Human:        PENDING
-public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerifiedArtifactIdentity>
+public readonly struct VmVerifiedArtifactIdentity(VmProfileId profileId, int descriptorRevision, uint acceptedProfileFormatVersion, VmFeatureManifestId manifestId,
+    int manifestVersion, int verifierSemanticVersion, int coreContractVersion, VmEffectiveCeilings effectiveCeilings, ImmutableArray<VmHostSignatureAssumption> hostSignatureAssumptions)
+    : IEquatable<VmVerifiedArtifactIdentity>
 {
-    /// <summary>Creates an identity.</summary>
-    public VmVerifiedArtifactIdentity(
-        VmProfileId profileId,
-        int descriptorRevision,
-        uint acceptedProfileFormatVersion,
-        VmFeatureManifestId manifestId,
-        int manifestVersion,
-        int verifierSemanticVersion,
-        int coreContractVersion,
-        VmEffectiveCeilings effectiveCeilings,
-        System.Collections.Immutable.ImmutableArray<VmHostSignatureAssumption> hostSignatureAssumptions)
-    {
-        ProfileId = profileId;
-        DescriptorRevision = descriptorRevision;
-        AcceptedProfileFormatVersion = acceptedProfileFormatVersion;
-        ManifestId = manifestId;
-        ManifestVersion = manifestVersion;
-        VerifierSemanticVersion = verifierSemanticVersion;
-        CoreContractVersion = coreContractVersion;
-        EffectiveCeilings = effectiveCeilings;
-        HostSignatureAssumptions = hostSignatureAssumptions;
-    }
 
     /// <summary>Component 1a: the profile.</summary>
-    public VmProfileId ProfileId { get; }
+    public VmProfileId ProfileId { get; } = profileId;
 
     /// <summary>Component 1b: the descriptor revision verification ran against.</summary>
-    public int DescriptorRevision { get; }
+    public int DescriptorRevision { get; } = descriptorRevision;
 
     /// <summary>Component 2: the exact profile-format version accepted.</summary>
-    public uint AcceptedProfileFormatVersion { get; }
+    public uint AcceptedProfileFormatVersion { get; } = acceptedProfileFormatVersion;
 
     /// <summary>Component 3a: the feature manifest accepted.</summary>
-    public VmFeatureManifestId ManifestId { get; }
+    public VmFeatureManifestId ManifestId { get; } = manifestId;
 
     /// <summary>Component 3b: its version.</summary>
-    public int ManifestVersion { get; }
+    public int ManifestVersion { get; } = manifestVersion;
 
     /// <summary>Component 4: the verifier semantic version that produced this handle.</summary>
-    public int VerifierSemanticVersion { get; }
+    public int VerifierSemanticVersion { get; } = verifierSemanticVersion;
 
     /// <summary>Component 5: the core contract version in force.</summary>
-    public int CoreContractVersion { get; }
+    public int CoreContractVersion { get; } = coreContractVersion;
 
     /// <summary>Component 6: the materialized ceilings, compared by exact equality.</summary>
-    public VmEffectiveCeilings EffectiveCeilings { get; }
+    public VmEffectiveCeilings EffectiveCeilings { get; } = effectiveCeilings;
 
     /// <summary>Component 7: the host signature assumptions, in canonical order.</summary>
-    public System.Collections.Immutable.ImmutableArray<VmHostSignatureAssumption> HostSignatureAssumptions { get; }
+    public ImmutableArray<VmHostSignatureAssumption> HostSignatureAssumptions { get; } = hostSignatureAssumptions;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Medium; Resources=3; Fingerprint=A41232
@@ -118,13 +103,8 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
             return false;
         }
 
-        var mine = HostSignatureAssumptions.IsDefault
-            ? System.Collections.Immutable.ImmutableArray<VmHostSignatureAssumption>.Empty
-            : HostSignatureAssumptions;
-
-        var theirs = other.HostSignatureAssumptions.IsDefault
-            ? System.Collections.Immutable.ImmutableArray<VmHostSignatureAssumption>.Empty
-            : other.HostSignatureAssumptions;
+        var mine = HostSignatureAssumptions.IsDefault ? [] : HostSignatureAssumptions;
+        var theirs = other.HostSignatureAssumptions.IsDefault ? [] : other.HostSignatureAssumptions;
 
         if (mine.Length != theirs.Length)
         {
@@ -149,7 +129,6 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
     /// </summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Low; Resources=3; Fingerprint=29234F
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmReason FirstMismatch(VmVerifiedArtifactIdentity other)
     {
         if (CoreContractVersion != other.CoreContractVersion)
@@ -194,20 +173,17 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
     public override bool Equals(object? obj) => obj is VmVerifiedArtifactIdentity other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() =>
-        System.HashCode.Combine(
+    public override int GetHashCode() => HashCode.Combine(
             ProfileId, DescriptorRevision, AcceptedProfileFormatVersion, ManifestId,
             ManifestVersion, VerifierSemanticVersion, CoreContractVersion, EffectiveCeilings);
 
     /// <summary>Value equality over all seven components.</summary>
-    public static bool operator ==(VmVerifiedArtifactIdentity left, VmVerifiedArtifactIdentity right) =>
-        left.Equals(right);
+    public static bool operator ==(VmVerifiedArtifactIdentity left, VmVerifiedArtifactIdentity right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D15F6D
     // Broiler-Human:        PENDING
-    public static bool operator !=(VmVerifiedArtifactIdentity left, VmVerifiedArtifactIdentity right) =>
-        !left.Equals(right);
+    public static bool operator !=(VmVerifiedArtifactIdentity left, VmVerifiedArtifactIdentity right) => !left.Equals(right);
 }
 
 /// <summary>
@@ -221,12 +197,11 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BB8BC2
 // Broiler-Human:        PENDING
-public sealed class VmArtifactLease : System.IDisposable
+public sealed class VmArtifactLease : IDisposable
 {
     private readonly VmVerifiedArtifact artifact;
     private int released;
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     internal VmArtifactLease(VmVerifiedArtifact artifact) => this.artifact = artifact;
 
     /// <summary>The artifact this lease pins.</summary>
@@ -235,14 +210,14 @@ public sealed class VmArtifactLease : System.IDisposable
     /// <summary>Whether the lease has been released.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=0; Fingerprint=D5129D
     // Broiler-Human:        PENDING
-    public bool IsReleased => System.Threading.Volatile.Read(ref released) != 0;
+    public bool IsReleased => Volatile.Read(ref released) != 0;
 
     /// <summary>Releases the lease. Idempotent.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=67CDDE
     // Broiler-Human:        PENDING
     public VmControlResult Release()
     {
-        if (System.Threading.Interlocked.Exchange(ref released, 1) != 0)
+        if (Interlocked.Exchange(ref released, 1) != 0)
         {
             return VmControlResult.NoOp;
         }
@@ -252,7 +227,7 @@ public sealed class VmArtifactLease : System.IDisposable
     }
 
     /// <inheritdoc/>
-    void System.IDisposable.Dispose() => Release();
+    void IDisposable.Dispose() => Release();
 }
 
 /// <summary>
@@ -277,10 +252,10 @@ public sealed class VmArtifactLease : System.IDisposable
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=111D5F
 // Broiler-Human:        PENDING
-public sealed class VmVerifiedArtifact : System.IDisposable
+public sealed class VmVerifiedArtifact : IDisposable
 {
     private readonly IVmVerifiedState state;
-    private readonly object gate = new();
+    private readonly Lock gate = new();
     private int leaseCount;
     private VmVerifiedArtifactState currentState;
 
@@ -300,38 +275,17 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Medium; Resources=1; Fingerprint=88576A
     // Broiler-Falsified-If: a handle for a Snapshot profile is built over the caller's bytes rather than a core-owned copy
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static VmVerifiedArtifact Create(
-        VmObjectId objectId,
-        VmVerifiedArtifactIdentity identity,
-        VmArtifactRepresentationKind representationKind,
-        VmArtifactLifetimeKind lifetimeKind,
-        VmArtifactSharing sharing,
-        VmArtifactOrigin origin,
-        VmObjectId owningRuntimeId,
-        VmObjectId aggregateBudgetId,
-        ulong byteLength,
-        IVmVerifiedState state,
-        System.Collections.Immutable.ImmutableArray<VmLimitClamp> clampedLimitRequests,
-        VmDiagnostics diagnosticsBase) =>
+    public static VmVerifiedArtifact Create(VmObjectId objectId, VmVerifiedArtifactIdentity identity, VmArtifactRepresentationKind representationKind,
+        VmArtifactLifetimeKind lifetimeKind, VmArtifactSharing sharing, VmArtifactOrigin origin, VmObjectId owningRuntimeId, VmObjectId aggregateBudgetId,
+        ulong byteLength, IVmVerifiedState state, ImmutableArray<VmLimitClamp> clampedLimitRequests, VmDiagnostics diagnosticsBase) =>
         new(objectId, identity, representationKind, lifetimeKind, sharing, origin,
             owningRuntimeId, aggregateBudgetId, byteLength, state, clampedLimitRequests, diagnosticsBase);
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Low; Resources=1; Fingerprint=EBD7DC
     // Broiler-Human:        PENDING
-    private VmVerifiedArtifact(
-        VmObjectId objectId,
-        VmVerifiedArtifactIdentity identity,
-        VmArtifactRepresentationKind representationKind,
-        VmArtifactLifetimeKind lifetimeKind,
-        VmArtifactSharing sharing,
-        VmArtifactOrigin origin,
-        VmObjectId owningRuntimeId,
-        VmObjectId aggregateBudgetId,
-        ulong byteLength,
-        IVmVerifiedState state,
-        System.Collections.Immutable.ImmutableArray<VmLimitClamp> clampedLimitRequests,
-        VmDiagnostics diagnosticsBase)
+    private VmVerifiedArtifact(VmObjectId objectId, VmVerifiedArtifactIdentity identity, VmArtifactRepresentationKind representationKind, VmArtifactLifetimeKind lifetimeKind,
+        VmArtifactSharing sharing, VmArtifactOrigin origin, VmObjectId owningRuntimeId, VmObjectId aggregateBudgetId, ulong byteLength, IVmVerifiedState state,
+        ImmutableArray<VmLimitClamp> clampedLimitRequests, VmDiagnostics diagnosticsBase)
     {
         ObjectId = objectId;
         VerifiedArtifactInstanceId = objectId;
@@ -344,9 +298,7 @@ public sealed class VmVerifiedArtifact : System.IDisposable
         AggregateBudgetId = aggregateBudgetId;
         ByteLength = byteLength;
         this.state = state;
-        ClampedLimitRequests = clampedLimitRequests.IsDefault
-            ? System.Collections.Immutable.ImmutableArray<VmLimitClamp>.Empty
-            : clampedLimitRequests;
+        ClampedLimitRequests = clampedLimitRequests.IsDefault ? [] : clampedLimitRequests;
         DiagnosticsBase = diagnosticsBase;
         currentState = VmVerifiedArtifactState.Ready;
     }
@@ -396,7 +348,7 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     /// verified to the same policy compare unequal because their descriptors asked differently -
     /// which would refuse a share for a difference the verification erased.
     /// </remarks>
-    public System.Collections.Immutable.ImmutableArray<VmLimitClamp> ClampedLimitRequests { get; }
+    public ImmutableArray<VmLimitClamp> ClampedLimitRequests { get; }
 
     /// <summary>The identity groups every result about this handle starts from.</summary>
     public VmDiagnostics DiagnosticsBase { get; }
@@ -436,7 +388,6 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     /// </summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=DC43FB
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public bool TryGetState(out IVmVerifiedState verifiedState)
     {
         lock (gate)
@@ -512,7 +463,7 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     }
 
     /// <inheritdoc/>
-    void System.IDisposable.Dispose() => Dispose();
+    void IDisposable.Dispose() => Dispose();
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=BEB421
     // Broiler-Falsified-If: a draining handle whose last lease is released stays anywhere but Disposed, or one releases twice

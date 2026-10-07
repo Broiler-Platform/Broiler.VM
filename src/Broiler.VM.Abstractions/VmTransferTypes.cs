@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// A core-owned, bounded, read-only view over bytes crossing the host boundary.
@@ -30,15 +32,15 @@ namespace Broiler.VM;
 // Broiler-Human:        PENDING
 public readonly ref struct VmBytes
 {
-    private readonly System.ReadOnlySpan<byte> span;
+    private readonly ReadOnlySpan<byte> span;
 
     /// <summary>Wraps a span for the duration of one call.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C880D9
     // Broiler-Human:        PENDING
-    public VmBytes(System.ReadOnlySpan<byte> bytes) => span = bytes;
+    public VmBytes(ReadOnlySpan<byte> bytes) => span = bytes;
 
     /// <summary>The bytes.</summary>
-    public System.ReadOnlySpan<byte> Span => span;
+    public ReadOnlySpan<byte> Span => span;
 
     /// <summary>How many bytes there are.</summary>
     public int Length => span.Length;
@@ -59,15 +61,15 @@ public readonly ref struct VmBytes
 // Broiler-Human:        PENDING
 public readonly ref struct VmUtf8Text
 {
-    private readonly System.ReadOnlySpan<byte> utf8;
+    private readonly ReadOnlySpan<byte> utf8;
 
     /// <summary>Wraps UTF-8 bytes for the duration of one call.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3F6F22
     // Broiler-Human:        PENDING
-    public VmUtf8Text(System.ReadOnlySpan<byte> bytes) => utf8 = bytes;
+    public VmUtf8Text(ReadOnlySpan<byte> bytes) => utf8 = bytes;
 
     /// <summary>The UTF-8 bytes.</summary>
-    public System.ReadOnlySpan<byte> Utf8 => utf8;
+    public ReadOnlySpan<byte> Utf8 => utf8;
 
     /// <summary>How many bytes there are.</summary>
     public int Length => utf8.Length;
@@ -86,26 +88,19 @@ public readonly ref struct VmUtf8Text
 /// <c>Equals</c> on the payload itself, never pattern-matches on its concrete type, and never
 /// stores, clones, pools or serialises it.
 /// </remarks>
+/// <remarks>Creates a payload identity.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F24020
 // Broiler-Human:        PENDING
-public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
+public readonly struct VmPayloadIdentity(VmProfileId profileId, int payloadKindId, int payloadSchemaVersion) : IEquatable<VmPayloadIdentity>
 {
-    /// <summary>Creates a payload identity.</summary>
-    public VmPayloadIdentity(VmProfileId profileId, int payloadKindId, int payloadSchemaVersion)
-    {
-        ProfileId = profileId;
-        PayloadKindId = payloadKindId;
-        PayloadSchemaVersion = payloadSchemaVersion;
-    }
-
     /// <summary>The profile that minted the payload.</summary>
-    public VmProfileId ProfileId { get; }
+    public VmProfileId ProfileId { get; } = profileId;
 
     /// <summary>Which of the profile's payload kinds this is; the core attaches no meaning to it.</summary>
-    public int PayloadKindId { get; }
+    public int PayloadKindId { get; } = payloadKindId;
 
     /// <summary>The profile's own schema version for that kind.</summary>
-    public int PayloadSchemaVersion { get; }
+    public int PayloadSchemaVersion { get; } = payloadSchemaVersion;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1D965E
@@ -119,8 +114,7 @@ public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
     public override bool Equals(object? obj) => obj is VmPayloadIdentity other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() =>
-        System.HashCode.Combine(ProfileId, PayloadKindId, PayloadSchemaVersion);
+    public override int GetHashCode() => HashCode.Combine(ProfileId, PayloadKindId, PayloadSchemaVersion);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmPayloadIdentity left, VmPayloadIdentity right) => left.Equals(right);

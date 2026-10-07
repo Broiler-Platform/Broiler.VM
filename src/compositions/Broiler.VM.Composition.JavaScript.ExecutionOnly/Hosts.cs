@@ -1,8 +1,8 @@
-using Broiler.VM;
 using Broiler.VM.Profile.JavaScript;
 using System.Collections.Immutable;
 
 using Broiler.VM.Profile.JavaScript.Format;
+using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Composition.JavaScript.ExecutionOnly;
 

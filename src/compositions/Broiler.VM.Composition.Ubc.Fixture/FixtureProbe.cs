@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Emitter.Bytecode;
 using Broiler.VM.Ubc;
 using Com.Example.Tally;

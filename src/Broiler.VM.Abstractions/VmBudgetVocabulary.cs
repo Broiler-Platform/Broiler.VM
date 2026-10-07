@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Abstractions;
+
+using System;
 
 /// <summary>
 /// The closed set of fifteen budgeted dimensions the core meters.
@@ -240,14 +242,12 @@ public static class VmBudgetDimensions
     /// <summary>Whether <paramref name="dimension"/> is one of the fifteen.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A37BD7
     // Broiler-Human:        PENDING
-    public static bool IsDefined(VmBudgetDimension dimension) =>
-        (int)dimension is >= 0 and < Count;
+    public static bool IsDefined(VmBudgetDimension dimension) => (int)dimension is >= 0 and < Count;
 
     /// <summary>The arithmetic <paramref name="dimension"/> obeys.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B20A36
     // Broiler-Human:        PENDING
-    public static VmBudgetClass ClassOf(VmBudgetDimension dimension) =>
-        Classes[Index(dimension)];
+    public static VmBudgetClass ClassOf(VmBudgetDimension dimension) => Classes[Index(dimension)];
 
     /// <summary>Whether <paramref name="dimension"/> carries aggregate scope.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C85EB6
@@ -262,18 +262,12 @@ public static class VmBudgetDimensions
     // Broiler-Human:        PENDING
     public static bool IsDeclarableAt(VmBudgetDimension dimension, VmBudgetScope scope) => dimension switch
     {
-        VmBudgetDimension.VerifierWork =>
-            scope is VmBudgetScope.Runtime or VmBudgetScope.Artifact or VmBudgetScope.Aggregate,
-
-        VmBudgetDimension.LiveBytes =>
-            scope is VmBudgetScope.Runtime or VmBudgetScope.Instance or VmBudgetScope.Aggregate,
-
+        VmBudgetDimension.VerifierWork => scope is VmBudgetScope.Runtime or VmBudgetScope.Artifact or VmBudgetScope.Aggregate,
+        VmBudgetDimension.LiveBytes => scope is VmBudgetScope.Runtime or VmBudgetScope.Instance or VmBudgetScope.Aggregate,
         VmBudgetDimension.ArtifactBytes or
         VmBudgetDimension.SectionCount or
         VmBudgetDimension.DeclaredCount or
-        VmBudgetDimension.StructuralDepth =>
-            scope is VmBudgetScope.Runtime or VmBudgetScope.Artifact,
-
+        VmBudgetDimension.StructuralDepth => scope is VmBudgetScope.Runtime or VmBudgetScope.Artifact,
         VmBudgetDimension.LiveRuntimes => scope is VmBudgetScope.Aggregate,
 
         _ => scope is VmBudgetScope.Runtime or VmBudgetScope.Instance
@@ -286,10 +280,7 @@ public static class VmBudgetDimensions
     {
         if (!IsDefined(dimension))
         {
-            throw new System.ArgumentOutOfRangeException(
-                nameof(dimension),
-                dimension,
-                "The budget dimension set is closed at fifteen members.");
+            throw new ArgumentOutOfRangeException(nameof(dimension), dimension, "The budget dimension set is closed at fifteen members.");
         }
 
         return (int)dimension;

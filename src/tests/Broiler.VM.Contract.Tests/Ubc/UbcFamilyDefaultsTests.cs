@@ -1,5 +1,5 @@
 using System.Text;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Ubc;
 
 namespace Broiler.VM.Contract.Tests;

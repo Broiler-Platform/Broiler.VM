@@ -220,12 +220,16 @@ from what the plans say. Files are named; line numbers are not, because a line m
   pinned slabs of `double`, holds no managed reference, calls no helper, and refuses at compile time
   every construct outside the manifest ([`roadmap.backends.md`](../src/Broiler.VM.Profile.JavaScript/docs/roadmap.backends.md)
   section 3). The **baseline form** over `broiler.javascript.wide`, decided by JSD-0025, whose emitted
-  code is control flow between instructions and one `call qword [rbx + opcode*8]` per instruction into
-  a handler table of `[UnmanagedCallersOnly]` wrappers around per-opcode instantiations of the
-  interpreter's own method body, with every value left in managed memory and the emitted frame holding
+  code is control flow between blocks and calls into a handler table of `[UnmanagedCallersOnly]`
+  wrappers around block or run-alone instantiations of the interpreter's own method body, with every
+  value left in managed memory and the emitted frame holding
   a table address and a cookie. A fourth, the **value form** of JSD-0035, NaN-boxes values into words
   in a pinned slab with a generation-checked handle table; it was refused on 2026-09-25 on its own
-  predeclared measurement and kept in the tree as an unadopted opt-in form.
+  predeclared measurement and kept in the tree as an unadopted opt-in form. It executes selected
+  operations inline and calls interpreter helpers for others. *(Corrected 2026-10-07: the baseline
+  description said one call per instruction, although the implementation uses blocks. These forms
+  do not establish general JavaScript execution without interpreter dispatch; see the
+  [current execution table](../src/Broiler.VM.Profile.JavaScript/docs/roadmap.backends.md#current-execution-behavior-2026-10-07).)*
 - **The seam a native form attaches at is the finished bytecode, not the syntax tree.**
   `JsAssembledProgram` carries the whole code section, the function rows, the exception regions, the
   constants encoded rather than decoded, and the declared maxima; `IJsNativeBackend.TryEmit` answers

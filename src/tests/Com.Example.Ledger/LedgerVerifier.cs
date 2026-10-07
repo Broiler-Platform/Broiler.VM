@@ -1,4 +1,5 @@
 using Broiler.VM;
+using Broiler.VM.Abstractions;
 
 namespace Com.Example.Ledger;
 

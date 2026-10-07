@@ -9,10 +9,31 @@ moves no ledger row and decides nothing.
 
 `JsNativeCompiler` is the only implementation of the core's native-compilation seam
 `IVmNativeCompiler`. Nothing in the repository calls it, and it disagrees with the format it reads and
-with the profile it targets in five separate ways, so it cannot have worked on any input. The profile
+with the profile it targets in the six ways listed below. The profile
 it produces artifacts for, `broiler.machinecode`, is registered in no catalog either. The component
 should be made correct and exercised, or removed with the reason recorded; a quiet fix is the one
 outcome the repository's records discourage.
+
+## Rechecked 2026-10-07
+
+The defects remain in the checkout. In a focused Windows x64 check against a Release build,
+`JsCompiler.Compile` successfully compiled `6 * 7` with the numeric manifest and an entry named
+`main`. Passing that artifact to `JsNativeCompiler.TryCompile` with `x86-64-win64` threw
+`ArgumentOutOfRangeException` from the Entries-section slice in `TryExtractSections`, rather than
+returning a compilation result. `CanCompile` also returned false for `broiler.javascript.wide`.
+These are working-tree observations, not a retained conformance bundle or evidence satisfying
+this task's exit conditions.
+
+This path is separate from `JsCompiler.Compile` with `JsOutputForm.Native`, which the JavaScript
+CLI uses to keep emitted code inside the JavaScript artifact. That CLI path runs supported numeric
+programs directly as machine code; its wide baseline form calls interpreter blocks, and its value
+form calls interpreter helpers for operations not emitted inline. Repairing this BMC converter
+alone would not supply general JavaScript execution without interpreter dispatch. See the
+[execution-mode table](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.backends.md#current-execution-behavior-2026-10-07).
+
+*(Corrected 2026-10-07: the summary counted "five separate ways" although the list contains six,
+and asserted that the compiler "cannot have worked on any input". The reproduction above states
+what was actually tested without claiming a history of every possible input.)*
 
 ## The pieces involved
 

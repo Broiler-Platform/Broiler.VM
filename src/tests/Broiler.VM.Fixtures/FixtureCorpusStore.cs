@@ -1,3 +1,5 @@
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM.Fixtures;
 
 /// <summary>One row of the retained corpus manifest.</summary>

@@ -238,8 +238,10 @@ trimming, and Native AOT gates for the core boundary.
   roadmap's numeric-only design it was read as leaving a native form one shape: a manifest small
   enough that every program in it compiles whole.
   [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) decides a second
-  native form, over `broiler.javascript.wide`, whose emitted code makes every instruction one call
-  into this profile's own interpreter dispatch for that instruction. **Every refusal of this
+  native form, over `broiler.javascript.wide`, whose emitted code calls this profile's own interpreter
+  dispatch per block, including instructions that run alone *(corrected:
+  [JSC-289](roadmap.corrections.md#jsc-289))*. The [current execution table](roadmap.backends.md#current-execution-behavior-2026-10-07)
+  distinguishes this baseline from the direct numeric form and the partial value form. **Every refusal of this
   paragraph stands**: no IL, no expression tree, no delegate compiled at run time, no tier, no
   promotion, no deoptimization, no on-stack replacement, and no path that picks a form from run-time
   observation. **What changes is two things**: a form is one per instance as well as one per handle,

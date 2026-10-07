@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// How a VM profile represents a verified artifact: as an immutable byte snapshot, or as a fully
@@ -135,11 +137,7 @@ public enum VmDeclaration
 // Broiler-Human:        PENDING
 public sealed class VmGuestLoadDeclaration
 {
-    private VmGuestLoadDeclaration(
-        VmDeclaration kind,
-        int minimumProviderCapabilityVersion,
-        VmGuestLoadBounds profileHardMaxima,
-        uint verifierWorkToFuelRate)
+    private VmGuestLoadDeclaration(VmDeclaration kind, int minimumProviderCapabilityVersion, VmGuestLoadBounds profileHardMaxima, uint verifierWorkToFuelRate)
     {
         Kind = kind;
         MinimumProviderCapabilityVersion = minimumProviderCapabilityVersion;
@@ -148,16 +146,12 @@ public sealed class VmGuestLoadDeclaration
     }
 
     /// <summary>The declaration of a profile that never requests code while executing.</summary>
-    public static VmGuestLoadDeclaration NotDeclared { get; } =
-        new(VmDeclaration.NotDeclared, 0, VmGuestLoadBounds.None, 0);
+    public static VmGuestLoadDeclaration NotDeclared { get; } = new(VmDeclaration.NotDeclared, 0, VmGuestLoadBounds.None, 0);
 
     /// <summary>The declaration of a profile that may request code while executing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E6369
     // Broiler-Human:        PENDING
-    public static VmGuestLoadDeclaration Declared(
-        int minimumProviderCapabilityVersion,
-        VmGuestLoadBounds profileHardMaxima,
-        uint verifierWorkToFuelRate) =>
+    public static VmGuestLoadDeclaration Declared(int minimumProviderCapabilityVersion, VmGuestLoadBounds profileHardMaxima, uint verifierWorkToFuelRate) =>
         new(VmDeclaration.Declared, minimumProviderCapabilityVersion, profileHardMaxima, verifierWorkToFuelRate);
 
     /// <summary>Whether guest-initiated loads are declared.</summary>
@@ -198,22 +192,16 @@ public sealed class VmGuestLoadDeclaration
 /// payload minted by one profile is recognised as foreign when it appears on another profile's
 /// result, without the core learning what any kind means.
 /// </remarks>
+/// <remarks>Creates an inclusive range.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7A5E0
 // Broiler-Human:        PENDING
-public readonly struct VmPayloadKindIdRange : System.IEquatable<VmPayloadKindIdRange>
+public readonly struct VmPayloadKindIdRange(int minInclusive, int maxInclusive) : IEquatable<VmPayloadKindIdRange>
 {
-    /// <summary>Creates an inclusive range.</summary>
-    public VmPayloadKindIdRange(int minInclusive, int maxInclusive)
-    {
-        MinInclusive = minInclusive;
-        MaxInclusive = maxInclusive;
-    }
-
     /// <summary>The lowest kind ID the profile may use.</summary>
-    public int MinInclusive { get; }
+    public int MinInclusive { get; } = minInclusive;
 
     /// <summary>The highest kind ID the profile may use.</summary>
-    public int MaxInclusive { get; }
+    public int MaxInclusive { get; } = maxInclusive;
 
     /// <summary>True when the range is non-empty and does not start below zero.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4DED19
@@ -223,20 +211,18 @@ public readonly struct VmPayloadKindIdRange : System.IEquatable<VmPayloadKindIdR
     /// <summary>Whether <paramref name="payloadKindId"/> lies in the range.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FF4A8F
     // Broiler-Human:        PENDING
-    public bool Contains(int payloadKindId) =>
-        payloadKindId >= MinInclusive && payloadKindId <= MaxInclusive;
+    public bool Contains(int payloadKindId) => payloadKindId >= MinInclusive && payloadKindId <= MaxInclusive;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3F9751
     // Broiler-Human:        PENDING
-    public bool Equals(VmPayloadKindIdRange other) =>
-        MinInclusive == other.MinInclusive && MaxInclusive == other.MaxInclusive;
+    public bool Equals(VmPayloadKindIdRange other) => MinInclusive == other.MinInclusive && MaxInclusive == other.MaxInclusive;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmPayloadKindIdRange other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => System.HashCode.Combine(MinInclusive, MaxInclusive);
+    public override int GetHashCode() => HashCode.Combine(MinInclusive, MaxInclusive);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmPayloadKindIdRange left, VmPayloadKindIdRange right) => left.Equals(right);

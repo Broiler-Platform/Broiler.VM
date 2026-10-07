@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Collections.Immutable;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Ubc;
 
 namespace Broiler.VM.Emitter.Bytecode;

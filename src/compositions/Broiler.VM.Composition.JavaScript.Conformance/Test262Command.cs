@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Broiler Platform contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript;
 using System.Globalization;
 
@@ -555,12 +556,12 @@ internal static class Test262Command
 
         using (runtime)
         {
-            var descriptor = new Broiler.VM.VmArtifactDescriptor(
+            var descriptor = new VmArtifactDescriptor(
                 JavaScriptProfile.Id,
                 manifest.FormatVersion,
                 manifest.Id,
                 default,
-                Broiler.VM.VmCallerIdentity.FromCanonicalIdentity(Caller));
+                VmCallerIdentity.FromCanonicalIdentity(Caller));
             var verified = runtime.Verify(in descriptor, artifactBytes, CancellationToken.None);
 
             if (!verified.TryGetArtifact(out var artifact))
@@ -577,7 +578,7 @@ internal static class Test262Command
                     " wallClockMs=" + wallClock.ToString(CultureInfo.InvariantCulture) + " per variant");
                 Console.WriteLine("# limit|dimension|verification|instantiation");
 
-                foreach (var dimension in Broiler.VM.VmBudgetDimensions.All)
+                foreach (var dimension in VmBudgetDimensions.All)
                 {
                     Console.WriteLine(
                         "limit|" + dimension + "|" +
@@ -589,7 +590,7 @@ internal static class Test262Command
 
         return ExitCodes.Ok;
 
-        static string Ceiling(Broiler.VM.VmLimitVector vector, Broiler.VM.VmBudgetDimension dimension) =>
+        static string Ceiling(VmLimitVector vector, VmBudgetDimension dimension) =>
             vector.IsUnconstrained(dimension) ? "unconstrained" : vector[dimension].ToString(CultureInfo.InvariantCulture);
     }
 

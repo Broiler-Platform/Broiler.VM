@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Broiler Platform contributors
 // SPDX-License-Identifier: Apache-2.0
 
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
 using Broiler.VM.Profile.JavaScript.Intl;

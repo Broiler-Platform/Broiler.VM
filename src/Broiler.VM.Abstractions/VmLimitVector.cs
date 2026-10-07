@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// One immutable value per budget dimension: the shape of a limit default, a profile hard maximum,
@@ -36,7 +38,7 @@ namespace Broiler.VM;
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=256734
 // Broiler-Human:        PENDING
-public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
+public readonly struct VmLimitVector : IEquatable<VmLimitVector>
 {
     private readonly ulong[]? values;
 
@@ -53,7 +55,7 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
         get
         {
             var top = new ulong[VmBudgetDimensions.Count];
-            System.Array.Fill(top, ulong.MaxValue);
+            Array.Fill(top, ulong.MaxValue);
             return new VmLimitVector(top);
         }
     }
@@ -66,16 +68,12 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     /// <summary>The value declared for <paramref name="dimension"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CBB5AC
     // Broiler-Human:        PENDING
-    public ulong this[VmBudgetDimension dimension] =>
-        values is null
-            ? 0
-            : values[(int)dimension];
+    public ulong this[VmBudgetDimension dimension] => values is null ? 0 : values[(int)dimension];
 
     /// <summary>Whether <paramref name="dimension"/> is at TOP.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F1F79B
     // Broiler-Human:        PENDING
-    public bool IsUnconstrained(VmBudgetDimension dimension) =>
-        this[dimension] == ulong.MaxValue;
+    public bool IsUnconstrained(VmBudgetDimension dimension) => this[dimension] == ulong.MaxValue;
 
     /// <summary>Whether any dimension is at TOP.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=04A197
@@ -104,7 +102,7 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=02727D
     // Broiler-Human:        PENDING
-    public static bool TryCreate(System.ReadOnlySpan<ulong> perDimension, out VmLimitVector vector)
+    public static bool TryCreate(ReadOnlySpan<ulong> perDimension, out VmLimitVector vector)
     {
         vector = default;
 
@@ -162,11 +160,11 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     /// <summary>Copies the vector into <paramref name="destination"/>, which must hold fifteen values.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3B39D8
     // Broiler-Human:        PENDING
-    public void CopyTo(System.Span<ulong> destination)
+    public void CopyTo(Span<ulong> destination)
     {
         if (destination.Length != VmBudgetDimensions.Count)
         {
-            throw new System.ArgumentException(
+            throw new ArgumentException(
                 "A limit vector has exactly fifteen values, one per budget dimension.",
                 nameof(destination));
         }
@@ -211,7 +209,7 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
             return 0;
         }
 
-        var hash = new System.HashCode();
+        var hash = new HashCode();
 
         foreach (var value in values)
         {
@@ -242,7 +240,7 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AC252A
 // Broiler-Human:        PENDING
-public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDeclarationMatrix>
+public readonly struct VmBudgetDeclarationMatrix : IEquatable<VmBudgetDeclarationMatrix>
 {
     private readonly VmBudgetApplicability[]? rows;
 
@@ -266,9 +264,7 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=965C46
     // Broiler-Human:        PENDING
-    public static bool TryCreate(
-        System.ReadOnlySpan<VmBudgetApplicability> perDimension,
-        out VmBudgetDeclarationMatrix matrix)
+    public static bool TryCreate(ReadOnlySpan<VmBudgetApplicability> perDimension, out VmBudgetDeclarationMatrix matrix)
     {
         matrix = default;
 
@@ -323,7 +319,7 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
             return 0;
         }
 
-        var hash = new System.HashCode();
+        var hash = new HashCode();
 
         foreach (var row in rows)
         {
@@ -354,22 +350,16 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
 /// receiving runtime - is ADR 0003's candidate amendment 1 and is breaking, because a refusal
 /// would become a success.
 /// </remarks>
+/// <remarks>Creates a ceiling pair.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E97F91
 // Broiler-Human:        PENDING
-public readonly struct VmEffectiveCeilings : System.IEquatable<VmEffectiveCeilings>
+public readonly struct VmEffectiveCeilings(VmLimitVector verificationCeilings, VmLimitVector instantiationCeilings) : IEquatable<VmEffectiveCeilings>
 {
-    /// <summary>Creates a ceiling pair.</summary>
-    public VmEffectiveCeilings(VmLimitVector verificationCeilings, VmLimitVector instantiationCeilings)
-    {
-        VerificationCeilings = verificationCeilings;
-        InstantiationCeilings = instantiationCeilings;
-    }
-
     /// <summary>The ceilings verification ran under.</summary>
-    public VmLimitVector VerificationCeilings { get; }
+    public VmLimitVector VerificationCeilings { get; } = verificationCeilings;
 
     /// <summary>The ceilings instantiation from this handle must run under.</summary>
-    public VmLimitVector InstantiationCeilings { get; }
+    public VmLimitVector InstantiationCeilings { get; } = instantiationCeilings;
 
     /// <inheritdoc/>
     public bool Equals(VmEffectiveCeilings other) =>
@@ -380,8 +370,7 @@ public readonly struct VmEffectiveCeilings : System.IEquatable<VmEffectiveCeilin
     public override bool Equals(object? obj) => obj is VmEffectiveCeilings other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() =>
-        System.HashCode.Combine(VerificationCeilings, InstantiationCeilings);
+    public override int GetHashCode() => HashCode.Combine(VerificationCeilings, InstantiationCeilings);
 
     /// <summary>Exact value equality.</summary>
     public static bool operator ==(VmEffectiveCeilings left, VmEffectiveCeilings right) => left.Equals(right);
@@ -402,23 +391,11 @@ public readonly struct VmEffectiveCeilings : System.IEquatable<VmEffectiveCeilin
 /// The struck names <c>MaxDepth</c>, <c>MaxFanOutPerOperation</c>,
 /// <c>MaxCumulativeNestedBytes</c> and <c>MaxCumulativeNestedVerifierWork</c> appear nowhere.
 /// </remarks>
+/// <remarks>Creates a bound group.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=327E45
 // Broiler-Human:        PENDING
-public readonly struct VmGuestLoadBounds : System.IEquatable<VmGuestLoadBounds>
+public readonly struct VmGuestLoadBounds(ulong nestedLoadDepth, ulong nestedLoadFanOut, ulong nestedLoadBytes, ulong verifierWork) : IEquatable<VmGuestLoadBounds>
 {
-    /// <summary>Creates a bound group.</summary>
-    public VmGuestLoadBounds(
-        ulong nestedLoadDepth,
-        ulong nestedLoadFanOut,
-        ulong nestedLoadBytes,
-        ulong verifierWork)
-    {
-        NestedLoadDepth = nestedLoadDepth;
-        NestedLoadFanOut = nestedLoadFanOut;
-        NestedLoadBytes = nestedLoadBytes;
-        VerifierWork = verifierWork;
-    }
-
     /// <summary>
     /// The bounds a profile that does not declare guest-initiated loads carries: all four zero.
     /// Its four matrix rows are <see cref="VmBudgetApplicability.NotApplicable"/>.
@@ -426,16 +403,16 @@ public readonly struct VmGuestLoadBounds : System.IEquatable<VmGuestLoadBounds>
     public static VmGuestLoadBounds None => default;
 
     /// <summary>Deepest provider-mediated nesting.</summary>
-    public ulong NestedLoadDepth { get; }
+    public ulong NestedLoadDepth { get; } = nestedLoadDepth;
 
     /// <summary>Most provider requests admitted for one operation.</summary>
-    public ulong NestedLoadFanOut { get; }
+    public ulong NestedLoadFanOut { get; } = nestedLoadFanOut;
 
     /// <summary>Most provider-returned bytes for one operation.</summary>
-    public ulong NestedLoadBytes { get; }
+    public ulong NestedLoadBytes { get; } = nestedLoadBytes;
 
     /// <summary>Most verifier work units spent on nested verification for one operation.</summary>
-    public ulong VerifierWork { get; }
+    public ulong VerifierWork { get; } = verifierWork;
 
     /// <summary>True when every bound is finite; TOP in any slot is refused at catalog construction.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B06362
@@ -449,8 +426,7 @@ public readonly struct VmGuestLoadBounds : System.IEquatable<VmGuestLoadBounds>
     /// <summary>True when every bound is greater than zero.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=75C968
     // Broiler-Human:        PENDING
-    public bool IsPositive =>
-        NestedLoadDepth > 0 && NestedLoadFanOut > 0 && NestedLoadBytes > 0 && VerifierWork > 0;
+    public bool IsPositive => NestedLoadDepth > 0 && NestedLoadFanOut > 0 && NestedLoadBytes > 0 && VerifierWork > 0;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=92B243
@@ -465,8 +441,7 @@ public readonly struct VmGuestLoadBounds : System.IEquatable<VmGuestLoadBounds>
     public override bool Equals(object? obj) => obj is VmGuestLoadBounds other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() =>
-        System.HashCode.Combine(NestedLoadDepth, NestedLoadFanOut, NestedLoadBytes, VerifierWork);
+    public override int GetHashCode() => HashCode.Combine(NestedLoadDepth, NestedLoadFanOut, NestedLoadBytes, VerifierWork);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmGuestLoadBounds left, VmGuestLoadBounds right) => left.Equals(right);

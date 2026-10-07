@@ -1,3 +1,5 @@
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM.Fixtures;
 
 /// <summary>

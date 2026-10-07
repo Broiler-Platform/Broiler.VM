@@ -15,7 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System.Threading;
+using System;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>Where a verified artifact came from.</summary>
 /// <remarks>
@@ -46,14 +49,13 @@ public enum VmArtifactOrigin
 public readonly ref struct VmArtifactRequest
 {
     /// <summary>Creates a request.</summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmArtifactRequest(
         VmProfileId requestingProfileId,
         VmObjectId requestingRuntimeId,
         VmObjectId requestingOperationId,
         int nestingDepth,
         VmLimitVector remainingAllowanceSnapshot,
-        System.Threading.CancellationToken cancellationToken,
+        CancellationToken cancellationToken,
         VmBytes requestPayload)
     {
         RequestingProfileId = requestingProfileId;
@@ -81,7 +83,7 @@ public readonly ref struct VmArtifactRequest
     public VmLimitVector RemainingAllowanceSnapshot { get; }
 
     /// <summary>The requesting operation's cancellation token.</summary>
-    public System.Threading.CancellationToken CancellationToken { get; }
+    public CancellationToken CancellationToken { get; }
 
     /// <summary>The profile's own opaque request bytes - a specifier, a name, whatever it means.</summary>
     public VmBytes RequestPayload { get; }
@@ -123,11 +125,7 @@ public enum VmArtifactProviderAnswerKind
 // Broiler-Human:        PENDING
 public readonly ref struct VmArtifactProviderAnswer
 {
-    private VmArtifactProviderAnswer(
-        VmArtifactProviderAnswerKind kind,
-        VmArtifactDescriptor descriptor,
-        System.ReadOnlySpan<byte> payload,
-        VmReason reason)
+    private VmArtifactProviderAnswer(VmArtifactProviderAnswerKind kind, VmArtifactDescriptor descriptor, ReadOnlySpan<byte> payload, VmReason reason)
     {
         Kind = kind;
         Descriptor = descriptor;
@@ -138,9 +136,7 @@ public readonly ref struct VmArtifactProviderAnswer
     /// <summary>The provider supplied an artifact, exactly as a caller would.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1E33DD
     // Broiler-Human:        PENDING
-    public static VmArtifactProviderAnswer Provided(
-        scoped in VmArtifactDescriptor descriptor,
-        System.ReadOnlySpan<byte> payload) =>
+    public static VmArtifactProviderAnswer Provided(scoped in VmArtifactDescriptor descriptor, ReadOnlySpan<byte> payload) =>
         new(VmArtifactProviderAnswerKind.Provided, descriptor, payload, VmReason.None);
 
     /// <summary>The provider declined.</summary>
@@ -162,7 +158,7 @@ public readonly ref struct VmArtifactProviderAnswer
     public VmArtifactDescriptor Descriptor { get; }
 
     /// <summary>The bytes, present only on the provided answer.</summary>
-    public System.ReadOnlySpan<byte> Payload { get; }
+    public ReadOnlySpan<byte> Payload { get; }
 
     /// <summary>The reason, present on the two negative answers.</summary>
     public VmReason Reason { get; }

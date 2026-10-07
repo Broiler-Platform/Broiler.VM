@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Abstractions;
+
+using System;
 
 /// <summary>
 /// The caller-supplied description of an artifact: which profile it belongs to, which format
@@ -38,42 +40,28 @@ namespace Broiler.VM;
 /// afterwards cannot change what a verified handle is bound to.
 /// </para>
 /// </remarks>
+/// <remarks>Creates an artifact descriptor.</remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=06FA02
 // Broiler-Human:        PENDING
-public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescriptor>
+public readonly struct VmArtifactDescriptor(VmProfileId profileId, uint formatVersion, VmFeatureManifestId featureManifestId, VmLimitVector requestedLimits, VmCallerIdentity callerIdentity) : IEquatable<VmArtifactDescriptor>
 {
-    /// <summary>Creates an artifact descriptor.</summary>
-    public VmArtifactDescriptor(
-        VmProfileId profileId,
-        uint formatVersion,
-        VmFeatureManifestId featureManifestId,
-        VmLimitVector requestedLimits,
-        VmCallerIdentity callerIdentity)
-    {
-        ProfileId = profileId;
-        FormatVersion = formatVersion;
-        FeatureManifestId = featureManifestId;
-        RequestedLimits = requestedLimits;
-        CallerIdentity = callerIdentity;
-    }
-
     /// <summary>The profile whose verifier owns these bytes. There is no probing of alternatives.</summary>
-    public VmProfileId ProfileId { get; }
+    public VmProfileId ProfileId { get; } = profileId;
 
     /// <summary>Exactly one profile-format version. Not a range.</summary>
-    public uint FormatVersion { get; }
+    public uint FormatVersion { get; } = formatVersion;
 
     /// <summary>Exactly one feature manifest. Not a set.</summary>
-    public VmFeatureManifestId FeatureManifestId { get; }
+    public VmFeatureManifestId FeatureManifestId { get; } = featureManifestId;
 
     /// <summary>
     /// Limits the artifact requests. They may only tighten the host and profile ceilings; a vector
     /// left empty requests nothing and removes nothing.
     /// </summary>
-    public VmLimitVector RequestedLimits { get; }
+    public VmLimitVector RequestedLimits { get; } = requestedLimits;
 
     /// <summary>The caller's own identity for these bytes, echoed into diagnostics and never parsed.</summary>
-    public VmCallerIdentity CallerIdentity { get; }
+    public VmCallerIdentity CallerIdentity { get; } = callerIdentity;
 
     /// <summary>
     /// Whether the descriptor is structurally usable: a present identity and manifest, a non-zero
@@ -101,8 +89,7 @@ public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescri
     public override bool Equals(object? obj) => obj is VmArtifactDescriptor other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() =>
-        System.HashCode.Combine(ProfileId, FormatVersion, FeatureManifestId, RequestedLimits, CallerIdentity);
+    public override int GetHashCode() => HashCode.Combine(ProfileId, FormatVersion, FeatureManifestId, RequestedLimits, CallerIdentity);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmArtifactDescriptor left, VmArtifactDescriptor right) => left.Equals(right);

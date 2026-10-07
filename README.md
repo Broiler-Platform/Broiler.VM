@@ -30,6 +30,22 @@ runtime extension directory, and it offers no binary plug-in ABI. That is part o
 contract: every executable profile and host capability must be rooted by a direct, typed
 reference.
 
+## JavaScript compilation and execution
+
+**Current implementation, checked 2026-10-07:** a JavaScript program can run through one host
+invocation, but general JavaScript is not yet compiled entirely into operations that execute without
+interpreter dispatch. The default is bytecode. The wide manifest's `--native` form emits machine
+code that calls interpreter handlers for blocks of instructions. `--value` emits some operations
+directly and uses interpreter handlers for others; it remains an unadopted, opt-in form.
+`--numeric --native` executes supported numeric programs directly as machine code, but refuses
+constructs outside that restricted backend's admission rules.
+
+The executable backends are x86-64, with an explicitly selected Windows or System V convention;
+ARM64 is emitting-only. These are implementation facts, not support or acceptance claims.
+See the [JavaScript execution-mode table](src/Broiler.VM.Profile.JavaScript/docs/roadmap.backends.md#current-execution-behavior-2026-10-07)
+for the paths, limitations and remaining work. Native AOT compilation of the host does not itself
+compile guest JavaScript into machine code.
+
 ## Status
 
 [The status ledger](docs/roadmap.status.md) is the authority for accepted evidence. It records
@@ -368,5 +384,11 @@ the sense the profile plans use the term: it decides nothing, moves no ledger ro
 in any decision series and schedules no work, and it names every published rule it would ask to move.
 The work it would take is planned in [docs/universal-bytecode.roadmap.md](docs/universal-bytecode.roadmap.md)
 and its state is recorded in [docs/universal-bytecode.status.md](docs/universal-bytecode.status.md),
-where every milestone is `Not started`; the split of the profiles and emitters into components of
-their own is that roadmap's optional last milestone and nothing before it depends on it.
+where UBC-0, UBC-1, UBC-2 and UBC-4 are `In progress`, with their gates met on retained evidence
+but none accepted. UBC-3 (the JavaScript migration), UBC-5 (shared native machinery), UBC-6a and
+UBC-6b (the x86-64 emitter and language families), and the later milestones remain `Not started`.
+The split of the profiles and emitters into components of their own is that roadmap's optional
+last milestone and nothing before it depends on it.
+
+*(Corrected 2026-10-07: this summary said "every milestone is `Not started`" after the ledger
+had moved. The correction synchronizes the summary; it advances no milestone.)*

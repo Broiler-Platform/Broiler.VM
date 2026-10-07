@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// The shape every envelope-bearing stage result carries.
@@ -105,42 +105,36 @@ public readonly struct VmVerificationResult : IVmOperationResult
     /// <summary>The artifact verified.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FDD515
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmVerificationResult Normal(VmVerifiedArtifact artifact, VmDiagnostics diagnostics) =>
         new(VmOutcome.Normal, VmReason.NormalCompleted, diagnostics, artifact);
 
     /// <summary>The composition cannot host the requested profile.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EB2DD6
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmVerificationResult UnsupportedProfile(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.UnsupportedProfile, reason, diagnostics, null);
 
     /// <summary>The bytes are not a well-formed artifact.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DE0D5B
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmVerificationResult InvalidArtifact(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.InvalidArtifact, reason, diagnostics, null);
 
     /// <summary>The call is not legal against the runtime in its current state.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E942EE
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmVerificationResult InvalidState(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.InvalidState, reason, diagnostics, null);
 
     /// <summary>Cancellation was observed at a polling point.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1403A5
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmVerificationResult Cancellation(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.Cancellation, reason, diagnostics, null);
 
     /// <summary>A named dimension in a named scope had no remaining allowance.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=97CC66
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmVerificationResult ResourceExhaustion(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.ResourceExhaustion, reason, diagnostics, null);
 
@@ -196,42 +190,36 @@ public readonly struct VmGuestLoadResult : IVmOperationResult
     /// <summary>The nested artifact was verified.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F3121E
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmGuestLoadResult Normal(VmVerifiedArtifact artifact, VmDiagnostics diagnostics) =>
         new(VmOutcome.Normal, VmReason.NormalCompleted, diagnostics, artifact);
 
     /// <summary>The provider named a profile the composition cannot host.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EB62F1
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmGuestLoadResult UnsupportedProfile(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.UnsupportedProfile, reason, diagnostics, null);
 
     /// <summary>The provider's bytes are not a well-formed artifact.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=366EA3
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmGuestLoadResult InvalidArtifact(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.InvalidArtifact, reason, diagnostics, null);
 
     /// <summary>The request is not legal - an out-of-scope mediator, a disposed runtime.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1B572C
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmGuestLoadResult InvalidState(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.InvalidState, reason, diagnostics, null);
 
     /// <summary>Cancellation was observed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=308D92
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmGuestLoadResult Cancellation(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.Cancellation, reason, diagnostics, null);
 
     /// <summary>A bound or an allowance the nested load draws on was spent.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5E7120
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmGuestLoadResult ResourceExhaustion(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.ResourceExhaustion, reason, diagnostics, null);
 
@@ -241,7 +229,6 @@ public readonly struct VmGuestLoadResult : IVmOperationResult
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A09655
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmGuestLoadResult HostFailure(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.HostFailure, reason, diagnostics, null);
 
@@ -281,13 +268,8 @@ public readonly struct VmInstantiationResult : IVmOperationResult
     private readonly IVmProfilePayload? payload;
     private readonly VmSuspension? suspension;
 
-    private VmInstantiationResult(
-        VmOutcome outcome,
-        VmReason reason,
-        VmDiagnostics diagnostics,
-        VmInstance? instance,
-        IVmProfilePayload? payload,
-        VmSuspension? suspension)
+    private VmInstantiationResult(VmOutcome outcome, VmReason reason, VmDiagnostics diagnostics, VmInstance? instance,
+        IVmProfilePayload? payload, VmSuspension? suspension)
     {
         Outcome = outcome;
         Reason = reason;
@@ -300,56 +282,48 @@ public readonly struct VmInstantiationResult : IVmOperationResult
     /// <summary>The instance was created.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DE5953
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInstantiationResult Normal(VmInstance instance, IVmProfilePayload? payload, VmDiagnostics diagnostics) =>
         new(VmOutcome.Normal, VmReason.NormalCompleted, diagnostics, instance, payload, null);
 
     /// <summary>A handle from another runtime names a profile this composition cannot host.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A237BB
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInstantiationResult UnsupportedProfile(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.UnsupportedProfile, reason, diagnostics, null, null, null);
 
     /// <summary>The call is not legal against the runtime or the handle in its current state.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FA7193
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInstantiationResult InvalidState(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.InvalidState, reason, diagnostics, null, null, null);
 
     /// <summary>The profile faulted, carrying its own typed payload.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=24C378
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInstantiationResult ProfileFault(VmReason reason, IVmProfilePayload? payload, VmDiagnostics diagnostics) =>
         new(VmOutcome.ProfileFault, reason, diagnostics, null, payload, null);
 
     /// <summary>Instantiation parked, which requires a declaring descriptor.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8F0775
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInstantiationResult Suspension(VmSuspension suspension, IVmProfilePayload? projection, VmDiagnostics diagnostics) =>
         new(VmOutcome.Suspension, VmReason.InstantiationSuspended, diagnostics, null, projection, suspension);
 
     /// <summary>Cancellation was observed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1CCF11
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInstantiationResult Cancellation(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.Cancellation, reason, diagnostics, null, null, null);
 
     /// <summary>A named dimension in a named scope had no remaining allowance.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FF2D54
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInstantiationResult ResourceExhaustion(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.ResourceExhaustion, reason, diagnostics, null, null, null);
 
     /// <summary>A host capability could not be reached, refused, or faulted.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F9CAFB
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInstantiationResult HostFailure(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.HostFailure, reason, diagnostics, null, null, null);
 
@@ -419,12 +393,7 @@ public readonly struct VmInvocationResult : IVmOperationResult
     private readonly IVmProfilePayload? payload;
     private readonly VmSuspension? suspension;
 
-    private VmInvocationResult(
-        VmOutcome outcome,
-        VmReason reason,
-        VmDiagnostics diagnostics,
-        IVmProfilePayload? payload,
-        VmSuspension? suspension)
+    private VmInvocationResult(VmOutcome outcome, VmReason reason, VmDiagnostics diagnostics, IVmProfilePayload? payload, VmSuspension? suspension)
     {
         Outcome = outcome;
         Reason = reason;
@@ -436,49 +405,42 @@ public readonly struct VmInvocationResult : IVmOperationResult
     /// <summary>The invocation completed, carrying the profile's typed result payload.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B07DBE
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInvocationResult Normal(IVmProfilePayload? payload, VmDiagnostics diagnostics) =>
         new(VmOutcome.Normal, VmReason.NormalCompleted, diagnostics, payload, null);
 
     /// <summary>The call is not legal against the instance in its current state.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=665DDD
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInvocationResult InvalidState(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.InvalidState, reason, diagnostics, null, null);
 
     /// <summary>A language-defined fault, carried as a typed payload the core never interprets.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=758B13
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInvocationResult ProfileFault(VmReason reason, IVmProfilePayload? payload, VmDiagnostics diagnostics) =>
         new(VmOutcome.ProfileFault, reason, diagnostics, payload, null);
 
     /// <summary>The invocation parked and is resumable.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=07791C
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInvocationResult Suspension(VmSuspension? suspension, IVmProfilePayload? projection, VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.Suspension, reason, diagnostics, projection, suspension);
 
     /// <summary>Cancellation was observed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C8B440
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInvocationResult Cancellation(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.Cancellation, reason, diagnostics, null, null);
 
     /// <summary>A named dimension in a named scope had no remaining allowance.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4A018F
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInvocationResult ResourceExhaustion(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.ResourceExhaustion, reason, diagnostics, null, null);
 
     /// <summary>A host capability could not be reached, refused, or faulted.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0FF766
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmInvocationResult HostFailure(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.HostFailure, reason, diagnostics, null, null);
 
@@ -552,14 +514,8 @@ public readonly struct VmResumeResult : IVmOperationResult
     private readonly IVmProfilePayload? payload;
     private readonly VmSuspension? suspension;
 
-    private VmResumeResult(
-        VmStage suspendedStage,
-        VmOutcome outcome,
-        VmReason reason,
-        VmDiagnostics diagnostics,
-        VmInstance? instance,
-        IVmProfilePayload? payload,
-        VmSuspension? suspension)
+    private VmResumeResult(VmStage suspendedStage, VmOutcome outcome, VmReason reason, VmDiagnostics diagnostics,
+        VmInstance? instance, IVmProfilePayload? payload, VmSuspension? suspension)
     {
         SuspendedStage = suspendedStage;
         Outcome = outcome;
@@ -573,49 +529,42 @@ public readonly struct VmResumeResult : IVmOperationResult
     /// <summary>The resumed operation completed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=37D812
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmResumeResult Normal(VmStage suspendedStage, VmInstance? instance, IVmProfilePayload? payload, VmDiagnostics diagnostics) =>
         new(suspendedStage, VmOutcome.Normal, VmReason.NormalCompleted, diagnostics, instance, payload, null);
 
     /// <summary>The resumption object or the target is not in a resumable state.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B4283E
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmResumeResult InvalidState(VmStage suspendedStage, VmReason reason, VmDiagnostics diagnostics) =>
         new(suspendedStage, VmOutcome.InvalidState, reason, diagnostics, null, null, null);
 
     /// <summary>A language-defined fault.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2ED7B3
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmResumeResult ProfileFault(VmStage suspendedStage, VmReason reason, IVmProfilePayload? payload, VmDiagnostics diagnostics) =>
         new(suspendedStage, VmOutcome.ProfileFault, reason, diagnostics, null, payload, null);
 
     /// <summary>The operation parked again.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0F7F7A
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmResumeResult Suspension(VmStage suspendedStage, VmSuspension? suspension, IVmProfilePayload? projection, VmReason reason, VmDiagnostics diagnostics) =>
         new(suspendedStage, VmOutcome.Suspension, reason, diagnostics, null, projection, suspension);
 
     /// <summary>Cancellation was observed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A8E29E
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmResumeResult Cancellation(VmStage suspendedStage, VmReason reason, VmDiagnostics diagnostics) =>
         new(suspendedStage, VmOutcome.Cancellation, reason, diagnostics, null, null, null);
 
     /// <summary>A named dimension in a named scope had no remaining allowance.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=846D23
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmResumeResult ResourceExhaustion(VmStage suspendedStage, VmReason reason, VmDiagnostics diagnostics) =>
         new(suspendedStage, VmOutcome.ResourceExhaustion, reason, diagnostics, null, null, null);
 
     /// <summary>A host capability could not be reached, refused, or faulted.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0BE395
     // Broiler-Human:        PENDING
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmResumeResult HostFailure(VmStage suspendedStage, VmReason reason, VmDiagnostics diagnostics) =>
         new(suspendedStage, VmOutcome.HostFailure, reason, diagnostics, null, null, null);
 

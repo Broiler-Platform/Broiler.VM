@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.WebAssembly;
 using Broiler.VM.Ubc;
 

@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// The identity of one feature manifest: the exact language surface accepted by one version of a
@@ -47,8 +49,7 @@ namespace Broiler.VM;
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3F15DD
 // Broiler-Human:        PENDING
-public readonly struct VmFeatureManifestId
-    : System.IEquatable<VmFeatureManifestId>, System.IComparable<VmFeatureManifestId>
+public readonly struct VmFeatureManifestId : IEquatable<VmFeatureManifestId>, IComparable<VmFeatureManifestId>
 {
     /// <summary>The most labels a well-formed manifest ID may have.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=None; Security=Medium; Resources=0; Fingerprint=5E036E
@@ -85,12 +86,12 @@ public readonly struct VmFeatureManifestId
     /// <summary>The ID as a span, without allocating.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
     // Broiler-Human:        PENDING
-    public System.ReadOnlySpan<char> AsSpan() => System.MemoryExtensions.AsSpan(text);
+    public ReadOnlySpan<char> AsSpan() => MemoryExtensions.AsSpan(text);
 
     /// <summary>Parses <paramref name="candidate"/>, returning <see langword="false"/> when it does not satisfy the grammar.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=081976
     // Broiler-Human:        PENDING
-    public static bool TryParse(System.ReadOnlySpan<char> candidate, out VmFeatureManifestId id)
+    public static bool TryParse(ReadOnlySpan<char> candidate, out VmFeatureManifestId id)
     {
         id = default;
 
@@ -113,7 +114,7 @@ public readonly struct VmFeatureManifestId
     /// <exception cref="System.ArgumentException">The candidate does not satisfy the grammar.</exception>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=54EDDE
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId Parse(System.ReadOnlySpan<char> candidate)
+    public static VmFeatureManifestId Parse(ReadOnlySpan<char> candidate)
     {
         if (!TryParse(candidate, out var id))
         {
@@ -155,13 +156,11 @@ public readonly struct VmFeatureManifestId
             return false;
         }
 
-        return System.MemoryExtensions.SequenceEqual(self[..owner.Length], owner) &&
-            self[owner.Length] == '.';
+        return MemoryExtensions.SequenceEqual(self[..owner.Length], owner) && self[owner.Length] == '.';
     }
 
     /// <summary>Ordinal, case-sensitive, exact equality. There is no other comparison.</summary>
-    public bool Equals(VmFeatureManifestId other) =>
-        string.Equals(text, other.text, System.StringComparison.Ordinal);
+    public bool Equals(VmFeatureManifestId other) => string.Equals(text, other.text, StringComparison.Ordinal);
 
     /// <summary>
     /// Ordinal ordering, used to normalize a declared manifest set into ascending order at catalog
@@ -169,8 +168,7 @@ public readonly struct VmFeatureManifestId
     /// </summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=1; Fingerprint=0F49BF
     // Broiler-Human:        PENDING
-    public int CompareTo(VmFeatureManifestId other) =>
-        string.CompareOrdinal(text ?? string.Empty, other.text ?? string.Empty);
+    public int CompareTo(VmFeatureManifestId other) => string.CompareOrdinal(text ?? string.Empty, other.text ?? string.Empty);
 
     /// <summary>The ID verbatim.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
@@ -183,8 +181,7 @@ public readonly struct VmFeatureManifestId
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
     // Broiler-Human:        PENDING
-    public override int GetHashCode() =>
-        text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
+    public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
     /// <summary>Ordinal equality.</summary>
     public static bool operator ==(VmFeatureManifestId left, VmFeatureManifestId right) => left.Equals(right);

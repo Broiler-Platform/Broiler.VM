@@ -7,7 +7,7 @@
 // test on one thread, and it is bounded rather than indefinite: every wait carries a patience.
 #pragma warning disable xUnit1031
 
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Fixtures;
 
 namespace Broiler.VM.Contract.Tests;

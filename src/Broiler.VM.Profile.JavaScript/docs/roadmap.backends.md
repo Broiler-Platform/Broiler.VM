@@ -1,7 +1,54 @@
 <!-- SPDX-FileCopyrightText: 2026 Broiler Platform contributors -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-# The backend roadmap — what a second and third output form would take
+# The backend roadmap — native output forms and their remaining work
+
+## Current execution behavior (2026-10-07)
+
+**One host invocation is available; general JavaScript execution without interpreter dispatch is
+not.** The CLI compiles and verifies a source artifact, instantiates it, and invokes its entry.
+The invocation runs synchronously until completion, a fault or a suspension; the host does not
+step each bytecode instruction. What happens inside that invocation depends on the compiled form:
+
+| Compile request / CLI option | What executes | Current limitation |
+|---|---|---|
+| `JsOutputForm.Bytecode` / default | The bytecode interpreter | No guest machine-code emission |
+| `JsOutputForm.Native`, wide / `--native <backend>` | Emitted control flow calls managed interpreter handlers for blocks of instructions, including instructions that must run alone | The instruction semantics still execute through interpreter dispatch |
+| `JsOutputForm.Native`, numeric / `--numeric --native <backend>` | Emitted code computes directly over numeric slabs | Only the backend's restricted numeric subset is admitted; unsupported constructs are refused at compilation |
+| `JsOutputForm.Value` / `--value <backend>` | Selected operations execute inline over NaN-boxed words; other operations call helpers that execute interpreter arms | Partial native semantics; unadopted and opt-in under JSD-0035 |
+| `JsOutputForm.ValueFlat` / `--value-flat <backend>` | The value form with bindings kept in managed environments | A control for the value form, with the same remaining interpreter involvement |
+
+The x86-64 backend names are `x86-64-win64` and `x86-64-sysv`; execution requires the process's
+matching convention and an installed native page mapper. `arm64-aapcs64` emits only the numeric
+form, with narrower admission, and cannot execute here. Native AOT describes compilation of the
+host and is independent of the guest's output form.
+
+The implementation anchors are `JsCompileRequest` and `JsCompiler.Compile` in
+[`JsCompiler.cs`](../../Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs), the block planner used
+by [`JsX64BaselineEmitter`](../../Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs),
+[`JsNativeActivation.Step` and `StepValue`](../JsNativeActivation.cs), and the direct numeric entry
+in [`JsNativeExecution.Invoke`](../JsNativeExecution.cs). **Whole-artifact emission means every
+code unit has emitted code; it does not mean every instruction's semantics execute without the
+interpreter.** Retaining bytecode for verification is separate from executing it.
+
+To meet the broader requirement, a wide-language backend must replace the remaining interpreter
+dispatch with emitted operations and appropriate runtime helpers, while preserving JavaScript
+semantics, rooting, exceptions, suspension and resource accounting. Ordinary runtime helpers are
+compatible with compiled execution; helpers that re-enter the opcode dispatcher are the remaining
+distinction here. The current value form is partial work toward that requirement, not its completion.
+The planned universal-bytecode native emitter and JavaScript migration are also unfinished, as
+their [ledger](../../../docs/universal-bytecode.status.md) records; naming them establishes no
+additional execution path.
+
+The separate `JsNativeCompiler` / `VmRuntime.CompileToMachineCode` path targeting a `BMC` artifact
+is broken and is not the CLI path above. Its [repair-or-retire task](../../../docs/tasks/repair-or-retire-js-native-compiler.md)
+records the defects and the focused reproduction. These implementation observations advance no
+milestone, issue no support claim and establish no performance result.
+
+**Correction scope:** older per-instruction descriptions below describe the original baseline
+design. The current emitter uses blocks, and the value form additionally emits selected semantics.
+[JSC-289](roadmap.corrections.md#jsc-289) records this correction; JSD-0025's dated implementation
+note distinguishes its original decision from the current code.
 
 **Where this document stands, 2026-10-03.** JSB-4, JSB-5 and JSB-6 are implemented in this
 checkout; JSB-2, JSB-3 and JSB-7 to JSB-11 are partly implemented; JSB-1 and JSB-12 are not
@@ -29,9 +76,10 @@ retraction.
 **AND ON 2026-09-15 THE WIDE MANIFEST WAS GIVEN A NATIVE FORM OF ITS OWN, WHOLE-ARTIFACT TOO.** The
 numeric form this document was built around is unchanged. Beside it,
 [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) decides a **baseline
-form** over `broiler.javascript.wide`: every unit emitted, the control flow between instructions
-emitted, and every instruction one call into the interpreter's own dispatch for that one instruction,
-with every value left in managed memory and no managed reference in any emitted frame. It is still
+form** over `broiler.javascript.wide`: every unit emitted, with emitted control flow between
+calls into the interpreter's own dispatch per block, with some instructions running alone
+*(corrected: [JSC-289](roadmap.corrections.md#jsc-289))*. Every value stays in managed memory and
+no managed reference is held in an emitted frame. It is still
 whole-artifact or nothing, and *one form per handle* becomes one form per handle **and per instance**
 ([JSC-215](roadmap.corrections.md#jsc-215), [JSC-216](roadmap.corrections.md#jsc-216)). **Its code
 landed on that date, and a bundle collected the same day retains some of what would show it true and
@@ -358,7 +406,7 @@ taken above — three from the first writing and one added on 2026-09-07 when th
 each is recorded here as **taken without a decision** — and from 2026-09-15 the second of them has
 a decision record behind it, which its bullet says rather than dropping the bullet; on the same date
 the fourth ended, which its bullet also says, and a fifth route taken without a decision — that the wide
-manifest's form calls back once per instruction — is recorded inside the fourth bullet as MVP-8:
+manifest's form calls back into interpreter semantics — is recorded inside the fourth bullet as MVP-8:
 
 - **That the bytecode is the back-end-neutral form**, rather than building the intermediate form
   [section 9](roadmap.md#9-the-semantic-front-end-and-lowering) promises. The alternative is real work
@@ -431,8 +479,9 @@ manifest's form calls back once per instruction — is recorded inside the fourt
   `broiler.javascript.numeric` with computing templates and under `broiler.javascript.wide` with
   baseline templates, one form per handle and per instance. The mixed-form alternative is still what
   the rules forbid and is still not built. **The route the wide manifest's form rests on beside its
-  decision** — that it calls back once per instruction, rather than once per block or not at all, which
-  JSD-0025 takes and no measurement weighs — is a new route taken without a decision, and it is
+  decision** is interpreter-backed execution, currently with calls per block rather than emitted
+  instruction semantics *(corrected: [JSC-289](roadmap.corrections.md#jsc-289))*. The original
+  granularity choice is recorded as
   [MVP-8](../../../docs/mvp.md#5-routes-taken-without-a-decision) *(corrected 2026-09-15:
   [JSC-216](roadmap.corrections.md#jsc-216))*.
 

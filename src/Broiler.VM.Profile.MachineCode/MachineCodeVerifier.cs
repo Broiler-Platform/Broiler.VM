@@ -20,7 +20,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Profile.MachineCode;
 

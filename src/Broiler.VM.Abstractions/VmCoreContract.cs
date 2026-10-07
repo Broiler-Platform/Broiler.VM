@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// The numbered revision of the profile-neutral Broiler.VM contract: the lifecycle states and

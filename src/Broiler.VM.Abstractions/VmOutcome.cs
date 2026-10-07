@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// The profile-neutral outcome category every envelope-bearing stage returns. Closed at ten.

@@ -15,7 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+using System.Collections.Immutable;
+using System.Threading;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// The profile-facing metering surface. Exactly four members.
@@ -74,17 +78,13 @@ public interface IVmMeter
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9B3EE1
 // Broiler-Falsified-If: the core calls anything on a stored state, or a state reachable from a shared handle can be mutated
 // Broiler-Human:        PENDING
-public interface IVmVerifiedState
-{
-}
+public interface IVmVerifiedState { }
 
 /// <summary>The profile-owned mutable state of one instance. The core never inspects it.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=FC8DAD
 // Broiler-Falsified-If: the core reads an instance state, or one reaches an executor other than the profile that made it
 // Broiler-Human:        PENDING
-public interface IVmInstanceState
-{
-}
+public interface IVmInstanceState { }
 
 /// <summary>The profile-owned captured continuation of a suspended operation.</summary>
 /// <remarks>
@@ -95,9 +95,7 @@ public interface IVmInstanceState
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9DB83C
 // Broiler-Falsified-If: the core inspects a continuation, or one is handed back to an operation it was not captured from
 // Broiler-Human:        PENDING
-public interface IVmProfileContinuation
-{
-}
+public interface IVmProfileContinuation { }
 
 /// <summary>What a caller asks an instance to do.</summary>
 /// <remarks>
@@ -138,15 +136,12 @@ public interface IVmVerificationContext
     IVmMeter Meter { get; }
 
     /// <summary>The capability shapes registered into the verifying runtime, in canonical order.</summary>
-    System.Collections.Immutable.ImmutableArray<VmHostCapabilityDescriptor> RegisteredCapabilities { get; }
+    ImmutableArray<VmHostCapabilityDescriptor> RegisteredCapabilities { get; }
 
     /// <summary>Looks up one registered capability shape by identity and exact version.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=Medium; Resources=0; Fingerprint=7EDEF8
     // Broiler-Human:        PENDING
-    bool TryGetCapabilityDescriptor(
-        VmCapabilityId capabilityId,
-        int version,
-        out VmHostCapabilityDescriptor descriptor);
+    bool TryGetCapabilityDescriptor(VmCapabilityId capabilityId, int version, out VmHostCapabilityDescriptor descriptor);
 }
 
 /// <summary>
@@ -166,15 +161,8 @@ public readonly struct VmVerifierOutcome
 {
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Medium; Resources=0; Fingerprint=487D97
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome(
-        VmOutcome category,
-        VmReason reason,
-        IVmVerifiedState? state,
-        VmArtifactSharing sharing,
-        int profileDiagnosticCode,
-        VmSourcePosition position,
-        VmBudgetDimension dimension,
-        VmBudgetScope scope)
+    private VmVerifierOutcome(VmOutcome category, VmReason reason, IVmVerifiedState? state, VmArtifactSharing sharing,
+        int profileDiagnosticCode, VmSourcePosition position, VmBudgetDimension dimension, VmBudgetScope scope)
     {
         Category = category;
         Reason = reason;
@@ -209,10 +197,7 @@ public readonly struct VmVerifierOutcome
     /// <summary>The bytes are not a well-formed artifact of this profile and format version.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=C7F217
     // Broiler-Human:        PENDING
-    public static VmVerifierOutcome InvalidArtifact(
-        VmReason reason,
-        int profileDiagnosticCode,
-        VmSourcePosition position) =>
+    public static VmVerifierOutcome InvalidArtifact(VmReason reason, int profileDiagnosticCode, VmSourcePosition position) =>
         new(VmOutcome.InvalidArtifact, reason, null, VmArtifactSharing.RuntimeScoped,
             profileDiagnosticCode, position, VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
 
@@ -309,11 +294,7 @@ public interface IVmProfileVerifier
     // Broiler-AI:           Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=High; Resources=0; Fingerprint=ED6BA8
     // Broiler-Falsified-If: the payload arrives as anything but a span, or a second member here can answer a verification
     // Broiler-Human:        PENDING
-    VmVerifierOutcome Verify(
-        in VmArtifactDescriptor descriptor,
-        System.ReadOnlySpan<byte> payload,
-        IVmVerificationContext context,
-        System.Threading.CancellationToken cancellationToken);
+    VmVerifierOutcome Verify(in VmArtifactDescriptor descriptor, ReadOnlySpan<byte> payload, IVmVerificationContext context, CancellationToken cancellationToken);
 }
 
 /// <summary>What the runtime hands a profile executor when it creates one.</summary>
@@ -388,12 +369,7 @@ public interface IVmHostCapabilityInvoker
 // Broiler-Human:        PENDING
 public readonly struct VmExecutionStep
 {
-    private VmExecutionStep(
-        VmExecutionStepKind kind,
-        IVmInstanceState? state,
-        IVmProfileContinuation? continuation,
-        IVmProfilePayload? payload,
-        VmReason reason)
+    private VmExecutionStep(VmExecutionStepKind kind, IVmInstanceState? state, IVmProfileContinuation? continuation, IVmProfilePayload? payload, VmReason reason)
     {
         Kind = kind;
         State = state;
@@ -492,17 +468,12 @@ public interface IVmProfileExecutor
     /// <summary>Instantiates profile-owned mutable state from a verified artifact.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B853C0
     // Broiler-Human:        PENDING
-    VmExecutionStep Instantiate(
-        VmVerifiedArtifact artifact,
-        System.Threading.CancellationToken cancellationToken);
+    VmExecutionStep Instantiate(VmVerifiedArtifact artifact, CancellationToken cancellationToken);
 
     /// <summary>Invokes an entry point against instance state.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6A0CE6
     // Broiler-Human:        PENDING
-    VmExecutionStep Invoke(
-        IVmInstanceState state,
-        in VmInvocationRequest request,
-        System.Threading.CancellationToken cancellationToken);
+    VmExecutionStep Invoke(IVmInstanceState state, in VmInvocationRequest request, CancellationToken cancellationToken);
 
     /// <summary>Resumes a parked step from its continuation.</summary>
     /// <remarks>
@@ -521,10 +492,7 @@ public interface IVmProfileExecutor
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F0E5BB
     // Broiler-Human:        PENDING
-    VmExecutionStep Resume(
-        IVmInstanceState state,
-        IVmProfileContinuation continuation,
-        System.Threading.CancellationToken cancellationToken);
+    VmExecutionStep Resume(IVmInstanceState state, IVmProfileContinuation continuation, CancellationToken cancellationToken);
 
     /// <summary>
     /// The terminal-unwind entry point, run on the disposing thread under the tighter of the
@@ -565,11 +533,6 @@ public interface IVmNativeCompiler
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=93BED7
     // Broiler-Human:        PENDING
-    bool TryCompile(
-        in VmArtifactDescriptor inputDescriptor,
-        System.ReadOnlyMemory<byte> inputBytecode,
-        string targetArchitecture,
-        out VmArtifactDescriptor outputDescriptor,
-        out byte[] outputMachineCode,
-        out string refusal);
+    bool TryCompile(in VmArtifactDescriptor inputDescriptor, ReadOnlyMemory<byte> inputBytecode, string targetArchitecture,
+        out VmArtifactDescriptor outputDescriptor, out byte[] outputMachineCode, out string refusal);
 }

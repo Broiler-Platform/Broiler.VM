@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
 using Broiler.VM.Profile.JavaScript.Format;

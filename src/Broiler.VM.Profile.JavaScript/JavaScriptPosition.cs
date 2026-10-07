@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.VM.Abstractions;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>One row of the canonical position table: a code offset and the source it came from.</summary>

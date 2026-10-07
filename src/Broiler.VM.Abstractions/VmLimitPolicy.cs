@@ -15,7 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+using System;
+using System.Collections.Immutable;
+
+namespace Broiler.VM.Abstractions;
 
 /// <summary>
 /// One host-stated value for one budget dimension at one scope, supplied when an instance or an
@@ -35,28 +38,21 @@ namespace Broiler.VM;
 /// contributes no constraint at this layer.
 /// </para>
 /// </remarks>
+/// <remarks>Creates an override of one dimension.</remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=9266BA
 // Broiler-Human:        PENDING
-public readonly struct VmLimitOverride : System.IEquatable<VmLimitOverride>
+public readonly struct VmLimitOverride(VmBudgetDimension dimension, ulong value) : IEquatable<VmLimitOverride>
 {
-    /// <summary>Creates an override of one dimension.</summary>
-    public VmLimitOverride(VmBudgetDimension dimension, ulong value)
-    {
-        Dimension = dimension;
-        Value = value;
-    }
-
     /// <summary>The dimension this override states.</summary>
-    public VmBudgetDimension Dimension { get; }
+    public VmBudgetDimension Dimension { get; } = dimension;
 
     /// <summary>The value it states. It may be no looser than the value it would replace.</summary>
-    public ulong Value { get; }
+    public ulong Value { get; } = value;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=107BE1
     // Broiler-Human:        PENDING
-    public bool Equals(VmLimitOverride other) =>
-        Dimension == other.Dimension && Value == other.Value;
+    public bool Equals(VmLimitOverride other) => Dimension == other.Dimension && Value == other.Value;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmLimitOverride other && Equals(other);
@@ -64,7 +60,7 @@ public readonly struct VmLimitOverride : System.IEquatable<VmLimitOverride>
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=017DC5
     // Broiler-Human:        PENDING
-    public override int GetHashCode() => System.HashCode.Combine((int)Dimension, Value);
+    public override int GetHashCode() => HashCode.Combine((int)Dimension, Value);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmLimitOverride left, VmLimitOverride right) => left.Equals(right);
@@ -94,12 +90,11 @@ public readonly struct VmLimitOverride : System.IEquatable<VmLimitOverride>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=974BBD
 // Broiler-Human:        PENDING
-public readonly struct VmLimitOverrides : System.IEquatable<VmLimitOverrides>
+public readonly struct VmLimitOverrides : IEquatable<VmLimitOverrides>
 {
-    private readonly System.Collections.Immutable.ImmutableArray<VmLimitOverride> entries;
+    private readonly ImmutableArray<VmLimitOverride> entries;
 
-    private VmLimitOverrides(System.Collections.Immutable.ImmutableArray<VmLimitOverride> entries) =>
-        this.entries = entries;
+    private VmLimitOverrides(ImmutableArray<VmLimitOverride> entries) => this.entries = entries;
 
     /// <summary>The empty set: every dimension inherits.</summary>
     public static VmLimitOverrides None => default;
@@ -107,28 +102,20 @@ public readonly struct VmLimitOverrides : System.IEquatable<VmLimitOverrides>
     /// <summary>Creates a set from the stated overrides, in the order given.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=2; Fingerprint=767D9F
     // Broiler-Human:        PENDING
-    public static VmLimitOverrides Create(System.ReadOnlySpan<VmLimitOverride> overrides)
+    public static VmLimitOverrides Create(ReadOnlySpan<VmLimitOverride> overrides)
     {
         if (overrides.IsEmpty)
         {
             return default;
         }
 
-        var builder = System.Collections.Immutable.ImmutableArray.CreateBuilder<VmLimitOverride>(overrides.Length);
-
-        foreach (var entry in overrides)
-        {
-            builder.Add(entry);
-        }
-
-        return new VmLimitOverrides(builder.MoveToImmutable());
+        return new VmLimitOverrides([.. overrides]);
     }
 
     /// <summary>Creates a set stating exactly one dimension.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=94CDA7
     // Broiler-Human:        PENDING
-    public static VmLimitOverrides Of(VmBudgetDimension dimension, ulong value) =>
-        new(System.Collections.Immutable.ImmutableArray.Create(new VmLimitOverride(dimension, value)));
+    public static VmLimitOverrides Of(VmBudgetDimension dimension, ulong value) => new([new VmLimitOverride(dimension, value)]);
 
     /// <summary>True when nothing is stated and every dimension inherits.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F72A4C
@@ -195,7 +182,7 @@ public readonly struct VmLimitOverrides : System.IEquatable<VmLimitOverrides>
     // Broiler-Human:        PENDING
     public override int GetHashCode()
     {
-        var hash = new System.HashCode();
+        var hash = new HashCode();
 
         for (var index = 0; index < Count; index++)
         {
@@ -233,32 +220,24 @@ public readonly struct VmLimitOverrides : System.IEquatable<VmLimitOverrides>
 /// configure.
 /// </para>
 /// </remarks>
+/// <remarks>Creates a clamp record.</remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=8B2425
 // Broiler-Human:        PENDING
-public readonly struct VmLimitClamp : System.IEquatable<VmLimitClamp>
+public readonly struct VmLimitClamp(VmBudgetDimension dimension, ulong requested, ulong effective) : IEquatable<VmLimitClamp>
 {
-    /// <summary>Creates a clamp record.</summary>
-    public VmLimitClamp(VmBudgetDimension dimension, ulong requested, ulong effective)
-    {
-        Dimension = dimension;
-        Requested = requested;
-        Effective = effective;
-    }
-
     /// <summary>The dimension whose request was tightened.</summary>
-    public VmBudgetDimension Dimension { get; }
+    public VmBudgetDimension Dimension { get; } = dimension;
 
     /// <summary>What the artifact descriptor asked for.</summary>
-    public ulong Requested { get; }
+    public ulong Requested { get; } = requested;
 
     /// <summary>What it was given: the host and profile intersection.</summary>
-    public ulong Effective { get; }
+    public ulong Effective { get; } = effective;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FE35CA
     // Broiler-Human:        PENDING
-    public bool Equals(VmLimitClamp other) =>
-        Dimension == other.Dimension && Requested == other.Requested && Effective == other.Effective;
+    public bool Equals(VmLimitClamp other) => Dimension == other.Dimension && Requested == other.Requested && Effective == other.Effective;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmLimitClamp other && Equals(other);
@@ -266,7 +245,7 @@ public readonly struct VmLimitClamp : System.IEquatable<VmLimitClamp>
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E0AFCB
     // Broiler-Human:        PENDING
-    public override int GetHashCode() => System.HashCode.Combine((int)Dimension, Requested, Effective);
+    public override int GetHashCode() => HashCode.Combine((int)Dimension, Requested, Effective);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmLimitClamp left, VmLimitClamp right) => left.Equals(right);
