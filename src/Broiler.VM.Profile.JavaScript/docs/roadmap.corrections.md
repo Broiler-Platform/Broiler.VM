@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-10-07 (JSC-289: current native execution behavior and documentation drift)
+**Last updated:** 2026-10-11 (JSC-290: three retained closure reports restored to what their bundles retained, and the JavaScript roots' catalogs and closures collected again as bundle JS-10-004)
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -12794,3 +12794,57 @@ The current-code note in [JSD-0025](decisions/0025-the-baseline-native-form-over
 [JSD-0035](decisions/0035-the-value-form-emitted-semantics-over-nan-boxed-values.md) and the
 [universal-bytecode ledger](../../../docs/universal-bytecode.status.md) are the records this
 correction follows. These checks are not a full conformance run and are not a retained evidence bundle.
+
+### JSC-290
+
+**Where:** the retained closure reports `closure-slicecompiler.txt` of
+[Bundle JS-1-001](evidence/js-1/README.md), `closure-conformance.txt` of
+[Bundle JS-3A-004](evidence/js-3a-004/README.md) and `closure-cli.txt` of
+[Bundle JS-3B-001](evidence/js-3b-001/README.md); and the Evidence cells of the SliceCompiler,
+Conformance and Cli rows of the [composition register](../../../docs/compositions.md).
+
+**What the records said.** Each report was retained as the closure its bundle's run read off the
+published output, and each bundle's README states that closure. After retention, three commits
+edited the reports in place:
+
+- on 2026-09-18 (`7bfe5617`), JS-1-001's SliceCompiler report gained
+  `Broiler.VM.Profile.MachineCode` in its JIT and trimmed sections, with both counts raised to
+  match;
+- on 2026-09-23 (`7c4b7ec2`), JS-3A-004's Conformance report and JS-3B-001's Cli report gained the
+  same line;
+- on 2026-10-04 (`3fe26817`), JS-1-001's and JS-3A-004's reports gained
+  `Broiler.VM.Profile.JavaScript.Intl`.
+
+Each edit made rule K4 agree with a register row whose declared assemblies had grown with its
+root. **None came from a publish.** No bundle's `publish-and-run.log` changed, each README still
+states the closure its run retained, and no retained bundle in this repository had read either
+assembly off any of these images. A retained bundle is immutable under
+[JSD-0010](decisions/0010-which-review-rules-govern-this-profiles-documents.md), so each edit
+turned a record of one run into a statement about a later tree that no run had made, and K4 then
+held the register to it.
+
+**What replaced it.** The three reports are restored byte for byte to what their bundles retained,
+and JS-1-001, JS-3A-004 and JS-3B-001 are the record of those images when they were collected.
+[Bundle JS-10-004](evidence/js-10-004/README.md), collected on 2026-10-11 at `88d8b51d`,
+publishes and runs every JavaScript root in all three modes and retains each catalog and each
+closure read off the published output. Its SliceCompiler, Conformance and Cli closures are
+byte-identical to what the edited reports said: the edits described today's images correctly,
+inside bundles that record earlier ones. All four JavaScript rows' Evidence cells name it, in the
+shape the register took when the WebAssembly rows' images changed and their cells moved to bundle
+`ubc-4-002`. **When a root's closure changes, a new collection is what moves the row**; an edit to
+a retained report is not.
+
+**What the new collection also found.** Rule K3 holds each catalog baseline to the catalog the
+row's bundle retained. The old bundles' catalogs agreed with baselines checked in on 2026-08-31 and
+2026-09-03, while today's binaries print a later profile line and, for three roots, two more
+manifests and a second format version. So K3 had been comparing two equally old records, and the
+four baselines are updated to what JS-10-004's binaries printed.
+
+**Collecting it needed one repair first.** Commit `02ecb4d8` had turned four `= null!;` property
+initialisers in `JsRealm.AsyncGenerator.cs` into `= null;`. No build with warnings as errors
+compiles that, and every root is published with warnings as errors. The initialisers are restored
+and their assurance fingerprints regenerated.
+
+**Authority and date.** 2026-10-11: the repository owner's request to review the post-retention
+edits and apply the remedy this repository's own rules require. JSD-0010's immutability rule, and
+the composition register's `ubc-4-002` precedent, are the records this correction follows.

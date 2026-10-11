@@ -1,6 +1,6 @@
 using Android.App;
 using Android.OS;
-using Broiler.VM;
+using Broiler.VM.Abstractions;
 using Broiler.VM.Composition.JavaScript.ExecutionOnly;
 using Broiler.VM.Profile.JavaScript;
 

@@ -1,0 +1,19 @@
+# closure Broiler.VM.Composition.JavaScript.ExecutionOnly rid=win-x64
+
+[jit] 6 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.JavaScript.ExecutionOnly
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Runtime
+
+[trimmed] 6 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.JavaScript.ExecutionOnly
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Runtime
+
+[aot] 0 non-framework assemblies

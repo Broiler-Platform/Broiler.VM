@@ -3,4 +3,4 @@ composition Broiler.VM.Composition.JavaScript.SliceCompiler
 label narrow-runtime-compiler-shaped
 carries-lowering yes
 profiles 1
-profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 4
