@@ -660,6 +660,19 @@ Applied to the concrete candidates:
 | The universal bytecode: one instruction encoding, container, common family, family-table schema, primitive table, verifier walk and dispatch loop, with every language instruction's meaning owned by the family that declares it (`Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode`) *(added 2026-09-25)* | **Yes, by extraction verdict of 2026-09-25 ([ADR 0013](adr/0013-the-universal-bytecode-extraction-record.md)).** G1: both product profiles implement framing, a code walk, a dispatch loop, charged activations, fault exits, per-instruction charges and immediate decoding in merged code; G2: the shared part is shown as a correspondence from that code; G3: the shared part names no language concept, checked by a banned-vocabulary scan the record retains; G4: no profile-to-profile edge. It is not part of the core contract and nothing in the core references it. **The native-form mechanism the concept places beside it (`Broiler.VM.Ubc.Native`) is not admitted: G1 is unsatisfied on the same date, because one product profile has a native form and the other has no emitted code at all, so the gate cannot be invoked for it, and ADR 0013 carries the dated note ADR 0011 prescribes for that state, which carries no verdict.** |
 | A cross-profile value channel, so one profile can call another in the same process | **No, and this is the row a browser will push hardest on.** See the cross-profile boundary below: the price is paid at the embedder's seam, where it is visible, rather than inside a core that would have to learn two languages to charge it. |
 
+**Editorial pointer, 2026-10-11: a scope reading of this section, recorded in ADR 0014.**
+[ADR 0014](adr/0014-shared-javascript-libraries.md), the admission record of
+[the shared JavaScript libraries programme](javascript-shared-libraries/README.md), reads this
+section's rule, its extraction gate and the table above as governing sharing between Broiler.VM
+profiles and placement in the core. A dependency of the JavaScript profile family on an
+engine-neutral library outside Broiler.VM - a shared frontend among them - is neither, so the rows on
+lexing and on a shared syntax tree or parser do not reach it, and they stand refused for what they
+refuse. The reading is taken as route MVP-16 of [`docs/mvp.md`](mvp.md), which names the amendment
+not taken and the ruling that would settle it. **The table above is not edited**, and nothing here
+admits a package: rule A2 refuses every shared package until the programme's milestone SJL-2. Rows 26
+to 28 of [ADR 0003](adr/0003-core-contract-v1-and-amendments.md) section 11's register propose the
+dated scope notes those rows would carry from then.
+
 **The extraction gate.** A new shared component is opened only when all four hold: two or more
 **product** profiles already implement the behavior; the implementations are compared and the
 shared part is identified from real merged code rather than anticipated; the shared part is

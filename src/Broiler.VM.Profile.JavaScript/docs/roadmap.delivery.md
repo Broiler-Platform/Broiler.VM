@@ -174,54 +174,44 @@ machine has **recorded** a RID, and a support table that has not been issued has
   patching and the section framing are what any lowering needs, and JS-3b's source lowering uses
   them rather than writing a second copy *(corrected: JSC-45)*.
 
-### JS-2 — Take the snapshot; make the copied front end this component's own code
+### JS-2 — The general front end is the shared frontend
 
-- **Owner:** profile front-end owner, with the release owner co-signing the attribution change.
+**Re-scoped 2026-10-11, before it started** *(corrected: JSC-295)*. This milestone took a snapshot of
+the legacy engine and made its copied front end this component's own code.
+[JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md) withdraws the
+copy, on decision SJL-D-7 of
+[the shared JavaScript libraries programme](../../../docs/javascript-shared-libraries/README.md): the
+general front end is instead the programme's shared frontend, a library that names neither engine.
+This is the settling route the acceptance track named: a record says the seed copy will not be
+taken, and JS-2's gate is re-scoped.
+
+- **Owner:** profile front-end owner, with the shared frontend's home maintainer (the Broiler.JS
+  maintainer) for the library half. One person.
 - **Ledger:** JS-2's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
   its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
-- **Next action:** Record the snapshot recursively. Copy the tokenizer, the syntax tree and its
-  visitors, the parse-time binding and scope analysis, the free-name analysis, and the allocation
-  and string primitives. Decide and record whether the few neighbouring primitives the tree
-  consumes are copied in or replaced. Rename every namespace to match its assembly on the first
-  commit. Delete the dead attribute family and every conditional-compilation directive. Replace
-  the ambient parse-goal and top-level-await reads with an explicit options value. Take the
-  deep-nesting decision of [section 9](roadmap.md#9-the-semantic-front-end-and-lowering). Annotate
-  every copied unit as ported.
-- **Dependencies:** JS-1, plus **one external gate: the core contract accepted**, which this
-  component does not hold and which the ledger records as a named blocker with its holder and its
-  unblock condition. Three things this milestone does not wait on, because JS-0 took them: the
-  per-item ruling of
-  [section 4.2](roadmap.md#42-what-after-the-fix-work-lands-can-and-cannot-mean), its stop
-  condition, and the nullable and unsafe positions the seed forces
-  *(corrected: JSC-03, JSC-04)*. **Taken is not applied**:
-  enabling nullable on the copied files, confining `AllowUnsafeBlocks` to the lowering project, and
-  adding the rule that asserts that distribution are all this milestone's work.
-- **Objective exit gate:** The snapshot identity is recorded recursively and re-derivable; **the
-  seed's own gates are re-run from this component at the snapshot commit, and the defect
-  [section 4.1](roadmap.md#41-the-snapshot-identity) inherits is either fixed before the snapshot or
-  recorded as a named exception** — an inherited reading is not a verified one; the
-  two-way boundary rule passes with its witnesses; the copied front end builds with the trim and
-  AOT analyzers **force-enabled**, producing zero trim and AOT warnings **anywhere in its
-  reference closure** rather than merely none attributed to the project, and a metadata scan finds
-  no IL-emission assembly reference; scans assert zero conditional-compilation directives in
-  covered files, zero occurrences of any legacy assembly name in any namespace, header, or
-  documentation comment, and zero uses of assembly loading, name-based type resolution, activator
-  construction, run-time generic construction, dynamic-method emission, IL generation, module
-  initializers, or reflective member read or write; the parser takes goal and top-level-await
-  permission as constructor arguments, a metadata scan finds no thread-static field and no
-  ambient async-local type in the assembly, and **two parses with different goals run
-  concurrently in one process each producing the goal-appropriate result, in a test that fails
-  when the options are replaced by a shared static**; a nesting corpus proves a deeply nested
-  program is refused rather than terminating the process; every relevant copied unit carries a
-  parsed annotation with a current fingerprint, no placeholder, and a falsification criterion on
-  every unit assessed at the top of the security vocabulary; the licence and notice changes are
-  landed and the core's standing third-party claim is confirmed scoped or amended; and a **scan**
-  over this component's roadmap and evidence tree finds no identifier from any other component
-  cited as evidence.
-- **Seed:** [Section 4.3](roadmap.md#43-the-copy-table)'s copy table. Not copied: the
-  expression-model seam, the interop surface, the dynamic-metaobject surface, the module hosts,
-  the dead attribute family, and the module-initializer bootstrap.
+- **Next action:** None in this component until the programme's milestone SJL-12 has fixed the
+  frontend's contract. Then the programme's milestone SJL-13 replaces the wide path's parser with
+  the shared frontend, and that milestone's bundle is this one's evidence.
+- **Dependencies:** JS-1, plus **one external dependency: the shared frontend**, built in the
+  Broiler.JS repository by the programme's milestones SJL-12 and SJL-13 and admitted under core
+  record ADR 0014 from the programme's SJL-2. The core contract's acceptance no longer binds this
+  milestone, because nothing is adapted from a copy to a moving contract.
+- **Objective exit gate:** **The general front end is the shared frontend (SJL-13).** This
+  profile's wide parser is gone and the wide path parses with the shared frontend; the artifacts are
+  byte-identical over the parse corpus, or every difference is classified under the programme's
+  predeclared rule; test262 in both forms meets that rule; rules N5 to N9, N12 and N19 hold, with a
+  registry revision for every code whose meaning changes; no compiler-free root's closure carries
+  the frontend; every root publishes and runs in three modes; and the two-way boundary rule passes
+  with its witnesses: no edge to an engine, and every shared package on the allow-list and pinned by
+  content hash. **What the copy's gate asked of copied code is asked of the shared frontend instead**,
+  through the programme's rules: no ambient parse state, so goal and top-level-await permission are
+  explicit and two parses with different goals run concurrently; no thread-static field and no
+  async-local type; no conditional compilation, IL emission, assembly loading, name-based type
+  resolution, activator construction, run-time generic construction or module initializer; trim and
+  AOT analyzers clean across its reference closure; a deep-nesting corpus refused rather than
+  terminating the process; and one early-error stage.
+- **Seed:** None. No snapshot is taken, and nothing is copied or ported from the legacy engine.
 
 ### JS-3a — The diagnostic registry and the oracle, standing before the copy arrives
 
@@ -789,11 +779,10 @@ The diagram below is the dependency order the milestones were planned in, and ev
              ┊        do not exist until JS-3b and JS-6, which is what holds
              ┊        the milestone open rather than the work.
              │
-             └→ JS-2  seeding snapshot; the front end becomes this component's code
-                  │        ←── (core contract accepted): external gate, held by
-                  │            the core, open today — it binds JS-2 onward and
-                  │            binds neither JS-0, JS-1, nor JS-3a
-                  │        ←── the copy lands here, behind the boundary rules
+             └→ JS-2  the general front end is the shared frontend (JSC-295)
+                  │        ←── (the shared frontend, programme milestone SJL-13):
+                  │            external, built in the Broiler.JS repository;
+                  │            no copy lands anywhere
                   │
                   ├→ JS-3b static semantics, the lowering, the boundary decision
                   │         (needs JS-3a's registry to land its codes in;
@@ -890,12 +879,12 @@ gate with no owning milestone is a gate nobody can close.
 | 1 Terminology and support claims | JS-0 fixes the identity; JS-10 issues the table | Identity and registration | 1 | untruthful published claim |
 | 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
 | 3 What the core gives and refuses | JS-0 (the two vectors and the matrix); JS-1 (the descriptor half of the two-profile test); JS-8 (its `eval`-refusal half); JS-10 publishes the defaults as the neighbour-facing half and names the reconciliation unowned | Identity and registration; Composed-profile safety | 1, 2 | declared defaults reaching a neighbour |
-| 4 The seed | JS-2 | Front end; Licence and attribution | 12 | the seed becomes a dependency |
+| 4 The seed | none: the copy is withdrawn (JSD-0063, JSC-293) | Dependency architecture | 2 | engine code becomes a dependency |
 | 5 Package boundaries and the graph | JS-0; **JS-1, JS-3a and JS-9 fill the composition roots with the evidence-producing code a test project may not hold** — the corpus writer, the harness, the mutator and the soak; JS-10 records the extraction-gate state, which no earlier milestone can, and no verdict | Dependency architecture | 2 | placement assumed rather than decided; the extraction gate unanswered; an advertised closure reaching the ingestion path |
 | 6 Feature manifests | JS-0 allocates; JS-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 9 | the manifest set drifts upward |
 | 7 The format and the verifier | JS-1 builds it; JS-9 attacks it and **owes the exhaustion entries the registry's binding cannot reach** | Format and verifier safety | 3 | a check migrates into first execution; a ceiling breach recorded as an invalid artifact |
 | 8 The value, frame, and call model | JS-4 (the ABI); JS-5 (the measured numbers and the charging) | Value model and storage; Executor and lifecycle; Measurement | 4, 10 | a late value-representation decision; unproportional charging |
-| 9 The front end and the lowering | JS-2 (ingest); JS-3b (the stage, the boundary, the lowering) | Front end | 3 | a nesting case terminating the process |
+| 9 The front end and the lowering | JS-2 (the shared frontend, at the programme's SJL-13); JS-3b (the stage, the boundary, the lowering) | Front end | 3 | a nesting case terminating the process |
 | 10 Execution on the core lifecycle | JS-1 (the loop end to end); JS-5 (the executor) | Executor and lifecycle | 4 | — |
 | 11 Guest-initiated loads | JS-8 | Guest loads and policy | 5 | — |
 | 12 Suspension | JS-7 | Suspension | 4 | — |
@@ -1439,7 +1428,8 @@ phase:
 
 - a named reviewer reads what the phase changed, which is the review debt JS-10's gate refuses;
 - the ledger's open blocker for JS-2 is settled: either the core contract is accepted, or a record
-  says the seed copy will not be taken and JS-2's gate is re-scoped;
+  says the seed copy will not be taken and JS-2's gate is re-scoped. **Settled 2026-10-11 by the
+  second route**: JSD-0063 is that record *(corrected: JSC-295)*;
 - each milestone's remaining clauses, which [section 19](#19-milestones) names, are closed by
   retained records rather than by working-tree runs.
 

@@ -365,11 +365,21 @@ nothing is refused. Nothing of either exists in the tree on this date.)*
 ## Relationship to Broiler.JS
 
 `Broiler.JS` is a **legacy component** with its own roadmap, ledger, and consumers. Broiler.VM does
-not depend on it, wrap it, or replace it on any schedule stated here, and no core gate may cite its
-results as evidence. The JavaScript profile is expected to begin from a snapshot **copy** of that
-component taken after its in-flight fix programme lands — a fork used as a base, with no dependency
-edge in either direction. The conditions on that copy are recorded in
-[section 9 of the roadmap](docs/roadmap.md).
+not depend on its engine, wrap it, or replace it on any schedule stated here, and no core gate may
+cite its results as evidence. **The JavaScript profile does not begin from a snapshot copy of that
+component.** [The shared JavaScript libraries programme](docs/javascript-shared-libraries/README.md)
+gives the language algorithms, data and source front end both engines implement one maintained
+implementation each, in libraries that name neither engine, and both engines consume them.
+[ADR 0014](docs/adr/0014-shared-javascript-libraries.md) records the admission policy and the scope
+reading of ADR 0011 it rests on, and the profile's decision
+[JSD-0063](src/Broiler.VM.Profile.JavaScript/docs/decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
+withdraws the copy. No package is admitted before the programme's milestone SJL-2, no edge runs
+between the two engines in either direction, and no evidence transfers between them.
+*(Corrected 2026-10-11: from "The JavaScript profile is expected", this paragraph read "The
+JavaScript profile is expected to begin from a snapshot **copy** of that component taken after its
+in-flight fix programme lands — a fork used as a base, with no dependency edge in either direction.
+The conditions on that copy are recorded in [section 9 of the roadmap](docs/roadmap.md)." Its second
+sentence read "Broiler.VM does not depend on it, wrap it, or replace it".)*
 
 ## Roadmap
 

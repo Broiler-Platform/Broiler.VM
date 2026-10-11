@@ -1,6 +1,6 @@
 # Broiler.VM roadmap status
 
-**Last updated:** 2026-09-28 (dated corrections: the packable set, the packages published on 2026-09-23, the graph and the register, rule N4 restored in revised form, and which core bundles the core changes since 2026-09-17 reach; no row moves). Before that: 2026-09-17
+**Last updated:** 2026-10-11 (a dated correction of section 1's sentence on Broiler.JS, when ADR 0014 was filed; no row moves). Before that: 2026-09-28 (dated corrections: the packable set, the packages published on 2026-09-23, the graph and the register, rule N4 restored in revised form, and which core bundles the core changes since 2026-09-17 reach; no row moves). Before that: 2026-09-17
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [Broiler.VM roadmap](roadmap.md). The roadmap defines planned work and objective exit gates; this
@@ -131,8 +131,15 @@ says moves it.
 
 Work in other components is not Broiler.VM evidence. In particular, the legacy `Broiler.JS`
 component's implementation, conformance results, measurements, and Native AOT samples establish
-nothing here, and no core gate may cite them. Broiler.VM has no dependency on that component and
-none of its milestones wait for it.
+nothing here, and no core gate may cite them. Broiler.VM has no dependency on the Broiler.JS engine,
+and **no core milestone waits on it or on anything built in its repository**. The milestones of
+[the shared JavaScript libraries programme](javascript-shared-libraries/README.md), which
+[its own ledger](javascript-shared-libraries/status.md) tracks, do wait on libraries built in the
+Broiler.JS repository, and from that programme's milestone SJL-2 the JavaScript profile family may
+depend on the shared libraries [ADR 0014](adr/0014-shared-javascript-libraries.md) admits. None of
+them is a core milestone, and none moves a row of this ledger. *(Corrected 2026-10-11, when ADR 0014
+was filed: the last sentence read "Broiler.VM has no dependency on that component and none of its
+milestones wait for it.")*
 
 ### Status vocabulary
 
