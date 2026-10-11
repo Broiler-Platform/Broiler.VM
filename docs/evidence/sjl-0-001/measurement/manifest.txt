@@ -1,0 +1,18 @@
+sub-bundle sjl-0-001/measurement
+evidence-class measurement
+decision For each workload and form, the attribution E(B) = Q(B) - Q(control) is recorded as the base's figure when |E(B)| exceeds the A/A difference |Q(B) - Q(B-again)|, and as below resolution otherwise. Nothing else is decided, and nothing about milestone SJL-3.
+rule docs/evidence/sjl-3-001/decision-rule.md part C, the base reading at SJL-0
+collected 2026-10-11T20:31:26Z
+base-commit 0087e8d73ae3833200fa263b68f71db15b059a9c
+workloads-commit 61c24e964e7a3883a64ab68d74ef19ceac32fd45
+binary Broiler.VM.Composition.JavaScript.Cli.dll sha256=c229bd7994387f928f60a0bbd9fc62947f517b647e37e28910b250d80bd3e8b5
+machine Linux-6.18.44-fc-v114-x86_64-with-glibc2.39 x86_64 cpus=4
+repetitions 7 retained, 3 warm-up excluded from Q
+allowance fuel=100000000000 wallClockMs=600000
+native-backend x86-64-sysv
+workload to-string.js sha256=4033dc82a396b3eb1b085d4ede7898466f9024b220c58d4a3fe3ac73071bbfa1
+workload to-string.control.js sha256=7332c6bd58a379a5d8da3a0de65af3ce4917cfda7609fb946116197b369def39
+workload to-number.js sha256=54cbfb0d5fd1e1a8c54dfcac7d082dd79c94d5feb5fa3221068bcbea9f7cc391
+workload to-number.control.js sha256=f2ecc0fb38cce55dd6c6660e3f59ece61748871c75639e466346a5b8a77047e0
+workload literals.js sha256=3bbfd1faed09437b14fd8091fd3554d1d56bc60861c804612eedb4e19e56a38f
+workload literals.control.js sha256=7498d4acb3bc73268c3bb0ee26a5f0a60a912441cc41e50ed32bc600c76cbd9a

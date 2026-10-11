@@ -1,0 +1,4 @@
+manifest <scratch>/packages/manifest.txt (clean tree)
+consumer runs: [1, 1, 1]; negative control exit 0; native AOT exit 1
+A STEP DID NOT GO AS EXPECTED
+exit code: 1

@@ -1,0 +1,14 @@
+Test run for <root>/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.27]     Broiler.VM.Architecture.Tests.CoreContractVersionTests.E4_The_Index_Lists_Every_Adr_And_Every_Named_Rule_Is_Registered [FAIL]
+  Failed Broiler.VM.Architecture.Tests.CoreContractVersionTests.E4_The_Index_Lists_Every_Adr_And_Every_Named_Rule_Is_Registered [40 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["0014-shared-javascript-libraries.md is not listed "···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.CoreContractVersionTests.E4_The_Index_Lists_Every_Adr_And_Every_Named_Rule_Is_Registered() in <root>/src/tests/Broiler.VM.Architecture.Tests/CoreContractVersionTests.cs:line 206
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 40 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+exit code: 1
