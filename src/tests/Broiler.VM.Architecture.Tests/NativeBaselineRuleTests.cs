@@ -1058,7 +1058,7 @@ public sealed partial class NativeBaselineRuleTests
         Assert.Equal(2, late.Count);
 
         // The check writing the array it is handed, and passing it on.
-        const string Seen = "        var seen = new System.Collections.Generic.HashSet<nint>();\n";
+        const string Seen = "        var seen = new HashSet<nint>();\n";
 
         Assert.Collection(
             Edited(Seen, Seen + "        slots[(int)JsOpcode.Call] = slots[(int)JsOpcode.Construct];\n"),
@@ -2728,14 +2728,14 @@ public sealed partial class NativeBaselineRuleTests
     [
         "var undefined = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Undefined;",
         "var slots = new nint[JsBaselineAbi.HandlerSlots];",
-        "System.Array.Fill(slots, undefined);",
+        "Array.Fill(slots, undefined);",
     ];
 
     /// <summary>The statements the handler table's static constructor ends with, after its slot assignments.</summary>
     private static readonly string[] TableClosing =
     [
         "if (!Sound(slots, undefined)) { Table = 0; return; }",
-        "var table = (nint*)System.Runtime.InteropServices.NativeMemory.AllocZeroed((nuint)(JsBaselineAbi.HandlerSlots * sizeof(nint)));",
+        "var table = (nint*)NativeMemory.AllocZeroed((nuint)(JsBaselineAbi.HandlerSlots * sizeof(nint)));",
         "for (var index = 0; index < slots.Length; index++) { table[index] = slots[index]; }",
         "Table = (nint)table;",
     ];

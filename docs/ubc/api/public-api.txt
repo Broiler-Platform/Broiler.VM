@@ -15,24 +15,24 @@
 # without running anything: the architecture tests do not reference this
 # assembly, and loading it would run code the describer has no reason to run.
 
-  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcExecutorFactory.Create<TFamily>(UbcFamilyRegistration<TFamily> family, Broiler.VM.Ubc.UbcFamilyDeclaration declaration, Broiler.VM.IVmExecutionEnvironment environment) : abstract Broiler.VM.IVmProfileExecutor
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcExecutorFactory.Create<TFamily>(UbcFamilyRegistration<TFamily> family, Broiler.VM.Ubc.UbcFamilyDeclaration declaration, Broiler.VM.Abstractions.IVmExecutionEnvironment environment) : abstract Broiler.VM.Abstractions.IVmProfileExecutor
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.AbandonInstance(System.Object instanceState) : static virtual System.Void
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.AdmitInstance(System.Object instanceState) : static virtual Broiler.VM.Ubc.UbcInstanceAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.BindParameters(ref Broiler.VM.Ubc.UbcActivation activation, System.ReadOnlySpan<System.Byte> entryName) : static abstract System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.CaptureValues(Broiler.VM.Ubc.IUbcValuePlane plane, System.Int32 start, System.Int32 count) : static abstract System.Object
-  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Completion(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Completion(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.Abstractions.IVmProfilePayload
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.CreateInstance(Broiler.VM.Ubc.UbcInstanceContext context) : static abstract System.Object
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.CreateValuePlane(System.Int32 capacity) : static abstract Broiler.VM.Ubc.IUbcValuePlane
-  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.EntryRefused(System.Object instanceState, System.ReadOnlySpan<System.Byte> entryName) : static abstract Broiler.VM.IVmProfilePayload
-  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Fault(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte familySlot, System.UInt16 code) : static abstract Broiler.VM.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.EntryRefused(System.Object instanceState, System.ReadOnlySpan<System.Byte> entryName) : static abstract Broiler.VM.Abstractions.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Fault(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte familySlot, System.UInt16 code) : static abstract Broiler.VM.Abstractions.IVmProfilePayload
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Handle(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte familyOpcode, System.UInt64 operand) : static abstract Broiler.VM.Ubc.UbcStatus
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.OnLand(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte regionKind) : static abstract System.Void
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.OnResume(ref Broiler.VM.Ubc.UbcActivation activation, System.Object reason) : static abstract System.Void
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.ResolveEntry(System.Object instanceState, Broiler.VM.Ubc.UbcVerifiedProgram program, System.ReadOnlySpan<System.Byte> entryPoint) : static virtual Broiler.VM.Ubc.UbcEntryAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.RestoreValues(Broiler.VM.Ubc.IUbcValuePlane plane, System.Int32 start, System.Object captured) : static abstract System.Void
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.StartUnit(System.Object instanceState) : static virtual System.Int32
-  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.SuspendProjection(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
-  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Uncaught(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.SuspendProjection(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.Abstractions.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Uncaught(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.Abstractions.IVmProfilePayload
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier.Begin(Broiler.VM.Ubc.UbcHookArtifact artifact, out System.Object familyState) : abstract Broiler.VM.Ubc.UbcHookAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier.CheckInstruction(System.Object familyState, in Broiler.VM.Ubc.UbcHookInstruction instruction) : abstract Broiler.VM.Ubc.UbcHookAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier.End(System.Object familyState) : abstract Broiler.VM.Ubc.UbcHookAnswer
@@ -42,9 +42,9 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcValuePlane.Resize(System.Int32 capacity) : abstract System.Void
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcValuePlane.ValueBytes : abstract System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.CallRequest : Broiler.VM.Ubc.UbcCallRequest
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Capabilities : Broiler.VM.IVmHostCapabilityInvoker
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Capabilities : Broiler.VM.Abstractions.IVmHostCapabilityInvoker
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.InstanceState : System.Object
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Meter : Broiler.VM.IVmMeter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Meter : Broiler.VM.Abstractions.IVmMeter
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Pc : System.UInt32
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Pending : System.Object
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Program : Broiler.VM.Ubc.UbcVerifiedProgram
@@ -69,7 +69,7 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Regions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcRegion> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Types : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSignature> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Units : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcUnit> { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactReader.TryRead(System.ReadOnlySpan<System.Byte> payload, in Broiler.VM.VmReadBounds bounds, Broiler.VM.IVmBoundedAllocationMeter meter, System.UInt64 pollGranularity, System.Nullable<System.UInt32> descriptorFormatVersion, out Broiler.VM.Ubc.UbcArtifact artifact, out Broiler.VM.Ubc.UbcRefusal refusal) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactReader.TryRead(System.ReadOnlySpan<System.Byte> payload, in Broiler.VM.Binary.VmReadBounds bounds, Broiler.VM.Binary.IVmBoundedAllocationMeter meter, System.UInt64 pollGranularity, System.Nullable<System.UInt32> descriptorFormatVersion, out Broiler.VM.Ubc.UbcArtifact artifact, out Broiler.VM.Ubc.UbcRefusal refusal) : static System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter..ctor(Broiler.VM.Ubc.UbcHeader header) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Code(System.ReadOnlySpan<System.Byte> code) : Broiler.VM.Ubc.UbcArtifactWriter
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Emission(Broiler.VM.Ubc.UbcEmission emission) : Broiler.VM.Ubc.UbcArtifactWriter
@@ -152,7 +152,7 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.Start : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.ValueEntryHeight : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.WordEntryHeight : System.Int32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDescriptors.Build<TFamily>(UbcFamilyRegistration<TFamily> family, Broiler.VM.Ubc.UbcFamilyDeclaration declaration, Broiler.VM.Ubc.UbcEmitterSet forms) : static Broiler.VM.VmProfileDescriptor
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDescriptors.Build<TFamily>(UbcFamilyRegistration<TFamily> family, Broiler.VM.Ubc.UbcFamilyDeclaration declaration, Broiler.VM.Ubc.UbcEmitterSet forms) : static Broiler.VM.Abstractions.VmProfileDescriptor
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.CallTargetOutOfRange : const Broiler.VM.Ubc.UbcDiagnosticCode = 3413
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.CodeNotTiled : const Broiler.VM.Ubc.UbcDiagnosticCode = 3305
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.CountedOperandTooLarge : const Broiler.VM.Ubc.UbcDiagnosticCode = 3417
@@ -237,11 +237,11 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry..ctor(System.Collections.Immutable.ImmutableArray<System.Byte> name, System.UInt32 unit) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry.Name : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry.Unit : System.UInt32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Fault : Broiler.VM.IVmProfilePayload { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Fault : Broiler.VM.Abstractions.IVmProfilePayload { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Found(System.Int32 unit) : static Broiler.VM.Ubc.UbcEntryAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Kind : Broiler.VM.Ubc.UbcEntryAnswerKind { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Missing : static Broiler.VM.Ubc.UbcEntryAnswer { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Refused(Broiler.VM.IVmProfilePayload fault) : static Broiler.VM.Ubc.UbcEntryAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Refused(Broiler.VM.Abstractions.IVmProfilePayload fault) : static Broiler.VM.Ubc.UbcEntryAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Unit : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswerKind.Found : const Broiler.VM.Ubc.UbcEntryAnswerKind = 1
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswerKind.Missing : const Broiler.VM.Ubc.UbcEntryAnswerKind = 2
@@ -251,34 +251,34 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData..ctor(System.Byte slot, System.Collections.Immutable.ImmutableArray<System.Byte> body) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData.Body : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData.Slot : System.Byte { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration..ctor(Broiler.VM.VmProfileId profileId, System.String displayName, System.Int32 descriptorRevision, Broiler.VM.VmArtifactRepresentationKind artifactRepresentationKind, Broiler.VM.VmArtifactLifetimeKind artifactLifetimeKind, System.Boolean supportsConcurrentVerification, Broiler.VM.VmThreadAffinity threadAffinity, System.UInt64 cancellationPollBound, System.UInt64 abandonBudget, Broiler.VM.VmLimitVector limitDefaults, Broiler.VM.VmLimitVector profileHardMaxima, Broiler.VM.VmBudgetDeclarationMatrix budgetDeclarationMatrix, System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCapabilityImport> hostCapabilityDescriptors, Broiler.VM.VmGuestLoadDeclaration guestInitiatedLoads, Broiler.VM.VmDeclaration asynchronousInstantiation, Broiler.VM.VmDeclaration externalSuspension, Broiler.VM.VmPayloadKindIdRange payloadKindIdRange, System.Int32 authoredCoreContractVersion, Broiler.VM.VmConformanceManifestId conformanceManifestId, System.Int32 conformanceManifestVersion, Broiler.VM.VmDiagnosticsIdentity diagnosticsIdentity, Broiler.VM.VmPackageIdentity packageIdentity, Broiler.VM.VmFaultRecovery faultRecovery, System.UInt32 maxUnchargedWork, System.UInt32 chargingGranularity, Broiler.VM.VmArtifactSharing artifactSharing, System.Int32 builtAgainstCoreContractVersion) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration..ctor(Broiler.VM.Abstractions.VmProfileId profileId, System.String displayName, System.Int32 descriptorRevision, Broiler.VM.Abstractions.VmArtifactRepresentationKind artifactRepresentationKind, Broiler.VM.Abstractions.VmArtifactLifetimeKind artifactLifetimeKind, System.Boolean supportsConcurrentVerification, Broiler.VM.Abstractions.VmThreadAffinity threadAffinity, System.UInt64 cancellationPollBound, System.UInt64 abandonBudget, Broiler.VM.Abstractions.VmLimitVector limitDefaults, Broiler.VM.Abstractions.VmLimitVector profileHardMaxima, Broiler.VM.Abstractions.VmBudgetDeclarationMatrix budgetDeclarationMatrix, System.Collections.Immutable.ImmutableArray<Broiler.VM.Abstractions.VmCapabilityImport> hostCapabilityDescriptors, Broiler.VM.Abstractions.VmGuestLoadDeclaration guestInitiatedLoads, Broiler.VM.Abstractions.VmDeclaration asynchronousInstantiation, Broiler.VM.Abstractions.VmDeclaration externalSuspension, Broiler.VM.Abstractions.VmPayloadKindIdRange payloadKindIdRange, System.Int32 authoredCoreContractVersion, Broiler.VM.Abstractions.VmConformanceManifestId conformanceManifestId, System.Int32 conformanceManifestVersion, Broiler.VM.Abstractions.VmDiagnosticsIdentity diagnosticsIdentity, Broiler.VM.Abstractions.VmPackageIdentity packageIdentity, Broiler.VM.Abstractions.VmFaultRecovery faultRecovery, System.UInt32 maxUnchargedWork, System.UInt32 chargingGranularity, Broiler.VM.Abstractions.VmArtifactSharing artifactSharing, System.Int32 builtAgainstCoreContractVersion) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.AbandonBudget : System.UInt64 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactLifetimeKind : Broiler.VM.VmArtifactLifetimeKind { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactRepresentationKind : Broiler.VM.VmArtifactRepresentationKind { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactSharing : Broiler.VM.VmArtifactSharing { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.AsynchronousInstantiation : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactLifetimeKind : Broiler.VM.Abstractions.VmArtifactLifetimeKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactRepresentationKind : Broiler.VM.Abstractions.VmArtifactRepresentationKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactSharing : Broiler.VM.Abstractions.VmArtifactSharing { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.AsynchronousInstantiation : Broiler.VM.Abstractions.VmDeclaration { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.AuthoredCoreContractVersion : System.Int32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.BudgetDeclarationMatrix : Broiler.VM.VmBudgetDeclarationMatrix { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.BudgetDeclarationMatrix : Broiler.VM.Abstractions.VmBudgetDeclarationMatrix { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.BuiltAgainstCoreContractVersion : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.CancellationPollBound : System.UInt64 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ChargingGranularity : System.UInt32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ConformanceManifestId : Broiler.VM.VmConformanceManifestId { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ConformanceManifestId : Broiler.VM.Abstractions.VmConformanceManifestId { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ConformanceManifestVersion : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.DescriptorRevision : System.Int32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.DiagnosticsIdentity : Broiler.VM.VmDiagnosticsIdentity { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.DiagnosticsIdentity : Broiler.VM.Abstractions.VmDiagnosticsIdentity { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.DisplayName : System.String { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ExternalSuspension : Broiler.VM.VmDeclaration { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.FaultRecovery : Broiler.VM.VmFaultRecovery { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.GuestInitiatedLoads : Broiler.VM.VmGuestLoadDeclaration { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.HostCapabilityDescriptors : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCapabilityImport> { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.LimitDefaults : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ExternalSuspension : Broiler.VM.Abstractions.VmDeclaration { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.FaultRecovery : Broiler.VM.Abstractions.VmFaultRecovery { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.GuestInitiatedLoads : Broiler.VM.Abstractions.VmGuestLoadDeclaration { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.HostCapabilityDescriptors : System.Collections.Immutable.ImmutableArray<Broiler.VM.Abstractions.VmCapabilityImport> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.LimitDefaults : Broiler.VM.Abstractions.VmLimitVector { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.MaxUnchargedWork : System.UInt32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.PackageIdentity : Broiler.VM.VmPackageIdentity { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.PayloadKindIdRange : Broiler.VM.VmPayloadKindIdRange { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ProfileHardMaxima : Broiler.VM.VmLimitVector { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.PackageIdentity : Broiler.VM.Abstractions.VmPackageIdentity { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.PayloadKindIdRange : Broiler.VM.Abstractions.VmPayloadKindIdRange { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ProfileHardMaxima : Broiler.VM.Abstractions.VmLimitVector { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ProfileId : Broiler.VM.Abstractions.VmProfileId { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.SupportsConcurrentVerification : System.Boolean { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ThreadAffinity : Broiler.VM.VmThreadAffinity { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ThreadAffinity : Broiler.VM.Abstractions.VmThreadAffinity { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry..ctor(System.Byte slot, System.String identity, System.UInt32 tableVersion, System.String manifest) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry.Identity : System.String { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry.Manifest : System.String { get; }
@@ -288,7 +288,7 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.BuiltAgainstUbcContractVersion : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.Identity : System.String { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.Tables : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcInstructionTable> { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.TryGetTable(Broiler.VM.VmFeatureManifestId manifest, out Broiler.VM.Ubc.UbcInstructionTable table) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.TryGetTable(Broiler.VM.Abstractions.VmFeatureManifestId manifest, out Broiler.VM.Ubc.UbcInstructionTable table) : System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.Verifier : Broiler.VM.Ubc.IUbcFamilyVerifier { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration<TFamily>..ctor(System.String identity, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcInstructionTable> tables, Broiler.VM.Ubc.IUbcFamilyVerifier verifier, System.Int32 authoredUbcContractVersion, System.Int32 builtAgainstUbcContractVersion) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyTrap..ctor(System.UInt16 code, System.String name) : void
@@ -321,16 +321,16 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader.TranslatorIdentity : System.String { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader.TranslatorVersion : System.UInt32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Admit : static Broiler.VM.Ubc.UbcHookAnswer { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Exhaust(Broiler.VM.VmBudgetDimension dimension) : static Broiler.VM.Ubc.UbcHookAnswer
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Exhausted : System.Nullable<Broiler.VM.VmBudgetDimension> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Exhaust(Broiler.VM.Abstractions.VmBudgetDimension dimension) : static Broiler.VM.Ubc.UbcHookAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Exhausted : System.Nullable<Broiler.VM.Abstractions.VmBudgetDimension> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.FamilyCode : System.Int32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Reason : Broiler.VM.VmReason { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Refuse(System.Int32 familyCode, Broiler.VM.VmReason reason) : static Broiler.VM.Ubc.UbcHookAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Reason : Broiler.VM.Abstractions.VmReason { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Refuse(System.Int32 familyCode, Broiler.VM.Abstractions.VmReason reason) : static Broiler.VM.Ubc.UbcHookAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Refused : System.Boolean { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact..ctor(Broiler.VM.Ubc.UbcArtifact artifact, System.Byte slot, Broiler.VM.Ubc.UbcInstructionTable table, System.ReadOnlyMemory<System.Byte> familyData, Broiler.VM.IVmMeter meter) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact..ctor(Broiler.VM.Ubc.UbcArtifact artifact, System.Byte slot, Broiler.VM.Ubc.UbcInstructionTable table, System.ReadOnlyMemory<System.Byte> familyData, Broiler.VM.Abstractions.IVmMeter meter) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Artifact : Broiler.VM.Ubc.UbcArtifact { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.FamilyData : System.ReadOnlyMemory<System.Byte> { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Meter : Broiler.VM.IVmMeter { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Meter : Broiler.VM.Abstractions.IVmMeter { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Slot : System.Byte { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Table : Broiler.VM.Ubc.UbcInstructionTable { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Height : System.Int32 { get; }
@@ -341,8 +341,8 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.TypeAt(System.Int32 depth) : Broiler.VM.Ubc.UbcSlotType
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Unit : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Exhausted : static Broiler.VM.Ubc.UbcInstanceAnswer { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Fault : Broiler.VM.IVmProfilePayload { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Faulted(Broiler.VM.IVmProfilePayload fault) : static Broiler.VM.Ubc.UbcInstanceAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Fault : Broiler.VM.Abstractions.IVmProfilePayload { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Faulted(Broiler.VM.Abstractions.IVmProfilePayload fault) : static Broiler.VM.Ubc.UbcInstanceAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Kind : Broiler.VM.Ubc.UbcInstanceAnswerKind { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Ready : static Broiler.VM.Ubc.UbcInstanceAnswer { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.Exhausted : const Broiler.VM.Ubc.UbcInstanceAnswerKind = 3
@@ -350,8 +350,8 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.Ready : const Broiler.VM.Ubc.UbcInstanceAnswerKind = 1
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.Unanswered : const Broiler.VM.Ubc.UbcInstanceAnswerKind = 0
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.value__ : System.Byte
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext..ctor(Broiler.VM.Ubc.UbcVerifiedProgram program, Broiler.VM.IVmExecutionEnvironment environment) : void
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext.Environment : Broiler.VM.IVmExecutionEnvironment { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext..ctor(Broiler.VM.Ubc.UbcVerifiedProgram program, Broiler.VM.Abstractions.IVmExecutionEnvironment environment) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext.Environment : Broiler.VM.Abstractions.IVmExecutionEnvironment { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext.Program : Broiler.VM.Ubc.UbcVerifiedProgram { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Index : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.IsFamily : System.Boolean { get; }
@@ -392,13 +392,13 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.CanonicaliseNaN : System.Boolean { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.DefinesTrap(System.UInt16 code) : System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.FamilyIdentity : System.String { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Manifest : Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Manifest : Broiler.VM.Abstractions.VmFeatureManifestId { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.RegionKinds : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcRegionKindRow> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Regions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcRegionDeclaration> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Rows : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcInstructionRow> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TableVersion : System.UInt32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Traps : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcFamilyTrap> { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TryCreate(System.String familyIdentity, System.UInt32 tableVersion, Broiler.VM.VmFeatureManifestId manifest, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcInstructionRow> rows, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcRegionKindRow> regionKinds, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcRegionDeclaration> regions, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcFamilyTrap> traps, System.Boolean canonicaliseNaN, out Broiler.VM.Ubc.UbcInstructionTable table, out System.String defect) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TryCreate(System.String familyIdentity, System.UInt32 tableVersion, Broiler.VM.Abstractions.VmFeatureManifestId manifest, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcInstructionRow> rows, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcRegionKindRow> regionKinds, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcRegionDeclaration> regions, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcFamilyTrap> traps, System.Boolean canonicaliseNaN, out Broiler.VM.Ubc.UbcInstructionTable table, out System.String defect) : static System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TryGetRegionKind(System.Byte kind, out Broiler.VM.Ubc.UbcRegionKindRow row) : System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TryGetRow(System.Byte opcode, out Broiler.VM.Ubc.UbcInstructionRow row) : System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcJumpTable..ctor(System.UInt32 unit, System.Collections.Immutable.ImmutableArray<System.UInt32> targets) : void
@@ -628,18 +628,18 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.TrapsOf(Broiler.VM.Ubc.UbcPrimitive primitive) : static Broiler.VM.Ubc.UbcTrapCode
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.TryGetSignature(Broiler.VM.Ubc.UbcPrimitive primitive, out System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> operands, out System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> results) : static System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Code : System.Int32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Dimension : Broiler.VM.VmBudgetDimension { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Exhausted(Broiler.VM.VmBudgetDimension dimension) : static Broiler.VM.Ubc.UbcRefusal
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InCode(System.Int32 unit, System.UInt32 codeOffset) : static Broiler.VM.VmSourcePosition
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InHeader(System.UInt64 offset) : static Broiler.VM.VmSourcePosition
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InRow(Broiler.VM.Ubc.UbcSectionKind kind, System.Int32 row) : static Broiler.VM.VmSourcePosition
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InSection(Broiler.VM.Ubc.UbcSectionKind kind, System.UInt64 offset) : static Broiler.VM.VmSourcePosition
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Invalid(Broiler.VM.Ubc.UbcDiagnosticCode code, Broiler.VM.VmReason reason, Broiler.VM.VmSourcePosition position) : static Broiler.VM.Ubc.UbcRefusal
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InvalidByFamily(System.Int32 familyCode, Broiler.VM.VmReason reason, Broiler.VM.VmSourcePosition position) : static Broiler.VM.Ubc.UbcRefusal
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Dimension : Broiler.VM.Abstractions.VmBudgetDimension { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Exhausted(Broiler.VM.Abstractions.VmBudgetDimension dimension) : static Broiler.VM.Ubc.UbcRefusal
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InCode(System.Int32 unit, System.UInt32 codeOffset) : static Broiler.VM.Abstractions.VmSourcePosition
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InHeader(System.UInt64 offset) : static Broiler.VM.Abstractions.VmSourcePosition
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InRow(Broiler.VM.Ubc.UbcSectionKind kind, System.Int32 row) : static Broiler.VM.Abstractions.VmSourcePosition
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InSection(Broiler.VM.Ubc.UbcSectionKind kind, System.UInt64 offset) : static Broiler.VM.Abstractions.VmSourcePosition
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Invalid(Broiler.VM.Ubc.UbcDiagnosticCode code, Broiler.VM.Abstractions.VmReason reason, Broiler.VM.Abstractions.VmSourcePosition position) : static Broiler.VM.Ubc.UbcRefusal
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InvalidByFamily(System.Int32 familyCode, Broiler.VM.Abstractions.VmReason reason, Broiler.VM.Abstractions.VmSourcePosition position) : static Broiler.VM.Ubc.UbcRefusal
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Kind : Broiler.VM.Ubc.UbcRefusalKind { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Position : Broiler.VM.VmSourcePosition { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Reason : Broiler.VM.VmReason { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.ToOutcome() : Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Position : Broiler.VM.Abstractions.VmSourcePosition { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Reason : Broiler.VM.Abstractions.VmReason { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.ToOutcome() : Broiler.VM.Abstractions.VmVerifierOutcome
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusalKind.Exhausted : const Broiler.VM.Ubc.UbcRefusalKind = 1
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusalKind.Invalid : const Broiler.VM.Ubc.UbcRefusalKind = 0
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusalKind.value__ : System.Byte
@@ -781,9 +781,9 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.Units : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcUnitCode> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.AuthoredCoreContractVersion : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.BuiltAgainstCoreContractVersion : System.Int32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.ProfileId : Broiler.VM.Abstractions.VmProfileId { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.VerifierSemanticVersion : System.Int32 { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.Verify(in Broiler.VM.Abstractions.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.Abstractions.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : Broiler.VM.Abstractions.VmVerifierOutcome
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.WalkVersion : const System.Int32 = 2
 type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcExecutorFactory : interface
 type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily : interface
@@ -859,5 +859,5 @@ type Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping : struct System.IEquatable<Bro
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitFlags : enum
-type Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram : sealed class Broiler.VM.IVmVerifiedState
-type Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier : sealed class Broiler.VM.IVmProfileVerifier
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram : sealed class Broiler.VM.Abstractions.IVmVerifiedState
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier : sealed class Broiler.VM.Abstractions.IVmProfileVerifier

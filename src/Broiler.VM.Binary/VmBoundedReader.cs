@@ -195,7 +195,7 @@ public ref struct VmBoundedReader
     }
 
     /// <summary>Reads a little-endian 32-bit unsigned integer.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=E8E77F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=C27CF7
     // Broiler-Falsified-If: a window shorter than four bytes reaches the shifts, or the assembly is not little-endian
     // Broiler-Human:        PENDING
     public bool TryReadUInt32LittleEndian(out uint value)
@@ -212,7 +212,7 @@ public ref struct VmBoundedReader
     }
 
     /// <summary>Reads a little-endian 64-bit unsigned integer.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=BF1BC9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=78E696
     // Broiler-Falsified-If: a window shorter than eight bytes reaches the loop, or the descending loop is not little-endian
     // Broiler-Human:        PENDING
     public bool TryReadUInt64LittleEndian(out ulong value)

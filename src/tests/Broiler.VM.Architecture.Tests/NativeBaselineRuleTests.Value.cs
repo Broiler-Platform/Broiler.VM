@@ -128,7 +128,7 @@ public sealed partial class NativeBaselineRuleTests
         var unchecked_ = X4Value(Replacing(activation with
         {
             Text = activation.Text.Replace(
-                "act.Code[pc] != (byte)expected ||\n            act.Segment is null ||",
+                "act.Code[pc] != (byte)expected || act.Segment is null ||",
                 "act.Code[pc] != (byte)expected ||",
                 StringComparison.Ordinal),
         })).Violations;

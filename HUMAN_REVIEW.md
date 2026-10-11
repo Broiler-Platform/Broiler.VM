@@ -504,15 +504,15 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: false is returned here for a cancellation, which the caller latches as a spent work allowance
 - `Broiler.VM.Binary.VmBoundedAllocator` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, Spec=none cited, `30CDFD`, PENDING
   - Falsified if: a member here allocates without taking both a bounds value and a meter
-- `Broiler.VM.Binary.VmBoundedAllocator.TryAllocate<T>(in VmReadBounds, IVmBoundedAllocationMeter, uint, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, Spec=ADR-0007 s6, `9AD40B`, PENDING
+- `Broiler.VM.Binary.VmBoundedAllocator.TryAllocate<T>(in VmReadBounds, IVmBoundedAllocationMeter, uint, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, Spec=ADR-0007 s6, `630EF7`, PENDING
   - Falsified if: the count is sized before its bound comparison, or the element-size product is not checked
-- `Broiler.VM.Binary.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, Spec=ADR-0007 s6, `0E76F6`, PENDING
+- `Broiler.VM.Binary.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, Spec=ADR-0007 s6, `5185F6`, PENDING
   - Falsified if: new T[] is reached before TryReserve returns true, or a failed allocation keeps its reservation
 - `Broiler.VM.Binary.VmBoundedReader` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `CCF177`, PENDING
   - Falsified if: a public member examines bytes or advances position while Status is not Ok
-- `Broiler.VM.Binary.VmBoundedReader.VmBoundedReader(ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `1B06F6`, PENDING
+- `Broiler.VM.Binary.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `CB0FB0`, PENDING
   - Falsified if: it forwards a granularity other than 1, so an existing caller's poll cadence changes
-- `Broiler.VM.Binary.VmBoundedReader.VmBoundedReader(ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter, ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=ADR-0007, `64A4BA`, PENDING
+- `Broiler.VM.Binary.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter, ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=ADR-0007, `83214B`, PENDING
   - Falsified if: a source longer than MaxArtifactBytes leaves Status Ok, or a granularity below 1 stops the reader polling at all
 - `Broiler.VM.Binary.VmBoundedReader.Remaining` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `D3559E`, PENDING
   - Falsified if: position can exceed bytes.Length, so the subtraction wraps to a remainder larger than the span
@@ -538,7 +538,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the end sum wraps past the bytes.Length test, or position advances on a refused ChargeWork
 - `Broiler.VM.Binary.VmBoundedReader.TryChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `D3A8E1`, PENDING
   - Falsified if: the meter is charged while Status is not Ok, so a spent reader keeps spending the allowance
-- `Broiler.VM.Binary.VmBoundedReader.TryTake(ulong, out ReadOnlySpan<byte>)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `B57638`, PENDING
+- `Broiler.VM.Binary.VmBoundedReader.TryTake(ulong, out System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `6D9975`, PENDING
   - Falsified if: the (int) casts narrow an index or length TryConsume allowed, so the slice leaves the span
 - `Broiler.VM.Binary.VmBoundedReader.TryConsume(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `7DE9F2`, PENDING
   - Falsified if: position advances past a failed bound test or a refused ChargeWork, or the addition is unchecked

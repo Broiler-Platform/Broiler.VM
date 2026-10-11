@@ -582,7 +582,7 @@ public sealed class AssuranceScannerTests
             {
                 "Equals(VmReadBounds)",
                 "operator !=(VmReadBounds, VmReadBounds)",
-                "Broiler.VM.VmReadBounds",
+                "Broiler.VM.Binary.VmReadBounds",
             }
             .Select(name => bounds.Single(unit => unit.Name.EndsWith(name, StringComparison.Ordinal)))
             .ToArray();

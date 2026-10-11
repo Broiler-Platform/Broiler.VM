@@ -395,7 +395,7 @@ internal static class ApiBaselineRules
             yield break;
         }
 
-        const string Factory = "Broiler.VM.VmVerifiedArtifact.Create";
+        const string Factory = "Broiler.VM.Abstractions.VmVerifiedArtifact.Create";
 
         var callers = product
             .Where(assembly => assembly.MemberReferences.Contains(Factory, StringComparer.Ordinal))

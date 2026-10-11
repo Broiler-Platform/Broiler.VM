@@ -1355,12 +1355,14 @@ public sealed class ReviewRecordRuleTests
         var relevant = AssuranceScanner.Units.Count(unit =>
             unit.IsRelevant &&
             string.Equals(unit.File.RelativePath, dropped, StringComparison.Ordinal));
+        var total = AssuranceScanner.Units.Count(unit =>
+            string.Equals(unit.File.RelativePath, dropped, StringComparison.Ordinal));
 
         var untrue = CoverageViolations(
             Doctored(
                 HumanReview,
-                $"| `{dropped}` | 13 | {relevant} |",
-                $"| `{dropped}` | 13 | {relevant + 7} |"),
+                $"| `{dropped}` | {total} | {relevant} |",
+                $"| `{dropped}` | {total} | {relevant + 7} |"),
             AssuranceSources.Files,
             AssuranceScanner.Units);
 

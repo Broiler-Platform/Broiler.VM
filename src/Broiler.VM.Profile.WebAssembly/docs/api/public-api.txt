@@ -35,28 +35,28 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule.TryDescribeExport(System.Int32 index, out Broiler.VM.Profile.WebAssembly.WasmExportKind kind, out System.UInt32 entityIndex, out System.Int32 nameLength) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule.TryDescribeFunctionBody(System.Int32 index, out System.Int32 localCount, out System.Int32 codeLength) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule.TypeCount : System.Int32 { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter..ctor(Broiler.VM.IVmMeter contractMeter, Broiler.VM.VmLimitVector verificationCeilings) : void
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter..ctor(Broiler.VM.Abstractions.IVmMeter contractMeter, Broiler.VM.Abstractions.VmLimitVector verificationCeilings) : void
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.Poll() : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.Release(System.UInt64 byteCount) : System.Void
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.ReleaseStructuralDepth(System.UInt64 levels) : System.Void
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.ToReadBounds(Broiler.VM.VmLimitVector limits) : static Broiler.VM.VmReadBounds
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.ToReadBounds(Broiler.VM.Abstractions.VmLimitVector limits) : static Broiler.VM.Binary.VmReadBounds
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryChargeDeclaredCount(System.UInt64 count) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryChargeStructuralDepth(System.UInt64 levels) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryChargeWork(System.UInt64 workUnits) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryReserve(System.UInt64 byteCount) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Artifact : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Code : Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Dimension : Broiler.VM.VmBudgetDimension { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Dimension : Broiler.VM.Abstractions.VmBudgetDimension { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Module : Broiler.VM.Profile.WebAssembly.WasmModule { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Outcome : Broiler.VM.VmOutcome { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Position : Broiler.VM.VmSourcePosition { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Reason : Broiler.VM.VmReason { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Scope : Broiler.VM.VmBudgetScope { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Outcome : Broiler.VM.Abstractions.VmOutcome { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Position : Broiler.VM.Abstractions.VmSourcePosition { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Reason : Broiler.VM.Abstractions.VmReason { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Scope : Broiler.VM.Abstractions.VmBudgetScope { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Succeeded : System.Boolean { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.Translate(System.ReadOnlySpan<System.Byte> module, Broiler.VM.VmLimitVector ceilings, System.Threading.CancellationToken cancellationToken) : static Broiler.VM.Profile.WebAssembly.WasmTranslation
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.Translate(System.ReadOnlySpan<System.Byte> module, Broiler.VM.Abstractions.VmLimitVector ceilings, System.Threading.CancellationToken cancellationToken) : static Broiler.VM.Profile.WebAssembly.WasmTranslation
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.TranslatorIdentity : const System.String = "broiler.webassembly.translator"
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.TranslatorVersion : const System.UInt32 = 1
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.VerificationDefaults : static Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.VerificationDefaults : static Broiler.VM.Abstractions.VmLimitVector { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind.IndirectCallTypeMismatch : const Broiler.VM.Profile.WebAssembly.WasmTrapKind = 8
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind.IntegerDivideByZero : const Broiler.VM.Profile.WebAssembly.WasmTrapKind = 2
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind.IntegerOverflow : const Broiler.VM.Profile.WebAssembly.WasmTrapKind = 3
@@ -165,7 +165,7 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.WrongMagic : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2001
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.value__ : System.Int32
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault.ArgumentIndex : System.Int32 { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault.Identity : Broiler.VM.VmPayloadIdentity { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault.Identity : Broiler.VM.Abstractions.VmPayloadIdentity { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault.Problem : Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem.ArgumentCountMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem = 9
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem.ArgumentTypeMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem = 10
@@ -181,25 +181,25 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem.value__ : System.Int32
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Declaration : static Broiler.VM.Ubc.UbcFamilyDeclaration { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.EntryPointFaultKindId : const System.Int32 = 2003
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Id : static Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Id : static Broiler.VM.Abstractions.VmProfileId { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.MaxUnchargedWork : const System.UInt32 = 65536
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Registration : static Broiler.VM.Ubc.UbcFamilyRegistration<Broiler.VM.Profile.WebAssembly.WasmFamily> { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.ResultsKindId : const System.Int32 = 2001
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.SliceManifest : static Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.SliceManifest : static Broiler.VM.Abstractions.VmFeatureManifestId { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TrapKindId : const System.Int32 = 2002
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryEvaluateReference(System.Byte opcode, System.UInt64 a, System.UInt64 b, out System.UInt64 bits, out Broiler.VM.Profile.WebAssembly.WasmTrapKind trap) : static System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryEvaluateReferenceAccess(System.Byte opcode, System.Span<System.Byte> memory, System.UInt32 address, System.UInt32 offset, System.UInt64 value, out System.UInt64 bits, out Broiler.VM.Profile.WebAssembly.WasmTrapKind trap) : static System.Boolean
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetEntryPointFault(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault fault) : static System.Boolean
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetResults(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyResults results) : static System.Boolean
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetTrap(in Broiler.VM.VmInstantiationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyTrap trap) : static System.Boolean
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetTrap(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyTrap trap) : static System.Boolean
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetEntryPointFault(in Broiler.VM.Abstractions.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault fault) : static System.Boolean
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetResults(in Broiler.VM.Abstractions.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyResults results) : static System.Boolean
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetTrap(in Broiler.VM.Abstractions.VmInstantiationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyTrap trap) : static System.Boolean
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetTrap(in Broiler.VM.Abstractions.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyTrap trap) : static System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyResults.Count : System.Int32 { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyResults.Identity : Broiler.VM.VmPayloadIdentity { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyResults.Identity : Broiler.VM.Abstractions.VmPayloadIdentity { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyResults.TryGetValue(System.Int32 index, out Broiler.VM.Profile.WebAssembly.WebAssemblyValue value) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap.DiagnosticCode : System.Int32 { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap.Identity : Broiler.VM.VmPayloadIdentity { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap.Identity : Broiler.VM.Abstractions.VmPayloadIdentity { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap.Kind : Broiler.VM.Profile.WebAssembly.WasmTrapKind { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap.Position : Broiler.VM.VmSourcePosition { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap.Position : Broiler.VM.Abstractions.VmSourcePosition { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValue.AsDouble : System.Double { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValue.AsInt32 : System.Int32 { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValue.AsInt64 : System.Int64 { get; }
@@ -214,15 +214,15 @@
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmExportKind : enum
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmFamily : struct Broiler.VM.Ubc.IUbcFamily
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule : sealed class
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter : sealed class Broiler.VM.IVmBoundedAllocationMeter
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter : sealed class Broiler.VM.Binary.IVmBoundedAllocationMeter
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation : sealed class
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator : static class
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind : enum
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode : enum
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault : sealed class Broiler.VM.IVmProfilePayload
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault : sealed class Broiler.VM.Abstractions.IVmProfilePayload
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem : enum
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile : static class
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyResults : sealed class Broiler.VM.IVmProfilePayload
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap : sealed class Broiler.VM.IVmProfilePayload
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyResults : sealed class Broiler.VM.Abstractions.IVmProfilePayload
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap : sealed class Broiler.VM.Abstractions.IVmProfilePayload
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValue : struct
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValueKind : enum

@@ -73,7 +73,7 @@ public sealed class N16WideSurfaceRuleTests
             System.StringComparison.Ordinal);
 
         Assert.Contains(
-            "VmFeatureManifestId.Parse(Format.JsNumericManifest.ManifestId)",
+            "VmFeatureManifestId.Parse(JsNumericManifest.ManifestId)",
             text,
             System.StringComparison.Ordinal);
 
@@ -96,7 +96,7 @@ public sealed class N16WideSurfaceRuleTests
         // The range's upper bound is the version-2 constant rather than a literal, so a third
         // version cannot arrive without this line moving with it.
         Assert.Contains(
-            "JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion",
+            "JavaScriptFormat.MinimumFormatVersion, JsFormat.FormatVersion",
             text,
             System.StringComparison.Ordinal);
     }
