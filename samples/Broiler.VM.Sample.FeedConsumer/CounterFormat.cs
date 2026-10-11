@@ -1,4 +1,5 @@
 using Broiler.VM;
+using Broiler.VM.Abstractions;
 using System.Collections.Generic;
 
 namespace Broiler.VM.Sample.FeedConsumer;
