@@ -320,8 +320,11 @@ def closure_of(publish_directory):
 
     Framework assemblies are excluded by prefix because a self-contained publish carries the
     whole runtime and the claim is about what the COMPOSITION contributes. The prefixes are
-    deliberately coarse - anything System.* or Microsoft.* - which cannot hide a fixture, a test
-    framework or a profile, since none of those is named that way.
+    deliberately coarse - anything System.* or Microsoft.* - which cannot hide a fixture or a
+    profile, since neither is named that way. They can hide part of a test framework: the test
+    platform's own assemblies are named Microsoft.TestPlatform.*, so rule K4 forbids only names a
+    report can carry, and a test reads this filter to know which those are. (Corrected
+    2026-10-11: this said the prefixes could not hide "a test framework".)
     """
     directory = os.path.join(ROOT, publish_directory)
 

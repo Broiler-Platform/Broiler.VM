@@ -32,13 +32,26 @@ internal static class CompositionRules
 
     /// <summary>
     /// Assemblies whose presence in a published composition is the failure VM-3's gate names: a
-    /// fixture, a testing framework, or a reflection or dynamic-code facility.
+    /// fixture or a testing framework.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Named rather than derived. A path expression would say "nothing whose project lived under
     /// src/tests/", which is exactly what the consumer profiles do - so the honest test is a list
     /// of the things that must never ship, and the exact-set clause in
     /// <see cref="K4"/> catches everything else by being an equality rather than a subset.
+    /// </para>
+    /// <para>
+    /// <b>Every name here is one a closure report can carry.</b> The collectors report non-framework
+    /// assemblies only and drop every name <see cref="OmittedPrefixes"/> and
+    /// <see cref="OmittedNames"/> describe before this rule reads a report, so a forbidden name of
+    /// that shape is a check that cannot fire. Until 2026-10-11 the list named
+    /// <c>System.Reflection.Emit</c>, <c>System.Reflection.Emit.Lightweight</c>,
+    /// <c>System.Private.Reflection.Emit</c> and <c>Microsoft.TestPlatform.CommunicationUtilities</c>,
+    /// and none of them ever could. Reflection emit is rule B5's, which reads the IL-emit references
+    /// of every assembly a published image can contain; <see cref="K4UnreadableForbidden"/> keeps
+    /// the list to what a report can show.
+    /// </para>
     /// </remarks>
     internal static readonly string[] ForbiddenInAClosure =
     [
@@ -46,11 +59,47 @@ internal static class CompositionRules
         "xunit.core",
         "xunit.execution.dotnet",
         "xunit.assert",
-        "Microsoft.TestPlatform.CommunicationUtilities",
-        "System.Reflection.Emit",
-        "System.Reflection.Emit.Lightweight",
-        "System.Private.Reflection.Emit",
     ];
+
+    /// <summary>
+    /// The prefixes of the names both collectors drop before they write a closure report.
+    /// </summary>
+    /// <remarks>
+    /// The collectors' choice, stated here because K4's reading of a report is only as wide as
+    /// their filter: a name the filter drops is outside what the rule can see, however the rule is
+    /// written. The test of <see cref="K4UnreadableForbidden"/> reads both collectors' source to
+    /// hold this list to it.
+    /// </remarks>
+    internal static readonly string[] OmittedPrefixes = ["System.", "Microsoft."];
+
+    /// <summary>
+    /// The facade names both collectors drop by name, beside <see cref="OmittedPrefixes"/>.
+    /// </summary>
+    internal static readonly string[] OmittedNames = ["netstandard", "mscorlib", "WindowsBase"];
+
+    /// <summary>
+    /// K4's own precondition: every name it forbids is one a closure report can carry.
+    /// </summary>
+    /// <remarks>
+    /// A pure function over the list it is given, in the idiom of group K, so the test can show it
+    /// rejecting the list as it stood before 2026-10-11 without editing the checkout.
+    /// </remarks>
+    internal static IEnumerable<string> K4UnreadableForbidden(IEnumerable<string> forbidden)
+    {
+        foreach (var name in forbidden)
+        {
+            var omitted =
+                OmittedPrefixes.Any(prefix => name.StartsWith(prefix, StringComparison.Ordinal)) ||
+                OmittedNames.Contains(name, StringComparer.Ordinal);
+
+            if (omitted)
+            {
+                yield return
+                    $"K4 forbids {name}, which no closure report can carry: the collectors drop that " +
+                    "name before the rule reads a report, so the check could never fire";
+            }
+        }
+    }
 
     /// <summary>One row of the register's composition table.</summary>
     /// <summary>

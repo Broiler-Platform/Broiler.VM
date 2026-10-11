@@ -241,6 +241,55 @@ public sealed class CompositionRegisterTests
     }
 
     /// <summary>
+    /// K4's forbidden list names only what a closure report can carry.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A forbidden name the collectors drop before writing a report is a check that can never fire.
+    /// Until 2026-10-11 the list carried reflection-emit and test-platform names of exactly that
+    /// shape, and the rule's statement promised what they could not deliver.
+    /// </para>
+    /// <para>
+    /// <b>The prefixes and facades are the collectors', not this rule's</b>, so the test reads both
+    /// collectors' source and asserts that each still drops every one of them. A collector that
+    /// stopped dropping one fails here, and the list of what K4 cannot see is corrected in the same
+    /// change rather than left describing a filter that no longer runs.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void K4_Forbids_Only_Names_A_Closure_Report_Can_Carry()
+    {
+        Assert.Empty(CompositionRules.K4UnreadableForbidden(CompositionRules.ForbiddenInAClosure));
+
+        // The rejecting direction is the list's own shape before 2026-10-11: a reflection-emit name
+        // and a test-platform name, each beside a name a report can carry.
+        var emit = Assert.Single(
+            CompositionRules.K4UnreadableForbidden(["Broiler.VM.Fixtures", "System.Reflection.Emit"]));
+        Assert.Contains("System.Reflection.Emit", emit, StringComparison.Ordinal);
+
+        var platform = Assert.Single(
+            CompositionRules.K4UnreadableForbidden(["xunit.core", "Microsoft.TestPlatform.CommunicationUtilities"]));
+        Assert.Contains("Microsoft.TestPlatform.CommunicationUtilities", platform, StringComparison.Ordinal);
+
+        Assert.Single(CompositionRules.K4UnreadableForbidden(["netstandard"]));
+
+        foreach (var collector in new[] { "eng/collect-evidence.py", "eng/collect-js-evidence.py" })
+        {
+            var source = File.ReadAllText(Path.Combine(ComponentGraph.Root, collector));
+
+            foreach (var prefix in CompositionRules.OmittedPrefixes)
+            {
+                Assert.Contains($"not name.startswith(\"{prefix}\")", source, StringComparison.Ordinal);
+            }
+
+            foreach (var name in CompositionRules.OmittedNames)
+            {
+                Assert.Contains($"\"{name}.dll\"", source, StringComparison.Ordinal);
+            }
+        }
+    }
+
+    /// <summary>
     /// K5: the native-execution column and the images it describes say the same thing.
     /// </summary>
     /// <remarks>

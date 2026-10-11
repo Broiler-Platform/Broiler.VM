@@ -46,11 +46,20 @@ any Native AOT image.
 | `Microsoft.NET.Test.Sdk` | 17.8.0 | MIT | Test host | As above |
 | `Microsoft.CodeAnalysis.CSharp` | 5.3.0 | MIT | Used by the architecture suite to read source for the Code Assurance rules | Test-only. It is the reason rule B1 has a real witness: the test assembly genuinely violates the framework-only rule, which is what makes that rule falsifiable |
 
-**The closure reports are the check that this table is true.** Every published composition's
-closure is listed in each evidence bundle, and rule K4 asserts that a closure contains exactly the
-composition, the three core assemblies and the profile assemblies its register row declares - no
-fixture, no testing framework, no reflection-emit assembly. A build-time dependency that leaked
-into a shipped closure would fail that rule rather than survive as a missing row here.
+**The closure reports are the check that this table is true, for every dependency whose name is
+not a framework name.** Every published composition's closure is listed in each evidence bundle,
+and rule K4 asserts that a closure contains exactly the composition, the three core assemblies and
+the profile assemblies its register row declares - no fixture and no testing framework. A
+build-time dependency that leaked into a shipped closure would fail that rule rather than survive
+as a missing row here. A closure report lists non-framework assemblies only: the collectors drop
+every name beginning with `System.` or `Microsoft.`, so a leak of `Microsoft.CodeAnalysis.CSharp`,
+or of the assemblies `Microsoft.NET.Test.Sdk` brings, would not show in one. Those are held where
+they would enter instead: rule A4 refuses a test-only project in a product project, and rules such
+as A12, A13 and N1 refuse a package reference in a composition root, a consumer profile and the
+JavaScript profile. Reflection emit is rule B5's. *(Corrected 2026-10-11: the paragraph listed "no
+reflection-emit assembly" among what rule K4 asserts, and said without condition that a leaked
+build-time dependency "would fail that rule". A closure report cannot carry a `System.*` or
+`Microsoft.*` name, so neither held for a dependency named that way.)*
 
 ---
 
