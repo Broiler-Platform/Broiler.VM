@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Runtime.ExceptionServices;
+using System.Threading;
 using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -245,16 +248,10 @@ internal sealed class JsInstance : IVmInstanceState
 internal static class JsExecution
 {
     /// <summary>Builds an instance and its realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C41876
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2877C3
     // Broiler-Human:        PENDING
-    internal static VmExecutionStep Instantiate(
-        JsProgram program,
-        IVmExecutionEnvironment environment,
-        IJsHostSurface? hostSurface,
-        System.Threading.CancellationToken cancellationToken,
-        bool handleStress = false,
-        bool sweepsFinalization = false,
-        JsIntlTables? intl = null)
+    internal static VmExecutionStep Instantiate(JsProgram program, IVmExecutionEnvironment environment, IJsHostSurface? hostSurface,
+        CancellationToken cancellationToken, bool handleStress = false, bool sweepsFinalization = false, JsIntlTables? intl = null)
     {
         // A BASELINE ARTIFACT THIS PROCESS CANNOT ENTER IS REFUSED BEFORE ANYTHING IS CHARGED, and it
         // is a refusal and not a fallback. The bytecode is in the same artifact and this arm will not
@@ -275,20 +272,12 @@ internal static class JsExecution
             return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
         }
 
-        var engine = new JsEngine(
-            environment.Meter,
-            cancellationToken,
-            environment.Capabilities,
-            program.AdmittedSurfaces,
-            nativeForm: native,
-            valueForm: native && program.NativeValueForm,
-            handleStress: handleStress,
-            sweepsFinalization: sweepsFinalization,
-            intl: intl);
+        var engine = new JsEngine(environment.Meter, cancellationToken, environment.Capabilities, program.AdmittedSurfaces, nativeForm: native,
+            valueForm: native && program.NativeValueForm, handleStress: handleStress, sweepsFinalization: sweepsFinalization, intl: intl);
 
         // THE PAGE IS MAPPED NOW AND NOT AT THE FIRST CALL, so a process that may not make memory
         // executable refuses the instance instead of faulting its first invocation.
-        if (native && engine.NativePageOf(program) is null)
+        if (native && JsEngine.NativePageOf(program) is null)
         {
             return VmExecutionStep.ContractViolation(VmReason.UnsatisfiedHostAssumption);
         }
@@ -337,8 +326,7 @@ internal static class JsExecution
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=A28546
     // Broiler-Falsified-If: a turn touches the realm outside the step bracket it opens
     // Broiler-Human:        PENDING
-    private static VmExecutionStep? RunHostTurn(
-        VmProfileId profileId, JsInstance instance, IJsHostSurface surface)
+    private static VmExecutionStep? RunHostTurn(VmProfileId profileId, JsInstance instance, IJsHostSurface surface)
     {
         var realm = instance.Engine.HostRealm;
 
@@ -396,7 +384,7 @@ internal static class JsExecution
     /// belongs.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=FC5623
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6AD406
     // Broiler-Falsified-If: an embedder that throws leaves an instance a caller can obtain
     // Broiler-Human:        PENDING
     private static VmExecutionStep? InstallHostSurface(JsEngine engine, IJsHostSurface surface)
@@ -439,10 +427,9 @@ internal static class JsExecution
         }
         catch (JsAbort abort)
         {
-            return VmExecutionStep.ContractViolation(
-                abort.Kind is JsAbortKind.Cancelled ? VmReason.Cancelled : VmReason.AllowanceExhausted);
+            return VmExecutionStep.ContractViolation(abort.Kind is JsAbortKind.Cancelled ? VmReason.Cancelled : VmReason.AllowanceExhausted);
         }
-        catch (System.Exception)
+        catch (Exception)
         {
             return VmExecutionStep.ContractViolation(VmReason.HostCapabilityFaulted);
         }
@@ -490,13 +477,12 @@ internal static class JsExecution
     /// told there is nothing left without having to ask first — and so that a program with no jobs
     /// at all never creates a suspension.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=B5AF9E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=FDED98
     // Broiler-Falsified-If: a step parks with an empty queue, or completes with a job still due
     // Broiler-Human:        PENDING
     private static VmExecutionStep StepJobs(VmProfileId profileId, JsInstance instance, int turn)
     {
-        instance.Engine.Loader =
-            instance.Environment.TryGetArtifactLoadMediator(out var mediator) ? mediator : null;
+        instance.Engine.Loader = instance.Environment.TryGetArtifactLoadMediator(out var mediator) ? mediator : null;
 
         try
         {
@@ -521,7 +507,7 @@ internal static class JsExecution
                 _ => VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation),
             };
         }
-        catch (System.InsufficientExecutionStackException)
+        catch (InsufficientExecutionStackException)
         {
             return VmExecutionStep.Faulted(
                 new JsUncaught(profileId, "Maximum call stack size exceeded", "RangeError"));
@@ -536,8 +522,7 @@ internal static class JsExecution
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=5DF4EF
     // Broiler-Falsified-If: a continuation is honoured against an instance that did not produce it
     // Broiler-Human:        PENDING
-    internal static VmExecutionStep Resume(
-        VmProfileId profileId, IVmInstanceState state, IVmProfileContinuation continuation)
+    internal static VmExecutionStep Resume(VmProfileId profileId, IVmInstanceState state, IVmProfileContinuation continuation)
     {
         if (state is not JsInstance instance ||
             continuation is not JsContinuation parked ||
@@ -600,27 +585,23 @@ internal static class JsExecution
     }
 
     /// <summary>Runs every due job on the guest stack and reports what happened.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2FD85C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=66824B
     // Broiler-Human:        PENDING
     private static VmExecutionStep DrainJobs(VmProfileId profileId, JsInstance instance)
     {
         instance.InvocationCount++;
 
-        instance.Engine.Loader =
-            instance.Environment.TryGetArtifactLoadMediator(out var mediator) ? mediator : null;
+        instance.Engine.Loader = instance.Environment.TryGetArtifactLoadMediator(out var mediator) ? mediator : null;
 
         try
         {
             var value = RunOnGuestStack(instance, unit: null);
 
-            return VmExecutionStep.Completed(
-                new JsCompletion(profileId, CompletionText(instance, value), value.TypeOf()));
+            return VmExecutionStep.Completed(new JsCompletion(profileId, CompletionText(instance, value), value.TypeOf()));
         }
         catch (JsThrow thrown)
         {
-            return VmExecutionStep.Faulted(
-                new JsUncaught(
-                    profileId, instance.Engine.Render(thrown.Value), ConstructorName(instance, thrown.Value)));
+            return VmExecutionStep.Faulted(new JsUncaught(profileId, instance.Engine.Render(thrown.Value), ConstructorName(instance, thrown.Value)));
         }
         catch (JsAbort abort)
         {
@@ -631,10 +612,9 @@ internal static class JsExecution
                 _ => VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation),
             };
         }
-        catch (System.InsufficientExecutionStackException)
+        catch (InsufficientExecutionStackException)
         {
-            return VmExecutionStep.Faulted(
-                new JsUncaught(profileId, "Maximum call stack size exceeded", "RangeError"));
+            return VmExecutionStep.Faulted(new JsUncaught(profileId, "Maximum call stack size exceeded", "RangeError"));
         }
         finally
         {
@@ -643,10 +623,9 @@ internal static class JsExecution
     }
 
     /// <summary>Runs one entry point against an existing realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=32F352
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F653F7
     // Broiler-Human:        PENDING
-    internal static VmExecutionStep Invoke(
-        VmProfileId profileId, JsInstance instance, in VmInvocationRequest request)
+    internal static VmExecutionStep Invoke(VmProfileId profileId, JsInstance instance, in VmInvocationRequest request)
     {
         var name = System.Text.Encoding.UTF8.GetString(request.EntryPoint.Utf8);
 
@@ -662,12 +641,12 @@ internal static class JsExecution
         //
         // The name cannot collide with a script's, because a script entry point is named by
         // whatever compiled it and `#` begins no JavaScript identifier.
-        if (string.Equals(name, DrainEntryPoint, System.StringComparison.Ordinal))
+        if (string.Equals(name, DrainEntryPoint, StringComparison.Ordinal))
         {
             return DrainJobs(profileId, instance);
         }
 
-        if (string.Equals(name, StepEntryPoint, System.StringComparison.Ordinal))
+        if (string.Equals(name, StepEntryPoint, StringComparison.Ordinal))
         {
             instance.InvocationCount++;
             return StepJobs(profileId, instance, 0);
@@ -678,12 +657,11 @@ internal static class JsExecution
         // turn to give - and answering that as an undefined entry point is the honest reading: the
         // name means nothing in a realm with no embedder in it, exactly as a script entry point
         // means nothing in a program that does not define it.
-        if (string.Equals(name, TurnEntryPoint, System.StringComparison.Ordinal))
+        if (string.Equals(name, TurnEntryPoint, StringComparison.Ordinal))
         {
             if (instance.HostSurface is not { } surface)
             {
-                return VmExecutionStep.Faulted(
-                    new JsUncaught(profileId, "entry point is not defined", "ReferenceError"));
+                return VmExecutionStep.Faulted(new JsUncaught(profileId, "entry point is not defined", "ReferenceError"));
             }
 
             instance.InvocationCount++;
@@ -702,8 +680,7 @@ internal static class JsExecution
             {
                 var turn = RunHostTurn(profileId, instance, surface);
 
-                return turn ?? VmExecutionStep.Completed(
-                    new JsCompletion(profileId, "undefined", "undefined"));
+                return turn ?? VmExecutionStep.Completed(new JsCompletion(profileId, "undefined", "undefined"));
             }
             finally
             {
@@ -749,7 +726,7 @@ internal static class JsExecution
                 _ => VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation),
             };
         }
-        catch (System.InsufficientExecutionStackException)
+        catch (InsufficientExecutionStackException)
         {
             return VmExecutionStep.Faulted(
                 new JsUncaught(profileId, "Maximum call stack size exceeded", "RangeError"));
@@ -858,23 +835,23 @@ internal static class JsExecution
     /// raises is carried back and rethrown on the calling thread, so the caller sees the exception
     /// it would have seen had the body run inline.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=63D0AD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=5EAA95
     // Broiler-Falsified-If: host-supplied setup runs on the caller's stack
     // Broiler-Human:        PENDING
-    private static void RunOnGuestStack(System.Action body)
+    private static void RunOnGuestStack(Action body)
     {
-        System.Runtime.ExceptionServices.ExceptionDispatchInfo? raised = null;
+        ExceptionDispatchInfo? raised = null;
 
-        var worker = new System.Threading.Thread(
+        var worker = new Thread(
             () =>
             {
                 try
                 {
                     body();
                 }
-                catch (System.Exception failure)
+                catch (Exception failure)
                 {
-                    raised = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure);
+                    raised = ExceptionDispatchInfo.Capture(failure);
                 }
             },
             GuestStackBytes)
@@ -896,16 +873,16 @@ internal static class JsExecution
     /// capability this profile imports declares caller-thread affinity - which this satisfies: the
     /// thread that calls it is the thread the guest is running on.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F6F6BF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6F728A
     // Broiler-Falsified-If: guest code runs on the caller's stack, or an exception the guest raised does not reach the caller
     // Broiler-Human:        PENDING
     private static JsValue RunOnGuestStack(JsInstance instance, uint? unit)
     {
         var completed = JsValue.Undefined;
         JsAbort? pending = null;
-        System.Runtime.ExceptionServices.ExceptionDispatchInfo? raised = null;
+        ExceptionDispatchInfo? raised = null;
 
-        var worker = new System.Threading.Thread(
+        var worker = new Thread(
             () =>
             {
                 try
@@ -956,9 +933,9 @@ internal static class JsExecution
                         throw pending;
                     }
                 }
-                catch (System.Exception failure)
+                catch (Exception failure)
                 {
-                    raised = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure);
+                    raised = ExceptionDispatchInfo.Capture(failure);
                 }
             },
             GuestStackBytes)
@@ -980,15 +957,15 @@ internal static class JsExecution
     /// carried out rather than raised, because a job that throws does not stop the stepping any
     /// more than it stops a drain.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=9C9D6C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=853E45
     // Broiler-Falsified-If: a job runs on the caller's stack, or a job that throws ends the stepping
     // Broiler-Human:        PENDING
     private static string RunOneJobOnGuestStack(JsInstance instance)
     {
         var rendered = string.Empty;
-        System.Runtime.ExceptionServices.ExceptionDispatchInfo? raised = null;
+        ExceptionDispatchInfo? raised = null;
 
-        var worker = new System.Threading.Thread(
+        var worker = new Thread(
             () =>
             {
                 try
@@ -1028,9 +1005,9 @@ internal static class JsExecution
                         throw pending;
                     }
                 }
-                catch (System.Exception failure)
+                catch (Exception failure)
                 {
-                    raised = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure);
+                    raised = ExceptionDispatchInfo.Capture(failure);
                 }
             },
             GuestStackBytes)

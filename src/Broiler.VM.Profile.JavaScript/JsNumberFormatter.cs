@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>One part of a formatted number: its type, its text and, in a range, its source.</summary>
@@ -57,15 +62,15 @@ internal sealed class JsNumberFormatter
     // Broiler-Human:        PENDING
     private sealed class Built
     {
-        internal System.Collections.Generic.List<Segment> OuterPrefix { get; } = [];
+        internal List<Segment> OuterPrefix { get; } = [];
 
-        internal System.Collections.Generic.List<Segment> MiddlePrefix { get; } = [];
+        internal List<Segment> MiddlePrefix { get; } = [];
 
-        internal System.Collections.Generic.List<Segment> Core { get; } = [];
+        internal List<Segment> Core { get; } = [];
 
-        internal System.Collections.Generic.List<Segment> MiddleSuffix { get; } = [];
+        internal List<Segment> MiddleSuffix { get; } = [];
 
-        internal System.Collections.Generic.List<Segment> OuterSuffix { get; } = [];
+        internal List<Segment> OuterSuffix { get; } = [];
 
         /// <summary>The middle layer's text, which two numbers of a range share when it is equal.</summary>
         internal string MiddleKey { get; set; } = string.Empty;
@@ -100,14 +105,14 @@ internal sealed class JsNumberFormatter
     // Broiler-Human:        PENDING
     private readonly string[]? digits;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CF866A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D55FB2
     // Broiler-Human:        PENDING
     internal JsNumberFormatter(JsNumberData data, string language, string numberingSystem)
     {
         this.data = data;
         this.language = language;
         NumberingSystem = numberingSystem;
-        digits = numberingSystem == "latn" ? null : System.Collections.Generic.CollectionExtensions.GetValueOrDefault(data.NumberingSystems, numberingSystem);
+        digits = numberingSystem == "latn" ? null : CollectionExtensions.GetValueOrDefault(data.NumberingSystems, numberingSystem);
     }
 
     // ---- the resolved options (ECMA-402 table 15) ------------------------------------------------
@@ -161,11 +166,11 @@ internal sealed class JsNumberFormatter
     // ---- the operations ------------------------------------------------------------------------
 
     /// <summary>ECMA-402's FormatNumeric.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.6; IP=Low; Security=Low; Resources=2; Fingerprint=4BBFA0
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.6; IP=Low; Security=Low; Resources=2; Fingerprint=91FDE7
     // Broiler-Human:        PENDING
     internal string Format(JsEngine engine, JsDecimal x)
     {
-        var text = new System.Text.StringBuilder();
+        var text = new StringBuilder();
 
         foreach (var part in Parts(engine, x))
         {
@@ -176,12 +181,12 @@ internal sealed class JsNumberFormatter
     }
 
     /// <summary>ECMA-402's PartitionNumberPattern, as the parts FormatNumericToParts answers.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.4; IP=Low; Security=Medium; Resources=2; Fingerprint=B9A716
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.4; IP=Low; Security=Medium; Resources=2; Fingerprint=601577
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsNumberPart> Parts(JsEngine engine, JsDecimal x)
+    internal List<JsNumberPart> Parts(JsEngine engine, JsDecimal x)
     {
         var built = Build(engine, x, approximately: false);
-        var parts = new System.Collections.Generic.List<(Segment Segment, string? Source)>();
+        var parts = new List<(Segment Segment, string? Source)>();
         Emit(parts, built.OuterPrefix, built.MiddlePrefix, null);
         AddCore(parts, built, built, null);
         Emit(parts, built.MiddleSuffix, built.OuterSuffix, null);
@@ -189,15 +194,15 @@ internal sealed class JsNumberFormatter
     }
 
     /// <summary>ECMA-402's PartitionNumberRangePattern.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.19; IP=Low; Security=Medium; Resources=3; Fingerprint=98A328
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.19; IP=Low; Security=Medium; Resources=3; Fingerprint=08172A
     // Broiler-Falsified-If: a range shares or repeats a layer otherwise than ICU's collapse rules, or two values that format alike are not written approximately
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsNumberPart> RangeParts(JsEngine engine, JsDecimal x, JsDecimal y)
+    internal List<JsNumberPart> RangeParts(JsEngine engine, JsDecimal x, JsDecimal y)
     {
-        if (string.Equals(Format(engine, x), Format(engine, y), System.StringComparison.Ordinal))
+        if (string.Equals(Format(engine, x), Format(engine, y), StringComparison.Ordinal))
         {
             var approximate = Build(engine, x, approximately: true);
-            var shared = new System.Collections.Generic.List<(Segment, string?)>();
+            var shared = new List<(Segment, string?)>();
             Emit(shared, approximate.OuterPrefix, approximate.MiddlePrefix, "shared");
             AddCore(shared, approximate, approximate, "shared");
             Emit(shared, approximate.MiddleSuffix, approximate.OuterSuffix, "shared");
@@ -207,9 +212,9 @@ internal sealed class JsNumberFormatter
         var first = Build(engine, x, approximately: false);
         var second = Build(engine, y, approximately: false);
 
-        var collapseOuter = string.Equals(OuterKey(first), OuterKey(second), System.StringComparison.Ordinal);
+        var collapseOuter = string.Equals(OuterKey(first), OuterKey(second), StringComparison.Ordinal);
         var collapseMiddle = collapseOuter &&
-            string.Equals(first.MiddleKey, second.MiddleKey, System.StringComparison.Ordinal) &&
+            string.Equals(first.MiddleKey, second.MiddleKey, StringComparison.Ordinal) &&
             first.MiddleLength > 1;
 
         var repeat = first.InnerLength > 0 ||
@@ -217,8 +222,8 @@ internal sealed class JsNumberFormatter
             (!collapseOuter && first.OuterLength > 0);
 
         var range = data.Value(language, "misc.range") ?? "{0}\u2013{1}";
-        var open = range.IndexOf("{0}", System.StringComparison.Ordinal);
-        var close = range.IndexOf("{1}", System.StringComparison.Ordinal);
+        var open = range.IndexOf("{0}", StringComparison.Ordinal);
+        var close = range.IndexOf("{1}", StringComparison.Ordinal);
         var separator = range[(open + 3)..close];
 
         if (repeat)
@@ -227,7 +232,7 @@ internal sealed class JsNumberFormatter
                 (separator.Length != 0 && IsPatternWhiteSpace(separator[^1]) ? string.Empty : " ");
         }
 
-        var parts = new System.Collections.Generic.List<(Segment Segment, string? Source)>();
+        var parts = new List<(Segment Segment, string? Source)>();
 
         // THE COLLAPSED OUTER NAME TAKES THE RANGE'S PLURAL, by the language's plural ranges.
         Built? outer = null;
@@ -275,13 +280,9 @@ internal sealed class JsNumberFormatter
     // Broiler-Human:        PENDING
     private string OuterKey(Built built) => built.OuterLength == 0 ? string.Empty : Style + "|" + Unit + "|" + Currency;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F2607F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A29E7C
     // Broiler-Human:        PENDING
-    private static void Emit(
-        System.Collections.Generic.List<(Segment, string?)> parts,
-        System.Collections.Generic.List<Segment> first,
-        System.Collections.Generic.List<Segment> second,
-        string? source)
+    private static void Emit(List<(Segment, string?)> parts, List<Segment> first, List<Segment> second, string? source)
     {
         foreach (var segment in first)
         {
@@ -298,9 +299,9 @@ internal sealed class JsNumberFormatter
     /// The digits with the currency spacing on each side: the spacing before them is decided by
     /// <paramref name="prefixOf"/>'s prefix and after them by <paramref name="suffixOf"/>'s suffix.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s4.2; IP=Low; Security=Low; Resources=1; Fingerprint=296D08
+    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s4.2; IP=Low; Security=Low; Resources=1; Fingerprint=B00DE1
     // Broiler-Human:        PENDING
-    private void AddCore(System.Collections.Generic.List<(Segment, string?)> parts, Built? prefixOf, Built? suffixOf, string? source)
+    private void AddCore(List<(Segment, string?)> parts, Built? prefixOf, Built? suffixOf, string? source)
     {
         var core = prefixOf ?? suffixOf!;
 
@@ -324,11 +325,11 @@ internal sealed class JsNumberFormatter
     /// The parts a list of segments is: each field trimmed of the default-ignorable characters at its
     /// ends, which become literals, and adjacent literals joined, shared where their sources differ.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=36881F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=640122
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<JsNumberPart> Flatten(System.Collections.Generic.List<(Segment Segment, string? Source)> segments)
+    private static List<JsNumberPart> Flatten(List<(Segment Segment, string? Source)> segments)
     {
-        var trimmed = new System.Collections.Generic.List<(Segment Segment, string? Source)>();
+        var trimmed = new List<(Segment Segment, string? Source)>();
 
         foreach (var (segment, source) in segments)
         {
@@ -372,7 +373,7 @@ internal sealed class JsNumberFormatter
             }
         }
 
-        var parts = new System.Collections.Generic.List<JsNumberPart>(trimmed.Count);
+        var parts = new List<JsNumberPart>(trimmed.Count);
 
         foreach (var (segment, source) in trimmed)
         {
@@ -412,7 +413,7 @@ internal sealed class JsNumberFormatter
     // ---- building one number -------------------------------------------------------------------
 
     /// <summary>ECMA-402's PartitionNumberPattern, layered.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.4; IP=Low; Security=Medium; Resources=3; Fingerprint=C3D131
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.4; IP=Low; Security=Medium; Resources=3; Fingerprint=5D53C2
     // Broiler-Human:        PENDING
     private Built Build(JsEngine engine, JsDecimal x, bool approximately)
     {
@@ -468,7 +469,7 @@ internal sealed class JsNumberFormatter
         };
 
         var compactKey = Notation == "compact" && rounded.IsFinite && !rounded.IsZero
-            ? System.Math.Min(exponent + rounded.Magnitude, 14)
+            ? Math.Min(exponent + rounded.Magnitude, 14)
             : 0;
 
         var operands = JsPluralOperands.Of(rounded.IsFinite ? n : "0", Notation == "compact" ? exponent : 0);
@@ -484,7 +485,7 @@ internal sealed class JsNumberFormatter
         built.PrefixSpacing = prefixEndsInCurrency;
         built.SuffixSpacing = suffixStartsWithCurrency;
 
-        var key = new System.Text.StringBuilder();
+        var key = new StringBuilder();
         var length = 0;
 
         foreach (var segment in prefix)
@@ -531,7 +532,7 @@ internal sealed class JsNumberFormatter
                     built.InnerLength += CodePoints(minus);
                 }
 
-                var power = Transliterate(System.Math.Abs((long)exponent).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                var power = Transliterate(Math.Abs((long)exponent).ToString(CultureInfo.InvariantCulture));
                 built.Core.Add(new Segment("exponentInteger", power));
                 built.InnerLength += CodePoints(power);
             }
@@ -543,7 +544,7 @@ internal sealed class JsNumberFormatter
     }
 
     /// <summary>The outer layer for a plural: a unit's pattern, or a currency's name in its pattern.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=A7436F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=C3161B
     // Broiler-Human:        PENDING
     private void AddOuter(Built built, string plural)
     {
@@ -559,7 +560,7 @@ internal sealed class JsNumberFormatter
         {
             pattern = data.Value(language, "currency.unitPattern-count-" + plural) ??
                 data.Value(language, "currency.unitPattern-count-other") ?? "{0} {1}";
-            var names = System.Collections.Generic.CollectionExtensions.GetValueOrDefault(data.Currencies, language + "|" + Currency);
+            var names = CollectionExtensions.GetValueOrDefault(data.Currencies, language + "|" + Currency);
             name = names is null ? Currency
                 : (plural == "one" ? names.One : names.Other) is { Length: > 0 } counted ? counted
                 : names.Other.Length != 0 ? names.Other
@@ -572,14 +573,14 @@ internal sealed class JsNumberFormatter
             return;
         }
 
-        var at = pattern.IndexOf("{0}", System.StringComparison.Ordinal);
+        var at = pattern.IndexOf("{0}", StringComparison.Ordinal);
 
         if (at < 0)
         {
             return;
         }
 
-        void Add(System.Collections.Generic.List<Segment> into, string text)
+        void Add(List<Segment> into, string text)
         {
             if (text.Length == 0)
             {
@@ -594,7 +595,7 @@ internal sealed class JsNumberFormatter
             }
 
             // A CURRENCY'S NAME PATTERN: {1} is the name, and the rest is literal.
-            var slot = text.IndexOf("{1}", System.StringComparison.Ordinal);
+            var slot = text.IndexOf("{1}", StringComparison.Ordinal);
 
             if (slot < 0)
             {
@@ -619,7 +620,7 @@ internal sealed class JsNumberFormatter
     /// or the numerator's pattern inside the denominator's per-unit pattern or the width's compound
     /// pattern.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 2 s6.1; IP=Low; Security=Low; Resources=2; Fingerprint=6BDC09
+    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 2 s6.1; IP=Low; Security=Low; Resources=2; Fingerprint=203C2A
     // Broiler-Human:        PENDING
     private string? UnitPattern(string unit, string width, string plural)
     {
@@ -657,7 +658,7 @@ internal sealed class JsNumberFormatter
             return direct;
         }
 
-        var per = unit.IndexOf("-per-", System.StringComparison.Ordinal);
+        var per = unit.IndexOf("-per-", StringComparison.Ordinal);
 
         if (per < 0)
         {
@@ -674,14 +675,14 @@ internal sealed class JsNumberFormatter
 
         if (Field(denominator, "perUnitPattern") is { } perUnit)
         {
-            return perUnit.Replace("{0}", numerator, System.StringComparison.Ordinal);
+            return perUnit.Replace("{0}", numerator, StringComparison.Ordinal);
         }
 
         var compound = Field("per", "compoundUnitPattern") ?? "{0}/{1}";
         var single = (Field(denominator, "unitPattern-count-one") ?? Field(denominator, "unitPattern-count-other") ?? denominator)
-            .Replace("{0}", string.Empty, System.StringComparison.Ordinal).Trim();
+            .Replace("{0}", string.Empty, StringComparison.Ordinal).Trim();
 
-        return compound.Replace("{0}", numerator, System.StringComparison.Ordinal).Replace("{1}", single, System.StringComparison.Ordinal);
+        return compound.Replace("{0}", numerator, StringComparison.Ordinal).Replace("{1}", single, StringComparison.Ordinal);
     }
 
     /// <summary>
@@ -719,7 +720,7 @@ internal sealed class JsNumberFormatter
     };
 
     /// <summary>The compact pattern for a magnitude and a plural, or nothing where the locale does not compact it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=37F655
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9EB5C0
     // Broiler-Human:        PENDING
     private string? CompactPattern(int magnitude, string plural)
     {
@@ -728,7 +729,7 @@ internal sealed class JsNumberFormatter
             return null;
         }
 
-        var key = "1" + new string('0', System.Math.Min(magnitude, 14));
+        var key = "1" + new string('0', Math.Min(magnitude, 14));
         var root = Style == "currency" && CurrencyDisplay != "name"
             ? "currency.short.standard."
             : CompactDisplay == "long" ? "decimal.long.decimalFormat." : "decimal.short.decimalFormat.";
@@ -741,7 +742,7 @@ internal sealed class JsNumberFormatter
     /// ECMA-402's ComputeExponentForMagnitude: 0 for the standard notation, the magnitude for the
     /// scientific, its multiple of three below for the engineering, and the compact pattern's.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.14; IP=Low; Security=Low; Resources=1; Fingerprint=575CD7
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.14; IP=Low; Security=Low; Resources=1; Fingerprint=75DB8F
     // Broiler-Human:        PENDING
     private int ExponentForMagnitude(int magnitude)
     {
@@ -750,7 +751,7 @@ internal sealed class JsNumberFormatter
             case "scientific":
                 return magnitude;
             case "engineering":
-                return (int)System.Math.Floor(magnitude / 3.0) * 3;
+                return (int)Math.Floor(magnitude / 3.0) * 3;
             case "compact":
                 var pattern = CompactPattern(magnitude, "other");
 
@@ -769,7 +770,7 @@ internal sealed class JsNumberFormatter
                     }
                 }
 
-                return System.Math.Min(magnitude, 14) - (zeros - 1);
+                return Math.Min(magnitude, 14) - (zeros - 1);
             default:
                 return 0;
         }
@@ -873,22 +874,15 @@ internal sealed class JsNumberFormatter
     /// One affix as ICU's patternInfoToStringBuilder writes it: the positive or negative subpattern's
     /// tokens, with the sign, a plus sign or the approximately sign at the sign's place.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s3.2; IP=Low; Security=Medium; Resources=2; Fingerprint=D3CA2E
+    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s3.2; IP=Low; Security=Medium; Resources=2; Fingerprint=71E23C
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<Segment> Affix(
-        JsNumberPattern pattern,
-        bool patternIsCompact,
-        JsNumberPattern? joined,
-        bool isPrefix,
-        int signType,
-        bool approximately,
-        out bool currencyAtNumber)
+    private List<Segment> Affix(JsNumberPattern pattern, bool patternIsCompact, JsNumberPattern? joined, bool isPrefix, int signType, bool approximately, out bool currencyAtNumber)
     {
         var plusReplacesMinus = signType == 1 && !pattern.PositiveHasPlus;
         var useNegative = pattern.NegativePrefix is not null &&
             (signType == 2 || (pattern.NegativeHasMinus && !plusReplacesMinus && !approximately));
 
-        var tokens = new System.Collections.Generic.List<(JsAffixToken Token, bool Compact)>();
+        var tokens = new List<(JsAffixToken Token, bool Compact)>();
 
         foreach (var token in useNegative ? (isPrefix ? pattern.NegativePrefix! : pattern.NegativeSuffix!) : (isPrefix ? pattern.PositivePrefix : pattern.PositiveSuffix))
         {
@@ -898,7 +892,7 @@ internal sealed class JsNumberFormatter
         // A JOINED COMPACT AFFIX SITS NEXT TO THE NUMBER, its text the compact part.
         if (joined is not null)
         {
-            var compactTokens = new System.Collections.Generic.List<(JsAffixToken, bool)>();
+            var compactTokens = new List<(JsAffixToken, bool)>();
 
             foreach (var token in isPrefix ? joined.PositivePrefix : joined.PositiveSuffix)
             {
@@ -920,7 +914,7 @@ internal sealed class JsNumberFormatter
             ? (plusReplacesMinus ? "~+" : signType == 2 ? "~-" : "~")
             : plusReplacesMinus ? "+" : "-";
 
-        var segments = new System.Collections.Generic.List<Segment>();
+        var segments = new List<Segment>();
 
         void Sign()
         {
@@ -982,12 +976,12 @@ internal sealed class JsNumberFormatter
     }
 
     /// <summary>The currency's text for one, two or three currency signs in a pattern, and its ends' kinds for spacing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E26E20
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E85AFB
     // Broiler-Human:        PENDING
     private (string Text, string Ends) CurrencyText(int count)
     {
         var code = Currency ?? "XXX";
-        var names = System.Collections.Generic.CollectionExtensions.GetValueOrDefault(data.Currencies, language + "|" + code);
+        var names = CollectionExtensions.GetValueOrDefault(data.Currencies, language + "|" + code);
 
         if (count >= 2 || CurrencyDisplay == "code" || names is null)
         {
@@ -1051,7 +1045,7 @@ internal sealed class JsNumberFormatter
     }
 
     /// <summary>ASCII digits as the numbering system's.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 table 14; IP=Low; Security=Low; Resources=1; Fingerprint=3C9325
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 table 14; IP=Low; Security=Low; Resources=1; Fingerprint=FF2787
     // Broiler-Human:        PENDING
     private string Transliterate(string ascii)
     {
@@ -1060,7 +1054,7 @@ internal sealed class JsNumberFormatter
             return ascii;
         }
 
-        var text = new System.Text.StringBuilder(ascii.Length);
+        var text = new StringBuilder(ascii.Length);
 
         foreach (var c in ascii)
         {

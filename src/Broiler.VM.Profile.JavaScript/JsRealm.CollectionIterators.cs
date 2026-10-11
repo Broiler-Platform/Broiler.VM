@@ -57,70 +57,51 @@ internal sealed partial class JsRealm
         var mapEntries = Native("entries", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.Object(engine.Realm.CollectionIterator(
-                engine, thisValue, "Map Iterator", IndexedIteratorKind.Entry, wantsMap: true));
+            return JsValue.Object(engine.Realm.CollectionIterator(engine, thisValue, "Map Iterator", IndexedIteratorKind.Entry, wantsMap: true));
         });
 
         Method(MapPrototype, "keys", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.Object(engine.Realm.CollectionIterator(
-                engine, thisValue, "Map Iterator", IndexedIteratorKind.Key, wantsMap: true));
+            return JsValue.Object(engine.Realm.CollectionIterator(engine, thisValue, "Map Iterator", IndexedIteratorKind.Key, wantsMap: true));
         });
 
         Method(MapPrototype, "values", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.Object(engine.Realm.CollectionIterator(
-                engine, thisValue, "Map Iterator", IndexedIteratorKind.Value, wantsMap: true));
+            return JsValue.Object(engine.Realm.CollectionIterator(engine, thisValue, "Map Iterator", IndexedIteratorKind.Value, wantsMap: true));
         });
 
-        MapPrototype.SetOwnProperty(
-            "entries", JsProperty.Data(JsValue.Object(mapEntries), JsPropertyAttributes.BuiltIn));
-
-        MapPrototype.SetOwnSymbol(
-            IteratorSymbol, JsProperty.Data(JsValue.Object(mapEntries), JsPropertyAttributes.BuiltIn));
-
-        MapPrototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Map"), JsPropertyAttributes.Configurable));
+        MapPrototype.SetOwnProperty("entries", JsProperty.Data(JsValue.Object(mapEntries), JsPropertyAttributes.BuiltIn));
+        MapPrototype.SetOwnSymbol(IteratorSymbol, JsProperty.Data(JsValue.Object(mapEntries), JsPropertyAttributes.BuiltIn));
+        MapPrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Map"), JsPropertyAttributes.Configurable));
 
         var setValues = Native("values", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.Object(engine.Realm.CollectionIterator(
-                engine, thisValue, "Set Iterator", IndexedIteratorKind.Value, wantsMap: false));
+            return JsValue.Object(engine.Realm.CollectionIterator(engine, thisValue, "Set Iterator", IndexedIteratorKind.Value, wantsMap: false));
         });
 
         // A SET'S KEYS AND VALUES ARE THE SAME FUNCTION OBJECT, which the language says in those
         // words: `Set.prototype.keys` IS `Set.prototype.values`. Two functions that behaved the
         // same would pass every test but one, and that one is `Set.prototype.keys === values`.
-        SetPrototype.SetOwnProperty(
-            "values", JsProperty.Data(JsValue.Object(setValues), JsPropertyAttributes.BuiltIn));
-
-        SetPrototype.SetOwnProperty(
-            "keys", JsProperty.Data(JsValue.Object(setValues), JsPropertyAttributes.BuiltIn));
+        SetPrototype.SetOwnProperty("values", JsProperty.Data(JsValue.Object(setValues), JsPropertyAttributes.BuiltIn));
+        SetPrototype.SetOwnProperty("keys", JsProperty.Data(JsValue.Object(setValues), JsPropertyAttributes.BuiltIn));
 
         Method(SetPrototype, "entries", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.Object(engine.Realm.CollectionIterator(
-                engine, thisValue, "Set Iterator", IndexedIteratorKind.Entry, wantsMap: false));
+            return JsValue.Object(engine.Realm.CollectionIterator(engine, thisValue, "Set Iterator", IndexedIteratorKind.Entry, wantsMap: false));
         });
 
-        SetPrototype.SetOwnSymbol(
-            IteratorSymbol, JsProperty.Data(JsValue.Object(setValues), JsPropertyAttributes.BuiltIn));
-
-        SetPrototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Set"), JsPropertyAttributes.Configurable));
+        SetPrototype.SetOwnSymbol(IteratorSymbol, JsProperty.Data(JsValue.Object(setValues), JsPropertyAttributes.BuiltIn));
+        SetPrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Set"), JsPropertyAttributes.Configurable));
     }
 
     /// <summary>One iterator over a keyed collection's slots.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D8E690
     // Broiler-Human:        PENDING
-    private JsObject CollectionIterator(
-        JsEngine owner, JsValue receiver, string tag, IndexedIteratorKind kind, bool wantsMap)
+    private JsObject CollectionIterator(JsEngine owner, JsValue receiver, string tag, IndexedIteratorKind kind, bool wantsMap)
     {
         var table = TableOf(owner, receiver, tag, wantsMap);
 
@@ -134,8 +115,7 @@ internal sealed partial class JsRealm
                     // tombstone the walk stepped over is a step the cursor has to make too, and a
                     // cursor that made one step per call re-read the entry this walk had just
                     // answered with.
-                    return (
-                        true,
+                    return (true,
                         kind switch
                         {
                             IndexedIteratorKind.Key => key,

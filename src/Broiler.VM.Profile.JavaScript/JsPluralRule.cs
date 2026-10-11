@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+using System.Globalization;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -29,11 +32,10 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s5.1.1; IP=Low; Security=Low; Resources=1; Fingerprint=63F0D0
 // Broiler-Human:        PENDING
-internal readonly record struct JsPluralOperands(
-    long Integer, bool IntegerHuge, string Fraction, int CompactExponent)
+internal readonly record struct JsPluralOperands(long Integer, bool IntegerHuge, string Fraction, int CompactExponent)
 {
     /// <summary>The operands of a formatted decimal string: ASCII digits with an optional <c>.</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B987AF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3BDB0D
     // Broiler-Human:        PENDING
     internal static JsPluralOperands Of(string formatted, int compactExponent)
     {
@@ -43,7 +45,7 @@ internal readonly record struct JsPluralOperands(
 
         var trimmed = integer.TrimStart('0');
         var huge = trimmed.Length > 15;
-        var low = trimmed.Length == 0 ? 0 : long.Parse(huge ? trimmed[^15..] : trimmed, System.Globalization.CultureInfo.InvariantCulture);
+        var low = trimmed.Length == 0 ? 0 : long.Parse(huge ? trimmed[^15..] : trimmed, CultureInfo.InvariantCulture);
 
         return new JsPluralOperands(low, huge, fraction, compactExponent);
     }
@@ -71,22 +73,22 @@ internal sealed class JsPluralRule
     // Broiler-Human:        PENDING
     private sealed record Relation(char Operand, long Modulus, bool Negated, (long Low, long High)[] Ranges);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=69AE46
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=24B035
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<System.Collections.Generic.List<Relation>> alternatives;
+    private readonly List<List<Relation>> alternatives;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C1E0B9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=298587
     // Broiler-Human:        PENDING
-    private JsPluralRule(System.Collections.Generic.List<System.Collections.Generic.List<Relation>> alternatives) =>
+    private JsPluralRule(List<List<Relation>> alternatives) =>
         this.alternatives = alternatives;
 
     /// <summary>Reads a rule's condition; the empty condition holds always.</summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s5.1; IP=Low; Security=Medium; Resources=2; Fingerprint=06CC3C
+    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s5.1; IP=Low; Security=Medium; Resources=2; Fingerprint=E737BE
     // Broiler-Falsified-If: a rule from the pinned plurals.json reads as a condition other than the one it states
     // Broiler-Human:        PENDING
     internal static JsPluralRule Parse(string condition)
     {
-        var alternatives = new System.Collections.Generic.List<System.Collections.Generic.List<Relation>>();
+        var alternatives = new List<List<Relation>>();
 
         if (condition.Trim().Length == 0)
         {
@@ -95,7 +97,7 @@ internal sealed class JsPluralRule
 
         foreach (var alternative in condition.Split(" or "))
         {
-            var relations = new System.Collections.Generic.List<Relation>();
+            var relations = new List<Relation>();
 
             foreach (var text in alternative.Split(" and "))
             {
@@ -108,7 +110,7 @@ internal sealed class JsPluralRule
         return new JsPluralRule(alternatives);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=098049
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=376B4E
     // Broiler-Human:        PENDING
     private static Relation ParseRelation(string text)
     {
@@ -120,7 +122,7 @@ internal sealed class JsPluralRule
 
         if (words[at] is "%" or "mod")
         {
-            modulus = long.Parse(words[at + 1], System.Globalization.CultureInfo.InvariantCulture);
+            modulus = long.Parse(words[at + 1], CultureInfo.InvariantCulture);
             at += 2;
         }
 
@@ -156,14 +158,14 @@ internal sealed class JsPluralRule
                 break;
         }
 
-        var ranges = new System.Collections.Generic.List<(long, long)>();
+        var ranges = new List<(long, long)>();
 
         foreach (var item in string.Concat(words[at..]).Split(','))
         {
             var dots = item.IndexOf("..", System.StringComparison.Ordinal);
             ranges.Add(dots < 0
-                ? (long.Parse(item, System.Globalization.CultureInfo.InvariantCulture), long.Parse(item, System.Globalization.CultureInfo.InvariantCulture))
-                : (long.Parse(item[..dots], System.Globalization.CultureInfo.InvariantCulture), long.Parse(item[(dots + 2)..], System.Globalization.CultureInfo.InvariantCulture)));
+                ? (long.Parse(item, CultureInfo.InvariantCulture), long.Parse(item, CultureInfo.InvariantCulture))
+                : (long.Parse(item[..dots], CultureInfo.InvariantCulture), long.Parse(item[(dots + 2)..], CultureInfo.InvariantCulture)));
         }
 
         return new Relation(operand, modulus, negated, [.. ranges]);
@@ -190,7 +192,7 @@ internal sealed class JsPluralRule
         return false;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E9B73
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0F6C43
     // Broiler-Human:        PENDING
     private static bool Holds(Relation relation, JsPluralOperands operands)
     {
@@ -226,7 +228,7 @@ internal sealed class JsPluralRule
             case 't':
                 var digits = (relation.Operand == 'f' ? operands.Fraction : operands.T).TrimStart('0');
                 huge = digits.Length > 15;
-                value = digits.Length == 0 ? 0 : long.Parse(huge ? digits[^15..] : digits, System.Globalization.CultureInfo.InvariantCulture);
+                value = digits.Length == 0 ? 0 : long.Parse(huge ? digits[^15..] : digits, CultureInfo.InvariantCulture);
                 integral = true;
                 break;
             case 'c':

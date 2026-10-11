@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -26,29 +29,27 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed class JsLocaleInfo
 {
     /// <summary>Each region's first day, weekend start and end and minimal days, a field empty where the world's applies.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=905AB8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=47AE5B
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, (string FirstDay, string WeekendStart, string WeekendEnd, string MinDays)> Weeks { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, (string FirstDay, string WeekendStart, string WeekendEnd, string MinDays)> Weeks { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Whether each script CLDR states a direction for is written right to left.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BF2E87
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F42BE
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, bool> RightToLeft { get; } = new(System.StringComparer.Ordinal);
+    internal Dictionary<string, bool> RightToLeft { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's list patterns, by <c>language|type</c> with CLDR's type names (JSD-0048).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F35DA3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=020F8B
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, (string Start, string Middle, string End, string Pair)> ListPatterns { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, (string Start, string Middle, string End, string Pair)> ListPatterns { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's relative time literals and patterns, by <c>language|field|key</c> (JSD-0049).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=19AB56
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E1AA84
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, string> RelativeTimes { get; } = new(System.StringComparer.Ordinal);
+    internal Dictionary<string, string> RelativeTimes { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's display names, by <c>language|kind|code</c> (JSD-0052).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7AB7F4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7A3186
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, string> DisplayNames { get; } = new(System.StringComparer.Ordinal);
+    internal Dictionary<string, string> DisplayNames { get; } = new(StringComparer.Ordinal);
 }

@@ -190,7 +190,6 @@ internal sealed partial class JsRealm
             return wrapper.Primitive.AsBigInt();
         }
 
-        throw engine.Error(
-            "TypeError", "BigInt.prototype." + method + " requires that 'this' be a BigInt");
+        throw engine.Error("TypeError", "BigInt.prototype." + method + " requires that 'this' be a BigInt");
     }
 }

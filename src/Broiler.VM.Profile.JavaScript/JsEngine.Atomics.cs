@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -63,9 +68,9 @@ internal sealed partial class JsEngine
     internal bool CanBlock { get; set; }
 
     /// <summary>The asynchronous waiters this agent made and has not settled, with their blocks.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=978981
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DED513
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<(JsSharedBlock Block, JsWaiter Waiter)> asyncWaiters = [];
+    private readonly List<(JsSharedBlock Block, JsWaiter Waiter)> asyncWaiters = [];
 
     /// <summary>How long a blocking wait sleeps between two polls of the allowance, in milliseconds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1C5049
@@ -92,36 +97,34 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>The deadline <paramref name="timeout"/> milliseconds from now, in clock ticks, or never.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=09C408
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F2D3BE
     // Broiler-Human:        PENDING
     private static long DeadlineAfter(double timeout)
     {
-        var ticks = System.Math.Ceiling(timeout * System.Diagnostics.Stopwatch.Frequency / 1000.0);
+        var ticks = Math.Ceiling(timeout * Stopwatch.Frequency / 1000.0);
 
         return double.IsPositiveInfinity(ticks) || ticks >= long.MaxValue / 4
             ? long.MaxValue
-            : System.Diagnostics.Stopwatch.GetTimestamp() + (long)ticks;
+            : Stopwatch.GetTimestamp() + (long)ticks;
     }
 
     /// <summary>
     /// How many whole milliseconds remain until <paramref name="deadline"/>, rounded up, so that a
     /// sleep of that length never ends before it; zero or less once it has passed.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BC250A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CD8EA8
     // Broiler-Human:        PENDING
     private static long MillisecondsUntil(long deadline)
     {
-        var ticks = deadline - System.Diagnostics.Stopwatch.GetTimestamp();
+        var ticks = deadline - Stopwatch.GetTimestamp();
 
-        return ticks <= 0
-            ? 0
-            : (long)System.Math.Ceiling(ticks * 1000.0 / System.Diagnostics.Stopwatch.Frequency);
+        return ticks <= 0 ? 0 : (long)Math.Ceiling(ticks * 1000.0 / Stopwatch.Frequency);
     }
 
     /// <summary>
     /// The blocking half of <c>DoWait</c>: answers <c>"not-equal"</c>, <c>"ok"</c> or <c>"timed-out"</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=3C03E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=85560E
     // Broiler-Falsified-If: a blocking wait runs in an agent whose host did not say it may block, outlives its operation's allowance, or leaves its waiter in the list
     // Broiler-Human:        PENDING
     internal string WaitBlocking(JsSharedBlock block, int byteIndex, int width, long expected, double timeout)
@@ -150,7 +153,7 @@ internal sealed partial class JsEngine
                         break;
                     }
 
-                    System.Threading.Monitor.Wait(block.Gate, (int)System.Math.Min(remaining, WaitSlice));
+                    Monitor.Wait(block.Gate, (int)Math.Min(remaining, WaitSlice));
 
                     if (!waiter.Notified)
                     {
@@ -211,7 +214,7 @@ internal sealed partial class JsEngine
     /// <c>Atomics.notify</c>'s critical section: removes up to <paramref name="count"/> waiters on
     /// <paramref name="byteIndex"/>, in the order they began waiting, and answers how many.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6D79B7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=9A832B
     // Broiler-Falsified-If: a notification wakes a waiter on another index or block, or more waiters than it was asked to
     // Broiler-Human:        PENDING
     internal static int Notify(JsSharedBlock block, int byteIndex, double count)
@@ -236,7 +239,7 @@ internal sealed partial class JsEngine
 
             if (woken != 0)
             {
-                System.Threading.Monitor.PulseAll(block.Gate);
+                Monitor.PulseAll(block.Gate);
             }
         }
 
@@ -249,7 +252,7 @@ internal sealed partial class JsEngine
     /// notification from another agent; answers whether any was settled. Only a host drain or step
     /// calls it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=84E69B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=36E089
     // Broiler-Falsified-If: an asynchronous waiter's promise settles anywhere but at a host drain or step, or a drain waits past its allowance
     // Broiler-Human:        PENDING
     internal bool SettleWaiters(bool wait)
@@ -260,7 +263,7 @@ internal sealed partial class JsEngine
             var earliest = long.MaxValue;
             var notifiable = false;
             (JsSharedBlock Block, JsWaiter Waiter)? watched = null;
-            var now = System.Diagnostics.Stopwatch.GetTimestamp();
+            var now = Stopwatch.GetTimestamp();
 
             for (var at = 0; at < asyncWaiters.Count; at++)
             {
@@ -282,7 +285,7 @@ internal sealed partial class JsEngine
 
                 if (outcome is null)
                 {
-                    earliest = System.Math.Min(earliest, waiter.Deadline);
+                    earliest = Math.Min(earliest, waiter.Deadline);
 
                     if (block.Crossed)
                     {
@@ -312,7 +315,7 @@ internal sealed partial class JsEngine
 
             if (remaining > 0)
             {
-                var slice = (int)System.Math.Min(remaining, WaitSlice);
+                var slice = (int)Math.Min(remaining, WaitSlice);
 
                 // A WAITER ANOTHER AGENT MAY NOTIFY IS WATCHED ON ITS BLOCK'S LOCK, which a
                 // notification pulses, so the drain wakes when it is notified rather than at the end
@@ -323,13 +326,13 @@ internal sealed partial class JsEngine
                     {
                         if (!pair.Waiter.Notified)
                         {
-                            System.Threading.Monitor.Wait(pair.Block.Gate, slice);
+                            Monitor.Wait(pair.Block.Gate, slice);
                         }
                     }
                 }
                 else
                 {
-                    System.Threading.Thread.Sleep(slice);
+                    Thread.Sleep(slice);
                 }
 
                 PollWhileWaiting();

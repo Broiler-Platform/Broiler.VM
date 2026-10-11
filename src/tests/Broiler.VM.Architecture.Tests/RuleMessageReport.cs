@@ -1,5 +1,6 @@
 using System.Reflection;
 using Broiler.VM.Abstractions;
+using Broiler.VM.Binary;
 
 namespace Broiler.VM.Architecture.Tests;
 

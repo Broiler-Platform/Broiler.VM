@@ -291,7 +291,7 @@ public interface IVmProfileVerifier
     int VerifierSemanticVersion { get; }
 
     /// <summary>Verifies <paramref name="payload"/> against <paramref name="descriptor"/>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=High; Resources=0; Fingerprint=ED6BA8
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=High; Resources=0; Fingerprint=D0C5A4
     // Broiler-Falsified-If: the payload arrives as anything but a span, or a second member here can answer a verification
     // Broiler-Human:        PENDING
     VmVerifierOutcome Verify(in VmArtifactDescriptor descriptor, ReadOnlySpan<byte> payload, IVmVerificationContext context, CancellationToken cancellationToken);
@@ -466,12 +466,12 @@ public interface IVmProfileExecutor
     VmProfileId ProfileId { get; }
 
     /// <summary>Instantiates profile-owned mutable state from a verified artifact.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B853C0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=0604BB
     // Broiler-Human:        PENDING
     VmExecutionStep Instantiate(VmVerifiedArtifact artifact, CancellationToken cancellationToken);
 
     /// <summary>Invokes an entry point against instance state.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6A0CE6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=431924
     // Broiler-Human:        PENDING
     VmExecutionStep Invoke(IVmInstanceState state, in VmInvocationRequest request, CancellationToken cancellationToken);
 
@@ -490,7 +490,7 @@ public interface IVmProfileExecutor
     /// instantiation without an instance, so nothing is published.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F0E5BB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1D3F22
     // Broiler-Human:        PENDING
     VmExecutionStep Resume(IVmInstanceState state, IVmProfileContinuation continuation, CancellationToken cancellationToken);
 
@@ -531,7 +531,7 @@ public interface IVmNativeCompiler
     /// <summary>
     /// Compiles input bytecode into a machine code artifact.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=93BED7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=EE2E0F
     // Broiler-Human:        PENDING
     bool TryCompile(in VmArtifactDescriptor inputDescriptor, ReadOnlyMemory<byte> inputBytecode, string targetArchitecture,
         out VmArtifactDescriptor outputDescriptor, out byte[] outputMachineCode, out string refusal);

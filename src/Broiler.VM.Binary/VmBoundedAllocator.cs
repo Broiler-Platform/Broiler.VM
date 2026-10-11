@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Binary;
 
 /// <summary>
 /// The allocation guard. Every allocation whose size derives from untrusted data goes through it,

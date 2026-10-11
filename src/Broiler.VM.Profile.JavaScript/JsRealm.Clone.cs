@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -66,15 +69,12 @@ internal sealed partial class JsRealm
     /// <see cref="JsCloneRefusedException"/>; so does a graph past either bound, which the caller
     /// may narrow below the carrier's own maxima and never widen past them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=33240C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=001FD2
     // Broiler-Falsified-If: a serialization completes for a function, a symbol, a Proxy or an unlisted brand, or its work is not charged
     // Broiler-Human:        PENDING
     internal JsCloneCarrier CloneSerialize(JsValue value, long maxEntries, long maxBytes)
     {
-        var writer = new CloneWriter(
-            this,
-            System.Math.Clamp(maxEntries, 0, JsCloneCarrier.MaxEntries),
-            System.Math.Clamp(maxBytes, 0, JsCloneCarrier.MaxBytes));
+        var writer = new CloneWriter(this, Math.Clamp(maxEntries, 0, JsCloneCarrier.MaxEntries), Math.Clamp(maxBytes, 0, JsCloneCarrier.MaxBytes));
 
         return writer.Run(value, []);
     }
@@ -102,20 +102,12 @@ internal sealed partial class JsRealm
     /// <c>clone/i16/resizable-buffers-are-refused-until-f04-f06-integrate</c> watches it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=8C1269
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=C51724
     // Broiler-Falsified-If: a refused transfer leaves any listed buffer detached, or a completed one leaves any listed buffer attached
     // Broiler-Human:        PENDING
-    internal JsCloneCarrier CloneSerializeWithTransfer(
-        JsValue value,
-        JsValue[] transfer,
-        long maxEntries,
-        long maxBytes)
+    internal JsCloneCarrier CloneSerializeWithTransfer(JsValue value, JsValue[] transfer, long maxEntries, long maxBytes)
     {
-        var writer = new CloneWriter(
-            this,
-            System.Math.Clamp(maxEntries, 0, JsCloneCarrier.MaxEntries),
-            System.Math.Clamp(maxBytes, 0, JsCloneCarrier.MaxBytes));
-
+        var writer = new CloneWriter(this, Math.Clamp(maxEntries, 0, JsCloneCarrier.MaxEntries), Math.Clamp(maxBytes, 0, JsCloneCarrier.MaxBytes));
         return writer.Run(value, transfer);
     }
 
@@ -136,8 +128,7 @@ internal sealed partial class JsRealm
         // it claims a single-use carrier: a refusal here must not spend moved bytes.
         if (carrier.HoldsBigInt && BigIntPrototype is null)
         {
-            throw new JsCloneRefusedException(
-                JsCloneRefusal.Unrepresentable,
+            throw new JsCloneRefusedException(JsCloneRefusal.Unrepresentable,
                 "the carrier holds a BigInt and this realm's composition declined the BigInt surface");
         }
 
@@ -145,8 +136,7 @@ internal sealed partial class JsRealm
         // second adoption is refused whole rather than halfway.
         if (carrier.Moved > 0 && !carrier.TryClaimMoved())
         {
-            throw new JsCloneRefusedException(
-                JsCloneRefusal.Consumed, "the carrier's transferred buffers were already adopted");
+            throw new JsCloneRefusedException(JsCloneRefusal.Consumed, "the carrier's transferred buffers were already adopted");
         }
 
         engine.Charge((ulong)records.Length + 1);
@@ -191,13 +181,13 @@ internal sealed partial class JsRealm
                 return new JsObject(ObjectPrototype);
 
             case JsCloneKind.Array:
-            {
-                // THE LENGTH FIRST, AS HTML'S ArrayCreate(length) DOES. Setting it allocates
-                // nothing, so a length of a billion with one element is one element.
-                var array = new JsArray(ArrayPrototype);
-                array.SetLength(JsValue.ToUint32(record.Number));
-                return array;
-            }
+                {
+                    // THE LENGTH FIRST, AS HTML'S ArrayCreate(length) DOES. Setting it allocates
+                    // nothing, so a length of a billion with one element is one element.
+                    var array = new JsArray(ArrayPrototype);
+                    array.SetLength(JsValue.ToUint32(record.Number));
+                    return array;
+                }
 
             case JsCloneKind.Boolean:
                 return new JsPrimitiveWrapper(BooleanPrototype, "Boolean", JsValue.Boolean(record.Number != 0));
@@ -255,8 +245,7 @@ internal sealed partial class JsRealm
         {
             // A pattern the source realm compiled and this one cannot is a difference between two
             // builds, not a guest error, and a SyntaxError here would name the wrong party.
-            throw new JsCloneRefusedException(
-                JsCloneRefusal.Unrepresentable, "this realm cannot compile the RegExp the carrier holds");
+            throw new JsCloneRefusedException(JsCloneRefusal.Unrepresentable, "this realm cannot compile the RegExp the carrier holds");
         }
     }
 
@@ -285,8 +274,7 @@ internal sealed partial class JsRealm
         // reads the empty string off its prototype, exactly as the original did.
         if (record.Detail is { } message)
         {
-            error.SetOwnProperty(
-                "message", JsProperty.Data(JsValue.String(message), JsPropertyAttributes.BuiltIn));
+            error.SetOwnProperty("message", JsProperty.Data(JsValue.String(message), JsPropertyAttributes.BuiltIn));
         }
 
         return error;
@@ -303,8 +291,7 @@ internal sealed partial class JsRealm
         // empty buffer standing in for the one that moved.
         if (record.Transferred && record.Bytes is null)
         {
-            throw new JsCloneRefusedException(
-                JsCloneRefusal.Consumed, "the carrier's transferred buffers were already adopted");
+            throw new JsCloneRefusedException(JsCloneRefusal.Consumed, "the carrier's transferred buffers were already adopted");
         }
 
         var bytes = record.Bytes ?? [];
@@ -330,7 +317,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds a typed array or DataView over the buffer its record names.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=36BE86
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=02FC0D
     // Broiler-Falsified-If: a view is built over bytes outside its buffer, or two views of one source buffer see two buffers
     // Broiler-Human:        PENDING
     private JsObject CloneView(JsCloneRecord record, JsObject?[] built)
@@ -357,7 +344,7 @@ internal sealed partial class JsRealm
             // A KIND THIS REALM DID NOT BUILD IS A NAME IT HAS NO CONSTRUCTOR FOR: a BigInt64Array
             // carried into a realm whose composition declines BigInt is refused below, exactly as an
             // unknown name is, rather than rebuilt over a prototype that does not exist (JSeal B07).
-            if (!string.Equals(JsElements.ConstructorNameOf(kind), record.Text, System.StringComparison.Ordinal) ||
+            if (!string.Equals(JsElements.ConstructorNameOf(kind), record.Text, StringComparison.Ordinal) ||
                 !TypedArrayPrototypes.ContainsKey(kind))
             {
                 continue;
@@ -389,51 +376,51 @@ internal sealed partial class JsRealm
         {
             case JsCloneKind.Object:
             case JsCloneKind.Array:
-            {
-                var keys = record.Keys;
-                var values = record.Values;
-
-                for (var at = 0; at < keys.Length && at < values.Length; at++)
                 {
-                    engine.Charge(1);
+                    var keys = record.Keys;
+                    var values = record.Values;
 
-                    // DEFINED, NOT ASSIGNED: HTML's CreateDataProperty. The target is fresh, so no
-                    // setter on the way can run, and an index key on an Array lands as an element.
-                    target.SetOwnProperty(
-                        keys[at],
-                        JsProperty.Data(CloneValueOf(values[at], built), JsPropertyAttributes.Default));
+                    for (var at = 0; at < keys.Length && at < values.Length; at++)
+                    {
+                        engine.Charge(1);
+
+                        // DEFINED, NOT ASSIGNED: HTML's CreateDataProperty. The target is fresh, so no
+                        // setter on the way can run, and an index key on an Array lands as an element.
+                        target.SetOwnProperty(
+                            keys[at],
+                            JsProperty.Data(CloneValueOf(values[at], built), JsPropertyAttributes.Default));
+                    }
+
+                    return;
                 }
-
-                return;
-            }
 
             case JsCloneKind.Map:
-            {
-                var table = ((JsMapObject)target).Table;
-                var values = record.Values;
-
-                for (var at = 0; at + 1 < values.Length; at += 2)
                 {
-                    engine.Charge(1);
-                    table.Set(CloneValueOf(values[at], built), CloneValueOf(values[at + 1], built));
-                }
+                    var table = ((JsMapObject)target).Table;
+                    var values = record.Values;
 
-                return;
-            }
+                    for (var at = 0; at + 1 < values.Length; at += 2)
+                    {
+                        engine.Charge(1);
+                        table.Set(CloneValueOf(values[at], built), CloneValueOf(values[at + 1], built));
+                    }
+
+                    return;
+                }
 
             case JsCloneKind.Set:
-            {
-                var table = ((JsSetObject)target).Table;
-
-                foreach (var member in record.Values)
                 {
-                    engine.Charge(1);
-                    var value = CloneValueOf(member, built);
-                    table.Set(value, value);
-                }
+                    var table = ((JsSetObject)target).Table;
 
-                return;
-            }
+                    foreach (var member in record.Values)
+                    {
+                        engine.Charge(1);
+                        var value = CloneValueOf(member, built);
+                        table.Set(value, value);
+                    }
+
+                    return;
+                }
 
             case JsCloneKind.Error when record.HasCause && record.Values.Length == 1:
                 engine.Charge(1);
@@ -495,12 +482,12 @@ internal sealed partial class JsRealm
     /// a closure, and cloning it as an ordinary object would answer <c>{}</c> where the language
     /// owes a refusal.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=66D826
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FFE564
     // Broiler-Human:        PENDING
     private static bool CloneIsSlottedTag(string tag) =>
-        string.Equals(tag, "Arguments", System.StringComparison.Ordinal) ||
-        string.Equals(tag, "Iterator Helper", System.StringComparison.Ordinal) ||
-        tag.EndsWith(" Iterator", System.StringComparison.Ordinal);
+        string.Equals(tag, "Arguments", StringComparison.Ordinal) ||
+        string.Equals(tag, "Iterator Helper", StringComparison.Ordinal) ||
+        tag.EndsWith(" Iterator", StringComparison.Ordinal);
 
     /// <summary>One serialization: the memory map, the records, the frames and the two meters.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=499643
@@ -512,23 +499,21 @@ internal sealed partial class JsRealm
         // Broiler-Human:        PENDING
         private readonly JsEngine engine;
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EA45E0
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=441A43
         // Broiler-Human:        PENDING
-        private readonly System.Collections.Generic.List<JsCloneRecord> records = [];
+        private readonly List<JsCloneRecord> records = [];
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7A7021
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=53A7F7
         // Broiler-Human:        PENDING
-        private readonly System.Collections.Generic.Dictionary<JsObject, int> memory =
-            new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+        private readonly Dictionary<JsObject, int> memory = new(ReferenceEqualityComparer.Instance);
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9E8D89
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9DF218
         // Broiler-Human:        PENDING
-        private readonly System.Collections.Generic.HashSet<object> counted =
-            new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+        private readonly HashSet<object> counted = new(ReferenceEqualityComparer.Instance);
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1CF320
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=934261
         // Broiler-Human:        PENDING
-        private readonly System.Collections.Generic.Stack<CloneFrame> frames = new();
+        private readonly Stack<CloneFrame> frames = new();
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=88E752
         // Broiler-Falsified-If: this bound is larger than JsCloneCarrier.MaxEntries
@@ -653,13 +638,12 @@ internal sealed partial class JsRealm
         /// Nothing about a listed buffer's bytes is read here. HTML does not ask about detachment
         /// until the walk is over, and a getter can still detach a buffer after this loop.
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=987E5C
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=CA502E
         // Broiler-Falsified-If: a transfer list naming a non-ArrayBuffer or one buffer twice is admitted
         // Broiler-Human:        PENDING
-        private System.Collections.Generic.List<(JsArrayBuffer Buffer, JsCloneRecord Record)> CheckTransferList(
-            JsValue[] transfer)
+        private List<(JsArrayBuffer Buffer, JsCloneRecord Record)> CheckTransferList(JsValue[] transfer)
         {
-            var listed = new System.Collections.Generic.List<(JsArrayBuffer, JsCloneRecord)>(transfer.Length);
+            var listed = new List<(JsArrayBuffer, JsCloneRecord)>(transfer.Length);
 
             foreach (var entry in transfer)
             {
@@ -670,14 +654,12 @@ internal sealed partial class JsRealm
                 // object, and a SharedArrayBuffer cannot be transferred (JSD-0041).
                 if (entry.AsObjectOrNull() is not JsArrayBuffer { IsShared: false } buffer)
                 {
-                    throw new JsCloneRefusedException(
-                        JsCloneRefusal.NotTransferable, "only an ArrayBuffer can be transferred");
+                    throw new JsCloneRefusedException(JsCloneRefusal.NotTransferable, "only an ArrayBuffer can be transferred");
                 }
 
                 if (memory.ContainsKey(buffer))
                 {
-                    throw new JsCloneRefusedException(
-                        JsCloneRefusal.DuplicateTransfer, "the transfer list names an ArrayBuffer twice");
+                    throw new JsCloneRefusedException(JsCloneRefusal.DuplicateTransfer, "the transfer list names an ArrayBuffer twice");
                 }
 
                 // A RESIZABLE BUFFER IS NOT TRANSFERABLE YET, and is refused before any getter runs:
@@ -685,8 +667,7 @@ internal sealed partial class JsRealm
                 // stopped being resizable (JSD-0032 section 5a).
                 if (buffer.IsResizable)
                 {
-                    throw new JsCloneRefusedException(
-                        JsCloneRefusal.NotTransferable, "a resizable ArrayBuffer cannot be transferred");
+                    throw new JsCloneRefusedException(JsCloneRefusal.NotTransferable, "a resizable ArrayBuffer cannot be transferred");
                 }
 
                 _ = New(buffer, JsCloneKind.ArrayBuffer, out var record);
@@ -705,17 +686,16 @@ internal sealed partial class JsRealm
         /// <b>Moved bytes count against <see cref="JsCloneCarrier.MaxBytes"/> as copied ones do</b>,
         /// because the carrier holds them either way; the bound is a statement about the carrier.
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=E91B98
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=542286
         // Broiler-Falsified-If: a detached buffer or one past the byte bound reaches the commit
         // Broiler-Human:        PENDING
-        private void Validate(System.Collections.Generic.List<(JsArrayBuffer Buffer, JsCloneRecord Record)> listed)
+        private void Validate(List<(JsArrayBuffer Buffer, JsCloneRecord Record)> listed)
         {
             foreach (var (buffer, _) in listed)
             {
                 if (buffer.IsDetached)
                 {
-                    throw new JsCloneRefusedException(
-                        JsCloneRefusal.DetachedBuffer, "a detached ArrayBuffer could not be transferred");
+                    throw new JsCloneRefusedException(JsCloneRefusal.DetachedBuffer, "a detached ArrayBuffer could not be transferred");
                 }
 
                 bytes += buffer.ByteLength;
@@ -752,11 +732,11 @@ internal sealed partial class JsRealm
                     return JsCloneSlot.NumberOf(value.AsNumber());
 
                 case JsType.String:
-                {
-                    var text = value.AsString();
-                    CountText(text);
-                    return JsCloneSlot.StringOf(text);
-                }
+                    {
+                        var text = value.AsString();
+                        CountText(text);
+                        return JsCloneSlot.StringOf(text);
+                    }
 
                 case JsType.Symbol:
                     throw new JsCloneRefusedException(JsCloneRefusal.Symbol, "a Symbol could not be cloned");
@@ -771,7 +751,7 @@ internal sealed partial class JsRealm
         }
 
         /// <summary>The record for one object: the one it already has, or a new one for its brand.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=0942DC
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=AE1062
         // Broiler-Falsified-If: an object whose brand is not in the matrix is recorded as any kind at all
         // Broiler-Human:        PENDING
         private int Record(JsObject source)
@@ -799,48 +779,48 @@ internal sealed partial class JsRealm
                     return Wrapper(source, wrapper.Primitive);
 
                 case DateObject date:
-                {
-                    var index = New(source, JsCloneKind.Date, out var record);
-                    record.Number = date.TimeValue;
-                    return index;
-                }
+                    {
+                        var index = New(source, JsCloneKind.Date, out var record);
+                        record.Number = date.TimeValue;
+                        return index;
+                    }
 
                 case RegExpObject regExp:
-                {
-                    // [[OriginalSource]] and [[OriginalFlags]]; lastIndex and every own property
-                    // stay behind, as HTML says.
-                    CountText(regExp.Source);
-                    var index = New(source, JsCloneKind.RegExp, out var record);
-                    record.Text = regExp.Source;
-                    record.Detail = regExp.Flags;
-                    return index;
-                }
+                    {
+                        // [[OriginalSource]] and [[OriginalFlags]]; lastIndex and every own property
+                        // stay behind, as HTML says.
+                        CountText(regExp.Source);
+                        var index = New(source, JsCloneKind.RegExp, out var record);
+                        record.Text = regExp.Source;
+                        record.Detail = regExp.Flags;
+                        return index;
+                    }
 
                 case JsArrayBuffer buffer:
                     return Buffer(source, buffer);
 
                 case JsTypedArray view:
-                {
-                    RefuseDetachedView(view.IsDetached);
-                    RefuseResizable(view.Buffer);
-                    var index = New(source, JsCloneKind.TypedArray, out var record);
-                    record.Text = JsElements.ConstructorNameOf(view.Kind);
-                    record.Offset = view.ByteOffset;
-                    record.Count = view.Length;
-                    record.Buffer = Record(view.Buffer);
-                    return index;
-                }
+                    {
+                        RefuseDetachedView(view.IsDetached);
+                        RefuseResizable(view.Buffer);
+                        var index = New(source, JsCloneKind.TypedArray, out var record);
+                        record.Text = JsElements.ConstructorNameOf(view.Kind);
+                        record.Offset = view.ByteOffset;
+                        record.Count = view.Length;
+                        record.Buffer = Record(view.Buffer);
+                        return index;
+                    }
 
                 case JsDataView view:
-                {
-                    RefuseDetachedView(view.IsDetached);
-                    RefuseResizable(view.Buffer);
-                    var index = New(source, JsCloneKind.DataView, out var record);
-                    record.Offset = view.ByteOffset;
-                    record.Count = view.ByteLength;
-                    record.Buffer = Record(view.Buffer);
-                    return index;
-                }
+                    {
+                        RefuseDetachedView(view.IsDetached);
+                        RefuseResizable(view.Buffer);
+                        var index = New(source, JsCloneKind.DataView, out var record);
+                        record.Offset = view.ByteOffset;
+                        record.Count = view.ByteLength;
+                        record.Buffer = Record(view.Buffer);
+                        return index;
+                    }
 
                 case JsMapObject map:
                     return Keyed(source, JsCloneKind.Map, map.Table, pairs: true);
@@ -849,14 +829,14 @@ internal sealed partial class JsRealm
                     return Keyed(source, JsCloneKind.Set, set.Table, pairs: false);
 
                 case JsArray array:
-                {
-                    // THE LENGTH IS READ WHEN THE RECORD IS MADE, AS HTML READS IT, so a getter
-                    // that later pushes onto the Array does not move the clone's length.
-                    var index = New(source, JsCloneKind.Array, out var record);
-                    record.Number = array.Length;
-                    Push(source, record, EnumerableKeys(source), null);
-                    return index;
-                }
+                    {
+                        // THE LENGTH IS READ WHEN THE RECORD IS MADE, AS HTML READS IT, so a getter
+                        // that later pushes onto the Array does not move the clone's length.
+                        var index = New(source, JsCloneKind.Array, out var record);
+                        record.Number = array.Length;
+                        Push(source, record, EnumerableKeys(source), null);
+                        return index;
+                    }
 
                 default:
                     break;
@@ -866,23 +846,21 @@ internal sealed partial class JsRealm
             // is; every other type that is not an ordinary object is a brand this carrier refuses.
             if (source.GetType() != typeof(JsObject) && source is not JsErrorObject)
             {
-                throw new JsCloneRefusedException(
-                    JsCloneRefusal.UnsupportedBrand, "a " + source.ClassName + " object could not be cloned");
+                throw new JsCloneRefusedException(JsCloneRefusal.UnsupportedBrand, "a " + source.ClassName + " object could not be cloned");
             }
 
             // THE CLASS NAME IS THE [[ErrorData]] TEST. The Error and NativeError prototypes are
             // ordinary objects with class name `Object` (JSeal VM-FIX-I), so they clone as ordinary
             // objects without a separate identity check; that check was removed as redundant
             // (JSeal VM-FIX-J).
-            if (string.Equals(source.ClassName, "Error", System.StringComparison.Ordinal))
+            if (string.Equals(source.ClassName, "Error", StringComparison.Ordinal))
             {
                 return Error(source);
             }
 
             if (CloneIsSlottedTag(source.ClassName))
             {
-                throw new JsCloneRefusedException(
-                    JsCloneRefusal.UnsupportedBrand, "a " + source.ClassName + " object could not be cloned");
+                throw new JsCloneRefusedException(JsCloneRefusal.UnsupportedBrand, "a " + source.ClassName + " object could not be cloned");
             }
 
             var ordinary = New(source, JsCloneKind.Object, out var plain);
@@ -903,8 +881,7 @@ internal sealed partial class JsRealm
         {
             if (detached)
             {
-                throw new JsCloneRefusedException(
-                    JsCloneRefusal.DetachedBuffer, "a view over a detached ArrayBuffer could not be cloned");
+                throw new JsCloneRefusedException(JsCloneRefusal.DetachedBuffer, "a view over a detached ArrayBuffer could not be cloned");
             }
         }
 
@@ -927,8 +904,7 @@ internal sealed partial class JsRealm
         {
             if (buffer.IsResizable)
             {
-                throw new JsCloneRefusedException(
-                    JsCloneRefusal.UnsupportedBrand, "a resizable ArrayBuffer could not be cloned");
+                throw new JsCloneRefusedException(JsCloneRefusal.UnsupportedBrand, "a resizable ArrayBuffer could not be cloned");
             }
         }
 
@@ -940,38 +916,38 @@ internal sealed partial class JsRealm
             switch (primitive.Type)
             {
                 case JsType.Boolean:
-                {
-                    var index = New(source, JsCloneKind.Boolean, out var record);
-                    record.Number = primitive.AsBoolean() ? 1 : 0;
-                    return index;
-                }
+                    {
+                        var index = New(source, JsCloneKind.Boolean, out var record);
+                        record.Number = primitive.AsBoolean() ? 1 : 0;
+                        return index;
+                    }
 
                 case JsType.Number:
-                {
-                    var index = New(source, JsCloneKind.Number, out var record);
-                    record.Number = primitive.AsNumber();
-                    return index;
-                }
+                    {
+                        var index = New(source, JsCloneKind.Number, out var record);
+                        record.Number = primitive.AsNumber();
+                        return index;
+                    }
 
                 case JsType.String:
-                {
-                    var text = primitive.AsString();
-                    CountText(text);
-                    var index = New(source, JsCloneKind.String, out var record);
-                    record.Text = text;
-                    return index;
-                }
+                    {
+                        var text = primitive.AsString();
+                        CountText(text);
+                        var index = New(source, JsCloneKind.String, out var record);
+                        record.Text = text;
+                        return index;
+                    }
 
                 // A BIGINT OBJECT CLONES AS A BIGINT OBJECT (card B06): HTML's [[BigIntData]] row,
                 // its integer and nothing else, as for the other three wrappers.
                 case JsType.BigInt:
-                {
-                    Count(1);
-                    var integer = CountBigInt(primitive.AsBigInt());
-                    var index = New(source, JsCloneKind.BigInt, out var record);
-                    record.Values = [JsCloneSlot.BigIntOf(integer)];
-                    return index;
-                }
+                    {
+                        Count(1);
+                        var integer = CountBigInt(primitive.AsBigInt());
+                        var index = New(source, JsCloneKind.BigInt, out var record);
+                        record.Values = [JsCloneSlot.BigIntOf(integer)];
+                        return index;
+                    }
 
                 default:
                     throw new JsCloneRefusedException(
@@ -989,12 +965,10 @@ internal sealed partial class JsRealm
             // (JSD-0032; JSD-0041 leaves sharing a block between agents to the agent slice).
             if (buffer.IsShared)
             {
-                throw new JsCloneRefusedException(
-                    JsCloneRefusal.UnsupportedBrand, "a SharedArrayBuffer could not be cloned");
+                throw new JsCloneRefusedException(JsCloneRefusal.UnsupportedBrand, "a SharedArrayBuffer could not be cloned");
             }
 
-            var data = buffer.Data ?? throw new JsCloneRefusedException(
-                JsCloneRefusal.DetachedBuffer, "a detached ArrayBuffer could not be cloned");
+            var data = buffer.Data ?? throw new JsCloneRefusedException(JsCloneRefusal.DetachedBuffer, "a detached ArrayBuffer could not be cloned");
 
             RefuseResizable(buffer);
 
@@ -1014,7 +988,7 @@ internal sealed partial class JsRealm
         }
 
         /// <summary>A Map or Set: its live entries, snapshotted now, serialized by a frame.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CEAC6C
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=848661
         // Broiler-Human:        PENDING
         private int Keyed(JsObject source, JsCloneKind kind, JsKeyedTable table, bool pairs)
         {
@@ -1022,7 +996,7 @@ internal sealed partial class JsRealm
 
             // THE SNAPSHOT IS HTML'S copiedList: a getter reached while the entries are serialized
             // may add to or delete from the table, and neither changes what this clone holds.
-            var pending = new System.Collections.Generic.List<JsValue>(pairs ? table.Count * 2 : table.Count);
+            var pending = new List<JsValue>(pairs ? table.Count * 2 : table.Count);
 
             for (var slot = 0; slot < table.SlotCount; slot++)
             {
@@ -1060,14 +1034,14 @@ internal sealed partial class JsRealm
         /// and an AggregateError's <c>errors</c> are not carried.
         /// </para>
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D72E0A
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AE4D50
         // Broiler-Human:        PENDING
         private int Error(JsObject source)
         {
             var index = New(source, JsCloneKind.Error, out var record);
             var named = engine.GetProperty(JsValue.Object(source), "name");
 
-            record.Text = named.IsString && System.Array.IndexOf(CloneErrorNames, named.AsString()) >= 0
+            record.Text = named.IsString && Array.IndexOf(CloneErrorNames, named.AsString()) >= 0
                 ? named.AsString()
                 : "Error";
 
@@ -1088,14 +1062,14 @@ internal sealed partial class JsRealm
         }
 
         /// <summary>The own enumerable string keys, in the specification's order, as of now.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EC0AC7
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=163352
         // Broiler-Human:        PENDING
-        private System.Collections.Generic.List<string> EnumerableKeys(JsObject source)
+        private List<string> EnumerableKeys(JsObject source)
         {
             var names = source.OwnPropertyNames();
             engine.Charge((ulong)names.Count + 1);
 
-            var keys = new System.Collections.Generic.List<string>(names.Count);
+            var keys = new List<string>(names.Count);
 
             foreach (var name in names)
             {
@@ -1122,13 +1096,9 @@ internal sealed partial class JsRealm
         }
 
         /// <summary>Queues an object's contents to be serialized next.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2CFA59
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F4B94D
         // Broiler-Human:        PENDING
-        private void Push(
-            JsObject source,
-            JsCloneRecord record,
-            System.Collections.Generic.List<string>? keys,
-            System.Collections.Generic.List<JsValue>? pending) =>
+        private void Push(JsObject source, JsCloneRecord record, List<string>? keys, List<JsValue>? pending) =>
             frames.Push(new CloneFrame(source, record, keys, pending));
 
         /// <summary>Counts entries against <see cref="JsCloneCarrier.MaxEntries"/>.</summary>
@@ -1198,13 +1168,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>One object whose contents are still being serialized.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B7C5F2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=91A4A9
     // Broiler-Human:        PENDING
-    private sealed class CloneFrame(
-        JsObject source,
-        JsCloneRecord record,
-        System.Collections.Generic.List<string>? keys,
-        System.Collections.Generic.List<JsValue>? pending)
+    private sealed class CloneFrame(JsObject source, JsCloneRecord record, List<string>? keys, List<JsValue>? pending)
     {
         /// <summary>The object being walked.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6225DE
@@ -1212,14 +1178,14 @@ internal sealed partial class JsRealm
         internal JsObject Source { get; } = source;
 
         /// <summary>The keys still to read, for an ordinary object or an Array.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=29CEDB
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5612B9
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<string>? Keys { get; } = keys;
+        internal List<string>? Keys { get; } = keys;
 
         /// <summary>The values still to serialize, for a Map, a Set or an Error's cause.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5C55E6
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2FB67A
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<JsValue>? Pending { get; } = pending;
+        internal List<JsValue>? Pending { get; } = pending;
 
         /// <summary>How far the walk has got.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=002A46
@@ -1227,14 +1193,14 @@ internal sealed partial class JsRealm
         internal int At { get; set; }
 
         /// <summary>The keys serialized so far.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CF5195
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=725BB4
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<string> OutKeys { get; } = [];
+        internal List<string> OutKeys { get; } = [];
 
         /// <summary>The values serialized so far.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=804C7F
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AD1827
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<JsCloneSlot> OutValues { get; } = [];
+        internal List<JsCloneSlot> OutValues { get; } = [];
 
         /// <summary>Writes what was serialized into the record, once the walk is done.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=38F290

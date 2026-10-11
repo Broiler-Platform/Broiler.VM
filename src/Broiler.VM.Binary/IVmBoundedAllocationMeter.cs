@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Binary;
 
 /// <summary>
 /// The callback through which a bounded read charges the allocation and verifier-work allowances

@@ -133,10 +133,10 @@ public sealed class SliceStaticSemantics
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=35BE4C
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<SliceSourceDiagnostic> diagnostics = [];
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=47646D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=A87058
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.Dictionary<SliceNode, SliceBinding> resolutions =
-        new(SliceNodeIdentityComparer.Instance);
+        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=8FF828
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<Scope> scopes = [];

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -157,22 +159,16 @@ internal sealed partial class JsRealm
     private void SetupGlobalUriFunctions(JsObject host)
     {
         Method(host, "encodeURI", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUriEncode(
-                engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), GlobalUriUnescapedUri)));
+            JsValue.String(GlobalUriEncode(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), GlobalUriUnescapedUri)));
 
         Method(host, "encodeURIComponent", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUriEncode(
-                engine,
-                engine.ToStringValue(ArgOfGlobal(arguments, 0)),
-                GlobalUriUnescapedComponent)));
+            JsValue.String(GlobalUriEncode(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), GlobalUriUnescapedComponent)));
 
         Method(host, "decodeURI", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUriDecode(
-                engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), GlobalUriPreservedUri)));
+            JsValue.String(GlobalUriDecode(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), GlobalUriPreservedUri)));
 
         Method(host, "decodeURIComponent", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUriDecode(
-                engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), string.Empty)));
+            JsValue.String(GlobalUriDecode(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), string.Empty)));
 
         // Annex B. `escape` and `unescape` are not the URI functions with different sets: they
         // work over code units rather than code points, they emit the `%uXXXX` form the URI
@@ -228,10 +224,7 @@ internal sealed partial class JsRealm
         // composition can register a reader", which the paragraph above had already retracted;
         // it says what is true of the realm now (JSP-10, JSC-240), and section 13 of the roadmap
         // states the choice of present-and-refusing over absent for every member here.
-        GlobalRefuse(
-            host,
-            "read",
-            1,
+        GlobalRefuse(host, "read", 1,
             "read: no reader is installed in this realm - the host-capability table cannot carry " +
             "a file's contents back to a guest, and this composition installed none through the " +
             "host-object surface");
@@ -246,8 +239,7 @@ internal sealed partial class JsRealm
         GlobalRefuse(agent, "broadcast", 1, "$262.agent.broadcast: this profile runs no second agent");
         GlobalRefuse(agent, "getReport", 0, "$262.agent.getReport: this profile runs no second agent");
         GlobalRefuse(agent, "sleep", 1, "$262.agent.sleep: this profile runs no second agent");
-        GlobalRefuse(
-            agent, "monotonicNow", 0, "$262.agent.monotonicNow: this profile runs no second agent");
+        GlobalRefuse(agent, "monotonicNow", 0, "$262.agent.monotonicNow: this profile runs no second agent");
 
         var harness = new JsObject(ObjectPrototype);
         harness.DefineBuiltIn("global", JsValue.Object(host));
@@ -265,21 +257,13 @@ internal sealed partial class JsRealm
         // member through `JsHostRealm.DetachArrayBuffer`, which is what the conformance harness
         // does. (Corrected 2026-09-21, JSeal follow-up VM-FIX-A: the message read "this profile
         // has no ArrayBuffer to detach", which stopped being true when `ArrayBuffer` landed.)
-        GlobalRefuse(
-            harness,
-            "detachArrayBuffer",
-            1,
-            "$262.detachArrayBuffer: the host of this realm installed no detach operation");
+        GlobalRefuse(harness, "detachArrayBuffer", 1, "$262.detachArrayBuffer: the host of this realm installed no detach operation");
 
         // RUNNING A SCRIPT IS THE HOST'S ACT TOO, and the same shape: a composition that means to
         // offer it replaces this member through `JsHostRealm.EvaluateScript`, which is what the
         // conformance harness does (JSeal V15-host). (Corrected 2026-09-21: the message read "the
         // wide manifest admits no guest-initiated load", which the manifest never decided.)
-        GlobalRefuse(
-            harness,
-            "evalScript",
-            1,
-            "$262.evalScript: the host of this realm installed no script evaluation");
+        GlobalRefuse(harness, "evalScript", 1, "$262.evalScript: the host of this realm installed no script evaluation");
 
         // INTERPRETING.md is explicit that `gc` throws when the host exposes no collection hook,
         // and this one does not: the collector is the CLR's and nothing here can ask it to run.
@@ -321,11 +305,11 @@ internal sealed partial class JsRealm
         Method(host, name, arity, (engine, thisValue, arguments) => engine.ThrowTypeError(message));
 
     /// <summary>Joins the arguments with one space and hands the line to the host.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DA1CB5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=264021
     // Broiler-Human:        PENDING
     private static void GlobalWriteLine(JsEngine engine, JsValue[] arguments)
     {
-        var line = new System.Text.StringBuilder();
+        var line = new StringBuilder();
 
         for (var at = 0; at < arguments.Length; at++)
         {
@@ -343,11 +327,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>Encode</c> over an explicit unescaped set.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CF8B90
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F908D8
     // Broiler-Human:        PENDING
     private static string GlobalUriEncode(JsEngine engine, string text, string unescaped)
     {
-        var result = new System.Text.StringBuilder(text.Length);
+        var result = new StringBuilder(text.Length);
 
         for (var at = 0; at < text.Length; at++)
         {
@@ -391,11 +375,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>Decode</c> over an explicit preserved set.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8EF1A3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=94518A
     // Broiler-Human:        PENDING
     private static string GlobalUriDecode(JsEngine engine, string text, string preserved)
     {
-        var result = new System.Text.StringBuilder(text.Length);
+        var result = new StringBuilder(text.Length);
         var at = 0;
 
         while (at < text.Length)
@@ -501,9 +485,9 @@ internal sealed partial class JsRealm
     };
 
     /// <summary>Appends the UTF-8 octets of a code point, each as <c>%XX</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D06635
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6929F8
     // Broiler-Human:        PENDING
-    private static void GlobalUriAppendUtf8(System.Text.StringBuilder text, int point)
+    private static void GlobalUriAppendUtf8(StringBuilder text, int point)
     {
         if (point <= 0x7F)
         {
@@ -530,9 +514,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Appends one octet as <c>%XX</c> in upper-case hex.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DC7520
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6F7D6E
     // Broiler-Human:        PENDING
-    private static void GlobalUriAppendOctet(System.Text.StringBuilder text, int octet)
+    private static void GlobalUriAppendOctet(StringBuilder text, int octet)
     {
         text.Append('%');
         text.Append(GlobalUriHexDigits[(octet >> 4) & 0xF]);
@@ -540,9 +524,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Appends a code point as one code unit or as a surrogate pair.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EE4D18
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E522D1
     // Broiler-Human:        PENDING
-    private static void GlobalUriAppendCodePoint(System.Text.StringBuilder text, int point)
+    private static void GlobalUriAppendCodePoint(StringBuilder text, int point)
     {
         if (point <= 0xFFFF)
         {
@@ -556,11 +540,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Annex B's <c>escape</c>, which works over code units and never throws.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9F8521
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=097487
     // Broiler-Human:        PENDING
     private static string GlobalEscapeText(JsEngine engine, string text)
     {
-        var result = new System.Text.StringBuilder(text.Length);
+        var result = new StringBuilder(text.Length);
 
         for (var at = 0; at < text.Length; at++)
         {
@@ -591,11 +575,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Annex B's <c>unescape</c>, which copies a malformed escape through verbatim.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=65547A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C2739F
     // Broiler-Human:        PENDING
     private static string GlobalUnescapeText(JsEngine engine, string text)
     {
-        var result = new System.Text.StringBuilder(text.Length);
+        var result = new StringBuilder(text.Length);
         var at = 0;
 
         while (at < text.Length)

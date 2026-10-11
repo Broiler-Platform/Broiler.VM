@@ -58,16 +58,14 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds <c>Reflect</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6CBA7D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A06E3
     // Broiler-Human:        PENDING
     private void SetupReflect()
     {
         var reflect = new JsObject(ObjectPrototype, "Reflect");
         GlobalObject.DefineBuiltIn("Reflect", JsValue.Object(reflect));
 
-        reflect.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Reflect"), JsPropertyAttributes.Configurable));
+        reflect.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Reflect"), JsPropertyAttributes.Configurable));
 
         Method(reflect, "get", 2, static (engine, thisValue, arguments) =>
         {
@@ -111,8 +109,8 @@ internal sealed partial class JsRealm
 
             return JsValue.Boolean(
                 key.IsSymbol
-                    ? engine.HasSymbol(target, key.AsSymbol())
-                    : engine.HasProperty(target, engine.ToPropertyKey(key)));
+                    ? JsEngine.HasSymbol(target, key.AsSymbol())
+                    : JsEngine.HasProperty(target, engine.ToPropertyKey(key)));
         });
 
         Method(reflect, "deleteProperty", 2, static (engine, thisValue, arguments) =>
@@ -257,8 +255,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Reflect.apply: the target is not callable");
             }
 
-            return engine.Call(
-                target, ArgOfReflect(arguments, 1), ReflectArguments(engine, ArgOfReflect(arguments, 2)));
+            return engine.Call(target, ArgOfReflect(arguments, 1), ReflectArguments(engine, ArgOfReflect(arguments, 2)));
         });
 
         Method(reflect, "construct", 2, static (engine, thisValue, arguments) =>
@@ -283,10 +280,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Reflect.construct: the new target is not a constructor");
             }
 
-            return engine.Construct(
-                target,
-                arguments.Length > 1 ? ReflectArguments(engine, arguments[1]) : [],
-                newTarget);
+            return engine.Construct(target, arguments.Length > 1 ? ReflectArguments(engine, arguments[1]) : [], newTarget);
         });
     }
 
@@ -297,16 +291,13 @@ internal sealed partial class JsRealm
     /// objects, so a primitive arriving here is a mistake and saying so is more useful than wrapping
     /// it and answering about the wrapper.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5709CE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=22307F
     // Broiler-Human:        PENDING
     private static JsObject ReflectTarget(JsEngine engine, JsValue[] arguments, string member)
     {
         var target = ArgOfReflect(arguments, 0);
 
-        return target.IsObject
-            ? target.AsObject()
-            : (JsObject)engine.ThrowTypeError(
-                "Reflect." + member + " called on a value that is not an object").AsObject();
+        return target.IsObject ? target.AsObject() : engine.ThrowTypeError("Reflect." + member + " called on a value that is not an object").AsObject();
     }
 
     /// <summary>One argument, or <c>undefined</c> where there is none.</summary>

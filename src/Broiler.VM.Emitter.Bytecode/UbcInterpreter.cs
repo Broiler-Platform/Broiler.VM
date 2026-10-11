@@ -15,7 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-using System.Collections.Immutable;
+using System;
+using System.Linq;
 using Broiler.VM.Abstractions;
 using Broiler.VM.Ubc;
 
@@ -79,7 +80,7 @@ internal sealed class UbcLoopMeter : IVmMeter
     internal IVmMeter Inner => inner;
 
     /// <summary>Charges <paramref name="amount"/> of fuel, polling whenever the count reaches the bound.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=106A66
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=279C20
     // Broiler-Falsified-If: a charge is split so that work since the last poll passes the bound, or a refused piece is answered as spent
     // Broiler-Human:        PENDING
     internal bool Spend(ulong amount)
@@ -91,7 +92,7 @@ internal sealed class UbcLoopMeter : IVmMeter
                 return false;
             }
 
-            var piece = System.Math.Min(amount, bound - since);
+            var piece = Math.Min(amount, bound - since);
 
             if (!inner.TryCharge(VmBudgetDimension.Fuel, piece))
             {
@@ -180,8 +181,7 @@ internal sealed class UbcLoopMeter : IVmMeter
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=5; Fingerprint=2D9DF7
 // Broiler-Falsified-If: an instruction's effect happens before its fuel is charged, a frame is pushed without CallDepth being charged, or a slot is read or written outside the heights the walk proved
 // Broiler-Human:        PENDING
-internal sealed class UbcInterpreter<TFamily>
-    where TFamily : struct, IUbcFamily
+internal sealed class UbcInterpreter<TFamily> where TFamily : struct, IUbcFamily
 {
     // The bytes one heap frame occupies: a program reference and five integers, padded.
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=37D7BA
@@ -191,9 +191,9 @@ internal sealed class UbcInterpreter<TFamily>
     private readonly UbcInstance instance;
     private readonly UbcLoopMeter meter;
     private readonly IVmHostCapabilityInvoker capabilities;
-    private ulong[] words = System.Array.Empty<ulong>();
+    private ulong[] words = [];
     private IUbcValuePlane values = null!;
-    private UbcFrame[] frames = System.Array.Empty<UbcFrame>();
+    private UbcFrame[] frames = [];
     private int depth;
 
     // Set for a start unit's run: its return at the bottom frame completes the instantiation step and
@@ -210,10 +210,10 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>Runs the entry unit <paramref name="unit"/>, its parameters bound by the family from the entry's name.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=DC43D5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=DBE661
     // Broiler-Falsified-If: an entry unit runs with locals the family did not bind left holding a previous operation's values
     // Broiler-Human:        PENDING
-    internal VmExecutionStep Start(int unit, System.ReadOnlySpan<byte> name)
+    internal VmExecutionStep Start(int unit, ReadOnlySpan<byte> name)
     {
         // The count of work since the last poll starts from a poll of its own: whatever the core's
         // meter already holds is not this loop's to know.
@@ -282,7 +282,7 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>Restores a suspended operation's frames and planes and continues after the suspending row.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CC284E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=31764D
     // Broiler-Falsified-If: a resumption continues with a plane other than the one captured, at an instruction other than the one after the suspending row, or with a frame standing whose depth is not charged
     // Broiler-Human:        PENDING
     internal VmExecutionStep Resume(UbcContinuation continuation)
@@ -302,7 +302,7 @@ internal sealed class UbcInterpreter<TFamily>
         }
 
         depth = continuation.Depth;
-        var length = System.Math.Max(depth, 4);
+        var length = Math.Max(depth, 4);
 
         if (!meter.Inner.TryCharge(VmBudgetDimension.AllocatedBytes, (ulong)length * FrameBytes) || !meter.Spend((ulong)depth))
         {
@@ -310,7 +310,7 @@ internal sealed class UbcInterpreter<TFamily>
         }
 
         frames = new UbcFrame[length];
-        System.Array.Copy(continuation.Frames, frames, depth);
+        Array.Copy(continuation.Frames, frames, depth);
 
         var top = frames[depth - 1];
         var code = top.Program.Units[top.Unit];
@@ -324,8 +324,8 @@ internal sealed class UbcInterpreter<TFamily>
         for (var frame = 0; frame < depth; frame++)
         {
             var unit = frames[frame].Program.Units[frames[frame].Unit];
-            wordExtent = System.Math.Max(wordExtent, frames[frame].WordBase + unit.WordLocals + (int)unit.Unit.MaxWordHeight + 1);
-            valueExtent = System.Math.Max(valueExtent, frames[frame].ValueBase + unit.ValueLocals + (int)unit.Unit.MaxValueHeight + 1);
+            wordExtent = Math.Max(wordExtent, frames[frame].WordBase + unit.WordLocals + (int)unit.Unit.MaxWordHeight + 1);
+            valueExtent = Math.Max(valueExtent, frames[frame].ValueBase + unit.ValueLocals + (int)unit.Unit.MaxValueHeight + 1);
         }
 
         if (!Grow(wordExtent, valueExtent))
@@ -333,7 +333,7 @@ internal sealed class UbcInterpreter<TFamily>
             return Finish(Stop());
         }
 
-        System.Array.Copy(continuation.Words, words, continuation.Words.Length);
+        Array.Copy(continuation.Words, words, continuation.Words.Length);
         TFamily.RestoreValues(values, 0, continuation.Values);
 
         var activation = Activation();
@@ -433,43 +433,43 @@ internal sealed class UbcInterpreter<TFamily>
                         continue;
 
                     case UbcStatusKind.Request when row.Kind == UbcInstructionKind.Call && !row.IsTerminal:
-                    {
-                        var callee = activation.CallRequest.Unit;
-                        var calleeProgram = activation.CallRequest.Program ?? program;
-
-                        // The family boundary is not crossed by a call: a program of another family is
-                        // the handler's defect, and so is a unit the program does not have.
-                        if (!string.Equals(calleeProgram.Table.FamilyIdentity, instance.Program.Table.FamilyIdentity, System.StringComparison.Ordinal) ||
-                            (uint)callee >= (uint)calleeProgram.Units.Length ||
-                            !Fits(row, in ins, program, calleeProgram.Units[callee], out var wordsBelow, out var valuesBelow))
                         {
-                            return Finish(VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation));
+                            var callee = activation.CallRequest.Unit;
+                            var calleeProgram = activation.CallRequest.Program ?? program;
+
+                            // The family boundary is not crossed by a call: a program of another family is
+                            // the handler's defect, and so is a unit the program does not have.
+                            if (!string.Equals(calleeProgram.Table.FamilyIdentity, instance.Program.Table.FamilyIdentity, System.StringComparison.Ordinal) ||
+                                (uint)callee >= (uint)calleeProgram.Units.Length ||
+                                !Fits(row, in ins, program, calleeProgram.Units[callee], out var wordsBelow, out var valuesBelow))
+                            {
+                                return Finish(VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation));
+                            }
+
+                            frames[depth - 1].Index = index;
+
+                            // The callee's frame starts above the row's whole input region, and its results
+                            // replace the region. Its parameters begin the distance below the top that
+                            // Fits answered: the region's top slots for a listed or counted row, its bottom
+                            // slots, beneath the trailing pops, for a signature row.
+                            if (!Enter(
+                                    calleeProgram,
+                                    callee,
+                                    wordTop,
+                                    valueTop,
+                                    wordTop - ins.WordPops,
+                                    valueTop - ins.ValuePops,
+                                    wordTop - wordsBelow,
+                                    valueTop - valuesBelow,
+                                    copyParameters: true))
+                            {
+                                return Finish(Stop());
+                            }
+
+                            activation.Words = words;
+                            activation.Values = values;
+                            goto Reload;
                         }
-
-                        frames[depth - 1].Index = index;
-
-                        // The callee's frame starts above the row's whole input region, and its results
-                        // replace the region. Its parameters begin the distance below the top that
-                        // Fits answered: the region's top slots for a listed or counted row, its bottom
-                        // slots, beneath the trailing pops, for a signature row.
-                        if (!Enter(
-                                calleeProgram,
-                                callee,
-                                wordTop,
-                                valueTop,
-                                wordTop - ins.WordPops,
-                                valueTop - ins.ValuePops,
-                                wordTop - wordsBelow,
-                                valueTop - valuesBelow,
-                                copyParameters: true))
-                        {
-                            return Finish(Stop());
-                        }
-
-                        activation.Words = words;
-                        activation.Values = values;
-                        goto Reload;
-                    }
 
                     case UbcStatusKind.Suspend when row.Kind == UbcInstructionKind.Suspend && !row.IsTerminal:
                         frames[depth - 1].Index = index;
@@ -503,18 +503,18 @@ internal sealed class UbcInterpreter<TFamily>
                     break;
 
                 case UbcOpcode.Trap:
-                {
-                    var shape = UbcOpcodes.Row(UbcOpcode.Trap).Shape;
-                    activation.Program = program;
-                    activation.Unit = frame.Unit;
-                    activation.Pc = ins.Pc;
-                    activation.WordArgs = wordTop;
-                    activation.ValueArgs = valueTop;
-                    return Finish(VmExecutionStep.Faulted(TFamily.Fault(
-                        ref activation,
-                        (byte)UbcOperandShapes.First(shape, ins.Operand),
-                        (ushort)UbcOperandShapes.Second(shape, ins.Operand))));
-                }
+                    {
+                        var shape = UbcOpcodes.Row(UbcOpcode.Trap).Shape;
+                        activation.Program = program;
+                        activation.Unit = frame.Unit;
+                        activation.Pc = ins.Pc;
+                        activation.WordArgs = wordTop;
+                        activation.ValueArgs = valueTop;
+                        return Finish(VmExecutionStep.Faulted(TFamily.Fault(
+                            ref activation,
+                            (byte)UbcOperandShapes.First(shape, ins.Operand),
+                            (ushort)UbcOperandShapes.Second(shape, ins.Operand))));
+                    }
 
                 case UbcOpcode.Jump:
                     index = ins.Target;
@@ -529,78 +529,78 @@ internal sealed class UbcInterpreter<TFamily>
                     break;
 
                 case UbcOpcode.JumpTable:
-                {
-                    var targets = program.JumpTableTargets[ins.Index];
-                    var selector = (uint)words[wordTop - 1];
-                    index = targets[selector < (uint)targets.Length ? (int)selector : targets.Length - 1];
-                    break;
-                }
+                    {
+                        var targets = program.JumpTableTargets[ins.Index];
+                        var selector = (uint)words[wordTop - 1];
+                        index = targets[selector < (uint)targets.Length ? (int)selector : targets.Length - 1];
+                        break;
+                    }
 
                 case UbcOpcode.Return:
-                {
-                    var resultWords = ins.WordPops;
-                    var resultValues = ins.ValuePops;
-                    var toWords = frame.ReturnWords;
-                    var toValues = frame.ReturnValues;
-
-                    System.Array.Copy(words, wordTop - resultWords, words, toWords, resultWords);
-
-                    for (var slot = 0; slot < resultValues; slot++)
                     {
-                        values.Copy(valueTop - resultValues + slot, toValues + slot);
-                    }
+                        var resultWords = ins.WordPops;
+                        var resultValues = ins.ValuePops;
+                        var toWords = frame.ReturnWords;
+                        var toValues = frame.ReturnValues;
 
-                    Discard(toValues + resultValues, valueTop - (toValues + resultValues));
-                    depth--;
-                    meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
+                        System.Array.Copy(words, wordTop - resultWords, words, toWords, resultWords);
 
-                    if (depth == 0)
-                    {
-                        if (starting)
+                        for (var slot = 0; slot < resultValues; slot++)
                         {
-                            return VmExecutionStep.Completed(null);
+                            values.Copy(valueTop - resultValues + slot, toValues + slot);
                         }
 
-                        activation.Program = program;
-                        activation.Unit = frame.Unit;
-                        activation.Pc = ins.Pc;
-                        activation.WordArgs = toWords;
-                        activation.ValueArgs = toValues;
-                        activation.Words = words;
-                        activation.Values = values;
-                        return VmExecutionStep.Completed(TFamily.Completion(ref activation));
-                    }
+                        Discard(toValues + resultValues, valueTop - (toValues + resultValues));
+                        depth--;
+                        meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
 
-                    ref var caller = ref frames[depth - 1];
-                    caller.Index = caller.Program.Units[caller.Unit].Instructions[caller.Index].Next;
-                    goto Reload;
-                }
+                        if (depth == 0)
+                        {
+                            if (starting)
+                            {
+                                return VmExecutionStep.Completed(null);
+                            }
+
+                            activation.Program = program;
+                            activation.Unit = frame.Unit;
+                            activation.Pc = ins.Pc;
+                            activation.WordArgs = toWords;
+                            activation.ValueArgs = toValues;
+                            activation.Words = words;
+                            activation.Values = values;
+                            return VmExecutionStep.Completed(TFamily.Completion(ref activation));
+                        }
+
+                        ref var caller = ref frames[depth - 1];
+                        caller.Index = caller.Program.Units[caller.Unit].Instructions[caller.Index].Next;
+                        goto Reload;
+                    }
 
                 case UbcOpcode.Call:
-                {
-                    var target = units[ins.Index];
-                    frames[depth - 1].Index = index;
-
-                    // The callee's frame starts above the caller's stack, whose top slots are the
-                    // arguments; its results replace them.
-                    if (!Enter(
-                            program,
-                            ins.Index,
-                            wordTop,
-                            valueTop,
-                            wordTop - target.ParameterWords,
-                            valueTop - target.ParameterValues,
-                            wordTop - target.ParameterWords,
-                            valueTop - target.ParameterValues,
-                            copyParameters: true))
                     {
-                        return Finish(Stop());
-                    }
+                        var target = units[ins.Index];
+                        frames[depth - 1].Index = index;
 
-                    activation.Words = words;
-                    activation.Values = values;
-                    goto Reload;
-                }
+                        // The callee's frame starts above the caller's stack, whose top slots are the
+                        // arguments; its results replace them.
+                        if (!Enter(
+                                program,
+                                ins.Index,
+                                wordTop,
+                                valueTop,
+                                wordTop - target.ParameterWords,
+                                valueTop - target.ParameterValues,
+                                wordTop - target.ParameterWords,
+                                valueTop - target.ParameterValues,
+                                copyParameters: true))
+                        {
+                            return Finish(Stop());
+                        }
+
+                        activation.Words = words;
+                        activation.Values = values;
+                        goto Reload;
+                    }
 
                 case UbcOpcode.Drop:
                     Discard(valueTop - ins.ValuePops, ins.ValuePops);
@@ -653,45 +653,45 @@ internal sealed class UbcInterpreter<TFamily>
                     break;
 
                 case UbcOpcode.Select:
-                {
-                    var keepDeeper = (uint)words[wordTop - 1] != 0;
-
-                    if (ins.ValuePops == 2)
                     {
-                        if (!keepDeeper)
+                        var keepDeeper = (uint)words[wordTop - 1] != 0;
+
+                        if (ins.ValuePops == 2)
                         {
-                            values.Copy(valueTop - 1, valueTop - 2);
+                            if (!keepDeeper)
+                            {
+                                values.Copy(valueTop - 1, valueTop - 2);
+                            }
+
+                            values.Clear(valueTop - 1, 1);
+                        }
+                        else if (!keepDeeper)
+                        {
+                            words[wordTop - 3] = words[wordTop - 2];
                         }
 
-                        values.Clear(valueTop - 1, 1);
+                        index = ins.Next;
+                        break;
                     }
-                    else if (!keepDeeper)
-                    {
-                        words[wordTop - 3] = words[wordTop - 2];
-                    }
-
-                    index = ins.Next;
-                    break;
-                }
 
                 case UbcOpcode.Squash:
-                {
-                    var keptWords = ins.WordPushes;
-                    var droppedWords = ins.WordPops - keptWords;
-                    System.Array.Copy(words, wordTop - keptWords, words, wordTop - keptWords - droppedWords, keptWords);
-
-                    var keptValues = ins.ValuePushes;
-                    var droppedValues = ins.ValuePops - keptValues;
-
-                    for (var slot = 0; slot < keptValues; slot++)
                     {
-                        values.Copy(valueTop - keptValues + slot, valueTop - keptValues - droppedValues + slot);
-                    }
+                        var keptWords = ins.WordPushes;
+                        var droppedWords = ins.WordPops - keptWords;
+                        System.Array.Copy(words, wordTop - keptWords, words, wordTop - keptWords - droppedWords, keptWords);
 
-                    Discard(valueTop - droppedValues, droppedValues);
-                    index = ins.Next;
-                    break;
-                }
+                        var keptValues = ins.ValuePushes;
+                        var droppedValues = ins.ValuePops - keptValues;
+
+                        for (var slot = 0; slot < keptValues; slot++)
+                        {
+                            values.Copy(valueTop - keptValues + slot, valueTop - keptValues - droppedValues + slot);
+                        }
+
+                        Discard(valueTop - droppedValues, droppedValues);
+                        index = ins.Next;
+                        break;
+                    }
 
                 case UbcOpcode.LocalGet:
                     if (ins.Plane == UbcPlane.Word)
@@ -754,19 +754,10 @@ internal sealed class UbcInterpreter<TFamily>
     /// arguments finds them unchanged when it lands, whatever the callee did to its parameters. The
     /// entry unit's parameters are the family's to bind, and a start unit has none.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=91914A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=9E1AE7
     // Broiler-Falsified-If: a frame is pushed without its CallDepth and fuel charged first, the CallDepth charged for a frame that never stands is kept after Enter returns or throws, a callee's parameter local is the caller's own slot or another slot than the ones the caller named, or a callee's non-parameter locals start holding anything but zero and the family's empty value
     // Broiler-Human:        PENDING
-    private bool Enter(
-        UbcVerifiedProgram program,
-        int unit,
-        int wordBase,
-        int valueBase,
-        int returnWords,
-        int returnValues,
-        int wordParameters,
-        int valueParameters,
-        bool copyParameters)
+    private bool Enter(UbcVerifiedProgram program, int unit, int wordBase, int valueBase, int returnWords, int returnValues, int wordParameters, int valueParameters, bool copyParameters)
     {
         if (!meter.TryCharge(VmBudgetDimension.CallDepth, 1))
         {
@@ -790,14 +781,14 @@ internal sealed class UbcInterpreter<TFamily>
 
             if (depth == frames.Length)
             {
-                var length = System.Math.Max(4, frames.Length * 2);
+                var length = Math.Max(4, frames.Length * 2);
 
                 if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, (ulong)(length - frames.Length) * FrameBytes))
                 {
                     return false;
                 }
 
-                System.Array.Resize(ref frames, length);
+                Array.Resize(ref frames, length);
             }
 
             if (!Grow(wordBase + code.WordLocals + (int)code.Unit.MaxWordHeight + 1,
@@ -808,7 +799,7 @@ internal sealed class UbcInterpreter<TFamily>
 
             if (copyParameters)
             {
-                System.Array.Copy(words, wordParameters, words, wordBase, code.ParameterWords);
+                Array.Copy(words, wordParameters, words, wordBase, code.ParameterWords);
 
                 for (var slot = 0; slot < code.ParameterValues; slot++)
                 {
@@ -816,7 +807,7 @@ internal sealed class UbcInterpreter<TFamily>
                 }
             }
 
-            System.Array.Clear(words, wordBase + code.ParameterWords, code.WordLocals - code.ParameterWords);
+            Array.Clear(words, wordBase + code.ParameterWords, code.WordLocals - code.ParameterWords);
             values.Clear(valueBase + code.ParameterValues, code.ValueLocals - code.ParameterValues);
 
             frames[depth++] = new UbcFrame
@@ -842,26 +833,26 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>Grows each plane to at least the given capacity, charging the bytes before allocating them.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=294E27
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=41B473
     // Broiler-Falsified-If: a plane grows by bytes that were not charged to the allocated-bytes allowance first
     // Broiler-Human:        PENDING
     private bool Grow(int wordCapacity, int valueCapacity)
     {
         if (wordCapacity > words.Length)
         {
-            var length = System.Math.Max(wordCapacity, System.Math.Min(words.Length * 2, int.MaxValue / 16));
+            var length = Math.Max(wordCapacity, Math.Min(words.Length * 2, int.MaxValue / 16));
 
             if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, (ulong)(length - words.Length) * sizeof(ulong)))
             {
                 return false;
             }
 
-            System.Array.Resize(ref words, length);
+            Array.Resize(ref words, length);
         }
 
         if (valueCapacity > values.Capacity)
         {
-            var length = System.Math.Max(valueCapacity, System.Math.Min(values.Capacity * 2, int.MaxValue / 16));
+            var length = Math.Max(valueCapacity, Math.Min(values.Capacity * 2, int.MaxValue / 16));
 
             if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, (ulong)(length - values.Capacity) * (ulong)values.ValueBytes))
             {
@@ -956,7 +947,7 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>Captures every frame and both planes below the suspending row's arguments, through the family's codec.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F91B21
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=779412
     // Broiler-Falsified-If: a slot below the arguments is missing from the continuation, the capture's bytes are not charged, or a parked continuation still holds CallDepth
     // Broiler-Human:        PENDING
     private VmExecutionStep Suspend(ref UbcActivation activation, int resumeIndex)
@@ -980,9 +971,9 @@ internal sealed class UbcInterpreter<TFamily>
         }
 
         var savedWords = new ulong[wordCount];
-        System.Array.Copy(words, savedWords, wordCount);
+        Array.Copy(words, savedWords, wordCount);
         var savedFrames = new UbcFrame[depth];
-        System.Array.Copy(frames, savedFrames, depth);
+        Array.Copy(frames, savedFrames, depth);
         var savedValues = TFamily.CaptureValues(values, 0, valueCount);
 
         var continuation = new UbcContinuation(instance, savedFrames, depth, savedWords, savedValues, valueCount, resumeIndex, reason);
@@ -1022,16 +1013,10 @@ internal sealed class UbcInterpreter<TFamily>
     /// and its parameters are the region's bottom slots on each plane, beneath the trailing pops, where
     /// the walk typed them. A form this loop does not know fits nothing.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=0; Fingerprint=D9E802
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=0; Fingerprint=FA4308
     // Broiler-Falsified-If: a request is performed whose callee would read a slot of another type than the walk proved, return other slots than the row pushes, or bind parameters from other slots than the ones its row's form places them in
     // Broiler-Human:        PENDING
-    private static bool Fits(
-        UbcInstructionRow row,
-        in UbcInstruction ins,
-        UbcVerifiedProgram program,
-        UbcUnitCode callee,
-        out int wordsBelow,
-        out int valuesBelow)
+    private static bool Fits(UbcInstructionRow row, in UbcInstruction ins, UbcVerifiedProgram program, UbcUnitCode callee, out int wordsBelow, out int valuesBelow)
     {
         var effect = row.Effect;
         var parameters = callee.Signature.Parameters;
@@ -1042,45 +1027,45 @@ internal sealed class UbcInterpreter<TFamily>
         {
             case UbcEffectForm.Listed:
             case UbcEffectForm.Counted:
-            {
-                var region = ins.WordPops + ins.ValuePops;
-
-                if (!System.Linq.Enumerable.SequenceEqual(callee.Signature.Results, effect.Pushes) || parameters.Length > region)
                 {
-                    return false;
-                }
+                    var region = ins.WordPops + ins.ValuePops;
 
-                for (var slot = 0; slot < parameters.Length; slot++)
-                {
-                    var position = region - parameters.Length + slot;
-                    var type = position < effect.Pops.Length ? effect.Pops[position] : effect.Repeated;
-
-                    if (type != parameters[slot])
+                    if (!Enumerable.SequenceEqual(callee.Signature.Results, effect.Pushes) || parameters.Length > region)
                     {
                         return false;
                     }
-                }
 
-                wordsBelow = callee.ParameterWords;
-                valuesBelow = callee.ParameterValues;
-                return true;
-            }
+                    for (var slot = 0; slot < parameters.Length; slot++)
+                    {
+                        var position = region - parameters.Length + slot;
+                        var type = position < effect.Pops.Length ? effect.Pops[position] : effect.Repeated;
+
+                        if (type != parameters[slot])
+                        {
+                            return false;
+                        }
+                    }
+
+                    wordsBelow = callee.ParameterWords;
+                    valuesBelow = callee.ParameterValues;
+                    return true;
+                }
 
             case UbcEffectForm.Signature:
-            {
-                // The walk refused an operand naming no Types row, so the row is there to read.
-                var named = program.Artifact.Types[(int)ins.Operand];
-
-                if (!System.Linq.Enumerable.SequenceEqual(callee.Signature.Results, named.Results) ||
-                    !System.Linq.Enumerable.SequenceEqual(parameters, named.Parameters))
                 {
-                    return false;
-                }
+                    // The walk refused an operand naming no Types row, so the row is there to read.
+                    var named = program.Artifact.Types[(int)ins.Operand];
 
-                wordsBelow = ins.WordPops;
-                valuesBelow = ins.ValuePops;
-                return true;
-            }
+                    if (!Enumerable.SequenceEqual(callee.Signature.Results, named.Results) ||
+                        !Enumerable.SequenceEqual(parameters, named.Parameters))
+                    {
+                        return false;
+                    }
+
+                    wordsBelow = ins.WordPops;
+                    valuesBelow = ins.ValuePops;
+                    return true;
+                }
 
             default:
                 return false;
@@ -1101,8 +1086,7 @@ internal sealed class UbcInterpreter<TFamily>
     /// <summary>The step a refused charge or a false poll ends in; the core names what happened from its latches.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A02F9E
     // Broiler-Human:        PENDING
-    private VmExecutionStep Stop() =>
-        VmExecutionStep.ContractViolation(meter.Stopped ? VmReason.Cancelled : VmReason.AllowanceExhausted);
+    private VmExecutionStep Stop() => VmExecutionStep.ContractViolation(meter.Stopped ? VmReason.Cancelled : VmReason.AllowanceExhausted);
 
     /// <summary>Releases the depth of every frame still standing, for a step that ends the operation.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B31EE6

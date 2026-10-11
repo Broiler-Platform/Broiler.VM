@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -71,11 +73,10 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=B458DE
     // Broiler-Falsified-If: it answers true for a function object this realm did not build as its own eval
     // Broiler-Human:        PENDING
-    internal bool IsEvalIntrinsic(JsValue value) =>
-        EvalIntrinsic is not null && value.IsObject && ReferenceEquals(value.AsObject(), EvalIntrinsic);
+    internal bool IsEvalIntrinsic(JsValue value) => EvalIntrinsic is not null && value.IsObject && ReferenceEquals(value.AsObject(), EvalIntrinsic);
 
     /// <summary>Builds <c>eval</c> and <c>Function</c> on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=209E66
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=9E4BEF
     // Broiler-Falsified-If: it installs a global that turns source into code without going through the mediator
     // Broiler-Human:        PENDING
     private void SetupDynamic()
@@ -97,18 +98,14 @@ internal sealed partial class JsRealm
                 return source.IsString
                     ? engine.EvaluateGlobal(
                         source.AsString(),
-                        Format.JsFormat.EvalRequestFlags.None,
+                        JsFormat.EvalRequestFlags.None,
                         JsValue.Object(engine.Realm.GlobalObject))
                     : source;
             });
 
         EvalIntrinsic = evaluate;
 
-        GlobalObject.SetOwnProperty(
-            "eval",
-            JsProperty.Data(
-                JsValue.Object(evaluate),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        GlobalObject.SetOwnProperty("eval", JsProperty.Data(JsValue.Object(evaluate), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Constructor(
             "Function",
@@ -156,7 +153,7 @@ internal sealed partial class JsRealm
     /// value, which is what the constructor has to return.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=C2D765
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=3FCD43
     // Broiler-Falsified-If: the assembled source is evaluated anywhere but the global scope
     // Broiler-Human:        PENDING
     private static JsValue FromSource(JsEngine engine, JsValue[] arguments, string keyword = "function")
@@ -175,7 +172,7 @@ internal sealed partial class JsRealm
 
         var body = arguments.Length == 0
             ? string.Empty
-            : engine.ToStringValue(arguments[arguments.Length - 1]);
+            : engine.ToStringValue(arguments[^1]);
 
         var source = new System.Text.StringBuilder()
             .Append('(')
@@ -187,7 +184,6 @@ internal sealed partial class JsRealm
             .Append("\n})")
             .ToString();
 
-        return engine.Evaluate(
-            [JsValue.String(source)], direct: false, Format.JsFormat.FunctionFlags.ProgramBody);
+        return engine.Evaluate([JsValue.String(source)], direct: false, JsFormat.FunctionFlags.ProgramBody);
     }
 }

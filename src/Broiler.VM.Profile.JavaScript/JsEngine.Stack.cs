@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -70,19 +72,14 @@ internal sealed partial class JsEngine
     private int siteCount;
 
     /// <summary>Takes the site of a frame that is about to run.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6096FB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2FF882
     // Broiler-Falsified-If: a site is taken without being given back when its frame ends, or a taken site names another frame's program, unit or function
     // Broiler-Human:        PENDING
-    internal JsStackSite PushSite(
-        JsProgram program,
-        int unit,
-        JsScriptFunction? function,
-        string referrer,
-        bool construct)
+    internal JsStackSite PushSite(JsProgram program, int unit, JsScriptFunction? function, string referrer, bool construct)
     {
         if (siteCount == sites.Length)
         {
-            System.Array.Resize(ref sites, sites.Length * 2);
+            Array.Resize(ref sites, sites.Length * 2);
         }
 
         var site = sites[siteCount] ??= new JsStackSite();
@@ -173,12 +170,7 @@ internal sealed partial class JsEngine
             var program = site.Program!;
             var placed = program.TryPositionOf(site.Unit, site.Pc, out var line, out var column);
 
-            frames[at] = new JsStackFrame(
-                FrameName(site),
-                site.Referrer,
-                placed ? line : 0,
-                placed ? column : 0,
-                site.Construct);
+            frames[at] = new JsStackFrame(FrameName(site), site.Referrer, placed ? line : 0, placed ? column : 0, site.Construct);
         }
 
         return frames;
@@ -333,8 +325,7 @@ internal sealed class JsStackSite
 /// <summary>One captured frame of an error's stack: its name, its place and how it was entered.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6B9476
 // Broiler-Human:        PENDING
-internal readonly record struct JsStackFrame(
-    string Name, string Referrer, uint Line, uint Column, bool Construct);
+internal readonly record struct JsStackFrame(string Name, string Referrer, uint Line, uint Column, bool Construct);
 
 /// <summary>
 /// An object with an <c>[[ErrorData]]</c> slot, and the stack captured when it was made (JSD-0038).
@@ -352,10 +343,7 @@ internal sealed class JsErrorObject : JsObject
     /// <summary>Creates an error on <paramref name="prototype"/>, with no stack yet.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8B1649
     // Broiler-Human:        PENDING
-    internal JsErrorObject(JsObject? prototype)
-        : base(prototype, "Error")
-    {
-    }
+    internal JsErrorObject(JsObject? prototype) : base(prototype, "Error") { }
 
     /// <summary>The frames captured when the error was made, until the stack is first read or assigned.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DD01BA

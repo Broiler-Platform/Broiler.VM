@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Globalization;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -79,7 +82,7 @@ internal sealed partial class JsRealm
     private const string DateZoneText = " GMT+0000 (Coordinated Universal Time)";
 
     /// <summary>Builds <c>Date</c>, its statics and <c>Date.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D23740
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=47C700
     // Broiler-Human:        PENDING
     private void SetupDate()
     {
@@ -91,8 +94,7 @@ internal sealed partial class JsRealm
             // CALLED AS A FUNCTION, `Date` IGNORES ITS ARGUMENTS AND RETURNS A STRING.
             // `Date(2020, 0, 1)` is not a shorthand for `new Date(2020, 0, 1)`; it is the current
             // instant rendered, and code that drops the `new` gets a String rather than an object.
-            static (engine, thisValue, arguments) =>
-                JsValue.String(DateToFullText(DateCurrentTime())),
+            static (engine, thisValue, arguments) => JsValue.String(DateToFullText(DateCurrentTime())),
 
             static (engine, thisValue, arguments) =>
             {
@@ -117,14 +119,9 @@ internal sealed partial class JsRealm
         // `Date.now` HAS TO SURVIVE BEING TORN OFF ITS CONSTRUCTOR. A harness that writes
         // `var now = Date.now; ... now()` calls it with an undefined receiver, so the body reads
         // nothing from `thisValue` at all.
-        Method(constructor, "now", 0, static (engine, thisValue, arguments) =>
-            JsValue.Number(DateCurrentTime()));
-
-        Method(constructor, "parse", 1, static (engine, thisValue, arguments) =>
-            JsValue.Number(DateParseText(engine, engine.ToStringValue(DateArg(arguments, 0)))));
-
-        Method(constructor, "UTC", 7, static (engine, thisValue, arguments) =>
-            JsValue.Number(DateFromFields(engine, arguments)));
+        Method(constructor, "now", 0, static (engine, thisValue, arguments) => JsValue.Number(DateCurrentTime()));
+        Method(constructor, "parse", 1, static (engine, thisValue, arguments) => JsValue.Number(DateParseText(engine, engine.ToStringValue(DateArg(arguments, 0)))));
+        Method(constructor, "UTC", 7, static (engine, thisValue, arguments) => JsValue.Number(DateFromFields(engine, arguments)));
 
         // THE HOTTEST BUILT-IN IN THE OCTANE HARNESS. Tens of thousands of calls reach this body,
         // so it is a type test and a field read with nothing allocated on either side of them -
@@ -160,32 +157,14 @@ internal sealed partial class JsRealm
         // THE LOCAL AND UTC GETTERS ARE ONE BODY REGISTERED TWICE, because this profile's
         // LocalTime is the identity. Two definitions of the same arithmetic could drift; one
         // cannot.
-        DatePair("getFullYear", "getUTCFullYear", static (engine, thisValue, arguments) =>
-            DateFieldOf(engine, thisValue, DateFieldKind.Year));
-
-        DatePair("getMonth", "getUTCMonth", static (engine, thisValue, arguments) =>
-            DateFieldOf(engine, thisValue, DateFieldKind.Month));
-
-        DatePair("getDate", "getUTCDate", static (engine, thisValue, arguments) =>
-            DateFieldOf(engine, thisValue, DateFieldKind.DayOfMonth));
-
-        DatePair("getDay", "getUTCDay", static (engine, thisValue, arguments) =>
-            DateFieldOf(engine, thisValue, DateFieldKind.DayOfWeek));
-
-        DatePair("getHours", "getUTCHours", static (engine, thisValue, arguments) =>
-            DateFieldOf(engine, thisValue, DateFieldKind.Hour));
-
-        DatePair("getMinutes", "getUTCMinutes", static (engine, thisValue, arguments) =>
-            DateFieldOf(engine, thisValue, DateFieldKind.Minute));
-
-        DatePair("getSeconds", "getUTCSeconds", static (engine, thisValue, arguments) =>
-            DateFieldOf(engine, thisValue, DateFieldKind.Second));
-
-        DatePair(
-            "getMilliseconds",
-            "getUTCMilliseconds",
-            static (engine, thisValue, arguments) =>
-                DateFieldOf(engine, thisValue, DateFieldKind.Millisecond));
+        DatePair("getFullYear", "getUTCFullYear", static (engine, thisValue, arguments) => DateFieldOf(engine, thisValue, DateFieldKind.Year));
+        DatePair("getMonth", "getUTCMonth", static (engine, thisValue, arguments) => DateFieldOf(engine, thisValue, DateFieldKind.Month));
+        DatePair("getDate", "getUTCDate", static (engine, thisValue, arguments) => DateFieldOf(engine, thisValue, DateFieldKind.DayOfMonth));
+        DatePair("getDay", "getUTCDay", static (engine, thisValue, arguments) => DateFieldOf(engine, thisValue, DateFieldKind.DayOfWeek));
+        DatePair("getHours", "getUTCHours", static (engine, thisValue, arguments) => DateFieldOf(engine, thisValue, DateFieldKind.Hour));
+        DatePair("getMinutes", "getUTCMinutes", static (engine, thisValue, arguments) => DateFieldOf(engine, thisValue, DateFieldKind.Minute));
+        DatePair("getSeconds", "getUTCSeconds", static (engine, thisValue, arguments) => DateFieldOf(engine, thisValue, DateFieldKind.Second));
+        DatePair("getMilliseconds", "getUTCMilliseconds", static (engine, thisValue, arguments) => DateFieldOf(engine, thisValue, DateFieldKind.Millisecond));
 
         // ZERO, BECAUSE THE PROFILE'S ZONE IS UTC - but NaN for an Invalid Date, which is what the
         // specification says and what a test that reads `new Date(NaN).getTimezoneOffset()` checks.
@@ -195,63 +174,37 @@ internal sealed partial class JsRealm
             return JsValue.Number(double.IsNaN(date.TimeValue) ? double.NaN : 0);
         });
 
-        DateSetterPair("setFullYear", "setUTCFullYear", 3, static (engine, thisValue, arguments) =>
-            DateSetDateFields(engine, thisValue, arguments, 0));
+        DateSetterPair("setFullYear", "setUTCFullYear", 3, static (engine, thisValue, arguments) => DateSetDateFields(engine, thisValue, arguments, 0));
+        DateSetterPair("setMonth", "setUTCMonth", 2, static (engine, thisValue, arguments) => DateSetDateFields(engine, thisValue, arguments, 1));
+        DateSetterPair("setDate", "setUTCDate", 1, static (engine, thisValue, arguments) => DateSetDateFields(engine, thisValue, arguments, 2));
+        DateSetterPair("setHours", "setUTCHours", 4, static (engine, thisValue, arguments) => DateSetTimeFields(engine, thisValue, arguments, 0));
+        DateSetterPair("setMinutes", "setUTCMinutes", 3, static (engine, thisValue, arguments) => DateSetTimeFields(engine, thisValue, arguments, 1));
+        DateSetterPair("setSeconds", "setUTCSeconds", 2, static (engine, thisValue, arguments) => DateSetTimeFields(engine, thisValue, arguments, 2));
+        DateSetterPair("setMilliseconds", "setUTCMilliseconds", 1, static (engine, thisValue, arguments) => DateSetTimeFields(engine, thisValue, arguments, 3));
 
-        DateSetterPair("setMonth", "setUTCMonth", 2, static (engine, thisValue, arguments) =>
-            DateSetDateFields(engine, thisValue, arguments, 1));
-
-        DateSetterPair("setDate", "setUTCDate", 1, static (engine, thisValue, arguments) =>
-            DateSetDateFields(engine, thisValue, arguments, 2));
-
-        DateSetterPair("setHours", "setUTCHours", 4, static (engine, thisValue, arguments) =>
-            DateSetTimeFields(engine, thisValue, arguments, 0));
-
-        DateSetterPair("setMinutes", "setUTCMinutes", 3, static (engine, thisValue, arguments) =>
-            DateSetTimeFields(engine, thisValue, arguments, 1));
-
-        DateSetterPair("setSeconds", "setUTCSeconds", 2, static (engine, thisValue, arguments) =>
-            DateSetTimeFields(engine, thisValue, arguments, 2));
-
-        DateSetterPair(
-            "setMilliseconds",
-            "setUTCMilliseconds",
-            1,
-            static (engine, thisValue, arguments) =>
-                DateSetTimeFields(engine, thisValue, arguments, 3));
-
-        Method(DatePrototype, "toString", 0, static (engine, thisValue, arguments) =>
-            JsValue.String(DateToFullText(DateReceiver(engine, thisValue).TimeValue)));
-
+        Method(DatePrototype, "toString", 0, static (engine, thisValue, arguments) => JsValue.String(DateToFullText(DateReceiver(engine, thisValue).TimeValue)));
         Method(DatePrototype, "toDateString", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
-
-            return JsValue.String(
-                double.IsNaN(time) ? DateInvalidText : DateToCalendarText(time));
+            return JsValue.String(double.IsNaN(time) ? DateInvalidText : DateToCalendarText(time));
         });
 
         Method(DatePrototype, "toTimeString", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
-
-            return JsValue.String(
-                double.IsNaN(time) ? DateInvalidText : DateToClockText(time) + DateZoneText);
+            return JsValue.String(double.IsNaN(time) ? DateInvalidText : DateToClockText(time) + DateZoneText);
         });
 
         Method(DatePrototype, "toUTCString", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
-
             return JsValue.String(double.IsNaN(time) ? DateInvalidText : DateToUtcText(time));
         });
 
         // ANNEX B'S `toGMTString` IS `toUTCString` ITSELF, the same function object (JSP-7, JSC-239).
         _ = DatePrototype.TryGetOwnProperty("toUTCString", out var utcText);
 
-        DatePrototype.SetOwnProperty(
-            "toGMTString",
-            JsProperty.Data(utcText.Value, JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        DatePrototype.SetOwnProperty("toGMTString", JsProperty.Data(utcText.Value, JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         // ANNEX B'S TWO-DIGIT YEAR PAIR (JSP-7, JSC-239). `getYear` is the local year less 1900;
         // `setYear` reads 0 to 99 as 1900 to 1999 and any other year as itself, starting from +0
@@ -311,8 +264,7 @@ internal sealed partial class JsRealm
                 return JsValue.Null;
             }
 
-            return engine.Call(
-                engine.GetProperty(target, "toISOString"), target, System.Array.Empty<JsValue>());
+            return engine.Call(engine.GetProperty(target, "toISOString"), target, Array.Empty<JsValue>());
         });
 
         // WITHOUT INTL THE LOCALE FORMS ARE THE PLAIN FORMS: the specification allows an
@@ -329,8 +281,7 @@ internal sealed partial class JsRealm
                 return JsValue.String(DateToFullText(time));
             }
 
-            return JsValue.String(
-                double.IsNaN(time) ? DateInvalidText : ToLocaleDateString(engine, time, arguments, "any", "all"));
+            return JsValue.String(double.IsNaN(time) ? DateInvalidText : ToLocaleDateString(engine, time, arguments, "any", "all"));
         });
 
         Method(DatePrototype, "toLocaleDateString", 0, static (engine, thisValue, arguments) =>
@@ -424,10 +375,10 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The current instant as a time value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CC0887
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AA47FD
     // Broiler-Human:        PENDING
     private static double DateCurrentTime() =>
-        System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     /// <summary>One broken-down field of a receiver's time value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=739F75
@@ -507,8 +458,7 @@ internal sealed partial class JsRealm
             }
         }
 
-        return DateTimeClip(
-            DateMakeDate(DateMakeDay(year, month, day), DateMakeTime(hour, minute, second, milli)));
+        return DateTimeClip(DateMakeDate(DateMakeDay(year, month, day), DateMakeTime(hour, minute, second, milli)));
     }
 
     // ---- the setters -----------------------------------------------------------------------------
@@ -532,8 +482,7 @@ internal sealed partial class JsRealm
     /// <summary>The coerced argument for one field, or NaN when this call does not supply it.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6D239B
     // Broiler-Human:        PENDING
-    private static double DateFieldArgument(
-        JsEngine engine, JsValue[] arguments, int firstField, int field)
+    private static double DateFieldArgument(JsEngine engine, JsValue[] arguments, int firstField, int field)
     {
         var at = field - firstField;
 
@@ -551,8 +500,7 @@ internal sealed partial class JsRealm
     /// <c>setMilliseconds</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7EAFC0
     // Broiler-Human:        PENDING
-    private static JsValue DateSetTimeFields(
-        JsEngine engine, JsValue thisValue, JsValue[] arguments, int firstField)
+    private static JsValue DateSetTimeFields(JsEngine engine, JsValue thisValue, JsValue[] arguments, int firstField)
     {
         var date = DateReceiver(engine, thisValue);
         var time = date.TimeValue;
@@ -599,8 +547,7 @@ internal sealed partial class JsRealm
     /// <summary>The shared body of <c>setFullYear</c>, <c>setMonth</c> and <c>setDate</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8C97AF
     // Broiler-Human:        PENDING
-    private static JsValue DateSetDateFields(
-        JsEngine engine, JsValue thisValue, JsValue[] arguments, int firstField)
+    private static JsValue DateSetDateFields(JsEngine engine, JsValue thisValue, JsValue[] arguments, int firstField)
     {
         var date = DateReceiver(engine, thisValue);
         var time = date.TimeValue;
@@ -652,15 +599,14 @@ internal sealed partial class JsRealm
     /// C#'s <c>%</c> takes the sign of the dividend, so <c>-1 % 24</c> is <c>-1</c> where the
     /// language needs <c>23</c>. Every clock field of a pre-epoch date depends on the difference.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=818A36
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=779815
     // Broiler-Human:        PENDING
-    private static double DateFloorMod(double left, double right) =>
-        left - (right * System.Math.Floor(left / right));
+    private static double DateFloorMod(double left, double right) => left - (right * Math.Floor(left / right));
 
     /// <summary>The specification's <c>Day</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8DE6AE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=36C5B0
     // Broiler-Human:        PENDING
-    private static double DateDay(double time) => System.Math.Floor(time / DateMsPerDay);
+    private static double DateDay(double time) => Math.Floor(time / DateMsPerDay);
 
     /// <summary>The specification's <c>TimeWithinDay</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F1D0A3
@@ -686,13 +632,13 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>DayFromYear</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=056ECE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F738B2
     // Broiler-Human:        PENDING
     private static double DateDayFromYear(double year) =>
         (365 * (year - 1970)) +
-        System.Math.Floor((year - 1969) / 4) -
-        System.Math.Floor((year - 1901) / 100) +
-        System.Math.Floor((year - 1601) / 400);
+        Math.Floor((year - 1969) / 4) -
+        Math.Floor((year - 1901) / 100) +
+        Math.Floor((year - 1601) / 400);
 
     /// <summary>The specification's <c>TimeFromYear</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0A3134
@@ -705,11 +651,11 @@ internal sealed partial class JsRealm
     /// time value, so the two corrections below run at most twice between them. A search would be
     /// correct too and would cost a hundred times as much on the hot path <c>getFullYear</c> is on.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=116739
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=826A41
     // Broiler-Human:        PENDING
     private static double DateYearFromTime(double time)
     {
-        var year = System.Math.Floor(time / (DateMsPerDay * 365.2425)) + 1970;
+        var year = Math.Floor(time / (DateMsPerDay * 365.2425)) + 1970;
 
         while (DateTimeFromYear(year) > time)
         {
@@ -833,22 +779,22 @@ internal sealed partial class JsRealm
     private static double DateWeekDay(double time) => DateFloorMod(DateDay(time) + 4, 7);
 
     /// <summary>The specification's <c>HourFromTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=20DB73
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=90BED3
     // Broiler-Human:        PENDING
     private static double DateHourFromTime(double time) =>
-        DateFloorMod(System.Math.Floor(time / DateMsPerHour), 24);
+        DateFloorMod(Math.Floor(time / DateMsPerHour), 24);
 
     /// <summary>The specification's <c>MinFromTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A484A2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DA2558
     // Broiler-Human:        PENDING
     private static double DateMinFromTime(double time) =>
-        DateFloorMod(System.Math.Floor(time / DateMsPerMinute), 60);
+        DateFloorMod(Math.Floor(time / DateMsPerMinute), 60);
 
     /// <summary>The specification's <c>SecFromTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=608551
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B88A0D
     // Broiler-Human:        PENDING
     private static double DateSecFromTime(double time) =>
-        DateFloorMod(System.Math.Floor(time / DateMsPerSecond), 60);
+        DateFloorMod(Math.Floor(time / DateMsPerSecond), 60);
 
     /// <summary>The specification's <c>msFromTime</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=40A5B0
@@ -878,7 +824,7 @@ internal sealed partial class JsRealm
     /// day 0 is the last day of the previous month. That is not leniency, it is the operation
     /// <c>setMonth</c> and <c>new Date(y, m, 0)</c> are both defined in terms of.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A9E3FF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=77E489
     // Broiler-Human:        PENDING
     private static double DateMakeDay(double year, double month, double day)
     {
@@ -890,7 +836,7 @@ internal sealed partial class JsRealm
         var wholeYear = JsValue.ToInteger(year);
         var wholeMonth = JsValue.ToInteger(month);
         var wholeDay = JsValue.ToInteger(day);
-        var carried = wholeYear + System.Math.Floor(wholeMonth / 12);
+        var carried = wholeYear + Math.Floor(wholeMonth / 12);
 
         if (!double.IsFinite(carried))
         {
@@ -917,16 +863,16 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>TimeClip</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=81B8C1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A516B0
     // Broiler-Human:        PENDING
     private static double DateTimeClip(double time)
     {
-        if (!double.IsFinite(time) || System.Math.Abs(time) > DateMaxTimeValue)
+        if (!double.IsFinite(time) || Math.Abs(time) > DateMaxTimeValue)
         {
             return double.NaN;
         }
 
-        var truncated = System.Math.Truncate(time);
+        var truncated = Math.Truncate(time);
 
         // The comparison folds a negative zero into a positive one, which is what
         // ToIntegerOrInfinity does and what keeps `new Date(-0.5).getTime()` from printing "-0".
@@ -1117,7 +1063,7 @@ internal sealed partial class JsRealm
     /// <c>Thu Jan 01 1970 00:00:00 GMT+0000 (…)</c> and <c>Thu Jan 01 1970</c> with one walk.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2C03A7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C29062
     // Broiler-Human:        PENDING
     private static double DateParseTextual(string text)
     {
@@ -1130,7 +1076,7 @@ internal sealed partial class JsRealm
         var offsetMinutes = 0.0;
 
         foreach (var token in text.Split(
-            [' ', ',', '\t'], System.StringSplitOptions.RemoveEmptyEntries))
+            [' ', ',', '\t'], StringSplitOptions.RemoveEmptyEntries))
         {
             if (token.Length != 0 && token[0] == '(')
             {
@@ -1147,7 +1093,7 @@ internal sealed partial class JsRealm
                 continue;
             }
 
-            if (token.Contains(':', System.StringComparison.Ordinal))
+            if (token.Contains(':', StringComparison.Ordinal))
             {
                 var parts = token.Split(':');
 
@@ -1162,8 +1108,8 @@ internal sealed partial class JsRealm
                 continue;
             }
 
-            if (token.StartsWith("GMT", System.StringComparison.Ordinal) ||
-                token.StartsWith("UTC", System.StringComparison.Ordinal))
+            if (token.StartsWith("GMT", StringComparison.Ordinal) ||
+                token.StartsWith("UTC", StringComparison.Ordinal))
             {
                 var zone = token[3..];
 
@@ -1294,13 +1240,12 @@ internal sealed partial class JsRealm
     // ---- rendering -------------------------------------------------------------------------------
 
     /// <summary>A non-negative field as a zero-padded decimal, with a sign when it is negative.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A45C3C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F280FE
     // Broiler-Human:        PENDING
     private static string DatePadded(double value, int width)
     {
         var negative = value < 0;
-        var digits = ((long)System.Math.Abs(value)).ToString(
-            System.Globalization.CultureInfo.InvariantCulture);
+        var digits = ((long)Math.Abs(value)).ToString(CultureInfo.InvariantCulture);
 
         if (digits.Length < width)
         {
@@ -1390,7 +1335,7 @@ internal sealed partial class JsRealm
     /// <c>new Date(8.64e15).toISOString()</c> is <c>"+275760-09-13T00:00:00.000Z"</c> rather than a
     /// truncation that would parse back as a different year.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D53585
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C68FC2
     // Broiler-Human:        PENDING
     private static string DateToIsoText(double time)
     {
@@ -1398,7 +1343,7 @@ internal sealed partial class JsRealm
 
         var yearText = year >= 0 && year <= 9999
             ? DatePadded(year, 4)
-            : (year < 0 ? "-" : "+") + DatePadded(System.Math.Abs(year), 6);
+            : (year < 0 ? "-" : "+") + DatePadded(Math.Abs(year), 6);
 
         return yearText + "-" +
             DatePadded(DateMonthFromTime(time) + 1, 2) + "-" +

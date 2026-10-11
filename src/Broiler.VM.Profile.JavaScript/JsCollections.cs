@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -48,9 +52,9 @@ namespace Broiler.VM.Profile.JavaScript;
 /// guest objects one Map key - a bug with no symptom until a program put both in a table.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8DA3AD
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=893962
 // Broiler-Human:        PENDING
-internal sealed class JsSameValueZero : System.Collections.Generic.IEqualityComparer<JsValue>
+internal sealed class JsSameValueZero : IEqualityComparer<JsValue>
 {
     /// <summary>The one instance: the comparer holds no state and needs no second.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=688CCB
@@ -63,19 +67,19 @@ internal sealed class JsSameValueZero : System.Collections.Generic.IEqualityComp
     public bool Equals(JsValue left, JsValue right) => left.SameValueZero(right);
 
     /// <summary>A hash that agrees with <see cref="Equals"/> on every pair it calls equal.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9E06CF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A14F18
     // Broiler-Human:        PENDING
     public int GetHashCode(JsValue value) => value.Type switch
     {
-        JsType.Number => System.HashCode.Combine(JsType.Number, Canonical(value.AsNumber())),
-        JsType.String => System.HashCode.Combine(
-            JsType.String, System.StringComparer.Ordinal.GetHashCode(value.AsString())),
-        JsType.Boolean => System.HashCode.Combine(JsType.Boolean, value.AsBoolean()),
+        JsType.Number => HashCode.Combine(JsType.Number, Canonical(value.AsNumber())),
+        JsType.String => HashCode.Combine(
+            JsType.String, StringComparer.Ordinal.GetHashCode(value.AsString())),
+        JsType.Boolean => HashCode.Combine(JsType.Boolean, value.AsBoolean()),
         JsType.Object => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value.AsObject()),
 
         // A BIGINT KEY HASHES ON ITS INTEGER, because `SameValueZero` compares integers: two
         // constants spelling one value are one key, and hashing their instances would split them.
-        JsType.BigInt => System.HashCode.Combine(JsType.BigInt, value.AsBigInt().GetHashCode()),
+        JsType.BigInt => HashCode.Combine(JsType.BigInt, value.AsBigInt().GetHashCode()),
         _ => (int)value.Type,
     };
 
@@ -150,14 +154,13 @@ internal sealed class JsKeyedTable
     // Broiler-Human:        PENDING
     private const int CompactionFloor = 8;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B7E975
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C6FA29
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<Entry> entries = [];
+    private readonly List<Entry> entries = [];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D23B09
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0B97B1
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<JsValue, int> slots =
-        new(JsSameValueZero.Instance);
+    private readonly Dictionary<JsValue, int> slots = new(JsSameValueZero.Instance);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FB4463
     // Broiler-Human:        PENDING
@@ -310,7 +313,7 @@ internal sealed class JsKeyedTable
         key.Type == JsType.Number && key.AsNumber() == 0 ? JsValue.Number(0) : key;
 
     /// <summary>Rebuilds the list without its tombstones, when it is safe to renumber.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B4525F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=636840
     // Broiler-Human:        PENDING
     private void Compact()
     {
@@ -319,7 +322,7 @@ internal sealed class JsKeyedTable
             return;
         }
 
-        var kept = new System.Collections.Generic.List<Entry>(living);
+        var kept = new List<Entry>(living);
 
         foreach (var entry in entries)
         {
@@ -433,7 +436,7 @@ internal sealed class JsValueBox
 /// with it.
 /// </para>
 /// <para>
-/// <b>It was a <see cref="System.Runtime.CompilerServices.ConditionalWeakTable{TKey,TValue}"/>
+/// <b>It was a <see cref="ConditionalWeakTable{TKey,TValue}"/>
 /// until 2026-10-04, and the collector is why it is not (JSC-260).</b> The runtime's table is a set
 /// of dependent handles, and the collector resolves a chain of them - a key whose value is the next
 /// key, <c>m.set(k, next)</c> ninety-nine thousand times - by rescanning the handle table once per
@@ -492,7 +495,7 @@ internal sealed class JsWeakMapObject : JsObject
     internal bool Has(object key) => Entries(key) is { } entries && entries.TryGet(Token, out _);
 
     /// <summary>Stores <paramref name="value"/> under <paramref name="key"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=25D5FB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E6E883
     // Broiler-Human:        PENDING
     internal void Set(object key, JsValue value)
     {
@@ -505,7 +508,7 @@ internal sealed class JsWeakMapObject : JsObject
                 (symbol.WeakEntries ??= new JsWeakEntries()).Set(Token, value);
                 break;
             default:
-                throw new System.ArgumentException("a weak key is an object or a Symbol", nameof(key));
+                throw new ArgumentException("a weak key is an object or a Symbol", nameof(key));
         }
     }
 
@@ -538,14 +541,14 @@ internal sealed class JsWeakMapObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsWeakMapToken
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E7AAD5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=492BA5
     // Broiler-Human:        PENDING
-    private readonly System.WeakReference<JsWeakMapObject> map;
+    private readonly WeakReference<JsWeakMapObject> map;
 
     /// <summary>Creates the token of <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E5DF45
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=41559E
     // Broiler-Human:        PENDING
-    internal JsWeakMapToken(JsWeakMapObject owner) => map = new System.WeakReference<JsWeakMapObject>(owner);
+    internal JsWeakMapToken(JsWeakMapObject owner) => map = new WeakReference<JsWeakMapObject>(owner);
 
     /// <summary>Whether the map this token names has been collected.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=247C7F
@@ -591,9 +594,9 @@ internal sealed class JsWeakEntries
     // Broiler-Human:        PENDING
     private int count;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=55B262
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DD38CF
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.Dictionary<JsWeakMapToken, JsValue>? table;
+    private Dictionary<JsWeakMapToken, JsValue>? table;
 
     /// <summary>The dictionary's size at which the next new entry first sweeps it.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B498A8
@@ -616,7 +619,7 @@ internal sealed class JsWeakEntries
     }
 
     /// <summary>Stores the value <paramref name="token"/>'s map holds here.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1E1A3A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6A139B
     // Broiler-Human:        PENDING
     internal void Set(JsWeakMapToken token, JsValue value)
     {
@@ -632,7 +635,7 @@ internal sealed class JsWeakEntries
                     }
                 }
 
-                sweepAt = System.Math.Max(ListLimit * 2, table.Count * 2);
+                sweepAt = Math.Max(ListLimit * 2, table.Count * 2);
             }
 
             table[token] = value;
@@ -656,8 +659,7 @@ internal sealed class JsWeakEntries
         {
             if (count >= ListLimit)
             {
-                table = new System.Collections.Generic.Dictionary<JsWeakMapToken, JsValue>(
-                    count * 2, System.Collections.Generic.ReferenceEqualityComparer.Instance);
+                table = new Dictionary<JsWeakMapToken, JsValue>(count * 2, ReferenceEqualityComparer.Instance);
 
                 for (var index = 0; index < count; index++)
                 {
@@ -671,8 +673,8 @@ internal sealed class JsWeakEntries
                 return;
             }
 
-            System.Array.Resize(ref tokens, count * 2);
-            System.Array.Resize(ref values, count * 2);
+            Array.Resize(ref tokens, count * 2);
+            Array.Resize(ref values, count * 2);
         }
 
         tokens[count] = token;
@@ -760,18 +762,14 @@ internal sealed class JsWeakSetObject : JsObject
     // Broiler-Human:        PENDING
     private static readonly JsValueBox Present = new(JsValue.Undefined);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A190B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C574A4
     // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, JsValueBox> table =
-        new();
+    private readonly ConditionalWeakTable<object, JsValueBox> table = [];
 
     /// <summary>Creates an empty WeakSet.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C0F964
     // Broiler-Human:        PENDING
-    internal JsWeakSetObject(JsObject? prototype)
-        : base(prototype, "WeakSet")
-    {
-    }
+    internal JsWeakSetObject(JsObject? prototype) : base(prototype, "WeakSet") { }
 
     /// <summary>Whether <paramref name="member"/> is present.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=867E9D
@@ -825,19 +823,19 @@ internal sealed class JsWeakSetObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsWeakRefObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C3408D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=464DFE
     // Broiler-Human:        PENDING
-    private readonly System.WeakReference<object> target;
+    private readonly WeakReference<object> target;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8C17A5
     // Broiler-Human:        PENDING
     private object? kept;
 
     /// <summary>Creates a reference to <paramref name="value"/>: an object, or an unregistered Symbol.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B40433
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C4328A
     // Broiler-Human:        PENDING
     internal JsWeakRefObject(JsObject? prototype, object value)
-        : base(prototype, "WeakRef") => target = new System.WeakReference<object>(value);
+        : base(prototype, "WeakRef") => target = new WeakReference<object>(value);
 
     /// <summary>The target while it lives, or nothing once it is gone.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D4ECBE
@@ -865,22 +863,22 @@ internal sealed class JsWeakRefObject : JsObject
 internal sealed class JsFinalizationRecord
 {
     /// <summary>Records one <c>register</c> call.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E56860
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2DEDE8
     // Broiler-Human:        PENDING
     internal JsFinalizationRecord(object target, JsValue held, object? token)
     {
-        Target = new System.WeakReference<object>(target);
+        Target = new WeakReference<object>(target);
         Held = held;
-        Token = token is null ? null : new System.WeakReference<object>(token);
+        Token = token is null ? null : new WeakReference<object>(token);
     }
 
     /// <summary>
     /// The object whose collection is reported, until a sweep finds it collected and lets the
     /// reference go (phase F4).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=93A2CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=22BA19
     // Broiler-Human:        PENDING
-    internal System.WeakReference<object>? Target { get; private set; }
+    internal WeakReference<object>? Target { get; private set; }
 
     /// <summary>The value the cleanup callback is handed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C1BB99
@@ -888,9 +886,9 @@ internal sealed class JsFinalizationRecord
     internal JsValue Held { get; }
 
     /// <summary>The token <c>unregister</c> matches on, when one was supplied.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1CD0BF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1418F9
     // Broiler-Human:        PENDING
-    internal System.WeakReference<object>? Token { get; }
+    internal WeakReference<object>? Token { get; }
 
     /// <summary>Whether a sweep found the target collected; a marked record stays marked.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0396AA
@@ -941,9 +939,9 @@ internal sealed class JsFinalizationRecord
 // Broiler-Human:        PENDING
 internal sealed class JsFinalizationRegistryObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=042973
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DDF4C0
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<JsFinalizationRecord> records = [];
+    private readonly List<JsFinalizationRecord> records = [];
 
     /// <summary>Creates a registry over <paramref name="cleanup"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AB0C6D
@@ -1209,10 +1207,7 @@ internal sealed class JsPromiseObject : JsObject
     /// <summary>Creates a pending promise.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=CCEF43
     // Broiler-Human:        PENDING
-    internal JsPromiseObject(JsObject? prototype)
-        : base(prototype, "Promise")
-    {
-    }
+    internal JsPromiseObject(JsObject? prototype) : base(prototype, "Promise") { }
 
     /// <summary>Which state the promise is in.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6135CD
@@ -1225,12 +1220,12 @@ internal sealed class JsPromiseObject : JsObject
     internal JsValue Result { get; set; } = JsValue.Undefined;
 
     /// <summary>The reactions a fulfilment would run.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A535AC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=999C23
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsPromiseReaction> FulfilReactions { get; } = [];
+    internal List<JsPromiseReaction> FulfilReactions { get; } = [];
 
     /// <summary>The reactions a rejection would run.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A5BACD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=68B083
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsPromiseReaction> RejectReactions { get; } = [];
+    internal List<JsPromiseReaction> RejectReactions { get; } = [];
 }

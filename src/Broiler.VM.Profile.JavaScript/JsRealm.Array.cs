@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -51,7 +53,7 @@ internal sealed partial class JsRealm
     internal JsValue IntrinsicArrayToString { get; private set; }
 
     /// <summary>Builds <c>Array</c>, its statics and <c>Array.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0A1B0B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BEFA56
     // Broiler-Human:        PENDING
     private void SetupArray()
     {
@@ -123,7 +125,7 @@ internal sealed partial class JsRealm
             if (engine.TryGetSymbolMethod(items, IteratorSymbol, out var method))
             {
                 var result = constructs
-                    ? engine.Construct(thisValue, System.Array.Empty<JsValue>())
+                    ? engine.Construct(thisValue, [])
                     : JsValue.Object(NewArray());
 
                 var iterator = engine.GetIteratorFromMethod(items, method);
@@ -372,7 +374,7 @@ internal sealed partial class JsRealm
     /// copy which preserved holes would have to be an Array exotic object built by a different
     /// path than the one that produces every other result here.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D8B2B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=82AA9F
     // Broiler-Human:        PENDING
     private void SetupArrayChangeByCopy()
     {
@@ -406,7 +408,7 @@ internal sealed partial class JsRealm
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
             ArrayRefuseUncreatable(engine, length);
-            var items = new System.Collections.Generic.List<JsValue>();
+            var items = new List<JsValue>();
             double undefinedCount = 0;
 
             // A HOLE AND AN `undefined` ARE THE SAME THING TO THIS ONE, unlike everywhere else in
@@ -429,7 +431,7 @@ internal sealed partial class JsRealm
 
             if (items.Count > 1)
             {
-                var buffer = new System.Collections.Generic.List<JsValue>(items);
+                var buffer = new List<JsValue>(items);
                 ArrayMergeSort(engine, comparator, items, buffer, 0, items.Count);
             }
 
@@ -515,8 +517,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=530C09
     // Broiler-Human:        PENDING
-    private static JsValue ArrayFindFromEnd(
-        JsEngine engine, JsValue thisValue, JsValue[] arguments, bool wantIndex)
+    private static JsValue ArrayFindFromEnd(JsEngine engine, JsValue thisValue, JsValue[] arguments, bool wantIndex)
     {
         var target = ArrayReceiver(engine, thisValue);
         var length = ArrayLengthOf(engine, target);
@@ -551,15 +552,8 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=871EB9
     // Broiler-Human:        PENDING
-    private static double ArrayFlattenInto(
-        JsEngine engine,
-        JsValue source,
-        double length,
-        double depth,
-        JsValue into,
-        double written,
-        JsValue mapper,
-        JsValue thisArg)
+    private static double ArrayFlattenInto(JsEngine engine, JsValue source, double length, double depth, JsValue into,
+        double written, JsValue mapper, JsValue thisArg)
     {
         for (double at = 0; at < length; at++)
         {
@@ -607,7 +601,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>push</c>, <c>pop</c>, <c>shift</c>, <c>unshift</c>, <c>splice</c>, <c>reverse</c>, <c>fill</c>, <c>sort</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1A6693
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3513AB
     // Broiler-Human:        PENDING
     private void SetupArrayMutators()
     {
@@ -853,7 +847,7 @@ internal sealed partial class JsRealm
 
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
-            var items = new System.Collections.Generic.List<JsValue>();
+            var items = new List<JsValue>();
             double undefinedCount = 0;
 
             // MATERIALISE FIRST. A comparator can read, write, delete and grow the receiver while
@@ -883,7 +877,7 @@ internal sealed partial class JsRealm
 
             if (items.Count > 1)
             {
-                var buffer = new System.Collections.Generic.List<JsValue>(items);
+                var buffer = new List<JsValue>(items);
                 ArrayMergeSort(engine, comparator, items, buffer, 0, items.Count);
             }
 
@@ -1557,12 +1551,12 @@ internal sealed partial class JsRealm
             : JsNumberFormat.ToJsString(at);
 
     /// <summary>Whether the receiver has a property at index <paramref name="at"/>: the hole test.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E72B6F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ADE914
     // Broiler-Human:        PENDING
     private static bool ArrayHasAt(JsEngine engine, JsValue target, double at)
     {
         var host = target.AsObjectOrNull();
-        return host is not null && engine.HasProperty(host, ArrayKeyOf(at));
+        return host is not null && JsEngine.HasProperty(host, ArrayKeyOf(at));
     }
 
     /// <summary>Reads index <paramref name="at"/>.</summary>
@@ -1677,8 +1671,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CC5F47
     // Broiler-Human:        PENDING
-    private static double ArrayConcatOne(
-        JsEngine engine, JsValue result, double at, JsValue item)
+    private static double ArrayConcatOne(JsEngine engine, JsValue result, double at, JsValue item)
     {
         engine.Charge(1);
 
@@ -1981,8 +1974,7 @@ internal sealed partial class JsRealm
 
         if (!callback.IsObject || !callback.AsObject().IsCallable)
         {
-            return engine.ThrowTypeError(
-                "Array.prototype." + method + " requires a callback function");
+            return engine.ThrowTypeError("Array.prototype." + method + " requires a callback function");
         }
 
         return callback;
@@ -1999,8 +1991,7 @@ internal sealed partial class JsRealm
     /// <summary>One comparison, by the comparator when there is one and by ToString when there is not.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F0E9DE
     // Broiler-Human:        PENDING
-    private static int ArrayCompareValues(
-        JsEngine engine, JsValue comparator, JsValue left, JsValue right)
+    private static int ArrayCompareValues(JsEngine engine, JsValue comparator, JsValue left, JsValue right)
     {
         engine.Charge(1);
 
@@ -2035,15 +2026,9 @@ internal sealed partial class JsRealm
     /// sorting records by one field has to leave equal records in the order they were in, and
     /// <c>List&lt;T&gt;.Sort</c> - an introsort - does not promise that.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=449AD0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B8C0AD
     // Broiler-Human:        PENDING
-    private static void ArrayMergeSort(
-        JsEngine engine,
-        JsValue comparator,
-        System.Collections.Generic.List<JsValue> items,
-        System.Collections.Generic.List<JsValue> buffer,
-        int from,
-        int to)
+    private static void ArrayMergeSort(JsEngine engine, JsValue comparator, List<JsValue> items, List<JsValue> buffer, int from, int to)
     {
         if (to - from < 2)
         {
@@ -2085,10 +2070,10 @@ internal sealed partial class JsRealm
     /// The arguments an element's <c>toLocaleString</c> is called with: none without Intl, as
     /// ECMA-262 states; the locales and the options with it, as ECMA-402 s20.5.1 states.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.5.1; IP=Low; Security=Low; Resources=0; Fingerprint=56CE3A
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.5.1; IP=Low; Security=Low; Resources=0; Fingerprint=614745
     // Broiler-Human:        PENDING
     internal static JsValue[] LocaleArguments(JsEngine engine, JsValue[] arguments) =>
         engine.Realm.NumberFormatConstructor is null
-            ? System.Array.Empty<JsValue>()
+            ? []
             : [arguments.Length > 0 ? arguments[0] : JsValue.Undefined, arguments.Length > 1 ? arguments[1] : JsValue.Undefined];
 }

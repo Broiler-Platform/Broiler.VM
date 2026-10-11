@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -57,9 +59,9 @@ internal sealed partial class JsRealm
     /// Allocated once and usually empty: a program with no script-level lexical declaration pays
     /// one <c>Count</c> comparison per global reference and nothing else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=408357
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=766B0F
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, JsLexicalBinding> lexicals = [];
+    private readonly Dictionary<string, JsLexicalBinding> lexicals = [];
 
     /// <summary>Whether any script-level lexical binding exists at all.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7539CD

@@ -17,6 +17,7 @@
 
 using System.Collections.Immutable;
 using Broiler.VM.Abstractions;
+using Broiler.VM.Binary;
 
 namespace Broiler.VM.Ubc;
 

@@ -1,4 +1,5 @@
 using Broiler.VM.Abstractions;
+using Broiler.VM.Binary;
 using Broiler.VM.Profile.WebAssembly;
 using Broiler.VM.Ubc;
 using System.Collections.Immutable;

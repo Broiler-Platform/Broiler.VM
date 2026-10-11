@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           43
+// Exempt:           42
 // Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    Medium
@@ -145,7 +145,7 @@ public sealed class VmSuspension
 
     /// <summary>The single construction site for a suspension object.</summary>
     /// <remarks>Hidden, and asserted by an architecture rule to have one call site in the runtime.</remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1BF435
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A50668
     // Broiler-Human:        PENDING
     public static VmSuspension Create(VmObjectId objectId, VmObjectId operationId, VmObjectId runtimeId, VmSuspensionOrigin origin, VmStage suspendedStage, IVmProfilePayload? projection) =>
         new(objectId, operationId, runtimeId, origin, suspendedStage, projection);
@@ -176,7 +176,7 @@ public sealed class VmSuspension
     public VmStage SuspendedStage { get; }
 
     /// <summary>Whether this object has already been used to resume.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=880609
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=92F5E1
     // Broiler-Human:        PENDING
     public bool IsConsumed => Volatile.Read(ref consumed) != 0;
 
@@ -194,7 +194,7 @@ public sealed class VmSuspension
     /// is refused rather than admitted, which is what makes double-resume a contract error instead
     /// of a race.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E01BAA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=41E42A
     // Broiler-Human:        PENDING
     public bool TryConsume() => Interlocked.Exchange(ref consumed, 1) == 0;
 }
@@ -206,7 +206,7 @@ public sealed class VmSuspension
 /// monotonic and is never cleared" is a contract property rather than an implementation detail.
 /// </remarks>
 /// <remarks>Creates a snapshot.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=91BF26
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BD02D9
 // Broiler-Human:        PENDING
 public readonly struct VmOperationStateSnapshot(VmObjectId operationId, VmOperationKind kind, VmOperationState state, VmSuspensionOrigin origin,
     bool hasSuspensionOrigin, bool cancellationRequested, bool externalSuspendRequested)
@@ -250,7 +250,7 @@ public readonly struct VmOperationStateSnapshot(VmObjectId operationId, VmOperat
 /// hole would make disposal timing depend on the garbage collector.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4F6C59
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F0717F
 // Broiler-Human:        PENDING
 public abstract class VmOperationControlHandle : IDisposable
 {
@@ -305,7 +305,7 @@ public abstract class VmOperationControlHandle : IDisposable
 /// only when instantiation completes normally: there is no half-instantiated instance a caller can
 /// obtain and then wonder about.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=66AFF3
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=174F75
 // Broiler-Human:        PENDING
 public abstract class VmInstance : IDisposable
 {
@@ -322,12 +322,12 @@ public abstract class VmInstance : IDisposable
     public abstract VmInstanceState State { get; }
 
     /// <summary>Invokes an entry point.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=63AEA3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=AB5E8A
     // Broiler-Human:        PENDING
     public abstract VmInvocationResult Invoke(in VmInvocationRequest request, CancellationToken cancellationToken);
 
     /// <summary>Invokes an entry point, also returning the control handle for the operation.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=72201A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=953DB2
     // Broiler-Human:        PENDING
     public abstract VmInvocationResult Invoke(in VmInvocationRequest request, CancellationToken cancellationToken, out VmOperationControlHandle controlHandle);
 
@@ -337,14 +337,14 @@ public abstract class VmInstance : IDisposable
     /// tighten it, and an override that would raise a bound is refused as a host failure naming the
     /// dimension rather than clamped, because it was stated from inside the trust boundary.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=7; Fingerprint=B4D2B2
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=7; Fingerprint=63EB25
     // Broiler-Human:        PENDING
     public abstract VmInvocationResult Invoke(in VmInvocationRequest request, VmLimitOverrides limitOverrides, CancellationToken cancellationToken);
 
     /// <summary>
     /// Invokes an entry point under stated operation limits, also returning the control handle.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=7; Fingerprint=7FA926
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=7; Fingerprint=B8AD12
     // Broiler-Human:        PENDING
     public abstract VmInvocationResult Invoke(in VmInvocationRequest request, VmLimitOverrides limitOverrides, CancellationToken cancellationToken, out VmOperationControlHandle controlHandle);
 

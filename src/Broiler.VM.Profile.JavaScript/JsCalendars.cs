@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   108
 // Annotated:        108/108
-// Exempt:           40
+// Exempt:           39
 // Human-reviewed:   0/108
 // IP risk:          Low
 // Security risk:    Low
@@ -14,6 +14,9 @@
 // Unverified:       108
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using System;
+using System.Globalization;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -83,9 +86,9 @@ internal sealed class JsCalendarYear
     }
 
     /// <summary>Offsets from month lengths.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=581DFA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=306813
     // Broiler-Human:        PENDING
-    internal static int[] FromLengths(System.ReadOnlySpan<int> lengths)
+    internal static int[] FromLengths(ReadOnlySpan<int> lengths)
     {
         var offsets = new int[lengths.Length + 1];
 
@@ -114,26 +117,19 @@ internal sealed class JsCalendarYear
 /// take a few multiplications, and the lunisolar ones a table lookup or a few dozen additions.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D6099F
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3493EB
 // Broiler-Human:        PENDING
-internal abstract class JsCalendarSystem
+internal abstract class JsCalendarSystem(string id)
 {
     /// <summary>R.D. 719163 is 1970-01-01.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A9315E
     // Broiler-Human:        PENDING
     internal const long RataDieOfEpoch = 719163;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2D71E3
-    // Broiler-Human:        PENDING
-    protected JsCalendarSystem(string id)
-    {
-        Id = id;
-    }
-
     /// <summary>The canonical calendar type.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D69BC4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CC7042
     // Broiler-Human:        PENDING
-    internal string Id { get; }
+    internal string Id { get; } = id;
 
     /// <summary>The year whose arithmetic year is <paramref name="year"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=311D20
@@ -242,10 +238,9 @@ internal abstract class JsCalendarSystem
     }
 
     /// <summary>CreateMonthCode (s12.2.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5DFDDD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2CC5EB
     // Broiler-Human:        PENDING
-    internal static string Code(int number, bool leap) =>
-        "M" + (number < 10 ? "0" : string.Empty) + number.ToString(System.Globalization.CultureInfo.InvariantCulture) + (leap ? "L" : string.Empty);
+    internal static string Code(int number, bool leap) => "M" + (number < 10 ? "0" : string.Empty) + number.ToString(CultureInfo.InvariantCulture) + (leap ? "L" : string.Empty);
 
     /// <summary>Floor division.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0DDA64
@@ -291,8 +286,7 @@ internal sealed class JsGregorianCalendar : JsCalendarSystem
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6B16E3
     // Broiler-Human:        PENDING
-    internal JsGregorianCalendar(string id, long isoOffset)
-        : base(id)
+    internal JsGregorianCalendar(string id, long isoOffset) : base(id)
     {
         this.isoOffset = isoOffset;
     }
@@ -495,18 +489,15 @@ internal sealed class JsIndianCalendar : JsCalendarSystem
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=764D9A
     // Broiler-Human:        PENDING
-    internal JsIndianCalendar()
-        : base("indian")
-    {
-    }
+    internal JsIndianCalendar() : base("indian") { }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3FA025
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CD642E
     // Broiler-Human:        PENDING
     internal override JsCalendarYear Year(long year)
     {
         var iso = year + 78;
         var leap = JsTemporalCore.IsLeapYear(iso);
-        System.ReadOnlySpan<int> lengths = [leap ? 31 : 30, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30];
+        ReadOnlySpan<int> lengths = [leap ? 31 : 30, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30];
         return new JsCalendarYear(year, JsTemporalCore.EpochDays(iso, 3, leap ? 21 : 22), JsCalendarYear.FromLengths(lengths));
     }
 
@@ -549,31 +540,27 @@ internal sealed class JsPersianCalendar : JsCalendarSystem
     // Broiler-Human:        PENDING
     private readonly int[] nonLeapYears;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=66E17A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=52241A
     // Broiler-Human:        PENDING
-    internal JsPersianCalendar(int[] nonLeapYears)
-        : base("persian")
-    {
-        this.nonLeapYears = nonLeapYears;
-    }
+    internal JsPersianCalendar(int[] nonLeapYears) : base("persian") => this.nonLeapYears = nonLeapYears;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6FAF01
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6B953C
     // Broiler-Human:        PENDING
     private bool Corrected(long year) =>
         nonLeapYears.Length > 0 && year >= nonLeapYears[0] && year <= nonLeapYears[^1] &&
-        System.Array.BinarySearch(nonLeapYears, (int)year) >= 0;
+        Array.BinarySearch(nonLeapYears, (int)year) >= 0;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CC41A2
     // Broiler-Human:        PENDING
     private long NewYear(long year) =>
         Epoch - 1 + (365 * (year - 1)) + FloorDiv((8 * year) + 21, 33) - (Corrected(year - 1) ? 1 : 0);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FF2DCC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65506F
     // Broiler-Human:        PENDING
     internal override JsCalendarYear Year(long year)
     {
         var days = (int)(NewYear(year + 1) - NewYear(year));
-        System.ReadOnlySpan<int> lengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, days - 336];
+        ReadOnlySpan<int> lengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, days - 336];
         return new JsCalendarYear(year, NewYear(year), JsCalendarYear.FromLengths(lengths));
     }
 
@@ -704,10 +691,7 @@ internal sealed class JsHebrewCalendar : JsCalendarSystem
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C21E68
     // Broiler-Human:        PENDING
-    internal JsHebrewCalendar()
-        : base("hebrew")
-    {
-    }
+    internal JsHebrewCalendar() : base("hebrew") { }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=464F55
     // Broiler-Human:        PENDING
@@ -750,7 +734,7 @@ internal sealed class JsHebrewCalendar : JsCalendarSystem
     // Broiler-Human:        PENDING
     private static bool IsLeap(long year) => ((((7 * year) + 1) % 19) + 19) % 19 < 7;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ADBD39
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E6B4A
     // Broiler-Human:        PENDING
     internal override JsCalendarYear Year(long year)
     {
@@ -761,11 +745,11 @@ internal sealed class JsHebrewCalendar : JsCalendarSystem
 
         if (IsLeap(year))
         {
-            System.ReadOnlySpan<int> leap = [30, heshvan, kislev, 29, 30, 30, 29, 30, 29, 30, 29, 30, 29];
+            ReadOnlySpan<int> leap = [30, heshvan, kislev, 29, 30, 30, 29, 30, 29, 30, 29, 30, 29];
             return new JsCalendarYear(year, start, JsCalendarYear.FromLengths(leap), leapMonth: 6);
         }
 
-        System.ReadOnlySpan<int> common = [30, heshvan, kislev, 29, 30, 29, 30, 29, 30, 29, 30, 29];
+        ReadOnlySpan<int> common = [30, heshvan, kislev, 29, 30, 29, 30, 29, 30, 29, 30, 29];
         return new JsCalendarYear(year, start, JsCalendarYear.FromLengths(common));
     }
 
@@ -847,8 +831,7 @@ internal sealed class JsEastAsianCalendar : JsCalendarSystem
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=344CFB
     // Broiler-Human:        PENDING
-    internal JsEastAsianCalendar(string id, JsCalendarData data)
-        : base(id)
+    internal JsEastAsianCalendar(string id, JsCalendarData data) : base(id)
     {
         korean = id == "dangi";
         this.data = data;
@@ -864,10 +847,10 @@ internal sealed class JsEastAsianCalendar : JsCalendarSystem
     // Broiler-Human:        PENDING
     internal override double MeanMonths => 365.2425 / 29.530588853;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D5E338
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ED710E
     // Broiler-Human:        PENDING
     internal override long MonthsBefore(long year) =>
-        (long)System.Math.Round((Year(year).Start - anchor) / 29.530588853, System.MidpointRounding.AwayFromZero);
+        (long)Math.Round((Year(year).Start - anchor) / 29.530588853, MidpointRounding.AwayFromZero);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7DA28A
     // Broiler-Human:        PENDING
@@ -1059,9 +1042,9 @@ internal sealed class JsCalendarData
     // Broiler-Human:        PENDING
     private readonly int ummAlQuraStart;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E860B6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6DACD2
     // Broiler-Human:        PENDING
-    internal JsCalendarData(System.ReadOnlySpan<byte> table)
+    internal JsCalendarData(ReadOnlySpan<byte> table)
     {
         var at = 0;
         (chinaStart, china) = Section(table, ref at, 3);
@@ -1083,18 +1066,18 @@ internal sealed class JsCalendarData
     // Broiler-Human:        PENDING
     internal int[] PersianNonLeapYears { get; }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A4B0BB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F4B57B
     // Broiler-Human:        PENDING
-    private static int U16(System.ReadOnlySpan<byte> table, ref int at)
+    private static int U16(ReadOnlySpan<byte> table, ref int at)
     {
         var value = table[at] | (table[at + 1] << 8);
         at += 2;
         return value;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AFA442
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E43F1C
     // Broiler-Human:        PENDING
-    private static (int Start, byte[] Records) Section(System.ReadOnlySpan<byte> table, ref int at, int size)
+    private static (int Start, byte[] Records) Section(ReadOnlySpan<byte> table, ref int at, int size)
     {
         var start = U16(table, ref at);
         var count = U16(table, ref at);
@@ -1165,12 +1148,12 @@ internal sealed class JsCalendars
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.Dictionary<string, JsCalendarSystem> systems;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2620C6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E57B4
     // Broiler-Human:        PENDING
-    internal JsCalendars(System.ReadOnlySpan<byte> table)
+    internal JsCalendars(ReadOnlySpan<byte> table)
     {
         var data = new JsCalendarData(table);
-        systems = new System.Collections.Generic.Dictionary<string, JsCalendarSystem>(System.StringComparer.Ordinal)
+        systems = new System.Collections.Generic.Dictionary<string, JsCalendarSystem>(StringComparer.Ordinal)
         {
             ["buddhist"] = new JsGregorianCalendar("buddhist", -543),
             ["chinese"] = new JsEastAsianCalendar("chinese", data),

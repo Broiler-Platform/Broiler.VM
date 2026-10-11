@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Binary;
 
 /// <summary>
 /// A checked-arithmetic reader over untrusted bytes. Every length, count, offset and index is
@@ -207,11 +207,7 @@ public ref struct VmBoundedReader
             return false;
         }
 
-        value = (uint)window[0]
-            | ((uint)window[1] << 8)
-            | ((uint)window[2] << 16)
-            | ((uint)window[3] << 24);
-
+        value = System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(window);
         return true;
     }
 
@@ -228,14 +224,7 @@ public ref struct VmBoundedReader
             return false;
         }
 
-        ulong accumulator = 0;
-
-        for (var index = 7; index >= 0; index--)
-        {
-            accumulator = (accumulator << 8) | window[index];
-        }
-
-        value = accumulator;
+        value = System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(window);
         return true;
     }
 

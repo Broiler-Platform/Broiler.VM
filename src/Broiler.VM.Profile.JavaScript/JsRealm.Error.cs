@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds the Error constructor, its prototype and the six native subtypes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=05698E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B559EE
     // Broiler-Human:        PENDING
     private void SetupError()
     {
@@ -116,7 +116,7 @@ internal sealed partial class JsRealm
             return JsValue.String(message.Length == 0 ? name : name + ": " + message);
         });
 
-        JsNativeBody baseBody = (engine, _, arguments) => JsValue.Object(
+        JsValue baseBody(JsEngine engine, JsValue _, JsValue[] arguments) => JsValue.Object(
             ErrorIntrinsicCreate(
                 engine,
                 basePrototype,
@@ -303,7 +303,7 @@ internal sealed partial class JsRealm
     /// Builds one error object on <paramref name="prototype"/>, the specification's
     /// <c>OrdinaryCreateFromConstructor</c> followed by the message and cause installation.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=32A136
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4512EC
     // Broiler-Human:        PENDING
     private static JsObject ErrorIntrinsicCreate(
         JsEngine engine, JsObject prototype, JsValue message, JsValue options)
@@ -324,7 +324,7 @@ internal sealed partial class JsRealm
 
         // InstallErrorCause asks HasProperty, which reads the prototype chain and asks a proxy
         // through its `has` trap; an own-property test did neither until 2026-10-03 (JSC-252).
-        if (options.IsObject && engine.HasProperty(options.AsObject(), "cause"))
+        if (options.IsObject && JsEngine.HasProperty(options.AsObject(), "cause"))
         {
             error.DefineBuiltIn("cause", engine.GetProperty(options, "cause"));
         }

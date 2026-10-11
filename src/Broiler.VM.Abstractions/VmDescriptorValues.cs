@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   14
 // Annotated:        14/14
-// Exempt:           24
+// Exempt:           23
 // Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Low
@@ -193,7 +193,7 @@ public sealed class VmGuestLoadDeclaration
 /// result, without the core learning what any kind means.
 /// </remarks>
 /// <remarks>Creates an inclusive range.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7A5E0
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3A5836
 // Broiler-Human:        PENDING
 public readonly struct VmPayloadKindIdRange(int minInclusive, int maxInclusive) : IEquatable<VmPayloadKindIdRange>
 {

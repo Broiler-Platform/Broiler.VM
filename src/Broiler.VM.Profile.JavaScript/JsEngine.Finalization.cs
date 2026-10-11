@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -61,18 +65,18 @@ internal sealed partial class JsEngine
     /// A registry nothing reaches drops out, and its callbacks never run, which the specification
     /// allows (JSD-0029 section 4.3).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BFE766
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0C875C
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<System.WeakReference<JsFinalizationRegistryObject>> registries = [];
+    private readonly List<WeakReference<JsFinalizationRegistryObject>> registries = [];
 
     /// <summary>Starts tracking a registry the realm just made, when this engine sweeps.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DC2A08
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CA616D
     // Broiler-Human:        PENDING
     internal void TrackRegistry(JsFinalizationRegistryObject registry)
     {
         if (SweepsFinalization)
         {
-            registries.Add(new System.WeakReference<JsFinalizationRegistryObject>(registry));
+            registries.Add(new WeakReference<JsFinalizationRegistryObject>(registry));
         }
     }
 
@@ -145,9 +149,9 @@ internal sealed partial class JsEngine
 internal interface IJsFinalizationEligibility
 {
     /// <summary>Whether the target <paramref name="target"/> refers to counts as collected now.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D360F8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8BF697
     // Broiler-Human:        PENDING
-    bool IsCollected(System.WeakReference<object> target);
+    bool IsCollected(WeakReference<object> target);
 }
 
 /// <summary>The production eligibility: the weak reference no longer resolves.</summary>
@@ -161,9 +165,9 @@ internal sealed class JsCollectedEligibility : IJsFinalizationEligibility
     internal static readonly JsCollectedEligibility Instance = new();
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=782095
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=004B07
     // Broiler-Human:        PENDING
-    public bool IsCollected(System.WeakReference<object> target) => !target.TryGetTarget(out _);
+    public bool IsCollected(WeakReference<object> target) => !target.TryGetTarget(out _);
 }
 
 /// <summary>
@@ -175,9 +179,9 @@ internal sealed class JsCollectedEligibility : IJsFinalizationEligibility
 internal sealed class JsScriptedEligibility : IJsFinalizationEligibility
 {
     /// <summary>The targets the check marked, held weakly so naming one keeps nothing alive.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=010A67
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=429DA2
     // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, object> marked = new();
+    private readonly ConditionalWeakTable<object, object> marked = new();
 
     /// <summary>Marks <paramref name="target"/> as collected from the next sweep on.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1D9B22
@@ -185,8 +189,8 @@ internal sealed class JsScriptedEligibility : IJsFinalizationEligibility
     internal void Mark(object target) => marked.AddOrUpdate(target, target);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=28AC3D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=32642A
     // Broiler-Human:        PENDING
-    public bool IsCollected(System.WeakReference<object> target) =>
+    public bool IsCollected(WeakReference<object> target) =>
         !target.TryGetTarget(out var value) || marked.TryGetValue(value, out _);
 }

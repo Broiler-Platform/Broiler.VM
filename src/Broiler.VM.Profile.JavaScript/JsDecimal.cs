@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Globalization;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>What an Intl mathematical value is: a finite decimal, or one of ECMA-402's three others.</summary>
@@ -180,10 +183,10 @@ internal readonly struct JsDecimal
     internal JsDecimal Scale(int power) => IsZero || !IsFinite ? this : new JsDecimal(Kind, Negative, Digits, Point + power);
 
     /// <summary>Whether two values are the same value: kind, sign and digits.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A49E0D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D25F73
     // Broiler-Human:        PENDING
     internal bool SameAs(JsDecimal other) =>
-        Kind == other.Kind && Negative == other.Negative && Point == other.Point && string.Equals(Digits, other.Digits, System.StringComparison.Ordinal);
+        Kind == other.Kind && Negative == other.Negative && Point == other.Point && string.Equals(Digits, other.Digits, StringComparison.Ordinal);
 
     /// <summary>The value a Number is: its shortest round-trip decimal, as ECMA-402's ToIntlMathematicalValue reads it.</summary>
     // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=Low; Resources=1; Fingerprint=677AAD
@@ -209,9 +212,9 @@ internal readonly struct JsDecimal
     }
 
     /// <summary>The value a BigInt is, exactly.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BA1271
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0E62F3
     // Broiler-Human:        PENDING
-    internal static JsDecimal FromBigInt(JsBigInt value, System.Action<ulong> charge)
+    internal static JsDecimal FromBigInt(JsBigInt value, Action<ulong> charge)
     {
         var text = value.ToDecimalString(charge);
         var negative = text.StartsWith('-');
@@ -223,10 +226,10 @@ internal readonly struct JsDecimal
     /// ECMA-402's ToIntlMathematicalValue for a String: its StringNumericLiteral read exactly, then
     /// held to the Number range as RoundMVResult rounds it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=High; Resources=3; Fingerprint=7BF49B
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=High; Resources=3; Fingerprint=7C8428
     // Broiler-Falsified-If: a text outside StringNumericLiteral answers other than not-a-number, or a value that rounds to an infinity or a zero as a Number is kept as written
     // Broiler-Human:        PENDING
-    internal static JsDecimal FromString(string text, System.Action<ulong> charge)
+    internal static JsDecimal FromString(string text, Action<ulong> charge)
     {
         charge((ulong)text.Length / 8 + 1);
         var trimmed = JsNumberFormat.Trim(text);
@@ -262,7 +265,7 @@ internal readonly struct JsDecimal
     /// A StrDecimalLiteral: an optional sign, digits with an optional point, and an optional
     /// exponent; nothing else.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-262 s7.1.4.1; IP=Low; Security=High; Resources=2; Fingerprint=B61AEA
+    // Broiler-AI:           Origin=AI; Spec=ECMA-262 s7.1.4.1; IP=Low; Security=High; Resources=2; Fingerprint=F3E0FD
     // Broiler-Falsified-If: a text that is not a StrDecimalLiteral parses, or one that is reads as another value
     // Broiler-Human:        PENDING
     private static JsDecimal? ParseDecimal(string text)
@@ -353,14 +356,14 @@ internal readonly struct JsDecimal
             return null;
         }
 
-        return Finite(negative, digits.ToString(), (int)System.Math.Clamp(point + exponent, -2_000_000_000L, 2_000_000_000L));
+        return Finite(negative, digits.ToString(), (int)Math.Clamp(point + exponent, -2_000_000_000L, 2_000_000_000L));
     }
 
     /// <summary>
     /// RoundMVResult's test: a value whose Number would be an infinity is that infinity, and one whose
     /// Number would be a zero is that zero; any other is kept exactly.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16 step 9; IP=Low; Security=Medium; Resources=1; Fingerprint=1C6FFF
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16 step 9; IP=Low; Security=Medium; Resources=1; Fingerprint=D27DA1
     // Broiler-Human:        PENDING
     private JsDecimal HeldToNumberRange()
     {
@@ -382,7 +385,7 @@ internal readonly struct JsDecimal
         // NEAR EITHER EDGE, THE NUMBER DECIDES: the digits are cut at 800 with a sticky 1 standing for
         // any that were cut, which keeps a correctly rounded parse on the same side of every tie.
         var shown = Digits.Length > 800 ? Digits[..800] + "1" : Digits;
-        var number = double.Parse("0." + shown + "e" + Point.ToString(System.Globalization.CultureInfo.InvariantCulture), System.Globalization.CultureInfo.InvariantCulture);
+        var number = double.Parse("0." + shown + "e" + Point.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
 
         if (double.IsInfinity(number))
         {
@@ -397,7 +400,7 @@ internal readonly struct JsDecimal
     /// rounding mode chooses for this nonnegative value: ECMA-402's choice between r1 and r2 in
     /// ToRawFixed and ToRawPrecision, through ApplyUnsignedRoundingMode.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.18; IP=Low; Security=High; Resources=3; Fingerprint=55ECF7
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.18; IP=Low; Security=High; Resources=3; Fingerprint=CB6384
     // Broiler-Falsified-If: a tie, a value just above or just below a tie, or an exact multiple is rounded otherwise than ApplyUnsignedRoundingMode states, for any admitted increment
     // Broiler-Human:        PENDING
     internal string RoundToUnits(int unit, int increment, JsUnsignedRounding mode)
@@ -432,7 +435,7 @@ internal readonly struct JsDecimal
 
         // THE REMAINDER BY THE INCREMENT AND THE QUOTIENT'S PARITY, from the last five digits:
         // twice every admitted increment divides 100,000.
-        var low = int.Parse(units.Length > 5 ? units[^5..] : units, System.Globalization.CultureInfo.InvariantCulture);
+        var low = int.Parse(units.Length > 5 ? units[^5..] : units, CultureInfo.InvariantCulture);
         var remainder = low % increment;
         var odd = (low % (2 * increment)) >= increment;
 

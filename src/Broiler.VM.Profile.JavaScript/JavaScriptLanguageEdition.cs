@@ -100,8 +100,7 @@ public static class JavaScriptLanguageEdition
     /// <summary>SHA-256 over that document, as retrieved at that revision.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=10F075
     // Broiler-Human:        PENDING
-    public const string DocumentDigest =
-        "ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0";
+    public const string DocumentDigest = "ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0";
 
     /// <summary>
     /// Whether the document has been archived, which is the third of the three actions roadmap
@@ -123,8 +122,7 @@ public static class JavaScriptLanguageEdition
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BB3644
     // Broiler-Human:        PENDING
-    public const string ArchivedAt =
-        "src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html";
+    public const string ArchivedAt = "src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html";
 
     /// <summary>The pin on one line, in the shape a run prints it.</summary>
     /// <remarks>
@@ -135,7 +133,6 @@ public static class JavaScriptLanguageEdition
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D1AF4
     // Broiler-Human:        PENDING
-    public static string Describe() =>
-        $"{Standard} {Year} ({Source}@{Revision}, {Document} sha256 {DocumentDigest})" +
+    public static string Describe() => $"{Standard} {Year} ({Source}@{Revision}, {Document} sha256 {DocumentDigest})" +
         (Archived ? " - archived at " + ArchivedAt : " - retrieved and hashed, NOT archived");
 }

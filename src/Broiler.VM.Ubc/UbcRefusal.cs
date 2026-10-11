@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM.Abstractions;
+using Broiler.VM.Binary;
 
 namespace Broiler.VM.Ubc;
 

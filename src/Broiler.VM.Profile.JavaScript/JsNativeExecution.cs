@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
 using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript.Format;
 
@@ -46,10 +49,10 @@ namespace Broiler.VM.Profile.JavaScript;
 /// stated where the manifest is defined: the admitted language is small and it is not JavaScript.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=7ABDB0
+// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=2874CD
 // Broiler-Falsified-If: anything reachable from this instance holds a managed reference emitted code can dereference
 // Broiler-Human:        PENDING
-internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDisposable
+internal sealed class JsNativeInstance : IVmInstanceState, IDisposable
 {
     /// <summary>How many operand-slab slots one instance is given.</summary>
     /// <remarks>
@@ -109,14 +112,8 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=361FFF
     // Broiler-Falsified-If: an instance is constructed around a mapping that is not armed
     // Broiler-Human:        PENDING
-    private JsNativeInstance(
-        JsProgram program,
-        IVmExecutionEnvironment environment,
-        JsNativePage page,
-        double[] operands,
-        double[] bindings,
-        double[] constants,
-        long[] fuel)
+    private JsNativeInstance(JsProgram program, IVmExecutionEnvironment environment, JsNativePage page,
+        double[] operands, double[] bindings, double[] constants, long[] fuel)
     {
         Program = program;
         Environment = environment;
@@ -177,11 +174,10 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     internal int InvocationCount { get; set; }
 
     /// <summary>Maps and arms the artifact's code, and builds the slabs it reads.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=030FF4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=CB5E00
     // Broiler-Falsified-If: an instance is produced whose mapping is not armed
     // Broiler-Human:        PENDING
-    internal static JsNativeInstance? TryCreate(
-        JsProgram program, IVmExecutionEnvironment environment)
+    internal static JsNativeInstance? TryCreate(JsProgram program, IVmExecutionEnvironment environment)
     {
         var page = JsNativePage.TryMap(program.NativeCode);
 
@@ -196,15 +192,12 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
             return null;
         }
 
-        var operands = System.GC.AllocateArray<double>(
-            OperandSlabSlots + OutgoingArgumentHeadroom, pinned: true);
-        var bindings = System.GC.AllocateArray<double>(
-            System.Math.Max(1, program.Constants.Length), pinned: true);
+        var operands = GC.AllocateArray<double>(OperandSlabSlots + OutgoingArgumentHeadroom, pinned: true);
+        var bindings = GC.AllocateArray<double>(Math.Max(1, program.Constants.Length), pinned: true);
 
-        var constants = System.GC.AllocateArray<double>(
-            System.Math.Max(1, program.Constants.Length), pinned: true);
+        var constants = GC.AllocateArray<double>(Math.Max(1, program.Constants.Length), pinned: true);
 
-        var fuel = System.GC.AllocateArray<long>(1, pinned: true);
+        var fuel = GC.AllocateArray<long>(1, pinned: true);
 
         var uninitialised = JsNativeValues.FromBits(JsNativeValues.UninitialisedBits);
 
@@ -215,23 +208,17 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
 
         for (var index = 0; index < program.Constants.Length; index++)
         {
-            constants[index] = program.Constants[index].IsNumber
-                ? program.Constants[index].AsNumber()
-                : 0;
+            constants[index] = program.Constants[index].IsNumber ? program.Constants[index].AsNumber() : 0;
         }
 
-        return new JsNativeInstance(
-            program, environment, page, operands, bindings, constants, fuel);
+        return new JsNativeInstance(program, environment, page, operands, bindings, constants, fuel);
     }
 
     /// <summary>Releases the mapping.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=4FEDBC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=BBF07B
     // Broiler-Falsified-If: a mapping outlives the instance that owns it, or is released while an invocation is still inside it
     // Broiler-Human:        PENDING
-    public void Dispose()
-    {
-        Page?.Dispose();
-    }
+    public void Dispose() => Page?.Dispose();
 }
 
 /// <summary>The native form's half of the executor: instantiate, invoke, and report.</summary>
@@ -271,20 +258,19 @@ internal static unsafe class JsNativeExecution
     internal static bool CarriesEmittedCode(JsProgram program) => program.NativeCode.Length != 0;
 
     /// <summary>The architecture and convention this process can call into.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=658D99
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=FD13FE
     // Broiler-Falsified-If: this names a convention other than the one this process actually uses
     // Broiler-Human:        PENDING
     internal static JsNativeArchitecture HostArchitecture
     {
         get
         {
-            if (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture !=
-                System.Runtime.InteropServices.Architecture.X64)
+            if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
             {
                 return JsNativeArchitecture.None;
             }
 
-            return System.OperatingSystem.IsWindows()
+            return OperatingSystem.IsWindows()
                 ? JsNativeArchitecture.X64Windows
                 : JsNativeArchitecture.X64SystemV;
         }
@@ -294,8 +280,7 @@ internal static unsafe class JsNativeExecution
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=DC113E
     // Broiler-Falsified-If: an artifact emitted for another architecture is instantiated
     // Broiler-Human:        PENDING
-    internal static VmExecutionStep Instantiate(
-        JsProgram program, IVmExecutionEnvironment environment)
+    internal static VmExecutionStep Instantiate(JsProgram program, IVmExecutionEnvironment environment)
     {
         if (program.NativeArchitecture != HostArchitecture)
         {
@@ -318,9 +303,7 @@ internal static unsafe class JsNativeExecution
             return VmExecutionStep.ContractViolation(VmReason.UnsatisfiedHostAssumption);
         }
 
-        environment.Meter.ReportRetained(
-            VmBudgetDimension.LiveBytes,
-            (ulong)(instance.Operands.Length + instance.Bindings.Length) * 8);
+        environment.Meter.ReportRetained(VmBudgetDimension.LiveBytes, (ulong)(instance.Operands.Length + instance.Bindings.Length) * 8);
 
         return VmExecutionStep.Instantiated(instance, null);
     }
@@ -341,13 +324,12 @@ internal static unsafe class JsNativeExecution
     /// pretending to be.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=660C65
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=9F6FE5
     // Broiler-Falsified-If: a value is reported that the emitted code did not leave in the frame's first operand slot
     // Broiler-Human:        PENDING
-    internal static VmExecutionStep Invoke(
-        VmProfileId profileId, JsNativeInstance instance, in VmInvocationRequest request)
+    internal static VmExecutionStep Invoke(VmProfileId profileId, JsNativeInstance instance, in VmInvocationRequest request)
     {
-        var name = System.Text.Encoding.UTF8.GetString(request.EntryPoint.Utf8);
+        var name = Encoding.UTF8.GetString(request.EntryPoint.Utf8);
 
         // THE DRAIN IS ANSWERED AND NOT REFUSED, AND THE REASON IS THE MANIFEST RATHER THAN A
         // CONVENIENCE. A host that drives an event loop asks for `#drain-jobs` after the last
@@ -362,7 +344,7 @@ internal static unsafe class JsNativeExecution
         // unavailable. A form that could queue work and reported zero here would be lying; this one
         // cannot queue work at all, and the manifest is what makes that a property rather than an
         // observation.
-        if (string.Equals(name, JavaScriptProfile.DrainEntryPoint, System.StringComparison.Ordinal))
+        if (string.Equals(name, JavaScriptProfile.DrainEntryPoint, StringComparison.Ordinal))
         {
             // IT ANSWERS THE SAME PAYLOAD SHAPE THE INTERPRETER'S DRAIN ANSWERS, and that is a
             // requirement rather than a courtesy: a host reads one payload type for a completion,
@@ -375,8 +357,7 @@ internal static unsafe class JsNativeExecution
 
         if (!instance.Program.TryFindEntry(name, out var unit))
         {
-            return VmExecutionStep.Faulted(
-                new JsUncaught(profileId, "entry point is not defined", "ReferenceError"));
+            return VmExecutionStep.Faulted(new JsUncaught(profileId, "entry point is not defined", "ReferenceError"));
         }
 
         if (!TryFindSymbol(instance.Program, unit, out var offset))
@@ -423,12 +404,8 @@ internal static unsafe class JsNativeExecution
 
         return (JsNativeReturn)answer switch
         {
-            JsNativeReturn.Returned => VmExecutionStep.Completed(
-                new JsCompletion(profileId, Render(result), TypeOf(result))),
-
-            JsNativeReturn.Threw => VmExecutionStep.Faulted(
-                new JsUncaught(
-                    profileId,
+            JsNativeReturn.Returned => VmExecutionStep.Completed(new JsCompletion(profileId, Render(result), TypeOf(result))),
+            JsNativeReturn.Threw => VmExecutionStep.Faulted(new JsUncaught(profileId,
                     "ReferenceError: Cannot access a binding before initialization",
                     "ReferenceError")),
 

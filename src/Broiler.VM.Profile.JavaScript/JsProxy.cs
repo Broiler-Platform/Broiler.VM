@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -84,8 +86,7 @@ internal sealed class JsProxy : JsObject
     /// <paramref name="handler"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5CEAA0
     // Broiler-Human:        PENDING
-    internal JsProxy(JsRealm owner, JsObject target, JsObject handler)
-        : base(null)
+    internal JsProxy(JsRealm owner, JsObject target, JsObject handler) : base(null)
     {
         realm = owner;
         Target = target;
@@ -247,11 +248,11 @@ internal sealed class JsProxy : JsObject
     /// enumerates; a Proxy reports what its trap returned, in that order, which is the one place in
     /// the language where <c>Object.keys</c> can answer <c>["1", "0"]</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4447B9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=150984
     // Broiler-Human:        PENDING
-    internal override System.Collections.Generic.List<string> OwnPropertyNames()
+    internal override List<string> OwnPropertyNames()
     {
-        var names = new System.Collections.Generic.List<string>();
+        var names = new List<string>();
 
         foreach (var key in ProxyOwnKeys())
         {
@@ -265,11 +266,11 @@ internal sealed class JsProxy : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=222CD9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F40FE3
     // Broiler-Human:        PENDING
-    internal override System.Collections.Generic.List<JsSymbol> OwnSymbolKeys()
+    internal override List<JsSymbol> OwnSymbolKeys()
     {
-        var keys = new System.Collections.Generic.List<JsSymbol>();
+        var keys = new List<JsSymbol>();
 
         foreach (var key in ProxyOwnKeys())
         {
@@ -283,9 +284,9 @@ internal sealed class JsProxy : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D4B106
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6C2697
     // Broiler-Human:        PENDING
-    internal override System.Collections.Generic.List<JsValue> OwnKeys() => ProxyOwnKeys();
+    internal override List<JsValue> OwnKeys() => ProxyOwnKeys();
 
     /// <summary>
     /// <c>[[OwnPropertyKeys]]</c>: the trap's list, checked against what the target has committed to.
@@ -305,9 +306,9 @@ internal sealed class JsProxy : JsObject
     /// the target may itself be a Proxy: each of those reads is a trap call the specification counts.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1E399D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E6B01A
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsValue> ProxyOwnKeys()
+    internal List<JsValue> ProxyOwnKeys()
     {
         var target = TrapTarget();
 
@@ -316,8 +317,7 @@ internal sealed class JsProxy : JsObject
             return target.OwnKeys();
         }
 
-        var reported = Engine.ProxyKeyList(
-            Engine.Call(trap, JsValue.Object(Handler!), [JsValue.Object(target)]));
+        var reported = Engine.ProxyKeyList(Engine.Call(trap, JsValue.Object(Handler!), [JsValue.Object(target)]));
 
         // THE DUPLICATE CHECK IS FIRST AND IS NOT AN OPTIMISATION. Everything below removes keys
         // from a working copy of this list, and a duplicate would let one target key satisfy two
@@ -336,8 +336,8 @@ internal sealed class JsProxy : JsObject
         }
 
         var extensible = target.Extensible;
-        var settled = new System.Collections.Generic.List<JsValue>();
-        var free = new System.Collections.Generic.List<JsValue>();
+        var settled = new List<JsValue>();
+        var free = new List<JsValue>();
 
         foreach (var key in target.OwnKeys())
         {
@@ -362,7 +362,7 @@ internal sealed class JsProxy : JsObject
             return reported;
         }
 
-        var unaccounted = new System.Collections.Generic.List<JsValue>(reported);
+        var unaccounted = new List<JsValue>(reported);
 
         foreach (var key in settled)
         {
@@ -370,8 +370,7 @@ internal sealed class JsProxy : JsObject
 
             if (!ProxyRemoveKey(unaccounted, key))
             {
-                Engine.ThrowTypeError(
-                    "the 'ownKeys' trap omitted a non-configurable own key of the target");
+                Engine.ThrowTypeError("the 'ownKeys' trap omitted a non-configurable own key of the target");
             }
         }
 
@@ -386,15 +385,13 @@ internal sealed class JsProxy : JsObject
 
             if (!ProxyRemoveKey(unaccounted, key))
             {
-                Engine.ThrowTypeError(
-                    "the 'ownKeys' trap omitted an own key of a non-extensible target");
+                Engine.ThrowTypeError("the 'ownKeys' trap omitted an own key of a non-extensible target");
             }
         }
 
         if (unaccounted.Count != 0)
         {
-            Engine.ThrowTypeError(
-                "the 'ownKeys' trap reported a key a non-extensible target does not have");
+            Engine.ThrowTypeError("the 'ownKeys' trap reported a key a non-extensible target does not have");
         }
 
         return reported;
@@ -432,8 +429,7 @@ internal sealed class JsProxy : JsObject
 
         if (!ReferenceEquals(answer.AsObjectOrNull(), target.Prototype))
         {
-            Engine.ThrowTypeError(
-                "the 'getPrototypeOf' trap disagreed with a non-extensible target's prototype");
+            Engine.ThrowTypeError("the 'getPrototypeOf' trap disagreed with a non-extensible target's prototype");
         }
 
         return answer.AsObjectOrNull();
@@ -792,7 +788,7 @@ internal sealed class JsProxy : JsObject
     /// one that hides something: claiming a property the target does not have costs nothing, while
     /// denying one the target holds non-configurably contradicts a promise the target made.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A9F02
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C84013
     // Broiler-Human:        PENDING
     internal bool ProxyHas(JsValue key)
     {
@@ -801,8 +797,8 @@ internal sealed class JsProxy : JsObject
         if (!TryTrap("has", out var trap))
         {
             return key.IsSymbol
-                ? Engine.HasSymbol(target, key.AsSymbol())
-                : Engine.HasProperty(target, key.AsString());
+                ? JsEngine.HasSymbol(target, key.AsSymbol())
+                : JsEngine.HasProperty(target, key.AsString());
         }
 
         var answered = Engine.Call(
@@ -991,10 +987,10 @@ internal sealed class JsProxy : JsObject
     /// any argument is coerced, because a revoked proxy has to be indistinguishable from a revoked
     /// proxy: an operation that coerced a key first would let a program tell which key it asked for.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=202C80
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2D81C9
     // Broiler-Human:        PENDING
     private JsObject TrapTarget() =>
-        Target ?? (JsObject)Engine.ThrowTypeError(
+        Target ?? Engine.ThrowTypeError(
             "an operation was attempted on a revoked Proxy").AsObject();
 
     /// <summary>Reads one trap off the handler: absent, or callable, or a <c>TypeError</c>.</summary>
@@ -1075,8 +1071,7 @@ internal sealed class JsProxy : JsObject
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E95B86
     // Broiler-Human:        PENDING
-    private static JsRealm.ObjectDescriptorFields CompletedFields(
-        JsRealm.ObjectDescriptorFields fields)
+    private static JsRealm.ObjectDescriptorFields CompletedFields(JsRealm.ObjectDescriptorFields fields)
     {
         fields.HasEnumerable = true;
         fields.HasConfigurable = true;
@@ -1136,8 +1131,7 @@ internal sealed class JsProxy : JsObject
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=792DA0
     // Broiler-Human:        PENDING
-    private static bool ProxyCompatible(
-        bool extensible, JsRealm.ObjectDescriptorFields fields, bool held, JsProperty current)
+    private static bool ProxyCompatible(bool extensible, JsRealm.ObjectDescriptorFields fields, bool held, JsProperty current)
     {
         if (!held)
         {
@@ -1192,10 +1186,10 @@ internal sealed class JsProxy : JsObject
                 string.Equals(left.AsString(), right.AsString(), System.StringComparison.Ordinal);
 
     /// <summary>Removes the first occurrence of <paramref name="key"/>, and says whether it was there.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=73BBA6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4E21BA
     // Broiler-Human:        PENDING
     private static bool ProxyRemoveKey(
-        System.Collections.Generic.List<JsValue> keys, JsValue key)
+        List<JsValue> keys, JsValue key)
     {
         for (var at = 0; at < keys.Count; at++)
         {

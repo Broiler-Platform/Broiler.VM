@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -236,12 +238,12 @@ internal sealed class JsHostObject : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8EC6DD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A85109
     // Broiler-Human:        PENDING
-    internal override System.Collections.Generic.List<string> OwnPropertyNames()
+    internal override List<string> OwnPropertyNames()
     {
         var names = base.OwnPropertyNames();
-        System.Collections.Generic.IReadOnlyList<string> supported;
+        IReadOnlyList<string> supported;
         uint length;
 
         try

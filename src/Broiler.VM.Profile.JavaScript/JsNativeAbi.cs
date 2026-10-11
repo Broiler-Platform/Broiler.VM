@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -30,8 +31,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=AB829C
 // Broiler-Falsified-If: a field here reports something the trampoline did not record
 // Broiler-Human:        PENDING
-public readonly record struct JsNativeAbiObservation(
-    bool Ran, long StackBefore, long StackAfter, long Answer, long[] Saved);
+public readonly record struct JsNativeAbiObservation(bool Ran, long StackBefore, long StackAfter, long Answer, long[] Saved);
 
 /// <summary>
 /// Runs a caller-supplied trampoline over a caller-supplied entry point and reports what the
@@ -84,18 +84,11 @@ public static unsafe class JsNativeAbi
     /// halves are complementary: the comparison names the defect and the repetition forces a defect
     /// too small to see in one call to arrive while a test is watching.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=AAE7EE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=08BF85
     // Broiler-Falsified-If: this reports a stack pointer the trampoline did not record, or it returns without releasing the mapping
     // Broiler-Human:        PENDING
-    public static JsNativeAbiObservation Run(
-        System.ReadOnlySpan<byte> blob,
-        uint trampolineOffset,
-        uint targetOffset,
-        int operandSlots,
-        int bindingSlots,
-        double[] constants,
-        long fuel,
-        int repetitions)
+    public static JsNativeAbiObservation Run(ReadOnlySpan<byte> blob, uint trampolineOffset, uint targetOffset,
+        int operandSlots, int bindingSlots, double[] constants, long fuel, int repetitions)
     {
         var page = JsNativePage.TryMap(blob);
 
@@ -111,17 +104,12 @@ public static unsafe class JsNativeAbi
                 return new JsNativeAbiObservation(false, 0, 0, 0, []);
             }
 
-            var operands = System.GC.AllocateArray<double>(
-                System.Math.Max(1, operandSlots), pinned: true);
+            var operands = GC.AllocateArray<double>(Math.Max(1, operandSlots), pinned: true);
+            var bindings = GC.AllocateArray<double>(Math.Max(1, bindingSlots), pinned: true);
+            var pool = GC.AllocateArray<double>(Math.Max(1, constants.Length), pinned: true);
+            var counter = GC.AllocateArray<long>(1, pinned: true);
 
-            var bindings = System.GC.AllocateArray<double>(
-                System.Math.Max(1, bindingSlots), pinned: true);
-
-            var pool = System.GC.AllocateArray<double>(
-                System.Math.Max(1, constants.Length), pinned: true);
-
-            var counter = System.GC.AllocateArray<long>(1, pinned: true);
-            System.Array.Copy(constants, pool, constants.Length);
+            Array.Copy(constants, pool, constants.Length);
 
             var uninitialised = JsNativeValues.FromBits(JsNativeValues.UninitialisedBits);
 
@@ -174,8 +162,7 @@ public static unsafe class JsNativeAbi
                 }
             }
 
-            return new JsNativeAbiObservation(
-                true, probe.StackBefore, probe.StackAfter, probe.Answer, saved);
+            return new JsNativeAbiObservation(true, probe.StackBefore, probe.StackAfter, probe.Answer, saved);
         }
     }
 
@@ -202,15 +189,10 @@ public static unsafe class JsNativeAbi
     /// that loads the entry program counter a unit takes as its second argument.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=1F95D2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=A3F62D
     // Broiler-Falsified-If: this records a handler stack pointer the stub did not write, sends a slot anywhere but the stub, or returns without releasing the mapping
     // Broiler-Human:        PENDING
-    public static JsNativeAbiObservation RunBaseline(
-        System.ReadOnlySpan<byte> blob,
-        uint trampolineOffset,
-        uint unitOffset,
-        uint stubOffset,
-        System.Span<long> handlerStacks)
+    public static JsNativeAbiObservation RunBaseline(ReadOnlySpan<byte> blob, uint trampolineOffset, uint unitOffset, uint stubOffset, Span<long> handlerStacks)
     {
         var page = JsNativePage.TryMap(blob);
 
@@ -258,8 +240,7 @@ public static unsafe class JsNativeAbi
                 saved[index] = probe.Saved[index];
             }
 
-            return new JsNativeAbiObservation(
-                true, probe.StackBefore, probe.StackAfter, probe.Answer, saved);
+            return new JsNativeAbiObservation(true, probe.StackBefore, probe.StackAfter, probe.Answer, saved);
         }
     }
 }

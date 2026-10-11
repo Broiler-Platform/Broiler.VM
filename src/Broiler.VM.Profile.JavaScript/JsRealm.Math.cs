@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -68,18 +73,18 @@ internal sealed partial class JsRealm
     /// A xorshift state of zero stays zero, so a zero draw is replaced by the constant that seeded
     /// every realm until 2026-09-29. The odds of that draw are one in 2^64.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BB57EE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=261289
     // Broiler-Human:        PENDING
     private static ulong MathRandomSeed()
     {
-        System.Span<byte> bytes = stackalloc byte[sizeof(ulong)];
-        System.Security.Cryptography.RandomNumberGenerator.Fill(bytes);
-        var seed = System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(bytes);
+        Span<byte> bytes = stackalloc byte[sizeof(ulong)];
+        RandomNumberGenerator.Fill(bytes);
+        var seed = BinaryPrimitives.ReadUInt64LittleEndian(bytes);
         return seed != 0 ? seed : 0x2545F4914F6CDD1DUL;
     }
 
     /// <summary>Builds <c>Math</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F8EBF6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B94BC
     // Broiler-Human:        PENDING
     private void SetupMath()
     {
@@ -94,40 +99,25 @@ internal sealed partial class JsRealm
         // Writable and configurable, NOT frozen: see the type remarks.
         GlobalObject.DefineBuiltIn("Math", JsValue.Object(math));
 
-        math.DefineFrozen("E", JsValue.Number(System.Math.E));
+        math.DefineFrozen("E", JsValue.Number(Math.E));
         math.DefineFrozen("LN10", JsValue.Number(2.302585092994046));
         math.DefineFrozen("LN2", JsValue.Number(0.6931471805599453));
         math.DefineFrozen("LOG10E", JsValue.Number(0.4342944819032518));
         math.DefineFrozen("LOG2E", JsValue.Number(1.4426950408889634));
-        math.DefineFrozen("PI", JsValue.Number(System.Math.PI));
+        math.DefineFrozen("PI", JsValue.Number(Math.PI));
         math.DefineFrozen("SQRT1_2", JsValue.Number(0.7071067811865476));
         math.DefineFrozen("SQRT2", JsValue.Number(1.4142135623730951));
 
-        Method(math, "abs", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Abs(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "acos", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Acos(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "acosh", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Acosh(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "asin", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Asin(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "asinh", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Asinh(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "atan", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Atan(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "atanh", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Atanh(MathNumberAt(engine, arguments, 0))));
+        Method(math, "abs", 1, static (engine, _, arguments) => JsValue.Number(Math.Abs(MathNumberAt(engine, arguments, 0))));
+        Method(math, "acos", 1, static (engine, _, arguments) => JsValue.Number(Math.Acos(MathNumberAt(engine, arguments, 0))));
+        Method(math, "acosh", 1, static (engine, _, arguments) => JsValue.Number(Math.Acosh(MathNumberAt(engine, arguments, 0))));
+        Method(math, "asin", 1, static (engine, _, arguments) => JsValue.Number(Math.Asin(MathNumberAt(engine, arguments, 0))));
+        Method(math, "asinh", 1, static (engine, _, arguments) => JsValue.Number(Math.Asinh(MathNumberAt(engine, arguments, 0))));
+        Method(math, "atan", 1, static (engine, _, arguments) => JsValue.Number(Math.Atan(MathNumberAt(engine, arguments, 0))));
+        Method(math, "atanh", 1, static (engine, _, arguments) => JsValue.Number(Math.Atanh(MathNumberAt(engine, arguments, 0))));
 
         // The arguments are coerced left to right, which is observable through a valueOf.
-        Method(math, "atan2", 2, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Atan2(
-                MathNumberAt(engine, arguments, 0), MathNumberAt(engine, arguments, 1))));
+        Method(math, "atan2", 2, static (engine, _, arguments) => JsValue.Number(Math.Atan2(MathNumberAt(engine, arguments, 0), MathNumberAt(engine, arguments, 1))));
 
         // THE SNAP IS NOT A TIDY-UP, it is what makes a perfect cube answer its own root. The
         // specification leaves this function's precision implementation-defined, so both
@@ -138,112 +128,59 @@ internal sealed partial class JsRealm
         Method(math, "cbrt", 1, static (engine, _, arguments) =>
         {
             var value = MathNumberAt(engine, arguments, 0);
-            var root = System.Math.Cbrt(value);
-            var near = System.Math.Round(root);
+            var root = Math.Cbrt(value);
+            var near = Math.Round(root);
 
             return JsValue.Number(near * near * near == value ? near : root);
         });
 
-        Method(math, "ceil", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Ceiling(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "clz32", 1, static (engine, _, arguments) =>
-            JsValue.Number(MathLeadingZeros(engine.ToUint32(ArgOfMath(arguments, 0)))));
-
-        Method(math, "cos", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Cos(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "cosh", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Cosh(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "exp", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Exp(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "expm1", 1, static (engine, _, arguments) =>
-            JsValue.Number(MathExpMinusOne(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "floor", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Floor(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "fround", 1, static (engine, _, arguments) =>
-            JsValue.Number((double)(float)MathNumberAt(engine, arguments, 0)));
+        Method(math, "ceil", 1, static (engine, _, arguments) => JsValue.Number(Math.Ceiling(MathNumberAt(engine, arguments, 0))));
+        Method(math, "clz32", 1, static (engine, _, arguments) => JsValue.Number(MathLeadingZeros(engine.ToUint32(ArgOfMath(arguments, 0)))));
+        Method(math, "cos", 1, static (engine, _, arguments) => JsValue.Number(Math.Cos(MathNumberAt(engine, arguments, 0))));
+        Method(math, "cosh", 1, static (engine, _, arguments) => JsValue.Number(Math.Cosh(MathNumberAt(engine, arguments, 0))));
+        Method(math, "exp", 1, static (engine, _, arguments) => JsValue.Number(Math.Exp(MathNumberAt(engine, arguments, 0))));
+        Method(math, "expm1", 1, static (engine, _, arguments) => JsValue.Number(MathExpMinusOne(MathNumberAt(engine, arguments, 0))));
+        Method(math, "floor", 1, static (engine, _, arguments) => JsValue.Number(Math.Floor(MathNumberAt(engine, arguments, 0))));
+        Method(math, "fround", 1, static (engine, _, arguments) => JsValue.Number((double)(float)MathNumberAt(engine, arguments, 0)));
 
         // HALF PRECISION, WHICH THE LANGUAGE ADDED FOR THE SAME REASON IT ADDED `fround`: a program
         // that stores numbers in a Float16Array wants to know what a value will become before it
         // stores it. So it is the SAME conversion the Float16Array and the DataView accessors
         // store through - `JsFloat16`, whose remarks record why the platform's rounding is the
         // language's - and a value this answers is exactly the value a store would keep.
-        Method(math, "f16round", 1, static (engine, _, arguments) =>
-            JsValue.Number(JsFloat16.Round(MathNumberAt(engine, arguments, 0))));
+        Method(math, "f16round", 1, static (engine, _, arguments) => JsValue.Number(JsFloat16.Round(MathNumberAt(engine, arguments, 0))));
 
         // AN EXACTLY ROUNDED SUM, which is not what a loop of additions gives: adding left to right
         // rounds at every step and the errors accumulate, so `0.1 + 0.2 + 0.3` and
         // `0.3 + 0.2 + 0.1` differ. This keeps a list of non-overlapping partial sums - Shewchuk's
         // distillation - so the exact value is carried and rounded once, at the end.
-        Method(math, "sumPrecise", 1, (engine, _, arguments) =>
-            JsValue.Number(MathSumPrecise(engine, MathArgumentAt(arguments, 0))));
-
-        Method(math, "hypot", 2, static (engine, _, arguments) =>
-            JsValue.Number(MathHypotenuse(engine, arguments)));
-
-        Method(math, "imul", 2, static (engine, _, arguments) =>
-            JsValue.Number(MathIntegerProduct(engine, arguments)));
-
-        Method(math, "log", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Log(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "log1p", 1, static (engine, _, arguments) =>
-            JsValue.Number(MathLogOnePlus(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "log10", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Log10(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "log2", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Log2(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "max", 2, static (engine, _, arguments) =>
-            JsValue.Number(MathLargest(engine, arguments)));
-
-        Method(math, "min", 2, static (engine, _, arguments) =>
-            JsValue.Number(MathSmallest(engine, arguments)));
-
-        Method(math, "pow", 2, static (engine, _, arguments) =>
-            JsValue.Number(MathPower(
-                MathNumberAt(engine, arguments, 0), MathNumberAt(engine, arguments, 1))));
+        Method(math, "sumPrecise", 1, (engine, _, arguments) => JsValue.Number(MathSumPrecise(engine, MathArgumentAt(arguments, 0))));
+        Method(math, "hypot", 2, static (engine, _, arguments) => JsValue.Number(MathHypotenuse(engine, arguments)));
+        Method(math, "imul", 2, static (engine, _, arguments) => JsValue.Number(MathIntegerProduct(engine, arguments)));
+        Method(math, "log", 1, static (engine, _, arguments) => JsValue.Number(Math.Log(MathNumberAt(engine, arguments, 0))));
+        Method(math, "log1p", 1, static (engine, _, arguments) => JsValue.Number(MathLogOnePlus(MathNumberAt(engine, arguments, 0))));
+        Method(math, "log10", 1, static (engine, _, arguments) => JsValue.Number(Math.Log10(MathNumberAt(engine, arguments, 0))));
+        Method(math, "log2", 1, static (engine, _, arguments) => JsValue.Number(Math.Log2(MathNumberAt(engine, arguments, 0))));
+        Method(math, "max", 2, static (engine, _, arguments) => JsValue.Number(MathLargest(engine, arguments)));
+        Method(math, "min", 2, static (engine, _, arguments) => JsValue.Number(MathSmallest(engine, arguments)));
+        Method(math, "pow", 2, static (engine, _, arguments) => JsValue.Number(MathPower(MathNumberAt(engine, arguments, 0), MathNumberAt(engine, arguments, 1))));
 
         // The only member that reads and writes realm state, so the only lambda that is not static.
         Method(math, "random", 0, (_, _, _) => JsValue.Number(MathNextRandom()));
-
-        Method(math, "round", 1, static (engine, _, arguments) =>
-            JsValue.Number(MathRoundHalfUp(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "sign", 1, static (engine, _, arguments) =>
-            JsValue.Number(MathSignOf(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "sin", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Sin(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "sinh", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Sinh(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "sqrt", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Sqrt(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "tan", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Tan(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "tanh", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Tanh(MathNumberAt(engine, arguments, 0))));
-
-        Method(math, "trunc", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Truncate(MathNumberAt(engine, arguments, 0))));
+        Method(math, "round", 1, static (engine, _, arguments) => JsValue.Number(MathRoundHalfUp(MathNumberAt(engine, arguments, 0))));
+        Method(math, "sign", 1, static (engine, _, arguments) => JsValue.Number(MathSignOf(MathNumberAt(engine, arguments, 0))));
+        Method(math, "sin", 1, static (engine, _, arguments) => JsValue.Number(Math.Sin(MathNumberAt(engine, arguments, 0))));
+        Method(math, "sinh", 1, static (engine, _, arguments) => JsValue.Number(Math.Sinh(MathNumberAt(engine, arguments, 0))));
+        Method(math, "sqrt", 1, static (engine, _, arguments) => JsValue.Number(Math.Sqrt(MathNumberAt(engine, arguments, 0))));
+        Method(math, "tan", 1, static (engine, _, arguments) => JsValue.Number(Math.Tan(MathNumberAt(engine, arguments, 0))));
+        Method(math, "tanh", 1, static (engine, _, arguments) => JsValue.Number(Math.Tanh(MathNumberAt(engine, arguments, 0))));
+        Method(math, "trunc", 1, static (engine, _, arguments) => JsValue.Number(Math.Truncate(MathNumberAt(engine, arguments, 0))));
     }
 
     /// <summary>The argument at <paramref name="at"/>, or <c>undefined</c> when there is none.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=760962
     // Broiler-Human:        PENDING
-    private static JsValue ArgOfMath(JsValue[] arguments, int at) =>
-        at < arguments.Length ? arguments[at] : JsValue.Undefined;
+    private static JsValue ArgOfMath(JsValue[] arguments, int at) => at < arguments.Length ? arguments[at] : JsValue.Undefined;
 
     /// <summary>The argument at <paramref name="at"/> as a Number, which may run guest code.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F3B6A0
@@ -297,7 +234,7 @@ internal sealed partial class JsRealm
     /// <c>0</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E0826
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=98C550
     // Broiler-Human:        PENDING
     private static double MathRoundHalfUp(double value)
     {
@@ -306,7 +243,7 @@ internal sealed partial class JsRealm
             return value;
         }
 
-        if (System.Math.Floor(value) == value)
+        if (Math.Floor(value) == value)
         {
             return value;
         }
@@ -321,7 +258,7 @@ internal sealed partial class JsRealm
             return -0.0;
         }
 
-        return System.Math.Floor(value + 0.5);
+        return Math.Floor(value + 0.5);
     }
 
     /// <summary>The specification's <c>Math.sign</c>, which answers a signed zero for a signed zero.</summary>
@@ -418,11 +355,11 @@ internal sealed partial class JsRealm
     /// zero. The scaling is exact for powers of two and costs one extra pass, which is why the
     /// coerced values are kept rather than re-read - re-reading would run a <c>valueOf</c> twice.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F3A8FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=22E49A
     // Broiler-Human:        PENDING
     private static double MathHypotenuse(JsEngine engine, JsValue[] arguments)
     {
-        var magnitudes = new System.Collections.Generic.List<double>(arguments.Length);
+        var magnitudes = new List<double>(arguments.Length);
         var largest = 0.0;
         var sawInfinity = false;
         var sawNotANumber = false;
@@ -442,7 +379,7 @@ internal sealed partial class JsRealm
             }
             else
             {
-                var magnitude = System.Math.Abs(value);
+                var magnitude = Math.Abs(value);
                 magnitudes.Add(magnitude);
 
                 if (magnitude > largest)
@@ -476,7 +413,7 @@ internal sealed partial class JsRealm
             sum += scaled * scaled;
         }
 
-        return largest * System.Math.Sqrt(sum);
+        return largest * Math.Sqrt(sum);
     }
 
     /// <summary>
@@ -512,7 +449,7 @@ internal sealed partial class JsRealm
     /// <c>NaN</c>. No front end folds <c>**</c> over constants, so these two are the only callers.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=576001
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BC301B
     // Broiler-Human:        PENDING
     internal static double MathPower(double baseValue, double exponent)
     {
@@ -531,34 +468,19 @@ internal sealed partial class JsRealm
             return double.NaN;
         }
 
-        if (double.IsInfinity(exponent) && System.Math.Abs(baseValue) == 1)
+        if (double.IsInfinity(exponent) && Math.Abs(baseValue) == 1)
         {
             return double.NaN;
         }
 
-        return System.Math.Pow(baseValue, exponent);
+        return Math.Pow(baseValue, exponent);
     }
 
     /// <summary>Counts the leading zero bits of a 32-bit value, answering 32 for zero.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=668652
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=202216
     // Broiler-Human:        PENDING
-    private static int MathLeadingZeros(uint bits)
-    {
-        if (bits == 0)
-        {
-            return 32;
-        }
-
-        var count = 0;
-
-        while ((bits & 0x80000000u) == 0)
-        {
-            bits <<= 1;
-            count++;
-        }
-
-        return count;
-    }
+    private static int MathLeadingZeros(uint bits) =>
+        System.Numerics.BitOperations.LeadingZeroCount(bits);
 
     /// <summary>
     /// The next draw from the realm's generator: a double in <c>[0, 1)</c>.
@@ -605,11 +527,11 @@ internal sealed partial class JsRealm
     /// so that the sign of a sum of negative zeros survives.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EEF3AB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=75C15A
     // Broiler-Human:        PENDING
     private double MathSumPrecise(JsEngine engine, JsValue source)
     {
-        var values = new System.Collections.Generic.List<double>();
+        var values = new List<double>();
         var positiveInfinities = 0;
         var negativeInfinities = 0;
         var seenNaN = false;
@@ -660,7 +582,7 @@ internal sealed partial class JsRealm
             }
 
             values.Add(value);
-            largest = System.Math.Max(largest, System.Math.Abs(value));
+            largest = Math.Max(largest, Math.Abs(value));
         });
 
         if (seenNaN)
@@ -698,18 +620,18 @@ internal sealed partial class JsRealm
         // exact, so a list with a huge term in it is distilled in a scaled domain and scaled back;
         // what that drops is terms below the scaled range, which are orders of magnitude beneath the
         // last bit of an answer this large.
-        var scale = largest > 8.98846567431158e307 / 4 ? System.Math.ScaleB(1.0, -600) : 1.0;
+        var scale = largest > 8.98846567431158e307 / 4 ? Math.ScaleB(1.0, -600) : 1.0;
         var total = MathDistil(values, scale);
 
-        return scale == 1.0 ? total : System.Math.ScaleB(total, 600);
+        return scale == 1.0 ? total : Math.ScaleB(total, 600);
     }
 
     /// <summary>Shewchuk's distillation: a list of non-overlapping partial sums, added once.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D6736
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1AF6EA
     // Broiler-Human:        PENDING
-    private static double MathDistil(System.Collections.Generic.List<double> values, double scale)
+    private static double MathDistil(List<double> values, double scale)
     {
-        var partials = new System.Collections.Generic.List<double>();
+        var partials = new List<double>();
 
         foreach (var element in values)
         {
@@ -720,7 +642,7 @@ internal sealed partial class JsRealm
             {
                 var held = partials[at];
 
-                if (System.Math.Abs(carried) < System.Math.Abs(held))
+                if (Math.Abs(carried) < Math.Abs(held))
                 {
                     (carried, held) = (held, carried);
                 }

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -183,21 +185,9 @@ internal sealed partial class JsRealm
 
         // `[Symbol.dispose]` IS THE SAME FUNCTION OBJECT AS `dispose`, not a second function that
         // behaves the same: the specification says so and test262 compares them by identity.
-        prototype.SetOwnProperty(
-            "dispose",
-            JsProperty.Data(
-                JsValue.Object(dispose),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
-
-        prototype.SetOwnSymbol(
-            DisposeSymbol,
-            JsProperty.Data(
-                JsValue.Object(dispose),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
-
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("DisposableStack"), JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("dispose", JsProperty.Data(JsValue.Object(dispose), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(DisposeSymbol, JsProperty.Data(JsValue.Object(dispose), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("DisposableStack"), JsPropertyAttributes.Configurable));
     }
 
     /// <summary>Builds <c>AsyncDisposableStack</c> and its prototype.</summary>
@@ -261,13 +251,7 @@ internal sealed partial class JsRealm
             // always answers a promise, so `stack.disposeAsync().catch(h)` sees every failure.
             if (thisValue.AsObjectOrNull() is not JsDisposableStack { Asynchronous: true } stack)
             {
-                SettleAsyncPromise(
-                    engine,
-                    promise,
-                    CreateError(
-                        "TypeError",
-                        "AsyncDisposableStack.prototype.disposeAsync called on an incompatible receiver"),
-                    rejected: true);
+                SettleAsyncPromise(engine, promise, CreateError("TypeError", "AsyncDisposableStack.prototype.disposeAsync called on an incompatible receiver"), rejected: true);
 
                 return JsValue.Object(promise);
             }
@@ -282,22 +266,9 @@ internal sealed partial class JsRealm
             return JsValue.Object(promise);
         });
 
-        prototype.SetOwnProperty(
-            "disposeAsync",
-            JsProperty.Data(
-                JsValue.Object(disposeAsync),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
-
-        prototype.SetOwnSymbol(
-            AsyncDisposeSymbol,
-            JsProperty.Data(
-                JsValue.Object(disposeAsync),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
-
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(
-                JsValue.String("AsyncDisposableStack"), JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("disposeAsync", JsProperty.Data(JsValue.Object(disposeAsync), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(AsyncDisposeSymbol, JsProperty.Data(JsValue.Object(disposeAsync), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("AsyncDisposableStack"), JsPropertyAttributes.Configurable));
     }
 
     /// <summary>
@@ -416,8 +387,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F62FA5
     // Broiler-Human:        PENDING
-    private static JsDisposableStack DisposalThis(
-        JsEngine engine, JsValue thisValue, bool asynchronous, string method)
+    private static JsDisposableStack DisposalThis(JsEngine engine, JsValue thisValue, bool asynchronous, string method)
     {
         if (thisValue.AsObjectOrNull() is not JsDisposableStack stack ||
             stack.Asynchronous != asynchronous)
@@ -442,8 +412,7 @@ internal sealed partial class JsRealm
     /// <summary>Reads one argument, which may not have been supplied.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=185FC5
     // Broiler-Human:        PENDING
-    private static JsValue DisposalArg(JsValue[] arguments, int at) =>
-        at < arguments.Length ? arguments[at] : JsValue.Undefined;
+    private static JsValue DisposalArg(JsValue[] arguments, int at) => at < arguments.Length ? arguments[at] : JsValue.Undefined;
 
     /// <summary>Appends one resource, charging it.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=043002
@@ -486,8 +455,7 @@ internal sealed partial class JsRealm
             return;
         }
 
-        DisposalPush(
-            engine, stack, new JsDisposableResource(value, DisposalMethod(engine, value, stack.Asynchronous)));
+        DisposalPush(engine, stack, new JsDisposableResource(value, DisposalMethod(engine, value, stack.Asynchronous)));
     }
 
     /// <summary>
@@ -525,11 +493,9 @@ internal sealed partial class JsRealm
 
         if (method.Type == JsType.Undefined)
         {
-            throw engine.Error(
-                "TypeError",
-                asynchronous
-                    ? "the resource has neither Symbol.asyncDispose nor Symbol.dispose"
-                    : "the resource has no Symbol.dispose");
+            throw engine.Error("TypeError", asynchronous ?
+                "the resource has neither Symbol.asyncDispose nor Symbol.dispose" :
+                "the resource has no Symbol.dispose");
         }
 
         return method;
@@ -569,8 +535,7 @@ internal sealed partial class JsRealm
     /// <summary><c>adopt(value, onDispose)</c>: registers a closure calling the callback with the value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AF9263
     // Broiler-Human:        PENDING
-    private void DisposalAdopt(
-        JsEngine engine, JsDisposableStack stack, JsValue value, JsValue onDispose, string method)
+    private void DisposalAdopt(JsEngine engine, JsDisposableStack stack, JsValue value, JsValue onDispose, string method)
     {
         if (!onDispose.IsObject || !onDispose.AsObject().IsCallable)
         {
@@ -592,8 +557,7 @@ internal sealed partial class JsRealm
     /// <summary><c>defer(onDispose)</c>: registers the callback itself, called with nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8E3A8D
     // Broiler-Human:        PENDING
-    private static void DisposalDefer(
-        JsEngine engine, JsDisposableStack stack, JsValue onDispose, string method)
+    private static void DisposalDefer(JsEngine engine, JsDisposableStack stack, JsValue onDispose, string method)
     {
         if (!onDispose.IsObject || !onDispose.AsObject().IsCallable)
         {
@@ -612,25 +576,22 @@ internal sealed partial class JsRealm
     /// what the specification says and what test262 checks: <c>move</c> does not consult a species.
     /// The transfer is the list itself, so moving a stack of any size costs one charge.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CAEDD5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5E1D8C
     // Broiler-Human:        PENDING
-    private static JsDisposableStack DisposalMove(
-        JsEngine engine, JsDisposableStack stack, JsObject prototype)
+    private static JsDisposableStack DisposalMove(JsEngine engine, JsDisposableStack stack, JsObject prototype)
     {
         engine.Charge(2);
 
-        var moved = new JsDisposableStack(prototype, stack.Asynchronous);
-        moved.Resources = stack.Resources;
+        var moved = new JsDisposableStack(prototype, stack.Asynchronous) { Resources = stack.Resources };
         stack.Resources = [];
         stack.Disposed = true;
         return moved;
     }
 
     /// <summary>Marks a stack disposed and takes its entries away from it, in one step.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CF7D49
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CF3809
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<JsDisposableResource> DisposalDetach(
-        JsDisposableStack stack)
+    private static List<JsDisposableResource> DisposalDetach(JsDisposableStack stack)
     {
         var entries = stack.Resources;
         stack.Resources = [];
@@ -658,8 +619,7 @@ internal sealed partial class JsRealm
         {
             if (asynchronous)
             {
-                DisposeScopePush(
-                    engine, scope, new JsScopedResource(JsValue.Undefined, JsValue.Undefined, Asynchronous: true));
+                DisposeScopePush(engine, scope, new JsScopedResource(JsValue.Undefined, JsValue.Undefined, Asynchronous: true));
             }
 
             return;
@@ -884,7 +844,7 @@ internal sealed partial class JsRealm
     {
         private readonly JsRealm realm;
         private readonly JsPromiseObject promise;
-        private readonly System.Collections.Generic.List<JsDisposableResource> entries;
+        private readonly List<JsDisposableResource> entries;
         private int next;
         private bool needsAwait;
         private bool hasAwaited;
@@ -892,12 +852,9 @@ internal sealed partial class JsRealm
         private JsValue completion = JsValue.Undefined;
 
         /// <summary>Creates a run over entries already detached from their stack.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1F6B23
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1F5EE5
         // Broiler-Human:        PENDING
-        internal JsDisposalRun(
-            JsRealm owner,
-            JsPromiseObject settles,
-            System.Collections.Generic.List<JsDisposableResource> detached)
+        internal JsDisposalRun(JsRealm owner, JsPromiseObject settles, List<JsDisposableResource> detached)
         {
             realm = owner;
             promise = settles;
@@ -1005,8 +962,7 @@ internal sealed partial class JsRealm
         /// <summary>Settles the run's promise with the completion.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1C9833
         // Broiler-Human:        PENDING
-        private void Finish(JsEngine engine) =>
-            realm.SettleAsyncPromise(engine, promise, completion, rejected: threw);
+        private void Finish(JsEngine engine) => realm.SettleAsyncPromise(engine, promise, completion, rejected: threw);
     }
 }
 
@@ -1047,9 +1003,9 @@ internal sealed class JsDisposableStack : JsObject
     internal bool Disposed { get; set; }
 
     /// <summary>The registered resources, oldest first.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=25E022
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=662067
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsDisposableResource> Resources { get; set; } = [];
+    internal List<JsDisposableResource> Resources { get; set; } = [];
 }
 
 /// <summary>One resource a declaration registered, with the hint it was declared under.</summary>
@@ -1084,15 +1040,12 @@ internal sealed class JsDisposeScope : JsObject
     /// <summary>Creates an empty scope.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=73808D
     // Broiler-Human:        PENDING
-    internal JsDisposeScope()
-        : base(null, "DisposeScope")
-    {
-    }
+    internal JsDisposeScope() : base(null, "DisposeScope") { }
 
     /// <summary>The registered resources, oldest first.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EE3B94
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CCBEE5
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsScopedResource> Resources { get; } = [];
+    internal List<JsScopedResource> Resources { get; } = [];
 
     /// <summary>The index of the next entry to unwind, or -1 when none is left.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=97E3B0

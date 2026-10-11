@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -41,29 +44,23 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsNativeFunction? ListFormatConstructor { get; private set; }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=29B5A1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=63DF42
     // Broiler-Human:        PENDING
     private void SetupListFormat(JsObject intl)
     {
         var prototype = new JsObject(ObjectPrototype);
         ListFormatPrototype = prototype;
 
-        var constructor = new JsNativeFunction(
-            this,
-            FunctionPrototype,
-            "ListFormat",
-            0,
-            static (engine, thisValue, arguments) =>
-                throw engine.Error("TypeError", "Constructor Intl.ListFormat requires 'new'"),
-            static (engine, newTarget, arguments) => NewListFormat(engine, newTarget, arguments));
-
-        constructor.BuildsFromNewTarget = true;
+        var constructor = new JsNativeFunction(this, FunctionPrototype, "ListFormat", 0,
+            static (engine, thisValue, arguments) => throw engine.Error("TypeError", "Constructor Intl.ListFormat requires 'new'"),
+            static (engine, newTarget, arguments) => NewListFormat(engine, newTarget, arguments))
+        {
+            BuildsFromNewTarget = true
+        };
         ListFormatConstructor = constructor;
 
         constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Method(constructor, "supportedLocalesOf", 1, static (engine, thisValue, arguments) =>
         {
@@ -90,7 +87,7 @@ internal sealed partial class JsRealm
         {
             var format = ListFormatOfThis(engine, thisValue, "formatToParts");
             var list = StringListFromIterable(engine, Argument(arguments, 0));
-            var values = new System.Collections.Generic.List<JsValue>();
+            var values = new List<JsValue>();
 
             foreach (var (type, value) in CreatePartsFromList(engine, format, list))
             {
@@ -116,13 +113,8 @@ internal sealed partial class JsRealm
             return JsValue.Object(options);
         });
 
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl.ListFormat"), JsPropertyAttributes.Configurable));
-
-        intl.SetOwnProperty(
-            "ListFormat",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl.ListFormat"), JsPropertyAttributes.Configurable));
+        intl.SetOwnProperty("ListFormat", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>The list format <paramref name="thisValue"/> is, or the <c>TypeError</c>.</summary>
@@ -133,7 +125,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.ListFormat.prototype." + member + " requires that 'this' be an Intl.ListFormat");
 
     /// <summary>ECMA-402's <c>Intl.ListFormat</c> constructor (s14.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C90F98
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=40D97C
     // Broiler-Human:        PENDING
     internal static JsValue NewListFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -145,12 +137,7 @@ internal sealed partial class JsRealm
         var options = JsValue.Object(Base64Options(engine, Argument(arguments, 1)));
         _ = GetStringOption(engine, options, "localeMatcher", ["lookup", "best fit"], "best fit");
 
-        var resolved = ResolveLocale(
-            engine,
-            requested,
-            new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal),
-            [],
-            static (locale, key) => [null]);
+        var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal), [], static (locale, key) => [null]);
 
         var type = GetStringOption(engine, options, "type", ["conjunction", "disjunction", "unit"], "conjunction")!;
         var style = GetStringOption(engine, options, "style", ["long", "short", "narrow"], "long")!;
@@ -168,11 +155,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's StringListFromIterable (s14.5.5): every value a String, or the iterator closed and a <c>TypeError</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C51195
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7BEC6A
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<string> StringListFromIterable(JsEngine engine, JsValue iterable)
+    private static List<string> StringListFromIterable(JsEngine engine, JsValue iterable)
     {
-        var list = new System.Collections.Generic.List<string>();
+        var list = new List<string>();
 
         if (iterable.Type == JsType.Undefined)
         {
@@ -200,12 +187,11 @@ internal sealed partial class JsRealm
     /// ECMA-402's CreatePartsFromList (s14.5.2): nothing, the element, the pair pattern, or the end
     /// pattern folded leftward through the middle patterns to the start pattern.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B0E36
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5AB96A
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<(string Type, string Value)> CreatePartsFromList(
-        JsEngine engine, JsListFormatObject format, System.Collections.Generic.List<string> list)
+    private static List<(string Type, string Value)> CreatePartsFromList(JsEngine engine, JsListFormatObject format, List<string> list)
     {
-        var parts = new System.Collections.Generic.List<(string Type, string Value)>();
+        var parts = new List<(string Type, string Value)>();
         var size = list.Count;
 
         if (size == 0)
@@ -240,14 +226,11 @@ internal sealed partial class JsRealm
     /// ECMA-402's DeconstructPattern (s14.5.1) over a list pattern: each non-empty literal between the
     /// placeables, and the parts of <c>{0}</c> and <c>{1}</c> in their places.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D512C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A030D9
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<(string Type, string Value)> DeconstructPattern(
-        string pattern,
-        System.Collections.Generic.List<(string Type, string Value)> zero,
-        System.Collections.Generic.List<(string Type, string Value)> one)
+    private static List<(string Type, string Value)> DeconstructPattern(string pattern, List<(string Type, string Value)> zero, List<(string Type, string Value)> one)
     {
-        var result = new System.Collections.Generic.List<(string Type, string Value)>();
+        var result = new List<(string Type, string Value)>();
         var at = 0;
 
         while (at < pattern.Length)
@@ -282,9 +265,7 @@ internal sealed class JsListFormatObject : JsObject
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=536BEA
     // Broiler-Human:        PENDING
-    internal JsListFormatObject(
-        JsObject prototype, string locale, string type, string style, (string Start, string Middle, string End, string Pair) templates)
-        : base(prototype)
+    internal JsListFormatObject(JsObject prototype, string locale, string type, string style, (string Start, string Middle, string End, string Pair) templates) : base(prototype)
     {
         Locale = locale;
         Type = type;

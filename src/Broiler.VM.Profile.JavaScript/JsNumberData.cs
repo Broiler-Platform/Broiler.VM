@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -33,31 +37,28 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed class JsNumberData
 {
     /// <summary>Each language's flattened number data, by dotted key.</summary>
-    internal System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>> Locales { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, Dictionary<string, string>> Locales { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's currency names, by <c>language|code</c>.</summary>
-    internal System.Collections.Generic.Dictionary<string, JsCurrencyNames> Currencies { get; } = new(System.StringComparer.Ordinal);
+    internal Dictionary<string, JsCurrencyNames> Currencies { get; } = new(StringComparer.Ordinal);
 
     /// <summary>The currencies whose fraction digits are not 2.</summary>
-    internal System.Collections.Generic.Dictionary<string, int> CurrencyDigits { get; } = new(System.StringComparer.Ordinal);
+    internal Dictionary<string, int> CurrencyDigits { get; } = new(StringComparer.Ordinal);
 
     /// <summary>The numbering systems with a simple digit mapping, each digit a string of one code point.</summary>
-    internal System.Collections.Generic.Dictionary<string, string[]> NumberingSystems { get; } = new(System.StringComparer.Ordinal);
+    internal Dictionary<string, string[]> NumberingSystems { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's cardinal plural rules, in the table's order.</summary>
-    internal System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<(string Category, JsPluralRule Rule)>> Plurals { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, List<(string Category, JsPluralRule Rule)>> Plurals { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's ordinal plural rules, in the table's order.</summary>
-    internal System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<(string Category, JsPluralRule Rule)>> Ordinals { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, List<(string Category, JsPluralRule Rule)>> Ordinals { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's plural range results, by <c>language|start|end</c>.</summary>
-    internal System.Collections.Generic.Dictionary<string, string> PluralRanges { get; } = new(System.StringComparer.Ordinal);
+    internal Dictionary<string, string> PluralRanges { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's unit patterns, by <c>language|width|unit|field</c>.</summary>
-    internal System.Collections.Generic.Dictionary<string, string> Units { get; } = new(System.StringComparer.Ordinal);
+    internal Dictionary<string, string> Units { get; } = new(StringComparer.Ordinal);
 
     /// <summary>One value of a language's number data, or nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=31907F
@@ -94,8 +95,7 @@ internal sealed class JsNumberData
 /// <summary>A currency's names in one language; an empty field is one CLDR does not give.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=44E511
 // Broiler-Human:        PENDING
-internal sealed record JsCurrencyNames(
-    string Symbol, string Narrow, string One, string Other, string Name, string SymbolEnds, string NarrowEnds);
+internal sealed record JsCurrencyNames(string Symbol, string Narrow, string One, string Other, string Name, string SymbolEnds, string NarrowEnds);
 
 /// <summary>One token of a pattern's prefix or suffix.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=282FBC
@@ -143,17 +143,15 @@ internal sealed class JsNumberPattern
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8DDCE7
     // Broiler-Human:        PENDING
-    private JsNumberPattern()
-    {
-    }
+    private JsNumberPattern() { }
 
-    internal System.Collections.Generic.List<JsAffixToken> PositivePrefix { get; private set; } = [];
+    internal List<JsAffixToken> PositivePrefix { get; private set; } = [];
 
-    internal System.Collections.Generic.List<JsAffixToken> PositiveSuffix { get; private set; } = [];
+    internal List<JsAffixToken> PositiveSuffix { get; private set; } = [];
 
-    internal System.Collections.Generic.List<JsAffixToken>? NegativePrefix { get; private set; }
+    internal List<JsAffixToken>? NegativePrefix { get; private set; }
 
-    internal System.Collections.Generic.List<JsAffixToken>? NegativeSuffix { get; private set; }
+    internal List<JsAffixToken>? NegativeSuffix { get; private set; }
 
     /// <summary>The primary grouping size, or -1 where the pattern does not group.</summary>
     internal int Grouping1 { get; private set; } = -1;
@@ -177,20 +175,21 @@ internal sealed class JsNumberPattern
         (NegativePrefix.Exists(static t => t.Kind == JsAffixKind.Minus) || NegativeSuffix!.Exists(static t => t.Kind == JsAffixKind.Minus));
 
     /// <summary>Reads a pattern; a malformed one reads as its literal text around no number.</summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s3.2; IP=Low; Security=Medium; Resources=2; Fingerprint=AC1A90
+    // Broiler-AI:           Origin=AI; Spec=UTS35 Part 3 s3.2; IP=Low; Security=Medium; Resources=2; Fingerprint=28FE5D
     // Broiler-Falsified-If: a pattern's affix reads other than UTS #35 states, or a quoted character is read as a symbol
     // Broiler-Human:        PENDING
     internal static JsNumberPattern Parse(string pattern)
     {
         var result = new JsNumberPattern();
-        var split = SplitSubpatterns(pattern);
 
-        var (prefix, suffix, number) = ParseSubpattern(split.Positive);
+        var (Positive, Negative) = SplitSubpatterns(pattern);
+        var (prefix, suffix, number) = ParseSubpattern(Positive);
+
         result.PositivePrefix = prefix;
         result.PositiveSuffix = suffix;
         result.ReadNumber(number);
 
-        if (split.Negative is { } negative)
+        if (Negative is { } negative)
         {
             var (negativePrefix, negativeSuffix, _) = ParseSubpattern(negative);
             result.NegativePrefix = negativePrefix;
@@ -223,17 +222,17 @@ internal sealed class JsNumberPattern
     }
 
     /// <summary>One subpattern's prefix tokens, suffix tokens and number part.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=929ADB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=00DD7B
     // Broiler-Human:        PENDING
-    private static (System.Collections.Generic.List<JsAffixToken> Prefix, System.Collections.Generic.List<JsAffixToken> Suffix, string Number) ParseSubpattern(string text)
+    private static (List<JsAffixToken> Prefix, List<JsAffixToken> Suffix, string Number) ParseSubpattern(string text)
     {
-        var prefix = new System.Collections.Generic.List<JsAffixToken>();
-        var suffix = new System.Collections.Generic.List<JsAffixToken>();
-        var number = new System.Text.StringBuilder();
+        var prefix = new List<JsAffixToken>();
+        var suffix = new List<JsAffixToken>();
+        var number = new StringBuilder();
         var stage = 0;
-        var literal = new System.Text.StringBuilder();
+        var literal = new StringBuilder();
 
-        void Flush(System.Collections.Generic.List<JsAffixToken> into)
+        void Flush(List<JsAffixToken> into)
         {
             if (literal.Length != 0)
             {

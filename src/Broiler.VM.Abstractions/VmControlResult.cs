@@ -149,7 +149,7 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
 /// <c>Broiler.VM.Runtime</c> because nothing a profile package names mentions it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=98445A
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1A2696
 // Broiler-Human:        PENDING
 public sealed class VmCoreDefectException : Exception
 {

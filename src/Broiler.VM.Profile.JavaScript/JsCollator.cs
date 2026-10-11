@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>How a collator orders case at the tertiary level and on its case level.</summary>
@@ -91,12 +94,12 @@ internal sealed class JsCollator
     internal bool Numeric { get; }
 
     /// <summary>ECMA-402's <c>CompareStrings</c>: -1, 0 or 1.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.3.3.1; IP=Low; Security=Medium; Resources=4; Fingerprint=BC15C3
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.3.3.1; IP=Low; Security=Medium; Resources=4; Fingerprint=C32AAD
     // Broiler-Falsified-If: canonically equivalent strings compare unequal, or the order differs from the root collation's on the archived CollationTest lines
     // Broiler-Human:        PENDING
     internal int Compare(JsEngine engine, string x, string y)
     {
-        if (string.Equals(x, y, System.StringComparison.Ordinal))
+        if (string.Equals(x, y, StringComparison.Ordinal))
         {
             return 0;
         }
@@ -109,12 +112,12 @@ internal sealed class JsCollator
     }
 
     /// <summary>A string's collation elements, after NFD and, when shifted, with variable elements removed.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DF7BC0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=968831
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<ulong> Elements(JsEngine engine, string text)
+    private List<ulong> Elements(JsEngine engine, string text)
     {
         var nfd = JsRealm.NormalizeText(engine, text, compose: false, compatibility: false);
-        var codePoints = new System.Collections.Generic.List<int>(nfd.Length);
+        var codePoints = new List<int>(nfd.Length);
 
         for (var at = 0; at < nfd.Length; at++)
         {
@@ -128,7 +131,7 @@ internal sealed class JsCollator
             codePoints.Add(nfd[at]);
         }
 
-        var elements = new System.Collections.Generic.List<ulong>(codePoints.Count + 4);
+        var elements = new List<ulong>(codePoints.Count + 4);
         data.Elements([.. codePoints], tailoring, Numeric, elements);
 
         if (!Shifted)
@@ -138,7 +141,7 @@ internal sealed class JsCollator
 
         // SHIFTED (UTS #10 s4.3): A VARIABLE ELEMENT, AND EVERY IGNORABLE ELEMENT AFTER IT UNTIL A
         // NON-VARIABLE PRIMARY, WEIGHS NOTHING AT THE THREE LEVELS COMPARED.
-        var kept = new System.Collections.Generic.List<ulong>(elements.Count);
+        var kept = new List<ulong>(elements.Count);
         var afterVariable = false;
 
         foreach (var element in elements)
@@ -166,9 +169,9 @@ internal sealed class JsCollator
     }
 
     /// <summary>The level-by-level comparison of two element sequences.</summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS10 s7.4; IP=Low; Security=Low; Resources=3; Fingerprint=F59935
+    // Broiler-AI:           Origin=AI; Spec=UTS10 s7.4; IP=Low; Security=Low; Resources=3; Fingerprint=FD5189
     // Broiler-Human:        PENDING
-    private int Compare(System.Collections.Generic.List<ulong> left, System.Collections.Generic.List<ulong> right)
+    private int Compare(List<ulong> left, List<ulong> right)
     {
         var primary = Level(left, right, static element => JsCollationData.Primary(element), static _ => true);
 
@@ -206,13 +209,9 @@ internal sealed class JsCollator
     }
 
     /// <summary>One level: the non-zero weights of the counted elements, compared in order, the shorter sequence first.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=6EB89C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=E01EA6
     // Broiler-Human:        PENDING
-    private static int Level(
-        System.Collections.Generic.List<ulong> left,
-        System.Collections.Generic.List<ulong> right,
-        System.Func<ulong, ulong> weight,
-        System.Func<ulong, bool> counted)
+    private static int Level(List<ulong> left, List<ulong> right, Func<ulong, ulong> weight, Func<ulong, bool> counted)
     {
         var i = 0;
         var j = 0;
@@ -235,9 +234,9 @@ internal sealed class JsCollator
     }
 
     /// <summary>The next non-zero weight of a counted element, or zero at the end.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7EA1C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C05994
     // Broiler-Human:        PENDING
-    private static ulong Next(System.Collections.Generic.List<ulong> elements, ref int at, System.Func<ulong, ulong> weight, System.Func<ulong, bool> counted)
+    private static ulong Next(List<ulong> elements, ref int at, Func<ulong, ulong> weight, Func<ulong, bool> counted)
     {
         while (at < elements.Count)
         {

@@ -15,6 +15,13 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -61,13 +68,13 @@ public sealed class JsHostRealm
     // Broiler-Human:        PENDING
     private readonly JsEngine engine;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F929E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=956DB3
     // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<JsObject, JsHostRef> objects = new();
+    private readonly ConditionalWeakTable<JsObject, JsHostRef> objects = [];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C9B66B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=76BC39
     // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<JsSymbol, JsHostRef> symbols = new();
+    private readonly ConditionalWeakTable<JsSymbol, JsHostRef> symbols = [];
 
     /// <summary>The realm this view is of: the engine's first, or one a guest created after it.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=82045E
@@ -124,10 +131,10 @@ public sealed class JsHostRealm
     /// realm between two invocations is not making a mistake, it is deciding whether to do the work
     /// now or to ask for a turn first. This is what lets it decide.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=745BF3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D2953F
     // Broiler-Human:        PENDING
     public bool IsCurrent =>
-        window.StepDepth > 0 && System.Environment.CurrentManagedThreadId == window.GuestThreadId;
+        window.StepDepth > 0 && Environment.CurrentManagedThreadId == window.GuestThreadId;
 
     // ---- the step bracket ----------------------------------------------------------------------
 
@@ -137,11 +144,11 @@ public sealed class JsHostRealm
     /// than a flag because a step can contain a host call that contains a guest call that contains
     /// another host call, and the window closes when the outermost one does.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5F91AC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ED374C
     // Broiler-Human:        PENDING
     internal void BeginStep()
     {
-        window.GuestThreadId = System.Environment.CurrentManagedThreadId;
+        window.GuestThreadId = Environment.CurrentManagedThreadId;
         window.StepDepth++;
     }
 
@@ -204,13 +211,13 @@ public sealed class JsHostRealm
     }
 
     /// <summary>A new Array, optionally pre-filled.</summary>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// An element is <see cref="JsHostValue.Missing"/> (JSD-0024 section 20): this member makes no holes, and
     /// nothing is created.
     /// </exception>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=929B53
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=4D0F10
     // Broiler-Human:        PENDING
-    public JsHostValue NewArray(System.ReadOnlySpan<JsHostValue> elements = default)
+    public JsHostValue NewArray(ReadOnlySpan<JsHostValue> elements = default)
     {
         Enter(4 + (ulong)elements.Length);
         RequireValues(elements, nameof(elements));
@@ -248,21 +255,17 @@ public sealed class JsHostRealm
     /// hundred unreachable pairs. Anything a guest may legitimately <c>new</c> asks for
     /// <see cref="NewConstructor"/> instead.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3AFF2F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F2DB49
     // Broiler-Human:        PENDING
     public JsHostValue NewMethod(string name, JsHostFunction body, int length = 0)
     {
         Enter(6);
 
-        if (body is null)
-        {
-            throw new System.ArgumentNullException(nameof(body));
-        }
+        ArgumentNullException.ThrowIfNull(body);
 
         try
         {
-            return Wrap(JsValue.Object(realm.Native(
-                name ?? string.Empty, length, Bind(body))));
+            return Wrap(JsValue.Object(realm.Native(name ?? string.Empty, length, Bind(body))));
         }
         catch (JsThrow thrown)
         {
@@ -320,16 +323,13 @@ public sealed class JsHostRealm
     }
 
     /// <summary>A new constructable host function, carrying a readable <c>prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=455027
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=61F29C
     // Broiler-Human:        PENDING
     public JsHostValue NewConstructor(string name, JsHostFunction body, int length = 0)
     {
         Enter(8);
 
-        if (body is null)
-        {
-            throw new System.ArgumentNullException(nameof(body));
-        }
+        ArgumentNullException.ThrowIfNull(body);
 
         try
         {
@@ -369,16 +369,13 @@ public sealed class JsHostRealm
     /// The handler answers only what the object's own storage did not; see
     /// <see cref="IJsHostExotic"/> for why that order is the way round it is.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FA5889
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E49B7F
     // Broiler-Human:        PENDING
     public JsHostValue NewExotic(IJsHostExotic handler)
     {
         Enter(6);
 
-        if (handler is null)
-        {
-            throw new System.ArgumentNullException(nameof(handler));
-        }
+        ArgumentNullException.ThrowIfNull(handler);
 
         try
         {
@@ -431,7 +428,7 @@ public sealed class JsHostRealm
     /// CLR exception, which unwinds through interpreter frames as something no <c>catch</c> in the
     /// guest can see.
     /// </remarks>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// <paramref name="value"/> is <see cref="JsHostValue.Missing"/>, which is not a value (JSD-0024
     /// section 20); nothing is written or thrown into the realm.
     /// </exception>
@@ -505,14 +502,14 @@ public sealed class JsHostRealm
     /// is zero, so neither the surface check nor the width ceiling nor a per-word charge applies.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2B5052
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F05374
     // Broiler-Human:        PENDING
     public bool ToBoolean(JsHostValue value)
     {
         Enter(1);
 
         return value.Kind == JsHostValueKind.BigInt
-            ? !((System.Numerics.BigInteger)value.RawReference!).IsZero
+            ? !((BigInteger)value.RawReference!).IsZero
             : Unwrap(value).ToBooleanValue();
     }
 
@@ -528,17 +525,13 @@ public sealed class JsHostRealm
     /// says its members are enumerable, writable and configurable, so this is that set: the same
     /// one an ordinary guest assignment produces.
     /// </remarks>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// <paramref name="value"/> is <see cref="JsHostValue.Missing"/>, which is not a value (JSD-0024
     /// section 20); nothing is written or thrown into the realm.
     /// </exception>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7AEF7E
     // Broiler-Human:        PENDING
-    public void DefineValue(
-        JsHostValue target,
-        string name,
-        JsHostValue value,
-        JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
+    public void DefineValue(JsHostValue target, string name, JsHostValue value, JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
     {
         Enter(3);
         RequireValue(value, nameof(value));
@@ -563,21 +556,13 @@ public sealed class JsHostRealm
     /// <summary>
     /// Installs an accessor property. A <see langword="null"/> setter makes it read-only.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0154B1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=404A55
     // Broiler-Human:        PENDING
-    public void DefineAccessor(
-        JsHostValue target,
-        string name,
-        JsHostFunction getter,
-        JsHostFunction? setter = null,
-        JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
+    public void DefineAccessor(JsHostValue target, string name, JsHostFunction getter, JsHostFunction? setter = null, JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
     {
         Enter(5);
 
-        if (getter is null)
-        {
-            throw new System.ArgumentNullException(nameof(getter));
-        }
+        ArgumentNullException.ThrowIfNull(getter);
 
         try
         {
@@ -602,7 +587,7 @@ public sealed class JsHostRealm
     }
 
     /// <summary>Reads a property, following the prototype chain. May run a guest getter.</summary>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// <paramref name="target"/> is <see cref="JsHostValue.Missing"/>, which is not a value (JSD-0024
     /// section 20); nothing is written or thrown into the realm.
     /// </exception>
@@ -628,7 +613,7 @@ public sealed class JsHostRealm
     }
 
     /// <summary>Writes a property. May run a guest setter.</summary>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// <paramref name="target"/> or <paramref name="value"/> is <see cref="JsHostValue.Missing"/> (JSD-0024 section
     /// 20); nothing is written.
     /// </exception>
@@ -660,7 +645,7 @@ public sealed class JsHostRealm
     }
 
     /// <summary>Whether the property exists, own or inherited.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=814218
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B036A3
     // Broiler-Human:        PENDING
     public bool HasProperty(JsHostValue target, string name)
     {
@@ -668,7 +653,7 @@ public sealed class JsHostRealm
 
         try
         {
-            return engine.HasProperty(ObjectOf(target), name ?? string.Empty);
+            return JsEngine.HasProperty(ObjectOf(target), name ?? string.Empty);
         }
         catch (JsThrow thrown)
         {
@@ -744,18 +729,14 @@ public sealed class JsHostRealm
     /// bookkeeping noticing, which makes the element invisible to every generic that reads
     /// <c>length</c> to find out how far to walk.
     /// </remarks>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// <paramref name="value"/> is <see cref="JsHostValue.Missing"/>, which is not a value (JSD-0024
     /// section 20); nothing is written or thrown into the realm.
     /// </exception>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=19C400
     // Broiler-Falsified-If: an index defined here is not found by an operation that walks length
     // Broiler-Human:        PENDING
-    public void DefineIndex(
-        JsHostValue target,
-        uint index,
-        JsHostValue value,
-        JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
+    public void DefineIndex(JsHostValue target, uint index, JsHostValue value, JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
     {
         Enter(3);
         RequireValue(value, nameof(value));
@@ -771,9 +752,7 @@ public sealed class JsHostRealm
                 return;
             }
 
-            host.SetOwnProperty(
-                JsNumberFormat.ToUintString(index),
-                JsProperty.Data(Unwrap(value), Attributes(flags)));
+            host.SetOwnProperty(JsNumberFormat.ToUintString(index), JsProperty.Data(Unwrap(value), Attributes(flags)));
         }
         catch (JsThrow thrown)
         {
@@ -786,7 +765,7 @@ public sealed class JsHostRealm
     }
 
     /// <summary>Reads an integer-indexed property, following the prototype chain.</summary>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// <paramref name="target"/> is <see cref="JsHostValue.Missing"/>, which is not a value (JSD-0024
     /// section 20); nothing is written or thrown into the realm.
     /// </exception>
@@ -909,7 +888,7 @@ public sealed class JsHostRealm
     /// and <paramref name="bytes"/> is not assigned: there is no partial answer to catch.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=9302B3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=99F943
     // Broiler-Falsified-If: a guest-writable property or function decides the answer, or the realm's own storage is answered
     // Broiler-Human:        PENDING
     public JsHostBufferStatus TryReadArrayBuffer(JsHostValue value, out byte[] bytes)
@@ -922,7 +901,7 @@ public sealed class JsHostRealm
 
             if (status != JsHostBufferStatus.Copied || data!.Length == 0)
             {
-                bytes = System.Array.Empty<byte>();
+                bytes = [];
                 return status;
             }
 
@@ -931,7 +910,7 @@ public sealed class JsHostRealm
             engine.Charge((ulong)data.Length);
 
             var copy = new byte[data.Length];
-            System.Buffer.BlockCopy(data, 0, copy, 0, data.Length);
+            Buffer.BlockCopy(data, 0, copy, 0, data.Length);
 
             bytes = copy;
             return status;
@@ -964,11 +943,10 @@ public sealed class JsHostRealm
     /// only borrowed for this call; the realm keeps no reference to it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=780A25
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C8C85D
     // Broiler-Falsified-If: a destination is written when the answer is not Copied, or is written before the charge is admitted
     // Broiler-Human:        PENDING
-    public JsHostBufferStatus TryReadArrayBuffer(
-        JsHostValue value, System.Span<byte> destination, out int byteLength)
+    public JsHostBufferStatus TryReadArrayBuffer(JsHostValue value, Span<byte> destination, out int byteLength)
     {
         Enter(2);
 
@@ -991,7 +969,7 @@ public sealed class JsHostRealm
             if (data.Length > 0)
             {
                 engine.Charge((ulong)data.Length);
-                new System.ReadOnlySpan<byte>(data).CopyTo(destination);
+                new ReadOnlySpan<byte>(data).CopyTo(destination);
             }
 
             byteLength = data.Length;
@@ -1032,20 +1010,18 @@ public sealed class JsHostRealm
     /// <c>RangeError</c>, as <c>new ArrayBuffer(n)</c> would throw.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F8E88E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=EC5AEA
     // Broiler-Falsified-If: a buffer is answered after its fuel or live-bytes charge was refused, or a later write to the caller's memory changes it
     // Broiler-Human:        PENDING
-    public JsHostValue NewArrayBuffer(System.ReadOnlySpan<byte> bytes)
+    public JsHostValue NewArrayBuffer(ReadOnlySpan<byte> bytes)
     {
         Enter(4);
 
         try
         {
-            if (bytes.Length > System.Array.MaxLength)
+            if (bytes.Length > Array.MaxLength)
             {
-                throw engine.Error(
-                    "RangeError",
-                    "Invalid array buffer length: " + JsNumberFormat.ToJsString(bytes.Length));
+                throw engine.Error("RangeError", "Invalid array buffer length: " + JsNumberFormat.ToJsString(bytes.Length));
             }
 
             engine.Charge((ulong)bytes.Length);
@@ -1187,19 +1163,17 @@ public sealed class JsHostRealm
     /// were charged to the operation that made it; adopting it charges one crossing. A realm whose
     /// composition did not admit <c>broiler.javascript.shared</c> answers a guest <c>TypeError</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=0B12F2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=B94967
     // Broiler-Falsified-If: a realm that did not admit the shared surface adopts a block, or adopting copies the bytes
     // Broiler-Human:        PENDING
     public JsHostValue AdoptBlock(JsHostSharedBlock block)
     {
         Enter(1);
-        System.ArgumentNullException.ThrowIfNull(block);
+        ArgumentNullException.ThrowIfNull(block);
 
         if (realm.SharedArrayBufferPrototype is not { } prototype)
         {
-            throw Error(
-                JsHostErrorKind.TypeError,
-                "this realm's composition did not admit " + Format.JsSurfaces.Shared);
+            throw Error(JsHostErrorKind.TypeError, "this realm's composition did not admit " + JsSurfaces.Shared);
         }
 
         return Wrap(JsValue.Object(new JsArrayBuffer(prototype, block.Block)));
@@ -1225,15 +1199,14 @@ public sealed class JsHostRealm
     /// cannot absorb the other.
     /// </para>
     /// </remarks>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// An argument is <see cref="JsHostValue.Missing"/> (JSD-0024 section 20); the function is not called. A
     /// receiver that is <see cref="JsHostValue.Missing"/> is <c>undefined</c>, as a call with no receiver is.
     /// </exception>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=790C56
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=43C953
     // Broiler-Falsified-If: a guest call from host code skips the call-depth charge or lets a JsAbort escape as a guest throw
     // Broiler-Human:        PENDING
-    public JsHostValue Invoke(
-        JsHostValue function, JsHostValue thisValue, System.ReadOnlySpan<JsHostValue> arguments = default)
+    public JsHostValue Invoke(JsHostValue function, JsHostValue thisValue, ReadOnlySpan<JsHostValue> arguments = default)
     {
         Enter(4 + (ulong)arguments.Length);
         RequireValues(arguments, nameof(arguments));
@@ -1242,8 +1215,7 @@ public sealed class JsHostRealm
 
         if (!callee.IsObject || !callee.AsObject().IsCallable)
         {
-            throw new JsHostSurfaceException(
-                JsHostRefusal.NotCallable, "the value presented to Invoke is not callable");
+            throw new JsHostSurfaceException(JsHostRefusal.NotCallable, "the value presented to Invoke is not callable");
         }
 
         try
@@ -1261,13 +1233,12 @@ public sealed class JsHostRealm
     }
 
     /// <summary>Calls a guest constructor with <c>new</c>.</summary>
-    /// <exception cref="System.ArgumentException">
+    /// <exception cref="ArgumentException">
     /// An argument is <see cref="JsHostValue.Missing"/> (JSD-0024 section 20); nothing is constructed.
     /// </exception>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=BE2103
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=CBCD80
     // Broiler-Human:        PENDING
-    public JsHostValue Construct(
-        JsHostValue constructor, System.ReadOnlySpan<JsHostValue> arguments = default)
+    public JsHostValue Construct(JsHostValue constructor, ReadOnlySpan<JsHostValue> arguments = default)
     {
         Enter(4 + (ulong)arguments.Length);
         RequireValues(arguments, nameof(arguments));
@@ -1276,8 +1247,7 @@ public sealed class JsHostRealm
 
         if (!callee.IsObject)
         {
-            throw new JsHostSurfaceException(
-                JsHostRefusal.NotAnObject, "the value presented to Construct is not an object");
+            throw new JsHostSurfaceException(JsHostRefusal.NotAnObject, "the value presented to Construct is not an object");
         }
 
         try
@@ -1332,19 +1302,19 @@ public sealed class JsHostRealm
     /// script compiled under the requested strictness, is a guest <c>EvalError</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=7C2B9E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=8A4FA7
     // Broiler-Falsified-If: a host script runs outside a step, without charging HostCalls, or lets a JsAbort escape as a guest throw
     // Broiler-Human:        PENDING
     public JsHostValue EvaluateScript(string source, string sourceName = "", bool strict = false)
     {
         Enter(4);
 
-        System.ArgumentNullException.ThrowIfNull(source);
-        System.ArgumentNullException.ThrowIfNull(sourceName);
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(sourceName);
 
         if (sourceName.Contains('\0'))
         {
-            throw new System.ArgumentException("a source name may not contain U+0000", nameof(sourceName));
+            throw new ArgumentException("a source name may not contain U+0000", nameof(sourceName));
         }
 
         // THE SCRIPT RUNS IN THIS VIEW'S REALM, whichever realm is running when it is asked: a view
@@ -1391,17 +1361,14 @@ public sealed class JsHostRealm
     /// ordering an embedder cannot reason about and a page depends on. The action is wrapped in an
     /// ordinary native function and enqueued where every other job goes.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=DB0384
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F02245
     // Broiler-Falsified-If: a host job and a guest job run in an order neither queue decided
     // Broiler-Human:        PENDING
-    public void EnqueueJob(System.Action job)
+    public void EnqueueJob(Action job)
     {
         Enter(2);
 
-        if (job is null)
-        {
-            throw new System.ArgumentNullException(nameof(job));
-        }
+        ArgumentNullException.ThrowIfNull(job);
 
         try
         {
@@ -1421,9 +1388,7 @@ public sealed class JsHostRealm
                         }
                         catch (JsHostTerminatedException)
                         {
-                            throw window.Latched ?? new JsAbort(
-                                JsAbortKind.InternalDefect,
-                                "a host job reported a termination that was not latched");
+                            throw window.Latched ?? new JsAbort(JsAbortKind.InternalDefect, "a host job reported a termination that was not latched");
                         }
                         catch (JsHostSurfaceException refusal)
                         {
@@ -1431,8 +1396,7 @@ public sealed class JsHostRealm
                         }
 
                         return JsValue.Undefined;
-                    })),
-                System.Array.Empty<JsValue>());
+                    })), []);
         }
         catch (JsThrow thrown)
         {
@@ -1548,7 +1512,7 @@ public sealed class JsHostRealm
     /// queue, and the host decides when that queue runs.
     /// </para>
     /// <para>
-    /// <b><see cref="JsHostValue.Missing"/> is refused</b> with an <see cref="System.ArgumentException"/>
+    /// <b><see cref="JsHostValue.Missing"/> is refused</b> with an <see cref="ArgumentException"/>
     /// and leaves the capability unsettled: it is not a language value, and resolving with
     /// <c>undefined</c> is spelled <see cref="JsHostValue.Undefined"/>.
     /// </para>
@@ -1568,7 +1532,7 @@ public sealed class JsHostRealm
     /// A rejection reason is never adopted, so this reads nothing off the reason and runs no guest
     /// code; it shares the capability's one resolved flag with <see cref="ResolvePromise"/>, so
     /// whichever of the two is called first wins. <see cref="JsHostValue.Missing"/> is refused with
-    /// an <see cref="System.ArgumentException"/>, as for <see cref="ResolvePromise"/>.
+    /// an <see cref="ArgumentException"/>, as for <see cref="ResolvePromise"/>.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=586445
     // Broiler-Falsified-If: a rejection after a resolution changes the promise or queues a reaction
@@ -1594,21 +1558,16 @@ public sealed class JsHostRealm
     /// same capability again meets a capability that is already resolved.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=4C9697
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=549E2B
     // Broiler-Falsified-If: a capability another realm minted settles a promise in this one
     // Broiler-Human:        PENDING
     private JsHostSettlement Settle(JsHostPromiseCapability capability, JsHostValue value, bool rejected)
     {
-        if (capability is null)
-        {
-            throw new System.ArgumentNullException(nameof(capability));
-        }
+        ArgumentNullException.ThrowIfNull(capability);
 
         if (!ReferenceEquals(capability.Realm, this))
         {
-            throw new JsHostSurfaceException(
-                JsHostRefusal.ForeignRealm,
-                "the promise capability was minted by a different realm and means nothing in this one");
+            throw new JsHostSurfaceException(JsHostRefusal.ForeignRealm, "the promise capability was minted by a different realm and means nothing in this one");
         }
 
         // MISSING IS NOT A VALUE THE LANGUAGE HAS. It unwraps to the marker an uninitialised
@@ -1616,9 +1575,7 @@ public sealed class JsHostRealm
         // as a TDZ error; the embedder meant undefined or meant nothing, and either way it is told.
         if (value.IsMissing)
         {
-            throw new System.ArgumentException(
-                "Missing is not a settlement value; pass JsHostValue.Undefined for undefined",
-                rejected ? "reason" : "value");
+            throw new ArgumentException("Missing is not a settlement value; pass JsHostValue.Undefined for undefined", rejected ? "reason" : "value");
         }
 
         var argument = UnwrapAtCrossing(value);
@@ -1658,10 +1615,9 @@ public sealed class JsHostRealm
     internal IJsHostModuleLoader? ModuleLoader { get; set; }
 
     /// <summary>The one handle this realm answers for each module key a host linked.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=ACBB77
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B5338B
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, JsHostModule> modules =
-        new(System.StringComparer.Ordinal);
+    private readonly Dictionary<string, JsHostModule> modules = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Loads and links the module graph <paramref name="specifier"/> names from
@@ -1692,17 +1648,14 @@ public sealed class JsHostRealm
     /// <see cref="JsHostTerminatedException"/>, as everywhere.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=B6FBE2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=10116B
     // Broiler-Falsified-If: a module reaches the realm without the artifact provider, a module body runs, or one key answers two handles
     // Broiler-Human:        PENDING
     public JsHostModule LoadModule(string specifier, string referrer = "")
     {
         Enter(4);
 
-        if (specifier is null)
-        {
-            throw new System.ArgumentNullException(nameof(specifier));
-        }
+        ArgumentNullException.ThrowIfNull(specifier);
 
         referrer ??= string.Empty;
 
@@ -1710,7 +1663,7 @@ public sealed class JsHostRealm
         // back as a different referrer and a different specifier. A module key never holds one.
         if (referrer.Contains('\0'))
         {
-            throw new System.ArgumentException("a referrer cannot contain U+0000", nameof(referrer));
+            throw new ArgumentException("a referrer cannot contain U+0000", nameof(referrer));
         }
 
         try
@@ -1725,8 +1678,7 @@ public sealed class JsHostRealm
                 return known;
             }
 
-            var handle = new JsHostModule(
-                this, program, index, key, Wrap(engine.ModuleNamespace(program, index)));
+            var handle = new JsHostModule(this, program, index, key, Wrap(engine.ModuleNamespace(program, index)));
 
             modules[key] = handle;
             return handle;
@@ -1762,23 +1714,18 @@ public sealed class JsHostRealm
     /// among them runs again.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=490FF5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=93C911
     // Broiler-Falsified-If: two calls answer two promises, a module body runs twice, the promise fulfils while a module of the graph is still suspended, or it fulfils for a graph holding an errored module
     // Broiler-Human:        PENDING
     public JsHostValue EvaluateModule(JsHostModule module)
     {
         Enter(4);
 
-        if (module is null)
-        {
-            throw new System.ArgumentNullException(nameof(module));
-        }
+        ArgumentNullException.ThrowIfNull(module);
 
         if (!ReferenceEquals(module.Realm, this))
         {
-            throw new JsHostSurfaceException(
-                JsHostRefusal.ForeignRealm,
-                "the module was linked by a different realm and means nothing in this one");
+            throw new JsHostSurfaceException(JsHostRefusal.ForeignRealm, "the module was linked by a different realm and means nothing in this one");
         }
 
         if (!module.Evaluation.IsMissing)
@@ -1849,18 +1796,13 @@ public sealed class JsHostRealm
     /// and an evaluation error that is a BigInt is charged per word as every BigInt crossing is.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=863A32
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D9B3F1
     // Broiler-Human:        PENDING
-    public bool TryGetModuleState(
-        string moduleKey,
-        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out JsHostModuleState? state)
+    public bool TryGetModuleState(string moduleKey, [NotNullWhen(true)] out JsHostModuleState? state)
     {
         Enter(1);
 
-        if (moduleKey is null)
-        {
-            throw new System.ArgumentNullException(nameof(moduleKey));
-        }
+        ArgumentNullException.ThrowIfNull(moduleKey);
 
         state = null;
 
@@ -1917,7 +1859,7 @@ public sealed class JsHostRealm
     /// failure answers <see cref="JsHostSettlement.AlreadyResolved"/> and does nothing; a request
     /// another realm offered is refused with <see cref="JsHostRefusal.ForeignRealm"/>; a request
     /// completed from inside the <see cref="IJsHostModuleLoader.OnImport"/> call that offered it is
-    /// an <see cref="System.InvalidOperationException"/>; and outside a step, including after the
+    /// an <see cref="InvalidOperationException"/>; and outside a step, including after the
     /// instance was released, the refusal is <see cref="JsHostRefusal.RealmNotCurrent"/>, as for
     /// every member.
     /// </para>
@@ -1963,8 +1905,7 @@ public sealed class JsHostRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=19B8BE
     // Broiler-Falsified-If: a failed request settles twice, or settles outside a step of its own realm
     // Broiler-Human:        PENDING
-    public JsHostSettlement FailModuleRequest(
-        JsHostModuleRequest request, JsHostErrorKind kind, string message)
+    public JsHostSettlement FailModuleRequest(JsHostModuleRequest request, JsHostErrorKind kind, string message)
     {
         Enter(4);
 
@@ -1998,28 +1939,21 @@ public sealed class JsHostRealm
     /// The flag is set here, before any work, so a completion that re-enters through guest code
     /// meets a request that is already taken.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=36AF6C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4A9400
     // Broiler-Falsified-If: a request another realm offered, or one still being offered, is settled here
     // Broiler-Human:        PENDING
     private bool Claim(JsHostModuleRequest request)
     {
-        if (request is null)
-        {
-            throw new System.ArgumentNullException(nameof(request));
-        }
+        ArgumentNullException.ThrowIfNull(request);
 
         if (!ReferenceEquals(request.Realm, this))
         {
-            throw new JsHostSurfaceException(
-                JsHostRefusal.ForeignRealm,
-                "the module request was offered by a different realm and means nothing in this one");
+            throw new JsHostSurfaceException(JsHostRefusal.ForeignRealm, "the module request was offered by a different realm and means nothing in this one");
         }
 
         if (request.Offering)
         {
-            throw new System.InvalidOperationException(
-                "a module request cannot be completed from inside the call that offers it; " +
-                "answer Deferred and complete it from a later step");
+            throw new InvalidOperationException("a module request cannot be completed from inside the call that offers it; answer Deferred and complete it from a later step");
         }
 
         if (request.Settled)
@@ -2125,8 +2059,7 @@ public sealed class JsHostRealm
         }
         catch (JsHostTerminatedException)
         {
-            throw window.Latched ?? new JsAbort(
-                JsAbortKind.InternalDefect, "a deletion hook reported a termination that was not latched");
+            throw window.Latched ?? new JsAbort(JsAbortKind.InternalDefect, "a deletion hook reported a termination that was not latched");
         }
         catch (JsHostSurfaceException refusal)
         {
@@ -2145,15 +2078,14 @@ public sealed class JsHostRealm
     /// becomes a <c>TypeError</c>, and a termination re-raises the latched abort. Only those three
     /// types arrive here; the host object filters by type, and runs nothing in the filter.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=648D90
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D5C60F
     // Broiler-Falsified-If: a hook's JsHostThrowException or JsHostSurfaceException unwinds through interpreter frames untranslated
     // Broiler-Human:        PENDING
-    internal System.Exception HookRaised(System.Exception raised) => raised switch
+    internal Exception HookRaised(Exception raised) => raised switch
     {
         JsHostThrowException thrown => Raised(thrown),
         JsHostSurfaceException refusal => engine.Error("TypeError", refusal.Message),
-        _ => window.Latched ?? new JsAbort(
-            JsAbortKind.InternalDefect, "an exotic hook reported a termination that was not latched"),
+        _ => window.Latched ?? new JsAbort(JsAbortKind.InternalDefect, "an exotic hook reported a termination that was not latched"),
     };
 
     /// <summary>
@@ -2254,22 +2186,22 @@ public sealed class JsHostRealm
             // like every other crossing whose size the guest controls. Nothing is copied: the
             // integer is immutable and the embedder's value shares its digits.
             case JsType.BigInt:
-            {
-                var integer = value.AsBigInt();
-                engine.Charge(JsBigInt.LinearCost(integer.Words));
-                return JsHostValue.BigInt(integer.Value);
-            }
+                {
+                    var integer = value.AsBigInt();
+                    engine.Charge(JsBigInt.LinearCost(integer.Words));
+                    return JsHostValue.BigInt(integer.Value);
+                }
 
             default:
-            {
-                var target = value.AsObject();
+                {
+                    var target = value.AsObject();
 
-                var kind = target is JsArray
-                    ? JsHostValueKind.Array
-                    : target.IsCallable ? JsHostValueKind.Function : JsHostValueKind.Object;
+                    var kind = target is JsArray
+                        ? JsHostValueKind.Array
+                        : target.IsCallable ? JsHostValueKind.Function : JsHostValueKind.Object;
 
-                return new JsHostValue(kind, 0, RefFor(target));
-            }
+                    return new JsHostValue(kind, 0, RefFor(target));
+                }
         }
     }
 
@@ -2310,24 +2242,24 @@ public sealed class JsHostRealm
                 return JsValue.BigInt(AdmitBigInt((System.Numerics.BigInteger)value.RawReference!));
 
             default:
-            {
-                if (value.RawReference is not JsHostRef handle)
                 {
-                    throw new JsHostSurfaceException(
-                        JsHostRefusal.NotAnObject, "the value names no guest object");
-                }
+                    if (value.RawReference is not JsHostRef handle)
+                    {
+                        throw new JsHostSurfaceException(
+                            JsHostRefusal.NotAnObject, "the value names no guest object");
+                    }
 
-                if (!ReferenceEquals(handle.Realm, this))
-                {
-                    throw new JsHostSurfaceException(
-                        JsHostRefusal.ForeignRealm,
-                        "the value was minted by a different realm and means nothing in this one");
-                }
+                    if (!ReferenceEquals(handle.Realm, this))
+                    {
+                        throw new JsHostSurfaceException(
+                            JsHostRefusal.ForeignRealm,
+                            "the value was minted by a different realm and means nothing in this one");
+                    }
 
-                return handle.Target is JsSymbol symbol
-                    ? JsValue.Symbol(symbol)
-                    : JsValue.Object((JsObject)handle.Target);
-            }
+                    return handle.Target is JsSymbol symbol
+                        ? JsValue.Symbol(symbol)
+                        : JsValue.Object((JsObject)handle.Target);
+                }
         }
     }
 
@@ -2344,25 +2276,21 @@ public sealed class JsHostRealm
     /// answer past (<see cref="JsBigInt.MaximumBits"/>), measured from the integer's length without
     /// reading its digits.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=06A4BA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=309AA4
     // Broiler-Falsified-If: a BigInt wider than JsBigInt.MaximumBits reaches the realm, or one reaches a realm whose composition declined the surface
     // Broiler-Human:        PENDING
-    private JsBigInt AdmitBigInt(System.Numerics.BigInteger value)
+    private JsBigInt AdmitBigInt(BigInteger value)
     {
         if (realm.BigIntPrototype is null)
         {
-            throw new JsHostSurfaceException(
-                JsHostRefusal.SurfaceDeclined,
-                "this realm's composition declined the BigInt surface, so a BigInt means nothing in it");
+            throw new JsHostSurfaceException(JsHostRefusal.SurfaceDeclined, "this realm's composition declined the BigInt surface, so a BigInt means nothing in it");
         }
 
         var bits = value.GetBitLength();
 
         if (bits > JsBigInt.MaximumBits)
         {
-            throw engine.Error(
-                "RangeError",
-                "Maximum BigInt size exceeded: the host's value is wider than " +
+            throw engine.Error("RangeError", "Maximum BigInt size exceeded: the host's value is wider than " +
                 JsBigInt.MaximumBits.ToString(System.Globalization.CultureInfo.InvariantCulture) + " bits");
         }
 
@@ -2402,25 +2330,24 @@ public sealed class JsHostRealm
     /// 20), naming the parameter.
     /// </summary>
     /// <remarks>
-    /// It is an <see cref="System.ArgumentException"/>, as <see cref="DetachClone"/> and a promise
+    /// It is an <see cref="ArgumentException"/>, as <see cref="DetachClone"/> and a promise
     /// settlement already answered, because presenting "no value" where one is required is the
     /// embedder's mistake and not the guest's: nothing is thrown into the realm and nothing is written.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0893AA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C15672
     // Broiler-Human:        PENDING
     private static void RequireValue(JsHostValue value, string parameter)
     {
         if (value.IsMissing)
         {
-            throw new System.ArgumentException(
-                "Missing is not a value; pass JsHostValue.Undefined for undefined", parameter);
+            throw new ArgumentException("Missing is not a value; pass JsHostValue.Undefined for undefined", parameter);
         }
     }
 
     /// <summary><see cref="RequireValue"/> over every value of a list, before any is resolved.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=86C6FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0F035F
     // Broiler-Human:        PENDING
-    private static void RequireValues(System.ReadOnlySpan<JsHostValue> values, string parameter)
+    private static void RequireValues(ReadOnlySpan<JsHostValue> values, string parameter)
     {
         foreach (var value in values)
         {
@@ -2428,13 +2355,13 @@ public sealed class JsHostRealm
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3DF541
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C5E50F
     // Broiler-Human:        PENDING
-    private JsValue[] UnwrapAll(System.ReadOnlySpan<JsHostValue> arguments)
+    private JsValue[] UnwrapAll(ReadOnlySpan<JsHostValue> arguments)
     {
         if (arguments.Length == 0)
         {
-            return System.Array.Empty<JsValue>();
+            return [];
         }
 
         var resolved = new JsValue[arguments.Length];
@@ -2449,13 +2376,11 @@ public sealed class JsHostRealm
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6329D1
     // Broiler-Human:        PENDING
-    private JsHostRef RefFor(JsObject target) =>
-        objects.GetValue(target, key => new JsHostRef(this, key));
+    private JsHostRef RefFor(JsObject target) => objects.GetValue(target, key => new JsHostRef(this, key));
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B72A3F
     // Broiler-Human:        PENDING
-    private JsHostRef RefFor(JsSymbol target) =>
-        symbols.GetValue(target, key => new JsHostRef(this, key));
+    private JsHostRef RefFor(JsSymbol target) => symbols.GetValue(target, key => new JsHostRef(this, key));
 
     /// <summary>
     /// Whether this realm is installing a member of its own, rather than a guest assigning to one.
@@ -2478,9 +2403,9 @@ public sealed class JsHostRealm
     private InstallScope Install() => new(this);
 
     /// <summary>Marks one install for as long as it is held.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=485CB3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=756BC2
     // Broiler-Human:        PENDING
-    private readonly struct InstallScope : System.IDisposable
+    private readonly struct InstallScope : IDisposable
     {
         private readonly JsHostRealm realm;
 
@@ -2507,8 +2432,7 @@ public sealed class JsHostRealm
     {
         var resolved = Unwrap(value);
 
-        return resolved.AsObjectOrNull() ?? throw new JsHostSurfaceException(
-            JsHostRefusal.NotAnObject, "the value presented is not a guest object");
+        return resolved.AsObjectOrNull() ?? throw new JsHostSurfaceException(JsHostRefusal.NotAnObject, "the value presented is not a guest object");
     }
 
     /// <summary>What the guest wrote after <c>new</c>, inside a host construct body.</summary>
@@ -2580,39 +2504,35 @@ public sealed class JsHostRealm
     /// through interpreter frames would leave the operand stack in a state no <c>catch</c> in the
     /// guest could reason about.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=4DD906
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5FAB07
     // Broiler-Falsified-If: a host body's CLR exception unwinds through interpreter frames uncaught
     // Broiler-Human:        PENDING
-    private JsNativeBody Bind(JsHostFunction body) =>
-        (owner, thisValue, arguments) =>
+    private JsNativeBody Bind(JsHostFunction body) => (owner, thisValue, arguments) =>
+    {
+        var projected = arguments.Length == 0 ? [] : new JsHostValue[arguments.Length];
+
+        for (var at = 0; at < arguments.Length; at++)
         {
-            var projected = arguments.Length == 0
-                ? System.Array.Empty<JsHostValue>()
-                : new JsHostValue[arguments.Length];
+            projected[at] = Wrap(arguments[at]);
+        }
 
-            for (var at = 0; at < arguments.Length; at++)
-            {
-                projected[at] = Wrap(arguments[at]);
-            }
-
-            try
-            {
-                return Unwrap(body(this, Wrap(thisValue), projected));
-            }
-            catch (JsHostThrowException raised)
-            {
-                throw Raised(raised);
-            }
-            catch (JsHostTerminatedException)
-            {
-                throw window.Latched ?? new JsAbort(
-                    JsAbortKind.InternalDefect, "a host body reported a termination that was not latched");
-            }
-            catch (JsHostSurfaceException refusal)
-            {
-                throw owner.Error("TypeError", refusal.Message);
-            }
-        };
+        try
+        {
+            return Unwrap(body(this, Wrap(thisValue), projected));
+        }
+        catch (JsHostThrowException raised)
+        {
+            throw Raised(raised);
+        }
+        catch (JsHostTerminatedException)
+        {
+            throw window.Latched ?? new JsAbort(JsAbortKind.InternalDefect, "a host body reported a termination that was not latched");
+        }
+        catch (JsHostSurfaceException refusal)
+        {
+            throw owner.Error("TypeError", refusal.Message);
+        }
+    };
 
     /// <summary>
     /// Tells <paramref name="surface"/> of this view's realm, which a guest just created through
@@ -2638,8 +2558,7 @@ public sealed class JsHostRealm
         }
         catch (JsHostTerminatedException)
         {
-            throw window.Latched ?? new JsAbort(
-                JsAbortKind.InternalDefect, "a host surface reported a termination that was not latched");
+            throw window.Latched ?? new JsAbort(JsAbortKind.InternalDefect, "a host surface reported a termination that was not latched");
         }
         catch (JsHostSurfaceException refusal)
         {
@@ -2746,11 +2665,7 @@ public sealed class JsHostRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=4EEA13
     // Broiler-Falsified-If: a refused transfer leaves any listed buffer detached, or a completed one leaves any attached
     // Broiler-Human:        PENDING
-    internal JsCloneCarrier CloneSerializeWithTransfer(
-        JsHostValue value,
-        JsHostValue[] transfer,
-        long maxEntries,
-        long maxBytes)
+    internal JsCloneCarrier CloneSerializeWithTransfer(JsHostValue value, JsHostValue[] transfer, long maxEntries, long maxBytes)
     {
         Enter(1);
 
@@ -2834,31 +2749,29 @@ public sealed class JsHostRealm
     /// listed buffer attached; once this returns, every listed buffer is detached.
     /// </para>
     /// <para>
-    /// <b><see cref="JsHostValue.Missing"/> is refused</b> with an <see cref="System.ArgumentException"/>,
+    /// <b><see cref="JsHostValue.Missing"/> is refused</b> with an <see cref="ArgumentException"/>,
     /// as the value or as an entry of <paramref name="transfer"/>, before anything is serialized or
     /// detached. It is not a value the language has, and a message carrying it would arrive as
     /// <c>undefined</c> - a guess at what the embedder meant.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=661F9E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=6CCF05
     // Broiler-Falsified-If: a carrier is made outside a step, holds an object of this realm, or leaves a listed buffer attached after returning
     // Broiler-Human:        PENDING
-    public JsHostCloneCarrier DetachClone(JsHostValue value, System.ReadOnlySpan<JsHostValue> transfer = default)
+    public JsHostCloneCarrier DetachClone(JsHostValue value, ReadOnlySpan<JsHostValue> transfer = default)
     {
         Enter(1 + (ulong)transfer.Length);
 
         if (value.IsMissing)
         {
-            throw new System.ArgumentException(
-                "Missing is not a value to clone; pass JsHostValue.Undefined for undefined", nameof(value));
+            throw new ArgumentException("Missing is not a value to clone; pass JsHostValue.Undefined for undefined", nameof(value));
         }
 
         foreach (var entry in transfer)
         {
             if (entry.IsMissing)
             {
-                throw new System.ArgumentException(
-                    "Missing is not a transferable value", nameof(transfer));
+                throw new ArgumentException("Missing is not a transferable value", nameof(transfer));
             }
         }
 
@@ -2871,8 +2784,7 @@ public sealed class JsHostRealm
                 list[at] = Unwrap(transfer[at]);
             }
 
-            return new JsHostCloneCarrier(realm.CloneSerializeWithTransfer(
-                Unwrap(value), list, JsCloneCarrier.MaxEntries, JsCloneCarrier.MaxBytes));
+            return new JsHostCloneCarrier(realm.CloneSerializeWithTransfer(Unwrap(value), list, JsCloneCarrier.MaxEntries, JsCloneCarrier.MaxBytes));
         }
         catch (JsCloneRefusedException refused)
         {
@@ -2913,17 +2825,14 @@ public sealed class JsHostRealm
     /// thread is refused with <see cref="JsHostRefusal.RealmNotCurrent"/> and claims nothing.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=78BC95
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=7A64AF
     // Broiler-Falsified-If: an adoption answers an object on another realm's intrinsics, accepts a foreign carrier, or adopts a single-use carrier twice
     // Broiler-Human:        PENDING
     public JsHostValue AdoptClone(object carrier)
     {
         Enter(1);
 
-        if (carrier is null)
-        {
-            throw new System.ArgumentNullException(nameof(carrier));
-        }
+        ArgumentNullException.ThrowIfNull(carrier);
 
         // THE COMPATIBILITY RULE. The type is this build's (a second copy of the assembly has its
         // own), and the profile and layout are asked anyway, so that a later build which admits an
@@ -2932,9 +2841,7 @@ public sealed class JsHostRealm
             || held.Profile != JavaScriptProfile.Id
             || held.FormatVersion != JsHostCloneCarrier.CurrentFormatVersion)
         {
-            throw new JsHostSurfaceException(
-                JsHostRefusal.ForeignCarrier,
-                "the carrier was not minted by a realm of this profile build");
+            throw new JsHostSurfaceException(JsHostRefusal.ForeignCarrier, "the carrier was not minted by a realm of this profile build");
         }
 
         // THE HOST'S MISTAKE, NOT THE GUEST'S: asked before the claim, so that it can be told apart
@@ -2969,22 +2876,19 @@ public sealed class JsHostRealm
 
     // ---- the gate ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=B218F2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F8DA15
     // Broiler-Falsified-If: a crossing proceeds while the realm is outside a step or on another thread
     // Broiler-Human:        PENDING
     private void Enter(ulong units)
     {
         if (window.Latched is not null)
         {
-            throw new JsHostTerminatedException(
-                "the operation ended underneath this call and no host code may continue");
+            throw new JsHostTerminatedException("the operation ended underneath this call and no host code may continue");
         }
 
-        if (window.StepDepth <= 0 || System.Environment.CurrentManagedThreadId != window.GuestThreadId)
+        if (window.StepDepth <= 0 || Environment.CurrentManagedThreadId != window.GuestThreadId)
         {
-            throw new JsHostSurfaceException(
-                JsHostRefusal.RealmNotCurrent,
-                "the realm was touched outside a step of the instance that owns it");
+            throw new JsHostSurfaceException(JsHostRefusal.RealmNotCurrent, "the realm was touched outside a step of the instance that owns it");
         }
 
         engine.ChargeHostCrossing(units);
@@ -3004,10 +2908,10 @@ public sealed class JsHostRealm
     /// termination, as it would anywhere else in the crossing.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=871C26
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=4FF6B8
     // Broiler-Falsified-If: a guest throw of any value reaches host code as anything but a JsHostThrowException or the latched termination
     // Broiler-Human:        PENDING
-    private System.Exception Thrown(JsThrow raised)
+    private Exception Thrown(JsThrow raised)
     {
         try
         {
@@ -3026,8 +2930,7 @@ public sealed class JsHostRealm
     {
         window.Latched ??= abort;
 
-        return new JsHostTerminatedException(
-            "the operation ended underneath this call and no host code may continue");
+        return new JsHostTerminatedException("the operation ended underneath this call and no host code may continue");
     }
 
     /// <summary>The engine's attribute bits for an embedder's flags.</summary>

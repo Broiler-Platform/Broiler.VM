@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>One compile-time scope a direct-<c>eval</c> site can see, as the verifier admitted it.</summary>
@@ -24,17 +28,14 @@ namespace Broiler.VM.Profile.JavaScript;
 /// not bounded here: the record a row describes may be a closure's, and the executor bounds each
 /// slot where it reads one, exactly as it bounds a <c>LoadScoped</c>.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5B71B7
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E93788
 // Broiler-Human:        PENDING
-internal sealed class JsEvalShape(
-    Format.JsFormat.EvalScopeKind kind,
-    int parent,
-    System.Collections.Generic.Dictionary<string, (int Slot, bool Immutable, bool Lexical, bool Hidden, bool FunctionName, bool Import)> names)
+internal sealed class JsEvalShape(JsFormat.EvalScopeKind kind, int parent, Dictionary<string, (int Slot, bool Immutable, bool Lexical, bool Hidden, bool FunctionName, bool Import)> names)
 {
     /// <summary>What kind of record the scope is at run time.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0F022D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3EF4A5
     // Broiler-Human:        PENDING
-    internal Format.JsFormat.EvalScopeKind Kind { get; } = kind;
+    internal JsFormat.EvalScopeKind Kind { get; } = kind;
 
     /// <summary>The enclosing scope's row, or -1 at a root.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=293935
@@ -114,31 +115,25 @@ internal sealed class JsEvalSite(int scope, Format.JsFormat.EvalRequestFlags fla
     internal int Scope { get; } = scope;
 
     /// <summary>What an evaluation from the site is compiled under.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6336E5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0EEC40
     // Broiler-Human:        PENDING
-    internal Format.JsFormat.EvalRequestFlags Flags { get; } = flags;
+    internal JsFormat.EvalRequestFlags Flags { get; } = flags;
 }
 
 /// <summary>What one evaluated program declares, and whether this build runs it.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F844D4
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=72DD0F
 // Broiler-Human:        PENDING
-internal sealed class JsEvalDeclaration(
-    Format.JsFormat.EvalRequestFlags flags,
-    Format.JsFormat.EvalRefusal refusal,
-    string[] varNames,
-    string[] functionNames,
-    string[] annexBNames,
-    string[] privateNames)
+internal sealed class JsEvalDeclaration(JsFormat.EvalRequestFlags flags, JsFormat.EvalRefusal refusal, string[] varNames, string[] functionNames, string[] annexBNames, string[] privateNames)
 {
     /// <summary>The request flags the program was compiled under.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6336E5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0EEC40
     // Broiler-Human:        PENDING
-    internal Format.JsFormat.EvalRequestFlags Flags { get; } = flags;
+    internal JsFormat.EvalRequestFlags Flags { get; } = flags;
 
     /// <summary>Why the program is refused before it runs, if it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=05160A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B0E83D
     // Broiler-Human:        PENDING
-    internal Format.JsFormat.EvalRefusal Refusal { get; } = refusal;
+    internal JsFormat.EvalRefusal Refusal { get; } = refusal;
 
     /// <summary>
     /// The <c>var</c> names a sloppy program introduces into its caller's variable environment, none
@@ -181,13 +176,10 @@ internal sealed class JsEvalDeclaration(
 /// live records a name is resolved in are the running frame's, and the map only says where in them
 /// a name is.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=DE8935
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=66E8A0
 // Broiler-Falsified-If: a site, shape or declaration row reaches the executor without the verifier having checked it against the code and function tables
 // Broiler-Human:        PENDING
-internal sealed class JsEvalMap(
-    JsEvalShape[] shapes,
-    System.Collections.Generic.Dictionary<uint, JsEvalSite> sites,
-    System.Collections.Generic.Dictionary<int, JsEvalDeclaration> declarations)
+internal sealed class JsEvalMap(JsEvalShape[] shapes, Dictionary<uint, JsEvalSite> sites, Dictionary<int, JsEvalDeclaration> declarations)
 {
     /// <summary>The scope shapes, parents before children.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=921EEE
@@ -195,17 +187,15 @@ internal sealed class JsEvalMap(
     internal JsEvalShape[] Shapes { get; } = shapes;
 
     /// <summary>Finds the site whose eval call instruction is at <paramref name="offset"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D41125
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5A3A03
     // Broiler-Human:        PENDING
-    internal bool TryFindSite(uint offset, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out JsEvalSite? site) =>
+    internal bool TryFindSite(uint offset, [NotNullWhen(true)] out JsEvalSite? site) =>
         sites.TryGetValue(offset, out site);
 
     /// <summary>Finds the declaration row of eval-code unit <paramref name="unit"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=377475
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C92DD1
     // Broiler-Human:        PENDING
-    internal bool TryFindDeclaration(
-        int unit, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out JsEvalDeclaration? declaration) =>
-        declarations.TryGetValue(unit, out declaration);
+    internal bool TryFindDeclaration(int unit, [NotNullWhen(true)] out JsEvalDeclaration? declaration) => declarations.TryGetValue(unit, out declaration);
 }
 
 /// <summary>
@@ -250,9 +240,7 @@ internal sealed class JsEvalView
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D5BEDA
     // Broiler-Human:        PENDING
-    private JsEvalView()
-    {
-    }
+    private JsEvalView() { }
 
     /// <summary>A fresh view of the global scope, one per evaluation.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=71455B
@@ -297,9 +285,9 @@ internal sealed class JsEvalView
     /// <see langword="null"/> until an instantiation declared one; an Annex B alias missing from it
     /// was kept from hoisting by the caller's own bindings, and its write is skipped.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8C417F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D05F13
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.HashSet<string>? Declared { get; set; }
+    internal HashSet<string>? Declared { get; set; }
 }
 
 /// <summary>
@@ -330,8 +318,5 @@ internal sealed class JsEvalVariables : JsObject
     /// <summary>Creates an empty set with no prototype.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A8E714
     // Broiler-Human:        PENDING
-    internal JsEvalVariables()
-        : base(null)
-    {
-    }
+    internal JsEvalVariables() : base(null) { }
 }

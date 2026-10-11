@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -133,8 +135,7 @@ internal sealed partial class JsRealm
 
         // NOT WRITABLE, NOT ENUMERABLE, CONFIGURABLE: the descriptor every kind's tag has, and the
         // one the realm's other tags already use.
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol, JsProperty.Data(JsValue.String(tag), JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String(tag), JsPropertyAttributes.Configurable));
 
         return prototype;
     }
@@ -194,15 +195,14 @@ internal sealed partial class JsRealm
     /// that re-enters <c>next</c> is simply answered (<see cref="JsBuiltinIterator.Resumable"/>).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5FBA0A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8AE00F
     // Broiler-Human:        PENDING
     private JsValue BuiltinIteratorNext(JsEngine engine, JsValue thisValue, string tag)
     {
         if (thisValue.AsObjectOrNull() is not JsBuiltinIterator iterator ||
-            !string.Equals(iterator.Brand, tag, System.StringComparison.Ordinal))
+            !string.Equals(iterator.Brand, tag, StringComparison.Ordinal))
         {
-            return engine.ThrowTypeError(
-                "%" + tag.Replace(" ", string.Empty, System.StringComparison.Ordinal) +
+            return engine.ThrowTypeError("%" + tag.Replace(" ", string.Empty, StringComparison.Ordinal) +
                 "Prototype%.next called on an incompatible receiver");
         }
 
@@ -249,14 +249,11 @@ internal sealed partial class JsRealm
     /// Builds the <c>Iterator</c> constructor, <c>Iterator.from</c>, <c>Iterator.concat</c> and the
     /// members of <c>%Iterator.prototype%</c> that are not helpers.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8A20D9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D375B3
     // Broiler-Human:        PENDING
     private void SetupIterator()
     {
-        IteratorConstructor = Constructor(
-            "Iterator",
-            0,
-            IteratorPrototype,
+        IteratorConstructor = Constructor("Iterator", 0, IteratorPrototype,
             static (engine, thisValue, arguments) =>
             {
                 _ = thisValue;
@@ -284,45 +281,29 @@ internal sealed partial class JsRealm
 
         // `constructor` IS AN ACCESSOR PAIR, which Constructor() above has just defined as the
         // ordinary data back-link every other prototype carries. It is replaced, not added to.
-        IteratorPrototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Accessor(
-                Native("get constructor", 0, static (engine, thisValue, arguments) =>
-                {
-                    _ = thisValue;
-                    _ = arguments;
-                    return JsValue.Object(engine.Realm.IteratorConstructor);
-                }),
-                Native("set constructor", 1, static (engine, thisValue, arguments) =>
-                {
-                    engine.Realm.SetterIgnoringPrototype(
-                        engine, thisValue, JsValue.String("constructor"), IteratorArgument(arguments, 0));
+        IteratorPrototype.SetOwnProperty("constructor", JsProperty.Accessor(Native("get constructor", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            _ = arguments;
+            return JsValue.Object(engine.Realm.IteratorConstructor);
+        }), Native("set constructor", 1, static (engine, thisValue, arguments) =>
+        {
+            engine.Realm.SetterIgnoringPrototype(engine, thisValue, JsValue.String("constructor"), IteratorArgument(arguments, 0));
 
-                    return JsValue.Undefined;
-                }),
-                JsPropertyAttributes.Configurable));
+            return JsValue.Undefined;
+        }), JsPropertyAttributes.Configurable));
 
-        IteratorPrototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Accessor(
-                Native("get [Symbol.toStringTag]", 0, static (engine, thisValue, arguments) =>
-                {
-                    _ = engine;
-                    _ = thisValue;
-                    _ = arguments;
-                    return JsValue.String("Iterator");
-                }),
-                Native("set [Symbol.toStringTag]", 1, static (engine, thisValue, arguments) =>
-                {
-                    engine.Realm.SetterIgnoringPrototype(
-                        engine,
-                        thisValue,
-                        JsValue.Symbol(engine.Realm.ToStringTagSymbol),
-                        IteratorArgument(arguments, 0));
-
-                    return JsValue.Undefined;
-                }),
-                JsPropertyAttributes.Configurable));
+        IteratorPrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Accessor(Native("get [Symbol.toStringTag]", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = engine;
+            _ = thisValue;
+            _ = arguments;
+            return JsValue.String("Iterator");
+        }), Native("set [Symbol.toStringTag]", 1, static (engine, thisValue, arguments) =>
+        {
+            engine.Realm.SetterIgnoringPrototype(engine, thisValue, JsValue.Symbol(engine.Realm.ToStringTagSymbol), IteratorArgument(arguments, 0));
+            return JsValue.Undefined;
+        }), JsPropertyAttributes.Configurable));
 
         WrapForValidIteratorPrototype = new JsObject(IteratorPrototype);
 
@@ -334,7 +315,7 @@ internal sealed partial class JsRealm
             // THE `next` READ WHEN THE WRAPPER WAS MADE, called with no arguments. The wrapper's
             // own `next` forwards nothing, and what it answers is passed through unchecked: the
             // caller of a wrapper is the one that inspects the result.
-            return engine.Call(record.Next, record.Iterator, System.Array.Empty<JsValue>());
+            return engine.Call(record.Next, record.Iterator, []);
         });
 
         Method(WrapForValidIteratorPrototype, "return", 0, static (engine, thisValue, arguments) =>
@@ -348,7 +329,7 @@ internal sealed partial class JsRealm
                 return JsValue.Object(engine.Realm.IteratorResult(JsValue.Undefined, done: true));
             }
 
-            return engine.Call(method, record.Iterator, System.Array.Empty<JsValue>());
+            return engine.Call(method, record.Iterator, []);
         });
 
         Method(IteratorConstructor, "from", 1, static (engine, thisValue, arguments) =>
@@ -389,8 +370,7 @@ internal sealed partial class JsRealm
             return wrapped.Iterated;
         }
 
-        throw engine.Error(
-            "TypeError", "%WrapForValidIteratorPrototype%." + method + " called on an incompatible receiver");
+        throw engine.Error("TypeError", "%WrapForValidIteratorPrototype%." + method + " called on an incompatible receiver");
     }
 
     /// <summary>
@@ -469,7 +449,7 @@ internal sealed partial class JsRealm
     /// while a <c>flatMap</c> mapper answering a string is a <c>TypeError</c>, so that a mapper that
     /// returns words does not silently flatten them into characters.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A0B4D4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8A9B4C
     // Broiler-Human:        PENDING
     internal JsIteratorRecord GetIteratorFlattenable(JsEngine engine, JsValue value, bool iterateStrings)
     {
@@ -478,9 +458,7 @@ internal sealed partial class JsRealm
             engine.ThrowTypeError(engine.Describe(value) + " is not an iterator or iterable object");
         }
 
-        var iterator = engine.TryGetSymbolMethod(value, IteratorSymbol, out var method)
-            ? engine.Call(method, value, System.Array.Empty<JsValue>())
-            : value;
+        var iterator = engine.TryGetSymbolMethod(value, IteratorSymbol, out var method) ? engine.Call(method, value, []) : value;
 
         if (!iterator.IsObject)
         {
@@ -510,11 +488,9 @@ internal sealed partial class JsRealm
 internal sealed class JsBuiltinIterator : JsObject
 {
     /// <summary>Creates an iterator of one kind over the step that kind supplies.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F9B195
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C067F3
     // Broiler-Human:        PENDING
-    internal JsBuiltinIterator(
-        JsObject brand, string tag, System.Func<JsEngine, (bool Found, JsValue Value)> step)
-        : base(brand, tag)
+    internal JsBuiltinIterator(JsObject brand, string tag, Func<JsEngine, (bool Found, JsValue Value)> step) : base(brand, tag)
     {
         Brand = tag;
         Step = step;
@@ -530,9 +506,9 @@ internal sealed class JsBuiltinIterator : JsObject
     internal string Brand { get; }
 
     /// <summary>The next step, or <see langword="null"/> once the iterator is finished.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C2B2D5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=67C639
     // Broiler-Human:        PENDING
-    internal System.Func<JsEngine, (bool Found, JsValue Value)>? Step { get; set; }
+    internal Func<JsEngine, (bool Found, JsValue Value)>? Step { get; set; }
 
     /// <summary>Whether a step is in progress, so that re-entry is refused.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=832C69
@@ -556,8 +532,7 @@ internal sealed class JsWrappedIterator : JsObject
     /// <summary>Wraps one record.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B88759
     // Broiler-Human:        PENDING
-    internal JsWrappedIterator(JsObject prototype, JsIteratorRecord iterated)
-        : base(prototype) => Iterated = iterated;
+    internal JsWrappedIterator(JsObject prototype, JsIteratorRecord iterated) : base(prototype) => Iterated = iterated;
 
     /// <summary>The <c>[[Iterated]]</c> slot: the iterator and the <c>next</c> read off it once.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=24E801

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Threading;
 using Broiler.VM.Abstractions;
 using Broiler.VM.Ubc;
 
@@ -68,12 +70,8 @@ internal sealed class UbcBytecodeExecutorFactory : IUbcExecutorFactory
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CBC2CA
     // Broiler-Falsified-If: the executor made here runs a family other than the type argument, or one registration's executor serves another's programs
     // Broiler-Human:        PENDING
-    public IVmProfileExecutor Create<TFamily>(
-        UbcFamilyRegistration<TFamily> family,
-        UbcFamilyDeclaration declaration,
-        IVmExecutionEnvironment environment)
-        where TFamily : struct, IUbcFamily =>
-        new UbcExecutor<TFamily>(family, declaration, environment);
+    public IVmProfileExecutor Create<TFamily>(UbcFamilyRegistration<TFamily> family, UbcFamilyDeclaration declaration, IVmExecutionEnvironment environment)
+        where TFamily : struct, IUbcFamily => new UbcExecutor<TFamily>(family, declaration, environment);
 }
 
 /// <summary>One instance: the verified program and the family's state for it.</summary>
@@ -110,15 +108,7 @@ internal sealed class UbcInstance : IVmInstanceState
 // Broiler-Human:        PENDING
 internal sealed class UbcContinuation : IVmProfileContinuation
 {
-    internal UbcContinuation(
-        object owner,
-        UbcFrame[] frames,
-        int depth,
-        ulong[] words,
-        object values,
-        int valueCount,
-        int resumeIndex,
-        object reason)
+    internal UbcContinuation(object owner, UbcFrame[] frames, int depth, ulong[] words, object values, int valueCount, int resumeIndex, object reason)
     {
         Owner = owner;
         Frames = frames;
@@ -179,8 +169,7 @@ internal sealed class UbcContinuation : IVmProfileContinuation
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=0DCB04
 // Broiler-Falsified-If: a step is answered with an instance, continuation or payload another executor made, or a guest program's fault is answered as a contract violation
 // Broiler-Human:        PENDING
-internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
-    where TFamily : struct, IUbcFamily
+internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor where TFamily : struct, IUbcFamily
 {
     private readonly UbcFamilyRegistration<TFamily> family;
     private readonly UbcFamilyDeclaration declaration;
@@ -214,13 +203,13 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
     /// violation; a cancellation is passed on to the core once the state is abandoned.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=2A89A8
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=122155
     // Broiler-Falsified-If: a handle this executor's family did not verify is instantiated, an instance is published whose admission was not ready or whose start unit did not complete, a unit the program does not have is entered, or a state this executor does not answer as instantiated outlives the step without being abandoned
     // Broiler-Human:        PENDING
-    public VmExecutionStep Instantiate(VmVerifiedArtifact artifact, System.Threading.CancellationToken cancellationToken)
+    public VmExecutionStep Instantiate(VmVerifiedArtifact artifact, CancellationToken cancellationToken)
     {
         if (!artifact.TryGetState(out var state) || state is not UbcVerifiedProgram program ||
-            !string.Equals(program.Table.FamilyIdentity, family.Identity, System.StringComparison.Ordinal))
+            !string.Equals(program.Table.FamilyIdentity, family.Identity, StringComparison.Ordinal))
         {
             return VmExecutionStep.ContractViolation(VmReason.ForeignHandle);
         }
@@ -289,7 +278,7 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
                     return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
             }
         }
-        catch (System.Exception failure)
+        catch (Exception failure)
         {
             // A handler that threw left the start run's frames standing; their depth is given back
             // here, in the step that charged it, as an ending the run answered would have given it.
@@ -300,7 +289,7 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
                 Abandon();
             }
 
-            if (failure is System.OperationCanceledException)
+            if (failure is OperationCanceledException)
             {
                 throw;
             }
@@ -325,10 +314,10 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
     /// invocation asks for before any frame stands to pay for it. A unit the family names is entered
     /// only when the program has it and it is flagged as an entry.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=274F83
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=DFCD44
     // Broiler-Falsified-If: an entry point starts a unit the program does not have or one not flagged as an entry, an answer of no kind starts anything, the family resolves before the fuel unit is charged, or another executor's instance is run
     // Broiler-Human:        PENDING
-    public VmExecutionStep Invoke(IVmInstanceState state, in VmInvocationRequest request, System.Threading.CancellationToken cancellationToken)
+    public VmExecutionStep Invoke(IVmInstanceState state, in VmInvocationRequest request, CancellationToken cancellationToken)
     {
         if (state is not UbcInstance instance || !ReferenceEquals(instance.Owner, this))
         {
@@ -346,17 +335,17 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
         switch (answer.Kind)
         {
             case UbcEntryAnswerKind.Found:
-            {
-                var units = instance.Program.Units;
-
-                if ((uint)answer.Unit >= (uint)units.Length || (units[answer.Unit].Unit.Flags & UbcUnitFlags.Entry) == 0)
                 {
-                    return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
-                }
+                    var units = instance.Program.Units;
 
-                var interpreter = new UbcInterpreter<TFamily>(instance, environment.Meter, environment.Capabilities, declaration.MaxUnchargedWork);
-                return interpreter.Start(answer.Unit, name);
-            }
+                    if ((uint)answer.Unit >= (uint)units.Length || (units[answer.Unit].Unit.Flags & UbcUnitFlags.Entry) == 0)
+                    {
+                        return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+                    }
+
+                    var interpreter = new UbcInterpreter<TFamily>(instance, environment.Meter, environment.Capabilities, declaration.MaxUnchargedWork);
+                    return interpreter.Start(answer.Unit, name);
+                }
 
             case UbcEntryAnswerKind.Missing:
                 return VmExecutionStep.Faulted(TFamily.EntryRefused(instance.FamilyState, name));
@@ -370,10 +359,10 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=5992DA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=8A4945
     // Broiler-Falsified-If: a continuation is resumed twice, or into an instance it was not captured from
     // Broiler-Human:        PENDING
-    public VmExecutionStep Resume(IVmInstanceState state, IVmProfileContinuation continuation, System.Threading.CancellationToken cancellationToken)
+    public VmExecutionStep Resume(IVmInstanceState state, IVmProfileContinuation continuation, CancellationToken cancellationToken)
     {
         if (state is not UbcInstance instance || !ReferenceEquals(instance.Owner, this) ||
             continuation is not UbcContinuation captured || !ReferenceEquals(captured.Owner, instance) || captured.Taken)
@@ -395,7 +384,5 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5DBDBE
     // Broiler-Human:        PENDING
-    public void Unwind(IVmProfileContinuation continuation, ulong effectiveUnwindAllowance)
-    {
-    }
+    public void Unwind(IVmProfileContinuation continuation, ulong effectiveUnwindAllowance) { }
 }

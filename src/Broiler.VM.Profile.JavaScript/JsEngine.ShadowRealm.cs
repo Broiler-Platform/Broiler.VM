@@ -66,7 +66,7 @@ internal sealed partial class JsEngine
     /// properties of that global, as an indirect <c>eval</c> there would make them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=213CEA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C59BE7
     // Broiler-Falsified-If: source evaluated in a ShadowRealm compiles anywhere but through the engine's one mediator, or an exception object or a non-callable object crosses out of it
     // Broiler-Human:        PENDING
     internal JsValue ShadowRealmEvaluate(JsRealm evalRealm, string text)
@@ -76,9 +76,7 @@ internal sealed partial class JsEngine
 
         if (declaration.PrivateNames.Length != 0)
         {
-            ThrowSyntaxError(
-                "the evaluated source names the private name " + declaration.PrivateNames[0][1..] +
-                ", which no class encloses");
+            ThrowSyntaxError("the evaluated source names the private name " + declaration.PrivateNames[0][1..] + ", which no class encloses");
         }
 
         JsValue result;
@@ -98,17 +96,7 @@ internal sealed partial class JsEngine
             var code = evaluated.Functions[(int)unit];
             var boundary = new JsEnvironment((int)code.ScopeSlots, null, view);
 
-            result = Execute(
-                evaluated,
-                (int)unit,
-                boundary,
-                JsValue.Object(evalRealm.GlobalObject),
-                System.Array.Empty<JsValue>(),
-                null,
-                JsValue.Undefined,
-                null,
-                null,
-                activeReferrer);
+            result = Execute(evaluated, (int)unit, boundary, JsValue.Object(evalRealm.GlobalObject), [], null, JsValue.Undefined, null, null, activeReferrer);
         }
         catch (JsThrow)
         {
@@ -161,12 +149,8 @@ internal sealed partial class JsEngine
         Charge(1);
         JsNativeFunction? wrapped = null;
 
-        wrapped = new JsNativeFunction(
-            callerRealm,
-            callerRealm.FunctionPrototype,
-            string.Empty,
-            0,
-            (engine, thisValue, arguments) => engine.WrappedFunctionCall(target, thisValue, arguments));
+        wrapped = new JsNativeFunction(callerRealm, callerRealm.FunctionPrototype, string.Empty, 0, (engine, thisValue, arguments)
+            => engine.WrappedFunctionCall(target, thisValue, arguments));
 
         try
         {
@@ -188,15 +172,12 @@ internal sealed partial class JsEngine
                 }
             }
 
-            wrapped.SetOwnProperty(
-                "length", JsProperty.Data(JsValue.Number(length), JsPropertyAttributes.Configurable));
+            wrapped.SetOwnProperty("length", JsProperty.Data(JsValue.Number(length), JsPropertyAttributes.Configurable));
 
             var name = GetProperty(JsValue.Object(target), "name");
             wrapped.FunctionName = name.IsString ? name.AsString() : string.Empty;
 
-            wrapped.SetOwnProperty(
-                "name",
-                JsProperty.Data(JsValue.String(wrapped.FunctionName), JsPropertyAttributes.Configurable));
+            wrapped.SetOwnProperty("name", JsProperty.Data(JsValue.String(wrapped.FunctionName), JsPropertyAttributes.Configurable));
         }
         catch (JsThrow)
         {
@@ -248,7 +229,7 @@ internal sealed partial class JsEngine
     /// <c>TypeError</c> of the caller's realm through that realm's <c>%ThrowTypeError%</c>, and a
     /// fulfilment reads the export and wraps it into the caller's realm.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=31A99E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F2BFDD
     // Broiler-Falsified-If: a module imported for a ShadowRealm loads anywhere but through the engine's one mediator, or its export crosses unwrapped
     // Broiler-Human:        PENDING
     internal JsValue ShadowRealmImportValue(JsRealm evalRealm, string specifier, string exportName)
@@ -270,7 +251,7 @@ internal sealed partial class JsEngine
         {
             var namespaceObject = arguments.Length == 0 ? JsValue.Undefined : arguments[0];
 
-            if (!namespaceObject.IsObject || !engine.HasProperty(namespaceObject.AsObject(), exportName))
+            if (!namespaceObject.IsObject || !HasProperty(namespaceObject.AsObject(), exportName))
             {
                 return engine.ThrowTypeError(
                     "ShadowRealm.prototype.importValue: the module has no export named " + exportName);

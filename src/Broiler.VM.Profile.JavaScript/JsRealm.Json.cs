@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+using System.Globalization;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -69,9 +72,9 @@ internal sealed partial class JsRealm
         internal JsValue ReplacerFunction { get; set; } = JsValue.Undefined;
 
         /// <summary>The key allow-list an Array replacer produced, or nothing.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=339507
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7AFE22
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<string>? PropertyList { get; set; }
+        internal List<string>? PropertyList { get; set; }
 
         /// <summary>One level of indentation; empty when the output is not indented.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ED61CE
@@ -84,9 +87,9 @@ internal sealed partial class JsRealm
         internal string Indent { get; set; } = string.Empty;
 
         /// <summary>The objects currently being serialised, innermost last.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A86FC1
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A5AB08
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<JsObject> Stack { get; } = [];
+        internal List<JsObject> Stack { get; } = [];
     }
 
     /// <summary>Builds <c>JSON</c> and defines it on the global object.</summary>
@@ -104,9 +107,7 @@ internal sealed partial class JsRealm
 
         // `JSON[Symbol.toStringTag]` is "JSON", configurable and nothing else, as it is for
         // `Math` and `Reflect`.
-        json.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("JSON"), JsPropertyAttributes.Configurable));
+        json.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("JSON"), JsPropertyAttributes.Configurable));
 
         GlobalObject.DefineBuiltIn("JSON", JsValue.Object(json));
     }
@@ -129,8 +130,7 @@ internal sealed partial class JsRealm
         /// <summary>Creates the frozen, null-prototype object carrying <paramref name="text"/>.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=574EEC
         // Broiler-Human:        PENDING
-        internal RawJsonObject(string text)
-            : base(null)
+        internal RawJsonObject(string text) : base(null)
         {
             Text = text;
             SetOwnProperty("rawJSON", JsProperty.Data(JsValue.String(text), JsPropertyAttributes.Enumerable));
@@ -268,8 +268,7 @@ internal sealed partial class JsRealm
     /// <summary>Reads one JSON value, whatever kind it is.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5E713D
     // Broiler-Human:        PENDING
-    private JsValue JsonParseValue(
-        JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
+    private JsValue JsonParseValue(JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
     {
         var value = JsonParseUnrecorded(engine, text, ref at, depth, recording, out record);
 
@@ -335,8 +334,7 @@ internal sealed partial class JsRealm
     /// <summary>Reads one JSON value, whatever kind it is.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FD4D00
     // Broiler-Human:        PENDING
-    private JsValue JsonParseUnrecorded(
-        JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
+    private JsValue JsonParseUnrecorded(JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
     {
         engine.Charge(1);
         record = null;
@@ -387,8 +385,7 @@ internal sealed partial class JsRealm
     /// <summary>Reads an object literal into an ordinary object.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B1BDD1
     // Broiler-Human:        PENDING
-    private JsValue JsonParseObject(
-        JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
+    private JsValue JsonParseObject(JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
     {
         at++;
         var target = new JsObject(ObjectPrototype);
@@ -455,8 +452,7 @@ internal sealed partial class JsRealm
     /// <summary>Reads an array literal into an Array.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0BAB7F
     // Broiler-Human:        PENDING
-    private JsValue JsonParseArray(
-        JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
+    private JsValue JsonParseArray(JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
     {
         at++;
         var target = NewArray();
@@ -703,11 +699,9 @@ internal sealed partial class JsRealm
     /// <summary>Reads one of the three bare words.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=73F871
     // Broiler-Human:        PENDING
-    private static JsValue JsonParseKeyword(
-        JsEngine engine, string text, ref int at, string word, JsValue value)
+    private static JsValue JsonParseKeyword(JsEngine engine, string text, ref int at, string word, JsValue value)
     {
-        if (at + word.Length > text.Length ||
-            string.CompareOrdinal(text, at, word, 0, word.Length) != 0)
+        if (at + word.Length > text.Length || string.CompareOrdinal(text, at, word, 0, word.Length) != 0)
         {
             throw JsonUnexpected(engine, text, at);
         }
@@ -717,12 +711,10 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>A SyntaxError naming where in the text the reader stopped.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DAE11A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A3DF51
     // Broiler-Human:        PENDING
     private static JsThrow JsonSyntax(JsEngine engine, string message, int at) =>
-        engine.Error(
-            "SyntaxError",
-            message + " at position " + at.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        engine.Error("SyntaxError", message + " at position " + at.ToString(CultureInfo.InvariantCulture));
 
     /// <summary>The error for a character the grammar has no place for.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=525CBA
@@ -740,8 +732,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A6E0FA
     // Broiler-Human:        PENDING
-    private static JsValue JsonInternalize(
-        JsEngine engine, JsObject holder, string key, JsValue reviver, int depth, JsonRecord? record)
+    private static JsValue JsonInternalize(JsEngine engine, JsObject holder, string key, JsValue reviver, int depth, JsonRecord? record)
     {
         engine.Charge(1);
 
@@ -805,8 +796,7 @@ internal sealed partial class JsRealm
             }
         }
 
-        return engine.Call(
-            reviver, JsValue.Object(holder), [JsValue.String(key), value, JsValue.Object(context)]);
+        return engine.Call(reviver, JsValue.Object(holder), [JsValue.String(key), value, JsValue.Object(context)]);
     }
 
     /// <summary>Revives one member in place, deleting it when the reviver returns <c>undefined</c>.</summary>
@@ -825,8 +815,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D0AE81
     // Broiler-Human:        PENDING
-    private static void JsonReviveInto(
-        JsEngine engine, JsObject target, string name, JsValue reviver, int depth, JsonRecord? record)
+    private static void JsonReviveInto(JsEngine engine, JsObject target, string name, JsValue reviver, int depth, JsonRecord? record)
     {
         var revived = JsonInternalize(engine, target, name, reviver, depth + 1, record);
 
@@ -880,7 +869,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads the replacer argument into either a function or a key allow-list.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D5825F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5919E3
     // Broiler-Human:        PENDING
     private static void JsonApplyReplacer(JsEngine engine, JsonWriter state, JsValue replacer)
     {
@@ -905,8 +894,8 @@ internal sealed partial class JsRealm
             return;
         }
 
-        var names = new System.Collections.Generic.List<string>();
-        var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+        var names = new List<string>();
+        var seen = new HashSet<string>(System.StringComparer.Ordinal);
         var length = ArrayLengthOf(engine, replacer);
 
         for (double at = 0; at < length; at++)
@@ -977,8 +966,7 @@ internal sealed partial class JsRealm
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0ECED0
     // Broiler-Human:        PENDING
-    private static string? JsonSerialize(
-        JsEngine engine, JsonWriter state, string key, JsObject holder)
+    private static string? JsonSerialize(JsEngine engine, JsonWriter state, string key, JsObject holder)
     {
         var value = engine.GetProperty(JsValue.Object(holder), key);
 
@@ -997,8 +985,7 @@ internal sealed partial class JsRealm
 
         if (state.ReplacerFunction.IsObject)
         {
-            value = engine.Call(
-                state.ReplacerFunction, JsValue.Object(holder), [JsValue.String(key), value]);
+            value = engine.Call(state.ReplacerFunction, JsValue.Object(holder), [JsValue.String(key), value]);
         }
 
         // A RAW VALUE IS EMITTED ONLY AFTER toJSON AND THE REPLACER HAVE HAD THEIR TURN, which is the
@@ -1038,10 +1025,10 @@ internal sealed partial class JsRealm
                 return JsonQuote(engine, value.AsString());
 
             case JsType.Number:
-            {
-                var number = value.AsNumber();
-                return double.IsFinite(number) ? JsNumberFormat.ToJsString(number) : "null";
-            }
+                {
+                    var number = value.AsNumber();
+                    return double.IsFinite(number) ? JsNumberFormat.ToJsString(number) : "null";
+                }
 
             // THE LANGUAGE THROWS A TypeError FOR A BIGINT HERE, after consulting `toJSON` and the
             // replacer and unwrapping a BigInt object. Falling through would answer "not
@@ -1074,7 +1061,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>SerializeJSONObject</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5B77B9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DFC5BE
     // Broiler-Human:        PENDING
     private static string JsonSerializeObject(JsEngine engine, JsonWriter state, JsObject value)
     {
@@ -1083,7 +1070,7 @@ internal sealed partial class JsRealm
         state.Indent += state.Gap;
 
         var keys = state.PropertyList ?? JsonOwnEnumerableKeys(engine, value);
-        var parts = new System.Collections.Generic.List<string>();
+        var parts = new List<string>();
         var separator = state.Gap.Length == 0 ? ":" : ": ";
 
         foreach (var key in keys)
@@ -1104,7 +1091,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>SerializeJSONArray</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CEE41
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5A7C99
     // Broiler-Human:        PENDING
     private static string JsonSerializeArray(JsEngine engine, JsonWriter state, JsObject value)
     {
@@ -1112,7 +1099,7 @@ internal sealed partial class JsRealm
         var stepback = state.Indent;
         state.Indent += state.Gap;
 
-        var parts = new System.Collections.Generic.List<string>();
+        var parts = new List<string>();
 
         // THE LENGTH IS READ AS A PROPERTY AND NOT OFF THE STORE, which is `LengthOfArrayLike` and
         // is what the specification says. It matters for a Proxy, whose `length` is whatever its
@@ -1158,22 +1145,16 @@ internal sealed partial class JsRealm
     /// <summary>Pops the innermost object off the cycle stack.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=727241
     // Broiler-Human:        PENDING
-    private static void JsonLeave(JsonWriter state) =>
-        state.Stack.RemoveAt(state.Stack.Count - 1);
+    private static void JsonLeave(JsonWriter state) => state.Stack.RemoveAt(state.Stack.Count - 1);
 
     /// <summary>Joins the serialised members, indented or not.</summary>
     /// <remarks>
     /// An empty object or Array is <c>{}</c> and <c>[]</c> whatever the gap is: the specification
     /// puts the newline and the indentation between members, and there are none.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E82C2A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=403797
     // Broiler-Human:        PENDING
-    private static string JsonJoin(
-        JsonWriter state,
-        string stepback,
-        System.Collections.Generic.List<string> parts,
-        string open,
-        string close)
+    private static string JsonJoin(JsonWriter state, string stepback, List<string> parts, string open, string close)
     {
         if (parts.Count == 0)
         {
@@ -1217,12 +1198,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Every own enumerable string key of <paramref name="value"/>, in specification order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=439337
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2CC330
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<string> JsonOwnEnumerableKeys(
-        JsEngine engine, JsObject value)
+    private static List<string> JsonOwnEnumerableKeys(JsEngine engine, JsObject value)
     {
-        var keys = new System.Collections.Generic.List<string>();
+        var keys = new List<string>();
 
         foreach (var key in value.OwnPropertyNames())
         {
@@ -1245,7 +1225,7 @@ internal sealed partial class JsRealm
     /// cannot be encoded as UTF-8 and would make the document unreadable to a consumer that decodes
     /// before it parses.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C400F0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B9B130
     // Broiler-Human:        PENDING
     private static string JsonQuote(JsEngine engine, string value)
     {
@@ -1290,9 +1270,7 @@ internal sealed partial class JsRealm
                 default:
                     if (character < ' ' || JsonIsLoneSurrogate(value, at))
                     {
-                        text.Append("\\u").Append(
-                            ((int)character).ToString(
-                                "x4", System.Globalization.CultureInfo.InvariantCulture));
+                        text.Append("\\u").Append(((int)character).ToString("x4", CultureInfo.InvariantCulture));
                     }
                     else
                     {
@@ -1346,13 +1324,13 @@ internal sealed partial class JsRealm
         internal string? Source { get; init; }
 
         /// <summary>An Array's elements' records, in order.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=912B4D
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E4D0C9
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<JsonRecord>? Elements { get; init; }
+        internal List<JsonRecord>? Elements { get; init; }
 
         /// <summary>An object's members' records, by key, the last of a repeated key kept.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=64F211
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1B41A6
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.Dictionary<string, JsonRecord>? Entries { get; init; }
+        internal Dictionary<string, JsonRecord>? Entries { get; init; }
     }
 }

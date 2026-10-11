@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -265,11 +270,11 @@ internal sealed class JsDatePatternGenerator
             }
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C8BEA0
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=604C12
         // Broiler-Human:        PENDING
         private static string Text(char[] chars, int[] lengths)
         {
-            var text = new System.Text.StringBuilder();
+            var text = new StringBuilder();
 
             for (var field = 0; field < FieldCount; field++)
             {
@@ -302,9 +307,9 @@ internal sealed class JsDatePatternGenerator
         internal bool Specified { get; set; } = specified;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E29AB5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDBD24
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<Entry>?[] boot = new System.Collections.Generic.List<Entry>?[52];
+    private readonly List<Entry>?[] boot = new List<Entry>?[52];
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AE521A
     // Broiler-Human:        PENDING
@@ -314,9 +319,9 @@ internal sealed class JsDatePatternGenerator
     // Broiler-Human:        PENDING
     private readonly string[] fieldNames = new string[FieldCount];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6159B7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=355213
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, string> glue = new(System.StringComparer.Ordinal);
+    private readonly Dictionary<string, string> glue = new(StringComparer.Ordinal);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A19636
     // Broiler-Human:        PENDING
@@ -327,7 +332,7 @@ internal sealed class JsDatePatternGenerator
     private readonly string decimalSymbol;
 
     /// <summary>Makes the generator of <paramref name="language"/> as ICU initializes one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E850AD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E740D7
     // Broiler-Human:        PENDING
     internal JsDatePatternGenerator(JsDateData data, string language, char hourChar, string decimalSymbol)
     {
@@ -354,17 +359,17 @@ internal sealed class JsDatePatternGenerator
 
         if (data.Locales.TryGetValue(language, out var values))
         {
-            var available = new System.Collections.Generic.List<string>();
+            var available = new List<string>();
 
             foreach (var key in values.Keys)
             {
-                if (key.StartsWith("available.", System.StringComparison.Ordinal))
+                if (key.StartsWith("available.", StringComparison.Ordinal))
                 {
                     available.Add(key["available.".Length..]);
                 }
             }
 
-            available.Sort(System.StringComparer.Ordinal);
+            available.Sort(StringComparer.Ordinal);
 
             foreach (var skeleton in available)
             {
@@ -375,7 +380,7 @@ internal sealed class JsDatePatternGenerator
         for (var field = 0; field < FieldCount; field++)
         {
             appendFormats[field] = data.Value(language, "append." + AppendItems[field]) ?? "{0} \u251C{2}: {1}\u2524";
-            fieldNames[field] = data.Value(language, "field." + FieldNames[field]) ?? "F" + field.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            fieldNames[field] = data.Value(language, "field." + FieldNames[field]) ?? "F" + field.ToString(CultureInfo.InvariantCulture);
         }
 
         foreach (var style in new[] { "full", "long", "medium", "short" })
@@ -447,11 +452,11 @@ internal sealed class JsDatePatternGenerator
     }
 
     /// <summary>A pattern's tokens as ICU's <c>FormatParser</c> splits it: runs of one letter, and every other character alone.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7BE70F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=92863F
     // Broiler-Human:        PENDING
-    internal static System.Collections.Generic.List<string> Tokens(string pattern)
+    internal static List<string> Tokens(string pattern)
     {
-        var tokens = new System.Collections.Generic.List<string>();
+        var tokens = new List<string>();
         var at = 0;
 
         while (at < pattern.Length)
@@ -483,9 +488,9 @@ internal sealed class JsDatePatternGenerator
     /// ICU's <c>getQuoteLiteral</c>: from the quote token at <paramref name="index"/>, the index of the
     /// token that closes it, with the quoted tokens, the quotes included, appended to <paramref name="into"/>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=78E72F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2A0B57
     // Broiler-Human:        PENDING
-    internal static int QuoteEnd(System.Collections.Generic.List<string> tokens, int index, System.Text.StringBuilder? into)
+    internal static int QuoteEnd(List<string> tokens, int index, StringBuilder? into)
     {
         if (tokens[index][0] == '\'')
         {
@@ -662,11 +667,11 @@ internal sealed class JsDatePatternGenerator
     }
 
     /// <summary>ICU's <c>mapSkeletonMetacharacters</c>: <c>j</c>, <c>C</c> and <c>J</c> replaced by the language's hour and day period.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C5EAE8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A05509
     // Broiler-Human:        PENDING
     private string MapMetacharacters(string skeleton, ref int flags)
     {
-        var mapped = new System.Text.StringBuilder(skeleton.Length);
+        var mapped = new StringBuilder(skeleton.Length);
         var quoted = false;
 
         for (var at = 0; at < skeleton.Length; at++)
@@ -841,7 +846,7 @@ internal sealed class JsDatePatternGenerator
     }
 
     /// <summary>ICU's <c>getDistance</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F1BD0E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=531AC5
     // Broiler-Human:        PENDING
     private static int Distance(Skeleton request, Skeleton other, int includeMask, out int missing, out int extra)
     {
@@ -871,7 +876,7 @@ internal sealed class JsDatePatternGenerator
             }
             else
             {
-                result += System.Math.Abs(mine - theirs);
+                result += Math.Abs(mine - theirs);
             }
         }
 
@@ -989,12 +994,12 @@ internal sealed class JsDatePatternGenerator
     }
 
     /// <summary>ICU's <c>adjustFieldTypes</c>: a found pattern's fields given the skeleton's letters and widths.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=283833
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4D9929
     // Broiler-Human:        PENDING
     private string AdjustFieldTypes(string pattern, Skeleton? specified, int flags, int options, Skeleton request)
     {
         var tokens = Tokens(pattern);
-        var result = new System.Text.StringBuilder(pattern.Length + 8);
+        var result = new StringBuilder(pattern.Length + 8);
 
         for (var index = 0; index < tokens.Count; index++)
         {
@@ -1096,11 +1101,11 @@ internal sealed class JsDatePatternGenerator
     }
 
     /// <summary>A CLDR message pattern with <c>{0}</c>, <c>{1}</c> and <c>{2}</c> replaced.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D8011
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=337911
     // Broiler-Human:        PENDING
     internal static string Substitute(string pattern, string zero, string one, string two)
     {
-        var text = new System.Text.StringBuilder(pattern.Length + zero.Length + one.Length + two.Length);
+        var text = new StringBuilder(pattern.Length + zero.Length + one.Length + two.Length);
 
         for (var at = 0; at < pattern.Length; at++)
         {

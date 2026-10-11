@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   19
 // Annotated:        19/19
-// Exempt:           37
+// Exempt:           34
 // Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
@@ -140,7 +140,7 @@ public enum VmHostCallOutcome
 /// </para>
 /// </remarks>
 /// <remarks>Creates a capability description.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=910B5D
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=FF03D9
 // Broiler-Human:        PENDING
 public readonly struct VmHostCapabilityDescriptor(VmCapabilityId capabilityId, int version, VmCapabilitySignatureId signatureId, VmCapabilityKind kind,
     VmCapabilityReentrancy reentrancy, VmCapabilityThreadAffinity threadAffinity, VmExceptionTranslation exceptionTranslation) : IEquatable<VmHostCapabilityDescriptor>
@@ -200,7 +200,7 @@ public readonly struct VmHostCapabilityDescriptor(VmCapabilityId capabilityId, i
     public override bool Equals(object? obj) => obj is VmHostCapabilityDescriptor other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=850367
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=5CDD0A
     // Broiler-Human:        PENDING
     public override int GetHashCode() => HashCode.Combine(CapabilityId, Version, SignatureId, (int)Kind, (int)Reentrancy, (int)ThreadAffinity, (int)ExceptionTranslation);
 
@@ -220,7 +220,7 @@ public readonly struct VmHostCapabilityDescriptor(VmCapabilityId capabilityId, i
 /// that named only an ID would be asking for whatever the host happened to register under it.
 /// </remarks>
 /// <remarks>Creates an import declaration.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=78DEED
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3657FA
 // Broiler-Human:        PENDING
 public readonly struct VmCapabilityImport(VmHostCapabilityDescriptor descriptor, VmCapabilityImportKind importKind) : IEquatable<VmCapabilityImport>
 {
@@ -239,7 +239,7 @@ public readonly struct VmCapabilityImport(VmHostCapabilityDescriptor descriptor,
     public override bool Equals(object? obj) => obj is VmCapabilityImport other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=3F2523
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=D1C66C
     // Broiler-Human:        PENDING
     public override int GetHashCode() => HashCode.Combine(Descriptor, (int)ImportKind);
 
@@ -264,7 +264,7 @@ public readonly struct VmCapabilityImport(VmHostCapabilityDescriptor descriptor,
 /// runtime-identity input, not a cache-key input.
 /// </remarks>
 /// <remarks>Creates an assumption record.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7C53D
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A9AC3A
 // Broiler-Human:        PENDING
 public readonly struct VmHostSignatureAssumption(VmCapabilityId capabilityId, int version, VmCapabilitySignatureId signatureId, VmCapabilityKind kind,
     VmCapabilityReentrancy reentrancy, VmExceptionTranslation exceptionTranslation, bool optionalImportBound) : IEquatable<VmHostSignatureAssumption>
@@ -309,7 +309,7 @@ public readonly struct VmHostSignatureAssumption(VmCapabilityId capabilityId, in
     public override bool Equals(object? obj) => obj is VmHostSignatureAssumption other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=A24466
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=D20C3B
     // Broiler-Human:        PENDING
     public override int GetHashCode() => HashCode.Combine(CapabilityId, Version, SignatureId, (int)Kind, (int)Reentrancy, (int)ExceptionTranslation, OptionalImportBound);
 

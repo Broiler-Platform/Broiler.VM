@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -82,13 +86,13 @@ internal sealed class JsDateIntervalFormat
     // Broiler-Human:        PENDING
     private readonly string?[] secondParts = new string?[Count];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9714C7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5B7B20
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, string?[]> intervals = new(System.StringComparer.Ordinal);
+    private readonly Dictionary<string, string?[]> intervals = new(StringComparer.Ordinal);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C3455E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FFF09B
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<string> skeletons = [];
+    private readonly List<string> skeletons = [];
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=16399D
     // Broiler-Human:        PENDING
@@ -111,7 +115,7 @@ internal sealed class JsDateIntervalFormat
     private readonly string? dateTimeFormat;
 
     /// <summary>Prepares the patterns of a format whose pattern's skeleton is <paramref name="skeleton"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E47612
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7FCC83
     // Broiler-Human:        PENDING
     internal JsDateIntervalFormat(JsDateData data, string language, JsDatePatternGenerator generator, string skeleton)
     {
@@ -123,7 +127,7 @@ internal sealed class JsDateIntervalFormat
         {
             foreach (var (key, value) in values)
             {
-                if (!key.StartsWith("interval.", System.StringComparison.Ordinal) || key == "interval.fallback")
+                if (!key.StartsWith("interval.", StringComparison.Ordinal) || key == "interval.fallback")
                 {
                     continue;
                 }
@@ -158,7 +162,7 @@ internal sealed class JsDateIntervalFormat
             }
         }
 
-        skeletons.Sort(System.StringComparer.Ordinal);
+        skeletons.Sort(StringComparer.Ordinal);
         FullPattern = generator.BestPattern(skeleton, 0);
 
         Split(NormalizeHour(skeleton), out var dateSkeleton, out var normalizedDate, out var timeSkeleton, out var normalizedTime);
@@ -234,9 +238,9 @@ internal sealed class JsDateIntervalFormat
     /// The range from <paramref name="from"/> to <paramref name="to"/> as ICU's <c>formatImpl</c>
     /// writes it, with its fields; the first index is -1 when it is one date.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E778B3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=90DDCB
     // Broiler-Human:        PENDING
-    internal int Format(JsLocalTime from, JsLocalTime to, JsDateTimeFormatter formatter, System.Text.StringBuilder text, System.Collections.Generic.List<JsDateField> fields)
+    internal int Format(JsLocalTime from, JsLocalTime to, JsDateTimeFormatter formatter, StringBuilder text, List<JsDateField> fields)
     {
         var field = Largest(from, to);
 
@@ -323,21 +327,14 @@ internal sealed class JsDateIntervalFormat
     }
 
     /// <summary>ICU's <c>fallbackFormat</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9CAD14
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7F0475
     // Broiler-Human:        PENDING
-    private int FallbackFormat(
-        string pattern,
-        JsLocalTime from,
-        JsLocalTime to,
-        bool sameDay,
-        JsDateTimeFormatter formatter,
-        System.Text.StringBuilder text,
-        System.Collections.Generic.List<JsDateField> fields)
+    private int FallbackFormat(string pattern, JsLocalTime from, JsLocalTime to, bool sameDay, JsDateTimeFormatter formatter, StringBuilder text, List<JsDateField> fields)
     {
         if (sameDay && datePattern is not null && timePattern is not null && dateTimeFormat is not null)
         {
-            var zero = dateTimeFormat.IndexOf("{0}", System.StringComparison.Ordinal);
-            var one = dateTimeFormat.IndexOf("{1}", System.StringComparison.Ordinal);
+            var zero = dateTimeFormat.IndexOf("{0}", StringComparison.Ordinal);
+            var one = dateTimeFormat.IndexOf("{1}", StringComparison.Ordinal);
 
             if (zero < one)
             {
@@ -361,18 +358,12 @@ internal sealed class JsDateIntervalFormat
     }
 
     /// <summary>ICU's <c>fallbackRange</c>: both ends in one pattern, joined by CLDR's fallback.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=38CBA7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A2EBDF
     // Broiler-Human:        PENDING
-    private int FallbackRange(
-        string pattern,
-        JsLocalTime from,
-        JsLocalTime to,
-        JsDateTimeFormatter formatter,
-        System.Text.StringBuilder text,
-        System.Collections.Generic.List<JsDateField> fields)
+    private int FallbackRange(string pattern, JsLocalTime from, JsLocalTime to, JsDateTimeFormatter formatter, StringBuilder text, List<JsDateField> fields)
     {
-        var zero = Fallback.IndexOf("{0}", System.StringComparison.Ordinal);
-        var one = Fallback.IndexOf("{1}", System.StringComparison.Ordinal);
+        var zero = Fallback.IndexOf("{0}", StringComparison.Ordinal);
+        var one = Fallback.IndexOf("{1}", StringComparison.Ordinal);
 
         if (zero < one)
         {
@@ -398,7 +389,7 @@ internal sealed class JsDateIntervalFormat
     /// ICU's <c>normalizeHourMetacharacters</c>: the hour field becomes one hour letter of the cycle
     /// the locale writes it in, followed on a twelve-hour clock by its day period.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EF5DA5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E1953
     // Broiler-Human:        PENDING
     private string NormalizeHour(string text)
     {
@@ -445,7 +436,7 @@ internal sealed class JsDateIntervalFormat
         }
 
         var converted = generator.BestPattern(hourChar.ToString(), 0);
-        var letters = new System.Text.StringBuilder();
+        var letters = new StringBuilder();
         var quoted = false;
 
         foreach (var c in converted)
@@ -462,7 +453,7 @@ internal sealed class JsDateIntervalFormat
 
         var stripped = letters.ToString();
         var hour = stripped.Contains('h') ? 'h' : stripped.Contains('K') ? 'K' : stripped.Contains('k') ? 'k' : 'H';
-        var replacement = new System.Text.StringBuilder().Append(hour);
+        var replacement = new StringBuilder().Append(hour);
 
         if (hour is 'h' or 'K')
         {
@@ -491,14 +482,14 @@ internal sealed class JsDateIntervalFormat
     }
 
     /// <summary>ICU's <c>getDateTimeSkeleton</c>: a skeleton's date and time halves, each also normalized.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7CA645
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5FF123
     // Broiler-Human:        PENDING
     private static void Split(string text, out string date, out string normalizedDate, out string time, out string normalizedTime)
     {
-        var dateText = new System.Text.StringBuilder();
-        var normalizedDateText = new System.Text.StringBuilder();
-        var timeText = new System.Text.StringBuilder();
-        var normalizedTimeText = new System.Text.StringBuilder();
+        var dateText = new StringBuilder();
+        var normalizedDateText = new StringBuilder();
+        var timeText = new StringBuilder();
+        var normalizedTimeText = new StringBuilder();
         int weekdays = 0, days = 0, months = 0, years = 0, minutes = 0, generics = 0, specifics = 0;
         var hourChar = '\0';
 
@@ -558,12 +549,12 @@ internal sealed class JsDateIntervalFormat
 
         if (months != 0)
         {
-            normalizedDateText.Append('M', months < 3 ? 1 : System.Math.Min(months, 5));
+            normalizedDateText.Append('M', months < 3 ? 1 : Math.Min(months, 5));
         }
 
         if (weekdays != 0)
         {
-            normalizedDateText.Append('E', weekdays <= 3 ? 1 : System.Math.Min(weekdays, 5));
+            normalizedDateText.Append('E', weekdays <= 3 ? 1 : Math.Min(weekdays, 5));
         }
 
         if (days != 0)
@@ -651,14 +642,7 @@ internal sealed class JsDateIntervalFormat
     /// <summary>ICU's <c>setIntervalPattern</c> for one field: whether it extended the skeleton by the field's letter.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=518A1B
     // Broiler-Human:        PENDING
-    private bool SetIntervalPattern(
-        int field,
-        string current,
-        string best,
-        int difference,
-        bool extend,
-        out string? extendedSkeleton,
-        out string? extendedBest)
+    private bool SetIntervalPattern(int field, string current, string best, int difference, bool extend, out string? extendedSkeleton, out string? extendedBest)
     {
         extendedSkeleton = null;
         extendedBest = null;
@@ -712,8 +696,7 @@ internal sealed class JsDateIntervalFormat
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FFA40C
     // Broiler-Human:        PENDING
-    private string? Pattern(string name, int field) =>
-        intervals.TryGetValue(name, out var patterns) ? patterns[field] : null;
+    private string? Pattern(string name, int field) => intervals.TryGetValue(name, out var patterns) ? patterns[field] : null;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F6A8CC
     // Broiler-Human:        PENDING
@@ -798,7 +781,7 @@ internal sealed class JsDateIntervalFormat
     }
 
     /// <summary>ICU's <c>getBestSkeleton</c> over the interval skeletons.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2600BE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=46985F
     // Broiler-Human:        PENDING
     private string? BestSkeleton(string text, out int difference)
     {
@@ -807,7 +790,7 @@ internal sealed class JsDateIntervalFormat
 
         if (text.IndexOfAny(['z', 'k', 'K', 'a', 'b']) >= 0)
         {
-            input = text.Replace('z', 'v').Replace('k', 'H').Replace('K', 'h').Replace("a", string.Empty, System.StringComparison.Ordinal).Replace("b", string.Empty, System.StringComparison.Ordinal);
+            input = text.Replace('z', 'v').Replace('k', 'H').Replace('K', 'h').Replace("a", string.Empty, StringComparison.Ordinal).Replace("b", string.Empty, StringComparison.Ordinal);
             replaced = true;
         }
 
@@ -843,7 +826,7 @@ internal sealed class JsDateIntervalFormat
                 }
                 else
                 {
-                    distance += System.Math.Abs(mine - theirs);
+                    distance += Math.Abs(mine - theirs);
                 }
             }
 
@@ -887,11 +870,11 @@ internal sealed class JsDateIntervalFormat
     }
 
     /// <summary>ICU's <c>adjustFieldWidth</c>: an interval pattern's fields widened to the skeleton's.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D5C58D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=05305F
     // Broiler-Human:        PENDING
     private static string AdjustFieldWidth(string input, string best, string pattern, int difference)
     {
-        var adjusted = new System.Text.StringBuilder(pattern);
+        var adjusted = new StringBuilder(pattern);
         var inputWidths = Widths(input);
         var bestWidths = Widths(best);
 
@@ -986,9 +969,9 @@ internal sealed class JsDateIntervalFormat
         return adjusted.ToString();
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7B81A0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=002915
     // Broiler-Human:        PENDING
-    private static void ReplaceInPattern(System.Text.StringBuilder pattern, char from, char to)
+    private static void ReplaceInPattern(StringBuilder pattern, char from, char to)
     {
         var quoted = false;
 

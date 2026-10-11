@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -46,7 +49,7 @@ internal sealed partial class JsRealm
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
     /// <summary>Builds the six members on <c>Uint8Array</c> and its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D4E25A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=62A2AA
     // Broiler-Human:        PENDING
     private void SetupUint8ArrayCodecs()
     {
@@ -109,7 +112,7 @@ internal sealed partial class JsRealm
             _ = arguments;
             var bytes = Base64BytesOf(engine, Base64Receiver(engine, thisValue, "toHex"));
             engine.Charge((ulong)bytes.Length * 2 + 1);
-            return JsValue.String(System.Convert.ToHexStringLower(bytes));
+            return JsValue.String(Convert.ToHexStringLower(bytes));
         });
 
         Method(prototype, "setFromBase64", 1, (engine, thisValue, arguments) =>
@@ -242,7 +245,7 @@ internal sealed partial class JsRealm
     /// The specification's <c>GetUint8ArrayBytes</c>: the view's bytes, or a <c>TypeError</c> when it
     /// is out of bounds.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=055594
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9F27B8
     // Broiler-Human:        PENDING
     private static byte[] Base64BytesOf(JsEngine engine, JsTypedArray view)
     {
@@ -254,7 +257,7 @@ internal sealed partial class JsRealm
 
         var length = view.Length;
         engine.Charge((ulong)length + 1);
-        return new System.Span<byte>(data, view.ByteOffset, length).ToArray();
+        return new Span<byte>(data, view.ByteOffset, length).ToArray();
     }
 
     /// <summary>
@@ -302,9 +305,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>A new <c>Uint8Array</c> holding <paramref name="bytes"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B12042
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=54E602
     // Broiler-Human:        PENDING
-    private JsTypedArray Base64Allocate(JsEngine engine, System.Collections.Generic.List<byte> bytes)
+    private JsTypedArray Base64Allocate(JsEngine engine, List<byte> bytes)
     {
         var made = BinaryNewTypedArray(engine, JsElementKind.Uint8, bytes.Count);
         bytes.CopyTo(made.Buffer.Data!, made.ByteOffset);
@@ -312,19 +315,33 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Encodes <paramref name="bytes"/> as RFC 4648 section 4 or section 5 base64.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ABA28D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3AA6C1
     // Broiler-Human:        PENDING
     private static string Base64Encode(JsEngine engine, byte[] bytes, bool urlSafe, bool omitPadding)
     {
         engine.Charge(((ulong)bytes.Length * 4 / 3) + 4);
-        var text = System.Convert.ToBase64String(bytes);
 
         if (urlSafe)
         {
-            text = text.Replace('+', '-').Replace('/', '_');
+            var text = System.Buffers.Text.Base64Url.EncodeToString(bytes);
+            if (!omitPadding)
+            {
+                var mod = text.Length % 4;
+                if (mod == 2)
+                {
+                    return text + "==";
+                }
+                if (mod == 3)
+                {
+                    return text + "=";
+                }
+            }
+
+            return text;
         }
 
-        return omitPadding ? text.TrimEnd('=') : text;
+        var standard = Convert.ToBase64String(bytes);
+        return omitPadding ? standard.TrimEnd('=') : standard;
     }
 
     /// <summary>What a decode produced: the bytes, how much of the text it read, and its error.</summary>
@@ -333,9 +350,9 @@ internal sealed partial class JsRealm
     private sealed class Base64Result
     {
         /// <summary>The bytes decoded before the decode stopped.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BFBD94
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=63715E
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<byte> Bytes { get; } = [];
+        internal List<byte> Bytes { get; } = [];
 
         /// <summary>How many code units of the text the decoded bytes account for.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=095A82
@@ -371,10 +388,9 @@ internal sealed partial class JsRealm
     /// must be zero and it must be padded. A chunk that would not fit in what is left of
     /// <paramref name="maxLength"/> is not started, and <c>read</c> stops before it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=442B42
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C0BBA8
     // Broiler-Human:        PENDING
-    private static Base64Result Base64Decode(
-        JsEngine engine, string text, bool urlSafe, string lastChunk, long maxLength)
+    private static Base64Result Base64Decode(JsEngine engine, string text, bool urlSafe, string lastChunk, long maxLength)
     {
         var result = new Base64Result();
 
@@ -483,7 +499,7 @@ internal sealed partial class JsRealm
                 };
             }
 
-            if (Base64Alphabet.IndexOf(character, System.StringComparison.Ordinal) < 0)
+            if (Base64Alphabet.IndexOf(character, StringComparison.Ordinal) < 0)
             {
                 result.Error = "'" + character + "' is not a base64 character";
                 return result;
@@ -513,15 +529,15 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>DecodeFullLengthBase64Chunk</c>: four characters, three bytes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=19F167
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=50E32D
     // Broiler-Human:        PENDING
-    private static void Base64DecodeFull(char[] chunk, System.Collections.Generic.List<byte> bytes)
+    private static void Base64DecodeFull(char[] chunk, List<byte> bytes)
     {
         var bits = 0;
 
         for (var at = 0; at < 4; at++)
         {
-            bits = (bits << 6) | Base64Alphabet.IndexOf(chunk[at], System.StringComparison.Ordinal);
+            bits = (bits << 6) | Base64Alphabet.IndexOf(chunk[at], StringComparison.Ordinal);
         }
 
         bytes.Add((byte)(bits >> 16));
@@ -533,13 +549,12 @@ internal sealed partial class JsRealm
     /// The specification's <c>DecodeFinalBase64Chunk</c>: two characters are one byte and three are
     /// two, and under <paramref name="strict"/> the bits past the last byte must be zero.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6EC2A6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5F8788
     // Broiler-Human:        PENDING
-    private static bool Base64DecodeFinal(
-        char[] chunk, int length, bool strict, System.Collections.Generic.List<byte> bytes)
+    private static bool Base64DecodeFinal(char[] chunk, int length, bool strict, List<byte> bytes)
     {
         var padded = new[] { chunk[0], chunk[1], length == 3 ? chunk[2] : 'A', 'A' };
-        var decoded = new System.Collections.Generic.List<byte>(3);
+        var decoded = new List<byte>(3);
         Base64DecodeFull(padded, decoded);
 
         if (strict && decoded[length - 1] != 0)

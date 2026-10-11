@@ -80,22 +80,16 @@ internal sealed partial class JsRealm
         // what a descriptor query reports for them. A generator's `constructor` is an ORDINARY
         // OBJECT rather than a function - it is `%GeneratorFunction.prototype%` - and a reader who
         // assumed otherwise would call it and get a type error from the language.
-        GeneratorPrototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(
-                JsValue.Object(GeneratorFunctionPrototype), JsPropertyAttributes.Configurable));
+        GeneratorPrototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(GeneratorFunctionPrototype), JsPropertyAttributes.Configurable));
 
         Method(GeneratorPrototype, "next", 1, static (engine, thisValue, arguments) =>
-            engine.ResumeGenerator(
-                thisValue, JsResumeMode.Next, GeneratorArgument(arguments), "next"));
+            engine.ResumeGenerator(thisValue, JsResumeMode.Next, GeneratorArgument(arguments), "next"));
 
         Method(GeneratorPrototype, "return", 1, static (engine, thisValue, arguments) =>
-            engine.ResumeGenerator(
-                thisValue, JsResumeMode.Return, GeneratorArgument(arguments), "return"));
+            engine.ResumeGenerator(thisValue, JsResumeMode.Return, GeneratorArgument(arguments), "return"));
 
         Method(GeneratorPrototype, "throw", 1, static (engine, thisValue, arguments) =>
-            engine.ResumeGenerator(
-                thisValue, JsResumeMode.Throw, GeneratorArgument(arguments), "throw"));
+            engine.ResumeGenerator(thisValue, JsResumeMode.Throw, GeneratorArgument(arguments), "throw"));
 
         // A GENERATOR IS AN ITERABLE ITERATOR THROUGH THE REAL SYMBOL, and inheriting the one
         // `%IteratorPrototype%` carries is not enough to say so: the specification puts
@@ -103,39 +97,21 @@ internal sealed partial class JsRealm
         // before it reads any `[[Class]]`. The `@@iterator` below is inherited rather than
         // redefined - it already answers `this` - and defining a second one here would have been
         // a copy of a function programs compare for identity.
-        GeneratorPrototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Generator"), JsPropertyAttributes.Configurable));
-
-        GeneratorFunctionPrototype.SetOwnProperty(
-            "prototype",
-            JsProperty.Data(JsValue.Object(GeneratorPrototype), JsPropertyAttributes.Configurable));
-
-        GeneratorFunctionPrototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(
-                JsValue.String("GeneratorFunction"), JsPropertyAttributes.Configurable));
+        GeneratorPrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Generator"), JsPropertyAttributes.Configurable));
+        GeneratorFunctionPrototype.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(GeneratorPrototype), JsPropertyAttributes.Configurable));
+        GeneratorFunctionPrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("GeneratorFunction"), JsPropertyAttributes.Configurable));
 
         // THE CONSTRUCTOR BUILDS A GENERATOR FROM SOURCE WHERE `Function` BUILDS A FUNCTION, and
         // refuses where `Function` does (JSP-10, JSC-240): a composition that admits
         // broiler.javascript.dynamic has both, and one that declines it has neither. It refused in
         // every realm, giving the dynamic surface's reason in a realm that had admitted the surface.
-        var constructor = new JsNativeFunction(
-            this,
-            GlobalFunctionConstructor(),
-            "GeneratorFunction",
-            1,
+        var constructor = new JsNativeFunction(this, GlobalFunctionConstructor(), "GeneratorFunction", 1,
             static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "function*", GeneratorFunctionRefusal),
             static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "function*", GeneratorFunctionRefusal));
 
-        constructor.SetOwnProperty(
-            "prototype",
-            JsProperty.Data(
-                JsValue.Object(GeneratorFunctionPrototype), JsPropertyAttributes.None));
+        constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(GeneratorFunctionPrototype), JsPropertyAttributes.None));
 
-        GeneratorFunctionPrototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Configurable));
+        GeneratorFunctionPrototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Configurable));
 
         SetupAsyncFunction();
         SetupAsyncGenerator();
@@ -159,28 +135,17 @@ internal sealed partial class JsRealm
     {
         AsyncFunctionPrototype = new JsObject(FunctionPrototype, "AsyncFunction");
 
-        AsyncFunctionPrototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("AsyncFunction"), JsPropertyAttributes.Configurable));
+        AsyncFunctionPrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("AsyncFunction"), JsPropertyAttributes.Configurable));
 
         // THE CONSTRUCTOR BUILDS AN ASYNC FUNCTION FROM SOURCE OR REFUSES, as `Function` and
         // `GeneratorFunction` do, by whether the composition admitted broiler.javascript.dynamic
         // (JSP-10, JSC-240).
-        var constructor = new JsNativeFunction(
-            this,
-            GlobalFunctionConstructor(),
-            "AsyncFunction",
-            1,
+        var constructor = new JsNativeFunction(this, GlobalFunctionConstructor(), "AsyncFunction", 1,
             static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "async function", AsyncFunctionRefusal),
             static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "async function", AsyncFunctionRefusal));
 
-        constructor.SetOwnProperty(
-            "prototype",
-            JsProperty.Data(JsValue.Object(AsyncFunctionPrototype), JsPropertyAttributes.None));
-
-        AsyncFunctionPrototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Configurable));
+        constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(AsyncFunctionPrototype), JsPropertyAttributes.None));
+        AsyncFunctionPrototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Configurable));
     }
 
     /// <summary>What a call or a construction of <c>AsyncFunction</c> is told, and why.</summary>
@@ -249,7 +214,6 @@ internal sealed partial class JsRealm
     {
         var declared = engine.GetProperty(JsValue.Object(function), "prototype");
 
-        return new JsGenerator(
-            declared.IsObject ? declared.AsObject() : function.Realm!.GeneratorPrototype, frame);
+        return new JsGenerator(declared.IsObject ? declared.AsObject() : function.Realm!.GeneratorPrototype, frame);
     }
 }

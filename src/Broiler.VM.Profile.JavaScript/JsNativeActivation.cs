@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -64,27 +67,18 @@ internal sealed unsafe class JsNativeActivation
     private static long cookies;
 
     /// <summary>The activation whose emitted code is innermost on this thread, or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=4421A1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=70BD12
     // Broiler-Falsified-If: this names an activation while no emitted code of that activation is on this thread's stack
     // Broiler-Human:        PENDING
-    [System.ThreadStatic]
+    [ThreadStatic]
     private static JsNativeActivation? current;
 
     /// <summary>Creates the activation for one entry into a unit.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=3F3C6C
     // Broiler-Falsified-If: an activation is created with a cookie another activation already holds, or with entry values other than the ones the dispatch loop was called with
     // Broiler-Human:        PENDING
-    internal JsNativeActivation(
-        JsEngine engine,
-        JsProgram program,
-        int unitIndex,
-        JsEnvironment? environment,
-        JsValue thisValue,
-        JsValue[] arguments,
-        JsScriptFunction? self,
-        JsValue newTarget,
-        JsCell? thisBinding,
-        JsFrame? frame)
+    internal JsNativeActivation(JsEngine engine, JsProgram program, int unitIndex, JsEnvironment? environment, JsValue thisValue, JsValue[] arguments,
+        JsScriptFunction? self, JsValue newTarget, JsCell? thisBinding, JsFrame? frame)
     {
         Engine = engine;
         Program = program;
@@ -173,10 +167,10 @@ internal sealed unsafe class JsNativeActivation
     internal JsValue[] Stack = [];
 
     /// <summary>The scope chain, set by the entry and shared by every step.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=0E6121
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=A0CC86
     // Broiler-Falsified-If: a step runs over a scope list other than the one the entry built or borrowed from the frame
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsEnvironment> Scopes = null!;
+    internal List<JsEnvironment> Scopes = null!;
 
     /// <summary>The operand stack height at the step boundary.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1FED1E
@@ -223,10 +217,10 @@ internal sealed unsafe class JsNativeActivation
     /// the resident bindings and the operand stack, and the operand height before every instruction, which
     /// is how a helper knows the height inline code left, since inline code writes no managed state.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=3EC17C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=684ECC
     // Broiler-Falsified-If: a value step of this activation reads a plan other than the one of its own unit the template scan held the payload to
     // Broiler-Human:        PENDING
-    internal Format.JsValueUnitPlan? Plan;
+    internal JsValueUnitPlan? Plan;
 
     /// <summary>Whether the last step ended at a landing: a caught throw or a caught forced return.</summary>
     /// <remarks>
@@ -241,10 +235,10 @@ internal sealed unsafe class JsNativeActivation
     internal bool Landed;
 
     /// <summary>The exception a step caught at the wrapper, for the entering frame to raise.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AE8477
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C651DA
     // Broiler-Falsified-If: an exception a step caught is dropped rather than raised by the managed frame that entered the emitted code
     // Broiler-Human:        PENDING
-    internal System.Exception? Pending;
+    internal Exception? Pending;
 
     /// <summary>The activation whose emitted code called this one's directly, or nothing (stage JSV-3).</summary>
     /// <remarks>
@@ -294,10 +288,9 @@ internal sealed unsafe class JsNativeActivation
     /// Inlined, the arms write the two fields where they stand.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=13132A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=FB0D66
     // Broiler-Human:        PENDING
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal JsValue Exit(JsValue value)
     {
         Exited = true;
@@ -330,11 +323,10 @@ internal sealed unsafe class JsNativeActivation
     /// activations the way a rethrow per frame would.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=EAD7FE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=CD2AD0
     // Broiler-Falsified-If: a step starts at an offset, with an opcode or for an activation other than what the managed side computed, or an exception escapes into emitted code
     // Broiler-Human:        PENDING
-    internal static int Step<TMode>(JsBaselineFrame* frame, int pc, JsOpcode expected)
-        where TMode : struct, IJsExecutionMode
+    internal static int Step<TMode>(JsBaselineFrame* frame, int pc, JsOpcode expected) where TMode : struct, IJsExecutionMode
     {
         var act = current;
 
@@ -351,21 +343,10 @@ internal sealed unsafe class JsNativeActivation
 
         try
         {
-            _ = act.Engine.ExecuteCore<TMode>(
-                act.Program,
-                act.UnitIndex,
-                act.Environment,
-                act.ThisValue,
-                act.Arguments,
-                act.Self,
-                act.NewTarget,
-                act.ThisBinding,
-                act.Frame,
-                act);
-
+            _ = act.Engine.ExecuteCore<TMode>(act.Program, act.UnitIndex, act.Environment, act.ThisValue, act.Arguments, act.Self, act.NewTarget, act.ThisBinding, act.Frame, act);
             return act.Exited ? (int)JsBaselineStatus.Exit : act.Pc;
         }
-        catch (System.Exception escaped)
+        catch (Exception escaped)
         {
             act.Pending = escaped;
             return (int)JsBaselineStatus.Threw;
@@ -398,22 +379,15 @@ internal sealed unsafe class JsNativeActivation
     /// activation and raised by the managed frame that entered the emitted code.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=D0E8EF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=F529D6
     // Broiler-Falsified-If: a value step starts at an offset that is not a reached instruction start of its activation's unit, with an opcode or for an activation other than the emitted code's own, runs with no open region, runs before its debt is charged, leaves a word the arm wrote unencoded or unpublished, or lets an exception escape into emitted code
     // Broiler-Human:        PENDING
-    internal static int StepValue<TMode>(JsValueFrame* frame, int pc, JsOpcode expected)
-        where TMode : struct, IJsExecutionMode
+    internal static int StepValue<TMode>(JsValueFrame* frame, int pc, JsOpcode expected) where TMode : struct, IJsExecutionMode
     {
         var act = current;
 
-        if (act is null ||
-            frame is null ||
-            act.Cookie != frame->Cookie ||
-            act.Exited ||
-            (uint)pc >= (uint)act.Code.Length ||
-            act.Code[pc] != (byte)expected ||
-            act.Segment is null ||
-            act.Plan is null)
+        if (act is null || frame is null || act.Cookie != frame->Cookie || act.Exited || (uint)pc >= (uint)act.Code.Length ||
+            act.Code[pc] != (byte)expected || act.Segment is null || act.Plan is null)
         {
             return (int)JsBaselineStatus.Defect;
         }
@@ -432,17 +406,7 @@ internal sealed unsafe class JsNativeActivation
             var pops = JsValueWindows.Enter(act, pc, out var height);
             act.Landed = false;
 
-            _ = act.Engine.ExecuteCore<TMode>(
-                act.Program,
-                act.UnitIndex,
-                act.Environment,
-                act.ThisValue,
-                act.Arguments,
-                act.Self,
-                act.NewTarget,
-                act.ThisBinding,
-                act.Frame,
-                act);
+            _ = act.Engine.ExecuteCore<TMode>(act.Program, act.UnitIndex, act.Environment, act.ThisValue, act.Arguments, act.Self, act.NewTarget, act.ThisBinding, act.Frame, act);
 
             if (act.Exited)
             {
@@ -459,7 +423,7 @@ internal sealed unsafe class JsNativeActivation
             JsValueWindows.Leave(act, pc, height, pops);
             return act.Pc;
         }
-        catch (System.Exception escaped)
+        catch (Exception escaped)
         {
             act.Pending = escaped;
             return (int)JsBaselineStatus.Threw;
@@ -476,19 +440,14 @@ internal sealed unsafe class JsNativeActivation
     /// charges the debt, which is where cancellation and the wall clock are polled on a loop of pure
     /// instructions; an allowance that cannot take it is parked as the exhaustion it is.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=2A7F11
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=AB8FE4
     // Broiler-Falsified-If: a settlement answers an offset other than the one it was handed, runs an instruction, writes a word, or leaves a debt it was handed uncharged without parking the refusal
     // Broiler-Human:        PENDING
     internal static int SettleValue(JsValueFrame* frame, int pc)
     {
         var act = current;
 
-        if (act is null ||
-            frame is null ||
-            act.Cookie != frame->Cookie ||
-            act.Exited ||
-            act.Segment is null ||
-            act.Plan is null)
+        if (act is null || frame is null || act.Cookie != frame->Cookie || act.Exited || act.Segment is null || act.Plan is null)
         {
             return (int)JsBaselineStatus.Defect;
         }
@@ -505,7 +464,7 @@ internal sealed unsafe class JsNativeActivation
             act.Engine.ChargeDebt(debt);
             return pc;
         }
-        catch (System.Exception escaped)
+        catch (Exception escaped)
         {
             act.Pending = escaped;
             return (int)JsBaselineStatus.Threw;
@@ -530,23 +489,15 @@ internal sealed unsafe class JsNativeActivation
     /// lands nowhere is parked for the caller's caller.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=F68147
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=B9A0C6
     // Broiler-Falsified-If: a direct call is prepared for a call site whose checks fail, for a callee the ordinary helper should call, without its debt charged, or answers the direct call with the thread slot naming anything but the prepared callee; or anything but the direct call escapes into emitted code
     // Broiler-Human:        PENDING
-    internal static int PrepareCall<TMode>(JsValueFrame* frame, int pc, JsValueFrame* context)
-        where TMode : struct, IJsExecutionMode
+    internal static int PrepareCall<TMode>(JsValueFrame* frame, int pc, JsValueFrame* context) where TMode : struct, IJsExecutionMode
     {
         var act = current;
 
-        if (act is null ||
-            frame is null ||
-            context is null ||
-            act.Cookie != frame->Cookie ||
-            act.Exited ||
-            (uint)pc >= (uint)act.Code.Length ||
-            act.Code[pc] != (byte)JsOpcode.Call ||
-            act.Segment is null ||
-            act.Plan is null)
+        if (act is null || frame is null || context is null || act.Cookie != frame->Cookie || act.Exited || (uint)pc >= (uint)act.Code.Length ||
+            act.Code[pc] != (byte)JsOpcode.Call || act.Segment is null || act.Plan is null)
         {
             return (int)JsBaselineStatus.Defect;
         }
@@ -576,7 +527,7 @@ internal sealed unsafe class JsNativeActivation
             current = act.Engine.BeginDirectCall(act, pc, height, function, context);
             return JsValueAbi.DirectCall;
         }
-        catch (System.Exception escaped)
+        catch (Exception escaped)
         {
             return RaiseAt(act, pc, height, pops, escaped);
         }
@@ -593,23 +544,15 @@ internal sealed unsafe class JsNativeActivation
     /// and the answer is a defect. A returned value is written where the interpreter's arm writes it, and the
     /// caller goes on at the instruction after the call.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=C2D3A2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=BD21F8
     // Broiler-Falsified-If: it acts for a callee or a caller whose cookie is not its context's, leaves the thread slot naming the callee, leaves the callee's region, depth or referrer taken, writes the answer anywhere but the call's own output slot, or lets an exception escape into emitted code
     // Broiler-Human:        PENDING
     internal static int FinishCall(JsValueFrame* frame, int pc, JsValueFrame* context, int status)
     {
         var callee = current;
 
-        if (callee is null ||
-            frame is null ||
-            context is null ||
-            callee.Cookie != context->Cookie ||
-            callee.Caller is not { } act ||
-            act.Cookie != frame->Cookie ||
-            act.Exited ||
-            act.Pc != pc ||
-            act.Plan is null ||
-            act.Segment is null)
+        if (callee is null || frame is null || context is null || callee.Cookie != context->Cookie || callee.Caller is not { } act || act.Cookie != frame->Cookie ||
+            act.Exited || act.Pc != pc || act.Plan is null || act.Segment is null)
         {
             return (int)JsBaselineStatus.Defect;
         }
@@ -660,7 +603,7 @@ internal sealed unsafe class JsNativeActivation
                     new JsAbort(JsAbortKind.InternalDefect, "a direct callee threw nothing"))
                 : (int)JsBaselineStatus.Defect;
         }
-        catch (System.Exception escaped)
+        catch (Exception escaped)
         {
             act.Pending = escaped;
             return (int)JsBaselineStatus.Threw;
@@ -672,10 +615,10 @@ internal sealed unsafe class JsNativeActivation
     /// filter would pick, through the dispatch loop's own landing and with no throw, or parked for the caller's
     /// caller as a status (JSD-0035 section 8, stage JSV-4).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=8E4FA9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=4C6DD2
     // Broiler-Falsified-If: an exception lands where the interpreter's filter would not land it, one it would land is parked, it is thrown again to land, or a landing's words are left unencoded or unpublished
     // Broiler-Human:        PENDING
-    private static int RaiseAt(JsNativeActivation act, int pc, int height, int pops, System.Exception raised)
+    private static int RaiseAt(JsNativeActivation act, int pc, int height, int pops, Exception raised)
     {
         try
         {
@@ -688,7 +631,7 @@ internal sealed unsafe class JsNativeActivation
             JsValueWindows.Leave(act, pc, height, pops);
             return act.Pc;
         }
-        catch (System.Exception escaped)
+        catch (Exception escaped)
         {
             act.Pending = escaped;
             return (int)JsBaselineStatus.Threw;

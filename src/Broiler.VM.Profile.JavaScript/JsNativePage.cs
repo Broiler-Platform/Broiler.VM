@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   4
 // Annotated:        4/4
-// Exempt:           8
+// Exempt:           3
 // Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    Medium
@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -23,34 +24,15 @@ namespace Broiler.VM.Profile.JavaScript;
 /// Mapped executable memory holding emitted code for native execution.
 /// Delegates mapping and arming to the configured native mapper without declaring platform invokes.
 /// </summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B69A56
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=576F3B
 // Broiler-Human:        PENDING
-public sealed unsafe class JsNativePage : System.IDisposable
+public sealed unsafe class JsNativePage(IDisposable? handle, Func<bool> arm, Func<uint, nint> at, Func<uint, nint> entry) : IDisposable
 {
-    private readonly System.IDisposable? handle;
-    private readonly System.Func<bool> arm;
-    private readonly System.Func<uint, nint> at;
-    private readonly System.Func<uint, nint> entry;
+    public static Func<ReadOnlySpan<byte>, JsNativePage?>? Mapper { get; set; }
 
-    public static System.Func<System.ReadOnlySpan<byte>, JsNativePage?>? Mapper { get; set; }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=ABC23D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7644B6
     // Broiler-Human:        PENDING
-    public static JsNativePage? TryMap(System.ReadOnlySpan<byte> code) => Mapper?.Invoke(code);
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9AE630
-    // Broiler-Human:        PENDING
-    public JsNativePage(
-        System.IDisposable? handle,
-        System.Func<bool> arm,
-        System.Func<uint, nint> at,
-        System.Func<uint, nint> entry)
-    {
-        this.handle = handle;
-        this.arm = arm;
-        this.at = at;
-        this.entry = entry;
-    }
+    public static JsNativePage? TryMap(ReadOnlySpan<byte> code) => Mapper?.Invoke(code);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4F8A61
     // Broiler-Human:        PENDING

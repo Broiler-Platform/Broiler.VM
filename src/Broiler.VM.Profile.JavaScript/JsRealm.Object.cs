@@ -129,8 +129,7 @@ internal sealed partial class JsRealm
             // let `[object 42]` through.
             var tagged = engine.GetSymbol(thisValue, engine.Realm.ToStringTagSymbol);
 
-            return JsValue.String(
-                "[object " + (tagged.Type == JsType.String ? tagged.AsString() : builtinTag) + "]");
+            return JsValue.String("[object " + (tagged.Type == JsType.String ? tagged.AsString() : builtinTag) + "]");
         });
 
         _ = ObjectPrototype.TryGetOwnProperty("toString", out var installed);
@@ -161,37 +160,32 @@ internal sealed partial class JsRealm
         // The getter and the setter are the specification's, which is why the setter answers
         // `undefined` rather than throwing for a primitive receiver or a non-object value: the two
         // ways to be a no-op are distinguished by the receiver, not by the argument.
-        ObjectPrototype.SetOwnProperty(
-            "__proto__",
-            JsProperty.Accessor(
-                Native("get __proto__", 0, static (engine, thisValue, arguments) =>
-                {
-                    _ = arguments;
-                    var held = engine.ToObject(thisValue).Prototype;
-                    return held is null ? JsValue.Null : JsValue.Object(held);
-                }),
-                Native("set __proto__", 1, static (engine, thisValue, arguments) =>
-                {
-                    // RequireObjectCoercible comes first: `undefined` and `null` are a TypeError,
-                    // which this setter answered with `undefined` until 2026-10-03 (JSC-249).
-                    if (thisValue.IsNullish)
-                    {
-                        return engine.ThrowTypeError("set __proto__ called on null or undefined");
-                    }
+        ObjectPrototype.SetOwnProperty("__proto__", JsProperty.Accessor(Native("get __proto__", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var held = engine.ToObject(thisValue).Prototype;
+            return held is null ? JsValue.Null : JsValue.Object(held);
+        }), Native("set __proto__", 1, static (engine, thisValue, arguments) =>
+        {
+            // RequireObjectCoercible comes first: `undefined` and `null` are a TypeError,
+            // which this setter answered with `undefined` until 2026-10-03 (JSC-249).
+            if (thisValue.IsNullish)
+            {
+                return engine.ThrowTypeError("set __proto__ called on null or undefined");
+            }
 
-                    var value = ArgOfObject(arguments, 0);
+            var value = ArgOfObject(arguments, 0);
 
-                    if (!thisValue.IsObject || (!value.IsObject && value.Type != JsType.Null))
-                    {
-                        return JsValue.Undefined;
-                    }
+            if (!thisValue.IsObject || (!value.IsObject && value.Type != JsType.Null))
+            {
+                return JsValue.Undefined;
+            }
 
-                    ObjectSetPrototype(
-                        engine, thisValue.AsObject(), value.Type == JsType.Null ? null : value.AsObject());
+            ObjectSetPrototype(
+                engine, thisValue.AsObject(), value.Type == JsType.Null ? null : value.AsObject());
 
-                    return JsValue.Undefined;
-                }),
-                JsPropertyAttributes.Configurable));
+            return JsValue.Undefined;
+        }), JsPropertyAttributes.Configurable));
 
         // THE FOUR ANNEX B ACCESSOR HELPERS. They are older than `Object.defineProperty` and the
         // language keeps them because the web does; a program that uses one is usually old rather
@@ -947,7 +941,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads a descriptor object into the fields it actually carries.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=93FF58
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A22F41
     // Broiler-Human:        PENDING
     private static ObjectDescriptorFields ObjectToDescriptorFields(JsEngine engine, JsValue value)
     {
@@ -959,31 +953,31 @@ internal sealed partial class JsRealm
         var source = value.AsObject();
         var fields = new ObjectDescriptorFields();
 
-        if (engine.HasProperty(source, "enumerable"))
+        if (JsEngine.HasProperty(source, "enumerable"))
         {
             fields.HasEnumerable = true;
             fields.Enumerable = engine.GetProperty(value, "enumerable").ToBooleanValue();
         }
 
-        if (engine.HasProperty(source, "configurable"))
+        if (JsEngine.HasProperty(source, "configurable"))
         {
             fields.HasConfigurable = true;
             fields.Configurable = engine.GetProperty(value, "configurable").ToBooleanValue();
         }
 
-        if (engine.HasProperty(source, "value"))
+        if (JsEngine.HasProperty(source, "value"))
         {
             fields.HasValue = true;
             fields.Value = engine.GetProperty(value, "value");
         }
 
-        if (engine.HasProperty(source, "writable"))
+        if (JsEngine.HasProperty(source, "writable"))
         {
             fields.HasWritable = true;
             fields.Writable = engine.GetProperty(value, "writable").ToBooleanValue();
         }
 
-        if (engine.HasProperty(source, "get"))
+        if (JsEngine.HasProperty(source, "get"))
         {
             var getter = engine.GetProperty(value, "get");
 
@@ -996,7 +990,7 @@ internal sealed partial class JsRealm
             fields.Getter = getter.AsObjectOrNull();
         }
 
-        if (engine.HasProperty(source, "set"))
+        if (JsEngine.HasProperty(source, "set"))
         {
             var setter = engine.GetProperty(value, "set");
 
@@ -1853,8 +1847,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CBB1BE
     // Broiler-Human:        PENDING
-    private static string? ObjectApplyLength(
-        JsArray target, uint wanted, ObjectDescriptorFields fields)
+    private static string? ObjectApplyLength(JsArray target, uint wanted, ObjectDescriptorFields fields)
     {
         // `length` is a non-configurable data property, so `OrdinaryDefineOwnProperty` refuses an
         // accessor and, once it is closed, a request to open it again - whatever the value, and

@@ -3,19 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
-// Exempt:           73
-// Human-reviewed:   0/8
+// Relevant units:   7
+// Annotated:        7/7
+// Exempt:           72
+// Human-reviewed:   0/7
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  1/10 max
-// Unverified:       8
+// Unverified:       7
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM.Abstractions;
+using Broiler.VM.Binary;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -579,19 +580,12 @@ public enum JavaScriptDiagnosticCode
 /// projection. Writing it is this profile's work and not the core's, which is the whole of what
 /// the seventh core-facing type amounts to.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=1DD7A4
+/// <remarks>Wraps the contract meter the core supplied.</remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=09884A
 // Broiler-Falsified-If: a charge made through this adapter reaches a dimension other than the one named, or a released byte count is charged rather than released
 // Broiler-Human:        PENDING
-public sealed class JavaScriptReadAdapter : IVmBoundedAllocationMeter
+public sealed class JavaScriptReadAdapter(IVmMeter contractMeter) : IVmBoundedAllocationMeter
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D9AC66
-    // Broiler-Human:        PENDING
-    private readonly IVmMeter meter;
-
-    /// <summary>Wraps the contract meter the core supplied.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9141C7
-    // Broiler-Human:        PENDING
-    public JavaScriptReadAdapter(IVmMeter contractMeter) => meter = contractMeter;
 
     /// <summary>Projects the four artifact-shaped ceilings out of an effective limit vector.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8F35EC
@@ -604,25 +598,25 @@ public sealed class JavaScriptReadAdapter : IVmBoundedAllocationMeter
             limits[VmBudgetDimension.StructuralDepth]);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FFFA26
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7760C8
     // Broiler-Human:        PENDING
     public bool TryReserve(ulong byteCount) =>
-        meter.TryCharge(VmBudgetDimension.AllocatedBytes, byteCount);
+        contractMeter.TryCharge(VmBudgetDimension.AllocatedBytes, byteCount);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E74062
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=17DA0E
     // Broiler-Human:        PENDING
     public void Release(ulong byteCount) =>
-        meter.ReportReleased(VmBudgetDimension.AllocatedBytes, byteCount);
+        contractMeter.ReportReleased(VmBudgetDimension.AllocatedBytes, byteCount);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4E1E45
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4DC736
     // Broiler-Human:        PENDING
     public bool TryChargeWork(ulong workUnits) =>
-        meter.TryCharge(VmBudgetDimension.VerifierWork, workUnits);
+        contractMeter.TryCharge(VmBudgetDimension.VerifierWork, workUnits);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=06A1AC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=24D661
     // Broiler-Human:        PENDING
-    public bool Poll() => meter.Poll();
+    public bool Poll() => contractMeter.Poll();
 }

@@ -47,7 +47,7 @@ namespace Broiler.VM.Abstractions;
 /// surfaces is a language claim the core cannot evaluate.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3F15DD
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5D2704
 // Broiler-Human:        PENDING
 public readonly struct VmFeatureManifestId : IEquatable<VmFeatureManifestId>, IComparable<VmFeatureManifestId>
 {
@@ -84,12 +84,12 @@ public readonly struct VmFeatureManifestId : IEquatable<VmFeatureManifestId>, IC
     public int Length => text?.Length ?? 0;
 
     /// <summary>The ID as a span, without allocating.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8D53DD
     // Broiler-Human:        PENDING
     public ReadOnlySpan<char> AsSpan() => MemoryExtensions.AsSpan(text);
 
     /// <summary>Parses <paramref name="candidate"/>, returning <see langword="false"/> when it does not satisfy the grammar.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=081976
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=65D8E7
     // Broiler-Human:        PENDING
     public static bool TryParse(ReadOnlySpan<char> candidate, out VmFeatureManifestId id)
     {
@@ -112,7 +112,7 @@ public readonly struct VmFeatureManifestId : IEquatable<VmFeatureManifestId>, IC
 
     /// <summary>Parses <paramref name="candidate"/> or throws.</summary>
     /// <exception cref="System.ArgumentException">The candidate does not satisfy the grammar.</exception>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=54EDDE
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=133DD6
     // Broiler-Human:        PENDING
     public static VmFeatureManifestId Parse(ReadOnlySpan<char> candidate)
     {
@@ -137,7 +137,7 @@ public readonly struct VmFeatureManifestId : IEquatable<VmFeatureManifestId>, IC
     /// a manifest declared under <c>Broiler.VM.Fixture.Alpha</c> does not belong to a profile
     /// spelled <c>broiler.vm.fixture.alpha</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Medium; Resources=1; Fingerprint=BC1C8F
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Medium; Resources=1; Fingerprint=5422A6
     // Broiler-Human:        PENDING
     public bool StartsWithProfileNamespace(VmProfileId profileId)
     {
@@ -179,7 +179,7 @@ public readonly struct VmFeatureManifestId : IEquatable<VmFeatureManifestId>, IC
     public override bool Equals(object? obj) => obj is VmFeatureManifestId other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E4177
     // Broiler-Human:        PENDING
     public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 

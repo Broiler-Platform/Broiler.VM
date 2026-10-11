@@ -138,8 +138,7 @@ internal sealed partial class JsRealm
             (FinalizationRegistryPrototype, "FinalizationRegistry"),
         })
         {
-            prototype.SetOwnSymbol(
-                ToStringTagSymbol, JsProperty.Data(JsValue.String(tag), JsPropertyAttributes.Configurable));
+            prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String(tag), JsPropertyAttributes.Configurable));
         }
     }
 
@@ -152,8 +151,7 @@ internal sealed partial class JsRealm
             "Map",
             0,
             MapPrototype,
-            static (engine, thisValue, arguments) =>
-                engine.ThrowTypeError("Constructor Map requires 'new'"),
+            static (engine, thisValue, arguments) => engine.ThrowTypeError("Constructor Map requires 'new'"),
             (engine, thisValue, arguments) =>
             {
                 // THE INSTANCE IS MADE FROM `new.target` BEFORE ITS ADDER IS READ, which is the
@@ -185,16 +183,11 @@ internal sealed partial class JsRealm
                     {
                         if (!entry.IsObject)
                         {
-                            throw engine.Error(
-                                "TypeError", "Iterator value is not an entry object");
+                            throw engine.Error("TypeError", "Iterator value is not an entry object");
                         }
 
                         engine.Retain(CollectionEntryBytes);
-
-                        engine.Call(
-                            adder,
-                            JsValue.Object(made),
-                            [engine.GetProperty(entry, "0"), engine.GetProperty(entry, "1")]);
+                        engine.Call(adder, JsValue.Object(made), [engine.GetProperty(entry, "0"), engine.GetProperty(entry, "1")]);
                     });
                 }
 
@@ -357,8 +350,7 @@ internal sealed partial class JsRealm
             "Set",
             0,
             SetPrototype,
-            static (engine, thisValue, arguments) =>
-                engine.ThrowTypeError("Constructor Set requires 'new'"),
+            static (engine, thisValue, arguments) => engine.ThrowTypeError("Constructor Set requires 'new'"),
             (engine, thisValue, arguments) =>
             {
                 // THE INSTANCE IS MADE FROM `new.target` BEFORE ITS ADDER IS READ, which is the
@@ -567,8 +559,7 @@ internal sealed partial class JsRealm
 
             if (!callback.IsObject || !callback.AsObject().IsCallable)
             {
-                return engine.ThrowTypeError(
-                    "WeakMap.prototype.getOrInsertComputed: the callback is not a function");
+                return engine.ThrowTypeError("WeakMap.prototype.getOrInsertComputed: the callback is not a function");
             }
 
             engine.Charge(1);
@@ -602,8 +593,7 @@ internal sealed partial class JsRealm
             "WeakSet",
             0,
             WeakSetPrototype,
-            static (engine, thisValue, arguments) =>
-                engine.ThrowTypeError("Constructor WeakSet requires 'new'"),
+            static (engine, thisValue, arguments) => engine.ThrowTypeError("Constructor WeakSet requires 'new'"),
             (engine, thisValue, arguments) =>
             {
                 // THE INSTANCE IS MADE FROM `new.target` BEFORE ITS ADDER IS READ, which is the
@@ -942,12 +932,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D6C4FD
     // Broiler-Human:        PENDING
-    private static void CollectionWalk(
-        JsEngine engine,
-        JsKeyedTable table,
-        JsValue callback,
-        JsValue thisArg,
-        JsValue receiver)
+    private static void CollectionWalk(JsEngine engine, JsKeyedTable table, JsValue callback, JsValue thisArg, JsValue receiver)
     {
         table.EnterIteration();
 
@@ -1252,12 +1237,12 @@ internal sealed partial class JsRealm
     /// as extra <c>next</c> calls the argument can see and count. Stopping early closes the
     /// iterator, which is what tells a generator to run its <c>finally</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=08814F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5766CF
     // Broiler-Human:        PENDING
     private static System.Collections.Generic.IEnumerable<JsValue> CollectionSetKeys(
         JsEngine engine, JsSetLike other)
     {
-        var iterator = engine.Call(other.Keys, other.Receiver, System.Array.Empty<JsValue>());
+        var iterator = engine.Call(other.Keys, other.Receiver, []);
 
         if (!iterator.IsObject)
         {
@@ -1304,8 +1289,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7030BC
     // Broiler-Human:        PENDING
-    internal static System.Collections.Generic.IEnumerable<JsValue> IterableElements(
-        JsEngine engine, JsValue source)
+    internal static System.Collections.Generic.IEnumerable<JsValue> IterableElements(JsEngine engine, JsValue source)
     {
         var record = engine.GetIterator(source);
         var settled = false;
@@ -1497,8 +1481,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4DF0AE
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<JsValue> CollectionElements(
-        JsEngine engine, JsValue source)
+    private static System.Collections.Generic.List<JsValue> CollectionElements(JsEngine engine, JsValue source)
     {
         var values = new System.Collections.Generic.List<JsValue>();
 

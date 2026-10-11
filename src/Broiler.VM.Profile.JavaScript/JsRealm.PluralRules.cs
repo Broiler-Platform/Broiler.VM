@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -52,29 +55,23 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] PluralCategoryOrder = ["zero", "one", "two", "few", "many", "other"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=068CFE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4781F8
     // Broiler-Human:        PENDING
     private void SetupPluralRules(JsObject intl)
     {
         var prototype = new JsObject(ObjectPrototype);
         PluralRulesPrototype = prototype;
 
-        var constructor = new JsNativeFunction(
-            this,
-            FunctionPrototype,
-            "PluralRules",
-            0,
-            static (engine, thisValue, arguments) =>
-                throw engine.Error("TypeError", "Constructor Intl.PluralRules requires 'new'"),
-            static (engine, newTarget, arguments) => NewPluralRules(engine, newTarget, arguments));
-
-        constructor.BuildsFromNewTarget = true;
+        var constructor = new JsNativeFunction(this, FunctionPrototype, "PluralRules", 0,
+            static (engine, thisValue, arguments) => throw engine.Error("TypeError", "Constructor Intl.PluralRules requires 'new'"),
+            static (engine, newTarget, arguments) => NewPluralRules(engine, newTarget, arguments))
+        {
+            BuildsFromNewTarget = true
+        };
         PluralRulesConstructor = constructor;
 
         constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Method(constructor, "supportedLocalesOf", 1, static (engine, thisValue, arguments) =>
         {
@@ -105,7 +102,7 @@ internal sealed partial class JsRealm
                 }
             }
 
-            var categories = new System.Collections.Generic.List<JsValue>();
+            var categories = new List<JsValue>();
 
             foreach (var category in PluralCategoriesOf(engine, rules))
             {
@@ -153,13 +150,8 @@ internal sealed partial class JsRealm
             return JsValue.String(ResolvePluralRange(engine, rules, x, y));
         });
 
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl.PluralRules"), JsPropertyAttributes.Configurable));
-
-        intl.SetOwnProperty(
-            "PluralRules",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl.PluralRules"), JsPropertyAttributes.Configurable));
+        intl.SetOwnProperty("PluralRules", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>The plural rules <paramref name="thisValue"/> is, or the <c>TypeError</c>.</summary>
@@ -170,7 +162,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.PluralRules.prototype." + member + " requires that 'this' be an Intl.PluralRules");
 
     /// <summary>ECMA-402's <c>Intl.PluralRules</c> constructor (s17.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2AB2C1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86D5A7
     // Broiler-Human:        PENDING
     internal static JsValue NewPluralRules(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -181,12 +173,7 @@ internal sealed partial class JsRealm
         var options = CoerceOptionsToObject(engine, Argument(arguments, 1));
         _ = GetStringOption(engine, options, "localeMatcher", ["lookup", "best fit"], "best fit");
 
-        var resolved = ResolveLocale(
-            engine,
-            requested,
-            new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal),
-            [],
-            static (locale, key) => [null]);
+        var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal), [], static (locale, key) => [null]);
 
         var type = GetStringOption(engine, options, "type", ["cardinal", "ordinal"], "cardinal")!;
         var notation = GetStringOption(engine, options, "notation", ["standard", "scientific", "engineering", "compact"], "standard")!;
@@ -241,7 +228,7 @@ internal sealed partial class JsRealm
     /// ECMA-402's ResolvePluralRange (s17.5.4): a <c>RangeError</c> at not-a-number, the start's
     /// category where both ends write the same string, and otherwise CLDR's range rule.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E969F1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=662288
     // Broiler-Human:        PENDING
     private static string ResolvePluralRange(JsEngine engine, JsPluralRulesObject rules, JsDecimal x, JsDecimal y)
     {
@@ -250,24 +237,24 @@ internal sealed partial class JsRealm
             throw engine.Error("RangeError", "Intl.PluralRules: a range cannot start or end at NaN");
         }
 
-        var start = ResolvePlural(engine, rules, x);
+        var (Category, Formatted) = ResolvePlural(engine, rules, x);
         var end = ResolvePlural(engine, rules, y);
 
-        if (start.Formatted == end.Formatted)
+        if (Formatted == end.Formatted)
         {
-            return start.Category;
+            return Category;
         }
 
-        return engine.Intl!.Numbers.PluralRange(rules.Language, start.Category, end.Category);
+        return engine.Intl!.Numbers.PluralRange(rules.Language, Category, end.Category);
     }
 
     /// <summary>Every category PluralRuleSelect can answer for the language and type, in s17.3.2's order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=76A751
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BF7749
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<string> PluralCategoriesOf(JsEngine engine, JsPluralRulesObject rules)
+    private static List<string> PluralCategoriesOf(JsEngine engine, JsPluralRulesObject rules)
     {
         var numbers = engine.Intl!.Numbers;
-        var categories = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal) { "other" };
+        var categories = new HashSet<string>(StringComparer.Ordinal) { "other" };
 
         if ((rules.Type == "ordinal" ? numbers.Ordinals : numbers.Plurals).TryGetValue(rules.Language, out var list))
         {
@@ -277,7 +264,7 @@ internal sealed partial class JsRealm
             }
         }
 
-        var ordered = new System.Collections.Generic.List<string>();
+        var ordered = new List<string>();
 
         foreach (var category in PluralCategoryOrder)
         {
@@ -298,8 +285,7 @@ internal sealed class JsPluralRulesObject : JsObject
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=44D402
     // Broiler-Human:        PENDING
-    internal JsPluralRulesObject(JsObject prototype, JsNumberFormatter formatter, string type, string language)
-        : base(prototype)
+    internal JsPluralRulesObject(JsObject prototype, JsNumberFormatter formatter, string type, string language) : base(prototype)
     {
         Formatter = formatter;
         Type = type;

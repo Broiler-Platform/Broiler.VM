@@ -1,4 +1,4 @@
-using Broiler.VM;
+using Broiler.VM.Binary;
 using Broiler.VM.Ubc;
 using Com.Example.Tally;
 using System.Collections.Immutable;

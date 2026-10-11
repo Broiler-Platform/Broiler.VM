@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>An enumerator over the property names <c>for…in</c> visits.</summary>
@@ -37,18 +40,17 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed class JsEnumerator : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D90CE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=14208A
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.HashSet<string> visited =
-        new(System.StringComparer.Ordinal);
+    private readonly HashSet<string> visited = new(StringComparer.Ordinal);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1FDE8E
     // Broiler-Human:        PENDING
     private JsObject? current;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6FFF1F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=49A06B
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<string>? names;
+    private List<string>? names;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=98C321
     // Broiler-Human:        PENDING
@@ -57,8 +59,7 @@ internal sealed class JsEnumerator : JsObject
     /// <summary>Creates an enumerator that starts at <paramref name="start"/>, or visits nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F78D99
     // Broiler-Human:        PENDING
-    internal JsEnumerator(JsObject? start)
-        : base(null, "Enumerator") => current = start;
+    internal JsEnumerator(JsObject? start) : base(null, "Enumerator") => current = start;
 
     /// <summary>Yields the next name, or answers that there is none.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5D5530
@@ -121,8 +122,7 @@ internal sealed class JsIteratorRecord : JsObject
     /// <summary>Creates a record over an iterator object and the <c>next</c> read off it.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=46425A
     // Broiler-Human:        PENDING
-    internal JsIteratorRecord(JsValue iterator, JsValue next)
-        : base(null, "Iterator")
+    internal JsIteratorRecord(JsValue iterator, JsValue next) : base(null, "Iterator")
     {
         Iterator = iterator;
         Next = next;
@@ -199,9 +199,7 @@ internal sealed partial class JsRealm
         agent = owner.Symbols;
 
         ObjectPrototype = new JsObject(null);
-        FunctionPrototype = new JsNativeFunction(
-            this,
-            ObjectPrototype, string.Empty, 0, static (_, _, _) => JsValue.Undefined);
+        FunctionPrototype = new JsNativeFunction(this, ObjectPrototype, string.Empty, 0, static (_, _, _) => JsValue.Undefined);
 
         ThrowTypeErrorFunction = CreateThrowTypeError();
 
@@ -302,9 +300,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The constructors this realm built while it was being built, in the order it built them.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0080AE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4E183A
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<JsNativeFunction> intrinsicConstructors = [];
+    private readonly List<JsNativeFunction> intrinsicConstructors = [];
 
     /// <summary>Whether the realm's constructor has finished.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E7F825
@@ -459,10 +457,10 @@ internal sealed partial class JsRealm
     internal JsObject RegExpPrototype { get; }
 
     /// <summary>The Error constructors, by name, so a thrown intrinsic reaches its own identity.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=60A934
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C935C7
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, JsNativeFunction> ErrorConstructors { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, JsNativeFunction> ErrorConstructors { get; } =
+        new(StringComparer.Ordinal);
 
     /// <summary>Installs <c>get [Symbol.species]</c>, which answers the receiver.</summary>
     /// <remarks>
@@ -506,42 +504,27 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FF73D9
     // Broiler-Human:        PENDING
     internal void Method(JsObject host, string name, int arity, JsNativeBody body) =>
-        host.SetOwnProperty(
-            name,
-            JsProperty.Data(
-                JsValue.Object(Native(name, arity, body)),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        host.SetOwnProperty(name, JsProperty.Data(JsValue.Object(Native(name, arity, body)), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
     /// <summary>Defines a built-in constructor on the global object and links its prototype.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1C829F
     // Broiler-Human:        PENDING
-    internal JsNativeFunction Constructor(
-        string name, int arity, JsObject prototype, JsNativeBody call, JsNativeBody construct)
+    internal JsNativeFunction Constructor(string name, int arity, JsObject prototype, JsNativeBody call, JsNativeBody construct)
     {
         var function = new JsNativeFunction(this, FunctionPrototype, name, arity, call, construct);
 
-        function.SetOwnProperty(
-            "prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
+        function.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(function), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(
-                JsValue.Object(function),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
-
-        GlobalObject.SetOwnProperty(
-            name,
-            JsProperty.Data(
-                JsValue.Object(function),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        GlobalObject.SetOwnProperty(name, JsProperty.Data(JsValue.Object(function), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         return function;
     }
 
     /// <summary>A fresh Array holding <paramref name="values"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BE50B5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=62F5B6
     // Broiler-Human:        PENDING
-    internal JsArray NewArray(System.Collections.Generic.IEnumerable<JsValue> values)
+    internal JsArray NewArray(IEnumerable<JsValue> values)
     {
         var array = new JsArray(ArrayPrototype);
 
@@ -569,9 +552,7 @@ internal sealed partial class JsRealm
 
         var error = NewError(engine, prototype.IsObject ? prototype.AsObject() : ErrorPrototype);
 
-        error.SetOwnProperty(
-            "message",
-            JsProperty.Data(JsValue.String(message), JsPropertyAttributes.BuiltIn));
+        error.SetOwnProperty("message", JsProperty.Data(JsValue.String(message), JsPropertyAttributes.BuiltIn));
 
         return JsValue.Object(error);
     }
@@ -602,11 +583,8 @@ internal sealed partial class JsRealm
                 "mode functions or the arguments objects for calls to them");
         });
 
-        thrower.SetOwnProperty(
-            "length", JsProperty.Data(JsValue.Number(0), JsPropertyAttributes.None));
-
-        thrower.SetOwnProperty(
-            "name", JsProperty.Data(JsValue.String(string.Empty), JsPropertyAttributes.None));
+        thrower.SetOwnProperty("length", JsProperty.Data(JsValue.Number(0), JsPropertyAttributes.None));
+        thrower.SetOwnProperty("name", JsProperty.Data(JsValue.String(string.Empty), JsPropertyAttributes.None));
 
         thrower.Extensible = false;
         return thrower;
@@ -629,32 +607,23 @@ internal sealed partial class JsRealm
     /// indices are mapped; an index past either count is an ordinary property from the start
     /// *(corrected: JSeal V05)*.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=606E6E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A8D4D4
     // Broiler-Human:        PENDING
-    internal JsObject CreateArguments(
-        JsValue[] arguments,
-        JsScriptFunction? callee,
-        bool strict,
-        JsEnvironment? parameters = null,
-        int parameterCount = 0)
+    internal JsObject CreateArguments(JsValue[] arguments, JsScriptFunction? callee, bool strict, JsEnvironment? parameters = null, int parameterCount = 0)
     {
         var mappedArguments = !strict && parameters is not null
             ? new JsMappedArguments(
-                ObjectPrototype, parameters, System.Math.Min(arguments.Length, parameterCount))
+                ObjectPrototype, parameters, Math.Min(arguments.Length, parameterCount))
             : null;
 
         var value = mappedArguments ?? new JsObject(ObjectPrototype, "Arguments");
 
         for (var at = 0; at < arguments.Length; at++)
         {
-            value.SetOwnProperty(
-                JsNumberFormat.ToUintString((uint)at),
-                JsProperty.Data(arguments[at], JsPropertyAttributes.Default));
+            value.SetOwnProperty(JsNumberFormat.ToUintString((uint)at), JsProperty.Data(arguments[at], JsPropertyAttributes.Default));
         }
 
-        value.SetOwnProperty(
-            "length",
-            JsProperty.Data(JsValue.Number(arguments.Length), JsPropertyAttributes.BuiltIn));
+        value.SetOwnProperty("length", JsProperty.Data(JsValue.Number(arguments.Length), JsPropertyAttributes.BuiltIn));
 
         // AN UNMAPPED OBJECT MAY NOT SAY WHICH FUNCTION IT BELONGS TO, and the refusal is a
         // property rather than an absence: `callee` is a non-enumerable, non-configurable accessor
@@ -664,23 +633,18 @@ internal sealed partial class JsRealm
         // default, a rest element or a pattern gets the unmapped object and so the accessor too.
         if (mappedArguments is null)
         {
-            value.SetOwnProperty(
-                "callee",
-                JsProperty.Accessor(
-                    ThrowTypeErrorFunction, ThrowTypeErrorFunction, JsPropertyAttributes.None));
+            value.SetOwnProperty("callee", JsProperty.Accessor(ThrowTypeErrorFunction, ThrowTypeErrorFunction, JsPropertyAttributes.None));
         }
         else if (callee is not null)
         {
-            value.SetOwnProperty(
-                "callee", JsProperty.Data(JsValue.Object(callee), JsPropertyAttributes.BuiltIn));
+            value.SetOwnProperty("callee", JsProperty.Data(JsValue.Object(callee), JsPropertyAttributes.BuiltIn));
         }
 
         // `arguments` IS ITERABLE, ON THE REAL `Symbol.iterator`, which is what makes
         // `f(...arguments)` and `[...arguments]` the ordinary forwarding idioms they are in the
         // wild. It gets `%Array.prototype.values%` because it is an array-like with a `length`,
         // which is all that iterator reads.
-        value.SetOwnSymbol(
-            IteratorSymbol, JsProperty.Data(arrayIterator, JsPropertyAttributes.BuiltIn));
+        value.SetOwnSymbol(IteratorSymbol, JsProperty.Data(arrayIterator, JsPropertyAttributes.BuiltIn));
 
         mappedArguments?.Connect();
         return value;
@@ -707,15 +671,8 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=18FB82
     // Broiler-Human:        PENDING
-    internal JsObject CreateClosure(
-        JsProgram program,
-        int unit,
-        JsEnvironment environment,
-        JsValue lexicalThis,
-        JsCell? lexicalThisBinding,
-        JsValue lexicalNewTarget,
-        JsScriptFunction? lexicalActive,
-        string scriptOrModule)
+    internal JsObject CreateClosure(JsProgram program, int unit, JsEnvironment environment, JsValue lexicalThis,
+        JsCell? lexicalThisBinding, JsValue lexicalNewTarget, JsScriptFunction? lexicalActive, string scriptOrModule)
     {
         // A GENERATOR FUNCTION INHERITS FROM `%GeneratorFunction.prototype%` AND NOT FROM
         // `Function.prototype`, and it is two hops rather than one to the latter. That is what
@@ -771,27 +728,15 @@ internal sealed partial class JsRealm
             function.ClassName = "AsyncFunction";
         }
 
-        function.SetOwnProperty(
-            "length",
-            JsProperty.Data(
-                JsValue.Number(program.Functions[unit].ParameterCount),
-                JsPropertyAttributes.Configurable));
-
-        function.SetOwnProperty(
-            "name",
-            JsProperty.Data(
-                JsValue.String(program.Functions[unit].Name), JsPropertyAttributes.Configurable));
+        function.SetOwnProperty("length", JsProperty.Data(JsValue.Number(program.Functions[unit].ParameterCount), JsPropertyAttributes.Configurable));
+        function.SetOwnProperty("name", JsProperty.Data(JsValue.String(program.Functions[unit].Name), JsPropertyAttributes.Configurable));
 
         if (isAsyncGenerator)
         {
             // THE SAME DESCRIPTOR AND A DIFFERENT PROTOTYPE, which is the whole of the difference
             // between the two kinds here: writable, not enumerable, not configurable, and no
             // `constructor` back-link, because nothing is ever constructed from it either.
-            function.SetOwnProperty(
-                "prototype",
-                JsProperty.Data(
-                    JsValue.Object(new JsObject(AsyncGeneratorPrototype, "AsyncGenerator")),
-                    JsPropertyAttributes.Writable));
+            function.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(new JsObject(AsyncGeneratorPrototype, "AsyncGenerator")), JsPropertyAttributes.Writable));
 
             return function;
         }
@@ -804,12 +749,7 @@ internal sealed partial class JsRealm
             // is INHERITED from `%GeneratorPrototype%` and is an object rather than a function.
             // The property is writable and neither enumerable nor configurable, which is the one
             // descriptor shape a generator function's `prototype` has.
-            function.SetOwnProperty(
-                "prototype",
-                JsProperty.Data(
-                    JsValue.Object(new JsObject(GeneratorPrototype, "Generator")),
-                    JsPropertyAttributes.Writable));
-
+            function.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(new JsObject(GeneratorPrototype, "Generator")), JsPropertyAttributes.Writable));
             return function;
         }
 
@@ -825,13 +765,8 @@ internal sealed partial class JsRealm
             // expects, so an object created by `new` has to be able to name what made it.
             var prototype = new JsObject(ObjectPrototype);
 
-            prototype.SetOwnProperty(
-                "constructor",
-                JsProperty.Data(JsValue.Object(function), JsPropertyAttributes.BuiltIn));
-
-            function.SetOwnProperty(
-                "prototype",
-                JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.Writable));
+            prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(function), JsPropertyAttributes.BuiltIn));
+            function.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.Writable));
         }
 
         // A SLOPPY PLAIN FUNCTION HAS THE LEGACY `caller` AND `arguments`, made when first needed

@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -23,7 +28,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>The magnitude is a <see cref="System.Numerics.BigInteger"/>, and that is a choice between
+/// <b>The magnitude is a <see cref="BigInteger"/>, and that is a choice between
 /// allowed things rather than an assumption that a library is permitted</b> (decision JSD-0033).
 /// It is part of the base class library, it is trimming- and Native-AOT-safe, it reaches no
 /// reflection, dynamic loading or unmanaged code (rule B5), and it adds no reference outside the
@@ -36,7 +41,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// a reference field, so a BigInt costs the value layout nothing: the tag says BigInt, the double is
 /// unused, and the reference is this. And a class is where the width ceiling, the size a charge is
 /// computed from, and the canonical decoding live, so no caller handles a bare
-/// <see cref="System.Numerics.BigInteger"/> it could forget to bound.
+/// <see cref="BigInteger"/> it could forget to bound.
 /// </para>
 /// <para>
 /// <b>Identity means nothing.</b> Two instances holding one integer are the same BigInt: equality
@@ -44,9 +49,9 @@ namespace Broiler.VM.Profile.JavaScript;
 /// require of a primitive.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=715739
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=411082
 // Broiler-Human:        PENDING
-internal sealed class JsBigInt : System.IEquatable<JsBigInt>
+internal sealed class JsBigInt : IEquatable<JsBigInt>
 {
     /// <summary>
     /// The widest magnitude a BigInt value of this realm may hold, in bits: 1,048,576 (128 KiB).
@@ -59,7 +64,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// is known to be too wide from its operands' widths refuses before it allocates.
     /// </para>
     /// <para>
-    /// <b>The width is <see cref="System.Numerics.BigInteger.GetBitLength"/>'s</b>: the shortest
+    /// <b>The width is <see cref="BigInteger.GetBitLength"/>'s</b>: the shortest
     /// two's-complement length without the sign bit. For a non-negative value that is the
     /// magnitude's bit count; for a negative power of two it is one less, so <c>-(2n ** 1048576n)</c>
     /// is admitted and <c>2n ** 1048576n</c> is not (decision JSD-0033, as amended for B03).
@@ -70,24 +75,23 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     internal const long MaximumBits = 1L << 20;
 
     /// <summary>Creates a BigInt holding <paramref name="value"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4BD330
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=BCC7BF
     // Broiler-Falsified-If: an instance holding a magnitude wider than MaximumBits is constructed
     // Broiler-Human:        PENDING
-    internal JsBigInt(System.Numerics.BigInteger value)
+    internal JsBigInt(BigInteger value)
     {
         if (value.GetBitLength() > MaximumBits)
         {
-            throw new System.ArgumentOutOfRangeException(
-                nameof(value), "a BigInt wider than the realm's ceiling was constructed");
+            throw new ArgumentOutOfRangeException(nameof(value), "a BigInt wider than the realm's ceiling was constructed");
         }
 
         Value = value;
     }
 
     /// <summary>The integer.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9D0848
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=647266
     // Broiler-Human:        PENDING
-    internal System.Numerics.BigInteger Value { get; }
+    internal BigInteger Value { get; }
 
     /// <summary>Whether this is <c>0n</c>, the one BigInt <c>ToBoolean</c> answers false for.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3A1C27
@@ -110,12 +114,12 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// The verifier has already refused a non-canonical or over-wide payload; this is the one
     /// decoding, and it is linear in the payload.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=2C9E91
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=7FD4A2
     // Broiler-Falsified-If: a payload decodes to an integer other than the one its bytes spell
     // Broiler-Human:        PENDING
-    internal static JsBigInt FromConstant(bool negative, System.ReadOnlySpan<byte> magnitude)
+    internal static JsBigInt FromConstant(bool negative, ReadOnlySpan<byte> magnitude)
     {
-        var value = new System.Numerics.BigInteger(magnitude, isUnsigned: true, isBigEndian: false);
+        var value = new BigInteger(magnitude, isUnsigned: true, isBigEndian: false);
         return new JsBigInt(negative ? -value : value);
     }
 
@@ -137,10 +141,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// The digit bound is charged first, linearly, as B01 charged it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=4CE1C6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=2987B1
     // Broiler-Falsified-If: a wider BigInt is converted to text for the same charge as a narrower one, or the text differs from the integer
     // Broiler-Human:        PENDING
-    internal string ToDecimalString(System.Action<ulong> charge)
+    internal string ToDecimalString(Action<ulong> charge)
     {
         charge(LinearCost(DecimalDigitsBound));
 
@@ -152,7 +156,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
 
         var negative = Value.Sign < 0;
         var magnitude = negative ? -Value : Value;
-        var text = new System.Text.StringBuilder(DecimalDigitsBound);
+        var text = new StringBuilder(DecimalDigitsBound);
 
         if (negative)
         {
@@ -162,8 +166,8 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
         // THE POWERS ARE 10^19, ITS SQUARE, ITS SQUARE'S SQUARE, ..., up to about the square root of
         // the value: a split by a power of half the value's width leaves two halves, and a split by
         // a larger one would leave a near-whole remainder to split again.
-        var powers = new System.Collections.Generic.List<System.Numerics.BigInteger> { TenToTheNineteen };
-        var widths = new System.Collections.Generic.List<int> { 19 };
+        var powers = new List<BigInteger> { TenToTheNineteen };
+        var widths = new List<int> { 19 };
 
         while ((powers[^1].GetBitLength() * 2 - 1) * 2 <= magnitude.GetBitLength() + 1)
         {
@@ -188,17 +192,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// below <c>powers[level + 1]</c>, which is <c>powers[level]</c> squared, so it splits into two
     /// parts below <c>powers[level]</c> and the recursion is as deep as the list is long.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=8795FC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=558AED
     // Broiler-Falsified-If: a digit is dropped, duplicated or unpadded where a split leaves a remainder with leading zeros
     // Broiler-Human:        PENDING
-    private static void AppendDecimal(
-        System.Text.StringBuilder text,
-        System.Numerics.BigInteger value,
-        int width,
-        int level,
-        System.Collections.Generic.List<System.Numerics.BigInteger> powers,
-        System.Collections.Generic.List<int> widths,
-        System.Action<ulong> charge)
+    private static void AppendDecimal(StringBuilder text, BigInteger value, int width, int level, List<BigInteger> powers, List<int> widths, Action<ulong> charge)
     {
         var bits = value.GetBitLength();
 
@@ -222,7 +219,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
         }
 
         charge(ProductCost(WordsOf(bits), WordsOf(powers[level].GetBitLength())));
-        var quotient = System.Numerics.BigInteger.DivRem(value, powers[level], out var remainder);
+        var quotient = BigInteger.DivRem(value, powers[level], out var remainder);
 
         if (width == 0)
         {
@@ -270,19 +267,19 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     // raise before it calls here; nothing here converts a BigInt through a double.
 
     /// <summary><c>0n</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=457F79
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B561EC
     // Broiler-Human:        PENDING
-    internal static readonly JsBigInt Zero = new(System.Numerics.BigInteger.Zero);
+    internal static readonly JsBigInt Zero = new(BigInteger.Zero);
 
     /// <summary><c>1n</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CA8712
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D8C5F1
     // Broiler-Human:        PENDING
-    internal static readonly JsBigInt One = new(System.Numerics.BigInteger.One);
+    internal static readonly JsBigInt One = new(BigInteger.One);
 
     /// <summary><c>-1n</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=70AA85
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7D8ADC
     // Broiler-Human:        PENDING
-    internal static readonly JsBigInt MinusOne = new(System.Numerics.BigInteger.MinusOne);
+    internal static readonly JsBigInt MinusOne = new(BigInteger.MinusOne);
 
     /// <summary>The widest part the decimal conversion hands to the base class library whole.</summary>
     /// <remarks>
@@ -294,10 +291,9 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     private const long FormatLeafBits = 4096;
 
     /// <summary>10^19, the largest power of ten a 64-bit word holds.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FF1250
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CC247F
     // Broiler-Human:        PENDING
-    private static readonly System.Numerics.BigInteger TenToTheNineteen =
-        new(10_000_000_000_000_000_000UL);
+    private static readonly BigInteger TenToTheNineteen = new(10_000_000_000_000_000_000UL);
 
     /// <summary>
     /// The width this value's charges and ceiling are computed from: the shortest two's-complement
@@ -317,10 +313,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// Measured on 2026-09-21: an addition, a bitwise operation or a shift of wide operands takes
     /// about 3 ns a word, and a unit of ordinary work about 21 ns, so a unit a word over-charges.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=EA891E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=33D3CC
     // Broiler-Falsified-If: an operation linear in its operands is charged less for wider operands
     // Broiler-Human:        PENDING
-    internal static ulong LinearCost(int words) => (ulong)System.Math.Max(words, 0) + 1UL;
+    internal static ulong LinearCost(int words) => (ulong)Math.Max(words, 0) + 1UL;
 
     /// <summary>
     /// The fuel a multiplication or a division over operands of these word counts costs: the
@@ -337,68 +333,66 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// small sizes, where the fixed cost of a call dominates.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=B7A09B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4DDF0F
     // Broiler-Falsified-If: a multiplication or division of wider operands is charged less than one of narrower operands, or less than the product of their sizes over eight
     // Broiler-Human:        PENDING
     internal static ulong ProductCost(int leftWords, int rightWords) =>
-        (ulong)System.Math.Max(leftWords, 1) * (ulong)System.Math.Max(rightWords, 1) / 16UL +
-        32UL * ((ulong)System.Math.Max(leftWords, 0) + (ulong)System.Math.Max(rightWords, 0));
+        (ulong)Math.Max(leftWords, 1) * (ulong)Math.Max(rightWords, 1) / 16UL +
+        32UL * ((ulong)Math.Max(leftWords, 0) + (ulong)Math.Max(rightWords, 0));
 
     /// <summary>The fuel converting a part of <paramref name="words"/> words to text whole costs.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=38E03F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=513B98
     // Broiler-Falsified-If: a wider part is converted for a smaller charge
     // Broiler-Human:        PENDING
-    private static ulong LeafCost(int words) =>
-        (ulong)words * (ulong)words / 2UL + 16UL * (ulong)System.Math.Max(words, 0) + 1UL;
+    private static ulong LeafCost(int words) => (ulong)words * (ulong)words / 2UL + 16UL * (ulong)Math.Max(words, 0) + 1UL;
 
     /// <summary>Wraps <paramref name="value"/>, or answers null when it is wider than the ceiling.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=81A77E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=FDCC4F
     // Broiler-Falsified-If: a value wider than MaximumBits is wrapped, or the constructor throws for a computed result
     // Broiler-Human:        PENDING
-    private static JsBigInt? Bounded(System.Numerics.BigInteger value) =>
-        value.GetBitLength() > MaximumBits ? null : new JsBigInt(value);
+    private static JsBigInt? Bounded(BigInteger value) => value.GetBitLength() > MaximumBits ? null : new JsBigInt(value);
 
     /// <summary><c>BigInt::add</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=79175C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D4F2BC
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Add(JsBigInt left, JsBigInt right, System.Action<ulong> charge)
+    internal static JsBigInt? Add(JsBigInt left, JsBigInt right, Action<ulong> charge)
     {
-        charge(LinearCost(System.Math.Max(left.Words, right.Words)));
+        charge(LinearCost(Math.Max(left.Words, right.Words)));
         return Bounded(left.Value + right.Value);
     }
 
     /// <summary><c>BigInt::subtract</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F284BE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=52E3FB
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Subtract(JsBigInt left, JsBigInt right, System.Action<ulong> charge)
+    internal static JsBigInt? Subtract(JsBigInt left, JsBigInt right, Action<ulong> charge)
     {
-        charge(LinearCost(System.Math.Max(left.Words, right.Words)));
+        charge(LinearCost(Math.Max(left.Words, right.Words)));
         return Bounded(left.Value - right.Value);
     }
 
     /// <summary><c>BigInt::unaryMinus</c>; <c>-0n</c> is <c>0n</c>, since there is one zero.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=82E336
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B53EF4
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Negate(JsBigInt value, System.Action<ulong> charge)
+    internal static JsBigInt? Negate(JsBigInt value, Action<ulong> charge)
     {
         charge(LinearCost(value.Words));
         return Bounded(-value.Value);
     }
 
     /// <summary><c>BigInt::bitwiseNOT</c>: <c>-x - 1</c>, which never widens a value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CDDAF8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DC4067
     // Broiler-Human:        PENDING
-    internal static JsBigInt? BitwiseNot(JsBigInt value, System.Action<ulong> charge)
+    internal static JsBigInt? BitwiseNot(JsBigInt value, Action<ulong> charge)
     {
         charge(LinearCost(value.Words));
-        return Bounded(-value.Value - System.Numerics.BigInteger.One);
+        return Bounded(-value.Value - BigInteger.One);
     }
 
     /// <summary><c>BigInt::multiply</c>, refused before it allocates when the product must be too wide.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=531F83
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=8CAC58
     // Broiler-Falsified-If: a product whose operands already prove it wider than MaximumBits is computed, or a product is charged less than ProductCost of its operands
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Multiply(JsBigInt left, JsBigInt right, System.Action<ulong> charge)
+    internal static JsBigInt? Multiply(JsBigInt left, JsBigInt right, Action<ulong> charge)
     {
         if (left.IsZero || right.IsZero)
         {
@@ -409,7 +403,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
         // |x| is at least 2^(Bits - 1), so the product is at least 2^(a + b - 2) in magnitude.
         if (left.Bits + right.Bits - 2 > MaximumBits)
         {
-            charge(LinearCost(System.Math.Max(left.Words, right.Words)));
+            charge(LinearCost(Math.Max(left.Words, right.Words)));
             return null;
         }
 
@@ -421,25 +415,25 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// <c>BigInt::divide</c>, truncating toward zero. <paramref name="right"/> is not zero: the
     /// engine raises the RangeError for that first.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=32A18C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=4B3DDB
     // Broiler-Falsified-If: a quotient is rounded other than toward zero, or a division is charged less than ProductCost of its operands
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Divide(JsBigInt left, JsBigInt right, System.Action<ulong> charge)
+    internal static JsBigInt? Divide(JsBigInt left, JsBigInt right, Action<ulong> charge)
     {
         charge(ProductCost(left.Words, right.Words));
-        return Bounded(System.Numerics.BigInteger.Divide(left.Value, right.Value));
+        return Bounded(BigInteger.Divide(left.Value, right.Value));
     }
 
     /// <summary>
     /// <c>BigInt::remainder</c>, whose sign is the dividend's. <paramref name="right"/> is not zero.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=EED233
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=D1D8CD
     // Broiler-Falsified-If: a remainder takes the sign of the divisor, or is charged less than ProductCost of its operands
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Remainder(JsBigInt left, JsBigInt right, System.Action<ulong> charge)
+    internal static JsBigInt? Remainder(JsBigInt left, JsBigInt right, Action<ulong> charge)
     {
         charge(ProductCost(left.Words, right.Words));
-        return Bounded(System.Numerics.BigInteger.Remainder(left.Value, right.Value));
+        return Bounded(BigInteger.Remainder(left.Value, right.Value));
     }
 
     /// <summary>
@@ -452,12 +446,12 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// any exponent; any other base with an exponent above <see cref="MaximumBits"/> is refused
     /// without a multiplication, since its result is at least <c>2 ** exponent</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=A8C216
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=9586BB
     // Broiler-Falsified-If: a power is computed without charging each multiplication, or a result past MaximumBits is answered, or a huge exponent of a trivial base is refused
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Power(JsBigInt @base, JsBigInt exponent, System.Action<ulong> charge)
+    internal static JsBigInt? Power(JsBigInt @base, JsBigInt exponent, Action<ulong> charge)
     {
-        charge(LinearCost(System.Math.Max(@base.Words, exponent.Words)));
+        charge(LinearCost(Math.Max(@base.Words, exponent.Words)));
 
         if (exponent.IsZero)
         {
@@ -469,7 +463,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
             return @base;
         }
 
-        if (@base.Value == System.Numerics.BigInteger.MinusOne)
+        if (@base.Value == BigInteger.MinusOne)
         {
             return exponent.Value.IsEven ? One : MinusOne;
         }
@@ -490,7 +484,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
         }
 
         var remaining = (long)exponent.Value;
-        var result = System.Numerics.BigInteger.One;
+        var result = BigInteger.One;
         var square = @base.Value;
 
         while (true)
@@ -539,29 +533,29 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     }
 
     /// <summary><c>BigInt::bitwiseAND</c>, on two's-complement values of unbounded width.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DB4096
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FACC4D
     // Broiler-Human:        PENDING
-    internal static JsBigInt? And(JsBigInt left, JsBigInt right, System.Action<ulong> charge)
+    internal static JsBigInt? And(JsBigInt left, JsBigInt right, Action<ulong> charge)
     {
-        charge(LinearCost(System.Math.Max(left.Words, right.Words)));
+        charge(LinearCost(Math.Max(left.Words, right.Words)));
         return Bounded(left.Value & right.Value);
     }
 
     /// <summary><c>BigInt::bitwiseOR</c>, on two's-complement values of unbounded width.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=30FA3D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0E3528
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Or(JsBigInt left, JsBigInt right, System.Action<ulong> charge)
+    internal static JsBigInt? Or(JsBigInt left, JsBigInt right, Action<ulong> charge)
     {
-        charge(LinearCost(System.Math.Max(left.Words, right.Words)));
+        charge(LinearCost(Math.Max(left.Words, right.Words)));
         return Bounded(left.Value | right.Value);
     }
 
     /// <summary><c>BigInt::bitwiseXOR</c>, on two's-complement values of unbounded width.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3686CE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C4B23E
     // Broiler-Human:        PENDING
-    internal static JsBigInt? Xor(JsBigInt left, JsBigInt right, System.Action<ulong> charge)
+    internal static JsBigInt? Xor(JsBigInt left, JsBigInt right, Action<ulong> charge)
     {
-        charge(LinearCost(System.Math.Max(left.Words, right.Words)));
+        charge(LinearCost(Math.Max(left.Words, right.Words)));
         return Bounded(left.Value ^ right.Value);
     }
 
@@ -571,25 +565,25 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// before it allocates; a right shift past the value's width answers <c>0n</c> or <c>-1n</c>
     /// without shifting, however large the count.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=06B2E2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=05E0C0
     // Broiler-Human:        PENDING
-    internal static JsBigInt? ShiftLeft(JsBigInt value, JsBigInt count, System.Action<ulong> charge) =>
+    internal static JsBigInt? ShiftLeft(JsBigInt value, JsBigInt count, Action<ulong> charge) =>
         Shift(value, count.Value, charge);
 
     /// <summary>
     /// <c>BigInt::signedRightShift</c>: a left shift by the negated count, negated as an integer and
     /// not as a BigInt, so a count at the ceiling's edge needs no second value.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=05B1AF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=86BEC0
     // Broiler-Human:        PENDING
-    internal static JsBigInt? ShiftRight(JsBigInt value, JsBigInt count, System.Action<ulong> charge) =>
+    internal static JsBigInt? ShiftRight(JsBigInt value, JsBigInt count, Action<ulong> charge) =>
         Shift(value, -count.Value, charge);
 
     /// <summary><c>value * 2 ** count</c>, rounding toward negative infinity for a negative count.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CC5259
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=C0B116
     // Broiler-Falsified-If: a left shift allocates a result its widths already prove wider than MaximumBits, a right shift rounds toward zero, or an oversized count reaches the base class library
     // Broiler-Human:        PENDING
-    private static JsBigInt? Shift(JsBigInt value, System.Numerics.BigInteger count, System.Action<ulong> charge)
+    private static JsBigInt? Shift(JsBigInt value, BigInteger count, Action<ulong> charge)
     {
         if (value.IsZero)
         {
@@ -633,10 +627,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// The result is never wider than the value, so this never answers null. The <c>BigInt</c>
     /// global has exposed it since card B05, after <c>ToIndex</c> and <c>ToBigInt</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=09DD62
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F5D998
     // Broiler-Falsified-If: a value that fits the signed width is changed, or a wrapped value takes the wrong sign
     // Broiler-Human:        PENDING
-    internal static JsBigInt? AsIntN(ulong bits, JsBigInt value, System.Action<ulong> charge)
+    internal static JsBigInt? AsIntN(ulong bits, JsBigInt value, Action<ulong> charge)
     {
         charge(LinearCost(value.Words));
 
@@ -652,8 +646,8 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
         }
 
         // Here bits <= value.Bits <= MaximumBits, so the modulus is bounded.
-        var modulus = System.Numerics.BigInteger.One << (int)bits;
-        var wrapped = value.Value & (modulus - System.Numerics.BigInteger.One);
+        var modulus = BigInteger.One << (int)bits;
+        var wrapped = value.Value & (modulus - BigInteger.One);
 
         if (wrapped >= modulus >> 1)
         {
@@ -672,10 +666,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// <c>2 ** (bits - 1)</c>, so it is refused without allocating. The <c>BigInt</c> global
     /// has exposed it since card B05, after <c>ToIndex</c> and <c>ToBigInt</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=443166
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=2295CA
     // Broiler-Falsified-If: a non-negative value that fits the width is changed, a negative value is answered negative, or a modulus past MaximumBits is allocated
     // Broiler-Human:        PENDING
-    internal static JsBigInt? AsUintN(ulong bits, JsBigInt value, System.Action<ulong> charge)
+    internal static JsBigInt? AsUintN(ulong bits, JsBigInt value, Action<ulong> charge)
     {
         charge(LinearCost(value.Words));
 
@@ -689,14 +683,14 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
             return value;
         }
 
-        if (value.Value.Sign < 0 && bits > (ulong)MaximumBits)
+        if (value.Value.Sign < 0 && bits > MaximumBits)
         {
             return null;
         }
 
         // Here bits <= MaximumBits, or the value is non-negative and wider than bits.
         charge(LinearCost(WordsOf((long)bits)));
-        var mask = (System.Numerics.BigInteger.One << (int)bits) - System.Numerics.BigInteger.One;
+        var mask = (BigInteger.One << (int)bits) - BigInteger.One;
         return Bounded(value.Value & mask);
     }
 
@@ -734,11 +728,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// the exact integer, which a double always has.
     /// </summary>
     /// <remarks>The caller has refused a fraction, a NaN and an infinity with the RangeError first.</remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=861F87
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=19CD6F
     // Broiler-Falsified-If: an integral Number converts to an integer other than its exact value
     // Broiler-Human:        PENDING
-    internal static JsBigInt FromIntegralNumber(double number) =>
-        new(new System.Numerics.BigInteger(number));
+    internal static JsBigInt FromIntegralNumber(double number) => new(new BigInteger(number));
 
     /// <summary>
     /// <c>𝔽(ℝ(x))</c>: the Number nearest this integer, ties to even, and an infinity past
@@ -749,23 +742,23 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// and scaled by the power of two they were shifted by; the scaling is exact until it overflows,
     /// which is the infinity the language gives. The work is one pass over the value.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A48858
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=2105D6
     // Broiler-Falsified-If: a BigInt converts to a Number other than the nearest one with ties to even, or a value at or past 2 ** 1024 - 2 ** 970 converts to a finite Number
     // Broiler-Human:        PENDING
-    internal double ToNumber(System.Action<ulong> charge)
+    internal double ToNumber(Action<ulong> charge)
     {
         charge(LinearCost(Words));
 
         if (Bits <= 53)
         {
-            return (double)(long)Value;
+            return (long)Value;
         }
 
-        var magnitude = System.Numerics.BigInteger.Abs(Value);
+        var magnitude = BigInteger.Abs(Value);
         var width = magnitude.GetBitLength();
         var shift = (int)(width - 54);
         var top = (ulong)(magnitude >> shift);
-        var sticky = shift > 0 && System.Numerics.BigInteger.TrailingZeroCount(magnitude) < shift;
+        var sticky = shift > 0 && BigInteger.TrailingZeroCount(magnitude) < shift;
         var half = (top & 1) != 0;
         top >>= 1;
 
@@ -774,7 +767,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
             top++;
         }
 
-        var rounded = System.Math.ScaleB((double)top, shift + 1);
+        var rounded = Math.ScaleB(top, shift + 1);
         return Value.Sign < 0 ? -rounded : rounded;
     }
 
@@ -787,14 +780,14 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// floor and the next integer, so an integer at or below the floor is below it and any other is
     /// above it. The Number is at most 1,024 bits wide, so the work is bounded by the value's width.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=616D0D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F5B13A
     // Broiler-Falsified-If: a BigInt and a Number compare other than their mathematical values do, or either is rounded to compare
     // Broiler-Human:        PENDING
-    internal int CompareToNumber(double number, System.Action<ulong> charge)
+    internal int CompareToNumber(double number, Action<ulong> charge)
     {
-        charge(LinearCost(System.Math.Max(Words, WordsOf(1024))));
-        var floor = System.Math.Floor(number);
-        var order = Value.CompareTo(new System.Numerics.BigInteger(floor));
+        charge(LinearCost(Math.Max(Words, WordsOf(1024))));
+        var floor = Math.Floor(number);
+        var order = Value.CompareTo(new BigInteger(floor));
 
         if (floor == number)
         {
@@ -830,11 +823,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// forms are one pass.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7E3B41
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=A71525
     // Broiler-Falsified-If: a text outside StringIntegerLiteral answers a value, a text inside it answers an integer other than its mathematical value, or a value past MaximumBits is constructed
     // Broiler-Human:        PENDING
-    internal static bool TryParseStringInteger(
-        string text, System.Action<ulong> charge, out JsBigInt? value, out int tooWideSign)
+    internal static bool TryParseStringInteger(string text, Action<ulong> charge, out JsBigInt? value, out int tooWideSign)
     {
         charge(LinearCost(text.Length / 8));
         value = null;
@@ -853,11 +845,11 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
         if (prefix is 'x' or 'o' or 'b')
         {
             var radix = prefix switch { 'x' => 16, 'o' => 8, _ => 2 };
-            return TryParseRadix(System.MemoryExtensions.AsSpan(trimmed, 2), radix, charge, out value, out tooWideSign);
+            return TryParseRadix(MemoryExtensions.AsSpan(trimmed, 2), radix, charge, out value, out tooWideSign);
         }
 
         var negative = trimmed[0] == '-';
-        var digits = trimmed[0] is '-' or '+' ? System.MemoryExtensions.AsSpan(trimmed, 1) : System.MemoryExtensions.AsSpan(trimmed);
+        var digits = trimmed[0] is '-' or '+' ? MemoryExtensions.AsSpan(trimmed, 1) : MemoryExtensions.AsSpan(trimmed);
 
         if (digits.Length == 0)
         {
@@ -872,7 +864,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
             }
         }
 
-        digits = System.MemoryExtensions.TrimStart(digits, '0');
+        digits = MemoryExtensions.TrimStart(digits, '0');
 
         if (digits.Length > MaximumDecimalDigits)
         {
@@ -907,11 +899,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// The bits are packed least significant first and converted once, as the literal's are, so the
     /// cost is one pass however long the text.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=6AC22E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=0BFA97
     // Broiler-Falsified-If: a digit outside the radix is admitted, or the packed bits spell an integer other than the digits do
     // Broiler-Human:        PENDING
-    private static bool TryParseRadix(
-        System.ReadOnlySpan<char> digits, int radix, System.Action<ulong> charge, out JsBigInt? value, out int tooWideSign)
+    private static bool TryParseRadix(ReadOnlySpan<char> digits, int radix, Action<ulong> charge, out JsBigInt? value, out int tooWideSign)
     {
         value = null;
         tooWideSign = 0;
@@ -929,7 +920,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
             }
         }
 
-        digits = System.MemoryExtensions.TrimStart(digits, '0');
+        digits = MemoryExtensions.TrimStart(digits, '0');
 
         if ((long)digits.Length * bitsPerDigit > MaximumBits + bitsPerDigit)
         {
@@ -955,7 +946,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
             }
         }
 
-        var magnitude = new System.Numerics.BigInteger(bytes, isUnsigned: true, isBigEndian: false);
+        var magnitude = new BigInteger(bytes, isUnsigned: true, isBigEndian: false);
 
         if (magnitude.GetBitLength() > MaximumBits)
         {
@@ -977,18 +968,18 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// part is multiplied by that power and the low part added, and leaves of at most
     /// <see cref="ParseLeafDigits"/> digits are handed to the base class library.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=254B9F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=3E8CF0
     // Broiler-Falsified-If: a digit is dropped or misplaced in a split, or a join is not charged before it runs
     // Broiler-Human:        PENDING
-    private static System.Numerics.BigInteger ParseDecimal(System.ReadOnlySpan<char> digits, System.Action<ulong> charge)
+    private static BigInteger ParseDecimal(ReadOnlySpan<char> digits, Action<ulong> charge)
     {
-        var powers = new System.Collections.Generic.List<System.Numerics.BigInteger>();
-        var widths = new System.Collections.Generic.List<int>();
+        var powers = new List<BigInteger>();
+        var widths = new List<int>();
 
         if (digits.Length > ParseLeafDigits)
         {
             charge(ProductCost(WordsOf(ParseLeafDigits * 4L), WordsOf(ParseLeafDigits * 4L)));
-            powers.Add(System.Numerics.BigInteger.Pow(10, ParseLeafDigits));
+            powers.Add(BigInteger.Pow(10, ParseLeafDigits));
             widths.Add(ParseLeafDigits);
 
             while ((long)widths[^1] * 2 < digits.Length)
@@ -1004,15 +995,10 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     }
 
     /// <summary>One part of <see cref="ParseDecimal"/>, which may have leading zeros.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C444EA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=CBA30D
     // Broiler-Falsified-If: the high part is scaled by a power other than ten to the low part's length
     // Broiler-Human:        PENDING
-    private static System.Numerics.BigInteger ParseDecimalPart(
-        System.ReadOnlySpan<char> digits,
-        int level,
-        System.Collections.Generic.List<System.Numerics.BigInteger> powers,
-        System.Collections.Generic.List<int> widths,
-        System.Action<ulong> charge)
+    private static BigInteger ParseDecimalPart(ReadOnlySpan<char> digits, int level, List<BigInteger> powers, List<int> widths, Action<ulong> charge)
     {
         while (level >= 0 && widths[level] >= digits.Length)
         {
@@ -1023,8 +1009,8 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
         {
             charge(LeafCost(WordsOf(digits.Length * 4L)));
             return digits.Length == 0
-                ? System.Numerics.BigInteger.Zero
-                : System.Numerics.BigInteger.Parse(
+                ? BigInteger.Zero
+                : BigInteger.Parse(
                     digits, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture);
         }
 
@@ -1049,17 +1035,17 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// </para>
     /// <para>The digit bound is charged first, linearly, as the decimal conversion charges it.</para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=DEB859
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=A28349
     // Broiler-Falsified-If: a wider BigInt is converted for the same charge as a narrower one, or the digits differ from the integer in that radix
     // Broiler-Human:        PENDING
-    internal string ToRadixString(int radix, System.Action<ulong> charge)
+    internal string ToRadixString(int radix, Action<ulong> charge)
     {
         if (radix == 10)
         {
             return ToDecimalString(charge);
         }
 
-        var digitBits = System.Math.Log2(radix);
+        var digitBits = Math.Log2(radix);
         var bound = (int)(Bits / digitBits) + 2;
         charge(LinearCost(bound));
 
@@ -1070,7 +1056,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
 
         var negative = Value.Sign < 0;
         var magnitude = negative ? -Value : Value;
-        var text = new System.Text.StringBuilder(bound);
+        var text = new StringBuilder(bound);
 
         if (negative)
         {
@@ -1079,16 +1065,16 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
 
         if ((radix & (radix - 1)) == 0)
         {
-            AppendPowerOfTwoRadix(text, magnitude, System.Numerics.BitOperations.Log2((uint)radix));
+            AppendPowerOfTwoRadix(text, magnitude, BitOperations.Log2((uint)radix));
             return text.ToString();
         }
 
         // THE CHUNK IS THE LARGEST POWER OF THE RADIX BELOW 2^63, so a leaf's word-at-a-time loop
         // never overflows, and it is the first of the powers the split squares.
         var chunkDigits = (int)(63 / digitBits);
-        var chunk = System.Numerics.BigInteger.Pow(radix, chunkDigits);
-        var powers = new System.Collections.Generic.List<System.Numerics.BigInteger> { chunk };
-        var widths = new System.Collections.Generic.List<int> { chunkDigits };
+        var chunk = BigInteger.Pow(radix, chunkDigits);
+        var powers = new List<BigInteger> { chunk };
+        var widths = new List<int> { chunkDigits };
 
         while ((powers[^1].GetBitLength() * 2 - 1) * 2 <= magnitude.GetBitLength() + 1)
         {
@@ -1103,10 +1089,9 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     }
 
     /// <summary>The digits of a non-zero magnitude in a radix of <c>2 ** bitsPerDigit</c>, most significant first.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=73A9C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=27DA0D
     // Broiler-Human:        PENDING
-    private static void AppendPowerOfTwoRadix(
-        System.Text.StringBuilder text, System.Numerics.BigInteger magnitude, int bitsPerDigit)
+    private static void AppendPowerOfTwoRadix(StringBuilder text, BigInteger magnitude, int bitsPerDigit)
     {
         var bytes = magnitude.ToByteArray(isUnsigned: true, isBigEndian: false);
         var width = magnitude.GetBitLength();
@@ -1132,20 +1117,11 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     /// left-padded with zeros to <paramref name="width"/> when that is not zero; the shape of
     /// <see cref="AppendDecimal"/>, over the radix's own powers.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=75C725
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C64707
     // Broiler-Falsified-If: a digit is dropped, duplicated or unpadded where a split leaves a remainder with leading zeros
     // Broiler-Human:        PENDING
-    private static void AppendRadix(
-        System.Text.StringBuilder text,
-        System.Numerics.BigInteger value,
-        int width,
-        int level,
-        int radix,
-        ulong chunk,
-        int chunkDigits,
-        System.Collections.Generic.List<System.Numerics.BigInteger> powers,
-        System.Collections.Generic.List<int> widths,
-        System.Action<ulong> charge)
+    private static void AppendRadix(StringBuilder text, BigInteger value, int width, int level, int radix, ulong chunk,
+        int chunkDigits, List<BigInteger> powers, List<int> widths, Action<ulong> charge)
     {
         var bits = value.GetBitLength();
 
@@ -1169,7 +1145,7 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
         }
 
         charge(ProductCost(WordsOf(bits), WordsOf(powers[level].GetBitLength())));
-        var quotient = System.Numerics.BigInteger.DivRem(value, powers[level], out var remainder);
+        var quotient = BigInteger.DivRem(value, powers[level], out var remainder);
 
         AppendRadix(
             text, quotient, width == 0 ? 0 : width - widths[level], width == 0 ? level : level - 1,
@@ -1179,20 +1155,20 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     }
 
     /// <summary>A leaf's digits, a word of <paramref name="chunkDigits"/> digits at a time, unpadded.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=20AB01
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=595A68
     // Broiler-Human:        PENDING
-    private static string RadixLeaf(System.Numerics.BigInteger value, int radix, ulong chunk, int chunkDigits)
+    private static string RadixLeaf(BigInteger value, int radix, ulong chunk, int chunkDigits)
     {
-        var words = new System.Collections.Generic.List<ulong>();
-        var divisor = new System.Numerics.BigInteger(chunk);
+        var words = new List<ulong>();
+        var divisor = new BigInteger(chunk);
 
         while (value >= divisor)
         {
-            value = System.Numerics.BigInteger.DivRem(value, divisor, out var remainder);
+            value = BigInteger.DivRem(value, divisor, out var remainder);
             words.Add((ulong)remainder);
         }
 
-        var text = new System.Text.StringBuilder();
+        var text = new StringBuilder();
         text.Append(WordDigits((ulong)value, radix, 0));
 
         for (var at = words.Count - 1; at >= 0; at--)
@@ -1204,11 +1180,11 @@ internal sealed class JsBigInt : System.IEquatable<JsBigInt>
     }
 
     /// <summary>One word's digits in <paramref name="radix"/>, left-padded to <paramref name="width"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BAF80C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=230ACB
     // Broiler-Human:        PENDING
     private static string WordDigits(ulong word, int radix, int width)
     {
-        System.Span<char> buffer = stackalloc char[64];
+        Span<char> buffer = stackalloc char[64];
         var at = buffer.Length;
 
         do

@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Buffers.Binary;
+using System.Threading;
 using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript.Format;
 
@@ -258,13 +261,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6BB511
     // Broiler-Human:        PENDING
-    internal JavaScriptExecutor(
-        VmProfileId profileId,
-        IVmExecutionEnvironment executionEnvironment,
-        IJsHostSurface? surface = null,
-        bool stress = false,
-        bool sweeps = false,
-        JsIntlTables? intl = null)
+    internal JavaScriptExecutor(VmProfileId profileId, IVmExecutionEnvironment executionEnvironment, IJsHostSurface? surface = null, bool stress = false, bool sweeps = false, JsIntlTables? intl = null)
     {
         ProfileId = profileId;
         environment = executionEnvironment;
@@ -285,12 +282,10 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     public VmProfileId ProfileId { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=9CEF10
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=841DDA
     // Broiler-Falsified-If: a handle this profile did not verify produces an instance
     // Broiler-Human:        PENDING
-    public VmExecutionStep Instantiate(
-        VmVerifiedArtifact artifact,
-        System.Threading.CancellationToken cancellationToken)
+    public VmExecutionStep Instantiate(VmVerifiedArtifact artifact, CancellationToken cancellationToken)
     {
         if (artifact.TryGetState(out var wide) && wide is JsProgram wideProgram)
         {
@@ -334,20 +329,16 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
         // Retained rather than consumed: a realm's locals live for the instance's lifetime and are
         // released when it is disposed, which is what makes LiveBytes a ceiling and not an
         // allowance.
-        environment.Meter.ReportRetained(
-            VmBudgetDimension.LiveBytes, (ulong)program.LocalCount * OneValueInBytes);
+        environment.Meter.ReportRetained(VmBudgetDimension.LiveBytes, (ulong)program.LocalCount * OneValueInBytes);
 
         return VmExecutionStep.Instantiated(instance, null);
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=89BE7A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=8FE15E
     // Broiler-Falsified-If: an unknown entry point is reported as anything but a language fault, or a foreign instance state runs
     // Broiler-Human:        PENDING
-    public VmExecutionStep Invoke(
-        IVmInstanceState state,
-        in VmInvocationRequest request,
-        System.Threading.CancellationToken cancellationToken)
+    public VmExecutionStep Invoke(IVmInstanceState state, in VmInvocationRequest request, CancellationToken cancellationToken)
     {
         if (state is JsInstance wide)
         {
@@ -374,8 +365,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
             // language, and what an entry-point name means is this profile's business - the core
             // carried the bytes without decoding them. So it is a language fault and not a core
             // answer.
-            return VmExecutionStep.Faulted(
-                new JavaScriptFault(ProfileId, JavaScriptErrorKind.ReferenceError, "entry point is not defined"));
+            return VmExecutionStep.Faulted(new JavaScriptFault(ProfileId, JavaScriptErrorKind.ReferenceError, "entry point is not defined"));
         }
 
         instance.InvocationCount++;
@@ -389,12 +379,9 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     /// to resume is what keeps a defect in the core or in this profile from being reported as a
     /// completed operation. JS-7 replaces this body.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9B2A67
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=806F61
     // Broiler-Human:        PENDING
-    public VmExecutionStep Resume(
-        IVmInstanceState state,
-        IVmProfileContinuation continuation,
-        System.Threading.CancellationToken cancellationToken) =>
+    public VmExecutionStep Resume(IVmInstanceState state, IVmProfileContinuation continuation, CancellationToken cancellationToken) =>
         state is JsInstance
             ? JsExecution.Resume(ProfileId, state, continuation)
             : VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
@@ -599,22 +586,19 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
                     // The shift count is masked to five bits by the language, not by the platform.
                     // C#'s own shift on int masks to 31 as well, but relying on that would be
                     // relying on an agreement rather than implementing a rule.
-                    stack[top - 2] = JavaScriptValue.Number(
-                        stack[top - 2].ToInt32() << (int)(stack[top - 1].ToUint32() & 31));
+                    stack[top - 2] = JavaScriptValue.Number(stack[top - 2].ToInt32() << (int)(stack[top - 1].ToUint32() & 31));
                     top--;
                     continue;
 
                 case JavaScriptOpcode.ShiftRight:
-                    stack[top - 2] = JavaScriptValue.Number(
-                        stack[top - 2].ToInt32() >> (int)(stack[top - 1].ToUint32() & 31));
+                    stack[top - 2] = JavaScriptValue.Number(stack[top - 2].ToInt32() >> (int)(stack[top - 1].ToUint32() & 31));
                     top--;
                     continue;
 
                 case JavaScriptOpcode.ShiftRightUnsigned:
                     // Zero-filling, over ToUint32, and the result is a Number that may exceed
                     // int.MaxValue - which is why it is widened through uint and not through int.
-                    stack[top - 2] = JavaScriptValue.Number(
-                        stack[top - 2].ToUint32() >> (int)(stack[top - 1].ToUint32() & 31));
+                    stack[top - 2] = JavaScriptValue.Number(stack[top - 2].ToUint32() >> (int)(stack[top - 1].ToUint32() & 31));
                     top--;
                     continue;
 
@@ -655,15 +639,11 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B8A814
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=330C66
     // Broiler-Human:        PENDING
-    private static int ReadIndex(byte[] code, int at) =>
-        System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(
-            System.MemoryExtensions.AsSpan(code, at, 2));
+    private static int ReadIndex(byte[] code, int at) => BinaryPrimitives.ReadUInt16LittleEndian(MemoryExtensions.AsSpan(code, at, 2));
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D5454
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=436BCF
     // Broiler-Human:        PENDING
-    private static int ReadDisplacement(byte[] code, int at) =>
-        System.Buffers.Binary.BinaryPrimitives.ReadInt32LittleEndian(
-            System.MemoryExtensions.AsSpan(code, at, 4));
+    private static int ReadDisplacement(byte[] code, int at) => BinaryPrimitives.ReadInt32LittleEndian(MemoryExtensions.AsSpan(code, at, 4));
 }

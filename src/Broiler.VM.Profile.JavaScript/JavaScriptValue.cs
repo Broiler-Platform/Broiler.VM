@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>The value kinds the <c>broiler.javascript.slice</c> surface has.</summary>
@@ -60,9 +62,9 @@ public enum JavaScriptValueKind : byte
 /// specification's abstract operations rather than from what a double happens to do.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EE0E99
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5542F3
 // Broiler-Human:        PENDING
-public readonly struct JavaScriptValue : System.IEquatable<JavaScriptValue>
+public readonly struct JavaScriptValue : IEquatable<JavaScriptValue>
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=48AEDA
     // Broiler-Human:        PENDING
@@ -223,26 +225,22 @@ public readonly struct JavaScriptValue : System.IEquatable<JavaScriptValue>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=C91DA6
     // Broiler-Falsified-If: any relational comparison involving NaN answers true
     // Broiler-Human:        PENDING
-    public static bool LessThan(JavaScriptValue left, JavaScriptValue right) =>
-        left.ToNumber() < right.ToNumber();
+    public static bool LessThan(JavaScriptValue left, JavaScriptValue right) => left.ToNumber() < right.ToNumber();
 
     /// <summary>The <c>&lt;=</c> comparison.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F96D19
     // Broiler-Human:        PENDING
-    public static bool LessThanOrEqual(JavaScriptValue left, JavaScriptValue right) =>
-        left.ToNumber() <= right.ToNumber();
+    public static bool LessThanOrEqual(JavaScriptValue left, JavaScriptValue right) => left.ToNumber() <= right.ToNumber();
 
     /// <summary>The <c>&gt;</c> comparison.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6DA591
     // Broiler-Human:        PENDING
-    public static bool GreaterThan(JavaScriptValue left, JavaScriptValue right) =>
-        left.ToNumber() > right.ToNumber();
+    public static bool GreaterThan(JavaScriptValue left, JavaScriptValue right) => left.ToNumber() > right.ToNumber();
 
     /// <summary>The <c>&gt;=</c> comparison.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CD5CA3
     // Broiler-Human:        PENDING
-    public static bool GreaterThanOrEqual(JavaScriptValue left, JavaScriptValue right) =>
-        left.ToNumber() >= right.ToNumber();
+    public static bool GreaterThanOrEqual(JavaScriptValue left, JavaScriptValue right) => left.ToNumber() >= right.ToNumber();
 
     /// <summary>Value equality over the representation, which is not the language's <c>===</c>.</summary>
     /// <remarks>
@@ -252,8 +250,7 @@ public readonly struct JavaScriptValue : System.IEquatable<JavaScriptValue>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=FFF533
     // Broiler-Human:        PENDING
-    public bool Equals(JavaScriptValue other) =>
-        Kind == other.Kind && number.Equals(other.number);
+    public bool Equals(JavaScriptValue other) => Kind == other.Kind && number.Equals(other.number);
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=13683B
@@ -261,9 +258,9 @@ public readonly struct JavaScriptValue : System.IEquatable<JavaScriptValue>
     public override bool Equals(object? obj) => obj is JavaScriptValue other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=87AB5A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=30B22B
     // Broiler-Human:        PENDING
-    public override int GetHashCode() => System.HashCode.Combine(Kind, number);
+    public override int GetHashCode() => HashCode.Combine(Kind, number);
 
     /// <summary>Representation equality.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B67366

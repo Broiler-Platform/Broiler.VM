@@ -1313,7 +1313,8 @@ public sealed class ReviewRecordRuleTests
         // metazones and ICU's algorithms that name a zone by them. It is covered on the same terms as
         // every other product file, and nothing in it has been read by a human.
         // The compiler's nineteen additional partial files each require a coverage row too.
-        Assert.Equal(318, AssuranceSources.Files.Count);
+        // Eighteen further partials keep the engine's operations separate from its dispatch loop.
+        Assert.Equal(336, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

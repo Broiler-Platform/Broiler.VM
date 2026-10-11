@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   4
 // Annotated:        4/4
-// Exempt:           9
+// Exempt:           8
 // Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    Low
@@ -41,7 +41,7 @@ using System;
 /// </para>
 /// </remarks>
 /// <remarks>Creates an artifact descriptor.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=06FA02
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4A4422
 // Broiler-Human:        PENDING
 public readonly struct VmArtifactDescriptor(VmProfileId profileId, uint formatVersion, VmFeatureManifestId featureManifestId, VmLimitVector requestedLimits, VmCallerIdentity callerIdentity) : IEquatable<VmArtifactDescriptor>
 {

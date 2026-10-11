@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>What an exported name, once resolved, actually names.</summary>
@@ -65,14 +68,8 @@ internal readonly struct JsBinding(int module, int slot, JsBindingKind kind, str
 /// <summary>One verified module record: the immutable half of a module.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=454AC3
 // Broiler-Human:        PENDING
-internal sealed class JsModuleRecord(
-    string key,
-    uint bodyUnit,
-    uint initialiserUnit,
-    string[] requestSpecifiers,
-    int[] requests,
-    string[] exportNames,
-    JsBinding[] exportBindings)
+internal sealed class JsModuleRecord(string key, uint bodyUnit, uint initialiserUnit, string[] requestSpecifiers,
+    int[] requests, string[] exportNames, JsBinding[] exportBindings)
 {
     /// <summary>The key the composition resolved this module to.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=71D82D
@@ -258,9 +255,9 @@ internal sealed class JsModuleInstance(JsEnvironment environment, JsProgram prog
     /// The specification's <c>[[AsyncParentModules]]</c>: the modules waiting on this one's async
     /// evaluation, or <see langword="null"/> while none is, and again once it has ended.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=37A066
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=171BBB
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsModuleInstance>? AsyncParentModules { get; set; }
+    internal List<JsModuleInstance>? AsyncParentModules { get; set; }
 
     /// <summary>
     /// The specification's <c>[[TopLevelCapability]]</c>: the promise an evaluation that began at
@@ -360,18 +357,14 @@ internal sealed class JsModuleNamespace : JsObject
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D007E4
     // Broiler-Human:        PENDING
-    internal JsModuleNamespace(
-        JsModuleRecord module, JsModuleInstance[] moduleInstances, JsEngine realm)
-        : base(prototype: null, "Module")
+    internal JsModuleNamespace(JsModuleRecord module, JsModuleInstance[] moduleInstances, JsEngine realm) : base(prototype: null, "Module")
     {
         record = module;
         instances = moduleInstances;
         engine = realm;
         Extensible = false;
 
-        SetOwnSymbol(
-            realm.Realm.ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Module"), JsPropertyAttributes.None));
+        SetOwnSymbol(realm.Realm.ToStringTagSymbol, JsProperty.Data(JsValue.String("Module"), JsPropertyAttributes.None));
     }
 
     /// <summary>Whether this namespace publishes a name, without reading what it is bound to.</summary>
@@ -381,13 +374,13 @@ internal sealed class JsModuleNamespace : JsObject
     /// <c>ns.x</c> on the same name is a <c>ReferenceError</c>; answering the first by attempting
     /// the second turns a question about the export set into a throw.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9C4B31
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B96C73
     // Broiler-Human:        PENDING
     internal bool Exports(string key)
     {
         foreach (var name in record.ExportNames)
         {
-            if (string.Equals(name, key, System.StringComparison.Ordinal))
+            if (string.Equals(name, key, StringComparison.Ordinal))
             {
                 return true;
             }
@@ -397,21 +390,18 @@ internal sealed class JsModuleNamespace : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FAB29B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9AC8FE
     // Broiler-Human:        PENDING
     internal override bool TryGetOwnProperty(string key, out JsProperty property)
     {
         for (var index = 0; index < record.ExportNames.Length; index++)
         {
-            if (!string.Equals(record.ExportNames[index], key, System.StringComparison.Ordinal))
+            if (!string.Equals(record.ExportNames[index], key, StringComparison.Ordinal))
             {
                 continue;
             }
 
-            property = JsProperty.Data(
-                Read(record.ExportBindings[index], instances, engine),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Enumerable);
-
+            property = JsProperty.Data(Read(record.ExportBindings[index], instances, engine), JsPropertyAttributes.Writable | JsPropertyAttributes.Enumerable);
             return true;
         }
 
@@ -433,13 +423,13 @@ internal sealed class JsModuleNamespace : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EFA521
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3E6561
     // Broiler-Human:        PENDING
     internal override bool DeleteOwnProperty(string key)
     {
         foreach (var name in record.ExportNames)
         {
-            if (string.Equals(name, key, System.StringComparison.Ordinal))
+            if (string.Equals(name, key, StringComparison.Ordinal))
             {
                 return false;
             }
@@ -455,13 +445,13 @@ internal sealed class JsModuleNamespace : JsObject
     /// otherwise: its keys are the export names in code-unit order, so two modules that export the
     /// same names in different orders have namespaces a program cannot tell apart.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8CEE60
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A51947
     // Broiler-Human:        PENDING
-    internal override System.Collections.Generic.List<string> OwnPropertyNames()
+    internal override List<string> OwnPropertyNames()
     {
-        var names = new System.Collections.Generic.List<string>(record.ExportNames.Length);
+        var names = new List<string>(record.ExportNames.Length);
         names.AddRange(record.ExportNames);
-        names.Sort(System.StringComparer.Ordinal);
+        names.Sort(StringComparer.Ordinal);
         return names;
     }
 
@@ -475,8 +465,7 @@ internal sealed class JsModuleNamespace : JsObject
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B395A3
     // Broiler-Human:        PENDING
-    internal static JsValue Read(
-        in JsBinding binding, JsModuleInstance[] instances, JsEngine engine)
+    internal static JsValue Read(in JsBinding binding, JsModuleInstance[] instances, JsEngine engine)
     {
         var instance = instances[binding.Module];
 
@@ -489,8 +478,7 @@ internal sealed class JsModuleNamespace : JsObject
 
         if (value.IsEmpty)
         {
-            engine.ThrowReferenceError(
-                "Cannot access '" + binding.Name + "' before initialisation");
+            engine.ThrowReferenceError("Cannot access '" + binding.Name + "' before initialisation");
         }
 
         return value;

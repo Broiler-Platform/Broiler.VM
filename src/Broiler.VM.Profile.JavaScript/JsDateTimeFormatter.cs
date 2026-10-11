@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>A part of a formatted date: its ECMA-402 type, its text, and for a range its source.</summary>
@@ -93,7 +98,7 @@ internal readonly record struct JsLocalTime(long Year, int Month, int Day, int W
     /// year, ordinal month, day and day of the year, its era as CLDR numbers it, and how its month is
     /// named and numbered.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1596FF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B6BF1
     // Broiler-Human:        PENDING
     internal JsLocalTime InCalendar(JsCalendarSystem system)
     {
@@ -106,8 +111,8 @@ internal readonly record struct JsLocalTime(long Year, int Month, int Day, int W
 
         string? monthKey = system.Id switch
         {
-            "hebrew" => code == "M05L" ? "6" : code == "M06" && year.LeapMonth != 0 ? "7-yeartype-leap" : (number < 6 ? number : number + 1).ToString(System.Globalization.CultureInfo.InvariantCulture),
-            "chinese" or "dangi" => number.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            "hebrew" => code == "M05L" ? "6" : code == "M06" && year.LeapMonth != 0 ? "7-yeartype-leap" : (number < 6 ? number : number + 1).ToString(CultureInfo.InvariantCulture),
+            "chinese" or "dangi" => number.ToString(CultureInfo.InvariantCulture),
             _ => null,
         };
 
@@ -214,28 +219,18 @@ internal sealed class JsDateTimeFormatter
     // Broiler-Human:        PENDING
     private readonly string[] digits;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6CFEE5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=50CA49
     // Broiler-Human:        PENDING
-    private readonly System.Func<JsDateIntervalFormat> intervals;
+    private readonly Func<JsDateIntervalFormat> intervals;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F65F5B
     // Broiler-Human:        PENDING
     private JsDateIntervalFormat? interval;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=387351
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=762321
     // Broiler-Human:        PENDING
-    internal JsDateTimeFormatter(
-        JsDateData data,
-        string language,
-        string[] digits,
-        string timeZone,
-        int offsetMinutes,
-        JsZoneKind zoneKind,
-        string pattern,
-        System.Func<JsDateIntervalFormat> intervals,
-        JsZone? zone = null,
-        JsCalendarSystem? calendar = null,
-        JsZoneNaming? naming = null)
+    internal JsDateTimeFormatter(JsDateData data, string language, string[] digits, string timeZone, int offsetMinutes, JsZoneKind zoneKind,
+        string pattern, Func<JsDateIntervalFormat> intervals, JsZone? zone = null, JsCalendarSystem? calendar = null, JsZoneNaming? naming = null)
     {
         this.zone = zone;
         this.calendar = calendar;
@@ -285,10 +280,10 @@ internal sealed class JsDateTimeFormatter
     internal int OffsetMinutes { get; }
 
     /// <summary>The offset, in seconds, in force at a time value: the fixed one, or the IANA zone's then.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=519DF9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DC4D5C
     // Broiler-Human:        PENDING
     internal int OffsetSecondsAt(double time) =>
-        zone is null ? OffsetMinutes * 60 : zone.OffsetAt((long)System.Math.Floor(time / 1000));
+        zone is null ? OffsetMinutes * 60 : zone.OffsetAt((long)Math.Floor(time / 1000));
 
     /// <summary>Which kind of zone it is.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=39D641
@@ -301,12 +296,12 @@ internal sealed class JsDateTimeFormatter
     internal string Pattern { get; }
 
     /// <summary>The parts of <paramref name="time"/>, an integral time value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=81FCB4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=187D76
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsDatePart> Parts(JsEngine engine, double time, string? source)
+    internal List<JsDatePart> Parts(JsEngine engine, double time, string? source)
     {
-        var text = new System.Text.StringBuilder();
-        var fields = new System.Collections.Generic.List<JsDateField>();
+        var text = new StringBuilder();
+        var fields = new List<JsDateField>();
         FormatPattern(Pattern, LocalTime(time), text, fields);
         engine.Charge((ulong)text.Length);
         return ToParts(text.ToString(), fields, source is null ? null : (_, _) => source);
@@ -317,14 +312,14 @@ internal sealed class JsDateTimeFormatter
     /// its parts' sources from the spans of the fields it repeats, or <paramref name="x"/> alone,
     /// shared, where it writes one date.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9B1FF7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D9EB0A
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsDatePart> RangeParts(JsEngine engine, double x, double y)
+    internal List<JsDatePart> RangeParts(JsEngine engine, double x, double y)
     {
         interval ??= intervals();
 
-        var text = new System.Text.StringBuilder();
-        var fields = new System.Collections.Generic.List<JsDateField>();
+        var text = new StringBuilder();
+        var fields = new List<JsDateField>();
         var first = interval.Format(LocalTime(x), LocalTime(y), this, text, fields);
         engine.Charge((ulong)text.Length);
 
@@ -340,10 +335,10 @@ internal sealed class JsDateTimeFormatter
                     continue;
                 }
 
-                s1a = System.Math.Min(s1a, fields[i].Start);
-                s1b = System.Math.Max(s1b, fields[i].End);
-                s2a = System.Math.Min(s2a, fields[j].Start);
-                s2b = System.Math.Max(s2b, fields[j].End);
+                s1a = Math.Min(s1a, fields[i].Start);
+                s1b = Math.Max(s1b, fields[i].End);
+                s2a = Math.Min(s2a, fields[j].Start);
+                s2b = Math.Max(s2b, fields[j].End);
                 break;
             }
         }
@@ -361,14 +356,14 @@ internal sealed class JsDateTimeFormatter
             "shared");
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E3EF37
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3EAB10
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<JsDatePart> ToParts(
+    private static List<JsDatePart> ToParts(
         string text,
-        System.Collections.Generic.List<JsDateField> fields,
-        System.Func<int, int, string>? source)
+        List<JsDateField> fields,
+        Func<int, int, string>? source)
     {
-        var parts = new System.Collections.Generic.List<JsDatePart>(fields.Count * 2);
+        var parts = new List<JsDatePart>(fields.Count * 2);
         var previous = 0;
 
         foreach (var field in fields)
@@ -412,9 +407,9 @@ internal sealed class JsDateTimeFormatter
     };
 
     /// <summary>Writes <paramref name="pattern"/> for <paramref name="time"/>, recording each field it writes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1B08A7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FD0F4E
     // Broiler-Human:        PENDING
-    internal void FormatPattern(string pattern, JsLocalTime time, System.Text.StringBuilder text, System.Collections.Generic.List<JsDateField> fields)
+    internal void FormatPattern(string pattern, JsLocalTime time, StringBuilder text, List<JsDateField> fields)
     {
         var hasMinute = false;
         var hasSecond = false;
@@ -498,9 +493,9 @@ internal sealed class JsDateTimeFormatter
     }
 
     /// <summary>Writes one field; whether the letter is one this formatter writes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AC523A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C9D3D5
     // Broiler-Human:        PENDING
-    private bool Field(char c, int count, JsLocalTime time, bool hasMinute, bool hasSecond, System.Text.StringBuilder text)
+    private bool Field(char c, int count, JsLocalTime time, bool hasMinute, bool hasSecond, StringBuilder text)
     {
         switch (c)
         {
@@ -516,8 +511,8 @@ internal sealed class JsDateTimeFormatter
                 return true;
             case 'U':
                 text.Append(time.CyclicYear is { } cyclic
-                    ? Name("cyclic.years." + (count <= 3 ? "abbreviated" : count == 4 ? "wide" : "narrow") + "." + cyclic.ToString(System.Globalization.CultureInfo.InvariantCulture))
-                    : time.Year.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                    ? Name("cyclic.years." + (count <= 3 ? "abbreviated" : count == 4 ? "wide" : "narrow") + "." + cyclic.ToString(CultureInfo.InvariantCulture))
+                    : time.Year.ToString(CultureInfo.InvariantCulture));
                 return true;
             case 'M' or 'L':
                 var context = c == 'M' ? "format" : "stand-alone";
@@ -530,7 +525,7 @@ internal sealed class JsDateTimeFormatter
                 }
                 else
                 {
-                    var key = time.MonthKey ?? time.Month.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    var key = time.MonthKey ?? time.Month.ToString(CultureInfo.InvariantCulture);
                     text.Append(Name("months." + context + "." + Width(count) + "." + key));
                     Leap(text, monthStart, "monthPatterns." + context + "." + Width(count) + ".leap", time);
                 }
@@ -582,7 +577,7 @@ internal sealed class JsDateTimeFormatter
                 Number(text, time.Second, count);
                 return true;
             case 'S':
-                Number(text, count switch { 1 => time.Millisecond / 100, 2 => time.Millisecond / 10, _ => time.Millisecond }, System.Math.Min(count, 3));
+                Number(text, count switch { 1 => time.Millisecond / 100, 2 => time.Millisecond / 10, _ => time.Millisecond }, Math.Min(count, 3));
 
                 for (var extra = 3; extra < count; extra++)
                 {
@@ -606,9 +601,9 @@ internal sealed class JsDateTimeFormatter
     private static string Width(int count) => count switch { <= 3 => "abbreviated", 4 => "wide", _ => "narrow" };
 
     /// <summary>A leap month's text written from <paramref name="start"/> on, put in CLDR's month pattern for it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=759487
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7A8551
     // Broiler-Human:        PENDING
-    private void Leap(System.Text.StringBuilder text, int start, string patternKey, JsLocalTime time)
+    private void Leap(StringBuilder text, int start, string patternKey, JsLocalTime time)
     {
         if (!time.LeapMonth || data.Value(language, patternKey) is not { } pattern)
         {
@@ -617,18 +612,18 @@ internal sealed class JsDateTimeFormatter
 
         var month = text.ToString(start, text.Length - start);
         text.Length = start;
-        text.Append(pattern.Replace("{0}", month, System.StringComparison.Ordinal));
+        text.Append(pattern.Replace("{0}", month, StringComparison.Ordinal));
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F3F6FF
     // Broiler-Human:        PENDING
     private string Name(string key) => data.Value(language, key) ?? string.Empty;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2F0550
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=83D79A
     // Broiler-Human:        PENDING
-    private void Number(System.Text.StringBuilder text, long value, int minimum)
+    private void Number(StringBuilder text, long value, int minimum)
     {
-        var plain = System.Math.Abs(value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var plain = Math.Abs(value).ToString(CultureInfo.InvariantCulture);
 
         if (value < 0)
         {
@@ -747,7 +742,7 @@ internal sealed class JsDateTimeFormatter
     /// CLDR's localized GMT format of the offset, long (<c>GMT+05:30</c>) or short (<c>GMT+5:30</c>),
     /// with its seconds after the minutes where it has any, as ICU writes a local mean time.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A6765B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4B7327
     // Broiler-Human:        PENDING
     private string Gmt(int offsetSeconds, bool longForm)
     {
@@ -758,10 +753,10 @@ internal sealed class JsDateTimeFormatter
 
         var formats = Name("zone.hourFormat").Split(';');
         var format = offsetSeconds > 0 || formats.Length < 2 ? formats[0] : formats[1];
-        var hours = System.Math.Abs(offsetSeconds) / 3600;
-        var minutes = System.Math.Abs(offsetSeconds) / 60 % 60;
-        var seconds = System.Math.Abs(offsetSeconds) % 60;
-        var offset = new System.Text.StringBuilder();
+        var hours = Math.Abs(offsetSeconds) / 3600;
+        var minutes = Math.Abs(offsetSeconds) / 60 % 60;
+        var seconds = Math.Abs(offsetSeconds) % 60;
+        var offset = new StringBuilder();
         var at = 0;
 
         while (at < format.Length)
@@ -807,9 +802,9 @@ internal sealed class JsDateTimeFormatter
     }
 
     /// <summary>An ISO 8601 offset: <c>+0530</c>, or <c>+05:30</c> extended, or <c>Z</c> for zero where asked.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=492D63
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=323C9F
     // Broiler-Human:        PENDING
-    private string Iso(int offsetSeconds, bool extended, bool zulu)
+    private static string Iso(int offsetSeconds, bool extended, bool zulu)
     {
         var offsetMinutes = offsetSeconds / 60;
 
@@ -818,11 +813,11 @@ internal sealed class JsDateTimeFormatter
             return "Z";
         }
 
-        var hours = System.Math.Abs(offsetMinutes) / 60;
-        var minutes = System.Math.Abs(offsetMinutes) % 60;
+        var hours = Math.Abs(offsetMinutes) / 60;
+        var minutes = Math.Abs(offsetMinutes) % 60;
         return (offsetMinutes < 0 ? "-" : "+") +
-            hours.ToString("00", System.Globalization.CultureInfo.InvariantCulture) +
+            hours.ToString("00", CultureInfo.InvariantCulture) +
             (extended ? ":" : string.Empty) +
-            minutes.ToString("00", System.Globalization.CultureInfo.InvariantCulture);
+            minutes.ToString("00", CultureInfo.InvariantCulture);
     }
 }

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -98,12 +100,8 @@ internal sealed partial class JsRealm
     {
         PromisePrototype = new JsObject(ObjectPrototype, "Promise");
 
-        PromiseConstructor = Constructor(
-            "Promise",
-            1,
-            PromisePrototype,
-            static (engine, thisValue, arguments) =>
-                engine.ThrowTypeError("Promise constructor cannot be invoked without 'new'"),
+        PromiseConstructor = Constructor("Promise", 1, PromisePrototype,
+            static (engine, thisValue, arguments) => engine.ThrowTypeError("Promise constructor cannot be invoked without 'new'"),
             (engine, thisValue, arguments) =>
             {
                 var executor = ArgOfPromise(arguments, 0);
@@ -145,9 +143,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private void SetupPromiseReactions()
     {
-        PromisePrototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Promise"), JsPropertyAttributes.Configurable));
+        PromisePrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Promise"), JsPropertyAttributes.Configurable));
 
 
         // THE RESULT IS BUILT BY THE SPECIES AND NOT BY THIS REALM'S `Promise`. A subclass that
@@ -169,9 +165,7 @@ internal sealed partial class JsRealm
 
             var capability = PromiseCapability(engine, species);
 
-            PromiseAttach(
-                engine,
-                promise,
+            PromiseAttach(engine, promise,
                 new JsPromiseReaction(capability.Resolve, capability.Reject, onFulfil, true),
                 new JsPromiseReaction(capability.Resolve, capability.Reject, onReject, false));
 
@@ -183,10 +177,7 @@ internal sealed partial class JsRealm
         // program that replaced `then` on an instance or on the prototype sees its replacement
         // used - which is a thing test suites and instrumentation libraries actually do.
         Method(PromisePrototype, "catch", 1, static (engine, thisValue, arguments) =>
-            engine.Call(
-                engine.GetProperty(thisValue, "then"),
-                thisValue,
-                [JsValue.Undefined, ArgOfPromise(arguments, 0)]));
+            engine.Call(engine.GetProperty(thisValue, "then"), thisValue, [JsValue.Undefined, ArgOfPromise(arguments, 0)]));
 
         Method(PromisePrototype, "finally", 1, (engine, thisValue, arguments) =>
         {
@@ -386,11 +377,7 @@ internal sealed partial class JsRealm
     /// <summary>Attaches a pair of reactions, scheduling at once when the promise has settled.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E5B145
     // Broiler-Human:        PENDING
-    private void PromiseAttach(
-        JsEngine engine,
-        JsPromiseObject promise,
-        JsPromiseReaction whenFulfilled,
-        JsPromiseReaction whenRejected)
+    private void PromiseAttach(JsEngine engine, JsPromiseObject promise, JsPromiseReaction whenFulfilled, JsPromiseReaction whenRejected)
     {
         engine.Charge(2);
 
@@ -484,8 +471,7 @@ internal sealed partial class JsRealm
         // and a program may have changed it.
         if (value.AsObjectOrNull() is JsPromiseObject &&
             engine.GetProperty(value, "constructor").IsObject &&
-            ReferenceEquals(
-                engine.GetProperty(value, "constructor").AsObject(), constructor.AsObjectOrNull()))
+            ReferenceEquals(engine.GetProperty(value, "constructor").AsObject(), constructor.AsObjectOrNull()))
         {
             return value;
         }
@@ -507,8 +493,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B3D392
     // Broiler-Human:        PENDING
-    private void PromiseResolvers(
-        JsEngine engine, JsPromiseObject promise, out JsValue resolve, out JsValue reject)
+    private void PromiseResolvers(JsEngine engine, JsPromiseObject promise, out JsValue resolve, out JsValue reject)
     {
         var latch = new JsPromiseLatch();
         engine.Retain(PromiseReactionBytes);
@@ -566,12 +551,7 @@ internal sealed partial class JsRealm
     {
         if (ReferenceEquals(value.AsObjectOrNull(), promise))
         {
-            PromiseSettle(
-                engine,
-                promise,
-                CreateError("TypeError", "Chaining cycle detected for promise"),
-                JsPromiseState.Rejected);
-
+            PromiseSettle(engine, promise, CreateError("TypeError", "Chaining cycle detected for promise"), JsPromiseState.Rejected);
             return;
         }
 
@@ -626,8 +606,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=14505C
     // Broiler-Human:        PENDING
-    private void PromiseSettle(
-        JsEngine engine, JsPromiseObject promise, JsValue value, JsPromiseState state)
+    private void PromiseSettle(JsEngine engine, JsPromiseObject promise, JsValue value, JsPromiseState state)
     {
         if (promise.State != JsPromiseState.Pending)
         {
@@ -725,8 +704,7 @@ internal sealed partial class JsRealm
     /// <summary>Settles what a reaction owes, whichever of the two shapes it holds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9BEC4D
     // Broiler-Human:        PENDING
-    private void PromiseReactionResolve(
-        JsEngine engine, JsPromiseReaction reaction, JsValue value)
+    private void PromiseReactionResolve(JsEngine engine, JsPromiseReaction reaction, JsValue value)
     {
         if (reaction.Derived is { } derived)
         {
@@ -740,8 +718,7 @@ internal sealed partial class JsRealm
     /// <summary>The rejecting half of the same.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F9E827
     // Broiler-Human:        PENDING
-    private void PromiseReactionReject(
-        JsEngine engine, JsPromiseReaction reaction, JsValue reason)
+    private void PromiseReactionReject(JsEngine engine, JsPromiseReaction reaction, JsValue reason)
     {
         if (reaction.Derived is { } derived)
         {
@@ -758,8 +735,7 @@ internal sealed partial class JsRealm
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E4B7AD
     // Broiler-Human:        PENDING
-    internal JsPromiseObject PromiseThen(
-        JsEngine engine, JsPromiseObject promise, JsValue onFulfil, JsValue onReject)
+    internal JsPromiseObject PromiseThen(JsEngine engine, JsPromiseObject promise, JsValue onFulfil, JsValue onReject)
     {
         var derived = new JsPromiseObject(PromisePrototype);
         var whenFulfilled = new JsPromiseReaction(derived, onFulfil, true);
@@ -802,8 +778,7 @@ internal sealed partial class JsRealm
     private JsPromiseObject PromiseResolveValue(JsEngine engine, JsValue value)
     {
         if (value.AsObjectOrNull() is JsPromiseObject already &&
-            ReferenceEquals(
-                engine.GetProperty(value, "constructor").AsObjectOrNull(), PromiseConstructor))
+            ReferenceEquals(engine.GetProperty(value, "constructor").AsObjectOrNull(), PromiseConstructor))
         {
             return already;
         }
@@ -839,8 +814,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7E5270
     // Broiler-Human:        PENDING
-    private JsValue PromiseCombine(
-        JsEngine engine, JsValue constructor, JsValue source, JsPromiseCombination shape)
+    private JsValue PromiseCombine(JsEngine engine, JsValue constructor, JsValue source, JsPromiseCombination shape)
     {
         // THE CAPABILITY IS BUILT BEFORE ANYTHING CAN GO WRONG, and a failure to build it THROWS
         // where every later failure rejects. That asymmetry is the specification's: without a
@@ -1131,8 +1105,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=316343
     // Broiler-Human:        PENDING
-    internal void SettleAsyncPromise(
-        JsEngine engine, JsPromiseObject promise, JsValue value, bool rejected)
+    internal void SettleAsyncPromise(JsEngine engine, JsPromiseObject promise, JsValue value, bool rejected)
     {
         if (rejected)
         {
@@ -1163,11 +1136,10 @@ internal sealed partial class JsRealm
     /// an <c>await</c> and a <c>then</c> on one promise is decided by one queue and one list.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=6F23A9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=10914B
     // Broiler-Falsified-If: an `await` of a value that is not a promise continues without yielding to the job queue
     // Broiler-Human:        PENDING
-    internal void AwaitOn(
-        JsEngine engine, JsValue value, System.Action<JsEngine, JsValue, bool> resume) =>
+    internal void AwaitOn(JsEngine engine, JsValue value, Action<JsEngine, JsValue, bool> resume) =>
         ReactOn(engine, PromiseResolveValue(engine, value), resume);
 
     /// <summary>
@@ -1180,10 +1152,9 @@ internal sealed partial class JsRealm
     /// attach to a promise the engine made, and reading its <c>constructor</c> first would run a
     /// guest getter the language never calls (JSeal I11-async).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=35BFBC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2839DF
     // Broiler-Human:        PENDING
-    internal void ReactOn(
-        JsEngine engine, JsPromiseObject awaited, System.Action<JsEngine, JsValue, bool> resume)
+    internal void ReactOn(JsEngine engine, JsPromiseObject awaited, Action<JsEngine, JsValue, bool> resume)
     {
         var onFulfil = JsValue.Object(Native("", 1, (inner, thisValue, arguments) =>
         {

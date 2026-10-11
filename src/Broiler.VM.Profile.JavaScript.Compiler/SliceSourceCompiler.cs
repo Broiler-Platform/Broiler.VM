@@ -159,11 +159,11 @@ public sealed class SliceSourceCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=33EDE7
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.HashSet<int> initialised = [];
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=7C98D9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=6C3C87
     // Broiler-Human:        PENDING
     private System.Collections.Generic.IReadOnlyDictionary<SliceNode, SliceBinding> resolutions =
         new System.Collections.Generic.Dictionary<SliceNode, SliceBinding>(
-            SliceNodeIdentityComparer.Instance);
+            System.Collections.Generic.ReferenceEqualityComparer.Instance);
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=93A008
     // Broiler-Human:        PENDING
     private int completionSlot;

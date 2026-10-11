@@ -15,12 +15,15 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>The attribute bits a property carries.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8BFC83
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A03F26
 // Broiler-Human:        PENDING
-[System.Flags]
+[Flags]
 internal enum JsPropertyAttributes : byte
 {
     /// <summary>None of the three: a non-writable, non-enumerable, non-configurable data property.</summary>
@@ -99,8 +102,7 @@ internal struct JsProperty
     /// <summary>An accessor property.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=48D7CF
     // Broiler-Human:        PENDING
-    internal static JsProperty Accessor(
-        JsObject? getter, JsObject? setter, JsPropertyAttributes attributes) =>
+    internal static JsProperty Accessor(JsObject? getter, JsObject? setter, JsPropertyAttributes attributes) =>
         new()
         {
             Value = JsValue.Undefined,
@@ -133,13 +135,13 @@ internal struct JsProperty
 // Broiler-Human:        PENDING
 internal class JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=71FF4C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=206A6E
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.Dictionary<string, int>? index;
+    private Dictionary<string, int>? index;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=137A27
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1D9385
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<Entry>? entries;
+    private List<Entry>? entries;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=178828
     // Broiler-Human:        PENDING
@@ -294,9 +296,9 @@ internal class JsObject
     /// the ordering rule wants.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7500E4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C844D2
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<(JsSymbol Key, JsProperty Property)>? symbols;
+    private List<(JsSymbol Key, JsProperty Property)>? symbols;
 
     /// <summary>Reads one Symbol-keyed own property.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=67E2E2
@@ -368,11 +370,11 @@ internal class JsObject
     }
 
     /// <summary>Every Symbol-keyed own property key, in the order they were defined.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=4FCD32
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CFC2AC
     // Broiler-Human:        PENDING
-    internal virtual System.Collections.Generic.List<JsSymbol> OwnSymbolKeys()
+    internal virtual List<JsSymbol> OwnSymbolKeys()
     {
-        var keys = new System.Collections.Generic.List<JsSymbol>();
+        var keys = new List<JsSymbol>();
 
         if (symbols is not null)
         {
@@ -395,11 +397,11 @@ internal class JsObject
     /// asking for the String keys and then the Symbol keys would run the <c>ownKeys</c> trap TWICE
     /// - which is observable, and which would let the two halves of one answer disagree.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=45C3E2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=536D5A
     // Broiler-Human:        PENDING
-    internal virtual System.Collections.Generic.List<JsValue> OwnKeys()
+    internal virtual List<JsValue> OwnKeys()
     {
-        var keys = new System.Collections.Generic.List<JsValue>();
+        var keys = new List<JsValue>();
 
         foreach (var key in OwnPropertyNames())
         {
@@ -440,9 +442,9 @@ internal class JsObject
     /// or configurable, because nothing enumerates them and nothing may delete one.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=79DD4B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1CE10F
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<(JsSymbol Name, JsProperty Element)>? privates;
+    private List<(JsSymbol Name, JsProperty Element)>? privates;
 
     /// <summary>Reads one private element.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=61865C
@@ -510,11 +512,11 @@ internal class JsObject
     /// exposes is <c>Object.defineProperty</c>, which validates against the current descriptor
     /// first and then calls this.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=408E19
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=818A43
     // Broiler-Human:        PENDING
     internal virtual void SetOwnProperty(string key, JsProperty property)
     {
-        index ??= new System.Collections.Generic.Dictionary<string, int>(System.StringComparer.Ordinal);
+        index ??= new Dictionary<string, int>(StringComparer.Ordinal);
         entries ??= [];
 
         if (index.TryGetValue(key, out var at))
@@ -562,11 +564,11 @@ internal class JsObject
     }
 
     /// <summary>Drops the deleted entries and renumbers the index, keeping the order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7B8FEF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=621DF9
     // Broiler-Human:        PENDING
     private void Compact()
     {
-        var kept = new System.Collections.Generic.List<Entry>(liveCount);
+        var kept = new List<Entry>(liveCount);
         index!.Clear();
 
         foreach (var entry in entries!)
@@ -584,12 +586,12 @@ internal class JsObject
     /// <summary>
     /// Every own property name, array indices first in ascending numeric order.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C87522
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DF1248
     // Broiler-Human:        PENDING
-    internal virtual System.Collections.Generic.List<string> OwnPropertyNames()
+    internal virtual List<string> OwnPropertyNames()
     {
-        var indices = new System.Collections.Generic.List<string>();
-        var rest = new System.Collections.Generic.List<string>();
+        var indices = new List<string>();
+        var rest = new List<string>();
         CollectOwnNames(indices, rest);
         SortIndexKeys(indices);
         indices.AddRange(rest);
@@ -597,11 +599,9 @@ internal class JsObject
     }
 
     /// <summary>Appends this object's stored keys, splitting index keys from the rest.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5CB8DC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=05B65D
     // Broiler-Human:        PENDING
-    private protected void CollectOwnNames(
-        System.Collections.Generic.List<string> indices,
-        System.Collections.Generic.List<string> rest)
+    private protected void CollectOwnNames(List<string> indices, List<string> rest)
     {
         if (entries is null)
         {
@@ -627,9 +627,9 @@ internal class JsObject
     }
 
     /// <summary>Orders array-index keys the way the specification orders them.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EA1531
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7896E9
     // Broiler-Human:        PENDING
-    private protected static void SortIndexKeys(System.Collections.Generic.List<string> keys) =>
+    private protected static void SortIndexKeys(List<string> keys) =>
         keys.Sort(static (left, right) =>
         {
             IsArrayIndex(left, out var a);
@@ -764,13 +764,13 @@ internal sealed class JsMappedArguments : JsObject
     /// <param name="prototype">The realm's <c>%Object.prototype%</c>.</param>
     /// <param name="parameters">The environment record the parameters are bound in.</param>
     /// <param name="count">How many indices may be mapped: the lesser of the two counts.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=561D49
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=356EB0
     // Broiler-Human:        PENDING
     internal JsMappedArguments(JsObject? prototype, JsEnvironment parameters, int count)
         : base(prototype, "Arguments")
     {
         this.parameters = parameters;
-        mapped = count <= 0 ? System.Array.Empty<bool>() : new bool[count];
+        mapped = count <= 0 ? [] : new bool[count];
     }
 
     /// <summary>

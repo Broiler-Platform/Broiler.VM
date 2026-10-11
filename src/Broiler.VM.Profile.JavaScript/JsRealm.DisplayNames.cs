@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -48,10 +51,9 @@ internal sealed partial class JsRealm
     /// <summary>The date-time field codes of table 19.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CE52F9
     // Broiler-Human:        PENDING
-    private static readonly string[] DateTimeFieldCodes =
-        ["era", "year", "quarter", "month", "weekOfYear", "weekday", "day", "dayPeriod", "hour", "minute", "second", "timeZoneName"];
+    private static readonly string[] DateTimeFieldCodes = ["era", "year", "quarter", "month", "weekOfYear", "weekday", "day", "dayPeriod", "hour", "minute", "second", "timeZoneName"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0F05BE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FCEBD2
     // Broiler-Human:        PENDING
     private void SetupDisplayNames(JsObject intl)
     {
@@ -63,17 +65,15 @@ internal sealed partial class JsRealm
             FunctionPrototype,
             "DisplayNames",
             2,
-            static (engine, thisValue, arguments) =>
-                throw engine.Error("TypeError", "Constructor Intl.DisplayNames requires 'new'"),
-            static (engine, newTarget, arguments) => NewDisplayNames(engine, newTarget, arguments));
-
-        constructor.BuildsFromNewTarget = true;
+            static (engine, thisValue, arguments) => throw engine.Error("TypeError", "Constructor Intl.DisplayNames requires 'new'"),
+            static (engine, newTarget, arguments) => NewDisplayNames(engine, newTarget, arguments))
+        {
+            BuildsFromNewTarget = true
+        };
         DisplayNamesConstructor = constructor;
 
         constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Method(constructor, "supportedLocalesOf", 1, static (engine, thisValue, arguments) =>
         {
@@ -110,13 +110,8 @@ internal sealed partial class JsRealm
             return JsValue.Object(options);
         });
 
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl.DisplayNames"), JsPropertyAttributes.Configurable));
-
-        intl.SetOwnProperty(
-            "DisplayNames",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl.DisplayNames"), JsPropertyAttributes.Configurable));
+        intl.SetOwnProperty("DisplayNames", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>The display names <paramref name="thisValue"/> is, or the <c>TypeError</c>.</summary>
@@ -127,7 +122,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.DisplayNames.prototype." + member + " requires that 'this' be an Intl.DisplayNames");
 
     /// <summary>ECMA-402's <c>Intl.DisplayNames</c> constructor (s12.1.1): the options required, and read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F72D91
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=906C98
     // Broiler-Human:        PENDING
     internal static JsValue NewDisplayNames(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -146,12 +141,7 @@ internal sealed partial class JsRealm
         var options = JsValue.Object(Base64Options(engine, optionsArgument));
         _ = GetStringOption(engine, options, "localeMatcher", ["lookup", "best fit"], "best fit");
 
-        var resolved = ResolveLocale(
-            engine,
-            requested,
-            new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal),
-            [],
-            static (locale, key) => [null]);
+        var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal), [], static (locale, key) => [null]);
 
         var style = GetStringOption(engine, options, "style", ["narrow", "short", "long"], "long")!;
         var type = GetStringOption(engine, options, "type", ["language", "region", "script", "currency", "calendar", "dateTimeField"], null) ??
@@ -290,10 +280,9 @@ internal sealed partial class JsRealm
     /// region and variants it did not cover in CLDR's locale pattern. An unnamed part is its code under
     /// the code fallback, as ICU writes "xyz (Germany)", and makes the whole name nothing otherwise.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=867072
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E05E65
     // Broiler-Human:        PENDING
-    private static string? LanguageName(
-        JsEngine engine, JsDisplayNamesObject names, string code, System.Func<string, string, string?> named)
+    private static string? LanguageName(JsEngine engine, JsDisplayNamesObject names, string code, Func<string, string, string?> named)
     {
         var tag = JsLocaleTag.Parse(code)!;
         var data = engine.Intl!.LocaleInfo.DisplayNames;
@@ -391,10 +380,10 @@ internal sealed partial class JsRealm
 
         for (var i = 1; i < details.Count; i++)
         {
-            joined = separator.Replace("{0}", joined, System.StringComparison.Ordinal).Replace("{1}", details[i], System.StringComparison.Ordinal);
+            joined = separator.Replace("{0}", joined, StringComparison.Ordinal).Replace("{1}", details[i], StringComparison.Ordinal);
         }
 
-        return pattern.Replace("{0}", name, System.StringComparison.Ordinal).Replace("{1}", joined, System.StringComparison.Ordinal);
+        return pattern.Replace("{0}", name, StringComparison.Ordinal).Replace("{1}", joined, StringComparison.Ordinal);
     }
 }
 
@@ -405,10 +394,7 @@ internal sealed class JsDisplayNamesObject : JsObject
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AD6CCF
     // Broiler-Human:        PENDING
-    internal JsDisplayNamesObject(JsObject prototype)
-        : base(prototype)
-    {
-    }
+    internal JsDisplayNamesObject(JsObject prototype) : base(prototype) { }
 
     /// <summary>The resolved locale.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDBB2D

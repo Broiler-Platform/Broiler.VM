@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   47
 // Annotated:        47/47
-// Exempt:           50
+// Exempt:           47
 // Human-reviewed:   0/47
 // IP risk:          Low
 // Security risk:    Medium
@@ -31,7 +31,7 @@ namespace Broiler.VM.Abstractions;
 /// sentinel is added, because a second way to spell "unset" is a second thing to check.
 /// </remarks>
 /// <remarks>Creates an inclusive range.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A2D356
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E963D6
 // Broiler-Human:        PENDING
 public readonly struct VmFormatVersionRange(uint min, uint max) : IEquatable<VmFormatVersionRange>
 {
@@ -85,7 +85,7 @@ public readonly struct VmFormatVersionRange(uint min, uint max) : IEquatable<VmF
 /// this is a validated value type over the same grammar, with the same reserved
 /// <c>Broiler.</c> first label under the same ASCII fold.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=85EDC9
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=588F55
 // Broiler-Human:        PENDING
 public readonly struct VmCapabilityId : IEquatable<VmCapabilityId>, IComparable<VmCapabilityId>
 {
@@ -99,7 +99,7 @@ public readonly struct VmCapabilityId : IEquatable<VmCapabilityId>, IComparable<
     public bool IsEmpty => text is null;
 
     /// <summary>True when the first label folds to <c>broiler</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Medium; Resources=0; Fingerprint=7F6D6A
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Medium; Resources=0; Fingerprint=8E811B
     // Broiler-Human:        PENDING
     public bool IsReservedNamespace
     {
@@ -135,12 +135,12 @@ public readonly struct VmCapabilityId : IEquatable<VmCapabilityId>, IComparable<
     }
 
     /// <summary>The ID as a span, without allocating.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8D53DD
     // Broiler-Human:        PENDING
     public ReadOnlySpan<char> AsSpan() => MemoryExtensions.AsSpan(text);
 
     /// <summary>Parses <paramref name="candidate"/>, returning <see langword="false"/> when it does not satisfy the grammar.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=2; Fingerprint=ABDB48
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=2; Fingerprint=7778CD
     // Broiler-Human:        PENDING
     public static bool TryParse(ReadOnlySpan<char> candidate, out VmCapabilityId id)
     {
@@ -163,7 +163,7 @@ public readonly struct VmCapabilityId : IEquatable<VmCapabilityId>, IComparable<
 
     /// <summary>Parses <paramref name="candidate"/> or throws.</summary>
     /// <exception cref="ArgumentException">The candidate does not satisfy the grammar.</exception>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=2; Fingerprint=BE68B5
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=2; Fingerprint=B0CAE8
     // Broiler-Human:        PENDING
     public static VmCapabilityId Parse(ReadOnlySpan<char> candidate)
     {
@@ -194,7 +194,7 @@ public readonly struct VmCapabilityId : IEquatable<VmCapabilityId>, IComparable<
     public override bool Equals(object? obj) => obj is VmCapabilityId other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E4177
     // Broiler-Human:        PENDING
     public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
@@ -215,7 +215,7 @@ public readonly struct VmCapabilityId : IEquatable<VmCapabilityId>, IComparable<
 /// import declare independently, so a mismatch is refused at binding rather than discovered at
 /// first call. The core never parses the description: it compares the derived identifier.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DB6159
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0894DF
 // Broiler-Human:        PENDING
 public readonly struct VmCapabilitySignatureId : IEquatable<VmCapabilitySignatureId>
 {
@@ -232,7 +232,7 @@ public readonly struct VmCapabilitySignatureId : IEquatable<VmCapabilitySignatur
     /// Derives a signature identity from a canonical description. The description is stored
     /// verbatim and compared ordinally; the core attaches no meaning to its internal structure.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=1C6F58
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6988E6
     // Broiler-Human:        PENDING
     public static VmCapabilitySignatureId FromCanonicalDescription(ReadOnlySpan<char> canonical) =>
         canonical.IsEmpty ? default : new VmCapabilitySignatureId(canonical.ToString());
@@ -249,7 +249,7 @@ public readonly struct VmCapabilitySignatureId : IEquatable<VmCapabilitySignatur
     public override bool Equals(object? obj) => obj is VmCapabilitySignatureId other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=3E4177
     // Broiler-Human:        PENDING
     public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
@@ -269,7 +269,7 @@ public readonly struct VmCapabilitySignatureId : IEquatable<VmCapabilitySignatur
 /// It is used for support tables and evidence only and never for matching. It is a distinct type
 /// rather than a string precisely so that a drift test can prove it never reaches a matching path.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E12AD3
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=494952
 // Broiler-Human:        PENDING
 public readonly struct VmConformanceManifestId : IEquatable<VmConformanceManifestId>
 {
@@ -283,7 +283,7 @@ public readonly struct VmConformanceManifestId : IEquatable<VmConformanceManifes
     public bool IsEmpty => text is null;
 
     /// <summary>Creates an identity from an opaque token.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=5B451A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=9C6140
     // Broiler-Human:        PENDING
     public static VmConformanceManifestId Create(ReadOnlySpan<char> token) => token.IsEmpty ? default : new VmConformanceManifestId(token.ToString());
 
@@ -299,7 +299,7 @@ public readonly struct VmConformanceManifestId : IEquatable<VmConformanceManifes
     public override bool Equals(object? obj) => obj is VmConformanceManifestId other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=3E4177
     // Broiler-Human:        PENDING
     public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
@@ -319,7 +319,7 @@ public readonly struct VmConformanceManifestId : IEquatable<VmConformanceManifes
 /// The namespace requirement is enforced at creation so that a malformed token can be reported at
 /// registration, where the composition root that wrote it is on the stack.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=623658
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6A5144
 // Broiler-Human:        PENDING
 public readonly struct VmDiagnosticsIdentity : IEquatable<VmDiagnosticsIdentity>
 {
@@ -336,7 +336,7 @@ public readonly struct VmDiagnosticsIdentity : IEquatable<VmDiagnosticsIdentity>
     /// Creates a diagnostics identity under <paramref name="owner"/>, returning
     /// <see langword="false"/> when the token does not lie in that profile's namespace.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C5A15C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DB03E3
     // Broiler-Human:        PENDING
     public static bool TryCreate(VmProfileId owner, ReadOnlySpan<char> token, out VmDiagnosticsIdentity identity)
     {
@@ -370,7 +370,7 @@ public readonly struct VmDiagnosticsIdentity : IEquatable<VmDiagnosticsIdentity>
     public override bool Equals(object? obj) => obj is VmDiagnosticsIdentity other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=3E4177
     // Broiler-Human:        PENDING
     public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
@@ -394,7 +394,7 @@ public readonly struct VmDiagnosticsIdentity : IEquatable<VmDiagnosticsIdentity>
 /// matches on.
 /// </remarks>
 /// <remarks>Creates a package identity. No part may be empty.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0CB78D
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F150DD
 // Broiler-Human:        PENDING
 public readonly struct VmPackageIdentity(string packageId, string packageVersion, string ownerTag) : IEquatable<VmPackageIdentity>
 {
@@ -444,7 +444,7 @@ public readonly struct VmPackageIdentity(string packageId, string packageVersion
 /// derived from an address, a secret or host state - a diagnostics field that leaked an address
 /// would be an information disclosure in a type whose whole purpose is to be safe to log.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6B27DF
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=326016
 // Broiler-Human:        PENDING
 public readonly struct VmObjectId : IEquatable<VmObjectId>
 {
@@ -462,7 +462,7 @@ public readonly struct VmObjectId : IEquatable<VmObjectId>
     /// the contract suite must be able to observe identity behaviour through the public surface
     /// alone: ADR 0001 rule A10 forbids <c>InternalsVisibleTo</c> in a product project.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=61001C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=580AF8
     // Broiler-Human:        PENDING
     public static VmObjectId Mint() => new(unchecked((ulong)Interlocked.Increment(ref counter)));
 
@@ -507,7 +507,7 @@ public readonly struct VmObjectId : IEquatable<VmObjectId>
 /// ambiguity ADR 0003's qualifier rule exists to prevent.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=699201
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1F029A
 // Broiler-Human:        PENDING
 public readonly struct VmOpaqueRef(ulong runtime, ulong generation, ulong slot) : IEquatable<VmOpaqueRef>
 {
@@ -521,7 +521,7 @@ public readonly struct VmOpaqueRef(ulong runtime, ulong generation, ulong slot) 
     public bool IsEmpty => runtime == 0 && generation == 0 && slot == 0;
 
     /// <summary>The identity of the runtime this reference belongs to.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=262C25
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DB63A2
     // Broiler-Human:        PENDING
     public ulong OwningRuntime => runtime;
 

@@ -274,7 +274,7 @@ public static class VmBudgetDimensions
             or VmBudgetScope.Invocation or VmBudgetScope.Aggregate,
     };
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4EEA2C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1D6943
     // Broiler-Human:        PENDING
     private static int Index(VmBudgetDimension dimension)
     {

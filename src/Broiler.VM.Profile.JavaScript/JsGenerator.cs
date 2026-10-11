@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>Which of the four things a generator object is doing right now.</summary>
@@ -127,13 +130,7 @@ internal sealed class JsFrame
     /// <summary>Creates the frame of a suspendable invocation that has not started.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=D70DE1
     // Broiler-Human:        PENDING
-    internal JsFrame(
-        JsProgram program,
-        int unitIndex,
-        JsEnvironment environment,
-        JsValue thisValue,
-        JsValue[] arguments,
-        JsScriptFunction function)
+    internal JsFrame(JsProgram program, int unitIndex, JsEnvironment environment, JsValue thisValue, JsValue[] arguments, JsScriptFunction function)
     {
         Program = program;
         UnitIndex = unitIndex;
@@ -395,8 +392,7 @@ internal sealed class JsForcedReturn : JsObject
     /// <summary>Wraps the value a forced return is carrying.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E3EA10
     // Broiler-Human:        PENDING
-    internal JsForcedReturn(JsValue value)
-        : base(null, "ForcedReturn") => Value = value;
+    internal JsForcedReturn(JsValue value) : base(null, "ForcedReturn") => Value = value;
 
     /// <summary>The value the generator will complete with once the finalisers have run.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CF3706
@@ -411,15 +407,14 @@ internal sealed class JsForcedReturn : JsObject
 /// flag would have made every existing handler site responsible for testing it, and the one that
 /// forgot would have let <c>gen.return()</c> be swallowed by an unrelated <c>catch</c>.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1B595F
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E91B3F
 // Broiler-Human:        PENDING
-internal sealed class JsReturnSignal : System.Exception
+internal sealed class JsReturnSignal : Exception
 {
     /// <summary>Creates a forced return carrying <paramref name="value"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=24A81E
     // Broiler-Human:        PENDING
-    internal JsReturnSignal(JsValue value)
-        : base("a generator was returned into") => Value = value;
+    internal JsReturnSignal(JsValue value) : base("a generator was returned into") => Value = value;
 
     /// <summary>The value the generator completes with.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CF3706
@@ -453,8 +448,7 @@ internal sealed class JsGenerator : JsObject
     /// <summary>Creates a generator object over a frame that has not started.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=98E438
     // Broiler-Human:        PENDING
-    internal JsGenerator(JsObject? prototype, JsFrame frame)
-        : base(prototype, "Generator") => Frame = frame;
+    internal JsGenerator(JsObject? prototype, JsFrame frame) : base(prototype, "Generator") => Frame = frame;
 
     /// <summary>The suspended frame, or <see langword="null"/> once the generator completed.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=5E59D5
@@ -655,8 +649,7 @@ internal sealed class JsAsyncGenerator : JsObject
     /// <summary>Creates an async generator object over a frame that has not started.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=E761B7
     // Broiler-Human:        PENDING
-    internal JsAsyncGenerator(JsObject? prototype, JsFrame frame)
-        : base(prototype, "AsyncGenerator") => Frame = frame;
+    internal JsAsyncGenerator(JsObject? prototype, JsFrame frame) : base(prototype, "AsyncGenerator") => Frame = frame;
 
     /// <summary>The suspended frame, or <see langword="null"/> once the body has finished.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=5E59D5
@@ -669,9 +662,9 @@ internal sealed class JsAsyncGenerator : JsObject
     internal JsAsyncGeneratorState State { get; set; } = JsAsyncGeneratorState.SuspendedStart;
 
     /// <summary>The requests made and not yet answered, oldest first.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=A43500
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=FE30DE
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsAsyncGeneratorRequest> Queue { get; } = [];
+    internal List<JsAsyncGeneratorRequest> Queue { get; } = [];
 
     /// <summary>Whether the body is on the interpreter's stack at this instant.</summary>
     /// <remarks>

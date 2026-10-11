@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Threading;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -33,32 +37,28 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed class JsDateData
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=328C44
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=69010A
     // Broiler-Human:        PENDING
-    private readonly object gate = new();
+    private readonly Lock gate = new();
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2D1036
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EF2F84
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, JsDatePatternGenerator> generators =
-        new(System.StringComparer.Ordinal);
+    private readonly Dictionary<string, JsDatePatternGenerator> generators = new(StringComparer.Ordinal);
 
     /// <summary>Each language's data, by dotted key.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1CB71C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=163FE2
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>> Locales { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, Dictionary<string, string>> Locales { get; } = new(StringComparer.Ordinal);
 
     /// <summary>The hour cycles a region allows and prefers.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=892C48
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CC34CD
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, (string Allowed, string Preferred)> TimeData { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, (string Allowed, string Preferred)> TimeData { get; } = new(StringComparer.Ordinal);
 
     /// <summary>Each language's day period rules.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D4C1DF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E8FA94
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<JsDayPeriodRule>> DayPeriods { get; } =
-        new(System.StringComparer.Ordinal);
+    internal Dictionary<string, List<JsDayPeriodRule>> DayPeriods { get; } = new(StringComparer.Ordinal);
 
     /// <summary>
     /// The pseudo-locale of the ISO 8601 calendar's patterns, and the suffix of each language's data
@@ -82,25 +82,25 @@ internal sealed class JsDateData
     ];
 
     /// <summary>The language a calendar's data language is of: <c>en</c> for <c>en@hebrew</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E53C2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2423B2
     // Broiler-Human:        PENDING
     internal static string LanguageOf(string dataLanguage)
     {
-        var at = dataLanguage.IndexOf('@', System.StringComparison.Ordinal);
+        var at = dataLanguage.IndexOf('@', StringComparison.Ordinal);
         return at < 0 ? dataLanguage : dataLanguage[..at];
     }
 
     /// <summary>Whether a key is one of a calendar's patterns rather than one of its names.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D3D1C3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=362031
     // Broiler-Human:        PENDING
     internal static bool IsPatternKey(string key) =>
-        key.StartsWith("dateFormats.", System.StringComparison.Ordinal) ||
-        key.StartsWith("timeFormats.", System.StringComparison.Ordinal) ||
-        key.StartsWith("dateTime.", System.StringComparison.Ordinal) ||
-        key.StartsWith("atTime.", System.StringComparison.Ordinal) ||
-        key.StartsWith("available.", System.StringComparison.Ordinal) ||
-        key.StartsWith("append.", System.StringComparison.Ordinal) ||
-        key.StartsWith("interval.", System.StringComparison.Ordinal);
+        key.StartsWith("dateFormats.", StringComparison.Ordinal) ||
+        key.StartsWith("timeFormats.", StringComparison.Ordinal) ||
+        key.StartsWith("dateTime.", StringComparison.Ordinal) ||
+        key.StartsWith("atTime.", StringComparison.Ordinal) ||
+        key.StartsWith("available.", StringComparison.Ordinal) ||
+        key.StartsWith("append.", StringComparison.Ordinal) ||
+        key.StartsWith("interval.", StringComparison.Ordinal);
 
     /// <summary>A language's value for a key, or nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E99C1

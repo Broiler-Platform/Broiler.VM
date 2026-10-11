@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           38
+// Exempt:           37
 // Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
@@ -52,7 +52,7 @@ public enum VmVerifiedArtifactState
 /// assumed, never a binding.
 /// </remarks>
 /// <remarks>Creates an identity.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4C239B
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D8EC2E
 // Broiler-Human:        PENDING
 public readonly struct VmVerifiedArtifactIdentity(VmProfileId profileId, int descriptorRevision, uint acceptedProfileFormatVersion, VmFeatureManifestId manifestId,
     int manifestVersion, int verifierSemanticVersion, int coreContractVersion, VmEffectiveCeilings effectiveCeilings, ImmutableArray<VmHostSignatureAssumption> hostSignatureAssumptions)
@@ -87,7 +87,7 @@ public readonly struct VmVerifiedArtifactIdentity(VmProfileId profileId, int des
     public ImmutableArray<VmHostSignatureAssumption> HostSignatureAssumptions { get; } = hostSignatureAssumptions;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Medium; Resources=3; Fingerprint=A41232
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Medium; Resources=3; Fingerprint=77B7D0
     // Broiler-Human:        PENDING
     public bool Equals(VmVerifiedArtifactIdentity other)
     {
@@ -127,7 +127,7 @@ public readonly struct VmVerifiedArtifactIdentity(VmProfileId profileId, int des
     /// refusal names. Clause order is the frozen order, so a handle failing two clauses always
     /// reports the same one.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Low; Resources=3; Fingerprint=29234F
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Low; Resources=3; Fingerprint=609068
     // Broiler-Human:        PENDING
     public VmReason FirstMismatch(VmVerifiedArtifactIdentity other)
     {
@@ -195,7 +195,7 @@ public readonly struct VmVerifiedArtifactIdentity(VmProfileId profileId, int des
 /// exhaustion, and appear in no stage row. Releasing twice is a no-op rather than an error, because
 /// the alternative is a host that has to track whether its own <c>using</c> already ran.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BB8BC2
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F7A0AE
 // Broiler-Human:        PENDING
 public sealed class VmArtifactLease : IDisposable
 {
@@ -208,12 +208,12 @@ public sealed class VmArtifactLease : IDisposable
     public VmVerifiedArtifact Artifact => artifact;
 
     /// <summary>Whether the lease has been released.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=0; Fingerprint=D5129D
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=0; Fingerprint=B10AF4
     // Broiler-Human:        PENDING
     public bool IsReleased => Volatile.Read(ref released) != 0;
 
     /// <summary>Releases the lease. Idempotent.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=67CDDE
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=305ECB
     // Broiler-Human:        PENDING
     public VmControlResult Release()
     {
@@ -250,7 +250,7 @@ public sealed class VmArtifactLease : IDisposable
 /// handle would be useless exactly when it is needed.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=111D5F
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B14FA2
 // Broiler-Human:        PENDING
 public sealed class VmVerifiedArtifact : IDisposable
 {
@@ -272,7 +272,7 @@ public sealed class VmVerifiedArtifact : IDisposable
     /// could in principle mint one; what is kept is that the one-construction-site property stays
     /// mechanically testable.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Medium; Resources=1; Fingerprint=88576A
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Medium; Resources=1; Fingerprint=4AF890
     // Broiler-Falsified-If: a handle for a Snapshot profile is built over the caller's bytes rather than a core-owned copy
     // Broiler-Human:        PENDING
     public static VmVerifiedArtifact Create(VmObjectId objectId, VmVerifiedArtifactIdentity identity, VmArtifactRepresentationKind representationKind,
@@ -281,7 +281,7 @@ public sealed class VmVerifiedArtifact : IDisposable
         new(objectId, identity, representationKind, lifetimeKind, sharing, origin,
             owningRuntimeId, aggregateBudgetId, byteLength, state, clampedLimitRequests, diagnosticsBase);
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Low; Resources=1; Fingerprint=EBD7DC
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Low; Resources=1; Fingerprint=564A36
     // Broiler-Human:        PENDING
     private VmVerifiedArtifact(VmObjectId objectId, VmVerifiedArtifactIdentity identity, VmArtifactRepresentationKind representationKind, VmArtifactLifetimeKind lifetimeKind,
         VmArtifactSharing sharing, VmArtifactOrigin origin, VmObjectId owningRuntimeId, VmObjectId aggregateBudgetId, ulong byteLength, IVmVerifiedState state,
@@ -386,7 +386,7 @@ public sealed class VmVerifiedArtifact : IDisposable
     /// draining or disposed, which is how use-after-dispose becomes a refusal rather than a
     /// half-valid read.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=DC43FB
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=AC46D3
     // Broiler-Human:        PENDING
     public bool TryGetState(out IVmVerifiedState verifiedState)
     {

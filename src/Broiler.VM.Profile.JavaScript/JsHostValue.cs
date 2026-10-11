@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>What a <see cref="JsHostValue"/> holds.</summary>
@@ -164,9 +169,9 @@ public sealed class JsHostRef
 /// not read like a property access.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BE2021
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=36EF1D
 // Broiler-Human:        PENDING
-public readonly struct JsHostValue : System.IEquatable<JsHostValue>
+public readonly struct JsHostValue : IEquatable<JsHostValue>
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=48AEDA
     // Broiler-Human:        PENDING
@@ -191,7 +196,7 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     /// value - an argument of <see cref="JsHostRealm.Invoke"/> or <see cref="JsHostRealm.Construct"/>,
     /// a value written or defined, an element of <see cref="JsHostRealm.NewArray"/>, a thrown value, a
     /// promise settlement, a clone root, a property target - refuses it with an
-    /// <see cref="System.ArgumentException"/>; where the host answers the guest or a value is only
+    /// <see cref="ArgumentException"/>; where the host answers the guest or a value is only
     /// read - a body's return, an exotic hook's answer, a receiver, a conversion - it is
     /// <c>undefined</c>.
     /// </remarks>
@@ -229,8 +234,7 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=52C438
     // Broiler-Human:        PENDING
-    public static JsHostValue String(string value) =>
-        new(JsHostValueKind.String, 0, value ?? string.Empty);
+    public static JsHostValue String(string value) => new(JsHostValueKind.String, 0, value ?? string.Empty);
 
     /// <summary>A BigInt of exactly <paramref name="value"/> (JSeal B06).</summary>
     /// <remarks>
@@ -250,8 +254,7 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F79C3D
     // Broiler-Human:        PENDING
-    public static JsHostValue BigInt(System.Numerics.BigInteger value) =>
-        new(JsHostValueKind.BigInt, 0, value);
+    public static JsHostValue BigInt(System.Numerics.BigInteger value) => new(JsHostValueKind.BigInt, 0, value);
 
     /// <summary>True when this is <see cref="Missing"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B12B56
@@ -261,14 +264,12 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     /// <summary>True when this is <c>undefined</c> or <c>null</c> or was not supplied.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=985318
     // Broiler-Human:        PENDING
-    public bool IsNullish =>
-        Kind is JsHostValueKind.Missing or JsHostValueKind.Undefined or JsHostValueKind.Null;
+    public bool IsNullish => Kind is JsHostValueKind.Missing or JsHostValueKind.Undefined or JsHostValueKind.Null;
 
     /// <summary>True when this names a guest object, of any of the three object kinds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=427F98
     // Broiler-Human:        PENDING
-    public bool IsObject =>
-        Kind is JsHostValueKind.Object or JsHostValueKind.Function or JsHostValueKind.Array;
+    public bool IsObject => Kind is JsHostValueKind.Object or JsHostValueKind.Function or JsHostValueKind.Array;
 
     /// <summary>The Boolean this holds, or <see langword="false"/> for any other kind.</summary>
     /// <remarks>
@@ -300,10 +301,9 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     /// answers <see langword="null"/> here, as a BigInt answers NaN from <see cref="AsNumber"/> -
     /// nothing on this surface converts one into the other.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D432AB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=961C8E
     // Broiler-Human:        PENDING
-    public System.Numerics.BigInteger? AsBigInt() =>
-        Kind == JsHostValueKind.BigInt ? (System.Numerics.BigInteger)reference! : null;
+    public System.Numerics.BigInteger? AsBigInt() => Kind == JsHostValueKind.BigInt ? (BigInteger)reference! : null;
 
     /// <summary>
     /// The identity of the guest object or symbol this names, or <see langword="null"/>.
@@ -345,24 +345,21 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     /// <see cref="AsString"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A08401
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=821388
     // Broiler-Human:        PENDING
-    public bool Equals(JsHostValue other) =>
-        Kind == other.Kind &&
-        (Kind == JsHostValueKind.BigInt
-            ? ((System.Numerics.BigInteger)reference!).Equals((System.Numerics.BigInteger)other.reference!)
+    public bool Equals(JsHostValue other) => Kind == other.Kind && (Kind == JsHostValueKind.BigInt
+            ? ((BigInteger)reference!).Equals((BigInteger)other.reference!)
             : number.Equals(other.number) && ReferenceEquals(reference, other.reference));
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is JsHostValue other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=41C3E9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=98C047
     // Broiler-Human:        PENDING
     public override int GetHashCode() => Kind == JsHostValueKind.BigInt
-        ? System.HashCode.Combine(Kind, ((System.Numerics.BigInteger)reference!).GetHashCode())
-        : System.HashCode.Combine(
-            Kind, number, reference is null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(reference));
+        ? HashCode.Combine(Kind, ((BigInteger)reference!).GetHashCode())
+        : HashCode.Combine(Kind, number, reference is null ? 0 : RuntimeHelpers.GetHashCode(reference));
 
     /// <summary>Identity equality.</summary>
     public static bool operator ==(JsHostValue left, JsHostValue right) => left.Equals(right);
@@ -391,10 +388,9 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
 /// it gives the guest the object the realm made.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=659F51
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=86D0ED
 // Broiler-Human:        PENDING
-public delegate JsHostValue JsHostFunction(
-    JsHostRealm realm, JsHostValue thisValue, System.ReadOnlySpan<JsHostValue> arguments);
+public delegate JsHostValue JsHostFunction(JsHostRealm realm, JsHostValue thisValue, ReadOnlySpan<JsHostValue> arguments);
 
 /// <summary>The attributes a member an embedder installs carries.</summary>
 /// <remarks>
@@ -404,9 +400,9 @@ public delegate JsHostValue JsHostFunction(
 /// could catch. What is here is what an interface description actually varies: whether a member is
 /// walked by an enumeration, whether it may be redefined, and whether it may be assigned to.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A85D9F
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=DDE01D
 // Broiler-Human:        PENDING
-[System.Flags]
+[Flags]
 public enum JsHostPropertyFlags
 {
     /// <summary>Not enumerable, not configurable, not writable.</summary>
@@ -563,14 +559,13 @@ public enum JsHostBufferStatus
 /// data the embedder is expected to handle; this is a defect in the embedder, and giving them one
 /// type would let a <c>catch</c> written for the first silently swallow the second.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=93B6FD
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7283F1
 // Broiler-Human:        PENDING
-public sealed class JsHostSurfaceException : System.Exception
+public sealed class JsHostSurfaceException : Exception
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=972CB1
     // Broiler-Human:        PENDING
-    internal JsHostSurfaceException(JsHostRefusal refusal, string message)
-        : base(message) => Refusal = refusal;
+    internal JsHostSurfaceException(JsHostRefusal refusal, string message) : base(message) => Refusal = refusal;
 
     /// <summary>Which refusal this is.</summary>
     public JsHostRefusal Refusal { get; }
@@ -583,14 +578,13 @@ public sealed class JsHostSurfaceException : System.Exception
 /// guest's own <c>toString</c>, which is a coercion the embedder may not want and certainly did not
 /// ask for at the moment an exception was propagating.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A1BC05
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DD1467
 // Broiler-Human:        PENDING
-public sealed class JsHostThrowException : System.Exception
+public sealed class JsHostThrowException : Exception
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AA36B8
     // Broiler-Human:        PENDING
-    internal JsHostThrowException(JsHostValue thrown, string message)
-        : base(message) => Thrown = thrown;
+    internal JsHostThrowException(JsHostValue thrown, string message) : base(message) => Thrown = thrown;
 
     /// <summary>What the guest threw.</summary>
     public JsHostValue Thrown { get; }
@@ -616,17 +610,14 @@ public sealed class JsHostThrowException : System.Exception
 /// is the only thing a <c>catch</c> here can honestly be for.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CECBE0
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F24544
 // Broiler-Falsified-If: an operation whose allowance was spent completes normally because host code caught this
 // Broiler-Human:        PENDING
-public sealed class JsHostTerminatedException : System.Exception
+public sealed class JsHostTerminatedException : Exception
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5897FA
     // Broiler-Human:        PENDING
-    internal JsHostTerminatedException(string message)
-        : base(message)
-    {
-    }
+    internal JsHostTerminatedException(string message) : base(message) { }
 }
 
 /// <summary>
@@ -741,9 +732,9 @@ public interface IJsHostExotic
     bool TryGetNamed(JsHostRealm realm, string name, out JsHostValue value);
 
     /// <summary>The names this object supports, for enumeration and spread.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=90AC1E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=0A61F9
     // Broiler-Human:        PENDING
-    System.Collections.Generic.IReadOnlyList<string> SupportedNames(JsHostRealm realm);
+    IReadOnlyList<string> SupportedNames(JsHostRealm realm);
 
     /// <summary>Answers an integer-indexed lookup the object's own storage did not hold.</summary>
     /// <remarks>
@@ -949,8 +940,7 @@ public sealed class JsHostModule
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B864B3
     // Broiler-Human:        PENDING
-    internal JsHostModule(
-        JsHostRealm realm, JsProgram program, int index, string key, JsHostValue moduleNamespace)
+    internal JsHostModule(JsHostRealm realm, JsProgram program, int index, string key, JsHostValue moduleNamespace)
     {
         Realm = realm;
         Program = program;
@@ -1015,8 +1005,7 @@ public sealed class JsHostModuleRequest
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=77D194
     // Broiler-Human:        PENDING
-    internal JsHostModuleRequest(
-        JsHostRealm realm, string referrer, string specifier, JsPromiseObject promise)
+    internal JsHostModuleRequest(JsHostRealm realm, string referrer, string specifier, JsPromiseObject promise)
     {
         Realm = realm;
         Referrer = referrer;
@@ -1125,8 +1114,7 @@ public sealed class JsHostModuleState
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9516E1
     // Broiler-Human:        PENDING
-    internal JsHostModuleState(
-        string key, JsHostModuleStatus status, bool hasTopLevelAwait, JsHostValue evaluationError, string cycleRoot)
+    internal JsHostModuleState(string key, JsHostModuleStatus status, bool hasTopLevelAwait, JsHostValue evaluationError, string cycleRoot)
     {
         Key = key;
         Status = status;

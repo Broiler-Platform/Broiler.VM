@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -118,8 +120,7 @@ internal sealed partial class JsRealm
             {
                 while (step.TryIterateNext(iterated, out var value))
                 {
-                    var selected = CallClosing(
-                        step, iterated, predicate, [value, JsValue.Number(counter)]);
+                    var selected = CallClosing(step, iterated, predicate, [value, JsValue.Number(counter)]);
 
                     counter++;
 
@@ -154,9 +155,7 @@ internal sealed partial class JsRealm
                     remaining--;
                 }
 
-                return step.TryIterateNext(iterated, out var value)
-                    ? (true, value)
-                    : (false, JsValue.Undefined);
+                return step.TryIterateNext(iterated, out var value) ? (true, value) : (false, JsValue.Undefined);
             }));
         });
 
@@ -183,9 +182,7 @@ internal sealed partial class JsRealm
                     }
                 }
 
-                return step.TryIterateNext(iterated, out var value)
-                    ? (true, value)
-                    : (false, JsValue.Undefined);
+                return step.TryIterateNext(iterated, out var value) ? (true, value) : (false, JsValue.Undefined);
             }));
         });
 
@@ -310,8 +307,7 @@ internal sealed partial class JsRealm
 
             while (engine.TryIterateNext(iterated, out var value))
             {
-                accumulator = CallClosing(
-                    engine, iterated, reducer, [accumulator, value, JsValue.Number(counter)]);
+                accumulator = CallClosing(engine, iterated, reducer, [accumulator, value, JsValue.Number(counter)]);
 
                 counter++;
             }
@@ -451,10 +447,10 @@ internal sealed partial class JsRealm
         });
 
     /// <summary>Makes a lazy helper over <paramref name="iterated"/>, closing it on <c>return</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F56E42
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=982C3C
     // Broiler-Human:        PENDING
     private JsIteratorHelper NewIteratorHelper(
-        JsIteratorRecord? iterated, System.Func<JsEngine, (bool Found, JsValue Value)> step)
+        JsIteratorRecord? iterated, Func<JsEngine, (bool Found, JsValue Value)> step)
     {
         var helper = new JsIteratorHelper(IteratorHelperPrototype, iterated, step);
 
@@ -577,13 +573,11 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=10B771
     // Broiler-Human:        PENDING
-    private static JsIteratorRecord HelperReceiver(
-        JsEngine engine, JsValue thisValue, JsValue callback, string method)
+    private static JsIteratorRecord HelperReceiver(JsEngine engine, JsValue thisValue, JsValue callback, string method)
     {
         if (!thisValue.IsObject)
         {
-            engine.ThrowTypeError(
-                "Iterator.prototype." + method + " called on a value that is not an object");
+            engine.ThrowTypeError("Iterator.prototype." + method + " called on a value that is not an object");
         }
 
         if (!callback.IsObject || !callback.AsObject().IsCallable)
@@ -612,8 +606,7 @@ internal sealed partial class JsRealm
     {
         if (!thisValue.IsObject)
         {
-            engine.ThrowTypeError(
-                "Iterator.prototype." + method + " called on a value that is not an object");
+            engine.ThrowTypeError("Iterator.prototype." + method + " called on a value that is not an object");
         }
 
         var receiver = new JsIteratorRecord(thisValue, JsValue.Undefined);
@@ -656,8 +649,7 @@ internal sealed partial class JsRealm
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0EA30E
     // Broiler-Human:        PENDING
-    private static JsValue? ShortCircuit(
-        JsEngine engine, JsValue thisValue, JsValue predicate, string method, bool stopWhen)
+    private static JsValue? ShortCircuit(JsEngine engine, JsValue thisValue, JsValue predicate, string method, bool stopWhen)
     {
         var iterated = HelperReceiver(engine, thisValue, predicate, method);
         var counter = 0d;
@@ -686,8 +678,7 @@ internal sealed partial class JsRealm
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7B840F
     // Broiler-Human:        PENDING
-    private static JsValue CallClosing(
-        JsEngine engine, JsIteratorRecord iterated, JsValue callback, JsValue[] arguments)
+    private static JsValue CallClosing(JsEngine engine, JsIteratorRecord iterated, JsValue callback, JsValue[] arguments)
     {
         try
         {
@@ -767,13 +758,9 @@ internal enum JsIteratorHelperState
 internal sealed class JsIteratorHelper : JsObject
 {
     /// <summary>Creates a helper in <c>suspended-start</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A56B9C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=86C998
     // Broiler-Human:        PENDING
-    internal JsIteratorHelper(
-        JsObject prototype,
-        JsIteratorRecord? underlying,
-        System.Func<JsEngine, (bool Found, JsValue Value)> step)
-        : base(prototype, "Iterator Helper")
+    internal JsIteratorHelper(JsObject prototype, JsIteratorRecord? underlying, Func<JsEngine, (bool Found, JsValue Value)> step) : base(prototype, "Iterator Helper")
     {
         Underlying = underlying;
         Step = step;
@@ -793,14 +780,14 @@ internal sealed class JsIteratorHelper : JsObject
     internal JsIteratorRecord? Underlying { get; }
 
     /// <summary>Resumes the closure normally: the next value, or that it has finished.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B082C4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F6D468
     // Broiler-Human:        PENDING
-    internal System.Func<JsEngine, (bool Found, JsValue Value)> Step { get; private set; }
+    internal Func<JsEngine, (bool Found, JsValue Value)> Step { get; private set; }
 
     /// <summary>Resumes the closure with a return completion from <c>suspended-yield</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=14B471
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0456BD
     // Broiler-Human:        PENDING
-    internal System.Action<JsEngine>? Abort { get; set; }
+    internal Action<JsEngine>? Abort { get; set; }
 
     /// <summary>Enters <c>completed</c> and lets go of everything the closure held.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F00910

@@ -15,6 +15,12 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -37,82 +43,80 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed class JsIntlTables
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0582E3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=503B2D
     // Broiler-Human:        PENDING
-    private readonly Format.IJsIntlData data;
+    private readonly IJsIntlData data;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=678323
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=97E10B
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<System.Collections.Generic.Dictionary<string, string>> likely;
+    private readonly Lazy<Dictionary<string, string>> likely;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E9ED15
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=98B3AA
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>> aliases;
+    private readonly Lazy<Dictionary<string, Dictionary<string, string>>> aliases;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F8026D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=717B72
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<System.Collections.Generic.Dictionary<string, string>> extensions;
+    private readonly Lazy<Dictionary<string, string>> extensions;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=38DA77
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F63895
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<string[]> locales;
+    private readonly Lazy<string[]> locales;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1EBC74
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B4AA12
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<JsCollationData> collation;
+    private readonly Lazy<JsCollationData> collation;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B4D744
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8CD2C4
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<(int First, int Last)[]> softDotted;
+    private readonly Lazy<(int First, int Last)[]> softDotted;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=228073
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A521AC
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<JsNumberData> numbers;
+    private readonly Lazy<JsNumberData> numbers;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=10659A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4B2C9F
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<JsDateData> dates;
+    private readonly Lazy<JsDateData> dates;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E52983
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=07F030
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<JsLocaleInfo> localeInfo;
+    private readonly Lazy<JsLocaleInfo> localeInfo;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=215679
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B2406B
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<JsBreakData> breaks;
+    private readonly Lazy<JsBreakData> breaks;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9311F4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BC9E62
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<JsTimeZones> timeZones;
+    private readonly Lazy<JsTimeZones> timeZones;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3AA84F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2E37CC
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<JsCalendars> calendars;
+    private readonly Lazy<JsCalendars> calendars;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F30CF4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F83F08
     // Broiler-Human:        PENDING
-    private readonly System.Lazy<JsZoneNames> zoneNames;
+    private readonly Lazy<JsZoneNames> zoneNames;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EAA1ED
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=46DF78
     // Broiler-Human:        PENDING
-    internal JsIntlTables(Format.IJsIntlData data)
+    internal JsIntlTables(IJsIntlData data)
     {
         this.data = data;
-        likely = new(() => Pairs(Format.JsIntlTable.LikelySubtags));
+        likely = new(() => Pairs(JsIntlTable.LikelySubtags));
         aliases = new(ReadAliases);
         extensions = new(ReadExtensions);
-        locales = new(() => [.. Lines(Format.JsIntlTable.Locales)]);
-        collation = new(() => new JsCollationData(
-            data.Table(Format.JsIntlTable.CollationRoot), data.Table(Format.JsIntlTable.CollationTailorings)));
+        locales = new(() => [.. Lines(JsIntlTable.Locales)]);
+        collation = new(() => new JsCollationData(data.Table(JsIntlTable.CollationRoot), data.Table(JsIntlTable.CollationTailorings)));
         softDotted = new(ReadRanges);
         numbers = new(ReadNumbers);
         dates = new(ReadDates);
         localeInfo = new(ReadLocaleInfo);
-        breaks = new(() => new JsBreakData(Lines(Format.JsIntlTable.SegmentBreakValues), data.Table(Format.JsIntlTable.SegmentBreaks)));
-        timeZones = new(() => new JsTimeZones(
-            Lines(Format.JsIntlTable.TimeZoneIds), Lines(Format.JsIntlTable.TimeZoneRegions), data.Table(Format.JsIntlTable.TimeZones)));
-        calendars = new(() => new JsCalendars(data.Table(Format.JsIntlTable.Calendars)));
-        zoneNames = new(() => new JsZoneNames(Lines(Format.JsIntlTable.MetaZones), TimeZones));
+        breaks = new(() => new JsBreakData(Lines(JsIntlTable.SegmentBreakValues), data.Table(JsIntlTable.SegmentBreaks)));
+        timeZones = new(() => new JsTimeZones(Lines(JsIntlTable.TimeZoneIds), Lines(JsIntlTable.TimeZoneRegions), data.Table(JsIntlTable.TimeZones)));
+        calendars = new(() => new JsCalendars(data.Table(JsIntlTable.Calendars)));
+        zoneNames = new(() => new JsZoneNames(Lines(JsIntlTable.MetaZones), TimeZones));
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -121,9 +125,9 @@ internal sealed class JsIntlTables
     internal string CldrVersion => data.CldrVersion;
 
     /// <summary>The locales the data supports, in canonical form.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F9D74C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0D8A26
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.IReadOnlyList<string> Locales => locales.Value;
+    internal IReadOnlyList<string> Locales => locales.Value;
 
     /// <summary>The IANA Time Zone Database's identifiers and offsets, decoded the first time a zone is named.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5A12A5
@@ -157,9 +161,9 @@ internal sealed class JsIntlTables
         aliases.Value.TryGetValue(kind, out var table) && table.TryGetValue(from, out var replacement) ? replacement : null;
 
     /// <summary>Every language alias, for the rule matcher that reads them all.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=00F4A3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DBB89D
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.IReadOnlyDictionary<string, string> LanguageAliases => aliases.Value["language"];
+    internal IReadOnlyDictionary<string, string> LanguageAliases => aliases.Value["language"];
 
     /// <summary>Whether <paramref name="key"/> is a key of extension <paramref name="singleton"/> the BCP 47 data defines.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8B3C4F
@@ -235,7 +239,7 @@ internal sealed class JsIntlTables
     internal JsBreakData Breaks => breaks.Value;
 
     /// <summary>A table value with its <c>\uXXXX</c> escapes resolved.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=771818
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E0016
     // Broiler-Human:        PENDING
     internal static string Unescape(string value)
     {
@@ -244,13 +248,13 @@ internal sealed class JsIntlTables
             return value;
         }
 
-        var text = new System.Text.StringBuilder(value.Length);
+        var text = new StringBuilder(value.Length);
 
         for (var at = 0; at < value.Length; at++)
         {
             if (value[at] == '\\' && at + 5 < value.Length && value[at + 1] == 'u')
             {
-                text.Append((char)int.Parse(value.Substring(at + 2, 4), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture));
+                text.Append((char)int.Parse(value.AsSpan(at + 2, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
                 at += 5;
                 continue;
             }
@@ -262,39 +266,39 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>Decodes the number tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=C4085C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=DEE8B0
     // Broiler-Human:        PENDING
     private JsNumberData ReadNumbers()
     {
         var data = new JsNumberData();
 
-        foreach (var line in Lines(Format.JsIntlTable.NumberLocales))
+        foreach (var line in Lines(JsIntlTable.NumberLocales))
         {
             var fields = line.Split('|');
 
             if (!data.Locales.TryGetValue(fields[0], out var locale))
             {
-                locale = new(System.StringComparer.Ordinal);
+                locale = new(StringComparer.Ordinal);
                 data.Locales[fields[0]] = locale;
             }
 
             locale[fields[1]] = Unescape(fields[2]);
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.Currencies))
+        foreach (var line in Lines(JsIntlTable.Currencies))
         {
             var fields = line.Split('|');
             data.Currencies[fields[0] + "|" + fields[1]] = new JsCurrencyNames(
                 Unescape(fields[2]), Unescape(fields[3]), Unescape(fields[4]), Unescape(fields[5]), Unescape(fields[6]), fields[7], fields[8]);
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.CurrencyDigits))
+        foreach (var line in Lines(JsIntlTable.CurrencyDigits))
         {
             var bar = line.IndexOf('|');
-            data.CurrencyDigits[line[..bar]] = int.Parse(line[(bar + 1)..], System.Globalization.CultureInfo.InvariantCulture);
+            data.CurrencyDigits[line[..bar]] = int.Parse(line[(bar + 1)..], CultureInfo.InvariantCulture);
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.NumberingSystems))
+        foreach (var line in Lines(JsIntlTable.NumberingSystems))
         {
             var bar = line.IndexOf('|');
             var digits = Unescape(line[(bar + 1)..]);
@@ -311,7 +315,7 @@ internal sealed class JsIntlTables
             data.NumberingSystems[line[..bar]] = list;
         }
 
-        foreach (var (table, plurals) in new[] { (Format.JsIntlTable.Plurals, data.Plurals), (Format.JsIntlTable.Ordinals, data.Ordinals) })
+        foreach (var (table, plurals) in new[] { (JsIntlTable.Plurals, data.Plurals), (JsIntlTable.Ordinals, data.Ordinals) })
         {
             foreach (var line in Lines(table))
             {
@@ -327,13 +331,13 @@ internal sealed class JsIntlTables
             }
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.PluralRanges))
+        foreach (var line in Lines(JsIntlTable.PluralRanges))
         {
             var fields = line.Split('|');
             data.PluralRanges[fields[0] + "|" + fields[1] + "|" + fields[2]] = fields[3];
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.Units))
+        foreach (var line in Lines(JsIntlTable.Units))
         {
             var fields = line.Split('|');
             data.Units[fields[0] + "|" + fields[1] + "|" + fields[2] + "|" + fields[3]] = Unescape(fields[4]);
@@ -343,14 +347,12 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>Decodes the date tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DD2261
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D65CD
     // Broiler-Human:        PENDING
     /// <summary>A layer of date data over the data below it: its values set, and its <c>-</c> keys removed.</summary>
-    private static System.Collections.Generic.Dictionary<string, string> Layered(
-        System.Collections.Generic.Dictionary<string, string> below,
-        System.Collections.Generic.Dictionary<string, string> layer)
+    private static Dictionary<string, string> Layered(Dictionary<string, string> below, Dictionary<string, string> layer)
     {
-        var result = new System.Collections.Generic.Dictionary<string, string>(below, System.StringComparer.Ordinal);
+        var result = new Dictionary<string, string>(below, StringComparer.Ordinal);
 
         foreach (var (key, value) in layer)
         {
@@ -367,19 +369,19 @@ internal sealed class JsIntlTables
         return result;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E8D3E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E9F5B
     // Broiler-Human:        PENDING
     private JsDateData ReadDates()
     {
         var data = new JsDateData();
 
-        foreach (var line in Lines(Format.JsIntlTable.DateLocales))
+        foreach (var line in Lines(JsIntlTable.DateLocales))
         {
             var fields = line.Split('|');
 
             if (!data.Locales.TryGetValue(fields[0], out var locale))
             {
-                locale = new(System.StringComparer.Ordinal);
+                locale = new(StringComparer.Ordinal);
                 data.Locales[fields[0]] = locale;
             }
 
@@ -391,18 +393,18 @@ internal sealed class JsIntlTables
         // language's Gregorian one, as ICU resolves it, where root's would be "{1} {0}".
         if (data.Locales.TryGetValue(JsDateData.Iso8601, out var iso8601))
         {
-            foreach (var language in new System.Collections.Generic.List<string>(data.Locales.Keys))
+            foreach (var language in new List<string>(data.Locales.Keys))
             {
-                if (language.Contains('@', System.StringComparison.Ordinal))
+                if (language.Contains('@', StringComparison.Ordinal))
                 {
                     continue;
                 }
 
-                var calendar = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+                var calendar = new Dictionary<string, string>(StringComparer.Ordinal);
 
                 foreach (var (key, value) in data.Locales[language])
                 {
-                    if (!JsDateData.IsPatternKey(key) || key.StartsWith("dateTime.", System.StringComparison.Ordinal) || key.StartsWith("atTime.", System.StringComparison.Ordinal))
+                    if (!JsDateData.IsPatternKey(key) || key.StartsWith("dateTime.", StringComparison.Ordinal) || key.StartsWith("atTime.", StringComparison.Ordinal))
                     {
                         calendar[key] = value;
                     }
@@ -410,7 +412,7 @@ internal sealed class JsIntlTables
 
                 foreach (var (key, value) in iso8601)
                 {
-                    if (!key.StartsWith("dateTime.", System.StringComparison.Ordinal) && !key.StartsWith("atTime.", System.StringComparison.Ordinal))
+                    if (!key.StartsWith("dateTime.", StringComparison.Ordinal) && !key.StartsWith("atTime.", StringComparison.Ordinal))
                     {
                         calendar[key] = value;
                     }
@@ -423,9 +425,9 @@ internal sealed class JsIntlTables
         // EACH LANGUAGE'S OTHER CALENDARS (JSD-0057) are layers: CLDR's generic patterns over the
         // language's Gregorian data, and each calendar over the generic layer or its parent's. A layer's
         // key beginning with `-` removes the key below it.
-        foreach (var language in new System.Collections.Generic.List<string>(data.Locales.Keys))
+        foreach (var language in new List<string>(data.Locales.Keys))
         {
-            if (language.Contains('@', System.StringComparison.Ordinal) || !data.Locales.TryGetValue(language + "@generic", out var genericDiff))
+            if (language.Contains('@', StringComparison.Ordinal) || !data.Locales.TryGetValue(language + "@generic", out var genericDiff))
             {
                 continue;
             }
@@ -441,16 +443,15 @@ internal sealed class JsIntlTables
             }
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.TimeData))
+        foreach (var line in Lines(JsIntlTable.TimeData))
         {
             var fields = line.Split('|');
             data.TimeData[fields[0]] = (fields[1], fields[2]);
         }
 
-        static int Minutes(string time) =>
-            time.Length == 0 ? -1 : (int.Parse(time[..2], System.Globalization.CultureInfo.InvariantCulture) * 60) + int.Parse(time[3..], System.Globalization.CultureInfo.InvariantCulture);
+        static int Minutes(string time) => time.Length == 0 ? -1 : (int.Parse(time[..2], CultureInfo.InvariantCulture) * 60) + int.Parse(time[3..], CultureInfo.InvariantCulture);
 
-        foreach (var line in Lines(Format.JsIntlTable.DayPeriods))
+        foreach (var line in Lines(JsIntlTable.DayPeriods))
         {
             var fields = line.Split('|');
 
@@ -469,38 +470,38 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>Decodes the week and script tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=330A35
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=280359
     // Broiler-Human:        PENDING
     private JsLocaleInfo ReadLocaleInfo()
     {
         var info = new JsLocaleInfo();
 
-        foreach (var line in Lines(Format.JsIntlTable.WeekData))
+        foreach (var line in Lines(JsIntlTable.WeekData))
         {
             var fields = line.Split('|');
             info.Weeks[fields[0]] = (fields[1], fields[2], fields[3], fields[4]);
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.Scripts))
+        foreach (var line in Lines(JsIntlTable.Scripts))
         {
             var bar = line.IndexOf('|');
             info.RightToLeft[line[..bar]] = line[(bar + 1)..] == "YES";
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.ListPatterns))
+        foreach (var line in Lines(JsIntlTable.ListPatterns))
         {
             var fields = line.Split('|');
             info.ListPatterns[fields[0] + "|" + fields[1]] =
                 (Unescape(fields[2]), Unescape(fields[3]), Unescape(fields[4]), Unescape(fields[5]));
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.RelativeTimes))
+        foreach (var line in Lines(JsIntlTable.RelativeTimes))
         {
             var fields = line.Split('|');
             info.RelativeTimes[fields[0] + "|" + fields[1] + "|" + fields[2]] = Unescape(fields[3]);
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.DisplayNames))
+        foreach (var line in Lines(JsIntlTable.DisplayNames))
         {
             var fields = line.Split('|');
             info.DisplayNames[fields[0] + "|" + fields[1] + "|" + fields[2]] = Unescape(fields[3]);
@@ -510,12 +511,12 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>The lines of a text table.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=D7F15D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=7154A5
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<string> Lines(Format.JsIntlTable table)
+    private List<string> Lines(JsIntlTable table)
     {
-        var text = System.Text.Encoding.ASCII.GetString(data.Table(table));
-        var lines = new System.Collections.Generic.List<string>();
+        var text = Encoding.ASCII.GetString(data.Table(table));
+        var lines = new List<string>();
 
         foreach (var line in text.Split('\n'))
         {
@@ -529,11 +530,11 @@ internal sealed class JsIntlTables
     }
 
     /// <summary>A two-field table as a dictionary.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=041F11
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=D4D9F0
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.Dictionary<string, string> Pairs(Format.JsIntlTable table)
+    private Dictionary<string, string> Pairs(JsIntlTable table)
     {
-        var pairs = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+        var pairs = new Dictionary<string, string>(StringComparer.Ordinal);
 
         foreach (var line in Lines(table))
         {
@@ -544,36 +545,36 @@ internal sealed class JsIntlTables
         return pairs;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=C4C031
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=F4CF0D
     // Broiler-Human:        PENDING
     private (int First, int Last)[] ReadRanges()
     {
-        var lines = Lines(Format.JsIntlTable.SoftDotted);
+        var lines = Lines(JsIntlTable.SoftDotted);
         var ranges = new (int First, int Last)[lines.Count];
 
         for (var at = 0; at < lines.Count; at++)
         {
             var bar = lines[at].IndexOf('|');
             ranges[at] = (
-                int.Parse(lines[at][..bar], System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture),
-                int.Parse(lines[at][(bar + 1)..], System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture));
+                int.Parse(lines[at][..bar], NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+                int.Parse(lines[at][(bar + 1)..], NumberStyles.HexNumber, CultureInfo.InvariantCulture));
         }
 
         return ranges;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=50C7CB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=4E9FB9
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>> ReadAliases()
+    private Dictionary<string, Dictionary<string, string>> ReadAliases()
     {
-        var kinds = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>(System.StringComparer.Ordinal);
+        var kinds = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
 
         foreach (var kind in new[] { "language", "script", "region", "variant", "subdivision" })
         {
-            kinds[kind] = new(System.StringComparer.Ordinal);
+            kinds[kind] = new(StringComparer.Ordinal);
         }
 
-        foreach (var line in Lines(Format.JsIntlTable.Aliases))
+        foreach (var line in Lines(JsIntlTable.Aliases))
         {
             var fields = line.Split('|');
             kinds[fields[0]][fields[1]] = fields[2];
@@ -582,13 +583,13 @@ internal sealed class JsIntlTables
         return kinds;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=F3E6EB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=5381D5
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.Dictionary<string, string> ReadExtensions()
+    private Dictionary<string, string> ReadExtensions()
     {
-        var table = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+        var table = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        foreach (var line in Lines(Format.JsIntlTable.Extensions))
+        foreach (var line in Lines(JsIntlTable.Extensions))
         {
             var fields = line.Split('|');
             table[fields[0] + "|" + fields[1] + "|" + fields[2]] = fields[3];

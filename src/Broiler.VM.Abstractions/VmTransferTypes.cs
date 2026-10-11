@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           16
+// Exempt:           15
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
@@ -35,7 +35,7 @@ public readonly ref struct VmBytes
     private readonly ReadOnlySpan<byte> span;
 
     /// <summary>Wraps a span for the duration of one call.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C880D9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AFDF5F
     // Broiler-Human:        PENDING
     public VmBytes(ReadOnlySpan<byte> bytes) => span = bytes;
 
@@ -64,7 +64,7 @@ public readonly ref struct VmUtf8Text
     private readonly ReadOnlySpan<byte> utf8;
 
     /// <summary>Wraps UTF-8 bytes for the duration of one call.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3F6F22
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=579C39
     // Broiler-Human:        PENDING
     public VmUtf8Text(ReadOnlySpan<byte> bytes) => utf8 = bytes;
 
@@ -89,7 +89,7 @@ public readonly ref struct VmUtf8Text
 /// stores, clones, pools or serialises it.
 /// </remarks>
 /// <remarks>Creates a payload identity.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F24020
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D3B393
 // Broiler-Human:        PENDING
 public readonly struct VmPayloadIdentity(VmProfileId profileId, int payloadKindId, int payloadSchemaVersion) : IEquatable<VmPayloadIdentity>
 {

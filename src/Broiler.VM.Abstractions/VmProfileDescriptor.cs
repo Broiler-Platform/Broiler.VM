@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           32
+// Exempt:           31
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -54,7 +54,7 @@ namespace Broiler.VM.Abstractions;
 /// </para>
 /// </remarks>
 /// <remarks>Creates a descriptor. Every row of the frozen table is supplied.</remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6BF23B
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=916D51
 // Broiler-Human:        PENDING
 public sealed class VmProfileDescriptor(
     VmProfileId profileId,

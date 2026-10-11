@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -46,7 +51,7 @@ internal static class JsNumberFormat
     private static readonly string[] SmallIntegers = BuildSmallIntegers();
 
     /// <summary>The specification's <c>Number::toString</c> in radix 10.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=77D95D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1DA02B
     // Broiler-Human:        PENDING
     internal static string ToJsString(double value)
     {
@@ -75,7 +80,7 @@ internal static class JsNumberFormat
             return "-" + ToJsString(-value);
         }
 
-        if (value < SmallIntegers.Length && value == System.Math.Floor(value))
+        if (value < SmallIntegers.Length && value == Math.Floor(value))
         {
             return SmallIntegers[(int)value];
         }
@@ -85,15 +90,15 @@ internal static class JsNumberFormat
     }
 
     /// <summary>Renders an unsigned integer, which is what an array index always is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=732E60
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F911BF
     // Broiler-Human:        PENDING
     internal static string ToUintString(uint value) =>
         value < SmallIntegers.Length
             ? SmallIntegers[(int)value]
-            : value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            : value.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>The specification's <c>Number::toString</c> in a radix other than 10.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=764D80
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2067F0
     // Broiler-Human:        PENDING
     internal static string ToRadixString(double value, int radix)
     {
@@ -124,7 +129,7 @@ internal static class JsNumberFormat
             value = -value;
         }
 
-        var integral = System.Math.Floor(value);
+        var integral = Math.Floor(value);
         var fraction = value - integral;
 
         // THE STOPPING RULE IS THE VALUE'S OWN PRECISION AND NOT A DIGIT COUNT.
@@ -141,10 +146,9 @@ internal static class JsNumberFormat
         // uncertainty in the value itself, so the expansion stops exactly where it stops saying
         // anything - and the half-way case rounds up and carries, which is why the digits are held
         // in a list rather than appended to a builder.
-        var delta = System.Math.Max(
-            0.5 * (System.Math.BitIncrement(value) - value), double.Epsilon);
+        var delta = Math.Max(0.5 * (Math.BitIncrement(value) - value), double.Epsilon);
 
-        var head = new System.Collections.Generic.List<char>();
+        var head = new List<char>();
 
         if (integral == 0)
         {
@@ -155,13 +159,13 @@ internal static class JsNumberFormat
             while (integral >= 1)
             {
                 head.Add(Digit((int)(integral % radix)));
-                integral = System.Math.Floor(integral / radix);
+                integral = Math.Floor(integral / radix);
             }
 
             head.Reverse();
         }
 
-        var tail = new System.Collections.Generic.List<char>();
+        var tail = new List<char>();
 
         if (fraction >= delta)
         {
@@ -189,12 +193,12 @@ internal static class JsNumberFormat
             }
         }
 
-        var text = new System.Text.StringBuilder();
-        text.Append(head.ToArray());
+        var text = new StringBuilder();
+        text.Append([.. head]);
 
         if (tail.Count != 0)
         {
-            text.Append('.').Append(tail.ToArray());
+            text.Append('.').Append([.. tail]);
         }
 
         return negative ? "-" + text : text.ToString();
@@ -210,12 +214,9 @@ internal static class JsNumberFormat
     /// wrapped are dropped rather than written as zeroes, and a carry that runs off the front of
     /// the integer part prepends a digit.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E62621
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=055E1B
     // Broiler-Human:        PENDING
-    private static void RoundUpRadix(
-        System.Collections.Generic.List<char> head,
-        System.Collections.Generic.List<char> tail,
-        int radix)
+    private static void RoundUpRadix(List<char> head, List<char> tail, int radix)
     {
         for (var at = tail.Count - 1; at >= 0; at--)
         {
@@ -253,7 +254,7 @@ internal static class JsNumberFormat
         digit <= '9' ? digit - '0' : digit - 'a' + 10;
 
     /// <summary>The specification's <c>StringToNumber</c>, including the whitespace it trims.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E860DD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2C815B
     // Broiler-Human:        PENDING
     internal static double ToNumber(string text)
     {
@@ -301,8 +302,8 @@ internal static class JsNumberFormat
 
         return double.TryParse(
             trimmed,
-            System.Globalization.NumberStyles.Float,
-            System.Globalization.CultureInfo.InvariantCulture,
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
             out var parsed)
             ? parsed
             : double.NaN;
@@ -361,7 +362,7 @@ internal static class JsNumberFormat
     }
 
     /// <summary>The global <c>parseFloat</c>, which reads the longest decimal prefix.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E73E6A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=478FB7
     // Broiler-Human:        PENDING
     internal static double ParseFloat(string text)
     {
@@ -373,7 +374,7 @@ internal static class JsNumberFormat
             at++;
         }
 
-        if (string.CompareOrdinal(trimmed, at, "Infinity", 0, System.Math.Min(8, trimmed.Length - at)) == 0 &&
+        if (string.CompareOrdinal(trimmed, at, "Infinity", 0, Math.Min(8, trimmed.Length - at)) == 0 &&
             trimmed.Length - at >= 8)
         {
             return trimmed[0] == '-' ? double.NegativeInfinity : double.PositiveInfinity;
@@ -426,22 +427,22 @@ internal static class JsNumberFormat
         }
 
         return double.TryParse(
-            System.MemoryExtensions.AsSpan(trimmed, 0, at),
-            System.Globalization.NumberStyles.Float,
-            System.Globalization.CultureInfo.InvariantCulture,
+            MemoryExtensions.AsSpan(trimmed, 0, at),
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
             out var parsed)
             ? parsed
             : double.NaN;
     }
 
     /// <summary>Whether every character of <paramref name="text"/> is JavaScript whitespace.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=91F7DB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=92694F
     // Broiler-Human:        PENDING
     internal static bool IsWhiteSpace(char character) =>
         character is ' ' or '\t' or '\n' or '\r' or '\u000B' or '\u000C' or
             '\u00A0' or '\uFEFF' or '\u2028' or '\u2029' ||
-        System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character) ==
-            System.Globalization.UnicodeCategory.SpaceSeparator;
+        CharUnicodeInfo.GetUnicodeCategory(character) ==
+            UnicodeCategory.SpaceSeparator;
 
     /// <summary>Trims the whitespace the specification's numeric conversions trim.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2E25B8
@@ -470,23 +471,23 @@ internal static class JsNumberFormat
     /// and <c>n</c>: the value equals <c>s x 10^(n - k)</c>, where <c>k</c> is the digit count, and
     /// <c>s</c> has no leading and no trailing zero.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9B28CE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A8162C
     // Broiler-Human:        PENDING
     private static void Decompose(double value, out string digits, out int exponent)
     {
-        var rendered = value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+        var rendered = value.ToString("R", CultureInfo.InvariantCulture);
         var mantissa = rendered;
         var scale = 0;
-        var atE = rendered.IndexOf('E', System.StringComparison.Ordinal);
+        var atE = rendered.IndexOf('E', StringComparison.Ordinal);
 
         if (atE >= 0)
         {
             mantissa = rendered[..atE];
             scale = int.Parse(
-                rendered[(atE + 1)..], System.Globalization.CultureInfo.InvariantCulture);
+                rendered[(atE + 1)..], CultureInfo.InvariantCulture);
         }
 
-        var atDot = mantissa.IndexOf('.', System.StringComparison.Ordinal);
+        var atDot = mantissa.IndexOf('.', StringComparison.Ordinal);
         string whole;
         string fraction;
 
@@ -528,7 +529,7 @@ internal static class JsNumberFormat
     }
 
     /// <summary>Places the digits by the five cases of <c>Number::toString</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=21624D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0B3656
     // Broiler-Human:        PENDING
     private static string Place(string digits, int exponent)
     {
@@ -550,8 +551,8 @@ internal static class JsNumberFormat
         }
 
         var sign = exponent - 1 >= 0 ? "+" : "-";
-        var magnitude = System.Math.Abs(exponent - 1)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var magnitude = Math.Abs(exponent - 1)
+            .ToString(CultureInfo.InvariantCulture);
 
         return count == 1
             ? digits + "e" + sign + magnitude
@@ -653,7 +654,7 @@ internal static class JsNumberFormat
     private static char Digit(int value) =>
         (char)(value < 10 ? '0' + value : 'a' + (value - 10));
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=561274
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=786AF1
     // Broiler-Human:        PENDING
     private static string[] BuildSmallIntegers()
     {
@@ -661,7 +662,7 @@ internal static class JsNumberFormat
 
         for (var at = 0; at < table.Length; at++)
         {
-            table[at] = at.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            table[at] = at.ToString(CultureInfo.InvariantCulture);
         }
 
         return table;

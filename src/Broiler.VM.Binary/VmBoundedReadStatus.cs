@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Binary;
 
 /// <summary>
 /// Why a bounded read stopped. This is mechanism vocabulary and deliberately not a contract

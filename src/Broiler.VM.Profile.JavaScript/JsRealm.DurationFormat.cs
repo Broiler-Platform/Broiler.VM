@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+using System.Numerics;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -71,29 +74,23 @@ internal sealed partial class JsRealm
     private static readonly string[] DurationFieldsRead =
         ["days", "hours", "microseconds", "milliseconds", "minutes", "months", "nanoseconds", "seconds", "weeks", "years"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=01E229
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C4778D
     // Broiler-Human:        PENDING
     private void SetupDurationFormat(JsObject intl)
     {
         var prototype = new JsObject(ObjectPrototype);
         DurationFormatPrototype = prototype;
 
-        var constructor = new JsNativeFunction(
-            this,
-            FunctionPrototype,
-            "DurationFormat",
-            0,
-            static (engine, thisValue, arguments) =>
-                throw engine.Error("TypeError", "Constructor Intl.DurationFormat requires 'new'"),
-            static (engine, newTarget, arguments) => NewDurationFormat(engine, newTarget, arguments));
-
-        constructor.BuildsFromNewTarget = true;
+        var constructor = new JsNativeFunction(this, FunctionPrototype, "DurationFormat", 0,
+            static (engine, thisValue, arguments) => throw engine.Error("TypeError", "Constructor Intl.DurationFormat requires 'new'"),
+            static (engine, newTarget, arguments) => NewDurationFormat(engine, newTarget, arguments))
+        {
+            BuildsFromNewTarget = true
+        };
         DurationFormatConstructor = constructor;
 
         constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Method(constructor, "supportedLocalesOf", 1, static (engine, thisValue, arguments) =>
         {
@@ -108,9 +105,9 @@ internal sealed partial class JsRealm
             var record = DurationFormatInput(engine, Argument(arguments, 0));
             var text = new System.Text.StringBuilder();
 
-            foreach (var part in PartitionDurationFormatPattern(engine, format, record))
+            foreach (var (Type, Value, Unit) in PartitionDurationFormatPattern(engine, format, record))
             {
-                text.Append(part.Value);
+                text.Append(Value);
             }
 
             return JsValue.String(text.ToString());
@@ -120,7 +117,7 @@ internal sealed partial class JsRealm
         {
             var format = DurationFormatOfThis(engine, thisValue, "formatToParts");
             var record = DurationFormatInput(engine, Argument(arguments, 0));
-            var values = new System.Collections.Generic.List<JsValue>();
+            var values = new List<JsValue>();
 
             foreach (var (type, value, unit) in PartitionDurationFormatPattern(engine, format, record))
             {
@@ -165,13 +162,8 @@ internal sealed partial class JsRealm
             return JsValue.Object(options);
         });
 
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl.DurationFormat"), JsPropertyAttributes.Configurable));
-
-        intl.SetOwnProperty(
-            "DurationFormat",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl.DurationFormat"), JsPropertyAttributes.Configurable));
+        intl.SetOwnProperty("DurationFormat", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>The duration format <paramref name="thisValue"/> is, or the <c>TypeError</c>.</summary>
@@ -182,7 +174,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.DurationFormat.prototype." + member + " requires that 'this' be an Intl.DurationFormat");
 
     /// <summary>ECMA-402's <c>Intl.DurationFormat</c> constructor (s13.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A30F45
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=54826B
     // Broiler-Human:        PENDING
     internal static JsValue NewDurationFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -200,7 +192,7 @@ internal sealed partial class JsRealm
         }
 
         var numbers = engine.Intl!.Numbers;
-        var systems = new System.Collections.Generic.List<string?> { "latn" };
+        var systems = new List<string?> { "latn" };
 
         foreach (var name in numbers.NumberingSystems.Keys)
         {
@@ -213,12 +205,7 @@ internal sealed partial class JsRealm
         systems.Sort(1, systems.Count - 1, System.StringComparer.Ordinal);
         var nuValues = systems.ToArray();
 
-        var resolved = ResolveLocale(
-            engine,
-            requested,
-            new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal) { ["nu"] = numberingSystem },
-            ["nu"],
-            (locale, key) => key == "nu" ? nuValues : [null]);
+        var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(System.StringComparer.Ordinal) { ["nu"] = numberingSystem }, ["nu"], (locale, key) => key == "nu" ? nuValues : [null]);
 
         // [[DIGITALFORMAT]]: CLDR's time separator, and whether its hours-minutes-seconds pattern
         // writes the hours with two digits.
@@ -262,8 +249,7 @@ internal sealed partial class JsRealm
     /// <summary>ECMA-402's GetDurationUnitOptions (s13.5.6) with ValidateDurationUnitStyle (s13.5.6.2).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=09E581
     // Broiler-Human:        PENDING
-    private static (string Style, string Display) GetDurationUnitOptions(
-        JsEngine engine, string unit, JsValue options, string baseStyle, string[] styles, string digitalBase, string previous, bool twoDigitHours)
+    private static (string Style, string Display) GetDurationUnitOptions(JsEngine engine, string unit, JsValue options, string baseStyle, string[] styles, string digitalBase, string previous, bool twoDigitHours)
     {
         var style = GetStringOption(engine, options, unit, styles, null);
         var displayDefault = "always";
@@ -337,8 +323,7 @@ internal sealed partial class JsRealm
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D80BE2
     // Broiler-Human:        PENDING
-    private static double[] DurationFormatInput(JsEngine engine, JsValue input) =>
-        engine.Realm.TemporalDurationPrototype is not null ? JsTemporal.ToDuration(engine, input) : ToDurationRecord(engine, input);
+    private static double[] DurationFormatInput(JsEngine engine, JsValue input) => engine.Realm.TemporalDurationPrototype is not null ? JsTemporal.ToDuration(engine, input) : ToDurationRecord(engine, input);
 
     /// <summary>
     /// ECMA-402's ToDurationRecord (s13.5.3): the ten fields read in alphabetical order, each an
@@ -391,7 +376,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's IsValidDuration (s13.5.5), its sum of seconds made exactly.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E5285F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F97739
     // Broiler-Human:        PENDING
     private static bool IsValidDuration(double[] record)
     {
@@ -419,11 +404,11 @@ internal sealed partial class JsRealm
             }
         }
 
-        var limit = System.Numerics.BigInteger.Pow(2, 32);
+        var limit = BigInteger.Pow(2, 32);
 
         for (var i = 0; i < 3; i++)
         {
-            if (System.Numerics.BigInteger.Abs(new System.Numerics.BigInteger(record[i])) >= limit)
+            if (BigInteger.Abs(new BigInteger(record[i])) >= limit)
             {
                 return false;
             }
@@ -431,12 +416,12 @@ internal sealed partial class JsRealm
 
         // DAYS TO SECONDS AS NANOSECONDS: (d * 86,400 + h * 3,600 + m * 60 + s) * 10^9 + ms * 10^6 + us * 10^3 + ns.
         var nanoseconds =
-            (((new System.Numerics.BigInteger(record[3]) * 86_400) + (new System.Numerics.BigInteger(record[4]) * 3_600) +
-              (new System.Numerics.BigInteger(record[5]) * 60) + new System.Numerics.BigInteger(record[6])) * 1_000_000_000) +
-            (new System.Numerics.BigInteger(record[7]) * 1_000_000) + (new System.Numerics.BigInteger(record[8]) * 1_000) +
-            new System.Numerics.BigInteger(record[9]);
+            (((new BigInteger(record[3]) * 86_400) + (new BigInteger(record[4]) * 3_600) +
+              (new BigInteger(record[5]) * 60) + new BigInteger(record[6])) * 1_000_000_000) +
+            (new BigInteger(record[7]) * 1_000_000) + (new BigInteger(record[8]) * 1_000) +
+            new BigInteger(record[9]);
 
-        return System.Numerics.BigInteger.Abs(nanoseconds) < System.Numerics.BigInteger.Pow(2, 53) * 1_000_000_000;
+        return BigInteger.Abs(nanoseconds) < BigInteger.Pow(2, 53) * 1_000_000_000;
     }
 
     /// <summary>ECMA-402's DurationSign (s13.5.4).</summary>
@@ -464,16 +449,16 @@ internal sealed partial class JsRealm
     /// The value of unit <paramref name="index"/> with ComputeFractionalDigits (s13.5.7) added: the
     /// fractional units that follow it, each a thousandth of the one before, as an exact decimal.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=36E10D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D57E8A
     // Broiler-Human:        PENDING
     private static JsDecimal WithFractions(JsEngine engine, JsDurationFormatObject format, double[] record, int index)
     {
-        var total = new System.Numerics.BigInteger(record[index]);
+        var total = new BigInteger(record[index]);
         var digits = 0;
 
         for (var i = index + 1; i < DurationUnits.Length && format.Units[i].Style == "fractional"; i++)
         {
-            total = (total * 1_000) + new System.Numerics.BigInteger(record[i]);
+            total = (total * 1_000) + new BigInteger(record[i]);
             digits += 3;
         }
 
@@ -483,16 +468,15 @@ internal sealed partial class JsRealm
         }
 
         var negative = total.Sign < 0;
-        var text = System.Numerics.BigInteger.Abs(total).ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(digits + 1, '0');
+        var text = BigInteger.Abs(total).ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(digits + 1, '0');
         var decimalText = (negative ? "-" : string.Empty) + text[..^digits] + "." + text[^digits..];
         return JsDecimal.FromString(decimalText, engine.ChargeFuel);
     }
 
     /// <summary>A number format of the duration format's locale, built by the constructor from <paramref name="settings"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F02052
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=270687
     // Broiler-Human:        PENDING
-    private static JsNumberFormatter DurationNumberFormat(
-        JsEngine engine, JsDurationFormatObject format, System.Collections.Generic.List<(string Key, JsValue Value)> settings)
+    private static JsNumberFormatter DurationNumberFormat(JsEngine engine, JsDurationFormatObject format, List<(string Key, JsValue Value)> settings)
     {
         var options = new JsObject(null);
         options.DefineOrdinary("numberingSystem", JsValue.String(format.NumberingSystem));
@@ -502,18 +486,14 @@ internal sealed partial class JsRealm
             options.DefineOrdinary(key, value);
         }
 
-        return ((JsNumberFormatObject)NewNumberFormat(
-            engine,
-            JsValue.Object(engine.Realm.NumberFormatConstructor!),
-            [JsValue.String(format.Locale), JsValue.Object(options)],
-            JsValue.Undefined,
-            called: false).AsObject()).Formatter;
+        return ((JsNumberFormatObject)NewNumberFormat(engine, JsValue.Object(engine.Realm.NumberFormatConstructor!),
+            [JsValue.String(format.Locale), JsValue.Object(options)], JsValue.Undefined, called: false).AsObject()).Formatter;
     }
 
     /// <summary>The digits settings of a value with fractions: up to nine digits, or exactly fractionalDigits, truncated.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86C383
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ACFC29
     // Broiler-Human:        PENDING
-    private static void FractionSettings(JsDurationFormatObject format, System.Collections.Generic.List<(string Key, JsValue Value)> settings)
+    private static void FractionSettings(JsDurationFormatObject format, List<(string Key, JsValue Value)> settings)
     {
         var digits = format.FractionalDigits;
         settings.Add(("maximumFractionDigits", JsValue.Number(digits ?? 9)));
@@ -525,23 +505,17 @@ internal sealed partial class JsRealm
     /// ECMA-402's FormatNumericHours, FormatNumericMinutes and FormatNumericSeconds (s13.5.9 to
     /// s13.5.11): one clock field, after its separator where a larger field precedes it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6ECA63
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=948A54
     // Broiler-Human:        PENDING
-    private static void FormatNumericField(
-        JsEngine engine,
-        JsDurationFormatObject format,
-        int index,
-        JsDecimal value,
-        string? separator,
-        bool signDisplayed,
-        System.Collections.Generic.List<(string Type, string Value, string? Unit)> result)
+    private static void FormatNumericField(JsEngine engine, JsDurationFormatObject format, int index, JsDecimal value,
+        string? separator, bool signDisplayed, List<(string Type, string Value, string? Unit)> result)
     {
         if (separator is not null)
         {
             result.Add(("literal", separator, null));
         }
 
-        var settings = new System.Collections.Generic.List<(string Key, JsValue Value)>();
+        var settings = new List<(string Key, JsValue Value)>();
 
         if (format.Units[index].Style == "2-digit")
         {
@@ -567,12 +541,12 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's FormatNumericUnits (s13.5.12): the clock, from its first numeric field.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1ECE55
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6E277B
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<(string Type, string Value, string? Unit)> FormatNumericUnits(
+    private static List<(string Type, string Value, string? Unit)> FormatNumericUnits(
         JsEngine engine, JsDurationFormatObject format, double[] record, int first, bool signDisplayed)
     {
-        var result = new System.Collections.Generic.List<(string Type, string Value, string? Unit)>();
+        var result = new List<(string Type, string Value, string? Unit)>();
         var hours = record[4];
         var minutes = record[5];
         var seconds = record[7] != 0 || record[8] != 0 || record[9] != 0
@@ -610,12 +584,12 @@ internal sealed partial class JsRealm
     /// ECMA-402's PartitionDurationFormatPattern (s13.5.15): each unit before the clock by a unit
     /// number format, the clock, and the whole joined by ListFormatParts (s13.5.14).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0ED68B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C3B603
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<(string Type, string Value, string? Unit)> PartitionDurationFormatPattern(
+    private static List<(string Type, string Value, string? Unit)> PartitionDurationFormatPattern(
         JsEngine engine, JsDurationFormatObject format, double[] record)
     {
-        var lists = new System.Collections.Generic.List<System.Collections.Generic.List<(string Type, string Value, string? Unit)>>();
+        var lists = new List<List<(string Type, string Value, string? Unit)>>();
         var signDisplayed = true;
 
         for (var i = 0; i < DurationUnits.Length; i++)
@@ -635,7 +609,7 @@ internal sealed partial class JsRealm
                 break;
             }
 
-            var settings = new System.Collections.Generic.List<(string Key, JsValue Value)>();
+            var settings = new List<(string Key, JsValue Value)>();
             var nextFractional = i + 1 < DurationUnits.Length && i >= 6 && format.Units[i + 1].Style == "fractional";
             var value = nextFractional ? WithFractions(engine, format, record, i) : JsDecimal.FromNumber(record[i]);
 
@@ -664,7 +638,7 @@ internal sealed partial class JsRealm
                 settings.Add(("unit", JsValue.String(DurationUnits[i].Singular)));
                 settings.Add(("unitDisplay", JsValue.String(style)));
 
-                var list = new System.Collections.Generic.List<(string Type, string Value, string? Unit)>();
+                var list = new List<(string Type, string Value, string? Unit)>();
 
                 foreach (var part in DurationNumberFormat(engine, format, settings).Parts(engine, value))
                 {
@@ -689,21 +663,21 @@ internal sealed partial class JsRealm
             JsValue.Object(engine.Realm.ListFormatConstructor!),
             [JsValue.String(format.Locale), JsValue.Object(listOptions)]).AsObject();
 
-        var strings = new System.Collections.Generic.List<string>();
+        var strings = new List<string>();
 
         foreach (var parts in lists)
         {
             var text = new System.Text.StringBuilder();
 
-            foreach (var part in parts)
+            foreach (var (Type, Value, Unit) in parts)
             {
-                text.Append(part.Value);
+                text.Append(Value);
             }
 
             strings.Add(text.ToString());
         }
 
-        var result = new System.Collections.Generic.List<(string Type, string Value, string? Unit)>();
+        var result = new List<(string Type, string Value, string? Unit)>();
         var element = 0;
 
         foreach (var (type, value) in CreatePartsFromList(engine, listFormat, strings))

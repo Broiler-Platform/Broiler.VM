@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -55,7 +58,7 @@ internal sealed partial class JsRealm
         "pound", "second", "stone", "terabit", "terabyte", "week", "yard", "year",
     ];
 
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16; IP=Low; Security=Medium; Resources=3; Fingerprint=28FC0B
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16; IP=Low; Security=Medium; Resources=3; Fingerprint=21B6E3
     // Broiler-Human:        PENDING
     private void SetupNumberFormat(JsObject intl)
     {
@@ -64,22 +67,16 @@ internal sealed partial class JsRealm
         var prototype = new JsObject(ObjectPrototype);
         NumberFormatPrototype = prototype;
 
-        var constructor = new JsNativeFunction(
-            this,
-            FunctionPrototype,
-            "NumberFormat",
-            0,
-            static (engine, thisValue, arguments) =>
-                NewNumberFormat(engine, JsValue.Object(engine.Realm.NumberFormatConstructor!), arguments, thisValue, called: true),
-            static (engine, newTarget, arguments) => NewNumberFormat(engine, newTarget, arguments, JsValue.Undefined, called: false));
-
-        constructor.BuildsFromNewTarget = true;
+        var constructor = new JsNativeFunction(this, FunctionPrototype, "NumberFormat", 0,
+            static (engine, thisValue, arguments) => NewNumberFormat(engine, JsValue.Object(engine.Realm.NumberFormatConstructor!), arguments, thisValue, called: true),
+            static (engine, newTarget, arguments) => NewNumberFormat(engine, newTarget, arguments, JsValue.Undefined, called: false))
+        {
+            BuildsFromNewTarget = true
+        };
         NumberFormatConstructor = constructor;
 
         constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Method(constructor, "supportedLocalesOf", 1, static (engine, thisValue, arguments) =>
         {
@@ -88,29 +85,23 @@ internal sealed partial class JsRealm
             return JsValue.Object(engine.Realm.NewArray(supported.ConvertAll(static locale => JsValue.String(locale))));
         });
 
-        prototype.SetOwnProperty(
-            "format",
-            JsProperty.Accessor(
-                Native("get format", 0, static (engine, thisValue, arguments) =>
-                {
-                    var format = UnwrapNumberFormat(engine, thisValue, "format");
+        prototype.SetOwnProperty("format", JsProperty.Accessor(Native("get format", 0, static (engine, thisValue, arguments) =>
+        {
+            var format = UnwrapNumberFormat(engine, thisValue, "format");
 
-                    // [[BoundFormat]]: MADE ONCE, an anonymous function of length 1.
-                    if (format.BoundFormat is null)
-                    {
-                        format.BoundFormat = new JsNativeFunction(
-                            engine.Realm,
-                            engine.Realm.FunctionPrototype,
-                            string.Empty,
-                            1,
-                            (inner, receiver, values) =>
-                                JsValue.String(format.Formatter.Format(inner, ToIntlMathematicalValue(inner, Argument(values, 0)))));
-                    }
+            // [[BoundFormat]]: MADE ONCE, an anonymous function of length 1.
+            if (format.BoundFormat is null)
+            {
+                format.BoundFormat = new JsNativeFunction(
+                    engine.Realm,
+                    engine.Realm.FunctionPrototype,
+                    string.Empty,
+                    1,
+                    (inner, receiver, values) => JsValue.String(format.Formatter.Format(inner, ToIntlMathematicalValue(inner, Argument(values, 0)))));
+            }
 
-                    return JsValue.Object(format.BoundFormat);
-                }),
-                null,
-                JsPropertyAttributes.Configurable));
+            return JsValue.Object(format.BoundFormat);
+        }), null, JsPropertyAttributes.Configurable));
 
         Method(prototype, "formatToParts", 1, static (engine, thisValue, arguments) =>
         {
@@ -185,13 +176,8 @@ internal sealed partial class JsRealm
             return JsValue.Object(options);
         });
 
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl.NumberFormat"), JsPropertyAttributes.Configurable));
-
-        intl.SetOwnProperty(
-            "NumberFormat",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl.NumberFormat"), JsPropertyAttributes.Configurable));
+        intl.SetOwnProperty("NumberFormat", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>The two values of a range: both present, both numbers.</summary>
@@ -219,11 +205,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>An array of <c>{ type, value }</c> objects, with <c>source</c> where a part has one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=7363B8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=CC8E99
     // Broiler-Human:        PENDING
-    private static JsValue PartsArray(JsEngine engine, System.Collections.Generic.List<JsNumberPart> parts)
+    private static JsValue PartsArray(JsEngine engine, List<JsNumberPart> parts)
     {
-        var values = new System.Collections.Generic.List<JsValue>(parts.Count);
+        var values = new List<JsValue>(parts.Count);
 
         foreach (var part in parts)
         {
@@ -303,7 +289,7 @@ internal sealed partial class JsRealm
     /// ECMA-402's <c>Intl.NumberFormat</c> constructor: the prototype from the new target, then
     /// InitializeNumberFormat, then the legacy path when called as a function.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=9EAA6C
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=5F52CF
     // Broiler-Falsified-If: an option is read in another order than ECMA-402's, an invalid option is admitted, or a resolved option differs from what the locale and options select
     // Broiler-Human:        PENDING
     internal static JsValue NewNumberFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments, JsValue thisValue, bool called)
@@ -322,7 +308,7 @@ internal sealed partial class JsRealm
         }
 
         var numbers = engine.Intl!.Numbers;
-        var systems = new System.Collections.Generic.List<string?> { "latn" };
+        var systems = new List<string?> { "latn" };
 
         foreach (var name in numbers.NumberingSystems.Keys)
         {
@@ -332,15 +318,10 @@ internal sealed partial class JsRealm
             }
         }
 
-        systems.Sort(1, systems.Count - 1, System.StringComparer.Ordinal);
+        systems.Sort(1, systems.Count - 1, StringComparer.Ordinal);
         var nuValues = systems.ToArray();
 
-        var resolved = ResolveLocale(
-            engine,
-            requested,
-            new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal) { ["nu"] = numberingSystem },
-            ["nu"],
-            (locale, key) => key == "nu" ? nuValues : [null]);
+        var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal) { ["nu"] = numberingSystem }, ["nu"], (locale, key) => key == "nu" ? nuValues : [null]);
 
         var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
 
@@ -456,20 +437,11 @@ internal sealed partial class JsRealm
     /// <summary>What SetNumberFormatDigitOptions resolves.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F0C7A5
     // Broiler-Human:        PENDING
-    internal sealed record JsDigitOptions(
-        int MinimumIntegerDigits,
-        int? MinimumFractionDigits,
-        int? MaximumFractionDigits,
-        int? MinimumSignificantDigits,
-        int? MaximumSignificantDigits,
-        string RoundingType,
-        string ComputedRoundingPriority,
-        int RoundingIncrement,
-        string RoundingMode,
-        string TrailingZeroDisplay);
+    internal sealed record JsDigitOptions(int MinimumIntegerDigits, int? MinimumFractionDigits, int? MaximumFractionDigits, int? MinimumSignificantDigits, int? MaximumSignificantDigits,
+        string RoundingType, string ComputedRoundingPriority, int RoundingIncrement, string RoundingMode, string TrailingZeroDisplay);
 
     /// <summary>ECMA-402's SetNumberFormatDigitOptions.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.1.2; IP=Low; Security=Medium; Resources=2; Fingerprint=ED6326
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.1.2; IP=Low; Security=Medium; Resources=2; Fingerprint=585A70
     // Broiler-Falsified-If: a digit option is read more than once or out of ECMA-402's order, or a combination ECMA-402 refuses is admitted
     // Broiler-Human:        PENDING
     internal static JsDigitOptions SetNumberFormatDigitOptions(JsEngine engine, JsValue options, int mnfdDefault, int mxfdDefault, string notation)
@@ -481,7 +453,7 @@ internal sealed partial class JsRealm
         var mxsd = engine.GetProperty(options, "maximumSignificantDigits");
         var roundingIncrement = GetNumberOption(engine, options, "roundingIncrement", 1, 5000, 1)!.Value;
 
-        if (System.Array.IndexOf([1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000], roundingIncrement) < 0)
+        if (Array.IndexOf([1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000], roundingIncrement) < 0)
         {
             throw engine.Error("RangeError", "Intl.NumberFormat: roundingIncrement must be one of the admitted increments");
         }
@@ -536,11 +508,11 @@ internal sealed partial class JsRealm
 
                 if (min is null)
                 {
-                    min = System.Math.Min(mnfdDefault, max!.Value);
+                    min = Math.Min(mnfdDefault, max!.Value);
                 }
                 else if (max is null)
                 {
-                    max = System.Math.Max(mxfdDefault, min.Value);
+                    max = Math.Max(mxfdDefault, min.Value);
                 }
                 else if (min > max)
                 {
@@ -608,7 +580,7 @@ internal sealed partial class JsRealm
         DefaultNumberOption(engine, engine.GetProperty(options, property), minimum, maximum, fallback, property);
 
     /// <summary>ECMA-402's DefaultNumberOption.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.13; IP=Low; Security=Low; Resources=1; Fingerprint=9EAB51
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.13; IP=Low; Security=Low; Resources=1; Fingerprint=F21832
     // Broiler-Human:        PENDING
     internal static int? DefaultNumberOption(JsEngine engine, JsValue value, int minimum, int maximum, int? fallback, string property)
     {
@@ -624,7 +596,7 @@ internal sealed partial class JsRealm
             throw engine.Error("RangeError", property + " value is out of range.");
         }
 
-        return (int)System.Math.Floor(number);
+        return (int)Math.Floor(number);
     }
 
     /// <summary>
@@ -632,7 +604,7 @@ internal sealed partial class JsRealm
     /// <c>always</c> and <see langword="false"/> answered as <see langword="null"/>; the strings
     /// <c>"true"</c> and <c>"false"</c> answer the fallback, as the step after it requires.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.12; IP=Low; Security=Low; Resources=1; Fingerprint=418222
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.12; IP=Low; Security=Low; Resources=1; Fingerprint=2DF0D7
     // Broiler-Human:        PENDING
     private static string? GetBooleanOrStringNumberFormatOption(JsEngine engine, JsValue options, string property, string[] values, string fallback)
     {
@@ -660,7 +632,7 @@ internal sealed partial class JsRealm
             return fallback;
         }
 
-        if (System.Array.IndexOf(values, text) < 0)
+        if (Array.IndexOf(values, text) < 0)
         {
             throw engine.Error("RangeError", "Value " + text + " out of range for option " + property);
         }
@@ -675,19 +647,17 @@ internal sealed partial class JsRealm
         code.Length == 3 && char.IsAsciiLetter(code[0]) && char.IsAsciiLetter(code[1]) && char.IsAsciiLetter(code[2]);
 
     /// <summary>ECMA-402's IsWellFormedUnitIdentifier: a sanctioned unit, or two joined by <c>-per-</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s6.6.1; IP=Low; Security=Low; Resources=1; Fingerprint=D5DE66
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s6.6.1; IP=Low; Security=Low; Resources=1; Fingerprint=856F6E
     // Broiler-Human:        PENDING
     private static bool IsWellFormedUnitIdentifier(string unit)
     {
-        if (System.Array.IndexOf(SanctionedUnits, unit) >= 0)
+        if (Array.IndexOf(SanctionedUnits, unit) >= 0)
         {
             return true;
         }
 
-        var per = unit.IndexOf("-per-", System.StringComparison.Ordinal);
-        return per > 0 &&
-            System.Array.IndexOf(SanctionedUnits, unit[..per]) >= 0 &&
-            System.Array.IndexOf(SanctionedUnits, unit[(per + 5)..]) >= 0;
+        var per = unit.IndexOf("-per-", StringComparison.Ordinal);
+        return per > 0 && Array.IndexOf(SanctionedUnits, unit[..per]) >= 0 && Array.IndexOf(SanctionedUnits, unit[(per + 5)..]) >= 0;
     }
 
     /// <summary>A Number's or a BigInt's <c>toLocaleString</c> through the realm's own <c>%Intl.NumberFormat%</c>.</summary>
@@ -695,13 +665,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal static string ToLocaleNumberString(JsEngine engine, JsDecimal x, JsValue[] arguments)
     {
-        var made = NewNumberFormat(
-            engine,
-            JsValue.Object(engine.Realm.NumberFormatConstructor!),
-            [Argument(arguments, 0), Argument(arguments, 1)],
-            JsValue.Undefined,
-            called: false);
-
+        var made = NewNumberFormat(engine, JsValue.Object(engine.Realm.NumberFormatConstructor!), [Argument(arguments, 0), Argument(arguments, 1)], JsValue.Undefined, called: false);
         return ((JsNumberFormatObject)made.AsObject()).Formatter.Format(engine, x);
     }
 }
@@ -713,8 +677,7 @@ internal sealed class JsNumberFormatObject : JsObject
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D23E25
     // Broiler-Human:        PENDING
-    internal JsNumberFormatObject(JsObject prototype, JsNumberFormatter formatter)
-        : base(prototype) => Formatter = formatter;
+    internal JsNumberFormatObject(JsObject prototype, JsNumberFormatter formatter) : base(prototype) => Formatter = formatter;
 
     internal JsNumberFormatter Formatter { get; }
 

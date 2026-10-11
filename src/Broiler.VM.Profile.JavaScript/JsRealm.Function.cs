@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Globalization;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -64,7 +67,7 @@ internal sealed partial class JsRealm
     internal JsObject LegacyArgumentsGetter { get; private set; } = null!;
 
     /// <summary>Builds <c>Function.prototype</c>'s members and the refused <c>Function</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EFB82E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7D8154
     // Broiler-Human:        PENDING
     private void SetupFunction()
     {
@@ -75,12 +78,8 @@ internal sealed partial class JsRealm
         // configurable - which is exactly what a descriptor query reports for them in every
         // engine, and what makes `delete Function.prototype.name` succeed and an assignment to it
         // silently do nothing.
-        functionPrototype.SetOwnProperty(
-            "length", JsProperty.Data(JsValue.Number(0), JsPropertyAttributes.Configurable));
-
-        functionPrototype.SetOwnProperty(
-            "name",
-            JsProperty.Data(JsValue.String(string.Empty), JsPropertyAttributes.Configurable));
+        functionPrototype.SetOwnProperty("length", JsProperty.Data(JsValue.Number(0), JsPropertyAttributes.Configurable));
+        functionPrototype.SetOwnProperty("name", JsProperty.Data(JsValue.String(string.Empty), JsPropertyAttributes.Configurable));
 
         // THE TWO RESTRICTED PROPERTIES, WHICH EXIST IN ORDER TO REFUSE. `caller` and `arguments`
         // were how a function reached its caller's frame; the language removed them and put an
@@ -92,19 +91,11 @@ internal sealed partial class JsRealm
         // `arguments` object's `callee` shares.
         var restricted = ThrowTypeErrorFunction;
 
-        functionPrototype.SetOwnProperty(
-            "caller",
-            JsProperty.Accessor(restricted, restricted, JsPropertyAttributes.Configurable));
-
-        functionPrototype.SetOwnProperty(
-            "arguments",
-            JsProperty.Accessor(restricted, restricted, JsPropertyAttributes.Configurable));
+        functionPrototype.SetOwnProperty("caller", JsProperty.Accessor(restricted, restricted, JsPropertyAttributes.Configurable));
+        functionPrototype.SetOwnProperty("arguments", JsProperty.Accessor(restricted, restricted, JsPropertyAttributes.Configurable));
 
         Method(functionPrototype, "call", 1, static (engine, thisValue, arguments) =>
-            engine.Call(
-                thisValue,
-                ArgOfFunction(arguments, 0),
-                FunctionTailArguments(engine, arguments, 1)));
+            engine.Call(thisValue, ArgOfFunction(arguments, 0), FunctionTailArguments(engine, arguments, 1)));
 
         Method(functionPrototype, "apply", 2, static (engine, thisValue, arguments) =>
         {
@@ -144,7 +135,7 @@ internal sealed partial class JsRealm
 
                     length = double.IsPositiveInfinity(number)
                         ? double.PositiveInfinity
-                        : System.Math.Max(0, JsValue.ToInteger(number) - boundArguments.Length);
+                        : Math.Max(0, JsValue.ToInteger(number) - boundArguments.Length);
                 }
             }
 
@@ -154,18 +145,12 @@ internal sealed partial class JsRealm
 
             var bound = new JsBoundFunction(functionPrototype, target, boundThis, boundArguments)
             {
-                FunctionName =
-                    "bound " + (targetName.IsString ? targetName.AsString() : string.Empty),
+                FunctionName = "bound " + (targetName.IsString ? targetName.AsString() : string.Empty),
                 DeclaredArity = arity,
             };
 
-            bound.SetOwnProperty(
-                "length", JsProperty.Data(JsValue.Number(length), JsPropertyAttributes.Configurable));
-
-            bound.SetOwnProperty(
-                "name",
-                JsProperty.Data(
-                    JsValue.String(bound.FunctionName), JsPropertyAttributes.Configurable));
+            bound.SetOwnProperty("length", JsProperty.Data(JsValue.Number(length), JsPropertyAttributes.Configurable));
+            bound.SetOwnProperty("name", JsProperty.Data(JsValue.String(bound.FunctionName), JsPropertyAttributes.Configurable));
 
             return JsValue.Object(bound);
         });
@@ -247,28 +232,26 @@ internal sealed partial class JsRealm
 
         if (receiver is null || !receiver.IsCallable)
         {
-            throw engine.Error(
-                "TypeError",
-                "Function.prototype." + method + " called on a value that is not a function");
+            throw engine.Error("TypeError", "Function.prototype." + method + " called on a value that is not a function");
         }
 
         return receiver;
     }
 
     /// <summary>Copies the arguments from <paramref name="from"/> onward into a fresh list.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1DD7B0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=11BA47
     // Broiler-Human:        PENDING
     private static JsValue[] FunctionTailArguments(JsEngine engine, JsValue[] arguments, int from)
     {
         if (arguments.Length <= from)
         {
-            return System.Array.Empty<JsValue>();
+            return [];
         }
 
         var count = arguments.Length - from;
         engine.Charge((ulong)count);
         var tail = new JsValue[count];
-        System.Array.Copy(arguments, from, tail, 0, count);
+        Array.Copy(arguments, from, tail, 0, count);
         return tail;
     }
 
@@ -278,20 +261,18 @@ internal sealed partial class JsRealm
     /// and none is special-cased: the list is read through <c>length</c> and the index properties,
     /// which is the only reading that works for all three.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BD7387
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8BD9B1
     // Broiler-Human:        PENDING
     private static JsValue[] FunctionSpreadArguments(JsEngine engine, JsValue source)
     {
         if (source.IsNullish)
         {
-            return System.Array.Empty<JsValue>();
+            return [];
         }
 
         if (!source.IsObject)
         {
-            throw engine.Error(
-                "TypeError",
-                "Function.prototype.apply expects an array-like second argument");
+            throw engine.Error("TypeError", "Function.prototype.apply expects an array-like second argument");
         }
 
         // `LengthOfArrayLike`, WHICH IS `ToLength` AND NOT `ToUint32`. The two disagree on exactly
@@ -301,7 +282,7 @@ internal sealed partial class JsRealm
 
         if (count == 0)
         {
-            return System.Array.Empty<JsValue>();
+            return [];
         }
 
         // THE CEILING `Reflect.apply` HAS, for the reason it has it: the specification's own is
@@ -328,19 +309,19 @@ internal sealed partial class JsRealm
         // program calling `apply` in a loop reached a ceiling for memory it had already given
         // back - which the RayTrace benchmark did after printing its score. Transient allocation
         // is bounded by the fuel this call already charged.
-        return collected.ToArray();
+        return [.. collected];
     }
 
     /// <summary>
     /// Whether <paramref name="name"/> can stand in a NativeFunction's name position: an identifier
     /// name or a bracketed one, after an optional <c>get</c> or <c>set</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=972663
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0C5024
     // Broiler-Human:        PENDING
     private static bool FunctionIsNativeName(string name)
     {
-        if (name.StartsWith("get ", System.StringComparison.Ordinal) ||
-            name.StartsWith("set ", System.StringComparison.Ordinal))
+        if (name.StartsWith("get ", StringComparison.Ordinal) ||
+            name.StartsWith("set ", StringComparison.Ordinal))
         {
             name = name[4..];
         }
@@ -359,10 +340,10 @@ internal sealed partial class JsRealm
         {
             var c = name[at];
             var starts = char.IsLetter(c) || char.IsSurrogate(c) || c is '$' or '_';
-            var continues = char.IsDigit(c) || c is '\u200C' or '\u200D' ||
-                char.GetUnicodeCategory(c) is System.Globalization.UnicodeCategory.NonSpacingMark or
-                    System.Globalization.UnicodeCategory.SpacingCombiningMark or
-                    System.Globalization.UnicodeCategory.ConnectorPunctuation;
+            var continues = char.IsDigit(c) || c is '\u200C' or '\u200D' || char.GetUnicodeCategory(c) is
+                UnicodeCategory.NonSpacingMark or
+                UnicodeCategory.SpacingCombiningMark or
+                UnicodeCategory.ConnectorPunctuation;
 
             if (!starts && !(at > 0 && continues))
             {

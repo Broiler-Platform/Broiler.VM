@@ -17,6 +17,7 @@
 
 using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript.Format;
+using System;
 using System.Collections.Immutable;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -117,8 +118,7 @@ public static class JavaScriptProfile
     /// <summary>The one feature manifest this build accepts.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2B766D
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId SliceManifest { get; } =
-        VmFeatureManifestId.Parse("broiler.javascript.slice");
+    public static VmFeatureManifestId SliceManifest { get; } = VmFeatureManifestId.Parse("broiler.javascript.slice");
 
     /// <summary>
     /// The wider feature manifest: objects, functions, closures, exceptions and a standard library.
@@ -133,8 +133,7 @@ public static class JavaScriptProfile
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AB89AD
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId WideManifest { get; } =
-        VmFeatureManifestId.Parse("broiler.javascript.wide");
+    public static VmFeatureManifestId WideManifest { get; } = VmFeatureManifestId.Parse("broiler.javascript.wide");
 
     /// <summary>
     /// The numeric feature manifest: the subset of the language a whole artifact can be compiled
@@ -174,10 +173,9 @@ public static class JavaScriptProfile
     /// dispatch to run every instruction.)</i>
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F84EE9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=077BB9
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId NumericManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsNumericManifest.ManifestId);
+    public static VmFeatureManifestId NumericManifest { get; } = VmFeatureManifestId.Parse(JsNumericManifest.ManifestId);
 
     /// <summary>
     /// The binary surface: <c>ArrayBuffer</c>, <c>DataView</c> and the typed array constructors.
@@ -198,10 +196,9 @@ public static class JavaScriptProfile
     /// that wanted an ordinary byte buffer admit cross-agent shared memory by accident.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50C297
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BE2972
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId BinaryManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.Binary);
+    public static VmFeatureManifestId BinaryManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.Binary);
 
     /// <summary>
     /// The BigInt surface: BigInt values, their literals, and the <c>BigInt</c> global.
@@ -222,10 +219,9 @@ public static class JavaScriptProfile
     /// wherever this identity and the binary one are both admitted (JSeal B07-B08).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=336318
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1C52DF
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId BigIntManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.BigInt);
+    public static VmFeatureManifestId BigIntManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.BigInt);
 
     /// <summary>
     /// The ShadowRealm surface: the <c>ShadowRealm</c> constructor, admitted ahead of the pinned
@@ -236,10 +232,9 @@ public static class JavaScriptProfile
     /// without the dynamic surface is refused when it is built, because a ShadowRealm does nothing but
     /// compile source into a realm of its own (JSD-0030 section 8).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=27E17A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5CA5BC
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId ShadowRealmManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.ShadowRealm);
+    public static VmFeatureManifestId ShadowRealmManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.ShadowRealm);
 
     /// <summary>
     /// The shared-memory surface: <c>SharedArrayBuffer</c> and <c>Atomics</c> (JSD-0041).
@@ -248,10 +243,9 @@ public static class JavaScriptProfile
     /// <b>It is admitted only together with <see cref="BinaryManifest"/></b>: a descriptor naming it
     /// without the binary surface is refused when it is built.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=084F37
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D732E9
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId SharedManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.Shared);
+    public static VmFeatureManifestId SharedManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.Shared);
 
     /// <summary>
     /// The internationalization surface: <c>Intl</c> and the ECMA-402 behaviour of the
@@ -261,10 +255,9 @@ public static class JavaScriptProfile
     /// <b>It is admitted only with its data</b>, which a composition hands to
     /// <see cref="DescriptorComposing"/>; every other door builds without it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9A120D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DA137C
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId IntlManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.Intl);
+    public static VmFeatureManifestId IntlManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.Intl);
 
     /// <summary>
     /// The Temporal surface: the <c>Temporal</c> namespace, admitted at proposal revision
@@ -274,10 +267,9 @@ public static class JavaScriptProfile
     /// <b>It is admitted only together with <see cref="IntlManifest"/> and <see cref="BigIntManifest"/></b>:
     /// a descriptor naming it without either is refused when it is built.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BAD2A7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DC3D45
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId TemporalManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.Temporal);
+    public static VmFeatureManifestId TemporalManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.Temporal);
 
     /// <summary>
     /// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor.
@@ -286,10 +278,9 @@ public static class JavaScriptProfile
     /// Separate because a composition that registers no artifact provider must be able to decline
     /// exactly this and say so, which is roadmap section 6's reason and not a new one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CDF67F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A63CBA
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId DynamicManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.Dynamic);
+    public static VmFeatureManifestId DynamicManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.Dynamic);
 
     /// <summary>
     /// The module surface: module records, live bindings, and the import and export forms.
@@ -310,10 +301,9 @@ public static class JavaScriptProfile
     /// records.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8A2782
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=12CE37
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId ModulesManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.Modules);
+    public static VmFeatureManifestId ModulesManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.Modules);
 
     /// <summary>
     /// The native surface: the artifact carries emitted machine code beside its bytecode.
@@ -342,10 +332,9 @@ public static class JavaScriptProfile
     /// baseline form that JSD-0025 decides, which carries its emitted code in the same section.)</i>
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DDC799
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ECCED9
     // Broiler-Human:        PENDING
-    public static VmFeatureManifestId NativeManifest { get; } =
-        VmFeatureManifestId.Parse(Format.JsSurfaces.Native);
+    public static VmFeatureManifestId NativeManifest { get; } = VmFeatureManifestId.Parse(JsSurfaces.Native);
 
     /// <summary>The kind ID stamped on a completion value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C9902C
@@ -600,8 +589,7 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A90981
     // Broiler-Falsified-If: a descriptor built here accepts an optional surface its caller did not name
     // Broiler-Human:        PENDING
-    public static VmProfileDescriptor DescriptorAdmitting(params VmFeatureManifestId[] surfaces) =>
-        Build(Named(surfaces));
+    public static VmProfileDescriptor DescriptorAdmitting(params VmFeatureManifestId[] surfaces) => Build(Named(surfaces));
 
     /// <summary>The names of <paramref name="surfaces"/>.</summary>
     /// <remarks>
@@ -649,12 +637,10 @@ public static class JavaScriptProfile
     /// asked twice could be given two answers.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F076BD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=AF83C0
     // Broiler-Falsified-If: a descriptor built here admits a native payload whose bytes its emitter does not reproduce
     // Broiler-Human:        PENDING
-    public static VmProfileDescriptor DescriptorReEmittingWith(
-        Format.IJsNativeEmitter emitter, params VmFeatureManifestId[] surfaces) =>
-        Build(Named(surfaces), emitter);
+    public static VmProfileDescriptor DescriptorReEmittingWith(IJsNativeEmitter emitter, params VmFeatureManifestId[] surfaces) => Build(Named(surfaces), emitter);
 
     /// <summary>Every optional surface this build implements.</summary>
     /// <remarks>
@@ -669,21 +655,21 @@ public static class JavaScriptProfile
 
     /// <summary>
     /// Every optional surface a composition holding <paramref name="intl"/> can build: every surface
-    /// this build implements, less <see cref="Format.JsSurfaces.Intl"/> when it was handed no data
+    /// this build implements, less <see cref="JsSurfaces.Intl"/> when it was handed no data
     /// (JSD-0043).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BC0349
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=203AD6
     // Broiler-Human:        PENDING
-    private static ImmutableArray<string> EverySurfaceWith(Format.IJsIntlData? intl)
+    private static ImmutableArray<string> EverySurfaceWith(IJsIntlData? intl)
     {
         var surfaces = ImmutableArray.CreateBuilder<string>();
 
-        foreach (var surface in Format.JsSurfaces.All)
+        foreach (var surface in JsSurfaces.All)
         {
             // TEMPORAL READS ITS TIME ZONES FROM THE SAME DATA (JSD-0054), so it goes with Intl.
             if (intl is not null ||
-                !(string.Equals(surface, Format.JsSurfaces.Intl, System.StringComparison.Ordinal) ||
-                  string.Equals(surface, Format.JsSurfaces.Temporal, System.StringComparison.Ordinal)))
+                !(string.Equals(surface, JsSurfaces.Intl, System.StringComparison.Ordinal) ||
+                  string.Equals(surface, JsSurfaces.Temporal, System.StringComparison.Ordinal)))
             {
                 surfaces.Add(surface);
             }
@@ -753,21 +739,16 @@ public static class JavaScriptProfile
     /// what they are.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=11215D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=EA065A
     // Broiler-Falsified-If: a descriptor built here installs a surface in a runtime that registered no permission
     // Broiler-Human:        PENDING
-    public static VmProfileDescriptor DescriptorHostingRealms(
-        IJsHostSurface surface, params VmFeatureManifestId[] surfaces)
+    public static VmProfileDescriptor DescriptorHostingRealms(IJsHostSurface surface, params VmFeatureManifestId[] surfaces)
     {
-        if (surface is null)
-        {
-            throw new System.ArgumentNullException(nameof(surface));
-        }
+        ArgumentNullException.ThrowIfNull(surface);
 
         var names = Named(surfaces);
 
-        return Build(
-            names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface);
+        return Build(names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface);
     }
 
     /// <summary>Projects a completion value out of an invocation result.</summary>
@@ -800,13 +781,11 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A66C15
     // Broiler-Falsified-If: a descriptor built here runs a value-form instance whose table does not compact at every safepoint, or changes anything for an instance of another form
     // Broiler-Human:        PENDING
-    public static VmProfileDescriptor DescriptorUnderHandleStress(
-        IJsHostSurface? surface, params VmFeatureManifestId[] surfaces)
+    public static VmProfileDescriptor DescriptorUnderHandleStress(IJsHostSurface? surface, params VmFeatureManifestId[] surfaces)
     {
         var names = Named(surfaces);
 
-        return Build(
-            names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface, handleStress: true);
+        return Build(names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface, handleStress: true);
     }
 
     /// <summary>
@@ -835,47 +814,36 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=96FEE8
     // Broiler-Falsified-If: a descriptor built here sweeps anywhere but at a host drain or step, or a descriptor built by any other door sweeps at all
     // Broiler-Human:        PENDING
-    public static VmProfileDescriptor DescriptorSweepingFinalization(
-        IJsHostSurface? surface, bool handleStress = false, params VmFeatureManifestId[] surfaces)
+    public static VmProfileDescriptor DescriptorSweepingFinalization(IJsHostSurface? surface, bool handleStress = false, params VmFeatureManifestId[] surfaces)
     {
         var names = Named(surfaces);
 
-        return Build(
-            names.Length == 0 ? EverySurface : names,
-            emitter: null,
-            hostSurface: surface,
-            handleStress: handleStress,
-            sweepsFinalization: true);
+        return Build(names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface, handleStress: handleStress, sweepsFinalization: true);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50E921
     // Broiler-Human:        PENDING
-    public static bool TryGetCompletion(in VmInvocationResult result, out JavaScriptCompletion completion) =>
-        result.TryGetPayload(out completion);
+    public static bool TryGetCompletion(in VmInvocationResult result, out JavaScriptCompletion completion) => result.TryGetPayload(out completion);
 
     /// <summary>Projects a language fault out of an invocation result.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=87273C
     // Broiler-Human:        PENDING
-    public static bool TryGetFault(in VmInvocationResult result, out JavaScriptFault fault) =>
-        result.TryGetPayload(out fault);
+    public static bool TryGetFault(in VmInvocationResult result, out JavaScriptFault fault) => result.TryGetPayload(out fault);
 
     /// <summary>Projects a wide-surface completion value out of an invocation result.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AC0F96
     // Broiler-Human:        PENDING
-    public static bool TryGetWideCompletion(in VmInvocationResult result, out JsCompletion completion) =>
-        result.TryGetPayload(out completion);
+    public static bool TryGetWideCompletion(in VmInvocationResult result, out JsCompletion completion) => result.TryGetPayload(out completion);
 
     /// <summary>Projects the pause a parked wide-surface operation published.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8096BB
     // Broiler-Human:        PENDING
-    public static bool TryGetPause(in VmInvocationResult result, out JsPause pause) =>
-        result.TryGetPayload(out pause);
+    public static bool TryGetPause(in VmInvocationResult result, out JsPause pause) => result.TryGetPayload(out pause);
 
     /// <summary>Projects a wide-surface uncaught exception out of an invocation result.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=56397D
     // Broiler-Human:        PENDING
-    public static bool TryGetUncaught(in VmInvocationResult result, out JsUncaught uncaught) =>
-        result.TryGetPayload(out uncaught);
+    public static bool TryGetUncaught(in VmInvocationResult result, out JsUncaught uncaught) => result.TryGetPayload(out uncaught);
 
     /// <summary>
     /// The one full-arity construction, with every row filled and the language-shaped ones marked.
@@ -902,62 +870,48 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=BBB011
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=89CF7B
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
-    private static VmProfileDescriptor Build(
-        ImmutableArray<string> admittedSurfaces,
-        Format.IJsNativeEmitter? emitter = null,
-        IJsHostSurface? hostSurface = null,
-        bool handleStress = false,
-        bool sweepsFinalization = false,
-        Format.IJsIntlData? intl = null)
+    private static VmProfileDescriptor Build(ImmutableArray<string> admittedSurfaces, IJsNativeEmitter? emitter = null,
+        IJsHostSurface? hostSurface = null, bool handleStress = false, bool sweepsFinalization = false, IJsIntlData? intl = null)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
 
         // THE INTERNATIONALIZATION SURFACE IS BUILT FROM DATA THE COMPOSITION HANDS OVER (JSD-0043),
         // and a set naming it without that data is the composition's mistake, refused here rather than
         // built into realms with an Intl that has nothing to answer from.
-        if (admittedSurfaces.Contains(Format.JsSurfaces.Intl) && intl is null)
+        if (admittedSurfaces.Contains(JsSurfaces.Intl) && intl is null)
         {
-            throw new System.ArgumentException(
-                Format.JsSurfaces.Intl + " is admitted only with its data, an IJsIntlData handed to " +
+            throw new ArgumentException(JsSurfaces.Intl + " is admitted only with its data, an IJsIntlData handed to " +
                 nameof(DescriptorComposing),
                 nameof(admittedSurfaces));
         }
 
-        var intlTables = intl is not null && admittedSurfaces.Contains(Format.JsSurfaces.Intl)
+        var intlTables = intl is not null && admittedSurfaces.Contains(JsSurfaces.Intl)
             ? new JsIntlTables(intl)
             : null;
 
         // THE SHADOWREALM SURFACE NEEDS THE DYNAMIC ONE (JSD-0040): a set naming it alone is a
         // composition's mistake, refused here rather than built into realms whose ShadowRealm could
         // compile nothing.
-        if (admittedSurfaces.Contains(Format.JsSurfaces.ShadowRealm) &&
-            !admittedSurfaces.Contains(Format.JsSurfaces.Dynamic))
+        if (admittedSurfaces.Contains(JsSurfaces.ShadowRealm) && !admittedSurfaces.Contains(JsSurfaces.Dynamic))
         {
-            throw new System.ArgumentException(
-                Format.JsSurfaces.ShadowRealm + " is admitted only together with " + Format.JsSurfaces.Dynamic,
-                nameof(admittedSurfaces));
+            throw new ArgumentException(JsSurfaces.ShadowRealm + " is admitted only together with " + JsSurfaces.Dynamic, nameof(admittedSurfaces));
         }
 
         // AND THE SHARED-MEMORY SURFACE NEEDS THE BINARY ONE (JSD-0041), whose views read it.
-        if (admittedSurfaces.Contains(Format.JsSurfaces.Shared) &&
-            !admittedSurfaces.Contains(Format.JsSurfaces.Binary))
+        if (admittedSurfaces.Contains(JsSurfaces.Shared) &&
+            !admittedSurfaces.Contains(JsSurfaces.Binary))
         {
-            throw new System.ArgumentException(
-                Format.JsSurfaces.Shared + " is admitted only together with " + Format.JsSurfaces.Binary,
-                nameof(admittedSurfaces));
+            throw new ArgumentException(JsSurfaces.Shared + " is admitted only together with " + JsSurfaces.Binary, nameof(admittedSurfaces));
         }
 
         // AND THE TEMPORAL SURFACE NEEDS BOTH INTL, whose data holds its time zones, AND BIGINT,
         // whose values its epoch nanoseconds are (JSD-0054).
-        if (admittedSurfaces.Contains(Format.JsSurfaces.Temporal) &&
-            !(admittedSurfaces.Contains(Format.JsSurfaces.Intl) && admittedSurfaces.Contains(Format.JsSurfaces.BigInt)))
+        if (admittedSurfaces.Contains(JsSurfaces.Temporal) && !(admittedSurfaces.Contains(JsSurfaces.Intl) && admittedSurfaces.Contains(JsSurfaces.BigInt)))
         {
-            throw new System.ArgumentException(
-                Format.JsSurfaces.Temporal + " is admitted only together with " + Format.JsSurfaces.Intl + " and " + Format.JsSurfaces.BigInt,
-                nameof(admittedSurfaces));
+            throw new ArgumentException(JsSurfaces.Temporal + " is admitted only together with " + JsSurfaces.Intl + " and " + JsSurfaces.BigInt, nameof(admittedSurfaces));
         }
 
         // THE NUMERIC MANIFEST IS ACCEPTED UNCONDITIONALLY AND THE NATIVE SURFACE IS NOT, because
@@ -979,8 +933,7 @@ public static class JavaScriptProfile
             profileId: Id,
             displayName: "Broiler JavaScript",
             descriptorRevision: 1,
-            supportedFormatVersions: new VmFormatVersionRange(
-                JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
+            supportedFormatVersions: new VmFormatVersionRange(JavaScriptFormat.MinimumFormatVersion, JsFormat.FormatVersion),
             acceptedFeatureManifests: accepted,
             verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces, emitter),
             executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface, handleStress, sweepsFinalization, intlTables),
@@ -1010,11 +963,13 @@ public static class JavaScriptProfile
             // artifact will verify; the fourth is what a composition puts host objects in a realm
             // through. All four are Optional for the same reason: a composition that registers
             // nothing still creates a runtime and still runs scripts.
-            hostCapabilityDescriptors: ImmutableArray.Create(
+            hostCapabilityDescriptors:
+            [
                 new VmCapabilityImport(WriteCapability, VmCapabilityImportKind.Optional),
                 new VmCapabilityImport(SourceProviderCapability, VmCapabilityImportKind.Optional),
                 new VmCapabilityImport(ResolveCapability, VmCapabilityImportKind.Optional),
-                new VmCapabilityImport(HostSurfaceCapability, VmCapabilityImportKind.Optional)),
+                new VmCapabilityImport(HostSurfaceCapability, VmCapabilityImportKind.Optional),
+            ],
 
             // `eval` AND THE `Function` CONSTRUCTOR, THROUGH THE MEDIATOR AND NOWHERE ELSE. Both
             // turn a String into a request and run whatever verified handle the composition's
@@ -1062,8 +1017,7 @@ public static class JavaScriptProfile
             conformanceManifestId: VmConformanceManifestId.Create("broiler.javascript.conformance"),
             conformanceManifestVersion: 1,
             diagnosticsIdentity: diagnostics,
-            packageIdentity: new VmPackageIdentity(
-                "Broiler.VM.Profile.JavaScript", "0.1.0-preview.1", "broiler.javascript"),
+            packageIdentity: new VmPackageIdentity("Broiler.VM.Profile.JavaScript", "0.1.0-preview.1", "broiler.javascript"),
             faultRecovery: VmFaultRecovery.InstanceRecoverable,
 
             // The same figure and for the same reason; see the poll bound above.

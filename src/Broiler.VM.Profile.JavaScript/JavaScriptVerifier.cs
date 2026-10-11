@@ -3,19 +3,26 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   33
-// Annotated:        33/33
-// Exempt:           29
-// Human-reviewed:   0/33
+// Relevant units:   32
+// Annotated:        32/32
+// Exempt:           26
+// Human-reviewed:   0/32
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         14/14
+// Criteria:         11/11
 // Resource impact:  7/10 max
-// Unverified:       33
+// Unverified:       32
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Text;
+using System.Threading;
 using Broiler.VM.Abstractions;
+using Broiler.VM.Binary;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -69,13 +76,7 @@ public sealed class JavaScriptProgram : IVmVerifiedState
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=914B29
     // Broiler-Human:        PENDING
-    internal JavaScriptProgram(
-        JavaScriptValue[] constants,
-        byte[] code,
-        JavaScriptEntryPoint[] entries,
-        int maximumOperandStack,
-        int localCount,
-        int positionRowCount)
+    internal JavaScriptProgram(JavaScriptValue[] constants, byte[] code, JavaScriptEntryPoint[] entries, int maximumOperandStack, int localCount, int positionRowCount)
     {
         Constants = constants;
         Code = code;
@@ -185,88 +186,58 @@ public sealed class JavaScriptProgram : IVmVerifiedState
 /// and records the wrong answer.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=6DB9F8
+/// <remarks>
+/// Creates the verifier with an emitter it may use to re-emit a native payload and compare.
+/// </remarks>
+/// <remarks>
+/// <para>
+/// <b>AN EMITTER IS OPTIONAL AND WHAT ITS ABSENCE COSTS IS STATED RATHER THAN HIDDEN.</b> With
+/// one, a native payload is verified in the only sense machine code admits: the artifact's own
+/// bytecode is recompiled by the same deterministic backend and the result must be byte-equal
+/// to the bytes carried. Without one, the structural checks still run - framing, length,
+/// alignment, every symbol offset inside and aligned, an architecture this build names, a
+/// backend version this image is - and so does the template-closure scan, which holds every
+/// instruction to this build's template table and, for the x86-64 baseline form, every unit
+/// body to the layout of the artifact's own partition, instruction for instruction. WHAT NO
+/// CHECK REACHES WITHOUT AN EMITTER IS THE GENERATOR: outside that form, which instructions a
+/// unit holds is not compared with anything, and within it the padding's length and the
+/// declared alignment are compared with this build's by re-emission alone. For those an image in
+/// that position is trusting PROVENANCE and not verification, and a composition that runs
+/// emitted code without an emitter in its own closure is asking its users to trust whoever
+/// produced the artifact for them.
+/// </para>
+/// <para>
+/// <b>It is held on the verifier object rather than passed to the pass</b>, for the same reason
+/// the admitted surfaces are: a composition's answer is fixed when it registers its descriptor,
+/// and a verifier that could be asked twice could be given two answers.
+/// </para>
+/// </remarks>
+/// <param name="admittedSurfaces">The optional surfaces the composition that built this descriptor admitted.</param>
+/// <remarks>
+/// It is a field of the one verifier object rather than a parameter of the pass, because a
+/// composition's answer is fixed when it registers its descriptor and a verifier that could be
+/// asked twice could be given two answers.
+/// </remarks>
+/// <param name="emitter">The emitter this image can re-emit a native payload with, or null when it has none.</param>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=76B52E
 // Broiler-Falsified-If: any input makes Verify throw, or a check this class performs can be reached for the first time during execution
 // Broiler-Human:        PENDING
-public sealed class JavaScriptVerifier : IVmProfileVerifier
+public sealed class JavaScriptVerifier(
+    VmProfileId profileId,
+    VmFeatureManifestId manifest,
+    ImmutableArray<string> admittedSurfaces,
+    IJsNativeEmitter? emitter) : IVmProfileVerifier
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DA99B9
-    // Broiler-Human:        PENDING
-    private readonly VmFeatureManifestId acceptedManifest;
-
-    /// <summary>The optional surfaces the composition that built this descriptor admitted.</summary>
-    /// <remarks>
-    /// It is a field of the one verifier object rather than a parameter of the pass, because a
-    /// composition's answer is fixed when it registers its descriptor and a verifier that could be
-    /// asked twice could be given two answers.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=60EEF1
-    // Broiler-Falsified-If: this set differs from the accepted feature manifests of the descriptor that carries this verifier
-    // Broiler-Human:        PENDING
-    private readonly System.Collections.Immutable.ImmutableArray<string> surfaces;
 
     /// <summary>Creates the verifier for one profile identity and its one accepted manifest.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=21A2BC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F6E669
     // Broiler-Human:        PENDING
-    public JavaScriptVerifier(
-        VmProfileId profileId,
-        VmFeatureManifestId manifest,
-        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
-        : this(profileId, manifest, admittedSurfaces, null)
-    {
-    }
-
-    /// <summary>
-    /// Creates the verifier with an emitter it may use to re-emit a native payload and compare.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>AN EMITTER IS OPTIONAL AND WHAT ITS ABSENCE COSTS IS STATED RATHER THAN HIDDEN.</b> With
-    /// one, a native payload is verified in the only sense machine code admits: the artifact's own
-    /// bytecode is recompiled by the same deterministic backend and the result must be byte-equal
-    /// to the bytes carried. Without one, the structural checks still run - framing, length,
-    /// alignment, every symbol offset inside and aligned, an architecture this build names, a
-    /// backend version this image is - and so does the template-closure scan, which holds every
-    /// instruction to this build's template table and, for the x86-64 baseline form, every unit
-    /// body to the layout of the artifact's own partition, instruction for instruction. WHAT NO
-    /// CHECK REACHES WITHOUT AN EMITTER IS THE GENERATOR: outside that form, which instructions a
-    /// unit holds is not compared with anything, and within it the padding's length and the
-    /// declared alignment are compared with this build's by re-emission alone. For those an image in
-    /// that position is trusting PROVENANCE and not verification, and a composition that runs
-    /// emitted code without an emitter in its own closure is asking its users to trust whoever
-    /// produced the artifact for them.
-    /// </para>
-    /// <para>
-    /// <b>It is held on the verifier object rather than passed to the pass</b>, for the same reason
-    /// the admitted surfaces are: a composition's answer is fixed when it registers its descriptor,
-    /// and a verifier that could be asked twice could be given two answers.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=8BF62C
-    // Broiler-Falsified-If: a native payload is admitted whose bytes this emitter, where there is one, does not reproduce
-    // Broiler-Human:        PENDING
-    public JavaScriptVerifier(
-        VmProfileId profileId,
-        VmFeatureManifestId manifest,
-        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
-        Format.IJsNativeEmitter? emitter)
-    {
-        ProfileId = profileId;
-        acceptedManifest = manifest;
-        surfaces = admittedSurfaces;
-        reEmitter = emitter;
-    }
-
-    /// <summary>The emitter this image can re-emit a native payload with, or null when it has none.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A13BA0
-    // Broiler-Falsified-If: this is non-null in an image whose closure carries no code generator
-    // Broiler-Human:        PENDING
-    private readonly Format.IJsNativeEmitter? reEmitter;
+    public JavaScriptVerifier(VmProfileId profileId, VmFeatureManifestId manifest, ImmutableArray<string> admittedSurfaces) : this(profileId, manifest, admittedSurfaces, null) { }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CCA6CF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DCEF20
     // Broiler-Human:        PENDING
-    public VmProfileId ProfileId { get; }
+    public VmProfileId ProfileId { get; } = profileId;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=91327C
@@ -290,14 +261,10 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// examining a payload byte. That ordering is asserted by a named case rather than left to be
     /// read off this file.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=2B5921
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=DF40E5
     // Broiler-Falsified-If: a payload byte is read on a path that answers UnsupportedProfile
     // Broiler-Human:        PENDING
-    public VmVerifierOutcome Verify(
-        in VmArtifactDescriptor descriptor,
-        System.ReadOnlySpan<byte> payload,
-        IVmVerificationContext context,
-        System.Threading.CancellationToken cancellationToken)
+    public VmVerifierOutcome Verify(in VmArtifactDescriptor descriptor, ReadOnlySpan<byte> payload, IVmVerificationContext context, CancellationToken cancellationToken)
     {
         if (descriptor.ProfileId != ProfileId)
         {
@@ -310,10 +277,9 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         // decided here is only which pass reads them, and it is decided from the descriptor,
         // because reading a payload byte to find out how to read the payload is the one ordering
         // this component refuses to have.
-        if (descriptor.FormatVersion == Format.JsFormat.FormatVersion)
+        if (descriptor.FormatVersion == JsFormat.FormatVersion)
         {
-            return JsVerifier.Verify(
-                in descriptor, payload, context, surfaces, reEmitter, cancellationToken);
+            return JsVerifier.Verify(in descriptor, payload, context, admittedSurfaces, emitter, cancellationToken);
         }
 
         var adapter = new JavaScriptReadAdapter(context.Meter);
@@ -323,21 +289,16 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         return VerifyCore(in descriptor, ref reader, in bounds, adapter, cancellationToken);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A48C81
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8DFFCC
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome VerifyCore(
-        in VmArtifactDescriptor descriptor,
-        ref VmBoundedReader reader,
-        in VmReadBounds bounds,
-        JavaScriptReadAdapter adapter,
-        System.Threading.CancellationToken cancellationToken)
+    private VmVerifierOutcome VerifyCore(in VmArtifactDescriptor descriptor, ref VmBoundedReader reader, in VmReadBounds bounds, JavaScriptReadAdapter adapter, CancellationToken cancellationToken)
     {
         if (!reader.TryReadBytes(4, out var magic))
         {
             return FromReader(ref reader, 0);
         }
 
-        if (!System.MemoryExtensions.SequenceEqual(magic, JavaScriptFormat.Magic))
+        if (!MemoryExtensions.SequenceEqual(magic, JavaScriptFormat.Magic))
         {
             return Invalid(VmReason.MalformedEncoding, JavaScriptDiagnosticCode.WrongMagic, 0);
         }
@@ -349,18 +310,12 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
         if (formatVersion is < JavaScriptFormat.MinimumFormatVersion or > JavaScriptFormat.MaximumFormatVersion)
         {
-            return Invalid(
-                VmReason.UnsupportedProfileFormatVersion,
-                JavaScriptDiagnosticCode.UnsupportedFormatVersion,
-                reader.Position);
+            return Invalid(VmReason.UnsupportedProfileFormatVersion, JavaScriptDiagnosticCode.UnsupportedFormatVersion, reader.Position);
         }
 
         if (descriptor.FormatVersion != formatVersion)
         {
-            return Invalid(
-                VmReason.DescriptorMismatch,
-                JavaScriptDiagnosticCode.DescriptorFormatVersionMismatch,
-                reader.Position);
+            return Invalid(VmReason.DescriptorMismatch, JavaScriptDiagnosticCode.DescriptorFormatVersionMismatch, reader.Position);
         }
 
         var manifestOutcome = ReadAndCheckManifest(in descriptor, ref reader);
@@ -386,8 +341,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                 return Stopped(cancellationToken);
             }
 
-            var sectionOutcome = ReadSection(
-                ref reader, in bounds, adapter, ref previousKind, ref sections, index, cancellationToken);
+            var sectionOutcome = ReadSection(ref reader, in bounds, adapter, ref previousKind, ref sections, index, cancellationToken);
 
             if (sectionOutcome.Category != VmOutcome.Normal)
             {
@@ -397,8 +351,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
         if (reader.Remaining != 0)
         {
-            return Invalid(
-                VmReason.InconsistentStructure, JavaScriptDiagnosticCode.TrailingBytes, reader.Position);
+            return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.TrailingBytes, reader.Position);
         }
 
         if (cancellationToken.IsCancellationRequested)
@@ -419,7 +372,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// says the caller mislabelled these bytes. Reporting either as the other would send a reader
     /// looking in the wrong place.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=5533C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=8F409F
     // Broiler-Falsified-If: an artifact naming an unaccepted manifest verifies, or the two mismatches report the same diagnostic code
     // Broiler-Human:        PENDING
     private VmVerifierOutcome ReadAndCheckManifest(in VmArtifactDescriptor descriptor, ref VmBoundedReader reader)
@@ -433,8 +386,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
         if (manifestLength > JavaScriptFormat.MaximumManifestIdBytes)
         {
-            return Invalid(
-                VmReason.InconsistentStructure, JavaScriptDiagnosticCode.ManifestIdTooLong, reader.Position);
+            return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.ManifestIdTooLong, reader.Position);
         }
 
         if (!reader.TryReadBytes(manifestLength, out var manifestBytes))
@@ -446,23 +398,17 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         // payload that is not valid UTF-8 simply fails to match rather than reaching a decoder
         // that could throw on it. A verifier that decoded first would have to answer for the
         // decoder's exceptions, which is a second failure mode for no gain.
-        System.Span<byte> accepted = stackalloc byte[VmFeatureManifestId.MaximumLength];
-        var acceptedLength = System.Text.Encoding.UTF8.GetBytes(acceptedManifest.AsSpan(), accepted);
+        Span<byte> accepted = stackalloc byte[VmFeatureManifestId.MaximumLength];
+        var acceptedLength = Encoding.UTF8.GetBytes(manifest.AsSpan(), accepted);
 
-        if (!System.MemoryExtensions.SequenceEqual(manifestBytes, accepted[..acceptedLength]))
+        if (!MemoryExtensions.SequenceEqual(manifestBytes, accepted[..acceptedLength]))
         {
-            return Invalid(
-                VmReason.UnsupportedFeatureManifest,
-                JavaScriptDiagnosticCode.UnsupportedFeatureManifest,
-                reader.Position);
+            return Invalid(VmReason.UnsupportedFeatureManifest, JavaScriptDiagnosticCode.UnsupportedFeatureManifest, reader.Position);
         }
 
-        if (descriptor.FeatureManifestId != acceptedManifest)
+        if (descriptor.FeatureManifestId != manifest)
         {
-            return Invalid(
-                VmReason.DescriptorMismatch,
-                JavaScriptDiagnosticCode.DescriptorManifestMismatch,
-                reader.Position);
+            return Invalid(VmReason.DescriptorMismatch, JavaScriptDiagnosticCode.DescriptorManifestMismatch, reader.Position);
         }
 
         return Ok;
@@ -474,17 +420,11 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// refused before its body is read. An unknown kind is refused outright: skipping it would let
     /// one artifact carry content this verifier never looked at.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=2FA2BD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=BDD2F7
     // Broiler-Falsified-If: a section body is read before its kind's order and uniqueness are checked, or an unknown kind is skipped rather than refused
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome ReadSection(
-        ref VmBoundedReader reader,
-        in VmReadBounds bounds,
-        JavaScriptReadAdapter adapter,
-        ref uint previousKind,
-        ref SectionSet sections,
-        uint sectionIndex,
-        System.Threading.CancellationToken cancellationToken)
+    private static VmVerifierOutcome ReadSection(ref VmBoundedReader reader, in VmReadBounds bounds, JavaScriptReadAdapter adapter, ref uint previousKind,
+        ref SectionSet sections, uint sectionIndex, CancellationToken cancellationToken)
     {
         var at = reader.Position;
 
@@ -539,10 +479,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             // Consuming less than declared is as structural an error as consuming more: it means
             // the artifact and this verifier disagree about where the next section begins, which
             // is exactly the confusion framing exists to prevent.
-            return Invalid(
-                VmReason.InconsistentStructure,
-                JavaScriptDiagnosticCode.SectionLengthMismatch,
-                reader.Position);
+            return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.SectionLengthMismatch, reader.Position);
         }
 
         return Ok;
@@ -568,10 +505,10 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// that sized something before it was compared would be a number from untrusted bytes deciding
     /// an allocation, which is the shape this whole boundary exists to prevent.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=521C64
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=44D3AC
     // Broiler-Falsified-If: a declared maximum is used before its ceiling comparison
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome ReadLimits(ref VmBoundedReader reader, ref SectionSet sections)
+    private static VmVerifierOutcome ReadLimits(ref VmBoundedReader reader, ref SectionSet sections)
     {
         if (!reader.TryReadVarUInt32(out var operandStack) ||
             !reader.TryReadVarUInt32(out var locals) ||
@@ -596,8 +533,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             // The slice has no functions, so it has exactly one frame. An artifact declaring two
             // is declaring a surface this manifest does not admit, and it is refused here rather
             // than at the first call that would have needed the second frame.
-            return Invalid(
-                VmReason.UnknownFeature, JavaScriptDiagnosticCode.DeclaredFrameCount, reader.Position);
+            return Invalid(VmReason.UnknownFeature, JavaScriptDiagnosticCode.DeclaredFrameCount, reader.Position);
         }
 
         sections.HasLimits = true;
@@ -607,14 +543,10 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=518AD1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=93BDA5
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome ReadConstants(
-        ref VmBoundedReader reader,
-        in VmReadBounds bounds,
-        JavaScriptReadAdapter adapter,
-        ref SectionSet sections,
-        System.Threading.CancellationToken cancellationToken)
+    private static VmVerifierOutcome ReadConstants(ref VmBoundedReader reader, in VmReadBounds bounds, JavaScriptReadAdapter adapter,
+        ref SectionSet sections, CancellationToken cancellationToken)
     {
         if (!reader.TryReadDeclaredCount(out var count))
         {
@@ -623,8 +555,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
         if (!sections.HasLimits)
         {
-            return Invalid(
-                VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MissingSection, reader.Position);
+            return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MissingSection, reader.Position);
         }
 
         if (count > sections.MaxConstants)
@@ -640,8 +571,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             // The guard refused before allocating, so a hostile count cost nothing proportional to
             // itself. The bytes were well formed and this host declined to spend the memory, which
             // is a resource answer and not a malformed one.
-            return VmVerifierOutcome.ResourceExhaustion(
-                VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact);
+            return VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact);
         }
 
         for (var index = 0u; index < count; index++)
@@ -711,15 +641,10 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4B9AB8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BB7374
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome ReadCode(
-        ref VmBoundedReader reader,
-        in VmReadBounds bounds,
-        JavaScriptReadAdapter adapter,
-        ulong declaredLength,
-        ref SectionSet sections,
-        uint sectionIndex)
+    private static VmVerifierOutcome ReadCode(ref VmBoundedReader reader, in VmReadBounds bounds, JavaScriptReadAdapter adapter,
+        ulong declaredLength, ref SectionSet sections, uint sectionIndex)
     {
         if (declaredLength == 0)
         {
@@ -728,14 +653,12 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
         if (declaredLength > bounds.MaxArtifactBytes)
         {
-            return VmVerifierOutcome.ResourceExhaustion(
-                VmBudgetDimension.ArtifactBytes, VmBudgetScope.Artifact);
+            return VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.ArtifactBytes, VmBudgetScope.Artifact);
         }
 
         if (!VmBoundedAllocator.TryAllocateExact<byte>(in bounds, adapter, declaredLength, out var code))
         {
-            return VmVerifierOutcome.ResourceExhaustion(
-                VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact);
+            return VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact);
         }
 
         if (!reader.TryReadBytes(declaredLength, out var body))
@@ -750,9 +673,9 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FE3341
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EE910D
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome ReadEntries(ref VmBoundedReader reader, ref SectionSet sections)
+    private static VmVerifierOutcome ReadEntries(ref VmBoundedReader reader, ref SectionSet sections)
     {
         if (!reader.TryReadDeclaredCount(out var count))
         {
@@ -801,9 +724,9 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         {
             for (var right = left + 1; right < entries.Length; right++)
             {
-                if (System.MemoryExtensions.SequenceEqual(
-                    System.MemoryExtensions.AsSpan(entries[left].Name),
-                    System.MemoryExtensions.AsSpan(entries[right].Name)))
+                if (MemoryExtensions.SequenceEqual(
+                    MemoryExtensions.AsSpan(entries[left].Name),
+                    MemoryExtensions.AsSpan(entries[right].Name)))
                 {
                     return Invalid(
                         VmReason.InconsistentStructure,
@@ -827,10 +750,10 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// diagnostic naming which, so the format can grow into those sections at a later manifest
     /// without a format-version break and without ever having tolerated one silently.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=57B0F0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=3469E2
     // Broiler-Falsified-If: a reserved section carrying a non-zero count verifies
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome ReadReserved(ref VmBoundedReader reader, JavaScriptDiagnosticCode diagnosticCode)
+    private static VmVerifierOutcome ReadReserved(ref VmBoundedReader reader, JavaScriptDiagnosticCode diagnosticCode)
     {
         var at = reader.Position;
 
@@ -844,9 +767,9 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             : Invalid(VmReason.UnknownFeature, diagnosticCode, at);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EDFC3A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=59C156
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome ReadPositions(ref VmBoundedReader reader, ref SectionSet sections)
+    private static VmVerifierOutcome ReadPositions(ref VmBoundedReader reader, ref SectionSet sections)
     {
         if (!reader.TryReadDeclaredCount(out var count))
         {
@@ -879,8 +802,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                 // Strictly ascending, so the table can be searched by a binary search that cannot
                 // be confused by two rows claiming one offset, and so a stack trace names one
                 // position rather than whichever row was found first.
-                return Invalid(
-                    VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MalformedPositionRow, at);
+                return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MalformedPositionRow, at);
             }
 
             // Zero is the published encoding's "not known" and one artifact may not mint it. A
@@ -891,8 +813,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             // than wrapped into a negative line nobody wrote.
             if (line is 0 or > int.MaxValue || column is 0 or > int.MaxValue)
             {
-                return Invalid(
-                    VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MalformedPositionRow, at);
+                return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MalformedPositionRow, at);
             }
 
             previousOffset = offset;
@@ -923,10 +844,10 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// traversal rather than about the program.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=B856CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=5B4895
     // Broiler-Falsified-If: an artifact admitted here contains a jump to a non-boundary, a join whose two heights differ, an unreachable instruction, or a path that reaches the end of the code without returning
     // Broiler-Human:        PENDING
-    private VmVerifierOutcome Link(ref SectionSet sections, in VmReadBounds bounds, JavaScriptReadAdapter adapter)
+    private static VmVerifierOutcome Link(ref SectionSet sections, in VmReadBounds bounds, JavaScriptReadAdapter adapter)
     {
         if (!sections.HasLimits || !sections.HasCode || !sections.HasEntries)
         {
@@ -950,8 +871,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             !VmBoundedAllocator.TryAllocate<int>(in bounds, adapter, (uint)code.Length, out var height) ||
             !VmBoundedAllocator.TryAllocate<byte>(in bounds, adapter, (uint)code.Length, out var isEntry))
         {
-            return VmVerifierOutcome.ResourceExhaustion(
-                VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact);
+            return VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact);
         }
 
         // Walk one: instruction boundaries. Every opcode must be one this version defines and
@@ -1005,11 +925,11 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             }
         }
 
-        var walk = Walk(in sections, code, boundary, height, isEntry, constants.Length);
+        var (Outcome, MaximumOperandStack) = Walk(in sections, code, boundary, height, isEntry, constants.Length);
 
-        if (walk.Outcome.Category != VmOutcome.Normal)
+        if (Outcome.Category != VmOutcome.Normal)
         {
-            return walk.Outcome;
+            return Outcome;
         }
 
         for (var offset = 0; offset < code.Length; offset++)
@@ -1029,15 +949,15 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                 constants,
                 code,
                 sections.Entries,
-                walk.MaximumOperandStack,
+                MaximumOperandStack,
                 sections.LocalCount,
                 sections.PositionRows.Count),
             VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F47A4B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5B169D
     // Broiler-Human:        PENDING
-    private (VmVerifierOutcome Outcome, int MaximumOperandStack) Walk(
+    private static (VmVerifierOutcome Outcome, int MaximumOperandStack) Walk(
         in SectionSet sections,
         byte[] code,
         byte[] boundary,
@@ -1191,7 +1111,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         return (Ok, observed);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D39432
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=96E98A
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome OperandCheck(
         JavaScriptOpcode opcode,
@@ -1202,8 +1122,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     {
         if (opcode == JavaScriptOpcode.LoadConstant)
         {
-            var index = System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(
-                System.MemoryExtensions.AsSpan(code, offset + 1, 2));
+            var index = BinaryPrimitives.ReadUInt16LittleEndian(MemoryExtensions.AsSpan(code, offset + 1, 2));
 
             return index < constantCount
                 ? Ok
@@ -1216,8 +1135,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
         if (opcode is JavaScriptOpcode.LoadLocal or JavaScriptOpcode.StoreLocal)
         {
-            var index = System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(
-                System.MemoryExtensions.AsSpan(code, offset + 1, 2));
+            var index = BinaryPrimitives.ReadUInt16LittleEndian(MemoryExtensions.AsSpan(code, offset + 1, 2));
 
             return index < sections.LocalCount
                 ? Ok
@@ -1246,8 +1164,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7D454C
     // Broiler-Human:        PENDING
-    private static readonly IVmVerifiedState EmptyState = new JavaScriptProgram(
-        [], [], [], 0, 0, 0);
+    private static readonly IVmVerifiedState EmptyState = new JavaScriptProgram([], [], [], 0, 0, 0);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2442C7
     // Broiler-Human:        PENDING
@@ -1296,10 +1213,10 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// rewrites the answer, which is why this method does not try to claim it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=2FAC64
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=6383D8
     // Broiler-Falsified-If: a wall-clock exhaustion during verification is reported as a cancellation, or a cancellation as a resource exhaustion
     // Broiler-Human:        PENDING
-    private static VmVerifierOutcome Stopped(System.Threading.CancellationToken cancellationToken) =>
+    private static VmVerifierOutcome Stopped(CancellationToken cancellationToken) =>
         cancellationToken.IsCancellationRequested
             ? VmVerifierOutcome.Cancellation()
             : VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.WallClock, VmBudgetScope.Artifact);
@@ -1317,29 +1234,21 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     private static VmVerifierOutcome FromReader(ref VmBoundedReader reader, ulong position) =>
         reader.Status switch
         {
-            VmBoundedReadStatus.Truncated =>
-                Invalid(VmReason.Truncated, JavaScriptDiagnosticCode.Truncated, position),
+            VmBoundedReadStatus.Truncated => Invalid(VmReason.Truncated, JavaScriptDiagnosticCode.Truncated, position),
 
-            VmBoundedReadStatus.MalformedEncoding =>
-                Invalid(VmReason.MalformedEncoding, JavaScriptDiagnosticCode.MalformedEncoding, position),
+            VmBoundedReadStatus.MalformedEncoding => Invalid(VmReason.MalformedEncoding, JavaScriptDiagnosticCode.MalformedEncoding, position),
 
-            VmBoundedReadStatus.DeclaredCountExceeded =>
-                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.DeclaredCount, VmBudgetScope.Artifact),
+            VmBoundedReadStatus.DeclaredCountExceeded => VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.DeclaredCount, VmBudgetScope.Artifact),
 
-            VmBoundedReadStatus.SectionCountExceeded =>
-                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.SectionCount, VmBudgetScope.Artifact),
+            VmBoundedReadStatus.SectionCountExceeded => VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.SectionCount, VmBudgetScope.Artifact),
 
-            VmBoundedReadStatus.StructuralDepthExceeded =>
-                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.StructuralDepth, VmBudgetScope.Artifact),
+            VmBoundedReadStatus.StructuralDepthExceeded => VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.StructuralDepth, VmBudgetScope.Artifact),
 
-            VmBoundedReadStatus.ArtifactBytesExceeded =>
-                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.ArtifactBytes, VmBudgetScope.Artifact),
+            VmBoundedReadStatus.ArtifactBytesExceeded => VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.ArtifactBytes, VmBudgetScope.Artifact),
 
-            VmBoundedReadStatus.AllocationRefused =>
-                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact),
+            VmBoundedReadStatus.AllocationRefused => VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact),
 
-            VmBoundedReadStatus.WorkBudgetExhausted =>
-                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact),
+            VmBoundedReadStatus.WorkBudgetExhausted => VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact),
 
             _ => Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.ReaderStopped, position),
         };
@@ -1392,9 +1301,9 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=63AFA5
         // Broiler-Human:        PENDING
         public JavaScriptEntryPoint[] Entries;
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=512D1C
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8A4652
         // Broiler-Human:        PENDING
-        public System.Collections.Generic.List<JavaScriptPositionRow> PositionRows;
+        public List<JavaScriptPositionRow> PositionRows;
 
         /// <summary>
         /// The ordinal index of the code section's frame, or <c>-1</c> until it is framed.

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Threading;
 using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -351,14 +353,7 @@ internal sealed class JsCloneCarrier
     /// <summary>Seals a finished graph.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=72AEB6
     // Broiler-Human:        PENDING
-    internal JsCloneCarrier(
-        JsCloneRecord[] records,
-        JsCloneSlot root,
-        long entries,
-        long bytes,
-        int moved = 0,
-        long charged = 0,
-        bool holdsBigInt = false)
+    internal JsCloneCarrier(JsCloneRecord[] records, JsCloneSlot root, long entries, long bytes, int moved = 0, long charged = 0, bool holdsBigInt = false)
     {
         Records = records;
         Root = root;
@@ -404,9 +399,9 @@ internal sealed class JsCloneCarrier
     internal long Charged { get; }
 
     /// <summary>Whether an adoption has claimed this carrier's moved bytes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E1E0E6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=55436C
     // Broiler-Human:        PENDING
-    internal bool Claimed => System.Threading.Volatile.Read(ref claimed) != 0;
+    internal bool Claimed => Volatile.Read(ref claimed) != 0;
 
     /// <summary>Set once the one adoption a carrier with moved bytes allows has claimed them.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F0E9BD
@@ -446,11 +441,11 @@ internal sealed class JsCloneCarrier
     /// same moved bytes must not both win. A claim is final even if the adoption that made it then
     /// fails; moved bytes are never offered twice.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D7D2C4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A72265
     // Broiler-Falsified-If: two adoptions of one carrier holding moved bytes both succeed
     // Broiler-Human:        PENDING
     internal bool TryClaimMoved() =>
-        System.Threading.Interlocked.Exchange(ref claimed, 1) == 0;
+        Interlocked.Exchange(ref claimed, 1) == 0;
 }
 
 /// <summary>Why a value could not be cloned.</summary>
@@ -500,9 +495,9 @@ internal enum JsCloneRefusal : byte
 /// <c>DataCloneError:</c>, and nothing else in the profile sees one. A getter's own throw is NOT
 /// this: it propagates as the guest exception it was, exactly as HTML's <c>?</c> says.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E0AC86
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D8216E
 // Broiler-Human:        PENDING
-internal sealed class JsCloneRefusedException : System.Exception
+internal sealed class JsCloneRefusedException : Exception
 {
     /// <summary>Creates a refusal.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BB6F92

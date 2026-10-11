@@ -220,7 +220,7 @@ public sealed class HostSurfaceRuleTests
     /// </remarks>
     private static IEnumerable<string> TheChargeReachesTheHostCallDimension()
     {
-        var engine = TextOf("JsEngine.cs");
+        var engine = TextOf("JsEngine.Metering.cs");
         var realm = TextOf("JsHostRealm.cs");
 
         if (!engine.Contains("VmBudgetDimension.HostCalls", StringComparison.Ordinal) ||

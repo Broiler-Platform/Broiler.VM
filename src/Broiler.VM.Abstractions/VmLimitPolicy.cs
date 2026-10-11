@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           16
+// Exempt:           14
 // Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Medium
@@ -39,7 +39,7 @@ namespace Broiler.VM.Abstractions;
 /// </para>
 /// </remarks>
 /// <remarks>Creates an override of one dimension.</remarks>
-// Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=9266BA
+// Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=36B5FA
 // Broiler-Human:        PENDING
 public readonly struct VmLimitOverride(VmBudgetDimension dimension, ulong value) : IEquatable<VmLimitOverride>
 {
@@ -58,7 +58,7 @@ public readonly struct VmLimitOverride(VmBudgetDimension dimension, ulong value)
     public override bool Equals(object? obj) => obj is VmLimitOverride other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=017DC5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7C91AC
     // Broiler-Human:        PENDING
     public override int GetHashCode() => HashCode.Combine((int)Dimension, Value);
 
@@ -88,7 +88,7 @@ public readonly struct VmLimitOverride(VmBudgetDimension dimension, ulong value)
 /// a value that would raise a bound are each refused, and a refused set applies nothing.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=974BBD
+// Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=438B1F
 // Broiler-Human:        PENDING
 public readonly struct VmLimitOverrides : IEquatable<VmLimitOverrides>
 {
@@ -100,7 +100,7 @@ public readonly struct VmLimitOverrides : IEquatable<VmLimitOverrides>
     public static VmLimitOverrides None => default;
 
     /// <summary>Creates a set from the stated overrides, in the order given.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=2; Fingerprint=767D9F
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=2; Fingerprint=455A47
     // Broiler-Human:        PENDING
     public static VmLimitOverrides Create(ReadOnlySpan<VmLimitOverride> overrides)
     {
@@ -113,7 +113,7 @@ public readonly struct VmLimitOverrides : IEquatable<VmLimitOverrides>
     }
 
     /// <summary>Creates a set stating exactly one dimension.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=94CDA7
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=8F0FDA
     // Broiler-Human:        PENDING
     public static VmLimitOverrides Of(VmBudgetDimension dimension, ulong value) => new([new VmLimitOverride(dimension, value)]);
 
@@ -178,7 +178,7 @@ public readonly struct VmLimitOverrides : IEquatable<VmLimitOverrides>
     public override bool Equals(object? obj) => obj is VmLimitOverrides other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9F90E3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B93FE
     // Broiler-Human:        PENDING
     public override int GetHashCode()
     {
@@ -221,7 +221,7 @@ public readonly struct VmLimitOverrides : IEquatable<VmLimitOverrides>
 /// </para>
 /// </remarks>
 /// <remarks>Creates a clamp record.</remarks>
-// Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=8B2425
+// Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=E2559D
 // Broiler-Human:        PENDING
 public readonly struct VmLimitClamp(VmBudgetDimension dimension, ulong requested, ulong effective) : IEquatable<VmLimitClamp>
 {
@@ -243,7 +243,7 @@ public readonly struct VmLimitClamp(VmBudgetDimension dimension, ulong requested
     public override bool Equals(object? obj) => obj is VmLimitClamp other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E0AFCB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A1DEF9
     // Broiler-Human:        PENDING
     public override int GetHashCode() => HashCode.Combine((int)Dimension, Requested, Effective);
 

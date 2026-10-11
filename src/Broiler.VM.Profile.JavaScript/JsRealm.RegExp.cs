@@ -17,6 +17,8 @@
 
 namespace Broiler.VM.Profile.JavaScript;
 
+using System;
+using System.Collections.Generic;
 using Broiler.VM.Profile.JavaScript.Format;
 
 /// <summary>
@@ -314,8 +316,7 @@ internal sealed partial class JsRealm
         {
             if (!thisValue.IsObject)
             {
-                return engine.ThrowTypeError(
-                    "RegExp.prototype.flags called on a value that is not an object");
+                return engine.ThrowTypeError("RegExp.prototype.flags called on a value that is not an object");
             }
 
             var builder = new System.Text.StringBuilder(8);
@@ -366,8 +367,7 @@ internal sealed partial class JsRealm
             {
                 if (flags.Type != JsType.Undefined)
                 {
-                    return engine.ThrowTypeError(
-                        "RegExp.prototype.compile: a RegExp pattern takes no flags of its own");
+                    return engine.ThrowTypeError("RegExp.prototype.compile: a RegExp pattern takes no flags of its own");
                 }
 
                 source = template.Source;
@@ -534,8 +534,7 @@ internal sealed partial class JsRealm
             var input = RegExpStringThis(engine, thisValue);
             engine.Charge((ulong)input.Length + 16);
 
-            return JsValue.String(
-                RegExpReplaceText(engine, input, engine.ToStringValue(search), replacement));
+            return JsValue.String(RegExpReplaceText(engine, input, engine.ToStringValue(search), replacement));
         });
 
         // `replaceAll` IS `replace` WITH A GUARD IN FRONT. A RegExp argument whose `flags` lack "g"
@@ -615,14 +614,14 @@ internal sealed partial class JsRealm
     /// <c>lastIndex</c>, <c>exec</c> and, for <c>split</c> and <c>matchAll</c>, its species
     /// <i>(a real RegExp was required until 2026-09-21; JSeal follow-up VM-FIX-G)</i>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=2893A6
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=EFAB51
     // Broiler-Human:        PENDING
     private void RegExpSymbolMethod(
         JsObject host,
         JsSymbol key,
         string name,
         int arity,
-        System.Func<JsEngine, JsValue, JsValue[], JsValue> body) =>
+        Func<JsEngine, JsValue, JsValue[], JsValue> body) =>
         host.SetOwnSymbol(
             key,
             JsProperty.Data(
@@ -775,7 +774,7 @@ internal sealed partial class JsRealm
     /// or one code point under "u" - further on. The final <c>null</c> is what leaves a built-in
     /// matcher's <c>lastIndex</c> at zero.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1B6653
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3B2F37
     // Broiler-Human:        PENDING
     private JsValue RegExpSymbolMatch(JsEngine engine, JsValue receiver, JsValue argument)
     {
@@ -783,7 +782,7 @@ internal sealed partial class JsRealm
         engine.Charge((ulong)input.Length + 16);
         var flags = engine.ToStringValue(engine.GetProperty(receiver, "flags"));
 
-        if (!flags.Contains('g', System.StringComparison.Ordinal))
+        if (!flags.Contains('g', StringComparison.Ordinal))
         {
             return RegExpExec(engine, receiver, input);
         }
@@ -866,17 +865,16 @@ internal sealed partial class JsRealm
     /// of the answer is charged, and the answer is held to <c>StringLengthCeiling</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=26749C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B64400
     // Broiler-Human:        PENDING
-    private JsValue RegExpSymbolReplace(
-        JsEngine engine, JsValue receiver, JsValue argument, JsValue replaceValue)
+    private JsValue RegExpSymbolReplace(JsEngine engine, JsValue receiver, JsValue argument, JsValue replaceValue)
     {
         var input = engine.ToStringValue(argument);
         engine.Charge((ulong)input.Length + 16);
         var functional = replaceValue.AsObjectOrNull() is { IsCallable: true };
         var template = functional ? string.Empty : engine.ToStringValue(replaceValue);
         var flags = engine.ToStringValue(engine.GetProperty(receiver, "flags"));
-        var global = flags.Contains('g', System.StringComparison.Ordinal);
+        var global = flags.Contains('g', StringComparison.Ordinal);
 
         if (global)
         {
@@ -888,8 +886,8 @@ internal sealed partial class JsRealm
         // the attempts, and every property of a fresh result is an own data property, so neither
         // the attempts nor the reads below can be told apart from the language's.
         var pristine = RegExpPristineExec(receiver);
-        var results = new System.Collections.Generic.List<JsValue>();
-        var matches = new System.Collections.Generic.List<JsRegExpMatch>();
+        var results = new List<JsValue>();
+        var matches = new List<JsRegExpMatch>();
 
         while (true)
         {
@@ -944,7 +942,7 @@ internal sealed partial class JsRealm
 
             // ONE FUEL UNIT PER CAPTURE, CHARGED AS THE LIST GROWS: the count is the result's own
             // `length`, which a custom `exec` controls, as `apply`'s argument list does.
-            var captures = new System.Collections.Generic.List<JsValue>();
+            var captures = new List<JsValue>();
 
             if (pristine is not null)
             {
@@ -965,10 +963,10 @@ internal sealed partial class JsRealm
             else
             {
                 var result = results[step];
-                var captureCount = System.Math.Max(
+                var captureCount = Math.Max(
                     ArrayToLength(engine, engine.GetProperty(result, "length")) - 1, 0);
                 matched = engine.ToStringValue(engine.GetProperty(result, "0"));
-                position = (int)System.Math.Clamp(
+                position = (int)Math.Clamp(
                     engine.ToInteger(engine.GetProperty(result, "index")), 0, input.Length);
 
                 for (var at = 1d; at <= captureCount; at++)
@@ -1051,7 +1049,7 @@ internal sealed partial class JsRealm
     /// <c>lastIndex</c> is left where the per-position walk would have left it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F965D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3E3741
     // Broiler-Human:        PENDING
     private JsValue RegExpSymbolSplit(
         JsEngine engine, JsValue receiver, JsValue argument, JsValue bound)
@@ -1061,11 +1059,11 @@ internal sealed partial class JsRealm
         var species = BinarySpeciesConstructor(engine, receiver, regExpFunction);
         var flags = engine.ToStringValue(engine.GetProperty(receiver, "flags"));
         var unicodeMatching = RegExpFullUnicode(flags);
-        var stickyFlags = flags.Contains('y', System.StringComparison.Ordinal) ? flags : flags + "y";
+        var stickyFlags = flags.Contains('y', StringComparison.Ordinal) ? flags : flags + "y";
         var splitter = engine.Construct(
             species, [receiver, JsValue.String(stickyFlags)], species);
         var limit = bound.Type == JsType.Undefined ? 4294967295L : engine.ToUint32(bound);
-        var pieces = new System.Collections.Generic.List<JsValue>();
+        var pieces = new List<JsValue>();
 
         if (limit == 0)
         {
@@ -1109,7 +1107,7 @@ internal sealed partial class JsRealm
 
                 at = match.Index;
                 pristine.LastIndex = JsValue.Number(match.End);
-                end = System.Math.Min(match.End, size);
+                end = Math.Min(match.End, size);
             }
             else
             {
@@ -1122,7 +1120,7 @@ internal sealed partial class JsRealm
                     continue;
                 }
 
-                end = (int)System.Math.Min(
+                end = (int)Math.Min(
                     ArrayToLength(engine, engine.GetProperty(splitter, "lastIndex")), size);
             }
 
@@ -1132,7 +1130,7 @@ internal sealed partial class JsRealm
                 continue;
             }
 
-            pieces.Add(JsValue.String(input.Substring(start, at - start)));
+            pieces.Add(JsValue.String(input[start..at]));
 
             if (pieces.Count >= limit)
             {
@@ -1143,7 +1141,7 @@ internal sealed partial class JsRealm
 
             var captureCount = match is not null
                 ? match.CaptureCount
-                : System.Math.Max(ArrayToLength(engine, engine.GetProperty(result, "length")) - 1, 0);
+                : Math.Max(ArrayToLength(engine, engine.GetProperty(result, "length")) - 1, 0);
 
             for (var group = 1d; group <= captureCount; group++)
             {
@@ -1170,7 +1168,7 @@ internal sealed partial class JsRealm
             at = start;
         }
 
-        pieces.Add(JsValue.String(input.Substring(start)));
+        pieces.Add(JsValue.String(input[start..]));
         return JsValue.Object(NewArray(pieces));
     }
 
@@ -1219,11 +1217,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Whether a <c>flags</c> string asks for code point steps: "u" or "v".</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C493C1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4E9614
     // Broiler-Human:        PENDING
     private static bool RegExpFullUnicode(string flags) =>
-        flags.Contains('u', System.StringComparison.Ordinal) ||
-        flags.Contains('v', System.StringComparison.Ordinal);
+        flags.Contains('u', StringComparison.Ordinal) ||
+        flags.Contains('v', StringComparison.Ordinal);
 
     /// <summary>The language's <c>AdvanceStringIndex</c> over an index that may be past the input.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FD5506
@@ -1292,7 +1290,7 @@ internal sealed partial class JsRealm
     /// that honoured no species, no <c>flags</c> property and no custom <c>exec</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2A4A81
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1F3158
     // Broiler-Human:        PENDING
     private JsValue RegExpMatchAllThrough(JsEngine engine, JsValue receiver, JsValue argument)
     {
@@ -1308,7 +1306,7 @@ internal sealed partial class JsRealm
         return JsValue.Object(RegExpStringIterator(
             matcher,
             input,
-            flags.Contains('g', System.StringComparison.Ordinal),
+            flags.Contains('g', StringComparison.Ordinal),
             RegExpFullUnicode(flags)));
     }
 
@@ -2062,7 +2060,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>replace</c> with a string on the left, which replaces the first occurrence only.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=0B573D
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=2702B1
     // Broiler-Human:        PENDING
     private static string RegExpReplaceText(
         JsEngine engine, string input, string search, JsValue replacement)
@@ -2071,7 +2069,7 @@ internal sealed partial class JsRealm
         // nothing is found - the language's order.
         var callable = replacement.AsObjectOrNull() is { IsCallable: true };
         var converted = callable ? string.Empty : engine.ToStringValue(replacement);
-        var at = input.IndexOf(search, System.StringComparison.Ordinal);
+        var at = input.IndexOf(search, StringComparison.Ordinal);
 
         if (at < 0)
         {
@@ -2198,14 +2196,14 @@ internal sealed partial class JsRealm
     /// left. The template is charged once up front and each expansion as it is appended.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=061B45
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5D0051
     // Broiler-Human:        PENDING
     private static string RegExpSubstitute(
         JsEngine engine,
         string matched,
         string input,
         int position,
-        System.Collections.Generic.List<JsValue> captures,
+        List<JsValue> captures,
         JsValue namedCaptures,
         string template)
     {
@@ -2245,7 +2243,7 @@ internal sealed partial class JsRealm
                     continue;
 
                 case '\'':
-                    var tail = System.Math.Min(position + matched.Length, input.Length);
+                    var tail = Math.Min(position + matched.Length, input.Length);
                     RegExpAppend(engine, builder, input, tail, input.Length - tail);
                     at += 2;
                     continue;
@@ -2312,11 +2310,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>split</c> with a string separator.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=9303A9
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=214548
     // Broiler-Human:        PENDING
     private JsArray RegExpSplitText(JsEngine engine, string input, string separator, long limit)
     {
-        var pieces = new System.Collections.Generic.List<JsValue>();
+        var pieces = new List<JsValue>();
 
         if (separator.Length == 0)
         {
@@ -2336,7 +2334,7 @@ internal sealed partial class JsRealm
         while (true)
         {
             engine.Charge((ulong)(input.Length - start) + 4);
-            var found = input.IndexOf(separator, start, System.StringComparison.Ordinal);
+            var found = input.IndexOf(separator, start, StringComparison.Ordinal);
 
             if (found < 0)
             {
@@ -2471,11 +2469,11 @@ internal sealed partial class JsRealm
         internal override int OwnPropertyCount => base.OwnPropertyCount + 1;
 
         /// <inheritdoc/>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=461B43
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=022DB5
         // Broiler-Human:        PENDING
         internal override bool TryGetOwnProperty(string key, out JsProperty property)
         {
-            if (string.Equals(key, "lastIndex", System.StringComparison.Ordinal))
+            if (string.Equals(key, "lastIndex", StringComparison.Ordinal))
             {
                 property = JsProperty.Data(
                     LastIndex,
@@ -2488,11 +2486,11 @@ internal sealed partial class JsRealm
         }
 
         /// <inheritdoc/>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=082176
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=5136A4
         // Broiler-Human:        PENDING
         internal override void SetOwnProperty(string key, JsProperty property)
         {
-            if (string.Equals(key, "lastIndex", System.StringComparison.Ordinal) &&
+            if (string.Equals(key, "lastIndex", StringComparison.Ordinal) &&
                 !property.IsAccessor)
             {
                 // A DEFINITION MAY CLOSE THE PROPERTY AND AN ASSIGNMENT MAY NOT, and both arrive
@@ -2509,16 +2507,16 @@ internal sealed partial class JsRealm
         }
 
         /// <inheritdoc/>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=6D0161
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=655EF9
         // Broiler-Human:        PENDING
         internal override bool DeleteOwnProperty(string key) =>
-            !string.Equals(key, "lastIndex", System.StringComparison.Ordinal) &&
+            !string.Equals(key, "lastIndex", StringComparison.Ordinal) &&
             base.DeleteOwnProperty(key);
 
         /// <inheritdoc/>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=A0A370
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=6A3E65
         // Broiler-Human:        PENDING
-        internal override System.Collections.Generic.List<string> OwnPropertyNames()
+        internal override List<string> OwnPropertyNames()
         {
             // `lastIndex` is the first property a RegExp is given (RegExpAlloc), so it is listed
             // before every other String key and after the integer ones, which always come first.

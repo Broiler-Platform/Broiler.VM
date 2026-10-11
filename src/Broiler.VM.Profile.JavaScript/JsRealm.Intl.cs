@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -56,9 +59,7 @@ internal sealed partial class JsRealm
     {
         var intl = new JsObject(ObjectPrototype);
 
-        intl.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl"), JsPropertyAttributes.Configurable));
+        intl.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl"), JsPropertyAttributes.Configurable));
 
         Method(intl, "getCanonicalLocales", 1, static (engine, thisValue, arguments) =>
         {
@@ -66,12 +67,9 @@ internal sealed partial class JsRealm
             return JsValue.Object(engine.Realm.NewArray(locales.ConvertAll(static locale => JsValue.String(locale))));
         });
 
-        GlobalObject.SetOwnProperty(
-            "Intl",
-            JsProperty.Data(JsValue.Object(intl), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        GlobalObject.SetOwnProperty("Intl", JsProperty.Data(JsValue.Object(intl), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
-        Method(intl, "supportedValuesOf", 1, static (engine, thisValue, arguments) =>
-            SupportedValuesOf(engine, Argument(arguments, 0)));
+        Method(intl, "supportedValuesOf", 1, static (engine, thisValue, arguments) => SupportedValuesOf(engine, Argument(arguments, 0)));
 
         SetupCollator(intl);
         SetupNumberFormat(intl);
@@ -87,30 +85,24 @@ internal sealed partial class JsRealm
 
     // ---- Intl.Collator ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10; IP=Low; Security=Medium; Resources=3; Fingerprint=103307
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10; IP=Low; Security=Medium; Resources=3; Fingerprint=5358E3
     // Broiler-Human:        PENDING
     private void SetupCollator(JsObject intl)
     {
         var prototype = new JsObject(ObjectPrototype);
         CollatorPrototype = prototype;
 
-        var constructor = new JsNativeFunction(
-            this,
-            FunctionPrototype,
-            "Collator",
-            0,
+        var constructor = new JsNativeFunction(this, FunctionPrototype, "Collator", 0,
             // CALLED WITHOUT `new`, THE ACTIVE FUNCTION IS THE NEW TARGET (ECMA-402 s10.1.1 step 1).
-            static (engine, thisValue, arguments) =>
-                NewCollator(engine, JsValue.Object(engine.Realm.CollatorConstructor!), arguments),
-            static (engine, newTarget, arguments) => NewCollator(engine, newTarget, arguments));
-
-        constructor.BuildsFromNewTarget = true;
+            static (engine, thisValue, arguments) => NewCollator(engine, JsValue.Object(engine.Realm.CollatorConstructor!), arguments),
+            static (engine, newTarget, arguments) => NewCollator(engine, newTarget, arguments))
+        {
+            BuildsFromNewTarget = true
+        };
         CollatorConstructor = constructor;
 
         constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Method(constructor, "supportedLocalesOf", 1, static (engine, thisValue, arguments) =>
         {
@@ -119,36 +111,26 @@ internal sealed partial class JsRealm
             return JsValue.Object(engine.Realm.NewArray(supported.ConvertAll(static locale => JsValue.String(locale))));
         });
 
-        prototype.SetOwnProperty(
-            "compare",
-            JsProperty.Accessor(
-                Native("get compare", 0, static (engine, thisValue, arguments) =>
+        prototype.SetOwnProperty("compare", JsProperty.Accessor(Native("get compare", 0, static (engine, thisValue, arguments) =>
+        {
+            var collator = CollatorOfThis(engine, thisValue, "compare");
+
+            // [[BoundCompare]]: MADE ONCE, an anonymous function of length 2 that remembers its
+            // collator, so `c.compare === c.compare`.
+            if (collator.BoundCompare is null)
+            {
+                var bound = new JsNativeFunction(engine.Realm, engine.Realm.FunctionPrototype, string.Empty, 2, (inner, receiver, values) =>
                 {
-                    var collator = CollatorOfThis(engine, thisValue, "compare");
+                    var x = inner.ToStringValue(Argument(values, 0));
+                    var y = inner.ToStringValue(Argument(values, 1));
+                    return JsValue.Number(collator.Collator.Compare(inner, x, y));
+                });
 
-                    // [[BoundCompare]]: MADE ONCE, an anonymous function of length 2 that remembers its
-                    // collator, so `c.compare === c.compare`.
-                    if (collator.BoundCompare is null)
-                    {
-                        var bound = new JsNativeFunction(
-                            engine.Realm,
-                            engine.Realm.FunctionPrototype,
-                            string.Empty,
-                            2,
-                            (inner, receiver, values) =>
-                            {
-                                var x = inner.ToStringValue(Argument(values, 0));
-                                var y = inner.ToStringValue(Argument(values, 1));
-                                return JsValue.Number(collator.Collator.Compare(inner, x, y));
-                            });
+                collator.BoundCompare = bound;
+            }
 
-                        collator.BoundCompare = bound;
-                    }
-
-                    return JsValue.Object(collator.BoundCompare);
-                }),
-                null,
-                JsPropertyAttributes.Configurable));
+            return JsValue.Object(collator.BoundCompare);
+        }), null, JsPropertyAttributes.Configurable));
 
         Method(prototype, "resolvedOptions", 0, static (engine, thisValue, arguments) =>
         {
@@ -165,13 +147,8 @@ internal sealed partial class JsRealm
             return JsValue.Object(options);
         });
 
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl.Collator"), JsPropertyAttributes.Configurable));
-
-        intl.SetOwnProperty(
-            "Collator",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl.Collator"), JsPropertyAttributes.Configurable));
+        intl.SetOwnProperty("Collator", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>The collator <paramref name="thisValue"/> is, or the <c>TypeError</c> a method throws.</summary>
@@ -185,7 +162,7 @@ internal sealed partial class JsRealm
     /// ECMA-402's <c>Intl.Collator</c> constructor steps: the prototype from the new target, then the
     /// options read in the specification's order, then the locale resolved.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=7DC5D8
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=7011E0
     // Broiler-Falsified-If: an option is read in another order than ECMA-402's, or a resolved option differs from what the locale and options select
     // Broiler-Human:        PENDING
     internal static JsValue NewCollator(JsEngine engine, JsValue newTarget, JsValue[] arguments)
@@ -208,17 +185,12 @@ internal sealed partial class JsRealm
         var numericOption = GetBooleanOption(engine, options, "numeric", null);
         var caseFirstOption = GetStringOption(engine, options, "caseFirst", ["upper", "lower", "false"], null);
 
-        var resolved = ResolveLocale(
-            engine,
-            requested,
-            new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal)
-            {
-                ["co"] = collation,
-                ["kn"] = numericOption is null ? null : numericOption.Value ? "true" : "false",
-                ["kf"] = caseFirstOption,
-            },
-            ["co", "kf", "kn"],
-            (locale, key) => CollatorKeyData(locale, key, usage));
+        var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal)
+        {
+            ["co"] = collation,
+            ["kn"] = numericOption is null ? null : numericOption.Value ? "true" : "false",
+            ["kf"] = caseFirstOption,
+        }, ["co", "kf", "kn"], (locale, key) => CollatorKeyData(locale, key, usage));
 
         var collationValue = resolved.Keys["co"] ?? "default";
         var numeric = resolved.Keys["kn"] == "true";
@@ -270,11 +242,11 @@ internal sealed partial class JsRealm
     };
 
     /// <summary>The locales the data supports, as every service offers them: the data's list without <c>und</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F2FA35
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D5D44
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<string> AvailableLocales(JsEngine engine)
+    private static List<string> AvailableLocales(JsEngine engine)
     {
-        var available = new System.Collections.Generic.List<string>();
+        var available = new List<string>();
 
         foreach (var locale in engine.Intl!.Locales)
         {
@@ -290,12 +262,12 @@ internal sealed partial class JsRealm
     // ---- the abstract operations ----------------------------------------------------------------
 
     /// <summary>ECMA-402's <c>CanonicalizeLocaleList</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=19C4FC
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=885230
     // Broiler-Falsified-If: an element that is not a String or an Object is admitted, or a structurally invalid tag is not a RangeError
     // Broiler-Human:        PENDING
-    internal static System.Collections.Generic.List<string> CanonicalizeLocaleList(JsEngine engine, JsValue locales)
+    internal static List<string> CanonicalizeLocaleList(JsEngine engine, JsValue locales)
     {
-        var seen = new System.Collections.Generic.List<string>();
+        var seen = new List<string>();
 
         if (locales.Type == JsType.Undefined)
         {
@@ -310,7 +282,7 @@ internal sealed partial class JsRealm
             engine.Charge(1);
             var key = ArrayKeyOf(index);
 
-            if (!engine.HasProperty(list, key))
+            if (!JsEngine.HasProperty(list, key))
             {
                 continue;
             }
@@ -340,9 +312,9 @@ internal sealed partial class JsRealm
         return seen;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=06FD53
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9EE630
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<string> ThrowList(JsEngine engine, string kind, string message) =>
+    private static List<string> ThrowList(JsEngine engine, string kind, string message) =>
         throw engine.Error(kind, message);
 
     /// <summary>ECMA-402's <c>CoerceOptionsToObject</c>: <c>undefined</c> is an empty object with no prototype.</summary>
@@ -352,7 +324,7 @@ internal sealed partial class JsRealm
         options.Type == JsType.Undefined ? JsValue.Object(new JsObject(null)) : JsValue.Object(engine.ToObject(options));
 
     /// <summary>ECMA-402's <c>GetOption</c> for a String: read, convert, and check against the values when there are any.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.11; IP=Low; Security=Low; Resources=1; Fingerprint=EA4D7B
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.11; IP=Low; Security=Low; Resources=1; Fingerprint=D3DDBD
     // Broiler-Human:        PENDING
     internal static string? GetStringOption(JsEngine engine, JsValue options, string property, string[]? values, string? fallback)
     {
@@ -365,7 +337,7 @@ internal sealed partial class JsRealm
 
         var text = engine.ToStringValue(value);
 
-        if (values is not null && System.Array.IndexOf(values, text) < 0)
+        if (values is not null && Array.IndexOf(values, text) < 0)
         {
             throw engine.Error("RangeError", "Value " + text + " out of range for option " + property);
         }
@@ -404,9 +376,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>What <see cref="ResolveLocale"/> answers.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6A54FD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C02A03
     // Broiler-Human:        PENDING
-    internal sealed record JsResolvedLocale(string Locale, string DataLocale, System.Collections.Generic.Dictionary<string, string?> Keys);
+    internal sealed record JsResolvedLocale(string Locale, string DataLocale, Dictionary<string, string?> Keys);
 
     /// <summary>
     /// An option ResolveLocale reads as <c>null</c> rather than as absent: the value a keyword had is
@@ -421,28 +393,23 @@ internal sealed partial class JsRealm
     /// first requested locale a prefix of which is available, its supported <c>-u-</c> keywords kept,
     /// and an option overriding a keyword it names.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.7; IP=Low; Security=Medium; Resources=3; Fingerprint=D5E229
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.7; IP=Low; Security=Medium; Resources=3; Fingerprint=4F53C6
     // Broiler-Falsified-If: a resolved locale names a keyword the locale data does not support, or an option the data supports is not honoured
     // Broiler-Human:        PENDING
-    internal static JsResolvedLocale ResolveLocale(
-        JsEngine engine,
-        System.Collections.Generic.List<string> requested,
-        System.Collections.Generic.Dictionary<string, string?> options,
-        string[] relevantKeys,
-        System.Func<string, string, string?[]> keyData)
+    internal static JsResolvedLocale ResolveLocale(JsEngine engine, List<string> requested, Dictionary<string, string?> options, string[] relevantKeys, Func<string, string, string?[]> keyData)
     {
         var available = AvailableLocales(engine);
         var (found, extension) = LookupMatchingLocale(available, requested) ?? (DefaultLocale, null);
 
-        var keywords = new System.Collections.Generic.List<(string Key, string Type)>();
+        var keywords = new List<(string Key, string Type)>();
 
         if (extension is not null)
         {
             keywords.AddRange(extension.Keywords);
         }
 
-        var supported = new System.Collections.Generic.List<(string Key, string Type)>();
-        var result = new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal);
+        var supported = new List<(string Key, string Type)>();
+        var result = new Dictionary<string, string?>(StringComparer.Ordinal);
 
         foreach (var key in relevantKeys)
         {
@@ -458,13 +425,13 @@ internal sealed partial class JsRealm
 
                 if (requestedValue.Length != 0)
                 {
-                    if (System.Array.IndexOf(values, requestedValue) >= 0)
+                    if (Array.IndexOf(values, requestedValue) >= 0)
                     {
                         value = requestedValue;
                         keyword = (key, value);
                     }
                 }
-                else if (System.Array.IndexOf(values, "true") >= 0)
+                else if (Array.IndexOf(values, "true") >= 0)
                 {
                     value = "true";
                     keyword = (key, string.Empty);
@@ -473,7 +440,7 @@ internal sealed partial class JsRealm
 
             if (options.TryGetValue(key, out var optionValue) && optionValue == NullOption)
             {
-                if (value is not null && System.Array.IndexOf(values, null) >= 0)
+                if (value is not null && Array.IndexOf(values, null) >= 0)
                 {
                     value = null;
                     keyword = null;
@@ -493,7 +460,7 @@ internal sealed partial class JsRealm
                     canonical = "true";
                 }
 
-                if (!string.Equals(canonical, value, System.StringComparison.Ordinal) && System.Array.IndexOf(values, canonical) >= 0)
+                if (!string.Equals(canonical, value, StringComparison.Ordinal) && Array.IndexOf(values, canonical) >= 0)
                 {
                     value = canonical;
                     keyword = null;
@@ -526,10 +493,9 @@ internal sealed partial class JsRealm
     /// extension set aside, the longest available prefix, truncated a subtag (and a singleton before
     /// it) at a time.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.3; IP=Low; Security=Low; Resources=2; Fingerprint=22AD93
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.3; IP=Low; Security=Low; Resources=2; Fingerprint=E6430F
     // Broiler-Human:        PENDING
-    internal static (string Locale, JsLocaleTag? Extension)? LookupMatchingLocale(
-        System.Collections.Generic.List<string> available, System.Collections.Generic.List<string> requested)
+    internal static (string Locale, JsLocaleTag? Extension)? LookupMatchingLocale(List<string> available, List<string> requested)
     {
         foreach (var locale in requested)
         {
@@ -570,18 +536,14 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's <c>FilterLocales</c>: the requested locales a prefix of which is available, in the order requested.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.9; IP=Low; Security=Low; Resources=2; Fingerprint=928316
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.9; IP=Low; Security=Low; Resources=2; Fingerprint=35E186
     // Broiler-Human:        PENDING
-    internal static System.Collections.Generic.List<string> FilterLocales(
-        JsEngine engine,
-        System.Collections.Generic.List<string> available,
-        System.Collections.Generic.List<string> requested,
-        JsValue options)
+    internal static List<string> FilterLocales(JsEngine engine, List<string> available, List<string> requested, JsValue options)
     {
         var coerced = CoerceOptionsToObject(engine, options);
         _ = GetStringOption(engine, coerced, "localeMatcher", ["lookup", "best fit"], "best fit");
 
-        var subset = new System.Collections.Generic.List<string>();
+        var subset = new List<string>();
 
         foreach (var locale in requested)
         {
@@ -610,8 +572,7 @@ internal sealed class JsCollatorObject : JsObject
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=58315C
     // Broiler-Human:        PENDING
-    internal JsCollatorObject(JsObject prototype, JsCollator collator)
-        : base(prototype) => Collator = collator;
+    internal JsCollatorObject(JsObject prototype, JsCollator collator) : base(prototype) => Collator = collator;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=24AFF4
     // Broiler-Human:        PENDING

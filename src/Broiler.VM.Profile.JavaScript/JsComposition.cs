@@ -15,7 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
 using Broiler.VM.Abstractions;
+using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -36,11 +38,11 @@ public sealed class JsComposition
 {
     /// <summary>
     /// The optional surfaces admitted, exactly; or nothing for every surface this composition can
-    /// build, which includes <see cref="Format.JsSurfaces.Intl"/> only when <see cref="IntlData"/> is set.
+    /// build, which includes <see cref="JsSurfaces.Intl"/> only when <see cref="IntlData"/> is set.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A188C0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=2F1C89
     // Broiler-Human:        PENDING
-    public System.Collections.Generic.IReadOnlyList<VmFeatureManifestId>? Surfaces { get; init; }
+    public IReadOnlyList<VmFeatureManifestId>? Surfaces { get; init; }
 
     /// <summary>The realm embedder, as <see cref="JavaScriptProfile.DescriptorHostingRealms"/> takes one, or nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=EB2FB0
@@ -48,9 +50,9 @@ public sealed class JsComposition
     public IJsHostSurface? HostSurface { get; init; }
 
     /// <summary>The native emitter a native payload is re-emitted with, as <see cref="JavaScriptProfile.DescriptorReEmittingWith"/> takes one, or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=0931B2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A19AD1
     // Broiler-Human:        PENDING
-    public Format.IJsNativeEmitter? NativeEmitter { get; init; }
+    public IJsNativeEmitter? NativeEmitter { get; init; }
 
     /// <summary>Whether value-form instances run under handle-stress, as <see cref="JavaScriptProfile.DescriptorUnderHandleStress"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=ADFC37
@@ -63,10 +65,10 @@ public sealed class JsComposition
     public bool SweepsFinalization { get; init; }
 
     /// <summary>
-    /// The internationalization data, which <see cref="Format.JsSurfaces.Intl"/> is built from; a
+    /// The internationalization data, which <see cref="JsSurfaces.Intl"/> is built from; a
     /// composition admitting that surface must set it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=0406B2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=AC1E80
     // Broiler-Human:        PENDING
-    public Format.IJsIntlData? IntlData { get; init; }
+    public IJsIntlData? IntlData { get; init; }
 }

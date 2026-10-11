@@ -134,7 +134,7 @@ public readonly ref struct VmArtifactProviderAnswer
     }
 
     /// <summary>The provider supplied an artifact, exactly as a caller would.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1E33DD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=59F80A
     // Broiler-Human:        PENDING
     public static VmArtifactProviderAnswer Provided(scoped in VmArtifactDescriptor descriptor, ReadOnlySpan<byte> payload) =>
         new(VmArtifactProviderAnswerKind.Provided, descriptor, payload, VmReason.None);

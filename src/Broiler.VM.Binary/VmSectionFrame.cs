@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM;
+namespace Broiler.VM.Binary;
 
 /// <summary>
 /// A section or segment framing token: the unit <c>TryEnterSection</c> and <c>TryExitSection</c>

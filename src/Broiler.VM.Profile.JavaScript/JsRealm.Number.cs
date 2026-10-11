@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Globalization;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -70,10 +72,9 @@ internal sealed partial class JsRealm
     private const int NumberFivePowerLimit = 22;
 
     /// <summary>The culture every conversion in this file uses, because none of them are localised.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=219406
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BE7A4B
     // Broiler-Human:        PENDING
-    private static readonly System.Globalization.CultureInfo NumberCulture =
-        System.Globalization.CultureInfo.InvariantCulture;
+    private static readonly CultureInfo NumberCulture = CultureInfo.InvariantCulture;
 
     /// <summary>Builds <c>Number</c> and <c>Number.prototype</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7D49EB
@@ -82,16 +83,9 @@ internal sealed partial class JsRealm
     {
         var prototype = NumberPrototype;
 
-        var constructor = Constructor(
-            "Number",
-            1,
-            prototype,
-            static (engine, thisValue, arguments) =>
-                JsValue.Number(NumberFromArguments(engine, arguments)),
-            (engine, thisValue, arguments) =>
-                JsValue.Object(
-                    new JsPrimitiveWrapper(
-                        prototype, "Number", JsValue.Number(NumberFromArguments(engine, arguments)))));
+        var constructor = Constructor("Number", 1, prototype,
+            static (engine, thisValue, arguments) => JsValue.Number(NumberFromArguments(engine, arguments)),
+            (engine, thisValue, arguments) => JsValue.Object(new JsPrimitiveWrapper(prototype, "Number", JsValue.Number(NumberFromArguments(engine, arguments)))));
 
         constructor.DefineFrozen("MAX_SAFE_INTEGER", JsValue.Number(NumberMaxSafe));
         constructor.DefineFrozen("MIN_SAFE_INTEGER", JsValue.Number(-NumberMaxSafe));
@@ -289,8 +283,7 @@ internal sealed partial class JsRealm
 
         // Unlike String.prototype's methods, these do NOT coerce: the specification throws for
         // every receiver that is not a Number or a boxed one, and a conformance suite checks it.
-        throw engine.Error(
-            "TypeError", "Number.prototype method called on a value that is not a Number");
+        throw engine.Error("TypeError", "Number.prototype method called on a value that is not a Number");
     }
 
     /// <summary>Whether <paramref name="value"/> is a finite integer.</summary>
@@ -405,8 +398,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EB6628
     // Broiler-Human:        PENDING
-    private static void NumberRoundSignificant(
-        double magnitude, int count, out string digits, out int exponent)
+    private static void NumberRoundSignificant(double magnitude, int count, out string digits, out int exponent)
     {
         var rendered = magnitude.ToString("E" + (count - 1).ToString(NumberCulture), NumberCulture);
         NumberSplitRendered(rendered, out var mantissa, out exponent);
@@ -431,7 +423,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The fewest significant digits that read back as <paramref name="magnitude"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1D9E23
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4DC225
     // Broiler-Human:        PENDING
     private static string NumberShortestDigits(double magnitude, out int exponent)
     {
@@ -439,16 +431,14 @@ internal sealed partial class JsRealm
         {
             var candidate = magnitude.ToString("E" + count.ToString(NumberCulture), NumberCulture);
 
-            if (double.Parse(
-                    candidate, System.Globalization.NumberStyles.Float, NumberCulture) == magnitude)
+            if (double.Parse(candidate, NumberStyles.Float, NumberCulture) == magnitude)
             {
                 NumberSplitRendered(candidate, out var mantissa, out exponent);
                 return NumberWithoutPoint(mantissa);
             }
         }
 
-        var widest = magnitude.ToString(
-            "E" + (NumberRoundTripDigits - 1).ToString(NumberCulture), NumberCulture);
+        var widest = magnitude.ToString("E" + (NumberRoundTripDigits - 1).ToString(NumberCulture), NumberCulture);
 
         NumberSplitRendered(widest, out var last, out exponent);
         return NumberWithoutPoint(last);

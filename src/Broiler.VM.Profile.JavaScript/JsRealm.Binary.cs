@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -107,10 +110,9 @@ internal sealed partial class JsRealm
     /// <c>filter</c>, <c>slice</c> and <c>subarray</c> no longer allocate here: they answer
     /// through the receiver's species, whose default is the intrinsic constructor of its kind.)
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B1F978
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0848B0
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<JsElementKind, JsObject> TypedArrayPrototypes { get; } =
-        new();
+    internal Dictionary<JsElementKind, JsObject> TypedArrayPrototypes { get; } = [];
 
     /// <summary>The intrinsic typed array constructors, by the kind each builds.</summary>
     /// <remarks>
@@ -118,10 +120,9 @@ internal sealed partial class JsRealm
     /// receiver names no species, and that fallback is the intrinsic object - not whatever a
     /// program has since assigned to the global of the same name.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=087805
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3F3BFD
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<JsElementKind, JsObject> typedArrayConstructors =
-        new();
+    private readonly Dictionary<JsElementKind, JsObject> typedArrayConstructors = [];
 
     /// <summary>The intrinsic <c>%ArrayBuffer%</c>: <c>ArrayBuffer.prototype.slice</c>'s species default.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=86A657
@@ -179,15 +180,12 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private void SetupBinaryTags()
     {
-        ArrayBufferPrototype.SetOwnSymbol(
-            ToStringTagSymbol, JsProperty.Data(JsValue.String("ArrayBuffer"), JsPropertyAttributes.Configurable));
-
-        DataViewPrototype.SetOwnSymbol(
-            ToStringTagSymbol, JsProperty.Data(JsValue.String("DataView"), JsPropertyAttributes.Configurable));
+        ArrayBufferPrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("ArrayBuffer"), JsPropertyAttributes.Configurable));
+        DataViewPrototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("DataView"), JsPropertyAttributes.Configurable));
     }
 
     /// <summary>Builds <c>ArrayBuffer</c>, its one static and its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6505E5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4F4C1B
     // Broiler-Human:        PENDING
     private void SetupArrayBuffer()
     {
@@ -296,8 +294,7 @@ internal sealed partial class JsRealm
 
             if (buffer.IsDetached)
             {
-                return engine.ThrowTypeError(
-                    "ArrayBuffer.prototype.slice called on a detached ArrayBuffer");
+                return engine.ThrowTypeError("ArrayBuffer.prototype.slice called on a detached ArrayBuffer");
             }
 
             var length = buffer.ByteLength;
@@ -318,8 +315,7 @@ internal sealed partial class JsRealm
 
             if (constructed.AsObjectOrNull() is not JsArrayBuffer { IsShared: false } made)
             {
-                return engine.ThrowTypeError(
-                    "ArrayBuffer.prototype.slice: the species constructor did not return an ArrayBuffer");
+                return engine.ThrowTypeError("ArrayBuffer.prototype.slice: the species constructor did not return an ArrayBuffer");
             }
 
             if (made.IsDetached)
@@ -330,15 +326,12 @@ internal sealed partial class JsRealm
 
             if (ReferenceEquals(made, buffer))
             {
-                return engine.ThrowTypeError(
-                    "ArrayBuffer.prototype.slice: the species constructor returned the receiver itself");
+                return engine.ThrowTypeError("ArrayBuffer.prototype.slice: the species constructor returned the receiver itself");
             }
 
             if (made.ByteLength < count)
             {
-                return engine.ThrowTypeError(
-                    "ArrayBuffer.prototype.slice: the species constructor returned a buffer smaller " +
-                    "than the slice");
+                return engine.ThrowTypeError("ArrayBuffer.prototype.slice: the species constructor returned a buffer smaller than the slice");
             }
 
             // THE RECEIVER IS RE-READ AFTER THE CONSTRUCTION AND THE COERCIONS. `ArrayRelative`
@@ -347,8 +340,7 @@ internal sealed partial class JsRealm
             // ones that are there now rather than the ones that were.
             if (buffer.IsDetached)
             {
-                return engine.ThrowTypeError(
-                    "ArrayBuffer.prototype.slice called on a detached ArrayBuffer");
+                return engine.ThrowTypeError("ArrayBuffer.prototype.slice called on a detached ArrayBuffer");
             }
 
             // A RECEIVER SHRUNK PAST THE START COPIES NOTHING AND IS NOT AN ERROR. The new buffer
@@ -356,7 +348,7 @@ internal sealed partial class JsRealm
             // the receiver still holds, which may be none of it (the specification's `first <
             // currentLen` test).
             var available = buffer.ByteLength - start;
-            var copied = (int)System.Math.Max(0, System.Math.Min(count, available));
+            var copied = (int)Math.Max(0, Math.Min(count, available));
 
             if (copied == 0)
             {
@@ -367,8 +359,7 @@ internal sealed partial class JsRealm
 
             if (!made.TryCopyFrom(buffer.Data, (int)start, copied))
             {
-                return engine.ThrowTypeError(
-                    "ArrayBuffer.prototype.slice called on a detached ArrayBuffer");
+                return engine.ThrowTypeError("ArrayBuffer.prototype.slice called on a detached ArrayBuffer");
             }
 
             return constructed;
@@ -384,8 +375,7 @@ internal sealed partial class JsRealm
             BinaryCopyAndDetach(engine, thisValue, arguments, preserveResizability: true, "transfer"));
 
         Method(ArrayBufferPrototype, "transferToFixedLength", 0, (engine, thisValue, arguments) =>
-            BinaryCopyAndDetach(
-                engine, thisValue, arguments, preserveResizability: false, "transferToFixedLength"));
+            BinaryCopyAndDetach(engine, thisValue, arguments, preserveResizability: false, "transferToFixedLength"));
     }
 
     /// <summary>
@@ -406,10 +396,9 @@ internal sealed partial class JsRealm
     /// nowhere to put them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FF3A3C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1F62CD
     // Broiler-Human:        PENDING
-    private JsValue BinaryCopyAndDetach(
-        JsEngine engine, JsValue thisValue, JsValue[] arguments, bool preserveResizability, string method)
+    private JsValue BinaryCopyAndDetach(JsEngine engine, JsValue thisValue, JsValue[] arguments, bool preserveResizability, string method)
     {
         var buffer = BinaryThisBuffer(engine, thisValue, method);
         var requested = ArgOfBinary(arguments, 0).Type == JsType.Undefined
@@ -418,8 +407,7 @@ internal sealed partial class JsRealm
 
         if (buffer.IsDetached)
         {
-            return engine.ThrowTypeError(
-                "ArrayBuffer.prototype." + method + " called on a detached ArrayBuffer");
+            return engine.ThrowTypeError("ArrayBuffer.prototype." + method + " called on a detached ArrayBuffer");
         }
 
         var made = preserveResizability && buffer.MaxByteLength is { } max
@@ -429,7 +417,7 @@ internal sealed partial class JsRealm
         var released = buffer.Detach();
         var carried = released is null
             ? 0
-            : System.Math.Min(made.ByteLength, released.Length);
+            : Math.Min(made.ByteLength, released.Length);
 
         engine.Charge((ulong)carried);
         _ = made.TryCopyFrom(released, 0, carried);
@@ -454,16 +442,14 @@ internal sealed partial class JsRealm
             {
                 if (ArgOfBinary(arguments, 0).AsObjectOrNull() is not JsArrayBuffer buffer)
                 {
-                    return engine.ThrowTypeError(
-                        "First argument to DataView constructor must be an ArrayBuffer");
+                    return engine.ThrowTypeError("First argument to DataView constructor must be an ArrayBuffer");
                 }
 
                 var offset = BinaryToIndex(engine, ArgOfBinary(arguments, 1), "byteOffset");
 
                 if (buffer.IsDetached)
                 {
-                    return engine.ThrowTypeError(
-                        "Cannot construct a DataView over a detached ArrayBuffer");
+                    return engine.ThrowTypeError("Cannot construct a DataView over a detached ArrayBuffer");
                 }
 
                 // THE LENGTH IS MEASURED ONCE, BEFORE `byteLength` IS CONVERTED, and the first range
@@ -497,8 +483,7 @@ internal sealed partial class JsRealm
 
                     if (offset + length > bufferByteLength)
                     {
-                        return engine.ThrowRangeError(
-                            "Invalid DataView length " + JsNumberFormat.ToJsString(length));
+                        return engine.ThrowRangeError("Invalid DataView length " + JsNumberFormat.ToJsString(length));
                     }
                 }
 
@@ -511,29 +496,22 @@ internal sealed partial class JsRealm
 
                 if (buffer.IsDetached)
                 {
-                    return engine.ThrowTypeError(
-                        "Cannot construct a DataView over a detached ArrayBuffer");
+                    return engine.ThrowTypeError("Cannot construct a DataView over a detached ArrayBuffer");
                 }
 
                 if (offset > buffer.ByteLength)
                 {
-                    return engine.ThrowRangeError(
-                        "Start offset " + JsNumberFormat.ToJsString(offset) +
-                        " is outside the bounds of the buffer");
+                    return engine.ThrowRangeError("Start offset " + JsNumberFormat.ToJsString(offset) + " is outside the bounds of the buffer");
                 }
 
                 if (lengthGiven && offset + length > buffer.ByteLength)
                 {
-                    return engine.ThrowRangeError(
-                        "Invalid DataView length " + JsNumberFormat.ToJsString(length));
+                    return engine.ThrowRangeError("Invalid DataView length " + JsNumberFormat.ToJsString(length));
                 }
 
-                int? viewLength = lengthGiven || !buffer.IsResizable
-                    ? (int)length
-                    : null;
+                int? viewLength = lengthGiven || !buffer.IsResizable ? (int)length : null;
 
-                return JsValue.Object(
-                    new JsDataView(prototype, buffer, (int)offset, viewLength));
+                return JsValue.Object(new JsDataView(prototype, buffer, (int)offset, viewLength));
             });
 
         dataView.BuildsFromNewTarget = true;
@@ -643,7 +621,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>set</c>, <c>subarray</c>, <c>slice</c>, <c>fill</c>, <c>copyWithin</c>, <c>reverse</c>, <c>sort</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=91A2C5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D4EA59
     // Broiler-Human:        PENDING
     private void SetupTypedArrayMutators()
     {
@@ -775,8 +753,8 @@ internal sealed partial class JsRealm
                     "%TypedArray%.prototype.slice called on a detached or out-of-bounds typed array");
             }
 
-            var end = System.Math.Min((int)stop, array.Length);
-            count = System.Math.Max(end - (int)start, 0);
+            var end = Math.Min((int)stop, array.Length);
+            count = Math.Max(end - (int)start, 0);
             engine.Charge((ulong)count);
 
             // THE SAME ELEMENT TYPE COPIES BYTES; ANY OTHER CONVERTS ELEMENT BY ELEMENT. "Same" is
@@ -838,11 +816,10 @@ internal sealed partial class JsRealm
             // to its new end, and one that grew is filled only as far as the old one reached.
             if (array.IsOutOfBounds)
             {
-                return engine.ThrowTypeError(
-                    "%TypedArray%.prototype.fill: the ArrayBuffer was detached or resized out of bounds while its arguments were converted");
+                return engine.ThrowTypeError("%TypedArray%.prototype.fill: the ArrayBuffer was detached or resized out of bounds while its arguments were converted");
             }
 
-            stop = System.Math.Min(stop, array.Length);
+            stop = Math.Min(stop, array.Length);
 
             for (var at = (int)start; at < stop; at++)
             {
@@ -863,7 +840,7 @@ internal sealed partial class JsRealm
                 ? length
                 : (int)ArrayRelative(engine, arguments[2], length);
 
-            var count = System.Math.Min(stop - from, length - to);
+            var count = Math.Min(stop - from, length - to);
 
             if (count > 0)
             {
@@ -873,12 +850,11 @@ internal sealed partial class JsRealm
                 // the source and the target range still hold, and may reach nothing.
                 if (array.IsOutOfBounds)
                 {
-                    return engine.ThrowTypeError(
-                        "%TypedArray%.prototype.copyWithin: the ArrayBuffer was detached or resized out of bounds while its arguments were converted");
+                    return engine.ThrowTypeError("%TypedArray%.prototype.copyWithin: the ArrayBuffer was detached or resized out of bounds while its arguments were converted");
                 }
 
                 length = array.Length;
-                count = System.Math.Min(count, System.Math.Min(length - from, length - to));
+                count = Math.Min(count, Math.Min(length - from, length - to));
 
                 if (count > 0)
                 {
@@ -899,7 +875,7 @@ internal sealed partial class JsRealm
             for (var lower = 0; lower < middle; lower++)
             {
                 engine.Charge(1);
-                var upper = (length - lower) - 1;
+                var upper = length - lower - 1;
                 _ = array.TryReadAt(lower, out var first);
                 _ = array.TryReadAt(upper, out var second);
                 _ = array.TryWriteAt(lower, second);
@@ -925,7 +901,7 @@ internal sealed partial class JsRealm
             }
 
             var array = BinaryLiveTypedArray(engine, thisValue, "sort");
-            var items = new System.Collections.Generic.List<JsValue>(array.Length);
+            var items = new List<JsValue>(array.Length);
 
             // MATERIALISE FIRST, for the reason Array's sort materialises: a comparator is guest
             // code, it can detach the buffer, and a sort that read the elements as it went would
@@ -939,7 +915,7 @@ internal sealed partial class JsRealm
 
             if (items.Count > 1)
             {
-                var buffer = new System.Collections.Generic.List<JsValue>(items);
+                var buffer = new List<JsValue>(items);
                 BinaryMergeSort(engine, comparator, items, buffer, 0, items.Count);
             }
 
@@ -954,7 +930,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The searches, <c>join</c>, <c>at</c> and <c>toString</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1BACC8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D4CBFF
     // Broiler-Human:        PENDING
     private void SetupTypedArrayReaders()
     {
@@ -982,7 +958,7 @@ internal sealed partial class JsRealm
                 return JsValue.Number(-1);
             }
 
-            var start = from >= 0 ? from : System.Math.Max(length + from, 0);
+            var start = from >= 0 ? from : Math.Max(length + from, 0);
 
             for (var at = (int)start; at < length; at++)
             {
@@ -1012,7 +988,7 @@ internal sealed partial class JsRealm
                 ? engine.ToInteger(arguments[1])
                 : length - 1;
 
-            var start = from >= 0 ? System.Math.Min(from, length - 1) : length + from;
+            var start = from >= 0 ? Math.Min(from, length - 1) : length + from;
 
             if (start < 0)
             {
@@ -1052,7 +1028,7 @@ internal sealed partial class JsRealm
                 return JsValue.False;
             }
 
-            var start = from >= 0 ? from : System.Math.Max(length + from, 0);
+            var start = from >= 0 ? from : Math.Max(length + from, 0);
 
             for (var at = (int)start; at < length; at++)
             {
@@ -1084,24 +1060,19 @@ internal sealed partial class JsRealm
             _ = arguments;
             _ = BinaryLiveTypedArray(engine, thisValue, "values");
 
-            return JsValue.Object(
-                engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Value));
+            return JsValue.Object(engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Value));
         });
 
-        TypedArrayPrototype.SetOwnProperty(
-            "values", JsProperty.Data(JsValue.Object(typedValues), JsPropertyAttributes.BuiltIn));
+        TypedArrayPrototype.SetOwnProperty("values", JsProperty.Data(JsValue.Object(typedValues), JsPropertyAttributes.BuiltIn));
 
-        TypedArrayPrototype.SetOwnSymbol(
-            IteratorSymbol,
-            JsProperty.Data(JsValue.Object(typedValues), JsPropertyAttributes.BuiltIn));
+        TypedArrayPrototype.SetOwnSymbol(IteratorSymbol, JsProperty.Data(JsValue.Object(typedValues), JsPropertyAttributes.BuiltIn));
 
         Method(TypedArrayPrototype, "keys", 0, (engine, thisValue, arguments) =>
         {
             _ = arguments;
             _ = BinaryLiveTypedArray(engine, thisValue, "keys");
 
-            return JsValue.Object(
-                engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Key));
+            return JsValue.Object(engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Key));
         });
 
         Method(TypedArrayPrototype, "entries", 0, (engine, thisValue, arguments) =>
@@ -1109,8 +1080,7 @@ internal sealed partial class JsRealm
             _ = arguments;
             _ = BinaryLiveTypedArray(engine, thisValue, "entries");
 
-            return JsValue.Object(
-                engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Entry));
+            return JsValue.Object(engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Entry));
         });
 
         Method(TypedArrayPrototype, "join", 1, (engine, thisValue, arguments) =>
@@ -1171,9 +1141,7 @@ internal sealed partial class JsRealm
         // NO `valueOf`: a typed array has no primitive it could sensibly become, and inheriting
         // Object.prototype's - which answers the object itself - is what makes `view + ""` fall
         // back to `toString` rather than to a number nobody meant.
-        TypedArrayPrototype.SetOwnProperty(
-            "toString",
-            JsProperty.Data(IntrinsicArrayToString, JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        TypedArrayPrototype.SetOwnProperty("toString", JsProperty.Data(IntrinsicArrayToString, JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>The members added to this prototype after the views themselves were.</summary>
@@ -1196,7 +1164,7 @@ internal sealed partial class JsRealm
     /// N1). What <c>Number.prototype.toLocaleString</c> answers is still exactly <c>toString</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6098F5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0BA34E
     // Broiler-Human:        PENDING
     private void SetupTypedArrayLaterAdditions()
     {
@@ -1211,8 +1179,7 @@ internal sealed partial class JsRealm
                 engine.Charge(1);
                 var element = array.ElementAt(at);
 
-                if (engine.Call(callback, thisArg, [element, JsValue.Number(at), thisValue])
-                    .ToBooleanValue())
+                if (engine.Call(callback, thisArg, [element, JsValue.Number(at), thisValue]).ToBooleanValue())
                 {
                     return element;
                 }
@@ -1231,9 +1198,7 @@ internal sealed partial class JsRealm
             {
                 engine.Charge(1);
 
-                if (engine.Call(
-                        callback, thisArg, [array.ElementAt(at), JsValue.Number(at), thisValue])
-                    .ToBooleanValue())
+                if (engine.Call(callback, thisArg, [array.ElementAt(at), JsValue.Number(at), thisValue]).ToBooleanValue())
                 {
                     return JsValue.Number(at);
                 }
@@ -1252,7 +1217,7 @@ internal sealed partial class JsRealm
             for (var at = 0; at < length; at++)
             {
                 engine.Charge(1);
-                _ = array.TryReadAt((length - at) - 1, out var element);
+                _ = array.TryReadAt(length - at - 1, out var element);
                 _ = made.TryWriteAt(at, element);
             }
 
@@ -1271,7 +1236,7 @@ internal sealed partial class JsRealm
             }
 
             var array = BinaryLiveTypedArray(engine, thisValue, "toSorted");
-            var items = new System.Collections.Generic.List<JsValue>(array.Length);
+            var items = new List<JsValue>(array.Length);
 
             for (var at = 0; at < array.Length; at++)
             {
@@ -1282,7 +1247,7 @@ internal sealed partial class JsRealm
 
             if (items.Count > 1)
             {
-                var buffer = new System.Collections.Generic.List<JsValue>(items);
+                var buffer = new List<JsValue>(items);
                 BinaryMergeSort(engine, comparator, items, buffer, 0, items.Count);
             }
 
@@ -1391,7 +1356,7 @@ internal sealed partial class JsRealm
     /// <c>ValidateTypedArray</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2F86D4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FDFADF
     // Broiler-Human:        PENDING
     private void SetupTypedArrayIteration()
     {
@@ -1445,7 +1410,7 @@ internal sealed partial class JsRealm
             var length = array.Length;
             var callback = BinaryCallbackOf(engine, arguments, "filter");
             var thisArg = ArgOfBinary(arguments, 1);
-            var kept = new System.Collections.Generic.List<JsValue>();
+            var kept = new List<JsValue>();
 
             // TWO PASSES, because the result's length is not known until the predicate has answered
             // for every element and a typed array cannot grow. What is kept is the VALUE read, which
@@ -1637,7 +1602,7 @@ internal sealed partial class JsRealm
     /// Builds <c>%TypedArray%</c> and the twelve constructors that inherit from it (ten where BigInt
     /// is declined).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4D3E5C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=64F74E
     // Broiler-Human:        PENDING
     private void SetupTypedArrayConstructors()
     {
@@ -1651,22 +1616,13 @@ internal sealed partial class JsRealm
             FunctionPrototype,
             "TypedArray",
             0,
-            static (engine, thisValue, arguments) =>
-                engine.ThrowTypeError("Abstract class TypedArray not directly callable"),
-            static (engine, thisValue, arguments) =>
-                engine.ThrowTypeError("Abstract class TypedArray not directly constructable"));
+            static (engine, thisValue, arguments) => engine.ThrowTypeError("Abstract class TypedArray not directly callable"),
+            static (engine, thisValue, arguments) => engine.ThrowTypeError("Abstract class TypedArray not directly constructable"));
 
         SpeciesGetter(superclass);
 
-        superclass.SetOwnProperty(
-            "prototype",
-            JsProperty.Data(JsValue.Object(TypedArrayPrototype), JsPropertyAttributes.None));
-
-        TypedArrayPrototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(
-                JsValue.Object(superclass),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        superclass.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(TypedArrayPrototype), JsPropertyAttributes.None));
+        TypedArrayPrototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(superclass), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         // `of` CONSTRUCTS THROUGH ITS RECEIVER, as `from` does: any constructor, a subclass of one
         // of the twelve included, validated by TypedArrayCreateFromConstructor before anything is
@@ -1731,7 +1687,7 @@ internal sealed partial class JsRealm
             if (engine.TryGetSymbolMethod(items, IteratorSymbol, out var method))
             {
                 var iterator = engine.GetIteratorFromMethod(items, method);
-                var collected = new System.Collections.Generic.List<JsValue>();
+                var collected = new List<JsValue>();
 
                 while (engine.TryIterateNext(iterator, out var yielded))
                 {
@@ -1760,8 +1716,7 @@ internal sealed partial class JsRealm
 
             var source = JsValue.Object(engine.ToObject(items));
             var length = ArrayLengthOf(engine, source);
-            var made = JsValue.Object(BinaryTypedArrayCreateFromConstructor(
-                engine, thisValue, [JsValue.Number(length)], "from"));
+            var made = JsValue.Object(BinaryTypedArrayCreateFromConstructor(engine, thisValue, [JsValue.Number(length)], "from"));
 
             for (double at = 0; at < length; at++)
             {
@@ -1796,10 +1751,8 @@ internal sealed partial class JsRealm
                 name,
                 3,
                 prototype,
-                (engine, thisValue, arguments) =>
-                    engine.ThrowTypeError("Constructor " + name + " requires 'new'"),
-                (engine, thisValue, arguments) =>
-                    BinaryConstructTypedArray(engine, kind, arguments, thisValue));
+                (engine, thisValue, arguments) => engine.ThrowTypeError("Constructor " + name + " requires 'new'"),
+                (engine, thisValue, arguments) => BinaryConstructTypedArray(engine, kind, arguments, thisValue));
 
             constructor.BuildsFromNewTarget = true;
 
@@ -1831,8 +1784,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EBC340
     // Broiler-Human:        PENDING
-    private JsValue BinarySpeciesConstructor(
-        JsEngine engine, JsValue receiver, JsObject defaultConstructor)
+    private JsValue BinarySpeciesConstructor(JsEngine engine, JsValue receiver, JsObject defaultConstructor)
     {
         var constructor = engine.GetProperty(receiver, "constructor");
 
@@ -1874,19 +1826,14 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3D528B
     // Broiler-Human:        PENDING
-    private JsTypedArray BinaryTypedArraySpeciesCreate(
-        JsEngine engine, JsValue exemplarValue, JsTypedArray exemplar, JsValue[] arguments, string method)
+    private JsTypedArray BinaryTypedArraySpeciesCreate(JsEngine engine, JsValue exemplarValue, JsTypedArray exemplar, JsValue[] arguments, string method)
     {
-        var constructor = BinarySpeciesConstructor(
-            engine, exemplarValue, typedArrayConstructors[exemplar.Kind]);
+        var constructor = BinarySpeciesConstructor(engine, exemplarValue, typedArrayConstructors[exemplar.Kind]);
         var made = BinaryTypedArrayCreateFromConstructor(engine, constructor, arguments, method);
 
         if (JsElements.HoldsBigInts(made.Kind) != JsElements.HoldsBigInts(exemplar.Kind))
         {
-            throw engine.Error(
-                "TypeError",
-                "%TypedArray%.prototype." + method +
-                ": the species constructor returned a typed array of another content type");
+            throw engine.Error("TypeError", "%TypedArray%.prototype." + method + ": the species constructor returned a typed array of another content type");
         }
 
         return made;
@@ -1907,33 +1854,23 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=43E8BF
     // Broiler-Human:        PENDING
-    private static JsTypedArray BinaryTypedArrayCreateFromConstructor(
-        JsEngine engine, JsValue constructor, JsValue[] arguments, string method)
+    private static JsTypedArray BinaryTypedArrayCreateFromConstructor(JsEngine engine, JsValue constructor, JsValue[] arguments, string method)
     {
         var constructed = engine.Construct(constructor, arguments);
 
         if (constructed.AsObjectOrNull() is not JsTypedArray made)
         {
-            throw engine.Error(
-                "TypeError",
-                "%TypedArray%.prototype." + method +
-                ": the species constructor did not return a typed array");
+            throw engine.Error("TypeError", "%TypedArray%.prototype." + method + ": the species constructor did not return a typed array");
         }
 
         if (made.IsOutOfBounds)
         {
-            throw engine.Error(
-                "TypeError",
-                "%TypedArray%.prototype." + method +
-                ": the species constructor returned a typed array that is detached or out of bounds");
+            throw engine.Error("TypeError", "%TypedArray%.prototype." + method + ": the species constructor returned a typed array that is detached or out of bounds");
         }
 
         if (arguments.Length == 1 && arguments[0].IsNumber && made.Length < arguments[0].AsNumber())
         {
-            throw engine.Error(
-                "TypeError",
-                "%TypedArray%.prototype." + method +
-                ": the species constructor returned a typed array shorter than requested");
+            throw engine.Error("TypeError", "%TypedArray%.prototype." + method + ": the species constructor returned a typed array shorter than requested");
         }
 
         return made;
@@ -1983,12 +1920,12 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Allocates a buffer, charging for the bytes before they exist.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=725C07
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=921D6A
     // Broiler-Human:        PENDING
     private JsArrayBuffer BinaryNewBuffer(JsEngine engine, double byteLength)
     {
         if (byteLength < 0 || byteLength > int.MaxValue ||
-            byteLength != System.Math.Floor(byteLength))
+            byteLength != Math.Floor(byteLength))
         {
             throw engine.Error(
                 "RangeError",
@@ -2050,7 +1987,7 @@ internal sealed partial class JsRealm
     /// A length above the maximum is refused first, as the specification orders it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7FFA8D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D9DB9A
     // Broiler-Human:        PENDING
     private JsArrayBuffer BinaryNewResizableBuffer(JsEngine engine, double byteLength, double maxByteLength)
     {
@@ -2062,7 +1999,7 @@ internal sealed partial class JsRealm
                 " exceeds the maximum byte length " + JsNumberFormat.ToJsString(maxByteLength));
         }
 
-        if (maxByteLength > System.Array.MaxLength)
+        if (maxByteLength > Array.MaxLength)
         {
             throw engine.Error(
                 "RangeError",
@@ -2098,7 +2035,7 @@ internal sealed partial class JsRealm
     /// releases nothing; see <see cref="JsArrayBuffer.RetainedByteLength"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=A87CC7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=9DF2AA
     // Broiler-Falsified-If: a resize the fuel meter, the live-bytes ceiling or the allocator refuses leaves the buffer at a different length or with different bytes
     // Broiler-Human:        PENDING
     private static void BinaryResizeBuffer(JsEngine engine, JsArrayBuffer buffer, int newByteLength)
@@ -2122,7 +2059,7 @@ internal sealed partial class JsRealm
         {
             storage = new byte[newByteLength];
         }
-        catch (System.OutOfMemoryException)
+        catch (OutOfMemoryException)
         {
             throw engine.Error(
                 "RangeError",
@@ -2138,14 +2075,14 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Allocates a typed array of <paramref name="length"/> elements over fresh bytes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=85EAE4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=3A2B23
     // Broiler-Human:        PENDING
     private JsTypedArray BinaryNewTypedArray(JsEngine engine, JsElementKind kind, double length)
     {
         var width = JsElements.WidthOf(kind);
 
         if (length < 0 || length > int.MaxValue / width ||
-            length != System.Math.Floor(length))
+            length != Math.Floor(length))
         {
             throw engine.Error(
                 "RangeError",
@@ -2179,10 +2116,9 @@ internal sealed partial class JsRealm
     /// the array-like reading, anything else that is not callable is a <c>TypeError</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1C05F7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=598B95
     // Broiler-Human:        PENDING
-    private JsValue BinaryConstructTypedArray(
-        JsEngine engine, JsElementKind kind, JsValue[] arguments, JsValue newTarget)
+    private JsValue BinaryConstructTypedArray(JsEngine engine, JsElementKind kind, JsValue[] arguments, JsValue newTarget)
     {
         var name = JsElements.ConstructorNameOf(kind);
         var width = JsElements.WidthOf(kind);
@@ -2202,8 +2138,7 @@ internal sealed partial class JsRealm
 
             if (offset % width != 0)
             {
-                return engine.ThrowRangeError(
-                    "start offset of " + name + " should be a multiple of " + width);
+                return engine.ThrowRangeError("start offset of " + name + " should be a multiple of " + width);
             }
 
             // THE LENGTH IS CONVERTED BEFORE THE BUFFER IS ASKED WHETHER IT IS STILL THERE, which
@@ -2215,8 +2150,7 @@ internal sealed partial class JsRealm
 
             if (buffer.IsDetached)
             {
-                return engine.ThrowTypeError(
-                    "Cannot construct " + name + " over a detached ArrayBuffer");
+                return engine.ThrowTypeError("Cannot construct " + name + " over a detached ArrayBuffer");
             }
 
             if (offset > buffer.ByteLength)
@@ -2265,8 +2199,7 @@ internal sealed partial class JsRealm
         {
             if (source.IsOutOfBounds)
             {
-                return engine.ThrowTypeError(
-                    "Cannot construct " + name + " from a typed array that is detached or out of bounds");
+                return engine.ThrowTypeError("Cannot construct " + name + " from a typed array that is detached or out of bounds");
             }
 
             // The copy is of the source's length NOW, and nothing between here and the last
@@ -2302,7 +2235,7 @@ internal sealed partial class JsRealm
             // until it is done, so the values are held as values and each is converted as it is
             // stored, which is where a `valueOf` on an element runs. Every step of the drain is
             // charged, by the iteration protocol itself or by the Array drain that stands in for it.
-            var values = new System.Collections.Generic.List<JsValue>();
+            var values = new List<JsValue>();
 
             // An element the Array drain below has charged for is not charged again when it is
             // stored, which keeps `new Float64Array(array)` at the fuel the array-like reading cost.
@@ -2345,7 +2278,7 @@ internal sealed partial class JsRealm
             // a length no buffer can hold and a RangeError, where the modular wrap made it zero and
             // answered an empty view.
             var declared = engine.ToInteger(engine.GetProperty(first, "length"));
-            var length = declared <= 0 ? 0 : System.Math.Min(declared, 9007199254740991.0);
+            var length = declared <= 0 ? 0 : Math.Min(declared, 9007199254740991.0);
             var made = BinaryNewTypedArray(engine, kind, length);
             made.Prototype = prototype;
 
@@ -2416,10 +2349,9 @@ internal sealed partial class JsRealm
     /// out of fuel; the caller does not charge the same element again when it stores it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B9DFA7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D67793
     // Broiler-Human:        PENDING
-    private static void BinaryDrainArrayValues(
-        JsEngine engine, JsArray array, System.Collections.Generic.List<JsValue> values)
+    private static void BinaryDrainArrayValues(JsEngine engine, JsArray array, List<JsValue> values)
     {
         for (var at = 0u; at < array.Length; at++)
         {
@@ -2437,8 +2369,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=EC1AA3
     // Broiler-Human:        PENDING
-    private static JsValue BinarySetFromTypedArray(
-        JsEngine engine, JsTypedArray target, JsTypedArray source, double offset)
+    private static JsValue BinarySetFromTypedArray(JsEngine engine, JsTypedArray target, JsTypedArray source, double offset)
     {
         // BOTH VIEWS ARE MEASURED NOW AND NOT AGAIN: nothing from here to the last write runs guest
         // code, so neither length can change under the copy.
@@ -2446,8 +2377,7 @@ internal sealed partial class JsRealm
 
         if (source.IsOutOfBounds)
         {
-            return engine.ThrowTypeError(
-                "%TypedArray%.prototype.set: the source typed array is detached or out of bounds");
+            return engine.ThrowTypeError("%TypedArray%.prototype.set: the source typed array is detached or out of bounds");
         }
 
         var sourceLength = source.Length;
@@ -2462,8 +2392,7 @@ internal sealed partial class JsRealm
         // otherwise need a conversion the language refuses in both directions (JSeal B07).
         if (source.HoldsBigInts != target.HoldsBigInts)
         {
-            return engine.ThrowTypeError(
-                "%TypedArray%.prototype.set: the source and the target hold different content types");
+            return engine.ThrowTypeError("%TypedArray%.prototype.set: the source and the target hold different content types");
         }
 
         var at = (int)offset;
@@ -2507,9 +2436,7 @@ internal sealed partial class JsRealm
             return array;
         }
 
-        throw engine.Error(
-            "TypeError",
-            "%TypedArray%.prototype." + member + " requires that 'this' be a typed array");
+        throw engine.Error("TypeError", "%TypedArray%.prototype." + member + " requires that 'this' be a typed array");
     }
 
     /// <summary>
@@ -2585,8 +2512,7 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DD683D
     // Broiler-Human:        PENDING
-    private static JsValue BinaryViewRead(
-        JsEngine engine, JsValue thisValue, JsValue[] arguments, JsElementKind kind, string method)
+    private static JsValue BinaryViewRead(JsEngine engine, JsValue thisValue, JsValue[] arguments, JsElementKind kind, string method)
     {
         var view = BinaryThisView(engine, thisValue, method);
         var at = BinaryToIndex(engine, ArgOfBinary(arguments, 0), "byteOffset");
@@ -2612,8 +2538,7 @@ internal sealed partial class JsRealm
     /// <summary>One <c>DataView</c> write: <c>(byteOffset, value[, littleEndian])</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=BAE818
     // Broiler-Human:        PENDING
-    private static JsValue BinaryViewWrite(
-        JsEngine engine, JsValue thisValue, JsValue[] arguments, JsElementKind kind, string method)
+    private static JsValue BinaryViewWrite(JsEngine engine, JsValue thisValue, JsValue[] arguments, JsElementKind kind, string method)
     {
         var view = BinaryThisView(engine, thisValue, method);
         var at = BinaryToIndex(engine, ArgOfBinary(arguments, 0), "byteOffset");
@@ -2652,8 +2577,7 @@ internal sealed partial class JsRealm
 
         if (!callback.IsObject || !callback.AsObject().IsCallable)
         {
-            return engine.ThrowTypeError(
-                "%TypedArray%.prototype." + method + " requires a callback function");
+            return engine.ThrowTypeError("%TypedArray%.prototype." + method + " requires a callback function");
         }
 
         return callback;
@@ -2667,15 +2591,13 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A63AA5
     // Broiler-Human:        PENDING
-    private static int BinaryCompareElements(
-        JsEngine engine, JsValue comparator, JsValue left, JsValue right)
+    private static int BinaryCompareElements(JsEngine engine, JsValue comparator, JsValue left, JsValue right)
     {
         engine.Charge(1);
 
         if (comparator.IsObject)
         {
-            var ordering = engine.ToNumber(engine.Call(
-                comparator, JsValue.Undefined, [left, right]));
+            var ordering = engine.ToNumber(engine.Call(comparator, JsValue.Undefined, [left, right]));
 
             if (double.IsNaN(ordering) || ordering == 0)
             {
@@ -2740,15 +2662,9 @@ internal sealed partial class JsRealm
     /// distinct bit patterns, such as a negative and a positive zero, must leave them where they
     /// were.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B24B69
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E6091C
     // Broiler-Human:        PENDING
-    private static void BinaryMergeSort(
-        JsEngine engine,
-        JsValue comparator,
-        System.Collections.Generic.List<JsValue> items,
-        System.Collections.Generic.List<JsValue> buffer,
-        int from,
-        int to)
+    private static void BinaryMergeSort(JsEngine engine, JsValue comparator, List<JsValue> items, List<JsValue> buffer, int from, int to)
     {
         if (to - from < 2)
         {

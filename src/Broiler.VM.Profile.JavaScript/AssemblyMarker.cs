@@ -46,6 +46,4 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=None; Resources=0; Fingerprint=E1BC8B
 // Broiler-Human:        PENDING
-internal sealed class AssemblyMarker
-{
-}
+internal sealed class AssemblyMarker { }

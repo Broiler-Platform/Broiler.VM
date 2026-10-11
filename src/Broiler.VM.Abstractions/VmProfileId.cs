@@ -51,7 +51,7 @@ namespace Broiler.VM.Abstractions;
 /// own diagnostics disagree with the composition root that wrote them.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CB7A1C
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=A3276E
 // Broiler-Falsified-If: Equals, ==, CompareTo or GetHashCode folds case, or a stored id is not the text the caller supplied
 // Broiler-Human:        PENDING
 public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProfileId>
@@ -132,7 +132,7 @@ public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProf
     }
 
     /// <summary>The ID as a span, without allocating.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8D53DD
     // Broiler-Human:        PENDING
     public ReadOnlySpan<char> AsSpan() => MemoryExtensions.AsSpan(text);
 
@@ -140,7 +140,7 @@ public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProf
     /// Parses <paramref name="candidate"/>, returning <see langword="false"/> rather than throwing
     /// when it does not satisfy the frozen grammar.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=745304
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=D48449
     // Broiler-Falsified-If: an id is returned for a candidate the grammar rejects, or it stores anything but the candidate
     // Broiler-Human:        PENDING
     public static bool TryParse(ReadOnlySpan<char> candidate, out VmProfileId id)
@@ -161,7 +161,7 @@ public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProf
     /// where a malformed ID is a programming error rather than untrusted input.
     /// </summary>
     /// <exception cref="ArgumentException">The candidate does not satisfy the grammar.</exception>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=AA7040
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=D4412E
     // Broiler-Falsified-If: it accepts a candidate TryParse refuses, or its message names bounds the constants above do not
     // Broiler-Human:        PENDING
     public static VmProfileId Parse(ReadOnlySpan<char> candidate)
@@ -233,7 +233,7 @@ public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProf
     public override bool Equals(object? obj) => obj is VmProfileId other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=1; Fingerprint=3E4177
     // Broiler-Human:        PENDING
     public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
@@ -264,7 +264,7 @@ public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProf
     /// Validates the frozen grammar. Shared with <see cref="VmFeatureManifestId"/> and
     /// <see cref="VmCapabilityId"/>, whose own records say their policy mirrors this one exactly.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=A4118A
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=622977
     // Broiler-Falsified-If: a label count, label length or total length outside its bound validates, or an empty label does
     // Broiler-Human:        PENDING
     internal static bool TryValidateGrammar(ReadOnlySpan<char> candidate, int minimumLabels, int maximumLabels, int minimumLength, int maximumLength, out byte labelCount)
@@ -354,7 +354,7 @@ public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProf
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=7D6A16
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=6B9AA7
     // Broiler-Falsified-If: it passes bounds other than the five constants above, or the label count is not dots plus one
     // Broiler-Human:        PENDING
     private static bool TryValidate(ReadOnlySpan<char> candidate, out byte labelCount) =>
@@ -372,7 +372,7 @@ public readonly struct VmProfileId : IEquatable<VmProfileId>, IComparable<VmProf
     private static bool IsAsciiAlphanumeric(char value) =>
         IsAsciiLetter(value) || value is >= '0' and <= '9';
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Low; Resources=1; Fingerprint=129175
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Low; Resources=1; Fingerprint=27630C
     // Broiler-Human:        PENDING
     private static ReadOnlySpan<char> FirstLabel(string value)
     {

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -58,37 +60,27 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] WeekdayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=602D97
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C1DB3E
     // Broiler-Human:        PENDING
     private void SetupLocale(JsObject intl)
     {
         var prototype = new JsObject(ObjectPrototype);
         LocalePrototype = prototype;
 
-        var constructor = new JsNativeFunction(
-            this,
-            FunctionPrototype,
-            "Locale",
-            1,
-            static (engine, thisValue, arguments) =>
-                throw engine.Error("TypeError", "Constructor Intl.Locale requires 'new'"),
-            static (engine, newTarget, arguments) => NewLocale(engine, newTarget, arguments));
-
-        constructor.BuildsFromNewTarget = true;
+        var constructor = new JsNativeFunction(this, FunctionPrototype, "Locale", 1,
+            static (engine, thisValue, arguments) => throw engine.Error("TypeError", "Constructor Intl.Locale requires 'new'"),
+            static (engine, newTarget, arguments) => NewLocale(engine, newTarget, arguments))
+        {
+            BuildsFromNewTarget = true
+        };
         LocaleConstructor = constructor;
 
         constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         void Getter(string name, System.Func<JsEngine, JsLocaleObject, JsValue> read) =>
-            prototype.SetOwnProperty(
-                name,
-                JsProperty.Accessor(
-                    Native("get " + name, 0, (engine, thisValue, arguments) => read(engine, LocaleOfThis(engine, thisValue, name))),
-                    null,
-                    JsPropertyAttributes.Configurable));
+            prototype.SetOwnProperty(name, JsProperty.Accessor(Native("get " + name, 0, (engine, thisValue, arguments) =>
+            read(engine, LocaleOfThis(engine, thisValue, name))), null, JsPropertyAttributes.Configurable));
 
         static JsValue Optional(string? value) => value is null ? JsValue.Undefined : JsValue.String(value);
 
@@ -142,7 +134,7 @@ internal sealed partial class JsRealm
 
             if (LookupMatchingLocale(AvailableLocales(engine), [locale.Locale]) is { } match)
             {
-                var list = new System.Collections.Generic.List<string>();
+                var list = new List<string>();
 
                 foreach (var value in CollatorKeyData(match.Locale, "co", "sort"))
                 {
@@ -200,13 +192,8 @@ internal sealed partial class JsRealm
             return JsValue.Object(info);
         });
 
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl.Locale"), JsPropertyAttributes.Configurable));
-
-        intl.SetOwnProperty(
-            "Locale",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl.Locale"), JsPropertyAttributes.Configurable));
+        intl.SetOwnProperty("Locale", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>The parsed form of a canonicalized locale identifier a Locale holds.</summary>
@@ -214,9 +201,9 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static JsLocaleTag Tag(string locale) => JsLocaleTag.Parse(locale)!;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=84F921
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=57717A
     // Broiler-Human:        PENDING
-    private static JsValue StringArray(JsEngine engine, System.Collections.Generic.List<string> values) =>
+    private static JsValue StringArray(JsEngine engine, List<string> values) =>
         JsValue.Object(engine.Realm.NewArray(values.ConvertAll(static value => JsValue.String(value))));
 
     /// <summary>The Locale <paramref name="thisValue"/> is, or the <c>TypeError</c>.</summary>
@@ -244,7 +231,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The steps of the constructor after the tag is a String: the options read in order, and the record made.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A51C22
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5DBFB3
     // Broiler-Human:        PENDING
     private static JsLocaleObject NewLocaleObject(JsEngine engine, JsObject prototype, string text, JsValue optionsValue)
     {
@@ -270,9 +257,11 @@ internal sealed partial class JsRealm
             return value;
         }
 
-        var overrides = new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal);
-        overrides["ca"] = TypeOption("calendar");
-        overrides["co"] = TypeOption("collation");
+        var overrides = new Dictionary<string, string?>(System.StringComparer.Ordinal)
+        {
+            ["ca"] = TypeOption("calendar"),
+            ["co"] = TypeOption("collation")
+        };
 
         var firstDay = GetStringOption(engine, options, "firstDayOfWeek", null, null);
 
@@ -297,7 +286,7 @@ internal sealed partial class JsRealm
 
         // MAKELOCALERECORD: each key from the tag's keywords, overridden by its option.
         var record = JsLocaleTag.Parse(text)!;
-        var values = new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal);
+        var values = new Dictionary<string, string?>(System.StringComparer.Ordinal);
 
         foreach (var key in LocaleExtensionKeys)
         {
@@ -353,7 +342,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's UpdateLanguageId (s15.1.2): the language, script, region and variants the options replace.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=25BC72
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=414677
     // Broiler-Human:        PENDING
     private static string UpdateLanguageId(JsEngine engine, string tag, JsValue options)
     {
@@ -394,7 +383,7 @@ internal sealed partial class JsRealm
             }
 
             var lower = variants.ToLowerInvariant();
-            var seen = new System.Collections.Generic.List<string>();
+            var seen = new List<string>();
 
             foreach (var variant in lower.Split('-'))
             {
@@ -490,14 +479,14 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's HourCyclesOfLocale (s15.5.11): CLDR's time data for the preferred regions, preferred first.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=22C926
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BACCE8
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<string> HourCyclesOf(JsEngine engine, string locale)
+    private static List<string> HourCyclesOf(JsEngine engine, string locale)
     {
         var (region, regionOverride) = RegionPreference(engine, locale);
         var language = Tag(locale).Language;
         var times = engine.Intl!.Dates.TimeData;
-        var cycles = new System.Collections.Generic.List<string>();
+        var cycles = new List<string>();
 
         foreach (var preferred in regionOverride is null ? new[] { region } : [regionOverride, region])
         {
@@ -551,14 +540,14 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's WeekInfoOfLocale (s15.5.17): CLDR's first day and weekend for the preferred region, the keyword's first day over it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=417572
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E8D86
     // Broiler-Human:        PENDING
-    private static (int FirstDay, System.Collections.Generic.List<int> Weekend) WeekInfoOf(JsEngine engine, JsLocaleObject locale)
+    private static (int FirstDay, List<int> Weekend) WeekInfoOf(JsEngine engine, JsLocaleObject locale)
     {
         var weeks = engine.Intl!.LocaleInfo.Weeks;
         var (region, regionOverride) = RegionPreference(engine, locale.Locale);
         var lookup = regionOverride is not null && weeks.ContainsKey(regionOverride) ? regionOverride : weeks.ContainsKey(region) ? region : "001";
-        var world = weeks["001"];
+        var (FirstDay, WeekendStart, WeekendEnd, _) = weeks["001"];
         var week = weeks[lookup];
 
         static int Day(string key) => key switch
@@ -573,10 +562,10 @@ internal sealed partial class JsRealm
             _ => 0,
         };
 
-        var firstDay = Day(week.FirstDay.Length != 0 ? week.FirstDay : world.FirstDay);
-        var start = Day(week.WeekendStart.Length != 0 ? week.WeekendStart : world.WeekendStart);
-        var end = Day(week.WeekendEnd.Length != 0 ? week.WeekendEnd : world.WeekendEnd);
-        var weekend = new System.Collections.Generic.List<int>();
+        var firstDay = Day(week.FirstDay.Length != 0 ? week.FirstDay : FirstDay);
+        var start = Day(week.WeekendStart.Length != 0 ? week.WeekendStart : WeekendStart);
+        var end = Day(week.WeekendEnd.Length != 0 ? week.WeekendEnd : WeekendEnd);
+        var weekend = new List<int>();
 
         for (var day = start; ; day = (day % 7) + 1)
         {
@@ -606,10 +595,7 @@ internal sealed class JsLocaleObject : JsObject
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CC67FA
     // Broiler-Human:        PENDING
-    internal JsLocaleObject(JsObject prototype)
-        : base(prototype)
-    {
-    }
+    internal JsLocaleObject(JsObject prototype) : base(prototype) { }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDBB2D
     // Broiler-Human:        PENDING

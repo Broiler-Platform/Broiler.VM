@@ -15,6 +15,11 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
+using System.Numerics;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>The twelve element types this realm's typed arrays store.</summary>
@@ -155,9 +160,9 @@ internal static class JsElements
     /// A realm whose composition declines BigInt builds the ten Number kinds only; see
     /// <see cref="HoldsBigInts"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DE0044
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C0404A
     // Broiler-Human:        PENDING
-    internal static System.Collections.Generic.IReadOnlyList<JsElementKind> All { get; } =
+    internal static IReadOnlyList<JsElementKind> All { get; } =
     [
         JsElementKind.Int8,
         JsElementKind.Uint8,
@@ -242,7 +247,7 @@ internal static class JsElements
     /// kinds are read through <see cref="ReadValue"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B71892
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F5A051
     // Broiler-Human:        PENDING
     internal static double Read(byte[] bytes, int at, JsElementKind kind, bool littleEndian)
     {
@@ -250,32 +255,32 @@ internal static class JsElements
 
         return kind switch
         {
-            JsElementKind.Int8 => (double)unchecked((sbyte)span[0]),
-            JsElementKind.Uint8 or JsElementKind.Uint8Clamped => (double)span[0],
-            JsElementKind.Int16 => (double)(littleEndian
-                ? System.Buffers.Binary.BinaryPrimitives.ReadInt16LittleEndian(span)
-                : System.Buffers.Binary.BinaryPrimitives.ReadInt16BigEndian(span)),
-            JsElementKind.Uint16 => (double)(littleEndian
-                ? System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(span)
-                : System.Buffers.Binary.BinaryPrimitives.ReadUInt16BigEndian(span)),
-            JsElementKind.Int32 => (double)(littleEndian
-                ? System.Buffers.Binary.BinaryPrimitives.ReadInt32LittleEndian(span)
-                : System.Buffers.Binary.BinaryPrimitives.ReadInt32BigEndian(span)),
-            JsElementKind.Uint32 => (double)(littleEndian
-                ? System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(span)
-                : System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(span)),
+            JsElementKind.Int8 => unchecked((sbyte)span[0]),
+            JsElementKind.Uint8 or JsElementKind.Uint8Clamped => span[0],
+            JsElementKind.Int16 => littleEndian
+                ? BinaryPrimitives.ReadInt16LittleEndian(span)
+                : BinaryPrimitives.ReadInt16BigEndian(span),
+            JsElementKind.Uint16 => littleEndian
+                ? BinaryPrimitives.ReadUInt16LittleEndian(span)
+                : BinaryPrimitives.ReadUInt16BigEndian(span),
+            JsElementKind.Int32 => littleEndian
+                ? BinaryPrimitives.ReadInt32LittleEndian(span)
+                : BinaryPrimitives.ReadInt32BigEndian(span),
+            JsElementKind.Uint32 => littleEndian
+                ? BinaryPrimitives.ReadUInt32LittleEndian(span)
+                : BinaryPrimitives.ReadUInt32BigEndian(span),
             JsElementKind.Float16 => JsFloat16.Decode(littleEndian
-                ? System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(span)
-                : System.Buffers.Binary.BinaryPrimitives.ReadUInt16BigEndian(span)),
+                ? BinaryPrimitives.ReadUInt16LittleEndian(span)
+                : BinaryPrimitives.ReadUInt16BigEndian(span)),
             JsElementKind.Float32 => (double)(littleEndian
-                ? System.Buffers.Binary.BinaryPrimitives.ReadSingleLittleEndian(span)
-                : System.Buffers.Binary.BinaryPrimitives.ReadSingleBigEndian(span)),
+                ? BinaryPrimitives.ReadSingleLittleEndian(span)
+                : BinaryPrimitives.ReadSingleBigEndian(span)),
             JsElementKind.BigInt64 or JsElementKind.BigUint64 => throw new JsAbort(
                 JsAbortKind.InternalDefect,
                 "a BigInt typed-array element was read through the Number path"),
             _ => littleEndian
-                ? System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(span)
-                : System.Buffers.Binary.BinaryPrimitives.ReadDoubleBigEndian(span),
+                ? BinaryPrimitives.ReadDoubleLittleEndian(span)
+                : BinaryPrimitives.ReadDoubleBigEndian(span),
         };
     }
 
@@ -284,10 +289,9 @@ internal static class JsElements
     /// A BigInt kind is refused by name, as <see cref="Read"/> refuses it; see
     /// <see cref="WriteValue"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=72BBCA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5BAA25
     // Broiler-Human:        PENDING
-    internal static void Write(
-        byte[] bytes, int at, JsElementKind kind, double value, bool littleEndian)
+    internal static void Write(byte[] bytes, int at, JsElementKind kind, double value, bool littleEndian)
     {
         var span = new System.Span<byte>(bytes, at, WidthOf(kind));
 
@@ -304,71 +308,71 @@ internal static class JsElements
 
             case JsElementKind.Int16:
             case JsElementKind.Uint16:
-            {
-                var narrowed = unchecked((ushort)JsValue.ToUint32(value));
-
-                if (littleEndian)
                 {
-                    System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(span, narrowed);
-                }
-                else
-                {
-                    System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(span, narrowed);
-                }
+                    var narrowed = unchecked((ushort)JsValue.ToUint32(value));
 
-                return;
-            }
+                    if (littleEndian)
+                    {
+                        BinaryPrimitives.WriteUInt16LittleEndian(span, narrowed);
+                    }
+                    else
+                    {
+                        BinaryPrimitives.WriteUInt16BigEndian(span, narrowed);
+                    }
+
+                    return;
+                }
 
             case JsElementKind.Int32:
             case JsElementKind.Uint32:
-            {
-                // ONE WRITE SERVES BOTH SIGNS. Int32 and Uint32 differ in how a READ interprets the
-                // four bytes; the bits a write produces are the same modular wrap either way.
-                var wrapped = JsValue.ToUint32(value);
-
-                if (littleEndian)
                 {
-                    System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(span, wrapped);
-                }
-                else
-                {
-                    System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(span, wrapped);
-                }
+                    // ONE WRITE SERVES BOTH SIGNS. Int32 and Uint32 differ in how a READ interprets the
+                    // four bytes; the bits a write produces are the same modular wrap either way.
+                    var wrapped = JsValue.ToUint32(value);
 
-                return;
-            }
+                    if (littleEndian)
+                    {
+                        BinaryPrimitives.WriteUInt32LittleEndian(span, wrapped);
+                    }
+                    else
+                    {
+                        BinaryPrimitives.WriteUInt32BigEndian(span, wrapped);
+                    }
+
+                    return;
+                }
 
             case JsElementKind.Float16:
-            {
-                var encoded = JsFloat16.Encode(value);
-
-                if (littleEndian)
                 {
-                    System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(span, encoded);
-                }
-                else
-                {
-                    System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(span, encoded);
-                }
+                    var encoded = JsFloat16.Encode(value);
 
-                return;
-            }
+                    if (littleEndian)
+                    {
+                        BinaryPrimitives.WriteUInt16LittleEndian(span, encoded);
+                    }
+                    else
+                    {
+                        BinaryPrimitives.WriteUInt16BigEndian(span, encoded);
+                    }
+
+                    return;
+                }
 
             case JsElementKind.Float32:
-            {
-                var single = (float)value;
-
-                if (littleEndian)
                 {
-                    System.Buffers.Binary.BinaryPrimitives.WriteSingleLittleEndian(span, single);
-                }
-                else
-                {
-                    System.Buffers.Binary.BinaryPrimitives.WriteSingleBigEndian(span, single);
-                }
+                    var single = (float)value;
 
-                return;
-            }
+                    if (littleEndian)
+                    {
+                        BinaryPrimitives.WriteSingleLittleEndian(span, single);
+                    }
+                    else
+                    {
+                        BinaryPrimitives.WriteSingleBigEndian(span, single);
+                    }
+
+                    return;
+                }
 
             case JsElementKind.BigInt64:
             case JsElementKind.BigUint64:
@@ -377,18 +381,18 @@ internal static class JsElements
                     "a Number was written into a BigInt typed-array element");
 
             default:
-            {
-                if (littleEndian)
                 {
-                    System.Buffers.Binary.BinaryPrimitives.WriteDoubleLittleEndian(span, value);
-                }
-                else
-                {
-                    System.Buffers.Binary.BinaryPrimitives.WriteDoubleBigEndian(span, value);
-                }
+                    if (littleEndian)
+                    {
+                        BinaryPrimitives.WriteDoubleLittleEndian(span, value);
+                    }
+                    else
+                    {
+                        BinaryPrimitives.WriteDoubleBigEndian(span, value);
+                    }
 
-                return;
-            }
+                    return;
+                }
         }
     }
 
@@ -396,7 +400,7 @@ internal static class JsElements
     /// Reads one element of any kind: a Number for the ten Number kinds and a BigInt for the two
     /// 64-bit integer kinds - the specification's <c>GetValueFromBuffer</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=BAB170
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=B99A2C
     // Broiler-Falsified-If: a BigInt64 element reads as anything but the two's-complement integer of its eight bytes, a BigUint64 element as anything but their unsigned integer, or either as a Number
     // Broiler-Human:        PENDING
     internal static JsValue ReadValue(byte[] bytes, int at, JsElementKind kind, bool littleEndian)
@@ -406,16 +410,16 @@ internal static class JsElements
             return JsValue.Number(Read(bytes, at, kind, littleEndian));
         }
 
-        var span = new System.ReadOnlySpan<byte>(bytes, at, 8);
+        var span = new ReadOnlySpan<byte>(bytes, at, 8);
         var raw = littleEndian
-            ? System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(span)
-            : System.Buffers.Binary.BinaryPrimitives.ReadUInt64BigEndian(span);
+            ? BinaryPrimitives.ReadUInt64LittleEndian(span)
+            : BinaryPrimitives.ReadUInt64BigEndian(span);
 
         // THE SIGN IS THE READ'S, NOT THE BYTES': the same eight bytes are -1n through a
         // BigInt64Array and 2n ** 64n - 1n through a BigUint64Array.
         var integer = kind == JsElementKind.BigInt64
-            ? new System.Numerics.BigInteger(unchecked((long)raw))
-            : new System.Numerics.BigInteger(raw);
+            ? new BigInteger(unchecked((long)raw))
+            : new BigInteger(raw);
 
         return JsValue.BigInt(new JsBigInt(integer));
     }
@@ -430,18 +434,16 @@ internal static class JsElements
     /// here is a defect in a built-in and not a guest error: it ends the invocation by name rather
     /// than storing a value converted a second, silent way.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=D893D2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=B9CACA
     // Broiler-Falsified-If: a BigInt element stores anything but its value modulo 2**64, or a value of the other content type is stored rather than refused
     // Broiler-Human:        PENDING
-    internal static void WriteValue(
-        byte[] bytes, int at, JsElementKind kind, JsValue value, bool littleEndian)
+    internal static void WriteValue(byte[] bytes, int at, JsElementKind kind, JsValue value, bool littleEndian)
     {
         if (!HoldsBigInts(kind))
         {
             if (!value.IsNumber)
             {
-                throw new JsAbort(
-                    JsAbortKind.InternalDefect,
+                throw new JsAbort(JsAbortKind.InternalDefect,
                     "an unconverted value reached a Number typed-array element write");
             }
 
@@ -451,24 +453,23 @@ internal static class JsElements
 
         if (!value.IsBigInt)
         {
-            throw new JsAbort(
-                JsAbortKind.InternalDefect,
+            throw new JsAbort(JsAbortKind.InternalDefect,
                 "a value that is not a BigInt reached a BigInt typed-array element write");
         }
 
         // ONE WRITE SERVES BOTH SIGNS, as it does for Int32 and Uint32: ToBigInt64 and ToBigUint64
         // differ only in how the result is READ, and the bits either stores are the value modulo
         // 2**64.
-        var span = new System.Span<byte>(bytes, at, 8);
+        var span = new Span<byte>(bytes, at, 8);
         var low = Low64(value.AsBigInt().Value);
 
         if (littleEndian)
         {
-            System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(span, low);
+            BinaryPrimitives.WriteUInt64LittleEndian(span, low);
         }
         else
         {
-            System.Buffers.Binary.BinaryPrimitives.WriteUInt64BigEndian(span, low);
+            BinaryPrimitives.WriteUInt64BigEndian(span, low);
         }
     }
 
@@ -482,10 +483,10 @@ internal static class JsElements
     /// charged, with <see cref="Narrow"/>, so a write repeated over many elements - <c>fill</c> -
     /// never masks a wide value more than once.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=33AFD0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=01A0C1
     // Broiler-Falsified-If: the answer differs from the value modulo 2**64 for any integer, negative ones included
     // Broiler-Human:        PENDING
-    internal static ulong Low64(System.Numerics.BigInteger value)
+    internal static ulong Low64(BigInteger value)
     {
         if (value >= long.MinValue && value <= long.MaxValue)
         {
@@ -511,14 +512,14 @@ internal static class JsElements
     /// that converts once and writes many times narrows once. A value already in range is answered
     /// as itself.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=25C1DD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=35300B
     // Broiler-Human:        PENDING
     internal static JsBigInt Narrow(JsElementKind kind, JsBigInt value)
     {
         var low = Low64(value.Value);
         var narrowed = kind == JsElementKind.BigInt64
-            ? new System.Numerics.BigInteger(unchecked((long)low))
-            : new System.Numerics.BigInteger(low);
+            ? new BigInteger(unchecked((long)low))
+            : new BigInteger(low);
 
         return narrowed == value.Value ? value : new JsBigInt(narrowed);
     }
@@ -598,7 +599,7 @@ internal static class JsElements
     /// 1.5 stores 2. Every other rounding in the language is half-up, so a reader who assumes
     /// <c>Math.round</c>'s rule here gets 1 and 2 and a picture one grey level off.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8FE417
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1A26B3
     // Broiler-Human:        PENDING
     private static byte Clamp(double value)
     {
@@ -607,7 +608,7 @@ internal static class JsElements
             return 0;
         }
 
-        return value >= 255 ? (byte)255 : (byte)System.Math.Round(value, System.MidpointRounding.ToEven);
+        return value >= 255 ? (byte)255 : (byte)Math.Round(value, MidpointRounding.ToEven);
     }
 }
 
@@ -653,18 +654,18 @@ internal static class JsFloat16
     private const ushort QuietNaN = 0x7E00;
 
     /// <summary>The binary16 bits <paramref name="value"/> rounds to, ties to even.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CE0A76
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=866FE2
     // Broiler-Human:        PENDING
     internal static ushort Encode(double value) =>
         double.IsNaN(value)
             ? QuietNaN
-            : System.BitConverter.HalfToUInt16Bits((System.Half)value);
+            : BitConverter.HalfToUInt16Bits((Half)value);
 
     /// <summary>The Number the binary16 <paramref name="bits"/> denote, which is exact.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8CD7DB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0FDF0F
     // Broiler-Human:        PENDING
     internal static double Decode(ushort bits) =>
-        (double)System.BitConverter.UInt16BitsToHalf(bits);
+        (double)BitConverter.UInt16BitsToHalf(bits);
 
     /// <summary>
     /// <paramref name="value"/> rounded to the nearest binary16 and widened back: <c>Math.f16round</c>.
@@ -848,7 +849,7 @@ internal sealed class JsArrayBuffer : JsObject
     /// never holds it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=81F25D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=073D97
     // Broiler-Falsified-If: a resize is committed on a fixed-length or detached buffer, past the maximum, or loses a byte of the common prefix or exposes a stale byte past it
     // Broiler-Human:        PENDING
     internal bool TryReplaceStorage(byte[] storage)
@@ -860,7 +861,7 @@ internal sealed class JsArrayBuffer : JsObject
             return false;
         }
 
-        System.Array.Copy(bytes, storage, System.Math.Min(bytes.Length, storage.Length));
+        Array.Copy(bytes, storage, Math.Min(bytes.Length, storage.Length));
 
         if (Block is { } block)
         {
@@ -890,7 +891,7 @@ internal sealed class JsArrayBuffer : JsObject
     /// <see langword="false"/> rather than throwing keeps the choice of error with the built-in
     /// that knows which one the specification names.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D0D4C4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FAE954
     // Broiler-Human:        PENDING
     internal bool TryCopyFrom(byte[]? source, int at, int count)
     {
@@ -902,7 +903,7 @@ internal sealed class JsArrayBuffer : JsObject
             return false;
         }
 
-        System.Array.Copy(source, at, bytes, 0, count);
+        Array.Copy(source, at, bytes, 0, count);
         return true;
     }
 }
@@ -1193,7 +1194,7 @@ internal sealed class JsTypedArray : JsObject
     /// A view whose offset is exactly the buffer's length is IN bounds with no elements, which is
     /// the specification's own note; only an offset past the end is out.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FAE511
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=66781C
     // Broiler-Human:        PENDING
     internal bool IsOutOfBounds
     {
@@ -1207,7 +1208,7 @@ internal sealed class JsTypedArray : JsObject
             }
 
             return !TracksLength &&
-                (long)ByteOffset + ((long)fixedLength * BytesPerElement) > bytes.Length;
+                ByteOffset + ((long)fixedLength * BytesPerElement) > bytes.Length;
         }
     }
 
@@ -1328,7 +1329,7 @@ internal sealed class JsTypedArray : JsObject
     /// two ranges may overlap and the specification requires the SOURCE values, not the ones a
     /// forward loop would have already overwritten. <c>Array.Copy</c> promises exactly that.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5252FD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=31CACE
     // Broiler-Human:        PENDING
     internal bool TryCopyWithin(int to, int from, int count)
     {
@@ -1346,12 +1347,12 @@ internal sealed class JsTypedArray : JsObject
         // backstop that makes a caller's mistake a refusal rather than a copy through bytes a
         // shrink has already taken away.
         if (from < 0 || to < 0 ||
-            (long)ByteOffset + (((long)System.Math.Max(from, to) + count) * width) > bytes.Length)
+            ByteOffset + (((long)Math.Max(from, to) + count) * width) > bytes.Length)
         {
             return false;
         }
 
-        System.Array.Copy(
+        Array.Copy(
             bytes, ByteOffset + (from * width), bytes, ByteOffset + (to * width), count * width);
 
         return true;
@@ -1418,7 +1419,7 @@ internal sealed class JsTypedArray : JsObject
     /// converted and printed back.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8E958A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7DF768
     // Broiler-Human:        PENDING
     internal static bool IsNumericKey(string key)
     {
@@ -1432,9 +1433,9 @@ internal sealed class JsTypedArray : JsObject
             return false;
         }
 
-        return string.Equals(key, "-0", System.StringComparison.Ordinal) ||
+        return string.Equals(key, "-0", StringComparison.Ordinal) ||
             string.Equals(
-                JsNumberFormat.ToJsString(JsNumberFormat.ToNumber(key)), key, System.StringComparison.Ordinal);
+                JsNumberFormat.ToJsString(JsNumberFormat.ToNumber(key)), key, StringComparison.Ordinal);
     }
 
     /// <inheritdoc/>

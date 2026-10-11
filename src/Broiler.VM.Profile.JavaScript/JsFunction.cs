@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>One environment record: a flat slot array and a link to the enclosing one.</summary>
@@ -47,20 +50,20 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed class JsEnvironment
 {
     /// <summary>Creates an environment of <paramref name="slots"/> slots under <paramref name="parent"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E75576
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A8FC41
     // Broiler-Human:        PENDING
     internal JsEnvironment(int slots, JsEnvironment? parent)
     {
-        Slots = slots == 0 ? System.Array.Empty<JsValue>() : new JsValue[slots];
+        Slots = slots == 0 ? [] : new JsValue[slots];
         Parent = parent;
     }
 
     /// <summary>Creates the object environment record a <c>with</c> statement puts on the chain.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3A6E29
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E7EE01
     // Broiler-Human:        PENDING
     internal JsEnvironment(JsObject binding, JsEnvironment? parent)
     {
-        Slots = System.Array.Empty<JsValue>();
+        Slots = [];
         Parent = parent;
         Binding = binding;
     }
@@ -75,14 +78,10 @@ internal sealed class JsEnvironment
     /// evaluation's boundary (JSeal V15) has no parent at all: nothing lies between it and the
     /// global scope, which its view says.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F9EB3D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A2ADAF
     // Broiler-Falsified-If: a boundary record is created with a parent other than the calling frame's current record
     // Broiler-Human:        PENDING
-    internal JsEnvironment(int slots, JsEnvironment? parent, JsEvalView view)
-        : this(slots, parent)
-    {
-        EvalView = view;
-    }
+    internal JsEnvironment(int slots, JsEnvironment? parent, JsEvalView view) : this(slots, parent) => EvalView = view;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7EE350
     // Broiler-Human:        PENDING
@@ -268,24 +267,15 @@ internal sealed class JsNativeFunction : JsFunction
     /// <summary>Creates a built-in.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8318EF
     // Broiler-Human:        PENDING
-    internal JsNativeFunction(
-        JsRealm realm,
-        JsObject? prototype,
-        string name,
-        int arity,
-        JsNativeBody body,
-        JsNativeBody? construct = null)
-        : base(prototype, realm)
+    internal JsNativeFunction(JsRealm realm, JsObject? prototype, string name, int arity, JsNativeBody body, JsNativeBody? construct = null) : base(prototype, realm)
     {
         this.body = body;
         this.construct = construct;
         FunctionName = name;
         DeclaredArity = arity;
-        SetOwnProperty(
-            "length", JsProperty.Data(JsValue.Number(arity), JsPropertyAttributes.Configurable));
 
-        SetOwnProperty(
-            "name", JsProperty.Data(JsValue.String(name), JsPropertyAttributes.Configurable));
+        SetOwnProperty("length", JsProperty.Data(JsValue.Number(arity), JsPropertyAttributes.Configurable));
+        SetOwnProperty("name", JsProperty.Data(JsValue.String(name), JsPropertyAttributes.Configurable));
 
         if (construct is not null)
         {
@@ -395,7 +385,7 @@ internal sealed class JsScriptFunction : JsFunction
     /// one the <c>Function</c> constructor made. An arrow, a method, a generator and an async
     /// function are none of these, and a strict function is forbidden the extension (17.1).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EF4324
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E0C2B1
     // Broiler-Human:        PENDING
     internal bool LegacyReflective
     {
@@ -403,7 +393,7 @@ internal sealed class JsScriptFunction : JsFunction
         {
             var row = Program.Functions[Unit];
             return !row.IsStrict && !row.IsClassConstructor &&
-                (row.Flags & Format.JsFormat.FunctionFlags.Constructible) != 0;
+                (row.Flags & JsFormat.FunctionFlags.Constructible) != 0;
         }
     }
 
@@ -614,10 +604,9 @@ internal sealed class JsScriptFunction : JsFunction
     internal JsScriptFunction? LexicalActiveFunction { get; set; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0AB323
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=AD551A
     // Broiler-Human:        PENDING
-    internal override bool IsConstructor =>
-        (Program.Functions[Unit].Flags & Format.JsFormat.FunctionFlags.Constructible) != 0;
+    internal override bool IsConstructor => (Program.Functions[Unit].Flags & JsFormat.FunctionFlags.Constructible) != 0;
 
     /// <summary>Whether calling this function without <c>new</c> is a <c>TypeError</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A7DFE0
@@ -647,9 +636,9 @@ internal sealed class JsScriptFunction : JsFunction
     /// them, so an ordinary closure carries one null field and no list.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=578942
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=641B81
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsClassElement>? InstanceElements { get; set; }
+    internal List<JsClassElement>? InstanceElements { get; set; }
 
     /// <summary>
     /// The class elements that run once, on the constructor itself, when the class is defined.
@@ -660,9 +649,9 @@ internal sealed class JsScriptFunction : JsFunction
     /// the order written, and two lists would have had to be merged by something that knew where
     /// each element came from.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=35D9A1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C51071
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsClassElement>? StaticElements { get; set; }
+    internal List<JsClassElement>? StaticElements { get; set; }
 }
 
 /// <summary>
@@ -719,9 +708,7 @@ internal sealed class JsBoundFunction : JsFunction
     /// <summary>Creates a bound function.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8846C1
     // Broiler-Human:        PENDING
-    internal JsBoundFunction(
-        JsObject? prototype, JsObject target, JsValue boundThis, JsValue[] boundArguments)
-        : base(prototype, null)
+    internal JsBoundFunction(JsObject? prototype, JsObject target, JsValue boundThis, JsValue[] boundArguments) : base(prototype, null)
     {
         Target = target;
         BoundThis = boundThis;
@@ -782,8 +769,7 @@ internal sealed class JsPrimitiveWrapper : JsObject
 
             if (IsArrayIndex(key, out var at) && at < text.Length)
             {
-                property = JsProperty.Data(
-                    JsValue.String(text[(int)at].ToString()), JsPropertyAttributes.Enumerable);
+                property = JsProperty.Data(JsValue.String(text[(int)at].ToString()), JsPropertyAttributes.Enumerable);
 
                 return true;
             }
@@ -836,16 +822,16 @@ internal sealed class JsPrimitiveWrapper : JsObject
     /// other String keys in the order they were made. An index added past the string's end sorted
     /// after <c>length</c>, as though it were an ordinary name (JSP-5, JSC-237).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FB6B46
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E1AA2E
     // Broiler-Human:        PENDING
-    internal override System.Collections.Generic.List<string> OwnPropertyNames()
+    internal override List<string> OwnPropertyNames()
     {
         if (!Primitive.IsString)
         {
             return base.OwnPropertyNames();
         }
 
-        var names = new System.Collections.Generic.List<string>();
+        var names = new List<string>();
         var text = Primitive.AsString();
 
         for (var at = 0; at < text.Length; at++)
@@ -853,8 +839,8 @@ internal sealed class JsPrimitiveWrapper : JsObject
             names.Add(JsNumberFormat.ToUintString((uint)at));
         }
 
-        var indices = new System.Collections.Generic.List<string>();
-        var rest = new System.Collections.Generic.List<string>();
+        var indices = new List<string>();
+        var rest = new List<string>();
         CollectOwnNames(indices, rest);
         SortIndexKeys(indices);
         names.AddRange(indices);

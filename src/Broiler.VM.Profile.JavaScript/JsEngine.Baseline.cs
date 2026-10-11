@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -55,21 +58,12 @@ internal sealed partial class JsEngine
     /// and no guest can observe the trace.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=8C7329
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=7CB84A
     // Broiler-Falsified-If: emitted code runs while its activation or its page is unreachable from a managed root, or this answers a value for a status other than exit
     // Broiler-Human:        PENDING
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-    private unsafe JsValue RunNative(
-        JsProgram program,
-        int unitIndex,
-        JsEnvironment? environment,
-        JsValue thisValue,
-        JsValue[] actualArguments,
-        JsScriptFunction? self,
-        JsValue newTarget,
-        JsCell? thisBinding,
-        JsFrame? frame)
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private unsafe JsValue RunNative(JsProgram program, int unitIndex, JsEnvironment? environment, JsValue thisValue, JsValue[] actualArguments,
+        JsScriptFunction? self, JsValue newTarget, JsCell? thisBinding, JsFrame? frame)
     {
         var page = NativePageOf(program) ??
             throw new JsAbort(JsAbortKind.InternalDefect, "emitted code could not be mapped");
@@ -100,16 +94,15 @@ internal sealed partial class JsEngine
         finally
         {
             JsNativeActivation.Current = previous;
-            System.GC.KeepAlive(page);
-            System.GC.KeepAlive(act);
+            GC.KeepAlive(page);
+            GC.KeepAlive(act);
         }
 
         return status switch
         {
             (int)JsBaselineStatus.Exit => act.Result,
             (int)JsBaselineStatus.Threw => throw act.Pending!,
-            _ => throw new JsAbort(
-                JsAbortKind.InternalDefect, "emitted code answered status " + status),
+            _ => throw new JsAbort(JsAbortKind.InternalDefect, "emitted code answered status " + status),
         };
     }
 
@@ -147,21 +140,12 @@ internal sealed partial class JsEngine
     /// direct calls is a status per level, landed at each call without a throw (JSD-0035 section 8).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=22D6B8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=27DECA
     // Broiler-Falsified-If: emitted code runs while its activation or its page is unreachable from a managed root, runs with no region or with a region some other activation holds, a region outlives the call that opened it, or this answers a value for a status other than exit
     // Broiler-Human:        PENDING
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-    private unsafe JsValue RunValue(
-        JsProgram program,
-        int unitIndex,
-        JsEnvironment? environment,
-        JsValue thisValue,
-        JsValue[] actualArguments,
-        JsScriptFunction? self,
-        JsValue newTarget,
-        JsCell? thisBinding,
-        JsFrame? frame)
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private unsafe JsValue RunValue(JsProgram program, int unitIndex, JsEnvironment? environment, JsValue thisValue, JsValue[] actualArguments,
+        JsScriptFunction? self, JsValue newTarget, JsCell? thisBinding, JsFrame? frame)
     {
         var page = NativePageOf(program) ??
             throw new JsAbort(JsAbortKind.InternalDefect, "emitted code could not be mapped");
@@ -191,8 +175,8 @@ internal sealed partial class JsEngine
             finally
             {
                 JsNativeActivation.Current = previous;
-                System.GC.KeepAlive(page);
-                System.GC.KeepAlive(act);
+                GC.KeepAlive(page);
+                GC.KeepAlive(act);
             }
 
             return status switch
@@ -200,8 +184,7 @@ internal sealed partial class JsEngine
                 (int)JsBaselineStatus.Exit => act.Result,
                 (int)JsBaselineStatus.Threw => throw act.Pending!,
                 JsValueAbi.Returned => Returned(act, native.Debt),
-                _ => throw new JsAbort(
-                    JsAbortKind.InternalDefect, "emitted code answered status " + status),
+                _ => throw new JsAbort(JsAbortKind.InternalDefect, "emitted code answered status " + status),
             };
         }
         finally
@@ -235,19 +218,11 @@ internal sealed partial class JsEngine
     /// that cannot be pushed is the call-depth backstop; one whose encoding fails is closed before the failure
     /// goes on.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=FB7536
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=9A26EA
     // Broiler-Falsified-If: it answers an activation whose region is not the top of the value stack, is not encoded and published at the activation's height, or whose plan is not its unit's; or a failure leaves a region pushed
     // Broiler-Human:        PENDING
-    private JsNativeActivation OpenValue(
-        JsProgram program,
-        int unitIndex,
-        JsEnvironment? environment,
-        JsValue thisValue,
-        JsValue[] actualArguments,
-        JsScriptFunction? self,
-        JsValue newTarget,
-        JsCell? thisBinding,
-        JsFrame? frame)
+    private JsNativeActivation OpenValue(JsProgram program, int unitIndex, JsEnvironment? environment, JsValue thisValue, JsValue[] actualArguments,
+        JsScriptFunction? self, JsValue newTarget, JsCell? thisBinding, JsFrame? frame)
     {
         var stack = ValueStack ??
             throw new JsAbort(JsAbortKind.InternalDefect, "a value-form program reached an engine with no value stack");
@@ -269,7 +244,7 @@ internal sealed partial class JsEngine
             // is given no frame, without the loop's frame of its own around it.
             var unit = program.Functions[unitIndex];
             act.Stack = new JsValue[unit.MaxOperandStack + 1];
-            act.Scopes = new System.Collections.Generic.List<JsEnvironment>(4) { environment! };
+            act.Scopes = new List<JsEnvironment>(4) { environment! };
             act.Sp = 0;
             act.Pc = (int)unit.CodeOffset;
         }
@@ -317,14 +292,14 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Fills a frame context for an activation whose region is open: the table, the cookie, the region and no debt.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=22D8FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=AE9348
     // Broiler-Falsified-If: the context names a cookie other than the activation's, a region other than its own first word, a debt other than zero, or an entry
     // Broiler-Human:        PENDING
     private static unsafe void Frame(JsNativeActivation act, JsValueFrame* frame)
     {
         frame->Helpers = JsValueHelpers.Table;
         frame->Cookie = act.Cookie;
-        frame->Region = (nint)System.Runtime.CompilerServices.Unsafe.AsPointer(
+        frame->Region = (nint)Unsafe.AsPointer(
             ref act.Segment!.Words[JsValueSlab.FirstWord(act.SlabFrame)]);
         frame->Debt = 0;
         frame->Entry = 0;
@@ -413,16 +388,15 @@ internal sealed partial class JsEngine
     /// <param name="height">The operand height before it, whose top words the window decoded.</param>
     /// <param name="function">The callee, as <see cref="TryDirectCallee"/> answered it.</param>
     /// <param name="context">The callee context the call site reserved.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=C69D51
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=7D26BD
     // Broiler-Falsified-If: a direct call charges, checks, binds or opens other than the interpreter's call of the same function would, fills an entry other than the callee unit's in the caller's own payload, or a failure leaves a depth, a referrer or a region taken
     // Broiler-Human:        PENDING
-    internal unsafe JsNativeActivation BeginDirectCall(
-        JsNativeActivation caller, int pc, int height, JsScriptFunction function, JsValueFrame* context)
+    internal unsafe JsNativeActivation BeginDirectCall(JsNativeActivation caller, int pc, int height, JsScriptFunction function, JsValueFrame* context)
     {
         var stack = caller.Stack;
         var argc = caller.Code[pc + 1];
         var sp = height;
-        var arguments = argc == 0 ? System.Array.Empty<JsValue>() : new JsValue[argc];
+        var arguments = argc == 0 ? [] : new JsValue[argc];
 
         for (var at = argc - 1; at >= 0; at--)
         {
@@ -546,10 +520,10 @@ internal sealed partial class JsEngine
     /// never seen with two pages and a published page is never replaced.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=D236B5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=875C62
     // Broiler-Falsified-If: a page this returns is not armed, or a program's published page is replaced or released while the program is reachable
     // Broiler-Human:        PENDING
-    internal JsNativePage? NativePageOf(JsProgram program)
+    internal static JsNativePage? NativePageOf(JsProgram program)
     {
         var published = program.NativePage;
 
@@ -592,7 +566,7 @@ internal sealed partial class JsEngine
     /// defect rather than a language error. The page is mapped here as well, so a program that
     /// cannot be mapped is refused where it was loaded rather than at its first call.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=D4C7D8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=C81E2F
     // Broiler-Falsified-If: a guest-loaded program of the other form, of another architecture, or of the numeric manifest runs in a baseline instance
     // Broiler-Human:        PENDING
     private void RequireInstanceForm(JsProgram loaded)
@@ -602,7 +576,7 @@ internal sealed partial class JsEngine
             (nativeForm &&
                 (loaded.NativeArchitecture != JsNativeExecution.HostArchitecture ||
                     string.Equals(
-                        loaded.ManifestId, JsNumericManifest.ManifestId, System.StringComparison.Ordinal))))
+                        loaded.ManifestId, JsNumericManifest.ManifestId, StringComparison.Ordinal))))
         {
             throw new JsAbort(
                 JsAbortKind.InternalDefect,

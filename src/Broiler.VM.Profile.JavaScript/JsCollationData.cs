@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -65,17 +69,17 @@ internal sealed class JsCollationData
     // Broiler-Human:        PENDING
     private readonly ulong[] runBase;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=273BC7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8A738A
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<int, ulong[]> singles = [];
+    private readonly Dictionary<int, ulong[]> singles = [];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B9006A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0B8B9D
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, ulong[]> contractions = new(System.StringComparer.Ordinal);
+    private readonly Dictionary<string, ulong[]> contractions = new(StringComparer.Ordinal);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=72791E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0E136B
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.HashSet<int> contractionStarts = [];
+    private readonly HashSet<int> contractionStarts = [];
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E8FCB1
     // Broiler-Human:        PENDING
@@ -85,9 +89,9 @@ internal sealed class JsCollationData
     // Broiler-Human:        PENDING
     private readonly (int First, int Last)[] unified;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AE4C32
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7B5C7B
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, Tailoring> tailorings = new(System.StringComparer.Ordinal);
+    private readonly Dictionary<string, Tailoring> tailorings = new(StringComparer.Ordinal);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0DF4F7
     // Broiler-Human:        PENDING
@@ -103,19 +107,19 @@ internal sealed class JsCollationData
     // Broiler-Human:        PENDING
     internal sealed class Tailoring
     {
-        internal System.Collections.Generic.Dictionary<string, ulong[]> Entries { get; } = new(System.StringComparer.Ordinal);
+        internal Dictionary<string, ulong[]> Entries { get; } = new(StringComparer.Ordinal);
 
-        internal System.Collections.Generic.HashSet<int> Starts { get; } = [];
+        internal HashSet<int> Starts { get; } = [];
 
-        internal System.Collections.Generic.HashSet<int> Suppressed { get; } = [];
+        internal HashSet<int> Suppressed { get; } = [];
 
         internal int MaxKey { get; set; } = 1;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=09AE3F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=27B608
     // Broiler-Falsified-If: a table decodes to mappings other than the ones the generator encoded
     // Broiler-Human:        PENDING
-    internal JsCollationData(System.ReadOnlySpan<byte> root, System.ReadOnlySpan<byte> tailored)
+    internal JsCollationData(ReadOnlySpan<byte> root, ReadOnlySpan<byte> tailored)
     {
         var at = 0;
         var runs = ReadInt32(root, ref at);
@@ -150,7 +154,7 @@ internal sealed class JsCollationData
             {
                 contractions[key] = elements;
                 contractionStarts.Add(first);
-                maxContraction = System.Math.Max(maxContraction, length);
+                maxContraction = Math.Max(maxContraction, length);
             }
         }
 
@@ -193,7 +197,7 @@ internal sealed class JsCollationData
 
                 tailoring.Entries[key] = elements;
                 tailoring.Starts.Add(first);
-                tailoring.MaxKey = System.Math.Max(tailoring.MaxKey, length);
+                tailoring.MaxKey = Math.Max(tailoring.MaxKey, length);
             }
 
             var suppressed = ReadInt32(tailored, ref at);
@@ -307,7 +311,7 @@ internal sealed class JsCollationData
     }
 
     /// <summary>UCA 17's implicit weights for a code point no key names.</summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS10 s10.1; IP=Low; Security=Low; Resources=1; Fingerprint=A49CE3
+    // Broiler-AI:           Origin=AI; Spec=UTS10 s10.1; IP=Low; Security=Low; Resources=1; Fingerprint=6B4A2B
     // Broiler-Human:        PENDING
     internal ulong[] Implicit(int codePoint)
     {
@@ -321,7 +325,7 @@ internal sealed class JsCollationData
                 {
                     if (otherBase == @base)
                     {
-                        origin = System.Math.Min(origin, other);
+                        origin = Math.Min(origin, other);
                     }
                 }
 
@@ -359,10 +363,10 @@ internal sealed class JsCollationData
     /// its discontiguous extension over unblocked non-starters, and implicit weights for the rest;
     /// numeric runs collapsed to their value when asked for.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS10 s7; IP=Low; Security=Medium; Resources=4; Fingerprint=D27C2E
+    // Broiler-AI:           Origin=AI; Spec=UTS10 s7; IP=Low; Security=Medium; Resources=4; Fingerprint=026FDB
     // Broiler-Falsified-If: a string's elements differ from the root collation's for any line of the archived CollationTest files
     // Broiler-Human:        PENDING
-    internal void Elements(int[] text, Tailoring? tailoring, bool numeric, System.Collections.Generic.List<ulong> output)
+    internal void Elements(int[] text, Tailoring? tailoring, bool numeric, List<ulong> output)
     {
         var consumed = new bool[text.Length];
 
@@ -428,7 +432,7 @@ internal sealed class JsCollationData
     }
 
     /// <summary>The longest key at <paramref name="at"/> over contiguous unconsumed code points, and its elements.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=C76060
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=104512
     // Broiler-Human:        PENDING
     private (int Length, ulong[] Elements) LongestMatch(int[] text, int at, bool[] consumed, Tailoring? tailoring)
     {
@@ -436,9 +440,9 @@ internal sealed class JsCollationData
 
         if (CanStartContraction(first, tailoring))
         {
-            var longest = System.Math.Max(maxContraction, tailoring?.MaxKey ?? 1);
+            var longest = Math.Max(maxContraction, tailoring?.MaxKey ?? 1);
 
-            for (var length = System.Math.Min(longest, text.Length - at); length > 1; length--)
+            for (var length = Math.Min(longest, text.Length - at); length > 1; length--)
             {
                 var contiguous = true;
 
@@ -486,11 +490,11 @@ internal sealed class JsCollationData
         contractionStarts.Contains(codePoint) && (tailoring is null || !tailoring.Suppressed.Contains(codePoint)) ||
         tailoring is not null && tailoring.Starts.Contains(codePoint);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=45CA74
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F714CD
     // Broiler-Human:        PENDING
     private static string Key(int[] text, int at, int length)
     {
-        var key = new System.Text.StringBuilder(length * 2);
+        var key = new StringBuilder(length * 2);
 
         for (var index = at; index < at + length; index++)
         {
@@ -524,11 +528,11 @@ internal sealed class JsCollationData
     /// digit, every primary in the gap after the zero's, so numbers sort among themselves by value and
     /// where a digit would among everything else.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 numeric collation; IP=Low; Security=Low; Resources=2; Fingerprint=9E1457
+    // Broiler-AI:           Origin=AI; Spec=UTS35 numeric collation; IP=Low; Security=Low; Resources=2; Fingerprint=5A56C8
     // Broiler-Human:        PENDING
-    private int Number(int[] text, int at, bool[] consumed, System.Collections.Generic.List<ulong> output)
+    private int Number(int[] text, int at, bool[] consumed, List<ulong> output)
     {
-        var digits = new System.Collections.Generic.List<int>();
+        var digits = new List<int>();
 
         while (at < text.Length && !consumed[at] && DigitValue(text[at]) is var digit and >= 0)
         {
@@ -545,7 +549,7 @@ internal sealed class JsCollationData
             digits.Add(0);
         }
 
-        output.Add(Pack(DigitZero + 1 + (ulong)System.Math.Min(digits.Count, 244), CommonSecondary, CommonTertiary, false));
+        output.Add(Pack(DigitZero + 1 + (ulong)Math.Min(digits.Count, 244), CommonSecondary, CommonTertiary, false));
 
         foreach (var value in digits)
         {
@@ -555,12 +559,12 @@ internal sealed class JsCollationData
         return at;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CF2FEA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D39B8B
     // Broiler-Human:        PENDING
-    private static string ReadKey(System.ReadOnlySpan<byte> data, ref int at, out int first, out int length)
+    private static string ReadKey(ReadOnlySpan<byte> data, ref int at, out int first, out int length)
     {
         length = data[at++];
-        var key = new System.Text.StringBuilder(length * 2);
+        var key = new StringBuilder(length * 2);
         first = 0;
 
         for (var index = 0; index < length; index++)
@@ -578,9 +582,9 @@ internal sealed class JsCollationData
         return key.ToString();
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=73B4F7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=02C7AB
     // Broiler-Human:        PENDING
-    private static ulong ReadElement(System.ReadOnlySpan<byte> data, ref int at)
+    private static ulong ReadElement(ReadOnlySpan<byte> data, ref int at)
     {
         var primary = (ulong)ReadInt16(data, ref at);
         var secondary = (ulong)ReadInt16(data, ref at);
@@ -588,27 +592,27 @@ internal sealed class JsCollationData
         return Pack(primary << 8, secondary << 8, (ulong)(tertiary & 0x7F) << 8, (tertiary & 0x80) != 0);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E6C3DC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1C645E
     // Broiler-Human:        PENDING
-    private static int ReadInt32(System.ReadOnlySpan<byte> data, ref int at)
+    private static int ReadInt32(ReadOnlySpan<byte> data, ref int at)
     {
         var value = data[at] | (data[at + 1] << 8) | (data[at + 2] << 16) | (data[at + 3] << 24);
         at += 4;
         return value;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D342BF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AE5675
     // Broiler-Human:        PENDING
-    private static int ReadInt24(System.ReadOnlySpan<byte> data, ref int at)
+    private static int ReadInt24(ReadOnlySpan<byte> data, ref int at)
     {
         var value = data[at] | (data[at + 1] << 8) | (data[at + 2] << 16);
         at += 3;
         return value;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D282AD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EA7518
     // Broiler-Human:        PENDING
-    private static int ReadInt16(System.ReadOnlySpan<byte> data, ref int at)
+    private static int ReadInt16(ReadOnlySpan<byte> data, ref int at)
     {
         var value = data[at] | (data[at + 1] << 8);
         at += 2;

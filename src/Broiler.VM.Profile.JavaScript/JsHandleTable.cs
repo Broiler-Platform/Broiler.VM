@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -88,10 +90,9 @@ internal sealed class JsHandleTable
     private const byte Retired = 3;
 
     private readonly IJsWordRoots slab;
-    private readonly System.Collections.Generic.Dictionary<object, int> byTarget =
-        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+    private readonly Dictionary<object, int> byTarget = new(ReferenceEqualityComparer.Instance);
 
-    private readonly System.Collections.Generic.List<int> nursery = [];
+    private readonly List<int> nursery = [];
     private object?[] targets;
     private ushort[] generations;
     private ushort[] tags;
@@ -218,7 +219,7 @@ internal sealed class JsHandleTable
     }
 
     /// <summary>Marks every entry reachable from the roots and releases every other one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=A9A332
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=B3E6A0
     // Broiler-Falsified-If: an entry named by a live slab word, a nursery handle or a permanent entry is released, or an entry named by none of them survives
     // Broiler-Human:        PENDING
     internal void Compact()
@@ -228,7 +229,7 @@ internal sealed class JsHandleTable
             marks = new bool[targets.Length];
         }
 
-        System.Array.Clear(marks, 0, used);
+        Array.Clear(marks, 0, used);
 
         foreach (var slot in nursery)
         {
@@ -273,8 +274,7 @@ internal sealed class JsHandleTable
 
         if (!TryResolve(word, out _))
         {
-            throw new JsAbort(
-                JsAbortKind.InternalDefect, "a live value-form word names a handle the table has released");
+            throw new JsAbort(JsAbortKind.InternalDefect, "a live value-form word names a handle the table has released");
         }
 
         marks[JsWord.HandleIndex(word)] = true;
@@ -286,7 +286,7 @@ internal sealed class JsHandleTable
     /// compaction left live, and never below <see cref="MinimumCompactionSize"/>; otherwise it grows. So
     /// every compaction releases, or is paid for by, a proportional number of allocations.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=767A29
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D415C5
     // Broiler-Falsified-If: a slot is answered that is live, permanent or retired
     // Broiler-Human:        PENDING
     private int Allocate()
@@ -298,7 +298,7 @@ internal sealed class JsHandleTable
 
         if (used == targets.Length)
         {
-            if (used >= System.Math.Max(MinimumCompactionSize, GrowthFactor * liveAfterCompaction))
+            if (used >= Math.Max(MinimumCompactionSize, GrowthFactor * liveAfterCompaction))
             {
                 Compact();
 
@@ -339,15 +339,15 @@ internal sealed class JsHandleTable
     }
 
     /// <summary>Doubles every per-slot array.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0293C4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F3E93B
     // Broiler-Human:        PENDING
     private void Grow()
     {
         var capacity = checked(targets.Length * 2);
-        System.Array.Resize(ref targets, capacity);
-        System.Array.Resize(ref generations, capacity);
-        System.Array.Resize(ref tags, capacity);
-        System.Array.Resize(ref states, capacity);
-        System.Array.Resize(ref free, capacity);
+        Array.Resize(ref targets, capacity);
+        Array.Resize(ref generations, capacity);
+        Array.Resize(ref tags, capacity);
+        Array.Resize(ref states, capacity);
+        Array.Resize(ref free, capacity);
     }
 }

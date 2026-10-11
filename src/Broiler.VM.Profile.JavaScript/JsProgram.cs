@@ -15,7 +15,12 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Threading;
 using Broiler.VM.Abstractions;
+using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -25,16 +30,10 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed class JsCodeUnit
 {
     /// <summary>Creates a code unit.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=49D34B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=20FACD
     // Broiler-Human:        PENDING
-    internal JsCodeUnit(
-        string name,
-        uint parameterCount,
-        uint scopeSlots,
-        uint maxOperandStack,
-        uint codeOffset,
-        uint codeLength,
-        Format.JsFormat.FunctionFlags flags)
+    internal JsCodeUnit(string name, uint parameterCount, uint scopeSlots, uint maxOperandStack,
+        uint codeOffset, uint codeLength, JsFormat.FunctionFlags flags)
     {
         Name = name;
         ParameterCount = parameterCount;
@@ -81,42 +80,39 @@ internal sealed class JsCodeUnit
     internal uint CodeLength { get; }
 
     /// <summary>The unit's flag bits.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3F7013
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3817B9
     // Broiler-Human:        PENDING
-    internal Format.JsFormat.FunctionFlags Flags { get; }
+    internal JsFormat.FunctionFlags Flags { get; }
 
     /// <summary>Whether the unit's code is strict-mode code.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5B86DE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=22CEE5
     // Broiler-Human:        PENDING
-    internal bool IsStrict => (Flags & Format.JsFormat.FunctionFlags.Strict) != 0;
+    internal bool IsStrict => (Flags & JsFormat.FunctionFlags.Strict) != 0;
 
     /// <summary>Whether the unit is an arrow function.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=66E2DF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=784C8F
     // Broiler-Human:        PENDING
-    internal bool IsArrow => (Flags & Format.JsFormat.FunctionFlags.Arrow) != 0;
+    internal bool IsArrow => (Flags & JsFormat.FunctionFlags.Arrow) != 0;
 
     /// <summary>Whether the frame must materialise an <c>arguments</c> object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AA2DE3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ADD880
     // Broiler-Human:        PENDING
-    internal bool UsesArguments => (Flags & Format.JsFormat.FunctionFlags.UsesArguments) != 0;
+    internal bool UsesArguments => (Flags & JsFormat.FunctionFlags.UsesArguments) != 0;
 
     /// <summary>Whether the unit is a class constructor, which no call may reach.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C4661A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=37F177
     // Broiler-Human:        PENDING
-    internal bool IsClassConstructor =>
-        (Flags & Format.JsFormat.FunctionFlags.ClassConstructor) != 0;
+    internal bool IsClassConstructor => (Flags & JsFormat.FunctionFlags.ClassConstructor) != 0;
 
     /// <summary>Whether the unit's <c>this</c> is created by its <c>super()</c> rather than by its caller.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7FD2F4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=423304
     // Broiler-Human:        PENDING
-    internal bool IsDerivedConstructor =>
-        (Flags & Format.JsFormat.FunctionFlags.DerivedConstructor) != 0;
+    internal bool IsDerivedConstructor => (Flags & JsFormat.FunctionFlags.DerivedConstructor) != 0;
 
     /// <summary>Whether the unit's own prologue binds its parameters, so the frame copies none.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EF5279
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=662BA7
     // Broiler-Human:        PENDING
-    internal bool BindsParameters =>
-        (Flags & Format.JsFormat.FunctionFlags.BindsParameters) != 0;
+    internal bool BindsParameters => (Flags & JsFormat.FunctionFlags.BindsParameters) != 0;
 
     /// <summary>
     /// Whether calling the unit builds a generator object instead of running its code.
@@ -127,9 +123,9 @@ internal sealed class JsCodeUnit
     /// frame lives in the interpreter's own locals - which is what every ordinary call still gets,
     /// unchanged - or on the heap where a suspension can leave it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CF19D5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E6F271
     // Broiler-Human:        PENDING
-    internal bool IsGenerator => (Flags & Format.JsFormat.FunctionFlags.Generator) != 0;
+    internal bool IsGenerator => (Flags & JsFormat.FunctionFlags.Generator) != 0;
 
     /// <summary>
     /// Whether calling the unit STARTS its code on a heap frame and answers a promise.
@@ -141,22 +137,15 @@ internal sealed class JsCodeUnit
     /// The two share the frame representation and share none of the timing, and a program can see
     /// the difference on its very first line.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=91E0E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9E9C10
     // Broiler-Human:        PENDING
-    internal bool IsAsync => (Flags & Format.JsFormat.FunctionFlags.Async) != 0;
+    internal bool IsAsync => (Flags & JsFormat.FunctionFlags.Async) != 0;
 }
 
 /// <summary>One verified exception region.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7DCA8B
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E71352
 // Broiler-Human:        PENDING
-internal readonly struct JsRegion(
-    uint unit,
-    uint tryStart,
-    uint tryEnd,
-    uint handler,
-    uint scopeDepth,
-    uint stackHeight,
-    Format.JsFormat.HandlerKind kind)
+internal readonly struct JsRegion(uint unit, uint tryStart, uint tryEnd, uint handler, uint scopeDepth, uint stackHeight, JsFormat.HandlerKind kind)
 {
     /// <summary>Which code unit the region belongs to.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=175148
@@ -189,9 +178,9 @@ internal readonly struct JsRegion(
     internal uint StackHeight { get; } = stackHeight;
 
     /// <summary>Whether the handler catches or rethrows.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4DEDD6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1F1D54
     // Broiler-Human:        PENDING
-    internal Format.JsFormat.HandlerKind Kind { get; } = kind;
+    internal JsFormat.HandlerKind Kind { get; } = kind;
 }
 
 /// <summary>One row of the position table: a code offset and the source line and column it begins.</summary>
@@ -229,7 +218,7 @@ internal readonly struct JsEntry(string name, uint unit)
 internal sealed class JsProgram : IVmVerifiedState
 {
     /// <summary>Creates a verified program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EC37D5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=300E7C
     // Broiler-Human:        PENDING
     internal JsProgram(
         JsValue[] constants,
@@ -239,20 +228,20 @@ internal sealed class JsProgram : IVmVerifiedState
         JsRegion[] regions,
         JsEntry[] entries,
         int positionRowCount,
-        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
+        ImmutableArray<string> admittedSurfaces,
         JsModuleRecord[]? modules = null,
         JsBinding[]? importBindings = null,
         string? manifestId = null,
-        Format.JsNativeArchitecture nativeArchitecture = Format.JsNativeArchitecture.None,
+        JsNativeArchitecture nativeArchitecture = JsNativeArchitecture.None,
         uint nativeBackendVersion = 0,
         uint nativeCodeAlignment = 0,
         byte[]? nativeCode = null,
-        Format.JsNativeSymbolRow[]? nativeSymbols = null,
+        JsNativeSymbolRow[]? nativeSymbols = null,
         JsEvalMap? evalMap = null,
-        System.Collections.Generic.Dictionary<int, JsScriptDeclaration>? scriptDeclarations = null,
-        System.Collections.Generic.Dictionary<int, string>? scriptReferrers = null,
+        Dictionary<int, JsScriptDeclaration>? scriptDeclarations = null,
+        Dictionary<int, string>? scriptReferrers = null,
         bool nativeValueForm = false,
-        Format.JsNativeProgramImage? nativeValueImage = null)
+        JsNativeProgramImage? nativeValueImage = null)
     {
         Constants = constants;
         Names = names;
@@ -265,7 +254,7 @@ internal sealed class JsProgram : IVmVerifiedState
         Modules = modules ?? [];
         ImportBindings = importBindings ?? [];
         ModuleOfUnit = MapUnits(Modules, functions.Length);
-        ManifestId = manifestId ?? Format.JsFormat.ManifestId;
+        ManifestId = manifestId ?? JsFormat.ManifestId;
         NativeArchitecture = nativeArchitecture;
         NativeBackendVersion = nativeBackendVersion;
         NativeCodeAlignment = nativeCodeAlignment;
@@ -276,24 +265,24 @@ internal sealed class JsProgram : IVmVerifiedState
         ScriptReferrers = scriptReferrers;
         NativeValueForm = nativeValueForm;
         NativeValueImage = nativeValueImage;
-        valuePlans = nativeValueImage is null ? [] : new Format.JsValueUnitPlan?[functions.Length];
+        valuePlans = nativeValueImage is null ? [] : new JsValueUnitPlan?[functions.Length];
     }
 
     /// <summary>The value-form plans made so far, one slot per code unit, filled on a unit's first entry.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=02CFED
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=186958
     // Broiler-Human:        PENDING
-    private readonly Format.JsValueUnitPlan?[] valuePlans;
+    private readonly JsValueUnitPlan?[] valuePlans;
 
     /// <summary>The handler offsets of the value image, grouped once, on the first plan made.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=30F743
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=20E927
     // Broiler-Human:        PENDING
-    private Format.JsBaselineHandlerOffsets? valueHandlerOffsets;
+    private JsBaselineHandlerOffsets? valueHandlerOffsets;
 
     /// <summary>The image a value-form payload was scanned against, or nothing for any other program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=BC2C12
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CD352E
     // Broiler-Falsified-If: this differs from the image the verifier scanned and re-emitted the value-form payload against
     // Broiler-Human:        PENDING
-    internal Format.JsNativeProgramImage? NativeValueImage { get; }
+    internal JsNativeProgramImage? NativeValueImage { get; }
 
     /// <summary>
     /// The value plan of one code unit - its heights, its region and its residency - made from the image the
@@ -305,38 +294,37 @@ internal sealed class JsProgram : IVmVerifiedState
     /// published is the one both read.
     /// </remarks>
     /// <param name="unitIndex">The code unit.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=6F3F18
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=F5F5D6
     // Broiler-Falsified-If: it answers a plan other than the one the template scan held the unit's payload to, or replaces a published plan
     // Broiler-Human:        PENDING
-    internal Format.JsValueUnitPlan? ValuePlan(int unitIndex)
+    internal JsValueUnitPlan? ValuePlan(int unitIndex)
     {
         if (NativeValueImage is null || (uint)unitIndex >= (uint)valuePlans.Length)
         {
             return null;
         }
 
-        var published = System.Threading.Volatile.Read(ref valuePlans[unitIndex]);
+        var published = Volatile.Read(ref valuePlans[unitIndex]);
 
         if (published is not null)
         {
             return published;
         }
 
-        var offsets = System.Threading.Volatile.Read(ref valueHandlerOffsets);
+        var offsets = Volatile.Read(ref valueHandlerOffsets);
 
         if (offsets is null)
         {
-            offsets = Format.JsBaselineBlocks.GroupHandlerOffsets(NativeValueImage);
-            System.Threading.Interlocked.CompareExchange(ref valueHandlerOffsets, offsets, null);
+            offsets = JsBaselineBlocks.GroupHandlerOffsets(NativeValueImage);
+            Interlocked.CompareExchange(ref valueHandlerOffsets, offsets, null);
         }
 
-        if (!Format.JsValueLayout.TryPlan(
-                NativeValueImage, unitIndex, offsets.Of(unitIndex), NativeValueImage.ResidentBindings, out var plan, out _))
+        if (!JsValueLayout.TryPlan(NativeValueImage, unitIndex, offsets.Of(unitIndex), NativeValueImage.ResidentBindings, out var plan, out _))
         {
             return null;
         }
 
-        return System.Threading.Interlocked.CompareExchange(ref valuePlans[unitIndex], plan, null) ?? plan;
+        return Interlocked.CompareExchange(ref valuePlans[unitIndex], plan, null) ?? plan;
     }
 
     /// <summary>Whether the emitted code is the value form rather than the manifest's own native form.</summary>
@@ -366,9 +354,9 @@ internal sealed class JsProgram : IVmVerifiedState
     /// V15-host): its scripts keep the lenient instantiation they always had, and a script body with
     /// no row declares nothing a check could refuse.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A1A60F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=163161
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<int, JsScriptDeclaration>? ScriptDeclarations { get; }
+    internal Dictionary<int, JsScriptDeclaration>? ScriptDeclarations { get; }
 
     /// <summary>The referrer each placed script body carries, by unit, or nothing.</summary>
     /// <remarks>
@@ -376,18 +364,18 @@ internal sealed class JsProgram : IVmVerifiedState
     /// I12-upstream): its scripts are placed nowhere, so eval code and <c>Function</c> bodies they
     /// create offer an embedder the empty referrer they always did.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=01008F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B01B76
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<int, string>? ScriptReferrers { get; }
+    internal Dictionary<int, string>? ScriptReferrers { get; }
 
     /// <summary>The source text each unit was defined from, by unit, or nothing (JSD-0037).</summary>
     /// <remarks>
     /// <b>Its absence is what every artifact written before the section existed says</b>, and what a
     /// compilation that dropped it says: every function renders as a native one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F4FB49
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6CD6DE
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.Dictionary<int, (string Text, int Start, int Length)>? SourceText { get; init; }
+    internal Dictionary<int, (string Text, int Start, int Length)>? SourceText { get; init; }
 
     /// <summary>The position rows, ascending by code offset (JSD-0038).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F0DD67
@@ -445,9 +433,9 @@ internal sealed class JsProgram : IVmVerifiedState
     internal string ManifestId { get; }
 
     /// <summary>The instruction set the emitted code was written for, or none.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9EAAF2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F09CDD
     // Broiler-Human:        PENDING
-    internal Format.JsNativeArchitecture NativeArchitecture { get; }
+    internal JsNativeArchitecture NativeArchitecture { get; }
 
     /// <summary>The version of the backend that emitted the code.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5A0CC0
@@ -479,9 +467,9 @@ internal sealed class JsProgram : IVmVerifiedState
     /// refused at verification, because an artifact whose units do not share one form is the
     /// per-unit executor choice this profile's non-goals refuse.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6FC5E6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=24E930
     // Broiler-Human:        PENDING
-    internal Format.JsNativeSymbolRow[] NativeSymbols { get; }
+    internal JsNativeSymbolRow[] NativeSymbols { get; }
 
     /// <summary>The armed mapping of <see cref="NativeCode"/>, once an engine of the baseline form mapped it.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=F05E06
@@ -512,12 +500,12 @@ internal sealed class JsProgram : IVmVerifiedState
     internal int[] ModuleOfUnit { get; }
 
     /// <summary>Indexes the module bodies by code unit, so an invocation can recognise one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B0B137
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D08704
     // Broiler-Human:        PENDING
     private static int[] MapUnits(JsModuleRecord[] modules, int unitCount)
     {
         var map = new int[unitCount];
-        System.Array.Fill(map, -1);
+        Array.Fill(map, -1);
 
         for (var index = 0; index < modules.Length; index++)
         {
@@ -533,15 +521,14 @@ internal sealed class JsProgram : IVmVerifiedState
     /// composition's answer is fixed the moment it registers a profile descriptor and asking twice
     /// is how two answers happen. The realm reads it to decide which intrinsics exist.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CAB5B1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=382FFA
     // Broiler-Human:        PENDING
-    internal System.Collections.Immutable.ImmutableArray<string> AdmittedSurfaces { get; }
+    internal ImmutableArray<string> AdmittedSurfaces { get; }
 
     /// <summary>Whether the composition admitted <paramref name="manifestId"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9D7A37
     // Broiler-Human:        PENDING
-    internal bool Admits(string manifestId) =>
-        !AdmittedSurfaces.IsDefault && AdmittedSurfaces.Contains(manifestId);
+    internal bool Admits(string manifestId) => !AdmittedSurfaces.IsDefault && AdmittedSurfaces.Contains(manifestId);
 
     /// <summary>The constant pool, as values.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D5B5E
@@ -587,13 +574,13 @@ internal sealed class JsProgram : IVmVerifiedState
     internal int PositionRowCount { get; }
 
     /// <summary>Finds the entry point named <paramref name="name"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C2FDD7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=17B9A6
     // Broiler-Human:        PENDING
     internal bool TryFindEntry(string name, out uint unit)
     {
         foreach (var entry in Entries)
         {
-            if (string.Equals(entry.Name, name, System.StringComparison.Ordinal))
+            if (string.Equals(entry.Name, name, StringComparison.Ordinal))
             {
                 unit = entry.Unit;
                 return true;
@@ -614,8 +601,7 @@ internal sealed class JsProgram : IVmVerifiedState
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8F4420
 // Broiler-Human:        PENDING
-internal sealed class JsScriptDeclaration(
-    string[] lexicalNames, string[] varNames, string[] functionNames, string[] annexBNames)
+internal sealed class JsScriptDeclaration(string[] lexicalNames, string[] varNames, string[] functionNames, string[] annexBNames)
 {
     /// <summary>The top-level <c>let</c>, <c>const</c> and <c>class</c> names.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=20F5C1

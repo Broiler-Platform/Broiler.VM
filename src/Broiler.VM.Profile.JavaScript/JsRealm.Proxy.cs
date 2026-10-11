@@ -46,34 +46,24 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private void SetupProxy()
     {
-        var constructor = new JsNativeFunction(
-            this,
-            FunctionPrototype,
-            "Proxy",
-            2,
-            static (engine, thisValue, arguments) =>
-            {
-                _ = thisValue;
-                _ = arguments;
+        var constructor = new JsNativeFunction(this, FunctionPrototype, "Proxy", 2, static (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            _ = arguments;
 
-                // A PLAIN CALL IS REFUSED BEFORE THE ARGUMENTS ARE EVEN LOOKED AT, which is what
-                // makes `Proxy({}, {})` a TypeError rather than a proxy nobody can reach. The
-                // language marks this class of built-in by having no [[Call]] at all; this profile
-                // gives every native both entry points, so the refusal is written out.
-                return engine.ThrowTypeError("Constructor Proxy requires 'new'");
-            },
-            (engine, thisValue, arguments) =>
-            {
-                _ = thisValue;
-                return JsValue.Object(
-                    ProxyCreate(engine, ArgOfProxy(arguments, 0), ArgOfProxy(arguments, 1)));
-            });
+            // A PLAIN CALL IS REFUSED BEFORE THE ARGUMENTS ARE EVEN LOOKED AT, which is what
+            // makes `Proxy({}, {})` a TypeError rather than a proxy nobody can reach. The
+            // language marks this class of built-in by having no [[Call]] at all; this profile
+            // gives every native both entry points, so the refusal is written out.
+            return engine.ThrowTypeError("Constructor Proxy requires 'new'");
+        },
+        (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            return JsValue.Object(ProxyCreate(engine, ArgOfProxy(arguments, 0), ArgOfProxy(arguments, 1)));
+        });
 
-        GlobalObject.SetOwnProperty(
-            "Proxy",
-            JsProperty.Data(
-                JsValue.Object(constructor),
-                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        GlobalObject.SetOwnProperty("Proxy", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Method(constructor, "revocable", 2, (engine, thisValue, arguments) =>
         {
@@ -171,14 +161,12 @@ internal sealed partial class JsRealm
 
         if (fields.HasGet)
         {
-            result.DefineOrdinary(
-                "get", fields.Getter is null ? JsValue.Undefined : JsValue.Object(fields.Getter));
+            result.DefineOrdinary("get", fields.Getter is null ? JsValue.Undefined : JsValue.Object(fields.Getter));
         }
 
         if (fields.HasSet)
         {
-            result.DefineOrdinary(
-                "set", fields.Setter is null ? JsValue.Undefined : JsValue.Object(fields.Setter));
+            result.DefineOrdinary("set", fields.Setter is null ? JsValue.Undefined : JsValue.Object(fields.Setter));
         }
 
         if (fields.HasEnumerable)
@@ -207,6 +195,5 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=919F8E
     // Broiler-Human:        PENDING
-    internal string ProxyArrayTag(JsProxy proxy) =>
-        ArrayIsArray(engine, proxy) ? "Array" : "Object";
+    internal string ProxyArrayTag(JsProxy proxy) => ArrayIsArray(engine, proxy) ? "Array" : "Object";
 }

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   36
 // Annotated:        36/36
-// Exempt:           84
+// Exempt:           80
 // Human-reviewed:   0/36
 // IP risk:          Low
 // Security risk:    Medium
@@ -26,7 +26,7 @@ namespace Broiler.VM.Abstractions;
 /// host's identifiers.
 /// </remarks>
 /// <remarks>Creates a token from two 64-bit halves.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CFBEE1
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=28E43F
 // Broiler-Human:        PENDING
 public readonly struct VmHostCorrelationToken(ulong high, ulong low) : IEquatable<VmHostCorrelationToken>
 {
@@ -104,7 +104,7 @@ public enum VmObjectKind
 /// diagnostics consumer that saw only the number would have to guess which table to read.
 /// </remarks>
 /// <remarks>Creates a state observation.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A6A8FD
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A8CA95
 // Broiler-Human:        PENDING
 public readonly struct VmObjectState(VmObjectKind kind, int value) : IEquatable<VmObjectState>
 {
@@ -229,7 +229,7 @@ public enum VmInitiator
 /// any of them mean.
 /// </remarks>
 /// <remarks>Creates a position.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=69E733
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=958FB5
 // Broiler-Human:        PENDING
 public readonly struct VmSourcePosition(int sectionIndex, ulong byteOffset, int profileCoordinate0, int profileCoordinate1) : IEquatable<VmSourcePosition>
 {
@@ -277,7 +277,7 @@ public readonly struct VmSourcePosition(int sectionIndex, ulong byteOffset, int 
 /// caller-supplied so a diagnostics sink can redact it without having to guess which fields might
 /// carry a URL, a file path or a user identifier.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8C6D88
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A3720C
 // Broiler-Human:        PENDING
 public readonly struct VmCallerIdentity : IEquatable<VmCallerIdentity>
 {
@@ -289,7 +289,7 @@ public readonly struct VmCallerIdentity : IEquatable<VmCallerIdentity>
     public static VmCallerIdentity None => default;
 
     /// <summary>Creates an identity from a caller-supplied canonical string.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=A051B8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=BF7E92
     // Broiler-Human:        PENDING
     public static VmCallerIdentity FromCanonicalIdentity(ReadOnlySpan<char> identity) =>
         identity.IsEmpty ? default : new VmCallerIdentity(identity.ToString());
@@ -319,7 +319,7 @@ public readonly struct VmCallerIdentity : IEquatable<VmCallerIdentity>
     public override bool Equals(object? obj) => obj is VmCallerIdentity other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=3E4177
     // Broiler-Human:        PENDING
     public override int GetHashCode() => text is null ? 0 : string.GetHashCode(text, StringComparison.Ordinal);
 
@@ -350,30 +350,9 @@ public readonly struct VmCallerIdentity : IEquatable<VmCallerIdentity>
 /// could turn it back on.
 /// </para>
 /// </remarks>
-/// <remarks>Creates a diagnostics record. Every field is supplied; there is no partial form.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=18A7D4
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CFE3C9
 // Broiler-Human:        PENDING
 [method: System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-/// <summary>
-/// The diagnostics record every stage result carries.
-/// </summary>
-/// <remarks>
-/// <para>
-/// It is a readonly struct of value types and references the core already held, so carrying it
-/// costs no allocation on any path, including the failure paths a hostile input drives hardest.
-/// </para>
-/// <para>
-/// <strong>What it deliberately does not carry.</strong> The exhaustion group names a dimension and
-/// a scope and never an absolute ceiling or an absolute consumption figure - those live on the
-/// host-facing budget snapshot, because a guest-observable result that carried them would leak the
-/// host's policy to the code the policy is applied to. No member is typed as a catalog listing or
-/// any collection of catalog entries: the listing is reachable only from the catalog itself, so the
-/// disclosure split is enforced by type rather than by a flag, and there is no verbose mode that
-/// could turn it back on.
-/// </para>
-/// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=18A7D4
-// Broiler-Human:        PENDING
 public readonly struct VmDiagnostics(
     VmStage stage,
     VmOutcome outcome,
@@ -411,14 +390,14 @@ public readonly struct VmDiagnostics(
     /// parameter constructor at every call site would be a place for two adjacent identities to
     /// be transposed without the compiler noticing.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E37CC2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=013CFF
     // Broiler-Human:        PENDING
     public static VmDiagnostics Create(VmStage stage, VmOutcome outcome, VmReason reason, VmObjectId runtimeId, VmInitiator initiator, VmAttemptedCall attemptedCall) =>
         new(stage, outcome, reason, runtimeId, default, default, 0, default, 0, default, 0, default, 0, VmCallerIdentity.None, default,
             VmBudgetDimension.Fuel, VmBudgetScope.Invocation, default, 0, default, 0, VmObjectKind.None, default, attemptedCall, initiator);
 
     /// <summary>Adds the operation and nesting group.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9F1DCA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6A509D
     // Broiler-Human:        PENDING
     public VmDiagnostics WithOperation(VmObjectId operationId, VmObjectId requestingOperationId, int nestingDepth) =>
         new(Stage, Outcome, Reason, RuntimeId, operationId, requestingOperationId, nestingDepth,
@@ -428,7 +407,7 @@ public readonly struct VmDiagnostics(
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the profile identity group.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EBDDB1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0F1C6B
     // Broiler-Human:        PENDING
     public VmDiagnostics WithProfile(VmProfileId profileId, uint profileFormatVersion, VmFeatureManifestId featureManifestId, int verifierSemanticVersion) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -438,7 +417,7 @@ public readonly struct VmDiagnostics(
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the artifact group.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=511B71
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F760CA
     // Broiler-Human:        PENDING
     public VmDiagnostics WithArtifact(VmObjectId artifactId, ulong artifactByteLength, VmCallerIdentity callerIdentity) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -448,7 +427,7 @@ public readonly struct VmDiagnostics(
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the profile-owned position and diagnostic code.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=467AF2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0D355B
     // Broiler-Human:        PENDING
     public VmDiagnostics WithPosition(VmSourcePosition position, int profileDiagnosticCode) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -458,7 +437,7 @@ public readonly struct VmDiagnostics(
             profileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the exhausted dimension and scope.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6DE21D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A17CFB
     // Broiler-Human:        PENDING
     public VmDiagnostics WithExhaustion(VmBudgetDimension dimension, VmBudgetScope scope) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -468,7 +447,7 @@ public readonly struct VmDiagnostics(
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the capability group.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=89F987
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=722B23
     // Broiler-Human:        PENDING
     public VmDiagnostics WithCapability(VmCapabilityId capabilityId, int capabilityVersion, VmHostCorrelationToken correlation) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -478,7 +457,7 @@ public readonly struct VmDiagnostics(
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the three facts an invalid-state result must carry.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BE2B1B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=190513
     // Broiler-Human:        PENDING
     public VmDiagnostics WithObject(VmObjectKind kind, int observedState, VmAttemptedCall attemptedCall) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -488,7 +467,7 @@ public readonly struct VmDiagnostics(
             ProfileDiagnosticCode, kind, new VmObjectState(kind, observedState), attemptedCall, Initiator);
 
     /// <summary>Restates the outcome and reason, keeping every identity group.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E49B8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CD0CBF
     // Broiler-Human:        PENDING
     public VmDiagnostics WithOutcome(VmStage stage, VmOutcome outcome, VmReason reason, VmInitiator initiator) =>
         new(stage, outcome, reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -498,12 +477,12 @@ public readonly struct VmDiagnostics(
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, initiator);
 
     /// <summary>Group 1: the core contract version this build implements.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7C60B3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0F5A33
     // Broiler-Human:        PENDING
     public static int CoreContractVersion => VmCoreContract.Version;
 
     /// <summary>Group 1: the reason-registry revision the reason is drawn from.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=345DB5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D2D1BB
     // Broiler-Human:        PENDING
     public static int ReasonRegistryRevision => VmReasonRegistry.Revision;
 
@@ -606,7 +585,7 @@ public readonly struct VmDiagnostics(
     public override bool Equals(object? obj) => obj is VmDiagnostics other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C423B7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B277A
     // Broiler-Human:        PENDING
     public override int GetHashCode()
     {

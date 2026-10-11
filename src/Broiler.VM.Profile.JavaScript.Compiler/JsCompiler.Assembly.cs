@@ -29,7 +29,7 @@ public sealed partial class JsCompiler
 
     // ---- assembly ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=241F76
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=698C25
     // Broiler-Human:        PENDING
     private byte[] Assemble()
     {
@@ -501,7 +501,7 @@ public sealed partial class JsCompiler
         return emission;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=79FFCF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AF28B8
     // Broiler-Human:        PENDING
     private JsModuleRow[] ModuleRows()
     {

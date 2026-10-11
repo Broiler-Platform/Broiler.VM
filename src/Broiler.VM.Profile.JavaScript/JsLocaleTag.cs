@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Text;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -49,13 +53,13 @@ internal sealed class JsLocaleTag
     internal string? Region { get; set; }
 
     /// <summary>The variant subtags, lower case, in the order written until canonicalized.</summary>
-    internal System.Collections.Generic.List<string> Variants { get; } = [];
+    internal List<string> Variants { get; } = [];
 
     /// <summary>The <c>-u-</c> attributes, in the order written.</summary>
-    internal System.Collections.Generic.List<string> Attributes { get; } = [];
+    internal List<string> Attributes { get; } = [];
 
     /// <summary>The <c>-u-</c> keywords: key, and the type's subtags joined with <c>-</c> or empty for <c>true</c> left implicit.</summary>
-    internal System.Collections.Generic.List<(string Key, string Type)> Keywords { get; } = [];
+    internal List<(string Key, string Type)> Keywords { get; } = [];
 
     /// <summary>Whether a <c>-u-</c> extension was written, even an empty one after canonicalization.</summary>
     internal bool HasUnicodeExtension { get; set; }
@@ -64,13 +68,13 @@ internal sealed class JsLocaleTag
     internal JsLocaleTag? TransformLanguage { get; set; }
 
     /// <summary>The <c>-t-</c> fields: key and value.</summary>
-    internal System.Collections.Generic.List<(string Key, string Value)> TransformFields { get; } = [];
+    internal List<(string Key, string Value)> TransformFields { get; } = [];
 
     /// <summary>Whether a <c>-t-</c> extension was written.</summary>
     internal bool HasTransformExtension { get; set; }
 
     /// <summary>The other extensions, by singleton: their subtags joined with <c>-</c>.</summary>
-    internal System.Collections.Generic.SortedDictionary<char, string> OtherExtensions { get; } = [];
+    internal SortedDictionary<char, string> OtherExtensions { get; } = [];
 
     /// <summary>The private-use subtags after <c>x</c>, joined with <c>-</c>, or nothing.</summary>
     internal string? PrivateUse { get; set; }
@@ -81,7 +85,7 @@ internal sealed class JsLocaleTag
     /// The tag <paramref name="text"/> is, or nothing when it is not structurally valid
     /// (ECMA-402 <c>IsStructurallyValidLanguageTag</c>).
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s6.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=8FD917
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s6.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=9D54BD
     // Broiler-Falsified-If: a tag the grammar or ECMA-402's duplicate rules refuse parses, or one they admit does not
     // Broiler-Human:        PENDING
     internal static JsLocaleTag? Parse(string text)
@@ -117,7 +121,7 @@ internal sealed class JsLocaleTag
             return null;
         }
 
-        var singletons = new System.Collections.Generic.HashSet<char>();
+        var singletons = new HashSet<char>();
 
         while (at < subtags.Length)
         {
@@ -302,8 +306,7 @@ internal sealed class JsLocaleTag
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=70E31F
     // Broiler-Human:        PENDING
-    internal static bool IsLanguage(string subtag) =>
-        subtag.Length is (>= 2 and <= 3) or (>= 5 and <= 8) && IsAlpha(subtag);
+    internal static bool IsLanguage(string subtag) => subtag.Length is (>= 2 and <= 3) or (>= 5 and <= 8) && IsAlpha(subtag);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C4030
     // Broiler-Human:        PENDING
@@ -311,8 +314,7 @@ internal sealed class JsLocaleTag
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8F28C2
     // Broiler-Human:        PENDING
-    internal static bool IsRegion(string subtag) =>
-        subtag.Length == 2 && IsAlpha(subtag) || subtag.Length == 3 && IsDigits(subtag);
+    internal static bool IsRegion(string subtag) => subtag.Length == 2 && IsAlpha(subtag) || subtag.Length == 3 && IsDigits(subtag);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2F8EA0
     // Broiler-Human:        PENDING
@@ -377,8 +379,7 @@ internal sealed class JsLocaleTag
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=64DC4A
     // Broiler-Human:        PENDING
-    private static string TitleCase(string subtag) =>
-        char.ToUpperInvariant(subtag[0]) + subtag[1..].ToLowerInvariant();
+    private static string TitleCase(string subtag) => char.ToUpperInvariant(subtag[0]) + subtag[1..].ToLowerInvariant();
 
     // ---- canonicalization -----------------------------------------------------------------------
 
@@ -386,7 +387,7 @@ internal sealed class JsLocaleTag
     /// ECMA-402's <c>CanonicalizeUnicodeLocaleId</c>: aliases replaced, extensions canonicalized and
     /// ordered, in canonical case.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s6.2.3, UTS35 Annex C; IP=Low; Security=Medium; Resources=3; Fingerprint=5DC78A
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s6.2.3, UTS35 Annex C; IP=Low; Security=Medium; Resources=3; Fingerprint=758E65
     // Broiler-Falsified-If: a canonical tag canonicalizes to anything but itself, or an alias the CLDR data names survives canonicalization
     // Broiler-Human:        PENDING
     internal JsLocaleTag Canonicalize(JsIntlTables tables)
@@ -395,7 +396,7 @@ internal sealed class JsLocaleTag
 
         // -u-: ATTRIBUTES SORTED WITHOUT DUPLICATES, KEYWORDS BY FIRST OCCURRENCE, TYPES BY THEIR
         // ALIASES, `true` LEFT IMPLICIT, AND THE KEYWORDS SORTED.
-        var attributes = new System.Collections.Generic.List<string>();
+        var attributes = new List<string>();
 
         foreach (var attribute in Attributes)
         {
@@ -405,11 +406,11 @@ internal sealed class JsLocaleTag
             }
         }
 
-        attributes.Sort(System.StringComparer.Ordinal);
+        attributes.Sort(StringComparer.Ordinal);
         Attributes.Clear();
         Attributes.AddRange(attributes);
 
-        var keywords = new System.Collections.Generic.List<(string Key, string Type)>();
+        var keywords = new List<(string Key, string Type)>();
 
         foreach (var (key, type) in Keywords)
         {
@@ -428,7 +429,7 @@ internal sealed class JsLocaleTag
         // -t-: THE LANGUAGE CANONICALIZED AND THE FIELDS BY FIRST OCCURRENCE, PREFERRED VALUES, SORTED.
         TransformLanguage?.ReplaceAliases(tables);
 
-        var fields = new System.Collections.Generic.List<(string Key, string Value)>();
+        var fields = new List<(string Key, string Value)>();
 
         foreach (var (key, value) in TransformFields)
         {
@@ -584,9 +585,9 @@ internal sealed class JsLocaleTag
     /// without its script and its region, and with none, one or two of its variants - the data's
     /// longest rule, <c>und-hepburn-heploc</c>, names two.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=7AFB91
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=A77E8E
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.IEnumerable<string> Candidates()
+    private IEnumerable<string> Candidates()
     {
         foreach (var language in new[] { Language, "und" })
         {
@@ -622,11 +623,11 @@ internal sealed class JsLocaleTag
     /// The one region of a replacement list: the region likely for this tag's language and script
     /// when the list holds it, and the first otherwise.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 Annex C; IP=Low; Security=Low; Resources=2; Fingerprint=BB3152
+    // Broiler-AI:           Origin=AI; Spec=UTS35 Annex C; IP=Low; Security=Low; Resources=2; Fingerprint=23716A
     // Broiler-Human:        PENDING
     private string PickRegion(JsIntlTables tables, string replacements)
     {
-        var regions = replacements.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+        var regions = replacements.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
         if (regions.Length == 1)
         {
@@ -635,7 +636,7 @@ internal sealed class JsLocaleTag
 
         var probe = new JsLocaleTag { Language = Language, Script = Script };
 
-        if (probe.Maximize(tables) && probe.Region is { } likely && System.Array.IndexOf(regions, likely) >= 0)
+        if (probe.Maximize(tables) && probe.Region is { } likely && Array.IndexOf(regions, likely) >= 0)
         {
             return likely;
         }
@@ -647,7 +648,7 @@ internal sealed class JsLocaleTag
     /// UTS #35's Add Likely Subtags over the language, script and region; answers whether the data
     /// held a match.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS35 s4.3; IP=Low; Security=Low; Resources=2; Fingerprint=2AEF10
+    // Broiler-AI:           Origin=AI; Spec=UTS35 s4.3; IP=Low; Security=Low; Resources=2; Fingerprint=17D5F1
     // Broiler-Human:        PENDING
     internal bool Maximize(JsIntlTables tables)
     {
@@ -668,7 +669,7 @@ internal sealed class JsLocaleTag
         }
 
         // LOOKUP ORDER: language_script_region, language_script, language_region, language.
-        var keys = new System.Collections.Generic.List<string>();
+        var keys = new List<string>();
 
         if (Script is not null && Region is not null)
         {
@@ -743,11 +744,11 @@ internal sealed class JsLocaleTag
     // ---- writing --------------------------------------------------------------------------------
 
     /// <summary>The language identifier alone: language, script, region and variants.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=395F79
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=13B07A
     // Broiler-Human:        PENDING
     internal string LanguageId()
     {
-        var text = new System.Text.StringBuilder(Language);
+        var text = new StringBuilder(Language);
 
         if (Script is not null)
         {
@@ -768,15 +769,15 @@ internal sealed class JsLocaleTag
     }
 
     /// <summary>The whole tag, extensions in singleton order and private use last.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=A58AF1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=F5C82D
     // Broiler-Human:        PENDING
     public override string ToString()
     {
-        var extensions = new System.Collections.Generic.SortedDictionary<char, string>(OtherExtensions);
+        var extensions = new SortedDictionary<char, string>(OtherExtensions);
 
         if (HasTransformExtension && (TransformLanguage is not null || TransformFields.Count != 0))
         {
-            var t = new System.Text.StringBuilder();
+            var t = new StringBuilder();
 
             if (TransformLanguage is not null)
             {
@@ -793,7 +794,7 @@ internal sealed class JsLocaleTag
 
         if (HasUnicodeExtension && (Attributes.Count != 0 || Keywords.Count != 0))
         {
-            var u = new System.Text.StringBuilder();
+            var u = new StringBuilder();
 
             foreach (var attribute in Attributes)
             {
@@ -813,7 +814,7 @@ internal sealed class JsLocaleTag
             extensions['u'] = u.ToString();
         }
 
-        var text = new System.Text.StringBuilder(LanguageId());
+        var text = new StringBuilder(LanguageId());
 
         foreach (var (singleton, body) in extensions)
         {

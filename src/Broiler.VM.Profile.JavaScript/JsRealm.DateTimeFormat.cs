@@ -15,6 +15,10 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -67,7 +71,7 @@ internal sealed partial class JsRealm
         ("timeZoneName", ["short", "long", "shortOffset", "longOffset", "shortGeneric", "longGeneric"]),
     ];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=949803
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F4E11
     // Broiler-Human:        PENDING
     private void SetupDateTimeFormat(JsObject intl)
     {
@@ -79,17 +83,15 @@ internal sealed partial class JsRealm
             FunctionPrototype,
             "DateTimeFormat",
             0,
-            static (engine, thisValue, arguments) =>
-                NewDateTimeFormat(engine, JsValue.Object(engine.Realm.DateTimeFormatConstructor!), arguments, thisValue, called: true),
-            static (engine, newTarget, arguments) => NewDateTimeFormat(engine, newTarget, arguments, JsValue.Undefined, called: false));
-
-        constructor.BuildsFromNewTarget = true;
+            static (engine, thisValue, arguments) => NewDateTimeFormat(engine, JsValue.Object(engine.Realm.DateTimeFormatConstructor!), arguments, thisValue, called: true),
+            static (engine, newTarget, arguments) => NewDateTimeFormat(engine, newTarget, arguments, JsValue.Undefined, called: false))
+        {
+            BuildsFromNewTarget = true
+        };
         DateTimeFormatConstructor = constructor;
 
         constructor.SetOwnProperty("prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
-        prototype.SetOwnProperty(
-            "constructor",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnProperty("constructor", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
         Method(constructor, "supportedLocalesOf", 1, static (engine, thisValue, arguments) =>
         {
@@ -197,13 +199,8 @@ internal sealed partial class JsRealm
             return JsValue.Object(options);
         });
 
-        prototype.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Intl.DateTimeFormat"), JsPropertyAttributes.Configurable));
-
-        intl.SetOwnProperty(
-            "DateTimeFormat",
-            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+        prototype.SetOwnSymbol(ToStringTagSymbol, JsProperty.Data(JsValue.String("Intl.DateTimeFormat"), JsPropertyAttributes.Configurable));
+        intl.SetOwnProperty("DateTimeFormat", JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
     }
 
     /// <summary>
@@ -231,13 +228,13 @@ internal sealed partial class JsRealm
     ];
 
     /// <summary>ECMA-402's <c>Intl.supportedValuesOf</c>: the values this data supports for a key, sorted.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=A55F08
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=978B5F
     // Broiler-Human:        PENDING
     private static JsValue SupportedValuesOf(JsEngine engine, JsValue key)
     {
         var name = engine.ToStringValue(key);
         var tables = engine.Intl!;
-        var values = new System.Collections.Generic.List<string>();
+        var values = new List<string>();
 
         switch (name)
         {
@@ -273,14 +270,14 @@ internal sealed partial class JsRealm
                 throw engine.Error("RangeError", "Intl.supportedValuesOf: invalid key: " + name);
         }
 
-        values.Sort(System.StringComparer.Ordinal);
+        values.Sort(StringComparer.Ordinal);
         return JsValue.Object(engine.Realm.NewArray(values.ConvertAll(static value => JsValue.String(value))));
     }
 
     /// <summary>The text of a list of parts.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E219F3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=81E849
     // Broiler-Human:        PENDING
-    private static string Joined(System.Collections.Generic.List<JsDatePart> parts)
+    private static string Joined(List<JsDatePart> parts)
     {
         var text = new System.Text.StringBuilder();
 
@@ -427,8 +424,7 @@ internal sealed partial class JsRealm
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B6BB9F
     // Broiler-Human:        PENDING
-    internal static string TemporalToLocaleString(
-        JsEngine engine, JsValue value, JsValue[] arguments, string required, string defaults, string? timeZone = null)
+    internal static string TemporalToLocaleString(JsEngine engine, JsValue value, JsValue[] arguments, string required, string defaults, string? timeZone = null)
     {
         var format = CreateDateTimeFormat(
             engine, engine.Realm.DateTimeFormatPrototype!, Argument(arguments, 0), Argument(arguments, 1), required, defaults, timeZone);
@@ -448,11 +444,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>An array of <c>{ type, value }</c> objects, with <c>source</c> where a part has one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9445FE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B63ACE
     // Broiler-Human:        PENDING
-    private static JsValue DatePartsArray(JsEngine engine, System.Collections.Generic.List<JsDatePart> parts)
+    private static JsValue DatePartsArray(JsEngine engine, List<JsDatePart> parts)
     {
-        var values = new System.Collections.Generic.List<JsValue>(parts.Count);
+        var values = new List<JsValue>(parts.Count);
 
         foreach (var part in parts)
         {
@@ -551,22 +547,14 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal static string ToLocaleDateString(JsEngine engine, double time, JsValue[] arguments, string required, string defaults)
     {
-        var format = CreateDateTimeFormat(
-            engine, engine.Realm.DateTimeFormatPrototype!, Argument(arguments, 0), Argument(arguments, 1), required, defaults);
+        var format = CreateDateTimeFormat(engine, engine.Realm.DateTimeFormatPrototype!, Argument(arguments, 0), Argument(arguments, 1), required, defaults);
         return Joined(format.Formatter.Parts(engine, time, null));
     }
 
     /// <summary>ECMA-402's CreateDateTimeFormat (s11.1.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=570C8D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D98180
     // Broiler-Human:        PENDING
-    internal static JsDateTimeFormatObject CreateDateTimeFormat(
-        JsEngine engine,
-        JsObject prototype,
-        JsValue locales,
-        JsValue optionsValue,
-        string required,
-        string defaults,
-        string? toLocaleStringTimeZone = null)
+    internal static JsDateTimeFormatObject CreateDateTimeFormat(JsEngine engine, JsObject prototype, JsValue locales, JsValue optionsValue, string required, string defaults, string? toLocaleStringTimeZone = null)
     {
         var requested = CanonicalizeLocaleList(engine, locales);
         var options = CoerceOptionsToObject(engine, optionsValue);
@@ -593,7 +581,7 @@ internal sealed partial class JsRealm
         var tables = engine.Intl!;
         var numbers = tables.Numbers;
         var dates = tables.Dates;
-        var systems = new System.Collections.Generic.List<string?> { "latn" };
+        var systems = new List<string?> { "latn" };
 
         foreach (var system in numbers.NumberingSystems.Keys)
         {
@@ -603,13 +591,13 @@ internal sealed partial class JsRealm
             }
         }
 
-        systems.Sort(1, systems.Count - 1, System.StringComparer.Ordinal);
+        systems.Sort(1, systems.Count - 1, StringComparer.Ordinal);
         var nuValues = systems.ToArray();
 
         var resolved = ResolveLocale(
             engine,
             requested,
-            new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal)
+            new Dictionary<string, string?>(StringComparer.Ordinal)
             {
                 ["ca"] = calendar,
                 ["hc"] = hour12 is null ? hourCycle : NullOption,
@@ -655,7 +643,7 @@ internal sealed partial class JsRealm
 
         var (timeZone, offset, kind, zone) = ResolveTimeZone(engine, timeZoneOption);
 
-        var components = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+        var components = new Dictionary<string, string>(StringComparer.Ordinal);
         var hasExplicitComponents = false;
 
         foreach (var (name, values) in DateTimeComponents)
@@ -700,7 +688,7 @@ internal sealed partial class JsRealm
         var dataLanguage = resolvedCalendar == "gregory" ? language : language + "@" + resolvedCalendar;
         var calendarSystem = resolvedCalendar is "gregory" or "iso8601" ? null : tables.Calendars.For(resolvedCalendar);
         var generator = dates.Generator(dataLanguage, resolved.Keys["hc"] is { } keyword ? CharOfHourCycle(keyword) : preferred, decimalSymbol);
-        var explicitComponents = new System.Collections.Generic.Dictionary<string, string>(components, System.StringComparer.Ordinal);
+        var explicitComponents = new Dictionary<string, string>(components, StringComparer.Ordinal);
         string pattern;
 
         if (dateStyle is not null || timeStyle is not null)
@@ -805,7 +793,7 @@ internal sealed partial class JsRealm
                     plain ? null : naming);
             }
 
-            string Best(System.Collections.Generic.Dictionary<string, string> formatOptions) =>
+            string Best(Dictionary<string, string> formatOptions) =>
                 ReplaceHourCycle(generator.BestPattern(SkeletonOfComponents(formatOptions, hcChar), JsDatePatternGenerator.MatchHourLength), hcChar);
 
             temporal = new JsTemporalDateFormats(kindOfValue =>
@@ -858,14 +846,9 @@ internal sealed partial class JsRealm
     /// components: the pattern a Temporal type is written in, or nothing where the options name
     /// components and none of the type's own.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FBF173
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2C1F8E
     // Broiler-Human:        PENDING
-    private static string? TemporalFormatPattern(
-        System.Collections.Generic.Dictionary<string, string> options,
-        string required,
-        string defaults,
-        bool inheritAll,
-        System.Func<System.Collections.Generic.Dictionary<string, string>, string> best)
+    private static string? TemporalFormatPattern(Dictionary<string, string> options, string required, string defaults, bool inheritAll, Func<Dictionary<string, string>, string> best)
     {
         string[] requiredOptions = required switch
         {
@@ -886,8 +869,8 @@ internal sealed partial class JsRealm
         };
 
         var formatOptions = inheritAll
-            ? new System.Collections.Generic.Dictionary<string, string>(options, System.StringComparer.Ordinal)
-            : new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+            ? new Dictionary<string, string>(options, StringComparer.Ordinal)
+            : new Dictionary<string, string>(StringComparer.Ordinal);
 
         if (!inheritAll && required is "date" or "year-month" or "any" && options.TryGetValue("era", out var era))
         {
@@ -937,19 +920,16 @@ internal sealed partial class JsRealm
     /// The proposal's AdjustDateTimeStyleFormat (amended ECMA-402 s15.6.2): the style's pattern where
     /// it writes only fields the type has, else the best pattern for those of its fields the type has.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=730B5D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=67FA27
     // Broiler-Human:        PENDING
-    private static string AdjustStylePattern(
-        string stylePattern,
-        string[] allowed,
-        System.Func<System.Collections.Generic.Dictionary<string, string>, string> best)
+    private static string AdjustStylePattern(string stylePattern, string[] allowed, Func<Dictionary<string, string>, string> best)
     {
         var components = ComponentsOf(stylePattern);
         var conflicting = false;
 
         foreach (var name in components.Keys)
         {
-            conflicting |= System.Array.IndexOf(allowed, name) < 0;
+            conflicting |= Array.IndexOf(allowed, name) < 0;
         }
 
         if (!conflicting)
@@ -957,7 +937,7 @@ internal sealed partial class JsRealm
             return stylePattern;
         }
 
-        var formatOptions = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+        var formatOptions = new Dictionary<string, string>(StringComparer.Ordinal);
 
         foreach (var name in allowed)
         {
@@ -1038,9 +1018,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The skeleton of the requested components, the hour in the resolved cycle's letter.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C685D7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FD940A
     // Broiler-Human:        PENDING
-    private static string SkeletonOfComponents(System.Collections.Generic.Dictionary<string, string> components, char hourChar)
+    private static string SkeletonOfComponents(Dictionary<string, string> components, char hourChar)
     {
         var skeleton = new System.Text.StringBuilder();
 
@@ -1084,14 +1064,7 @@ internal sealed partial class JsRealm
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2A1CD8
     // Broiler-Human:        PENDING
-    private static string StylePattern(
-        JsDateData dates,
-        string language,
-        string? dateStyle,
-        string? timeStyle,
-        string hc,
-        char hcChar,
-        JsDatePatternGenerator generator)
+    private static string StylePattern(JsDateData dates, string language, string? dateStyle, string? timeStyle, string hc, char hcChar, JsDatePatternGenerator generator)
     {
         var date = dateStyle is null ? null : dates.Value(language, "dateFormats." + dateStyle);
         var time = timeStyle is null ? null : dates.Value(language, "timeFormats." + timeStyle);
@@ -1122,11 +1095,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The components a pattern writes, as resolvedOptions reports them.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CB3A2B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=386A6C
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.Dictionary<string, string> ComponentsOf(string pattern)
+    private static Dictionary<string, string> ComponentsOf(string pattern)
     {
-        var components = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+        var components = new Dictionary<string, string>(StringComparer.Ordinal);
         var tokens = JsDatePatternGenerator.Tokens(pattern);
 
         for (var index = 0; index < tokens.Count; index++)
@@ -1196,7 +1169,7 @@ internal sealed partial class JsRealm
     /// primary identifier (ECMA-402 11.1.2 steps 29 to 36, JSD-0053): a name resolving to UTC as
     /// <c>UTC</c>, an <c>Etc/GMT</c> zone with an hour as its fixed offset, and any other as the zone.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65FECD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=938A63
     // Broiler-Human:        PENDING
     private static (string Identifier, int Offset, JsZoneKind Kind, JsZone? Zone) ResolveTimeZone(JsEngine engine, JsValue value)
     {
@@ -1215,8 +1188,8 @@ internal sealed partial class JsRealm
             }
 
             var identifier = (minutes < 0 ? "-" : "+") +
-                (System.Math.Abs(minutes) / 60).ToString("00", System.Globalization.CultureInfo.InvariantCulture) + ":" +
-                (System.Math.Abs(minutes) % 60).ToString("00", System.Globalization.CultureInfo.InvariantCulture);
+                (Math.Abs(minutes) / 60).ToString("00", CultureInfo.InvariantCulture) + ":" +
+                (Math.Abs(minutes) % 60).ToString("00", CultureInfo.InvariantCulture);
             return (identifier, minutes, minutes == 0 ? JsZoneKind.Gmt : JsZoneKind.Offset, null);
         }
 
@@ -1231,11 +1204,11 @@ internal sealed partial class JsRealm
         }
 
         // IANA'S ETC/GMT ZONES WITH AN HOUR ARE FIXED OFFSETS by definition, with POSIX's inverted sign.
-        foreach (var zone in EtcGmtZones())
+        foreach (var (Name, Offset) in EtcGmtZones())
         {
-            if (string.Equals(zone.Name, record.Primary, System.StringComparison.Ordinal))
+            if (string.Equals(Name, record.Primary, StringComparison.Ordinal))
             {
-                return (zone.Name, zone.Offset, JsZoneKind.Offset, null);
+                return (Name, Offset, JsZoneKind.Offset, null);
             }
         }
 
@@ -1243,13 +1216,13 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>IANA's <c>Etc/GMT+1</c> to <c>Etc/GMT+12</c> and <c>Etc/GMT-1</c> to <c>Etc/GMT-14</c>, with each one's offset in minutes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E7BE2C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=164680
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.IEnumerable<(string Name, int Offset)> EtcGmtZones()
+    private static IEnumerable<(string Name, int Offset)> EtcGmtZones()
     {
         for (var hours = 1; hours <= 14; hours++)
         {
-            var text = hours.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var text = hours.ToString(CultureInfo.InvariantCulture);
 
             if (hours <= 12)
             {
@@ -1360,8 +1333,7 @@ internal sealed class JsDateTimeFormatObject : JsObject
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ECDA96
     // Broiler-Human:        PENDING
-    internal JsDateTimeFormatObject(JsObject prototype, JsDateTimeFormatter formatter)
-        : base(prototype)
+    internal JsDateTimeFormatObject(JsObject prototype, JsDateTimeFormatter formatter) : base(prototype)
     {
         Formatter = formatter;
     }
@@ -1412,19 +1384,19 @@ internal sealed class JsDateTimeFormatObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsTemporalDateFormats
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EAD48E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5897BF
     // Broiler-Human:        PENDING
-    private readonly System.Func<string, JsDateTimeFormatter?> build;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9E6407
+    private readonly Func<string, JsDateTimeFormatter?> build;
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C1B4D0
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, JsDateTimeFormatter?> built = new(System.StringComparer.Ordinal);
+    private readonly Dictionary<string, JsDateTimeFormatter?> built = new(StringComparer.Ordinal);
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=328C44
     // Broiler-Human:        PENDING
     private readonly object gate = new();
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=181FF5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F1A14E
     // Broiler-Human:        PENDING
-    internal JsTemporalDateFormats(System.Func<string, JsDateTimeFormatter?> build) => this.build = build;
+    internal JsTemporalDateFormats(Func<string, JsDateTimeFormatter?> build) => this.build = build;
 
     /// <summary>The format of <c>date</c>, <c>year-month</c>, <c>month-day</c>, <c>time</c>, <c>date-time</c> or <c>instant</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FEE5F4

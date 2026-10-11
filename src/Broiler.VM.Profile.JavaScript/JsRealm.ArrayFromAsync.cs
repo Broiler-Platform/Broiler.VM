@@ -84,10 +84,9 @@ internal sealed partial class JsRealm
     /// and a constructor that logs can see it. A receiver that is not a constructor gets an
     /// ordinary Array rather than a <c>TypeError</c>: the method is a generic factory.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C89977
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D51208
     // Broiler-Human:        PENDING
-    private void ArrayFromAsyncStart(
-        JsEngine engine, JsPromiseObject promise, JsValue receiver, JsValue[] arguments)
+    private void ArrayFromAsyncStart(JsEngine engine, JsPromiseObject promise, JsValue receiver, JsValue[] arguments)
     {
         var items = ArgOfArray(arguments, 0);
         var mapper = ArgOfArray(arguments, 1);
@@ -125,7 +124,7 @@ internal sealed partial class JsRealm
         {
             run.Record = record;
             run.Target = constructs
-                ? engine.Construct(receiver, System.Array.Empty<JsValue>())
+                ? engine.Construct(receiver, [])
                 : ArrayCreate(engine, 0);
 
             ArrayFromAsyncPull(engine, run);
@@ -150,13 +149,12 @@ internal sealed partial class JsRealm
     /// The specification's <c>GetIteratorFromMethod</c>: call the method already read, and read
     /// <c>next</c> once.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D49D1D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=29821F
     // Broiler-Human:        PENDING
-    private static JsIteratorRecord ArrayFromAsyncIteratorOf(
-        JsEngine engine, JsValue items, JsValue method)
+    private static JsIteratorRecord ArrayFromAsyncIteratorOf(JsEngine engine, JsValue items, JsValue method)
     {
         engine.Charge(4);
-        var iterator = engine.Call(method, items, System.Array.Empty<JsValue>());
+        var iterator = engine.Call(method, items, []);
 
         if (!iterator.IsObject)
         {
@@ -169,7 +167,7 @@ internal sealed partial class JsRealm
     /// <summary>
     /// One step over an iterator: call <c>next</c> with no argument and await what it answered.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=EE795C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E0271E
     // Broiler-Human:        PENDING
     private void ArrayFromAsyncPull(JsEngine engine, JsArrayFromAsyncRun run)
     {
@@ -186,7 +184,7 @@ internal sealed partial class JsRealm
         try
         {
             var record = run.Record!;
-            var step = engine.Call(record.Next, record.Iterator, System.Array.Empty<JsValue>());
+            var step = engine.Call(record.Next, record.Iterator, []);
 
             AwaitOn(engine, step, (inner, value, rejected) =>
                 ArrayFromAsyncStepped(inner, run, value, rejected));
@@ -203,8 +201,7 @@ internal sealed partial class JsRealm
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8383E4
     // Broiler-Human:        PENDING
-    private void ArrayFromAsyncStepped(
-        JsEngine engine, JsArrayFromAsyncRun run, JsValue step, bool rejected)
+    private void ArrayFromAsyncStepped(JsEngine engine, JsArrayFromAsyncRun run, JsValue step, bool rejected)
     {
         if (rejected)
         {
@@ -298,7 +295,7 @@ internal sealed partial class JsRealm
     /// iterator is still cleaning up. What <c>return</c> answered, or threw, is discarded: the
     /// failure the caller is owed is the one that made the method stop.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A385FD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E36F94
     // Broiler-Human:        PENDING
     private void ArrayFromAsyncClose(JsEngine engine, JsArrayFromAsyncRun run, JsValue reason)
     {
@@ -316,7 +313,7 @@ internal sealed partial class JsRealm
                 return;
             }
 
-            answered = engine.Call(method, record.Iterator, System.Array.Empty<JsValue>());
+            answered = engine.Call(method, record.Iterator, []);
         }
         catch (JsThrow)
         {
@@ -371,8 +368,7 @@ internal sealed partial class JsRealm
     /// <summary>The awaited array-like element: map it if asked, then store it.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FAFD27
     // Broiler-Human:        PENDING
-    private void ArrayFromAsyncTaken(
-        JsEngine engine, JsArrayFromAsyncRun run, JsValue value, bool rejected)
+    private void ArrayFromAsyncTaken(JsEngine engine, JsArrayFromAsyncRun run, JsValue value, bool rejected)
     {
         if (rejected)
         {

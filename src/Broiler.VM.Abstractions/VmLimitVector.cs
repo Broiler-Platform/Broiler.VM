@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   27
 // Annotated:        27/27
-// Exempt:           24
+// Exempt:           22
 // Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Medium
@@ -36,7 +36,7 @@ namespace Broiler.VM.Abstractions;
 /// may not, which is checked at catalog construction rather than left as a convention.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=256734
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=737823
 // Broiler-Human:        PENDING
 public readonly struct VmLimitVector : IEquatable<VmLimitVector>
 {
@@ -48,7 +48,7 @@ public readonly struct VmLimitVector : IEquatable<VmLimitVector>
     /// The vector with every dimension at TOP. Only a profile hard maximum and the
     /// <c>LiveRuntimes</c> slot of an unparented runtime may legitimately be this.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A9FFF9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=62BA42
     // Broiler-Human:        PENDING
     public static VmLimitVector Unconstrained
     {
@@ -100,7 +100,7 @@ public readonly struct VmLimitVector : IEquatable<VmLimitVector>
     /// Creates a vector from exactly fifteen values, in the frozen dimension order. A span of any
     /// other length is refused rather than padded.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=02727D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=73119C
     // Broiler-Human:        PENDING
     public static bool TryCreate(ReadOnlySpan<ulong> perDimension, out VmLimitVector vector)
     {
@@ -158,7 +158,7 @@ public readonly struct VmLimitVector : IEquatable<VmLimitVector>
     }
 
     /// <summary>Copies the vector into <paramref name="destination"/>, which must hold fifteen values.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3B39D8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D53B1A
     // Broiler-Human:        PENDING
     public void CopyTo(Span<ulong> destination)
     {
@@ -200,7 +200,7 @@ public readonly struct VmLimitVector : IEquatable<VmLimitVector>
     public override bool Equals(object? obj) => obj is VmLimitVector other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=66B94B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=376401
     // Broiler-Human:        PENDING
     public override int GetHashCode()
     {
@@ -238,7 +238,7 @@ public readonly struct VmLimitVector : IEquatable<VmLimitVector>
 /// <c>NestedLoadDepth = NotApplicable</c> means no artifact-provider capability may be bound. All
 /// three are checked at catalog construction, where the composition root is on the stack.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AC252A
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=652B46
 // Broiler-Human:        PENDING
 public readonly struct VmBudgetDeclarationMatrix : IEquatable<VmBudgetDeclarationMatrix>
 {
@@ -262,7 +262,7 @@ public readonly struct VmBudgetDeclarationMatrix : IEquatable<VmBudgetDeclaratio
     /// other length is refused rather than padded with a default, because a defaulted row is
     /// silence in code form.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=965C46
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=816352
     // Broiler-Human:        PENDING
     public static bool TryCreate(ReadOnlySpan<VmBudgetApplicability> perDimension, out VmBudgetDeclarationMatrix matrix)
     {
@@ -310,7 +310,7 @@ public readonly struct VmBudgetDeclarationMatrix : IEquatable<VmBudgetDeclaratio
     public override bool Equals(object? obj) => obj is VmBudgetDeclarationMatrix other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D5E5EF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B21B11
     // Broiler-Human:        PENDING
     public override int GetHashCode()
     {
@@ -351,7 +351,7 @@ public readonly struct VmBudgetDeclarationMatrix : IEquatable<VmBudgetDeclaratio
 /// would become a success.
 /// </remarks>
 /// <remarks>Creates a ceiling pair.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E97F91
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CE5A1C
 // Broiler-Human:        PENDING
 public readonly struct VmEffectiveCeilings(VmLimitVector verificationCeilings, VmLimitVector instantiationCeilings) : IEquatable<VmEffectiveCeilings>
 {
@@ -392,7 +392,7 @@ public readonly struct VmEffectiveCeilings(VmLimitVector verificationCeilings, V
 /// <c>MaxCumulativeNestedBytes</c> and <c>MaxCumulativeNestedVerifierWork</c> appear nowhere.
 /// </remarks>
 /// <remarks>Creates a bound group.</remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=327E45
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=55B079
 // Broiler-Human:        PENDING
 public readonly struct VmGuestLoadBounds(ulong nestedLoadDepth, ulong nestedLoadFanOut, ulong nestedLoadBytes, ulong verifierWork) : IEquatable<VmGuestLoadBounds>
 {

@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
 using Broiler.VM.Abstractions;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -114,8 +115,7 @@ internal static class JavaScriptPosition
     /// <summary>A position that is an offset into the artifact's byte stream.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3207E1
     // Broiler-Human:        PENDING
-    internal static VmSourcePosition InArtifact(ulong byteOffset) =>
-        new(OutsideAnySection, byteOffset, Unknown, Unknown);
+    internal static VmSourcePosition InArtifact(ulong byteOffset) => new(OutsideAnySection, byteOffset, Unknown, Unknown);
 
     /// <summary>
     /// A position inside the code section, carrying the line and column of the row that covers it.
@@ -125,13 +125,10 @@ internal static class JavaScriptPosition
     /// offset. A binary search would be the same answer in fewer steps and is not written here:
     /// this runs once, on the refusal path, after a verification has already failed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=36B11E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=009F29
     // Broiler-Falsified-If: an offset with no row at or before it reports a line other than zero, or an offset with two candidate rows reports the earlier one
     // Broiler-Human:        PENDING
-    internal static VmSourcePosition InCode(
-        int codeSectionIndex,
-        ulong codeOffset,
-        System.Collections.Generic.List<JavaScriptPositionRow> rows)
+    internal static VmSourcePosition InCode(int codeSectionIndex, ulong codeOffset, List<JavaScriptPositionRow> rows)
     {
         var line = Unknown;
         var column = Unknown;

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using System.Collections.Generic;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -45,9 +47,9 @@ internal sealed class JsArray : JsObject
     // Broiler-Human:        PENDING
     private const int DenseGrowthSlack = 1024;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0C926E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=98A5C2
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<JsValue> elements = [];
+    private readonly List<JsValue> elements = [];
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CB409
     // Broiler-Human:        PENDING
@@ -68,10 +70,7 @@ internal sealed class JsArray : JsObject
     /// <summary>Creates an empty Array.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A4EEE4
     // Broiler-Human:        PENDING
-    internal JsArray(JsObject? prototype)
-        : base(prototype, "Array")
-    {
-    }
+    internal JsArray(JsObject? prototype) : base(prototype, "Array") { }
 
     /// <summary>The Array's <c>length</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F4AC04
@@ -158,7 +157,7 @@ internal sealed class JsArray : JsObject
     /// the walk would have stopped; everything above it goes, and the result is the same.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=08D0D0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6BEEB9
     // Broiler-Human:        PENDING
     internal bool TrySetLength(uint value)
     {
@@ -172,10 +171,10 @@ internal sealed class JsArray : JsObject
         // attributes to consult: an element still in it is an ordinary configurable data property,
         // and one that was given attributes has already moved into the map underneath - leaving a
         // HOLE in the dense half at that index. Only the map can refuse.
-        var keys = new System.Collections.Generic.List<string>();
+        var keys = new List<string>();
         CollectOwnNames(keys, []);
 
-        var mapped = new System.Collections.Generic.List<uint>();
+        var mapped = new List<uint>();
 
         foreach (var key in keys)
         {
@@ -243,8 +242,7 @@ internal sealed class JsArray : JsObject
         }
         else
         {
-            base.SetOwnProperty(
-                JsNumberFormat.ToUintString(at), JsProperty.Data(value, JsPropertyAttributes.Default));
+            base.SetOwnProperty(JsNumberFormat.ToUintString(at), JsProperty.Data(value, JsPropertyAttributes.Default));
         }
 
         if (at >= length)
@@ -279,10 +277,7 @@ internal sealed class JsArray : JsObject
         }
         else if (string.Equals(key, "length", System.StringComparison.Ordinal))
         {
-            property = JsProperty.Data(
-                JsValue.Number(length),
-                lengthWritable ? JsPropertyAttributes.Writable : JsPropertyAttributes.None);
-
+            property = JsProperty.Data(JsValue.Number(length), lengthWritable ? JsPropertyAttributes.Writable : JsPropertyAttributes.None);
             return true;
         }
 
@@ -386,12 +381,12 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=271967
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=011422
     // Broiler-Human:        PENDING
-    internal override System.Collections.Generic.List<string> OwnPropertyNames()
+    internal override List<string> OwnPropertyNames()
     {
-        var indices = new System.Collections.Generic.List<string>();
-        var rest = new System.Collections.Generic.List<string>();
+        var indices = new List<string>();
+        var rest = new List<string>();
 
         for (var at = 0; at < elements.Count; at++)
         {

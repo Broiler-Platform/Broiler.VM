@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Numerics;
 using Broiler.VM.Abstractions;
+using Broiler.VM.Binary;
 using Broiler.VM.Ubc;
 using O = Broiler.VM.Ubc.UbcOpcode;
 using Op = Broiler.VM.Contract.Tests.UbcCorpusFamily.Op;
