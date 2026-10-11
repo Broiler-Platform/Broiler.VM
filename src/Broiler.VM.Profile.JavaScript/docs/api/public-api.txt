@@ -226,10 +226,10 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostBufferStatus.value__ : System.Int32
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier.ChargedBytes : System.Int64 { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier.CurrentFormatVersion : static System.Int32 { get; }
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier.FormatVersion : static System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier.FormatVersion : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier.IsConsumed : System.Boolean { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier.IsSingleUse : System.Boolean { get; }
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier.Profile : static Broiler.VM.Abstractions.VmProfileId { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostCloneCarrier.Profile : Broiler.VM.Abstractions.VmProfileId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.Error : const Broiler.VM.Profile.JavaScript.JsHostErrorKind = 0
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.RangeError : const Broiler.VM.Profile.JavaScript.JsHostErrorKind = 2
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.ReferenceError : const Broiler.VM.Profile.JavaScript.JsHostErrorKind = 4
