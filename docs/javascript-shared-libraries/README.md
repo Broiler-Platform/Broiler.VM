@@ -1,13 +1,17 @@
 # Shared JavaScript libraries: programme documents
 
-**Date:** 2026-10-11. **Status:** planned. **Nothing here is done or accepted, and no record is
-filed.** Every decision point was taken on 2026-10-11 ([decisions.md](decisions.md)); the records
-that formalise the decisions are deliverables of the milestones. These documents turn
+**Date:** 2026-10-11. **Status:** planned, with milestone SJL-0 in progress. **Nothing here is
+accepted.** Every decision point was taken on 2026-10-11 ([decisions.md](decisions.md)); the records
+that formalise the decisions are deliverables of the milestones, and SJL-0 has filed Broiler.VM's
+share of them: [ADR 0014](../adr/0014-shared-javascript-libraries.md) and the JavaScript profile's
+decision JSD-0063 among them. These documents turn
 [the feasibility report](../javascript-shared-libraries-feasibility.md) into a programme. The
 programme's milestones are `SJL-0` to `SJL-17`, and their state is recorded in
-[the programme ledger](status.md). Every row is `Not started` on this date. *(Revised 2026-10-11,
-when the decisions were taken. The status read "Nothing here is done, decided or accepted", and the
-milestones ran to `SJL-16`.)*
+[the programme ledger](status.md). *(Revised 2026-10-11, when the decisions were taken. The status
+read "Nothing here is done, decided or accepted", and the milestones ran to `SJL-16`. Revised again
+the same day, at SJL-0's first records: the status read "planned. **Nothing here is done or
+accepted, and no record is filed.**", and the paragraph ended "Every row is `Not started` on this
+date.")*
 
 **What the programme is for.** Broiler.VM's JavaScript profile family and Broiler.JS each
 implement the same JavaScript language algorithms, data and source front end separately. The
@@ -150,7 +154,10 @@ accepted, or a record says the seed copy will not be taken and JS-2's gate is re
 shares the front end instead of copying it makes the copy pointless.** Decision `SJL-D-7` was taken
 on 2026-10-11: JS-2 is re-scoped, and the seed copy is not taken. **That does not disarm the stop
 condition; only a filed JSD does.** SJL-0.4 files that JSD before 2026-11-30, or, failing that, a
-JSD that revises the stop condition. See [decisions.md](decisions.md#sjl-d-7). *(Revised
+JSD that revises the stop condition. See [decisions.md](decisions.md#sjl-d-7). **That JSD is filed**:
+[JSD-0063](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md),
+on 2026-10-11, withdraws the seed copy and the stop condition with it *(added 2026-10-11, at SJL-0's
+first records)*. *(Revised
 2026-10-11, when the decision was taken. The paragraph ended "Decision `SJL-D-7` (the re-scope of
 JS-2) therefore has to be taken before that date, or explicitly deferred with the stop condition
 revised in the same record.")*
@@ -167,7 +174,7 @@ revised in the same record.")*
 | `sjl-n-nnn` | An evidence bundle of milestone `SJL-n`, in the repository that collects it | The milestone file names it; the bundle holds it |
 | Rule group `I` (proposed) | Broiler.VM architecture rules governing **imported** shared libraries (`I1` to `I7`) | Minted at SJL-2. `I` is one of the letters no register, ADR, roadmap or ledger uses. If the owner prefers the JavaScript family's `N` group, only the identifiers move. |
 | Rule group `SL` (proposed) | Architecture rules of the shared libraries themselves, in their home repository | Minted at SJL-2 |
-| ADR, JSD, JSC, MVP and EX numbers | Records in the existing Broiler.VM series | **Taken at filing time**, as the next free number. On this document's date the next free numbers are ADR 0014, JSD-0063, JSC-291, MVP-16, EX-125 and roadmap-amendment register row 24. These documents name records by subject, not by a number that another change may take first. |
+| ADR, JSD, JSC, MVP and EX numbers | Records in the existing Broiler.VM series | **Taken at filing time**, as the next free number. SJL-0's first records took ADR 0014, JSD-0063, JSC-291 to JSC-295, MVP-16 and register rows 24 to 41, so the next free numbers are ADR 0015, JSD-0064, JSC-296, MVP-17, EX-125 and register row 42 *(revised 2026-10-11: this read "On this document's date the next free numbers are ADR 0014, JSD-0063, JSC-291, MVP-16, EX-125 and roadmap-amendment register row 24.")*. These documents name records by subject, not by a number that another change may take first. |
 
 `SJL-`, `JSL-`, `SHL-` and `SL-` occur nowhere in either repository on this date. `JSH-` is already
 taken by the JavaScript profile's hosting stages.
