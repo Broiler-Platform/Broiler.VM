@@ -1,0 +1,86 @@
+The release mode is EXPECTED to refuse. Every relevant unit in this component is
+HUMAN_PENDING, the profile's three among them, so a release gate that passed here would
+be the defect. What this log is read for is that each blocking declaration is named
+individually rather than counted.
+
+exit 1
+
+  Wiederherzustellende Projekte werden ermittelt...
+  Alle Projekte sind für die Wiederherstellung auf dem neuesten Stand.
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Architecture.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+Testlauf für "D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll" (.NETCoreApp,Version=v10.0)
+Insgesamt 1 Testdateien stimmten mit dem angegebenen Muster überein.
+  Fehler Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [7 ms]
+  Fehlermeldung:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["Broiler.VM.Composition.JavaScript.SliceCompiler [j"···, "Broiler.VM.Composition.JavaScript.SliceCompiler [t"···]
+  Stapelverfolgung:
+     at Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares() in D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\CompositionRegisterTests.cs:line 191
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Fehler Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [115 ms]
+  Fehlermeldung:
+   7156 thing(s) block a release of this tree:
+  src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(46): Broiler.VM.Abstractions.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(72): Broiler.VM.Abstractions.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(81): Broiler.VM.Abstractions.VmArtifactDescriptor.Equals(VmArtifactDescriptor) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(100): Broiler.VM.Abstractions.VmArtifactDescriptor.operator !=(VmArtifactDescriptor, VmArtifactDescriptor) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(45): Broiler.VM.Abstractions.VmBudgetDimension is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(111): Broiler.VM.Abstractions.VmBudgetScope is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(140): Broiler.VM.Abstractions.VmBudgetClass is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(158): Broiler.VM.Abstractions.VmBudgetApplicability is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(178): Broiler.VM.Abstractions.VmBudgetDimensions is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(183): Broiler.VM.Abstractions.VmBudgetDimensions.Count is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(187): Broiler.VM.Abstractions.VmBudgetDimensions.Classes is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(212): Broiler.VM.Abstractions.VmBudgetDimensions.Aggregate is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(223): Broiler.VM.Abstractions.VmBudgetDimensions.All is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(245): Broiler.VM.Abstractions.VmBudgetDimensions.IsDefined(VmBudgetDimension) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(250): Broiler.VM.Abstractions.VmBudgetDimensions.ClassOf(VmBudgetDimension) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(255): Broiler.VM.Abstractions.VmBudgetDimensions.CarriesAggregateScope(VmBudgetDimension) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(263): Broiler.VM.Abstractions.VmBudgetDimensions.IsDeclarableAt(VmBudgetDimension, VmBudgetScope) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs(279): Broiler.VM.Abstractions.VmBudgetDimensions.Index(VmBudgetDimension) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(25): Broiler.VM.Abstractions.VmControlOutcome is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(70): Broiler.VM.Abstractions.VmControlResult is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(87): Broiler.VM.Abstractions.VmControlResult.InvalidState(VmReason) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(95): Broiler.VM.Abstractions.VmControlResult.Unsupported(VmReason) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(106): Broiler.VM.Abstractions.VmControlResult.IsSuccess is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(111): Broiler.VM.Abstractions.VmControlResult.Equals(VmControlResult) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(119): Broiler.VM.Abstractions.VmControlResult.GetHashCode() is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(124): Broiler.VM.Abstractions.VmControlResult.ToString() is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(132): Broiler.VM.Abstractions.VmControlResult.operator !=(VmControlResult, VmControlResult) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(154): Broiler.VM.Abstractions.VmCoreDefectException is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(159): Broiler.VM.Abstractions.VmCoreDefectException.VmCoreDefectException(string, VmObjectId) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmControlResult.cs(164): Broiler.VM.Abstractions.VmCoreDefectException.VmCoreDefectException(string) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmCoreContract.cs(40): Broiler.VM.Abstractions.VmCoreContract is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmCoreContract.cs(45): Broiler.VM.Abstractions.VmCoreContract.Version is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmCoreContract.cs(53): Broiler.VM.Abstractions.VmCoreContract.MinimumSupportedVersion is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(33): Broiler.VM.Abstractions.VmArtifactRepresentationKind is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(50): Broiler.VM.Abstractions.VmArtifactLifetimeKind is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(67): Broiler.VM.Abstractions.VmArtifactSharing is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(84): Broiler.VM.Abstractions.VmFaultRecovery is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(101): Broiler.VM.Abstractions.VmThreadAffinity is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(118): Broiler.VM.Abstractions.VmDeclaration is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(138): Broiler.VM.Abstractions.VmGuestLoadDeclaration is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(154): Broiler.VM.Abstractions.VmGuestLoadDeclaration.Declared(int, VmGuestLoadBounds, uint) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(176): Broiler.VM.Abstractions.VmGuestLoadDeclaration.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(198): Broiler.VM.Abstractions.VmPayloadKindIdRange is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(209): Broiler.VM.Abstractions.VmPayloadKindIdRange.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(214): Broiler.VM.Abstractions.VmPayloadKindIdRange.Contains(int) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(219): Broiler.VM.Abstractions.VmPayloadKindIdRange.Equals(VmPayloadKindIdRange) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDescriptorValues.cs(233): Broiler.VM.Abstractions.VmPayloadKindIdRange.operator !=(VmPayloadKindIdRange, VmPayloadKindIdRange) is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDiagnostics.cs(31): Broiler.VM.Abstractions.VmHostCorrelationToken is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDiagnostics.cs(39): Broiler.VM.Abstractions.VmHostCorrelationToken.IsEmpty is HUMAN_PENDING and its human line reads 'PENDING'
+  src/Broiler.VM.Abstractions/VmDiagnostics.cs(44): Broiler.VM.Abstractions.VmHostCorrelationToken.Equals(VmHostCorrelationToken) is HUMAN_PENDING and its human line reads 'PENDING'
+  Stapelverfolgung:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So() in D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\AssuranceRuleTests.cs:line 2945
+   at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Fehler!      : Fehler:     2, erfolgreich:   367, übersprungen:     0, gesamt:   369, Dauer: 24 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:05.54]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
+[xUnit.net 00:00:23.43]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [FAIL]

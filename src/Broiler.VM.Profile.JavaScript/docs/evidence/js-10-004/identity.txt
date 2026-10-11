@@ -1,0 +1,26 @@
+bundle:                JS-10-004
+milestone:             JS-10
+collected (UTC):       2026-10-11T18:37:07+00:00
+component commit:      88d8b51de7f3722e55d673d9ac73b73ba7b64c80
+branch:                main
+working tree:          DIRTY
+dirty entries:         12
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   M THIRD_PARTY_NOTICES.md
+   M assurance.manifest.json
+   M docs/javascript-shared-libraries-feasibility.md
+   M eng/collect-evidence.py
+   M src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs
+   M src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1/closure-slicecompiler.txt
+   M src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004/closure-conformance.txt
+   M src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001/closure-cli.txt
+   M src/tests/Broiler.VM.Architecture.Tests/CompositionRegisterTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/CompositionRules.cs
+   M src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  ?? docs/javascript-shared-libraries/
