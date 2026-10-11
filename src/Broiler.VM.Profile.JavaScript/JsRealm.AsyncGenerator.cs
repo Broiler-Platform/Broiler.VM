@@ -57,29 +57,29 @@ internal sealed partial class JsRealm
     /// <summary>
     /// <c>%AsyncIteratorPrototype%</c>: where <c>[Symbol.asyncIterator]</c> answering itself lives.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=881137
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0E5AE2
     // Broiler-Human:        PENDING
-    internal JsObject AsyncIteratorPrototype { get; private set; } = null;
+    internal JsObject AsyncIteratorPrototype { get; private set; } = null!;
 
     /// <summary><c>%AsyncGeneratorPrototype%</c>: <c>next</c>, <c>return</c> and <c>throw</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F5A837
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=93D570
     // Broiler-Human:        PENDING
-    internal JsObject AsyncGeneratorPrototype { get; private set; } = null;
+    internal JsObject AsyncGeneratorPrototype { get; private set; } = null!;
 
     /// <summary>
     /// <c>%AsyncGeneratorFunction.prototype%</c>: what every async generator function inherits from.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=155941
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=16DF44
     // Broiler-Human:        PENDING
-    internal JsObject AsyncGeneratorFunctionPrototype { get; private set; } = null;
+    internal JsObject AsyncGeneratorFunctionPrototype { get; private set; } = null!;
 
     /// <summary>
     /// <c>%AsyncFromSyncIteratorPrototype%</c>: what wraps a synchronous iterator for
     /// <c>for await</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E2EA68
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0AB28B
     // Broiler-Human:        PENDING
-    private JsObject AsyncFromSyncIteratorPrototype { get; set; } = null;
+    private JsObject AsyncFromSyncIteratorPrototype { get; set; } = null!;
 
     /// <summary>Builds the asynchronous half of the iteration protocol.</summary>
     /// <remarks>
