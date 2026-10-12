@@ -194,6 +194,16 @@ internal static class Program
                     verbose);
             }
 
+            // THE SHARED CONFORMANCE VECTORS (programme milestone SJL-1): a corpus of Broiler.JS's,
+            // held here as a pinned archive and handed to this mode extracted, as a checkout is
+            // handed to --test262. It needs no suite of this harness's own.
+            var vectors = Argument(args, "--vectors");
+
+            if (vectors is not null)
+            {
+                return VectorsCommand.Run(vectors, args, verbose);
+            }
+
             var checkout = Argument(args, "--test262");
 
             if (checkout is not null)
@@ -216,7 +226,7 @@ internal static class Program
                     "broiler-js-conformance: no --suite <directory> was given. Modes: --closure, " +
                     "--harness-checks, --self-check, --run, --write-artifacts, --pin, " +
                     "--merge <dir>, --floor <file> --report <file>, --json-schema, " +
-                    "--test262 <root>. A run adds --dialect native|ingested, --selfcheck <dir> and " +
+                    "--test262 <root>, --vectors <dir> --expect <pin> [--report <file>] [--mutate <id>]. A run adds --dialect native|ingested, --selfcheck <dir> and " +
                     "--expect <retained pin>. A --test262 run takes --manifest <id>, " +
                     "--form bytecode|native|value|value-stress|value-flat, --backend <name> (a native run's; it defaults to the " +
                     "convention this process arms, and a native run is taken under " +

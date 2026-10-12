@@ -44,8 +44,15 @@ public sealed class IngestionPathRuleTests
     /// directory is listed here. The WebAssembly harness root is handed the extracted scripts on a
     /// command line, as this rule's harness is handed its suite.
     /// </para>
+    /// <para>
+    /// <b>The fourth entry is the shared conformance vectors</b>, pinned on 2026-10-12 for the shared
+    /// JavaScript libraries programme's milestone SJL-1: Broiler.JS's corpus, held as an archive of a
+    /// named corpus revision. This rule's own harness reads it from a path on its command line
+    /// (<c>--vectors</c>), and the milestone's exit clause asks for exactly this entry and a witness
+    /// that names the directory from a product project.
+    /// </para>
     /// </remarks>
-    private static readonly string[] SuiteDirectories = ["tests/conformance", "tests/octane", "tests/wasm/spec"];
+    private static readonly string[] SuiteDirectories = ["tests/conformance", "tests/octane", "tests/wasm/spec", "tests/vectors"];
 
     [Fact]
     public void N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure()
@@ -113,6 +120,28 @@ public sealed class IngestionPathRuleTests
             violations,
             violation => violation.Contains(
                 "names the suite directory tests/conformance", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void N13_Rejects_A_Product_Project_That_Carries_The_Shared_Vectors()
+    {
+        // The shared conformance vectors' clause (SJL-1): the profile itself carries the pinned
+        // corpus into its output. It is the same mechanism as the suite witness above, from a
+        // product project and for a corpus that is not this repository's.
+        var violations = ArchitectureRules.N13(
+            Harness,
+            [
+                .. ComponentGraph.Projects,
+                ComponentGraph.Witness("N13-a-project-that-carries-vector-files.csproj.witness"),
+            ],
+            CompositionRegisterTests.RegisterRows,
+            CompositionRegisterTests.Closures(),
+            SuiteDirectories);
+
+        Assert.Contains(
+            violations,
+            violation => violation.Contains(
+                "Broiler.VM.Profile.JavaScript names the suite directory tests/vectors", StringComparison.Ordinal));
     }
 
     [Fact]

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    THE THIRD NEGATIVE CONTROL FOR RULE N13: A PRODUCT PROJECT THAT NAMES THE SHARED VECTORS.
+
+    The shared conformance vectors (programme milestone SJL-1) are Broiler.JS's corpus, held here as
+    a pinned archive under src/tests/vectors/pins/ and read by the conformance harness from a path on
+    its command line. Their exit clause asks for exactly this: rule N13 passes with the new
+    directory and fails on a witness that names it from a product project.
+
+    The product project chosen is the profile itself, because it is the one a reader would most
+    plausibly want the vectors in - "the profile's own tests of its number conversion" - and the one
+    whose package the corpus must never enter. No reference changes; a Content item carries the
+    archive into the build output, which every reference-set rule in this component is blind to.
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Profile.JavaScript</RootNamespace>
+    <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\tests\vectors\pins\*.tar.gz" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

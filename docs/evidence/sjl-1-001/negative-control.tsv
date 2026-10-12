@@ -1,0 +1,9 @@
+# engine: broiler-vm
+# corpus: Broiler-Platform/broiler.js@593f2c5bce1f055025864af2b7ec38ee6f2f835a content sha256 b86ee85ea4487b42c19a8aa84a68ec652aa414ce4982a2f1c2f16244838c67bd
+# vectors: 10132
+# match: 9740
+# classified-divergence: 391
+# difference: 1
+# divergence no longer holds: 0
+id	class	expected	rendered	verdict
+numbers/to-fixed/0001	normative	value: str:"00"	value: str:"0"	difference

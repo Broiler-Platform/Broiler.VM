@@ -887,11 +887,11 @@
       "id": "N13",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "The conformance harness Broiler.VM.Composition.JavaScript.Conformance appears in no package and in no advertised composition's closure, no other project references it, and no project file names a conformance-suite directory. Six clauses: a project reference, a PackageId, a missing IsPackable false, an advertised register row naming it, a retained closure report containing it, and a project item carrying suite files into a build output. Deliberately NOT phrased as no published closure - the harness root publishes one of its own for its own evidence, which that phrasing would falsify.",
+      "statement": "The conformance harness Broiler.VM.Composition.JavaScript.Conformance appears in no package and in no advertised composition's closure, no other project references it, and no project file names a conformance-suite directory, the shared conformance vectors' tests/vectors among them (since 2026-10-12, programme milestone SJL-1). Six clauses: a project reference, a PackageId, a missing IsPackable false, an advertised register row naming it, a retained closure report containing it, and a project item carrying suite or vector files into a build output. Deliberately NOT phrased as no published closure - the harness root publishes one of its own for its own evidence, which that phrasing would falsify.",
       "evidence": "Project files, the composition register, and the retained closure reports",
       "activationMilestone": null,
       "nonVacuousWhen": "The harness root exists and the register retains at least one closure report; the rule reports its own vacuity when the harness is named by no project in the checkout.",
-      "witness": "witnesses/N13-execution-only-references-the-harness.csproj.witness, witnesses/N13-a-project-that-carries-suite-files.csproj.witness"
+      "witness": "witnesses/N13-execution-only-references-the-harness.csproj.witness, witnesses/N13-a-project-that-carries-suite-files.csproj.witness, witnesses/N13-a-project-that-carries-vector-files.csproj.witness"
     },
     {
       "id": "N14",

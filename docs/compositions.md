@@ -469,7 +469,11 @@ harness appears in **no package and in no advertised composition's closure**,
 that no other project references it, and that no project file names a suite
 directory — the last being how suite *files* would reach a build output with the
 dependency graph still looking clean. Its negative control adds the reference
-from the execution-only root, which is the direction that would actually ship.
+from the execution-only root, which is the direction that would actually ship. Since
+2026-10-12 the root also reads the shared conformance vectors, a pinned archive
+of Broiler.JS's corpus under `src/tests/vectors/pins/` (`--vectors`, programme
+milestone SJL-1), and N13's suite directories name `tests/vectors` with a
+witness of its own.
 
 **It carries a lowering, and that is forced rather than chosen.** Scoring a
 conformance test means lowering its source, verifying the artifact and running
