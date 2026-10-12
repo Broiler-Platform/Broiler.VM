@@ -1,0 +1,12 @@
+// Violates I6: a JavaScript-family public member whose signature names an admitted type,
+// Broiler.ECMAScript.Failure. The shared package would then be part of the family's public contract,
+// which no decision has taken. The test compiles this against the admitted assembly from the committed
+// feed and describes it as the family's baseline is described, through a resolver that knows the
+// admitted assemblies - so the signature is seen, rather than failing to resolve.
+namespace Broiler.VM.Profile.JavaScript.Witness;
+
+public static class Numbers
+{
+    public static Broiler.ECMAScript.Failure Parse(string text) =>
+        new(Broiler.ECMAScript.ResultStatus.Malformed, 0, "number.malformed");
+}

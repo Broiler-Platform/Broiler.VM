@@ -19,11 +19,21 @@ namespace Broiler.VM.Architecture.Tests;
 /// subject: the product graph now has method bodies, assembly references and an exported surface.
 /// </para>
 /// <para>
-/// B3 is the one that did NOT become Active, and the register says why: A1 forbids the outbound
-/// project reference, A2 forbids the package-shaped one, and the single-source NuGet.config makes
-/// a foreign Broiler package unresolvable, so a violation is unreachable by construction rather
-/// than merely absent. Claiming it Active would be claiming the suite had rejected something it
-/// cannot construct.
+/// B3 stayed Vacuous until SJL-2, on the ground that A1 forbids the outbound project reference and
+/// A2 the package-shaped one, so a violation could not be constructed. It became Active at SJL-2,
+/// when the shared JavaScript libraries made a Broiler assembly outside the component something
+/// the graph can hold, and it now sweeps every shipping assembly with a witness compiled against a
+/// foreign Broiler assembly.
+/// </para>
+/// <para>
+/// <i>(Revised 2026-10-12, at SJL-2.3. This paragraph read: "B3 is the one that did NOT become
+/// Active, and the register says why: A1 forbids the outbound project reference, A2 forbids the
+/// package-shaped one, and the single-source NuGet.config makes a foreign Broiler package
+/// unresolvable, so a violation is unreachable by construction rather than merely absent. Claiming
+/// it Active would be claiming the suite had rejected something it cannot construct." The
+/// NuGet.config claim was already false: Broiler.JS publishes to nuget.org, the one source the
+/// configuration lists, so a foreign Broiler package was always resolvable and only A2 stood in
+/// its way.)</i>
 /// </para>
 /// </remarks>
 public sealed class AssemblyMetadataRuleTests
@@ -48,15 +58,29 @@ public sealed class AssemblyMetadataRuleTests
     [Fact]
     public void B3_No_Assembly_Names_A_Foreign_Broiler_Assembly()
     {
-        // Registered Vacuous with an activation milestone of VM-3, not Active. The subject exists
-        // now - these assemblies name non-framework assemblies for the first time - but no project
-        // in the checkout can acquire a foreign Broiler assembly to violate it with, so the rule
-        // runs and has rejected nothing. It becomes reachable when composition roots and profile
-        // packages exist.
-        foreach (var assembly in AssemblyFacts.Product.Append(AssemblyFacts.Fixtures))
+        // Every shipping assembly, not only the core and the fixtures, which is what the rewrite at
+        // SJL-2 widened it to. Not vacuous: the sweep reaches the composition roots and the
+        // profiles, whose AssemblyRef tables name other Broiler.VM assemblies the rule reads and
+        // passes as the component's own.
+        Assert.Contains(AssemblyFacts.Shipping, static assembly =>
+            assembly.Name.StartsWith("Broiler.VM.Composition.", StringComparison.Ordinal));
+        Assert.Contains(AssemblyFacts.Shipping, static assembly =>
+            assembly.AssemblyReferences.Any(static reference => reference.StartsWith("Broiler.VM.", StringComparison.Ordinal)));
+
+        foreach (var assembly in AssemblyFacts.Shipping.Append(AssemblyFacts.Fixtures))
         {
             Assert.Empty(ArchitectureRules.B3(assembly));
         }
+
+        // The witness: an assembly compiled against a stub of the Broiler.JS engine's runtime, a
+        // Broiler assembly no rule admits.
+        var foreign = WitnessAssemblies.Compile(
+            "Broiler.JavaScript.Runtime",
+            "namespace Broiler.JavaScript.Runtime { public sealed class JSValue { } }");
+        var witness = WitnessAssemblies.Read(
+            "B3-assembly-references-a-foreign-broiler-assembly.cs.witness", "Broiler.VM.Witness", foreign);
+
+        Assert.Equal(["Broiler.VM.Witness -> Broiler.JavaScript.Runtime"], ArchitectureRules.B3(witness));
     }
 
     [Fact]

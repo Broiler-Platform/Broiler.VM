@@ -25,6 +25,17 @@ public sealed class ProjectFileRuleTests
         Assert.Empty(Sweep(ArchitectureRules.A2));
         Assert.NotEmpty(ArchitectureRules.A2(
             ComponentGraph.Witness("A2-broiler-package-reference.csproj.witness")));
+
+        // Revised at SJL-2: a non-admitted engine package, an identifier spelled BroilerJS.* that
+        // the old StartsWith("Broiler.") test let through, and an admitted package referenced from
+        // a project the allow-list does not name for it.
+        Assert.NotEmpty(ArchitectureRules.A2(
+            ComponentGraph.Witness("A2-non-admitted-engine-package.csproj.witness")));
+        Assert.NotEmpty(ArchitectureRules.A2(
+            ComponentGraph.Witness("A2-broilerjs-spelled-package.csproj.witness")));
+        Assert.Contains(
+            ArchitectureRules.A2(ComponentGraph.Witness("A2-admitted-package-from-an-unlisted-project.csproj.witness")),
+            static message => message.Contains("admitted for [", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -109,7 +120,35 @@ public sealed class ProjectFileRuleTests
         .ThenBy(static edge => edge.To, StringComparer.Ordinal)
         .ToArray();
 
+    /// <summary>The package edges the checkout declares, every PackageReference by project.</summary>
+    private static IReadOnlyList<GraphManifest.Edge> A7PackageEdges(IEnumerable<ComponentGraph.ProjectFile> projects) => projects
+        .SelectMany(static project => project.PackageReferences
+            .Select(package => new GraphManifest.Edge(project.AssemblyName, package)))
+        .OrderBy(static edge => edge.From, StringComparer.Ordinal)
+        .ThenBy(static edge => edge.To, StringComparer.Ordinal)
+        .ToArray();
+
+    /// <summary>
+    /// A7's package half, added at SJL-2.5: the checkout's package edges against the manifest's,
+    /// a multiset in both directions like the project edges, reported with "package" in each line.
+    /// </summary>
+    private static IEnumerable<string> A7PackageViolations(IEnumerable<GraphManifest.Edge> actual) =>
+        actual.Select(static edge => ($"{edge.From} -> package {edge.To}", +1))
+            .Concat(GraphManifest.PackageEdges.Select(static edge => ($"{edge.From} -> package {edge.To}", -1)))
+            .GroupBy(static entry => entry.Item1, StringComparer.Ordinal)
+            .Select(static group => (Edge: group.Key, Delta: group.Sum(static entry => entry.Item2)))
+            .Where(static entry => entry.Delta != 0)
+            .Select(static entry => entry.Delta > 0
+                ? $"checkout has {entry.Delta} more: {entry.Edge}"
+                : $"manifest has {-entry.Delta} more: {entry.Edge}")
+            .OrderBy(static message => message, StringComparer.Ordinal);
+
     private static IEnumerable<string> A7Violations()
+    {
+        return A7ProjectViolations().Concat(A7PackageViolations(A7PackageEdges(ComponentGraph.Projects)));
+    }
+
+    private static IEnumerable<string> A7ProjectViolations()
     {
         var actual = A7Edges();
 
@@ -145,6 +184,18 @@ public sealed class ProjectFileRuleTests
                 .Select(target => new GraphManifest.Edge(witness.AssemblyName, target)));
 
         Assert.NotEmpty(withWitness.Except(ArchitectureRules.DeclaredEdges));
+
+        // The package half's witness (SJL-2.5): a project whose file declares a package edge the
+        // manifest does not record. Its assembly name is a real project's, so the only difference
+        // between it and the checkout is the one edge.
+        var packageWitness = ComponentGraph.Witness("A7-project-declares-a-package-edge-the-manifest-omits.csproj.witness");
+        var substituted = ComponentGraph.Projects
+            .Where(project => !string.Equals(project.AssemblyName, packageWitness.AssemblyName, StringComparison.Ordinal))
+            .Append(packageWitness);
+
+        Assert.Equal(
+            ["checkout has 1 more: Broiler.VM.Profile.JavaScript -> package Broiler.ECMAScript.Algorithms"],
+            A7PackageViolations(A7PackageEdges(substituted)));
     }
 
     [Fact]
@@ -370,6 +421,11 @@ public sealed class ProjectFileRuleTests
         Assert.Contains(
             ArchitectureRules.N1(ComponentGraph.Witness("N1-profile-package-reference.csproj.witness")),
             message => message.Contains("PackageReference", StringComparison.Ordinal));
+
+        // Revised at SJL-2: an engine package is outside the set I1 admits for the profile too.
+        Assert.Contains(
+            ArchitectureRules.N1(ComponentGraph.Witness("N1-profile-references-an-engine-package.csproj.witness")),
+            static message => message.Contains("Broiler.JavaScript.Runtime, outside the set rule I1 admits", StringComparison.Ordinal));
 
         Assert.Contains(
             ArchitectureRules.N1(ComponentGraph.Witness("N1-profile-internals-visible-to.csproj.witness")),

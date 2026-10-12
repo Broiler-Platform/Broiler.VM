@@ -1,0 +1,26 @@
+# The collectors' I7 identity record (SJL-2.7), exercised without a full collection.
+#
+# eng/collect-evidence.py, eng/collect-js-evidence.py and eng/ubc-bundle-manifest.py call
+# admitted_packages.write_identities / identities over the assemblies their closure listings
+# hold. No retained closure carries an admitted package at SJL-2, so this transcript calls the
+# same function over two closures: one that carries the admitted probe package, and one that
+# carries none.
+
+## a closure carrying the admitted package: Broiler.VM.Profile.JavaScript, Broiler.ECMAScript.Algorithms
+wrote admitted-packages.json:
+{
+  "admittedPackages": [
+    {
+      "id": "Broiler.ECMAScript.Algorithms",
+      "version": "0.0.1-probe.1",
+      "contentHash": "CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ==",
+      "use": "test-only",
+      "feedContentHash": "CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ==",
+      "commit": "a84a0b4ccd9497d9a6cea03e64030e7c5ab6b0ad"
+    }
+  ]
+}
+
+## a closure carrying none: Broiler.VM.Abstractions, Broiler.VM.Runtime
+wrote nothing: no admitted package in the closure
+

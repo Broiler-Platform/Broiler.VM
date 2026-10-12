@@ -76,6 +76,11 @@ internal static class ProfileApiSurface
             Path.GetDirectoryName(typeof(object).Assembly.Location)!, "*.dll"));
         resolverPaths.AddRange(Directory.EnumerateFiles(AppContext.BaseDirectory, "*.dll"));
 
+        // Since SJL-2.6 the resolver also knows the assemblies rule I1 admits, read from the
+        // committed feed. A family signature naming an admitted type then resolves, and rule I6
+        // sees it on the surface, instead of the baseline run failing to resolve it.
+        resolverPaths.AddRange(AdmissionRules.AdmittedAssemblyPaths());
+
         using var context = new MetadataLoadContext(
             new PathAssemblyResolver(resolverPaths.Distinct(StringComparer.OrdinalIgnoreCase)));
 
@@ -108,6 +113,7 @@ internal static class ProfileApiSurface
         resolverPaths.AddRange(Directory.EnumerateFiles(
             Path.GetDirectoryName(typeof(object).Assembly.Location)!, "*.dll"));
         resolverPaths.AddRange(Directory.EnumerateFiles(AppContext.BaseDirectory, "*.dll"));
+        resolverPaths.AddRange(AdmissionRules.AdmittedAssemblyPaths());
 
         var context = new MetadataLoadContext(
             new PathAssemblyResolver(resolverPaths.Distinct(StringComparer.OrdinalIgnoreCase)));

@@ -427,10 +427,15 @@ public sealed class RuleRegisterTests
         // the checkout, every blocker named by its declaration and held to the gate's register in both
         // directions, with a review headline and a support table that claim more than the units
         // record shown not to clear it (decision JSD-0062). Active when minted; no other count moves.
-        Assert.Equal(117, byStatus["Active"]);
-        Assert.Equal(1, byStatus["Vacuous"]);
+        // SJL-2 of the shared JavaScript libraries programme mints group I's first five rules - I1
+        // admission, I2 imported-assembly hygiene, I3 the deployment boundary, I6 no leak through
+        // the family's surface, I7 upstream identity in evidence - each Active when minted, and
+        // promotes B3, the one Vacuous row, to Active: the shared packages give it a subject. No row
+        // is Vacuous after it; the Deferred row is unchanged.
+        Assert.Equal(123, byStatus["Active"]);
+        Assert.Equal(0, byStatus.GetValueOrDefault("Vacuous"));
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(119, Loaded.Rules.Count);
+        Assert.Equal(124, Loaded.Rules.Count);
     }
 
     private static Register Load()

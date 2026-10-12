@@ -1,0 +1,553 @@
+using System.IO.Compression;
+using System.Security.Cryptography;
+using System.Text.Json;
+
+namespace Broiler.VM.Architecture.Tests;
+
+/// <summary>One entry of rule I1's allow-list, admitted-packages.json.</summary>
+internal sealed record AdmittedPackage(
+    string Id,
+    string Version,
+    string ContentHash,
+    string Use,
+    IReadOnlyList<string> Projects,
+    IReadOnlyList<string> Sources,
+    string Pin)
+{
+    internal bool IsTestOnly => string.Equals(Use, "test-only", StringComparison.Ordinal);
+
+    /// <summary>The committed feed's copy of the package, beside its pin.</summary>
+    internal string FeedPath => Path.Combine(
+        Path.GetDirectoryName(Path.Combine(ComponentGraph.Root, Pin))!, Id + "." + Version + ".nupkg");
+}
+
+/// <summary>A lock file's resolution of one package: what restored and the content hash it recorded.</summary>
+internal sealed record LockedPackage(string Id, string Resolved, string ContentHash);
+
+/// <summary>
+/// Group I: the admission of shared JavaScript library packages (ADR 0014; the programme's
+/// governance, section 3.1). Each rule is a function from what it reads to the violations it
+/// finds, as every other group's is.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>Before SJL-2 nothing reached this component by package at all.</b> Rule A2 refused every
+/// Broiler package, N1 refused every package in the profile, and the product graph declared none.
+/// The shared libraries are the first packages a product project will ever reference, so the
+/// admission is spelled out per package and per project, and the hash that restored is part of
+/// the tree: a project that references an admitted package restores with a lock file, and the lock
+/// file's content hash is held to the list.
+/// </para>
+/// </remarks>
+internal static class AdmissionRules
+{
+    /// <summary>The allow-list, read once.</summary>
+    internal static IReadOnlyList<AdmittedPackage> AllowList { get; } = LoadAllowList(
+        Path.Combine(ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests", "admitted-packages.json"));
+
+    /// <summary>
+    /// The JavaScript family, the only projects that may hold an admitted reference: the profile
+    /// and its siblings. Composition roots declare no package reference (rule A12) and receive a
+    /// shared package transitively, through the family project that references it.
+    /// </summary>
+    internal static bool IsJavaScriptFamily(string assemblyName) =>
+        assemblyName.StartsWith("Broiler.VM.Profile.JavaScript", StringComparison.Ordinal);
+
+    /// <summary>
+    /// Whether a package identifier names a Broiler package, however it is spelled: <c>Broiler.*</c>,
+    /// and also <c>BroilerJS.*</c> and any other identifier that opens with "Broiler", which the
+    /// earlier <c>StartsWith("Broiler.")</c> test let through.
+    /// </summary>
+    internal static bool IsBroilerPackage(string id) =>
+        id.StartsWith("Broiler", StringComparison.OrdinalIgnoreCase);
+
+    internal static AdmittedPackage? Admitted(string id) =>
+        AllowList.SingleOrDefault(package => string.Equals(package.Id, id, StringComparison.OrdinalIgnoreCase));
+
+    internal static IReadOnlyList<AdmittedPackage> LoadAllowList(string path)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        return document.RootElement.GetProperty("packages").EnumerateArray()
+            .Select(static entry => new AdmittedPackage(
+                entry.GetProperty("id").GetString()!,
+                entry.GetProperty("version").GetString()!,
+                entry.GetProperty("contentHash").GetString()!,
+                entry.GetProperty("use").GetString()!,
+                entry.GetProperty("projects").EnumerateArray().Select(static p => p.GetString()!).ToArray(),
+                entry.GetProperty("sources").EnumerateArray().Select(static s => s.GetString()!).ToArray(),
+                entry.GetProperty("pin").GetString()!))
+            .ToArray();
+    }
+
+    /// <summary>The packages a lock file resolved for net10.0, direct and transitive.</summary>
+    internal static IReadOnlyList<LockedPackage> ReadLockFile(string text)
+    {
+        using var document = JsonDocument.Parse(text);
+        return document.RootElement.GetProperty("dependencies").EnumerateObject()
+            .SelectMany(static framework => framework.Value.EnumerateObject())
+            .Where(static package => package.Value.TryGetProperty("contentHash", out _))
+            .Select(static package => new LockedPackage(
+                package.Name,
+                package.Value.GetProperty("resolved").GetString()!,
+                package.Value.GetProperty("contentHash").GetString()!))
+            .ToArray();
+    }
+
+    /// <summary>
+    /// I1: every PackageReference is on the allow-list, from a project the list names for it, in
+    /// the JavaScript family, restored with a lock file whose content hash equals the list's pin.
+    /// A test-only package is admitted for no product project.
+    /// </summary>
+    /// <param name="project">The project file.</param>
+    /// <param name="lockFile">Its packages.lock.json, or null when it has none.</param>
+    internal static IEnumerable<string> I1(ComponentGraph.ProjectFile project, IReadOnlyList<LockedPackage>? lockFile)
+    {
+        foreach (var reference in project.PackageReferences)
+        {
+            var admitted = Admitted(reference);
+            var where = $"{project.RelativePath} ({project.AssemblyName}) -> package {reference}";
+
+            if (admitted is null)
+            {
+                yield return $"{where}: the allow-list does not admit it";
+                continue;
+            }
+
+            if (!IsJavaScriptFamily(project.AssemblyName))
+            {
+                yield return $"{where}: an admitted reference outside the JavaScript family";
+                continue;
+            }
+
+            if (!admitted.Projects.Contains(project.AssemblyName, StringComparer.Ordinal))
+            {
+                yield return $"{where}: the allow-list admits it for [{string.Join(", ", admitted.Projects)}] only";
+                continue;
+            }
+
+            if (admitted.IsTestOnly && (project.IsProduct || project.IsComposition))
+            {
+                yield return $"{where}: admitted test-only, and this is a shipping project";
+                continue;
+            }
+
+            if (!project.RawText.Contains("<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>", StringComparison.Ordinal))
+            {
+                yield return $"{where}: the project does not restore with a lock file";
+            }
+
+            var locked = lockFile?.SingleOrDefault(package => string.Equals(package.Id, admitted.Id, StringComparison.OrdinalIgnoreCase));
+
+            if (locked is null)
+            {
+                yield return $"{where}: no lock file records what restored";
+            }
+            else if (!string.Equals(locked.Resolved, admitted.Version, StringComparison.Ordinal))
+            {
+                yield return $"{where}: the lock file resolved {locked.Resolved}, the allow-list pins {admitted.Version}";
+            }
+            else if (!string.Equals(locked.ContentHash, admitted.ContentHash, StringComparison.Ordinal))
+            {
+                yield return $"{where}: the lock file's content hash {locked.ContentHash} differs from the pin {admitted.ContentHash}";
+            }
+        }
+    }
+
+    /// <summary>
+    /// I1's other half: every allow-list entry agrees with its pin, its package is on the committed
+    /// feed hashing to the pin when that is a source, and every project it names is in the
+    /// JavaScript family.
+    /// </summary>
+    internal static IEnumerable<string> I1Entries(IReadOnlyList<AdmittedPackage> list)
+    {
+        foreach (var package in list)
+        {
+            foreach (var project in package.Projects.Where(static p => !IsJavaScriptFamily(p)))
+            {
+                yield return $"{package.Id}: the allow-list names {project}, outside the JavaScript family";
+            }
+
+            var pinPath = Path.Combine(ComponentGraph.Root, package.Pin);
+
+            if (!File.Exists(pinPath))
+            {
+                yield return $"{package.Id}: its pin {package.Pin} does not exist";
+                continue;
+            }
+
+            var pin = File.ReadLines(pinPath)
+                .Where(static line => line.Length > 0 && !line.StartsWith('#'))
+                .Select(static line => line.Split(' ', 2))
+                .ToDictionary(static parts => parts[0], static parts => parts[1], StringComparer.Ordinal);
+
+            if (pin.GetValueOrDefault("id") != package.Id || pin.GetValueOrDefault("version") != package.Version
+                || pin.GetValueOrDefault("content-hash") != package.ContentHash)
+            {
+                yield return $"{package.Id}: the allow-list and {package.Pin} disagree on identity or content hash";
+            }
+
+            if (package.Sources.Contains("committed-feed", StringComparer.Ordinal))
+            {
+                if (!File.Exists(package.FeedPath))
+                {
+                    yield return $"{package.Id}: {package.Version} is not on the committed feed";
+                }
+                else if (ContentHash(File.ReadAllBytes(package.FeedPath)) != package.ContentHash)
+                {
+                    yield return $"{package.Id}: the committed feed's copy does not hash to the pin";
+                }
+            }
+        }
+    }
+
+    /// <summary>NuGet's content hash: the base64 SHA-512 of the .nupkg's bytes, which a lock file records.</summary>
+    internal static string ContentHash(byte[] package) => Convert.ToBase64String(SHA512.HashData(package));
+
+    /// <summary>The assemblies a package carries for net10.0, as (file name, bytes).</summary>
+    internal static IReadOnlyList<(string Name, byte[] Image)> PackageAssemblies(string nupkg)
+    {
+        using var archive = ZipFile.OpenRead(nupkg);
+        return archive.Entries
+            .Where(static entry => entry.FullName.StartsWith("lib/net10.0/", StringComparison.Ordinal)
+                && entry.FullName.EndsWith(".dll", StringComparison.Ordinal))
+            .Select(static entry =>
+            {
+                using var stream = entry.Open();
+                using var copy = new MemoryStream();
+                stream.CopyTo(copy);
+                return (Path.GetFileNameWithoutExtension(entry.Name), copy.ToArray());
+            })
+            .ToArray();
+    }
+
+    /// <summary>The source commit a package's nuspec records in its repository element, or null.</summary>
+    internal static string? NuspecCommit(string nupkg)
+    {
+        using var archive = ZipFile.OpenRead(nupkg);
+        var nuspec = archive.Entries.Single(static entry => entry.FullName.EndsWith(".nuspec", StringComparison.Ordinal));
+        using var stream = nuspec.Open();
+        var document = System.Xml.Linq.XDocument.Load(stream);
+        return document.Descendants().FirstOrDefault(static e => e.Name.LocalName == "repository")?.Attribute("commit")?.Value;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Members whose answer comes from the platform's culture, time zone, Unicode data or regular
+    /// expressions: the metadata equivalents of rules N18 and N23, which read this component's
+    /// sources and so can never read a package's.
+    /// </summary>
+    private static readonly string[] PlatformMembers =
+    [
+        "System.String.Normalize", "System.String.IsNormalized",
+        "System.String.ToUpper", "System.String.ToLower", "System.String.ToUpperInvariant", "System.String.ToLowerInvariant",
+        "System.Char.ToUpper", "System.Char.ToLower", "System.Char.ToUpperInvariant", "System.Char.ToLowerInvariant",
+        "System.String.Compare", "System.String.CompareTo",
+    ];
+
+    private static readonly string[] PlatformTypePrefixes =
+    [
+        "System.Text.RegularExpressions.", "System.TimeZoneInfo", "System.Globalization.CultureInfo",
+        "System.Globalization.TextInfo", "System.Globalization.CompareInfo", "System.Globalization.StringNormalizationExtensions",
+    ];
+
+    /// <summary>
+    /// I2: an admitted assembly reaches nothing on the member lists of B5, B5b and B5c, and no
+    /// platform globalization or regular-expression API.
+    /// </summary>
+    /// <remarks>
+    /// B5, B5b and B5c read only this solution's own projects, so a package was outside every one
+    /// of them; this rule applies the same lists to every admitted assembly, read from the package
+    /// itself. ILC, publishing with warnings as errors, already fails on a trim or AOT warning in
+    /// package code a root reaches; I2 also covers the code no root reaches yet.
+    /// </remarks>
+    internal static IEnumerable<string> I2(AssemblyFacts assembly)
+    {
+        foreach (var violation in ArchitectureRules.B5(assembly).Concat(ArchitectureRules.B5b(assembly)).Concat(NativeMappingRules.B5c(assembly)))
+        {
+            yield return violation;
+        }
+
+        foreach (var member in assembly.MemberReferences.Where(static member => PlatformMembers.Contains(member, StringComparer.Ordinal)))
+        {
+            yield return $"{assembly.Name} calls {member}";
+        }
+
+        foreach (var type in assembly.TypeReferences.Where(static type => PlatformTypePrefixes.Any(prefix =>
+                     type.StartsWith(prefix, StringComparison.Ordinal))))
+        {
+            yield return $"{assembly.Name} names {type}";
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>The shared frontend's assemblies: the compile-time-only library no compiler-free root may carry.</summary>
+    internal static readonly string[] FrontendAssemblies = ["Broiler.ECMAScript.Frontend"];
+
+    /// <summary>The roots that are compiler-free by definition: an execution-only deployment and the mobile head.</summary>
+    internal static readonly string[] CompilerFreeRoots =
+        ["Broiler.VM.Composition.JavaScript.ExecutionOnly", "Broiler.VM.Composition.JavaScript.Android"];
+
+    /// <summary>Optional data: the assemblies a root carries only when it has an Intl or zoned-Temporal surface.</summary>
+    internal static readonly string[] OptionalDataAssemblies = ["Broiler.VM.Profile.JavaScript.Intl"];
+
+    /// <summary>
+    /// I3: a compiler-free root's closure holds no frontend assembly, and a root carries optional data
+    /// only when docs/compositions.md declares it in that root's closure, which is where an Intl or
+    /// zoned-Temporal surface is declared.
+    /// </summary>
+    /// <param name="root">The composition root's assembly name.</param>
+    /// <param name="closure">The assemblies its closure holds: from the project graph, or from an mstat.</param>
+    /// <param name="rootsDeclaringData">The roots whose compositions.md row lists optional data.</param>
+    internal static IEnumerable<string> I3(string root, IEnumerable<string> closure, IReadOnlySet<string> rootsDeclaringData)
+    {
+        var held = closure.ToHashSet(StringComparer.Ordinal);
+
+        if (CompilerFreeRoots.Contains(root, StringComparer.Ordinal))
+        {
+            foreach (var frontend in FrontendAssemblies.Where(held.Contains))
+            {
+                yield return $"{root} is compiler-free and its closure holds {frontend}";
+            }
+        }
+
+        if (!rootsDeclaringData.Contains(root))
+        {
+            foreach (var data in OptionalDataAssemblies.Where(held.Contains))
+            {
+                yield return $"{root} declares no Intl or zoned-Temporal surface and its closure holds {data}";
+            }
+        }
+    }
+
+    /// <summary>
+    /// A root's closure from the project graph: every project it reaches by ProjectReference, and
+    /// every package any of them references - the shape a published directory's managed assemblies
+    /// take, which is what a JIT-mode closure listing holds.
+    /// </summary>
+    internal static IReadOnlyList<string> GraphClosure(string rootAssembly)
+    {
+        var byPath = ComponentGraph.Projects.ToDictionary(static p => Path.GetFullPath(p.Path), StringComparer.OrdinalIgnoreCase);
+        var start = ComponentGraph.Projects.Single(p => string.Equals(p.AssemblyName, rootAssembly, StringComparison.Ordinal));
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var queue = new Queue<ComponentGraph.ProjectFile>([start]);
+
+        while (queue.Count > 0)
+        {
+            var project = queue.Dequeue();
+            if (!seen.Add(project.AssemblyName))
+            {
+                continue;
+            }
+
+            foreach (var package in project.PackageReferences)
+            {
+                seen.Add(package);
+            }
+
+            foreach (var reference in project.ProjectReferences)
+            {
+                if (byPath.TryGetValue(Path.GetFullPath(reference), out var next))
+                {
+                    queue.Enqueue(next);
+                }
+            }
+        }
+
+        return seen.Order(StringComparer.Ordinal).ToArray();
+    }
+
+    /// <summary>
+    /// A Native AOT image's closure, read from ILC's mstat file. The publish directory of a native
+    /// image holds no managed assembly, so the collector asks ILC for its record of the image
+    /// (<c>IlcGenerateMstatFile</c>), and that record's AssemblyRef table names every assembly the
+    /// image was compiled from.
+    /// </summary>
+    internal static IReadOnlyList<string> MstatClosure(AssemblyFacts mstat) => mstat.AssemblyReferences
+        .Where(static name => !name.StartsWith("System.", StringComparison.Ordinal))
+        .ToArray();
+
+    /// <summary>The roots whose row in docs/compositions.md lists an optional-data assembly in its closure.</summary>
+    internal static IReadOnlySet<string> RootsDeclaringOptionalData()
+    {
+        var compositions = File.ReadAllLines(Path.Combine(ComponentGraph.Root, "docs", "compositions.md"));
+        return compositions
+            .Where(static line => line.StartsWith("| `Broiler.VM.Composition.", StringComparison.Ordinal))
+            .Where(static line => OptionalDataAssemblies.Any(data => line.Contains("`" + data + "`", StringComparison.Ordinal)))
+            .Select(static line => line.Split('`')[1])
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The admitted types a decision has baselined on the family's public surface. None: an
+    /// admitted type on that surface would make a shared package part of the family's public
+    /// contract, and no decision has taken that.
+    /// </summary>
+    internal static readonly string[] BaselinedAdmittedTypes = [];
+
+    /// <summary>
+    /// I6: no admitted type appears in the JavaScript family's public API baseline unless a decision
+    /// baselines it - rule B4 extended to the family and to the shared packages, which B4 does not
+    /// reach.
+    /// </summary>
+    internal static IEnumerable<string> I6(string baselineName, IEnumerable<string> baselineLines, IEnumerable<string> admittedTypes)
+    {
+        var patterns = admittedTypes
+            .Where(static type => !BaselinedAdmittedTypes.Contains(type, StringComparer.Ordinal))
+            .Select(static type => (Type: type, Pattern: new System.Text.RegularExpressions.Regex(
+                @"(?<![\w.])" + System.Text.RegularExpressions.Regex.Escape(type) + @"(?!\w)")))
+            .ToArray();
+
+        foreach (var line in baselineLines.Where(static line => !line.StartsWith('#')))
+        {
+            foreach (var (type, pattern) in patterns.Where(entry => entry.Pattern.IsMatch(line)))
+            {
+                yield return $"{baselineName} names the admitted type {type}: {line.Trim()}";
+            }
+        }
+    }
+
+    /// <summary>Every public type of every admitted assembly, read from the committed feed's packages.</summary>
+    internal static IReadOnlyList<string> AdmittedPublicTypes() => AllowList
+        .Where(static package => File.Exists(package.FeedPath))
+        .SelectMany(static package => PackageAssemblies(package.FeedPath))
+        .SelectMany(static assembly => AssemblyFacts.ReadImage(assembly.Name, assembly.Image).PublicTypeNames)
+        .Distinct(StringComparer.Ordinal)
+        .Order(StringComparer.Ordinal)
+        .ToArray();
+
+    /// <summary>
+    /// The admitted assemblies as files, extracted from the committed feed into a directory keyed by
+    /// content hash, so that a metadata-only reflection context can resolve a public signature that
+    /// names one - which is what lets I6 see such a signature rather than the baseline run failing
+    /// on it.
+    /// </summary>
+    internal static IReadOnlyList<string> AdmittedAssemblyPaths()
+    {
+        var paths = new List<string>();
+
+        foreach (var package in AllowList.Where(static package => File.Exists(package.FeedPath)))
+        {
+            var key = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.ASCII.GetBytes(package.ContentHash)))[..16];
+            var directory = Path.Combine(Path.GetTempPath(), "broiler-vm-admitted", package.Id + "." + package.Version + "-" + key);
+            Directory.CreateDirectory(directory);
+
+            foreach (var (name, image) in PackageAssemblies(package.FeedPath))
+            {
+                var path = Path.Combine(directory, name + ".dll");
+                if (!File.Exists(path) || !File.ReadAllBytes(path).AsSpan().SequenceEqual(image))
+                {
+                    File.WriteAllBytes(path, image);
+                }
+
+                paths.Add(path);
+            }
+        }
+
+        return paths;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// I7: a bundle manifest that runs a composition carrying an admitted package records each such
+    /// package's identifier, version, content hash and the source commit its nuspec names, so that
+    /// the upstream revision a release's review gate reads is in the evidence (decision SJL-D-5 (a)).
+    /// </summary>
+    /// <param name="manifestName">The manifest's path, for messages.</param>
+    /// <param name="manifest">The manifest.</param>
+    /// <param name="closures">Each composition the bundle ran, with the assemblies its closure holds.</param>
+    internal static IEnumerable<string> I7(
+        string manifestName,
+        JsonElement manifest,
+        IReadOnlyDictionary<string, IReadOnlyList<string>> closures)
+    {
+        var recorded = manifest.TryGetProperty("admittedPackages", out var list)
+            ? list.EnumerateArray().ToArray()
+            : [];
+
+        foreach (var (composition, closure) in closures)
+        {
+            foreach (var package in AllowList.Where(package => closure.Contains(package.Id, StringComparer.Ordinal)))
+            {
+                var entry = recorded.FirstOrDefault(e => e.TryGetProperty("id", out var id) && id.GetString() == package.Id);
+
+                if (entry.ValueKind != JsonValueKind.Object)
+                {
+                    yield return $"{manifestName}: {composition} carries {package.Id} and the manifest does not record it";
+                    continue;
+                }
+
+                foreach (var field in (string[])["version", "contentHash", "commit"])
+                {
+                    if (!entry.TryGetProperty(field, out var value) || string.IsNullOrWhiteSpace(value.GetString()))
+                    {
+                        yield return $"{manifestName}: {composition} carries {package.Id} and the manifest records no {field}";
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// <summary>SemVer 2.0 precedence, for the version clauses of N37 and I1: numeric core, then prerelease identifiers.</summary>
+internal static class SemanticVersion
+{
+    internal static int Compare(string left, string right)
+    {
+        var (leftCore, leftPre) = Split(left);
+        var (rightCore, rightPre) = Split(right);
+
+        for (var i = 0; i < 3; i++)
+        {
+            var order = leftCore[i].CompareTo(rightCore[i]);
+            if (order != 0)
+            {
+                return order;
+            }
+        }
+
+        if (leftPre.Length == 0 || rightPre.Length == 0)
+        {
+            return rightPre.Length.CompareTo(leftPre.Length) == 0 ? 0 : leftPre.Length == 0 ? 1 : -1;
+        }
+
+        for (var i = 0; i < Math.Min(leftPre.Length, rightPre.Length); i++)
+        {
+            var leftNumeric = long.TryParse(leftPre[i], out var leftNumber);
+            var rightNumeric = long.TryParse(rightPre[i], out var rightNumber);
+            var order = (leftNumeric, rightNumeric) switch
+            {
+                (true, true) => leftNumber.CompareTo(rightNumber),
+                (true, false) => -1,
+                (false, true) => 1,
+                _ => string.CompareOrdinal(leftPre[i], rightPre[i]),
+            };
+
+            if (order != 0)
+            {
+                return order;
+            }
+        }
+
+        return leftPre.Length.CompareTo(rightPre.Length);
+    }
+
+    private static (long[] Core, string[] Prerelease) Split(string version)
+    {
+        var withoutMetadata = version.Split('+')[0];
+        var dash = withoutMetadata.IndexOf('-', StringComparison.Ordinal);
+        var core = (dash < 0 ? withoutMetadata : withoutMetadata[..dash]).Split('.');
+        var numbers = new long[3];
+
+        for (var i = 0; i < 3 && i < core.Length; i++)
+        {
+            numbers[i] = long.Parse(core[i], System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        return (numbers, dash < 0 ? [] : withoutMetadata[(dash + 1)..].Split('.'));
+    }
+}

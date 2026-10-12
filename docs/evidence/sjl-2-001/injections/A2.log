@@ -1,0 +1,32 @@
+# A2: a package spelled BroilerJS.Network in the Intl data project
+# The test is A2_No_Project_References_A_Broiler_Package.
+
+## Injected
+
+(injected into src/Broiler.VM.Profile.JavaScript.Intl/Broiler.VM.Profile.JavaScript.Intl.csproj)
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~A2_No_Project_References_A_Broiler_Package
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A2_No_Project_References_A_Broiler_Package [49 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Profile.JavaScript.Intl/Broiler.VM."···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A2_No_Project_References_A_Broiler_Package() in /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/ProjectFileRuleTests.cs:line 25
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 49 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.28]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A2_No_Project_References_A_Broiler_Package [FAIL]
+exit 1
+
+## Reverted
+
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~A2_No_Project_References_A_Broiler_Package
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 49 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+exit 0
+
+# Result: injected exit 1 (must be non-zero), reverted exit 0 (must be zero)

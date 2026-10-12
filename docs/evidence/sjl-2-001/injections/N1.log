@@ -1,0 +1,32 @@
+# N1: the JavaScript profile declaring the Broiler.JS engine's runtime package
+# The test is N1_The_JavaScript_Profile_References.
+
+## Injected
+
+(injected into src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj)
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~N1_The_JavaScript_Profile_References
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format [49 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profi"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format() in /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/ProjectFileRuleTests.cs:line 408
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 49 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.28]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format [FAIL]
+exit 1
+
+## Reverted
+
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~N1_The_JavaScript_Profile_References
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 40 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+exit 0
+
+# Result: injected exit 1 (must be non-zero), reverted exit 0 (must be zero)

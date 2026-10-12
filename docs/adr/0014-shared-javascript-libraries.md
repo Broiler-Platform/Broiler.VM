@@ -159,8 +159,8 @@ pins, and each engine embeds the tables they generate, so no package carries dat
 `Broiler.ECMAScript.Algorithms`, `Broiler.ECMAScript.Intl`, `Broiler.ECMAScript.Frontend` and
 `Broiler.ECMAScript.Conformance` (test-only). `Broiler.ECMAScript.TimeData` and
 `Broiler.ECMAScript.IntlData` are reserved for data packages, which decision `SJL-D-6` (c) does not
-publish. The prefix is reserved on nuget.org before anything under it is published (milestone SJL-2,
-work package SJL-2.13). It passes Broiler.JSeal's package gate, which treats `Broiler.JavaScript.*` and
+publish. No reservation of the prefix on nuget.org is required (revised 2026-10-12; see the revision
+at the end of this record). It passes Broiler.JSeal's package gate, which treats `Broiler.JavaScript.*` and
 `Broiler.VM.*` as engine families, without a revision of that gate.
 
 ## Decision 5 - Versioning, co-hosting and the consumption source (decisions SJL-D-3 and SJL-D-4)
@@ -284,3 +284,18 @@ this section.
 
 **Nothing is reviewed, accepted, advertised, packed or published by this record**, under
 [`docs/mvp.md`](../mvp.md). No package is admitted, no rule is minted and no algorithm moves.
+
+---
+
+### 2026-10-12 - the prefix reservation is withdrawn, SJL-2
+
+**What the record said.** Decision 4's package-identity paragraph said: "The prefix is reserved on
+nuget.org before anything under it is published (milestone SJL-2, work package SJL-2.13)."
+
+**What replaced it.** The owner withdrew the reservation, and decision `SJL-D-2` carries the revised
+choice beside the one taken on 2026-10-11. No reservation of `Broiler.ECMAScript` on nuget.org is
+required, and Broiler.JS's `Publish shared libraries` workflow no longer waits for one. The prefix, the
+package identities and every other decision of this record are unchanged. What guards against a
+package substituted under the prefix is what already held at SJL-2: package source mapping, lock files
+whose content hashes rule `I1` holds to the allow-list's pins, and the upstream commit rule `I7`
+records.

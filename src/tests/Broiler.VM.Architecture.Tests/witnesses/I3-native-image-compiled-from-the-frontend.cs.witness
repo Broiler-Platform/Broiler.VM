@@ -1,0 +1,10 @@
+// Violates I3, the Native AOT half: an image record whose AssemblyRef table names the shared frontend.
+// ILC's mstat file records the assemblies a native image was compiled from in exactly this table, so
+// the test compiles this source against a stub Broiler.ECMAScript.Frontend and reads the result as the
+// execution-only root's mstat.
+namespace Broiler.VM.Witness;
+
+public static class CompiledIn
+{
+    public static string Frontend() => typeof(Broiler.ECMAScript.Frontend.Parser).FullName!;
+}

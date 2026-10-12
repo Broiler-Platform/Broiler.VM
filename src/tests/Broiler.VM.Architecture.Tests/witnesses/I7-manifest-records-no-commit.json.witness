@@ -1,0 +1,22 @@
+{
+  "$comment": [
+    "Violates I7: a bundle that ran a composition carrying an admitted package, whose manifest records the",
+    "package's identifier, version and content hash but not the source commit its nuspec names. A release's",
+    "review gate reads that commit (decision SJL-D-5 (a)), so a bundle without it cannot be gated.",
+    "The closures field stands in for the bundle's closure listings."
+  ],
+  "bundle": "witness",
+  "closures": {
+    "Broiler.VM.Composition.JavaScript.Cli": [
+      "Broiler.ECMAScript.Algorithms",
+      "Broiler.VM.Profile.JavaScript"
+    ]
+  },
+  "admittedPackages": [
+    {
+      "id": "Broiler.ECMAScript.Algorithms",
+      "version": "0.0.1-probe.1",
+      "contentHash": "CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ=="
+    }
+  ]
+}

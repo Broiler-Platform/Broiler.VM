@@ -33,6 +33,9 @@ import os
 import subprocess
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import admitted_packages  # noqa: E402  (rule I1's allow-list, for the I7 identity record)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -92,8 +95,19 @@ def main():
         manifest["sources"] = {path: git("rev-parse", f"{revision}:{path}") for path in sorted(arguments.source)}
     manifest["inputs"] = {path: sha256(stored_bytes(path)) for path in sorted(arguments.input)}
 
-    retained = {}
+    # Rule I7 (SJL-2.7): when the bundle's closure listings show a composition carrying an admitted
+    # shared package, the manifest records its upstream identity.
     directory = os.path.join(ROOT, bundle)
+    carried = set()
+    for name in sorted(os.listdir(directory)):
+        if name.startswith("closure-") and name.endswith(".txt"):
+            with open(os.path.join(directory, name), encoding="utf-8") as handle:
+                carried.update(line.strip() for line in handle if line.strip() and line[0] not in "#[")
+    admitted = admitted_packages.identities(sorted(carried))
+    if admitted:
+        manifest["admittedPackages"] = admitted
+
+    retained = {}
     for name in sorted(os.listdir(directory)):
         if name == "manifest.json" or os.path.isdir(os.path.join(directory, name)):
             continue

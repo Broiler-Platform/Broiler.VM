@@ -1,0 +1,11 @@
+<!-- Violates I1: a listed package referenced from Broiler.VM.Runtime, a core project. Nothing outside
+     the JavaScript family may hold an admitted reference, whatever the list says of the package. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Runtime</AssemblyName>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Broiler.ECMAScript.Algorithms" Version="0.0.1-probe.1" />
+  </ItemGroup>
+</Project>

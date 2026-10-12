@@ -13,10 +13,16 @@ Phase F9's slice R3 (decision JSD-0061) takes release gate 8's facts and retains
   3. THE PREVIOUS PACKAGE SET is the one actually published: the consumer's packages at
      0.1.0-preview.5, downloaded from nuget.org and hashed. It carries no Intl package, because none
      was published.
-  4. A PRISTINE CONSUMER RESTORES AND RUNS with upstream feeds unreachable: samples/NuGet.config
-     lists one local source, the packages folder and the HTTP cache are fresh and empty, and every
-     proxy variable points at a closed port, so a package found anywhere but the local feed is a
-     failed restore rather than a quiet download.
+  4. A PRISTINE CONSUMER RESTORES AND RUNS with upstream feeds unreachable: the consumer's own
+     NuGet.config, which this script writes beside it for the run and removes after, lists one local
+     source, the packages folder and the HTTP cache are fresh and empty, and every proxy variable
+     points at a closed port, so a package found anywhere but the local feed is a failed restore
+     rather than a quiet download. Every package rule I1 admits is placed on the local feed first
+     (milestone SJL-2.7), from the committed feed eng/packages/, so the consumer restore proves that
+     the shared packages travel with the family's packages.
+     (Corrected 2026-10-12, at SJL-2.7. It read "samples/NuGet.config lists one local source": that
+     file lists nuget.org alone since 2026-10-11, when the samples moved to the published packages,
+     and the consumer's isolated configuration is this script's to write.)
   5. ROLLBACK: the same consumer, unchanged, restored and run against the previous set, then rolled
      forward to the candidate again.
   6. A NEGATIVE CONTROL: the consumer asked for exactly 0.1.0-preview.4, which nuget.org holds and the
@@ -42,6 +48,9 @@ import tempfile
 import urllib.request
 import zipfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import admitted_packages  # noqa: E402  (rule I1's allow-list: its packages travel with the family's)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOLUTION = "Broiler.VM.slnx"
 SAMPLE = os.path.join(ROOT, "samples", "Broiler.VM.Sample.JavaScriptConsumer")
@@ -52,6 +61,22 @@ CANDIDATE_SUFFIX = "preview.6.f9-candidate"
 CANDIDATE = PREFIX + "-" + CANDIDATE_SUFFIX
 PREVIOUS = "0.1.0-preview.5"
 UNPUBLISHED = "0.1.0-preview.4"
+
+# The consumer's configuration for the isolated runs: the local feed alone, every package mapped to it.
+LOCAL_ONLY_CONFIG = """<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="local-feed" value="{feed}" />
+  </packageSources>
+  <packageSourceMapping>
+    <clear />
+    <packageSource key="local-feed">
+      <package pattern="*" />
+    </packageSource>
+  </packageSourceMapping>
+</configuration>
+"""
 
 # The previous set: what the consumer references at 0.1.0-preview.5, as published. The Intl package
 # did not exist then.
@@ -201,6 +226,10 @@ def main():
         if name.endswith(".nupkg"):
             shutil.copy(os.path.join(packed, name), FEED)
 
+    # Every admitted shared package, from the committed feed, so that the consumer restores them
+    # from the same local source as the family's packages (SJL-2.7).
+    admitted = admitted_packages.place_on_feed(FEED)
+
     # 3. The previous set, as published.
     lines = ["=== THE PREVIOUS PACKAGE SET, AS PUBLISHED ==="]
     for package in PREVIOUS_PACKAGES:
@@ -213,6 +242,17 @@ def main():
     lines.append("")
     lines.append("--- feed contents ---")
     lines.extend("%s sha256=%s" % (name, sha256(os.path.join(FEED, name))) for name in sorted(os.listdir(FEED)))
+
+    if admitted:
+        lines.append("--- admitted shared packages placed on the feed ---")
+        lines.extend(admitted)
+
+    # The consumer's isolated configuration: the local feed and nothing else. Written beside the
+    # consumer for the runs below, and removed after them, so that the sample's own configuration -
+    # nuget.org, for a developer building it against the published packages - is never edited.
+    consumer_config = os.path.join(SAMPLE, "NuGet.config")
+    with open(consumer_config, "w", encoding="utf-8", newline="\n") as stream:
+        stream.write(LOCAL_ONLY_CONFIG.format(feed=FEED))
 
     # 4-6. Restore and run, roll back, roll forward, and the negative control, each from nothing.
     sequence = [
@@ -267,6 +307,7 @@ def main():
     shutil.rmtree(scratch, ignore_errors=True)
     for directory in ("bin", "obj"):
         shutil.rmtree(os.path.join(SAMPLE, directory), ignore_errors=True)
+    os.remove(consumer_config)
 
     with open(os.path.join(out, "consumer.log"), "w", encoding="utf-8", newline="\n") as stream:
         stream.write("\n".join(lines) + "\n")

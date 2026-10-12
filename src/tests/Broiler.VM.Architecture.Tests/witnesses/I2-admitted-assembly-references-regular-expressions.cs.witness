@@ -1,0 +1,12 @@
+// Violates I2: an assembly, built as an admitted shared package would be, that references
+// System.Text.RegularExpressions - the platform matcher rule N18 refuses in this component's own
+// sources and which no admitted package may bring in by the back door. The admission probe's third
+// negative control compiles it under the probe's own assembly name.
+using System.Text.RegularExpressions;
+
+namespace Broiler.ECMAScript;
+
+public static class PlatformMatcher
+{
+    public static bool IsNumber(string text) => Regex.IsMatch(text, "^[0-9]+$");
+}

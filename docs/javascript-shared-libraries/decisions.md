@@ -175,6 +175,17 @@ data packages, which [SJL-D-6](#sjl-d-6) (c) does not publish. The prefix is res
 before anything under it is published (SJL-2.13). Broiler.JSeal's gate needs no revision.
 **Recorded by** ADR 0014 (SJL-0.2) and the Broiler.JS shared-libraries plan (SJL-0.5).
 
+**Revised 2026-10-12, at SJL-2, by the owner: the prefix reservation is withdrawn.** No reservation of
+`Broiler.ECMAScript` on nuget.org is required, and nothing under the prefix waits for one before it is
+published. The rest of (a) stands: the prefix, the package identities and Broiler.JSeal's unrevised
+gate. The supply-chain measures that remain are those of
+[governance.md](governance.md#8-security): package source mapping, lock files with content hashes
+held to rule `I1`'s pins, nuget.org repository signatures, Source Link and deterministic builds, and
+the upstream commit rule `I7` records. The taken choice's sentence this supersedes read "The prefix
+is reserved on nuget.org before anything under it is published (SJL-2.13)." The holder is the same
+one person (EX-30). **Recorded by** ADR 0014's revision of this date and the Broiler.JS
+shared-libraries plan.
+
 <a id="sjl-d-3"></a>
 ### SJL-D-3 — Versioning, compatibility and co-hosting
 

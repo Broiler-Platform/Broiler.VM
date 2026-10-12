@@ -129,3 +129,8 @@ src/tests/cldr/pins/cldr-LICENSE.txt binary
 src/tests/calendars/pins/*.crate binary
 
 *.png                     binary
+
+# THE COMMITTED FEED'S PACKAGES ARE BYTES PINNED BY HASH (decision SJL-D-4 (c), milestone SJL-2.7). A
+# .nupkg is a zip, which git's heuristic calls binary today, but its pin's content hash is what a lock
+# file and rule I1 compare, and that is not a guarantee to leave to a heuristic.
+eng/packages/*.nupkg binary

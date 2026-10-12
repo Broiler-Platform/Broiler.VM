@@ -1,0 +1,15 @@
+<!-- Violates N1 as revised at SJL-2: the JavaScript profile assembly declaring a package outside the
+     set rule I1 admits for it - here a package of the Broiler.JS engine, which no decision admits
+     and which would put a second engine's runtime into every composition. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" />
+    <PackageReference Include="Broiler.JavaScript.Runtime" Version="0.1.0-preview.1" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,7 @@
+<!-- Violates A2 as revised at SJL-2: a Broiler package spelled BroilerJS.*, with no dot after
+     "Broiler". The rule's earlier StartsWith("Broiler.") test missed every such identifier. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="BroilerJS.Network" Version="1.0.0" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,11 @@
+<!-- Violates I1: a package that is not on the allow-list at all, referenced from a JavaScript-family
+     project. Nothing reaches the product graph by package unless the list admits it. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Intl</AssemblyName>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+</Project>

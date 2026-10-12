@@ -1953,3 +1953,54 @@ No composition root is packable, and section 1 of the composition register still
 advertises nothing.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-10-12 - shared packages admitted, the legacy boundary restated, SJL-2
+
+**What changes.** No project in either solution and no project edge. What changes is what may cross
+the component's outer boundary by package. ADR 0014 (`0014-shared-javascript-libraries.md`) admits
+the shared JavaScript libraries' packages, `Broiler.ECMAScript.*`, to the JavaScript profile family
+only, and milestone SJL-2 of that programme makes the admission enforceable: rule I1's allow-list
+(`src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json`), lock files for any project that
+references an admitted package, and rules I2, I3, I6 and I7. No product project references a shared
+package at this revision; the only admitted package is a probe, admitted test-only. Four passages of
+this record are revised by this entry, and each said, before it:
+
+- **The outbound legacy boundary** said: "OUTBOUND - Broiler.VM references no legacy Broiler component.
+  Enforced from inside the component at both levels by Rule A1, Rule A2, Rule A3 and Rule B3, and at pack
+  level by Rule C2 when VM-6 activates it." It now reads, by this revision: Broiler.VM references no
+  legacy Broiler engine component. The shared libraries ADR 0014 admits are the only edges allowed
+  outside the component, only from the JavaScript profile family, and only as rule I1's allow-list names
+  them. Rule A2 refuses every Broiler package outside that list (and catches an identifier spelled
+  `BroilerJS.*`, which its `StartsWith("Broiler.")` test missed); rule B3, Active from this revision,
+  sweeps every shipping assembly against the component's own set plus the admitted assemblies; rule A1
+  and rule A3 are unchanged.
+- **The single-source `NuGet.config` rationale** said: "Adding a Broiler-serving package feed would make
+  a PackageReference to a legacy Broiler package RESOLVABLE. Omitting it makes that forbidden edge
+  unreachable rather than merely detected, so Rule A2 becomes a second line of defence instead of the
+  only one." **That claim was already false before this revision**: Broiler.JS publishes to nuget.org,
+  the one source the configuration listed, so a legacy Broiler package was resolvable all along and rule
+  A2 was the only line of defence. What holds the boundary now is rules, not unreachability: A2 and I1
+  on project files, B3 and I2 on metadata, and package source mapping, which sends the shared prefix to
+  two sources - the committed, hash-pinned feed `eng/packages/` and nuget.org - and every other
+  identifier to nuget.org only (decision SJL-D-4 (c)). A lock file records the content hash whichever
+  source supplies a package, and I1 holds it to the pin. Restore determinism for evidence bundles is now
+  the lock files' and the pins', not the single source's.
+- **The no-chaining reason** said that Broiler.VM "references no other Broiler component", so it needs
+  none of the path properties chaining delivers. It now reads: Broiler.VM references no other Broiler
+  component's **build** - no project, no imported props or targets, no linked source. An admitted shared
+  package is a package, restored like any other, and no path property is needed to reach it. Not
+  chaining `Directory.Build.props` is unchanged, for the reasons that paragraph gives.
+- **The package-edge budget.** This record budgets projects and project edges by number, and rule A15
+  reads the last such sentence. Package edges are not projects, and this revision does not type their
+  number: since SJL-2.5 `graph.manifest.json` records every project's package edges, rule A7 compares
+  them with the project files in both directions, and the figure is the catalogue's, cited as
+  `{graph:package-edges}`. At this revision every package edge is a test project's test framework; the
+  product graph has none.
+
+**What is now true.** The project set and the project-edge set are unchanged, and so is the last budget
+sentence above. Package edges are part of the frozen graph, the boundary is held by rules A1, A2, A3,
+B3, I1 and I2 rather than by an unreachable source, and an admitted package can reach only the
+JavaScript family.
+
+**What is not edited.** Every revision above stands as written, and the sentences quoted here stand in
+the sections they were written in, read with this revision.

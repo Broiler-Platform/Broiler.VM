@@ -1,0 +1,10 @@
+// Violates B3: an assembly that names a Broiler assembly outside the component's own set and outside
+// rule I1's allow-list. The test compiles this against a stub assembly named
+// Broiler.JavaScript.Runtime - the Broiler.JS engine's runtime, a package any project could reference
+// from nuget.org - so the witness's AssemblyRef table records exactly the edge the rule refuses.
+namespace Broiler.VM.Witness;
+
+public static class ForeignEngine
+{
+    public static string Describe() => typeof(Broiler.JavaScript.Runtime.JSValue).FullName!;
+}

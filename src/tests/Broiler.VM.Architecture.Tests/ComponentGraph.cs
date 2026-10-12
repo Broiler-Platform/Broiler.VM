@@ -58,6 +58,13 @@ internal static class ComponentGraph
     /// </remarks>
     internal static IReadOnlyList<string> WitnessInputs { get; } = LoadWitnessInputs();
 
+    /// <summary>
+    /// Parses a project file this checkout does not hold - the admission probe's scratch project -
+    /// the way a witness is parsed: evaluated as though it sat in the component, and never test-only,
+    /// product or a composition, so that a rule cannot skip it by its location.
+    /// </summary>
+    internal static ProjectFile ParseOutside(string path) => Parse(path, isWitness: true);
+
     internal static ProjectFile Witness(string fileName) =>
         Witnesses.SingleOrDefault(witness =>
             string.Equals(Path.GetFileName(witness.Path), fileName, StringComparison.Ordinal))

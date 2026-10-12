@@ -1,0 +1,32 @@
+# E4: ADR 0014 citing Rule I9, which has no register row
+# The test is E4_The_Index_Lists_Every_Adr.
+
+## Injected
+
+(injected into docs/adr/0014-shared-javascript-libraries.md)
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~E4_The_Index_Lists_Every_Adr
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.CoreContractVersionTests.E4_The_Index_Lists_Every_Adr_And_Every_Named_Rule_Is_Registered [70 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["0014-shared-javascript-libraries.md names unregist"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.CoreContractVersionTests.E4_The_Index_Lists_Every_Adr_And_Every_Named_Rule_Is_Registered() in /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/CoreContractVersionTests.cs:line 249
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 70 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.30]     Broiler.VM.Architecture.Tests.CoreContractVersionTests.E4_The_Index_Lists_Every_Adr_And_Every_Named_Rule_Is_Registered [FAIL]
+exit 1
+
+## Reverted
+
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~E4_The_Index_Lists_Every_Adr
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 56 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+exit 0
+
+# Result: injected exit 1 (must be non-zero), reverted exit 0 (must be zero)

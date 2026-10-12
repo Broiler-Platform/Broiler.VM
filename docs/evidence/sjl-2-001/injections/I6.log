@@ -1,0 +1,32 @@
+# I6: the family's API baseline naming an admitted type in a public signature
+# The test is I6_No_Admitted_Type_Appears.
+
+## Injected
+
+(injected into src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt)
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~I6_No_Admitted_Type_Appears
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.AdmissionRuleTests.I6_No_Admitted_Type_Appears_In_The_Family_Api_Baseline [71 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Profile.JavaScript/docs/api/public-"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AdmissionRuleTests.I6_No_Admitted_Type_Appears_In_The_Family_Api_Baseline() in /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AdmissionRuleTests.cs:line 133
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 71 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.30]     Broiler.VM.Architecture.Tests.AdmissionRuleTests.I6_No_Admitted_Type_Appears_In_The_Family_Api_Baseline [FAIL]
+exit 1
+
+## Reverted
+
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~I6_No_Admitted_Type_Appears
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+exit 0
+
+# Result: injected exit 1 (must be non-zero), reverted exit 0 (must be zero)

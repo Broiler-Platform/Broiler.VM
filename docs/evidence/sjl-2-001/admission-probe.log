@@ -1,0 +1,44 @@
+# The admission probe of milestone SJL-2.9: Broiler.ECMAScript.Algorithms 0.0.1-probe.1, admitted test-only.
+
+$ dotnet restore <probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj --configfile <probe>/NuGet.config --packages <probe>/packages --no-http-cache
+  Determining projects to restore...
+  Restored <probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj (in 298 ms).
+exit 0
+
+$ dotnet restore <probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj --configfile <probe>/NuGet.config --packages <probe>/packages --locked-mode --no-http-cache
+  Determining projects to restore...
+  Restored <probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj (in 230 ms).
+exit 0
+
+$ dotnet build <probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj -c Release --no-restore --nologo
+  Broiler.VM.Profile.JavaScript.AdmissionProbe -> <probe>/probe/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.AdmissionProbe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.78
+exit 0
+
+## positive: I1: no violation
+
+## positive: I2 over the restored assembly: no violation
+
+## positive: I6 over the probe's public surface (2 lines): no violation
+
+## negative: the probe package referenced from Broiler.VM.Runtime, I1: 1 violation(s)
+  src/tests/Broiler.VM.Architecture.Tests/witnesses/I1-admitted-package-in-the-runtime.csproj.witness (Broiler.VM.Runtime) -> package Broiler.ECMAScript.Algorithms: an admitted reference outside the JavaScript family
+
+## negative: the lock file's content hash changed, I1: 1 violation(s)
+  <probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj (Broiler.VM.Profile.JavaScript.AdmissionProbe) -> package Broiler.ECMAScript.Algorithms: the lock file's content hash AAmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ== differs from the pin CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ==
+
+$ dotnet restore <probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj --configfile <probe>/NuGet.config --packages <probe>/packages --locked-mode --no-http-cache
+  Determining projects to restore...
+<probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj : error NU1403: Package content hash validation failed for Broiler.ECMAScript.Algorithms.0.0.1-probe.1. The package is different than the last restore.
+<probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj : error NU1403: 
+  Failed to restore <probe>/probe/Broiler.VM.Profile.JavaScript.AdmissionProbe.csproj (in 250 ms).
+exit 1
+
+## negative: a probe build referencing System.Text.RegularExpressions, I2: 1 violation(s)
+  Broiler.ECMAScript.Algorithms names System.Text.RegularExpressions.Regex
+

@@ -1,0 +1,35 @@
+# eng/verify-sources.py: a restore through each configured source, and an unmapped identifier
+
+## 1. the committed feed: Broiler.ECMAScript.Algorithms 0.0.1-probe.1
+$ dotnet restore <scratch>/project/Scratch.csproj --configfile <scratch>/NuGet.config --no-http-cache
+  Determining projects to restore...
+  Restored <scratch>/project/Scratch.csproj (in 292 ms).
+exit 0
+
+lock file content hash: CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ==
+allow-list pin:         CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ==
+
+## 2. nuget.org: System.Reflection.MetadataLoadContext 9.0.0
+$ dotnet restore <scratch>/project/Scratch.csproj --configfile <scratch>/NuGet.config --no-http-cache
+  Determining projects to restore...
+  Restored <scratch>/project/Scratch.csproj (in 1.4 sec).
+exit 0
+
+## 3. an unmapped identifier: Unmapped.Source.Probe 1.0.0, packed into a copy of the committed feed
+$ dotnet pack <scratch>/library/Unmapped.csproj -o <scratch>/feed --nologo
+  Determining projects to restore...
+  Restored <scratch>/library/Unmapped.csproj (in 76 ms).
+  Unmapped -> <scratch>/library/bin/Release/net10.0/Unmapped.dll
+  The package Unmapped.Source.Probe.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '<scratch>/feed/Unmapped.Source.Probe.1.0.0.nupkg'.
+exit 0
+
+feed copy: Broiler.ECMAScript.Algorithms.0.0.1-probe.1.nupkg, Broiler.ECMAScript.Algorithms.0.0.1-probe.1.pin, README.md, Unmapped.Source.Probe.1.0.0.nupkg
+
+$ dotnet restore <scratch>/project/Scratch.csproj --configfile <scratch>/NuGet.config --no-http-cache
+  Determining projects to restore...
+<scratch>/project/Scratch.csproj : error NU1101: Unable to find package Unmapped.Source.Probe. No packages exist with this id in source(s): nuget.org. PackageSourceMapping is enabled, the following source(s) were not considered: broiler-shared.
+  Failed to restore <scratch>/project/Scratch.csproj (in 1.22 sec).
+exit 1
+
+# Result: committed feed yes, nuget.org yes, unmapped identifier refused yes

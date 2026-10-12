@@ -281,12 +281,10 @@ public sealed class PackageRuleTests
     [Fact]
     public void B3_No_Product_Assembly_Names_A_Broiler_Assembly_Outside_The_Component()
     {
-        // Vacuous since VM-0 with activation milestone VM-6, and it stays Vacuous: nothing in the
-        // graph can violate it, because ADR 0001's rule A1 stops a Broiler.* PROJECT reference
-        // arriving in the first place and rule A2 stops a Broiler.* PACKAGE reference. What VM-6
-        // adds is not a way to break it but a place it could have been broken - the packages
-        // themselves - and C2 above is that half. The register row keeps saying Vacuous, which is
-        // the honest state of a rule whose subject cannot yet be broken.
+        // The packed half of B3: a product assembly names only the three packages this component
+        // publishes. Vacuous from VM-0 to SJL-2, Active since, when the shared libraries made a
+        // Broiler assembly outside the component reachable; the sweep over every shipping
+        // assembly, and the witness, are in AssemblyMetadataRuleTests.
         foreach (var assembly in AssemblyFacts.Product)
         {
             var stray = assembly.AssemblyReferences
@@ -406,10 +404,12 @@ public sealed class PackageRuleTests
             Assert.Null(row.ActivationMilestone);
         }
 
-        var vacuous = RuleRegisterTests.Loaded.Rules.Single(
+        // B3 was Vacuous here until SJL-2 and is Active since; the row may not still say "never".
+        var b3 = RuleRegisterTests.Loaded.Rules.Single(
             rule => string.Equals(rule.Id, "B3", StringComparison.Ordinal));
 
-        Assert.Equal("Vacuous", vacuous.Status);
+        Assert.Equal("Active", b3.Status);
+        Assert.Null(b3.ActivationMilestone);
     }
 
     private static int Count(string log, string prefix) =>

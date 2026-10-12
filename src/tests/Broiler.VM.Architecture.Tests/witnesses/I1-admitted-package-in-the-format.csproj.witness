@@ -1,0 +1,12 @@
+<!-- Violates I1: a listed package referenced from the JavaScript profile's Format assembly. Format is
+     in the JavaScript family, but the list admits the package for named projects only, and a probe
+     admitted test-only is admitted for no product project. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Broiler.ECMAScript.Algorithms" Version="0.0.1-probe.1" />
+  </ItemGroup>
+</Project>
