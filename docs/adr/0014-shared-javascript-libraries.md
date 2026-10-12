@@ -282,6 +282,12 @@ which come to cover admitted upstream packages (SJL-2); the rules and register r
 onward). An area's accept or refuse verdict is a JSD in the profile series, with a pointer added to
 this section.
 
+**Area verdicts, added as each is filed:**
+
+- **Number conversion (SJL-3.1): accepted**, by the JavaScript profile's
+  [JSD-0065](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0065-number-conversion-moves-to-the-shared-algorithms-library.md),
+  2026-10-12.
+
 **Nothing is reviewed, accepted, advertised, packed or published by this record**, under
 [`docs/mvp.md`](../mvp.md). No package is admitted, no rule is minted and no algorithm moves.
 
