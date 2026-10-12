@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Text;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -123,7 +124,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines <c>parseInt</c>, <c>parseFloat</c>, <c>isNaN</c> and <c>isFinite</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=494845
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=475E3E
     // Broiler-Human:        PENDING
     private void SetupGlobalNumericFunctions(JsObject host)
     {
@@ -131,19 +132,19 @@ internal sealed partial class JsRealm
         {
             var text = engine.ToStringValue(ArgOfGlobal(arguments, 0));
             var radix = engine.ToInt32(ArgOfGlobal(arguments, 1));
-            engine.Charge((ulong)text.Length + 1);
-
-            // JsNumberFormat.ParseInt owns the whole of the specification's shape: the leading
-            // whitespace, the sign, the `0x` prefix that only radix 0 and 16 admit, the
-            // out-of-range radix that answers NaN, and the stop at the first unusable character.
-            return JsValue.Number(JsNumberFormat.ParseInt(text, radix));
+            // The library owns the whole of the specification's shape: the leading white space,
+            // the sign, the `0x` prefix that only radix 0 and 16 admit, the out-of-range radix that
+            // answers NaN, and the stop at the first unusable character. It charges the text's
+            // length; the unit beyond it is the call's, as before.
+            engine.Charge(1UL);
+            return JsValue.Number(NumberParsing.ParseInt(text, radix, engine.WorkCharge));
         });
 
         Method(host, "parseFloat", 1, static (engine, thisValue, arguments) =>
         {
             var text = engine.ToStringValue(ArgOfGlobal(arguments, 0));
-            engine.Charge((ulong)text.Length + 1);
-            return JsValue.Number(JsNumberFormat.ParseFloat(text));
+            engine.Charge(1UL);
+            return JsValue.Number(NumberParsing.ParseFloat(text, engine.WorkCharge));
         });
 
         Method(host, "isNaN", 1, static (engine, thisValue, arguments) =>

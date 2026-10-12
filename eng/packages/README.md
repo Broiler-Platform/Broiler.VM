@@ -17,4 +17,6 @@ and every other package to nuget.org only.
 
 | Package | Version | Admitted as | Why it is here |
 |---|---|---|---|
-| `Broiler.ECMAScript.Algorithms` | `0.0.1-probe.1` | test-only | The admission probe of SJL-2.9: the contract types only, never published to nuget.org |
+| `Broiler.ECMAScript.Algorithms` | `0.1.0-preview.1` | product | The number-conversion area of SJL-3 (JSD-0065), referenced by the runtime and the compiler since SJL-3.4; the admission probe restores it too |
+
+*(Revised 2026-10-12, at SJL-3.4. The table's row read: "| `Broiler.ECMAScript.Algorithms` | `0.0.1-probe.1` | test-only | The admission probe of SJL-2.9: the contract types only, never published to nuget.org |". The probe pre-release, its `.nupkg` and its pin left the feed in the same change: no project references it, and the allow-list admits one version of a package.)*

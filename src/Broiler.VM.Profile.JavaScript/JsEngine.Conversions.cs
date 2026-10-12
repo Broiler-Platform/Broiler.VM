@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -125,13 +126,13 @@ internal sealed partial class JsEngine
     /// The conversion trims and scans the whole string, so its cost is the string's own length —
     /// which the guest chooses, and which was charged nothing until this existed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=07B791
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=887C51
     // Broiler-Falsified-If: a longer numeric string is read for the same charge as a shorter one
     // Broiler-Human:        PENDING
     private double ToNumberFromText(string text)
     {
-        ChargeText(text.Length);
-        return JsNumberFormat.ToNumber(text);
+        Charge(1UL);
+        return NumberParsing.StringToNumber(text, WorkCharge);
     }
 
     /// <summary>
@@ -158,12 +159,12 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>The abstract operation <c>ToString</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C35FB5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=99A717
     // Broiler-Human:        PENDING
     internal string ToStringValue(JsValue value) => value.Type switch
     {
         JsType.String => value.AsString(),
-        JsType.Number => JsNumberFormat.ToJsString(value.AsNumber()),
+        JsType.Number => JsNumberFormat.NumberToString(value.AsNumber()),
         JsType.Boolean => value.AsBoolean() ? "true" : "false",
         JsType.Undefined => "undefined",
         JsType.Null => "null",
@@ -206,7 +207,7 @@ internal sealed partial class JsEngine
     internal JsBigInt ToBigInt(JsValue value) => PrimitiveToBigInt(ToPrimitive(value, "number"));
 
     /// <summary><see cref="ToBigInt"/> after its <c>ToPrimitive</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=A8BFC5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=3F8F47
     // Broiler-Falsified-If: a Number, undefined, null or a Symbol converts to a BigInt
     // Broiler-Human:        PENDING
     internal JsBigInt PrimitiveToBigInt(JsValue primitive)
@@ -216,7 +217,7 @@ internal sealed partial class JsEngine
             JsType.BigInt => primitive.AsBigInt(),
             JsType.Boolean => primitive.AsBoolean() ? JsBigInt.One : JsBigInt.Zero,
             JsType.String => StringToBigIntOrThrow(primitive.AsString()),
-            JsType.Number => throw Error("TypeError", "Cannot convert " + JsNumberFormat.ToJsString(primitive.AsNumber()) + " to a BigInt"),
+            JsType.Number => throw Error("TypeError", "Cannot convert " + JsNumberFormat.NumberToString(primitive.AsNumber()) + " to a BigInt"),
             JsType.Symbol => throw Error("TypeError", "Cannot convert a Symbol value to a BigInt"),
             _ => throw Error("TypeError", "Cannot convert " + (primitive.Type == JsType.Null ? "null" : "undefined") + " to a BigInt"),
         };
@@ -243,14 +244,14 @@ internal sealed partial class JsEngine
     /// The abstract operation <c>NumberToBigInt</c>: the exact integer an integral Number is, and a
     /// RangeError for a fraction, a NaN or an infinity.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=AABAD1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=63282C
     // Broiler-Falsified-If: a Number that is not an integer converts to a BigInt, or an integral one converts to any integer but its own
     // Broiler-Human:        PENDING
     internal JsBigInt NumberToBigInt(double number)
     {
         if (!double.IsFinite(number) || Math.Floor(number) != number)
         {
-            throw Error("RangeError", "The number " + JsNumberFormat.ToJsString(number) + " cannot be converted to a BigInt because it is not an integer");
+            throw Error("RangeError", "The number " + JsNumberFormat.NumberToString(number) + " cannot be converted to a BigInt because it is not an integer");
         }
 
         return JsBigInt.FromIntegralNumber(number);

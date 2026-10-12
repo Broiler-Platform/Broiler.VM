@@ -49,7 +49,7 @@ internal sealed partial class JsRealm
     private JsNativeFunction? sharedArrayBufferConstructor;
 
     /// <summary>Builds <c>SharedArrayBuffer</c> and <c>Atomics</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6DB918
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6FA5A2
     // Broiler-Falsified-If: a realm builds SharedArrayBuffer or Atomics without the binary and shared surfaces, or a shared buffer is reachable as an ArrayBuffer
     // Broiler-Human:        PENDING
     private void SetupShared()
@@ -74,8 +74,8 @@ internal sealed partial class JsRealm
                 {
                     throw engine.Error(
                         "RangeError",
-                        "Invalid shared array buffer length: " + JsNumberFormat.ToJsString(byteLength) +
-                        " exceeds the maximum byte length " + JsNumberFormat.ToJsString(bound));
+                        "Invalid shared array buffer length: " + JsNumberFormat.NumberToString(byteLength) +
+                        " exceeds the maximum byte length " + JsNumberFormat.NumberToString(bound));
                 }
 
                 var made = engine.PrototypeFromConstructor(thisValue, SharedArrayBufferPrototype!);
@@ -115,7 +115,7 @@ internal sealed partial class JsRealm
             if (requested > buffer.MaxByteLength)
             {
                 return engine.ThrowRangeError(
-                    "SharedArrayBuffer.prototype.grow: " + JsNumberFormat.ToJsString(requested) +
+                    "SharedArrayBuffer.prototype.grow: " + JsNumberFormat.NumberToString(requested) +
                     " exceeds the maximum byte length");
             }
 
@@ -185,7 +185,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Allocates a shared buffer, charging for its bytes as an unshared one is charged.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D059D2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C940E1
     // Broiler-Human:        PENDING
     private JsArrayBuffer SharedNewBuffer(JsEngine engine, double byteLength, double? maxByteLength)
     {
@@ -194,7 +194,7 @@ internal sealed partial class JsRealm
         {
             throw engine.Error(
                 "RangeError",
-                "Invalid shared array buffer length: " + JsNumberFormat.ToJsString(maxByteLength ?? byteLength));
+                "Invalid shared array buffer length: " + JsNumberFormat.NumberToString(maxByteLength ?? byteLength));
         }
 
         var size = (int)byteLength;

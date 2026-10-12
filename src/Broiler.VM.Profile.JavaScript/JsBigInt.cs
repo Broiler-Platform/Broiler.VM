@@ -823,7 +823,7 @@ internal sealed class JsBigInt : IEquatable<JsBigInt>
     /// forms are one pass.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=A71525
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=686799
     // Broiler-Falsified-If: a text outside StringIntegerLiteral answers a value, a text inside it answers an integer other than its mathematical value, or a value past MaximumBits is constructed
     // Broiler-Human:        PENDING
     internal static bool TryParseStringInteger(string text, Action<ulong> charge, out JsBigInt? value, out int tooWideSign)
@@ -832,7 +832,7 @@ internal sealed class JsBigInt : IEquatable<JsBigInt>
         value = null;
         tooWideSign = 0;
 
-        var trimmed = JsNumberFormat.Trim(text);
+        var trimmed = JsNumberFormat.TrimWhiteSpace(text);
 
         if (trimmed.Length == 0)
         {

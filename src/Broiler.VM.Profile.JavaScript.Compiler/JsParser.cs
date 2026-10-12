@@ -3,17 +3,19 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   172
-// Annotated:        172/172
+// Relevant units:   171
+// Annotated:        171/171
 // Exempt:           25
-// Human-reviewed:   0/172
+// Human-reviewed:   0/171
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       172
+// Unverified:       171
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
@@ -6299,88 +6301,30 @@ internal sealed class JsParser
 
     /// <summary>
     /// The exact integer a well-formed BigInt literal token spells, or false when it is wider than
-    /// a BigInt constant may be.
+    /// a BigInt constant may be: <c>Broiler.ECMAScript.Algorithms</c>' <see cref="NumericLiterals.Evaluate"/>
+    /// under this format's ceiling, which it holds before a digit is converted (JSD-0065).
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>The tokenizer has already refused every malformed spelling</b>, so what is left is a
-    /// decimal integer with no leading zero, or a <c>0x</c>, <c>0o</c> or <c>0b</c> integer, with
-    /// separators only between digits, and the <c>n</c>.
-    /// </para>
-    /// <para>
-    /// <b>The width is bounded before a digit is converted.</b> A decimal literal of more digits
-    /// than the widest constant has is refused on its length, so no conversion is ever asked of a
-    /// text the format could not carry; a prefixed literal's width is its digit count times the
-    /// digit's bits. What passes is converted exactly and checked once more on its bit length.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9C1B5C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=16D059
     // Broiler-Falsified-If: a BigInt literal's value differs from the integer its text spells, or a literal wider than the constant ceiling is converted
     // Broiler-Human:        PENDING
-    private static bool TryBigIntValue(SliceToken token, out System.Numerics.BigInteger value)
+    private static bool BigIntValueOf(SliceToken token, out System.Numerics.BigInteger value)
     {
-        value = System.Numerics.BigInteger.Zero;
-        var text = token.RawText[..^1].Replace("_", string.Empty, System.StringComparison.Ordinal);
-        const long maximumBits = Format.JsFormat.CeilingBigIntConstantBytes * 8L;
-
-        var radix = text.Length > 1 && text[0] == '0'
-            ? text[1] switch { 'x' or 'X' => 16, 'o' or 'O' => 8, _ => 2 }
-            : 10;
-
-        if (radix != 10)
-        {
-            var digits = text[2..].TrimStart('0');
-            var bitsPerDigit = radix switch { 16 => 4, 8 => 3, _ => 1 };
-
-            if ((long)digits.Length * bitsPerDigit > maximumBits + bitsPerDigit)
-            {
-                return false;
-            }
-
-            // THE BITS ARE PACKED LEAST SIGNIFICANT FIRST AND CONVERTED ONCE, so the cost is linear
-            // in the literal: shifting an accumulator per digit would copy it once per digit.
-            var bytes = new byte[(((long)digits.Length * bitsPerDigit) + 7) / 8 + 1];
-            var bit = 0L;
-
-            for (var at = digits.Length - 1; at >= 0; at--)
-            {
-                var digit = digits[at];
-                var digitValue = char.IsAsciiDigit(digit) ? digit - '0' : (digit | 0x20) - 'a' + 10;
-
-                for (var within = 0; within < bitsPerDigit; within++, bit++)
-                {
-                    if ((digitValue >> within & 1) != 0)
-                    {
-                        bytes[bit / 8] |= (byte)(1 << (int)(bit % 8));
-                    }
-                }
-            }
-
-            value = new System.Numerics.BigInteger(bytes, isUnsigned: true, isBigEndian: false);
-        }
-        else
-        {
-            // 65,536 bits is 19,729 decimal digits, and one more is always wider.
-            if (text.Length > (int)(maximumBits * 30103L / 100000L) + 1)
-            {
-                return false;
-            }
-
-            value = System.Numerics.BigInteger.Parse(
-                text,
-                System.Globalization.NumberStyles.None,
-                System.Globalization.CultureInfo.InvariantCulture);
-        }
-
-        return value.GetBitLength() <= maximumBits;
+        var status = NumericLiterals.Evaluate(
+            token.RawText,
+            false,
+            new Broiler.ECMAScript.LengthLimit(Format.JsFormat.CeilingBigIntConstantBytes * 8L),
+            out var literal,
+            out _);
+        value = literal.BigInt;
+        return status == Broiler.ECMAScript.ResultStatus.Completed && literal.Kind == NumericLiteralKind.BigInt;
     }
 
     /// <summary>A gated BigInt literal: its exact value, or a refusal at the literal.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BEFFB5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7D90F2
     // Broiler-Human:        PENDING
     private JsExpression BigIntLiteral(SliceSourceSpan span, SliceToken token)
     {
-        if (!TryBigIntValue(token, out var value))
+        if (!BigIntValueOf(token, out var value))
         {
             return OutsideExpression(
                 span,
@@ -6393,11 +6337,11 @@ internal sealed class JsParser
     }
 
     /// <summary>A BigInt literal used as a property key: its exact decimal spelling.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EC1F06
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F75A8B
     // Broiler-Human:        PENDING
     private string BigIntKey(SliceToken token)
     {
-        if (!TryBigIntValue(token, out var value))
+        if (!BigIntValueOf(token, out var value))
         {
             Refuse(
                 new SliceSourceSpan(token.Line, token.Column),
@@ -6411,105 +6355,14 @@ internal sealed class JsParser
         return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=ECF818
-    // Broiler-Human:        PENDING
-    private static string NumberKey(double value) =>
-        value == System.Math.Floor(value) && !double.IsInfinity(value) &&
-        value >= 0 && value < 4294967295
-            ? ((uint)value).ToString(System.Globalization.CultureInfo.InvariantCulture)
-            : NumberText(value);
-
     /// <summary>
-    /// The specification's <c>Number::toString</c> in radix 10, which is what a numeric property
-    /// key names: <c>{ 0.0000001: 1 }</c> has the key <c>"1e-7"</c>.
+    /// The property key a numeric literal names: the specification's <c>Number::toString</c> in radix
+    /// 10, <c>Broiler.ECMAScript.Algorithms</c>' (JSD-0065). <c>{ 0.0000001: 1 }</c> has the key
+    /// <c>"1e-7"</c>, and until 2026-10-03 had the platform's spelling, <c>"1E-07"</c> (JSC-253).
     /// </summary>
-    /// <remarks>
-    /// The digits are the shortest that round-trip, read off the platform's <c>"R"</c> form, and
-    /// placed by the specification's rules rather than the platform's: until 2026-10-03 a key was
-    /// the platform's spelling, <c>"1E-07"</c>, which names a different property (JSC-253).
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=29D624
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4D0FF4
     // Broiler-Human:        PENDING
-    private static string NumberText(double value)
-    {
-        if (double.IsNaN(value))
-        {
-            return "NaN";
-        }
-
-        if (value == 0)
-        {
-            return "0";
-        }
-
-        if (double.IsInfinity(value))
-        {
-            return value > 0 ? "Infinity" : "-Infinity";
-        }
-
-        if (value < 0)
-        {
-            return "-" + NumberText(-value);
-        }
-
-        var round = value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
-        string digits;
-        int point;
-        var e = round.IndexOfAny(['E', 'e']);
-
-        if (e >= 0)
-        {
-            var mantissa = round[..e];
-            var exponent = int.Parse(round[(e + 1)..], System.Globalization.CultureInfo.InvariantCulture);
-            var dot = mantissa.IndexOf('.');
-            digits = mantissa.Replace(".", string.Empty, System.StringComparison.Ordinal);
-            point = (dot < 0 ? mantissa.Length : dot) + exponent;
-        }
-        else
-        {
-            var dot = round.IndexOf('.');
-            var whole = dot < 0 ? round : round[..dot];
-            var fraction = dot < 0 ? string.Empty : round[(dot + 1)..];
-            digits = whole + fraction;
-            point = whole.Length;
-        }
-
-        var lead = 0;
-
-        while (lead < digits.Length - 1 && digits[lead] == '0')
-        {
-            lead++;
-        }
-
-        digits = digits[lead..].TrimEnd('0');
-        point -= lead;
-
-        var k = digits.Length;
-        var n = point;
-
-        if (k <= n && n <= 21)
-        {
-            return digits + new string('0', n - k);
-        }
-
-        if (0 < n && n <= 21)
-        {
-            return digits[..n] + "." + digits[n..];
-        }
-
-        if (-6 < n && n <= 0)
-        {
-            return "0." + new string('0', -n) + digits;
-        }
-
-        var shown = n - 1;
-        var sign = shown < 0 ? "-" : "+";
-        var magnitude = System.Math.Abs(shown).ToString(System.Globalization.CultureInfo.InvariantCulture);
-
-        return k == 1
-            ? digits + "e" + sign + magnitude
-            : digits[..1] + "." + digits[1..] + "e" + sign + magnitude;
-    }
+    private static string NumberKey(double value) => NumberText.ToString(value);
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC0C0B
     // Broiler-Human:        PENDING

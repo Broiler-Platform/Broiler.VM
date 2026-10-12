@@ -21,17 +21,19 @@
   "packages": [
     {
       "id": "Broiler.ECMAScript.Algorithms",
-      "version": "0.0.1-probe.1",
-      "contentHash": "CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ==",
-      "use": "test-only",
+      "version": "0.1.0-preview.1",
+      "contentHash": "T2OSjZRPalI2gOn70yimlFuzYHxzzD7bXtrN5XfYJtykuBnnunK5OgMEuvoXGKbxgmmO8zQK9RyZbduleSWpBw==",
+      "use": "product",
       "projects": [
+        "Broiler.VM.Profile.JavaScript",
+        "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.JavaScript.AdmissionProbe"
       ],
       "sources": [
         "committed-feed"
       ],
-      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.0.1-probe.1.pin",
-      "admittedBy": "SJL-2.9, the admission probe: a scratch JavaScript-family project the architecture tests restore and discard"
+      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.1.pin",
+      "admittedBy": "SJL-3.4 and JSD-0065: the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced the probe pre-release 0.0.1-probe.1, admitted test-only by SJL-2.9 and retired from the feed at SJL-3.4."
     }
   ]
 }

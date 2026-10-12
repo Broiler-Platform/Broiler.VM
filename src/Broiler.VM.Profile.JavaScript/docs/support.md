@@ -60,7 +60,7 @@ untruthful support claim.**
 | Property enumeration order | **Fixed** | The specification's order where it fixes one, and insertion order for the rest, a deleted and re-added key going last | Rule N11's corpus; [`evidence/js-1/README.md`](evidence/js-1/README.md) |
 | Error message text | **Varying** | The message string is this profile's and may change; the error's kind is fixed, and the corpus pins the kind and never the string | [`roadmap.md`](roadmap.md) section 6 |
 | `Error.prototype.stack` | **Fixed** by this profile | Its form is decision JSD-0038's | [`decisions/0038-the-error-stack.md`](decisions/0038-the-error-stack.md) |
-| Number to string and string to number at the edges | **Fixed** | The specification's algorithms, implemented here rather than delegated to the platform | Rule N11's corpus |
+| Number to string and string to number at the edges | **Fixed** | The specification's algorithms, implemented in an admitted shared library, `Broiler.ECMAScript.Algorithms`, rather than delegated to the platform, and pinned by the shared vectors *(corrected: [JSC-297](roadmap.corrections.md#jsc-297))* | Rule N11's corpus; the shared vectors at this family's pin, [`../../../src/tests/vectors/pins/README.md`](../../../src/tests/vectors/pins/README.md) |
 | Locale-sensitive behaviour | **Fixed** | CLDR 48.2's `de` and `en`, archived and generated; the default locale is `en-US` whatever the host's | Rules N27 and N28; [`decisions/0027-intl-scope-and-data-strategy.md`](decisions/0027-intl-scope-and-data-strategy.md) |
 | Calendar and time-zone behaviour | **Fixed** | tzdb 2026e and the calendars' published years, archived and generated; the default time zone is `UTC` whatever the host's | Rules N29 to N32; [`decisions/0053-time-zone-data-and-temporal-admission.md`](decisions/0053-time-zone-data-and-temporal-admission.md) |
 | `Math.random` | **Varying** | Seeded for each realm from the platform's entropy source | [`roadmap.status.md`](roadmap.status.md), JSC-231 |
@@ -198,8 +198,10 @@ before review. What each has been shown to do:
 
 **The family's four packages are frozen** in the [package baseline](packages.md), each with its
 dependencies and files, and rule N37 holds it to the checkout and to the candidate pack of bundle
-[JS-10-002](evidence/js-10-002/README.md), where a pristine consumer restored and ran them with
-upstream unreachable and rolled back to the published `0.1.0-preview.5` and forward again.
+[JS-10-005](evidence/js-10-005/README.md), where a pristine consumer restored and ran them, and the
+shared algorithms package they depend on, with upstream unreachable and rolled back to the published
+`0.1.0-preview.5` and forward again *(corrected: [JSC-300](roadmap.corrections.md#jsc-300); it named
+bundle JS-10-002)*.
 
 **No composition is advertised.** Every JavaScript composition root is a demonstration and none is
 packable; the composition register is the authority, and rules K1 to K5 hold it to the checkout.

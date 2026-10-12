@@ -1010,7 +1010,7 @@ public sealed class JsHostRealm
     /// <c>RangeError</c>, as <c>new ArrayBuffer(n)</c> would throw.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=EC5AEA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=933BED
     // Broiler-Falsified-If: a buffer is answered after its fuel or live-bytes charge was refused, or a later write to the caller's memory changes it
     // Broiler-Human:        PENDING
     public JsHostValue NewArrayBuffer(ReadOnlySpan<byte> bytes)
@@ -1021,7 +1021,7 @@ public sealed class JsHostRealm
         {
             if (bytes.Length > Array.MaxLength)
             {
-                throw engine.Error("RangeError", "Invalid array buffer length: " + JsNumberFormat.ToJsString(bytes.Length));
+                throw engine.Error("RangeError", "Invalid array buffer length: " + JsNumberFormat.NumberToString(bytes.Length));
             }
 
             engine.Charge((ulong)bytes.Length);

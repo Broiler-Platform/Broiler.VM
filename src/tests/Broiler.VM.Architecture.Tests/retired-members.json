@@ -1,0 +1,185 @@
+{
+  "$comment": [
+    "THE REGISTER OF RULE I5, retired duplicates (ADR 0014; governance.md section 3.1). Every member a cut-over removed",
+    "from this repository because a shared library now implements it, by its fully qualified name, with the milestone",
+    "that removed it and what replaced it. Rule I5 refuses a declaration of any of these names anywhere in the JavaScript",
+    "family's product sources, so a duplicate the programme retired cannot come back unnoticed. An entry is never",
+    "removed; a decision that reinstates a member removes its entry in the same change and says why.",
+    "",
+    "SJL-3.4 (JSD-0065): the number-conversion area. What stays of JsNumberFormat (the shared strings of the commonest",
+    "Numbers, ToUintString and TrimWhiteSpace) and JsObject.IsArrayIndex and JsRealm.ObjectIsCanonicalNumeric, which",
+    "became adapters, are not here: they exist, and hold no algorithm."
+  ],
+  "retired": [
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.ToJsString",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsNumberFormat.NumberToString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.Decompose",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsNumberFormat.NumberToString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.Place",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsNumberFormat.NumberToString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.ToRadixString",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.RoundUpRadix",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.Value",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.Digit",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.ToNumber",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberParsing.StringToNumber"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.IsDecimalLiteral",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberParsing.StringToNumber"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.ParseRadix",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberParsing.StringToNumber"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.DigitValue",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberParsing.StringToNumber"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.ParseInt",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberParsing.ParseInt"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.ParseFloat",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberParsing.ParseFloat"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.IsWhiteSpace",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberParsing.IsStrWhiteSpaceChar and TrimStrWhiteSpace"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormat.Trim",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberParsing.IsStrWhiteSpaceChar and TrimStrWhiteSpace"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberFixedText",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToFixed"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberFixedCeiling",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToFixed"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberExponentialText",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToExponential"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberShortestDigits",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToExponential"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberRoundTripDigits",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToExponential"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberPrecisionText",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToPrecision"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberRoundSignificant",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberIsMidpoint",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberFivePowerLimit",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberSplitRendered",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberWithoutPoint",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberPointAfterFirst",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberExponentSuffix",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberIncrementDigits",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberIncrementFixed",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.NumberCulture",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText (the digit generation of toFixed, toExponential and toPrecision)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser.NumberText",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsParser.NumberKey"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser.TryBigIntValue",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumericLiterals.Evaluate, behind JsParser.BigIntValueOf"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.DigitValue",
+      "milestone": "SJL-3.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumericLiterals.Evaluate, behind SliceTokenizer.TryLiteralValue (the value loops of ReadNumericLiteral)"
+    }
+  ]
+}

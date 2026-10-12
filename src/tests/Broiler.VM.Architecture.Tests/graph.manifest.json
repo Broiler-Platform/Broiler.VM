@@ -36,7 +36,9 @@
     "",
     "UBC-4's third change adds six edges and no project, taking the graph from 31 projects and 107 edges to 31 and 113: Broiler.VM.Composition.WebAssembly.Execution, Broiler.VM.Composition.WebAssembly.Harness and Broiler.VM.Composition.PolyglotCli each reference Broiler.VM.Ubc and Broiler.VM.Emitter.Bytecode, because the core now verifies the WebAssembly translator's universal bytecode artifact and each root builds the WebAssembly family's descriptor over the bytecode emitter itself (rule A12 admits both as siblings at their product paths). It adds ZERO packable assemblies. ADR 0001's budget sentence has not been revised for it yet, which rule A15 reports.",
     "",
-    "F7 adds Broiler.VM.Profile.JavaScript.Intl, the JavaScript family's internationalization data, taking the graph from 31 projects and 113 edges to 32 and 116: it references Broiler.VM.Profile.JavaScript.Format and nothing else, because the profile reads the data through the format's IJsIntlData and must not reference it (decision JSD-0043), and the two composition roots that admit Intl - Broiler.VM.Composition.JavaScript.SliceCompiler and Broiler.VM.Composition.JavaScript.Conformance - each reference it and hand its one instance to the profile. It is a family project and declares IsPackable true with no PackageId (rule N4), so it adds one packable assembly, which ADR 0001's revision of 2026-10-04 records; a composition that declines Intl does not reference it and carries none of the data."
+    "F7 adds Broiler.VM.Profile.JavaScript.Intl, the JavaScript family's internationalization data, taking the graph from 31 projects and 113 edges to 32 and 116: it references Broiler.VM.Profile.JavaScript.Format and nothing else, because the profile reads the data through the format's IJsIntlData and must not reference it (decision JSD-0043), and the two composition roots that admit Intl - Broiler.VM.Composition.JavaScript.SliceCompiler and Broiler.VM.Composition.JavaScript.Conformance - each reference it and hand its one instance to the profile. It is a family project and declares IsPackable true with no PackageId (rule N4), so it adds one packable assembly, which ADR 0001's revision of 2026-10-04 records; a composition that declines Intl does not reference it and carries none of the data.",
+    "",
+    "SJL-3.4 adds the graph's first package edges and no project: Broiler.VM.Profile.JavaScript and Broiler.VM.Profile.JavaScript.Compiler reference Broiler.ECMAScript.Algorithms, the shared JavaScript libraries' algorithms package, which ADR 0014 admits and the allow-list (admitted-packages.json, rule I1) names for these two projects only, at its pinned content hash. The project count, the project edges and the packable set are unchanged."
   ],
   "milestone": "JS-1",
   "coreContractVersion": 1,
@@ -86,7 +88,9 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Profile.JavaScript.Format"
       ],
-      "packageReferences": []
+      "packageReferences": [
+        "Broiler.ECMAScript.Algorithms"
+      ]
     },
     {
       "path": "src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj",
@@ -99,7 +103,9 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Profile.JavaScript.Format"
       ],
-      "packageReferences": []
+      "packageReferences": [
+        "Broiler.ECMAScript.Algorithms"
+      ]
     },
     {
       "path": "src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj",

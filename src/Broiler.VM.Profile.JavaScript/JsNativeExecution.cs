@@ -440,13 +440,13 @@ internal static unsafe class JsNativeExecution
     /// answer for the sake of not looking at the bits. The uninitialised pattern cannot reach here:
     /// emitted code answers a throw rather than returning it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=A768C5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=794D31
     // Broiler-Falsified-If: a completion of undefined is reported as a Number, or a Number as undefined
     // Broiler-Human:        PENDING
     private static string Render(double value) =>
         JsNativeValues.Bits(value) == JsNativeValues.UndefinedBits
             ? "undefined"
-            : JsNumberFormat.ToJsString(value);
+            : JsNumberFormat.NumberToString(value);
 
     /// <summary>What <c>typeof</c> answers for a slot of the emitted form.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=0FC6E8

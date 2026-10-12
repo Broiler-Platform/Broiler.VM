@@ -3,19 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
+// Relevant units:   8
+// Annotated:        8/8
 // Exempt:           0
-// Human-reviewed:   0/24
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       24
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Globalization;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -56,28 +57,8 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private const double NumberEpsilonStep = 2.220446049250313E-16;
 
-    /// <summary>The magnitude at which <c>toFixed</c> hands the value back to <c>ToString</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=453870
-    // Broiler-Human:        PENDING
-    private const double NumberFixedCeiling = 1e21;
-
-    /// <summary>How many significant digits a binary64 ever needs to round-trip.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C9C3BE
-    // Broiler-Human:        PENDING
-    private const int NumberRoundTripDigits = 17;
-
-    /// <summary>The largest <c>t</c> for which <c>5^t</c> can divide a fifty-three bit odd number.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8B7E2E
-    // Broiler-Human:        PENDING
-    private const int NumberFivePowerLimit = 22;
-
-    /// <summary>The culture every conversion in this file uses, because none of them are localised.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BE7A4B
-    // Broiler-Human:        PENDING
-    private static readonly CultureInfo NumberCulture = CultureInfo.InvariantCulture;
-
     /// <summary>Builds <c>Number</c> and <c>Number.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7D49EB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C68C64
     // Broiler-Human:        PENDING
     private void SetupNumber()
     {
@@ -126,20 +107,12 @@ internal sealed partial class JsRealm
             return JsValue.Boolean(value.IsNumber && double.IsNaN(value.AsNumber()));
         });
 
-        Method(constructor, "parseFloat", 1, static (engine, thisValue, arguments) =>
-        {
-            var text = engine.ToStringValue(ArgOfNumber(arguments, 0));
-            engine.Charge((ulong)text.Length + 1);
-            return JsValue.Number(JsNumberFormat.ParseFloat(text));
-        });
-
-        Method(constructor, "parseInt", 2, static (engine, thisValue, arguments) =>
-        {
-            var text = engine.ToStringValue(ArgOfNumber(arguments, 0));
-            var radix = engine.ToInt32(ArgOfNumber(arguments, 1));
-            engine.Charge((ulong)text.Length + 1);
-            return JsValue.Number(JsNumberFormat.ParseInt(text, radix));
-        });
+        // `Number.parseFloat` and `Number.parseInt` ARE the global functions (21.1.2.12 and 21.1.2.13),
+        // which SetupGlobal writes into these two slots. The slots are made here, in their place in
+        // the key order, holding nothing until then; until SJL-3.4 they held two functions of their
+        // own that were overwritten unused.
+        constructor.DefineOrdinary("parseFloat", JsValue.Undefined);
+        constructor.DefineOrdinary("parseInt", JsValue.Undefined);
 
         Method(prototype, "toString", 1, static (engine, thisValue, arguments) =>
         {
@@ -152,7 +125,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowRangeError("toString() radix must be an integer between 2 and 36");
             }
 
-            var text = JsNumberFormat.ToRadixString(value, (int)radix);
+            var text = NumberText.ToRadixString(value, (int)radix);
             engine.Charge((ulong)text.Length + 1);
             return JsValue.String(text);
         });
@@ -165,7 +138,7 @@ internal sealed partial class JsRealm
             var value = NumberThisValue(engine, thisValue);
 
             return engine.Realm.NumberFormatConstructor is null
-                ? JsValue.String(JsNumberFormat.ToJsString(value))
+                ? JsValue.String(JsNumberFormat.NumberToString(value))
                 : JsValue.String(ToLocaleNumberString(engine, JsDecimal.FromNumber(value), arguments));
         });
 
@@ -184,7 +157,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowRangeError("toFixed() digits must be between 0 and 100");
             }
 
-            var text = NumberFixedText(value, (int)digits);
+            var text = NumberText.ToFixed(value, (int)digits);
             engine.Charge((ulong)text.Length + 1);
             return JsValue.String(text);
         });
@@ -200,7 +173,7 @@ internal sealed partial class JsRealm
             // is checked, so `(Infinity).toExponential(101)` is "Infinity" and not a RangeError.
             if (!double.IsFinite(value))
             {
-                return JsValue.String(JsNumberFormat.ToJsString(value));
+                return JsValue.String(JsNumberFormat.NumberToString(value));
             }
 
             if (!automatic && digits is < 0 or > 100)
@@ -208,7 +181,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowRangeError("toExponential() digits must be between 0 and 100");
             }
 
-            var text = NumberExponentialText(value, automatic ? -1 : (int)digits);
+            var text = automatic ? NumberText.ToExponential(value) : NumberText.ToExponential(value, (int)digits);
             engine.Charge((ulong)text.Length + 1);
             return JsValue.String(text);
         });
@@ -220,14 +193,14 @@ internal sealed partial class JsRealm
 
             if (argument.Type == JsType.Undefined)
             {
-                return JsValue.String(JsNumberFormat.ToJsString(value));
+                return JsValue.String(JsNumberFormat.NumberToString(value));
             }
 
             var precision = engine.ToInteger(argument);
 
             if (!double.IsFinite(value))
             {
-                return JsValue.String(JsNumberFormat.ToJsString(value));
+                return JsValue.String(JsNumberFormat.NumberToString(value));
             }
 
             if (precision is < 1 or > 100)
@@ -235,7 +208,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowRangeError("toPrecision() precision must be between 1 and 100");
             }
 
-            var text = NumberPrecisionText(value, (int)precision);
+            var text = NumberText.ToPrecision(value, (int)precision);
             engine.Charge((ulong)text.Length + 1);
             return JsValue.String(text);
         });
@@ -291,315 +264,4 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static bool NumberIsIntegral(double value) =>
         double.IsFinite(value) && System.Math.Truncate(value) == value;
-
-    /// <summary><c>Number.prototype.toFixed</c>, over an already-validated digit count.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=264A7C
-    // Broiler-Human:        PENDING
-    private static string NumberFixedText(double value, int digits)
-    {
-        if (double.IsNaN(value))
-        {
-            return "NaN";
-        }
-
-        var negative = value < 0;
-
-        // Abs() rather than a negation, so that -0 loses its sign here and renders as "0" while
-        // -0.0001 keeps the "-" the specification's `s` gives it and renders as "-0.00".
-        var magnitude = System.Math.Abs(value);
-        string text;
-
-        if (magnitude >= NumberFixedCeiling)
-        {
-            // At and above 1e21 the answer is ToString(x), infinities included.
-            text = JsNumberFormat.ToJsString(magnitude);
-        }
-        else if (NumberIsMidpoint(magnitude, digits))
-        {
-            var exact = magnitude.ToString("F" + (digits + 1).ToString(NumberCulture), NumberCulture);
-            var kept = exact[..^1];
-
-            if (digits == 0)
-            {
-                kept = kept[..^1];
-            }
-
-            text = NumberIncrementFixed(kept);
-        }
-        else
-        {
-            text = magnitude.ToString("F" + digits.ToString(NumberCulture), NumberCulture);
-        }
-
-        return negative ? "-" + text : text;
-    }
-
-    /// <summary><c>Number.prototype.toExponential</c>; <paramref name="digits"/> is -1 when absent.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D34EF6
-    // Broiler-Human:        PENDING
-    private static string NumberExponentialText(double value, int digits)
-    {
-        var negative = value < 0;
-        var magnitude = System.Math.Abs(value);
-        string significant;
-        int exponent;
-
-        if (digits < 0)
-        {
-            significant = NumberShortestDigits(magnitude, out exponent);
-        }
-        else
-        {
-            NumberRoundSignificant(magnitude, digits + 1, out significant, out exponent);
-        }
-
-        var text = NumberPointAfterFirst(significant) + "e" + NumberExponentSuffix(exponent);
-        return negative ? "-" + text : text;
-    }
-
-    /// <summary><c>Number.prototype.toPrecision</c>, over an already-validated precision.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50E30F
-    // Broiler-Human:        PENDING
-    private static string NumberPrecisionText(double value, int precision)
-    {
-        var negative = value < 0;
-        var magnitude = System.Math.Abs(value);
-        NumberRoundSignificant(magnitude, precision, out var digits, out var exponent);
-        string text;
-
-        if (exponent < -6 || exponent >= precision)
-        {
-            text = NumberPointAfterFirst(digits) + "e" + NumberExponentSuffix(exponent);
-        }
-        else if (exponent == precision - 1)
-        {
-            text = digits;
-        }
-        else if (exponent >= 0)
-        {
-            text = digits[..(exponent + 1)] + "." + digits[(exponent + 1)..];
-        }
-        else
-        {
-            text = "0." + new string('0', -(exponent + 1)) + digits;
-        }
-
-        return negative ? "-" + text : text;
-    }
-
-    /// <summary>
-    /// Rounds <paramref name="magnitude"/> to <paramref name="count"/> significant digits, breaking
-    /// an exact halfway case away from zero.
-    /// </summary>
-    /// <remarks>
-    /// <paramref name="digits"/> comes back with exactly <paramref name="count"/> characters and
-    /// <paramref name="exponent"/> is the decimal exponent of the first of them, so the value is
-    /// <c>0.digits x 10^(exponent + 1)</c>.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EB6628
-    // Broiler-Human:        PENDING
-    private static void NumberRoundSignificant(double magnitude, int count, out string digits, out int exponent)
-    {
-        var rendered = magnitude.ToString("E" + (count - 1).ToString(NumberCulture), NumberCulture);
-        NumberSplitRendered(rendered, out var mantissa, out exponent);
-        digits = NumberWithoutPoint(mantissa);
-
-        if (!NumberIsMidpoint(magnitude, count - 1 - exponent))
-        {
-            return;
-        }
-
-        // A halfway case terminates one digit past the cut, so THIS rendering is exact and its
-        // last character is the '5' that .NET just broke to even and the language breaks upward.
-        // It is also why the exponent is re-read here: the rounded rendering may have carried.
-        var exact = magnitude.ToString("E" + count.ToString(NumberCulture), NumberCulture);
-        NumberSplitRendered(exact, out var exactMantissa, out exponent);
-        digits = NumberIncrementDigits(NumberWithoutPoint(exactMantissa)[..^1], out var carried);
-
-        if (carried)
-        {
-            exponent++;
-        }
-    }
-
-    /// <summary>The fewest significant digits that read back as <paramref name="magnitude"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4DC225
-    // Broiler-Human:        PENDING
-    private static string NumberShortestDigits(double magnitude, out int exponent)
-    {
-        for (var count = 0; count < NumberRoundTripDigits; count++)
-        {
-            var candidate = magnitude.ToString("E" + count.ToString(NumberCulture), NumberCulture);
-
-            if (double.Parse(candidate, NumberStyles.Float, NumberCulture) == magnitude)
-            {
-                NumberSplitRendered(candidate, out var mantissa, out exponent);
-                return NumberWithoutPoint(mantissa);
-            }
-        }
-
-        var widest = magnitude.ToString("E" + (NumberRoundTripDigits - 1).ToString(NumberCulture), NumberCulture);
-
-        NumberSplitRendered(widest, out var last, out exponent);
-        return NumberWithoutPoint(last);
-    }
-
-    /// <summary>
-    /// Whether <paramref name="magnitude"/> is exactly halfway between two values that
-    /// <paramref name="decimals"/> decimal places apart can hold.
-    /// </summary>
-    /// <remarks>
-    /// Writing the value as <c>m x 2^p</c> with <c>m</c> odd, twice the value scaled by
-    /// <c>10^decimals</c> is <c>m x 5^decimals x 2^(p + decimals + 1)</c>. That is an odd integer -
-    /// which is what halfway means - exactly when the power of two vanishes, and, for a negative
-    /// <paramref name="decimals"/>, when the five it is divided by divides <c>m</c> as well.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=625238
-    // Broiler-Human:        PENDING
-    private static bool NumberIsMidpoint(double magnitude, int decimals)
-    {
-        if (magnitude == 0 || !double.IsFinite(magnitude))
-        {
-            return false;
-        }
-
-        var bits = System.BitConverter.DoubleToInt64Bits(magnitude);
-        var biased = (int)((bits >> 52) & 0x7FF);
-        var significand = bits & 0xFFFFFFFFFFFFFL;
-        int exponent;
-
-        if (biased == 0)
-        {
-            exponent = -1074;
-        }
-        else
-        {
-            significand |= 0x10000000000000L;
-            exponent = biased - 1075;
-        }
-
-        if (significand == 0)
-        {
-            return false;
-        }
-
-        while ((significand & 1) == 0)
-        {
-            significand >>= 1;
-            exponent++;
-        }
-
-        if (exponent + decimals + 1 != 0)
-        {
-            return false;
-        }
-
-        if (decimals >= 0)
-        {
-            return true;
-        }
-
-        var power = -decimals;
-
-        if (power > NumberFivePowerLimit)
-        {
-            // 5^23 is larger than any odd significand a binary64 has, so nothing divides.
-            return false;
-        }
-
-        long divisor = 1;
-
-        for (var step = 0; step < power; step++)
-        {
-            divisor *= 5;
-        }
-
-        return significand % divisor == 0;
-    }
-
-    /// <summary>Splits a <c>"E"</c>-formatted rendering into its mantissa and its exponent.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C44C92
-    // Broiler-Human:        PENDING
-    private static void NumberSplitRendered(string rendered, out string mantissa, out int exponent)
-    {
-        var atE = rendered.IndexOf('E', System.StringComparison.Ordinal);
-
-        if (atE < 0)
-        {
-            mantissa = rendered;
-            exponent = 0;
-            return;
-        }
-
-        mantissa = rendered[..atE];
-        exponent = int.Parse(rendered[(atE + 1)..], NumberCulture);
-    }
-
-    /// <summary>Drops the point from a mantissa the <c>"E"</c> format wrote.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1D0AA3
-    // Broiler-Human:        PENDING
-    private static string NumberWithoutPoint(string mantissa) =>
-        mantissa.Length > 1 ? mantissa[..1] + mantissa[2..] : mantissa;
-
-    /// <summary>Puts the point back after the first digit, which is where <c>d.ddd</c> wants it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=43BB3F
-    // Broiler-Human:        PENDING
-    private static string NumberPointAfterFirst(string digits) =>
-        digits.Length > 1 ? digits[..1] + "." + digits[1..] : digits;
-
-    /// <summary>The exponent part, with the sign the language writes and no zero padding.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=36B50F
-    // Broiler-Human:        PENDING
-    private static string NumberExponentSuffix(int exponent) =>
-        (exponent < 0 ? "-" : "+") + System.Math.Abs(exponent).ToString(NumberCulture);
-
-    /// <summary>Adds one to a digit string, reporting the carry that lengthened it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CAAF5D
-    // Broiler-Human:        PENDING
-    private static string NumberIncrementDigits(string digits, out bool carried)
-    {
-        var characters = digits.ToCharArray();
-
-        for (var at = characters.Length - 1; at >= 0; at--)
-        {
-            if (characters[at] != '9')
-            {
-                characters[at]++;
-                carried = false;
-                return new string(characters);
-            }
-
-            characters[at] = '0';
-        }
-
-        // Every digit was a nine, so the count is kept and the exponent moves instead.
-        carried = true;
-        return "1" + new string('0', digits.Length - 1);
-    }
-
-    /// <summary>Adds one to the last place of a fixed-point string, carrying across the point.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0B9F07
-    // Broiler-Human:        PENDING
-    private static string NumberIncrementFixed(string text)
-    {
-        var characters = text.ToCharArray();
-
-        for (var at = characters.Length - 1; at >= 0; at--)
-        {
-            if (characters[at] == '.')
-            {
-                continue;
-            }
-
-            if (characters[at] != '9')
-            {
-                characters[at]++;
-                return new string(characters);
-            }
-
-            characters[at] = '0';
-        }
-
-        return "1" + new string(characters);
-    }
 }

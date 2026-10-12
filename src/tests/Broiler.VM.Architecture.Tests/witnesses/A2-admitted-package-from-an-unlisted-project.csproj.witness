@@ -1,11 +1,14 @@
 <!-- Violates A2 as revised at SJL-2 (governance section 3.1's third witness): an ADMITTED package,
      Broiler.ECMAScript.Algorithms, referenced from a project the allow-list does not name for it.
-     Admission is per project: the identifier being on the list is not enough. -->
+     Admission is per project: the identifier being on the list is not enough. Revised 2026-10-12, at
+     SJL-3.4, when the allow-list came to name Broiler.VM.Profile.JavaScript: the witness's project was
+     that one, and is now the Intl surface, which the list does not name; the version moved with the
+     package's admission (it read 0.0.1-probe.1). -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Intl</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Broiler.ECMAScript.Algorithms" Version="0.0.1-probe.1" />
+    <PackageReference Include="Broiler.ECMAScript.Algorithms" Version="0.1.0-preview.1" />
   </ItemGroup>
 </Project>

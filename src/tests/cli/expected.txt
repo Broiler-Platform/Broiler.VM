@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 146
+runs|0|# Completed: 147
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -1079,3 +1079,7 @@ runs/a-shared-buffer-and-atomics.js|0|wait threw TypeError
 runs/a-shared-buffer-and-atomics.js|0|an ArrayBuffer member on it threw TypeError
 runs/a-shared-buffer-and-atomics.js|0|grow 8 8
 runs/a-shared-buffer-and-atomics.js|0|waitAsync true
+
+# TWO NUMBER LITERALS ONE UNIT IN THE LAST PLACE APART are two constants: the wide compiler keyed its
+# pool by the platform's "R" text, which renders both the same (milestone SJL-3.4). From node -p.
+runs/two-number-literals-one-unit-apart.js|0|false 2.9802322387695312e-8 2.980232238769531e-8

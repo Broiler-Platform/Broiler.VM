@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -664,42 +665,10 @@ internal class JsObject
     /// <c>ToString</c> does not produce them. An implementation that parsed the digits and stopped
     /// would answer that <c>a["01"]</c> is <c>a[1]</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E3AF51
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D45414
     // Broiler-Human:        PENDING
-    internal static bool IsArrayIndex(string key, out uint value)
-    {
-        value = 0;
-
-        if (key.Length == 0 || key.Length > 10)
-        {
-            return false;
-        }
-
-        if (key[0] == '0' && key.Length > 1)
-        {
-            return false;
-        }
-
-        ulong accumulated = 0;
-
-        foreach (var character in key)
-        {
-            if (character is < '0' or > '9')
-            {
-                return false;
-            }
-
-            accumulated = (accumulated * 10) + (ulong)(character - '0');
-
-            if (accumulated > 4294967294)
-            {
-                return false;
-            }
-        }
-
-        value = (uint)accumulated;
-        return true;
-    }
+    internal static bool IsArrayIndex(string key, out uint value) =>
+        NumericKeys.TryParseArrayIndex(key, out value);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=01F91E
     // Broiler-Human:        PENDING

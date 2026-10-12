@@ -125,11 +125,22 @@ public sealed partial class JsCompiler
             ((uint)buffer.Code.Count, (uint)System.Math.Max(1, span.Line), (uint)System.Math.Max(1, span.Column)));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9BC56B
+    /// <summary>
+    /// A Number constant, interned by its exact bits, as <c>SliceProgramBuilder.Number</c> interns it.
+    /// </summary>
+    /// <remarks>
+    /// The key was the platform's <c>"R"</c> text of the value, which does not read back as the same
+    /// double for every value: <c>2**-25</c> and the double below it both render
+    /// <c>2.980232238769531E-08</c>, so a program holding both literals got one constant for the two
+    /// and <c>2.9802322387695312e-8 === 2.980232238769531e-8</c> answered <c>true</c> (found by
+    /// milestone SJL-3.7's search for the number area's surviving duplicates).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BE884C
     // Broiler-Human:        PENDING
     private ushort NumberConstant(double value)
     {
-        var key = "n" + value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+        var key = "n" + System.BitConverter.DoubleToInt64Bits(value).ToString(
+            "X16", System.Globalization.CultureInfo.InvariantCulture);
         return Intern(key, JsArtifactWriter.NumberConstant(value));
     }
 

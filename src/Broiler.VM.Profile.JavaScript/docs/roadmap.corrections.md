@@ -13024,3 +13024,82 @@ references. No package declares a shared dependency at this revision.
 **Authority and date.** [JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md)
 section 1, on the programme's work package SJL-2.4 and [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
 section 1. 2026-10-12.
+
+### JSC-297
+
+**Where:** [`support.md`](support.md), section 2, the row "Number to string and string to number at
+the edges".
+
+**What the plan said.** "The specification's algorithms, implemented here rather than delegated to
+the platform", with the evidence "Rule N11's corpus".
+
+**What replaced it.** The specification's algorithms, implemented in an admitted shared library,
+`Broiler.ECMAScript.Algorithms`, rather than delegated to the platform, and pinned by the shared
+vectors; the evidence is rule N11's corpus and the shared vectors at this family's pin. The surface
+stays **fixed**: what fixes it moved out of this profile, into a library the shared vectors pin and
+rule I1 admits at one hashed version.
+
+**Authority and date.** [JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md)
+section 1, on [JSD-0065](decisions/0065-number-conversion-moves-to-the-shared-algorithms-library.md)
+and the shared JavaScript libraries programme's work package SJL-3.4, item 6. 2026-10-12.
+
+### JSC-298
+
+**Where:** [`release-gate.md`](release-gate.md), gate 8 ("Packages and consumers") in the table of
+gates.
+
+**What the plan said.** "Held" by "N37, A14".
+
+**What replaced it.** Held by N37, A14 and I1. Since the number-conversion cut-over, the runtime's and
+the compiler's packages declare `Broiler.ECMAScript.Algorithms`, so gate 8's "produced metadata
+declares no foreign dependency" is held by N37 admitting that one dependency only at the version rule
+I1's allow-list pins, and by I1 holding the allow-list, the committed feed and the lock files to the
+package's hash. The pristine consumer restores the shared package from the local feed with upstream
+unreachable (bundle JS-10-005).
+
+**Authority and date.** [JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md)
+section 1, on [JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md) and the
+programme's work package SJL-3.4, item 6. 2026-10-12.
+
+### JSC-299
+
+**Where:** [`release-gate.md`](release-gate.md), the blockers of gate 12 ("Licence and attribution").
+
+**What the plan said.** Five gate-12 blockers: four unconfirmed ingesting-components rows of
+`THIRD_PARTY_NOTICES.md` (the specification, the Unicode Character Database, Octane and the shared
+conformance vectors) and the Intl assembly with no row.
+
+**What replaced it.** Six: the ingesting-components table gains the row of the shared algorithms
+package, which the runtime and the compiler now ingest - `Broiler.ECMAScript.Algorithms`
+`0.1.0-preview.1`, with the third-party component it carries, a port of Ryu, and its table generated
+from the Unicode Character Database - and the row is not yet confirmed, so the gate names
+`G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.compiler`. The release
+owner co-signing the scoping clears it, as for the other four.
+
+**Authority and date.** [JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md)
+section 5, on the programme's work package SJL-3.4, items 5 and 6. 2026-10-12.
+
+### JSC-300
+
+**Where:** [`packages.md`](packages.md): its opening paragraph, the rows of
+`Broiler.VM.Profile.JavaScript` and `Broiler.VM.Profile.JavaScript.Compiler`, the paragraph "No
+foreign dependency" and the section "The consumer"; and [`support.md`](support.md), section 9, the
+paragraph on the frozen packages.
+
+**What the plan said.** The baseline was "the candidate pack of **bundle
+[JS-10-002](evidence/js-10-002/README.md)**"; the runtime's package depended on
+"`Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Profile.JavaScript.Format`" and the
+compiler's on "`Broiler.VM.Abstractions`, `Broiler.VM.Profile.JavaScript.Format`"; "Every dependency
+above is a Broiler.VM package [...] no package declares one at this revision"; and "Bundle JS-10-002
+records it restoring and running with upstream feeds unreachable". Section 9 of the support table
+named bundle JS-10-002 the same way.
+
+**What replaced it.** The baseline is bundle JS-10-005's candidate pack, taken after the cut-over. Both
+packages depend on `Broiler.ECMAScript.Algorithms` beside their Broiler.VM dependencies, the one
+dependency outside `Broiler.VM.` the baseline holds, which rule I1 admits for shipping. Bundle
+JS-10-005 records the pristine consumer restoring and running from a local feed that holds the shared
+package beside the family's, with upstream unreachable.
+
+**Authority and date.** [JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md)
+sections 1 and 5, on [JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md)
+and the programme's work package SJL-3.4, items 1 and 6. 2026-10-12.

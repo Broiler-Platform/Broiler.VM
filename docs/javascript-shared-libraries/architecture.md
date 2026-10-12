@@ -308,12 +308,18 @@ review obligations named in each area's adapter definition.
 13. **Data versions are public.** A library whose results depend on data exposes each data version
     as a public constant and in its package metadata: Unicode version, CLDR version, tzdb release,
     calendar source. The tables come from pinned, hashed inputs through a generator in the data's
-    home repository, and each engine embeds them (decision `SJL-D-6` (c)). The generator emits each
+    home repository, and each engine embeds a data area's tables (decision `SJL-D-6` (c)); the one
+    table a library carries itself is the number area's, the `Space_Separator` members of the
+    `StrWhiteSpaceChar` set, which `areas/numbers.md` section 5, item 5 puts in the algorithms
+    library and the home generates from the pinned UCD 17.0.0 `PropList.txt`. The generator emits each
     table as a `ReadOnlySpan<byte>` property over constant data, a byte array or a UTF-8 literal, as
     Broiler.VM's generators do today. A table is never an embedded resource, a mutable array or text
     parsed at run time, and it compiles into a Native AOT image as read-only data. Regenerating them
     reproduces them byte for byte, in the home and in each engine, which is the shape of
-    Broiler.VM's rules N22, N28, N30 and N32.
+    Broiler.VM's rules N22, N28, N30 and N32. *(Revised 2026-10-12, at SJL-3.4, when this family
+    took the algorithms library and its white-space table: the second sentence ended "and each
+    engine embeds them (decision `SJL-D-6` (c))." The home's conventions document records the same
+    revision at SJL-3.3.)*
 14. **Names that do not collide with engine scans.** Broiler.VM's rule N23 rejects the identifier
     tokens `Normalize`, `IsNormalized` and `NormalizationForm` anywhere in the profile's sources,
     so an adapter calling `UnicodeNormalizer.Normalize(...)` would fail it. Rule N18 rejects

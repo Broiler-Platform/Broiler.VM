@@ -131,6 +131,14 @@ internal static class CompositionRules
     /// against a file that was never written for it. Naming the bundle per row is what keeps the
     /// two ledgers apart while one rule still holds every composition to its own evidence.
     /// </remarks>
+    /// <param name="SharedAssemblies">
+    /// The shared JavaScript libraries' assemblies the root carries (governance item V17, added at
+    /// SJL-3.4): neither siblings nor profiles, because a shared library names no engine.
+    /// </param>
+    /// <param name="SharedPredateClosure">
+    /// Whether the row says its retained closure predates its shared assemblies, under a named
+    /// exclusion; K4 then holds that closure to the row without them.
+    /// </param>
     internal sealed record Row(
         string Composition,
         string Kind,
@@ -138,10 +146,15 @@ internal static class CompositionRules
         IReadOnlyList<string> ProfileAssemblies,
         IReadOnlyList<string>? SiblingAssemblies = null,
         string Evidence = "",
-        string NativeExecution = "")
+        string NativeExecution = "",
+        IReadOnlyList<string>? SharedAssemblies = null,
+        bool SharedPredateClosure = false)
     {
         /// <summary>The sibling assemblies, never null.</summary>
         internal IReadOnlyList<string> Siblings => SiblingAssemblies ?? [];
+
+        /// <summary>The shared assemblies, never null.</summary>
+        internal IReadOnlyList<string> Shared => SharedAssemblies ?? [];
     }
 
     /// <summary>
@@ -363,10 +376,14 @@ internal static class CompositionRules
             yield break;
         }
 
+        // The shared assemblies are part of the closure (governance item V17), except where the row
+        // says its retained closure predates them: that closure is then held to the row without
+        // them, so a re-collected closure that carries one is refused until the row stops saying so.
         var allowed = CoreAssemblies
             .Concat([row.Composition])
             .Concat(row.ProfileAssemblies)
             .Concat(row.Siblings)
+            .Concat(row.SharedPredateClosure ? [] : row.Shared)
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();
 

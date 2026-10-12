@@ -13,14 +13,15 @@
 # records the same commit, which rule I7 reads. `content-hash` is NuGet's: the base64 SHA-512 of the
 # .nupkg's bytes, which is what a lock file records. `sha256` is over the same bytes.
 #
-# WHAT IT IS. The probe pre-release of milestone SJL-2.13: the contract types only (WorkCharge,
-# ResultStatus, Failure, LengthLimit, DepthLimit), admitted TEST-ONLY for the admission probe of
-# SJL-2.9. It is never published to nuget.org, and no product project references it.
+# WHAT IT IS. The first preview of the shared algorithms library's number-conversion area (milestone
+# SJL-3.3; JSD-0065): admitted for PRODUCT use by Broiler.VM.Profile.JavaScript and
+# Broiler.VM.Profile.JavaScript.Compiler at SJL-3.4, and restored by the admission probe. A Broiler.VM
+# package release that depends on it waits until it is on nuget.org (eng/verify-feed.ps1).
 
 id Broiler.ECMAScript.Algorithms
-version 0.0.1-probe.1
-file Broiler.ECMAScript.Algorithms.0.0.1-probe.1.nupkg
-content-hash CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ==
-sha256 fa47374e1a7462304e2efd20504d13617eb88beed77fa3f5cb3ede25de360122
+version 0.1.0-preview.1
+file Broiler.ECMAScript.Algorithms.0.1.0-preview.1.nupkg
+content-hash T2OSjZRPalI2gOn70yimlFuzYHxzzD7bXtrN5XfYJtykuBnnunK5OgMEuvoXGKbxgmmO8zQK9RyZbduleSWpBw==
+sha256 ac24cc4ff5a26668542e24fb278075e44bd74cdbb65b7050957974af39d87c47
 upstream Broiler-Platform/broiler.js
-upstream-commit a84a0b4ccd9497d9a6cea03e64030e7c5ab6b0ad
+upstream-commit 93df3fd4d5d469268fbd2324b1f4f9ede0d2110c

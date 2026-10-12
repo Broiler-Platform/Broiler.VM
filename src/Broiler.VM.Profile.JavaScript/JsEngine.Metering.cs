@@ -3,19 +3,21 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
-// Exempt:           0
-// Human-reviewed:   0/14
+// Relevant units:   15
+// Annotated:        15/15
+// Exempt:           1
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         5/5
+// Criteria:         6/6
 // Resource impact:  5/10 max
-// Unverified:       14
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM.Abstractions;
+
+using Broiler.ECMAScript;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -98,6 +100,24 @@ internal sealed partial class JsEngine
     // Broiler-Falsified-If: a text operation's charge does not grow with the input the guest controls
     // Broiler-Human:        PENDING
     internal void ChargeText(int units) => Charge(units <= 0 ? 1UL : (ulong)units + 1UL);
+
+    /// <summary>
+    /// This engine's <see cref="Charge"/> as the shared libraries' meter (decision SJL-D-10 (a)), made
+    /// once per engine so that a conversion allocates no delegate.
+    /// </summary>
+    /// <remarks>
+    /// A shared parsing operation charges the text's length, before reading it, when the text is not
+    /// empty; an adapter that charged <see cref="ChargeText"/> before charges the one unit beyond it
+    /// itself, so every total, and every exhaustion's point, is what it was (JSD-0065, decision 2).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=BD45AA
+    // Broiler-Falsified-If: a shared conversion charges through it a total, or exhausts at a point, other than this engine's own charge for the same text did before SJL-3.4
+    // Broiler-Human:        PENDING
+    internal WorkCharge WorkCharge => workCharge ??= Charge;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6CED30
+    // Broiler-Human:        PENDING
+    private WorkCharge? workCharge;
 
     /// <summary>Charges one crossing of the host surface: a host call, and its fuel.</summary>
     /// <remarks>

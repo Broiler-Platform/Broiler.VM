@@ -1,0 +1,13 @@
+// Violates I5 (governance section 3.1's witness): JsNumberFormat.ToJsString, which SJL-3.4 retired when
+// the number-conversion area moved to Broiler.ECMAScript.Algorithms, declared again. The comment and the
+// string below name ToRadixString and NumberText too, and are not declarations, so they are not reported.
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static class JsNumberFormat
+{
+    private const string Note = "ToRadixString and JsParser.NumberText are retired as well";
+
+    internal static string NumberToString(double value) => ToJsString(value);
+
+    internal static string ToJsString(double value) => value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+}

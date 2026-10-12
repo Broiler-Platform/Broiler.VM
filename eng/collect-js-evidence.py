@@ -320,7 +320,7 @@ def snapshot_identity(out):
 # tolerated drift would stop reporting SKIPPED, and a control that quietly matches something
 # adjacent is worse than one that says it found nothing.
 ANDROID_REGISTER_ROW = (
-    "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |\n")
+    "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` | none | `Broiler.ECMAScript.Algorithms`; its retained closure predates it (EX-126) |\n")
 
 
 CONTROLS = [
@@ -528,7 +528,7 @@ CONTROLS = [
             ANDROID_REGISTER_ROW +
             "| `Broiler.VM.Composition.Deleted` | demonstration | `com.example.gone` | "
             "`Com.Example.Gone` | none | none registered | none registered | "
-            "`docs/evidence/vm-6` |\n"),
+            "`docs/evidence/vm-6` | none | none |\n"),
     ),
     (
         "K1-the-register-loses-the-android-row",

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 7156 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 7127 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 336 |
-| Code units | 12316 |
-| Relevant | 7156 |
-| Exempt | 5160 |
-| Assessed | 7156 of 7156 (100%) |
-| Human reviewed | 0 of 7156 (0%) |
-| Unverified | 7156 |
+| Code units | 12288 |
+| Relevant | 7127 |
+| Exempt | 5161 |
+| Assessed | 7127 of 7127 (100%) |
+| Human reviewed | 0 of 7127 (0%) |
+| Unverified | 7127 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 7156 |
+| HUMAN_PENDING | 7127 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5160 |
+| EXEMPT | 5161 |
 
 ## 5. Aliases In The Tree
 
@@ -172,7 +172,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 23 | 12 | 11 | 12 | None | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeCompiler.cs` | 9 | 7 | 2 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` | 14 | 12 | 2 | 12 | None | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 197 | 172 | 25 | 172 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 196 | 171 | 25 | 171 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 105 | 83 | 22 | 83 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` | 11 | 9 | 2 | 9 | Low | High | 8/8 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Assembler.cs` | 97 | 65 | 32 | 65 | Low | Critical | 20/20 |
@@ -192,7 +192,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` | 12 | 10 | 2 | 10 | None | High | 6/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs` | 40 | 24 | 16 | 24 | None | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSyntax.cs` | 29 | 26 | 3 | 26 | None | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 167 | 49 | 118 | 49 | Low | High | 23/18 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 167 | 49 | 118 | 49 | Low | High | 24/19 |
 | `src/Broiler.VM.Profile.JavaScript.Format/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptArtifactWriter.cs` | 20 | 17 | 3 | 17 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs` | 26 | 14 | 12 | 14 | None | Medium | 0/0 |
@@ -263,7 +263,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Imports.cs` | 11 | 11 | 0 | 11 | Low | High | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Iteration.cs` | 9 | 9 | 0 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Jobs.cs` | 6 | 6 | 0 | 6 | Low | High | 3/3 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.Metering.cs` | 14 | 14 | 0 | 14 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.Metering.cs` | 16 | 15 | 1 | 15 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Modules.cs` | 15 | 15 | 0 | 15 | Low | High | 8/8 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Operators.cs` | 16 | 16 | 0 | 16 | Low | High | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Properties.cs` | 22 | 22 | 0 | 22 | Low | Medium | 0/0 |
@@ -289,7 +289,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 23 | 14 | 9 | 14 | Low | Critical | 18/18 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` | 7 | 4 | 3 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberData.cs` | 36 | 14 | 22 | 14 | Low | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 6 | 6 | 0 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs` | 69 | 31 | 38 | 31 | Low | Medium | 3/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 71 | 39 | 32 | 39 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsPluralRule.cs` | 12 | 10 | 2 | 10 | Low | Medium | 1/0 |
@@ -323,7 +323,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.ListFormat.cs` | 15 | 9 | 6 | 9 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs` | 29 | 19 | 10 | 19 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs` | 20 | 19 | 1 | 19 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs` | 24 | 24 | 0 | 24 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs` | 8 | 8 | 0 | 8 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.NumberFormat.cs` | 24 | 19 | 5 | 19 | Low | Medium | 2/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs` | 50 | 33 | 17 | 33 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.PluralRules.cs` | 15 | 10 | 5 | 10 | Low | Low | 0/0 |
@@ -700,7 +700,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a call whose callee is not a function this program declares is admitted
 - `Broiler.VM.Profile.JavaScript.Compiler.JsParser.ParseArrowParameters()` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` - Security=High, Spec=none cited, `D843FF`, PENDING
   - Falsified if: an arrow's parameter list is parsed with the enclosing `[Await]` context cleared
-- `Broiler.VM.Profile.JavaScript.Compiler.JsParser.TryBigIntValue(SliceToken, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` - Security=High, Spec=none cited, `9C1B5C`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsParser.BigIntValueOf(SliceToken, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` - Security=High, Spec=none cited, `16D059`, PENDING
   - Falsified if: a BigInt literal's value differs from the integer its text spells, or a literal wider than the constant ceiling is converted
 - `Broiler.VM.Profile.JavaScript.Compiler.JsParser.Deepen(SliceSourceSpan, out JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` - Security=High, Spec=none cited, `FEEA6B`, PENDING
   - Falsified if: a source whose tree is deeper than this bound reaches a walk
@@ -970,8 +970,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an escape naming a lone surrogate throws, or a supplementary code point is not encoded as a surrogate pair
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadUnicodeEscapeValue(out int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `6142E3`, PENDING
   - Falsified if: either spelling produces a value the language does not give it
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadNumericLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `7D4324`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadNumericLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `B8236F`, PENDING
   - Falsified if: the value this produces differs from the language's MV for the same literal text
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TryLiteralValue(int, out double)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `8AE25F`, PENDING
+  - Falsified if: the value differs from the language's MV for the same literal text
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadStringLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `07DC3C`, PENDING
   - Falsified if: a directive is recognised from the string's value rather than from its raw text
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.RegularExpressionIsAllowedHere()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `EC67B9`, PENDING
@@ -1784,7 +1786,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a BigInt converts to a Number other than the nearest one with ties to even, or a value at or past 2 ** 1024 - 2 ** 970 converts to a finite Number
 - `Broiler.VM.Profile.JavaScript.JsBigInt.CompareToNumber(double, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `F5B13A`, PENDING
   - Falsified if: a BigInt and a Number compare other than their mathematical values do, or either is rounded to compare
-- `Broiler.VM.Profile.JavaScript.JsBigInt.TryParseStringInteger(string, Action<ulong>, out JsBigInt?, out int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `A71525`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.TryParseStringInteger(string, Action<ulong>, out JsBigInt?, out int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `686799`, PENDING
   - Falsified if: a text outside StringIntegerLiteral answers a value, a text inside it answers an integer other than its mathematical value, or a value past MaximumBits is constructed
 - `Broiler.VM.Profile.JavaScript.JsBigInt.TryParseRadix(ReadOnlySpan<char>, int, Action<ulong>, out JsBigInt?, out int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `0BFA97`, PENDING
   - Falsified if: a digit outside the radix is admitted, or the packed bits spell an integer other than the digits do
@@ -1824,7 +1826,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a registration is marked whose target the eligibility answered alive, or a marked registration is unmarked
 - `Broiler.VM.Profile.JavaScript.JsDecimal` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, Spec=ECMA-402 s16.5, `0C7B76`, PENDING
   - Falsified if: a value rounds to a decimal other than the one ECMA-402's ToRawFixed or ToRawPrecision selects for its rounding mode, or the work is not linear in the digits
-- `Broiler.VM.Profile.JavaScript.JsDecimal.FromString(string, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, Spec=ECMA-402 s16.5.16, `7C8428`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsDecimal.FromString(string, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, Spec=ECMA-402 s16.5.16, `C3D83F`, PENDING
   - Falsified if: a text outside StringNumericLiteral answers other than not-a-number, or a value that rounds to an infinity or a zero as a Number is kept as written
 - `Broiler.VM.Profile.JavaScript.JsDecimal.ParseDecimal(string)` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, Spec=ECMA-262 s7.1.4.1, `F3E0FD`, PENDING
   - Falsified if: a text that is not a StrDecimalLiteral parses, or one that is reads as another value
@@ -1898,7 +1900,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a call is made from the loop while its caller's frame still has an instruction to run, a handler to land in, or a value to construct
 - `Broiler.VM.Profile.JavaScript.JsEngine.BindParameters(JsProgram, JsCodeUnit, JsScriptFunction, JsFrame, JsValue, JsValue[])` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Calls.cs` - Security=High, Spec=none cited, `E1EDFC`, PENDING
   - Falsified if: a generator over a non-simple parameter list reports a binding failure at its first resumption rather than at its call
-- `Broiler.VM.Profile.JavaScript.JsEngine.ToNumberFromText(string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `07B791`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ToNumberFromText(string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `887C51`, PENDING
   - Falsified if: a longer numeric string is read for the same charge as a shorter one
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToNumeric(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `5C1B6B`, PENDING
   - Falsified if: an object operand is converted to a primitive twice, or a BigInt reaches ToNumber through this operation
@@ -1906,11 +1908,11 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a wider BigInt is converted to text for the same charge as a narrower one
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToBigInt(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `66E934`, PENDING
   - Falsified if: a Number, undefined, null or a Symbol converts to a BigInt, or a String outside StringIntegerLiteral answers anything but a SyntaxError
-- `Broiler.VM.Profile.JavaScript.JsEngine.PrimitiveToBigInt(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `A8BFC5`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.PrimitiveToBigInt(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `3F8F47`, PENDING
   - Falsified if: a Number, undefined, null or a Symbol converts to a BigInt
 - `Broiler.VM.Profile.JavaScript.JsEngine.StringToBigIntOrThrow(string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `60A446`, PENDING
   - Falsified if: a text outside StringIntegerLiteral answers a value, or a value past the ceiling is answered
-- `Broiler.VM.Profile.JavaScript.JsEngine.NumberToBigInt(double)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `AABAD1`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.NumberToBigInt(double)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `63282C`, PENDING
   - Falsified if: a Number that is not an integer converts to a BigInt, or an integral one converts to any integer but its own
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToElementValue(JsElementKind, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs` - Security=High, Spec=none cited, `AB31B4`, PENDING
   - Falsified if: a BigInt kind accepts a Number, a Number kind accepts a BigInt, or either converts with the other content type's operation
@@ -1976,6 +1978,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the stack backstop produces a result naming no dimension, or a refused charge commits anything
 - `Broiler.VM.Profile.JavaScript.JsEngine.ChargeText(int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Metering.cs` - Security=High, Spec=none cited, `626201`, PENDING
   - Falsified if: a text operation's charge does not grow with the input the guest controls
+- `Broiler.VM.Profile.JavaScript.JsEngine.WorkCharge` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Metering.cs` - Security=High, Spec=none cited, `BD45AA`, PENDING
+  - Falsified if: a shared conversion charges through it a total, or exhausts at a point, other than this engine's own charge for the same text did before SJL-3.4
 - `Broiler.VM.Profile.JavaScript.JsEngine.ChargeHostCrossing(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Metering.cs` - Security=High, Spec=none cited, `62A22B`, PENDING
   - Falsified if: a crossing of the host surface completes without charging HostCalls
 - `Broiler.VM.Profile.JavaScript.JsEngine.ChargeDebt(long)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Metering.cs` - Security=High, Spec=none cited, `6EA938`, PENDING
@@ -2158,7 +2162,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a guest-writable property or function decides the answer, or the realm's own storage is answered
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.TryReadArrayBuffer(JsHostValue, Span<byte>, out int)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `C8C85D`, PENDING
   - Falsified if: a destination is written when the answer is not Copied, or is written before the charge is admitted
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.NewArrayBuffer(ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `EC5AEA`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.NewArrayBuffer(ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `933BED`, PENDING
   - Falsified if: a buffer is answered after its fuel or live-bytes charge was refused, or a later write to the caller's memory changes it
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.BufferBytes(JsHostValue, out byte[]?)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `78A87E`, PENDING
   - Falsified if: an object that is not the realm's own buffer type answers Copied
@@ -2342,7 +2346,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a value is reported that the emitted code did not leave in the frame's first operand slot
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.TryFindSymbol(JsProgram, uint, out uint)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `B97A49`, PENDING
   - Falsified if: an offset is returned for a unit the symbol table does not name
-- `Broiler.VM.Profile.JavaScript.JsNativeExecution.Render(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `A768C5`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeExecution.Render(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `794D31`, PENDING
   - Falsified if: a completion of undefined is reported as a Number, or a Number as undefined
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.TypeOf(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `0FC6E8`, PENDING
   - Falsified if: this disagrees with what the interpreter's typeof answers for the same value
@@ -2360,7 +2364,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a `for await` over an object carrying `Symbol.asyncIterator` reaches the synchronous wrapper, or one over an Array of promises answers the promises rather than their values
 - `Broiler.VM.Profile.JavaScript.JsRealm.BigIntWrap(JsEngine, JsValue[], bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.BigInt.cs` - Security=High, Spec=none cited, `2F9DBC`, PENDING
   - Falsified if: the value is converted before the width, a Number value is accepted, or a result past MaximumBits is answered
-- `Broiler.VM.Profile.JavaScript.JsRealm.BinaryResizeBuffer(JsEngine, JsArrayBuffer, int)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` - Security=High, Spec=none cited, `9DF2AA`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsRealm.BinaryResizeBuffer(JsEngine, JsArrayBuffer, int)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` - Security=High, Spec=none cited, `C37D0C`, PENDING
   - Falsified if: a resize the fuel meter, the live-bytes ceiling or the allocator refuses leaves the buffer at a different length or with different bytes
 - `Broiler.VM.Profile.JavaScript.JsRealm` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `60DD8D`, PENDING
   - Falsified if: a clone graph carries a reference into the realm that produced it
@@ -2442,7 +2446,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a realm builds ShadowRealm without the dynamic surface, or its evaluate compiles outside the mediator
 - `Broiler.VM.Profile.JavaScript.JsRealm` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Shared.cs` - Security=High, Spec=none cited, `60DD8D`, PENDING
   - Falsified if: a shared buffer is detached, transferred or reachable as an ArrayBuffer, or an Atomics access is not sequentially consistent
-- `Broiler.VM.Profile.JavaScript.JsRealm.SetupShared()` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Shared.cs` - Security=High, Spec=none cited, `6DB918`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsRealm.SetupShared()` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Shared.cs` - Security=High, Spec=none cited, `6FA5A2`, PENDING
   - Falsified if: a realm builds SharedArrayBuffer or Atomics without the binary and shared surfaces, or a shared buffer is reachable as an ArrayBuffer
 - `Broiler.VM.Profile.JavaScript.JsRealm.AtomicsDoWait(JsEngine, JsValue[], bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Shared.cs` - Security=High, Spec=none cited, `F20377`, PENDING
   - Falsified if: Atomics.wait blocks an agent whose host did not say it may block
@@ -4260,7 +4264,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 7018 of the 7156 assessed units declare
+That is not a figure of speech. 6989 of the 7127 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

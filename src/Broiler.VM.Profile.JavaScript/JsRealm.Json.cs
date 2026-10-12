@@ -17,6 +17,7 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -627,7 +628,7 @@ internal sealed partial class JsRealm
     };
 
     /// <summary>Reads a number literal in the JSON grammar, which is narrower than the language's.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7D68C4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A9B233
     // Broiler-Human:        PENDING
     private static JsValue JsonParseNumber(JsEngine engine, string text, ref int at)
     {
@@ -692,8 +693,8 @@ internal sealed partial class JsRealm
             }
         }
 
-        engine.Charge((ulong)(at - start));
-        return JsValue.Number(JsNumberFormat.ToNumber(text[start..at]));
+        // The library charges the number's length, which is never empty here, before reading it.
+        return JsValue.Number(NumberParsing.StringToNumber(System.MemoryExtensions.AsSpan(text, start, at - start), engine.WorkCharge));
     }
 
     /// <summary>Reads one of the three bare words.</summary>
@@ -869,7 +870,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads the replacer argument into either a function or a key allow-list.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5919E3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9F005F
     // Broiler-Human:        PENDING
     private static void JsonApplyReplacer(JsEngine engine, JsonWriter state, JsValue replacer)
     {
@@ -910,7 +911,7 @@ internal sealed partial class JsRealm
             }
             else if (element.IsNumber)
             {
-                name = JsNumberFormat.ToJsString(element.AsNumber());
+                name = JsNumberFormat.NumberToString(element.AsNumber());
             }
             else if (element.IsObject && element.AsObject() is JsPrimitiveWrapper wrapper &&
                      (wrapper.Primitive.IsString || wrapper.Primitive.IsNumber))
@@ -964,7 +965,7 @@ internal sealed partial class JsRealm
     /// The specification's <c>SerializeJSONProperty</c>, returning <see langword="null"/> for the
     /// values that have no JSON text at all.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0ECED0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=736E87
     // Broiler-Human:        PENDING
     private static string? JsonSerialize(JsEngine engine, JsonWriter state, string key, JsObject holder)
     {
@@ -1027,7 +1028,7 @@ internal sealed partial class JsRealm
             case JsType.Number:
                 {
                     var number = value.AsNumber();
-                    return double.IsFinite(number) ? JsNumberFormat.ToJsString(number) : "null";
+                    return double.IsFinite(number) ? JsNumberFormat.NumberToString(number) : "null";
                 }
 
             // THE LANGUAGE THROWS A TypeError FOR A BIGINT HERE, after consulting `toJSON` and the
