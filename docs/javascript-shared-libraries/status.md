@@ -136,6 +136,14 @@ lists. SJL-3.1's area verdict is where the choice is revisited.
 SJL-1 stays `In progress`, because nothing is accepted. This paragraph replaces none; the ones above
 still hold.
 
+**2026-10-12, later still: SJL-1's changes are merged, and nothing moves.**
+Broiler-Platform/Broiler.JS#1020 and Broiler-Platform/Broiler.VM#117 were merged into their default
+branches with merge commits (`75f2e9f` and `8578c65`), so every commit the paragraph above cites is
+on its repository's default branch. Broiler.JS#1020 also carries `4ab17ce`, which checks the corpus
+out with LF line endings on every platform and changes no file's content. That paragraph said the
+Broiler.JS commits were not yet merged; this one corrects that and nothing else. SJL-1 stays
+`In progress`, because nothing is accepted.
+
 ---
 
 ## 1. Reading this ledger
@@ -191,7 +199,7 @@ Rows are in delivery order (roadmap section 4), not numeric order.
 | Milestone | Objective, in one line | State | Unmet clauses / holder | Evidence | Last moved |
 |---|---|---|---|---|---|
 | SJL-0 | Records, decisions, baselines and predeclared rules in four repositories | `In progress` | **Every clause is met on records and bundles in its own repository, and none is accepted**, because review is deferred under `docs/mvp.md`. **Broiler.VM:** clauses 1 to 7, on its records and bundle `sjl-0-001`, which retains every base of SJL-0.8's Broiler.VM half at `0087e8d7` and names what it excludes (the pristine consumer's restores, which fail at that commit, and ILC's mstat records). **Broiler.JS** (observed): clauses 8 to 11, on `a69eeca`, `1410079` and its bundle `docs/evidence/sjl-0-001/` (`31f92a6`) at base `44a214dc`, which names what it excludes (a run in the CI environment, and a controlled measurement lane); its status file is `docs/roadmap/SharedLibraries.status.md`. **Components** (observed): clause 12, on Broiler.Unicode `6c4baf7` and Broiler.RegEx `0814aa5`. Every record is merged into its repository's default branch *(2026-10-12; read "Every record outside Broiler.VM is on branch `claude/busy-lamport-m3yprr`, not yet merged.")*. `SJL-D-7`'s record is filed ([JSD-0063](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)), so the 2026-11-30 deadline is met. | Broiler.VM [`sjl-0-001`](../evidence/sjl-0-001/README.md); Broiler.JS `docs/evidence/sjl-0-001/` (observed) | 2026-10-12 (Broiler.JS's and the components' records, rules and bundle) |
-| SJL-1 | The shared conformance vectors | `In progress` | **Every clause is met on retained records, and none is accepted**, because review is deferred. **Broiler.JS (home):** clauses 1 to 3 and its half of clause 6, on corpus revision 3 and bundle `docs/evidence/sjl-1-001/` (`687a081`, not yet merged), met under its rule with one judgement its README states. **Broiler.VM:** clause 4 on the pin of revision 3 and rule N13's fourth suite directory and witness; clauses 5 and 6 met under the rule revised on 2026-10-12 after the first run was seen, and **not met under the rule as committed**. A finding for SJL-3 (SJL-3.3's radix algorithm) is recorded above | Broiler.JS `docs/evidence/sjl-1-001/`; Broiler.VM [`sjl-1-001`](../evidence/sjl-1-001/README.md) | 2026-10-12 |
+| SJL-1 | The shared conformance vectors | `In progress` | **Every clause is met on retained records, and none is accepted**, because review is deferred. **Broiler.JS (home):** clauses 1 to 3 and its half of clause 6, on corpus revision 3 and bundle `docs/evidence/sjl-1-001/` (`687a081`, merged in `75f2e9f`) *(2026-10-12; read "(`687a081`, not yet merged)")*, met under its rule with one judgement its README states. **Broiler.VM:** clause 4 on the pin of revision 3 and rule N13's fourth suite directory and witness; clauses 5 and 6 met under the rule revised on 2026-10-12 after the first run was seen, and **not met under the rule as committed**. A finding for SJL-3 (SJL-3.3's radix algorithm) is recorded above | Broiler.JS `docs/evidence/sjl-1-001/`; Broiler.VM [`sjl-1-001`](../evidence/sjl-1-001/README.md) | 2026-10-12 |
 | SJL-2 | The admission path | `Not started` | All. The records of decisions `SJL-D-1` to `SJL-D-5`, `SJL-D-8` and `SJL-D-9`, all taken, are SJL-0's to file, apart from `SJL-D-3`'s `docs/publishing.md`, which SJL-2.13 files. | None | 2026-10-11 (created) |
 | SJL-3 | Number conversion, the pilot | `Not started` | All. Decision `SJL-D-23` was taken before the pilot (continue), so SJL-3's exit stops nothing. | None | 2026-10-11 (created) |
 | SJL-12 | The frontend contract and in-place preparation | `Not started` | All. Its in-place work packages may start after SJL-0. | None | 2026-10-11 (created) |
