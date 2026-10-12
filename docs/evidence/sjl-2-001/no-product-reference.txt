@@ -1,0 +1,7 @@
+# A search of every project file of the checkout for a reference to a shared package (milestone SJL-2, clause 6).
+$ git grep -nE 'Include="Broiler\.ECMAScript' -- '*.csproj' '*.props' '*.targets'
+exit 1 (1: no match)
+
+# The project files outside src/tests/ that reference any package at all:
+src/Broiler.VM.HyperV/tests/Broiler.VM.HyperV.Tests/Broiler.VM.HyperV.Tests.csproj
+(end of list: the one entry is the vendored HyperV component's own test project)

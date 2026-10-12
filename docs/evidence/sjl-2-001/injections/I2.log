@@ -1,0 +1,32 @@
+# I2: the committed feed's probe package replaced by a build of it that calls System.Text.RegularExpressions
+# The test is I2_Every_Admitted_Assembly.
+
+## Injected
+
+(injected into eng/packages/Broiler.ECMAScript.Algorithms.0.0.1-probe.1.nupkg)
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~I2_Every_Admitted_Assembly
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.AdmissionRuleTests.I2_Every_Admitted_Assembly_Reaches_No_Dynamic_Code_And_No_Platform_Text_Api [65 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["Broiler.ECMAScript.Algorithms names System.Text.Re"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AdmissionRuleTests.I2_Every_Admitted_Assembly_Reaches_No_Dynamic_Code_And_No_Platform_Text_Api() in /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AdmissionRuleTests.cs:line 67
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 65 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.29]     Broiler.VM.Architecture.Tests.AdmissionRuleTests.I2_Every_Admitted_Assembly_Reaches_No_Dynamic_Code_And_No_Platform_Text_Api [FAIL]
+exit 1
+
+## Reverted
+
+$ dotnet test /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~I2_Every_Admitted_Assembly
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+exit 0
+
+# Result: injected exit 1 (must be non-zero), reverted exit 0 (must be zero)

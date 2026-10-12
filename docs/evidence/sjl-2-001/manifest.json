@@ -1,0 +1,28 @@
+{
+  "bundle": "sjl-2-001",
+  "milestone": "SJL-2",
+  "evidence-class": "rules-and-admission",
+  "collected-at": "d3d5affa658dfc6aad048b2a1496d3ef6a7292c6",
+  "worktree-clean": true,
+  "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
+  "note": "The admission path, Broiler.VM's half: the injection controls of every rule SJL-2 minted or revised, the admission probe's runs, the restore through each source, and the register diff. The injection logs were collected on the working tree that became the collected-at commit. The probe package is named as a source (its git blob id) and not as an input, because this script normalises CRLF before hashing an input, which would misstate a binary file's digest; its SHA-256 and NuGet content hash are in its pin.",
+  "source-revision": "d3d5affa658dfc6aad048b2a1496d3ef6a7292c6",
+  "sources": {
+    "NuGet.config": "341f81060d0e9f121adb0d96cf7345727855e48e",
+    "eng/packages/Broiler.ECMAScript.Algorithms.0.0.1-probe.1.nupkg": "97cf4ff16c880128f20411c014f72b83de4f5597",
+    "eng/packages/Broiler.ECMAScript.Algorithms.0.0.1-probe.1.pin": "54943fb8a99a86d540dc80a9f60a25b57779e666",
+    "src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json": "4ad8f26811f160d758397fee2df14551c93a8892",
+    "src/tests/Broiler.VM.Architecture.Tests/graph.manifest.json": "61a3dd74bef5abb0e588b12ed5736dd50a3b2414",
+    "src/tests/Broiler.VM.Architecture.Tests/rules.register.json": "742e4637cac96ecbd0b86869bd5a19f6d9d86f72"
+  },
+  "inputs": {},
+  "retained": {
+    "README.md": "8d87368d23a3e2ad7ea3b0f208ec9efecfd85ec6ef735e3d289cb005c810f53d",
+    "admission-probe.log": "6a6700b7d3e2bb513160d1e2b3e1dc931f8bed7da2d8fbb1949228857789d0c4",
+    "collector-identity.log": "e63b915362d990935f66494f7e9d858058a0c4a666fb1be03d2147cb960dd03d",
+    "no-product-reference.txt": "9ac10b8d2ffb07e4d95a8e7290365dfae21d6cb38e9ff3faa873cff3b2a473df",
+    "register.diff": "90e2c94e4fbb2813cf0486f20e0f762293353eda3fa31a7166d12f1276daf843",
+    "restore-sources.log": "de707806f3130d25222371c9dbe71d4f4487a653a3922b9bad2d0827776faa71",
+    "tests.log": "60a0c07b5783794689e18e531e4260beeddd347fdaad8bd95240804b6b5ed966"
+  }
+}
