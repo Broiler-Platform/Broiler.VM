@@ -338,10 +338,13 @@ Data is a trusted input: pinned, hashed, and embedded by each engine (decision `
    - lock files with content hashes;
    - nuget.org repository signatures;
    - Source Link and deterministic builds;
-   - the upstream commit recorded in Broiler.VM's bundles (rule `I7`);
-   - a reservation of the shared package prefix, `Broiler.ECMAScript` (decision `SJL-D-2`), on
-     nuget.org before anything under it is published (SJL-2.13), which also guards against
-     dependency confusion.
+   - the upstream commit recorded in Broiler.VM's bundles (rule `I7`).
+
+   *(Corrected 2026-10-12, when the owner withdrew the prefix reservation and decision `SJL-D-2` was
+   revised. The list's last entry read: "a reservation of the shared package prefix,
+   `Broiler.ECMAScript` (decision `SJL-D-2`), on nuget.org before anything under it is published
+   (SJL-2.13), which also guards against dependency confusion." A package substituted under the
+   prefix is caught by the lock files' content hashes, which rule `I1` holds to its pins.)*
 5. **Vulnerability response.** ADR 0012's R4 covers admitted packages (record V14). The home
    repositories need a security intake; Broiler.VM's release gate already lists a missing intake
    (`G13-no-security-intake`) as a blocker. A fix to a shared library that both engines ship

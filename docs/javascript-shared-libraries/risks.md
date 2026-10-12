@@ -65,7 +65,7 @@ stop of the programme is withdrawn, and its row quotes it.
 |---|---|---|---|
 | S1 | **Unbounded work on hostile input** in a shared parser, matcher or codec | Contract conventions 4 and 5; fuzzing; the adversarial regular-expression corpus | **Stop:** a hostile input that completes without charging, or that hangs |
 | S2 | **Stack exhaustion** in a shared parser or matcher. Broiler.Regex's parser and compiler recurse without a guard today. | Depth limits checked before the stack is; explicit stacks; Broiler.VM's large compilation thread kept | **Stop:** a stack overflow on any fuzz input |
-| S3 | **A tampered or confused package** | Prefix reservation on nuget.org; package source mapping; lock files with content hashes; rule `I1`; the upstream commit recorded (rule `I7`) | **Stop:** a restore whose content hash differs from the pin |
+| S3 | **A tampered or confused package** | Package source mapping; lock files with content hashes; rule `I1`; the upstream commit recorded (rule `I7`). *(Corrected 2026-10-12: the list began "Prefix reservation on nuget.org", which the owner withdrew when decision `SJL-D-2` was revised.)* | **Stop:** a restore whose content hash differs from the pin |
 | S4 | **A vulnerability in a shared library** reaches both engines at once | ADR 0012's R4 covers admitted packages; a security intake in each home; coordinated releases | None. Responding is R4's process. |
 
 ## Licensing and assurance

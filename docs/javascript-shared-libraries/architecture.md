@@ -152,8 +152,9 @@ things rule out the existing prefixes:
 - Broiler.JS's `eng/pack.ps1` gives every package it packs one version.
 - Broiler.VM's rule A2 tests the `Broiler.` prefix.
 
-`Broiler.ECMAScript.*` is the prefix decision `SJL-D-2` took. It is reserved on nuget.org before
-anything under it is published (SJL-2.13).
+`Broiler.ECMAScript.*` is the prefix decision `SJL-D-2` took. No reservation of it on nuget.org is
+required. *(Corrected 2026-10-12, when the owner withdrew the reservation and `SJL-D-2` was revised.
+It read: "It is reserved on nuget.org before anything under it is published (SJL-2.13).")*
 
 ---
 
