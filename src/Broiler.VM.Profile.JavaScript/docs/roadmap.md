@@ -39,12 +39,13 @@ another component is cited here, and the two ledgers stay apart. Where the text 
 component", read "this profile" — the argument is unaffected, and the places where the placement
 genuinely changes an answer say so *(corrected: JSC-21)*.
 
-The component does not start empty and this roadmap does not pretend otherwise. It starts as a
-**snapshot copy** of a large existing JavaScript engine whose execution arm emits IL at run time,
-hosted on a core that forbids dynamic code in any product closure.
-[Section 4](#4-the-seed-what-is-copied-what-is-rewritten-what-is-written-fresh) states what that
-copy actually costs, milestone by milestone, and [section 19](roadmap.delivery.md#19-milestones)
-sequences the work so the adaptation is de-risked early rather than discovered late.
+The component was planned to start as a **snapshot copy** of a large existing JavaScript engine
+whose execution arm emits IL at run time. **It does not.** Both of its front ends were written in
+this checkout, and [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md) withdraws the copy: its general front end is to be the shared
+frontend of [the shared JavaScript libraries programme](../../../docs/javascript-shared-libraries/README.md), a library that names neither engine
+and that both engines consume, admitted under core record [ADR 0014](../../../docs/adr/0014-shared-javascript-libraries.md).
+[Section 4](#4-the-seed-what-is-copied-what-is-rewritten-what-is-written-fresh) records what the copy
+would have contained and what replaces each of its rows *(corrected: JSC-293)*.
 
 Two properties of this document are load-bearing and stated once here. **It links to no document,
 path, result, or item identifier in the legacy engine component**, in either direction: the copy
@@ -142,7 +143,7 @@ terms this component adds or narrows; where a term is the core's, that is said.
 |---|---|
 | **This profile** | `Broiler.VM.Profile.JavaScript`. One profile ID, one descriptor, one verifier, one executor factory, one payload-kind range. |
 | **The core** | The Broiler.VM execution core: its three packable assemblies and the numbered core contract version they carry. Core-owned terms — verified artifact, verified handle, guest-initiated load, artifact-provider capability, external suspension, deployment composition, feature manifest, core contract version, operation-result envelope — keep their core meanings. |
-| **The seed** | The named snapshot copy of the legacy JavaScript engine component from which this component's front end and property storage are taken, and whose standard library it takes as specification rather than as source. A fork with its own history and no dependency edge in either direction. [Section 4](#4-the-seed-what-is-copied-what-is-rewritten-what-is-written-fresh) is its whole treatment, verdict by verdict. |
+| **The seed** | The legacy JavaScript engine component this component was planned to copy its front end and property storage from. **The copy is not taken** ([JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)): no snapshot exists, and none will. The term survives because JS-0's records and [section 4](#4-the-seed-what-is-copied-what-is-rewritten-what-is-written-fresh) name it, the second verdict by verdict *(corrected: JSC-293)*. |
 | **Feature manifest** | The core's term, with this profile's content: the exact JavaScript surface accepted by one version of this profile, minted as a `VmFeatureManifestId` under this profile's own ID. **A profile name alone is never a conformance claim**, and neither is a manifest name; a manifest claims only what its own retained oracle run shows. |
 | **Manifest increment** | One further feature-manifest identity with a reviewed scope, its own corpus extension, and its own oracle run. An increment is not a milestone and closes none. |
 | **The format** | This profile's bytecode: magic, format version, section framing, constant pool, code, exception regions, and position tables. Versioned from the first byte, independently of the core contract version, the package version, and any feature manifest. |
@@ -336,10 +337,15 @@ trimming, and Native AOT gates for the core boundary.
     inputs. Each claimed composition publishes **and runs** its workload on every declared RID
     with trim and AOT warnings treated as errors, and its published closure is read off the
     published output.
-11. **The fork is one-way and mechanical.** No project reference, package reference, or shared
-    source item runs between this component and any legacy Broiler component in either direction,
-    and an architecture rule with a passing witness enforces it. Fixes do not flow across the
-    fork after the snapshot, and neither side is the other's upstream.
+11. **No edge reaches an engine, and the shared libraries are upstream of both.** No project
+    reference, package reference, or shared source item runs between this component and the
+    Broiler.JS engine, or any other legacy Broiler engine component, in either direction, and
+    architecture rules with passing witnesses enforce it. This family's only dependencies outside
+    the component are the shared libraries core [ADR 0014](../../../docs/adr/0014-shared-javascript-libraries.md) admits, each on rule `I1`'s
+    allow-list and pinned by content hash, from the shared libraries programme's milestone SJL-2.
+    Fixes to a shared area flow through the shared library; engine code does not flow between the
+    engines, neither engine is the other's upstream, and a shared library is never patched here
+    *(corrected: JSC-291)*.
 12. **No evidence transfers.** No conformance result, benchmark, measurement, review decision, or
     Native AOT sample produced by any other component is this component's evidence, and no gate
     here may cite one. Every claim starts at zero.
@@ -523,15 +529,16 @@ reconciling two profiles' declarations belongs to whichever component composes b
 
 ## 4. The seed: what is copied, what is rewritten, what is written fresh
 
-The core roadmap fixes four conditions on this copy, and they are conditions on *this* document:
-the snapshot is a named commit recorded here; the copy is a fork with its own history and no
-dependency edge in either direction; fixes do not flow across the fork afterwards and neither
-side is the other's upstream; and because the seed is a large existing codebase rather than a
-greenfield interpreter, the core's profile-facing contract must be reachable by code that was not
-written for it.
+**The copy is not taken.** [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md) withdraws it, on the shared JavaScript libraries
+programme's decision SJL-D-7 *(corrected: JSC-293)*. What the core roadmap's conditions on the copy
+protected still holds, in the form that fits a shared library rather than a fork: no edge in
+either direction reaches the Broiler.JS engine or any other legacy Broiler engine component, the
+family's only outside dependencies are the shared libraries core ADR 0014 admits, fixes to a shared
+area flow through the shared library, and neither engine is the other's upstream
+*(corrected: JSC-292)*.
 
-This section satisfies them in full, and adds the two things they do not settle: what the copy
-actually contains, and what waiting longer buys.
+This section is kept as the record of what the copy would have contained and what replaces each of
+its rows. Its subsections describe a snapshot nobody took.
 
 ### 4.1 The snapshot identity
 
@@ -549,9 +556,8 @@ re-derive the same tree from it:
 | SDK and runtime | Recorded at snapshot time |
 | Working tree | Clean, asserted, or a retained patch identity |
 
-That row set is the **candidate** identity, not the taken one. It is written here so the record
-has a shape and a starting value; JS-2 takes the snapshot and replaces these values with the ones
-it actually took, or records why it took different ones.
+That row set is the **candidate** identity, and nobody took it. JS-2 no longer takes a snapshot,
+so these values are never replaced *(corrected: JSC-293)*.
 
 **One honest defect in the candidate, recorded rather than discovered later.** A repository gate in
 the seed is red at that commit: a configuration test asserts a smaller ownership set than the tree
@@ -588,17 +594,12 @@ snapshot and a late one:
 | A rename of every assembly, namespace, and package ID across the seed | Every file a copy takes | **Do not wait.** This component renames on ingest into its own namespace on the first commit, which subsumes it. Waiting for a rename in order to rename again is pure delay. |
 | The project-shell restructure that would extract a backend-neutral front end | Nothing, by its own terms — it is forbidden from moving production code | **Do not wait**, and do not plan against it. This component performs its own extraction. [Section 9](#9-the-semantic-front-end-and-lowering) says so plainly because the alternative is planning around an extraction that will not arrive. |
 
-**And a stop condition, because the seed does not stand still.** It moves at a rate that makes a
-late snapshot strictly more expensive than an early one: every further release is more to adapt
-and more to re-review. The snapshot is therefore taken as-is on **2026-11-30, or after 400 further
-commits on the seed's default branch beyond the candidate revision, whichever comes first**, after
-which the remaining waited-on item is re-derived on this side of the fork and JS-2 records what it
-cost. A precondition without a deadline is how a fork becomes a permanent postponement — and if the
-trigger arrives with the awaited work unlanded, the condition fires and the wait is abandoned
-rather than extended.
-
-The second leg of the core's own condition — that the core contract is **accepted** — is a
-separate gate and is unmet today. This roadmap shows both legs, and lets neither imply the other.
+**There is no stop condition, because there is no snapshot.** JSD-0005 gave the snapshot one, a
+date and a commit budget, so that a precondition could not become a permanent postponement.
+[JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md) withdrew the copy before that date, and the stop condition with it: nothing is taken
+on any date, and the waited-on set above has no subject *(corrected: JSC-293)*. The core contract's
+acceptance, the other leg of the core's condition on the copy, no longer binds JS-2 either, because
+nothing is adapted from a copy to a moving contract.
 
 ### 4.3 The copy table
 
@@ -607,14 +608,14 @@ column.
 
 | Seed material | Roughly | Verdict |
 |---|---|---|
-| Tokenizer and parser: scanner, token stream, classifiers, numeric coercion, pattern validation | 11,000 lines | **Copy.** Its reference closure contains no IL emitter, and a forced trim/AOT analyzer build of it produces no warnings attributed to it. That is the best-conditioned material in the seed. |
-| Syntax tree and visitors | 3,000 lines | **Copy**, with two conditions: it requires unsafe blocks (a visitor takes the address of a stack local, and the pervasive string type is an unsafe struct over source, offset, length), and it depends on three small primitives from a neighbouring assembly that must be copied in rather than referenced. |
-| Backend-neutral static analysis extracted from the lowering project: post-parse validation, free-name analysis, declaration and hoisting analysis | 5,000 lines, out of a 20,000-line project | **Copy and re-home.** The remaining three quarters of that project emits against the seed's expression model and is not front-end code. |
-| Property storage: hidden-class shapes with a transition table, shape-only slot storage with its one-way materialization boundary, packed/holey/dictionary element arrays, the named-property trie | Part of ~2,700 lines | **Copy, with its tests and its recorded defect history.** This is the strongest single asset in the seed and the least likely to be improved by rewriting. |
+| Tokenizer and parser: scanner, token stream, classifiers, numeric coercion, pattern validation | 11,000 lines | **Withdrawn.** The shared frontend's tokenizer and parser replace it, at the shared libraries programme's milestones SJL-12 and SJL-13 *(corrected: JSC-293)*. |
+| Syntax tree and visitors | 3,000 lines | **Withdrawn.** The shared frontend's canonical tree replaces it (SJL-12, SJL-13), so no unsafe block arrives with it *(corrected: JSC-293)*. |
+| Backend-neutral static analysis extracted from the lowering project: post-parse validation, free-name analysis, declaration and hoisting analysis | 5,000 lines, out of a 20,000-line project | **Withdrawn.** The shared frontend's static semantics replace it, at the programme's milestone SJL-15 *(corrected: JSC-293)*. |
+| Property storage: hidden-class shapes with a transition table, shape-only slot storage with its one-way materialization boundary, packed/holey/dictionary element arrays, the named-property trie | Part of ~2,700 lines | **Withdrawn.** The object model is this profile's own, written in this checkout, and the shared libraries share no object model *(corrected: JSC-293)*. |
 | The interned property-key table | Small | **Rewrite.** Its static constructor initialises its own fields by reflection, which is trim- and AOT-hostile in the lowest layer of the graph, and its identities are process-wide where this profile needs them realm-scoped. |
 | Standard library, core surface | ~30,000 lines | **Rewrite.** The gate on entry to JS-4 exists precisely so this answer is known before a file is taken, and [section 8](#8-the-value-frame-and-call-model)'s answer is *replace* — so a library typed against the seed's boxed value base type cannot be copied and re-typed. Its semantics are taken as specification, it is re-implemented against this profile's value struct, and its tests are ported and labelled as ported *(corrected: JSC-24)*. |
 | Standard library, optional surfaces: temporal, internationalization, regular expressions | ~29,000 lines | **Rewrite, behind separate manifests**, for the row above's reason: they are the same assembly typed against the same value base type, so none of them is a copy either. Together they are about half the library. None belongs in the first feature manifest, and each gets its own identity so a composition can decline it truthfully — which also means each carries its own cost, at the milestone that mints its manifest, rather than all three landing with the core surface *(corrected: JSC-24)*. |
-| The built-in registration source generator and its attribute vocabulary | ~1,600 lines | **Copy, and change one thing.** It is a Roslyn incremental generator emitting static creation and registration methods with no runtime reflection — which already satisfies the core's static-and-typed rule. Its generated prototype lookup reads ambient context and must take a realm parameter instead. |
+| The built-in registration source generator and its attribute vocabulary | ~1,600 lines | **Withdrawn.** Registration is this profile's own, and the shared libraries share no built-in object implementation *(corrected: JSC-293)*. |
 | The value base type's dynamic-metaobject interface and its binder | Small, pervasive | **Amputate at ingest.** It is a runtime-code-generation path sitting on the base class of every JavaScript value, so the decision cannot be deferred past the first copied file. |
 | A dead registration attribute family | ~120 lines, zero usages | **Delete at ingest.** A copy that begins by deleting provably dead inherited code is cheaper to review than one that carries it. |
 | Cross-assembly module-initializer wiring | ~360 lines — one initializer body, plus seven satellite initializer files | **Delete.** The core forbids the discovery this exists to perform; a composition root wires what it composes. |
@@ -623,8 +624,8 @@ column.
 | The module-host assemblies | ~1,500 lines | **Exclude by name.** They are host integration doing filesystem and package resolution. Module *syntax* lowering is front-end work and is copied; module *hosting* is the embedder's, behind the artifact provider. |
 | The expression model, the IL emitter, and the tree-building and generator-rewriting layer between them and the runtime | ~16,500 lines | **Exclude.** This is the arm this profile replaces, and it is larger than the part of the seed being kept for the same job. |
 | The numeric bytecode island and its offline compiler | ~660 lines | **Reference as prior art in prose only; copy nothing.** It has no object model, no strings, no properties, no calls, no closures, no exceptions, no modules, no async. Its value is that it proved a no-emitter closure can publish and run, and this roadmap does not restate that as evidence for anything. |
-| The regular-expression engine, the Unicode property tables, and the locale data | ~3,700 for the matcher; ~26,000 more on the Unicode and locale side, most of it generated tables | **Acquire as this checkout's own dependencies.** They are independently versioned components, not part of the seed's own tree, and the Unicode side is not only tables — it carries hand-maintained calendar, plural-rule, and special-casing code that lands inside this component's root and under JS-0's warning and resolution gates. The dead extended date-time reference is dropped. |
-| The test corpus for the library and the storage layer | ~27,000 lines | **Copy the storage half; port the library half**, because the library is re-implemented against a different value representation. Labelled as a port, not as a pass. |
+| The regular-expression engine, the Unicode property tables, and the locale data | ~3,700 for the matcher; ~26,000 more on the Unicode and locale side, most of it generated tables | **Admitted packages instead.** `Broiler.Regex` (the programme's SJL-11) and the Unicode owner's packages (SJL-7) are admitted under ADR 0014; the locale and time data are generated by the shared generators from the shared pins into this family's own data assembly (SJL-8, SJL-9), and no package carries data. The dead extended date-time reference is dropped *(corrected: JSC-293)*. |
+| The test corpus for the library and the storage layer | ~27,000 lines | **Withdrawn with the copy.** Nothing is copied or ported from the seed; the shared libraries carry their own tests and the shared conformance vectors *(corrected: JSC-293)*. |
 | The conformance harness, sharding, host modes, self-check fixtures, merge, and audit tooling | Method, not code | **Re-implement the method.** [Section 14](#14-the-conformance-oracle) states the method in full so it can be built from this document. **No total, manifest entry, known-gap entry, or triage finding crosses the fork.** |
 
 ### 4.4 What the copy actually costs
@@ -788,8 +789,11 @@ The rules the verified graph retains, whatever the names become:
 - the profile never references the lowering, which is what makes an execution-only image contain
   a format, a verifier, and an interpreter and no compiler at all;
 - no product project references a test project, a fixture, or a conformance host;
-- **no edge in either direction reaches any legacy Broiler component**, asserted by an
-  architecture rule with a passing witness and a negative control, including the inbound half;
+- **no edge in either direction reaches the Broiler.JS engine or any other legacy Broiler engine
+  component**, asserted by an architecture rule with a passing witness and a negative control,
+  including the inbound half; the family's only dependencies outside the component are the shared
+  libraries core ADR 0014 admits, each on rule `I1`'s allow-list and pinned by content hash, from
+  the shared libraries programme's milestone SJL-2 *(corrected: JSC-292)*;
 - **no edge in either direction reaches any other Broiler.VM profile family**, asserted the
   same way and with the same negative control. This is a separate rule from the one above and it
   is not implied by the reference-set clause, because that clause already tolerates one further
@@ -1381,12 +1385,13 @@ consumes that *(corrected: JSC-227)*.
 
 **And for `broiler.javascript.slice` the front end is not ingested at all — it is written
 here** *(corrected: JSC-43)*. Everything above describes adapting the seed's four
-early-error places into one, which is JS-2's ingest and is blocked with it; the slice
+early-error places into one, which was JS-2's ingest until the copy was withdrawn; the slice
 surface is small enough that its tokenizer, parser, one validation stage and source
 lowering were written from the grammar instead, needing neither of JS-2's blockers. That is
 the [JSC-15](roadmap.corrections.md#jsc-15) split applied a second time, and it is what let
 the five decisions above be taken against something that runs rather than against a plan.
-**The general front end is still the ingest's and still waits.**
+**The general front end is the shared frontend's, and waits for it**: the shared JavaScript
+libraries programme's milestone SJL-13, with which JS-2 closes *(corrected: JSC-295)*.
 
 The module host projects are excluded by name: they are host integration doing filesystem and
 package resolution against the seed's object model, and they contain no parser or semantic work.

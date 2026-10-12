@@ -363,8 +363,11 @@ decision's record is filed by the work packages that [decisions.md](decisions.md
 ## 8. Decision points
 
 Every decision point was taken on 2026-10-11. [decisions.md](decisions.md) lists each with its
-alternatives, the recommendation, the holder and the choice. **None is recorded yet**, and a gate
-clause that needs a decision is met only by its record.
+alternatives, the recommendation, the holder and the choice. **Broiler.VM's records of them are
+filed at SJL-0, and Broiler.JS's and the component repositories' are not yet**; [the
+ledger](status.md) says which decision is recorded where. A gate clause that needs a decision is met
+only by its record. *(Revised 2026-10-11, at SJL-0's first records: the second sentence read "**None
+is recorded yet**, and a gate clause that needs a decision is met only by its record.")*
 
 **SJL-0 records most of them:**
 

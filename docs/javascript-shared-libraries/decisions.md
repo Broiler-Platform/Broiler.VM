@@ -1,7 +1,9 @@
 # Decision points
 
-**Date:** 2026-10-11. **State, later on 2026-10-11: every decision is taken, and no record is
-filed.** A decision point is a place where two or more routes are admissible under the published
+**Date:** 2026-10-11. **State, later on 2026-10-11: every decision is taken, and Broiler.VM's records
+of the decisions milestone SJL-0 records are filed; [the ledger](status.md) says which.** *(Revised
+2026-10-11, at SJL-0's first records: this read "every decision is taken, and no record is
+filed.")* A decision point is a place where two or more routes are admissible under the published
 rules and a milestone clause cannot be met until one is chosen. This document states each question,
 its alternatives, a recommendation and its holder, and ends each section with the decision taken.
 

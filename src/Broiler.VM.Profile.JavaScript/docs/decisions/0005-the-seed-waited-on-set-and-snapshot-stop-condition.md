@@ -120,3 +120,14 @@ would be a rule with no subject.
 Nothing about what the copy contains. The copy table, the per-file verdicts, the ingest deletions
 and the attribution changes are JS-2's, and JS-2 is blocked on the core contract's acceptance -
 a blocker this component does not hold and must record rather than route around.
+
+## Superseded in part 2026-10-11: the seed copy is not taken
+
+[JSD-0063](0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md) takes decision SJL-D-7 of
+the shared JavaScript libraries programme as (a): **the seed copy will not be taken, so the snapshot
+stop condition above is withdrawn.** No snapshot is taken on 2026-11-30, and none after any number of
+seed commits. The waited-on set has no subject, because nothing is copied. The satellite dependency
+keeps its holder and is fulfilled by admitted component packages and the shared generators rather than
+by acquisition into this checkout. The unsafe position has no subject; nullable reference types stay
+enabled. **The rulings above are not edited**: they are kept as they were taken, and the candidate
+snapshot identity stays a candidate nobody took.

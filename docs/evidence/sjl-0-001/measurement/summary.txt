@@ -1,0 +1,10 @@
+# the base arm measured alone; Q is the median of the retained repetitions, in ms
+# form | workload | Q(B) | Q(control) | Q(B-again) | E = Q(B) - Q(control) | N = |Q(B) - Q(B-again)| | reading
+bytecode | to-string | 715.588 | 437.760 | 725.674 | 277.828 | 10.085 | recorded
+bytecode | to-number | 725.439 | 549.413 | 761.370 | 176.027 | 35.930 | recorded
+bytecode | literals | 1260.369 | 1105.464 | 1270.095 | 154.904 | 9.727 | recorded
+native | to-string | 852.525 | 558.967 | 941.453 | 293.558 | 88.928 | recorded
+native | to-number | 892.002 | 636.464 | 890.454 | 255.538 | 1.548 | recorded
+native | literals | 1519.121 | 1317.660 | 1506.970 | 201.460 | 12.151 | recorded
+# effective-configuration lines seen: 1
+#   runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed

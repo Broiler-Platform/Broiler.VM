@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-10-11 (JSC-290: three retained closure reports restored to what their bundles retained, and the JavaScript roots' catalogs and closures collected again as bundle JS-10-004)
+**Last updated:** 2026-10-11 (JSC-291 to JSC-295: invariant 11, the edge clause, the seed copy rows, the gates and JS-2's gate, on decision JSD-0063 of the shared JavaScript libraries programme). Before that, the same day: JSC-290, three retained closure reports restored to what their bundles retained, and the JavaScript roots' catalogs and closures collected again as bundle JS-10-004
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -12848,3 +12848,159 @@ and their assurance fingerprints regenerated.
 **Authority and date.** 2026-10-11: the repository owner's request to review the post-retention
 edits and apply the remedy this repository's own rules require. JSD-0010's immutability rule, and
 the composition register's `ubc-4-002` precedent, are the records this correction follows.
+
+### JSC-291
+
+**Where:** roadmap section 2, invariant 11.
+
+**What the plan said.** "**The fork is one-way and mechanical.** No project reference, package
+reference, or shared source item runs between this component and any legacy Broiler component in
+either direction, and an architecture rule with a passing witness enforces it. Fixes do not flow
+across the fork after the snapshot, and neither side is the other's upstream." Read against a
+shared library, the last sentence forbids fixing it: a fix to a shared area is a fix that flows
+across the fork.
+
+**What replaced it.** **No edge reaches an engine, and the shared libraries are upstream of both.**
+No reference of any kind runs between this component and the Broiler.JS engine, or any other legacy
+Broiler engine component, in either direction. The family's only dependencies outside the component
+are the shared libraries core [ADR 0014](../../../docs/adr/0014-shared-javascript-libraries.md)
+admits, each on rule `I1`'s allow-list and pinned by content hash, from the shared libraries
+programme's milestone SJL-2; until then rules A2, N1 and N37 refuse every one. Fixes to a shared
+area flow through the shared library; engine code does not flow between the engines; neither engine
+is the other's upstream; and a shared library is never patched here. **Invariant 12, "No evidence
+transfers", is not touched.**
+
+**Authority and date.** [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
+section 2, on the shared JavaScript libraries programme's decision SJL-D-9 (the fork policy), and
+core record ADR 0014. 2026-10-11.
+
+### JSC-292
+
+**Where:** roadmap section 4's opening paragraph, its second and third conditions; roadmap section 5's
+dependency rules, the bullet on legacy components.
+
+**What the plan said.** Section 4 restated the core roadmap's conditions on the copy, among them "the
+copy is a fork with its own history and no dependency edge in either direction; fixes do not flow
+across the fork afterwards and neither side is the other's upstream". Section 5 required that "**no
+edge in either direction reaches any legacy Broiler component**", asserted by an architecture rule
+with a passing witness and a negative control, including the inbound half. Both read as forbidding
+every package that is built in the Broiler.JS repository, whatever it names.
+
+**What replaced it.** The edge that is forbidden is an edge to an **engine**: no edge in either
+direction reaches the Broiler.JS engine or any other legacy Broiler engine component, still asserted
+by an architecture rule with a passing witness and a negative control, inbound half included. The
+family's only dependencies outside the component are the shared libraries core ADR 0014 admits, some
+of which are built in the Broiler.JS repository, each on rule `I1`'s allow-list and pinned by content
+hash, from the programme's milestone SJL-2. Fixes to a shared area flow through the shared library,
+and neither engine is the other's upstream.
+
+**Authority and date.** [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
+sections 1 and 2; core record ADR 0014's admission policy and fork policy; the core roadmap's register
+rows 25, 31 and 32 of ADR 0003 section 11, which propose the same reading for the core's sentences and
+are `Proposed` until the programme's milestone SJL-2. 2026-10-11.
+
+### JSC-293
+
+**Where:** the roadmap's opening paragraph on the snapshot copy; section 1's glossary row **The seed**;
+section 4's opening paragraph; section 4.1's paragraph on the candidate identity; section 4.2's stop
+condition; section 4.3's copy table, the rows on the tokenizer and parser, the syntax tree, the
+backend-neutral static analysis, property storage, the registration source generator, the
+regular-expression engine with the Unicode and locale data, and the test corpus; and section 20's
+chapter map, the row for section 4.
+
+**What the plan said.** The component started as a **snapshot copy** of the legacy engine. JS-2 took
+the snapshot and replaced section 4.1's candidate identity with the one it took. JSD-0005's stop
+condition took it as-is on 2026-11-30, or after 400 further seed commits, whichever came first. The
+copy table's verdicts were **Copy** for the tokenizer and parser, the syntax tree (with unsafe blocks)
+and property storage, **Copy and re-home** for the static analysis, **Copy, and change one thing** for
+the registration generator, **Copy the storage half; port the library half** for the test corpus, and
+**Acquire as this checkout's own dependencies** for the regular-expression engine, the Unicode
+property tables and the locale data. The chapter map gave section 4 to JS-2, with the licence and
+attribution gate and the stop condition "the seed becomes a dependency".
+
+**What replaced it.** **The copy is not taken**, and no snapshot exists or will. Both front ends were
+written in this checkout, and the general front end is to be the shared frontend. The stop condition
+is withdrawn with the copy, so nothing is taken on any date. The copy rows read **Withdrawn**: the
+tokenizer, parser and tree are replaced by the shared frontend (the programme's SJL-12 and SJL-13),
+the static analysis by its static semantics (SJL-15), property storage and registration stay this
+profile's own because the programme shares no object model and no built-in object implementation,
+and nothing is copied or ported from the seed's tests. The "acquire" row reads **Admitted packages
+instead**: `Broiler.Regex` (SJL-11) and the Unicode owner's packages (SJL-7) are admitted, and the
+locale and time data are generated by the shared generators from the shared pins into this family's
+own data assembly (SJL-8, SJL-9; decision SJL-D-6 (c)). The rows already marked Rewrite, Exclude,
+Delete or Amputate are unchanged, because nothing was ever copied from them. Section 4 is kept as the
+record of what the copy would have contained. The chapter map gives section 4 to no milestone, under
+the dependency-architecture area, gate 2 and the stop condition "engine code becomes a dependency".
+
+**Authority and date.** [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
+sections 4 and 5, on the shared JavaScript libraries programme's decision SJL-D-7, taken as (a); it
+supersedes [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md)'s stop
+condition, which [JSC-04](#jsc-04) recorded. Filed before 2026-11-30, the date the stop condition would
+have fired. 2026-10-11.
+
+### JSC-294
+
+**Where:** gates section 21, the dependency-architecture row; gates section 22, gate 2; gates section
+23, the risk row on the copied seed and its stop condition, and the closing stop paragraph.
+
+**What the plan said.** Section 21 required "no edge to a legacy component in either direction".
+Gate 2 required that "**no edge reaches a legacy component and no edge reaches another Broiler.VM
+profile family, in either direction, each with both halves witnessed**". The risk row read "The
+copied seed quietly becomes a dependency — through a package reference, a shared-source item
+resolving outside the root, or a fix ported back across the fork", mitigated in part by "the
+snapshot is a recursive commit set", and stopped by "**a build edge in either direction, or a fix
+ported across the fork, stops the milestone. Fixes do not flow across the fork and neither side is
+the other's upstream.**" The closing paragraph stopped a milestone when a product closure reached
+"test tooling, or a legacy component".
+
+**What replaced it.** Each forbids an edge to an **engine**: no edge to a legacy engine component in
+either direction, and every edge to a shared library core ADR 0014 admits on the allow-list, pinned
+by content hash and witnessed. The risk is engine code becoming a dependency - through a package
+reference outside the allow-list, a shared-source item resolving outside the root, or a fix copied
+from one engine into the other - or a shared library being patched here instead of in its home. Its
+stop condition is "**an edge to an engine, or an engine fix copied across, stops the milestone.
+Fixes to a shared area flow through the shared library, and neither engine is the other's
+upstream.**" The closing paragraph stops on "a legacy engine component, or a package outside core
+ADR 0014's allow-list".
+
+**Authority and date.** [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
+sections 1 and 2, and the shared JavaScript libraries programme's governance item P4. 2026-10-11.
+
+### JSC-295
+
+**Where:** delivery section 19, milestone JS-2 - its title, owner, next action, dependencies,
+objective exit gate and seed; section 20's dependency diagram, the JS-2 node, and its chapter map's
+row for section 9; section 26.5's acceptance-track bullet on JS-2's blocker; and roadmap section
+9's "What the front end is not", whose last sentence said the general front end was still the
+ingest's.
+
+**What the plan said.** JS-2 was "Take the snapshot; make the copied front end this component's own
+code". It recorded the snapshot recursively and copied the tokenizer, the syntax tree and its
+visitors, the binding and scope analysis and the primitives, renaming and deleting on ingest. It
+depended on JS-1 and on one external gate, **the core contract accepted**. Its gate asked that the
+seed's own gates be re-run at the snapshot commit, that the copied front end build with the trim and
+AOT analyzers force-enabled and clean across its closure, that the parser take goal and
+top-level-await permission as constructor arguments with two concurrent parses proving it, that a
+nesting corpus be refused, that every copied unit carry a ported annotation, and that the licence and
+notice changes land. Its seed was section 4.3's copy table. The diagram hung the core-acceptance gate
+off JS-2 and landed the copy there. The acceptance track said the blocker settles when "either the
+core contract is accepted, or a record says the seed copy will not be taken and JS-2's gate is
+re-scoped".
+
+**What replaced it.** **JS-2: the general front end is the shared frontend.** It closes when the
+programme's milestone SJL-13 meets its Broiler.VM clauses: the wide parser gone and the wide path
+parsing with the shared frontend, artifacts byte-identical over the parse corpus or every difference
+classified under the programme's predeclared rule, test262 in both forms meeting that rule, the
+registry rules held, the frontend absent from every compiler-free closure, every root published and
+run in three modes, and the two-way boundary rule passing. **What the copy's gate asked of copied
+code is asked of the shared frontend** through the programme's rules: explicit parse options with
+two concurrent parses, no ambient state, none of the forbidden dynamic constructs, clean analyzers,
+a refused nesting corpus, and one early-error stage. Its one external dependency is the shared
+frontend, built in the Broiler.JS repository; the core contract's acceptance no longer binds it,
+because nothing is adapted from a copy. It has no seed. The acceptance-track bullet is **settled**,
+by its second route, and the diagram's JS-2 node names the shared frontend. Section 9 says the
+general front end is the shared frontend's and waits for it.
+
+**Authority and date.** [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
+section 5, on the shared JavaScript libraries programme's decision SJL-D-7, taken as (a), and that
+programme's milestone SJL-13, whose work package SJL-13.5 closes JS-2. 2026-10-11.

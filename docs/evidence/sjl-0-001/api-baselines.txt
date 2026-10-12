@@ -1,0 +1,4 @@
+# the committed API baselines at the base commit 0087e8d73ae3833200fa263b68f71db15b059a9c
+# path | sha256 of the LF bytes | git blob id at the base commit
+docs/api/public-api.txt | c86977f098d6a773edde6667a8c2509a8be61f602ced95b732b3e90b18d7d110 | 55752fe15f1f4b06b167162f0c5b61a01a28032c
+src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt | 4ce9002cde65b0e898f1a42da830e06e7c648d338ad99b79cc06253765a26bb2 | 04f1790f2fe1cbb73371e75ae52d88594ec39087

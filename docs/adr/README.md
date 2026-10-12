@@ -36,14 +36,17 @@ without the amendment procedure in
 govern component shape and ownership instead, and are not contract-bearing, and
 so is ADR 0013, the first extraction record the sharing gate of ADR 0011 has
 produced *(added 2026-09-25: this paragraph named ADR 0001 and ADR 0012 as the
-only records outside the contract; the contract-bearing ten are unchanged)*.
+only records outside the contract; the contract-bearing ten are unchanged)*, and
+so is ADR 0014, the admission record of the shared JavaScript libraries
+programme *(added 2026-10-11; the contract-bearing ten are unchanged)*.
 `CoreContractVersionTests` in the architecture test project asserts that this
 table lists exactly the files present, that every record declares the field, and
 that the contract-bearing ten declare the version the `VmCoreContract` constants
 carry.
 
-All thirteen are `Proposed`, not `Approved` *(corrected 2026-09-25: this read
-"All twelve", which ADR 0013 made false)*. Every one of the six ownership roles
+All fourteen are `Proposed`, not `Approved` *(corrected 2026-10-11: this read
+"All thirteen are `Proposed`", which ADR 0014 made false; corrected before that on
+2026-09-25, when it read "All twelve", which ADR 0013 made false)*. Every one of the six ownership roles
 in [ADR 0012](0012-security-ownership-and-support-matrix.md) is now held by one
 person, so someone is in a position to accept them - but nobody has, and with a
 single maintainer that confirmation would not be independent.
@@ -63,6 +66,7 @@ single maintainer that confirmation would not be independent.
 | [0011](0011-source-level-profile-contract.md) | The source-level profile contract, profile checklist, and sharing rule | version 1 |
 | [0012](0012-security-ownership-and-support-matrix.md) | Security ownership, support matrix, and pinned platform references | not contract-bearing |
 | [0013](0013-the-universal-bytecode-extraction-record.md) | The universal bytecode extraction record: the correspondence, the proposed surface, and the verdict on each candidate | not contract-bearing |
+| [0014](0014-shared-javascript-libraries.md) | Shared JavaScript libraries: the scope reading of ADR 0011, the admission and fork policies, homes, packages, versioning, assurance, and the pilot decision | not contract-bearing |
 
 ## Reading order
 
@@ -89,3 +93,7 @@ release or security owner reads.
 [0013](0013-the-universal-bytecode-extraction-record.md) is read after 0011, whose
 extraction gate it invokes: it is the first record that gate has produced, and it
 is the precondition of [the universal bytecode programme](../universal-bytecode.roadmap.md).
+[0014](0014-shared-javascript-libraries.md) is also read after 0011: it records why
+ADR 0011's gate and standing refusals do not reach a JavaScript-family dependency
+on an engine-neutral library, and it is the admission record of
+[the shared JavaScript libraries programme](../javascript-shared-libraries/README.md).

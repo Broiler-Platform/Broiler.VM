@@ -1,0 +1,55 @@
+# reference bc.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   total|53469|101723|100368|158|0|44|1153
+# candidate nat.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   total|53469|101723|100334|192|0|44|1153
+# reading: realistic - class (c) is admitted, because a run was taken below 60000 ms; class (b) is admitted
+# 101723 variants in both reports, 41 differ; 0 variant(s) present in only one report were ignored
+
+## (c) a wall-clock exhaustion under a realistic allowance: 7 - admitted
+  test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-1-of-8.js [strict]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-3-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/TypedArray/sort_large_countingsort.js [strict]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+
+## (unclassified) a difference in no admitted class: 34 - NOT ADMITTED
+  test/language/expressions/call/tco-call-args.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/call/tco-member-args.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/call/tco-non-eval-function-dynamic.js [sloppy]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/call/tco-non-eval-function.js [sloppy]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/call/tco-non-eval-global.js [sloppy]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/call/tco-non-eval-with.js [sloppy]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/coalesce/tco-pos-null.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/coalesce/tco-pos-undefined.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/comma/tco-final.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/conditional/tco-cond.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/conditional/tco-pos.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/logical-and/tco-right.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/logical-or/tco-right.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/tagged-template/tco-call.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/tagged-template/tco-member.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/expressions/tco-pos.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/block/tco-stmt-list.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/block/tco-stmt.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/do-while/tco-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/for/tco-const-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/for/tco-let-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/for/tco-lhs-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/for/tco-var-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/if/tco-else-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/if/tco-if-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/labeled/tco.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/return/tco.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/switch/tco-case-body-dflt.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/switch/tco-case-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/switch/tco-dftl-body.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/try/tco-catch-finally.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/try/tco-catch.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/try/tco-finally.js [strict]: Passed -> Failed  an uncaught RangeError
+  test/language/statements/while/tco-body.js [strict]: Passed -> Failed  an uncaught RangeError
+
+# 34 difference(s) in no admitted class

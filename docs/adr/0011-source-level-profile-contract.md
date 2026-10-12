@@ -560,6 +560,22 @@ would gain `Broiler.VM.Ubc` when a profile first references it, and names the
 ruling that would settle that reading. *(Added 2026-09-25: a profile first referenced it at milestone
 UBC-2, and P1's editorial revision of that date records the edit.)*
 
+**Editorial pointer, 2026-10-11: a scope reading of this section, recorded in ADR 0014.**
+[ADR 0014](0014-shared-javascript-libraries.md), the admission record of the
+shared JavaScript libraries programme, reads this section's extraction gate (G1
+to G4) and the standing refusals above as governing sharing between Broiler.VM
+profiles and placement in the core. A dependency of the JavaScript profile
+family on an engine-neutral library outside Broiler.VM - a shared syntax tree,
+parser, tokenizer and diagnostics among them - is neither: no profile shares
+anything with another profile, and nothing enters the core's namespace. The
+first and fourth rows of the table above therefore do not reach it, and they
+stand refused for what they refuse. ADR 0014 takes the reading as route MVP-16 of
+`docs/mvp.md`, which names the alternative not taken - an amendment of this
+record, unexecutable under EX-15 - and the ruling by the core-contract owner that
+would settle it. **The table above is not edited**, no gate condition and no
+promise of this record changes, and no extraction record is produced: the
+programme creates no component shared between profiles, so it invokes no gate.
+
 ### Canonical forms this record publishes, so the copies agree
 
 Three mechanisms are refused as components above and duplicated by every profile instead. Roadmap
