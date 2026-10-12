@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-10-11 (JSC-291 to JSC-295: invariant 11, the edge clause, the seed copy rows, the gates and JS-2's gate, on decision JSD-0063 of the shared JavaScript libraries programme). Before that, the same day: JSC-290, three retained closure reports restored to what their bundles retained, and the JavaScript roots' catalogs and closures collected again as bundle JS-10-004
+**Last updated:** 2026-10-12 (JSC-296: the package baseline's "No foreign dependency" paragraph, on decision JSD-0064, at the shared JavaScript libraries programme's SJL-2). Before that, 2026-10-11: JSC-291 to JSC-295, invariant 11, the edge clause, the seed copy rows, the gates and JS-2's gate, on decision JSD-0063; and JSC-290, three retained closure reports restored to what their bundles retained, and the JavaScript roots' catalogs and closures collected again as bundle JS-10-004
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -13004,3 +13004,23 @@ general front end is the shared frontend's and waits for it.
 **Authority and date.** [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
 section 5, on the shared JavaScript libraries programme's decision SJL-D-7, taken as (a), and that
 programme's milestone SJL-13, whose work package SJL-13.5 closes JS-2. 2026-10-11.
+
+### JSC-296
+
+**Where:** [`packages.md`](packages.md), the paragraph "No foreign dependency" under "The family's
+packages".
+
+**What the plan said.** "Every dependency above is a Broiler.VM package, and rule N37 holds every
+`.nuspec` the candidate pack produced - the family's and the seven others' - to declaring none outside
+`Broiler.VM.`."
+
+**What replaced it.** Every dependency above is still a Broiler.VM package. Rule N37, revised at the
+shared JavaScript libraries programme's SJL-2.4, holds every produced `.nuspec` to declaring none
+outside `Broiler.VM.` except a shared package rule I1 admits for shipping, at the version its allow-list
+pins or a later one; a package admitted test-only is refused like any foreign dependency, and a
+baseline row's dependencies are compared with its project's package references as well as its project
+references. No package declares a shared dependency at this revision.
+
+**Authority and date.** [JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md)
+section 1, on the programme's work package SJL-2.4 and [JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)
+section 1. 2026-10-12.

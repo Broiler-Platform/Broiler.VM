@@ -82,6 +82,10 @@ admitted assemblies, and moves to `Active`. Its remarks, and those of `LegacyBou
 the claim that a single-source `NuGet.config` makes a foreign Broiler package unresolvable. That
 claim is false on this date: Broiler.JS publishes to nuget.org, which is Broiler.VM's one source.
 
+*(Corrected 2026-10-12, when the work package was done: the claim was in the remarks of
+`AssemblyMetadataRuleTests`, and in B3's register row, not in those of `LegacyBoundaryTests`, which
+never made it. It was dropped from both places it was.)*
+
 **Witness:** an assembly referencing a non-admitted Broiler assembly.
 
 *Done when* B3 is `Active` with its witness.
@@ -142,6 +146,12 @@ Rule E4's identifier pattern gains group `I`, and the groups it misses today (K,
 - **`samples/NuGet.config`** and **`eng/collect-js-packages.py`** place every admitted package on
   `artifacts/feed` before the pristine consumer restores with the upstream unreachable. The consumer
   restore therefore proves that the shared packages travel with the family's packages.
+
+  *(Corrected 2026-10-12, when the work package was done: `samples/NuGet.config` lists nuget.org
+  alone since 2026-10-11, when the samples moved to the published packages, so it is
+  `eng/collect-js-packages.py` that writes the consumer's local-only configuration for its isolated
+  runs, beside placing every admitted package on `artifacts/feed`. `samples/NuGet.config` is not
+  edited.)*
 - **The collectors** (`eng/collect-evidence.py`, `eng/collect-js-evidence.py`, the bundle-manifest
   script) record `I7` identity. They treat admitted assemblies as declared rather than filtering
   them by name: the current closure filter excludes only `System.` and `Microsoft.` names (EX-87).

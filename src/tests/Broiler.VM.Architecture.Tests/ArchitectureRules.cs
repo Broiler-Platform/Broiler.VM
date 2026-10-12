@@ -44,11 +44,40 @@ internal static class ArchitectureRules
         project.ProjectReferences.SelectMany(reference =>
             Escapes(reference, $"{project.RelativePath} -> "));
 
-    /// <summary>A2: no PackageReference names a Broiler package.</summary>
-    internal static IEnumerable<string> A2(ComponentGraph.ProjectFile project) =>
-        project.PackageReferences
-            .Where(static package => package.StartsWith("Broiler.", StringComparison.OrdinalIgnoreCase))
-            .Select(package => $"{project.RelativePath} -> package {package}");
+    /// <summary>
+    /// A2: no PackageReference names a Broiler package outside rule I1's allow-list, and an
+    /// admitted one only from a project the list names for it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Revised at SJL-2.</b> It read "no PackageReference names a Broiler package", by a
+    /// <c>StartsWith("Broiler.")</c> test. The shared JavaScript libraries are Broiler packages
+    /// this component now admits (ADR 0014), so the rule is about the ones it does not admit, and
+    /// the test is "opens with Broiler", which also catches an identifier spelled
+    /// <c>BroilerJS.*</c> that the old test let through.
+    /// </para>
+    /// <para>
+    /// Rule I1 states the admission in full - the version, the lock file, the hash, the family. A2
+    /// keeps the narrower question it always asked, which Broiler package, so that a legacy
+    /// engine package is refused by the rule that has refused it since VM-0.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> A2(ComponentGraph.ProjectFile project)
+    {
+        foreach (var package in project.PackageReferences.Where(AdmissionRules.IsBroilerPackage))
+        {
+            var admitted = AdmissionRules.Admitted(package);
+
+            if (admitted is null)
+            {
+                yield return $"{project.RelativePath} -> package {package}, which rule I1's allow-list does not admit";
+            }
+            else if (!admitted.Projects.Contains(project.AssemblyName, StringComparer.Ordinal))
+            {
+                yield return $"{project.RelativePath} -> package {package}, admitted for [{string.Join(", ", admitted.Projects)}] and not for {project.AssemblyName}";
+            }
+        }
+    }
 
     /// <summary>
     /// A3: no source or import item escapes the component root. A shared source link satisfies
@@ -498,9 +527,15 @@ internal static class ArchitectureRules
                 $"[{string.Join(", ", ConsumerProfileReferences)}], or [{string.Join(", ", ConsumerFamilyReferences)}] for a universal bytecode family";
         }
 
-        foreach (var package in project.PackageReferences)
+        // Revised at SJL-2: "declares no PackageReference" became "declares none outside the set
+        // rule I1 admits for this project". An admitted shared package is the one kind a profile
+        // may declare; anything else - a non-Broiler package, an engine package - is refused as
+        // before, because it reintroduces an edge no project reference spells out.
+        foreach (var package in project.PackageReferences.Where(package =>
+                     AdmissionRules.Admitted(package) is not { } admitted
+                     || !admitted.Projects.Contains(project.AssemblyName, StringComparer.Ordinal)))
         {
-            yield return $"{project.RelativePath} declares PackageReference {package}";
+            yield return $"{project.RelativePath} declares PackageReference {package}, outside the set rule I1 admits for it";
         }
 
         foreach (var target in project.InternalsVisibleTo)
@@ -576,7 +611,8 @@ internal static class ArchitectureRules
     /// <summary>
     /// N1: the JavaScript profile assembly references exactly Abstractions, Binary and its own
     /// format sibling; it never references the runtime and never references the lowering; it
-    /// declares no PackageReference and opens its internals to nobody.
+    /// declares no PackageReference outside the set rule I1 admits for this project; and it opens
+    /// its internals to nobody.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -629,9 +665,15 @@ internal static class ArchitectureRules
                 "execution-only composition would carry a lowering";
         }
 
-        foreach (var package in project.PackageReferences)
+        // Revised at SJL-2: "declares no PackageReference" became "declares none outside the set
+        // rule I1 admits for this project". An admitted shared package is the one kind a profile
+        // may declare; anything else - a non-Broiler package, an engine package - is refused as
+        // before, because it reintroduces an edge no project reference spells out.
+        foreach (var package in project.PackageReferences.Where(package =>
+                     AdmissionRules.Admitted(package) is not { } admitted
+                     || !admitted.Projects.Contains(project.AssemblyName, StringComparer.Ordinal)))
         {
-            yield return $"{project.RelativePath} declares PackageReference {package}";
+            yield return $"{project.RelativePath} declares PackageReference {package}, outside the set rule I1 admits for it";
         }
 
         foreach (var target in project.InternalsVisibleTo)
@@ -1745,14 +1787,34 @@ internal static class ArchitectureRules
             .Select(reference => $"{assembly.Name} -> {reference}");
 
     /// <summary>
-    /// B3: no assembly names a Broiler assembly outside the component's own set. The
-    /// assembly-level twin of A1 and A2: it survives a package-based reintroduction of the
-    /// legacy edge, which is why both levels are required rather than either alone.
+    /// B3: no assembly names a Broiler assembly outside the component's own set and the
+    /// assemblies rule I1 admits. The assembly-level twin of A1 and A2: it survives a
+    /// package-based reintroduction of the legacy edge, which is why both levels are required
+    /// rather than either alone.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Rewritten and made Active at SJL-2.</b> It was Vacuous from VM-0, swept the core
+    /// assemblies and the fixtures only, and its permanence reason said that A1 and A2 made a
+    /// foreign Broiler assembly reference impossible to construct, with a single-source
+    /// NuGet.config making such a package unresolvable. That last claim was false by 2026-10-11:
+    /// Broiler.JS publishes to nuget.org, which is this component's one source, so a Broiler
+    /// package was always resolvable and only A2 stood in the way. With shared packages admitted,
+    /// a Broiler assembly outside the component is something the graph can now hold, so the
+    /// rule has a subject.
+    /// </para>
+    /// <para>
+    /// It sweeps every shipping assembly (<see cref="AssemblyFacts.Shipping"/>), and the
+    /// component's own set is every assembly a project of the checkout builds rather than a
+    /// hand-kept list of five.
+    /// </para>
+    /// </remarks>
     internal static IEnumerable<string> B3(AssemblyFacts assembly) =>
         assembly.AssemblyReferences
-            .Where(static reference => reference.StartsWith("Broiler.", StringComparison.Ordinal))
-            .Where(static reference => !ComponentAssemblies.Contains(reference, StringComparer.Ordinal))
+            .Where(AdmissionRules.IsBroilerPackage)
+            .Where(static reference => !ComponentGraph.Projects.Any(project =>
+                string.Equals(project.AssemblyName, reference, StringComparison.Ordinal)))
+            .Where(static reference => AdmissionRules.Admitted(reference) is null)
             .Select(reference => $"{assembly.Name} -> {reference}");
 
     /// <summary>B6: no product assembly references an assembly built from src/tests/.</summary>

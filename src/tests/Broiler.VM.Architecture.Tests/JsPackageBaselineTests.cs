@@ -81,6 +81,24 @@ public sealed class JsPackageBaselineTests
     }
 
     [Fact]
+    public void N37_Rejects_A_Test_Only_Admitted_Package_In_Produced_Metadata()
+    {
+        // SJL-2.4: an admitted package is a permitted dependency only when it is admitted for
+        // shipping, at its pinned version or later. The probe is admitted test-only, so a nuspec
+        // declaring it is refused like any foreign dependency.
+        Assert.Contains(Violations(Rows(Baseline()), Witness("N37-nuspecs-declare-a-test-only-admitted-package.txt.witness"), Bundle("contents.txt"), Bundle("consumer.log")), violation =>
+            violation.Contains("Broiler.ECMAScript.Algorithms", StringComparison.Ordinal) &&
+            violation.Contains("test-only", StringComparison.Ordinal));
+
+        // The ordering the version clause compares by: SemVer 2.0 precedence, prerelease below release.
+        Assert.True(SemanticVersion.Compare("0.0.1-probe.1", "0.0.1-probe.2") < 0);
+        Assert.True(SemanticVersion.Compare("0.0.1-probe.10", "0.0.1-probe.2") > 0);
+        Assert.True(SemanticVersion.Compare("0.1.0-preview.1", "0.1.0") < 0);
+        Assert.True(SemanticVersion.Compare("0.0.1-probe.1", "0.1.0-preview.1") < 0);
+        Assert.Equal(0, SemanticVersion.Compare(MinimumOf("[0.0.1-probe.1, )"), "0.0.1-probe.1"));
+    }
+
+    [Fact]
     public void N37_Rejects_A_Transcript_Whose_Rollback_Did_Not_Run_Clean()
     {
         Assert.Contains(Violations(Rows(Baseline()), Bundle("nuspecs.txt"), Bundle("contents.txt"), Witness("N37-consumer-log-rollback-failed.log.witness")), violation =>
@@ -137,11 +155,27 @@ public sealed class JsPackageBaselineTests
             violations.Add($"the checkout packs {project}, and {BaselineName} has no row for it");
         }
 
-        foreach (var (package, dependencies) in produced)
+        // Revised at SJL-2.4: a dependency outside Broiler.VM. is permitted only on a package rule
+        // I1 admits for shipping (not test-only), at the version the allow-list pins or a later
+        // one. Anything else is still a foreign dependency.
+        foreach (var (package, dependencies) in NuspecDependencies(nuspecs))
         {
-            foreach (var dependency in dependencies.Where(static id => !id.StartsWith("Broiler.VM.", StringComparison.Ordinal)))
+            foreach (var (dependency, version) in dependencies.Where(static entry => !entry.Id.StartsWith("Broiler.VM.", StringComparison.Ordinal)))
             {
-                violations.Add($"the candidate's {package}.nuspec declares the foreign dependency {dependency}");
+                var admitted = AdmissionRules.Admitted(dependency);
+
+                if (admitted is null)
+                {
+                    violations.Add($"the candidate's {package}.nuspec declares the foreign dependency {dependency}");
+                }
+                else if (admitted.IsTestOnly)
+                {
+                    violations.Add($"the candidate's {package}.nuspec declares {dependency}, which rule I1 admits test-only and so for no shipped package");
+                }
+                else if (SemanticVersion.Compare(MinimumOf(version), admitted.Version) < 0)
+                {
+                    violations.Add($"the candidate's {package}.nuspec declares {dependency} {version}, below the version the allow-list pins, {admitted.Version}");
+                }
             }
         }
 
@@ -211,8 +245,13 @@ public sealed class JsPackageBaselineTests
                 continue;
             }
 
+            // Package references as well as project references, since SJL-2.4: an admitted shared
+            // package is a dependency the family's nuspec declares, and a baseline that read only
+            // project references would call it undeclared.
             projects[name] = Regex.Matches(text, @"<ProjectReference\s+Include=""(?<path>[^""]+)""")
                 .Select(static match => Path.GetFileNameWithoutExtension(match.Groups["path"].Value.Replace('\\', '/')))
+                .Concat(Regex.Matches(text, @"<PackageReference\s+Include=""(?<id>[^""]+)""")
+                    .Select(static match => match.Groups["id"].Value))
                 .ToArray();
         }
 
@@ -238,6 +277,30 @@ public sealed class JsPackageBaselineTests
 
         return packages;
     }
+
+    /// <summary>Each produced package's dependencies with the version each declares, read from the retained .nuspec text.</summary>
+    private static Dictionary<string, (string Id, string Version)[]> NuspecDependencies(string text)
+    {
+        var packages = new Dictionary<string, (string Id, string Version)[]>(StringComparer.Ordinal);
+
+        foreach (var block in Regex.Split(text, @"(?m)^=== ").Skip(1))
+        {
+            var id = Regex.Match(block, @"<id>(?<id>[^<]+)</id>");
+
+            if (id.Success)
+            {
+                packages[id.Groups["id"].Value] = Regex.Matches(block, @"<dependency id=""(?<id>[^""]+)""(?:\s+version=""(?<version>[^""]*)"")?")
+                    .Select(static match => (match.Groups["id"].Value, match.Groups["version"].Value))
+                    .ToArray();
+            }
+        }
+
+        return packages;
+    }
+
+    /// <summary>The lower bound of a nuspec version range: <c>1.0</c>, <c>[1.0]</c>, <c>[1.0, 2.0)</c> all mean at least 1.0.</summary>
+    private static string MinimumOf(string range) =>
+        range.Trim('[', '(', ')', ']').Split(',')[0].Trim();
 
     /// <summary>The baseline table's rows: a backticked package, its dependencies or <c>none</c>, its files.</summary>
     private static List<Row> Rows(string document)

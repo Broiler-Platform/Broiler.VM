@@ -1,0 +1,14 @@
+# closure Broiler.VM.Composition.JavaScript.ExecutionOnly rid=linux-x64
+#
+# Violates I3: a closure listing of the compiler-free execution-only root that holds the shared
+# frontend, Broiler.ECMAScript.Frontend - a compile-time library that has no business in a deployment
+# that executes and never compiles. Read by rule I3 as a closure listing is.
+
+Broiler.ECMAScript.Algorithms
+Broiler.ECMAScript.Frontend
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.JavaScript.ExecutionOnly
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Runtime

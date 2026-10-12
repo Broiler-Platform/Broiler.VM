@@ -21,10 +21,14 @@
          the scanner uses only the syntax API, which has not moved, so the reason to prefer this
          one is that it needs nothing newer, not that nothing newer works.
 
-         THIS PROJECT ONLY. Rule A2 forbids a Broiler.* package and this is not one; rule B1
-         constrains Abstractions and Binary and this project is neither; NuGet.config clears every
-         source and lists nuget.org, where this package resolves. No product project may acquire
-         it - a parser in a shipping assembly would be a dependency the component does not have. -->
+         THIS PROJECT ONLY. Rule A2 forbids a Broiler package outside rule I1's allow-list and this
+         is not one; rule B1 constrains Abstractions and Binary and this project is neither;
+         NuGet.config's source mapping sends every package outside the shared Broiler.ECMAScript
+         prefix to nuget.org, where this package resolves. No product project may acquire it - a
+         parser in a shipping assembly would be a dependency the component does not have, and rule
+         I1 refuses a product package reference the allow-list does not name.
+         (Revised 2026-10-12, at SJL-2.7: it said NuGet.config "clears every source and lists
+         nuget.org", true until the committed feed was added for the shared packages.) -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
 
     <!-- Reflection over an assembly this project may not reference and must not run.

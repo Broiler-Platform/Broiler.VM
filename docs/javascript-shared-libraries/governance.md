@@ -59,6 +59,14 @@ with the superseded text quoted beside the new text.
 | V19 | `src/tests/Broiler.VM.Architecture.Tests/rules.register.json`, `graph.manifest.json`, `LegacyBoundaryTests.cs` remarks | A2 "No PackageReference names a Broiler.* package."; B3 `Vacuous`, with a permanence reason that relies on A1 and A2; the manifest has no field for package edges | See section 3 | Rule changes with witnesses | SJL-2 |
 | V20 | `samples/NuGet.config`, `samples/Directory.Packages.props`, `eng/verify-feed.ps1`, `eng/collect-js-packages.py` | The JavaScript consumer restores only from `../artifacts/feed`, and the collection proxies the upstream to an unreachable address | The shared packages are placed on the local feed before restore. `verify-feed.ps1` maps the shared identifiers to their source. | Tooling change | SJL-2, exercised at SJL-3 |
 
+*(Corrected 2026-10-12, at SJL-2. Two rows misdescribed the tree as it stood. Row V19 names the
+`LegacyBoundaryTests.cs` remarks among the places that carry the single-source NuGet.config claim; the
+claim was in `AssemblyMetadataRuleTests.cs`'s remarks, and that is where SJL-2.3 dropped it, while
+`LegacyBoundaryTests.cs` never made it. Row V20's current state read "The JavaScript consumer restores
+only from `../artifacts/feed`"; since 2026-10-11 `samples/NuGet.config` lists nuget.org alone, so the
+consumer's isolated local-only configuration is now written by `eng/collect-js-packages.py` for its
+runs, which also places every admitted package on that feed.)*
+
 ### 2.2 JavaScript profile documents (`src/Broiler.VM.Profile.JavaScript/docs/`)
 
 | # | Where | What it says now | What the programme needs | Record | Milestone |

@@ -728,3 +728,39 @@ the bundle records as a gap rather than a decision.
 **What is not edited.** The five revisions above stand as written, including the
 one that called the grid closed. It was closed on the limb it was about.
 
+
+### 2026-10-12 - admitted shared packages are inside R4 and R6, SJL-2
+
+**What the record said.** That R4, the vulnerability-response owner, owns intake, embargo, triage, fix,
+disclosure and the recertification trigger for this component, and that R6, the release and
+recertification owner, owns section 15's gates and recertification triggers - both over code this
+component builds. Neither role named a package this component did not build, because until this date
+no such package could reach a Broiler.VM image: the product graph declared no package reference at all.
+
+**What replaced it.** ADR 0014 admits the shared JavaScript libraries' packages to the JavaScript
+profile family, and milestone SJL-2 makes the admission enforceable (rules I1, I2, I3, I6 and I7). From
+this revision:
+
+- **R4 covers admitted packages.** A vulnerability in an admitted package is a vulnerability in every
+  Broiler.VM image that carries it, whatever repository the code lives in. R4 takes the report, holds
+  the embargo, and coordinates with the package's home (record V14 of the programme's governance); a fix
+  in a shared library that both engines ship releases in both together. Broiler.VM may pin back to the
+  previous version; it may not fork the library or add a local copy of the algorithm.
+- **R6 covers admitted packages.** Section 15's gates apply to a release that ships one, and **moving a
+  pin is a recertification trigger**: a changed version or content hash in rule I1's allow-list is a
+  change to what the image contains, and is recertified as one.
+- **A release refuses an admitted package whose upstream revision lacks a completed review**, under
+  decision SJL-D-5 (a). The revision is the source commit the package's nuspec records, which rule I7
+  writes into every bundle that runs a composition carrying the package; the review is the home
+  repository's record for that commit. Broiler.VM's own release gate 9 still requires a human decision
+  on every relevant unit of this component; this adds the same requirement, read through I7, for the
+  shared code a release ships.
+
+**What it does not settle.** No release ships an admitted package at this revision: the only admitted
+package is a probe, admitted test-only, and `eng/verify-feed.ps1` refuses a release that depends on a
+test-only package. The home repository's security intake does not exist on this date
+(`G13-no-security-intake` already blocks a release for this component's own reason), and no shared
+library's revision carries a completed review.
+
+**What is not edited.** The revisions above stand as written, and so does the ownership table: the
+roles are the same six, held by the same person; what they cover is wider.

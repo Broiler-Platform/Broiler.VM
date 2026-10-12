@@ -29,6 +29,9 @@ import subprocess
 import sys
 import time
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import admitted_packages  # noqa: E402  (rule I1's allow-list, for the I7 identity record)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOLUTION = "Broiler.VM.slnx"
 
@@ -876,6 +879,12 @@ def is_managed(path):
     return int.from_bytes(data[cli + 4:cli + 8], "little") != 0
 
 
+def find_mstat(project, rid, assembly):
+    """ILC's mstat record of a Native AOT image, from the project's intermediate output, or None."""
+    native = os.path.join(ROOT, os.path.dirname(project), "obj", "Release", "net10.0", rid, "native", assembly + ".mstat")
+    return native if os.path.isfile(native) else None
+
+
 def closure_of(directory):
     """
     The non-framework managed assemblies a published directory contains.
@@ -916,6 +925,8 @@ def compositions(arguments, out, corpus):
     log = []
     ok = True
 
+    carried = set()
+
     for slug, assembly, project in COMPOSITIONS:
         catalogs = {}
         closures = ["# closure " + assembly + " rid=" + rid, ""]
@@ -923,7 +934,9 @@ def compositions(arguments, out, corpus):
         for mode, extra in (
                 ("jit", ["-r", rid, "--self-contained", "false", "-p:PublishTrimmed=false"]),
                 ("trimmed", ["-r", rid, "--self-contained", "true"]),
-                ("aot", ["-r", rid, "-p:PublishAot=true"])):
+                # ILC's record of the image, which rule I3 reads: a Native AOT publish directory holds
+                # no managed assembly, so the closure of that mode is the mstat's AssemblyRef table.
+                ("aot", ["-r", rid, "-p:PublishAot=true", "-p:IlcGenerateMstatFile=true"])):
 
             directory = os.path.join(ROOT, "artifacts", "js-publish", slug, mode)
             shutil.rmtree(directory, ignore_errors=True)
@@ -991,6 +1004,16 @@ def compositions(arguments, out, corpus):
             closures.append("[" + mode + "] " + str(len(names)) + " non-framework assemblies")
             closures.extend(names)
             closures.append("")
+            carried.update(names)
+
+            if mode == "aot":
+                mstat = find_mstat(project, rid, assembly)
+                if mstat is None:
+                    closures.append("[aot] no mstat record of the image was found")
+                else:
+                    shutil.copyfile(mstat, os.path.join(out, "mstat-" + slug + ".mstat"))
+                    closures.append("[aot] the image's record is mstat-" + slug + ".mstat")
+                closures.append("")
 
         distinct = {text for text in catalogs.values()}
         log.append("[" + slug + "] catalog tables identical across modes: " + str(len(distinct) <= 1))
@@ -1002,6 +1025,9 @@ def compositions(arguments, out, corpus):
         write(os.path.join(out, "closure-" + slug + ".txt"), "\n".join(closures))
 
     write(os.path.join(out, "publish-and-run.log"), "\n\n".join(log))
+
+    # Rule I7: a closure that carries an admitted package has its upstream identity recorded.
+    admitted_packages.write_identities(out, sorted(carried))
     return ok
 
 

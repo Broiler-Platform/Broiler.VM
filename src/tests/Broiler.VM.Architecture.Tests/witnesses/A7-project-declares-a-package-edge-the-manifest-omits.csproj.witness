@@ -1,0 +1,12 @@
+<!-- Violates A7's package half (SJL-2.5): the JavaScript profile's project file declaring a package edge
+     that graph.manifest.json does not record for it. The manifest records every project's package
+     edges, an empty list for none, so a package reaching a project without the manifest saying so is
+     drift exactly as an undeclared project edge is. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Broiler.ECMAScript.Algorithms" />
+  </ItemGroup>
+</Project>

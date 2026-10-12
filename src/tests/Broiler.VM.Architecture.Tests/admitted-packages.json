@@ -1,0 +1,37 @@
+{
+  "$comment": [
+    "THE ALLOW-LIST OF RULE I1 (milestone SJL-2.1; ADR 0014's admission policy). The only packages any project",
+    "of this component's product graph may reference, each with the projects that may reference it.",
+    "",
+    "Each entry names: the package identifier; the pinned version; the NuGet content hash a lock file records",
+    "for it (base64 SHA-512 of the .nupkg), which rule I1 compares with the lock file of every project that",
+    "references it; the assemblies (by assembly name) of the projects that may reference it, every one in the",
+    "JavaScript family; whether it is product or test-only; and its sources under decision SJL-D-4 (c), the",
+    "committed feed eng/packages/ and nuget.org once a Broiler.VM package release depends on it.",
+    "",
+    "The list is a file of the architecture-test project, not a field of graph.manifest.json: the manifest",
+    "records which project REFERENCES which package (rule A7 holds that to the project files), and this file",
+    "records which references are ALLOWED. One answers 'what is', the other 'what may be', and folding the",
+    "second into the first would let one edit change both.",
+    "",
+    "Admitting a package is a decision: the milestone or JSD that admits it is named in 'admittedBy', and the",
+    "allow-list changes in the same commit as the reference it allows. A test-only package is admitted for no",
+    "product project, whatever 'projects' says."
+  ],
+  "packages": [
+    {
+      "id": "Broiler.ECMAScript.Algorithms",
+      "version": "0.0.1-probe.1",
+      "contentHash": "CCmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ==",
+      "use": "test-only",
+      "projects": [
+        "Broiler.VM.Profile.JavaScript.AdmissionProbe"
+      ],
+      "sources": [
+        "committed-feed"
+      ],
+      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.0.1-probe.1.pin",
+      "admittedBy": "SJL-2.9, the admission probe: a scratch JavaScript-family project the architecture tests restore and discard"
+    }
+  ]
+}

@@ -89,11 +89,11 @@
       "id": "A2",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "No PackageReference names a Broiler.* package.",
+      "statement": "No PackageReference names a Broiler package outside rule I1's allow-list, and an admitted one is referenced only from a project the list names for it. A Broiler package is any identifier that opens with Broiler, so one spelled BroilerJS.* is caught as well as Broiler.*. (Revised 2026-10-12 at SJL-2.2. It read: \"No PackageReference names a Broiler.* package.\", tested by StartsWith(\"Broiler.\"), which let BroilerJS.* through.)",
       "evidence": "Project files",
       "activationMilestone": null,
-      "nonVacuousWhen": "Any project file exists; closes the feed-shaped reintroduction A1 cannot see.",
-      "witness": "witnesses/A2-broiler-package-reference.csproj.witness"
+      "nonVacuousWhen": "Any project file exists; closes the feed-shaped reintroduction A1 cannot see. Since SJL-2 the allow-list admits one Broiler package, so the rule decides between admitted and refused Broiler packages rather than refusing every one, and its witnesses cover each side: a legacy package, a non-admitted engine package, an identifier without the dot, and an admitted package from a project the list does not name.",
+      "witness": "witnesses/A2-broiler-package-reference.csproj.witness, witnesses/A2-non-admitted-engine-package.csproj.witness, witnesses/A2-broilerjs-spelled-package.csproj.witness, witnesses/A2-admitted-package-from-an-unlisted-project.csproj.witness"
     },
     {
       "id": "A3",
@@ -139,11 +139,11 @@
       "id": "A7",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "The resolved ProjectReference edge multiset equals graph.manifest.json exactly; extra and missing edges both fail. Subsumes acyclicity.",
-      "evidence": "Project files against graph.manifest.json",
+      "statement": "The resolved ProjectReference edge multiset equals graph.manifest.json exactly, and so does the PackageReference edge multiset: every project entry states its package references, an empty list for none, and an extra or a missing edge of either kind fails. Subsumes acyclicity. (Revised 2026-10-12 at SJL-2.5, when the manifest gained the per-project packageReferences field. It read: \"The resolved ProjectReference edge multiset equals graph.manifest.json exactly; extra and missing edges both fail. Subsumes acyclicity.\")",
+      "evidence": "Project files against graph.manifest.json, project edges and package edges",
       "activationMilestone": null,
-      "nonVacuousWhen": "{graph:edges} edges exist.",
-      "witness": "witnesses/A8-profile-references-runtime.csproj.witness"
+      "nonVacuousWhen": "{graph:edges} project edges exist, and the test projects' package edges are package edges like any other, so the package half compares real entries in both directions; a manifest entry without the field is refused when the manifest loads rather than read as no package edges.",
+      "witness": "witnesses/A8-profile-references-runtime.csproj.witness, witnesses/A7-project-declares-a-package-edge-the-manifest-omits.csproj.witness"
     },
     {
       "id": "A8",
@@ -228,13 +228,12 @@
     {
       "id": "B3",
       "owningAdr": "0001",
-      "status": "Vacuous",
-      "statement": "No assembly in the product graph names a Broiler.* assembly outside the component's own set. The assembly-level twin of A1 and A2.",
-      "evidence": "AssemblyRef table",
-      "activationMilestone": "never",
-      "nonVacuousWhen": "Still Vacuous, and VM-6 is where that was expected to change. It did not, and the honest reason is that nothing in the graph can violate it: rule A1 stops a Broiler.* PROJECT reference arriving and rule A2 stops a Broiler.* PACKAGE reference, so no assembly reference to another Broiler component can be constructed. What VM-6 adds is the other half of the surface it guards - the produced packages - and rule C2 asserts that half, finding not merely no stray Broiler dependency but no package dependency at all. A rule nothing can break is Vacuous however many milestones pass.",
-      "witness": "none - a witness needs a foreign Broiler assembly, and the graph is closed over its own seven. The project-file twins A1 and A2 are witnessed.",
-      "permanenceReason": "Nothing in the graph can violate it and nothing is planned that could. Rule A1 stops a Broiler.* PROJECT reference arriving and rule A2 stops a Broiler.* PACKAGE reference, so an assembly reference to another Broiler component cannot be constructed - the assembly-level claim is a consequence of two rules that are already Active rather than a claim with its own subject. VM-6 was its nominal activation milestone and produced the packages that were expected to give it one; rule C2 asserts that half and found not merely no stray Broiler dependency but no package dependency at all."
+      "status": "Active",
+      "statement": "No shipping assembly names a Broiler assembly outside the component's own set - every assembly a project of the checkout builds - and the assemblies rule I1 admits. The assembly-level twin of A1 and A2. (Rewritten 2026-10-12 at SJL-2.3, Vacuous until then. It read: \"No assembly in the product graph names a Broiler.* assembly outside the component's own set. The assembly-level twin of A1 and A2.\", and swept the core assemblies and the fixtures only.)",
+      "evidence": "The AssemblyRef table of every shipping assembly and of the fixtures",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The sweep reaches every shipping assembly - the composition roots, the profiles, the emitters - whose AssemblyRef tables name other Broiler.VM assemblies the rule reads and passes as the component's own. Its Vacuous reason was withdrawn at SJL-2: it said that A1 and A2 made a foreign Broiler assembly reference impossible to construct and that a single-source NuGet.config made a foreign Broiler package unresolvable, and the second was false by 2026-10-11, because Broiler.JS publishes to nuget.org, the one source the configuration listed. With shared packages admitted, a Broiler assembly from outside the component is something the graph can hold, so the rule has a subject and a witness.",
+      "witness": "witnesses/B3-assembly-references-a-foreign-broiler-assembly.cs.witness"
     },
     {
       "id": "B4",
@@ -370,11 +369,11 @@
       "id": "E4",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "The ADR index lists exactly the ADR files present, and every rule identifier named in an ADR has exactly one row in this register.",
+      "statement": "The ADR index lists exactly the ADR files present, and every rule identifier named in an ADR as \"Rule <id>\" of a group the register uses - A to E, H to N, U to X - has exactly one row in this register. (Revised 2026-10-12 at SJL-2.6, when group I was added and the gap the test recorded, groups K, L, M, N, W and X, closed. The pattern's class read [A-EHJUV].)",
       "evidence": "Documentation against this file",
       "activationMilestone": null,
       "nonVacuousWhen": "{docs:adrs} ADR files and this register exist.",
-      "witness": "witnesses/adr/E4-index-links-a-missing-record.md.witness"
+      "witness": "witnesses/adr/E4-index-links-a-missing-record.md.witness, witnesses/adr/E4-cites-an-unregistered-group-i-rule.md.witness"
     },
     {
       "id": "E5",
@@ -767,11 +766,11 @@
       "id": "N1",
       "owningAdr": "0011",
       "status": "Active",
-      "statement": "The Broiler.VM.Profile.JavaScript project references exactly Broiler.VM.Abstractions, Broiler.VM.Binary and Broiler.VM.Profile.JavaScript.Format; it references neither the runtime nor its own lowering, declares no PackageReference, and opens its internals to nobody. ADR 0011's obligations P1 and P2 over a product-located profile, plus the execution-only property that the profile carries no compiler.",
+      "statement": "The Broiler.VM.Profile.JavaScript project references exactly Broiler.VM.Abstractions, Broiler.VM.Binary and Broiler.VM.Profile.JavaScript.Format; it references neither the runtime nor its own lowering, declares no PackageReference outside the set rule I1 admits for this project, and opens its internals to nobody. ADR 0011's obligations P1 and P2 over a product-located profile, plus the execution-only property that the profile carries no compiler. (Revised 2026-10-12 at SJL-2.4: \"declares no PackageReference\" became \"declares no PackageReference outside the set rule I1 admits for this project\".)",
       "evidence": "Project files",
       "activationMilestone": null,
       "nonVacuousWhen": "The profile project exists at JS-0 with a three-assembly reference set, so the rule decides a real set rather than an empty one. Rule A13 does not reach it: A13's subject is a test-only consumer profile whose set is exactly two assemblies.",
-      "witness": "witnesses/N1-profile-references-runtime.csproj.witness, witnesses/N1-profile-references-the-lowering.csproj.witness, witnesses/N1-profile-package-reference.csproj.witness, witnesses/N1-profile-internals-visible-to.csproj.witness"
+      "witness": "witnesses/N1-profile-references-runtime.csproj.witness, witnesses/N1-profile-references-the-lowering.csproj.witness, witnesses/N1-profile-package-reference.csproj.witness, witnesses/N1-profile-internals-visible-to.csproj.witness, witnesses/N1-profile-references-an-engine-package.csproj.witness"
     },
     {
       "id": "N2",
@@ -1082,11 +1081,11 @@
       "id": "N37",
       "owningAdr": "0011",
       "status": "Active",
-      "statement": "The JavaScript family's package baseline, src/Broiler.VM.Profile.JavaScript/docs/packages.md, agrees in both directions with what the checkout packs and with what the candidate pack of the bundle it names produced: every package it names is a family project carrying IsPackable true and every such project has a row; each row's dependencies are exactly its project's references and exactly its retained .nuspec's dependencies; each row's files are exactly the files the retained package holds besides its .nuspec; no .nuspec the candidate pack produced declares a dependency outside Broiler.VM.; and the bundle's consumer transcript shows the pristine consumer passing every check against the candidate, after rolling back to the published previous set and after rolling forward again, and as Native AOT, and its negative control refused for a version only upstream holds with no other source searched. Release gate 8 asks that whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an addition and a removal each fail; phase F9's slice R3, decision JSD-0061.",
+      "statement": "The JavaScript family's package baseline, src/Broiler.VM.Profile.JavaScript/docs/packages.md, agrees in both directions with what the checkout packs and with what the candidate pack of the bundle it names produced: every package it names is a family project carrying IsPackable true and every such project has a row; each row's dependencies are exactly its project's references and exactly its retained .nuspec's dependencies; each row's files are exactly the files the retained package holds besides its .nuspec; no .nuspec the candidate pack produced declares a dependency outside Broiler.VM. other than a package rule I1 admits for shipping, at the version the allow-list pins or a later one; and the bundle's consumer transcript shows the pristine consumer passing every check against the candidate, after rolling back to the published previous set and after rolling forward again, and as Native AOT, and its negative control refused for a version only upstream holds with no other source searched. Release gate 8 asks that whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an addition and a removal each fail; phase F9's slice R3, decision JSD-0061. (Revised 2026-10-12 at SJL-2.4: the clause \"no .nuspec the candidate pack produced declares a dependency outside Broiler.VM.\" gained the admitted-package exception, and each row's dependencies are compared with its project's package references as well as its project references.)",
       "evidence": "src/Broiler.VM.Profile.JavaScript/docs/packages.md against the family's project files and the nuspecs.txt, contents.txt and consumer.log of the bundle it names",
       "activationMilestone": null,
       "nonVacuousWhen": "Four packages are packable and stated, eleven .nuspec files are retained and read for foreign dependencies, and every comparison is a set difference taken both ways, so an addition and a removal each fail. The bundle is read from the baseline's own link. THE SAME LIMIT AS L1: the bundle's metadata is read against the document and the document against the project files; the pack is not re-run, and a stale pair agrees with itself.",
-      "witness": "witnesses/js-packages/N37-baseline-adds-a-package.md.witness, witnesses/js-packages/N37-baseline-omits-a-package.md.witness, witnesses/js-packages/N37-baseline-misstates-a-dependency.md.witness, witnesses/js-packages/N37-nuspecs-declare-a-foreign-dependency.txt.witness, witnesses/js-packages/N37-consumer-log-rollback-failed.log.witness"
+      "witness": "witnesses/js-packages/N37-baseline-adds-a-package.md.witness, witnesses/js-packages/N37-baseline-omits-a-package.md.witness, witnesses/js-packages/N37-baseline-misstates-a-dependency.md.witness, witnesses/js-packages/N37-nuspecs-declare-a-foreign-dependency.txt.witness, witnesses/js-packages/N37-consumer-log-rollback-failed.log.witness, witnesses/js-packages/N37-nuspecs-declare-a-test-only-admitted-package.txt.witness"
     },
     {
       "id": "N38",
@@ -1257,6 +1256,56 @@
       "activationMilestone": null,
       "nonVacuousWhen": "The assembly exports a real surface at UBC-1 - the container, the common family, the family table schema, the primitive table, the contracts a family implements and the verifier - so the comparison has a real subject on both sides, and the rule fails rather than passes when the build output is absent: it asserts the assembly was found and the described surface is non-empty, because an empty surface compared against an empty baseline would agree. TWO STATED LIMITS. This baseline is over a BUILD OUTPUT and not over a package - the assembly packs since decision UBC-D-5, taken at UBC-4, and the package carries the same build output, but no rule reads the assembly a produced package holds - so what is frozen is what a family, an emitter or a composition root can bind to as this repository builds it. And the file it reads is the last build in the configuration this test run was built in, which the rule takes from its own output path rather than assuming Release. It is deliberately not a widening of M1, N10 or W2: the baselines have disjoint subjects, which its own test asserts, and a rule holding two of them to one file would freeze a surface whose records can then disagree. The baseline is regenerated by BROILER_API_WRITE=1, so a deliberate change is a diff a person reads rather than a rule that fires, which is the trade rule M1 records.",
       "witness": "witnesses/api/U9-baseline-omits-an-exported-member.txt.witness, witnesses/api/U9-baseline-declares-a-member-that-is-gone.txt.witness"
+    },
+    {
+      "id": "I1",
+      "owningAdr": "0014",
+      "status": "Active",
+      "statement": "Admission. Every PackageReference of a project that ships or composes is on the allow-list, admitted-packages.json, from a project the list names for it, in the JavaScript family; the project restores with a lock file, and the lock file's resolved version and content hash equal the list's pin. A package admitted test-only is admitted for no shipping project. Every entry of the list agrees with its pin file, every project it names is in the JavaScript family, and a package whose source is the committed feed is there, hashing to the pin.",
+      "evidence": "The project files of every non-test project and their packages.lock.json; admitted-packages.json against eng/packages/*.pin and the .nupkg beside each",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The product graph declares no package reference at SJL-2 - no product project references a shared package, which the milestone requires - so the clean direction over the graph is the answer to a real question with an empty answer, and what makes the rule non-vacuous is the admission probe: a scratch JavaScript-family project restored through this repository's NuGet.config whose project file and lock file I1 reads and passes, and whose lock file with one hash changed I1 refuses. The list itself has a real entry, checked against its pin and the committed feed's bytes.",
+      "witness": "witnesses/I1-unlisted-package.csproj.witness, witnesses/I1-admitted-package-in-the-runtime.csproj.witness, witnesses/I1-admitted-package-in-the-format.csproj.witness, witnesses/I1-lock-file-hash-differs.packages.lock.json.witness"
+    },
+    {
+      "id": "I2",
+      "owningAdr": "0014",
+      "status": "Active",
+      "statement": "Imported-assembly hygiene. Every admitted assembly, read from its package, reaches nothing on the member lists of rules B5, B5b and B5c, and names no platform regular-expression, normalization, culture-sensitive casing or comparison, culture or time-zone API - the metadata equivalents of N18 and N23, which read this component's sources and so never a package's.",
+      "evidence": "The MemberRef, TypeRef, CustomAttribute and ImplMap tables of every assembly of every admitted package on the committed feed, and of the admission probe's restored copy",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The admitted probe package's assembly is read from the committed feed and from the probe's restore, and references the framework; the witness, compiled under the admitted assembly's own name, references System.Text.RegularExpressions and is refused. ILC refuses a trim or AOT warning in package code a root reaches; this rule also covers the code no root reaches yet.",
+      "witness": "witnesses/I2-admitted-assembly-references-regular-expressions.cs.witness"
+    },
+    {
+      "id": "I3",
+      "owningAdr": "0014",
+      "status": "Active",
+      "statement": "Deployment boundary. The closure of a compiler-free root - JavaScript.ExecutionOnly and JavaScript.Android - holds no shared frontend assembly, and no root carries optional data (the Intl data assembly) unless docs/compositions.md declares it in that root's closure, which is where an Intl or zoned-Temporal surface is declared. A closure is the project graph's, or, for a Native AOT image whose publish directory holds no managed assembly, the AssemblyRef table of ILC's mstat record of the image, which the collectors request with IlcGenerateMstatFile and retain.",
+      "evidence": "Each composition root's closure from the project graph; docs/compositions.md; an image's mstat when a bundle retains one",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The optional-data clause is decided over real closures today: two roots declare the Intl data assembly and carry it, and every other root's closure is read and holds none. THE FRONTEND CLAUSE HAS NO SUBJECT UNTIL SJL-3: no frontend package exists, so it cannot fail on the graph yet, and the programme's governance lists this rule as minted at SJL-2 and active from SJL-3 for that reason; the row is Active because its other clause is, and the frontend clause is shown refusing both of its witnesses, a closure listing and an mstat-shaped image.",
+      "witness": "witnesses/I3-execution-only-closure-carries-the-frontend.txt.witness, witnesses/I3-native-image-compiled-from-the-frontend.cs.witness"
+    },
+    {
+      "id": "I6",
+      "owningAdr": "0014",
+      "status": "Active",
+      "statement": "No leak through the public surface. No admitted type appears in the JavaScript family's public API baseline unless a decision baselines it (none does). ProfileApiSurface's resolver knows the admitted assemblies, read from the committed feed, so a family signature naming an admitted type resolves and is seen by this rule, rather than failing the baseline run instead. Rule B4 extended to the family and to the shared packages, which B4 does not reach.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt against every public type of every admitted assembly; the admission probe's own public surface",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The family baseline is read in full and the admitted assembly's public types are read from its package; the admission probe's public surface, from a project that uses the contract types inside its members, is described through the same resolver and passes; the witness, a public member returning an admitted type, is compiled against the admitted assembly, described and refused.",
+      "witness": "witnesses/I6-public-member-returns-an-admitted-type.cs.witness"
+    },
+    {
+      "id": "I7",
+      "owningAdr": "0014",
+      "status": "Active",
+      "statement": "Upstream identity in evidence. A bundle whose closure listings show a composition carrying an admitted package records, in its manifest, that package's identifier, version, content hash and the source commit its nuspec names, which is the upstream revision a release's review gate reads (decision SJL-D-5 (a)).",
+      "evidence": "Every retained bundle's closure-*.txt listings and its manifest.json",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Every retained bundle with closure listings is read. NO RETAINED CLOSURE CARRIES AN ADMITTED PACKAGE AT SJL-2, because no composition takes one before SJL-3, so the clean direction passes over real bundles whose closures hold none; the witness, a manifest of a bundle carrying the admitted package that records its identity without the commit, is refused. The collectors write the identity from the allow-list and the committed feed's nuspec, so the first bundle that carries one records it.",
+      "witness": "witnesses/I7-manifest-records-no-commit.json.witness"
     }
   ]
 }

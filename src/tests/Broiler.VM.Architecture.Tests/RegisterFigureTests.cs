@@ -172,7 +172,7 @@ public sealed class RegisterFigureTests
         foreach (var metric in new[]
         {
             "assurance:files", "assurance:units", "assurance:relevant", "assurance:exempt",
-            "assurance:artefacts", "graph:packable", "graph:javascript-family", "graph:edges",
+            "assurance:artefacts", "graph:packable", "graph:javascript-family", "graph:edges", "graph:package-edges",
             "graph:composition-roots", "docs:adrs", "review:documents",
         })
         {

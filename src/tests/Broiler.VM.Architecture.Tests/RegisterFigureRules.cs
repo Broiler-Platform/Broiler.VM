@@ -168,6 +168,10 @@ internal static class RegisterFigureRules
 
         figures["graph:projects"] = projects.Count;
         figures["graph:edges"] = projects.Sum(static project => project.ProjectReferences.Count);
+
+        // Package edges are counted apart from project edges (SJL-2.5): ADR 0001 budgets projects
+        // and project edges by number, and cites this figure for packages rather than typing it.
+        figures["graph:package-edges"] = projects.Sum(static project => project.PackageReferences.Count);
         figures["graph:packable"] = projects.Count(static project => project.PackageId is not null);
         figures["graph:test-only"] = projects.Count(static project => project.IsTestOnly);
         figures["graph:composition-roots"] = projects.Count(static project =>

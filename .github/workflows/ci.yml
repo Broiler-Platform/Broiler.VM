@@ -49,6 +49,19 @@ jobs:
       - name: Test preview version selection
         run: node --test eng/resolve-preview-version.test.mjs
 
+      # Every project that references an admitted shared package restores with a lock file (rule
+      # I1), and CI restores each of them in locked mode, so a content hash that moved fails here
+      # rather than being rewritten (milestone SJL-2.1). No product project references one at
+      # SJL-2, and the step says so when there is nothing to lock.
+      - name: Restore lock-file projects in locked mode
+        run: |
+          found=0
+          while IFS= read -r lock; do
+            found=1
+            dotnet restore "$(dirname "$lock")" --locked-mode --nologo
+          done < <(git ls-files '*packages.lock.json')
+          if [ "$found" = 0 ]; then echo "No project carries a lock file."; fi
+
       - name: Build
         run: |
           args=()

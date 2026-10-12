@@ -1,0 +1,8 @@
+# ADR 9999 - A record citing a group I rule with no register row
+
+**Status:** Witness
+**Core contract:** not contract-bearing
+
+This witness exists for rule E4's group I clause (SJL-2.6). It cites Rule I1, which the register
+holds, and Rule I9, which it does not. Before SJL-2 the citation pattern's character class had no I,
+so a record naming an unregistered admission rule was not read at all.

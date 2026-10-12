@@ -1,4 +1,10 @@
 # Prove that a consumer can restore the complete release from nuget.org plus the packages themselves.
+#
+# Every dependency outside the release must already be on nuget.org, and that includes a shared
+# JavaScript library package rule I1 admits (milestone SJL-2.7): the committed feed eng/packages/ is a
+# development source, and this check's configuration deliberately does not list it, so a release whose
+# admitted dependency is only on the committed feed fails here rather than at a consumer. A dependency on
+# a package the allow-list admits test-only is refused outright: no release may ship one.
 [CmdletBinding()]
 param(
     [string] $Packages = 'artifacts'
@@ -11,6 +17,10 @@ $archives = @(Get-ChildItem -LiteralPath $packagePath -Filter *.nupkg)
 if (!$archives.Count) { throw 'No packages to validate.' }
 $scratch = Join-Path ([IO.Path]::GetTempPath()) ("broiler-feed-check-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $scratch | Out-Null
+$allowList = Join-Path $PSScriptRoot '..' 'src' 'tests' 'Broiler.VM.Architecture.Tests' 'admitted-packages.json'
+$admitted = @{}
+foreach ($entry in (Get-Content -Raw $allowList | ConvertFrom-Json).packages) { $admitted[$entry.id] = $entry }
+$admittedDependencies = @()
 $references = @()
 $mappings = @()
 foreach ($archive in $archives) {
@@ -23,6 +33,14 @@ foreach ($archive in $archives) {
         $version = [Security.SecurityElement]::Escape($nuspec.package.metadata.version)
         $references += "    <PackageReference Include=`"$id`" Version=`"[$version]`" />"
         $mappings += "      <package pattern=`"$id`" />"
+        foreach ($dependency in $nuspec.SelectNodes('//*[local-name()="dependency"]')) {
+            if ($admitted.ContainsKey($dependency.id)) {
+                if ($admitted[$dependency.id].use -eq 'test-only') {
+                    throw "$id depends on $($dependency.id), which rule I1 admits test-only. No release may ship it."
+                }
+                $admittedDependencies += "$($dependency.id) $($dependency.version)"
+            }
+        }
     } finally { $zip.Dispose() }
 }
 $escapedPath = [Security.SecurityElement]::Escape($packagePath)
@@ -56,5 +74,8 @@ $($references -join "`n")
 "@ | Set-Content (Join-Path $scratch 'Consumer.csproj') -Encoding utf8
 # An isolated cache prevents installed developer packages from hiding feed gaps.
 & dotnet restore (Join-Path $scratch 'Consumer.csproj') --configfile (Join-Path $scratch 'NuGet.config') --packages (Join-Path $scratch 'packages') --no-http-cache --nologo
-if ($LASTEXITCODE -ne 0) { throw "Consumer restore against nuget.org failed. Every dependency outside this release must already be on nuget.org. Diagnostics: $scratch" }
+if ($LASTEXITCODE -ne 0) {
+    $shared = if ($admittedDependencies.Count) { " Admitted shared dependencies, which must be on nuget.org and not only on the committed feed: $($admittedDependencies -join ', ')." } else { '' }
+    throw "Consumer restore against nuget.org failed. Every dependency outside this release must already be on nuget.org.$shared Diagnostics: $scratch"
+}
 Write-Host "Consumer restore verified $($archives.Count) packages against nuget.org."

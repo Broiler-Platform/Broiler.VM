@@ -1,0 +1,11 @@
+<!-- Violates A2 as revised at SJL-2: a Broiler package that rule I1's allow-list does not admit. The
+     Broiler.JS engine's parser is a Broiler package like any other; only an admitted shared package,
+     from a project the list names, may be referenced, and this one is neither. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Compiler</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Broiler.JavaScript.Parser" Version="0.1.0-preview.1" />
+  </ItemGroup>
+</Project>

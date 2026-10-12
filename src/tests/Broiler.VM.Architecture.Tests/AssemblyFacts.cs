@@ -218,6 +218,21 @@ internal sealed class AssemblyFacts
     private static AssemblyFacts ReadAt(string assemblyName, string path)
     {
         using var stream = File.OpenRead(path);
+        return ReadFrom(assemblyName, stream);
+    }
+
+    /// <summary>
+    /// Reads an assembly image this run made or extracted rather than built: a witness compiled in
+    /// memory, or an admitted assembly read out of its package (group I). Nothing in it runs.
+    /// </summary>
+    internal static AssemblyFacts ReadImage(string assemblyName, byte[] image)
+    {
+        using var stream = new MemoryStream(image, writable: false);
+        return ReadFrom(assemblyName, stream);
+    }
+
+    private static AssemblyFacts ReadFrom(string assemblyName, Stream stream)
+    {
         using var reader = new PEReader(stream);
         var metadata = reader.GetMetadataReader();
 

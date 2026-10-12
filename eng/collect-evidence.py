@@ -37,6 +37,9 @@ import shutil
 import tempfile
 import zipfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import admitted_packages  # noqa: E402  (rule I1's allow-list, for the I7 identity record)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -348,6 +351,8 @@ def collect_compositions(arguments, out):
     difference between JIT and Native AOT is a failure rather than a footnote; and the closure
     report lists what the published image actually contains.
     """
+    carried = set()
+
     for name, project in COMPOSITIONS:
         slug = name.split(".")[-1].lower()
         lines = ["=== COMPOSITION %s ===" % name, "project: " + project, ""]
@@ -422,8 +427,13 @@ def collect_compositions(arguments, out):
             report.append("[%s] %d non-framework assemblies" % (mode, len(assemblies)))
             report += assemblies
             report.append("")
+            carried.update(assemblies)
 
         write(os.path.join(out, "closure-%s.txt" % slug), "\n".join(report).strip() + "\n")
+
+    # Rule I7 (SJL-2.7): a retained closure that carries an admitted shared package has its upstream
+    # identity - identifier, version, content hash, nuspec commit - recorded beside it.
+    admitted_packages.write_identities(out, sorted(carried))
 
 
 def soak_run(arguments):

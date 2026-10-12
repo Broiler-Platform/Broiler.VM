@@ -31,9 +31,10 @@ restores. `Broiler.VM.Profile.MachineCode` is packable and is its own family's, 
 | `Broiler.VM.Profile.JavaScript.Format` | none | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Format.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Format.xml` |
 | `Broiler.VM.Profile.JavaScript.Intl` | `Broiler.VM.Profile.JavaScript.Format` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Intl.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Intl.xml` |
 
-**No foreign dependency.** Every dependency above is a Broiler.VM package, and rule N37 holds every
-`.nuspec` the candidate pack produced - the family's and the seven others' - to declaring none
-outside `Broiler.VM.`.
+**No foreign dependency.** Every dependency above is a Broiler.VM package. Rule N37 holds every
+`.nuspec` the candidate pack produced - the family's and the seven others' - to declaring none outside
+`Broiler.VM.` except a shared package rule I1 admits for shipping, at the version its allow-list pins or
+a later one; no package declares one at this revision *(corrected: JSC-296)*.
 
 ## The consumer
 

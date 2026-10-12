@@ -48,7 +48,8 @@
       "packageId": "Broiler.VM.Abstractions",
       "isPackable": true,
       "isTestProject": false,
-      "projectReferences": []
+      "projectReferences": [],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Binary/Broiler.VM.Binary.csproj",
@@ -57,7 +58,8 @@
       "packageId": "Broiler.VM.Binary",
       "isPackable": true,
       "isTestProject": false,
-      "projectReferences": []
+      "projectReferences": [],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj",
@@ -69,7 +71,8 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj",
@@ -82,7 +85,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Profile.JavaScript.Format"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj",
@@ -94,7 +98,8 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Profile.JavaScript.Format"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj",
@@ -103,7 +108,8 @@
       "packageId": null,
       "isPackable": false,
       "isTestProject": false,
-      "projectReferences": []
+      "projectReferences": [],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Profile.JavaScript.Intl/Broiler.VM.Profile.JavaScript.Intl.csproj",
@@ -114,7 +120,8 @@
       "isTestProject": false,
       "projectReferences": [
         "Broiler.VM.Profile.JavaScript.Format"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj",
@@ -126,7 +133,8 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj",
@@ -139,7 +147,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Ubc"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj",
@@ -151,7 +160,8 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj",
@@ -164,7 +174,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Ubc"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj",
@@ -178,7 +189,8 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
         "Com.Example.Calculator"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.Workbench/Broiler.VM.Composition.Workbench.csproj",
@@ -193,7 +205,8 @@
         "Broiler.VM.Runtime",
         "Com.Example.Calculator",
         "Com.Example.Ledger"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.JavaScript.Android/Broiler.VM.Composition.JavaScript.Android.csproj",
@@ -207,7 +220,8 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
         "Broiler.VM.Profile.JavaScript"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj",
@@ -221,7 +235,8 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
         "Broiler.VM.Profile.JavaScript"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj",
@@ -238,7 +253,8 @@
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.JavaScript.Intl",
         "Broiler.VM.Profile.MachineCode"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj",
@@ -255,7 +271,8 @@
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.JavaScript.Intl",
         "Broiler.VM.Profile.MachineCode"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj",
@@ -271,7 +288,8 @@
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.MachineCode"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.WebAssembly.Execution/Broiler.VM.Composition.WebAssembly.Execution.csproj",
@@ -287,7 +305,8 @@
         "Broiler.VM.Ubc",
         "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.WebAssembly"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Broiler.VM.Composition.WebAssembly.Harness.csproj",
@@ -303,7 +322,8 @@
         "Broiler.VM.Ubc",
         "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.WebAssembly"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj",
@@ -321,7 +341,8 @@
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.WebAssembly"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.Ubc.Fixture/Broiler.VM.Composition.Ubc.Fixture.csproj",
@@ -338,7 +359,8 @@
         "Broiler.VM.Ubc",
         "Com.Example.Ledger",
         "Com.Example.Tally"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj",
@@ -352,6 +374,13 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Fixtures",
         "Broiler.VM.Runtime"
+      ],
+      "packageReferences": [
+        "Microsoft.CodeAnalysis.CSharp",
+        "Microsoft.NET.Test.Sdk",
+        "System.Reflection.MetadataLoadContext",
+        "xunit",
+        "xunit.runner.visualstudio"
       ]
     },
     {
@@ -366,7 +395,8 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Fixtures",
         "Broiler.VM.Runtime"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj",
@@ -381,6 +411,11 @@
         "Broiler.VM.Fixtures",
         "Broiler.VM.Runtime",
         "Broiler.VM.Ubc"
+      ],
+      "packageReferences": [
+        "Microsoft.NET.Test.Sdk",
+        "xunit",
+        "xunit.runner.visualstudio"
       ]
     },
     {
@@ -395,7 +430,8 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Fixtures",
         "Broiler.VM.Runtime"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj",
@@ -407,7 +443,8 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/tests/Broiler.VM.Fuzz.Host/Broiler.VM.Fuzz.Host.csproj",
@@ -421,7 +458,8 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Fixtures",
         "Broiler.VM.Runtime"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/tests/Broiler.VM.Soak.Host/Broiler.VM.Soak.Host.csproj",
@@ -435,7 +473,8 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Fixtures",
         "Broiler.VM.Runtime"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj",
@@ -447,7 +486,8 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/tests/Com.Example.Ledger/Com.Example.Ledger.csproj",
@@ -459,7 +499,8 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
-      ]
+      ],
+      "packageReferences": []
     },
     {
       "path": "src/tests/Com.Example.Tally/Com.Example.Tally.csproj",
@@ -472,7 +513,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Ubc"
-      ]
+      ],
+      "packageReferences": []
     }
   ]
 }

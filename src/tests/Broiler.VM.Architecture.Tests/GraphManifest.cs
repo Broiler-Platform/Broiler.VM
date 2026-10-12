@@ -30,6 +30,19 @@ internal static class GraphManifest
             .ThenBy(static edge => edge.To, StringComparer.Ordinal)
             .ToArray();
 
+    /// <summary>
+    /// The declared package edges as (project, package) pairs: every PackageReference a project
+    /// file states, which the manifest records per project since SJL-2.5 so that a package edge is
+    /// part of the frozen graph as a project edge is.
+    /// </summary>
+    internal static IReadOnlyList<Edge> PackageEdges { get; } =
+        Loaded.Projects
+            .SelectMany(static project => project.PackageReferences!
+                .Select(package => new Edge(project.AssemblyName, package)))
+            .OrderBy(static edge => edge.From, StringComparer.Ordinal)
+            .ThenBy(static edge => edge.To, StringComparer.Ordinal)
+            .ToArray();
+
     internal static string Path { get; } = System.IO.Path.Combine(
         ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests", "graph.manifest.json");
 
@@ -40,8 +53,18 @@ internal static class GraphManifest
 
         var json = File.ReadAllText(path);
 
-        return JsonSerializer.Deserialize<Manifest>(json, Options)
+        var manifest = JsonSerializer.Deserialize<Manifest>(json, Options)
             ?? throw new InvalidOperationException($"{path} deserialized to null.");
+
+        var silent = manifest.Projects.Where(static project => project.PackageReferences is null).Select(static project => project.AssemblyName).ToArray();
+
+        if (silent.Length > 0)
+        {
+            throw new InvalidOperationException(
+                $"{path}: every project states its package edges, an empty list for none; these do not: {string.Join(", ", silent)}");
+        }
+
+        return manifest;
     }
 
     private static JsonSerializerOptions Options { get; } = new()
@@ -83,5 +106,13 @@ internal static class GraphManifest
 
         [JsonPropertyName("projectReferences")]
         public IReadOnlyList<string> ProjectReferences { get; init; } = [];
+
+        /// <summary>
+        /// The packages the project references, by identifier. Required on every entry since
+        /// SJL-2.5 - null rather than absent is what <see cref="Load"/> refuses, so an entry
+        /// written before the field existed cannot pass as "no package edges".
+        /// </summary>
+        [JsonPropertyName("packageReferences")]
+        public IReadOnlyList<string>? PackageReferences { get; init; }
     }
 }

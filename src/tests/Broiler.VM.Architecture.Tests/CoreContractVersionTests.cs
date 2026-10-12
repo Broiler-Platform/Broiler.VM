@@ -230,11 +230,16 @@ public sealed class CoreContractVersionTests
         // it is what makes the first capitalised citation of an unregistered U rule a failure here.
         // Groups K, L, M, N, W and X are not in the class; that is a gap this change records rather
         // than closes, because widening a check over records nobody has re-read is a change of its own.
+        //
+        // CLOSED AT SJL-2.6 (2026-10-12), with group I added: the class now holds every group letter
+        // the register uses - I for the shared libraries' admission rules, and K, L, M, N, W and X,
+        // the gap the paragraph above recorded. The records were re-read by this test, which is the
+        // re-reading that paragraph asked for: it runs over every one of them.
         var registered = RegisteredRuleIds();
 
         var unregistered = Adrs
             .SelectMany(static adr => Regex
-                .Matches(adr.Text, @"\bRule (?<id>[A-EHJUV]\d{1,2}b?)\b")
+                .Matches(adr.Text, RuleCitation)
                 .Select(match => (adr.FileName, Id: match.Groups["id"].Value)))
             .Where(named => !registered.Contains(named.Id))
             .Select(named => $"{named.FileName} names unregistered {named.Id}")
@@ -258,7 +263,25 @@ public sealed class CoreContractVersionTests
             .Select(match => match.Groups["id"].Value)
             .Where(id => !registered.Contains(id))
             .ToArray());
+
+        // The group I witness (SJL-2.6): a record citing a group I rule that has no register row.
+        // Read with the class the clean direction uses, so a class that lost I again fails here.
+        var groupI = Witness("E4-cites-an-unregistered-group-i-rule.md.witness").Text;
+
+        Assert.Equal(
+            ["I9"],
+            Regex.Matches(groupI, RuleCitation)
+                .Select(match => match.Groups["id"].Value)
+                .Where(id => !registered.Contains(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToArray());
     }
+
+    /// <summary>
+    /// A citation of an architecture rule in a record: "Rule" and an identifier of a group the
+    /// register uses. Widened at SJL-2.6 with I, K, L, M, N, W and X.
+    /// </summary>
+    private const string RuleCitation = @"\bRule (?<id>[A-EHIJKLMNUVWX]\d{1,2}b?)\b";
 
     private static HashSet<string> RegisteredRuleIds()
     {

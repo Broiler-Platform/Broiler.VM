@@ -33,10 +33,24 @@ some rule, and every count unchanged. Another rule may name the same file as wel
 A7 and A8 share one input. What is still not verified is that the named witness is the one the
 rule's own test actually exercises; that correspondence is maintained by review.
 
-Two rules have no witness at VM-0 and say so in the register. B3 would need a foreign Broiler
+Two rules had no witness at VM-0 and said so in the register. B3 would have needed a foreign
+Broiler assembly, and the component's graph was closed over its own five; B6 would need a product
+assembly referencing a test assembly, which cannot be built without breaking the graph. Both have
+witnessed project-file twins - A1 and A2 for B3, A4 for B6. **B3 has a witness since SJL-2**
+(2026-10-12): `B3-assembly-references-a-foreign-broiler-assembly.cs.witness`, compiled in memory
+against a stub of the Broiler.JS engine's runtime, so its AssemblyRef table names exactly the
+foreign Broiler assembly the rule refuses - which is how B3 became Active once the shared packages
+made such an assembly something the graph can hold. *(Revised 2026-10-12. The paragraph read:
+"Two rules have no witness at VM-0 and say so in the register. B3 would need a foreign Broiler
 assembly, and the component's graph is closed over its own five; B6 would need a product assembly
-referencing a test assembly, which cannot be built without breaking the graph. Both have
-witnessed project-file twins - A1 and A2 for B3, A4 for B6.
+referencing a test assembly, which cannot be built without breaking the graph. Both have witnessed
+project-file twins - A1 and A2 for B3, A4 for B6.")*
+
+**Group I's source witnesses are compiled, not stored as assemblies** (SJL-2). B3, I2, I3's Native
+AOT half and I6 each need an image whose metadata names something - a foreign Broiler assembly, the
+platform matcher, the shared frontend, an admitted type - and `WitnessAssemblies` compiles each
+`*.cs.witness` in memory against the framework and, where it must, against a stub or the admitted
+assembly from the committed feed. Nothing compiled is loaded or run.
 
 **Rule X1's two witnesses are the one place in this repository where the page protection that
 admits a write and an execute at once is written down**, and they are stored rather than
