@@ -143,6 +143,7 @@ was confirmed.
 | `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.JavaScript.Format` | **The Unicode Character Database 17.0.0** - thirteen UCD files and the Unicode licence text, archived at [`src/tests/unicode/pins/`](src/tests/unicode/pins/README.md) - and **tables derived from it that are compiled into both assemblies**; see [below](#unicode-data-and-the-tables-derived-from-it) | **not yet confirmed** |
 | `Broiler.VM.Composition.JavaScript.Cli` | **Octane**, the retired JavaScript benchmark suite, at `chromium/octane` commit `570ad1ccfe86e3eecba0636c8f932ac08edec517` — archived as the retrieved archive at [`src/tests/octane/pins/`](src/tests/octane/pins/README.md), BSD 3-Clause, with its licence beside it as that licence requires | **not yet confirmed** |
 | `Broiler.VM.Composition.WebAssembly.Harness` | **The WebAssembly specification's core test scripts**, the 73 `.wast` files of `test/core` at `WebAssembly/spec` commit `977f97014c962f7bd1291fcc6d28b41a924882bf` (tag `wg-1.0`) — archived unmodified at [`src/tests/wasm/spec/`](src/tests/wasm/spec/README.md), Apache-2.0, with its licence beside it | **not yet confirmed** |
+| `Broiler.VM.Composition.JavaScript.Conformance` | **The shared conformance vectors** of the shared JavaScript libraries programme, at `Broiler-Platform/broiler.js` commit `593f2c5bce1f055025864af2b7ec38ee6f2f835a` (corpus revision 3) — archived as `git archive` wrote it at [`src/tests/vectors/pins/`](src/tests/vectors/pins/README.md), Apache-2.0, under this repository's own copyright holder | **not yet confirmed** |
 
 **What that entry is and what it is not.** It is a **normative reference document**, archived
 because roadmap section 24 asks for the pinned edition to be retrieved, hashed **and archived**,
@@ -245,6 +246,16 @@ extracted directory on a command line and packs nothing. Rule **N13** names `tes
 `tests/conformance` and `tests/octane` as a directory no project file may mention. **The release owner's
 confirmation is not made here**, for the reason the Octane row gives: it is a release-facing statement a
 person makes. It is recorded as owed.
+
+**The shared conformance vectors' row is the one whose material is not third-party at all**, and it
+is listed because it is ingested the same way and kept out by the same mechanism. The corpus is the
+Broiler.JS repository's, under Apache-2.0 and this repository's copyright holder; it quotes no
+specification text and copies no Unicode data file, naming ECMA-262 clauses by their identifiers and
+stating which code points a set holds. The archive is a `.tar.gz` under `src/tests/`, no project
+includes it, the conformance root reads it from a path on its command line and packs nothing, and
+rule **N13** names `tests/vectors` beside the other three directories, with a witness that names it
+from the profile's own project file. **The release owner's confirmation is not made here**, for the
+reason the Octane row gives. It is recorded as owed.
 
 **One obligation moved inside this repository on 2026-08-31 and is recorded here rather than
 left to be discovered.** The JavaScript profile's snapshot copy of an Apache-2.0 engine now lands

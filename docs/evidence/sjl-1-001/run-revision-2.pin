@@ -1,0 +1,10 @@
+# broiler-js-conformance retained suite pin 1
+suite broiler-js-vectors
+upstream Broiler-Platform/broiler.js
+revision 9b0f2dde58712ad49a0c9dcf2a385c3d328ccd47
+archive git archive --format=tar.gz 9b0f2dde58712ad49a0c9dcf2a385c3d328ccd47 -- conformance/vectors :(exclude)conformance/vectors/controls
+archive-sha256 a9db48c54178ffed24e476e5453e6c67e231d66c6170a6bf3d1fb11757872e24
+content-sha256 a2958bb005c4942a580cd774a13e683f1a533df2cd23d6cc912cbe969d43660d
+files 16
+archived yes
+archived-at (not retained: the archive of revision 2, made by the command above)

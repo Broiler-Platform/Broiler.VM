@@ -56,6 +56,7 @@ blocker, and rule N38's two witnesses show the gate refusing both.
 | `G12-unconfirmed-broiler.vm.profile.javascript` | 12 | [`THIRD_PARTY_NOTICES.md`](../../../THIRD_PARTY_NOTICES.md), the specification row | The release owner co-signing the scoping |
 | `G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format` | 12 | The same file, the Unicode Character Database row | The same |
 | `G12-unconfirmed-broiler.vm.composition.javascript.cli` | 12 | The same file, the Octane row | The same |
+| `G12-unconfirmed-broiler.vm.composition.javascript.conformance` | 12 | The same file, the shared conformance vectors' row (added 2026-10-12, programme milestone SJL-1) | The same |
 | `G12-no-row-broiler.vm.profile.javascript.intl` | 12 | The same file's ingesting-components table, which has no CLDR or tzdb row | A row for the Intl assembly, confirmed |
 | `G13-vacant-diagnostics` | 13 | [`support.md`](support.md) section 10 | The owner naming a holder |
 | `G13-vacant-cancellation` | 13 | The same | The same |

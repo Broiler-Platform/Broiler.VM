@@ -1,0 +1,9 @@
+bundle: sjl-1-001 (Broiler.VM)
+collected: 2026-10-12
+repository: Broiler-Platform/Broiler.VM, branch claude/busy-lamport-m3yprr, from main at 4ac8dafa09a9b64e17116c91f4f14ee830990784
+runner: the conformance root, Broiler.VM.Composition.JavaScript.Conformance, built in Release from the commit that adds this bundle (its --vectors mode, the pin, rule N13's fourth suite directory and its witness land in the same commit)
+judged run: src/tests/vectors/pins/vectors.pin - Broiler-Platform/broiler.js at 593f2c5bce1f055025864af2b7ec38ee6f2f835a, corpus revision 3, archive sha256 0da7a77063cd641d0df2f09ded3f3024e85c6dab056e5d9a83d8203762657d84, content sha256 b86ee85ea4487b42c19a8aa84a68ec652aa414ce4982a2f1c2f16244838c67bd over 16 files
+first run: run-revision-2.pin - Broiler-Platform/broiler.js at 9b0f2dde58712ad49a0c9dcf2a385c3d328ccd47, corpus revision 2, archive sha256 a9db48c54178ffed24e476e5453e6c67e231d66c6170a6bf3d1fb11757872e24; that archive is not retained, and the command in the pin remakes it byte for byte
+configuration: each vector in a runtime, an instance and a realm of its own; the JavaScript profile under the wide manifest, the bytecode form; fuel 2,000,000,000 and wall clock 60,000 ms per vector, the --test262 mode's per-variant defaults
+sdk: .NET SDK 10.0.401, runtime Microsoft.NETCore.App 10.0.12
+machine: Linux 6.18.44 x86-64, Intel Xeon @ 2.10GHz, 4 cores, a cloud container

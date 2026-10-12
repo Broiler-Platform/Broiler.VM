@@ -98,6 +98,12 @@ src/tests/conformance/pins/*.tar.gz binary
 # workload or the checkout had changed.
 src/tests/octane/pins/*.tar.gz binary
 
+# THE SHARED CONFORMANCE VECTORS' ARCHIVE, for the same reason: `git archive` of a Broiler.JS commit,
+# whose digest vectors.pin states and the conformance root checks before it runs a vector. The
+# bundles' compressed first runs are binary for the same reason as any other archive.
+src/tests/vectors/pins/*.tar.gz binary
+docs/evidence/sjl-1-001/*.gz binary
+
 # THE UNICODE CHARACTER DATABASE AND ITS LICENCE, and the declaration matters more for these than for
 # anything above them, because the generic `*.txt text eol=lf` line near the top claims every one of
 # them as text. They are LF today, so nothing would change on an ordinary checkout; but `unicode.pin`

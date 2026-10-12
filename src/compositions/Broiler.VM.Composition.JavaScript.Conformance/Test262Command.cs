@@ -40,7 +40,7 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 internal static class Test262Command
 {
     /// <summary>The instruction allowance one test variant gets unless a caller states one.</summary>
-    private const ulong DefaultFuel = 2_000_000_000;
+    internal const ulong DefaultFuel = 2_000_000_000;
 
     /// <summary>The wall-clock allowance one test variant gets, in milliseconds.</summary>
     /// <remarks>
@@ -51,7 +51,7 @@ internal static class Test262Command
     /// figure: a default sized for the whole suite would silently turn a single-test investigation
     /// into a five-second one.
     /// </remarks>
-    private const ulong DefaultWallClock = 60_000;
+    internal const ulong DefaultWallClock = 60_000;
 
     /// <summary>Where a test262 checkout keeps the files that are scored.</summary>
     private const string TestDirectory = "test";
