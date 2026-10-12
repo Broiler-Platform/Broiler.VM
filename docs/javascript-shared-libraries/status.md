@@ -1,6 +1,9 @@
 # The shared JavaScript libraries programme — status ledger
 
-**Last updated:** 2026-10-12, at SJL-2's bundles in Broiler.VM and Broiler.JS (SJL-2 `In progress`:
+**Last updated:** 2026-10-12, after SJL-2's changes were merged and Broiler.JS's `Shared libraries`
+workflow first passed on its default branch (SJL-2 `In progress`: every clause met on retained records,
+Broiler.JS's clause 8 now in CI too; the nuget.org prefix reservation withdrawn by the owner; none
+accepted). Before that: 2026-10-12, at SJL-2's bundles in Broiler.VM and Broiler.JS (SJL-2 `In progress`:
 Broiler.VM's clauses 1 to 6 met on its bundle `sjl-2-001`; Broiler.JS's clauses 7, 9 and 10 met on its
 bundle and clause 8 met locally with its CI half owed, observed; none accepted). Before that: 2026-10-12,
 after the four repositories' SJL-0 changes were merged into their default
@@ -157,6 +160,27 @@ out with LF line endings on every platform and changes no file's content. That p
 Broiler.JS commits were not yet merged; this one corrects that and nothing else. SJL-1 stays
 `In progress`, because nothing is accepted.
 
+**2026-10-12, later still: SJL-2's changes are merged, Broiler.JS's clause 8 is met in CI, and SJL-2
+stays `In progress`.** Broiler-Platform/Broiler.JS#1021 and Broiler-Platform/Broiler.VM#119 were
+merged into their default branches with merge commits (`29be101` and `d8e9c0f`), so every commit the
+SJL-2 row cites is on its repository's default branch. Each also carries a change made after its
+bundle was collected:
+- **the nuget.org prefix reservation is withdrawn.** The owner revised decision SJL-D-2 (a): the
+  prefix and the package identities stand, and nothing waits for a reservation before it is
+  published. Broiler.VM's records carry the revision in `83ef8c5` (the decision, ADR 0014, the
+  architecture, governance, milestone and risks documents, and this ledger); Broiler.JS's in `bd24676`,
+  which also removes `Publish shared libraries`' guard;
+- **SL10's test reads `.gitattributes` by line** (Broiler.JS `062c472`). The `Shared libraries`
+  workflow's first two runs failed on Windows only, because Git for Windows checks that file out with
+  CRLF line endings and the test looked for a substring ending in LF. No rule changed.
+
+The workflow's run on Broiler.JS's `main` at `29be101` passed every job: the build and the SL rules on
+both operating systems (SL6, the API baseline, among them), the assurance check, the Native AOT probe on
+linux-x64 and win-x64, and the stream's pack, feed check and pristine consumer. Broiler.JS's bundle
+`docs/evidence/sjl-2-001/` retains its six job logs and now reads clause 8 as met, and clause 10 as met
+on both runtimes. This is observed, not cited: no evidence transfers into Broiler.VM's bundle. SJL-2
+stays `In progress`, because nothing is accepted.
+
 ---
 
 ## 1. Reading this ledger
@@ -213,7 +237,7 @@ Rows are in delivery order (roadmap section 4), not numeric order.
 |---|---|---|---|---|---|
 | SJL-0 | Records, decisions, baselines and predeclared rules in four repositories | `In progress` | **Every clause is met on records and bundles in its own repository, and none is accepted**, because review is deferred under `docs/mvp.md`. **Broiler.VM:** clauses 1 to 7, on its records and bundle `sjl-0-001`, which retains every base of SJL-0.8's Broiler.VM half at `0087e8d7` and names what it excludes (the pristine consumer's restores, which fail at that commit, and ILC's mstat records). **Broiler.JS** (observed): clauses 8 to 11, on `a69eeca`, `1410079` and its bundle `docs/evidence/sjl-0-001/` (`31f92a6`) at base `44a214dc`, which names what it excludes (a run in the CI environment, and a controlled measurement lane); its status file is `docs/roadmap/SharedLibraries.status.md`. **Components** (observed): clause 12, on Broiler.Unicode `6c4baf7` and Broiler.RegEx `0814aa5`. Every record is merged into its repository's default branch *(2026-10-12; read "Every record outside Broiler.VM is on branch `claude/busy-lamport-m3yprr`, not yet merged.")*. `SJL-D-7`'s record is filed ([JSD-0063](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)), so the 2026-11-30 deadline is met. | Broiler.VM [`sjl-0-001`](../evidence/sjl-0-001/README.md); Broiler.JS `docs/evidence/sjl-0-001/` (observed) | 2026-10-12 (Broiler.JS's and the components' records, rules and bundle) |
 | SJL-1 | The shared conformance vectors | `In progress` | **Every clause is met on retained records, and none is accepted**, because review is deferred. **Broiler.JS (home):** clauses 1 to 3 and its half of clause 6, on corpus revision 3 and bundle `docs/evidence/sjl-1-001/` (`687a081`, merged in `75f2e9f`) *(2026-10-12; read "(`687a081`, not yet merged)")*, met under its rule with one judgement its README states. **Broiler.VM:** clause 4 on the pin of revision 3 and rule N13's fourth suite directory and witness; clauses 5 and 6 met under the rule revised on 2026-10-12 after the first run was seen, and **not met under the rule as committed**. A finding for SJL-3 (SJL-3.3's radix algorithm) is recorded above | Broiler.JS `docs/evidence/sjl-1-001/`; Broiler.VM [`sjl-1-001`](../evidence/sjl-1-001/README.md) | 2026-10-12 |
-| SJL-2 | The admission path | `In progress` | **Every clause is met on retained records except clause 8's CI half, and none is accepted**, because review is deferred. **Broiler.VM:** clauses 1 to 6 on bundle [`sjl-2-001`](../evidence/sjl-2-001/README.md) at `d3d5aff`: rule I1's allow-list and rules I2, I3, I6 and I7 minted, A2, A7, B3 (now `Active`), E4, N1 and N37 revised, each watched failing on an injection and passing on revert; the admission probe's positive run and its three negative controls; ADR 0001's and ADR 0012's revisions; ADR 0003 section 11's rows 24 to 41 `Applied`; a restore through each source and an unmapped identifier refused; and no product project referencing a shared package. Its README states two judgements: I3 and I7 are `Active` with the clause that has no subject before SJL-3 stated in each row, and the collectors' identity record is exercised by the function they call rather than by a full collection. **Broiler.JS (home, observed):** clauses 7, 9 and 10 on its bundle `docs/evidence/sjl-2-001/` (`a84a0b4`, `e76d7d1`, on branch `claude/busy-lamport-m3yprr`); clause 8 met locally, **its CI half owed** until the `Shared libraries` workflow first runs. No nuget.org reservation of the `Broiler.ECMAScript` prefix is owed: the owner withdrew it on 2026-10-12, revising decision SJL-D-2 *(corrected 2026-10-12; read "**Owed by a release owner:** the nuget.org reservation of the `Broiler.ECMAScript` prefix, before anything under it is published.")*. SJL-2.15 not needed. | Broiler.VM [`sjl-2-001`](../evidence/sjl-2-001/README.md); Broiler.JS `docs/evidence/sjl-2-001/` (observed) | 2026-10-12 |
+| SJL-2 | The admission path | `In progress` | **Every clause is met on retained records, and none is accepted**, because review is deferred *(2026-10-12; read "Every clause is met on retained records except clause 8's CI half, and none is accepted")*. **Broiler.VM:** clauses 1 to 6 on bundle [`sjl-2-001`](../evidence/sjl-2-001/README.md) at `d3d5aff`: rule I1's allow-list and rules I2, I3, I6 and I7 minted, A2, A7, B3 (now `Active`), E4, N1 and N37 revised, each watched failing on an injection and passing on revert; the admission probe's positive run and its three negative controls; ADR 0001's and ADR 0012's revisions; ADR 0003 section 11's rows 24 to 41 `Applied`; a restore through each source and an unmapped identifier refused; and no product project referencing a shared package. Its README states two judgements: I3 and I7 are `Active` with the clause that has no subject before SJL-3 stated in each row, and the collectors' identity record is exercised by the function they call rather than by a full collection. Merged in `d8e9c0f`. **Broiler.JS (home, observed):** clauses 7 to 10 on its bundle `docs/evidence/sjl-2-001/` (`a84a0b4`, `e76d7d1`, merged in `29be101`); clause 8's CI half by the `Shared libraries` workflow's run on `29be101`, which passed every job and whose logs the bundle retains *(2026-10-12; read "clauses 7, 9 and 10 on its bundle `docs/evidence/sjl-2-001/` (`a84a0b4`, `e76d7d1`, on branch `claude/busy-lamport-m3yprr`); clause 8 met locally, **its CI half owed** until the `Shared libraries` workflow first runs.")*. No nuget.org reservation of the `Broiler.ECMAScript` prefix is owed: the owner withdrew it on 2026-10-12, revising decision SJL-D-2 *(corrected 2026-10-12; read "**Owed by a release owner:** the nuget.org reservation of the `Broiler.ECMAScript` prefix, before anything under it is published.")*. SJL-2.15 not needed. | Broiler.VM [`sjl-2-001`](../evidence/sjl-2-001/README.md); Broiler.JS `docs/evidence/sjl-2-001/` (observed) | 2026-10-12 |
 | SJL-3 | Number conversion, the pilot | `Not started` | All. Decision `SJL-D-23` was taken before the pilot (continue), so SJL-3's exit stops nothing. | None | 2026-10-11 (created) |
 | SJL-12 | The frontend contract and in-place preparation | `Not started` | All. Its in-place work packages may start after SJL-0. | None | 2026-10-11 (created) |
 | SJL-4 | Numerics | `Not started` | All | None | 2026-10-11 (created) |
