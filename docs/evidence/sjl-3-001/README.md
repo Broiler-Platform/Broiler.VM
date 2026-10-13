@@ -16,7 +16,8 @@ bundle.
 **State:** collection in progress. The cut-over landed first, with the exclusions of section 9; each
 run of SJL-3.6 is added to this bundle as it is taken, at the after commit of section 1, and this
 README says which have been. Nothing here is a verdict until its section says so. **Taken:** the
-identity, the closures, the packages (bundle JS-10-005) and the simplification check's searches.
+identity, the closures, the packages (bundle JS-10-005), test262 in both forms and its comparison, the
+fuel-parity twins, and the simplification check's searches.
 
 ## 1. Identity
 
@@ -35,11 +36,32 @@ carried a `divergence.broiler-vm` field among them; JSD-0066 section 4 lists the
 
 ## 3. Test262, both forms (rule part A)
 
-Pending.
+**Pending: the (c') re-runs.** Both whole runs were taken at `49ea00e` through bundle sjl-0-001's
+procedure (`eng/run-test262.py` at the pin, the conformance root built in Release, fuel 100,000,000
+and 5,000 ms per variant, four jobs, the floors of the release candidate), and each was compared with
+the base's retained report through `eng/compare-test262-forms.py --same-form`, the native pair with
+`--exempt-guest-loads`, as class C4 has it:
+
+| Run | Runner | Totals after | Totals at the base | Comparison |
+|---|---|---|---|---|
+| `wide-bytecode` | exit 1, the floor holds ([`wide-bytecode.run.log`](wide-bytecode.run.log)) | pass 99,791, fail 158, exhausted 621, skipped 1,153 | pass 100,368, fail 158, exhausted 44, skipped 1,153 | 616 variants differ, **every one class (c')** ([`compare-wide-bytecode.log`](compare-wide-bytecode.log)) |
+| `wide-native` | exit 4, a re-base, as at the base: the floor was set in the win64 native form | pass 99,591, fail 192, exhausted 787, skipped 1,153 | pass 100,334, fail 192, exhausted 44, skipped 1,153 | 776 variants differ, **every one class (c')** ([`compare-wide-native.log`](compare-wide-native.log)) |
+
+Both runs are retainable as whole runs (neither exit is 2 or 3). **No difference outside (c'):** no
+variant failing at the base passes after, so part A lists no C1 row, and none moves in any other
+class. Every (c') row is the after run exhausting the wall clock where the base passed (577 bytecode,
+743 native) or exhausted fuel or the nested-load fan-out: the runs were taken while Broiler.JS's
+whole-suite run held the same four processors, which the base's run did not share. Part A asks each
+(c') row to be run again alone at both commits, the re-run retained, and a row that still differs is
+a regression; the re-runs are taken on the idle machine, and section 3 is read when they are.
 
 ## 4. The fuel-parity twins (rule part B)
 
-Pending.
+**MET.** [`fuel-parity.log`](fuel-parity.log): every twin of `src/tests/forms/wide` that bundle
+sjl-0-001 bisected - ten, each in the bytecode form and in the native form under `x86-64-sysv` -
+completes at its base figure and refuses with `AllowanceExhausted on Fuel` at one less, after as at
+the base. No charge moved, so part B admits no C2 row, as JSD-0066 section 2 said it would not: the
+adapters charge one unit and the library the text's length, the total the deleted code charged.
 
 ## 5. Closures, the composition register and the packages
 

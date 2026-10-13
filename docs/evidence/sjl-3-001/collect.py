@@ -37,6 +37,9 @@ Steps, each with `--only`:
              for each workload of src/tests/forms/numbers and each form, every arm running the workload
              and its control inside every repetition, the arms' order rotating by repetition, into
              measurement/, a sub-bundle of its own;
+  rerun      part A's class C4 (c'): every path of a (c') row of compare-<run>.log run again alone, one
+             process, at --base-tree's conformance root and at --tree's, the two re-run reports compared
+             with --same-form, and each row's four verdicts tabulated, into rerun-<run>.*;
   rules      the whole architecture suite at the after tree, rules I1 to I7, N37 and K4 among them, into
              rules.log;
   simplification
@@ -249,7 +252,7 @@ class Collector(base.Collector):
     def compare(self):
         verdict = 0
         for name, extra, _ in base.RUNS:
-            native = "--native" in extra
+            native = "native" in extra
             reports = []
             for side, folder in (("base", BASE_BUNDLE), ("after", self.out)):
                 source = os.path.join(folder, "%s.report.gz" % name)
@@ -407,6 +410,80 @@ class Collector(base.Collector):
             stream.write("\n".join(lines) + "\n")
         return verdict
 
+    def rerun(self):
+        if not self.base_tree or not self.suite:
+            print("rerun: needs --base-tree and --suite")
+            return 1
+        sides = {}
+        for side, tree in (("base", self.base_tree), ("after", self.tree)):
+            directory = os.path.join(tree, base.CONFORMANCE, "bin", "Release", "net10.0")
+            if not os.path.isfile(os.path.join(directory, base.CONFORMANCE_BINARY + ".dll")):
+                code, output = self.run(["dotnet", "build", os.path.join(tree, base.CONFORMANCE,
+                                         os.path.basename(base.CONFORMANCE) + ".csproj"), "-c", "Release"], cwd=tree)
+                if code != 0:
+                    print("rerun: the %s conformance root did not build" % side)
+                    return 1
+            sides[side] = (tree, os.path.join(directory, base.CONFORMANCE_BINARY))
+        verdict = 0
+        for name, extra, _ in base.RUNS:
+            rows = []
+            for line in open(os.path.join(self.out, "compare-%s.log" % name), encoding="utf-8"):
+                found = re.match(r"^  (test/\S+) \[(\w+)\]: (\S+) -> (\S+)", line)
+                if found:
+                    rows.append(found.groups())
+            paths = sorted({row[0] for row in rows})
+            reports = {}
+            log = ["# part A, class C4 (c'): the %d variants of %d paths compare-%s.log admits as (c'), run again alone"
+                   % (len(rows), len(paths), name)]
+            for side in ("base", "after"):
+                tree, binary = sides[side]
+                report = os.path.join(self.scratch, "rerun-%s-%s.report" % (name, side))
+                command = [binary, "--test262", self.suite, "--manifest", "broiler.javascript.wide",
+                           "--expect", os.path.join(tree, base.PIN), "--report", report,
+                           "--fuel", str(base.FUEL), "--wall", str(base.WALL)] + (extra or ["--form", "bytecode"])
+                for path in paths:
+                    command += ["--test", path]
+                started = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                code, output = self.run(command, cwd=tree)
+                log.append("## %s: %s.dll sha256=%s, started %s, exit %d\n%s" % (
+                    side, base.CONFORMANCE_BINARY, self.sha256(binary + ".dll"), started, code,
+                    self.hide(output).replace(self.base_tree, "<base-tree>").strip()[-4000:]))
+                reports[side] = report
+                if os.path.isfile(report):
+                    with open(report, "rb") as source, gzip.GzipFile(
+                            os.path.join(self.out, "rerun-%s-%s.report.gz" % (name, side)), "wb", compresslevel=9,
+                            mtime=0) as target:
+                        shutil.copyfileobj(source, target)
+            code, output = self.run([sys.executable, os.path.join(self.tree, "eng", "compare-test262-forms.py"),
+                                     reports["base"], reports["after"], "--same-form", "--suite", self.suite]
+                                    + (["--exempt-guest-loads"] if "native" in extra else []))
+            log.append("## the two re-runs compared, --same-form\n%s\nexit code: %d" % (output.strip(), code))
+            self.write("rerun-%s.log" % name, "\n\n".join(log) + "\n")
+
+            def verdicts(report):
+                table = {}
+                if os.path.isfile(report):
+                    for line in open(report, encoding="utf-8"):
+                        if line.startswith("result|"):
+                            parts = line.rstrip("\n").split("|")
+                            verdict_text = parts[3] + ("/" + parts[5] if parts[3] == "Exhausted" and len(parts) > 5 else "")
+                            table[(parts[1], parts[2])] = verdict_text
+                return table
+
+            base_rerun, after_rerun = verdicts(reports["base"]), verdicts(reports["after"])
+            table = ["path\tvariant\tbase run\tafter run\tbase re-run\tafter re-run\tre-runs agree"]
+            disagreeing = 0
+            for path, variant, before, after in rows:
+                key = (path, variant)
+                agree = key in base_rerun and base_rerun.get(key) == after_rerun.get(key)
+                disagreeing += 0 if agree else 1
+                table.append("\t".join((path, variant, before, after, base_rerun.get(key, "(absent)"),
+                                        after_rerun.get(key, "(absent)"), "yes" if agree else "NO")))
+            self.write("rerun-%s.tsv" % name, "\n".join(table) + "\n")
+            print("rerun: %s %d rows, %d whose re-runs disagree" % (name, len(rows), disagreeing), flush=True)
+            verdict |= 1 if disagreeing else 0
+        return verdict
+
     def rules(self):
         # Rule I3 reads every mstat-<root>.mstat under src/ as that root's Native AOT image. No bundle
         # commits the records (they are megabytes each; closures/mstat.sha256 names them), so the
@@ -482,8 +559,8 @@ def main():
     parser.add_argument("--against-root", help="the Broiler.JS checkout it was built from")
     parser.add_argument("--images", help="the closures step's mstat records, for rule I3 (rules)")
     parser.add_argument("--only", action="append", required=True,
-                        choices=("identity", "closures", "test262", "compare", "twins", "differential", "measure", "rules",
-                                 "simplification"))
+                        choices=("identity", "closures", "test262", "compare", "rerun", "twins", "differential", "measure",
+                                 "rules", "simplification"))
     arguments = parser.parse_args()
 
     collector = Collector(arguments)
