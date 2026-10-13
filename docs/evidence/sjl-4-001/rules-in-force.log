@@ -1,0 +1,100 @@
+# SJL-4: the comparison rules are in force, checked before any code of SJL-4.3 to SJL-4.5 exists
+# Checked 2026-10-13T17:40Z at 281cb2bd634088cdde47f813873d89d37b1b5e21 (claude/busy-lamport-m3yprr), against the rule commit 6ab3d470eb9a29d7efdb18e0588bac8586e97ed2.
+
+$ git log --format="%H %s" -- <each file the rules commit or name>
+## docs/evidence/sjl-4-001/decision-rule.md
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: 5a0c0138f0204aecb5d2aa404367bfe25559ad2b
+blob at 6ab3d47: 5a0c0138f0204aecb5d2aa404367bfe25559ad2b
+## src/tests/forms/numerics/README.md
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: da734d2cce5f525ecb43c17f16ecc706aec41020
+blob at 6ab3d47: da734d2cce5f525ecb43c17f16ecc706aec41020
+## src/tests/forms/numerics/bigint-arithmetic.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: 47dcde27ad670b4ad75b34e082a7faed3336a16d
+blob at 6ab3d47: 47dcde27ad670b4ad75b34e082a7faed3336a16d
+## src/tests/forms/numerics/bigint-asintn.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: 1feeaf5c79068545a912a8d5f201d16deb2a3c4e
+blob at 6ab3d47: 1feeaf5c79068545a912a8d5f201d16deb2a3c4e
+## src/tests/forms/numerics/bigint-number.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: 6b87eaa31421fea8cf57a6ab392f91f22e7b79b2
+blob at 6ab3d47: 6b87eaa31421fea8cf57a6ab392f91f22e7b79b2
+## src/tests/forms/numerics/bigint-power.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: 22494c24481698beb9ebbfbbfea91f4299f89134
+blob at 6ab3d47: 22494c24481698beb9ebbfbbfea91f4299f89134
+## src/tests/forms/numerics/bigint-shift.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: 294e834b704b856901595e0bf4142ec482165637
+blob at 6ab3d47: 294e834b704b856901595e0bf4142ec482165637
+## src/tests/forms/numerics/bigint-text.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: f2cbac0609d1d4a64d6ebc6606f84435d4ec9a83
+blob at 6ab3d47: f2cbac0609d1d4a64d6ebc6606f84435d4ec9a83
+## src/tests/forms/numerics/integer-conversions.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: 8b19ce3fbdfd445b2fd7e0e8e4b1db77d2de6fcb
+blob at 6ab3d47: 8b19ce3fbdfd445b2fd7e0e8e4b1db77d2de6fcb
+## src/tests/forms/numerics/math-kernels.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: b71aadc02ef96ec2a7d4ac523f0c1182a55424f8
+blob at 6ab3d47: b71aadc02ef96ec2a7d4ac523f0c1182a55424f8
+## src/tests/forms/numerics/sum-precise.small.js
+6ab3d470eb9a29d7efdb18e0588bac8586e97ed2 SJL-4.1: the numerics area's verdict, its correspondence, and bundle sjl-4-001's rule
+blob at HEAD: ccea78af7c933e702cb348db2698979f7710c07c
+blob at 6ab3d47: ccea78af7c933e702cb348db2698979f7710c07c
+## src/tests/forms/wide/array-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: f29c2fce1cd65d10080df12a885216b407121296
+blob at 6ab3d47: f29c2fce1cd65d10080df12a885216b407121296
+## src/tests/forms/wide/call-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 98d0684f5566fa839301d4b81f2b9f4b6048f6be
+blob at 6ab3d47: 98d0684f5566fa839301d4b81f2b9f4b6048f6be
+## src/tests/forms/wide/closure-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 5f1e105248c7f58e3f5cede158600b621ef1c455
+blob at 6ab3d47: 5f1e105248c7f58e3f5cede158600b621ef1c455
+## src/tests/forms/wide/fib.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: cc03298b770e94c2f8be61dc9b8cf2dc258a2b69
+blob at 6ab3d47: cc03298b770e94c2f8be61dc9b8cf2dc258a2b69
+## src/tests/forms/wide/generator-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 517224973c93b4b3c7a315910801dd34d9e10660
+blob at 6ab3d47: 517224973c93b4b3c7a315910801dd34d9e10660
+## src/tests/forms/wide/numeric-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 03e5c4b5a09adaa0c76495105d9a31cd79efa4b5
+blob at 6ab3d47: 03e5c4b5a09adaa0c76495105d9a31cd79efa4b5
+## src/tests/forms/wide/property-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: a1173f86941d049392fdfad186f5824b5fcb1206
+blob at 6ab3d47: a1173f86941d049392fdfad186f5824b5fcb1206
+## src/tests/forms/wide/string-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: bbd1ab3032520668f38c0c07ee6614eb03d6b942
+blob at 6ab3d47: bbd1ab3032520668f38c0c07ee6614eb03d6b942
+## src/tests/forms/wide/throw-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: dfdf22321d0658a9c275e2a6ae8cf7c53720a2e6
+blob at 6ab3d47: dfdf22321d0658a9c275e2a6ae8cf7c53720a2e6
+## src/tests/forms/wide/try-loop.small.js
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 11e8cb5489ce9ca3695ab6e7826fb619a041069b
+blob at 6ab3d47: 11e8cb5489ce9ca3695ab6e7826fb619a041069b
+## eng/compare-test262-forms.py
+4c28dbc84e8e0a5b1613a7ff1f04fc623e181ddb JSV-2: residency analysis, the pure inline set and fuel debt for the value form
+4edae9679156869c3258dfdf83f46097efc97f5d Implement stage JSV-1 of the value form: every instruction a helper, control emitted
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 48e3091a872921849bab1f903b46698be0c69e33
+blob at 6ab3d47: 48e3091a872921849bab1f903b46698be0c69e33
+## eng/run-test262.py
+4c28dbc84e8e0a5b1613a7ff1f04fc623e181ddb JSV-2: residency analysis, the pure inline set and fuel debt for the value form
+4edae9679156869c3258dfdf83f46097efc97f5d Implement stage JSV-1 of the value form: every instruction a helper, control emitted
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 695674a86701368e4ee19536198c446c77cbeee1
+blob at 6ab3d47: 695674a86701368e4ee19536198c446c77cbeee1
