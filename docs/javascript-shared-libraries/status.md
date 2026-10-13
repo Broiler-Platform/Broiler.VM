@@ -1,7 +1,8 @@
 # The shared JavaScript libraries programme — status ledger
 
-**Last updated:** 2026-10-13, later the same day, after SJL-3's changes were merged into both
-repositories' default branches (no state moves). Before that: 2026-10-13, at SJL-3's cut-overs and bundles (SJL-3 `In progress`: every clause
+**Last updated:** 2026-10-13, at the start of SJL-4 by the owner's choice, before SJL-3 is met (SJL-4
+`In progress` with every clause unmet). Before that: 2026-10-13, later the same day, after SJL-3's
+changes were merged into both repositories' default branches (no state moves). Before that: 2026-10-13, at SJL-3's cut-overs and bundles (SJL-3 `In progress`: every clause
 met on its bundles but clause 7, whose measurement half is void on the machine that took it, and
 clause 13, whose measurement is NOT MET under its rule as written; none accepted; neither
 repository's changes merged). Before that: 2026-10-12, after SJL-2's changes were merged and Broiler.JS's `Shared libraries`
@@ -27,7 +28,8 @@ milestone `Not started`; every decision open).
 [the programme roadmap](roadmap.md). The roadmap and the [milestone files](milestones/) define the
 planned work and the objective exit gates. This ledger records whether those gates have evidence.
 
-**Today SJL-0 to SJL-3 are `In progress` and every other milestone is `Not started`:**
+**Today SJL-0 to SJL-4 are `In progress` and every other milestone is `Not started`** *(2026-10-13;
+read "**Today SJL-0 to SJL-3 are `In progress` and every other milestone is `Not started`:**")*:
 
 - the shared folder exists in Broiler.JS, `Broiler.ECMAScript/`, with its conventions, rules SL1 to
   SL10, its version stream and its Native AOT probe. It holds one area, number conversion, in
@@ -248,6 +250,15 @@ paragraph above cites is on its repository's default branch. That paragraph said
 not yet merged; this one corrects that and nothing else. SJL-3 stays `In progress`: clauses 7 and
 13 are unmet, and nothing is accepted.
 
+**2026-10-13, later again: SJL-4 starts before SJL-3 is met, by the owner's choice.** The roadmap
+starts SJL-4, SJL-5 and SJL-6 "in any order once SJL-3 is met", and its "Waits on" column means
+"milestones whose exit gates must be met first". SJL-3 is not met: clause 7 waits on a controlled
+lane this programme does not yet have, and clause 13 on a later dated choice. The owner chose, on
+2026-10-13, to start SJL-4 now rather than wait. The choice moves no gate: **SJL-4 may not meet its
+gate before SJL-3 meets SJL-3's**, as the "Waits on" definition also says, and update rule 10 still
+holds SJL-4's row to the milestones it waits on. SJL-4's row moves to `In progress` under update
+rule 4, because this record is SJL-4's first; every clause is unmet. SJL-5 and SJL-6 do not move.
+
 ---
 
 ## 1. Reading this ledger
@@ -307,7 +318,7 @@ Rows are in delivery order (roadmap section 4), not numeric order.
 | SJL-2 | The admission path | `In progress` | **Every clause is met on retained records, and none is accepted**, because review is deferred *(2026-10-12; read "Every clause is met on retained records except clause 8's CI half, and none is accepted")*. **Broiler.VM:** clauses 1 to 6 on bundle [`sjl-2-001`](../evidence/sjl-2-001/README.md) at `d3d5aff`: rule I1's allow-list and rules I2, I3, I6 and I7 minted, A2, A7, B3 (now `Active`), E4, N1 and N37 revised, each watched failing on an injection and passing on revert; the admission probe's positive run and its three negative controls; ADR 0001's and ADR 0012's revisions; ADR 0003 section 11's rows 24 to 41 `Applied`; a restore through each source and an unmapped identifier refused; and no product project referencing a shared package. Its README states two judgements: I3 and I7 are `Active` with the clause that has no subject before SJL-3 stated in each row, and the collectors' identity record is exercised by the function they call rather than by a full collection. Merged in `d8e9c0f`. **Broiler.JS (home, observed):** clauses 7 to 10 on its bundle `docs/evidence/sjl-2-001/` (`a84a0b4`, `e76d7d1`, merged in `29be101`); clause 8's CI half by the `Shared libraries` workflow's run on `29be101`, which passed every job and whose logs the bundle retains *(2026-10-12; read "clauses 7, 9 and 10 on its bundle `docs/evidence/sjl-2-001/` (`a84a0b4`, `e76d7d1`, on branch `claude/busy-lamport-m3yprr`); clause 8 met locally, **its CI half owed** until the `Shared libraries` workflow first runs.")*. No nuget.org reservation of the `Broiler.ECMAScript` prefix is owed: the owner withdrew it on 2026-10-12, revising decision SJL-D-2 *(corrected 2026-10-12; read "**Owed by a release owner:** the nuget.org reservation of the `Broiler.ECMAScript` prefix, before anything under it is published.")*. SJL-2.15 not needed. | Broiler.VM [`sjl-2-001`](../evidence/sjl-2-001/README.md); Broiler.JS `docs/evidence/sjl-2-001/` (observed) | 2026-10-12 |
 | SJL-3 | Number conversion, the pilot | `In progress` | **Clauses 7 and 13 are unmet; every other clause is met on its bundles, and none is accepted.** **Clause 7** (Broiler.JS, observed): its measurement was taken on a machine that is not a controlled lane, which its rule voids, and its smoke reading puts the literal-values workload first for a controlled lane to look at; the pristine consumer and package checks pass. **Clause 13** (Broiler.VM): part C, taken under the rule as written, is NOT MET, on its condition (the radix corrections move `to-string.js`'s answer) and on one workload's comparison with the A/A floor. Clause 8 reads six rules, because I4 is SJL-7's; clause 10 excludes the Android root (EX-126). Merged in `4899f9c` (Broiler.JS) and `a04b2e5` (Broiler.VM) *(2026-10-13, later the same day; read "Every change is on branch `claude/busy-lamport-m3yprr`, not yet merged")* *(2026-10-13; read "All. Decision `SJL-D-23` was taken before the pilot (continue), so SJL-3's exit stops nothing.")* | Broiler.VM [`sjl-3-001`](../evidence/sjl-3-001/README.md); Broiler.JS `docs/evidence/sjl-3-001/` (observed) | 2026-10-13 |
 | SJL-12 | The frontend contract and in-place preparation | `Not started` | All. Its in-place work packages may start after SJL-0. | None | 2026-10-11 (created) |
-| SJL-4 | Numerics | `Not started` | All | None | 2026-10-11 (created) |
+| SJL-4 | Numerics | `In progress` | All. Started on 2026-10-13 by the owner's choice before SJL-3 is met, recorded above; SJL-4 may not meet its gate before SJL-3 meets SJL-3's *(2026-10-13; read "`Not started` \| All \| None")* | None | 2026-10-13 (started) |
 | SJL-5 | Text algorithms | `Not started` | All | None | 2026-10-11 (created) |
 | SJL-6 | Date arithmetic and the Date string grammar | `Not started` | All | None | 2026-10-11 (created) |
 | SJL-7 | Unicode character data and algorithms | `Not started` | All | None | 2026-10-11 (created) |

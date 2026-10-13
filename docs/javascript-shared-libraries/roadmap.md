@@ -231,6 +231,10 @@ repositories.
 - SJL-9 once SJL-7 and SJL-8 are met, and SJL-17 once SJL-9 is met;
 - SJL-11 once SJL-7 is met.
 
+*(Added 2026-10-13: SJL-4 started before SJL-3 was met, by the owner's dated choice, which the
+[ledger](status.md) records. The order above is unchanged, and so is what it gates: SJL-4 may not
+meet its gate before SJL-3 meets SJL-3's.)*
+
 **What can start today:**
 
 - SJL-0 in full;
