@@ -13120,3 +13120,24 @@ allow-list, the committed feed and both lock files moved to it together.
 **Authority and date.** [JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md) section 1, on
 [JSD-0067](decisions/0067-numerics-move-to-the-shared-algorithms-library.md) and the programme's work
 package SJL-4.4. 2026-10-13.
+
+### JSC-302
+
+**Where:** [`packages.md`](packages.md), its opening paragraph and the section "The consumer"; and
+[`support.md`](support.md), section 9, the paragraph on the frozen packages.
+
+**What the plan said.** The baseline was the candidate pack of "**bundle
+[JS-10-005](evidence/js-10-005/README.md)**"; "Bundle JS-10-005 records it restoring and running with
+upstream feeds unreachable"; and section 9 of the support table named "the candidate pack of bundle
+[JS-10-005](evidence/js-10-005/README.md)".
+
+**What replaced it.** The baseline is bundle JS-10-006's candidate pack, taken at the numerics
+cut-over's commit, where the runtime's and the compiler's packages declare `Broiler.ECMAScript.Algorithms`
+`0.2.0-preview.1`; JS-10-005's declared `0.1.0-preview.1`, which rule N37 no longer finds in the
+checkout. Bundle JS-10-006 records the pristine consumer restoring and running from a local feed that
+holds the new version beside the family's, with upstream unreachable, rolling back and forward, refusing
+the negative control, and running as Native AOT.
+
+**Authority and date.** [JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md) section 1, on
+[JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md) and the programme's work
+package SJL-4.4. 2026-10-13.

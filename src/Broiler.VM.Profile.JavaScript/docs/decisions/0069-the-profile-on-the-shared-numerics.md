@@ -123,14 +123,18 @@ has no sign.
 - **Notices.** `THIRD_PARTY_NOTICES.md`'s row for the package moves to `0.2.0-preview.1` and names the
   second third-party component it carries, fdlibm's `expm1` and `log1p` (SunPro). The row is still not
   confirmed, so release gate 12's blocker for it stands, under the same name.
-- **Packages.** `packages.md` names the new version ([JSC-301](../roadmap.corrections.md#jsc-301)).
+- **Packages.** `packages.md` names the new version ([JSC-301](../roadmap.corrections.md#jsc-301)), and
+  its baseline is bundle [JS-10-006](../evidence/js-10-006/README.md)'s candidate pack, collected at the
+  cut-over's commit, which rule N37 holds it to ([JSC-302](../roadmap.corrections.md#jsc-302)).
 - **Assurance.** The code that left this family's assurance coverage is exclusion EX-127 in bundle
   `sjl-4-001`: the home's own assurance component covers it in the Broiler.JS repository, as EX-125 says
   of the number-conversion area.
 
 ## Correction entries
 
-[JSC-301](../roadmap.corrections.md#jsc-301) (`packages.md`).
+[JSC-301](../roadmap.corrections.md#jsc-301) (`packages.md`, the shared package's version) and
+[JSC-302](../roadmap.corrections.md#jsc-302) (`packages.md` and `support.md` section 9, the bundle the
+baseline freezes).
 
 ## The milestone's readings
 
