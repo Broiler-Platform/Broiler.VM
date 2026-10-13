@@ -1,8 +1,10 @@
 # Area: numerics: integer conversions, Float16, Math kernels, exact rounding and BigInt
 
 **Delivered by:** [SJL-4](../milestones/sjl-4-numerics.md). **Library:**
-`Broiler.ECMAScript.Algorithms`. **Status:** design. Observations marked *(reading)* are to be
-confirmed by vectors.
+`Broiler.ECMAScript.Algorithms`. **Status:** design; its verdict is [JSD-0067](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0067-numerics-move-to-the-shared-algorithms-library.md),
+all four sub-areas accepted on 2026-10-13. Observations marked *(reading)* are to be confirmed by vectors.
+*(Revised 2026-10-13: the status read "design. Observations marked *(reading)* are to be
+confirmed by vectors.")*
 
 ---
 
@@ -34,7 +36,7 @@ each engine.
 | Float16 | `JsBinary` `JsFloat16`: `Encode` (writes one canonical NaN), `Decode`, `Round` | inline `(Half)` casts in `JSMath.F16round`, `DataView` get and set, `JSFloat16Array`; NaN payloads not normalised |
 | Typed-array byte order | explicit little-endian | typed arrays follow the host's byte order through `BitConverter`; `DataView` uses `BinaryPrimitives` |
 
-No observable difference in the conversions was found by reading. The NaN bytes Float16 writes may
+No observable difference in the conversions was found by reading. *(Corrected 2026-10-13 at SJL-4.1, [JSD-0067](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0067-numerics-move-to-the-shared-algorithms-library.md): true of the kernels named here; Broiler.JS's other copies of the same conversions, which this table does not name, differ, and JSD-0067's X2 lists them)* The NaN bytes Float16 writes may
 differ, and **the canonical-NaN choice becomes a parameter**.
 
 ### Math kernels
@@ -45,13 +47,13 @@ differ, and **the canonical-NaN choice becomes a parameter**.
 | `**` and `pow` | `MathPower`, special cases for NaN exponent, zero exponent, and ±1 with infinite exponent; used by `**` too | `JSMath.pow` has the cases, **but `**` does not use it**: the generic `JSValue.Power` lacks the NaN-exponent case, and the numeric fast path emits `Math.Pow` directly |
 | `hypot` | one pass scaled by the largest value | pairwise |
 | `cbrt` | snaps when the rounded root cubes back exactly | picks the best of three neighbours |
-| `expm1`, `log1p` | `double.ExpM1`/`LogP1` with a −0 fix; its remark claims precision near zero *(the claim is to be checked: if the runtime computes `Exp(x) - 1`, it does not hold)* | a Kahan-style correction; a Taylor series near zero |
+| `expm1`, `log1p` | `double.ExpM1`/`LogP1` with a −0 fix; its remark claims precision near zero *(the claim is to be checked: if the runtime computes `Exp(x) - 1`, it does not hold)* *(Corrected 2026-10-13 at SJL-4.1, [JSD-0067](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0067-numerics-move-to-the-shared-algorithms-library.md): on .NET 10 the runtime computes `Exp(x) - 1` and `Log(x + 1)`, so the claim does not hold)* | a Kahan-style correction; a Taylor series near zero |
 | `sumPrecise` | Shewchuk's algorithm with a scaling step when the largest term is huge | a port of the TC39 reference algorithm with an overflow partial |
 | `random` | per-realm xorshift seeded from a cryptographic source | one static `System.Random` |
 
 | Input | Specification | Broiler.VM | Broiler.JS |
 |---|---|---|---|
-| `1 ** NaN`, `(-1) ** Infinity` | `NaN` | `NaN` | `1` *(reading)* |
+| `1 ** NaN`, `(-1) ** Infinity` | `NaN` | `NaN` | `1` *(reading)* *(Corrected 2026-10-13 at SJL-4.1, [JSD-0067](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0067-numerics-move-to-the-shared-algorithms-library.md): `1 ** NaN` is `1` on every path; `(-1) ** Infinity` written literally is `NaN`, and `1` only on the compiled fast paths)* |
 | `Math.sumPrecise([1e308, -1e308, 5e-324])` | `5e-324` | `0`: the scaling flushes the tiny term *(reading)* | `5e-324` |
 | `Math.sumPrecise("")` | to be settled by a vector citing the clause | accepted as an iterable | accepted |
 
@@ -61,9 +63,9 @@ Broiler.VM holds two copies:
 
 - `JsTemporalCore`: `Negate`, `UnsignedMode`, `ApplyUnsigned`, `RoundToIncrement`,
   `RoundToIncrementAsIfPositive`, `ToDouble(num, den)`;
-- `JsDecimal.JsUnsignedRounding`, with its mapping in `JsNumberFormatter`.
+- `JsDecimal.JsUnsignedRounding`, with its mapping in `JsNumberFormatter`. *(Corrected 2026-10-13 at SJL-4.1, [JSD-0067](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0067-numerics-move-to-the-shared-algorithms-library.md): `JsUnsignedRounding` is a top-level enum in `JsDecimal.cs`, and `JsTemporalCore` also holds `RoundsToSecond` and `ToDouble(BigInteger)`)*
 
-Broiler.JS holds four:
+Broiler.JS holds four: *(Corrected 2026-10-13 at SJL-4.1, [JSD-0067](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0067-numerics-move-to-the-shared-algorithms-library.md): it holds about eleven, which JSD-0067's X1 names; `JSTemporalRoundingOptions` is the file of `TemporalRoundingOptions`, and the Intl copies are `JSIntlNumberFormat`'s)*
 
 - `JSTemporalRoundingOptions`;
 - `JSTemporalZonedDateTime.Rounding`;
@@ -77,7 +79,7 @@ Broiler.JS holds four:
 | Representation | wraps `BigInteger`; a fixed maximum width | wraps `BigInteger`; no width limit |
 | Metering | **every operation takes `Action<ulong> charge` and returns `null` past the ceiling**; the engine maps `null` to `RangeError` | none; `2n ** 2000000000n` cannot be interrupted *(reading)* |
 | Text out | divide-and-conquer, culture-invariant | radix 10 through `BigInteger.ToString()` (current culture); other radixes by repeated division and insertion |
-| Text in | `TryParseStringInteger`: the JavaScript whitespace set, radix-checked, over-width reported | `TryParseBigIntString` uses .NET `Trim` |
+| Text in | `TryParseStringInteger`: the JavaScript whitespace set, radix-checked, over-width reported | `TryParseBigIntString` uses .NET `Trim` *(Corrected 2026-10-13 at SJL-4.1, [JSD-0067](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0067-numerics-move-to-the-shared-algorithms-library.md): it uses the shared `StrWhiteSpace` set, since SJL-3.5)* |
 | `asIntN`, `asUintN` | exact, ceiling-checked | `AsUintN` shifts `1 << (int)bits`, so very large bit counts wrap *(reading)* |
 | Number conversion, comparison | top bits plus sticky bit, ties to even; floor-based comparison | correctly rounded `ToNumber`; comparison by truncation; `EqualsLiteral(double)` truncates |
 | Property keys | correct | `(uint)value` raises a .NET overflow beyond `uint` *(reading)* |
