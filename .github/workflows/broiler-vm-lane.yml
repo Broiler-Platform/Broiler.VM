@@ -194,12 +194,17 @@ jobs:
           test "$snupkg" -eq 11
 
       # The one check that cannot be done from inside the solution: a consumer with no project
-      # reference, restoring from a feed whose only source is the packages just built.
+      # reference, restoring from a feed whose only source is the packages just built. That one
+      # source is eng/sample-local-feed.sh's, written beside the consumer for the step and removed
+      # after it, because samples/NuGet.config lists nuget.org for a developer's build.
       - name: Restore and run the pristine feed consumer
         run: |
           set -euo pipefail
           rm -rf artifacts/feed && mkdir -p artifacts/feed
           dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.1
+          config="$PWD/samples/Broiler.VM.Sample.FeedConsumer/NuGet.config"
+          trap 'rm -f "$config"' EXIT
+          eng/sample-local-feed.sh samples/Broiler.VM.Sample.FeedConsumer artifacts/feed
           cd samples/Broiler.VM.Sample.FeedConsumer
           dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.1
 
@@ -209,6 +214,9 @@ jobs:
         run: |
           set -euo pipefail
           dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.2
+          config="$PWD/samples/Broiler.VM.Sample.FeedConsumer/NuGet.config"
+          trap 'rm -f "$config"' EXIT
+          eng/sample-local-feed.sh samples/Broiler.VM.Sample.FeedConsumer artifacts/feed
           cd samples/Broiler.VM.Sample.FeedConsumer
           dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.2
           dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.1
@@ -819,6 +827,9 @@ jobs:
           set -euo pipefail
           rm -rf artifacts/feed && mkdir -p artifacts/feed
           dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.1
+          config="$PWD/samples/Broiler.VM.Sample.FeedConsumer/NuGet.config"
+          trap 'rm -f "$config"' EXIT
+          eng/sample-local-feed.sh samples/Broiler.VM.Sample.FeedConsumer artifacts/feed
           cd samples/Broiler.VM.Sample.FeedConsumer
           dotnet publish -c Release -r ${{ matrix.rid }} -p:PublishAot=true \
             -p:BroilerVmVersion=0.1.0-preview.1 -o ../../artifacts/ci-sample-aot
