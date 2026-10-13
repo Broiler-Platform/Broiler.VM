@@ -84,11 +84,17 @@ public sealed class JsPackageBaselineTests
     public void N37_Rejects_A_Test_Only_Admitted_Package_In_Produced_Metadata()
     {
         // SJL-2.4: an admitted package is a permitted dependency only when it is admitted for
-        // shipping, at its pinned version or later. The probe is admitted test-only, so a nuspec
-        // declaring it is refused like any foreign dependency.
-        Assert.Contains(Violations(Rows(Baseline()), Witness("N37-nuspecs-declare-a-test-only-admitted-package.txt.witness"), Bundle("contents.txt"), Bundle("consumer.log")), violation =>
+        // shipping, at its pinned version or later. The witness declares the probe pre-release,
+        // which SJL-2.9 admitted test-only; since SJL-3.4 the allow-list admits the package for
+        // shipping at 0.1.0-preview.1, so the test-only clause is held against that entry marked
+        // test-only, and the real list refuses the same witness by the version clause.
+        var witness = Witness("N37-nuspecs-declare-a-test-only-admitted-package.txt.witness");
+        Assert.Contains(Violations(Rows(Baseline()), witness, Bundle("contents.txt"), Bundle("consumer.log"), TestOnly), violation =>
             violation.Contains("Broiler.ECMAScript.Algorithms", StringComparison.Ordinal) &&
             violation.Contains("test-only", StringComparison.Ordinal));
+        Assert.Contains(Violations(Rows(Baseline()), witness, Bundle("contents.txt"), Bundle("consumer.log")), violation =>
+            violation.Contains("Broiler.ECMAScript.Algorithms 0.0.1-probe.1", StringComparison.Ordinal) &&
+            violation.Contains("below the version the allow-list pins", StringComparison.Ordinal));
 
         // The ordering the version clause compares by: SemVer 2.0 precedence, prerelease below release.
         Assert.True(SemanticVersion.Compare("0.0.1-probe.1", "0.0.1-probe.2") < 0);
@@ -116,8 +122,14 @@ public sealed class JsPackageBaselineTests
         Assert.Contains(BaselineName, row.Evidence, StringComparison.Ordinal);
     }
 
-    private static List<string> Violations(IReadOnlyList<Row> rows, string nuspecs, string contents, string consumer)
+    // The allow-list with every entry admitted test-only, for the clause no real entry exercises now.
+    private static AdmittedPackage? TestOnly(string id) =>
+        AdmissionRules.Admitted(id) is { } admitted ? admitted with { Use = "test-only" } : null;
+
+    private static List<string> Violations(
+        IReadOnlyList<Row> rows, string nuspecs, string contents, string consumer, Func<string, AdmittedPackage?>? admittedBy = null)
     {
+        admittedBy ??= AdmissionRules.Admitted;
         var violations = new List<string>();
         var projects = PackableFamilyProjects();
         var produced = Nuspecs(nuspecs);
@@ -162,7 +174,7 @@ public sealed class JsPackageBaselineTests
         {
             foreach (var (dependency, version) in dependencies.Where(static entry => !entry.Id.StartsWith("Broiler.VM.", StringComparison.Ordinal)))
             {
-                var admitted = AdmissionRules.Admitted(dependency);
+                var admitted = admittedBy(dependency);
 
                 if (admitted is null)
                 {
