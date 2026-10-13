@@ -17,7 +17,7 @@ bundle.
 run of SJL-3.6 is added to this bundle as it is taken, at the after commit of section 1, and this
 README says which have been. Nothing here is a verdict until its section says so. **Taken:** the
 identity, the closures, the packages (bundle JS-10-005), test262 in both forms and its comparison, the
-fuel-parity twins, and the simplification check's searches.
+fuel-parity twins, the differential cross-check, and the simplification check's searches.
 
 ## 1. Identity
 
@@ -96,7 +96,24 @@ the core's move of `VmProfileDescriptor` into `Broiler.VM.Abstractions`. JS-10-0
 
 ## 6. The differential cross-check
 
-Pending.
+**No new undeclared finding against the base.** [`differential/`](differential/) is the after tree's
+`eng/run-differential.py` over every probe of `src/tests/differential`, with the after commit's
+command-line root, against the same Broiler.JS the base was compared with: `44a214dc`, built in
+Release from a clean checkout. It is a cross-check under template T8 and meets no conformance clause.
+
+- **Against the retained answers: no difference.** Every finding names Broiler.JS.
+- **Against Broiler.JS: the same findings as the base, line for line, but one**
+  ([`differential/run.log`](differential/run.log) against sjl-0-001's). In
+  `the-async-module-siblings.mjs`, the base's run listed an undeclared ordering divergence on case 11;
+  here Broiler.JS did not finish the probe, `Uncaught TypeError: undefined is not a function` at its
+  line 59, where `globalThis.siblingsRelease` is set by a module the probe imported dynamically ten
+  turns earlier. Neither engine's code nor the probe moved for that line: run alone afterwards,
+  Broiler.JS `44a214dc` failed the same way on every run from either tree's identical copy of the probe,
+  and aborted once ([`differential/the-async-module-siblings-alone.log`](differential/the-async-module-siblings-alone.log)).
+  It is Broiler.JS's own nondeterminism in when a dynamic import evaluates, not a change of Broiler.VM's
+  answers, which the line does not compare.
+- **No declaration is corrected.** None of the declared divergences moved, so none needs a new
+  reason; the base's undeclared findings stay unadjudicated, as bundle sjl-0-001 left them.
 
 ## 7. The measurement sub-bundle (rule part C)
 
