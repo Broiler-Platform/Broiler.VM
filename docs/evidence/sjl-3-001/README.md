@@ -26,7 +26,7 @@ simplification check.
 |---|---|
 | Base | Bundle [`sjl-0-001`](../sjl-0-001/README.md)'s base commit, before any engine changed |
 | After | `49ea00e`, a clean checkout ([`identity.txt`](identity.txt)): the cut-over (`a8b3d0e`) and the repair of the pristine consumers' version (`49ea00e`), which changes no product source. Every run of this bundle is taken from it; the commits after it touch nothing outside `docs/evidence/`, `src/Broiler.VM.Profile.JavaScript/docs/evidence/` and the architecture tests |
-| Package | `Broiler.ECMAScript.Algorithms` `0.1.0-preview.1`, from the committed feed `eng/packages/`, pinned by `eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.1.pin` |
+| Package | `Broiler.ECMAScript.Algorithms` `0.1.0-preview.1`, from the committed feed `eng/packages/`, pinned by `eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.1.pin`. Every run of this bundle used the copy the feed held at `49ea00e`, packed locally from Broiler.JS `93df3fd`; `closures/admitted-packages.json` and JS-10-005 record that copy's hash. *(Added 2026-10-13, after the runs: the package was published to nuget.org that day from Broiler.JS `2cb5275`, whose library sources are `93df3fd`'s, and the feed now holds the published package, with a new content hash, so that a restore from either source records one hash. The engine-level vectors, run again with it, match row for row, and the architecture suite passes.)* |
 | Shared vectors | This family's pin, `src/tests/vectors/pins/` (corpus revision 3) |
 
 ## 2. Engine-level vectors

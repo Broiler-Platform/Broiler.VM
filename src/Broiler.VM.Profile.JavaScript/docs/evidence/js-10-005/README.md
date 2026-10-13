@@ -112,5 +112,8 @@ the step that shows it, and the consumer's switch is how the same source still b
 3. **The rolled-back set has no Intl package**, so the rollback exercises the consumer's core half
    only. That is what the previous set was.
 4. **The shared package is a preview from the committed feed**, `eng/packages/`, as decision SJL-D-4
-   (c) has it for an area in development; nothing was restored from nuget.org.
+   (c) has it for an area in development; nothing was restored from nuget.org. *(Added 2026-10-13,
+   after collection: the package was published to nuget.org that day, and the committed feed now holds
+   the published package, whose content hash differs from the one `consumer.log` lists; its pin says
+   why.)*
 5. **Not reviewed.** Release gate 11 publishes nothing a named human has not read.
