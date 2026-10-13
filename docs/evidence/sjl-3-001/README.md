@@ -17,7 +17,7 @@ bundle.
 run of SJL-3.6 is added to this bundle as it is taken, at the after commit of section 1, and this
 README says which have been. Nothing here is a verdict until its section says so. **Taken:** the
 identity, the closures, the packages (bundle JS-10-005), test262 in both forms and its comparison, the
-fuel-parity twins, the differential cross-check, and the simplification check's searches.
+fuel-parity twins, the differential cross-check, the rules, and the simplification check.
 
 ## 1. Identity
 
@@ -79,6 +79,13 @@ AOT publish leaves no managed assembly beside the image. The Android root is exc
 | [`closures/admitted-packages.json`](closures/admitted-packages.json) | Rule I7's identity of the admitted package the closures carry: `Broiler.ECMAScript.Algorithms` `0.1.0-preview.1`, its NuGet content hash as the allow-list pins it and as the committed feed's copy has it, and the upstream commit its nuspec names, Broiler.JS `93df3fd` |
 | [`closures/mstat.sha256`](closures/mstat.sha256) | The SHA-256 of each root's Native AOT image record. The records are not committed (megabytes each); rule I3 read them in the rules run, which placed them in the tree for that run alone |
 
+**The rules on the real closures.** [`rules.log`](rules.log) is the whole architecture suite, built
+and run as the lane runs it (the solution in Release, then the tests), at `141f7cd`, a clean checkout
+whose product sources are `49ea00e`'s: **381 tests, every one passed**. Among them rules I1, I2, I3,
+I5, I6 and I7, K4 and N37; I3 read the five image records of `closures/`, placed in the tree for that
+run alone and named with their hashes in the log's first line. Rule I4, data agreement, is SJL-7's
+and is not yet in the register, so "I1 to I7" is six rules at this milestone.
+
 **The composition register** names this directory as the retained closure of every JavaScript row
 but Android's, and its shared-assemblies column declares the algorithms assembly on each; rule K4
 holds the two to each other, exactly.
@@ -123,8 +130,8 @@ Pending.
 
 **The deletion check.** Rule I5 holds the 34 members its register names
 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`) to never being declared again in the
-JavaScript family's product sources, by fully qualified name; its run on this commit is in
-`rules.log` (pending). [`simplification/deletion-check.log`](simplification/deletion-check.log) adds
+JavaScript family's product sources, by fully qualified name; its run is in [`rules.log`](rules.log),
+`I5_No_Retired_Member_Is_Declared_Again` and its witness, both passed. [`simplification/deletion-check.log`](simplification/deletion-check.log) adds
 a search a reader can repeat: each member's simple name as a declaration in the family's C# sources.
 **None is declared in the type it was removed from.** The lines it finds are same-named members of
 other types: `JsHostRealm.ToJsString`, BigInt's `ToRadixString` and `ToNumber`, the `ToNumber` of

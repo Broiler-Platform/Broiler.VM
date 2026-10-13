@@ -497,8 +497,15 @@ class Collector(base.Collector):
             for name in placed:
                 shutil.copyfile(os.path.join(source, name), os.path.join(images, name))
         try:
-            code, output = self.run(["dotnet", "test", os.path.join("src", "tests", "Broiler.VM.Architecture.Tests"),
-                                     "-c", "Release", "--nologo", "--logger", "console;verbosity=normal"])
+            # The solution first, as the lane builds it: rules B3, B5, N10, U9 and W2 read every
+            # shipping assembly's built image, which the test project's own build does not produce.
+            code, output = self.run(["dotnet", "build", "Broiler.VM.slnx",
+                                     "-c", "Release", "--nologo"])
+            if code == 0:
+                code, output = self.run(["dotnet", "test", os.path.join("src", "tests", "Broiler.VM.Architecture.Tests"),
+                                         "-c", "Release", "--no-build", "--nologo", "--logger", "console;verbosity=normal"])
+            else:
+                output = "the solution did not build\n" + output
         finally:
             shutil.rmtree(images, ignore_errors=True)
         header = ("# the after tree at %s; the image records placed for rule I3 for this run alone: %s\n"
