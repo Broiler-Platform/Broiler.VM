@@ -96,14 +96,23 @@ def main():
     manifest["inputs"] = {path: sha256(stored_bytes(path)) for path in sorted(arguments.input)}
 
     # Rule I7 (SJL-2.7): when the bundle's closure listings show a composition carrying an admitted
-    # shared package, the manifest records its upstream identity.
+    # shared package, the manifest records its upstream identity. Listings are read at any depth of
+    # the bundle. A collector that wrote the identity beside its closures recorded it as it stood
+    # when they were taken, and the allow-list may have moved since (a re-pin), so that record is the
+    # one copied; the allow-list is read only when there is none.
     directory = os.path.join(ROOT, bundle)
     carried = set()
-    for name in sorted(os.listdir(directory)):
-        if name.startswith("closure-") and name.endswith(".txt"):
-            with open(os.path.join(directory, name), encoding="utf-8") as handle:
-                carried.update(line.strip() for line in handle if line.strip() and line[0] not in "#[")
-    admitted = admitted_packages.identities(sorted(carried))
+    recorded = []
+    for folder, folders, names in os.walk(directory):
+        folders.sort()
+        for name in sorted(names):
+            if name.startswith("closure-") and name.endswith(".txt"):
+                with open(os.path.join(folder, name), encoding="utf-8") as handle:
+                    carried.update(line.strip() for line in handle if line.strip() and line[0] not in "#[")
+            elif name == admitted_packages.IDENTITY_FILE:
+                with open(os.path.join(folder, name), encoding="utf-8") as handle:
+                    recorded += json.load(handle)["admittedPackages"]
+    admitted = recorded or admitted_packages.identities(sorted(carried))
     if admitted:
         manifest["admittedPackages"] = admitted
 

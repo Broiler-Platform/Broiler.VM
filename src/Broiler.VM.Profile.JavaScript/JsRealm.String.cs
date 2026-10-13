@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -56,7 +58,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D64C20
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=80B9AA
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -134,7 +136,7 @@ internal sealed partial class JsRealm
                     double.IsNaN(code))
                 {
                     return engine.ThrowRangeError(
-                        JsNumberFormat.ToJsString(code) + " is not a valid code point");
+                        JsNumberFormat.NumberToString(code) + " is not a valid code point");
                 }
 
                 // A SURROGATE CODE POINT IS A LEGAL ARGUMENT AND ONE CODE UNIT. The platform's
@@ -1422,7 +1424,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Trims the ECMAScript whitespace set from one or both ends.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=66EDA3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6F7755
     // Broiler-Human:        PENDING
     private static string StringTrimEnds(JsEngine engine, string text, bool head, bool tail)
     {
@@ -1432,7 +1434,7 @@ internal sealed partial class JsRealm
 
         if (head)
         {
-            while (from < to && JsNumberFormat.IsWhiteSpace(text[from]))
+            while (from < to && NumberParsing.IsStrWhiteSpaceChar(text[from]))
             {
                 from++;
             }
@@ -1440,7 +1442,7 @@ internal sealed partial class JsRealm
 
         if (tail)
         {
-            while (to > from && JsNumberFormat.IsWhiteSpace(text[to - 1]))
+            while (to > from && NumberParsing.IsStrWhiteSpaceChar(text[to - 1]))
             {
                 to--;
             }

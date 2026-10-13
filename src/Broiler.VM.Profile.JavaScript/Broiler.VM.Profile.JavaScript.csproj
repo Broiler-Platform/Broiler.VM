@@ -34,4 +34,22 @@
     <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" />
   </ItemGroup>
 
+  <!--
+    THE SHARED ALGORITHMS LIBRARY (ADR 0014; JSD-0065, milestone SJL-3.4): the runtime's number conversions: Number::toString at every radix, toFixed, toExponential and toPrecision, StringToNumber, parseInt and parseFloat, the string white-space set, and the array-index and canonical numeric key tests. The
+    package comes from the committed feed eng/packages/ at its pin, the lock file records its
+    content hash, and rule I1 holds both to the allow-list, which names this project.
+  -->
+  <PropertyGroup>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- A restore for one runtime identifier - a trimmed or Native AOT publish - adds that RID's
+         own packages (the IL compiler, the linker tasks) to the graph. It writes its lock file under
+         obj/, so the committed lock file stays the RID-less one CI restores in locked mode and rule
+         I1 reads, and a publish leaves the tree as it found it. -->
+    <NuGetLockFilePath Condition="'$(RuntimeIdentifier)' != ''">$(MSBuildProjectDirectory)/obj/packages.$(RuntimeIdentifier).lock.json</NuGetLockFilePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Broiler.ECMAScript.Algorithms" />
+  </ItemGroup>
+
 </Project>

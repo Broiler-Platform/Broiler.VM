@@ -19,6 +19,7 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Numerics;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -574,12 +575,12 @@ internal static class JsElements
     /// the one case that would need to run a program, and it is the same line
     /// <see cref="JsArray"/> draws when it coerces a written <c>length</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=CC6ABD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=35B56B
     // Broiler-Human:        PENDING
     internal static double NumberOf(JsValue value) => value.Type switch
     {
         JsType.Number => value.AsNumber(),
-        JsType.String => JsNumberFormat.ToNumber(value.AsString()),
+        JsType.String => NumberParsing.StringToNumber(value.AsString()),
         JsType.Boolean => value.AsBoolean() ? 1 : 0,
         JsType.Null => 0,
 
@@ -1419,23 +1420,11 @@ internal sealed class JsTypedArray : JsObject
     /// converted and printed back.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7DF768
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B5C75A
     // Broiler-Human:        PENDING
     internal static bool IsNumericKey(string key)
     {
-        if (IsArrayIndex(key, out _))
-        {
-            return true;
-        }
-
-        if (key.Length == 0 || key.Length > 32 || key[0] is not ((>= '0' and <= '9') or '-' or 'I' or 'N'))
-        {
-            return false;
-        }
-
-        return string.Equals(key, "-0", StringComparison.Ordinal) ||
-            string.Equals(
-                JsNumberFormat.ToJsString(JsNumberFormat.ToNumber(key)), key, StringComparison.Ordinal);
+        return NumericKeys.IsCanonicalNumericString(key, out _);
     }
 
     /// <inheritdoc/>

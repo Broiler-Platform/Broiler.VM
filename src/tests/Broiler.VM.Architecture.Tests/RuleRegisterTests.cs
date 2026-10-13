@@ -432,10 +432,12 @@ public sealed class RuleRegisterTests
         // the family's surface, I7 upstream identity in evidence - each Active when minted, and
         // promotes B3, the one Vacuous row, to Active: the shared packages give it a subject. No row
         // is Vacuous after it; the Deferred row is unchanged.
-        Assert.Equal(123, byStatus["Active"]);
+        // SJL-3.4 adds I5, retired duplicates, over the register of members the number area's
+        // cut-over removed (JSD-0065). Active when minted; no other count moves.
+        Assert.Equal(124, byStatus["Active"]);
         Assert.Equal(0, byStatus.GetValueOrDefault("Vacuous"));
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(124, Loaded.Rules.Count);
+        Assert.Equal(125, Loaded.Rules.Count);
     }
 
     private static Register Load()

@@ -185,7 +185,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>ArrayBuffer</c>, its one static and its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4F4C1B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=43CC57
     // Broiler-Human:        PENDING
     private void SetupArrayBuffer()
     {
@@ -212,8 +212,8 @@ internal sealed partial class JsRealm
                 {
                     throw engine.Error(
                         "RangeError",
-                        "Invalid array buffer length: " + JsNumberFormat.ToJsString(byteLength) +
-                        " exceeds the maximum byte length " + JsNumberFormat.ToJsString(bound));
+                        "Invalid array buffer length: " + JsNumberFormat.NumberToString(byteLength) +
+                        " exceeds the maximum byte length " + JsNumberFormat.NumberToString(bound));
                 }
 
                 var prototype = BinaryPrototypeFrom(engine, thisValue, ArrayBufferPrototype);
@@ -280,7 +280,7 @@ internal sealed partial class JsRealm
             if (requested > buffer.MaxByteLength)
             {
                 return engine.ThrowRangeError(
-                    "ArrayBuffer.prototype.resize: " + JsNumberFormat.ToJsString(requested) +
+                    "ArrayBuffer.prototype.resize: " + JsNumberFormat.NumberToString(requested) +
                     " exceeds the maximum byte length");
             }
 
@@ -428,7 +428,7 @@ internal sealed partial class JsRealm
     /// Builds <c>DataView</c>, its prototype and the twenty-two accessors (eighteen where BigInt is
     /// declined).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=CE3326
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=389473
     // Broiler-Human:        PENDING
     private void SetupDataView()
     {
@@ -463,7 +463,7 @@ internal sealed partial class JsRealm
                 if (offset > bufferByteLength)
                 {
                     return engine.ThrowRangeError(
-                        "Start offset " + JsNumberFormat.ToJsString(offset) +
+                        "Start offset " + JsNumberFormat.NumberToString(offset) +
                         " is outside the bounds of the buffer");
                 }
 
@@ -483,7 +483,7 @@ internal sealed partial class JsRealm
 
                     if (offset + length > bufferByteLength)
                     {
-                        return engine.ThrowRangeError("Invalid DataView length " + JsNumberFormat.ToJsString(length));
+                        return engine.ThrowRangeError("Invalid DataView length " + JsNumberFormat.NumberToString(length));
                     }
                 }
 
@@ -501,12 +501,12 @@ internal sealed partial class JsRealm
 
                 if (offset > buffer.ByteLength)
                 {
-                    return engine.ThrowRangeError("Start offset " + JsNumberFormat.ToJsString(offset) + " is outside the bounds of the buffer");
+                    return engine.ThrowRangeError("Start offset " + JsNumberFormat.NumberToString(offset) + " is outside the bounds of the buffer");
                 }
 
                 if (lengthGiven && offset + length > buffer.ByteLength)
                 {
-                    return engine.ThrowRangeError("Invalid DataView length " + JsNumberFormat.ToJsString(length));
+                    return engine.ThrowRangeError("Invalid DataView length " + JsNumberFormat.NumberToString(length));
                 }
 
                 int? viewLength = lengthGiven || !buffer.IsResizable ? (int)length : null;
@@ -1164,7 +1164,7 @@ internal sealed partial class JsRealm
     /// N1). What <c>Number.prototype.toLocaleString</c> answers is still exactly <c>toString</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0BA34E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2771BE
     // Broiler-Human:        PENDING
     private void SetupTypedArrayLaterAdditions()
     {
@@ -1286,7 +1286,7 @@ internal sealed partial class JsRealm
             // refuse, and zero is the value the Number integer kinds already store for it.
             if (index < 0 || index >= array.Length)
             {
-                return engine.ThrowRangeError("Invalid index : " + JsNumberFormat.ToJsString(wanted));
+                return engine.ThrowRangeError("Invalid index : " + JsNumberFormat.NumberToString(wanted));
             }
 
             var made = BinaryNewTypedArray(engine, array.Kind, length);
@@ -1898,7 +1898,7 @@ internal sealed partial class JsRealm
     /// turn <c>new Uint8Array(-1)</c> into an empty array that the calling code then walks
     /// believing it asked for something.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C8445E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=28E46C
     // Broiler-Human:        PENDING
     private static double BinaryToIndex(JsEngine engine, JsValue value, string what)
     {
@@ -1913,14 +1913,14 @@ internal sealed partial class JsRealm
         {
             throw engine.Error(
                 "RangeError",
-                "Invalid " + what + ": " + JsNumberFormat.ToJsString(number));
+                "Invalid " + what + ": " + JsNumberFormat.NumberToString(number));
         }
 
         return number;
     }
 
     /// <summary>Allocates a buffer, charging for the bytes before they exist.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=921D6A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A48355
     // Broiler-Human:        PENDING
     private JsArrayBuffer BinaryNewBuffer(JsEngine engine, double byteLength)
     {
@@ -1929,7 +1929,7 @@ internal sealed partial class JsRealm
         {
             throw engine.Error(
                 "RangeError",
-                "Invalid array buffer length: " + JsNumberFormat.ToJsString(byteLength));
+                "Invalid array buffer length: " + JsNumberFormat.NumberToString(byteLength));
         }
 
         var size = (int)byteLength;
@@ -1987,7 +1987,7 @@ internal sealed partial class JsRealm
     /// A length above the maximum is refused first, as the specification orders it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D9DB9A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=764444
     // Broiler-Human:        PENDING
     private JsArrayBuffer BinaryNewResizableBuffer(JsEngine engine, double byteLength, double maxByteLength)
     {
@@ -1995,15 +1995,15 @@ internal sealed partial class JsRealm
         {
             throw engine.Error(
                 "RangeError",
-                "Invalid array buffer length: " + JsNumberFormat.ToJsString(byteLength) +
-                " exceeds the maximum byte length " + JsNumberFormat.ToJsString(maxByteLength));
+                "Invalid array buffer length: " + JsNumberFormat.NumberToString(byteLength) +
+                " exceeds the maximum byte length " + JsNumberFormat.NumberToString(maxByteLength));
         }
 
         if (maxByteLength > Array.MaxLength)
         {
             throw engine.Error(
                 "RangeError",
-                "Invalid array buffer max length: " + JsNumberFormat.ToJsString(maxByteLength));
+                "Invalid array buffer max length: " + JsNumberFormat.NumberToString(maxByteLength));
         }
 
         var size = (int)byteLength;
@@ -2035,7 +2035,7 @@ internal sealed partial class JsRealm
     /// releases nothing; see <see cref="JsArrayBuffer.RetainedByteLength"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=9DF2AA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=C37D0C
     // Broiler-Falsified-If: a resize the fuel meter, the live-bytes ceiling or the allocator refuses leaves the buffer at a different length or with different bytes
     // Broiler-Human:        PENDING
     private static void BinaryResizeBuffer(JsEngine engine, JsArrayBuffer buffer, int newByteLength)
@@ -2063,7 +2063,7 @@ internal sealed partial class JsRealm
         {
             throw engine.Error(
                 "RangeError",
-                "ArrayBuffer.prototype.resize: " + JsNumberFormat.ToJsString(newByteLength) +
+                "ArrayBuffer.prototype.resize: " + JsNumberFormat.NumberToString(newByteLength) +
                 " bytes could not be allocated");
         }
 
@@ -2075,7 +2075,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Allocates a typed array of <paramref name="length"/> elements over fresh bytes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=3A2B23
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=BE1943
     // Broiler-Human:        PENDING
     private JsTypedArray BinaryNewTypedArray(JsEngine engine, JsElementKind kind, double length)
     {
@@ -2086,7 +2086,7 @@ internal sealed partial class JsRealm
         {
             throw engine.Error(
                 "RangeError",
-                "Invalid typed array length: " + JsNumberFormat.ToJsString(length));
+                "Invalid typed array length: " + JsNumberFormat.NumberToString(length));
         }
 
         var count = (int)length;
@@ -2116,7 +2116,7 @@ internal sealed partial class JsRealm
     /// the array-like reading, anything else that is not callable is a <c>TypeError</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=598B95
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=62C1B6
     // Broiler-Human:        PENDING
     private JsValue BinaryConstructTypedArray(JsEngine engine, JsElementKind kind, JsValue[] arguments, JsValue newTarget)
     {
@@ -2156,7 +2156,7 @@ internal sealed partial class JsRealm
             if (offset > buffer.ByteLength)
             {
                 return engine.ThrowRangeError(
-                    "start offset " + JsNumberFormat.ToJsString(offset) +
+                    "start offset " + JsNumberFormat.NumberToString(offset) +
                     " is outside the bounds of the buffer");
             }
 
@@ -2187,7 +2187,7 @@ internal sealed partial class JsRealm
                 if (offset + (count * width) > buffer.ByteLength)
                 {
                     return engine.ThrowRangeError(
-                        "Invalid typed array length: " + JsNumberFormat.ToJsString(count));
+                        "Invalid typed array length: " + JsNumberFormat.NumberToString(count));
                 }
             }
 

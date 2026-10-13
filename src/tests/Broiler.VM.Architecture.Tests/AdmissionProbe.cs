@@ -53,7 +53,9 @@ internal sealed class AdmissionProbe : IDisposable
     /// <summary>Writes the scratch project for the admitted test-only package, its source and its configuration.</summary>
     internal static AdmissionProbe Create()
     {
-        var package = AdmissionRules.AllowList.Single(static p => p.IsTestOnly && p.Projects.Contains(AssemblyName, StringComparer.Ordinal));
+        // The entry that names the probe. Until SJL-3.4 it was the probe pre-release, admitted test-only;
+        // since, it is the package the profile itself references, so the probe checks what ships.
+        var package = AdmissionRules.AllowList.Single(static p => p.Projects.Contains(AssemblyName, StringComparer.Ordinal));
         var directory = System.IO.Directory.CreateTempSubdirectory("broiler-vm-admission-probe-").FullName;
         var probe = new AdmissionProbe(directory, package);
 

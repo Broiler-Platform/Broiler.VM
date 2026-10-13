@@ -9,13 +9,14 @@
 // Human-reviewed:   0/49
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         23/18
+// Criteria:         24/19
 // Resource impact:  2/10 max
 // Unverified:       49
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM.Profile.JavaScript.Format;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
@@ -999,7 +1000,7 @@ public sealed class SliceTokenizer
     /// on strictness, strictness is the validator's, and a tokenizer that knew about strictness
     /// would be the ambient parse state this component removed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=7D4324
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B8236F
     // Broiler-Falsified-If: the value this produces differs from the language's MV for the same literal text
     // Broiler-Human:        PENDING
     private SliceToken ReadNumericLiteral(int startLine, int startColumn, bool sawNewline)
@@ -1032,16 +1033,9 @@ public sealed class SliceTokenizer
                     start, startLine, startColumn, "a numeric separator that is not between two digits");
             }
 
-            value = 0;
-
-            for (var at = digitsStart; at < index; at++)
+            if (!TryLiteralValue(start, out value))
             {
-                if (source[at] == '_')
-                {
-                    continue;
-                }
-
-                value = (value * radix) + DigitValue(source[at]);
+                return RefuseNumeric(start, startLine, startColumn, "a numeric literal that is not a number");
             }
         }
         else
@@ -1086,11 +1080,9 @@ public sealed class SliceTokenizer
                             "a numeric separator in a legacy octal literal");
                     }
 
-                    value = 0;
-
-                    for (var at = digitsStart; at < index; at++)
+                    if (!TryLiteralValue(start, out value))
                     {
-                        value = (value * 8) + (source[at] - '0');
+                        return RefuseNumeric(start, startLine, startColumn, "a numeric literal that is not a number");
                     }
 
                     return FinishNumeric(start, value, legacyOctal, startLine, startColumn, sawNewline);
@@ -1165,21 +1157,41 @@ public sealed class SliceTokenizer
                         start, startLine, startColumn,
                         "a numeric separator that is not between two digits");
                 }
-
-                text = text.Replace("_", string.Empty, System.StringComparison.Ordinal);
             }
 
-            if (!double.TryParse(
-                    text,
-                    System.Globalization.NumberStyles.Float,
-                    System.Globalization.CultureInfo.InvariantCulture,
-                    out value))
+            if (!TryLiteralValue(start, out value))
             {
                 return RefuseNumeric(start, startLine, startColumn, "a numeric literal that is not a number");
             }
         }
 
         return FinishNumeric(start, value, legacyOctal, startLine, startColumn, sawNewline);
+    }
+
+    /// <summary>
+    /// The value of the numeric literal scanned from <paramref name="start"/> to here, without its
+    /// BigInt suffix: <c>Broiler.ECMAScript.Algorithms</c>' <see cref="NumericLiterals.Evaluate"/>,
+    /// which reads every form exactly (JSD-0065).
+    /// </summary>
+    /// <remarks>
+    /// The scan above has already refused every malformed spelling, so the library refuses nothing
+    /// here; were it to, the literal is refused as not a number rather than given a value the scan
+    /// and the library disagree on. Strictness is not asked: the token records the legacy forms, and
+    /// the validator, which knows the strictness, refuses them there.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=8AE25F
+    // Broiler-Falsified-If: the value differs from the language's MV for the same literal text
+    // Broiler-Human:        PENDING
+    private bool TryLiteralValue(int start, out double value)
+    {
+        var status = NumericLiterals.Evaluate(
+            System.MemoryExtensions.AsSpan(source, start, index - start),
+            false,
+            new Broiler.ECMAScript.LengthLimit(long.MaxValue),
+            out var literal,
+            out _);
+        value = literal.Number;
+        return status == Broiler.ECMAScript.ResultStatus.Completed && literal.Kind == NumericLiteralKind.Number;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A1592E
@@ -2602,8 +2614,4 @@ public sealed class SliceTokenizer
     // Broiler-Human:        PENDING
     private static bool IsDecimalPart(char c) => char.IsAsciiDigit(c) || c == '_';
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=61C94C
-    // Broiler-Human:        PENDING
-    private static int DigitValue(char c) =>
-        char.IsAsciiDigit(c) ? c - '0' : (char.ToLowerInvariant(c) - 'a') + 10;
 }

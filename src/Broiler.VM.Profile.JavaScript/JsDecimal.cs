@@ -189,7 +189,7 @@ internal readonly struct JsDecimal
         Kind == other.Kind && Negative == other.Negative && Point == other.Point && string.Equals(Digits, other.Digits, StringComparison.Ordinal);
 
     /// <summary>The value a Number is: its shortest round-trip decimal, as ECMA-402's ToIntlMathematicalValue reads it.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=Low; Resources=1; Fingerprint=677AAD
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=Low; Resources=1; Fingerprint=39063D
     // Broiler-Human:        PENDING
     internal static JsDecimal FromNumber(double value)
     {
@@ -208,7 +208,7 @@ internal readonly struct JsDecimal
             return double.IsNegative(value) ? NegativeZero : Zero;
         }
 
-        return ParseDecimal(JsNumberFormat.ToJsString(value)) ?? NaN;
+        return ParseDecimal(JsNumberFormat.NumberToString(value)) ?? NaN;
     }
 
     /// <summary>The value a BigInt is, exactly.</summary>
@@ -226,13 +226,13 @@ internal readonly struct JsDecimal
     /// ECMA-402's ToIntlMathematicalValue for a String: its StringNumericLiteral read exactly, then
     /// held to the Number range as RoundMVResult rounds it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=High; Resources=3; Fingerprint=7C8428
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=High; Resources=3; Fingerprint=C3D83F
     // Broiler-Falsified-If: a text outside StringNumericLiteral answers other than not-a-number, or a value that rounds to an infinity or a zero as a Number is kept as written
     // Broiler-Human:        PENDING
     internal static JsDecimal FromString(string text, Action<ulong> charge)
     {
         charge((ulong)text.Length / 8 + 1);
-        var trimmed = JsNumberFormat.Trim(text);
+        var trimmed = JsNumberFormat.TrimWhiteSpace(text);
 
         if (trimmed.Length == 0)
         {

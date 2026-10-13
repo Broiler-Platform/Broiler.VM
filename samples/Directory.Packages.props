@@ -5,18 +5,20 @@
     gives.
 
     The version is still supplied by the build (-p:BroilerVmVersion=...), so the same samples can
-    be pointed at a rolled-back package set without editing a file.
+    be pointed at a rolled-back package set without editing a file. Without one, a developer's
+    build asks for the version below.
   -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <BroilerVmVersion Condition="'$(BroilerVmVersion)' == ''">0.1.0-preview.6</BroilerVmVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Broiler.VM.Abstractions" Version="0.1.0-preview.6" />
-    <PackageVersion Include="Broiler.VM.Binary" Version="0.1.0-preview.6" />
-    <PackageVersion Include="Broiler.VM.Runtime" Version="0.1.0-preview.6" />
-    <PackageVersion Include="Broiler.VM.Profile.JavaScript" Version="0.1.0-preview.6" />
-    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Format" Version="0.1.0-preview.6" />
-    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Compiler" Version="0.1.0-preview.6" />
-    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Intl" Version="0.1.0-preview.6" />
+    <PackageVersion Include="Broiler.VM.Abstractions" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Binary" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Runtime" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Profile.JavaScript" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Format" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Compiler" Version="$(BroilerVmVersion)" />
+    <PackageVersion Include="Broiler.VM.Profile.JavaScript.Intl" Version="$(BroilerVmVersion)" />
   </ItemGroup>
 </Project>

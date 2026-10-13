@@ -1,5 +1,7 @@
 using Broiler.VM;
+#if BROILER_VM_ABSTRACTIONS_NAMESPACE
 using Broiler.VM.Abstractions;
+#endif
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
 #if BROILER_VM_INTL

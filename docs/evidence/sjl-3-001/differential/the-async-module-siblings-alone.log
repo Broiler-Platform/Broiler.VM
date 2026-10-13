@@ -1,0 +1,12 @@
+# Broiler.JS 44a214dc, alone, on src/tests/differential/the-async-module-siblings.mjs (the probe identical at 0087e8d and 49ea00e), --module-host, run 2026-10-13 after the differential step
+from the after tree, run 1: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 2: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 3: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 4: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 5: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 6: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 7: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 8: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 9: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the after tree, run 10: Uncaught TypeError: undefined is not a function (line 59, globalThis.siblingsRelease) exit 1
+from the base tree, run 1: exit 1; run 2: exit 134 (aborted); run 3: exit 1

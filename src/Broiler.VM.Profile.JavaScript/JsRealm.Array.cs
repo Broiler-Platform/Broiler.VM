@@ -1543,12 +1543,12 @@ internal sealed partial class JsRealm
         ArrayToLength(engine, engine.GetProperty(target, "length"));
 
     /// <summary>The property key index <paramref name="at"/> is named by.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=34AD56
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A7ABAD
     // Broiler-Human:        PENDING
     private static string ArrayKeyOf(double at) =>
         at >= 0 && at < 4294967296.0 && at == System.Math.Floor(at)
             ? JsNumberFormat.ToUintString((uint)at)
-            : JsNumberFormat.ToJsString(at);
+            : JsNumberFormat.NumberToString(at);
 
     /// <summary>Whether the receiver has a property at index <paramref name="at"/>: the hole test.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ADE914

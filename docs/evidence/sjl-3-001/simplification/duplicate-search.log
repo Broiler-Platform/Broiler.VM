@@ -1,0 +1,134 @@
+# SJL-3.7 search for a surviving duplicate of the number area, Broiler.VM at 49ea00effa457ac8d5b05f34cbae718b862007b2: every construct
+# that converts between numbers and text, rounds by powers of ten, or classifies white space with a
+# table other than the library's, in the component's C# product sources (src/, every tests/ excluded).
+# pattern: double\.(Try)?Parse\(|decimal\.(Try)?Parse\(|\.ToString\("(R|G17|E[0-9]*|F[0-9]*|N[0-9]*)"|0123456789abcdefghijklmnopqrstuvwxyz|Math\.Pow\(10|char\.IsWhiteSpace|string\.IsNullOrWhiteSpace|\.Trim\(\)|BigInteger\.(Try)?Parse\(|NumberStyles\.(Float|AllowExponent|HexNumber)|Convert\.ToDouble|double\.TryFormat|"R"
+# hits: 128; each is reviewed in the bundle's README
+
+src/Broiler.VM.Abstractions/VmIdentityPrimitives.cs:414:        !string.IsNullOrWhiteSpace(PackageId) &&
+src/Broiler.VM.Abstractions/VmIdentityPrimitives.cs:415:        !string.IsNullOrWhiteSpace(PackageVersion) &&
+src/Broiler.VM.Abstractions/VmIdentityPrimitives.cs:416:        !string.IsNullOrWhiteSpace(OwnerTag);
+src/Broiler.VM.HyperV/src/Broiler.VM.HyperV/PicoVmOptions.cs:35:        set => name = string.IsNullOrWhiteSpace(value) ? "pico" : value;
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs:132:    /// The key was the platform's <c>"R"</c> text of the value, which does not read back as the same
+src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs:7639:                if (!char.IsWhiteSpace(c))
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:891:                    System.Globalization.NumberStyles.HexNumber,
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:907:                System.Globalization.NumberStyles.HexNumber,
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:1434:                            System.Globalization.NumberStyles.HexNumber,
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:2464:    /// (<see cref="JsUnicodeLexical.IsWhiteSpace"/>). This read <c>char.IsWhiteSpace</c>, which
+src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeLexical.cs:40:/// <c>General_Category=Space_Separator</c>; <c>char.IsWhiteSpace</c> also answers yes for U+0085
+src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs:297:        _ => number.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
+src/Broiler.VM.Profile.JavaScript/JsBigInt.cs:1013:                : BigInteger.Parse(
+src/Broiler.VM.Profile.JavaScript/JsBigInt.cs:1208:    private const string RadixDigits = "0123456789abcdefghijklmnopqrstuvwxyz";
+src/Broiler.VM.Profile.JavaScript/JsDecimal.cs:388:        var number = double.Parse("0." + shown + "e" + Point.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs:257:                text.Append((char)int.Parse(value.AsSpan(at + 2, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs:559:                int.Parse(lines[at][..bar], NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs:560:                int.Parse(lines[at][(bar + 1)..], NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:683:            .Replace("{0}", string.Empty, StringComparison.Ordinal).Trim();
+src/Broiler.VM.Profile.JavaScript/JsPluralRule.cs:93:        if (condition.Trim().Length == 0)
+src/Broiler.VM.Profile.JavaScript/JsPluralRule.cs:104:                relations.Add(ParseRelation(text.Trim()));
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:1038:            var whole = System.Numerics.BigInteger.Parse(text[start..at], System.Globalization.CultureInfo.InvariantCulture);
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:1104:                fractionNs = System.Numerics.BigInteger.Parse(fractionDigits, System.Globalization.CultureInfo.InvariantCulture) * unitNs / scale;
+src/compositions/Broiler.VM.Composition.JavaScript.Cli/HostSurfaceChecks.BigInt.cs:354:                        BigInteger.Parse(r.ToJsString(Argument(arguments, 0)), System.Globalization.CultureInfo.InvariantCulture)),
+src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs:1037:            JavaScriptProfile.Descriptor.LimitDefaults[VmBudgetDimension.Fuel].ToString("N0", System.Globalization.CultureInfo.InvariantCulture) +
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/CompletionProtocol.cs:46:            var marker = raw.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/CompletionProtocol.cs:54:                failures.Add(marker[FailurePrefix.Length..].Trim());
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ConformanceTest.cs:107:        if (string.Equals(text.Trim(), "completes", StringComparison.Ordinal))
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ConformanceTest.cs:123:        var value = text[(space + 1)..].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ConformanceTest.cs:264:            var line = raw.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ConformanceTest.cs:272:            var key = line[..colon].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ConformanceTest.cs:273:            var value = line[(colon + 1)..].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ConformanceTest.cs:365:        var trimmed = value.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Report.cs:362:        .Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Selection.cs:320:            if (parts.Length != 2 || parts[1].Trim().Length == 0)
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Selection.cs:326:            paths.Add(Suite.Normalize(parts[0].Trim()));
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs:153:            var line = raw.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs:184:            var name = (comment < 0 ? line : line[..comment]).Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuitePins.cs:86:            var line = raw.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuitePins.cs:115:            if (!values.TryAdd(key, line[(space + 1)..].Trim()))
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262DigestCache.cs:150:                    declared = line[DigestKey.Length..].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Families.cs:72:        var flattened = message.Replace('\r', ' ').Replace('\n', ' ').Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:140:            if (line.Trim().Length == 0)
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:150:                failure = $"{path} indents `{line.Trim()}` under no key";
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:158:                failure = $"{path} carries `{line.Trim()}` in its metadata block, which is not `key: value`";
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:162:            var key = line[..colon].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:163:            var value = line[(colon + 1)..].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:264:            if (line.Trim().Length != 0)
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:322:            if (next.Trim().Length == 0)
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:333:            parts.Add(next.Trim());
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:351:        var trimmed = value.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:375:            if (next.Trim().Length == 0)
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:386:            var item = next.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:394:            items.Add(item[2..].Trim());
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:417:        if (value.Trim().Length != 0)
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:419:            failure = $"{path} writes `negative: {value.Trim()}`, and a negative expectation is a phase and a type";
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:430:            if (next.Trim().Length == 0)
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:441:            var line = next.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:450:            var key = line[..colon].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs:451:            var member = line[(colon + 1)..].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs:540:            var line = raw.Split('#')[0].Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs:559:                    var codePoint = int.Parse(token, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.Invari
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IsolationChecks.cs:485:                double.TryParse(draw, System.Globalization.NumberStyles.Float,
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IsolationChecks.cs:549:        answer = output.Trim();
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:246:        (JsOpcode.LoadGlobal, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:247:        (JsOpcode.StoreGlobal, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:248:        (JsOpcode.LoadGlobalOrUndefined, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:254:        (JsOpcode.ResolveName, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:257:        (JsOpcode.GetProperty, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:258:        (JsOpcode.SetProperty, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:259:        (JsOpcode.GetIndex, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:260:        (JsOpcode.SetIndex, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:261:        (JsOpcode.DefineField, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:262:        (JsOpcode.DefineIndexed, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:263:        (JsOpcode.DeleteProperty, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:264:        (JsOpcode.DeleteIndex, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:265:        (JsOpcode.DefineGetter, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:266:        (JsOpcode.DefineSetter, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:267:        (JsOpcode.DefineMethod, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:268:        (JsOpcode.LoadSuperProperty, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:269:        (JsOpcode.StoreSuperProperty, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:279:        (JsOpcode.NewClass, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:282:        (JsOpcode.SpreadObject, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:286:        (JsOpcode.SetPrototypeLiteral, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:287:        (JsOpcode.Add, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:288:        (JsOpcode.Subtract, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:289:        (JsOpcode.Multiply, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:290:        (JsOpcode.Divide, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:291:        (JsOpcode.Remainder, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:292:        (JsOpcode.Exponent, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:293:        (JsOpcode.Negate, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:294:        (JsOpcode.ToNumber, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:296:        (JsOpcode.BitwiseNot, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:297:        (JsOpcode.LessThan, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:298:        (JsOpcode.LessThanOrEqual, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:299:        (JsOpcode.GreaterThan, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:300:        (JsOpcode.GreaterThanOrEqual, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:303:        (JsOpcode.LooseEquals, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:304:        (JsOpcode.LooseNotEquals, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:305:        (JsOpcode.BitwiseOr, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:306:        (JsOpcode.BitwiseAnd, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:307:        (JsOpcode.BitwiseXor, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:308:        (JsOpcode.ShiftLeft, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:309:        (JsOpcode.ShiftRight, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:310:        (JsOpcode.ShiftRightUnsigned, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:312:        (JsOpcode.InstanceOf, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:313:        (JsOpcode.In, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:316:        (JsOpcode.ToPropertyKey, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:322:        (JsOpcode.ForInStart, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:340:        (JsOpcode.LoadPrivate, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:341:        (JsOpcode.StorePrivate, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:365:        (JsOpcode.DisposeAdd, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:369:        (JsOpcode.ToNumeric, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:370:        (JsOpcode.Increment, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:371:        (JsOpcode.Decrement, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:372:        (JsOpcode.LoadSuperPropertyKeepKey, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:375:        (JsOpcode.GetObjectBinding, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:376:        (JsOpcode.SetObjectBinding, "R"),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:413:                if (single is not ("T" or "C" or "E" or "R" or "P"))
+src/compositions/Broiler.VM.Composition.PolyglotCli/WebAssemblyLane.cs:316:        WebAssemblyValueKind.F32 => value.AsSingle.ToString("R", CultureInfo.InvariantCulture),
+src/compositions/Broiler.VM.Composition.PolyglotCli/WebAssemblyLane.cs:317:        _ => value.AsDouble.ToString("R", CultureInfo.InvariantCulture),
+src/compositions/Broiler.VM.Composition.PolyglotCli/WebAssemblyLane.cs:456:            case "f64" when double.TryParse(literal, CultureInfo.InvariantCulture, out var f64):
+src/compositions/Broiler.VM.Composition.Ubc.Fixture/FixtureCorpus.cs:383:            var a = ulong.Parse(fields[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+src/compositions/Broiler.VM.Composition.Ubc.Fixture/FixtureCorpus.cs:384:            var b = ulong.Parse(fields[2], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ExecutionChecks.cs:1531:            $"f32 {value.AsSingle.ToString("R", CultureInfo.InvariantCulture)} (0x{(uint)value.Bits:X8})",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ExecutionChecks.cs:1533:            $"f64 {value.AsDouble.ToString("R", CultureInfo.InvariantCulture)} (0x{value.Bits:X16})",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptText.cs:513:            if (!float.TryParse(signed, NumberStyles.Float, CultureInfo.InvariantCulture, out var single) ||
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptText.cs:522:        if (!double.TryParse(signed, NumberStyles.Float, CultureInfo.InvariantCulture, out var wide) ||

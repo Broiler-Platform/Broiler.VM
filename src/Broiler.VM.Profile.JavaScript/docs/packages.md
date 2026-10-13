@@ -7,7 +7,8 @@
 **whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an
 addition and a removal each fail**. This is that baseline: the JavaScript family's packable set, each
 package's dependencies and each package's files, as the candidate pack of
-**bundle [JS-10-002](evidence/js-10-002/README.md)** produced them. Rule **N37** holds it to the
+**bundle [JS-10-005](evidence/js-10-005/README.md)** produced them *(corrected: JSC-300; it was bundle
+JS-10-002's pack, before the family took its first shared dependency)*. Rule **N37** holds it to the
 checkout's packable projects and their references, and to the bundle's retained metadata, in both
 directions.
 
@@ -26,20 +27,26 @@ restores. `Broiler.VM.Profile.MachineCode` is packable and is its own family's, 
 
 | Package | Depends on | Files |
 |---|---|---|
-| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Profile.JavaScript.Format` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.xml` |
-| `Broiler.VM.Profile.JavaScript.Compiler` | `Broiler.VM.Abstractions`, `Broiler.VM.Profile.JavaScript.Format` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Compiler.xml` |
+| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.ECMAScript.Algorithms` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.xml` |
+| `Broiler.VM.Profile.JavaScript.Compiler` | `Broiler.VM.Abstractions`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.ECMAScript.Algorithms` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Compiler.xml` |
 | `Broiler.VM.Profile.JavaScript.Format` | none | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Format.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Format.xml` |
 | `Broiler.VM.Profile.JavaScript.Intl` | `Broiler.VM.Profile.JavaScript.Format` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Intl.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Intl.xml` |
 
-**No foreign dependency.** Every dependency above is a Broiler.VM package. Rule N37 holds every
+**No foreign dependency.** Every dependency above is a Broiler.VM package but one:
+`Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms package, which rule I1
+admits for shipping and which `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at
+`0.1.0-preview.1` since the number-conversion cut-over
+([JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md)). Rule N37 holds every
 `.nuspec` the candidate pack produced - the family's and the seven others' - to declaring none outside
 `Broiler.VM.` except a shared package rule I1 admits for shipping, at the version its allow-list pins or
-a later one; no package declares one at this revision *(corrected: JSC-296)*.
+a later one *(corrected: JSC-296, JSC-300)*.
 
 ## The consumer
 
 The pristine consumer, `samples/Broiler.VM.Sample.JavaScriptConsumer`, references the three core
-packages and these four and nothing else (rule A14). Bundle JS-10-002 records it restoring and running
-with upstream feeds unreachable, rolling back to the published `0.1.0-preview.5` set and forward
-again, failing to restore a version only nuget.org holds, and running as Native AOT; rule N37 holds
-the bundle's transcript to having done each.
+packages and these four and nothing else (rule A14); it restores `Broiler.ECMAScript.Algorithms`
+through them. Bundle JS-10-005 records it restoring and running with upstream feeds unreachable, from
+a local feed that holds the shared package beside the family's, rolling back to the published
+`0.1.0-preview.5` set and forward again, failing to restore a version only nuget.org holds, and
+running as Native AOT; rule N37 holds the bundle's transcript to having done each *(corrected:
+JSC-300; it named bundle JS-10-002, whose consumer had no shared package to restore)*.

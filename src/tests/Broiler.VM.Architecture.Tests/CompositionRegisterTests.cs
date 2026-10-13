@@ -238,6 +238,29 @@ public sealed class CompositionRegisterTests
         Assert.Contains(
             CompositionRules.K4(calculator, []),
             message => message.Contains("retained no closure report", StringComparison.Ordinal));
+
+        // The shared-assemblies column (governance item V17, SJL-3.4). A declared shared assembly is
+        // part of the exact closure: missing from it, the row is refused, and carried, it passes.
+        const string Shared = "Broiler.ECMAScript.Algorithms";
+        var sharing = calculator with { SharedAssemblies = [Shared] };
+        var carrying = new[]
+        {
+            new CompositionRules.ClosureMode("trimmed", [.. clean[0].Assemblies, Shared]),
+        };
+
+        Assert.Contains(
+            CompositionRules.K4(sharing, clean),
+            message => message.Contains("rather than", StringComparison.Ordinal));
+        Assert.Empty(CompositionRules.K4(sharing, carrying));
+
+        // A row that says its retained closure predates the shared assembly is held to that closure
+        // without it, and refused once a re-collected closure carries it, so the exclusion cannot
+        // outlive the evidence it excuses.
+        var predating = sharing with { SharedPredateClosure = true };
+        Assert.Empty(CompositionRules.K4(predating, clean));
+        Assert.Contains(
+            CompositionRules.K4(predating, carrying),
+            message => message.Contains("ships " + Shared + ", which it does not declare", StringComparison.Ordinal));
     }
 
     /// <summary>
@@ -723,7 +746,12 @@ public sealed class CompositionRegisterTests
                 // carries no such cell declares neither a permission nor an incapability, and rule
                 // K5 says so instead of reading the absence as `none` - which is the reading that
                 // would let the column be deleted without a rule noticing.
-                cells.Length > 8 ? cells[8] : string.Empty));
+                cells.Length > 8 ? cells[8] : string.Empty,
+
+                // The shared-assemblies cell (governance item V17): the backquoted names, and
+                // whether the cell says the retained closure predates them.
+                cells.Length > 9 ? SharedNames(cells[9]) : [],
+                cells.Length > 9 && cells[9].Contains("predates", StringComparison.Ordinal)));
         }
 
         return rows;
@@ -733,6 +761,9 @@ public sealed class CompositionRegisterTests
         composition.Split('.')[^1].ToLowerInvariant();
 
     private static string Unquote(string cell) => cell.Trim('`', ' ');
+
+    private static IReadOnlyList<string> SharedNames(string cell) =>
+        Regex.Matches(cell, "`(?<name>[^`]+)`").Select(static match => match.Groups["name"].Value).ToArray();
 
     private static IReadOnlyList<string> Names(string cell) =>
         cell.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)

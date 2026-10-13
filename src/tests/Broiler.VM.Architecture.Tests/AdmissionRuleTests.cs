@@ -42,7 +42,7 @@ public sealed class AdmissionRuleTests
             static message => message.Contains("outside the JavaScript family", StringComparison.Ordinal));
         Assert.Contains(
             AdmissionRules.I1(ComponentGraph.Witness("I1-admitted-package-in-the-format.csproj.witness"), null),
-            static message => message.Contains("admits it for [Broiler.VM.Profile.JavaScript.AdmissionProbe] only", StringComparison.Ordinal));
+            static message => message.Contains("admits it for [Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.JavaScript.Compiler, Broiler.VM.Profile.JavaScript.AdmissionProbe] only", StringComparison.Ordinal));
 
         // And a lock file whose content hash is not the pin, read with the probe's own project file.
         using var probe = AdmissionProbe.Create();
@@ -206,7 +206,7 @@ public sealed class AdmissionRuleTests
     public void The_Admission_Probe_Is_Admitted_And_Every_Negative_Control_Is_Refused()
     {
         using var probe = AdmissionProbe.Create();
-        probe.Note("# The admission probe of milestone SJL-2.9: " + probe.Package.Id + " " + probe.Package.Version + ", admitted test-only.");
+        probe.Note("# The admission probe of milestone SJL-2.9: " + probe.Package.Id + " " + probe.Package.Version + ", admitted " + probe.Package.Use + ".");
         probe.Note(string.Empty);
 
         // Positive: restore through the repository's own source mapping, then again in locked mode,

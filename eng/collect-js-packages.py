@@ -24,7 +24,10 @@ Phase F9's slice R3 (decision JSD-0061) takes release gate 8's facts and retains
      file lists nuget.org alone since 2026-10-11, when the samples moved to the published packages,
      and the consumer's isolated configuration is this script's to write.)
   5. ROLLBACK: the same consumer, unchanged, restored and run against the previous set, then rolled
-     forward to the candidate again.
+     forward to the candidate again. The rollback builds it with BroilerVmIntl=false and
+     BroilerVmAbstractionsNamespace=false: the previous set carries no Intl package, and declares
+     the core's contract types in Broiler.VM rather than Broiler.VM.Abstractions. (The second switch
+     was added 2026-10-13, at SJL-3.6, when the namespace move made the rollback's build fail.)
   6. A NEGATIVE CONTROL: the consumer asked for exactly 0.1.0-preview.4, which nuget.org holds and the
      local feed does not, must FAIL to restore, naming the local feed as the only source searched. A
      restore that succeeded would mean upstream was reachable.
@@ -257,7 +260,8 @@ def main():
     # 4-6. Restore and run, roll back, roll forward, and the negative control, each from nothing.
     sequence = [
         ("restore and run the candidate " + CANDIDATE, CANDIDATE, []),
-        ("ROLL BACK to the published " + PREVIOUS + " and run", PREVIOUS, ["-p:BroilerVmIntl=false"]),
+        ("ROLL BACK to the published " + PREVIOUS + " and run", PREVIOUS,
+         ["-p:BroilerVmIntl=false", "-p:BroilerVmAbstractionsNamespace=false"]),
         ("roll forward to the candidate " + CANDIDATE + " and run", CANDIDATE, []),
     ]
     results = []

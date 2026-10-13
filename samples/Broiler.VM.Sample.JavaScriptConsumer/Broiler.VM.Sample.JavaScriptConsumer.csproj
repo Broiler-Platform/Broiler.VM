@@ -48,4 +48,17 @@
     <PackageReference Include="Broiler.VM.Profile.JavaScript.Intl" />
   </ItemGroup>
 
+  <!--
+    THE NAMESPACE OF THE CORE'S CONTRACT TYPES. A package set from 0.1.0-preview.6 on declares
+    VmProfileDescriptor, which this sample names, in Broiler.VM.Abstractions; the published
+    0.1.0-preview.5 declares it in Broiler.VM, where that namespace does not exist. The newer set's
+    using directive is on by default; a rollback to such a set passes
+    BroilerVmAbstractionsNamespace=false, which drops it, so the same source builds against both and
+    the rollback records that it needed the switch.
+  -->
+  <PropertyGroup>
+    <BroilerVmAbstractionsNamespace Condition="'$(BroilerVmAbstractionsNamespace)' == ''">true</BroilerVmAbstractionsNamespace>
+    <DefineConstants Condition="'$(BroilerVmAbstractionsNamespace)' == 'true'">$(DefineConstants);BROILER_VM_ABSTRACTIONS_NAMESPACE</DefineConstants>
+  </PropertyGroup>
+
 </Project>

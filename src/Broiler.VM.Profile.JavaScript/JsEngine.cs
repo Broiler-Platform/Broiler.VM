@@ -425,14 +425,14 @@ internal sealed partial class JsEngine
     // Broiler-Human:        PENDING
     internal const long DirectCallCharge = FuelPerInstruction + (long)CallCharge;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=305714
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=F1D824
     // Broiler-Human:        PENDING
     internal string Describe(JsValue value) => value.Type switch
     {
         JsType.Undefined => "undefined",
         JsType.Null => "null",
         JsType.String => "\"" + value.AsString() + "\"",
-        JsType.Number => JsNumberFormat.ToJsString(value.AsNumber()),
+        JsType.Number => JsNumberFormat.NumberToString(value.AsNumber()),
         JsType.Boolean => value.AsBoolean() ? "true" : "false",
 
         // A SYMBOL NEEDS ITS OWN ARM AND THE DEFAULT WAS NOT ONE. This described anything that was

@@ -1,0 +1,67 @@
+# SJL-3.2: the comparison rules are in force, checked before any code of SJL-3.3 to SJL-3.5 exists
+# Checked 2026-10-12T19:46Z at 8519370feda015a51c05b8c99f071e197e874734 (main).
+
+## docs/evidence/sjl-3-001/decision-rule.md
+f55f83c769dda4dd335087e4293c8a8e2674cf12 Commit SJL-0.9's Broiler.VM decision rules and the pilot's measurement workloads
+blob at HEAD: feb4e1ceaa3c70371ae96419510210deaeff5833
+blob at f55f83c: feb4e1ceaa3c70371ae96419510210deaeff5833
+## src/tests/forms/numbers/README.md
+f55f83c769dda4dd335087e4293c8a8e2674cf12 Commit SJL-0.9's Broiler.VM decision rules and the pilot's measurement workloads
+blob at HEAD: 65f7020233e244cf86b85dfd209e28dedfa915b8
+blob at f55f83c: 65f7020233e244cf86b85dfd209e28dedfa915b8
+## src/tests/forms/numbers/to-string.js
+f55f83c769dda4dd335087e4293c8a8e2674cf12 Commit SJL-0.9's Broiler.VM decision rules and the pilot's measurement workloads
+blob at HEAD: 0dcb7bd442aab56ac4effc8b942336254d195e19
+blob at f55f83c: 0dcb7bd442aab56ac4effc8b942336254d195e19
+## src/tests/forms/numbers/to-string.control.js
+f55f83c769dda4dd335087e4293c8a8e2674cf12 Commit SJL-0.9's Broiler.VM decision rules and the pilot's measurement workloads
+blob at HEAD: 0b4528e04fc6ea851d44fdb4449dae200ecce65a
+blob at f55f83c: 0b4528e04fc6ea851d44fdb4449dae200ecce65a
+## src/tests/forms/numbers/to-number.js
+f55f83c769dda4dd335087e4293c8a8e2674cf12 Commit SJL-0.9's Broiler.VM decision rules and the pilot's measurement workloads
+blob at HEAD: 8adba71e2fc69f68bdaf809ef7c002c2b8e11ff3
+blob at f55f83c: 8adba71e2fc69f68bdaf809ef7c002c2b8e11ff3
+## src/tests/forms/numbers/to-number.control.js
+f55f83c769dda4dd335087e4293c8a8e2674cf12 Commit SJL-0.9's Broiler.VM decision rules and the pilot's measurement workloads
+blob at HEAD: 5cb75ea8eab31aff0e600bce70d964eefb682248
+blob at f55f83c: 5cb75ea8eab31aff0e600bce70d964eefb682248
+## src/tests/forms/numbers/literals.js
+f55f83c769dda4dd335087e4293c8a8e2674cf12 Commit SJL-0.9's Broiler.VM decision rules and the pilot's measurement workloads
+blob at HEAD: a38f62802f402495b7a970d32aab3b9bb67ca514
+blob at f55f83c: a38f62802f402495b7a970d32aab3b9bb67ca514
+## src/tests/forms/numbers/literals.control.js
+f55f83c769dda4dd335087e4293c8a8e2674cf12 Commit SJL-0.9's Broiler.VM decision rules and the pilot's measurement workloads
+blob at HEAD: 14fd83e57dd9a7e7b99818c9ae161a03122ad10a
+blob at f55f83c: 14fd83e57dd9a7e7b99818c9ae161a03122ad10a
+## eng/run-test262.py
+4c28dbc84e8e0a5b1613a7ff1f04fc623e181ddb JSV-2: residency analysis, the pure inline set and fuel debt for the value form
+4edae9679156869c3258dfdf83f46097efc97f5d Implement stage JSV-1 of the value form: every instruction a helper, control emitted
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 695674a86701368e4ee19536198c446c77cbeee1
+blob at f55f83c: 695674a86701368e4ee19536198c446c77cbeee1
+## eng/compare-test262-forms.py
+4c28dbc84e8e0a5b1613a7ff1f04fc623e181ddb JSV-2: residency analysis, the pure inline set and fuel debt for the value form
+4edae9679156869c3258dfdf83f46097efc97f5d Implement stage JSV-1 of the value form: every instruction a helper, control emitted
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 48e3091a872921849bab1f903b46698be0c69e33
+blob at f55f83c: 48e3091a872921849bab1f903b46698be0c69e33
+## eng/compare-forms.py
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: d9591c286489cf8f966db68de56e5575069772ff
+blob at f55f83c: d9591c286489cf8f966db68de56e5575069772ff
+## docs/baselines.md
+58e25574363e3d7f112666866469a1add27af8cf Put back the dated notes of 2026-09-15 that 0293c62 rewrote, and restate them in notes of their own
+blob at HEAD: 101887b00d3d16d4e3adf986272732694e9ef23f
+blob at f55f83c: 101887b00d3d16d4e3adf986272732694e9ef23f
+
+$ git merge-base --is-ancestor f55f83c HEAD; echo $?
+0
+
+## The admitted package on the committed feed is still the SJL-2 probe, contract types only
+Broiler.ECMAScript.Algorithms.0.0.1-probe.1.nupkg
+Broiler.ECMAScript.Algorithms.0.0.1-probe.1.pin
+README.md
+
+## No project references a shared package yet
+$ git grep -n 'PackageReference Include="Broiler.ECMAScript' -- '*.csproj'
+(none)

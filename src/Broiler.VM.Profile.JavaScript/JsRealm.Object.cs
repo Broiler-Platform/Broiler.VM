@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -1256,18 +1258,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>CanonicalNumericIndexString</c>, as a test.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DDAFD4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2C16DB
     // Broiler-Human:        PENDING
     private static bool ObjectIsCanonicalNumeric(string key, out double numeric)
     {
-        if (string.Equals(key, "-0", System.StringComparison.Ordinal))
-        {
-            numeric = -0.0;
-            return true;
-        }
-
-        numeric = JsNumberFormat.ToNumber(key);
-        return string.Equals(JsNumberFormat.ToJsString(numeric), key, System.StringComparison.Ordinal);
+        return NumericKeys.IsCanonicalNumericString(key, out numeric);
     }
 
     /// <summary>The specification's <c>IsValidIntegerIndex</c> for a fixed-length view.</summary>

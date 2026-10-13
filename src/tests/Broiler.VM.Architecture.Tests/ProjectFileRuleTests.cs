@@ -194,7 +194,7 @@ public sealed class ProjectFileRuleTests
             .Append(packageWitness);
 
         Assert.Equal(
-            ["checkout has 1 more: Broiler.VM.Profile.JavaScript -> package Broiler.ECMAScript.Algorithms"],
+            ["checkout has 1 more: Broiler.VM.Profile.JavaScript.Format -> package Broiler.ECMAScript.Algorithms"],
             A7PackageViolations(A7PackageEdges(substituted)));
     }
 
