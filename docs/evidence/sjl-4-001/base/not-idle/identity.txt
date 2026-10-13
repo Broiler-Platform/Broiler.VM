@@ -1,0 +1,24 @@
+bundle sjl-4-001, its base
+milestone SJL-4, the numerics area; the base is this family after SJL-3
+collected 2026-10-13T16:01:37Z
+base-commit d0e607e4afa985920210b33ae02b70395651ff02
+base-tree clean
+rule docs/evidence/sjl-4-001/decision-rule.md sha256=00f6c1d9d3d84c17b52057ac7ffa26301e8f36d9ac37886ce52256f1e9fd78ae
+sdk 10.0.401
+machine Linux-6.18.44-fc-v114-x86_64-with-glibc2.39 x86_64 cpus=4
+suite-pin src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+allowance fuel=100000000 wallClockMs=5000
+twin-allowance ceiling=1000000000 wallClockMs=600000
+jobs 4
+native-backend x86-64-sysv
+since-sjl-3-merge a04b2e5bc35461d3ed99aab4354871846e9253d6, outside the documents: 10 files
+  src/tests/forms/numerics/README.md
+  src/tests/forms/numerics/bigint-arithmetic.small.js
+  src/tests/forms/numerics/bigint-asintn.small.js
+  src/tests/forms/numerics/bigint-number.small.js
+  src/tests/forms/numerics/bigint-power.small.js
+  src/tests/forms/numerics/bigint-shift.small.js
+  src/tests/forms/numerics/bigint-text.small.js
+  src/tests/forms/numerics/integer-conversions.small.js
+  src/tests/forms/numerics/math-kernels.small.js
+  src/tests/forms/numerics/sum-precise.small.js
