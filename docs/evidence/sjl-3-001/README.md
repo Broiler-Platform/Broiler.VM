@@ -132,7 +132,20 @@ Release from a clean checkout. It is a cross-check under template T8 and meets n
 
 ## 7. The measurement sub-bundle (rule part C)
 
-Pending.
+Pending: it is taken last, on the idle machine, after the (c') re-runs of section 3.
+
+**Read before it runs: clause 1 cannot hold.** Part C's condition asks every lane's answer to equal
+the workload's answer at the base arm. `to-string.js` answers with the total length of the strings it
+converts, `toString` at radixes 2, 7, 16 and 36 among them, and the cut-over corrects radix digits
+(JSD-0066 section 4), so its answer moves: 2515784 at the base (bundle sjl-0-001's base reading),
+2516095 at `49ea00e`, taken with the closures' published command-line root before any lane ran.
+`to-number.js` and `literals.js`, and every control, answer as at the base. Broiler.JS's own rule
+counts conversions instead of results for this reason; this one does not.
+
+**The owner's choice, 2026-10-13, before the measurement:** measure under the rule as written, not
+under a revised rule. Part C will therefore read NOT MET on clause 1 for `to-string.js` in both forms,
+whatever its timings show, and D against N is retained beside it for every workload. Clause 13 stays
+open, and SJL-3 with it, until a dated rule judges a condition that a correcting cut-over can meet.
 
 ## 8. The simplification check (SJL-3.7)
 
