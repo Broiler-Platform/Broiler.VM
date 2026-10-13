@@ -16,8 +16,8 @@ bundle.
 **State:** collection in progress. The cut-over landed first, with the exclusions of section 9; each
 run of SJL-3.6 is added to this bundle as it is taken, at the after commit of section 1, and this
 README says which have been. Nothing here is a verdict until its section says so. **Taken:** the
-identity, the closures, the packages (bundle JS-10-005), test262 in both forms and its comparison, the
-fuel-parity twins, the differential cross-check, the rules, the engine-level vectors, and the
+identity, the closures, the packages (bundle JS-10-005), test262 in both forms with its comparison
+and its (c') re-runs, the fuel-parity twins, the differential cross-check, the rules, the engine-level vectors, and the
 simplification check.
 
 ## 1. Identity
@@ -44,7 +44,13 @@ it in a later change.
 
 ## 3. Test262, both forms (rule part A)
 
-**Pending: the (c') re-runs.** Both whole runs were taken at `49ea00e` through bundle sjl-0-001's
+**MET.** All four runs are retainable as whole runs. Every changed verdict of either pair is class C4
+(c') and is listed in its comparison. Each (c') row was run again alone at both commits, and **no
+re-run differs**: 616 of 616 bytecode rows and 776 of 776 native rows give the same verdict at the base
+and after. No row needs C1, C2 or C3. The whole runs and their comparisons come first below, then the
+re-runs.
+
+Both whole runs were taken at `49ea00e` through bundle sjl-0-001's
 procedure (`eng/run-test262.py` at the pin, the conformance root built in Release, fuel 100,000,000
 and 5,000 ms per variant, four jobs, the floors of the release candidate), and each was compared with
 the base's retained report through `eng/compare-test262-forms.py --same-form`, the native pair with
@@ -59,9 +65,32 @@ Both runs are retainable as whole runs (neither exit is 2 or 3). **No difference
 variant failing at the base passes after, so part A lists no C1 row, and none moves in any other
 class. Every (c') row is the after run exhausting the wall clock where the base passed (577 bytecode,
 743 native) or exhausted fuel or the nested-load fan-out: the runs were taken while Broiler.JS's
-whole-suite run held the same four processors, which the base's run did not share. Part A asks each
-(c') row to be run again alone at both commits, the re-run retained, and a row that still differs is
-a regression; the re-runs are taken on the idle machine, and section 3 is read when they are.
+whole-suite run held the same four processors, which the base's run did not share.
+
+**The (c') re-runs.** `collect.py --only rerun` ran each pair's (c') paths again on the idle machine,
+alone, at both commits. Each side was one process of the conformance root over those paths, under the
+same manifest, fuel and wall allowance. The base side used the root rebuilt from a clean checkout of
+`0087e8d`; its hash differs from the one bundle sjl-0-001 names, because the build records the
+directory it ran in. The after side used the binary of the whole runs. The two re-runs of each pair
+were compared with `compare-test262-forms.py --same-form`, the native pair with
+`--exempt-guest-loads`:
+
+| Pair | (c') rows (paths) | Re-run, base and after alike | Re-runs that differ | Where |
+|---|---|---|---|---|
+| bytecode | 616 (345) | 577 pass; 22 exhaust fuel; 17 exhaust the nested-load fan-out | **0** | [`rerun-wide-bytecode.log`](rerun-wide-bytecode.log), [`.tsv`](rerun-wide-bytecode.tsv), both reports |
+| native | 776 (405) | 743 pass; 18 exhaust the nested-load fan-out; 15 exhaust the wall clock | **0** | [`rerun-wide-native.log`](rerun-wide-native.log), [`.tsv`](rerun-wide-native.tsv), both reports |
+
+Each base re-run gives the base's whole-run verdict back on every row but 15 native ones. Those 15
+exhausted fuel in sjl-0-001's run, and alone they exhaust the 5,000 ms wall clock first, at both
+commits alike. Which of the two limits such a row reaches first depends on how fast the machine runs
+it at the time. They do not differ between the commits, so part A reads no regression in them. The `.tsv` files list every row with its four verdicts: the base
+run, the after run and the two re-runs.
+
+The re-runs were started three times. The first start was stopped after eleven minutes, before
+either side had ended, so that the machine could build and test a CI fix in Broiler.JS without
+sharing processors with the re-runs. The second was stopped after about 40 seconds and started again
+outside a two-hour task limit. Neither stopped start wrote anything to this bundle; the third start,
+from 11:23 to 12:42 on 2026-10-13, is the one retained.
 
 ## 4. The fuel-parity twins (rule part B)
 
