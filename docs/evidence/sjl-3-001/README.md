@@ -82,7 +82,44 @@ Pending.
 
 ## 8. The simplification check (SJL-3.7)
 
-Pending.
+**The deletion check.** Rule I5 holds the 34 members its register names
+(`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`) to never being declared again in the
+JavaScript family's product sources, by fully qualified name; its run on this commit is in
+`rules.log` (pending). [`simplification/deletion-check.log`](simplification/deletion-check.log) adds
+a search a reader can repeat: each member's simple name as a declaration in the family's C# sources.
+**None is declared in the type it was removed from.** The lines it finds are same-named members of
+other types: `JsHostRealm.ToJsString`, BigInt's `ToRadixString` and `ToNumber`, the `ToNumber` of
+`JsEngine.Conversions`, `JsHostRealm`, `JsWord`, `JavaScriptValue` and two opcode handlers, a
+collation table's `DigitValue`, eighteen properties, fields and methods named `Value`, and the tokenizer's `IsWhiteSpace`, which
+reads the lexer's own table (`JsUnicodeLexical.IsWhiteSpace`, the front end's, section 1 of the area).
+
+**The adapter review.** Each adapter of JSD-0066 section 2 was read at this commit against the area's
+adapter definition (areas/numbers.md section 5.3: coercion, errors, charging, object creation, and no
+algorithm).
+
+| Adapter | What it holds | Algorithm |
+|---|---|---|
+| `JsRealm.Number`: `toString`, `toFixed`, `toExponential`, `toPrecision` | `thisNumberValue`; `ToIntegerOrInfinity` of the argument in each method's order (toFixed's range check before the value is looked at, toExponential's and toPrecision's non-finite answer before it); the `RangeError`s; one charge of the text's length plus one; the string | none: the text is `NumberText`'s |
+| `JsRealm.Global`: `parseInt`, `parseFloat` | `ToString`, `ToInt32` of the radix, one unit of charge, the library charging the text | none |
+| `JsEngine.Conversions.ToNumberFromText`, `JsRealm.Json`'s number, `JsBinary.NumberOf` | one unit of charge; for JSON, the grammar that found the span | none |
+| `JsRealm.String`: `trim`, `trimStart`, `trimEnd` | the `this` coercion, the index walk and the substring | none: the class of each character is `NumberParsing.IsStrWhiteSpaceChar`'s |
+| `JsNumberFormat`: `NumberToString`, `ToUintString`, `TrimWhiteSpace` | the shared strings of 0 to 255, `NaN` and the infinities; an array index's decimal text (`uint`, exact); the original string when nothing is trimmed | none |
+| `JsObject.IsArrayIndex`, `JsRealm.Object`'s and `JsBinary`'s canonical numeric test | nothing: each is one call | none |
+| `SliceTokenizer`'s literal values, `JsParser.BigIntValueOf`, `JsParser.NumberKey` | the scan, the diagnostics, strictness, the format's BigInt ceiling passed as the width limit | none: `NumericLiterals.Evaluate` and `NumberText.ToString` |
+
+**The duplicate search.** [`simplification/duplicate-search.log`](simplification/duplicate-search.log)
+lists 128 hits in the component's C# product sources. **None is a surviving duplicate of the area**:
+
+| Class | Hits | Where | Reading |
+|---|---|---|---|
+| Composition roots' own harness and checks | 105 | Conformance (35: test262 metadata, pins, selection, the completion protocol), SliceCompiler (59, 55 of them `"R"` as an operand-kind label in `NativeTemplateScanChecks`), Cli (2), PolyglotCli (3), the UBC fixture (2), the WebAssembly harness (4) | text of a harness's own files and options, and WebAssembly's `f32`/`f64` text, which is not this area's; no JavaScript value is converted |
+| Other areas' code | 13 | BigInt (`JsBigInt`, 2: SJL-4), Intl (`JsDecimal`, `JsIntlTables`, `JsNumberFormatter`, `JsPluralRule`, 7: SJL-9), Temporal (`JsTemporalParser`, 2: SJL-10), and the front end's escape and template scans (`SliceTokenizer`, 3; `JsParser.ScanSubstitution`, 1: SJL-13) | each is answered by its own milestone; areas/numbers.md section 1 does not name them |
+| Names and options | 4 | `VmIdentityPrimitives`, `PicoVmOptions` | `string.IsNullOrWhiteSpace` on identifiers |
+| Comments recording this cut-over | 3 | `JsCompiler.Emission`, `SliceTokenizer`, `JsUnicodeLexical` | the text of what was replaced |
+| A host-side diagnostic rendering | 1 | `JavaScriptValue.ToDiagnosticString` | **A finding, not a duplicate.** It is documented as deliberately not `Number::toString`, and it is not: it renders a host value for a corpus entry or a report. Its remark calls the rendering round-trip, and .NET's `"R"` is not, for `2**-25` and the double below it render alike (`2.980232238769531E-08`). The constant pool's key had the same defect, and SJL-3.4 corrected it, because there it changed a program's values (JSD-0066 section 4); here two values would print alike in a report. Left for its owner, outside this pilot |
+
+The search pattern is in the log's header; it is the same as Broiler.JS's bundle sjl-3-001 runs,
+with .NET's other double conversions added.
 
 ## 9. Exclusions
 
