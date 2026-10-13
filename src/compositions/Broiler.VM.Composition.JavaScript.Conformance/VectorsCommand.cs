@@ -41,6 +41,12 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// the function is read before the vector's script runs, so the script cannot replace it.
 /// </para>
 /// <para>
+/// <b>Its realms admit every surface the profile builds, Intl and Temporal included</b>, with the
+/// internationalization data the test262 runs hand over. Until corpus revision 6 they admitted every
+/// surface but those two, which need the data; the numerics area's rounding vectors run through
+/// Temporal. <i>(Added 2026-10-13, at milestone SJL-4.2.)</i>
+/// </para>
+/// <para>
 /// <b>Every vector gets a runtime of its own</b>, for the reason <see cref="Execution"/> gives: a
 /// fuel allowance is spent over a runtime's life, so a vector that does not terminate would
 /// otherwise be charged to every vector after it. One that spends its allowance is rendered
@@ -405,8 +411,16 @@ internal static class VectorsCommand
     private static string Evaluate(ReadOnlyMemory<byte> artifactBytes, string prelude, string script, ulong fuel, ulong wallClock)
     {
         var surface = new VectorSurface(prelude, script);
+
+        // EVERY SURFACE IS ADMITTED, Intl and Temporal included, so the internationalization data is
+        // handed over as the test262 runs hand it (Test262Manifest.Descriptor): the numerics area's
+        // rounding vectors run through Temporal (corpus revision 6, milestone SJL-4.2).
         var created = VmRuntime.Create(
-            VmCatalog.CreateBuilder().Add(JavaScriptProfile.DescriptorHostingRealms(surface)).Build(),
+            VmCatalog.CreateBuilder().Add(JavaScriptProfile.DescriptorComposing(new JsComposition
+            {
+                HostSurface = surface,
+                IntlData = Broiler.VM.Profile.JavaScript.Intl.JsCldrData.Instance,
+            })).Build(),
             Options(fuel, wallClock));
 
         if (!created.TryGetRuntime(out var runtime))

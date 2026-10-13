@@ -21,13 +21,14 @@ repository holds it the way it holds test262: as the archive of one named revisi
 
 ```bash
 dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.Conformance -c Release -- \
-  --vectors src/tests/vectors/pins/broiler-js-vectors-593f2c5bce1f055025864af2b7ec38ee6f2f835a.tar.gz \
+  --vectors src/tests/vectors/pins/broiler-js-vectors-b725bb06567f54a3273f4c92dd4c5fa09456f21d.tar.gz \
   --expect src/tests/vectors/pins/vectors.pin --report vectors-report.tsv
 ```
 
 The conformance root reads the archive in memory and refuses it, before any vector runs, unless
 its digest, its files' digest and its file count are the pin's. It then evaluates every vector in a
-fresh realm of this profile, under the wide manifest in the bytecode form, renders the outcome
+fresh realm of this profile, under the wide manifest in the bytecode form and with every surface the
+profile builds, Intl and Temporal included, renders the outcome
 under the corpus's one rendering rule (its `SCHEMA.md` section 7), and compares. `--mutate <id>` is
 the negative control: it changes one vector's expected value in the in-memory copy, and the run
 must report that vector as an unclassified difference. **Rule N13** lists `tests/vectors` among the
