@@ -89,6 +89,7 @@ class Collector(base.Collector):
     def __init__(self, arguments):
         super().__init__(arguments)
         self.base_tree = os.path.abspath(arguments.base_tree) if arguments.base_tree else None
+        self.images = os.path.abspath(arguments.images) if arguments.images else None
 
     def hide(self, text):
         text = super().hide(text)
@@ -100,7 +101,7 @@ class Collector(base.Collector):
         commit = self.run(["git", "rev-parse", "HEAD"])[1].strip()
         status = self.run(["git", "status", "--porcelain"])[1]
         base_commit = next(line.split(" ", 1)[1] for line in open(
-            os.path.join(BASE_BUNDLE, "identity.txt"), encoding="utf-8") if line.startswith("base-commit "))
+            os.path.join(BASE_BUNDLE, "identity.txt"), encoding="utf-8") if line.startswith("base-commit ")).strip()
         lines = [
             "bundle sjl-3-001",
             "milestone SJL-3, work packages SJL-3.4 and SJL-3.6, Broiler.VM's half",
@@ -407,9 +408,26 @@ class Collector(base.Collector):
         return verdict
 
     def rules(self):
-        code, output = self.run(["dotnet", "test", os.path.join("src", "tests", "Broiler.VM.Architecture.Tests"),
-                                 "-c", "Release", "--nologo", "--logger", "console;verbosity=normal"])
-        self.write("rules.log", output.strip() + "\nexit code: %d\n" % code)
+        # Rule I3 reads every mstat-<root>.mstat under src/ as that root's Native AOT image. No bundle
+        # commits the records (they are megabytes each; closures/mstat.sha256 names them), so the
+        # closures step's records are placed in the tree for this run alone and removed after it.
+        images = os.path.join(self.tree, "src", "Broiler.VM.Profile.JavaScript", "docs", "evidence", "sjl-3-001-images")
+        source = self.images or os.path.join(self.out, "closures")
+        placed = sorted(name for name in os.listdir(source) if name.endswith(".mstat")) if os.path.isdir(source) else []
+        shutil.rmtree(images, ignore_errors=True)
+        if placed:
+            os.makedirs(images)
+            for name in placed:
+                shutil.copyfile(os.path.join(source, name), os.path.join(images, name))
+        try:
+            code, output = self.run(["dotnet", "test", os.path.join("src", "tests", "Broiler.VM.Architecture.Tests"),
+                                     "-c", "Release", "--nologo", "--logger", "console;verbosity=normal"])
+        finally:
+            shutil.rmtree(images, ignore_errors=True)
+        header = ("# the after tree at %s; the image records placed for rule I3 for this run alone: %s\n"
+                  % (self.run(["git", "rev-parse", "HEAD"])[1].strip(),
+                     ", ".join("%s sha256=%s" % (name, self.sha256(os.path.join(source, name))) for name in placed) or "none"))
+        self.write("rules.log", header + output.strip() + "\nexit code: %d\n" % code)
         print("rules: exit %d" % code)
         return code
 
@@ -462,6 +480,7 @@ def main():
     parser.add_argument("--jobs", type=int, default=max(1, os.cpu_count() or 1))
     parser.add_argument("--against-broiler-js", help="the BroilerJS apphost built at the named commit")
     parser.add_argument("--against-root", help="the Broiler.JS checkout it was built from")
+    parser.add_argument("--images", help="the closures step's mstat records, for rule I3 (rules)")
     parser.add_argument("--only", action="append", required=True,
                         choices=("identity", "closures", "test262", "compare", "twins", "differential", "measure", "rules",
                                  "simplification"))

@@ -14,15 +14,16 @@ on [JSD-0065](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0065-num
 bundle.
 
 **State:** collection in progress. The cut-over landed first, with the exclusions of section 9; each
-run of SJL-3.6 is added to this bundle as it is taken, at the cut-over's commit, and this README says
-which have been. Nothing here is a verdict until its section says so.
+run of SJL-3.6 is added to this bundle as it is taken, at the after commit of section 1, and this
+README says which have been. Nothing here is a verdict until its section says so. **Taken:** the
+identity, the closures, the packages (bundle JS-10-005) and the simplification check's searches.
 
 ## 1. Identity
 
 | | |
 |---|---|
 | Base | Bundle [`sjl-0-001`](../sjl-0-001/README.md)'s base commit, before any engine changed |
-| After | The commit that lands SJL-3.4's cut-over; named here once the runs are taken from it |
+| After | `49ea00e`, a clean checkout ([`identity.txt`](identity.txt)): the cut-over (`a8b3d0e`) and the repair of the pristine consumers' version (`49ea00e`), which changes no product source. Every run of this bundle is taken from it; the commits after it touch nothing outside `docs/evidence/`, `src/Broiler.VM.Profile.JavaScript/docs/evidence/` and the architecture tests |
 | Package | `Broiler.ECMAScript.Algorithms` `0.1.0-preview.1`, from the committed feed `eng/packages/`, pinned by `eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.1.pin` |
 | Shared vectors | This family's pin, `src/tests/vectors/pins/` (corpus revision 3) |
 
@@ -42,7 +43,34 @@ Pending.
 
 ## 5. Closures, the composition register and the packages
 
-Pending.
+**Every JavaScript root this machine can publish was published and run in three modes, and each
+closure declares the algorithms assembly.** [`closures/`](closures/) holds, for ExecutionOnly,
+SliceCompiler, Conformance, Cli and PolyglotCli, the closure under the JIT, trimming and Native AOT
+(`closure-<root>.txt`), the catalog table each mode printed, identical across the three
+(`catalog-<root>.txt`), and the transcripts of every publish and run (`publish-and-run.log`, and
+`publish-and-run-polyglotcli.log` for PolyglotCli, whose runs are bundle UBC-4-002's, `nottext.wasm`
+refused by design). Each JIT and trimmed closure lists `Broiler.ECMAScript.Algorithms`; each Native
+AOT publish leaves no managed assembly beside the image. The Android root is exclusion EX-126.
+
+| Record | What it holds |
+|---|---|
+| [`closures/admitted-packages.json`](closures/admitted-packages.json) | Rule I7's identity of the admitted package the closures carry: `Broiler.ECMAScript.Algorithms` `0.1.0-preview.1`, its NuGet content hash as the allow-list pins it and as the committed feed's copy has it, and the upstream commit its nuspec names, Broiler.JS `93df3fd` |
+| [`closures/mstat.sha256`](closures/mstat.sha256) | The SHA-256 of each root's Native AOT image record. The records are not committed (megabytes each); rule I3 read them in the rules run, which placed them in the tree for that run alone |
+
+**The composition register** names this directory as the retained closure of every JavaScript row
+but Android's, and its shared-assemblies column declares the algorithms assembly on each; rule K4
+holds the two to each other, exactly.
+
+**The packages** are bundle
+[JS-10-005](../../../src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-005/README.md), taken from
+the same commit: the runtime's and the compiler's nuspecs declare `Broiler.ECMAScript.Algorithms`
+`0.1.0-preview.1`, which rule N37 admits at the allow-list's pin, and the pristine JavaScript
+consumer restored and ran from a local feed holding the shared package beside the family's, with
+upstream unreachable, rolled back to the published `0.1.0-preview.5` and forward again, refused a
+version only nuget.org holds, and ran as Native AOT. Its first collection at the cut-over commit
+failed every restore, because `samples/Directory.Packages.props` had stopped reading the version the
+collector passes; `49ea00e` repairs that, and gives the consumer the switch its rollback needs across
+the core's move of `VmProfileDescriptor` into `Broiler.VM.Abstractions`. JS-10-005's README says both.
 
 ## 6. The differential cross-check
 
