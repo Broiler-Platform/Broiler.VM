@@ -17,7 +17,8 @@ bundle.
 run of SJL-3.6 is added to this bundle as it is taken, at the after commit of section 1, and this
 README says which have been. Nothing here is a verdict until its section says so. **Taken:** the
 identity, the closures, the packages (bundle JS-10-005), test262 in both forms and its comparison, the
-fuel-parity twins, the differential cross-check, the rules, and the simplification check.
+fuel-parity twins, the differential cross-check, the rules, the engine-level vectors, and the
+simplification check.
 
 ## 1. Identity
 
@@ -30,9 +31,16 @@ fuel-parity twins, the differential cross-check, the rules, and the simplificati
 
 ## 2. Engine-level vectors
 
-Pending in this bundle. At the cut-over, before it was committed, the conformance root ran this
-family's pin of the shared vectors against the final package and matched every vector, the 391 that
-carried a `divergence.broiler-vm` field among them; JSD-0066 section 4 lists them by reason.
+**Every vector matches.** [`vectors/run-revision-3.log`](vectors/run-revision-3.log) and
+[`vectors/run-revision-3.tsv.gz`](vectors/run-revision-3.tsv.gz): the conformance root, built in
+Release at `141f7cd` (the product sources of `49ea00e`), over this family's pin of the shared corpus,
+revision 3: **10,132 vectors, 10,132 match, 0 classified divergences, 0 unclassified differences**.
+The report says of the 391 vectors that carry a `divergence.broiler-vm` field that the divergence no
+longer holds; JSD-0066 section 4 lists them by reason. Every vector that matched in bundle
+[sjl-1-001](../sjl-1-001/README.md)'s judged run matches here, so JSD-0066's first falsifier on
+vectors does not fire. The rows are byte-identical to the run taken at the cut-over before it was
+committed. Retiring the 391 fields is a corpus revision in the home, and this family's pin moves to
+it in a later change.
 
 ## 3. Test262, both forms (rule part A)
 
