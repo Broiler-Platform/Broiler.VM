@@ -1,0 +1,20 @@
+sub-bundle sjl-3-001/measurement
+evidence-class measurement
+decision docs/evidence/sjl-3-001/decision-rule.md part C, as written: MET if and only if every lane's condition passes before and after for every workload and form, every effective-configuration line is identical across arms, lanes and repetitions, and for every workload and form D <= N.
+collected 2026-10-13T12:44:52Z
+arm-B-commit 0087e8d73ae3833200fa263b68f71db15b059a9c (bundle sjl-0-001's base commit: 0087e8d73ae3833200fa263b68f71db15b059a9c
+)
+arm-A-commit 49ea00effa457ac8d5b05f34cbae718b862007b2
+arm-A-again the arm A binaries, measured a second time under another lane name
+binary arm B Broiler.VM.Composition.JavaScript.Cli.dll sha256=4a45bc0e248ce3f57f9246b1f0ef3db23f8b958f86854e5655b92809550cb036
+binary arm A Broiler.VM.Composition.JavaScript.Cli.dll sha256=08ae1a9be246600646c73eaa46ae961f7f09421e309f52d057f2e1d41ac2e74d
+machine Linux-6.18.44-fc-v114-x86_64-with-glibc2.39 x86_64 cpus=4
+repetitions 7 retained per lane, 3 warm-up excluded from Q
+allowance fuel=100000000000 wallClockMs=600000
+native-backend x86-64-sysv
+workload to-string.js sha256=4033dc82a396b3eb1b085d4ede7898466f9024b220c58d4a3fe3ac73071bbfa1 (as at the base reading: True)
+workload to-string.control.js sha256=7332c6bd58a379a5d8da3a0de65af3ce4917cfda7609fb946116197b369def39 (as at the base reading: True)
+workload to-number.js sha256=54cbfb0d5fd1e1a8c54dfcac7d082dd79c94d5feb5fa3221068bcbea9f7cc391 (as at the base reading: True)
+workload to-number.control.js sha256=f2ecc0fb38cce55dd6c6660e3f59ece61748871c75639e466346a5b8a77047e0 (as at the base reading: True)
+workload literals.js sha256=3bbfd1faed09437b14fd8091fd3554d1d56bc60861c804612eedb4e19e56a38f (as at the base reading: True)
+workload literals.control.js sha256=7498d4acb3bc73268c3bb0ee26a5f0a60a912441cc41e50ed32bc600c76cbd9a (as at the base reading: True)

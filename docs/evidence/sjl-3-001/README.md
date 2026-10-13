@@ -17,8 +17,8 @@ bundle.
 run of SJL-3.6 is added to this bundle as it is taken, at the after commit of section 1, and this
 README says which have been. Nothing here is a verdict until its section says so. **Taken:** the
 identity, the closures, the packages (bundle JS-10-005), test262 in both forms with its comparison
-and its (c') re-runs, the fuel-parity twins, the differential cross-check, the rules, the engine-level vectors, and the
-simplification check.
+and its (c') re-runs, the fuel-parity twins, the differential cross-check, the rules, the engine-level
+vectors, the simplification check, and the measurement.
 
 ## 1. Identity
 
@@ -161,9 +161,51 @@ Release from a clean checkout. It is a cross-check under template T8 and meets n
 
 ## 7. The measurement sub-bundle (rule part C)
 
-Pending: it is taken last, on the idle machine, after the (c') re-runs of section 3.
+**NOT MET, on clauses 1 and 3.** [`measurement/`](measurement/) holds the run, taken by
+`collect.py --only measure` on 2026-10-13 from 12:44 to 12:52, on the idle machine, after the (c')
+re-runs of section 3:
 
-**Read before it runs: clause 1 cannot hold.** Part C's condition asks every lane's answer to equal
+- [`manifest.txt`](measurement/manifest.txt) names the arms and the binaries by hash, and was written
+  and made read-only before any lane ran.
+- [`runs.tsv`](measurement/runs.tsv) holds every timed child, warm-up repetitions included and named.
+- [`conditions.tsv`](measurement/conditions.tsv) holds every answer check, before and after each
+  lane.
+- [`summary.txt`](measurement/summary.txt) holds Q, N, D and E, and every effective-configuration
+  line seen.
+- [`hashes.txt`](measurement/hashes.txt) covers those four files.
+- [`build-cli-b.log`](build-cli-b.log) and [`build-cli-a.log`](build-cli-a.log) are the two arms'
+  builds.
+
+Arm B was rebuilt from a clean checkout of `0087e8d`, and A is `49ea00e`. The run used seven
+repetitions per lane and three warm-up repetitions excluded from Q, with fuel 100,000,000,000 and a
+600,000 ms wall allowance.
+
+| Clause | Result |
+|---|---|
+| 1. Every lane's condition passes, before and after | **fails**: `to-string.js` answers 2516095 at A and A-again, against 2515784 at B, before and after every lane, in both forms. Every other workload and every control answers as at B |
+| 2. Every effective-configuration line identical | **holds**: one line across arms, lanes and repetitions |
+| 3. D <= N for every workload and form | **fails** for `to-number.js` in the bytecode form, and holds for the other five |
+
+| Form | Workload | Q(B) ms | Q(A) ms | Q(A-again) ms | N | D | D <= N |
+|---|---|---|---|---|---|---|---|
+| bytecode | to-string | 889.229 | 896.370 | 801.695 | 94.675 | 7.141 | yes |
+| bytecode | to-number | 852.604 | 882.460 | 879.049 | 3.411 | **29.856** | **no** |
+| bytecode | literals | 1524.849 | 1451.919 | 1438.554 | 13.365 | -72.930 | yes |
+| native | to-string | 1070.742 | 1064.063 | 1109.789 | 45.726 | -6.679 | yes |
+| native | to-number | 982.434 | 980.398 | 1016.976 | 36.577 | -2.036 | yes |
+| native | literals | 1908.295 | 1804.761 | 1818.392 | 13.631 | -103.535 | yes |
+
+**What clause 3's failure is, and is not.** The rule's only tolerance is the A/A floor, and on bytecode
+`to-number` that floor came out at 3.4 ms, the difference of two medians that happened to lie close
+together. Within each lane, the seven retained repetitions span 119 ms at B, 236 ms at A and 187 ms at
+A-again (`runs.tsv`). The rule reads none of this. A failed clause is a NOT MET, not a re-run, so
+nothing was run again, and this bundle makes no speed claim in either direction.
+
+**One defect of the manifest.** The collector read bundle sjl-0-001's base commit with its line ending,
+so the `arm-B-commit` line of `manifest.txt` closes its parenthesis on a line of its own. The commit
+it names is the right one, and the file is retained as written.
+
+**Read before it ran: clause 1 cannot hold.** Part C's condition asks every lane's answer to equal
 the workload's answer at the base arm. `to-string.js` answers with the total length of the strings it
 converts, `toString` at radixes 2, 7, 16 and 36 among them, and the cut-over corrects radix digits
 (JSD-0066 section 4), so its answer moves: 2515784 at the base (bundle sjl-0-001's base reading),

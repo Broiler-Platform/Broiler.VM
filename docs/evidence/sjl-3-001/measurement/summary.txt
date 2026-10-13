@@ -1,0 +1,11 @@
+# Q is the median of the retained repetitions, in ms; N = |Q(A) - Q(A-again)|; D = Q(A) - Q(B);
+# E(arm) = Q(workload, arm) - Q(control, arm)
+# form | workload | Q(B) | Q(A) | Q(A-again) | N | D | D <= N | E(B) | E(A)
+bytecode | to-string | 889.229 | 896.370 | 801.695 | 94.675 | 7.141 | yes | 351.461 | 372.782
+bytecode | to-number | 852.604 | 882.460 | 879.049 | 3.411 | 29.856 | NO | 184.852 | 242.207
+bytecode | literals | 1524.849 | 1451.919 | 1438.554 | 13.365 | -72.930 | yes | 264.273 | 212.554
+native | to-string | 1070.742 | 1064.063 | 1109.789 | 45.726 | -6.679 | yes | 375.720 | 376.432
+native | to-number | 982.434 | 980.398 | 1016.976 | 36.577 | -2.036 | yes | 247.823 | 227.967
+native | literals | 1908.295 | 1804.761 | 1818.392 | 13.631 | -103.535 | yes | 370.655 | 228.946
+# effective-configuration lines seen: 1
+#   runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
