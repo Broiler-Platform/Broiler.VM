@@ -1,0 +1,33 @@
+# broiler-shared-package pin 1
+#
+# One package of the committed, hash-pinned feed (decision SJL-D-4 (c); milestone SJL-2.7): a shared
+# JavaScript library package whose home is the Broiler.JS repository, retained here byte for byte so
+# that a restore needs no other repository's folder and no network for it. NuGet.config's package
+# source mapping sends the Broiler.ECMAScript prefix to this directory and to nuget.org; the lock
+# file of a project that references it records `content-hash`, and rule I1 holds that hash to this
+# pin and to the allow-list.
+#
+# HOW IT WAS TAKEN. Packed on 2026-10-13 in the Broiler.JS repository, from `upstream-commit`, with
+# `dotnet pack Broiler.ECMAScript/Broiler.ECMAScript.Algorithms -c Release -p:Version=0.2.0-preview.1
+# -p:PackageVersion=0.2.0-preview.1 -p:ContinuousIntegrationBuild=true`; the nuspec's repository
+# element records the same commit, which rule I7 reads. The same commit's pristine consumer
+# (scripts/packaging/test_pristine_consumer.py --set shared --version 0.2.0-preview.1) restored it
+# from a local feed alone, into an isolated cache, and ran. `content-hash` is NuGet's: the base64
+# SHA-512 of the .nupkg's bytes, which is what a lock file records. `sha256` is over the same bytes.
+# It is not on nuget.org: a Broiler.VM package release that depends on it waits for its publication
+# (eng/verify-feed.ps1), and the pin is then taken again from the published package, as
+# 0.1.0-preview.1's was.
+#
+# WHAT IT IS. The numerics area of the shared algorithms library (milestone SJL-4.3; JSD-0067), with
+# the number-conversion area of 0.1.0-preview.1 unchanged: admitted for PRODUCT use by
+# Broiler.VM.Profile.JavaScript and Broiler.VM.Profile.JavaScript.Compiler at SJL-4.4, and restored by
+# the admission probe. It carries one more third-party component than 0.1.0-preview.1, a port of
+# fdlibm's expm1 and log1p under Sun's notice, which its THIRD_PARTY_NOTICES.md names.
+
+id Broiler.ECMAScript.Algorithms
+version 0.2.0-preview.1
+file Broiler.ECMAScript.Algorithms.0.2.0-preview.1.nupkg
+content-hash CBi+VFOzuSIJW1CphcIvIWst3+H5foI2b44FCoyw31uc7aUwOB550K6z7HThjrTBw0DSPcad2/3RGJC42aqOWA==
+sha256 aded30f14cafe7572037192b90a8877ca9bba79db9d5c4a63a49a27605f00af1
+upstream Broiler-Platform/broiler.js
+upstream-commit 01209c43a3a244b9e502908e68fcded49e9bc198

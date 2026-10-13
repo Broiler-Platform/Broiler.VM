@@ -21,6 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Broiler.VM.Profile.JavaScript.Format;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -2154,7 +2155,7 @@ public sealed class JsHostRealm
     // ---- conversion ----------------------------------------------------------------------------
 
     /// <summary>Names a guest value for an embedder, canonicalising an object's identity.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5F3135
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6F73D2
     // Broiler-Falsified-If: two calls over one guest object answer two different JsHostRef instances
     // Broiler-Human:        PENDING
     internal JsHostValue Wrap(JsValue value)
@@ -2188,7 +2189,7 @@ public sealed class JsHostRealm
             case JsType.BigInt:
                 {
                     var integer = value.AsBigInt();
-                    engine.Charge(JsBigInt.LinearCost(integer.Words));
+                    engine.Charge(BigIntMath.LinearCost(integer.Words));
                     return JsHostValue.BigInt(integer.Value);
                 }
 
@@ -2276,7 +2277,7 @@ public sealed class JsHostRealm
     /// answer past (<see cref="JsBigInt.MaximumBits"/>), measured from the integer's length without
     /// reading its digits.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=309AA4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=48343F
     // Broiler-Falsified-If: a BigInt wider than JsBigInt.MaximumBits reaches the realm, or one reaches a realm whose composition declined the surface
     // Broiler-Human:        PENDING
     private JsBigInt AdmitBigInt(BigInteger value)
@@ -2286,15 +2287,13 @@ public sealed class JsHostRealm
             throw new JsHostSurfaceException(JsHostRefusal.SurfaceDeclined, "this realm's composition declined the BigInt surface, so a BigInt means nothing in it");
         }
 
-        var bits = value.GetBitLength();
-
-        if (bits > JsBigInt.MaximumBits)
+        if (!JsBigInt.Policy.Admits(value))
         {
             throw engine.Error("RangeError", "Maximum BigInt size exceeded: the host's value is wider than " +
                 JsBigInt.MaximumBits.ToString(System.Globalization.CultureInfo.InvariantCulture) + " bits");
         }
 
-        engine.Charge(JsBigInt.LinearCost(JsBigInt.WordsOf(bits)));
+        engine.Charge(BigIntMath.LinearCost(BigIntMath.Words(value)));
         return new JsBigInt(value);
     }
 

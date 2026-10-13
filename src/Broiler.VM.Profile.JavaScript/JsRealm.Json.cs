@@ -929,7 +929,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads the space argument into one level of indentation.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ECC1E3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D08293
     // Broiler-Human:        PENDING
     private static void JsonApplySpace(JsEngine engine, JsonWriter state, JsValue space)
     {
@@ -948,7 +948,7 @@ internal sealed partial class JsRealm
         if (space.IsNumber)
         {
             var count = (int)System.Math.Min(
-                10, System.Math.Max(0, JsValue.ToInteger(space.AsNumber())));
+                10, System.Math.Max(0, IntegerConversions.ToIntegerOrInfinity(space.AsNumber())));
 
             state.Gap = count > 0 ? new string(' ', count) : string.Empty;
             return;

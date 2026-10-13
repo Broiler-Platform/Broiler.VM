@@ -186,10 +186,10 @@ internal sealed partial class JsEngine
     /// <c>BigInt::toString(x, 10)</c>, charged on the digits it can produce and on the square of the
     /// value's width, step by step (JSeal B03).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=E0D910
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=88DC16
     // Broiler-Falsified-If: a wider BigInt is converted to text for the same charge as a narrower one
     // Broiler-Human:        PENDING
-    private string BigIntText(JsBigInt value) => value.ToDecimalString(ChargeFuel);
+    private string BigIntText(JsBigInt value) => value.ToDecimalString(WorkCharge);
 
     /// <summary>
     /// The abstract operation <c>ToBigInt</c>: a BigInt from a Boolean, a BigInt or a String, after
@@ -227,12 +227,12 @@ internal sealed partial class JsEngine
     /// <c>StringToBigInt</c> for a caller that needs a value: a SyntaxError for text outside the
     /// grammar, and the ceiling's RangeError for a value too wide for the realm.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=60A446
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=6F23CC
     // Broiler-Falsified-If: a text outside StringIntegerLiteral answers a value, or a value past the ceiling is answered
     // Broiler-Human:        PENDING
     internal JsBigInt StringToBigIntOrThrow(string text)
     {
-        if (!JsBigInt.TryParseStringInteger(text, ChargeFuel, out var parsed, out _))
+        if (!JsBigInt.TryParseStringInteger(text, WorkCharge, out var parsed, out _))
         {
             throw Error("SyntaxError", "Cannot convert " + (text.Length > 64 ? text[..64] + "..." : text) + " to a BigInt");
         }
@@ -277,7 +277,7 @@ internal sealed partial class JsEngine
     /// wide one would, so a <c>fill</c> that stores it a million times masks it once.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=AB31B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=574D3D
     // Broiler-Falsified-If: a BigInt kind accepts a Number, a Number kind accepts a BigInt, or either converts with the other content type's operation
     // Broiler-Human:        PENDING
     internal JsValue ToElementValue(JsElementKind kind, JsValue value)
@@ -294,7 +294,7 @@ internal sealed partial class JsEngine
             return JsValue.BigInt(integer);
         }
 
-        Charge(JsBigInt.LinearCost(integer.Words));
+        Charge(BigIntMath.LinearCost(integer.Words));
         return JsValue.BigInt(JsElements.Narrow(kind, integer));
     }
 
@@ -302,10 +302,10 @@ internal sealed partial class JsEngine
     /// The Number a BigInt stands for, <c>F(R(x))</c>: the nearest one, ties to even, charged on
     /// its width. <c>Number(x)</c> is the one operation that asks for it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=1D0F36
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=37D187
     // Broiler-Falsified-If: a BigInt converts to a Number other than the nearest one with ties to even
     // Broiler-Human:        PENDING
-    internal double BigIntToNumber(JsBigInt value) => value.ToNumber(ChargeFuel);
+    internal double BigIntToNumber(JsBigInt value) => value.ToNumber(WorkCharge);
 
     /// <summary>The abstract operation <c>ToObject</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D3B49B
@@ -326,19 +326,19 @@ internal sealed partial class JsEngine
     };
 
     /// <summary>The abstract operation <c>ToInt32</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1BA637
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A6A1AD
     // Broiler-Human:        PENDING
-    internal int ToInt32(JsValue value) => JsValue.ToInt32(ToNumber(value));
+    internal int ToInt32(JsValue value) => IntegerConversions.ToInt32(ToNumber(value));
 
     /// <summary>The abstract operation <c>ToUint32</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DBC89F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=215678
     // Broiler-Human:        PENDING
-    internal uint ToUint32(JsValue value) => JsValue.ToUint32(ToNumber(value));
+    internal uint ToUint32(JsValue value) => IntegerConversions.ToUint32(ToNumber(value));
 
     /// <summary>The abstract operation <c>ToIntegerOrInfinity</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=F80693
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=26FCB4
     // Broiler-Human:        PENDING
-    internal double ToInteger(JsValue value) => JsValue.ToInteger(ToNumber(value));
+    internal double ToInteger(JsValue value) => IntegerConversions.ToIntegerOrInfinity(ToNumber(value));
 
     /// <summary>The abstract operation <c>ToPropertyKey</c>, over the string keys this surface has.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7A65ED

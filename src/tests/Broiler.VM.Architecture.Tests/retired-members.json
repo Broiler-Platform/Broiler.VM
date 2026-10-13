@@ -8,7 +8,13 @@
     "",
     "SJL-3.4 (JSD-0065): the number-conversion area. What stays of JsNumberFormat (the shared strings of the commonest",
     "Numbers, ToUintString and TrimWhiteSpace) and JsObject.IsArrayIndex and JsRealm.ObjectIsCanonicalNumeric, which",
-    "became adapters, are not here: they exist, and hold no algorithm."
+    "became adapters, are not here: they exist, and hold no algorithm.",
+    "",
+    "SJL-4.4 (JSD-0069): the numerics area. A type declared directly in a namespace is registered by its own name. What",
+    "stays as adapters is not here: JsBigInt, the value wrapper whose operations are one line over BigIntMath and",
+    "BigIntText; JsElements.Narrow; JsRealm.MathHypotOperands and MathSumPrecise, which keep the coercion, the iteration and",
+    "the charges; JsRealm.BinaryToIndex, which keeps the coercion and the RangeError; and JavaScriptValue.ToInt32 and",
+    "ToUint32, public forwarders."
   ],
   "retired": [
     {
@@ -180,6 +186,226 @@
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.DigitValue",
       "milestone": "SJL-3.4",
       "replacedBy": "Broiler.ECMAScript.Numbers.NumericLiterals.Evaluate, behind SliceTokenizer.TryLiteralValue (the value loops of ReadNumericLiteral)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsValue.ToInt32",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.IntegerConversions.ToInt32, behind JsEngine.ToInt32"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsValue.ToUint32",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.IntegerConversions.ToUint32, behind JsEngine.ToUint32"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsValue.ToInteger",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.IntegerConversions.ToIntegerOrInfinity, behind JsEngine.ToInteger"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsElements.Clamp",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.IntegerConversions.ToUint8Clamp"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsElements.Low64",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.IntegerConversions.ToBigUint64"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsFloat16",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.Float16 (Encode under Float16NanPolicy.Canonical, Decode, Round)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ArrayToLength",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.IntegerConversions.ToLength"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.MathRoundHalfUp",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.MathKernels.Round"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.MathHypotenuse",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.MathKernels.Hypot, over JsRealm.MathHypotOperands"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.MathPower",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.MathKernels.Power, for Math.pow and the Exponent opcode"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.MathExpMinusOne",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.MathKernels.Expm1"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.MathLogOnePlus",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.MathKernels.Log1p"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.MathDistil",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.PreciseSum, behind JsRealm.MathSumPrecise"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.TemporalRounding",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.RoundingMode"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.Negate",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.Negate"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.Unsigned",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.UnsignedRoundingMode"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.UnsignedMode",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.GetUnsignedRoundingMode"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.ApplyUnsigned",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.ApplyUnsignedRoundingMode"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.RoundToIncrement",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.RoundNumberToIncrement"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.RoundToIncrementAsIfPositive",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.RoundNumberToIncrementAsIfPositive"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.RoundsToSecond",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.ApplyUnsignedRoundingMode, at NudgeToCalendarUnit"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.ToDouble",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.ToDouble"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsUnsignedRounding",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.UnsignedRoundingMode"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormatter.Unsigned",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.TryParseRoundingMode and GetUnsignedRoundingMode"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.AppendDecimal",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.DecimalDigitsBound",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.FormatLeafBits",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.TenToTheNineteen",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.AppendPowerOfTwoRadix",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.AppendRadix",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.RadixLeaf",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.WordDigits",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.RadixDigits",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.ToString, behind JsBigInt.ToDecimalString and ToRadixString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.TryParseRadix",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.StringToBigInt, behind JsBigInt.TryParseStringInteger"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.ParseDecimal",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.StringToBigInt, behind JsBigInt.TryParseStringInteger"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.ParseDecimalPart",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.StringToBigInt, behind JsBigInt.TryParseStringInteger"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.ParseLeafDigits",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.StringToBigInt, behind JsBigInt.TryParseStringInteger"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.MaximumDecimalDigits",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntText.StringToBigInt, behind JsBigInt.TryParseStringInteger"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.Bounded",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntPolicy, behind JsBigInt.Policy"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.Shift",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntMath.LeftShift and SignedRightShift, behind JsBigInt.ShiftLeft and ShiftRight"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.WordsOf",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntMath.WordsOf"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.LinearCost",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntMath.LinearCost"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.ProductCost",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntMath.ProductCost"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBigInt.LeafCost",
+      "milestone": "SJL-4.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.BigIntMath.LeafCost"
     }
   ]
 }

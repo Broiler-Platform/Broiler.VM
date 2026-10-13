@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>The goal symbols of the proposal's ISO 8601 / RFC 9557 grammar (s13.31) a string is parsed as.</summary>
@@ -974,7 +976,7 @@ internal sealed class JsTemporalParser
     /// The proposal's ParseTemporalDurationString (s13.37): the ten fields, exact, or null where the
     /// string is not a duration.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=05591E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7614CB
     // Broiler-Human:        PENDING
     internal static double[]? Duration(string text)
     {
@@ -1142,7 +1144,7 @@ internal sealed class JsTemporalParser
         var nanoseconds = totalSubNs % 1000;
         var factor = negative ? -1 : 1;
 
-        double D(System.Numerics.BigInteger value) => JsTemporalCore.ToDouble(value * factor);
+        double D(System.Numerics.BigInteger value) => ExactRounding.ToDouble(value * factor, System.Numerics.BigInteger.One);
 
         return
         [

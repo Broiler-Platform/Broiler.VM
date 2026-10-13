@@ -21,7 +21,8 @@ namespace Broiler.VM.Architecture.Tests;
 /// documentation that explain what replaced them, so a text search would be defeated by its own
 /// records. A member is reported when a type of that fully qualified name declares a method,
 /// property, field, constant, event or nested type of that name, whatever its signature; a partial
-/// type is the same type in every file.
+/// type is the same type in every file. A type declared directly in a namespace is reported by its
+/// own fully qualified name, since SJL-4.4 retired three (JSD-0069).
 /// </para>
 /// </remarks>
 public sealed class I5RetiredDuplicatesRuleTests
@@ -49,13 +50,17 @@ public sealed class I5RetiredDuplicatesRuleTests
         // them, so a register whose types no longer exist would not pass by finding nothing.
         Assert.Equal(FamilyAssemblies.Order(StringComparer.Ordinal), covered.Select(static f => f.Assembly).Distinct().Order(StringComparer.Ordinal));
         foreach (var file in (string[])["src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs",
-                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs"])
+                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsValue.cs", "src/Broiler.VM.Profile.JavaScript/JsBinary.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsDecimal.cs", "src/Broiler.VM.Profile.JavaScript/JsBigInt.cs"])
         {
             Assert.Contains(covered, file2 => string.Equals(file2.RelativePath, file, StringComparison.Ordinal));
         }
 
         var declared = covered.SelectMany(static file => Declarations(file.RelativePath, file.Tree)).ToArray();
         Assert.Contains(declared, static d => d.Name == "Broiler.VM.Profile.JavaScript.JsNumberFormat.NumberToString");
+        Assert.Contains(declared, static d => d.Name == "Broiler.VM.Profile.JavaScript.JsBigInt");
         Assert.Empty(Violations(retired, declared));
     }
 
@@ -65,9 +70,10 @@ public sealed class I5RetiredDuplicatesRuleTests
         var source = File.ReadAllText(Path.Combine(ComponentGraph.Root, "src/tests/Broiler.VM.Architecture.Tests/witnesses/I5-re-adds-a-retired-member.cs.witness"));
         var violations = Violations(Register(), Declarations("witness.cs", AssuranceSources.Parse(source, "witness.cs"))).ToArray();
 
-        var violation = Assert.Single(violations);
-        Assert.Contains("Broiler.VM.Profile.JavaScript.JsNumberFormat.ToJsString", violation, StringComparison.Ordinal);
-        Assert.Contains("SJL-3.4", violation, StringComparison.Ordinal);
+        // A retired member and a retired top-level type, each reported once.
+        Assert.Equal(2, violations.Length);
+        Assert.Contains(violations, static v => v.Contains("Broiler.VM.Profile.JavaScript.JsNumberFormat.ToJsString", StringComparison.Ordinal) && v.Contains("SJL-3.4", StringComparison.Ordinal));
+        Assert.Contains(violations, static v => v.Contains("declares Broiler.VM.Profile.JavaScript.JsFloat16,", StringComparison.Ordinal) && v.Contains("SJL-4.4", StringComparison.Ordinal));
     }
 
     /// <summary>The register: member name to the milestone that retired it and what replaced it.</summary>
@@ -86,12 +92,20 @@ public sealed class I5RetiredDuplicatesRuleTests
         let entry = retired[d.Name]
         select $"{d.Where} declares {d.Name}, which {entry.Milestone} retired: {entry.ReplacedBy} implements it (rule I5)";
 
-    /// <summary>Every member declaration of every type, by fully qualified name, with its line.</summary>
+    /// <summary>
+    /// Every member declaration of every type, and every type declared directly in a namespace, by
+    /// fully qualified name, with its line.
+    /// </summary>
     internal static IEnumerable<(string Name, string Where)> Declarations(string path, SyntaxTree tree)
     {
         foreach (var type in tree.GetRoot().DescendantNodes().OfType<BaseTypeDeclarationSyntax>())
         {
             var typeName = FullName(type);
+            if (type.Parent is BaseNamespaceDeclarationSyntax or CompilationUnitSyntax)
+            {
+                yield return (typeName, $"{path}:{type.Identifier.GetLocation().GetLineSpan().StartLinePosition.Line + 1}");
+            }
+
             if (type is not TypeDeclarationSyntax members)
             {
                 continue;

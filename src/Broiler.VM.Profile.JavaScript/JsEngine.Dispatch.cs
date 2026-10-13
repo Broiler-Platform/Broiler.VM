@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Broiler.VM.Profile.JavaScript.Format;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -129,7 +130,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=83AA8A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=D16C0A
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(JsProgram program, int unitIndex, JsEnvironment? environment, JsValue thisValue, JsValue[] actualArguments, JsScriptFunction? self,
@@ -1361,7 +1362,7 @@ internal sealed partial class JsEngine
                             break;
 
                         case JsOpcode.Exponent:
-                            Binary(stack, ref sp, opcode, static (a, b) => JsRealm.MathPower(a, b), this);
+                            Binary(stack, ref sp, opcode, static (a, b) => MathKernels.Power(a, b), this);
                             pc++;
                             break;
 
@@ -1370,7 +1371,7 @@ internal sealed partial class JsEngine
                                 var numeric = ToNumeric(stack[sp - 1]);
                                 stack[sp - 1] = numeric.IsNumber
                                     ? JsValue.Number(-numeric.AsNumber())
-                                    : BigIntResult(JsBigInt.Negate(numeric.AsBigInt(), ChargeFuel));
+                                    : BigIntResult(JsBigInt.Negate(numeric.AsBigInt(), WorkCharge));
 
                                 pc++;
                                 break;
@@ -1404,8 +1405,8 @@ internal sealed partial class JsEngine
                             {
                                 var numeric = ToNumeric(stack[sp - 1]);
                                 stack[sp - 1] = numeric.IsNumber
-                                    ? JsValue.Number(~JsValue.ToInt32(numeric.AsNumber()))
-                                    : BigIntResult(JsBigInt.BitwiseNot(numeric.AsBigInt(), ChargeFuel));
+                                    ? JsValue.Number(~IntegerConversions.ToInt32(numeric.AsNumber()))
+                                    : BigIntResult(JsBigInt.BitwiseNot(numeric.AsBigInt(), WorkCharge));
 
                                 pc++;
                                 break;

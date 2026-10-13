@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -542,7 +543,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's TemporalZonedDateTimeToString (s6.5.4).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8C2DC2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B101B6
     // Broiler-Human:        PENDING
     internal static string ZonedDateTimeString(
         JsEngine engine,
@@ -553,7 +554,7 @@ internal static partial class JsTemporal
         string showOffset,
         long increment = 1,
         TemporalUnit unit = TemporalUnit.Nanosecond,
-        TemporalRounding mode = TemporalRounding.Trunc)
+        RoundingMode mode = RoundingMode.Trunc)
     {
         var epochNs = RoundInstant(zoned.EpochNanoseconds, increment, unit, mode);
         var offsetNs = OffsetNanosecondsFor(engine, zoned.TimeZone, epochNs);
@@ -574,8 +575,8 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's RoundTemporalInstant (s8.5.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E08078
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8B1AD9
     // Broiler-Human:        PENDING
-    internal static BigInteger RoundInstant(BigInteger epochNs, long increment, TemporalUnit unit, TemporalRounding mode) =>
-        JsTemporalCore.RoundToIncrementAsIfPositive(epochNs, JsTemporalCore.UnitLength(unit) * increment, mode);
+    internal static BigInteger RoundInstant(BigInteger epochNs, long increment, TemporalUnit unit, RoundingMode mode) =>
+        ExactRounding.RoundNumberToIncrementAsIfPositive(epochNs, BigInteger.One, JsTemporalCore.UnitLength(unit) * increment, mode);
 }

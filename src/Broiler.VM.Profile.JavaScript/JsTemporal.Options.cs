@@ -15,12 +15,14 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>The settings GetDifferenceSettings reads (s13.43).</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E78ED7
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CFB659
 // Broiler-Human:        PENDING
-internal readonly record struct JsDifferenceSettings(TemporalUnit SmallestUnit, TemporalUnit LargestUnit, TemporalRounding RoundingMode, long RoundingIncrement);
+internal readonly record struct JsDifferenceSettings(TemporalUnit SmallestUnit, TemporalUnit LargestUnit, RoundingMode RoundingMode, long RoundingIncrement);
 
 /// <summary>A ToSecondsStringPrecisionRecord (s13.16): the precision, the unit and the increment.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E9A13A
@@ -35,6 +37,7 @@ internal readonly record struct JsPrecision(int Precision, TemporalUnit Unit, lo
 // Broiler-Human:        PENDING
 internal static partial class JsTemporal
 {
+    /// <summary>The rounding modes' option names, in the order of the shared library's <see cref="RoundingMode"/> values, which <see cref="RoundingModeOption"/> casts an index to.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5931F8
     // Broiler-Human:        PENDING
     private static readonly string[] RoundingModeNames =
@@ -131,12 +134,12 @@ internal static partial class JsTemporal
         StringOption(engine, options, "offset", ["auto", "never"], "auto")!;
 
     /// <summary>The proposal's GetRoundingModeOption (s14.5.2.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=601A29
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=492FF8
     // Broiler-Human:        PENDING
-    internal static TemporalRounding RoundingMode(JsEngine engine, JsObject options, TemporalRounding fallback)
+    internal static RoundingMode RoundingModeOption(JsEngine engine, JsObject options, RoundingMode fallback)
     {
         var text = StringOption(engine, options, "roundingMode", RoundingModeNames, RoundingModeNames[(int)fallback])!;
-        return (TemporalRounding)System.Array.IndexOf(RoundingModeNames, text);
+        return (RoundingMode)System.Array.IndexOf(RoundingModeNames, text);
     }
 
     /// <summary>The proposal's GetRoundingIncrementOption (s14.5.2.3).</summary>
@@ -161,7 +164,7 @@ internal static partial class JsTemporal
         return (long)integer;
     }
 
-    /// <summary>The proposal's ValidateTemporalRoundingIncrement (s13.14).</summary>
+    /// <summary>The proposal's ValidateRoundingModeIncrement (s13.14).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=71B924
     // Broiler-Human:        PENDING
     internal static void ValidateIncrement(JsEngine engine, long increment, long dividend, bool inclusive)
@@ -304,7 +307,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's GetDifferenceSettings (s13.43).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=43B6B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2BA164
     // Broiler-Human:        PENDING
     internal static JsDifferenceSettings DifferenceSettings(
         JsEngine engine,
@@ -317,7 +320,7 @@ internal static partial class JsTemporal
     {
         var largest = UnitOption(engine, options, "largestUnit", required: false);
         var increment = RoundingIncrement(engine, options);
-        var mode = RoundingMode(engine, options, TemporalRounding.Trunc);
+        var mode = RoundingModeOption(engine, options, RoundingMode.Trunc);
         var smallest = UnitOption(engine, options, "smallestUnit", required: false);
 
         ValidateUnit(engine, largest, group, allowAuto: true);
@@ -363,7 +366,7 @@ internal static partial class JsTemporal
             ValidateIncrement(engine, increment, maximum, inclusive: false);
         }
 
-        return new JsDifferenceSettings(smallest, largest, since ? JsTemporalCore.Negate(mode) : mode, increment);
+        return new JsDifferenceSettings(smallest, largest, since ? ExactRounding.Negate(mode) : mode, increment);
     }
 
     // ---- Number conversions -----------------------------------------------------------------

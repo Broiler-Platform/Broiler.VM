@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
+// Relevant units:   29
+// Annotated:        29/29
 // Exempt:           21
-// Human-reviewed:   0/32
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       32
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -351,45 +351,4 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5F2FA6
     // Broiler-Human:        PENDING
     public static bool operator !=(JsValue left, JsValue right) => !left.Equals(right);
-
-    /// <summary>The abstract operation <c>ToInt32</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D7E592
-    // Broiler-Human:        PENDING
-    internal static int ToInt32(double value) => unchecked((int)ToUint32(value));
-
-    /// <summary>The abstract operation <c>ToUint32</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=273765
-    // Broiler-Human:        PENDING
-    internal static uint ToUint32(double value)
-    {
-        if (double.IsNaN(value) || double.IsInfinity(value))
-        {
-            return 0;
-        }
-
-        var truncated = System.Math.Truncate(value) % 4294967296.0;
-
-        if (truncated < 0)
-        {
-            truncated += 4294967296.0;
-        }
-
-        return (uint)truncated;
-    }
-
-    /// <summary>The abstract operation <c>ToIntegerOrInfinity</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4EA1A2
-    // Broiler-Human:        PENDING
-    internal static double ToInteger(double value)
-    {
-        if (double.IsNaN(value))
-        {
-            return 0;
-        }
-
-        // NEVER -0 (since 2026-09-22, JSeal VM-FIX-J): the operation answers a mathematical
-        // integer, which has no sign of zero, so -0 and every value truncating to it are +0. Adding
-        // +0 is the IEEE spelling of that; `[true].indexOf(true, -0)` answered -0 without it.
-        return double.IsInfinity(value) ? value : System.Math.Truncate(value) + 0.0;
-    }
 }

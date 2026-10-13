@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 using System;
@@ -865,7 +867,7 @@ internal sealed partial class JsRealm
     /// of the answer is charged, and the answer is held to <c>StringLengthCeiling</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B64400
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DEEE3D
     // Broiler-Human:        PENDING
     private JsValue RegExpSymbolReplace(JsEngine engine, JsValue receiver, JsValue argument, JsValue replaceValue)
     {
@@ -964,7 +966,7 @@ internal sealed partial class JsRealm
             {
                 var result = results[step];
                 var captureCount = Math.Max(
-                    ArrayToLength(engine, engine.GetProperty(result, "length")) - 1, 0);
+                    (double)IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(result, "length"))) - 1, 0);
                 matched = engine.ToStringValue(engine.GetProperty(result, "0"));
                 position = (int)Math.Clamp(
                     engine.ToInteger(engine.GetProperty(result, "index")), 0, input.Length);
@@ -1049,7 +1051,7 @@ internal sealed partial class JsRealm
     /// <c>lastIndex</c> is left where the per-position walk would have left it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3E3741
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=545EAF
     // Broiler-Human:        PENDING
     private JsValue RegExpSymbolSplit(
         JsEngine engine, JsValue receiver, JsValue argument, JsValue bound)
@@ -1121,7 +1123,7 @@ internal sealed partial class JsRealm
                 }
 
                 end = (int)Math.Min(
-                    ArrayToLength(engine, engine.GetProperty(splitter, "lastIndex")), size);
+                    (double)IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(splitter, "lastIndex"))), size);
             }
 
             if (end == start)
@@ -1141,7 +1143,7 @@ internal sealed partial class JsRealm
 
             var captureCount = match is not null
                 ? match.CaptureCount
-                : Math.Max(ArrayToLength(engine, engine.GetProperty(result, "length")) - 1, 0);
+                : Math.Max((double)IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(result, "length"))) - 1, 0);
 
             for (var group = 1d; group <= captureCount; group++)
             {
@@ -1235,12 +1237,12 @@ internal sealed partial class JsRealm
     /// Moves <c>lastIndex</c> past an empty match: read through <c>ToLength</c>, advanced, and
     /// written back with a throwing <c>Set</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E528E4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=49B303
     // Broiler-Human:        PENDING
     private static void RegExpStepPastEmpty(
         JsEngine engine, JsValue matcher, string input, bool fullUnicode)
     {
-        var thisIndex = ArrayToLength(engine, engine.GetProperty(matcher, "lastIndex"));
+        var thisIndex = (double)IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(matcher, "lastIndex")));
 
         engine.SetProperty(
             matcher,
@@ -1290,7 +1292,7 @@ internal sealed partial class JsRealm
     /// that honoured no species, no <c>flags</c> property and no custom <c>exec</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1F3158
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6E2642
     // Broiler-Human:        PENDING
     private JsValue RegExpMatchAllThrough(JsEngine engine, JsValue receiver, JsValue argument)
     {
@@ -1300,7 +1302,7 @@ internal sealed partial class JsRealm
         var species = BinarySpeciesConstructor(engine, receiver, regExpFunction);
         var flags = engine.ToStringValue(engine.GetProperty(receiver, "flags"));
         var matcher = engine.Construct(species, [receiver, JsValue.String(flags)], species);
-        var lastIndex = ArrayToLength(engine, engine.GetProperty(receiver, "lastIndex"));
+        var lastIndex = (double)IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(receiver, "lastIndex")));
         engine.SetProperty(matcher, "lastIndex", JsValue.Number(lastIndex), strict: true);
 
         return JsValue.Object(RegExpStringIterator(
@@ -1892,7 +1894,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>One <c>exec</c>, answering the match itself rather than an Array.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=66030A
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=9BE4BE
     // Broiler-Human:        PENDING
     private static JsRegExpMatch? RegExpMatchOne(
         JsEngine engine, RegExpObject target, string input)
@@ -1903,7 +1905,7 @@ internal sealed partial class JsRealm
         // negative to zero rather than failing on it: `re.lastIndex = -1` searches from the start,
         // and only a `lastIndex` past the end of the input ends the search before it begins. The
         // flags are consulted after the read, as RegExpBuiltinExec consults [[OriginalFlags]].
-        var start = ArrayToLength(engine, target.LastIndex);
+        var start = (double)IntegerConversions.ToLength(engine.ToNumber(target.LastIndex));
         var tracks = target.Global || target.Sticky;
 
         if (!tracks)

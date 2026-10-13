@@ -35,8 +35,10 @@ restores. `Broiler.VM.Profile.MachineCode` is packable and is its own family's, 
 **No foreign dependency.** Every dependency above is a Broiler.VM package but one:
 `Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms package, which rule I1
 admits for shipping and which `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at
-`0.1.0-preview.1` since the number-conversion cut-over
-([JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md)). Rule N37 holds every
+`0.2.0-preview.1` since the numerics cut-over
+([JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md)), and declared from the
+number-conversion cut-over ([JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md))
+at `0.1.0-preview.1` *(corrected: JSC-301)*. Rule N37 holds every
 `.nuspec` the candidate pack produced - the family's and the seven others' - to declaring none outside
 `Broiler.VM.` except a shared package rule I1 admits for shipping, at the version its allow-list pins or
 a later one *(corrected: JSC-296, JSC-300)*.

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary><c>Temporal.PlainTime</c> (Temporal s4; JSD-0054).</summary>
@@ -26,7 +28,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] TimeFieldNames = ["hour", "minute", "second", "millisecond", "microsecond", "nanosecond"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=650CAB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=30CA67
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainTime(JsObject temporal)
     {
@@ -100,7 +102,7 @@ internal sealed partial class JsRealm
             var plainTime = TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "round");
             var roundTo = TemporalRoundTo(engine, TemporalArgument(arguments, 0), "PlainTime");
             var increment = JsTemporal.RoundingIncrement(engine, roundTo);
-            var mode = JsTemporal.RoundingMode(engine, roundTo, TemporalRounding.HalfExpand);
+            var mode = JsTemporal.RoundingModeOption(engine, roundTo, RoundingMode.HalfExpand);
             var smallest = JsTemporal.UnitOption(engine, roundTo, "smallestUnit", required: true);
             JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
             JsTemporal.ValidateIncrement(engine, increment, JsTemporalCore.MaximumIncrement(smallest), inclusive: false);
@@ -118,7 +120,7 @@ internal sealed partial class JsRealm
             var plainTime = TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "toString");
             var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0));
             var digits = JsTemporal.FractionalSecondDigits(engine, options);
-            var mode = JsTemporal.RoundingMode(engine, options, TemporalRounding.Trunc);
+            var mode = JsTemporal.RoundingModeOption(engine, options, RoundingMode.Trunc);
             var smallest = JsTemporal.UnitOption(engine, options, "smallestUnit", required: false);
             JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
 

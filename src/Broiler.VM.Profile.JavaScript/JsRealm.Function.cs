@@ -17,6 +17,7 @@
 
 using System;
 using System.Globalization;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -67,7 +68,7 @@ internal sealed partial class JsRealm
     internal JsObject LegacyArgumentsGetter { get; private set; } = null!;
 
     /// <summary>Builds <c>Function.prototype</c>'s members and the refused <c>Function</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7D8154
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A3C19C
     // Broiler-Human:        PENDING
     private void SetupFunction()
     {
@@ -135,7 +136,7 @@ internal sealed partial class JsRealm
 
                     length = double.IsPositiveInfinity(number)
                         ? double.PositiveInfinity
-                        : Math.Max(0, JsValue.ToInteger(number) - boundArguments.Length);
+                        : Math.Max(0, IntegerConversions.ToIntegerOrInfinity(number) - boundArguments.Length);
                 }
             }
 
@@ -261,7 +262,7 @@ internal sealed partial class JsRealm
     /// and none is special-cased: the list is read through <c>length</c> and the index properties,
     /// which is the only reading that works for all three.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8BD9B1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7CAE8E
     // Broiler-Human:        PENDING
     private static JsValue[] FunctionSpreadArguments(JsEngine engine, JsValue source)
     {
@@ -278,7 +279,7 @@ internal sealed partial class JsRealm
         // `LengthOfArrayLike`, WHICH IS `ToLength` AND NOT `ToUint32`. The two disagree on exactly
         // the lengths a guest can write: `-1` is an empty list and not four billion reads, and
         // 2**32 + 2 is a list too long to call with and not a list of two (JSC-236).
-        var count = ArrayToLength(engine, engine.GetProperty(source, "length"));
+        var count = (double)IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(source, "length")));
 
         if (count == 0)
         {

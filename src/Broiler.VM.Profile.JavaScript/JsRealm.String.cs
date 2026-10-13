@@ -58,7 +58,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=80B9AA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3E4FBA
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -112,7 +112,7 @@ internal sealed partial class JsRealm
 
             foreach (var argument in arguments)
             {
-                builder.Append((char)(ushort)engine.ToUint32(argument));
+                builder.Append((char)IntegerConversions.ToUint16(engine.ToNumber(argument)));
             }
 
             return JsValue.String(builder.ToString());
@@ -350,7 +350,7 @@ internal sealed partial class JsRealm
             // `indexOf` at position zero.
             var position = double.IsNaN(requested)
                 ? double.PositiveInfinity
-                : JsValue.ToInteger(requested);
+                : IntegerConversions.ToIntegerOrInfinity(requested);
 
             var start = StringBoundIndex(position, text.Length);
             StringCharge(engine, text.Length + search.Length);

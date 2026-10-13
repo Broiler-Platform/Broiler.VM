@@ -3,19 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   85
-// Annotated:        85/85
-// Exempt:           27
-// Human-reviewed:   0/85
+// Relevant units:   74
+// Annotated:        74/74
+// Exempt:           13
+// Human-reviewed:   0/74
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       85
+// Unverified:       74
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -40,22 +41,6 @@ internal enum TemporalUnit
 
     /// <summary>The specification's <c>auto</c>.</summary>
     Auto,
-}
-
-/// <summary>The rounding modes of the proposal's Table 28.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=331C77
-// Broiler-Human:        PENDING
-internal enum TemporalRounding
-{
-    Ceil,
-    Floor,
-    Expand,
-    Trunc,
-    HalfCeil,
-    HalfFloor,
-    HalfExpand,
-    HalfTrunc,
-    HalfEven,
 }
 
 /// <summary>An ISO Date Record (s3.5.1): a valid ISO 8601 date, the year not necessarily within Temporal's range.</summary>
@@ -96,15 +81,16 @@ internal readonly record struct JsInternalDuration(JsDateDuration Date, BigInteg
 
 /// <summary>
 /// The ISO 8601 arithmetic Temporal is built on (phase F8, JSD-0054): dates and times as records,
-/// epoch days and nanoseconds, the representable limits, exact rounding to an increment, and the
-/// duration operations of the proposal's sections 3, 4, 5, 7 and 13.
+/// epoch days and nanoseconds, the representable limits, and the duration operations of the
+/// proposal's sections 3, 4, 5, 7 and 13. Rounding to an increment, the rounding modes and 𝔽 of a
+/// fraction are the shared library's <c>ExactRounding</c> and <c>RoundingMode</c> (JSD-0069).
 /// </summary>
 /// <remarks>
 /// <para>
 /// <b>Every quantity the proposal calls a mathematical value is exact here.</b> A time duration and an
 /// epoch-nanoseconds value are <see cref="BigInteger"/>s, a fraction is a numerator and a
 /// denominator, and a Number is made from either only where the proposal applies 𝔽, correctly
-/// rounded to nearest, ties to even. A duration's ten fields are doubles, because the proposal
+/// rounded to nearest, ties to even, by <c>ExactRounding.ToDouble</c>. A duration's ten fields are doubles, because the proposal
 /// stores them as float64-representable integers.
 /// </para>
 /// </remarks>
@@ -416,9 +402,9 @@ internal static class JsTemporalCore
     internal static JsTimeRecord AddTime(JsTimeRecord time, BigInteger duration) => BalanceTime(TimeNs(time) + duration);
 
     /// <summary>The proposal's RoundTime (s4.5.16).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3CC195
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7470D3
     // Broiler-Human:        PENDING
-    internal static JsTimeRecord RoundTime(JsTimeRecord time, long increment, TemporalUnit unit, TemporalRounding mode)
+    internal static JsTimeRecord RoundTime(JsTimeRecord time, long increment, TemporalUnit unit, RoundingMode mode)
     {
         var length = UnitLength(unit);
         var quantity = unit switch
@@ -431,7 +417,7 @@ internal static class JsTemporalCore
             _ => time.Nanosecond,
         };
 
-        var result = RoundToIncrement(quantity, increment * length, mode) / length;
+        var result = ExactRounding.RoundNumberToIncrement(quantity, BigInteger.One, increment * length, mode) / length;
 
         return unit switch
         {
@@ -486,234 +472,15 @@ internal static class JsTemporalCore
     }
 
     /// <summary>The proposal's RoundISODateTime (s5.5.11).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6F915E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3FCA6E
     // Broiler-Human:        PENDING
-    internal static JsIsoDateTime RoundDateTime(JsIsoDateTime dateTime, long increment, TemporalUnit unit, TemporalRounding mode)
+    internal static JsIsoDateTime RoundDateTime(JsIsoDateTime dateTime, long increment, TemporalUnit unit, RoundingMode mode)
     {
         var rounded = RoundTime(dateTime.Time, increment, unit, mode);
         return new JsIsoDateTime(AddDays(dateTime.Date, rounded.Days), rounded with { Days = 0 });
     }
 
-    // ---- Rounding ---------------------------------------------------------------------------
-
-    /// <summary>The proposal's NegateRoundingMode (s13.8).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C0FFAC
-    // Broiler-Human:        PENDING
-    internal static TemporalRounding Negate(TemporalRounding mode) => mode switch
-    {
-        TemporalRounding.Ceil => TemporalRounding.Floor,
-        TemporalRounding.Floor => TemporalRounding.Ceil,
-        TemporalRounding.HalfCeil => TemporalRounding.HalfFloor,
-        TemporalRounding.HalfFloor => TemporalRounding.HalfCeil,
-        _ => mode,
-    };
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0A895E
-    // Broiler-Human:        PENDING
-    private enum Unsigned
-    {
-        Zero,
-        Infinity,
-        HalfZero,
-        HalfInfinity,
-        HalfEven,
-    }
-
-    /// <summary>The proposal's GetUnsignedRoundingMode (s13.27, Table 22).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=231421
-    // Broiler-Human:        PENDING
-    private static Unsigned UnsignedMode(TemporalRounding mode, bool negative) => mode switch
-    {
-        TemporalRounding.Ceil => negative ? Unsigned.Zero : Unsigned.Infinity,
-        TemporalRounding.Floor => negative ? Unsigned.Infinity : Unsigned.Zero,
-        TemporalRounding.Expand => Unsigned.Infinity,
-        TemporalRounding.Trunc => Unsigned.Zero,
-        TemporalRounding.HalfCeil => negative ? Unsigned.HalfZero : Unsigned.HalfInfinity,
-        TemporalRounding.HalfFloor => negative ? Unsigned.HalfInfinity : Unsigned.HalfZero,
-        TemporalRounding.HalfExpand => Unsigned.HalfInfinity,
-        TemporalRounding.HalfTrunc => Unsigned.HalfZero,
-        _ => Unsigned.HalfEven,
-    };
-
-    /// <summary>
-    /// The proposal's ApplyUnsignedRoundingMode (s13.28) for a non-negative fraction
-    /// <paramref name="numerator"/> / <paramref name="denominator"/> between the integers
-    /// <paramref name="r1"/> and <paramref name="r1"/> + 1: the integer it rounds to.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C9A90C
-    // Broiler-Human:        PENDING
-    private static BigInteger ApplyUnsigned(BigInteger numerator, BigInteger denominator, BigInteger r1, Unsigned mode)
-    {
-        var remainder = numerator - (r1 * denominator);
-
-        if (remainder.IsZero)
-        {
-            return r1;
-        }
-
-        var r2 = r1 + 1;
-
-        switch (mode)
-        {
-            case Unsigned.Zero:
-                return r1;
-            case Unsigned.Infinity:
-                return r2;
-        }
-
-        var twice = remainder * 2;
-
-        if (twice < denominator)
-        {
-            return r1;
-        }
-
-        if (twice > denominator)
-        {
-            return r2;
-        }
-
-        return mode switch
-        {
-            Unsigned.HalfZero => r1,
-            Unsigned.HalfInfinity => r2,
-            _ => r1.IsEven ? r1 : r2,
-        };
-    }
-
-    /// <summary>
-    /// The proposal's RoundNumberToIncrement (s13.29) of a fraction <paramref name="numerator"/> /
-    /// <paramref name="denominator"/>, the denominator positive: a multiple of <paramref name="increment"/>.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=434861
-    // Broiler-Human:        PENDING
-    internal static BigInteger RoundToIncrement(BigInteger numerator, BigInteger denominator, BigInteger increment, TemporalRounding mode)
-    {
-        var negative = numerator.Sign < 0;
-        var magnitude = BigInteger.Abs(numerator);
-        var scaled = denominator * increment;
-        var r1 = BigInteger.Divide(magnitude, scaled);
-        var rounded = ApplyUnsigned(magnitude, scaled, r1, UnsignedMode(mode, negative));
-        return (negative ? -rounded : rounded) * increment;
-    }
-
-    /// <summary>The proposal's RoundNumberToIncrement (s13.29) of an integer.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B3BD5A
-    // Broiler-Human:        PENDING
-    internal static BigInteger RoundToIncrement(BigInteger x, BigInteger increment, TemporalRounding mode) =>
-        RoundToIncrement(x, BigInteger.One, increment, mode);
-
-    /// <summary>The proposal's RoundNumberToIncrementAsIfPositive (s13.30) of an integer.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6D2DB7
-    // Broiler-Human:        PENDING
-    internal static BigInteger RoundToIncrementAsIfPositive(BigInteger x, BigInteger increment, TemporalRounding mode)
-    {
-        var r1 = BigInteger.Divide(x, increment);
-
-        if (x.Sign < 0 && !(r1 * increment).Equals(x))
-        {
-            r1 -= 1;
-        }
-
-        // THE FLOOR ABOVE MAKES x - r1 × increment NON-NEGATIVE, so the positive table applies, and
-        // halfEven's tie goes to the even one of r1 and r1 + 1 themselves.
-        return ApplyUnsigned(x, increment, r1, UnsignedMode(mode, negative: false)) * increment;
-    }
-
-    /// <summary>
-    /// The unsigned rounding mode's choice between <paramref name="r1"/> and <paramref name="r2"/> for
-    /// a value whose absolute value is the fraction given, which lies between them (s13.28, as
-    /// NudgeToCalendarUnit applies it).
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6305B3
-    // Broiler-Human:        PENDING
-    internal static bool RoundsToSecond(
-        BigInteger numerator, BigInteger denominator, BigInteger r1, BigInteger r2, TemporalRounding mode, bool negative)
-    {
-        // THE SPACING IS ONE INCREMENT, so the fraction (value - r1) / (r2 - r1) decides.
-        var span = r2 - r1;
-        var offset = numerator - (r1 * denominator);
-        var unsignedMode = UnsignedMode(mode, negative);
-
-        if (offset.IsZero)
-        {
-            return false;
-        }
-
-        switch (unsignedMode)
-        {
-            case Unsigned.Zero:
-                return false;
-            case Unsigned.Infinity:
-                return true;
-        }
-
-        var twice = offset * 2;
-        var whole = span * denominator;
-
-        if (twice < whole)
-        {
-            return false;
-        }
-
-        if (twice > whole)
-        {
-            return true;
-        }
-
-        return unsignedMode switch
-        {
-            Unsigned.HalfZero => false,
-            Unsigned.HalfInfinity => true,
-            _ => !(BigInteger.Divide(r1, span).IsEven),
-        };
-    }
-
     // ---- Numbers ----------------------------------------------------------------------------
-
-    /// <summary>𝔽 of a fraction: the nearest double, ties to even.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D53D7A
-    // Broiler-Human:        PENDING
-    internal static double ToDouble(BigInteger numerator, BigInteger denominator)
-    {
-        if (denominator.Sign < 0)
-        {
-            numerator = -numerator;
-            denominator = -denominator;
-        }
-
-        if (numerator.IsZero)
-        {
-            return 0;
-        }
-
-        var negative = numerator.Sign < 0;
-        var n = BigInteger.Abs(numerator);
-
-        // SCALE SO THE QUOTIENT HAS 55 OR 56 BITS, then round to 53 with the remainder as sticky.
-        var shift = 55 - (int)(n.GetBitLength() - denominator.GetBitLength());
-        var quotient = shift >= 0
-            ? BigInteger.DivRem(n << shift, denominator, out var remainder)
-            : BigInteger.DivRem(n, denominator << -shift, out remainder);
-
-        var extra = (int)quotient.GetBitLength() - 53;
-        var mantissa = quotient >> extra;
-        var dropped = quotient - (mantissa << extra);
-        var half = BigInteger.One << (extra - 1);
-
-        if (dropped > half || (dropped == half && (!remainder.IsZero || !mantissa.IsEven)))
-        {
-            mantissa += 1;
-        }
-
-        var result = System.Math.ScaleB((double)mantissa, extra - shift);
-        return negative ? -result : result;
-    }
-
-    /// <summary>𝔽 of an integer: the nearest double, ties to even.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E717BC
-    // Broiler-Human:        PENDING
-    internal static double ToDouble(BigInteger value) => ToDouble(value, BigInteger.One);
 
     /// <summary>The exact integer of an integral double.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ADA9FA
@@ -849,7 +616,7 @@ internal static class JsTemporalCore
     /// The proposal's TemporalDurationFromInternal (s7.5.8) before CreateTemporalDuration: the ten
     /// fields, the time balanced up to <paramref name="largestUnit"/> and each made a Number.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=17F9CB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4BB382
     // Broiler-Human:        PENDING
     internal static double[] FromInternal(JsInternalDuration duration, TemporalUnit largestUnit)
     {
@@ -887,14 +654,14 @@ internal static class JsTemporalCore
             days = BigInteger.DivRem(hours, 24, out hours);
         }
 
-        double Signed(BigInteger value) => ToDouble(value * sign);
+        double Signed(BigInteger value) => ExactRounding.ToDouble(value * sign, BigInteger.One);
 
         return
         [
             duration.Date.Years,
             duration.Date.Months,
             duration.Date.Weeks,
-            ToDouble(Exact(duration.Date.Days) + (days * sign)),
+            ExactRounding.ToDouble(Exact(duration.Date.Days) + (days * sign), BigInteger.One),
             Signed(hours),
             Signed(minutes),
             Signed(seconds),
@@ -1007,11 +774,11 @@ internal static class JsTemporalCore
     }
 
     /// <summary>The proposal's FormatDateTimeUTCOffsetRounded (s11.1.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C46986
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E50F6A
     // Broiler-Human:        PENDING
     internal static string FormatOffsetRounded(long offsetNanoseconds)
     {
-        var rounded = RoundToIncrement(offsetNanoseconds, new BigInteger(60_000_000_000L), TemporalRounding.HalfExpand);
+        var rounded = ExactRounding.RoundNumberToIncrement(offsetNanoseconds, BigInteger.One, new BigInteger(60_000_000_000L), RoundingMode.HalfExpand);
         return FormatOffsetMinutes((long)(rounded / 60_000_000_000L));
     }
 

@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -24,9 +25,9 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal readonly record struct JsFraction(BigInteger Numerator, BigInteger Denominator)
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBB6CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AC9C01
     // Broiler-Human:        PENDING
-    internal double ToDouble() => JsTemporalCore.ToDouble(Numerator, Denominator);
+    internal double ToDouble() => ExactRounding.ToDouble(Numerator, Denominator);
 }
 
 /// <summary>The record GetTemporalRelativeToOption returns (s13.19): a plain date, a zoned instant, or neither.</summary>
@@ -216,11 +217,11 @@ internal static partial class JsTemporal
         AddTimeDuration(engine, time, JsTemporalCore.Exact(days) * JsTemporalCore.NsPerDay);
 
     /// <summary>The proposal's RoundTimeDurationToIncrement (s7.5.27).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=282D4D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0338BF
     // Broiler-Human:        PENDING
-    internal static BigInteger RoundTimeDurationToIncrement(JsEngine engine, BigInteger duration, BigInteger increment, TemporalRounding mode)
+    internal static BigInteger RoundTimeDurationToIncrement(JsEngine engine, BigInteger duration, BigInteger increment, RoundingMode mode)
     {
-        var rounded = JsTemporalCore.RoundToIncrement(duration, increment, mode);
+        var rounded = ExactRounding.RoundNumberToIncrement(duration, BigInteger.One, increment, mode);
 
         if (BigInteger.Abs(rounded) > JsTemporalCore.MaxTimeDuration)
         {
@@ -231,9 +232,9 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's RoundTimeDuration (s7.5.30).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=28BC96
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0A8FC3
     // Broiler-Human:        PENDING
-    internal static BigInteger RoundTimeDuration(JsEngine engine, BigInteger duration, long increment, TemporalUnit unit, TemporalRounding mode) =>
+    internal static BigInteger RoundTimeDuration(JsEngine engine, BigInteger duration, long increment, TemporalUnit unit, RoundingMode mode) =>
         RoundTimeDurationToIncrement(engine, duration, JsTemporalCore.UnitLength(unit) * increment, mode);
 
     /// <summary>The proposal's TotalTimeDuration (s7.5.31), exact.</summary>
@@ -243,9 +244,9 @@ internal static partial class JsTemporal
         new(duration, JsTemporalCore.UnitLength(unit));
 
     /// <summary>The proposal's DifferenceInstant (s8.5.6).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E66BFC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E06450
     // Broiler-Human:        PENDING
-    internal static JsInternalDuration DifferenceInstant(JsEngine engine, BigInteger ns1, BigInteger ns2, long increment, TemporalUnit smallestUnit, TemporalRounding mode) =>
+    internal static JsInternalDuration DifferenceInstant(JsEngine engine, BigInteger ns1, BigInteger ns2, long increment, TemporalUnit smallestUnit, RoundingMode mode) =>
         new(default, RoundTimeDuration(engine, ns2 - ns1, increment, smallestUnit, mode));
 
     // ---- relativeTo ---------------------------------------------------------------------------
@@ -404,7 +405,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's InterpretISODateTimeOffset (s6.5.1); a null time is start-of-day.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDC759
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=861784
     // Broiler-Human:        PENDING
     internal static BigInteger InterpretDateTimeOffset(
         JsEngine engine,
@@ -466,7 +467,7 @@ internal static partial class JsTemporal
             }
 
             if (matchMinutes &&
-                JsTemporalCore.RoundToIncrement(candidateOffset, new BigInteger(60_000_000_000L), TemporalRounding.HalfExpand) == offsetNanoseconds)
+                ExactRounding.RoundNumberToIncrement(candidateOffset, BigInteger.One, new BigInteger(60_000_000_000L), RoundingMode.HalfExpand) == offsetNanoseconds)
             {
                 return candidate;
             }
@@ -549,10 +550,10 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's DifferencePlainDateTimeWithRounding (s5.5.13).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6F3BED
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=932803
     // Broiler-Human:        PENDING
     internal static JsInternalDuration DifferencePlainDateTimeWithRounding(
-        JsEngine engine, JsIsoDateTime one, JsIsoDateTime two, string calendar, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, TemporalRounding mode)
+        JsEngine engine, JsIsoDateTime one, JsIsoDateTime two, string calendar, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, RoundingMode mode)
     {
         if (JsTemporalCore.Compare(one, two) == 0)
         {
@@ -652,10 +653,10 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's DifferenceZonedDateTimeWithRounding (s6.5.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1353A3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B6EBE1
     // Broiler-Human:        PENDING
     internal static JsInternalDuration DifferenceZonedDateTimeWithRounding(
-        JsEngine engine, BigInteger ns1, BigInteger ns2, string timeZone, string calendar, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, TemporalRounding mode)
+        JsEngine engine, BigInteger ns1, BigInteger ns2, string timeZone, string calendar, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, RoundingMode mode)
     {
         if (!JsTemporalCore.IsDateUnit(largestUnit))
         {
@@ -717,7 +718,7 @@ internal static partial class JsTemporal
         timeZone is null ? JsTemporalCore.UtcEpochNs(dateTime) : EpochNsFor(engine, timeZone, dateTime, "compatible");
 
     /// <summary>The proposal's ComputeNudgeWindow (s7.5.33).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C5571
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7038AD
     // Broiler-Human:        PENDING
     private static NudgeWindow ComputeNudgeWindow(
         JsEngine engine, int sign, JsInternalDuration duration, BigInteger originEpochNs, JsIsoDateTime dateTime,
@@ -726,7 +727,7 @@ internal static partial class JsTemporal
         long r1, r2;
         JsDateDuration startDate, endDate;
 
-        long Truncated(double value) => (long)JsTemporalCore.RoundToIncrement(JsTemporalCore.Exact(value), increment, TemporalRounding.Trunc);
+        long Truncated(double value) => (long)ExactRounding.RoundNumberToIncrement(JsTemporalCore.Exact(value), BigInteger.One, increment, RoundingMode.Trunc);
 
         switch (unit)
         {
@@ -751,7 +752,7 @@ internal static partial class JsTemporal
                 var weeksStart = DateAdd(engine, calendar, dateTime.Date, yearsMonths, reject: false);
                 var weeksEnd = JsTemporalCore.AddDays(weeksStart, (long)duration.Date.Days);
                 var until = DateUntil(engine, calendar, weeksStart, weeksEnd, TemporalUnit.Week);
-                var weeks = (long)JsTemporalCore.RoundToIncrement(JsTemporalCore.Exact(duration.Date.Weeks + until.Weeks), increment, TemporalRounding.Trunc);
+                var weeks = (long)ExactRounding.RoundNumberToIncrement(JsTemporalCore.Exact(duration.Date.Weeks + until.Weeks), BigInteger.One, increment, RoundingMode.Trunc);
                 r1 = weeks;
                 r2 = weeks + (increment * sign);
                 startDate = AdjustDate(engine, duration.Date, 0, r1);
@@ -789,11 +790,11 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's NudgeToCalendarUnit (s7.5.34): the nudge and the exact total.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CFE1C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9BF034
     // Broiler-Human:        PENDING
     private static (JsNudge Nudge, JsFraction Total) NudgeToCalendarUnit(
         JsEngine engine, int sign, JsInternalDuration duration, BigInteger originEpochNs, BigInteger destEpochNs, JsIsoDateTime dateTime,
-        string? timeZone, string calendar, long increment, TemporalUnit unit, TemporalRounding mode)
+        string? timeZone, string calendar, long increment, TemporalUnit unit, RoundingMode mode)
     {
         var didExpand = false;
         var window = ComputeNudgeWindow(engine, sign, duration, originEpochNs, dateTime, timeZone, calendar, increment, unit, additionalShift: false);
@@ -829,8 +830,12 @@ internal static partial class JsTemporal
         }
         else
         {
-            roundUp = JsTemporalCore.RoundsToSecond(
-                BigInteger.Abs(numerator), denominator, System.Math.Abs(window.R1), System.Math.Abs(window.R2), mode, sign < 0);
+            // THE SPACING IS ONE INCREMENT, so the window's ends are |r1| and |r2| and the unsigned
+            // mode chooses between them for the total's magnitude (s7.5.34 step 10 to 12).
+            var upper = new BigInteger(System.Math.Abs(window.R2));
+            roundUp = ExactRounding.ApplyUnsignedRoundingMode(
+                BigInteger.Abs(numerator), denominator, System.Math.Abs(window.R1), upper,
+                ExactRounding.GetUnsignedRoundingMode(mode, sign < 0)) == upper;
         }
 
         JsNudge nudge;
@@ -848,11 +853,11 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's NudgeToZonedTime (s7.5.35).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=873106
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A348A0
     // Broiler-Human:        PENDING
     private static JsNudge NudgeToZonedTime(
         JsEngine engine, int sign, JsInternalDuration duration, JsIsoDateTime dateTime, string timeZone, string calendar,
-        long increment, TemporalUnit unit, TemporalRounding mode)
+        long increment, TemporalUnit unit, RoundingMode mode)
     {
         var start = DateAdd(engine, calendar, dateTime.Date, duration.Date, reject: false);
         var startDateTime = new JsIsoDateTime(start, dateTime.Time);
@@ -887,10 +892,10 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's NudgeToDayOrTime (s7.5.36).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5988A4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D62846
     // Broiler-Human:        PENDING
     private static JsNudge NudgeToDayOrTime(
-        JsEngine engine, JsInternalDuration duration, BigInteger destEpochNs, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, TemporalRounding mode)
+        JsEngine engine, JsInternalDuration duration, BigInteger destEpochNs, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, RoundingMode mode)
     {
         var time = Add24HourDays(engine, duration.Time, duration.Date.Days);
         var unitLength = JsTemporalCore.UnitLength(smallestUnit);
@@ -910,7 +915,7 @@ internal static partial class JsTemporal
             remainder = rounded - (roundedWholeDays * JsTemporalCore.NsPerDay);
         }
 
-        var date = AdjustDate(engine, duration.Date, JsTemporalCore.ToDouble(days));
+        var date = AdjustDate(engine, duration.Date, ExactRounding.ToDouble(days, BigInteger.One));
         return new JsNudge(new JsInternalDuration(date, remainder), nudgedEpochNs, didExpandDays);
     }
 
@@ -966,11 +971,11 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's RoundRelativeDuration (s7.5.38); a null time zone is unset.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DDB951
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1A49E2
     // Broiler-Human:        PENDING
     internal static JsInternalDuration RoundRelativeDuration(
         JsEngine engine, JsInternalDuration duration, BigInteger originEpochNs, BigInteger destEpochNs, JsIsoDateTime dateTime,
-        string? timeZone, string calendar, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, TemporalRounding mode)
+        string? timeZone, string calendar, TemporalUnit largestUnit, long increment, TemporalUnit smallestUnit, RoundingMode mode)
     {
         var irregular = JsTemporalCore.IsCalendarUnit(smallestUnit) || (timeZone is not null && smallestUnit == TemporalUnit.Day);
         var sign = JsTemporalCore.Sign(duration) < 0 ? -1 : 1;
@@ -1001,7 +1006,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's TotalRelativeDuration (s7.5.39), exact.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=75D5E6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B4C59D
     // Broiler-Human:        PENDING
     internal static JsFraction TotalRelativeDuration(
         JsEngine engine, JsInternalDuration duration, BigInteger originEpochNs, BigInteger destEpochNs, JsIsoDateTime dateTime,
@@ -1010,7 +1015,7 @@ internal static partial class JsTemporal
         if (JsTemporalCore.IsCalendarUnit(unit) || (timeZone is not null && unit == TemporalUnit.Day))
         {
             var sign = JsTemporalCore.Sign(duration) < 0 ? -1 : 1;
-            return NudgeToCalendarUnit(engine, sign, duration, originEpochNs, destEpochNs, dateTime, timeZone, calendar, 1, unit, TemporalRounding.Trunc).Total;
+            return NudgeToCalendarUnit(engine, sign, duration, originEpochNs, destEpochNs, dateTime, timeZone, calendar, 1, unit, RoundingMode.Trunc).Total;
         }
 
         var time = Add24HourDays(engine, duration.Time, duration.Date.Days);

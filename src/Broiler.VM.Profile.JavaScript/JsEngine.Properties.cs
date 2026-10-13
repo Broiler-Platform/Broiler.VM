@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -337,11 +338,11 @@ internal sealed partial class JsEngine
     /// <c>RangeError</c> rather than whichever length the first call chose.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3406AB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6A9832
     // Broiler-Human:        PENDING
     internal uint ArrayLengthOrRefuse(JsValue value)
     {
-        var index = JsValue.ToUint32(ToNumber(value));
+        var index = IntegerConversions.ToUint32(ToNumber(value));
         var number = ToNumber(value);
 
         if (index != number)
@@ -1093,7 +1094,7 @@ internal sealed partial class JsEngine
     /// become a key nothing on the target could ever match, so an <c>ownKeys</c> trap that answered
     /// <c>[0]</c> would silently report a property called neither <c>0</c> nor anything else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7BA221
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=F70F2F
     // Broiler-Human:        PENDING
     internal List<JsValue> ProxyKeyList(JsValue list)
     {
@@ -1102,7 +1103,7 @@ internal sealed partial class JsEngine
             ThrowTypeError("the 'ownKeys' trap answered a value that is not an object");
         }
 
-        var length = JsValue.ToInteger(ToNumber(GetProperty(list, "length")));
+        var length = IntegerConversions.ToIntegerOrInfinity(ToNumber(GetProperty(list, "length")));
 
         if (length > JsRealm.ReflectArgumentCeiling)
         {

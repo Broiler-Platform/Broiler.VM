@@ -4,8 +4,8 @@
     "net10.0": {
       "Broiler.ECMAScript.Algorithms": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.1, 0.1.0-preview.1]",
-        "resolved": "0.1.0-preview.1",
+        "requested": "[0.2.0-preview.1, 0.2.0-preview.1]",
+        "resolved": "0.2.0-preview.1",
         "contentHash": "AAmUoN1rNXwTk7vTwNB3OoLDh2uk/zn3QRT4qfnnwBklqRKKcrS3sxxqUVBFW5Rv9el1OYl+e4OMnx230TvIrQ=="
       }
     }

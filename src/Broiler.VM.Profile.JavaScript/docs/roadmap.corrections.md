@@ -13103,3 +13103,20 @@ package beside the family's, with upstream unreachable.
 **Authority and date.** [JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md)
 sections 1 and 5, on [JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md)
 and the programme's work package SJL-3.4, items 1 and 6. 2026-10-12.
+
+### JSC-301
+
+**Where:** [`packages.md`](packages.md), the paragraph "No foreign dependency".
+
+**What the plan said.** "`Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms
+package, which rule I1 admits for shipping and which `Broiler.VM.Profile.JavaScript` and `.Compiler`
+declare at `0.1.0-preview.1` since the number-conversion cut-over".
+
+**What replaced it.** The two packages declare `0.2.0-preview.1` since the numerics cut-over, the
+version that carries the numerics area beside the number conversions; they declared `0.1.0-preview.1`
+from the number-conversion cut-over until then. Rule I1 admits one version of a package, so the
+allow-list, the committed feed and both lock files moved to it together.
+
+**Authority and date.** [JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md) section 1, on
+[JSD-0067](decisions/0067-numerics-move-to-the-shared-algorithms-library.md) and the programme's work
+package SJL-4.4. 2026-10-13.

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   56
-// Annotated:        56/56
+// Relevant units:   50
+// Annotated:        50/50
 // Exempt:           28
-// Human-reviewed:   0/56
+// Human-reviewed:   0/50
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  4/10 max
-// Unverified:       56
+// Unverified:       50
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -93,8 +93,8 @@ internal enum JsElementKind : byte
     Float64 = 8,
 
     /// <summary>
-    /// An IEEE 754 binary16, which a write rounds to through <see cref="JsFloat16"/> and a read
-    /// widens from exactly.
+    /// An IEEE 754 binary16, which a write rounds to through the shared library's <c>Float16</c> and a
+    /// read widens from exactly.
     /// </summary>
     /// <remarks>
     /// It is numbered after <see cref="Float64"/> rather than beside <see cref="Float32"/> so that
@@ -144,7 +144,7 @@ internal enum JsElementKind : byte
 /// <b>The write conversions are the language's, not the CLR's.</b> A C# cast from <c>double</c> to
 /// <c>int</c> is saturating and undefined for NaN; the language's <c>ToInt32</c> is modular and
 /// answers zero for NaN, so <c>new Int8Array(1)[0] = 1e30</c> is 0 and not 127. Every integer kind
-/// therefore goes through <see cref="JsValue.ToUint32(double)"/> and keeps the low bits, and only
+/// therefore goes through <see cref="IntegerConversions.ToUint32(double)"/> and keeps the low bits, and only
 /// <see cref="JsElementKind.Uint8Clamped"/> - which the specification defines as a clamp with
 /// round-half-to-even - departs from that.
 /// </para>
@@ -248,7 +248,7 @@ internal static class JsElements
     /// kinds are read through <see cref="ReadValue"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F5A051
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FF6E1A
     // Broiler-Human:        PENDING
     internal static double Read(byte[] bytes, int at, JsElementKind kind, bool littleEndian)
     {
@@ -270,7 +270,7 @@ internal static class JsElements
             JsElementKind.Uint32 => littleEndian
                 ? BinaryPrimitives.ReadUInt32LittleEndian(span)
                 : BinaryPrimitives.ReadUInt32BigEndian(span),
-            JsElementKind.Float16 => JsFloat16.Decode(littleEndian
+            JsElementKind.Float16 => Float16.Decode(littleEndian
                 ? BinaryPrimitives.ReadUInt16LittleEndian(span)
                 : BinaryPrimitives.ReadUInt16BigEndian(span)),
             JsElementKind.Float32 => (double)(littleEndian
@@ -290,7 +290,7 @@ internal static class JsElements
     /// A BigInt kind is refused by name, as <see cref="Read"/> refuses it; see
     /// <see cref="WriteValue"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5BAA25
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E46C64
     // Broiler-Human:        PENDING
     internal static void Write(byte[] bytes, int at, JsElementKind kind, double value, bool littleEndian)
     {
@@ -300,17 +300,18 @@ internal static class JsElements
         {
             case JsElementKind.Int8:
             case JsElementKind.Uint8:
-                span[0] = unchecked((byte)JsValue.ToUint32(value));
+                // ONE WRITE SERVES BOTH SIGNS: ToInt8 and ToUint8 store the same byte.
+                span[0] = IntegerConversions.ToUint8(value);
                 return;
 
             case JsElementKind.Uint8Clamped:
-                span[0] = Clamp(value);
+                span[0] = IntegerConversions.ToUint8Clamp(value);
                 return;
 
             case JsElementKind.Int16:
             case JsElementKind.Uint16:
                 {
-                    var narrowed = unchecked((ushort)JsValue.ToUint32(value));
+                    var narrowed = IntegerConversions.ToUint16(value);
 
                     if (littleEndian)
                     {
@@ -329,7 +330,7 @@ internal static class JsElements
                 {
                     // ONE WRITE SERVES BOTH SIGNS. Int32 and Uint32 differ in how a READ interprets the
                     // four bytes; the bits a write produces are the same modular wrap either way.
-                    var wrapped = JsValue.ToUint32(value);
+                    var wrapped = IntegerConversions.ToUint32(value);
 
                     if (littleEndian)
                     {
@@ -345,7 +346,7 @@ internal static class JsElements
 
             case JsElementKind.Float16:
                 {
-                    var encoded = JsFloat16.Encode(value);
+                    var encoded = Float16.Encode(value, Float16NanPolicy.Canonical);
 
                     if (littleEndian)
                     {
@@ -401,7 +402,7 @@ internal static class JsElements
     /// Reads one element of any kind: a Number for the ten Number kinds and a BigInt for the two
     /// 64-bit integer kinds - the specification's <c>GetValueFromBuffer</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=B99A2C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=14E1E9
     // Broiler-Falsified-If: a BigInt64 element reads as anything but the two's-complement integer of its eight bytes, a BigUint64 element as anything but their unsigned integer, or either as a Number
     // Broiler-Human:        PENDING
     internal static JsValue ReadValue(byte[] bytes, int at, JsElementKind kind, bool littleEndian)
@@ -416,6 +417,18 @@ internal static class JsElements
             ? BinaryPrimitives.ReadUInt64LittleEndian(span)
             : BinaryPrimitives.ReadUInt64BigEndian(span);
 
+        return BigIntElement(kind, raw);
+    }
+
+    /// <summary>
+    /// A 64-bit integer element's eight bytes, as one value, as the BigInt its kind reads them as: the
+    /// one reading <see cref="ReadValue"/> and the <c>Atomics</c> operations share.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=64D478
+    // Broiler-Falsified-If: a BigInt64 element reads as anything but the two's-complement integer of its bits, or a BigUint64 element as anything but their unsigned integer
+    // Broiler-Human:        PENDING
+    internal static JsValue BigIntElement(JsElementKind kind, ulong raw)
+    {
         // THE SIGN IS THE READ'S, NOT THE BYTES': the same eight bytes are -1n through a
         // BigInt64Array and 2n ** 64n - 1n through a BigUint64Array.
         var integer = kind == JsElementKind.BigInt64
@@ -435,7 +448,7 @@ internal static class JsElements
     /// here is a defect in a built-in and not a guest error: it ends the invocation by name rather
     /// than storing a value converted a second, silent way.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=B9CACA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=1F0293
     // Broiler-Falsified-If: a BigInt element stores anything but its value modulo 2**64, or a value of the other content type is stored rather than refused
     // Broiler-Human:        PENDING
     internal static void WriteValue(byte[] bytes, int at, JsElementKind kind, JsValue value, bool littleEndian)
@@ -462,7 +475,7 @@ internal static class JsElements
         // differ only in how the result is READ, and the bits either stores are the value modulo
         // 2**64.
         var span = new Span<byte>(bytes, at, 8);
-        var low = Low64(value.AsBigInt().Value);
+        var low = IntegerConversions.ToBigUint64(value.AsBigInt().Value);
 
         if (littleEndian)
         {
@@ -475,36 +488,6 @@ internal static class JsElements
     }
 
     /// <summary>
-    /// The low 64 bits of <paramref name="value"/> in two's complement: <paramref name="value"/>
-    /// modulo 2**64.
-    /// </summary>
-    /// <remarks>
-    /// A value that fits a <c>long</c> or a <c>ulong</c> converts directly; anything wider is masked,
-    /// which reads every word of it. The engine's element conversion narrows a wide value ONCE,
-    /// charged, with <see cref="Narrow"/>, so a write repeated over many elements - <c>fill</c> -
-    /// never masks a wide value more than once.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=01A0C1
-    // Broiler-Falsified-If: the answer differs from the value modulo 2**64 for any integer, negative ones included
-    // Broiler-Human:        PENDING
-    internal static ulong Low64(BigInteger value)
-    {
-        if (value >= long.MinValue && value <= long.MaxValue)
-        {
-            return unchecked((ulong)(long)value);
-        }
-
-        if (value.Sign > 0 && value <= ulong.MaxValue)
-        {
-            return (ulong)value;
-        }
-
-        // BigInteger's AND IS TWO'S COMPLEMENT WITH AN INFINITE SIGN, so a negative value masks to
-        // exactly its residue modulo 2**64.
-        return (ulong)(value & ulong.MaxValue);
-    }
-
-    /// <summary>
     /// <paramref name="value"/> reduced to what an element of <paramref name="kind"/> would read
     /// back: <c>BigInt.asIntN(64, v)</c> or <c>BigInt.asUintN(64, v)</c>.
     /// </summary>
@@ -513,14 +496,13 @@ internal static class JsElements
     /// that converts once and writes many times narrows once. A value already in range is answered
     /// as itself.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=35300B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F1D264
     // Broiler-Human:        PENDING
     internal static JsBigInt Narrow(JsElementKind kind, JsBigInt value)
     {
-        var low = Low64(value.Value);
         var narrowed = kind == JsElementKind.BigInt64
-            ? new BigInteger(unchecked((long)low))
-            : new BigInteger(low);
+            ? new BigInteger(IntegerConversions.ToBigInt64(value.Value))
+            : new BigInteger(IntegerConversions.ToBigUint64(value.Value));
 
         return narrowed == value.Value ? value : new JsBigInt(narrowed);
     }
@@ -593,87 +575,6 @@ internal static class JsElements
             "a BigInt reached a typed-array element write that has no engine to refuse it"),
         _ => double.NaN,
     };
-
-    /// <summary>The clamp <see cref="JsElementKind.Uint8Clamped"/> writes through.</summary>
-    /// <remarks>
-    /// Round-half-to-EVEN, which is the one place the language rounds that way: 0.5 stores 0 and
-    /// 1.5 stores 2. Every other rounding in the language is half-up, so a reader who assumes
-    /// <c>Math.round</c>'s rule here gets 1 and 2 and a picture one grey level off.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1A26B3
-    // Broiler-Human:        PENDING
-    private static byte Clamp(double value)
-    {
-        if (double.IsNaN(value) || value <= 0)
-        {
-            return 0;
-        }
-
-        return value >= 255 ? (byte)255 : (byte)Math.Round(value, MidpointRounding.ToEven);
-    }
-}
-
-/// <summary>
-/// The one conversion between a Number and an IEEE 754 binary16, which <c>Math.f16round</c>,
-/// <c>DataView.prototype.getFloat16</c>/<c>setFloat16</c> and <c>Float16Array</c> all go through.
-/// </summary>
-/// <remarks>
-/// <para>
-/// <b>The narrowing is the platform's <c>(System.Half)double</c>, and that is a verified claim
-/// rather than an assumption.</b> The language rounds a Number to binary16 ONCE, directly, ties to
-/// even; a conversion that went through <c>float</c> first would round twice and answer wrongly
-/// for a double just above a binary16 midpoint - <c>1 + 2**-11 + 2**-40</c> becomes the tie
-/// <c>1 + 2**-11</c> in binary32 and then 1, where the correct answer is <c>1 + 2**-10</c>. The
-/// runtime this profile targets converts from the double directly; it was checked on 2026-09-21
-/// against an integer-arithmetic reference over every binary16 value, every midpoint between two
-/// neighbours, the doubles either side of each midpoint and random points between neighbours, with
-/// no disagreement, and the probe <c>src/tests/differential/the-float16-surface.js</c> repeats the
-/// boundary sweep in the guest on every run. Should a runtime change that, the probe is what fails.
-/// </para>
-/// <para>
-/// <b>What the rounding answers at the edges, all of which is IEEE 754's and the language's.</b>
-/// A magnitude at or above 65520 - the midpoint between the largest finite value 65504 and the
-/// next power of two - becomes an infinity of the same sign; a magnitude at or below 2**-25 - half
-/// the smallest subnormal - becomes a zero of the same sign, so a negative number that underflows
-/// is <c>-0</c>; subnormals are kept rather than flushed; infinities and signed zeros are exact.
-/// </para>
-/// <para>
-/// <b>Every NaN is written as the one quiet NaN <c>0x7E00</c>.</b> The specification lets an
-/// implementation choose which NaN encoding a write stores, and choosing one makes the bytes a
-/// property of the profile rather than of which NaN the guest happened to compute. A read is
-/// exact in the other direction: every binary16 value, NaN included, widens to a double without
-/// rounding.
-/// </para>
-/// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=99D5EC
-// Broiler-Human:        PENDING
-internal static class JsFloat16
-{
-    /// <summary>The quiet NaN every NaN is stored as.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0C7512
-    // Broiler-Human:        PENDING
-    private const ushort QuietNaN = 0x7E00;
-
-    /// <summary>The binary16 bits <paramref name="value"/> rounds to, ties to even.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=866FE2
-    // Broiler-Human:        PENDING
-    internal static ushort Encode(double value) =>
-        double.IsNaN(value)
-            ? QuietNaN
-            : BitConverter.HalfToUInt16Bits((Half)value);
-
-    /// <summary>The Number the binary16 <paramref name="bits"/> denote, which is exact.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0FDF0F
-    // Broiler-Human:        PENDING
-    internal static double Decode(ushort bits) =>
-        (double)BitConverter.UInt16BitsToHalf(bits);
-
-    /// <summary>
-    /// <paramref name="value"/> rounded to the nearest binary16 and widened back: <c>Math.f16round</c>.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3640E7
-    // Broiler-Human:        PENDING
-    internal static double Round(double value) => Decode(Encode(value));
 }
 
 /// <summary>A block of bytes a typed array or a <c>DataView</c> reads and writes through.</summary>

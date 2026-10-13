@@ -3,22 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           1
-// Human-reviewed:   0/19
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         1/0
 // Resource impact:  3/10 max
-// Unverified:       19
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
 using System.Buffers.Binary;
-using System.Collections.Generic;
 using System.Security.Cryptography;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -35,13 +35,17 @@ namespace Broiler.VM.Profile.JavaScript;
 /// as a silent score difference rather than as a throw.
 /// </para>
 /// <para>
-/// <b>Four of these are not the platform's function of the same name.</b> <c>Math.round</c> rounds
-/// halves toward +&#8734; rather than to even, so <c>System.Math.Round</c> answers <c>2</c> where the
-/// language answers <c>3</c> for <c>2.5</c>; <c>Math.max</c> and <c>Math.min</c> have to distinguish
-/// <c>+0</c> from <c>-0</c>, which <c>&gt;</c> cannot; and <c>Math.pow</c> answers <c>NaN</c> for
-/// <c>pow(1, &#8734;)</c> where IEEE 754 - and therefore <c>System.Math.Pow</c> - answers <c>1</c>.
-/// Each is written out below with the specification's cases rather than delegated. Two more,
-/// <c>expm1</c> and <c>log1p</c>, are the platform's with the sign of a zero put back.
+/// <b>Eight of these are the shared library's, not the platform's function of the same name.</b>
+/// <c>Math.round</c>, <c>Math.pow</c> (and with it the <c>**</c> operator), <c>Math.hypot</c>,
+/// <c>Math.cbrt</c>, <c>Math.expm1</c>, <c>Math.log1p</c>, <c>Math.f16round</c> and the sum of
+/// <c>Math.sumPrecise</c> are <c>Broiler.ECMAScript.Numbers</c>' <c>MathKernels</c>,
+/// <c>Float16</c> and <c>PreciseSum</c> (JSD-0069). The platform's functions differ from the
+/// language: <c>System.Math.Round</c> answers <c>2</c> where the language answers <c>3</c> for
+/// <c>2.5</c>, and IEEE 754's pow - and therefore <c>System.Math.Pow</c> - answers <c>1</c> for
+/// <c>pow(1, &#8734;)</c> where the language answers <c>NaN</c>. What runs guest code stays here:
+/// each argument's <c>ToNumber</c>, in order, and <c>sumPrecise</c>'s iteration. <c>Math.max</c> and
+/// <c>Math.min</c> are written out below, because they have to distinguish <c>+0</c> from <c>-0</c>,
+/// which <c>&gt;</c> cannot.
 /// </para>
 /// <para>
 /// <b><c>Math.random</c> is a realm-local xorshift seeded per realm from the platform's entropy
@@ -84,7 +88,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Math</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B94BC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7EAAE2
     // Broiler-Human:        PENDING
     private void SetupMath()
     {
@@ -119,55 +123,45 @@ internal sealed partial class JsRealm
         // The arguments are coerced left to right, which is observable through a valueOf.
         Method(math, "atan2", 2, static (engine, _, arguments) => JsValue.Number(Math.Atan2(MathNumberAt(engine, arguments, 0), MathNumberAt(engine, arguments, 1))));
 
-        // THE SNAP IS NOT A TIDY-UP, it is what makes a perfect cube answer its own root. The
-        // specification leaves this function's precision implementation-defined, so both
-        // `Math.cbrt(27) === 3` and the platform's `3.0000000000000004` are conforming - but a
-        // program that indexes by a cube root, or compares one against an integer, sees the second
-        // as a defect. Snapping only when the rounded value cubes back EXACTLY means no result that
-        // was not already a perfect cube is moved.
-        Method(math, "cbrt", 1, static (engine, _, arguments) =>
-        {
-            var value = MathNumberAt(engine, arguments, 0);
-            var root = Math.Cbrt(value);
-            var near = Math.Round(root);
-
-            return JsValue.Number(near * near * near == value ? near : root);
-        });
+        // CORRECTLY ROUNDED, so a perfect cube answers its own root: `Math.cbrt(27) === 3`, where
+        // the platform's `3.0000000000000004` is conforming too but reads as a defect to a program
+        // that compares a cube root against an integer.
+        Method(math, "cbrt", 1, static (engine, _, arguments) => JsValue.Number(MathKernels.Cbrt(MathNumberAt(engine, arguments, 0))));
 
         Method(math, "ceil", 1, static (engine, _, arguments) => JsValue.Number(Math.Ceiling(MathNumberAt(engine, arguments, 0))));
         Method(math, "clz32", 1, static (engine, _, arguments) => JsValue.Number(MathLeadingZeros(engine.ToUint32(ArgOfMath(arguments, 0)))));
         Method(math, "cos", 1, static (engine, _, arguments) => JsValue.Number(Math.Cos(MathNumberAt(engine, arguments, 0))));
         Method(math, "cosh", 1, static (engine, _, arguments) => JsValue.Number(Math.Cosh(MathNumberAt(engine, arguments, 0))));
         Method(math, "exp", 1, static (engine, _, arguments) => JsValue.Number(Math.Exp(MathNumberAt(engine, arguments, 0))));
-        Method(math, "expm1", 1, static (engine, _, arguments) => JsValue.Number(MathExpMinusOne(MathNumberAt(engine, arguments, 0))));
+        Method(math, "expm1", 1, static (engine, _, arguments) => JsValue.Number(MathKernels.Expm1(MathNumberAt(engine, arguments, 0))));
         Method(math, "floor", 1, static (engine, _, arguments) => JsValue.Number(Math.Floor(MathNumberAt(engine, arguments, 0))));
         Method(math, "fround", 1, static (engine, _, arguments) => JsValue.Number((double)(float)MathNumberAt(engine, arguments, 0)));
 
         // HALF PRECISION, WHICH THE LANGUAGE ADDED FOR THE SAME REASON IT ADDED `fround`: a program
         // that stores numbers in a Float16Array wants to know what a value will become before it
         // stores it. So it is the SAME conversion the Float16Array and the DataView accessors
-        // store through - `JsFloat16`, whose remarks record why the platform's rounding is the
-        // language's - and a value this answers is exactly the value a store would keep.
-        Method(math, "f16round", 1, static (engine, _, arguments) => JsValue.Number(JsFloat16.Round(MathNumberAt(engine, arguments, 0))));
+        // store through - the shared library's `Float16` - and a value this answers is exactly the
+        // value a store would keep.
+        Method(math, "f16round", 1, static (engine, _, arguments) => JsValue.Number(Float16.Round(MathNumberAt(engine, arguments, 0))));
 
         // AN EXACTLY ROUNDED SUM, which is not what a loop of additions gives: adding left to right
         // rounds at every step and the errors accumulate, so `0.1 + 0.2 + 0.3` and
-        // `0.3 + 0.2 + 0.1` differ. This keeps a list of non-overlapping partial sums - Shewchuk's
-        // distillation - so the exact value is carried and rounded once, at the end.
-        Method(math, "sumPrecise", 1, (engine, _, arguments) => JsValue.Number(MathSumPrecise(engine, MathArgumentAt(arguments, 0))));
-        Method(math, "hypot", 2, static (engine, _, arguments) => JsValue.Number(MathHypotenuse(engine, arguments)));
+        // `0.3 + 0.2 + 0.1` differ. The shared library's `PreciseSum` carries the exact value and
+        // rounds it once, at the end; the iteration is this file's.
+        Method(math, "sumPrecise", 1, static (engine, _, arguments) => JsValue.Number(MathSumPrecise(engine, MathArgumentAt(arguments, 0))));
+        Method(math, "hypot", 2, static (engine, _, arguments) => JsValue.Number(MathKernels.Hypot(MathHypotOperands(engine, arguments))));
         Method(math, "imul", 2, static (engine, _, arguments) => JsValue.Number(MathIntegerProduct(engine, arguments)));
         Method(math, "log", 1, static (engine, _, arguments) => JsValue.Number(Math.Log(MathNumberAt(engine, arguments, 0))));
-        Method(math, "log1p", 1, static (engine, _, arguments) => JsValue.Number(MathLogOnePlus(MathNumberAt(engine, arguments, 0))));
+        Method(math, "log1p", 1, static (engine, _, arguments) => JsValue.Number(MathKernels.Log1p(MathNumberAt(engine, arguments, 0))));
         Method(math, "log10", 1, static (engine, _, arguments) => JsValue.Number(Math.Log10(MathNumberAt(engine, arguments, 0))));
         Method(math, "log2", 1, static (engine, _, arguments) => JsValue.Number(Math.Log2(MathNumberAt(engine, arguments, 0))));
         Method(math, "max", 2, static (engine, _, arguments) => JsValue.Number(MathLargest(engine, arguments)));
         Method(math, "min", 2, static (engine, _, arguments) => JsValue.Number(MathSmallest(engine, arguments)));
-        Method(math, "pow", 2, static (engine, _, arguments) => JsValue.Number(MathPower(MathNumberAt(engine, arguments, 0), MathNumberAt(engine, arguments, 1))));
+        Method(math, "pow", 2, static (engine, _, arguments) => JsValue.Number(MathKernels.Power(MathNumberAt(engine, arguments, 0), MathNumberAt(engine, arguments, 1))));
 
         // The only member that reads and writes realm state, so the only lambda that is not static.
         Method(math, "random", 0, (_, _, _) => JsValue.Number(MathNextRandom()));
-        Method(math, "round", 1, static (engine, _, arguments) => JsValue.Number(MathRoundHalfUp(MathNumberAt(engine, arguments, 0))));
+        Method(math, "round", 1, static (engine, _, arguments) => JsValue.Number(MathKernels.Round(MathNumberAt(engine, arguments, 0))));
         Method(math, "sign", 1, static (engine, _, arguments) => JsValue.Number(MathSignOf(MathNumberAt(engine, arguments, 0))));
         Method(math, "sin", 1, static (engine, _, arguments) => JsValue.Number(Math.Sin(MathNumberAt(engine, arguments, 0))));
         Method(math, "sinh", 1, static (engine, _, arguments) => JsValue.Number(Math.Sinh(MathNumberAt(engine, arguments, 0))));
@@ -187,79 +181,6 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static double MathNumberAt(JsEngine engine, JsValue[] arguments, int at) =>
         engine.ToNumber(ArgOfMath(arguments, at));
-
-    /// <summary>
-    /// <c>exp(x) - 1</c>, computed without losing the significant digits near zero.
-    /// </summary>
-    /// <remarks>
-    /// The operation is IEEE 754's <c>expm1</c> and it lives on <c>double</c> rather than on
-    /// <c>System.Math</c>, which has no such member. The zero case is taken here rather than left
-    /// to the platform because <c>double.ExpM1(-0)</c> answers <c>+0</c> and the language requires
-    /// <c>-0</c> - a difference nothing but a conformance test ever sees, and one it always sees.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=305E18
-    // Broiler-Human:        PENDING
-    private static double MathExpMinusOne(double value) =>
-        value == 0 ? value : double.ExpM1(value);
-
-    /// <summary>
-    /// <c>log(1 + x)</c>, computed without losing the significant digits near zero.
-    /// </summary>
-    /// <remarks>
-    /// IEEE 754's <c>log1p</c>, with the same signed-zero correction as
-    /// <see cref="MathExpMinusOne"/>: <c>double.LogP1(-0)</c> answers <c>+0</c> where the language
-    /// requires <c>-0</c>.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7ADF5B
-    // Broiler-Human:        PENDING
-    private static double MathLogOnePlus(double value) =>
-        value == 0 ? value : double.LogP1(value);
-
-    /// <summary>
-    /// The specification's <c>Math.round</c>, which is not <c>System.Math.Round</c>.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The language rounds a half toward +&#8734; and the platform rounds it to even, so the two
-    /// disagree on every other half: <c>Math.round(2.5)</c> is <c>3</c> and
-    /// <c>System.Math.Round(2.5)</c> is <c>2</c>. Rounding toward +&#8734; also means
-    /// <c>Math.round(-0.5)</c> is <c>-0</c> rather than <c>-1</c>.
-    /// </para>
-    /// <para>
-    /// The three guards before the <c>floor(x + 1/2)</c> are not decoration. An already-integral
-    /// argument is returned unchanged, because for a magnitude at or above 2^52 the addition itself
-    /// rounds and would answer <c>x + 1</c> for an odd <c>x</c>. The two half-open intervals around
-    /// zero are returned as signed zeroes, because <c>floor(0.49999999999999994 + 0.5)</c> is
-    /// <c>1</c> - the addition rounds up to exactly <c>1</c> - where the closest integer is
-    /// <c>0</c>.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=98C550
-    // Broiler-Human:        PENDING
-    private static double MathRoundHalfUp(double value)
-    {
-        if (double.IsNaN(value) || double.IsInfinity(value) || value == 0)
-        {
-            return value;
-        }
-
-        if (Math.Floor(value) == value)
-        {
-            return value;
-        }
-
-        if (value > 0 && value < 0.5)
-        {
-            return 0;
-        }
-
-        if (value < 0 && value >= -0.5)
-        {
-            return -0.0;
-        }
-
-        return Math.Floor(value + 0.5);
-    }
 
     /// <summary>The specification's <c>Math.sign</c>, which answers a signed zero for a signed zero.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5E329B
@@ -345,75 +266,42 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// The specification's <c>Math.hypot</c>: <c>+0</c> for no arguments, <c>+&#8734;</c> when any
-    /// argument is infinite even if another is <c>NaN</c>, and otherwise the square root of the sum
-    /// of the squares.
+    /// <c>Math.hypot</c>'s arguments as Numbers, each argument's <c>ToNumber</c> in order, for the
+    /// shared library's <c>MathKernels.Hypot</c>.
     /// </summary>
     /// <remarks>
-    /// The sum is taken over the magnitudes divided by the largest of them, so an argument near the
-    /// top of the range does not overflow on being squared and one near the bottom does not flush to
-    /// zero. The scaling is exact for powers of two and costs one extra pass, which is why the
-    /// coerced values are kept rather than re-read - re-reading would run a <c>valueOf</c> twice.
+    /// Every argument is coerced before any is examined, because coercion is observable through a
+    /// <c>valueOf</c>; the coerced values are kept rather than re-read, since re-reading would run a
+    /// <c>valueOf</c> twice. <b>The charges are the engine's and are unchanged</b>: one unit per
+    /// argument as it is coerced, and, when every value is finite and one is not a zero, one more per
+    /// argument for the summing pass the kernel then makes.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=22E49A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5EBD76
     // Broiler-Human:        PENDING
-    private static double MathHypotenuse(JsEngine engine, JsValue[] arguments)
+    private static double[] MathHypotOperands(JsEngine engine, JsValue[] arguments)
     {
-        var magnitudes = new List<double>(arguments.Length);
-        var largest = 0.0;
-        var sawInfinity = false;
-        var sawNotANumber = false;
+        var values = new double[arguments.Length];
+        var summed = true;
+        var nonZero = false;
 
         for (var at = 0; at < arguments.Length; at++)
         {
             engine.Charge(1);
             var value = engine.ToNumber(arguments[at]);
+            values[at] = value;
+            summed &= double.IsFinite(value);
+            nonZero |= value != 0;
+        }
 
-            if (double.IsInfinity(value))
+        if (summed && nonZero)
+        {
+            for (var at = 0; at < values.Length; at++)
             {
-                sawInfinity = true;
-            }
-            else if (double.IsNaN(value))
-            {
-                sawNotANumber = true;
-            }
-            else
-            {
-                var magnitude = Math.Abs(value);
-                magnitudes.Add(magnitude);
-
-                if (magnitude > largest)
-                {
-                    largest = magnitude;
-                }
+                engine.Charge(1);
             }
         }
 
-        if (sawInfinity)
-        {
-            return double.PositiveInfinity;
-        }
-
-        if (sawNotANumber)
-        {
-            return double.NaN;
-        }
-
-        if (largest == 0)
-        {
-            return 0;
-        }
-
-        var sum = 0.0;
-
-        foreach (var magnitude in magnitudes)
-        {
-            engine.Charge(1);
-            var scaled = magnitude / largest;
-            sum += scaled * scaled;
-        }
-
-        return largest * Math.Sqrt(sum);
+        return values;
     }
 
     /// <summary>
@@ -431,49 +319,6 @@ internal sealed partial class JsRealm
         var left = engine.ToInt32(ArgOfMath(arguments, 0));
         var right = engine.ToInt32(ArgOfMath(arguments, 1));
         return unchecked(left * right);
-    }
-
-    /// <summary>
-    /// The specification's <c>Number::exponentiate</c>, which differs from IEEE 754 in four places.
-    /// </summary>
-    /// <remarks>
-    /// IEEE 754 - and therefore <c>System.Math.Pow</c> - answers <c>1</c> for <c>pow(1, &#8734;)</c>
-    /// and <c>pow(1, NaN)</c>, on the reasoning that one raised to anything is one. The language
-    /// answers <c>NaN</c> whenever the exponent is <c>NaN</c> or the base has magnitude <c>1</c> and
-    /// the exponent is infinite, and answers <c>1</c> for a zero exponent even over a <c>NaN</c>
-    /// base. Those four cases are taken first and everything else is the platform's.
-    /// <para>
-    /// <b>It is <c>Math.pow</c> AND the <c>**</c> operator</b>, because the specification defines
-    /// both as this one operation. The operator used to call <c>System.Math.Pow</c> directly, so
-    /// <c>(-1) ** Infinity</c> answered <c>1</c> while <c>Math.pow(-1, Infinity)</c> answered
-    /// <c>NaN</c>. No front end folds <c>**</c> over constants, so these two are the only callers.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BC301B
-    // Broiler-Human:        PENDING
-    internal static double MathPower(double baseValue, double exponent)
-    {
-        if (double.IsNaN(exponent))
-        {
-            return double.NaN;
-        }
-
-        if (exponent == 0)
-        {
-            return 1;
-        }
-
-        if (double.IsNaN(baseValue))
-        {
-            return double.NaN;
-        }
-
-        if (double.IsInfinity(exponent) && Math.Abs(baseValue) == 1)
-        {
-            return double.NaN;
-        }
-
-        return Math.Pow(baseValue, exponent);
     }
 
     /// <summary>Counts the leading zero bits of a 32-bit value, answering 32 for zero.</summary>
@@ -503,208 +348,74 @@ internal sealed partial class JsRealm
         mathRandomState = state;
         return (state >> 11) * (1.0 / 9007199254740992.0);
     }
+
     /// <summary>Reads one argument, which the caller may not have supplied.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=270320
     // Broiler-Human:        PENDING
     private static JsValue MathArgumentAt(JsValue[] arguments, int at) =>
         at < arguments.Length ? arguments[at] : JsValue.Undefined;
 
-    /// <summary>The exactly rounded sum of an iterable of Numbers.</summary>
+    /// <summary>The count of elements at which <c>Math.sumPrecise</c> stops: 2^53.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=55572E
+    // Broiler-Human:        PENDING
+    private const long MathSumPreciseLimit = 9007199254740992L;
+
+    /// <summary>The exactly rounded sum of an iterable of Numbers (ES2026 21.3.2.34).</summary>
     /// <remarks>
     /// <para>
-    /// <b>Every element must already BE a Number.</b> This is the one arithmetic method in the
-    /// namespace that does not coerce: a string in the list is a <c>TypeError</c> rather than a
-    /// number, because a list of numbers is what the method is for and coercing would hide the
-    /// element that is not one.
+    /// <b>It iterates, and only iterates.</b> <c>GetIterator(items, sync)</c> refuses a nullish
+    /// value and a value without a <c>Symbol.iterator</c> method - an array-like among them - with a
+    /// <c>TypeError</c>, and reads that method once; a primitive whose prototype is iterable is
+    /// iterated. Until SJL-4.4 an array-like was walked by its <c>length</c> and the method was read
+    /// twice (JSD-0069).
     /// </para>
     /// <para>
-    /// <b>The infinities and NaN are decided before the arithmetic.</b> Both infinities present is
-    /// NaN, either alone is itself, and a NaN anywhere wins - so the partial sums never have to
-    /// carry a value that is not finite, which they cannot do.
+    /// <b>Every element must already BE a Number.</b> This is the one arithmetic method in the
+    /// namespace that does not coerce: a string in the list is a <c>TypeError</c>, and the iterator
+    /// is CLOSED where the walk stops, so a generator handed a bad list runs its <c>finally</c> and
+    /// is asked for nothing more. The 2^53rd element is a <c>RangeError</c>, closed the same way.
+    /// </para>
+    /// <para>
+    /// <b>The sum is the shared library's <c>PreciseSum</c></b>, which is handed each element once
+    /// it is known to be a Number. It decides NaN and the infinities as the clause's states - both
+    /// infinities present is NaN, either alone is itself, and a NaN anywhere wins - and carries the
+    /// finite values exactly, rounding once at the end.
     /// </para>
     /// <para>
     /// <b>An empty list sums to negative zero</b>, which is the identity this operation was given
     /// so that the sign of a sum of negative zeros survives.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=75C15A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=95BDCF
+    // Broiler-Falsified-If: an array-like without Symbol.iterator is summed, Symbol.iterator is read twice, or an element that is not a Number is summed or leaves the iterator unclosed
     // Broiler-Human:        PENDING
-    private double MathSumPrecise(JsEngine engine, JsValue source)
+    private static double MathSumPrecise(JsEngine engine, JsValue items)
     {
-        var values = new List<double>();
-        var positiveInfinities = 0;
-        var negativeInfinities = 0;
-        var seenNaN = false;
-        var seenPositiveZero = false;
-        var largest = 0.0;
+        var record = engine.GetIterator(items);
+        var sum = new PreciseSum();
+        var count = 0L;
 
-        // ONE ELEMENT AT A TIME AND STOPPING AT THE FIRST THAT IS NOT A NUMBER, which the language
-        // asks for twice over: nothing is coerced, and the iterator is CLOSED where the walk stops -
-        // so a generator handed a bad list runs its `finally` and is asked for nothing more.
-        CollectionEach(engine, source, element =>
+        while (engine.TryIterateNext(record, out var element))
         {
+            // TWO UNITS AN ELEMENT, the walk's and the sum's, as the element was charged before.
             engine.Charge(1);
+            engine.Charge(1);
+
+            if (++count >= MathSumPreciseLimit)
+            {
+                engine.CloseIteratorQuietly(record);
+                throw engine.Error("RangeError", "Math.sumPrecise: too many elements");
+            }
 
             if (!element.IsNumber)
             {
+                engine.CloseIteratorQuietly(record);
                 throw engine.Error("TypeError", "Math.sumPrecise: an element is not a number");
             }
 
-            var value = element.AsNumber();
-
-            if (double.IsNaN(value))
-            {
-                seenNaN = true;
-                return;
-            }
-
-            if (double.IsInfinity(value))
-            {
-                if (value > 0)
-                {
-                    positiveInfinities++;
-                }
-                else
-                {
-                    negativeInfinities++;
-                }
-
-                return;
-            }
-
-            if (value == 0)
-            {
-                // `-0` IS THE IDENTITY OF THIS OPERATION AND `+0` IS NOT. An empty list and a list
-                // of nothing but negative zeros sum to `-0`; one `+0` anywhere makes the answer
-                // `+0`. Neither contributes to the arithmetic, so the sign is all that is kept.
-                seenPositiveZero |= !double.IsNegative(value);
-                return;
-            }
-
-            values.Add(value);
-            largest = Math.Max(largest, Math.Abs(value));
-        });
-
-        if (seenNaN)
-        {
-            return double.NaN;
+            sum.Add(element.AsNumber());
         }
 
-
-        // BOTH INFINITIES PRESENT IS NaN, which is the one case a running total would also have
-        // got right and for the wrong reason: here it is decided before any arithmetic, so the
-        // partial sums never have to hold a value they cannot represent.
-        if (positiveInfinities > 0 && negativeInfinities > 0)
-        {
-            return double.NaN;
-        }
-
-        if (positiveInfinities > 0)
-        {
-            return double.PositiveInfinity;
-        }
-
-        if (negativeInfinities > 0)
-        {
-            return double.NegativeInfinity;
-        }
-
-        if (values.Count == 0)
-        {
-            return seenPositiveZero ? 0.0 : -0.0;
-        }
-
-        // AN INTERMEDIATE SUM MAY OVERFLOW WHERE THE ANSWER DOES NOT, which is what makes this
-        // harder than a running total: `[8.99e307, 8.99e307, -1.8e308]` is about 1e292, and any
-        // order that adds the first two first passes through infinity. Scaling by a power of two is
-        // exact, so a list with a huge term in it is distilled in a scaled domain and scaled back;
-        // what that drops is terms below the scaled range, which are orders of magnitude beneath the
-        // last bit of an answer this large.
-        var scale = largest > 8.98846567431158e307 / 4 ? Math.ScaleB(1.0, -600) : 1.0;
-        var total = MathDistil(values, scale);
-
-        return scale == 1.0 ? total : Math.ScaleB(total, 600);
+        return sum.Result();
     }
-
-    /// <summary>Shewchuk's distillation: a list of non-overlapping partial sums, added once.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1AF6EA
-    // Broiler-Human:        PENDING
-    private static double MathDistil(List<double> values, double scale)
-    {
-        var partials = new List<double>();
-
-        foreach (var element in values)
-        {
-            var carried = element * scale;
-            var kept = 0;
-
-            for (var at = 0; at < partials.Count; at++)
-            {
-                var held = partials[at];
-
-                if (Math.Abs(carried) < Math.Abs(held))
-                {
-                    (carried, held) = (held, carried);
-                }
-
-                var high = carried + held;
-                var low = held - (high - carried);
-
-                if (low != 0)
-                {
-                    partials[kept] = low;
-                    kept++;
-                }
-
-                carried = high;
-            }
-
-            partials.RemoveRange(kept, partials.Count - kept);
-            partials.Add(carried);
-        }
-
-        // THE LAST STEP IS NOT A LOOP OF ADDITIONS, and that is where exactness is won or lost.
-        // The partials are non-overlapping and increasing, so summing them from the top stops at
-        // the first addition that is inexact - and the correction below is what makes half-even
-        // rounding come out right across two of them, which is the case a plain loop gets wrong by
-        // one unit in the last place.
-        if (partials.Count == 0)
-        {
-            return 0.0;
-        }
-
-        var index = partials.Count - 1;
-        var answer = partials[index];
-        var remainder = 0.0;
-
-        while (index > 0)
-        {
-            index--;
-            var above = answer;
-            var next = partials[index];
-            answer = above + next;
-            remainder = next - (answer - above);
-
-            if (remainder != 0.0)
-            {
-                break;
-            }
-        }
-
-        if (index > 0 &&
-            ((remainder < 0.0 && partials[index - 1] < 0.0) ||
-             (remainder > 0.0 && partials[index - 1] > 0.0)))
-        {
-            var doubled = remainder * 2.0;
-            var raised = answer + doubled;
-
-            if (doubled == raised - answer)
-            {
-                answer = raised;
-            }
-        }
-
-        return answer;
-    }
-
 }

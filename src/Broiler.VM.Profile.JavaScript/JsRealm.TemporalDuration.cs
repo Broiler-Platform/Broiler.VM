@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary><c>Temporal.Duration</c> (Temporal s7; JSD-0054).</summary>
@@ -27,7 +29,7 @@ internal sealed partial class JsRealm
     private static readonly string[] DurationFieldNames =
         ["years", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds", "microseconds", "nanoseconds"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CA8BA6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=600AA7
     // Broiler-Human:        PENDING
     private void SetupTemporalDuration(JsObject temporal)
     {
@@ -116,7 +118,7 @@ internal sealed partial class JsRealm
             var duration = TemporalThis<JsDurationObject>(engine, thisValue, "Duration", "toString");
             var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0));
             var digits = JsTemporal.FractionalSecondDigits(engine, options);
-            var mode = JsTemporal.RoundingMode(engine, options, TemporalRounding.Trunc);
+            var mode = JsTemporal.RoundingModeOption(engine, options, RoundingMode.Trunc);
             var smallest = JsTemporal.UnitOption(engine, options, "smallestUnit", required: false);
             JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
 
@@ -262,7 +264,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Temporal.Duration.prototype.round (s7.3.20).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8749A3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C5D1D
     // Broiler-Human:        PENDING
     private static JsDurationObject DurationRound(JsEngine engine, JsDurationObject duration, JsValue argument)
     {
@@ -272,7 +274,7 @@ internal sealed partial class JsRealm
         var largest = JsTemporal.UnitOption(engine, roundTo, "largestUnit", required: false);
         var relativeTo = JsTemporal.RelativeToOption(engine, roundTo);
         var increment = JsTemporal.RoundingIncrement(engine, roundTo);
-        var mode = JsTemporal.RoundingMode(engine, roundTo, TemporalRounding.HalfExpand);
+        var mode = JsTemporal.RoundingModeOption(engine, roundTo, RoundingMode.HalfExpand);
         var smallest = JsTemporal.UnitOption(engine, roundTo, "smallestUnit", required: false);
         JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.DateTime);
 
@@ -362,8 +364,8 @@ internal sealed partial class JsRealm
 
         if (smallest == TemporalUnit.Day)
         {
-            var days = JsTemporalCore.RoundToIncrement(balanced.Time, JsTemporalCore.NsPerDay, increment, mode);
-            var dateDuration = JsTemporal.DateDurationRecord(engine, 0, 0, 0, JsTemporalCore.ToDouble(days));
+            var days = ExactRounding.RoundNumberToIncrement(balanced.Time, JsTemporalCore.NsPerDay, increment, mode);
+            var dateDuration = JsTemporal.DateDurationRecord(engine, 0, 0, 0, ExactRounding.ToDouble(days, System.Numerics.BigInteger.One));
             result = new JsInternalDuration(dateDuration, 0);
         }
         else

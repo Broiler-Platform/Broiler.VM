@@ -449,7 +449,7 @@ internal sealed partial class JsRealm
     /// The value of unit <paramref name="index"/> with ComputeFractionalDigits (s13.5.7) added: the
     /// fractional units that follow it, each a thousandth of the one before, as an exact decimal.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D57E8A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F9B887
     // Broiler-Human:        PENDING
     private static JsDecimal WithFractions(JsEngine engine, JsDurationFormatObject format, double[] record, int index)
     {
@@ -470,7 +470,7 @@ internal sealed partial class JsRealm
         var negative = total.Sign < 0;
         var text = BigInteger.Abs(total).ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(digits + 1, '0');
         var decimalText = (negative ? "-" : string.Empty) + text[..^digits] + "." + text[^digits..];
-        return JsDecimal.FromString(decimalText, engine.ChargeFuel);
+        return JsDecimal.FromString(decimalText, engine.WorkCharge);
     }
 
     /// <summary>A number format of the duration format's locale, built by the constructor from <paramref name="settings"/>.</summary>

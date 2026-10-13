@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -142,7 +144,7 @@ internal sealed partial class JsEngine
     /// with a call and no construction, whose <c>length</c> and <c>name</c> are copied from
     /// <paramref name="target"/> as <c>CopyNameAndLength</c> copies them.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CE4D0D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8111ED
     // Broiler-Human:        PENDING
     private JsNativeFunction WrappedFunctionCreate(JsRealm callerRealm, JsObject target)
     {
@@ -168,7 +170,7 @@ internal sealed partial class JsEngine
                         ? double.PositiveInfinity
                         : double.IsNegativeInfinity(number)
                             ? 0
-                            : System.Math.Max(0, JsValue.ToInteger(number));
+                            : System.Math.Max(0, IntegerConversions.ToIntegerOrInfinity(number));
                 }
             }
 

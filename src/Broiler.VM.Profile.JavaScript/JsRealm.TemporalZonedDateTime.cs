@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -24,7 +25,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4C16E5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B9A9D0
     // Broiler-Human:        PENDING
     private void SetupTemporalZonedDateTime(JsObject temporal)
     {
@@ -206,7 +207,7 @@ internal sealed partial class JsRealm
             var showCalendar = JsTemporal.ShowCalendar(engine, options);
             var digits = JsTemporal.FractionalSecondDigits(engine, options);
             var showOffset = JsTemporal.ShowOffset(engine, options);
-            var mode = JsTemporal.RoundingMode(engine, options, TemporalRounding.Trunc);
+            var mode = JsTemporal.RoundingModeOption(engine, options, RoundingMode.Trunc);
             var smallest = JsTemporal.UnitOption(engine, options, "smallestUnit", required: false);
             var showTimeZone = JsTemporal.ShowTimeZone(engine, options);
             JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
@@ -303,13 +304,13 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Temporal.ZonedDateTime.prototype.round (s6.3.39).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=63439A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6CE210
     // Broiler-Human:        PENDING
     private static JsZonedDateTimeObject ZonedDateTimeRound(JsEngine engine, JsZonedDateTimeObject zoned, JsValue argument)
     {
         var roundTo = TemporalRoundTo(engine, argument, "ZonedDateTime");
         var increment = JsTemporal.RoundingIncrement(engine, roundTo);
-        var mode = JsTemporal.RoundingMode(engine, roundTo, TemporalRounding.HalfExpand);
+        var mode = JsTemporal.RoundingModeOption(engine, roundTo, RoundingMode.HalfExpand);
         var smallest = JsTemporal.UnitOption(engine, roundTo, "smallestUnit", required: true);
 
         if (smallest == TemporalUnit.Day)
