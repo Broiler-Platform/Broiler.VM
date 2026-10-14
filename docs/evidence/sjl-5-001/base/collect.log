@@ -1,0 +1,44 @@
+== base-identity 2026-10-14T16:48:49Z
+base-identity: e600da2a07e385dbdd4bd04d6d0c8f2842c3b462 (clean tree)
+== base-test262 2026-10-14T16:48:49Z
+test262: run wide-bytecode ...
+test262: wide-bytecode runner exit 1
+test262: run wide-native ...
+test262: wide-native runner exit 4
+== base-twins 2026-10-14T17:28:19Z
+base-twins: wide/array-loop.small.js bytecode 73082
+base-twins: wide/array-loop.small.js native 73082
+base-twins: wide/call-loop.small.js bytecode 28026
+base-twins: wide/call-loop.small.js native 28026
+base-twins: wide/closure-loop.small.js bytecode 31044
+base-twins: wide/closure-loop.small.js native 31044
+base-twins: wide/fib.small.js bytecode 7682
+base-twins: wide/fib.small.js native 7682
+base-twins: wide/generator-loop.small.js bytecode 40075
+base-twins: wide/generator-loop.small.js native 40075
+base-twins: wide/numeric-loop.small.js bytecode 23022
+base-twins: wide/numeric-loop.small.js native 23022
+base-twins: wide/property-loop.small.js bytecode 29029
+base-twins: wide/property-loop.small.js native 29029
+base-twins: wide/string-loop.small.js bytecode 26083
+base-twins: wide/string-loop.small.js native 26083
+base-twins: wide/throw-loop.small.js bytecode 34026
+base-twins: wide/throw-loop.small.js native 34026
+base-twins: wide/try-loop.small.js bytecode 34022
+base-twins: wide/try-loop.small.js native 34022
+base-twins: text/base64-hex.small.js bytecode 44250
+base-twins: text/base64-hex.small.js native 44250
+base-twins: text/json.small.js bytecode 297865
+base-twins: text/json.small.js native 297865
+base-twins: text/pad-index.small.js bytecode 40571
+base-twins: text/pad-index.small.js native 40571
+base-twins: text/substitution.small.js bytecode 72704
+base-twins: text/substitution.small.js native 72704
+base-twins: text/trim-utf16.small.js bytecode 30168
+base-twins: text/trim-utf16.small.js native 30168
+base-twins: text/uri.small.js bytecode 15144
+base-twins: text/uri.small.js native 15144
+== base-json-modules 2026-10-14T17:33:22Z
+base-json-modules: run 1 exit 0
+base-json-modules: run 2 exit 0
+collector exit 0
