@@ -10,15 +10,23 @@
 whose input is [`correspondence.md`](correspondence.md). **Owner and reviewer:** one person holds every
 role (EX-30), and nobody independent has read this bundle.
 
-**State:** collected, 2026-10-14, at SJL-4.6. **Part A is NOT MET** in the native pair and met in the
-bytecode pair (section 4): two rows the rule admits as class C4 (c') still differ in their exhaustion
-dimension when run again alone, which the rule reads as a regression, and a diagnostic shows both
-commits racing between the same two allowances on them. **Part B is MET** (section 5). The vectors,
+**State:** collected, 2026-10-14, at SJL-4.6. **Part A is NOT MET** in the native pair, under
+[`decision-rule.md`](decision-rule.md) and under its revision
+[`decision-rule-revised-2026-10-14.md`](decision-rule-revised-2026-10-14.md) alike, and met in the
+bytecode pair (section 4). Two rows the original rule admits as class C4 (c') still differ in their
+exhaustion dimension when run again alone, which it reads as a regression. The revision's class (d)
+admits one of them; the other, `decodeURI/S15.1.3.1_A2.5_T1.js` [strict], reached only the wall clock
+in all twelve of its runs at the base, which class (d) does not admit. **Part B is MET** (section 5). The vectors,
 the closures, the rules and the simplification check are sections 6 to 8, and section 10 holds the
 Broiler.VM clauses. *(Revised 2026-10-14, at SJL-4.6. The paragraph read: "**State:** collection in
 progress. Nothing here is a verdict until its section says so. **Taken:** the base (section 1) and the
 engine-level vectors of SJL-4.2 (section 2). The after runs, their comparisons and the rest of SJL-4.6
 are added when SJL-4.4's cut-over has landed; [`collect.py`](collect.py) gains their steps then.")*
+*(Revised again 2026-10-14, later at SJL-4.6, when the revised rule's races step had run. Its first
+two sentences after the date read: "**Part A is NOT MET** in the native pair and met in the bytecode
+pair (section 4): two rows the rule admits as class C4 (c') still differ in their exhaustion dimension
+when run again alone, which the rule reads as a regression, and a diagnostic shows both commits racing
+between the same two allowances on them.")*
 
 ## 1. The base
 
@@ -132,9 +140,35 @@ the same idle machine ([`after/race-diagnostic.tsv`](after/race-diagnostic.tsv))
 
 Both commits split between the two allowances on both rows, so the dimension a single run reports is
 not stable at either commit. The rule does not read the diagnostic, and it does not admit a race of
-exhaustion dimensions. Admitting one would take a revised rule, written now that these runs have been
-seen, and so weaker evidence. That is the owner's decision; until it is taken, part A stays NOT MET.
-**No row passing at the base fails, is exhausted or is unsupported after**, and none needs class C1.
+exhaustion dimensions. **No row passing at the base fails, is exhausted or is unsupported after**, and
+none needs class C1. *(Revised 2026-10-14, later at SJL-4.6: after "exhaustion dimensions." the
+paragraph read "Admitting one would take a revised rule, written now that these runs have been seen,
+and so weaker evidence. That is the owner's decision; until it is taken, part A stays NOT MET."; the
+owner then had the revision below written.)*
+
+**Under the revised rule.** [`decision-rule-revised-2026-10-14.md`](decision-rule-revised-2026-10-14.md),
+written at the owner's direction after these runs were seen, and so weaker evidence, adds class C4 (d):
+a (c') row whose re-runs differ is run alone ten more times at each commit, alternating which commit
+goes first, and is admitted only if it is exhausted in every run at both commits and each commit
+reaches both allowances at least once. The collector's `races` step took the twenty runs afresh, on the
+idle machine, from 05:18Z to 05:26Z on 2026-10-14, with the conformance roots of the re-runs
+([`after/races-wide-native.tsv`](after/races-wide-native.tsv), every report in
+[`after/races-wide-native/`](after/races-wide-native/)). Over each row's twelve runs at each commit -
+the whole run, the re-run and the ten repetitions
+([`after/races-wide-native-summary.tsv`](after/races-wide-native-summary.tsv)):
+
+| Row | Base: fuel, wall clock | After: fuel, wall clock | Class (d) |
+|---|---|---|---|
+| `decodeURI/S15.1.3.1_A2.5_T1.js` [strict] | 0, 12 | 2, 10 | **not admitted**: the base reached the wall clock only, in every run, and the rule reads that as a regression |
+| `dst-offset-caching-6-of-8.js` [strict] | 1, 11 | 1, 11 | **admitted**: exhausted in every run, and both allowances reached at each commit |
+
+**So part A stays NOT MET under the revised rule as well**, on the one row. All twenty repetitions
+reached the wall clock first, at both commits alike: on this machine, since the restart that preceded
+the step, both rows spend the 5,000 ms before the 100,000,000 units of fuel. The repetitions show no
+difference between the commits. But class (d) asks each commit to reach both allowances, so that a
+commit that always reaches one of them is not mistaken for a race, and in this regime the base reached
+only one of them on that row. A further revision would be written after this result too, and so weaker
+again; that, or leaving clause 9 unmet, is the owner's decision.
 
 **The exhaustion verdicts** milestone SJL-4.6 requires: every variant exhausted at the base is
 exhausted after, and every variant that completes at the base completes after. The dimension moved on
@@ -245,7 +279,7 @@ Temporal's `ToIntegerWithTruncation`, a truncation plus 0.0. `f617962` makes bot
 | Clause | What it asks | Where | State |
 |---|---|---|---|
 | 8 | Rules I1 to I7 hold, and rule I5 holds the deletion list | section 7, [`after/rules.log`](after/rules.log) | **Met** at `f617962`: 381 of 381, I5 among them |
-| 9 | Whole-suite test262 in both forms meets the area rule | section 4 | **Not met**: the native pair's two (c') rows whose re-runs differ in dimension, a regression as the rule reads it; the bytecode pair meets it |
+| 9 | Whole-suite test262 in both forms meets the area rule | section 4 | **Not met**, under the rule and under its revision: the native pair's (c') row `decodeURI/S15.1.3.1_A2.5_T1.js` [strict], whose re-runs differ and which class (d) does not admit; the bytecode pair meets it *(revised 2026-10-14, later at SJL-4.6; read "**Not met**: the native pair's two (c') rows whose re-runs differ in dimension, a regression as the rule reads it; the bytecode pair meets it")* |
 | 10 | The fuel-parity twins and the exhaustion verdicts meet the area rule | sections 4 and 5 | **Met**: part B MET; the exhaustion verdicts hold, but for the dimension of the two rows of clause 9 |
 | 11 | Every root published and run in three modes, its closure declared | section 7 | **Met** for every root this machine can publish, at `f617962`; Android is EX-126 |
 | 12 | Engine-level vectors pass | section 6 | **Met**: 22,634 of 22,634 at corpus revision 9 |
