@@ -864,7 +864,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>TimeClip</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A516B0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ECFC97
     // Broiler-Human:        PENDING
     private static double DateTimeClip(double time)
     {
@@ -873,11 +873,9 @@ internal sealed partial class JsRealm
             return double.NaN;
         }
 
-        var truncated = Math.Truncate(time);
-
-        // The comparison folds a negative zero into a positive one, which is what
-        // ToIntegerOrInfinity does and what keeps `new Date(-0.5).getTime()` from printing "-0".
-        return truncated == 0 ? 0 : truncated;
+        // 𝔽(! ToIntegerOrInfinity(time)), the shared library's (SJL-4.6): a negative zero, and a time in
+        // (-1, 0), is +0, which keeps `new Date(-0.5).getTime()` from printing "-0".
+        return IntegerConversions.ToIntegerOrInfinity(time);
     }
 
     // ---- parsing ---------------------------------------------------------------------------------

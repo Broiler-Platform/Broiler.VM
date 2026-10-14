@@ -372,7 +372,7 @@ internal static partial class JsTemporal
     // ---- Number conversions -----------------------------------------------------------------
 
     /// <summary>The proposal's ToIntegerWithTruncation (s13.40).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D386A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C2D905
     // Broiler-Human:        PENDING
     internal static double IntegerWithTruncation(JsEngine engine, JsValue argument)
     {
@@ -383,7 +383,9 @@ internal static partial class JsTemporal
             throw engine.Error("RangeError", "Temporal: " + number + " is not a finite number");
         }
 
-        return System.Math.Truncate(number) + 0.0;
+        // The truncation of a finite Number is the shared library's ToIntegerOrInfinity (SJL-4.6), which
+        // also answers +0 for a negative zero.
+        return IntegerConversions.ToIntegerOrInfinity(number);
     }
 
     /// <summary>The proposal's ToPositiveIntegerWithTruncation (s13.39).</summary>

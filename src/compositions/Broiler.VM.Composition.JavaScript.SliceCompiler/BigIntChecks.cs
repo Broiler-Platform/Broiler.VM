@@ -1142,23 +1142,27 @@ internal static class BigIntChecks
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_Value")]
     private static extern System.Numerics.BigInteger ValueOf([UnsafeAccessorType(BigIntType)] object instance);
 
-    /// <summary><c>JsBigInt.AsIntN</c>, the internal <c>BigInt.asIntN</c>.</summary>
+    /// <summary>
+    /// <c>JsBigInt.AsIntN</c>, the internal <c>BigInt.asIntN</c>. Its meter is the shared library's
+    /// <see cref="Broiler.ECMAScript.WorkCharge"/> since the numerics cut-over (JSD-0069), which an
+    /// accessor must name exactly: one declared with the delegate it replaced binds to nothing.
+    /// </summary>
     [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "AsIntN")]
     [return: UnsafeAccessorType(BigIntType)]
     private static extern object? AsIntN(
         [UnsafeAccessorType(BigIntType)] object? owner,
         ulong bits,
         [UnsafeAccessorType(BigIntType)] object value,
-        System.Action<ulong> charge);
+        Broiler.ECMAScript.WorkCharge charge);
 
-    /// <summary><c>JsBigInt.AsUintN</c>, the internal <c>BigInt.asUintN</c>.</summary>
+    /// <summary><c>JsBigInt.AsUintN</c>, the internal <c>BigInt.asUintN</c>, metered as <see cref="AsIntN"/> is.</summary>
     [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "AsUintN")]
     [return: UnsafeAccessorType(BigIntType)]
     private static extern object? AsUintN(
         [UnsafeAccessorType(BigIntType)] object? owner,
         ulong bits,
         [UnsafeAccessorType(BigIntType)] object value,
-        System.Action<ulong> charge);
+        Broiler.ECMAScript.WorkCharge charge);
 
     /// <summary>The internal BigInt value type, named for the accessors above.</summary>
     private const string BigIntType = "Broiler.VM.Profile.JavaScript.JsBigInt, Broiler.VM.Profile.JavaScript";
