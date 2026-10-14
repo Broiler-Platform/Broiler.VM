@@ -1,0 +1,12 @@
+{
+  "admittedPackages": [
+    {
+      "id": "Broiler.ECMAScript.Algorithms",
+      "version": "0.2.0-preview.1",
+      "contentHash": "CBi+VFOzuSIJW1CphcIvIWst3+H5foI2b44FCoyw31uc7aUwOB550K6z7HThjrTBw0DSPcad2/3RGJC42aqOWA==",
+      "use": "product",
+      "feedContentHash": "CBi+VFOzuSIJW1CphcIvIWst3+H5foI2b44FCoyw31uc7aUwOB550K6z7HThjrTBw0DSPcad2/3RGJC42aqOWA==",
+      "commit": "01209c43a3a244b9e502908e68fcded49e9bc198"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+# SJL-4.6 search for a surviving duplicate of the numerics area, Broiler.VM at b5723213d12926bbfb8cc056b0accef2ef93830b: every
+# construct that approximates a Math function the shared library computes, converts binary16 or a
+# BigInt by the platform, rounds by a mode spelled as a string or by the platform's midpoint rule, or
+# writes the 32-bit wrap out, in the component's C# product sources (src/, every tests/ excluded).
+# pattern: Math\.(Pow|Cbrt|Round|Truncate)\(|double\.(ExpM1|LogP1)|\(Half\)|\bHalf\.|BitConverter\.(HalfToUInt16Bits|UInt16BitsToHalf)|MidpointRounding|"half(Expand|Even|Trunc|Ceil|Floor)"|BigInteger\.(Pow|Parse|TryParse)\(|4294967296|unchecked\(\(int\)\(uint\)
+# hits: 32; each is reviewed in the bundle's README
+
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:853:        (long)Math.Round((Year(year).Start - anchor) / 29.530588853, MidpointRounding.AwayFromZero);
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:154:    internal string RoundingMode { get; init; } = "halfExpand";
+src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs:1550:        at >= 0 && at < 4294967296.0 && at == System.Math.Floor(at)
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:876:        var truncated = Math.Truncate(time);
+src/Broiler.VM.Profile.JavaScript/JsRealm.DurationFormat.cs:356:            if (!double.IsFinite(number) || System.Math.Truncate(number) != number)
+src/Broiler.VM.Profile.JavaScript/JsRealm.DurationFormat.cs:407:        var limit = BigInteger.Pow(2, 32);
+src/Broiler.VM.Profile.JavaScript/JsRealm.DurationFormat.cs:424:        return BigInteger.Abs(nanoseconds) < BigInteger.Pow(2, 53) * 1_000_000_000;
+src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs:171:        Method(math, "trunc", 1, static (engine, _, arguments) => JsValue.Number(Math.Truncate(MathNumberAt(engine, arguments, 0))));
+src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs:266:        double.IsFinite(value) && System.Math.Truncate(value) == value;
+src/Broiler.VM.Profile.JavaScript/JsRealm.NumberFormat.cs:462:            ["ceil", "floor", "expand", "trunc", "halfCeil", "halfFloor", "halfExpand", "halfTrunc", "halfEven"], "halfExpand")!;
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:44:        ["ceil", "floor", "expand", "trunc", "halfCeil", "halfFloor", "halfExpand", "halfTrunc", "halfEven"];
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:386:        return System.Math.Truncate(number) + 0.0;
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:411:        if (!double.IsFinite(number) || System.Math.Truncate(number) != number)
+src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs:531:        var limit = 4294967296.0;
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:1040:            var whole = System.Numerics.BigInteger.Parse(text[start..at], System.Globalization.CultureInfo.InvariantCulture);
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:1105:                var scale = System.Numerics.BigInteger.Pow(10, fractionDigits.Length);
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:1106:                fractionNs = System.Numerics.BigInteger.Parse(fractionDigits, System.Globalization.CultureInfo.InvariantCulture) * unitNs / scale;
+src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs:388:                    System.MathF.Round(stack[top - 1].F32, System.MidpointRounding.ToEven));
+src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs:398:            case 0x9D: stack[top - 1] = Operand.FromF64(System.Math.Truncate(stack[top - 1].F64)); return true;
+src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs:402:                    System.Math.Round(stack[top - 1].F64, System.MidpointRounding.ToEven));
+src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs:561:        var truncated = System.Math.Truncate(value);
+src/Broiler.VM.Ubc/UbcPrimitives.cs:835:            case UbcPrimitive.F32Nearest: return F32(System.MathF.Round(fa, System.MidpointRounding.ToEven));
+src/Broiler.VM.Ubc/UbcPrimitives.cs:855:            case UbcPrimitive.F64Trunc: return F64(System.Math.Truncate(da));
+src/Broiler.VM.Ubc/UbcPrimitives.cs:856:            case UbcPrimitive.F64Nearest: return F64(System.Math.Round(da, System.MidpointRounding.ToEven));
+src/Broiler.VM.Ubc/UbcPrimitives.cs:982:        var truncated = System.Math.Truncate(value);
+src/Broiler.VM.Ubc/UbcPrimitives.cs:1012:        var truncated = System.Math.Truncate(value);
+src/compositions/Broiler.VM.Composition.JavaScript.Cli/HostSurfaceChecks.BigInt.cs:354:                        BigInteger.Parse(r.ToJsString(Argument(arguments, 0)), System.Globalization.CultureInfo.InvariantCulture)),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BigIntChecks.cs:106:            "0n * -5n, 4294967296n * 4294967296n].join(',');",
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BigIntChecks.cs:112:            "18446744073709551617n % 4294967296n].join(',');",
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ValueFormChecks.cs:892:          -2147483649, 4294967295, 4294967296, 4294967297, 1e21, -1e21, 1.7976931348623157e308, 5e-324, -5e-324,
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/DifferentialChecks.cs:138:        4294967296,
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/DifferentialChecks.cs:139:        -4294967296,
