@@ -101,5 +101,10 @@ files in every package; their sizes differ, the notices among them.
    only. That is what the previous set was.
 4. **The shared package is a preview from the committed feed**, `eng/packages/`, packed from Broiler.JS
    `01209c4`, as decision SJL-D-4 (c) has it for an area in development; nothing was restored from
-   nuget.org.
+   nuget.org. *(Added 2026-10-14, after collection: the same library was published to nuget.org that
+   day as `0.1.0-preview.2`, from Broiler.JS `b3d54f7`, with one change to its code, and
+   `0.2.0-preview.1`, which `nuspecs.txt` declares, will not be published. The committed feed now holds
+   the published package, whose content hash differs from the one `consumer.log` lists, and the
+   checkout references it (JSC-303). Rule N37 still holds this baseline, which declares a version at or
+   above the one the allow-list pins; a pack of the checkout declares `0.1.0-preview.2`.)*
 5. **Not reviewed.** Release gate 11 publishes nothing a named human has not read.

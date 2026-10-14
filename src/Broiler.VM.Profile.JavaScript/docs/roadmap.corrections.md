@@ -13141,3 +13141,35 @@ the negative control, and running as Native AOT.
 **Authority and date.** [JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md) section 1, on
 [JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md) and the programme's work
 package SJL-4.4. 2026-10-13.
+
+### JSC-303
+
+**Where:** [`packages.md`](packages.md), the paragraph "No foreign dependency"; and the records that
+carry the version: the committed feed `eng/packages/` with its README and the package's pin, the
+allow-list's entry, both lock files, rule I1's lock-file witness and `THIRD_PARTY_NOTICES.md`'s row
+for the package. [JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md) is not edited.
+
+**What the plan said.** JSD-0069 section 1: "`Broiler.VM.Profile.JavaScript` and
+`Broiler.VM.Profile.JavaScript.Compiler` reference `Broiler.ECMAScript.Algorithms` `0.2.0-preview.1`,
+packed from Broiler.JS `01209c43a3a244b9e502908e68fcded49e9bc198` and restored from the committed feed
+`eng/packages/` with lock files." Its section 5: "`THIRD_PARTY_NOTICES.md`'s row for the package moves
+to `0.2.0-preview.1`". And `packages.md`, as JSC-301 left it: "declare at `0.2.0-preview.1` since the
+numerics cut-over".
+
+**What replaced it.** The two packages reference `0.1.0-preview.2`, which Broiler.JS's publish-shared
+workflow published to nuget.org on 2026-10-14 (run 38582605981) from Broiler.JS `b3d54f7`. Broiler.JS
+keeps the shared stream's `0.1.0` prefix, so the library first planned as `0.2.0-preview.1` was
+published as the stream's next preview, and `0.2.0-preview.1` will not be published. Its code is
+`01209c4`'s with one change, Broiler.JS `ff7416b`: `BigIntPolicy.RepresentationLimit` is 2^31 - 128
+bits, where it was 2^31 - 1, so that no operation computes a value wider than a .NET `BigInteger`
+holds. This family's policy, `JsBigInt.MaximumBits`, is 2^20 bits and never reaches either limit. The
+feed holds the package as published, and the pin, the allow-list (whose sources now name nuget.org
+too), both lock files and the notices row record it; each quotes what it read before. Everything else
+JSD-0069 decided stands. Bundle JS-10-006's candidate pack, the package baseline, declares
+`0.2.0-preview.1`, and rule N37 still holds it, since it declares a version at or above the one the
+allow-list pins; the bundle notes the change.
+
+**Authority and date.** The owner's instruction of 2026-10-14 to publish the numerics area under the
+shared stream's `0.1.0` prefix, which Broiler.JS `b3d54f7` records in `Broiler.ECMAScript/CHANGELOG.md`;
+on [JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md) section 1 and the programme's work
+package SJL-4.4. 2026-10-14.

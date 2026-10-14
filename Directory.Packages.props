@@ -20,7 +20,7 @@
     <!-- The shared JavaScript libraries (ADR 0014), from the committed feed eng/packages/ while an
          area is in development (decision SJL-D-4 (c)). Rule I1 holds every reference to the
          allow-list, src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json, and to its pin. -->
-    <PackageVersion Include="Broiler.ECMAScript.Algorithms" Version="0.2.0-preview.1" />
+    <PackageVersion Include="Broiler.ECMAScript.Algorithms" Version="0.1.0-preview.2" />
 
     <!-- Broiler.VM.Architecture.Tests only; see that project for why each is pinned. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />

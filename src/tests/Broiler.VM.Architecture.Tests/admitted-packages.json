@@ -21,8 +21,8 @@
   "packages": [
     {
       "id": "Broiler.ECMAScript.Algorithms",
-      "version": "0.2.0-preview.1",
-      "contentHash": "CBi+VFOzuSIJW1CphcIvIWst3+H5foI2b44FCoyw31uc7aUwOB550K6z7HThjrTBw0DSPcad2/3RGJC42aqOWA==",
+      "version": "0.1.0-preview.2",
+      "contentHash": "V1b57mCiAxulP7R+V4sZOSLcnqWjgIR1Q7z0Q8DDXkOBiVws1KTWMiMG7N5fKZ+ZR28NWjxUGtfPm00AXhSkEw==",
       "use": "product",
       "projects": [
         "Broiler.VM.Profile.JavaScript",
@@ -30,10 +30,11 @@
         "Broiler.VM.Profile.JavaScript.AdmissionProbe"
       ],
       "sources": [
-        "committed-feed"
+        "committed-feed",
+        "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.2.0-preview.1.pin",
-      "admittedBy": "SJL-4.4 and JSD-0067: the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. This version is not yet on nuget.org, so the committed feed is its only source."
+      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.2.pin",
+      "admittedBy": "SJL-4.4 and JSD-0067: the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
     }
   ]
 }

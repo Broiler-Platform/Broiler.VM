@@ -235,6 +235,16 @@ holds the 44 members SJL-4.4 deleted, beside SJL-3.4's 34, and it passes.
 the cut-over's commit, whose baseline rule N37 holds (JSC-302). `f617962` changes no package's
 dependencies or files.
 
+*(Added 2026-10-14, after the runs. The package was published to nuget.org that day as
+`Broiler.ECMAScript.Algorithms` `0.1.0-preview.2`, from Broiler.JS `b3d54f7`: the library
+`0.2.0-preview.1` was packed from, with one change to its code, `BigIntPolicy.RepresentationLimit`,
+which this family's BigInt policy of 2^20 bits never reaches. The committed feed now holds the
+published package, and the checkout references it (JSC-303). Every run of this bundle used the copy the
+feed held at `f617962`, which `after/closures/admitted-packages.json` records. With the published
+package, the engine-level vectors at revision 9 give a report identical byte for byte to
+`vectors/run-revision-9.tsv.gz`, their negative control reports `numerics/toint32/0010` alone, and the
+architecture suite passes 381 of 381.)*
+
 ## 8. The simplification check
 
 **The deletion check.** [`after/simplification/deletion-check.log`](after/simplification/deletion-check.log)

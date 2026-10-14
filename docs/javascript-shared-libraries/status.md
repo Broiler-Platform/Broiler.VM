@@ -333,6 +333,15 @@ package baseline moves to bundle JS-10-006, collected at the cut-over's commit. 
 `In progress`: the evidence of SJL-4.6, bundle `sjl-4-001`'s after-runs, judges the cut-over, and
 Broiler.JS's cut-over, SJL-4.5, follows.
 
+**2026-10-14: the numerics area is published as `0.1.0-preview.2`.** Broiler.JS keeps the shared
+stream's `0.1.0` prefix, so the library first planned as `0.2.0-preview.1` is published to nuget.org as
+`Broiler.ECMAScript.Algorithms` `0.1.0-preview.2`, from Broiler.JS `b3d54f7`, with one change to its
+code: `BigIntPolicy.RepresentationLimit` stays 64 bits below what a .NET `BigInteger` holds. The
+runtime and the compiler reference it, and the committed feed holds the published package
+([JSC-303](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-303));
+`0.2.0-preview.1` will not be published. Bundle `sjl-4-001`'s runs used the earlier copy, and its
+README says what was run again with the published one. Nothing moves: SJL-4 stays `In progress`.
+
 ---
 
 ## 1. Reading this ledger
