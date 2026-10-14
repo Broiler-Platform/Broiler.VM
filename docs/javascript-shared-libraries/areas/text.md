@@ -1,8 +1,10 @@
 # Area: text algorithms: whitespace, UTF-16 helpers, substitution, URI, base64 and hex, JSON lexing
 
 **Delivered by:** [SJL-5](../milestones/sjl-5-text-algorithms.md). **Library:**
-`Broiler.ECMAScript.Algorithms`. **Status:** design. Observations marked *(reading)* are to be
-confirmed by vectors.
+`Broiler.ECMAScript.Algorithms`. **Status:** design; its verdict is [JSD-0070](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md),
+all six sub-areas accepted on 2026-10-14. Observations marked *(reading)* are to be confirmed by vectors.
+*(Revised 2026-10-14: the status read "design. Observations marked *(reading)* are to be
+confirmed by vectors.")*
 
 ---
 
@@ -28,16 +30,16 @@ Broiler.JS itself.
 | Responsibility | Broiler.VM | Broiler.JS | Differences *(reading)* |
 |---|---|---|---|
 | Well-formedness | `JsRealm.String.StringWellFormed`; `toWellFormed` loop | `JSStringPrototype.Transform.IsWellFormedUtf16`, `ToWellFormedUtf16` | Equivalent |
-| `trim` | `StringTrimEnds` with `JsNumberFormat.IsWhiteSpace` | `trimCharacters` with `string.Trim(char[])` | Equal sets today; other Broiler.JS paths use .NET `char.IsWhiteSpace` (U+0085 included, U+FEFF excluded) |
-| `padStart`/`padEnd`, `repeat` | `StringPadTo`, `repeat`, with a string-length ceiling raising `RangeError` | `StringPad` with no limit and an `int` cast; `repeat` refuses above `int.MaxValue` | `"x".padEnd(2**40)` raises a .NET exception in Broiler.JS |
-| `GetSubstitution` | `StringExpandDollars`, an inline copy in `RegExpReplaceText`, and `RegExpSubstitute` | `JSString.GetSubstitution`, and a local copy in `BuiltInsAssemblyInitializer` | Equivalent apart from details; three copies in Broiler.VM, two in Broiler.JS |
+| `trim` | `StringTrimEnds` with `JsNumberFormat.IsWhiteSpace` | `trimCharacters` with `string.Trim(char[])` | Equal sets today; other Broiler.JS paths use .NET `char.IsWhiteSpace` (U+0085 included, U+FEFF excluded) *(Corrected 2026-10-14 at SJL-5.1, [JSD-0070](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md): both engines' trim already calls the library's `StrWhiteSpaceChar` predicate, which SJL-3 moved; `JsNumberFormat.IsWhiteSpace` and `trimCharacters` no longer exist; the Broiler.JS paths that use `char.IsWhiteSpace` are its lexer and `RegExp.escape`, outside the area)* |
+| `padStart`/`padEnd`, `repeat` | `StringPadTo`, `repeat`, with a string-length ceiling raising `RangeError` | `StringPad` with no limit and an `int` cast; `repeat` refuses above `int.MaxValue` | `"x".padEnd(2**40)` raises a .NET exception in Broiler.JS *(Corrected 2026-10-14 at SJL-5.1, [JSD-0070](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md): `"x".padEnd(2**40)` raises `RangeError` there; a .NET exception escapes between .NET's largest string and `int.MaxValue`, for `padStart`, `padEnd` and `repeat`. This family's `padStart` and `padEnd` refuse past their ceiling before converting the filler, and refuse an empty one there, which the specification does not)* |
+| `GetSubstitution` | `StringExpandDollars`, an inline copy in `RegExpReplaceText`, and `RegExpSubstitute` | `JSString.GetSubstitution`, and a local copy in `BuiltInsAssemblyInitializer` | Equivalent apart from details; three copies in Broiler.VM, two in Broiler.JS *(Corrected 2026-10-14 at SJL-5.1, [JSD-0070](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md): Broiler.JS has a third, `JSRegExp.Replace(string, string)`, reached when a RegExp's `Symbol.replace` is absent, where the specification searches for the text; and it converts a named group's value with the CLR's `ToString`. This family's `replaceAll` converts the replacement only after a match)* |
 | `split` by string | `JsRealm.String` `split`; `RegExpSplitText` | `JSStringPrototype.Pattern.Split` | `"abc".split("", 2)` gives three items in Broiler.JS: the empty-separator branch ignores the limit |
 | URI | `JsRealm.Global` sets, `GlobalUriEncode`/`Decode`, `GlobalEscapeText`/`GlobalUnescapeText`; charged | `Runtime/UriHelper` (cites a third-party engine) | None found |
-| Base64, hex | `JsRealm.Base64` `Base64Encode`, `Base64Decode`, `Base64DecodeHex` (pure apart from a charge; return bytes, read count and error) | `JSUInt8Array.DecodeBase64` reads options itself and builds exceptions eagerly; `SetFromHex` parses the whole input before honouring the destination length | `setFromHex("aaZZ")` into a one-byte array: the specification and Broiler.VM report two read and one written; Broiler.JS writes one byte, then throws. Broiler.JS ignores a non-object options argument. |
+| Base64, hex | `JsRealm.Base64` `Base64Encode`, `Base64Decode`, `Base64DecodeHex` (pure apart from a charge; return bytes, read count and error) | `JSUInt8Array.DecodeBase64` reads options itself and builds exceptions eagerly; `SetFromHex` parses the whole input before honouring the destination length | `setFromHex("aaZZ")` into a one-byte array: the specification and Broiler.VM report two read and one written; Broiler.JS writes one byte, then throws. Broiler.JS ignores a non-object options argument. *(Corrected 2026-10-14 at SJL-5.1, [JSD-0070](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md): Broiler.JS also reads a `null` option as the default and encodes a detached array as empty. This family's `Base64Options` is its GetOptionsObject, which Intl calls too, and is not base64's to delete)* |
 | `JSON.parse` lexing | A hand-written reader in `JsRealm.Json`; charged per character; nesting refused past a fixed depth; lone surrogates preserved | `System.Text.Json` deserialisation with default options; exceptions mapped to `SyntaxError` | Broiler.JS rejects documents nested past System.Text.Json's default depth; refuses an escaped lone surrogate; lets a raw lone surrogate raise an uncaught .NET exception; probably refuses `1e400`, which should be `Infinity` |
 | `QuoteJSONString`, gap | `JsonQuote`, `JsonApplySpace`, `JsonJoin` | `JSJSON.QuoteString(in StringSpan)`, gap through `IndentedTextWriter` | **Broiler.JS's indented output uses CRLF on Windows**; the specification uses LF |
 | Raw JSON brand | A distinct .NET type | A structural check: any frozen object with a string `rawJSON` passes | Forgeable in Broiler.JS. This is an object-model fix in Broiler.JS, not shared code. |
-| JSON modules | Compile time: `JsJsonModule` (its own reader) emits `export default` source | Load time: `JSJSON.Parse` | Different phases by design. The shared validator serves both. |
+| JSON modules | Compile time: `JsJsonModule` (its own reader) emits `export default` source | Load time: `JSJSON.Parse` | Different phases by design. The shared validator serves both. *(Corrected 2026-10-14 at SJL-5.1, [JSD-0070](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md): the shared validator serves this family's translation; Broiler.JS loads a JSON module through `JSON.parse`. This family refuses a JSON module nested deeper than 61 levels, because the source the translation writes is parsed under the module's parse options, so the translation's own limit of 1024 is never reached)* |
 
 ---
 
@@ -119,6 +121,11 @@ anyone chose**.
   `GlobalUriHexValue` and its helpers, and their constant sets;
 - `Base64Encode`, `Base64Result`, `Base64SkipSpace`, `Base64Decode`, `Base64DecodeFull`,
   `Base64DecodeFinal`, `Base64HexDigit`, `Base64DecodeHex` and `Base64Alphabet`;
+
+*(Corrected 2026-10-14 at SJL-5.1, [JSD-0070](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md): each list is extended in JSD-0070's X6, which names every member the correspondence found: the
+relative-index sites, `AdvanceStringIndex`'s copies, the third template walk and the identical hex-digit
+helpers among them; and `StringTrimEnds`' classification is already gone)*
+
 - the lexical half of `JsRealm.Json`'s parser, and `JsonQuote`;
 - `JsJsonModule`'s reader.
 
