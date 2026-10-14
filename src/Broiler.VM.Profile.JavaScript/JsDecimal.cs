@@ -3,20 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   30
-// Annotated:        30/30
-// Exempt:           14
-// Human-reviewed:   0/30
+// Relevant units:   29
+// Annotated:        29/29
+// Exempt:           9
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         6/4
 // Resource impact:  3/10 max
-// Unverified:       30
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
 using System.Globalization;
+using Broiler.ECMAScript;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -36,27 +38,6 @@ internal enum JsDecimalKind
 
     /// <summary><c>negative-infinity</c>.</summary>
     NegativeInfinity,
-}
-
-/// <summary>ECMA-402's unsigned rounding modes (table 22 of the pinned edition).</summary>
-// Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.17; IP=Low; Security=Low; Resources=0; Fingerprint=485763
-// Broiler-Human:        PENDING
-internal enum JsUnsignedRounding
-{
-    /// <summary>Toward zero.</summary>
-    Zero,
-
-    /// <summary>Away from zero.</summary>
-    Infinity,
-
-    /// <summary>To the nearer, ties toward zero.</summary>
-    HalfZero,
-
-    /// <summary>To the nearer, ties away from zero.</summary>
-    HalfInfinity,
-
-    /// <summary>To the nearer, ties to the even one.</summary>
-    HalfEven,
 }
 
 /// <summary>
@@ -212,9 +193,9 @@ internal readonly struct JsDecimal
     }
 
     /// <summary>The value a BigInt is, exactly.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0E62F3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=24F3B3
     // Broiler-Human:        PENDING
-    internal static JsDecimal FromBigInt(JsBigInt value, Action<ulong> charge)
+    internal static JsDecimal FromBigInt(JsBigInt value, WorkCharge charge)
     {
         var text = value.ToDecimalString(charge);
         var negative = text.StartsWith('-');
@@ -226,10 +207,10 @@ internal readonly struct JsDecimal
     /// ECMA-402's ToIntlMathematicalValue for a String: its StringNumericLiteral read exactly, then
     /// held to the Number range as RoundMVResult rounds it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=High; Resources=3; Fingerprint=C3D83F
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=High; Resources=3; Fingerprint=388DF8
     // Broiler-Falsified-If: a text outside StringNumericLiteral answers other than not-a-number, or a value that rounds to an infinity or a zero as a Number is kept as written
     // Broiler-Human:        PENDING
-    internal static JsDecimal FromString(string text, Action<ulong> charge)
+    internal static JsDecimal FromString(string text, WorkCharge charge)
     {
         charge((ulong)text.Length / 8 + 1);
         var trimmed = JsNumberFormat.TrimWhiteSpace(text);
@@ -250,12 +231,13 @@ internal readonly struct JsDecimal
 
         if (trimmed.Length > 2 && trimmed[0] == '0' && (trimmed[1] | 0x20) is 'x' or 'o' or 'b')
         {
-            if (!JsBigInt.TryParseStringInteger(trimmed, charge, out var integer, out var tooWide))
+            // A PREFIXED TEXT HAS NO SIGN, so one past the BigInt ceiling is past the Number range too.
+            if (!JsBigInt.TryParseStringInteger(trimmed, charge, out var integer, out _))
             {
-                return tooWide != 0 ? PositiveInfinity : NaN;
+                return NaN;
             }
 
-            return FromBigInt(integer!, charge).HeldToNumberRange();
+            return integer is null ? PositiveInfinity : FromBigInt(integer, charge).HeldToNumberRange();
         }
 
         return ParseDecimal(trimmed)?.HeldToNumberRange() ?? NaN;
@@ -400,10 +382,10 @@ internal readonly struct JsDecimal
     /// rounding mode chooses for this nonnegative value: ECMA-402's choice between r1 and r2 in
     /// ToRawFixed and ToRawPrecision, through ApplyUnsignedRoundingMode.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.18; IP=Low; Security=High; Resources=3; Fingerprint=CB6384
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.18; IP=Low; Security=High; Resources=3; Fingerprint=AA85EE
     // Broiler-Falsified-If: a tie, a value just above or just below a tie, or an exact multiple is rounded otherwise than ApplyUnsignedRoundingMode states, for any admitted increment
     // Broiler-Human:        PENDING
-    internal string RoundToUnits(int unit, int increment, JsUnsignedRounding mode)
+    internal string RoundToUnits(int unit, int increment, UnsignedRoundingMode mode)
     {
         if (IsZero)
         {
@@ -454,12 +436,12 @@ internal readonly struct JsDecimal
 
             up = mode switch
             {
-                JsUnsignedRounding.Zero => false,
-                JsUnsignedRounding.Infinity => true,
+                UnsignedRoundingMode.Zero => false,
+                UnsignedRoundingMode.Infinity => true,
                 _ when half < 0 => false,
                 _ when half > 0 => true,
-                JsUnsignedRounding.HalfZero => false,
-                JsUnsignedRounding.HalfInfinity => true,
+                UnsignedRoundingMode.HalfZero => false,
+                UnsignedRoundingMode.HalfInfinity => true,
                 _ => odd,
             };
         }
@@ -553,10 +535,10 @@ internal readonly record struct JsRawFormat(string Formatted, JsDecimal Rounded,
 internal static class JsRawDecimal
 {
     /// <summary>ECMA-402's ToRawFixed.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.9; IP=Low; Security=Medium; Resources=2; Fingerprint=F77F74
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.9; IP=Low; Security=Medium; Resources=2; Fingerprint=88E575
     // Broiler-Falsified-If: the string or the rounded value differs from ToRawFixed's for a value, a digit range, an increment and a mode
     // Broiler-Human:        PENDING
-    internal static JsRawFormat ToRawFixed(JsDecimal x, int minFraction, int maxFraction, int increment, JsUnsignedRounding mode)
+    internal static JsRawFormat ToRawFixed(JsDecimal x, int minFraction, int maxFraction, int increment, UnsignedRoundingMode mode)
     {
         var f = maxFraction;
         var n = x.RoundToUnits(-f, increment, mode);
@@ -587,10 +569,10 @@ internal static class JsRawDecimal
     }
 
     /// <summary>ECMA-402's ToRawPrecision.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.8; IP=Low; Security=Medium; Resources=2; Fingerprint=9D31D9
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.8; IP=Low; Security=Medium; Resources=2; Fingerprint=65449A
     // Broiler-Falsified-If: the string or the rounded value differs from ToRawPrecision's for a value, a precision range and a mode
     // Broiler-Human:        PENDING
-    internal static JsRawFormat ToRawPrecision(JsDecimal x, int minPrecision, int maxPrecision, JsUnsignedRounding mode)
+    internal static JsRawFormat ToRawPrecision(JsDecimal x, int minPrecision, int maxPrecision, UnsignedRoundingMode mode)
     {
         var p = maxPrecision;
         string n;

@@ -4,9 +4,9 @@
     "net10.0": {
       "Broiler.ECMAScript.Algorithms": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.1, )",
-        "resolved": "0.1.0-preview.1",
-        "contentHash": "Qpwv+uEbrrj3boOgvay3O5Pm5OsTR1raNCBVqlfBhOAkKSKb6KCSYzQqoSbJv9zqwaGFCCm5jRsCh8yi58ddXw=="
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "V1b57mCiAxulP7R+V4sZOSLcnqWjgIR1Q7z0Q8DDXkOBiVws1KTWMiMG7N5fKZ+ZR28NWjxUGtfPm00AXhSkEw=="
       },
       "broiler.vm.abstractions": {
         "type": "Project"

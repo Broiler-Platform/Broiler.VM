@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary><c>Temporal.PlainDate</c> (Temporal s3; JSD-0054).</summary>
@@ -208,14 +210,14 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The proposal's ToDateDurationRecordWithoutTime (s7.5.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B7D5AD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BFB35D
     // Broiler-Human:        PENDING
     private static JsDateDuration DateDurationWithoutTime(JsEngine engine, double[] fields)
     {
         var internalDuration = JsTemporalCore.ToInternalWith24HourDays(fields);
         var days = System.Numerics.BigInteger.Divide(internalDuration.Time, JsTemporalCore.NsPerDay);
         return JsTemporal.DateDurationRecord(
-            engine, internalDuration.Date.Years, internalDuration.Date.Months, internalDuration.Date.Weeks, JsTemporalCore.ToDouble(days));
+            engine, internalDuration.Date.Years, internalDuration.Date.Months, internalDuration.Date.Weeks, ExactRounding.ToDouble(days, System.Numerics.BigInteger.One));
     }
 
     /// <summary>The proposal's AddDurationToDate (s3.5.15).</summary>

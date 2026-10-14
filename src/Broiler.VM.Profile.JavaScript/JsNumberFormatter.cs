@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
+// Relevant units:   30
+// Annotated:        30/30
 // Exempt:           38
-// Human-reviewed:   0/31
+// Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         3/0
 // Resource impact:  3/10 max
-// Unverified:       31
+// Unverified:       30
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -799,7 +800,7 @@ internal sealed class JsNumberFormatter
     }
 
     /// <summary>ECMA-402's FormatNumericToString: the rounded value with its sign, and its decimal string.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.3; IP=Low; Security=Medium; Resources=2; Fingerprint=789311
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.3; IP=Low; Security=Medium; Resources=2; Fingerprint=54EA08
     // Broiler-Falsified-If: a rounding type, a priority, the trailing-zero display or the minimum integer digits is applied otherwise than FormatNumericToString states
     // Broiler-Human:        PENDING
     internal (JsDecimal Rounded, string Formatted) FormatNumericToString(JsEngine engine, JsDecimal x)
@@ -808,7 +809,10 @@ internal sealed class JsNumberFormatter
         var magnitude = x.Abs();
         engine.Charge((ulong)(magnitude.Digits.Length / 16) + 1);
 
-        var mode = Unsigned(RoundingMode, negative);
+        // The option reader admits only the nine names, so the fallback, halfExpand's, is the default's.
+        var mode = ExactRounding.TryParseRoundingMode(RoundingMode, out var signed)
+            ? ExactRounding.GetUnsignedRoundingMode(signed, negative)
+            : UnsignedRoundingMode.HalfInfinity;
         JsRawFormat result;
 
         switch (RoundingType)
@@ -853,22 +857,6 @@ internal sealed class JsNumberFormatter
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E2FFE4
     // Broiler-Human:        PENDING
     private static bool IsInteger(JsDecimal value) => value.IsZero || value.Point >= value.Digits.Length;
-
-    /// <summary>ECMA-402's GetUnsignedRoundingMode.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.17; IP=Low; Security=Low; Resources=0; Fingerprint=4D378A
-    // Broiler-Human:        PENDING
-    private static JsUnsignedRounding Unsigned(string mode, bool negative) => mode switch
-    {
-        "ceil" => negative ? JsUnsignedRounding.Zero : JsUnsignedRounding.Infinity,
-        "floor" => negative ? JsUnsignedRounding.Infinity : JsUnsignedRounding.Zero,
-        "expand" => JsUnsignedRounding.Infinity,
-        "trunc" => JsUnsignedRounding.Zero,
-        "halfCeil" => negative ? JsUnsignedRounding.HalfZero : JsUnsignedRounding.HalfInfinity,
-        "halfFloor" => negative ? JsUnsignedRounding.HalfInfinity : JsUnsignedRounding.HalfZero,
-        "halfTrunc" => JsUnsignedRounding.HalfZero,
-        "halfEven" => JsUnsignedRounding.HalfEven,
-        _ => JsUnsignedRounding.HalfInfinity,
-    };
 
     /// <summary>
     /// One affix as ICU's patternInfoToStringBuilder writes it: the positive or negative subpattern's

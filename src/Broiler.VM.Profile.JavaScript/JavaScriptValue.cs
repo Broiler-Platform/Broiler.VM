@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -148,40 +149,22 @@ public readonly struct JavaScriptValue : IEquatable<JavaScriptValue>
     /// </summary>
     /// <remarks>
     /// NaN and both infinities are zero rather than saturating, which is the whole difference
-    /// between this and a cast. A conversion written as <c>(int)value</c> in C# saturates for a
-    /// value out of range and is undefined-ish for NaN, so <c>2147483648 | 0</c> would answer
-    /// <c>2147483647</c> instead of <c>-2147483648</c>.
+    /// between this and a cast. A forwarder to the shared library's <c>IntegerConversions.ToInt32</c>
+    /// over <see cref="ToNumber"/> (decision JSD-0069).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=61E0F7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=0FCB4A
     // Broiler-Falsified-If: ToInt32 of 2147483648 is not -2147483648, or of NaN or an infinity is not 0
     // Broiler-Human:        PENDING
-    public int ToInt32() => unchecked((int)ToUint32());
+    public int ToInt32() => IntegerConversions.ToInt32(ToNumber());
 
-    /// <summary>The abstract operation <c>ToUint32</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=983293
+    /// <summary>
+    /// The abstract operation <c>ToUint32</c>: a forwarder to the shared library's
+    /// <c>IntegerConversions.ToUint32</c> over <see cref="ToNumber"/>.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=975A59
     // Broiler-Falsified-If: ToUint32 of -1 is not 4294967295, or of a value above 2^53 disagrees with the specification's modulo
     // Broiler-Human:        PENDING
-    public uint ToUint32()
-    {
-        var value = ToNumber();
-
-        if (double.IsNaN(value) || double.IsInfinity(value))
-        {
-            return 0;
-        }
-
-        // Truncation toward zero, then a modulo that lands in [0, 2^32). The remainder operator on
-        // doubles is exact for every integral magnitude a double can hold, so this is the
-        // specification's arithmetic and not an approximation of it.
-        var truncated = System.Math.Truncate(value) % 4294967296.0;
-
-        if (truncated < 0)
-        {
-            truncated += 4294967296.0;
-        }
-
-        return (uint)truncated;
-    }
+    public uint ToUint32() => IntegerConversions.ToUint32(ToNumber());
 
     /// <summary>
     /// The strict equality comparison, <c>===</c>.

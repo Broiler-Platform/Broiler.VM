@@ -17,6 +17,7 @@
 
 using System;
 using Broiler.VM.Profile.JavaScript.Format;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -69,7 +70,7 @@ internal sealed partial class JsEngine
     /// The six bitwise and shift operators: <c>ToNumeric</c> on both operands, left first, then the
     /// 32-bit Number operation or the BigInt one.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1760EF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5E48B7
     // Broiler-Human:        PENDING
     internal JsValue Bitwise(JsOpcode opcode, JsValue leftValue, JsValue rightValue)
     {
@@ -86,12 +87,12 @@ internal sealed partial class JsEngine
 
         return opcode switch
         {
-            JsOpcode.BitwiseOr => JsValue.Number(JsValue.ToInt32(a) | JsValue.ToInt32(b)),
-            JsOpcode.BitwiseAnd => JsValue.Number(JsValue.ToInt32(a) & JsValue.ToInt32(b)),
-            JsOpcode.BitwiseXor => JsValue.Number(JsValue.ToInt32(a) ^ JsValue.ToInt32(b)),
-            JsOpcode.ShiftLeft => JsValue.Number(JsValue.ToInt32(a) << (int)(JsValue.ToUint32(b) & 31)),
-            JsOpcode.ShiftRight => JsValue.Number(JsValue.ToInt32(a) >> (int)(JsValue.ToUint32(b) & 31)),
-            _ => JsValue.Number(JsValue.ToUint32(a) >> (int)(JsValue.ToUint32(b) & 31)),
+            JsOpcode.BitwiseOr => JsValue.Number(IntegerConversions.ToInt32(a) | IntegerConversions.ToInt32(b)),
+            JsOpcode.BitwiseAnd => JsValue.Number(IntegerConversions.ToInt32(a) & IntegerConversions.ToInt32(b)),
+            JsOpcode.BitwiseXor => JsValue.Number(IntegerConversions.ToInt32(a) ^ IntegerConversions.ToInt32(b)),
+            JsOpcode.ShiftLeft => JsValue.Number(IntegerConversions.ToInt32(a) << (int)(IntegerConversions.ToUint32(b) & 31)),
+            JsOpcode.ShiftRight => JsValue.Number(IntegerConversions.ToInt32(a) >> (int)(IntegerConversions.ToUint32(b) & 31)),
+            _ => JsValue.Number(IntegerConversions.ToUint32(a) >> (int)(IntegerConversions.ToUint32(b) & 31)),
         };
     }
 
@@ -113,7 +114,7 @@ internal sealed partial class JsEngine
     /// (<see cref="BigIntResult"/>); the operations charge fuel before each step.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=A07DA3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=587695
     // Broiler-Falsified-If: a Number operand is mixed into a BigInt result, a BigInt is read as a Number, a zero divisor or negative exponent answers anything but a RangeError, or >>> answers a value
     // Broiler-Human:        PENDING
     internal JsValue BigIntBinary(JsOpcode opcode, JsValue left, JsValue right)
@@ -133,17 +134,17 @@ internal sealed partial class JsEngine
             JsOpcode.ShiftRightUnsigned => ThrowTypeError("BigInts have no unsigned right shift, use >> instead"),
             _ => BigIntResult(opcode switch
             {
-                JsOpcode.Add => JsBigInt.Add(a, b, ChargeFuel),
-                JsOpcode.Subtract => JsBigInt.Subtract(a, b, ChargeFuel),
-                JsOpcode.Multiply => JsBigInt.Multiply(a, b, ChargeFuel),
-                JsOpcode.Divide => JsBigInt.Divide(a, b, ChargeFuel),
-                JsOpcode.Remainder => JsBigInt.Remainder(a, b, ChargeFuel),
-                JsOpcode.Exponent => JsBigInt.Power(a, b, ChargeFuel),
-                JsOpcode.BitwiseAnd => JsBigInt.And(a, b, ChargeFuel),
-                JsOpcode.BitwiseOr => JsBigInt.Or(a, b, ChargeFuel),
-                JsOpcode.BitwiseXor => JsBigInt.Xor(a, b, ChargeFuel),
-                JsOpcode.ShiftLeft => JsBigInt.ShiftLeft(a, b, ChargeFuel),
-                JsOpcode.ShiftRight => JsBigInt.ShiftRight(a, b, ChargeFuel),
+                JsOpcode.Add => JsBigInt.Add(a, b, WorkCharge),
+                JsOpcode.Subtract => JsBigInt.Subtract(a, b, WorkCharge),
+                JsOpcode.Multiply => JsBigInt.Multiply(a, b, WorkCharge),
+                JsOpcode.Divide => JsBigInt.Divide(a, b, WorkCharge),
+                JsOpcode.Remainder => JsBigInt.Remainder(a, b, WorkCharge),
+                JsOpcode.Exponent => JsBigInt.Power(a, b, WorkCharge),
+                JsOpcode.BitwiseAnd => JsBigInt.And(a, b, WorkCharge),
+                JsOpcode.BitwiseOr => JsBigInt.Or(a, b, WorkCharge),
+                JsOpcode.BitwiseXor => JsBigInt.Xor(a, b, WorkCharge),
+                JsOpcode.ShiftLeft => JsBigInt.ShiftLeft(a, b, WorkCharge),
+                JsOpcode.ShiftRight => JsBigInt.ShiftRight(a, b, WorkCharge),
                 _ => throw new InvalidOperationException("not a binary numeric operator: " + opcode),
             }),
         };
@@ -159,7 +160,7 @@ internal sealed partial class JsEngine
     /// one is always of the operand's own type. The BigInt step is charged and bounded exactly as
     /// the <c>+</c> and <c>-</c> operators are.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=27D8C7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=CDF54F
     // Broiler-Falsified-If: a BigInt operand is stepped through a double or answers a Number, or a Number operand answers anything but x + 1 or x - 1
     // Broiler-Human:        PENDING
     internal JsValue NumericStep(JsValue value, bool increment)
@@ -173,8 +174,8 @@ internal sealed partial class JsEngine
 
         return BigIntResult(
             increment
-                ? JsBigInt.Add(numeric.AsBigInt(), JsBigInt.One, ChargeFuel)
-                : JsBigInt.Subtract(numeric.AsBigInt(), JsBigInt.One, ChargeFuel));
+                ? JsBigInt.Add(numeric.AsBigInt(), JsBigInt.One, WorkCharge)
+                : JsBigInt.Subtract(numeric.AsBigInt(), JsBigInt.One, WorkCharge));
     }
 
     /// <summary>
@@ -268,14 +269,14 @@ internal sealed partial class JsEngine
     /// infinity is beyond every BigInt.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=309DC2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=6CABC0
     // Broiler-Falsified-If: a BigInt and a Number or String are ordered other than by their mathematical values, or either is read through a double
     // Broiler-Human:        PENDING
     private int? BigIntOrder(JsValue first, JsValue second)
     {
         if (first.IsBigInt && second.IsString)
         {
-            if (!JsBigInt.TryParseStringInteger(second.AsString(), ChargeFuel, out var parsed, out var wide))
+            if (!JsBigInt.TryParseStringInteger(second.AsString(), WorkCharge, out var parsed, out var wide))
             {
                 return null;
             }
@@ -285,7 +286,7 @@ internal sealed partial class JsEngine
 
         if (first.IsString && second.IsBigInt)
         {
-            if (!JsBigInt.TryParseStringInteger(first.AsString(), ChargeFuel, out var parsed, out var wide))
+            if (!JsBigInt.TryParseStringInteger(first.AsString(), WorkCharge, out var parsed, out var wide))
             {
                 return null;
             }
@@ -317,14 +318,14 @@ internal sealed partial class JsEngine
     /// The order of a BigInt against a Number, or <see langword="null"/> for a NaN; an infinity is
     /// beyond every BigInt.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=5CB7FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=050A90
     // Broiler-Falsified-If: a BigInt is ordered against a Number other than by their mathematical values
     // Broiler-Human:        PENDING
     private int? OrderAgainstNumber(JsBigInt value, double number) =>
         double.IsNaN(number) ? null
         : double.IsPositiveInfinity(number) ? -1
         : double.IsNegativeInfinity(number) ? 1
-        : value.CompareToNumber(number, ChargeFuel);
+        : value.CompareToNumber(number, WorkCharge);
 
     /// <summary>
     /// Charges an equality comparison for the text it may have to read.
@@ -437,11 +438,11 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Whether a String spells exactly this BigInt under <c>StringToBigInt</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=783A53
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=5872E8
     // Broiler-Falsified-If: a String that is not an integer, or spells another integer, is answered equal
     // Broiler-Human:        PENDING
     private bool BigIntEqualsText(JsBigInt value, string text) =>
-        JsBigInt.TryParseStringInteger(text, ChargeFuel, out var parsed, out _) &&
+        JsBigInt.TryParseStringInteger(text, WorkCharge, out var parsed, out _) &&
         parsed is not null &&
         CompareBigInts(value, parsed) == 0;
 

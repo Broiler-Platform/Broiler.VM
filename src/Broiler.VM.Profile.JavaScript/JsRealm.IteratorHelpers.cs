@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -600,7 +601,7 @@ internal sealed partial class JsRealm
     /// truncate toward zero, so <c>-0.5</c> is a limit of zero rather than a negative one, and
     /// <c>Infinity</c> is kept as itself: an unbounded take and a drop of everything.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B54229
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F8DB32
     // Broiler-Human:        PENDING
     private static double HelperLimit(JsEngine engine, JsValue thisValue, JsValue limit, string method)
     {
@@ -629,7 +630,7 @@ internal sealed partial class JsRealm
             throw error;
         }
 
-        var integer = JsValue.ToInteger(number);
+        var integer = IntegerConversions.ToIntegerOrInfinity(number);
 
         if (integer < 0)
         {

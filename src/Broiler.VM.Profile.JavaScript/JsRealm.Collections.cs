@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -1189,7 +1191,7 @@ internal sealed partial class JsRealm
     /// <c>TypeError</c> where a negative one is a <c>RangeError</c>, and only then are the two
     /// methods read and tested for callability.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=181D66
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C14907
     // Broiler-Human:        PENDING
     private static JsSetLike CollectionSetRecord(JsEngine engine, JsValue other, string member)
     {
@@ -1205,7 +1207,7 @@ internal sealed partial class JsRealm
             throw engine.Error("TypeError", "Set.prototype." + member + ": the size is not a number");
         }
 
-        var size = JsValue.ToInteger(declared);
+        var size = IntegerConversions.ToIntegerOrInfinity(declared);
 
         if (size < 0)
         {
@@ -1398,7 +1400,7 @@ internal sealed partial class JsRealm
     /// hand-written iterator's <c>return</c> is called exactly once.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4835DC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7B4479
     // Broiler-Human:        PENDING
     private static void CollectionEach(JsEngine engine, JsValue source, System.Action<JsValue> step)
     {
@@ -1436,7 +1438,7 @@ internal sealed partial class JsRealm
             throw engine.Error("TypeError", "the argument is not iterable");
         }
 
-        var length = JsValue.ToInteger(engine.ToNumber(declared));
+        var length = IntegerConversions.ToIntegerOrInfinity(engine.ToNumber(declared));
 
         if (length > 4294967295.0)
         {
@@ -1479,7 +1481,7 @@ internal sealed partial class JsRealm
     /// only through an iterator and an Array is one.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4DF0AE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A631C8
     // Broiler-Human:        PENDING
     private static System.Collections.Generic.List<JsValue> CollectionElements(JsEngine engine, JsValue source)
     {
@@ -1503,7 +1505,7 @@ internal sealed partial class JsRealm
             throw engine.Error("TypeError", "the argument is not iterable");
         }
 
-        var length = JsValue.ToInteger(engine.ToNumber(declared));
+        var length = IntegerConversions.ToIntegerOrInfinity(engine.ToNumber(declared));
 
         if (length <= 0)
         {

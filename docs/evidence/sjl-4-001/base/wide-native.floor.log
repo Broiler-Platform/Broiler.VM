@@ -1,0 +1,2 @@
+note the floor was set in the native (x86-64-win64) form and this run was taken in the native (x86-64-sysv) form: re-basing, because two output forms' totals are two runs
+broiler-js-conformance: the suite revision, the manifest or the output form moved; pass --admit to re-base the floor onto this run

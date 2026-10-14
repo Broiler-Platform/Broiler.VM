@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -171,7 +172,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds the object a record names, or nothing for a view, which is built second.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D3477C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=403FE9
     // Broiler-Human:        PENDING
     private JsObject? CloneShell(JsCloneRecord record)
     {
@@ -185,7 +186,7 @@ internal sealed partial class JsRealm
                     // THE LENGTH FIRST, AS HTML'S ArrayCreate(length) DOES. Setting it allocates
                     // nothing, so a length of a billion with one element is one element.
                     var array = new JsArray(ArrayPrototype);
-                    array.SetLength(JsValue.ToUint32(record.Number));
+                    array.SetLength(IntegerConversions.ToUint32(record.Number));
                     return array;
                 }
 
@@ -458,7 +459,7 @@ internal sealed partial class JsRealm
     /// <see cref="JsCloneCarrier.HoldsBigInt"/> was checked against this realm's surfaces before the
     /// rebuild began, so a declining realm never reaches here.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=4CF6A0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D53C16
     // Broiler-Falsified-If: a BigInt slot is rebuilt uncharged, or a slot of another kind is read as a BigInt
     // Broiler-Human:        PENDING
     private JsValue CloneBigInt(JsCloneSlot slot)
@@ -468,7 +469,7 @@ internal sealed partial class JsRealm
             : throw new JsCloneRefusedException(
                 JsCloneRefusal.Unrepresentable, "the carrier's BigInt record holds no BigInt");
 
-        engine.Charge(JsBigInt.LinearCost(integer.Words));
+        engine.Charge(BigIntMath.LinearCost(integer.Words));
         return JsValue.BigInt(integer);
     }
 
@@ -1144,7 +1145,7 @@ internal sealed partial class JsRealm
         /// width. Each occurrence counts: two slots naming one integer are two values, as two
         /// Numbers are.
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=0651DE
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=16F03F
         // Broiler-Falsified-If: a BigInt is carried past the byte bound without a refusal, or carried uncharged
         // Broiler-Human:        PENDING
         private JsBigInt CountBigInt(JsBigInt value)
@@ -1156,7 +1157,7 @@ internal sealed partial class JsRealm
                 throw TooLarge();
             }
 
-            engine.Charge(JsBigInt.LinearCost(value.Words));
+            engine.Charge(BigIntMath.LinearCost(value.Words));
             holdsBigInt = true;
             return value;
         }

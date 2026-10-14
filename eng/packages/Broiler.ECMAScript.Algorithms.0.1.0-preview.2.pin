@@ -1,0 +1,53 @@
+# broiler-shared-package pin 1
+#
+# One package of the committed, hash-pinned feed (decision SJL-D-4 (c); milestone SJL-2.7): a shared
+# JavaScript library package whose home is the Broiler.JS repository, retained here byte for byte so
+# that a restore needs no other repository's folder and no network for it. NuGet.config's package
+# source mapping sends the Broiler.ECMAScript prefix to this directory and to nuget.org; the lock
+# file of a project that references it records `content-hash`, and rule I1 holds that hash to this
+# pin and to the allow-list.
+#
+# HOW IT WAS TAKEN. The package exactly as the Broiler.JS repository's publish-shared workflow pushed
+# it to nuget.org on 2026-10-14 (run 38582605981, its artifact shared-packages), packed from
+# `upstream-commit`; the nuspec's repository element records the same commit, which rule I7 reads.
+# nuget.org serves the same package with its repository signature (.signature.p7s) added, and NuGet's
+# content hash of a signed package leaves the signature out, so a restore from either source records
+# `content-hash`, the base64 SHA-512 of this file's bytes. `sha256` is over the same bytes.
+#
+# (Revised 2026-10-14, when the package was published. Until then this feed held the same library
+# under the version first planned for it, 0.2.0-preview.1, in the files
+# Broiler.ECMAScript.Algorithms.0.2.0-preview.1.nupkg and .pin. Broiler.JS b3d54f7 keeps the shared
+# stream's 0.1.0 prefix, so the library was published as 0.1.0-preview.2, and 0.2.0-preview.1 will not
+# be. The published commit's library code is 01209c4's with one change, ff7416b's: BigIntPolicy.
+# RepresentationLimit is 2^31 - 128 bits, where it was 2^31 - 1. The paragraph read: "Packed on
+# 2026-10-13 in the Broiler.JS repository, from `upstream-commit`, with `dotnet pack
+# Broiler.ECMAScript/Broiler.ECMAScript.Algorithms -c Release -p:Version=0.2.0-preview.1
+# -p:PackageVersion=0.2.0-preview.1 -p:ContinuousIntegrationBuild=true`; the nuspec's repository
+# element records the same commit, which rule I7 reads. The same commit's pristine consumer
+# (scripts/packaging/test_pristine_consumer.py --set shared --version 0.2.0-preview.1) restored it
+# from a local feed alone, into an isolated cache, and ran. `content-hash` is NuGet's: the base64
+# SHA-512 of the .nupkg's bytes, which is what a lock file records. `sha256` is over the same bytes.
+# It is not on nuget.org: a Broiler.VM package release that depends on it waits for its publication
+# (eng/verify-feed.ps1), and the pin is then taken again from the published package, as
+# 0.1.0-preview.1's was." The identity lines read:
+#   version 0.2.0-preview.1
+#   file Broiler.ECMAScript.Algorithms.0.2.0-preview.1.nupkg
+#   content-hash CBi+VFOzuSIJW1CphcIvIWst3+H5foI2b44FCoyw31uc7aUwOB550K6z7HThjrTBw0DSPcad2/3RGJC42aqOWA==
+#   sha256 aded30f14cafe7572037192b90a8877ca9bba79db9d5c4a63a49a27605f00af1
+#   upstream-commit 01209c43a3a244b9e502908e68fcded49e9bc198)
+#
+# WHAT IT IS. The numerics area of the shared algorithms library (milestone SJL-4.3; JSD-0067), with
+# the number-conversion area of 0.1.0-preview.1 unchanged: admitted for PRODUCT use by
+# Broiler.VM.Profile.JavaScript and Broiler.VM.Profile.JavaScript.Compiler at SJL-4.4, and restored by
+# the admission probe. It carries one more third-party component than 0.1.0-preview.1, a port of
+# fdlibm's expm1 and log1p under Sun's notice, which its THIRD_PARTY_NOTICES.md names. It is on
+# nuget.org since 2026-10-14, as a Broiler.VM package release that depends on it requires
+# (eng/verify-feed.ps1).
+
+id Broiler.ECMAScript.Algorithms
+version 0.1.0-preview.2
+file Broiler.ECMAScript.Algorithms.0.1.0-preview.2.nupkg
+content-hash V1b57mCiAxulP7R+V4sZOSLcnqWjgIR1Q7z0Q8DDXkOBiVws1KTWMiMG7N5fKZ+ZR28NWjxUGtfPm00AXhSkEw==
+sha256 1dfa9ab39830eca265ecf12f39cf7942544037b2b229bd2ce6048fef8a8bd401
+upstream Broiler-Platform/broiler.js
+upstream-commit b3d54f7c9c01f84abbd56a823482200dd695f222

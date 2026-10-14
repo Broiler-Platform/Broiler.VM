@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 336 |
 | Files carrying an annotation | 336 |
-| Code units | 12288 |
-| Relevant | 7127 |
-| Exempt by predicate | 5161 |
-| Annotated | 7127 of 7127 (100%) |
-| Human reviewed | 0 of 7127 (0%) |
-| Unverified | 7127 |
+| Code units | 12222 |
+| Relevant | 7081 |
+| Exempt by predicate | 5141 |
+| Annotated | 7081 of 7081 (100%) |
+| Human reviewed | 0 of 7081 (0%) |
+| Unverified | 7081 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 7127 |
+| HUMAN_PENDING | 7081 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5161 |
+| EXEMPT | 5141 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1654 |
-| Low | 7037 |
+| Low | 6990 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 2264 |
-| Medium | 4620 |
-| High | 1635 |
+| Low | 2248 |
+| Medium | 4599 |
+| High | 1625 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.6 / 10 |
-| Units scored | 7127 |
+| Units scored | 7081 |
 
 ## High-security review areas
 
@@ -708,33 +708,23 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDisposeStep.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDisposeEnd` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDisposeEnd.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Policy` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBigInt.JsBigInt(BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBigInt.FromConstant(bool, ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.ToDecimalString(Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.AppendDecimal(StringBuilder, BigInteger, int, int, List<BigInteger>, List<int>, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.LinearCost(int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.ProductCost(int, int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.LeafCost(int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.Bounded(BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.Multiply(JsBigInt, JsBigInt, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.Divide(JsBigInt, JsBigInt, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.Remainder(JsBigInt, JsBigInt, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.Power(JsBigInt, JsBigInt, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.Shift(JsBigInt, BigInteger, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.AsIntN(ulong, JsBigInt, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.AsUintN(ulong, JsBigInt, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.FromIntegralNumber(double)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.ToNumber(Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.CompareToNumber(double, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.TryParseStringInteger(string, Action<ulong>, out JsBigInt?, out int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.TryParseRadix(ReadOnlySpan<char>, int, Action<ulong>, out JsBigInt?, out int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.ParseDecimal(ReadOnlySpan<char>, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.ParseDecimalPart(ReadOnlySpan<char>, int, List<BigInteger>, List<int>, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.ToRadixString(int, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsBigInt.AppendRadix(StringBuilder, BigInteger, int, int, int, ulong, int, List<BigInteger>, List<int>, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ToDecimalString(WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ToRadixString(int, WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Of(ResultStatus, BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Multiply(JsBigInt, JsBigInt, WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Power(JsBigInt, JsBigInt, WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ShiftLeft(JsBigInt, JsBigInt, WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ShiftRight(JsBigInt, JsBigInt, WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.AsUintN(ulong, JsBigInt, WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ToNumber(WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.CompareToNumber(double, WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBigInt.TryParseStringInteger(string, WorkCharge, out JsBigInt?, out int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsElements.ReadValue(byte[], int, JsElementKind, bool)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsElements.BigIntElement(JsElementKind, ulong)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsElements.WriteValue(byte[], int, JsElementKind, JsValue, bool)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsElements.Low64(BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsElements.ElementOf(JsElementKind, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsArrayBuffer.TryReplaceStorage(byte[])` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsCloneCarrier` in `src/Broiler.VM.Profile.JavaScript/JsClone.cs` - Security=High, human line PENDING
@@ -746,9 +736,9 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsFinalizationRegistryObject` in `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsFinalizationRegistryObject.Mark(JsEngine, IJsFinalizationEligibility)` in `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsDecimal` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsDecimal.FromString(string, Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsDecimal.FromString(string, WorkCharge)` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsDecimal.ParseDecimal(string)` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsDecimal.RoundToUnits(int, int, JsUnsignedRounding)` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsDecimal.RoundToUnits(int, int, UnsignedRoundingMode)` in `src/Broiler.VM.Profile.JavaScript/JsDecimal.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsync(JsAsyncCall, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Async.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.EnqueueAsyncGenerator(JsValue, JsResumeMode, JsValue, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Async.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsyncGenerator(JsAsyncGenerator, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Async.cs` - Security=High, human line PENDING
@@ -1959,8 +1949,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2043 |
-| Units required to carry one | 1888 |
+| Units carrying a criterion | 2034 |
+| Units required to carry one | 1878 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1993,8 +1983,8 @@ that the rule is reviewable in one place rather than in several hundred.
 | CompilerSuppliedRecordOrEnumMember | 30 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 961 |
-| EnumMemberOfADeclaredVocabulary | 2064 |
+| FieldDeclaringStorage | 960 |
+| EnumMemberOfADeclaredVocabulary | 2045 |
 | DeclaredInSource | 79 |
 
 ## Per-unit exemptions
@@ -2092,7 +2082,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-12288 of them, exempt and relevant alike - with the fingerprint of its declaration.
+12222 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

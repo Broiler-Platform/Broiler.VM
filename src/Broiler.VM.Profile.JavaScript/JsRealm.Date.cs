@@ -17,6 +17,7 @@
 
 using System;
 using System.Globalization;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -82,7 +83,7 @@ internal sealed partial class JsRealm
     private const string DateZoneText = " GMT+0000 (Coordinated Universal Time)";
 
     /// <summary>Builds <c>Date</c>, its statics and <c>Date.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=47C700
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D2E6AD
     // Broiler-Human:        PENDING
     private void SetupDate()
     {
@@ -228,7 +229,7 @@ internal sealed partial class JsRealm
                 return JsValue.Number(double.NaN);
             }
 
-            var whole = JsValue.ToInteger(year);
+            var whole = IntegerConversions.ToIntegerOrInfinity(year);
             var full = whole is >= 0 and <= 99 ? 1900 + whole : year;
 
             var day = DateMakeDay(full, DateMonthFromTime(time), DateDateFromTime(time));
@@ -432,7 +433,7 @@ internal sealed partial class JsRealm
     /// The time value the seven-field form produces, shared by <c>new Date(y, m, …)</c> and
     /// <c>Date.UTC</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A7CC40
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2F3B60
     // Broiler-Human:        PENDING
     private static double DateFromFields(JsEngine engine, JsValue[] arguments)
     {
@@ -448,7 +449,7 @@ internal sealed partial class JsRealm
 
         if (!double.IsNaN(year))
         {
-            var integral = JsValue.ToInteger(year);
+            var integral = IntegerConversions.ToIntegerOrInfinity(year);
 
             // THE TWO-DIGIT YEAR WINDOW: 0..99 MEANS 1900..1999. It is a compatibility wart the
             // language kept, and `new Date(99, 0, 1)` being 1999 rather than year 99 is observable.
@@ -802,7 +803,7 @@ internal sealed partial class JsRealm
     private static double DateMsFromTime(double time) => DateFloorMod(time, DateMsPerSecond);
 
     /// <summary>The specification's <c>MakeTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CC1F15
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=65B0BA
     // Broiler-Human:        PENDING
     private static double DateMakeTime(double hour, double minute, double second, double milli)
     {
@@ -812,10 +813,10 @@ internal sealed partial class JsRealm
             return double.NaN;
         }
 
-        return (JsValue.ToInteger(hour) * DateMsPerHour) +
-            (JsValue.ToInteger(minute) * DateMsPerMinute) +
-            (JsValue.ToInteger(second) * DateMsPerSecond) +
-            JsValue.ToInteger(milli);
+        return (IntegerConversions.ToIntegerOrInfinity(hour) * DateMsPerHour) +
+            (IntegerConversions.ToIntegerOrInfinity(minute) * DateMsPerMinute) +
+            (IntegerConversions.ToIntegerOrInfinity(second) * DateMsPerSecond) +
+            IntegerConversions.ToIntegerOrInfinity(milli);
     }
 
     /// <summary>The specification's <c>MakeDay</c>.</summary>
@@ -824,7 +825,7 @@ internal sealed partial class JsRealm
     /// day 0 is the last day of the previous month. That is not leniency, it is the operation
     /// <c>setMonth</c> and <c>new Date(y, m, 0)</c> are both defined in terms of.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=77E489
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2E8472
     // Broiler-Human:        PENDING
     private static double DateMakeDay(double year, double month, double day)
     {
@@ -833,9 +834,9 @@ internal sealed partial class JsRealm
             return double.NaN;
         }
 
-        var wholeYear = JsValue.ToInteger(year);
-        var wholeMonth = JsValue.ToInteger(month);
-        var wholeDay = JsValue.ToInteger(day);
+        var wholeYear = IntegerConversions.ToIntegerOrInfinity(year);
+        var wholeMonth = IntegerConversions.ToIntegerOrInfinity(month);
+        var wholeDay = IntegerConversions.ToIntegerOrInfinity(day);
         var carried = wholeYear + Math.Floor(wholeMonth / 12);
 
         if (!double.IsFinite(carried))
@@ -863,7 +864,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>TimeClip</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A516B0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ECFC97
     // Broiler-Human:        PENDING
     private static double DateTimeClip(double time)
     {
@@ -872,11 +873,9 @@ internal sealed partial class JsRealm
             return double.NaN;
         }
 
-        var truncated = Math.Truncate(time);
-
-        // The comparison folds a negative zero into a positive one, which is what
-        // ToIntegerOrInfinity does and what keeps `new Date(-0.5).getTime()` from printing "-0".
-        return truncated == 0 ? 0 : truncated;
+        // 𝔽(! ToIntegerOrInfinity(time)), the shared library's (SJL-4.6): a negative zero, and a time in
+        // (-1, 0), is +0, which keeps `new Date(-0.5).getTime()` from printing "-0".
+        return IntegerConversions.ToIntegerOrInfinity(time);
     }
 
     // ---- parsing ---------------------------------------------------------------------------------

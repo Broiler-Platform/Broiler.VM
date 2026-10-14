@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -84,7 +86,7 @@ internal sealed partial class JsRealm
     /// and a constructor that logs can see it. A receiver that is not a constructor gets an
     /// ordinary Array rather than a <c>TypeError</c>: the method is a generic factory.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D51208
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=670D34
     // Broiler-Human:        PENDING
     private void ArrayFromAsyncStart(JsEngine engine, JsPromiseObject promise, JsValue receiver, JsValue[] arguments)
     {
@@ -134,7 +136,7 @@ internal sealed partial class JsRealm
         // NEITHER PROTOCOL, SO AN ARRAY-LIKE - a number, a boolean and a plain object without a
         // `length` all land here and answer an empty result, as they do for `Array.from`.
         var source = JsValue.Object(engine.ToObject(items));
-        var length = ArrayToLength(engine, engine.GetProperty(source, "length"));
+        double length = IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(source, "length")));
 
         run.Source = source;
         run.Length = length;

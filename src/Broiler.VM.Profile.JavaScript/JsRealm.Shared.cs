@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -381,7 +383,7 @@ internal sealed partial class JsRealm
     /// Converts an operand as the element's content type asks - <c>ToBigInt</c> or
     /// <c>ToIntegerOrInfinity</c> - and answers its bits, with the converted value in <paramref name="converted"/>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0682EB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6D98B7
     // Broiler-Human:        PENDING
     private static long AtomicsOperand(JsEngine engine, JsTypedArray array, JsValue value, out JsValue converted)
     {
@@ -389,14 +391,14 @@ internal sealed partial class JsRealm
         {
             var big = engine.ToBigInt(value);
             converted = JsValue.BigInt(big);
-            return unchecked((long)(ulong)(big.Value & ulong.MaxValue));
+            return IntegerConversions.ToBigInt64(big.Value);
         }
 
         var integer = engine.ToInteger(value);
 
         // `ToIntegerOrInfinity` ANSWERS +0 FOR -0, which is the value `store` hands back.
         converted = JsValue.Number(integer == 0 ? 0 : integer);
-        return JsValue.ToUint32(integer);
+        return IntegerConversions.ToUint32(integer);
     }
 
     /// <summary>
@@ -427,7 +429,7 @@ internal sealed partial class JsRealm
         array.Buffer.Block?.Gate ?? array.Buffer;
 
     /// <summary>An element's bits as the value its kind reads them as.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BCB739
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BC0BAB
     // Broiler-Human:        PENDING
     private static JsValue AtomicsValueOf(JsElementKind kind, long raw) => kind switch
     {
@@ -437,12 +439,11 @@ internal sealed partial class JsRealm
         JsElementKind.Uint16 => JsValue.Number(unchecked((ushort)raw)),
         JsElementKind.Int32 => JsValue.Number(unchecked((int)raw)),
         JsElementKind.Uint32 => JsValue.Number(unchecked((uint)raw)),
-        JsElementKind.BigInt64 => JsValue.BigInt(new JsBigInt(new System.Numerics.BigInteger(raw))),
-        _ => JsValue.BigInt(new JsBigInt(new System.Numerics.BigInteger(unchecked((ulong)raw)))),
+        _ => JsElements.BigIntElement(kind, unchecked((ulong)raw)),
     };
 
     /// <summary><c>DoWait</c>: <c>Atomics.wait</c> when <paramref name="synchronous"/>, else <c>waitAsync</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F20377
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=2373E3
     // Broiler-Falsified-If: Atomics.wait blocks an agent whose host did not say it may block
     // Broiler-Human:        PENDING
     private static JsValue AtomicsDoWait(JsEngine engine, JsValue[] arguments, bool synchronous)
@@ -452,8 +453,8 @@ internal sealed partial class JsRealm
         var block = array.Buffer.Block!;
 
         var expected = array.Kind == JsElementKind.BigInt64
-            ? unchecked((long)(ulong)(engine.ToBigInt(ArgOfBinary(arguments, 2)).Value & ulong.MaxValue))
-            : (long)(uint)JsValue.ToInt32(engine.ToNumber(ArgOfBinary(arguments, 2)));
+            ? IntegerConversions.ToBigInt64(engine.ToBigInt(ArgOfBinary(arguments, 2)).Value)
+            : (long)(uint)IntegerConversions.ToInt32(engine.ToNumber(ArgOfBinary(arguments, 2)));
 
         var requested = engine.ToNumber(ArgOfBinary(arguments, 3));
         var timeout = double.IsNaN(requested) || double.IsPositiveInfinity(requested)

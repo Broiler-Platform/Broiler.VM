@@ -1,6 +1,7 @@
 // Violates I5 (governance section 3.1's witness): JsNumberFormat.ToJsString, which SJL-3.4 retired when
-// the number-conversion area moved to Broiler.ECMAScript.Algorithms, declared again. The comment and the
-// string below name ToRadixString and NumberText too, and are not declarations, so they are not reported.
+// the number-conversion area moved to Broiler.ECMAScript.Algorithms, declared again; and JsFloat16, the
+// top-level type SJL-4.4 retired when the numerics area moved. The comment and the string below name
+// ToRadixString and NumberText too, and are not declarations, so they are not reported.
 namespace Broiler.VM.Profile.JavaScript;
 
 internal static class JsNumberFormat
@@ -10,4 +11,9 @@ internal static class JsNumberFormat
     internal static string NumberToString(double value) => ToJsString(value);
 
     internal static string ToJsString(double value) => value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+}
+
+internal static class JsFloat16
+{
+    internal static double Round(double value) => (double)(System.Half)value;
 }

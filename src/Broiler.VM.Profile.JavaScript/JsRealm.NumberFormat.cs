@@ -230,7 +230,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's ToIntlMathematicalValue.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=Medium; Resources=2; Fingerprint=776FBB
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.5.16; IP=Low; Security=Medium; Resources=2; Fingerprint=EDDF29
     // Broiler-Human:        PENDING
     internal static JsDecimal ToIntlMathematicalValue(JsEngine engine, JsValue value)
     {
@@ -238,12 +238,12 @@ internal sealed partial class JsRealm
 
         if (primitive.IsBigInt)
         {
-            return JsDecimal.FromBigInt(primitive.AsBigInt(), engine.ChargeFuel);
+            return JsDecimal.FromBigInt(primitive.AsBigInt(), engine.WorkCharge);
         }
 
         if (primitive.IsString)
         {
-            return JsDecimal.FromString(primitive.AsString(), engine.ChargeFuel);
+            return JsDecimal.FromString(primitive.AsString(), engine.WorkCharge);
         }
 
         return JsDecimal.FromNumber(engine.ToNumber(primitive));

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           28
-// Human-reviewed:   0/27
+// Relevant units:   26
+// Annotated:        26/26
+// Exempt:           27
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         15/15
 // Resource impact:  5/10 max
-// Unverified:       27
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -391,19 +391,6 @@ internal sealed partial class JsEngine
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=733ADC
     // Broiler-Human:        PENDING
     private const ulong PollWindow = 16_384;
-
-    /// <summary>
-    /// <see cref="Charge"/> as a delegate, made once, which is how the BigInt operations charge fuel
-    /// - and so meet the cancellation poll - between the steps of a long operation.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DA6294
-    // Broiler-Human:        PENDING
-    internal Action<ulong> ChargeFuel => chargeFuel ??= Charge;
-
-    /// <summary>The delegate <see cref="ChargeFuel"/> made.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B83AE1
-    // Broiler-Human:        PENDING
-    private Action<ulong>? chargeFuel;
 
     /// <summary>What a call is charged for itself, over the instruction that makes it.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=176597

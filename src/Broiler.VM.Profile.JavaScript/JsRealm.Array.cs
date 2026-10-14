@@ -3,19 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   39
-// Annotated:        39/39
+// Relevant units:   38
+// Annotated:        38/38
 // Exempt:           1
-// Human-reviewed:   0/39
+// Human-reviewed:   0/38
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       39
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Collections.Generic;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -1437,7 +1438,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The <c>Array</c> constructor, which behaves the same called and constructed.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=848D4D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E839C5
     // Broiler-Human:        PENDING
     private JsValue ArrayBuild(JsEngine engine, JsValue thisValue, JsValue[] arguments)
     {
@@ -1449,7 +1450,7 @@ internal sealed partial class JsRealm
         if (arguments.Length == 1 && arguments[0].IsNumber)
         {
             var requested = arguments[0].AsNumber();
-            var length = JsValue.ToUint32(requested);
+            var length = IntegerConversions.ToUint32(requested);
 
             if (length != requested)
             {
@@ -1537,10 +1538,10 @@ internal sealed partial class JsRealm
     /// past 2^53-1 refuse with the <c>TypeError</c> the specification names before they write.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4138B7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D49003
     // Broiler-Human:        PENDING
     private static double ArrayLengthOf(JsEngine engine, JsValue target) =>
-        ArrayToLength(engine, engine.GetProperty(target, "length"));
+        IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(target, "length")));
 
     /// <summary>The property key index <paramref name="at"/> is named by.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A7ABAD
@@ -1669,7 +1670,7 @@ internal sealed partial class JsRealm
     /// result that would pass that ceiling before a single element is copied. Each index the spread visits is charged, holes included, so a huge sparse length meets
     /// the instruction budget rather than an unmetered scan.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CC5F47
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3BB778
     // Broiler-Human:        PENDING
     private static double ArrayConcatOne(JsEngine engine, JsValue result, double at, JsValue item)
     {
@@ -1681,7 +1682,7 @@ internal sealed partial class JsRealm
         // what keeps `[].concat(arguments)` a one-element Array.
         if (ArrayIsConcatSpreadable(engine, item))
         {
-            var length = ArrayToLength(engine, engine.GetProperty(item, "length"));
+            double length = IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(item, "length")));
 
             if (at + length > ArrayMaxSafeLength)
             {
@@ -1744,21 +1745,6 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E932DB
     // Broiler-Human:        PENDING
     private const double ArrayMaxSafeLength = 9007199254740991.0;
-
-    /// <summary>The specification's <c>ToLength</c>: an integer clamped to [0, 2^53-1].</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FD062F
-    // Broiler-Human:        PENDING
-    private static double ArrayToLength(JsEngine engine, JsValue value)
-    {
-        var length = engine.ToInteger(value);
-
-        if (length <= 0)
-        {
-            return 0;
-        }
-
-        return length > ArrayMaxSafeLength ? ArrayMaxSafeLength : length;
-    }
 
     /// <summary>
     /// The specification's <c>ArraySpeciesCreate</c>: the object an allocating method builds its

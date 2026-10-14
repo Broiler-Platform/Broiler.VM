@@ -1,0 +1,207 @@
+# SJL-4.6 deletion check, Broiler.VM at f617962a7f5747d8bcbfcef90f405a8f133ed57d: every member rule I5 registers (src/tests/Broiler.VM.Architecture.Tests/retired-members.json), its simple
+# name searched as a declaration - a modifier, then the name as a whole word - in the JavaScript
+# family's C# sources (src/Broiler.VM.Profile.JavaScript/*.cs, src/Broiler.VM.Profile.JavaScript.Compiler/*.cs, src/Broiler.VM.Profile.JavaScript.Format/*.cs, src/Broiler.VM.Profile.JavaScript.Intl/*.cs). A member listed with no line is declared nowhere there.
+# Rule I5 itself decides by the fully qualified name, and its run is rules.log.
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.ToJsString (SJL-3.4)
+src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs:450:    public string ToJsString(JsHostValue value)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.Decompose (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.Place (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.ToRadixString (SJL-3.4)
+src/Broiler.VM.Profile.JavaScript/JsBigInt.cs:172:    internal string ToRadixString(int radix, WorkCharge charge) => BigIntText.ToString(Value, radix, charge);
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.RoundUpRadix (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.Value (SJL-3.4)
+src/Broiler.VM.Profile.JavaScript.Compiler/JsJsonModule.cs:107:        internal bool Value(System.Text.StringBuilder written, int depth)
+src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs:53:    public JavaScriptValue Value { get; }
+src/Broiler.VM.Profile.JavaScript/JsBigInt.cs:111:    internal BigInteger Value { get; }
+src/Broiler.VM.Profile.JavaScript/JsCollections.cs:355:        internal JsValue Value { get; } = value;
+src/Broiler.VM.Profile.JavaScript/JsCollections.cs:423:    internal JsValue Value { get; set; }
+src/Broiler.VM.Profile.JavaScript/JsDateData.cs:108:    internal string? Value(string language, string key) =>
+src/Broiler.VM.Profile.JavaScript/JsExecution.cs:53:    public string Value { get; }
+src/Broiler.VM.Profile.JavaScript/JsFunction.cs:861:    internal JsValue Value { get; set; } = JsValue.Undefined;
+src/Broiler.VM.Profile.JavaScript/JsGenerator.cs:400:    internal JsValue Value { get; }
+src/Broiler.VM.Profile.JavaScript/JsGenerator.cs:422:    internal JsValue Value { get; }
+src/Broiler.VM.Profile.JavaScript/JsGenerator.cs:608:    internal JsValue Value { get; }
+src/Broiler.VM.Profile.JavaScript/JsNumberData.cs:66:    internal string? Value(string language, string key) =>
+src/Broiler.VM.Profile.JavaScript/JsObject.cs:60:    internal JsValue Value;
+src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs:1320:        internal JsValue Value { get; } = value;
+src/Broiler.VM.Profile.JavaScript/JsRealm.Lexical.cs:113:    internal JsValue Value { get; set; }
+src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs:1923:        internal JsValue Value { get; set; } = JsValue.Undefined;
+src/Broiler.VM.Profile.JavaScript/JsSegmenter.cs:102:        static TEnum Value<TEnum>(string[] list, int code)
+src/Broiler.VM.Profile.JavaScript/JsThrow.cs:50:    internal JsValue Value { get; }
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.Digit (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.ToNumber (SJL-3.4)
+src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs:218:    public static double ToNumber(ulong word) => System.BitConverter.Int64BitsToDouble((long)word);
+src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs:121:    public double ToNumber() => Kind switch
+src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs:760:    private static int ToNumber(JsBaselineFrame* frame, int pc) => JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.ToNumber);
+src/Broiler.VM.Profile.JavaScript/JsBigInt.cs:352:    internal double ToNumber(WorkCharge charge) => BigIntMath.ToNumber(Value, charge);
+src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs:97:    internal double ToNumber(JsValue value) => value.Type switch
+src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs:474:    public double ToNumber(JsHostValue value)
+src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs:829:    private static int ToNumber(JsValueFrame* frame, int pc) =>
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.IsDecimalLiteral (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.ParseRadix (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.DigitValue (SJL-3.4)
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:515:    private int DigitValue(int codePoint)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.ParseInt (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.ParseFloat (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.IsWhiteSpace (SJL-3.4)
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:2472:    private static bool IsWhiteSpace(char c) => JsUnicodeLexical.IsWhiteSpace(c);
+src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeLexical.cs:77:    public static bool IsWhiteSpace(int codePoint) =>
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormat.Trim (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberFixedText (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberFixedCeiling (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberExponentialText (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberShortestDigits (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberRoundTripDigits (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberPrecisionText (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberRoundSignificant (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberIsMidpoint (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberFivePowerLimit (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberSplitRendered (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberWithoutPoint (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberPointAfterFirst (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberExponentSuffix (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberIncrementDigits (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberIncrementFixed (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.NumberCulture (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.Compiler.JsParser.NumberText (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.Compiler.JsParser.TryBigIntValue (SJL-3.4)
+
+## Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.DigitValue (SJL-3.4)
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:515:    private int DigitValue(int codePoint)
+
+## Broiler.VM.Profile.JavaScript.JsValue.ToInt32 (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs:158:    public int ToInt32() => IntegerConversions.ToInt32(ToNumber());
+src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs:331:    internal int ToInt32(JsValue value) => IntegerConversions.ToInt32(ToNumber(value));
+
+## Broiler.VM.Profile.JavaScript.JsValue.ToUint32 (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs:167:    public uint ToUint32() => IntegerConversions.ToUint32(ToNumber());
+src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs:336:    internal uint ToUint32(JsValue value) => IntegerConversions.ToUint32(ToNumber(value));
+
+## Broiler.VM.Profile.JavaScript.JsValue.ToInteger (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JsEngine.Conversions.cs:341:    internal double ToInteger(JsValue value) => IntegerConversions.ToIntegerOrInfinity(ToNumber(value));
+
+## Broiler.VM.Profile.JavaScript.JsElements.Clamp (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsElements.Low64 (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsFloat16 (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.ArrayToLength (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.MathRoundHalfUp (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.MathHypotenuse (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.MathPower (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.MathExpMinusOne (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.MathLogOnePlus (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsRealm.MathDistil (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.TemporalRounding (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsTemporalCore.Negate (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs:753:    private static int Negate(JsBaselineFrame* frame, int pc) => JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Negate);
+src/Broiler.VM.Profile.JavaScript/JsBigInt.cs:234:    internal static JsBigInt? Negate(JsBigInt value, WorkCharge charge) =>
+src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs:821:    private static int Negate(JsValueFrame* frame, int pc) =>
+
+## Broiler.VM.Profile.JavaScript.JsTemporalCore.Unsigned (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs:164:    internal static ulong Unsigned(byte[] bytes, ref int at)
+
+## Broiler.VM.Profile.JavaScript.JsTemporalCore.UnsignedMode (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsTemporalCore.ApplyUnsigned (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsTemporalCore.RoundToIncrement (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsTemporalCore.RoundToIncrementAsIfPositive (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsTemporalCore.RoundsToSecond (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsTemporalCore.ToDouble (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs:30:    internal double ToDouble() => ExactRounding.ToDouble(Numerator, Denominator);
+
+## Broiler.VM.Profile.JavaScript.JsUnsignedRounding (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsNumberFormatter.Unsigned (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs:164:    internal static ulong Unsigned(byte[] bytes, ref int at)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.AppendDecimal (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.DecimalDigitsBound (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.FormatLeafBits (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.TenToTheNineteen (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.AppendPowerOfTwoRadix (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.AppendRadix (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.RadixLeaf (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.WordDigits (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.RadixDigits (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.TryParseRadix (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.ParseDecimal (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JsDecimal.cs:253:    private static JsDecimal? ParseDecimal(string text)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.ParseDecimalPart (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.ParseLeafDigits (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.MaximumDecimalDigits (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.Bounded (SJL-4.4)
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:201:    private string? Bounded(int maximum)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.Shift (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.WordsOf (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.LinearCost (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.ProductCost (SJL-4.4)
+
+## Broiler.VM.Profile.JavaScript.JsBigInt.LeafCost (SJL-4.4)
+
+# registered members with no declaration of their simple name: 62
+# registered members: 78

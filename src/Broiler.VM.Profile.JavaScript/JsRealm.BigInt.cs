@@ -59,7 +59,7 @@ internal sealed partial class JsRealm
     internal JsObject? BigIntPrototype { get; private set; }
 
     /// <summary>Builds <c>BigInt</c>, its two statics and <c>BigInt.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D8795
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=839008
     // Broiler-Human:        PENDING
     private void SetupBigInt()
     {
@@ -112,7 +112,7 @@ internal sealed partial class JsRealm
                 }
             }
 
-            return JsValue.String(value.ToRadixString((int)radix, engine.ChargeFuel));
+            return JsValue.String(value.ToRadixString((int)radix, engine.WorkCharge));
         });
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
@@ -121,8 +121,8 @@ internal sealed partial class JsRealm
 
             // WITH INTL, ECMA-402 s20.3.1: through the realm's own %Intl.NumberFormat%.
             return engine.Realm.NumberFormatConstructor is null
-                ? JsValue.String(value.ToDecimalString(engine.ChargeFuel))
-                : JsValue.String(ToLocaleNumberString(engine, JsDecimal.FromBigInt(value, engine.ChargeFuel), arguments));
+                ? JsValue.String(value.ToDecimalString(engine.WorkCharge))
+                : JsValue.String(ToLocaleNumberString(engine, JsDecimal.FromBigInt(value, engine.WorkCharge), arguments));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>
@@ -145,7 +145,7 @@ internal sealed partial class JsRealm
     /// realm's ceiling - a negative value at a width past it - is the ceiling's RangeError, since no
     /// value in the realm can hold it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=2F9DBC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C9DF6D
     // Broiler-Falsified-If: the value is converted before the width, a Number value is accepted, or a result past MaximumBits is answered
     // Broiler-Human:        PENDING
     private static JsValue BigIntWrap(JsEngine engine, JsValue[] arguments, bool signed)
@@ -154,8 +154,8 @@ internal sealed partial class JsRealm
         var value = engine.ToBigInt(ArgOfBigInt(arguments, 1));
 
         var result = signed
-            ? JsBigInt.AsIntN(bits, value, engine.ChargeFuel)
-            : JsBigInt.AsUintN(bits, value, engine.ChargeFuel);
+            ? JsBigInt.AsIntN(bits, value, engine.WorkCharge)
+            : JsBigInt.AsUintN(bits, value, engine.WorkCharge);
 
         return engine.BigIntResult(result);
     }

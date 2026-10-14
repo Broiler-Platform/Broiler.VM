@@ -1,0 +1,18 @@
+$ compare-test262-forms.py <base wide-bytecode> <after wide-bytecode> --same-form --suite <suite>
+# reference <scratch>/base-wide-bytecode.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   total|53469|101723|100368|158|0|44|1153
+# candidate <scratch>/after-wide-bytecode.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   total|53469|101723|100372|154|0|44|1153
+# same-form: two bytecode runs, from two builds, read on either side - class (c') is admitted at any wall allowance, because two builds differ in speed by construction and were run at different times; classes (a) and (b) are NOT read, because these are not two native runs; class (b) is not admitted without --exempt-guest-loads
+# 101723 variants in both reports, 4 differ; 0 variant(s) present in only one report were ignored
+
+## (unclassified) a difference in no admitted class: 4 - NOT ADMITTED
+  test/staging/sm/Math/expm1-approx.js [sloppy]: Failed -> Passed
+  test/staging/sm/Math/expm1-approx.js [strict]: Failed -> Passed
+  test/staging/sm/Math/log1p-approx.js [sloppy]: Failed -> Passed
+  test/staging/sm/Math/log1p-approx.js [strict]: Failed -> Passed
+
+# 4 difference(s) in no admitted class
+exit code: 1

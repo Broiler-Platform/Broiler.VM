@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Numbers;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -314,7 +316,7 @@ internal sealed partial class JsRealm
     /// for different callers, and a program handing one of these a Set is handing it something with
     /// no <c>length</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=961EDF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7D2EA1
     // Broiler-Human:        PENDING
     private static JsValue[] ReflectArguments(JsEngine engine, JsValue list)
     {
@@ -323,7 +325,7 @@ internal sealed partial class JsRealm
             engine.ThrowTypeError("the argument list is not an object");
         }
 
-        var length = JsValue.ToInteger(engine.ToNumber(engine.GetProperty(list, "length")));
+        var length = IntegerConversions.ToIntegerOrInfinity(engine.ToNumber(engine.GetProperty(list, "length")));
 
         if (length <= 0)
         {

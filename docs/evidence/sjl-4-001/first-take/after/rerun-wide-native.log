@@ -1,0 +1,71 @@
+# part A, class C4 (c'): the 3 variants of 2 paths compare-wide-native.log admits as (c'), run again alone
+
+## base: Broiler.VM.Composition.JavaScript.Conformance.dll sha256=9b8acb4d948b38b185eba9f412b5ee3064b8d48a39aede5513cea32b0d05359a, started 2026-10-14T00:52:00Z, exit 1
+suite digest the checkout was read in full
+retained pin test262 tc39/test262@ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e content sha256 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 over 56560 files - archived at src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=2 selected=2 thisShard=2
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=100000000 wallClockMs=5000 per variant
+exhausted   test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict]  WallClock: the allowance was spent running the test
+exhausted   test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-6-of-8.js [strict]  WallClock: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-6-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+# this run met no construct outside the manifest
+# exhausted dimensions: 2 distinct, 4 variants
+#         2  Fuel  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]
+#         2  WallClock  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict]
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-6-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-6-of-8.js [strict] on WallClock
+# no variant failed, so there is nothing to classify
+# test262 2 files, 4 variants: pass 0, fail 0, unsupported 0, exhausted 4, skipped 0
+coverage partial a named selection rather than the whole test tree: test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js test/staging/sm/Date/dst-offset-caching-6-of-8.js; configuration failure NoExecutedTests
+CONFIGURATION NoExecutedTests: 4 variants ran and none of them reached a verdict about the engine
+
+## after: Broiler.VM.Composition.JavaScript.Conformance.dll sha256=f725ea1de5e8c64a415f396497a233476080dd99d2786569e6dbc01d30791a46, started 2026-10-14T00:52:23Z, exit 1
+suite digest the checkout was read in full
+retained pin test262 tc39/test262@ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e content sha256 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 over 56560 files - archived at src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=2 selected=2 thisShard=2
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=100000000 wallClockMs=5000 per variant
+exhausted   test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict]  WallClock: the allowance was spent running the test
+exhausted   test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-6-of-8.js [strict]  WallClock: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-6-of-8.js [sloppy]  WallClock: the allowance was spent running the test
+# this run met no construct outside the manifest
+# exhausted dimensions: 2 distinct, 4 variants
+#         3  WallClock  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict]
+#         1  Fuel  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-6-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-6-of-8.js [strict] on WallClock
+# no variant failed, so there is nothing to classify
+# test262 2 files, 4 variants: pass 0, fail 0, unsupported 0, exhausted 4, skipped 0
+coverage partial a named selection rather than the whole test tree: test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js test/staging/sm/Date/dst-offset-caching-6-of-8.js; configuration failure NoExecutedTests
+CONFIGURATION NoExecutedTests: 4 variants ran and none of them reached a verdict about the engine
+
+## the two re-runs compared, --same-form
+# reference <scratch>/rerun-wide-native-base.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   total|2|4|0|0|0|4|0
+# candidate <scratch>/rerun-wide-native-after.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   total|2|4|0|0|0|4|0
+# same-form: two native runs, from two builds, read on either side - class (c') is admitted at any wall allowance, because two builds differ in speed by construction and were run at different times; classes (a) and (b) are read on either side; class (b) is admitted
+# 4 variants in both reports, 1 differ; 0 variant(s) present in only one report were ignored
+
+## (c') a wall-clock exhaustion on one side, against an answer or another allowance: 1 - admitted
+  test/staging/sm/Date/dst-offset-caching-6-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+
+# every difference is in an admitted class
+exit code: 0

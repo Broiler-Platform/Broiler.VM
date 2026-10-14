@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -24,7 +25,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FFF0A9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E8EDD
     // Broiler-Human:        PENDING
     private void SetupTemporalInstant(JsObject temporal)
     {
@@ -86,7 +87,7 @@ internal sealed partial class JsRealm
             var instant = TemporalThis<JsInstantObject>(engine, thisValue, "Instant", "round");
             var roundTo = TemporalRoundTo(engine, TemporalArgument(arguments, 0), "Instant");
             var increment = JsTemporal.RoundingIncrement(engine, roundTo);
-            var mode = JsTemporal.RoundingMode(engine, roundTo, TemporalRounding.HalfExpand);
+            var mode = JsTemporal.RoundingModeOption(engine, roundTo, RoundingMode.HalfExpand);
             var smallest = JsTemporal.UnitOption(engine, roundTo, "smallestUnit", required: true);
             JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
             var maximum = (long)(JsTemporalCore.NsPerDay / JsTemporalCore.UnitLength(smallest));
@@ -105,7 +106,7 @@ internal sealed partial class JsRealm
             var instant = TemporalThis<JsInstantObject>(engine, thisValue, "Instant", "toString");
             var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0));
             var digits = JsTemporal.FractionalSecondDigits(engine, options);
-            var mode = JsTemporal.RoundingMode(engine, options, TemporalRounding.Trunc);
+            var mode = JsTemporal.RoundingModeOption(engine, options, RoundingMode.Trunc);
             var smallest = JsTemporal.UnitOption(engine, options, "smallestUnit", required: false);
             var timeZoneValue = engine.GetProperty(JsValue.Object(options), "timeZone");
             JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);

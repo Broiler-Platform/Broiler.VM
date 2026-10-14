@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -1164,7 +1165,7 @@ internal sealed partial class JsRealm
     /// N1). What <c>Number.prototype.toLocaleString</c> answers is still exactly <c>toString</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2771BE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A7E4D1
     // Broiler-Human:        PENDING
     private void SetupTypedArrayLaterAdditions()
     {
@@ -1269,7 +1270,7 @@ internal sealed partial class JsRealm
         {
             var array = BinaryLiveTypedArray(engine, thisValue, "with");
             var length = array.Length;
-            var wanted = JsValue.ToInteger(engine.ToNumber(ArgOfBinary(arguments, 0)));
+            var wanted = IntegerConversions.ToIntegerOrInfinity(engine.ToNumber(ArgOfBinary(arguments, 0)));
             var index = wanted < 0 ? length + wanted : wanted;
 
             // THE CONVERSION HAPPENS BEFORE THE RANGE TEST, and the order is observable: a value
@@ -1898,7 +1899,7 @@ internal sealed partial class JsRealm
     /// turn <c>new Uint8Array(-1)</c> into an empty array that the calling code then walks
     /// believing it asked for something.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=28E46C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2C3085
     // Broiler-Human:        PENDING
     private static double BinaryToIndex(JsEngine engine, JsValue value, string what)
     {
@@ -1907,16 +1908,17 @@ internal sealed partial class JsRealm
             return 0;
         }
 
-        var number = engine.ToInteger(value);
+        // THE RANGE RULE IS THE SHARED LIBRARY'S; the coercion and the RangeError are this engine's.
+        var number = engine.ToNumber(value);
 
-        if (number < 0 || number > 9007199254740991.0)
+        if (!IntegerConversions.TryToIndex(number, out var index))
         {
             throw engine.Error(
                 "RangeError",
-                "Invalid " + what + ": " + JsNumberFormat.NumberToString(number));
+                "Invalid " + what + ": " + JsNumberFormat.NumberToString(IntegerConversions.ToIntegerOrInfinity(number)));
         }
 
-        return number;
+        return index;
     }
 
     /// <summary>Allocates a buffer, charging for the bytes before they exist.</summary>
@@ -2116,7 +2118,7 @@ internal sealed partial class JsRealm
     /// the array-like reading, anything else that is not callable is a <c>TypeError</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=62C1B6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=112390
     // Broiler-Human:        PENDING
     private JsValue BinaryConstructTypedArray(JsEngine engine, JsElementKind kind, JsValue[] arguments, JsValue newTarget)
     {
@@ -2277,8 +2279,7 @@ internal sealed partial class JsRealm
             // `LengthOfArrayLike`, which is `ToLength` and not `ToUint32`: a `length` of 2**53 is
             // a length no buffer can hold and a RangeError, where the modular wrap made it zero and
             // answered an empty view.
-            var declared = engine.ToInteger(engine.GetProperty(first, "length"));
-            var length = declared <= 0 ? 0 : Math.Min(declared, 9007199254740991.0);
+            double length = IntegerConversions.ToLength(engine.ToNumber(engine.GetProperty(first, "length")));
             var made = BinaryNewTypedArray(engine, kind, length);
             made.Prototype = prototype;
 

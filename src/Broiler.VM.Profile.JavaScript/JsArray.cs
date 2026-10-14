@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Collections.Generic;
+using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -285,13 +286,13 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1DF589
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=544E8C
     // Broiler-Human:        PENDING
     internal override void SetOwnProperty(string key, JsProperty property)
     {
         if (string.Equals(key, "length", System.StringComparison.Ordinal) && !property.IsAccessor)
         {
-            var wanted = JsValue.ToUint32(property.Value.Type == JsType.Number
+            var wanted = IntegerConversions.ToUint32(property.Value.Type == JsType.Number
                 ? property.Value.AsNumber()
                 : 0);
 
