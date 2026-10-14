@@ -54,7 +54,11 @@ the base commit, which only `rerun` reads.
                  sources, and the search for a surviving duplicate of the numerics area in the whole
                  component's product sources, into after/simplification/;
   vectors        the conformance root over this family's pin of the shared corpus, and its negative
-                 control, into vectors/run-revision-<n>.* and vectors/negative-control-revision-<n>.*.
+                 control, into vectors/run-revision-<n>.* and vectors/negative-control-revision-<n>.*;
+  races          part A's class C4 (d), which decision-rule-revised-2026-10-14.md adds: every (c') row whose
+                 re-runs differ (after/rerun-<run>.tsv) run alone ten more times at each commit, alternating
+                 which commit goes first, each run's report retained, and each row's exhaustions counted per
+                 commit over the whole run, the re-run and the repetitions, into after/races-<run>*.
 """
 
 import argparse
@@ -91,6 +95,25 @@ CUT_OVER = "6bd3009527ca293e54fd73ee7a4704fe79935800"
 VECTORS_PIN = os.path.join("src", "tests", "vectors", "pins", "vectors.pin")
 # The control vector every run of this family's vectors mutates, as SJL-4.2's did.
 VECTORS_CONTROL = "numerics/toint32/0010"
+# Class C4 (d)'s repetitions at each commit (decision-rule-revised-2026-10-14.md).
+RACE_REPETITIONS = 10
+
+
+def report_verdicts(report):
+    """Each (path, variant) of a conformance report, with its verdict and any exhausted dimension."""
+    table = {}
+    if os.path.isfile(report):
+        for line in open(report, encoding="utf-8"):
+            if line.startswith("result|"):
+                parts = line.rstrip("\n").split("|")
+                table[(parts[1], parts[2])] = parts[3] + (
+                    "/" + parts[5] if parts[3] == "Exhausted" and len(parts) > 5 else "")
+    return table
+
+
+def dimension(verdict):
+    """fuel, wall clock, or other, for one verdict as report_verdicts writes it."""
+    return "fuel" if verdict.endswith("/Fuel") else "wall clock" if verdict.endswith("/WallClock") else "other"
 # The search for a surviving duplicate of the numerics area: the platform's own approximations and
 # conversions the shared library replaces, the rounding modes spelled as strings, binary16 by the
 # platform, BigInt arithmetic by BigInteger's own parse and power, and the 32-bit wrap written out.
@@ -489,6 +512,83 @@ class Collector(prior.Collector):
             verdict |= 0 if code == wanted else 1
         return verdict
 
+    def races(self):
+        """Part A's class C4 (d) (decision-rule-revised-2026-10-14.md): each (c') row whose re-runs differ,
+        run alone RACE_REPETITIONS more times at each commit, alternating which commit goes first, with the
+        conformance roots the re-runs used. It counts; the README reads the counts under the rule."""
+        self.into("after")
+        if not self.base_tree or not self.suite:
+            print("races: needs --base-tree and --suite")
+            return 1
+        sides = {}
+        for side, tree in (("base", self.base_tree), ("after", self.tree)):
+            directory = os.path.join(tree, base.CONFORMANCE, "bin", "Release", "net10.0")
+            if not os.path.isfile(os.path.join(directory, base.CONFORMANCE_BINARY + ".dll")):
+                code, output = self.run(["dotnet", "build", os.path.join(tree, base.CONFORMANCE,
+                                         os.path.basename(base.CONFORMANCE) + ".csproj"), "-c", "Release"], cwd=tree)
+                if code != 0:
+                    print("races: the %s conformance root did not build" % side)
+                    return 1
+            sides[side] = (tree, os.path.join(directory, base.CONFORMANCE_BINARY))
+        for name, extra, _ in base.RUNS:
+            source = os.path.join(self.out, "rerun-%s.tsv" % name)
+            rows = []
+            if os.path.isfile(source):
+                for line in open(source, encoding="utf-8").read().splitlines()[1:]:
+                    cells = line.split("\t")
+                    if len(cells) == 7 and cells[6] == "NO":
+                        rows.append(cells)
+            if not rows:
+                print("races: %s has no (c') row whose re-runs differ" % name, flush=True)
+                continue
+            keys = [(cells[0], cells[1]) for cells in rows]
+            paths = sorted({key[0] for key in keys})
+            folder = os.path.join(self.out, "races-%s" % name)
+            os.makedirs(folder, exist_ok=True)
+            counts = {(key, side): {"fuel": 0, "wall clock": 0, "other": 0} for key in keys for side in sides}
+            for cells, key in zip(rows, keys):
+                for side, whole, again in (("base", cells[2], cells[4]), ("after", cells[3], cells[5])):
+                    counts[(key, side)][dimension(whole)] += 1
+                    counts[(key, side)][dimension(again)] += 1
+            runs = ["repetition\tside\torder\tstarted\texit\t" + "\t".join("%s [%s]" % key for key in keys)]
+            for repetition in range(1, RACE_REPETITIONS + 1):
+                order = ["base", "after"] if repetition % 2 == 1 else ["after", "base"]
+                for position, side in enumerate(order, 1):
+                    tree, binary = sides[side]
+                    report = os.path.join(self.scratch, "race-%s-%d-%s.report" % (name, repetition, side))
+                    command = [binary, "--test262", self.suite, "--manifest", "broiler.javascript.wide",
+                               "--expect", os.path.join(tree, base.PIN), "--report", report,
+                               "--fuel", str(base.FUEL), "--wall", str(base.WALL)] + (extra or ["--form", "bytecode"])
+                    for path in paths:
+                        command += ["--test", path]
+                    started = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    code, _ = self.run(command, cwd=tree)
+                    verdicts = report_verdicts(report)
+                    for key in keys:
+                        counts[(key, side)][dimension(verdicts.get(key, ""))] += 1
+                    runs.append("%d\t%s\t%d\t%s\t%d\t%s" % (repetition, side, position, started, code,
+                                                              "\t".join(verdicts.get(key, "(absent)") for key in keys)))
+                    if os.path.isfile(report):
+                        with open(report, "rb") as stream, gzip.GzipFile(
+                                os.path.join(folder, "%02d-%s.report.gz" % (repetition, side)), "wb",
+                                compresslevel=9, mtime=0) as target:
+                            shutil.copyfileobj(stream, target)
+                    print("races: %s repetition %d %s" % (name, repetition, side), flush=True)
+            self.write("races-%s.tsv" % name, "\n".join(runs) + "\n")
+            summary = ["# each row's exhaustions per commit over the whole run, the re-run and %d repetitions alone"
+                       % RACE_REPETITIONS,
+                       "# base: %s.dll sha256=%s; after: %s.dll sha256=%s" % (
+                           base.CONFORMANCE_BINARY, self.sha256(sides["base"][1] + ".dll"),
+                           base.CONFORMANCE_BINARY, self.sha256(sides["after"][1] + ".dll")),
+                       "path\tvariant\tcommit\tfuel\twall clock\tother"]
+            for key in keys:
+                for side in ("base", "after"):
+                    tally = counts[(key, side)]
+                    summary.append("%s\t%s\t%s\t%d\t%d\t%d" % (key[0], key[1], side, tally["fuel"],
+                                                                 tally["wall clock"], tally["other"]))
+            self.write("races-%s-summary.tsv" % name, "\n".join(summary) + "\n")
+        return 0
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -500,7 +600,8 @@ def main():
     parser.add_argument("--images", help="the closures step's mstat records, for rule I3 (rules)")
     parser.add_argument("--only", action="append", required=True,
                         choices=("base-identity", "base-test262", "base-twins", "after-identity", "after-test262",
-                                 "after-twins", "compare", "rerun", "closures", "rules", "simplification", "vectors"))
+                                 "after-twins", "compare", "rerun", "closures", "rules", "simplification", "vectors",
+                                 "races"))
     arguments = parser.parse_args()
     arguments.against_broiler_js = None
     arguments.against_root = None
