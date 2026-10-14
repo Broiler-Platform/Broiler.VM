@@ -50,6 +50,27 @@ Both runs used the conformance root of the base commit (section 1), built in Rel
 | `text/pad-order/0002`, `0004` | `"x"`, for an empty filler | `RangeError` | P2 |
 | `text/replace-order/0001` | `replaceAll`'s `toString` called once when nothing matches | not called | S1 |
 
-No other row of the correspondence shows up as a difference here. The corpus revision that classifies
-both engines' first runs moves this family's pin. The run at the moved pin, with its negative control,
-is added to this section then.
+No other row of the correspondence shows up as a difference here. *(Revised 2026-10-14, when the pin
+moved. The paragraph went on: "The corpus revision that classifies both engines' first runs moves this
+family's pin. The run at the moved pin, with its negative control, is added to this section then.")*
+
+**Every vector of corpus revision 12 has a classified result in this family.** Revision 12 (Broiler.JS
+`9ae67ee`) classifies both engines' first runs, and this family's pin
+([`src/tests/vectors/pins/vectors.pin`](../../../src/tests/vectors/pins/vectors.pin)) moves to it. On the
+pinned archive, with the same conformance root
+([`vectors/run-revision-12.log`](vectors/run-revision-12.log),
+[`vectors/run-revision-12.tsv.gz`](vectors/run-revision-12.tsv.gz)): **42,943 vectors, 42,938 match, 5
+classified divergences, 0 unclassified differences.** The 5 are the `divergence.broiler-vm` fields revision
+12 adds: P1's two (`vm-pad-filler-order`), P2's two (`vm-pad-empty-filler`) and S1's one
+(`vm-replaceall-order`), each naming SJL-5.4. The negative control
+([`vectors/negative-control-revision-12.log`](vectors/negative-control-revision-12.log)) changes the
+expected value of `text/trim/0001` in memory, and the run reports that vector, and only it, as an
+unclassified difference.
+
+**What the runs say of JSD-0070.** Every difference either engine's first run found is one the
+correspondence classified, so the record's first falsifier does not fire, and no new record is needed.
+The vectors confirm every Broiler.VM cell the correspondence ran and refute one Broiler.JS cell: row J4
+read that Broiler.JS refuses `JSON.parse("1e400")`, and its first run answers `Infinity`, as the
+specification does. JSD-0070's "J2 to J4" sentence is not edited; Broiler.JS's plan records the
+correction, and that engine's changelog will not list J4. Rows P4, X1 and X2 have no vector, and row
+J5's vectors match on Linux, where both runs were taken.
