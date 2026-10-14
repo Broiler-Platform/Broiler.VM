@@ -1,0 +1,43 @@
+# broiler-js-conformance retained suite pin 1
+#
+# The shared conformance vectors of the shared JavaScript libraries programme (milestone SJL-1): a
+# corpus whose home is the Broiler.JS repository, retained here as the archive of one named corpus
+# revision. `revision` is the Broiler.JS commit that carries it, an immutable commit and never a
+# branch name, and the corpus at that commit is at corpus revision 10 (its REVISIONS.md).
+#
+# HOW IT WAS TAKEN. On 2026-10-14, with `git archive` of that commit, twice, into two files: the two
+# were byte-identical. The second was extracted into a fresh directory and its files hashed there,
+# independently of the in-memory reading the harness makes, which is what makes `content-sha256` a
+# reading rather than a copy of an earlier one. The command, which anybody with the Broiler.JS
+# repository can repeat:
+#
+#   git archive --format=tar.gz <revision> -- conformance/vectors ':(exclude)conformance/vectors/controls'
+#
+# WHAT IS HERE. One file of 820,953 bytes hashing to `archive-sha256`, which extracts to the 30
+# files `content-sha256` is over: the number area's ten vector files, the numerics area's eight, the
+# text area's six, the schema, the README, the revision log, the prelude and the two source pins. The negative controls stay in Broiler.JS; the
+# home's validator is the one that reads them.
+#
+# HOW IT IS READ. `--vectors <archive> --expect <this file>` of the conformance root checks both
+# digests and the count before any vector runs. `content-sha256` is over the files' paths below
+# conformance/vectors/ and their SHA-256 digests, sorted, as `<path> LF <digest> LF` lines - the
+# digest every retained suite pin in this repository uses.
+#
+# WHAT THIS FILE IS. Bundle sjl-5-001's first run of this family against the text area, at corpus
+# revision 10, which adds it (milestone SJL-5.2). It is not this family's pin, which stays at revision 9
+# until revision 11 classifies both engines' first runs; the archive it names was placed at
+# `archived-at` for the run and is not committed.
+#
+# CORRECTED 2026-10-14. The paragraph above read "until revision 11 classifies both engines' first
+# runs". Revision 11 widened the schema's clause ids instead, and revision 12 (Broiler.JS 9ae67ee)
+# classifies the first runs; the family's pin moved to revision 12.
+
+suite broiler-js-vectors
+upstream Broiler-Platform/broiler.js
+revision 1ae7a54a37525bd947c58dbe7e698ede358e6f73
+archive git archive --format=tar.gz 1ae7a54a37525bd947c58dbe7e698ede358e6f73 -- conformance/vectors :(exclude)conformance/vectors/controls
+archive-sha256 42ac63b7b1995a43450d724713a9f819ec65afeba1d325243dadb6a516913106
+content-sha256 e4861fd60e07fd8b11073be9a6607751b56770462d011a2723fc2aa670c8c3e4
+files 30
+archived yes
+archived-at src/tests/vectors/pins/broiler-js-vectors-1ae7a54a37525bd947c58dbe7e698ede358e6f73.tar.gz

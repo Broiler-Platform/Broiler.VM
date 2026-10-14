@@ -77,6 +77,14 @@ src/tests/wasm/corpus/*.wasm binary
 # has to be explicit. Declared at JS-3b with the host itself.
 src/tests/cli/encoding/*.js binary
 
+# THE TEXT AREA'S JSON MODULE DOCUMENTS ARE BYTES TOO. They are the population of part C of bundle
+# sjl-5-001's rule, which compiles each one and compares the artifact's hash at two commits, and one of
+# them, whitespace.json, carries every white-space character JSON admits - carriage returns among them -
+# between its tokens. `*.json text eol=lf` would claim them all as text; an end-of-line filter that
+# rewrote one would change the document under test, not the compiler. Declared at SJL-5.1 with the
+# corpus itself.
+src/tests/forms/text/json-modules/*.json binary
+
 # THE ARCHIVED LANGUAGE SPECIFICATION IS THE ONE FILE HERE WHOSE HASH IS PUBLISHED IN A PUBLIC
 # API. `JavaScriptLanguageEdition.DocumentDigest` is a public constant, it appears in the
 # profile's API baseline, and every conformance report carries it - so a byte of end-of-line
