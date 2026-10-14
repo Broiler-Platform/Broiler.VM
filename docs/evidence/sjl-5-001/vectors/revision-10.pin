@@ -27,6 +27,10 @@
 # revision 10, which adds it (milestone SJL-5.2). It is not this family's pin, which stays at revision 9
 # until revision 11 classifies both engines' first runs; the archive it names was placed at
 # `archived-at` for the run and is not committed.
+#
+# CORRECTED 2026-10-14. The paragraph above read "until revision 11 classifies both engines' first
+# runs". Revision 11 widened the schema's clause ids instead, and revision 12 (Broiler.JS 9ae67ee)
+# classifies the first runs; the family's pin moved to revision 12.
 
 suite broiler-js-vectors
 upstream Broiler-Platform/broiler.js
