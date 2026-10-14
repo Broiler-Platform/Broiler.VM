@@ -235,6 +235,10 @@ repositories.
 [ledger](status.md) records. The order above is unchanged, and so is what it gates: SJL-4 may not
 meet its gate before SJL-3 meets SJL-3's.)*
 
+*(Added 2026-10-14: SJL-5 started before SJL-3 was met, by the owner's dated choice, which the
+[ledger](status.md) records. The order above is unchanged, and so is what it gates: SJL-5 may not
+meet its gate before SJL-3 meets SJL-3's.)*
+
 **What can start today:**
 
 - SJL-0 in full;
