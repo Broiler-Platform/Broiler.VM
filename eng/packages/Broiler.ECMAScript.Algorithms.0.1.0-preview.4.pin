@@ -1,0 +1,32 @@
+# broiler-shared-package pin 1
+#
+# One package of the committed, hash-pinned feed (decision SJL-D-4 (c); milestone SJL-2.7): a shared
+# JavaScript library package whose home is the Broiler.JS repository, retained here byte for byte so
+# that a restore needs no other repository's folder and no network for it. NuGet.config's package
+# source mapping sends the Broiler.ECMAScript prefix to this directory and to nuget.org; the lock
+# file of a project that references it records `content-hash`, and rule I1 holds that hash to this
+# pin and to the allow-list.
+#
+# HOW IT WAS TAKEN. Packed on 2026-10-15 in the Broiler.JS repository, from `upstream-commit`, in a clean
+# checkout of it, with `dotnet pack Broiler.ECMAScript/Broiler.ECMAScript.Algorithms -c Release
+# -p:ContinuousIntegrationBuild=true`; Broiler.ECMAScript/Directory.Build.props sets the version,
+# 0.1.0-preview.4, at that commit. The nuspec's repository element records the same commit, which rule
+# I7 reads. `content-hash` is NuGet's: the base64 SHA-512 of the .nupkg's bytes, which is what a lock
+# file records. `sha256` is over the same bytes. It is not on nuget.org: a Broiler.VM package release
+# that depends on it waits for its publication (eng/verify-feed.ps1), and the pin is then taken again
+# from the published package, as 0.1.0-preview.3's was.
+#
+# WHAT IT IS. The Date area of the shared algorithms library (milestone SJL-6.3; JSD-0072), namespace
+# Broiler.ECMAScript.Time, with the number-conversion, numerics and text areas of 0.1.0-preview.3
+# unchanged: admitted for PRODUCT use by Broiler.VM.Profile.JavaScript and
+# Broiler.VM.Profile.JavaScript.Compiler at SJL-6.4, and restored by the admission probe. It carries no
+# third-party component beyond 0.1.0-preview.3's; it implements Howard Hinnant's public-domain civil-day
+# formulas, which its THIRD_PARTY_NOTICES.md credits beside those components.
+
+id Broiler.ECMAScript.Algorithms
+version 0.1.0-preview.4
+file Broiler.ECMAScript.Algorithms.0.1.0-preview.4.nupkg
+content-hash ouVhgiEHIzWYuLtmtNEZk9ICTXN966P6KzqvMfYYPVxm4FHDBBBK3ivpc4rJ9kQpPPGRQMhC5RrQv3Oth069ZA==
+sha256 d04897139c9e81e475abfb180ecc80a925b65c07eeff8e6bf782b4bda4936958
+upstream Broiler-Platform/broiler.js
+upstream-commit e04874d069f10a3f71bbcdd66e497a5b37069368
