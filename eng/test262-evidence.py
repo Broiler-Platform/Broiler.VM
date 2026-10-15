@@ -323,11 +323,24 @@ def merge(arguments):
                       if (runner / "runner.txt").is_file() else f"# {runner.name}\n(absent)\n" for runner in runners]
     write(out / f"{name}.runners.txt", "".join(configurations))
 
+    # A WHOLE RUN, as the merged report says it. run-test262.py lets a narrowed run through with its floor's
+    # exit code, 4, because a narrowing is what its caller asked for; a hosted run asks for none, so a
+    # shard that never reported, or shards that disagree, make this form's run incomplete whatever the
+    # exit code says. The run log keeps run-test262.py's code as that script would give it.
+    whole = False
+    document = out / f"{name}.test262.json"
+    if document.is_file():
+        report = json.loads(document.read_text(encoding="utf-8"))
+        whole = bool(report["coverage"]["whole"]) and bool(report["retention"]["retainable"]) and not any(
+            finding["failure"] in ("IncompleteShardCoverage", "InconsistentShardConfiguration")
+            for finding in report["findings"])
+
     shutil.rmtree(scratch, ignore_errors=True)
-    print(f"{name}: run-test262 exit {code}; {distinct} distinct assembly list(s) across {len(lists)}", flush=True)
+    print(f"{name}: run-test262 exit {code}; {'whole and retainable' if whole else 'NOT WHOLE OR NOT RETAINABLE'}; "
+          f"{distinct} distinct assembly list(s) across {len(lists)}", flush=True)
     # 0, 1 and 4 are measurements, as the collectors read them; 2 and 3 are runs that could not be taken
     # or may not be retained, and a run that mixed builds is not one run.
-    return 0 if code in (0, 1, 4) and distinct == 1 and len(runners) > 0 else 1
+    return 0 if code in (0, 1, 4) and whole and distinct == 1 and len(runners) > 0 else 1
 
 
 def main():
