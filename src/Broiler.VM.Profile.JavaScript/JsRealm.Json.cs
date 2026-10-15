@@ -3,21 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   39
-// Annotated:        39/39
+// Relevant units:   30
+// Annotated:        30/30
 // Exempt:           10
-// Human-reviewed:   0/39
+// Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       39
+// Unverified:       30
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Collections.Generic;
 using System.Globalization;
-using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript;
+using Broiler.ECMAScript.Text;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -155,7 +156,7 @@ internal sealed partial class JsRealm
     /// around it. The parse itself is the ordinary reader, so a raw number or string is held to the
     /// same grammar <c>JSON.parse</c> is.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B5ED57
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=12F642
     // Broiler-Human:        PENDING
     private JsValue JsonRawJsonEntry(JsEngine engine, JsValue[] arguments)
     {
@@ -179,13 +180,14 @@ internal sealed partial class JsRealm
 
         // The value read is discarded: what the object carries is the text, and the reader is here
         // only to refuse text that is not one JSON primitive. Nothing it can reach creates an object,
-        // because no character allowed first is `{` or `[`.
-        var at = 0;
-        _ = JsonParseValue(engine, text, ref at, 0, false, out _);
+        // because no character allowed first is `{` or `[`. What follows the value is refused where
+        // the value ends, before any white space after it is skipped and charged.
+        var reader = new JsonReader(text, new DepthLimit(JsonMaximumDepth), engine.WorkCharge);
+        JsonRead(engine, ref reader, text);
 
-        if (at != text.Length)
+        if (reader.TokenEnd != text.Length)
         {
-            throw JsonUnexpected(engine, text, at);
+            throw JsonUnexpected(engine, text, reader.TokenEnd);
         }
 
         return JsValue.Object(new RawJsonObject(text));
@@ -212,12 +214,11 @@ internal sealed partial class JsRealm
     // ---- reading -----------------------------------------------------------------------------
 
     /// <summary><c>JSON.parse</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8E77B1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F560AE
     // Broiler-Human:        PENDING
     private JsValue JsonParseEntry(JsEngine engine, JsValue[] arguments)
     {
         var text = engine.ToStringValue(JsonArgument(arguments, 0));
-        var at = 0;
 
         // THE PARSE IS RECORDED ONLY WHEN THERE IS A REVIVER TO HAND IT TO, which is the JSON Parse
         // Record the specification builds for one: the source text of every primitive value and the
@@ -227,14 +228,14 @@ internal sealed partial class JsRealm
         var reviver = JsonArgument(arguments, 1);
         var recording = reviver.IsObject && reviver.AsObject().IsCallable;
 
-        JsonSkipSpace(engine, text, ref at);
-        var parsed = JsonParseValue(engine, text, ref at, 0, recording, out var snapshot);
-        JsonSkipSpace(engine, text, ref at);
+        // The shared reader checks the grammar and charges as this reader did (JSD-0071); the values,
+        // the records and the errors are built here.
+        var reader = new JsonReader(text, new DepthLimit(JsonMaximumDepth), engine.WorkCharge);
+        JsonRead(engine, ref reader, text);
+        var parsed = JsonBuild(engine, ref reader, text, recording, out var snapshot);
 
-        if (at != text.Length)
-        {
-            throw JsonUnexpected(engine, text, at);
-        }
+        // The end of the text, after nothing but white space: anything else is refused where it starts.
+        JsonRead(engine, ref reader, text);
 
         if (!recording)
         {
@@ -248,178 +249,90 @@ internal sealed partial class JsRealm
         return JsonInternalize(engine, root, string.Empty, reviver, 0, snapshot);
     }
 
-    /// <summary>Consumes the four characters JSON calls whitespace, and no others.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C5FEB5
+    /// <summary>Reads the next token, or throws the error the reader stopped at.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8BA23F
     // Broiler-Human:        PENDING
-    private static void JsonSkipSpace(JsEngine engine, string text, ref int at)
+    private static void JsonRead(JsEngine engine, ref JsonReader reader, string text)
     {
-        var start = at;
-
-        while (at < text.Length && text[at] is ' ' or '\t' or '\n' or '\r')
+        if (reader.Read() == ResultStatus.Completed)
         {
-            at++;
+            return;
         }
 
-        if (at > start)
+        var failure = reader.Failure;
+
+        throw failure.MessageId switch
         {
-            engine.Charge((ulong)(at - start));
-        }
+            // Both directions are recursive over a structure the guest chose the depth of; the
+            // ceiling is a RangeError the host can act on rather than an exhausted CLR stack.
+            "json.too-deep" => engine.Error("RangeError", "Maximum JSON nesting depth exceeded"),
+            "json.unterminated-string" => JsonSyntax(engine, "Unterminated string in JSON", failure.Position),
+
+            // A raw control character inside a string is the single most common way a hand-built
+            // encoder produces something no conforming reader will take back.
+            "json.control-character" => JsonSyntax(engine, "Bad control character in JSON", failure.Position),
+            "json.bad-escape" => JsonSyntax(engine, "Bad escaped character in JSON", failure.Position),
+            "json.bad-unicode-escape" => JsonSyntax(engine, "Bad Unicode escape in JSON", failure.Position),
+            _ => JsonUnexpected(engine, text, failure.Position),
+        };
     }
 
-    /// <summary>Reads one JSON value, whatever kind it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5E713D
+    /// <summary>Builds the value whose first token the reader has just read.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C5B067
     // Broiler-Human:        PENDING
-    private JsValue JsonParseValue(JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
+    private JsValue JsonBuild(JsEngine engine, ref JsonReader reader, string text, bool recording, out JsonRecord? record)
     {
-        var value = JsonParseUnrecorded(engine, text, ref at, depth, recording, out record);
+        switch (reader.Token)
+        {
+            case JsonToken.BeginObject:
+                return JsonBuildObject(engine, ref reader, text, recording, out record);
+
+            case JsonToken.BeginArray:
+                return JsonBuildArray(engine, ref reader, text, recording, out record);
+        }
+
+        // A string's escapes are resolved code unit by code unit, so `"\ud800"` is a well-formed JSON
+        // string holding a lone surrogate: a String in this language is a sequence of code units
+        // rather than of scalars, and rejecting it would be inventing a rule.
+        var value = reader.Token switch
+        {
+            JsonToken.String => JsValue.String(reader.StringValue),
+            JsonToken.Number => JsValue.Number(reader.NumberValue),
+            JsonToken.True => JsValue.True,
+            JsonToken.False => JsValue.False,
+            _ => JsValue.Null,
+        };
 
         // A PRIMITIVE'S RECORD IS ITS TEXT, exactly as written - the escapes of a string, the
         // exponent of a number, the sign of `-0` - with nothing around it. A container records its
         // members while it is read.
-        if (recording && record is null)
-        {
-            record = new JsonRecord(value) { Source = text[JsonValueStart(text, at, value)..at] };
-        }
+        record = recording
+            ? new JsonRecord(value) { Source = text[reader.TokenStart..reader.TokenEnd] }
+            : null;
 
         return value;
     }
 
-    /// <summary>Where the primitive that ended at <paramref name="end"/> began.</summary>
-    /// <remarks>
-    /// A primitive is one token, and the reader stopped on its last character; walking back over the
-    /// characters a token of its kind can hold finds its first. A string walks back to the quote
-    /// that opened it, past every escaped quote inside.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8BD31D
+    /// <summary>Builds an ordinary object from the members the reader reads.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=56CD6C
     // Broiler-Human:        PENDING
-    private static int JsonValueStart(string text, int end, JsValue value)
+    private JsValue JsonBuildObject(JsEngine engine, ref JsonReader reader, string text, bool recording, out JsonRecord? record)
     {
-        if (value.IsString)
-        {
-            var start = end - 2;
-
-            while (start > 0)
-            {
-                if (text[start] == '"')
-                {
-                    var slashes = 0;
-
-                    while (start - 1 - slashes >= 0 && text[start - 1 - slashes] == '\\')
-                    {
-                        slashes++;
-                    }
-
-                    if (slashes % 2 == 0)
-                    {
-                        break;
-                    }
-                }
-
-                start--;
-            }
-
-            return start;
-        }
-
-        var first = end - 1;
-
-        while (first > 0 && text[first - 1] is (>= '0' and <= '9') or '.' or 'e' or 'E' or '+' or '-' or
-            (>= 'a' and <= 'z'))
-        {
-            first--;
-        }
-
-        return first;
-    }
-
-    /// <summary>Reads one JSON value, whatever kind it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FD4D00
-    // Broiler-Human:        PENDING
-    private JsValue JsonParseUnrecorded(JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
-    {
-        engine.Charge(1);
-        record = null;
-
-        if (depth > JsonMaximumDepth)
-        {
-            throw engine.Error("RangeError", "Maximum JSON nesting depth exceeded");
-        }
-
-        if (at >= text.Length)
-        {
-            throw JsonUnexpected(engine, text, at);
-        }
-
-        switch (text[at])
-        {
-            case '{':
-                return JsonParseObject(engine, text, ref at, depth, recording, out record);
-
-            case '[':
-                return JsonParseArray(engine, text, ref at, depth, recording, out record);
-
-            case '"':
-                return JsValue.String(JsonParseString(engine, text, ref at));
-
-            case 't':
-                return JsonParseKeyword(engine, text, ref at, "true", JsValue.True);
-
-            case 'f':
-                return JsonParseKeyword(engine, text, ref at, "false", JsValue.False);
-
-            case 'n':
-                return JsonParseKeyword(engine, text, ref at, "null", JsValue.Null);
-
-            case '-':
-                return JsonParseNumber(engine, text, ref at);
-
-            default:
-                if (text[at] is >= '0' and <= '9')
-                {
-                    return JsonParseNumber(engine, text, ref at);
-                }
-
-                throw JsonUnexpected(engine, text, at);
-        }
-    }
-
-    /// <summary>Reads an object literal into an ordinary object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B1BDD1
-    // Broiler-Human:        PENDING
-    private JsValue JsonParseObject(JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
-    {
-        at++;
         var target = new JsObject(ObjectPrototype);
         record = recording ? new JsonRecord(JsValue.Object(target)) { Entries = [] } : null;
-        JsonSkipSpace(engine, text, ref at);
-
-        if (at < text.Length && text[at] == '}')
-        {
-            at++;
-            return JsValue.Object(target);
-        }
 
         while (true)
         {
-            JsonSkipSpace(engine, text, ref at);
+            JsonRead(engine, ref reader, text);
 
-            if (at >= text.Length || text[at] != '"')
+            if (reader.Token == JsonToken.EndObject)
             {
-                throw JsonUnexpected(engine, text, at);
+                return JsValue.Object(target);
             }
 
-            var key = JsonParseString(engine, text, ref at);
-            JsonSkipSpace(engine, text, ref at);
-
-            if (at >= text.Length || text[at] != ':')
-            {
-                throw JsonUnexpected(engine, text, at);
-            }
-
-            at++;
-            engine.Charge(1);
-            JsonSkipSpace(engine, text, ref at);
-            var value = JsonParseValue(engine, text, ref at, depth + 1, recording, out var member);
+            var key = reader.StringValue;
+            JsonRead(engine, ref reader, text);
+            var value = JsonBuild(engine, ref reader, text, recording, out var member);
 
             // An unchecked define, which is what CreateDataProperty is here: a key of "__proto__"
             // becomes an own data property rather than reaching Object.prototype's setter, and a
@@ -431,284 +344,29 @@ internal sealed partial class JsRealm
             {
                 entries[key] = member!;
             }
-            JsonSkipSpace(engine, text, ref at);
-
-            if (at < text.Length && text[at] == ',')
-            {
-                at++;
-                engine.Charge(1);
-                continue;
-            }
-
-            if (at < text.Length && text[at] == '}')
-            {
-                at++;
-                return JsValue.Object(target);
-            }
-
-            throw JsonUnexpected(engine, text, at);
         }
     }
 
-    /// <summary>Reads an array literal into an Array.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0BAB7F
+    /// <summary>Builds an Array from the elements the reader reads.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=89103F
     // Broiler-Human:        PENDING
-    private JsValue JsonParseArray(JsEngine engine, string text, ref int at, int depth, bool recording, out JsonRecord? record)
+    private JsValue JsonBuildArray(JsEngine engine, ref JsonReader reader, string text, bool recording, out JsonRecord? record)
     {
-        at++;
         var target = NewArray();
         record = recording ? new JsonRecord(JsValue.Object(target)) { Elements = [] } : null;
-        JsonSkipSpace(engine, text, ref at);
-
-        if (at < text.Length && text[at] == ']')
-        {
-            at++;
-            return JsValue.Object(target);
-        }
 
         while (true)
         {
-            JsonSkipSpace(engine, text, ref at);
-            target.Push(JsonParseValue(engine, text, ref at, depth + 1, recording, out var element));
-            record?.Elements!.Add(element!);
-            JsonSkipSpace(engine, text, ref at);
+            JsonRead(engine, ref reader, text);
 
-            if (at < text.Length && text[at] == ',')
+            if (reader.Token == JsonToken.EndArray)
             {
-                at++;
-                engine.Charge(1);
-                continue;
-            }
-
-            if (at < text.Length && text[at] == ']')
-            {
-                at++;
                 return JsValue.Object(target);
             }
 
-            throw JsonUnexpected(engine, text, at);
+            target.Push(JsonBuild(engine, ref reader, text, recording, out var element));
+            record?.Elements!.Add(element!);
         }
-    }
-
-    /// <summary>Reads a string literal, resolving the escapes JSON has.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=158C30
-    // Broiler-Human:        PENDING
-    private static string JsonParseString(JsEngine engine, string text, ref int at)
-    {
-        var start = at;
-        at++;
-        var built = new System.Text.StringBuilder();
-
-        while (true)
-        {
-            if (at >= text.Length)
-            {
-                throw JsonSyntax(engine, "Unterminated string in JSON", at);
-            }
-
-            var character = text[at];
-
-            if (character == '"')
-            {
-                at++;
-                engine.Charge((ulong)(at - start));
-                return built.ToString();
-            }
-
-            // A raw control character inside a string is the single most common way a hand-built
-            // encoder produces something no conforming reader will take back.
-            if (character < ' ')
-            {
-                throw JsonSyntax(engine, "Bad control character in JSON", at);
-            }
-
-            if (character != '\\')
-            {
-                built.Append(character);
-                at++;
-                continue;
-            }
-
-            at++;
-
-            if (at >= text.Length)
-            {
-                throw JsonSyntax(engine, "Unexpected end of JSON input", at);
-            }
-
-            var escape = text[at];
-            at++;
-
-            switch (escape)
-            {
-                case '"':
-                    built.Append('"');
-                    break;
-
-                case '\\':
-                    built.Append('\\');
-                    break;
-
-                case '/':
-                    built.Append('/');
-                    break;
-
-                case 'b':
-                    built.Append('\b');
-                    break;
-
-                case 'f':
-                    built.Append('\f');
-                    break;
-
-                case 'n':
-                    built.Append('\n');
-                    break;
-
-                case 'r':
-                    built.Append('\r');
-                    break;
-
-                case 't':
-                    built.Append('\t');
-                    break;
-
-                case 'u':
-                    built.Append(JsonParseHex(engine, text, ref at));
-                    break;
-
-                default:
-                    throw JsonSyntax(engine, "Bad escaped character in JSON", at - 1);
-            }
-        }
-    }
-
-    /// <summary>Reads the four hexadecimal digits of a <c>\u</c> escape.</summary>
-    /// <remarks>
-    /// The result is one UTF-16 code unit and is not validated as a scalar value: <c>"\ud800"</c> is
-    /// a well-formed JSON string holding a lone surrogate, and a String in this language is a
-    /// sequence of code units rather than of scalars, so rejecting it would be inventing a rule.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CB98BF
-    // Broiler-Human:        PENDING
-    private static char JsonParseHex(JsEngine engine, string text, ref int at)
-    {
-        if (at + 4 > text.Length)
-        {
-            throw JsonSyntax(engine, "Bad Unicode escape in JSON", at);
-        }
-
-        var unit = 0;
-
-        for (var step = 0; step < 4; step++)
-        {
-            var digit = JsonHexDigit(text[at + step]);
-
-            if (digit < 0)
-            {
-                throw JsonSyntax(engine, "Bad Unicode escape in JSON", at + step);
-            }
-
-            unit = (unit * 16) + digit;
-        }
-
-        at += 4;
-        return (char)unit;
-    }
-
-    /// <summary>The value of one hexadecimal digit, or a negative number when it is not one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E6AE57
-    // Broiler-Human:        PENDING
-    private static int JsonHexDigit(char character) => character switch
-    {
-        >= '0' and <= '9' => character - '0',
-        >= 'a' and <= 'f' => character - 'a' + 10,
-        >= 'A' and <= 'F' => character - 'A' + 10,
-        _ => -1,
-    };
-
-    /// <summary>Reads a number literal in the JSON grammar, which is narrower than the language's.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A9B233
-    // Broiler-Human:        PENDING
-    private static JsValue JsonParseNumber(JsEngine engine, string text, ref int at)
-    {
-        var start = at;
-
-        if (at < text.Length && text[at] == '-')
-        {
-            at++;
-        }
-
-        if (at >= text.Length || text[at] is < '0' or > '9')
-        {
-            throw JsonUnexpected(engine, text, at);
-        }
-
-        // A leading zero admits no further digits: "01" is two tokens in JSON and therefore an
-        // error, where the language would read it as an octal-looking decimal.
-        if (text[at] == '0')
-        {
-            at++;
-        }
-        else
-        {
-            while (at < text.Length && text[at] is >= '0' and <= '9')
-            {
-                at++;
-            }
-        }
-
-        if (at < text.Length && text[at] == '.')
-        {
-            at++;
-
-            if (at >= text.Length || text[at] is < '0' or > '9')
-            {
-                throw JsonUnexpected(engine, text, at);
-            }
-
-            while (at < text.Length && text[at] is >= '0' and <= '9')
-            {
-                at++;
-            }
-        }
-
-        if (at < text.Length && text[at] is 'e' or 'E')
-        {
-            at++;
-
-            if (at < text.Length && text[at] is '+' or '-')
-            {
-                at++;
-            }
-
-            if (at >= text.Length || text[at] is < '0' or > '9')
-            {
-                throw JsonUnexpected(engine, text, at);
-            }
-
-            while (at < text.Length && text[at] is >= '0' and <= '9')
-            {
-                at++;
-            }
-        }
-
-        // The library charges the number's length, which is never empty here, before reading it.
-        return JsValue.Number(NumberParsing.StringToNumber(System.MemoryExtensions.AsSpan(text, start, at - start), engine.WorkCharge));
-    }
-
-    /// <summary>Reads one of the three bare words.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=73F871
-    // Broiler-Human:        PENDING
-    private static JsValue JsonParseKeyword(JsEngine engine, string text, ref int at, string word, JsValue value)
-    {
-        if (at + word.Length > text.Length || string.CompareOrdinal(text, at, word, 0, word.Length) != 0)
-        {
-            throw JsonUnexpected(engine, text, at);
-        }
-
-        at += word.Length;
-        return value;
     }
 
     /// <summary>A SyntaxError naming where in the text the reader stopped.</summary>
@@ -929,7 +587,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads the space argument into one level of indentation.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D08293
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=036E0F
     // Broiler-Human:        PENDING
     private static void JsonApplySpace(JsEngine engine, JsonWriter state, JsValue space)
     {
@@ -947,17 +605,13 @@ internal sealed partial class JsRealm
 
         if (space.IsNumber)
         {
-            var count = (int)System.Math.Min(
-                10, System.Math.Max(0, IntegerConversions.ToIntegerOrInfinity(space.AsNumber())));
-
-            state.Gap = count > 0 ? new string(' ', count) : string.Empty;
+            state.Gap = JsonText.GapFromNumber(space.AsNumber());
             return;
         }
 
         if (space.IsString)
         {
-            var text = space.AsString();
-            state.Gap = text.Length <= 10 ? text : text[..10];
+            state.Gap = JsonText.GapFromString(space.AsString());
         }
     }
 
@@ -965,7 +619,7 @@ internal sealed partial class JsRealm
     /// The specification's <c>SerializeJSONProperty</c>, returning <see langword="null"/> for the
     /// values that have no JSON text at all.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=736E87
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=407032
     // Broiler-Human:        PENDING
     private static string? JsonSerialize(JsEngine engine, JsonWriter state, string key, JsObject holder)
     {
@@ -1023,7 +677,7 @@ internal sealed partial class JsRealm
                 return value.AsBoolean() ? "true" : "false";
 
             case JsType.String:
-                return JsonQuote(engine, value.AsString());
+                return JsonText.Quote(value.AsString(), engine.WorkCharge);
 
             case JsType.Number:
                 {
@@ -1062,7 +716,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>SerializeJSONObject</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DFC5BE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BBCDB6
     // Broiler-Human:        PENDING
     private static string JsonSerializeObject(JsEngine engine, JsonWriter state, JsObject value)
     {
@@ -1081,7 +735,7 @@ internal sealed partial class JsRealm
 
             if (text is not null)
             {
-                parts.Add(JsonQuote(engine, key) + separator + text);
+                parts.Add(JsonText.Quote(key, engine.WorkCharge) + separator + text);
             }
         }
 
@@ -1216,94 +870,6 @@ internal sealed partial class JsRealm
         }
 
         return keys;
-    }
-
-    /// <summary>The specification's <c>QuoteJSONString</c>.</summary>
-    /// <remarks>
-    /// Every code unit below <c>0x20</c> that has no short escape, and every surrogate without its
-    /// partner, becomes a <c>\u</c> escape. The lone-surrogate case is what makes the output
-    /// well-formed UTF-16 text that any reader can take back: a bare <c>\ud800</c> in the output
-    /// cannot be encoded as UTF-8 and would make the document unreadable to a consumer that decodes
-    /// before it parses.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B9B130
-    // Broiler-Human:        PENDING
-    private static string JsonQuote(JsEngine engine, string value)
-    {
-        engine.Charge((ulong)value.Length + 1);
-        var text = new System.Text.StringBuilder(value.Length + 2);
-        text.Append('"');
-
-        for (var at = 0; at < value.Length; at++)
-        {
-            var character = value[at];
-
-            switch (character)
-            {
-                case '\\':
-                    text.Append("\\\\");
-                    break;
-
-                case '"':
-                    text.Append("\\\"");
-                    break;
-
-                case '\b':
-                    text.Append("\\b");
-                    break;
-
-                case '\f':
-                    text.Append("\\f");
-                    break;
-
-                case '\n':
-                    text.Append("\\n");
-                    break;
-
-                case '\r':
-                    text.Append("\\r");
-                    break;
-
-                case '\t':
-                    text.Append("\\t");
-                    break;
-
-                default:
-                    if (character < ' ' || JsonIsLoneSurrogate(value, at))
-                    {
-                        text.Append("\\u").Append(((int)character).ToString("x4", CultureInfo.InvariantCulture));
-                    }
-                    else
-                    {
-                        text.Append(character);
-                    }
-
-                    break;
-            }
-        }
-
-        text.Append('"');
-        return text.ToString();
-    }
-
-    /// <summary>Whether the code unit at <paramref name="at"/> is a surrogate without its partner.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7E0A15
-    // Broiler-Human:        PENDING
-    private static bool JsonIsLoneSurrogate(string value, int at)
-    {
-        var character = value[at];
-
-        if (char.IsHighSurrogate(character))
-        {
-            return at + 1 >= value.Length || !char.IsLowSurrogate(value[at + 1]);
-        }
-
-        if (char.IsLowSurrogate(character))
-        {
-            return at == 0 || !char.IsHighSurrogate(value[at - 1]);
-        }
-
-        return false;
     }
 
     /// <summary>

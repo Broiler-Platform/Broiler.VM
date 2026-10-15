@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Text;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -1226,12 +1227,11 @@ internal sealed partial class JsRealm
         flags.Contains('v', StringComparison.Ordinal);
 
     /// <summary>The language's <c>AdvanceStringIndex</c> over an index that may be past the input.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FD5506
+    /// <remarks>The shared library's (JSD-0070); the index is <c>lastIndex</c> after <c>ToLength</c>, never negative.</remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=551BED
     // Broiler-Human:        PENDING
     private static double RegExpAdvanceIndex(string input, double index, bool fullUnicode) =>
-        fullUnicode && index + 1 < input.Length
-            ? JsRegExpMatcher.Advance(input, (int)index, true)
-            : index + 1;
+        Utf16.AdvanceStringIndex(input, (long)index, fullUnicode);
 
     /// <summary>
     /// Moves <c>lastIndex</c> past an empty match: read through <c>ToLength</c>, advanced, and
@@ -2062,7 +2062,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>replace</c> with a string on the left, which replaces the first occurrence only.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=2702B1
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=5FC826
     // Broiler-Human:        PENDING
     private static string RegExpReplaceText(
         JsEngine engine, string input, string search, JsValue replacement)
@@ -2089,52 +2089,10 @@ internal sealed partial class JsRealm
         }
         else
         {
-            var template = converted;
-            var builder = new System.Text.StringBuilder(template.Length);
-            var step = 0;
-
-            while (step < template.Length)
-            {
-                var character = template[step];
-
-                if (character != '$' || step + 1 >= template.Length)
-                {
-                    builder.Append(character);
-                    step++;
-                    continue;
-                }
-
-                // A string pattern has no captures, so `$1`..`$9` stay literal and only the four
-                // capture-free substitutions mean anything.
-                switch (template[step + 1])
-                {
-                    case '$':
-                        builder.Append('$');
-                        step += 2;
-                        continue;
-
-                    case '&':
-                        builder.Append(search);
-                        step += 2;
-                        continue;
-
-                    case '`':
-                        builder.Append(input, 0, at);
-                        step += 2;
-                        continue;
-
-                    case '\'':
-                        builder.Append(input, at + search.Length, input.Length - at - search.Length);
-                        step += 2;
-                        continue;
-
-                    default:
-                        builder.Append(character);
-                        step++;
-                        continue;
-                }
-            }
-
+            // A string pattern has no captures, so `$1`..`$9` stay literal and only the four
+            // capture-free substitutions mean anything: the shared parser's parts, evaluated here.
+            var builder = new System.Text.StringBuilder(converted.Length);
+            StringSubstitute(builder, ReplacementTemplate.Parse(converted, 0, false), converted, search, input, at);
             produced = builder.ToString();
         }
 
@@ -2198,7 +2156,7 @@ internal sealed partial class JsRealm
     /// left. The template is charged once up front and each expansion as it is appended.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5D0051
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1FEB4C
     // Broiler-Human:        PENDING
     private static string RegExpSubstitute(
         JsEngine engine,
@@ -2209,103 +2167,58 @@ internal sealed partial class JsRealm
         JsValue namedCaptures,
         string template)
     {
-        engine.Charge((ulong)template.Length + 1);
+        // The shared parser charges the template's length and one more, first; each expansion is
+        // charged as it is appended, and a named group is read with an ordinary Get where its part is.
+        var parts = ReplacementTemplate.Parse(
+            template, captures.Count, namedCaptures.Type != JsType.Undefined, engine.WorkCharge);
+
         var builder = new System.Text.StringBuilder(template.Length);
-        var count = captures.Count;
-        var at = 0;
 
-        while (at < template.Length)
+        foreach (var part in parts)
         {
-            var character = template[at];
-
-            if (character != '$' || at + 1 >= template.Length)
+            switch (part.Kind)
             {
-                builder.Append(character);
-                at++;
-                continue;
-            }
-
-            var next = template[at + 1];
-
-            switch (next)
-            {
-                case '$':
+                case ReplacementPartKind.Dollar:
                     builder.Append('$');
-                    at += 2;
-                    continue;
+                    break;
 
-                case '&':
+                case ReplacementPartKind.Match:
                     RegExpAppend(engine, builder, matched);
-                    at += 2;
-                    continue;
+                    break;
 
-                case '`':
+                case ReplacementPartKind.Before:
                     RegExpAppend(engine, builder, input, 0, position);
-                    at += 2;
-                    continue;
+                    break;
 
-                case '\'':
+                case ReplacementPartKind.After:
                     var tail = Math.Min(position + matched.Length, input.Length);
                     RegExpAppend(engine, builder, input, tail, input.Length - tail);
-                    at += 2;
-                    continue;
+                    break;
 
-                case '<':
-                    var close = template.IndexOf('>', at + 2);
+                case ReplacementPartKind.Capture:
+                    var value = captures[part.CaptureIndex - 1];
 
-                    if (close < 0 || namedCaptures.Type == JsType.Undefined)
+                    if (value.Type != JsType.Undefined)
                     {
-                        builder.Append("$<");
-                        at += 2;
-                        continue;
+                        RegExpAppend(engine, builder, value.AsString());
                     }
 
-                    var capture = engine.GetProperty(
-                        namedCaptures, template.Substring(at + 2, close - at - 2));
+                    break;
+
+                case ReplacementPartKind.NamedCapture:
+                    var capture = engine.GetProperty(namedCaptures, template.Substring(part.Start, part.Length));
 
                     if (capture.Type != JsType.Undefined)
                     {
                         RegExpAppend(engine, builder, engine.ToStringValue(capture));
                     }
 
-                    at = close + 1;
-                    continue;
+                    break;
 
                 default:
+                    builder.Append(template, part.Start, part.Length);
                     break;
             }
-
-            if (next is >= '0' and <= '9')
-            {
-                var digits = at + 2 < template.Length && template[at + 2] is >= '0' and <= '9' ? 2 : 1;
-                var index = digits == 2 ? ((next - '0') * 10) + (template[at + 2] - '0') : next - '0';
-
-                if (index > count && digits == 2)
-                {
-                    digits = 1;
-                    index = next - '0';
-                }
-
-                if (index >= 1 && index <= count)
-                {
-                    var value = captures[index - 1];
-
-                    if (value.Type != JsType.Undefined)
-                    {
-                        RegExpAppend(engine, builder, value.AsString());
-                    }
-                }
-                else
-                {
-                    builder.Append(template, at, 1 + digits);
-                }
-
-                at += 1 + digits;
-                continue;
-            }
-
-            builder.Append(character);
-            at++;
         }
 
         return builder.ToString();

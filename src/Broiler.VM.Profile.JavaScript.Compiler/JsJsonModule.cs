@@ -3,17 +3,23 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
-// Exempt:           3
-// Human-reviewed:   0/15
+// Relevant units:   5
+// Annotated:        5/5
+// Exempt:           0
+// Human-reviewed:   0/5
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       15
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using Broiler.ECMAScript;
+using Broiler.ECMAScript.Text;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
@@ -43,6 +49,11 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// rather than evaluated. Strings are written back with every code unit outside printable ASCII
 /// escaped, so a lone surrogate or a line separator in the document survives unchanged.
 /// </para>
+/// <para>
+/// <b>The reading is the shared library's <see cref="JsonReader"/></b> (JSD-0071), the reader
+/// <c>JSON.parse</c> uses, under this translation's own depth limit and with no meter: the
+/// translation runs at compile time, where nothing is charged. The writer is this family's.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3E7D2B
 // Broiler-Human:        PENDING
@@ -60,22 +71,103 @@ internal static class JsJsonModule
     /// <param name="source">The synthetic module's source, when the text is JSON.</param>
     /// <param name="error">Why it is not, when it is not.</param>
     /// <param name="tooDeep">Whether the refusal is this front end's nesting ceiling.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B49F8D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D878CC
     // Broiler-Human:        PENDING
     internal static bool TryTranslate(string json, out string source, out string error, out bool tooDeep)
     {
-        var reader = new Reader(json);
-        var written = new System.Text.StringBuilder(json.Length + 32);
+        var reader = new JsonReader(json, new DepthLimit(MaximumDepth));
+        var written = new StringBuilder(json.Length + 32);
         written.Append("export default (");
 
-        var read = reader.Value(written, 0) && reader.End();
-        tooDeep = reader.TooDeep;
+        // One entry per open container: whether it is an object, and whether a member or an
+        // element has been written in it, which is when the next one needs its separator.
+        var inObject = new List<bool>();
+        var separated = new List<bool>();
+        tooDeep = false;
 
-        if (!read)
+        while (true)
         {
-            source = string.Empty;
-            error = reader.Error;
-            return false;
+            var status = reader.Read();
+
+            if (status != ResultStatus.Completed)
+            {
+                tooDeep = status == ResultStatus.LimitExceeded;
+                source = string.Empty;
+                error = Describe(json, reader.Failure);
+                return false;
+            }
+
+            var token = reader.Token;
+
+            if (token == JsonToken.EndOfText)
+            {
+                break;
+            }
+
+            if (token is JsonToken.EndObject or JsonToken.EndArray)
+            {
+                written.Append(token == JsonToken.EndObject ? '}' : ']');
+                inObject.RemoveAt(inObject.Count - 1);
+                separated.RemoveAt(separated.Count - 1);
+                continue;
+            }
+
+            // A member's name opens a member; any other value opens one only in an array, since
+            // in an object it is the value of the name just written.
+            var opensEntry = token == JsonToken.PropertyName ||
+                (inObject.Count > 0 && !inObject[^1]);
+
+            if (opensEntry)
+            {
+                if (separated[^1])
+                {
+                    written.Append(", ");
+                }
+
+                separated[^1] = true;
+            }
+
+            switch (token)
+            {
+                case JsonToken.PropertyName:
+                    written.Append('[');
+                    WriteString(written, reader.StringValue);
+                    written.Append("]: ");
+                    break;
+
+                case JsonToken.BeginObject:
+                    written.Append('{');
+                    inObject.Add(true);
+                    separated.Add(false);
+                    break;
+
+                case JsonToken.BeginArray:
+                    written.Append('[');
+                    inObject.Add(false);
+                    separated.Add(false);
+                    break;
+
+                case JsonToken.String:
+                    WriteString(written, reader.StringValue);
+                    break;
+
+                case JsonToken.Number:
+                    // A number's text is a literal of the language as it stands.
+                    written.Append(json, reader.TokenStart, reader.TokenEnd - reader.TokenStart);
+                    break;
+
+                case JsonToken.True:
+                    written.Append("true");
+                    break;
+
+                case JsonToken.False:
+                    written.Append("false");
+                    break;
+
+                default:
+                    written.Append("null");
+                    break;
+            }
         }
 
         written.Append(");\n");
@@ -84,367 +176,44 @@ internal static class JsJsonModule
         return true;
     }
 
-    /// <summary>A cursor over one JSON text.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=54E035
+    /// <summary>Writes one string as a double-quoted literal of printable ASCII.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0624D9
     // Broiler-Human:        PENDING
-    private sealed class Reader(string text)
+    private static void WriteString(StringBuilder written, string value)
     {
-        private int position;
+        written.Append('"');
 
-        /// <summary>Why the text was refused.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=78F8BF
-        // Broiler-Human:        PENDING
-        internal string Error { get; private set; } = string.Empty;
-
-        /// <summary>Whether the refusal is the nesting ceiling.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=801F2B
-        // Broiler-Human:        PENDING
-        internal bool TooDeep { get; private set; }
-
-        /// <summary>Reads one value and writes it as a literal.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CB1B92
-        // Broiler-Human:        PENDING
-        internal bool Value(System.Text.StringBuilder written, int depth)
+        foreach (var unit in value)
         {
-            if (depth > MaximumDepth)
+            if (unit is >= ' ' and <= '~' && unit != '"' && unit != '\\')
             {
-                TooDeep = true;
-                return Fail("the document nests deeper than " + MaximumDepth + " levels");
+                written.Append(unit);
             }
-
-            SkipSpace();
-
-            if (position == text.Length)
+            else
             {
-                return Fail("the text ends where a value was expected");
-            }
-
-            switch (text[position])
-            {
-                case '{':
-                    return Object(written, depth);
-
-                case '[':
-                    return Array(written, depth);
-
-                case '"':
-                    return String(written);
-
-                case 't':
-                    return Word("true", written);
-
-                case 'f':
-                    return Word("false", written);
-
-                case 'n':
-                    return Word("null", written);
-
-                default:
-                    return Number(written);
+                written.Append("\\u").Append(((int)unit).ToString("X4", CultureInfo.InvariantCulture));
             }
         }
 
-        /// <summary>Whether nothing but white space follows the value.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=CDA2CD
-        // Broiler-Human:        PENDING
-        internal bool End()
+        written.Append('"');
+    }
+
+    /// <summary>Why the reader refused the text, in this front end's words, with the offset it stopped at.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=B82F94
+    // Broiler-Human:        PENDING
+    private static string Describe(string json, Failure failure)
+    {
+        var reason = failure.MessageId switch
         {
-            SkipSpace();
-            return position == text.Length || Fail("text follows the value");
-        }
+            "json.too-deep" => "the document nests deeper than " + MaximumDepth + " levels",
+            "json.unterminated-string" => "a string is not closed",
+            "json.control-character" => "a string holds an unescaped control character",
+            "json.bad-escape" => "a string holds an escape JSON does not define",
+            "json.bad-unicode-escape" => "a `\\u` escape is four hexadecimal digits",
+            _ when failure.Position >= json.Length => "the text ends where the grammar expects more",
+            _ => "the grammar has no place for `" + json[failure.Position] + "`",
+        };
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B32183
-        // Broiler-Human:        PENDING
-        private bool Object(System.Text.StringBuilder written, int depth)
-        {
-            position++;
-            written.Append('{');
-            SkipSpace();
-
-            if (Next('}'))
-            {
-                written.Append('}');
-                return true;
-            }
-
-            while (true)
-            {
-                SkipSpace();
-
-                if (position == text.Length || text[position] != '"')
-                {
-                    return Fail("an object key is a string");
-                }
-
-                written.Append('[');
-
-                if (!String(written))
-                {
-                    return false;
-                }
-
-                written.Append("]: ");
-                SkipSpace();
-
-                if (!Next(':'))
-                {
-                    return Fail("an object key is followed by `:`");
-                }
-
-                if (!Value(written, depth + 1))
-                {
-                    return false;
-                }
-
-                SkipSpace();
-
-                if (Next('}'))
-                {
-                    written.Append('}');
-                    return true;
-                }
-
-                if (!Next(','))
-                {
-                    return Fail("an object member is followed by `,` or `}`");
-                }
-
-                written.Append(", ");
-            }
-        }
-
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B517CA
-        // Broiler-Human:        PENDING
-        private bool Array(System.Text.StringBuilder written, int depth)
-        {
-            position++;
-            written.Append('[');
-            SkipSpace();
-
-            if (Next(']'))
-            {
-                written.Append(']');
-                return true;
-            }
-
-            while (true)
-            {
-                if (!Value(written, depth + 1))
-                {
-                    return false;
-                }
-
-                SkipSpace();
-
-                if (Next(']'))
-                {
-                    written.Append(']');
-                    return true;
-                }
-
-                if (!Next(','))
-                {
-                    return Fail("an array element is followed by `,` or `]`");
-                }
-
-                written.Append(", ");
-            }
-        }
-
-        /// <summary>Reads one string and writes it as a double-quoted literal of printable ASCII.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BB9BF8
-        // Broiler-Human:        PENDING
-        private bool String(System.Text.StringBuilder written)
-        {
-            position++;
-            written.Append('"');
-
-            while (true)
-            {
-                if (position == text.Length)
-                {
-                    return Fail("a string is not closed");
-                }
-
-                var unit = text[position++];
-
-                if (unit == '"')
-                {
-                    written.Append('"');
-                    return true;
-                }
-
-                if (unit < 0x20)
-                {
-                    return Fail("a string holds an unescaped control character");
-                }
-
-                if (unit == '\\')
-                {
-                    if (position == text.Length)
-                    {
-                        return Fail("a string ends inside an escape");
-                    }
-
-                    var escape = text[position++];
-
-                    switch (escape)
-                    {
-                        case '"':
-                        case '\\':
-                        case '/':
-                            unit = escape;
-                            break;
-
-                        case 'b':
-                            unit = '\b';
-                            break;
-
-                        case 'f':
-                            unit = '\f';
-                            break;
-
-                        case 'n':
-                            unit = '\n';
-                            break;
-
-                        case 'r':
-                            unit = '\r';
-                            break;
-
-                        case 't':
-                            unit = '\t';
-                            break;
-
-                        case 'u':
-                            if (position + 4 > text.Length ||
-                                !ushort.TryParse(
-                                    System.MemoryExtensions.AsSpan(text, position, 4),
-                                    System.Globalization.NumberStyles.AllowHexSpecifier,
-                                    System.Globalization.CultureInfo.InvariantCulture,
-                                    out var code))
-                            {
-                                return Fail("a `\\u` escape is four hexadecimal digits");
-                            }
-
-                            position += 4;
-                            unit = (char)code;
-                            break;
-
-                        default:
-                            return Fail("a string holds an escape JSON does not define");
-                    }
-                }
-
-                if (unit is >= ' ' and <= '~' && unit != '"' && unit != '\\')
-                {
-                    written.Append(unit);
-                }
-                else
-                {
-                    written.Append("\\u").Append(((int)unit).ToString("X4", System.Globalization.CultureInfo.InvariantCulture));
-                }
-            }
-        }
-
-        /// <summary>Reads one number and writes its text unchanged, which is a literal of the language.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F2B30A
-        // Broiler-Human:        PENDING
-        private bool Number(System.Text.StringBuilder written)
-        {
-            var start = position;
-            Next('-');
-
-            if (Next('0'))
-            {
-                // A leading zero is a whole integer part: `01` is not JSON.
-            }
-            else if (!Digits())
-            {
-                return Fail("a value is an object, an array, a string, a number, true, false or null");
-            }
-
-            if (Next('.') && !Digits())
-            {
-                return Fail("a fraction has a digit");
-            }
-
-            if (Next('e') || Next('E'))
-            {
-                _ = Next('+') || Next('-');
-
-                if (!Digits())
-                {
-                    return Fail("an exponent has a digit");
-                }
-            }
-
-            written.Append(text, start, position - start);
-            return true;
-        }
-
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=E0E3FA
-        // Broiler-Human:        PENDING
-        private bool Digits()
-        {
-            var start = position;
-
-            while (position < text.Length && text[position] is >= '0' and <= '9')
-            {
-                position++;
-            }
-
-            return position != start;
-        }
-
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=B71F09
-        // Broiler-Human:        PENDING
-        private bool Word(string word, System.Text.StringBuilder written)
-        {
-            if (string.CompareOrdinal(text, position, word, 0, word.Length) != 0)
-            {
-                return Fail("a value is an object, an array, a string, a number, true, false or null");
-            }
-
-            position += word.Length;
-            written.Append(word);
-            return true;
-        }
-
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=F5DB03
-        // Broiler-Human:        PENDING
-        private bool Next(char expected)
-        {
-            if (position < text.Length && text[position] == expected)
-            {
-                position++;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Skips JSON's four white-space characters, and no others.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=0E908F
-        // Broiler-Human:        PENDING
-        private void SkipSpace()
-        {
-            while (position < text.Length && text[position] is ' ' or '\t' or '\n' or '\r')
-            {
-                position++;
-            }
-        }
-
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=85566E
-        // Broiler-Human:        PENDING
-        private bool Fail(string reason)
-        {
-            if (Error.Length == 0)
-            {
-                Error = reason + " (at offset " + position + ")";
-            }
-
-            return false;
-        }
+        return reason + " (at offset " + failure.Position.ToString(CultureInfo.InvariantCulture) + ")";
     }
 }

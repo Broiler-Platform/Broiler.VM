@@ -491,7 +491,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds an iterator over a String's code points.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2EF10A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F049A7
     // Broiler-Human:        PENDING
     internal JsObject CreateStringIterator(string text)
     {
@@ -504,11 +504,8 @@ internal sealed partial class JsRealm
                 return (false, JsValue.Undefined);
             }
 
-            var width = at + 1 < text.Length &&
-                char.IsHighSurrogate(text[at]) &&
-                char.IsLowSurrogate(text[at + 1])
-                ? 2
-                : 1;
+            // The shared CodePointAt: a pair is one step of two units, any other unit one of one.
+            var width = Broiler.ECMAScript.Text.Utf16.CodePointAt(text, at).CodeUnitCount;
 
             var slice = text.Substring(at, width);
             at += width;

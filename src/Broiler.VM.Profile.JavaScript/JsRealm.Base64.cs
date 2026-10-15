@@ -3,20 +3,21 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   20
-// Annotated:        20/20
-// Exempt:           3
-// Human-reviewed:   0/20
+// Relevant units:   12
+// Annotated:        12/12
+// Exempt:           0
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       20
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
-using System.Collections.Generic;
+using Broiler.ECMAScript;
+using Broiler.ECMAScript.Text;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -37,19 +38,18 @@ namespace Broiler.VM.Profile.JavaScript;
 /// decoders write straight into the buffer they validated: the specification notes the same, and it
 /// is why no length is re-read after a decode.
 /// </para>
+/// <para>
+/// <b>The codecs are the shared library's</b> (JSD-0071), which charge the units these members
+/// charged before. What stays here is everything a script can observe around them: the receiver,
+/// the options and their order, bounds, the result object and the error messages.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=60DD8D
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    /// <summary>The standard base64 alphabet, which <c>base64url</c> differs from in two places.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=24CF9F
-    // Broiler-Human:        PENDING
-    private const string Base64Alphabet =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
     /// <summary>Builds the six members on <c>Uint8Array</c> and its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=62A2AA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A6420F
     // Broiler-Human:        PENDING
     private void SetupUint8ArrayCodecs()
     {
@@ -66,16 +66,20 @@ internal sealed partial class JsRealm
             }
 
             var options = Base64Options(engine, Base64Argument(arguments, 1));
-            var urlSafe = Base64ReadAlphabet(engine, options);
+            var alphabet = Base64ReadAlphabet(engine, options);
             var lastChunk = Base64ReadLastChunk(engine, options);
-            var result = Base64Decode(engine, text.AsString(), urlSafe, lastChunk, long.MaxValue);
+            var source = text.AsString();
 
-            if (result.Error is { } error)
+            // No `maxLength`: a destination no decode of the text can fill.
+            var bytes = new byte[Base64Codec.DecodedLengthBound(source.Length)];
+            var status = Base64Codec.FromBase64(source, alphabet, lastChunk, bytes, out _, out var written, out var failure, engine.WorkCharge);
+
+            if (status != ResultStatus.Completed)
             {
-                throw engine.Error("SyntaxError", error);
+                throw engine.Error("SyntaxError", Base64Message(source, failure));
             }
 
-            return JsValue.Object(Base64Allocate(engine, result.Bytes));
+            return JsValue.Object(Base64Allocate(engine, bytes.AsSpan(0, written)));
         });
 
         Method(constructor, "fromHex", 1, (engine, thisValue, arguments) =>
@@ -87,32 +91,33 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Uint8Array.fromHex requires a String");
             }
 
-            var result = Base64DecodeHex(engine, text.AsString(), long.MaxValue);
+            var source = text.AsString();
+            var bytes = new byte[source.Length / 2];
+            var status = Base64Codec.FromHex(source, bytes, out _, out var written, out var failure, engine.WorkCharge);
 
-            if (result.Error is { } error)
+            if (status != ResultStatus.Completed)
             {
-                throw engine.Error("SyntaxError", error);
+                throw engine.Error("SyntaxError", Base64Message(source, failure));
             }
 
-            return JsValue.Object(Base64Allocate(engine, result.Bytes));
+            return JsValue.Object(Base64Allocate(engine, bytes.AsSpan(0, written)));
         });
 
         Method(prototype, "toBase64", 0, static (engine, thisValue, arguments) =>
         {
             var view = Base64Receiver(engine, thisValue, "toBase64");
             var options = Base64Options(engine, Base64Argument(arguments, 0));
-            var urlSafe = Base64ReadAlphabet(engine, options);
+            var alphabet = Base64ReadAlphabet(engine, options);
             var omitPadding = engine.GetProperty(JsValue.Object(options), "omitPadding").ToBooleanValue();
             var bytes = Base64BytesOf(engine, view);
-            return JsValue.String(Base64Encode(engine, bytes, urlSafe, omitPadding));
+            return JsValue.String(Base64Codec.ToBase64(bytes, alphabet, omitPadding, engine.WorkCharge));
         });
 
         Method(prototype, "toHex", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
             var bytes = Base64BytesOf(engine, Base64Receiver(engine, thisValue, "toHex"));
-            engine.Charge((ulong)bytes.Length * 2 + 1);
-            return JsValue.String(Convert.ToHexStringLower(bytes));
+            return JsValue.String(Base64Codec.ToHex(bytes, engine.WorkCharge));
         });
 
         Method(prototype, "setFromBase64", 1, (engine, thisValue, arguments) =>
@@ -126,11 +131,11 @@ internal sealed partial class JsRealm
             }
 
             var options = Base64Options(engine, Base64Argument(arguments, 1));
-            var urlSafe = Base64ReadAlphabet(engine, options);
+            var alphabet = Base64ReadAlphabet(engine, options);
             var lastChunk = Base64ReadLastChunk(engine, options);
-            var capacity = Base64Capacity(engine, into);
-            var result = Base64Decode(engine, text.AsString(), urlSafe, lastChunk, capacity);
-            return Base64Settle(engine, into, result);
+            var source = text.AsString();
+            var status = Base64Codec.FromBase64(source, alphabet, lastChunk, Base64Destination(engine, into), out var read, out var written, out var failure, engine.WorkCharge);
+            return Base64Settle(engine, source, status, failure, read, written);
         });
 
         Method(prototype, "setFromHex", 1, (engine, thisValue, arguments) =>
@@ -143,9 +148,9 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Uint8Array.prototype.setFromHex requires a String");
             }
 
-            var capacity = Base64Capacity(engine, into);
-            var result = Base64DecodeHex(engine, text.AsString(), capacity);
-            return Base64Settle(engine, into, result);
+            var source = text.AsString();
+            var status = Base64Codec.FromHex(source, Base64Destination(engine, into), out var read, out var written, out var failure, engine.WorkCharge);
+            return Base64Settle(engine, source, status, failure, read, written);
         });
     }
 
@@ -194,51 +199,59 @@ internal sealed partial class JsRealm
         return null!;
     }
 
-    /// <summary>Reads <c>alphabet</c>, answering whether it is <c>base64url</c>.</summary>
+    /// <summary>Reads <c>alphabet</c>: <c>base64</c> or <c>base64url</c>.</summary>
     /// <remarks>
     /// The value is compared and not converted: only the two Strings are alphabets, and an object
     /// whose <c>toString</c> answers one of them is a <c>TypeError</c>, as the specification says.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=948DB4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3E88C2
     // Broiler-Human:        PENDING
-    private static bool Base64ReadAlphabet(JsEngine engine, JsObject options)
+    private static Base64Alphabet Base64ReadAlphabet(JsEngine engine, JsObject options)
     {
         var alphabet = engine.GetProperty(JsValue.Object(options), "alphabet");
 
         if (alphabet.Type == JsType.Undefined)
         {
-            return false;
+            return Base64Alphabet.Base64;
         }
 
         if (alphabet.IsString && alphabet.AsString() is "base64" or "base64url")
         {
-            return alphabet.AsString() == "base64url";
+            return alphabet.AsString() == "base64url" ? Base64Alphabet.Base64Url : Base64Alphabet.Base64;
         }
 
         engine.ThrowTypeError("the alphabet must be \"base64\" or \"base64url\"");
-        return false;
+        return Base64Alphabet.Base64;
     }
 
     /// <summary>Reads <c>lastChunkHandling</c>: <c>loose</c>, <c>strict</c> or <c>stop-before-partial</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BC0FB5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FB7A0E
     // Broiler-Human:        PENDING
-    private static string Base64ReadLastChunk(JsEngine engine, JsObject options)
+    private static LastChunkHandling Base64ReadLastChunk(JsEngine engine, JsObject options)
     {
         var handling = engine.GetProperty(JsValue.Object(options), "lastChunkHandling");
 
         if (handling.Type == JsType.Undefined)
         {
-            return "loose";
+            return LastChunkHandling.Loose;
         }
 
-        if (handling.IsString && handling.AsString() is "loose" or "strict" or "stop-before-partial")
+        if (handling.IsString)
         {
-            return handling.AsString();
+            switch (handling.AsString())
+            {
+                case "loose":
+                    return LastChunkHandling.Loose;
+                case "strict":
+                    return LastChunkHandling.Strict;
+                case "stop-before-partial":
+                    return LastChunkHandling.StopBeforePartial;
+            }
         }
 
         engine.ThrowTypeError(
             "lastChunkHandling must be \"loose\", \"strict\" or \"stop-before-partial\"");
-        return string.Empty;
+        return LastChunkHandling.Loose;
     }
 
     /// <summary>
@@ -261,361 +274,72 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// How many bytes a <c>setFrom…</c> call may write: the view's length, or a <c>TypeError</c> when
-    /// it is out of bounds.
+    /// Where a <c>setFrom…</c> call writes: the view's bytes, whose length is the
+    /// <c>maxLength</c> the decode may not pass, or a <c>TypeError</c> when it is out of bounds.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2B94B8
+    /// <remarks>
+    /// <b>The decode writes straight into the buffer</b>, so what it decoded before an error is
+    /// in the array when the error is thrown, which is the specification's order.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DC3656
     // Broiler-Human:        PENDING
-    private static long Base64Capacity(JsEngine engine, JsTypedArray view)
+    private static Span<byte> Base64Destination(JsEngine engine, JsTypedArray view)
     {
         if (view.IsOutOfBounds)
         {
             engine.ThrowTypeError("the Uint8Array is out of bounds");
         }
 
-        return view.Length;
+        return view.Buffer.Data is { } data
+            ? new Span<byte>(data, view.ByteOffset, view.Length)
+            : Span<byte>.Empty;
     }
 
-    /// <summary>
-    /// Writes what a <c>setFrom…</c> decode produced, then throws its error or answers
-    /// <c>{ read, written }</c>.
-    /// </summary>
-    /// <remarks>
-    /// <b>The bytes are written before the error is thrown</b>, which is the specification's order:
-    /// a decode that fails part way leaves what it decoded in the array.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A23CC8
+    /// <summary>Throws a <c>setFrom…</c> decode's error or answers <c>{ read, written }</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3F56AB
     // Broiler-Human:        PENDING
-    private JsValue Base64Settle(JsEngine engine, JsTypedArray into, Base64Result result)
+    private JsValue Base64Settle(JsEngine engine, string text, ResultStatus status, Failure failure, int read, int written)
     {
-        if (into.Buffer.Data is { } data)
+        if (status != ResultStatus.Completed)
         {
-            result.Bytes.CopyTo(data, into.ByteOffset);
-        }
-
-        if (result.Error is { } error)
-        {
-            throw engine.Error("SyntaxError", error);
+            throw engine.Error("SyntaxError", Base64Message(text, failure));
         }
 
         var answer = new JsObject(ObjectPrototype);
-        answer.DefineOrdinary("read", JsValue.Number(result.Read));
-        answer.DefineOrdinary("written", JsValue.Number(result.Bytes.Count));
+        answer.DefineOrdinary("read", JsValue.Number(read));
+        answer.DefineOrdinary("written", JsValue.Number(written));
         return JsValue.Object(answer);
     }
 
     /// <summary>A new <c>Uint8Array</c> holding <paramref name="bytes"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=54E602
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1C25A4
     // Broiler-Human:        PENDING
-    private JsTypedArray Base64Allocate(JsEngine engine, List<byte> bytes)
+    private JsTypedArray Base64Allocate(JsEngine engine, ReadOnlySpan<byte> bytes)
     {
-        var made = BinaryNewTypedArray(engine, JsElementKind.Uint8, bytes.Count);
-        bytes.CopyTo(made.Buffer.Data!, made.ByteOffset);
+        var made = BinaryNewTypedArray(engine, JsElementKind.Uint8, bytes.Length);
+        bytes.CopyTo(new Span<byte>(made.Buffer.Data!, made.ByteOffset, bytes.Length));
         return made;
     }
 
-    /// <summary>Encodes <paramref name="bytes"/> as RFC 4648 section 4 or section 5 base64.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3AA6C1
-    // Broiler-Human:        PENDING
-    private static string Base64Encode(JsEngine engine, byte[] bytes, bool urlSafe, bool omitPadding)
-    {
-        engine.Charge(((ulong)bytes.Length * 4 / 3) + 4);
-
-        if (urlSafe)
-        {
-            var text = System.Buffers.Text.Base64Url.EncodeToString(bytes);
-            if (!omitPadding)
-            {
-                var mod = text.Length % 4;
-                if (mod == 2)
-                {
-                    return text + "==";
-                }
-                if (mod == 3)
-                {
-                    return text + "=";
-                }
-            }
-
-            return text;
-        }
-
-        var standard = Convert.ToBase64String(bytes);
-        return omitPadding ? standard.TrimEnd('=') : standard;
-    }
-
-    /// <summary>What a decode produced: the bytes, how much of the text it read, and its error.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FE03F7
-    // Broiler-Human:        PENDING
-    private sealed class Base64Result
-    {
-        /// <summary>The bytes decoded before the decode stopped.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=63715E
-        // Broiler-Human:        PENDING
-        internal List<byte> Bytes { get; } = [];
-
-        /// <summary>How many code units of the text the decoded bytes account for.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=095A82
-        // Broiler-Human:        PENDING
-        internal int Read { get; set; }
-
-        /// <summary>The <c>SyntaxError</c>'s message, or <see langword="null"/> when there was none.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=04608A
-        // Broiler-Human:        PENDING
-        internal string? Error { get; set; }
-    }
-
-    /// <summary>The specification's <c>SkipAsciiWhitespace</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5D511B
-    // Broiler-Human:        PENDING
-    private static int Base64SkipSpace(string text, int at)
-    {
-        while (at < text.Length && text[at] is '\t' or '\n' or '\f' or '\r' or ' ')
-        {
-            at++;
-        }
-
-        return at;
-    }
-
-    /// <summary>
-    /// The specification's <c>FromBase64</c>: decodes at most <paramref name="maxLength"/> bytes,
-    /// answering what it read and the error it stopped at.
-    /// </summary>
+    /// <summary>The <c>SyntaxError</c>'s message for a decode the library refused.</summary>
     /// <remarks>
-    /// A chunk of four characters is three bytes. A final chunk of two or three characters is one or
-    /// two, padded or not as <paramref name="lastChunk"/> allows; under <c>strict</c> its unused bits
-    /// must be zero and it must be padded. A chunk that would not fit in what is left of
-    /// <paramref name="maxLength"/> is not started, and <c>read</c> stops before it.
+    /// The library names the failure and where it is; the words are this profile's and are the ones
+    /// it wrote before the cut-over.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C0BBA8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=96FF23
     // Broiler-Human:        PENDING
-    private static Base64Result Base64Decode(JsEngine engine, string text, bool urlSafe, string lastChunk, long maxLength)
+    private static string Base64Message(string text, Failure failure) => failure.MessageId switch
     {
-        var result = new Base64Result();
-
-        if (maxLength == 0)
-        {
-            return result;
-        }
-
-        engine.Charge((ulong)text.Length + 1);
-        var chunk = new char[4];
-        var chunkLength = 0;
-        var at = 0;
-
-        while (true)
-        {
-            at = Base64SkipSpace(text, at);
-
-            if (at == text.Length)
-            {
-                if (chunkLength > 0)
-                {
-                    if (lastChunk == "stop-before-partial")
-                    {
-                        return result;
-                    }
-
-                    if (lastChunk == "strict")
-                    {
-                        result.Error = "the base64 text ends in an unpadded chunk";
-                        return result;
-                    }
-
-                    if (chunkLength == 1)
-                    {
-                        result.Error = "the base64 text ends in a chunk of one character";
-                        return result;
-                    }
-
-                    Base64DecodeFinal(chunk, chunkLength, false, result.Bytes);
-                }
-
-                result.Read = text.Length;
-                return result;
-            }
-
-            var character = text[at];
-            at++;
-
-            if (character == '=')
-            {
-                if (chunkLength < 2)
-                {
-                    result.Error = "padding in base64 text where a chunk has fewer than two characters";
-                    return result;
-                }
-
-                at = Base64SkipSpace(text, at);
-
-                if (chunkLength == 2)
-                {
-                    if (at == text.Length)
-                    {
-                        if (lastChunk != "stop-before-partial")
-                        {
-                            result.Error = "the base64 text ends in a chunk with one padding character of two";
-                        }
-
-                        return result;
-                    }
-
-                    if (text[at] == '=')
-                    {
-                        at = Base64SkipSpace(text, at + 1);
-                    }
-                }
-
-                if (at < text.Length)
-                {
-                    result.Error = "base64 text continues after its padding";
-                    return result;
-                }
-
-                if (!Base64DecodeFinal(chunk, chunkLength, lastChunk == "strict", result.Bytes))
-                {
-                    result.Error = "the final base64 chunk has bits set past its last byte";
-                    return result;
-                }
-
-                result.Read = text.Length;
-                return result;
-            }
-
-            if (urlSafe)
-            {
-                if (character is '+' or '/')
-                {
-                    result.Error = "'" + character + "' is not in the base64url alphabet";
-                    return result;
-                }
-
-                character = character switch
-                {
-                    '-' => '+',
-                    '_' => '/',
-                    _ => character,
-                };
-            }
-
-            if (Base64Alphabet.IndexOf(character, StringComparison.Ordinal) < 0)
-            {
-                result.Error = "'" + character + "' is not a base64 character";
-                return result;
-            }
-
-            var remaining = maxLength - result.Bytes.Count;
-
-            if ((remaining == 1 && chunkLength == 2) || (remaining == 2 && chunkLength == 3))
-            {
-                return result;
-            }
-
-            chunk[chunkLength++] = character;
-
-            if (chunkLength == 4)
-            {
-                Base64DecodeFull(chunk, result.Bytes);
-                chunkLength = 0;
-                result.Read = at;
-
-                if (result.Bytes.Count == maxLength)
-                {
-                    return result;
-                }
-            }
-        }
-    }
-
-    /// <summary>The specification's <c>DecodeFullLengthBase64Chunk</c>: four characters, three bytes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=50E32D
-    // Broiler-Human:        PENDING
-    private static void Base64DecodeFull(char[] chunk, List<byte> bytes)
-    {
-        var bits = 0;
-
-        for (var at = 0; at < 4; at++)
-        {
-            bits = (bits << 6) | Base64Alphabet.IndexOf(chunk[at], StringComparison.Ordinal);
-        }
-
-        bytes.Add((byte)(bits >> 16));
-        bytes.Add((byte)(bits >> 8));
-        bytes.Add((byte)bits);
-    }
-
-    /// <summary>
-    /// The specification's <c>DecodeFinalBase64Chunk</c>: two characters are one byte and three are
-    /// two, and under <paramref name="strict"/> the bits past the last byte must be zero.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5F8788
-    // Broiler-Human:        PENDING
-    private static bool Base64DecodeFinal(char[] chunk, int length, bool strict, List<byte> bytes)
-    {
-        var padded = new[] { chunk[0], chunk[1], length == 3 ? chunk[2] : 'A', 'A' };
-        var decoded = new List<byte>(3);
-        Base64DecodeFull(padded, decoded);
-
-        if (strict && decoded[length - 1] != 0)
-        {
-            return false;
-        }
-
-        bytes.Add(decoded[0]);
-
-        if (length == 3)
-        {
-            bytes.Add(decoded[1]);
-        }
-
-        return true;
-    }
-
-    /// <summary>The value of one hex digit of either case, or -1 for any other character.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F88009
-    // Broiler-Human:        PENDING
-    private static int Base64HexDigit(char character) => character switch
-    {
-        >= '0' and <= '9' => character - '0',
-        >= 'a' and <= 'f' => character - 'a' + 10,
-        >= 'A' and <= 'F' => character - 'A' + 10,
-        _ => -1,
+        "base64.unpadded-chunk" => "the base64 text ends in an unpadded chunk",
+        "base64.single-character-chunk" => "the base64 text ends in a chunk of one character",
+        "base64.misplaced-padding" => "padding in base64 text where a chunk has fewer than two characters",
+        "base64.incomplete-padding" => "the base64 text ends in a chunk with one padding character of two",
+        "base64.text-after-padding" => "base64 text continues after its padding",
+        "base64.extra-bits" => "the final base64 chunk has bits set past its last byte",
+        "base64.wrong-alphabet" => "'" + text[failure.Position] + "' is not in the base64url alphabet",
+        "base64.invalid-character" => "'" + text[failure.Position] + "' is not a base64 character",
+        "hex.odd-length" => "hex text has an odd number of characters",
+        "hex.invalid-digit" => "'" + text.Substring(failure.Position, 2) + "' is not a pair of hex digits",
+        _ => failure.MessageId,
     };
-
-    /// <summary>
-    /// The specification's <c>FromHex</c>: pairs of hex digits, at most <paramref name="maxLength"/>
-    /// bytes, and an error for an odd length or a character that is not one.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7DC176
-    // Broiler-Human:        PENDING
-    private static Base64Result Base64DecodeHex(JsEngine engine, string text, long maxLength)
-    {
-        var result = new Base64Result();
-
-        if (text.Length % 2 != 0)
-        {
-            result.Error = "hex text has an odd number of characters";
-            return result;
-        }
-
-        engine.Charge((ulong)text.Length + 1);
-
-        while (result.Read < text.Length && result.Bytes.Count < maxLength)
-        {
-            var high = Base64HexDigit(text[result.Read]);
-            var low = Base64HexDigit(text[result.Read + 1]);
-
-            if (high < 0 || low < 0)
-            {
-                result.Error = "'" + text.Substring(result.Read, 2) + "' is not a pair of hex digits";
-                return result;
-            }
-
-            result.Read += 2;
-            result.Bytes.Add((byte)((high << 4) | low));
-        }
-
-        return result;
-    }
 }

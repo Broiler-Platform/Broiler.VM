@@ -3,20 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           1
-// Human-reviewed:   0/25
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       25
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Text;
+using Broiler.ECMAScript;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Text;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -46,40 +48,6 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    /// <summary>The characters <c>encodeURIComponent</c> leaves alone beyond the alphanumerics.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0F257C
-    // Broiler-Human:        PENDING
-    private const string GlobalUriUnescapedComponent = "-_.!~*'()";
-
-    /// <summary>The characters <c>encodeURI</c> leaves alone beyond the alphanumerics.</summary>
-    /// <remarks>
-    /// The component set, plus <c>uriReserved</c> and <c>#</c>. A URI's own punctuation has to
-    /// survive encoding or the result no longer parses as the URI it came from.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=32C003
-    // Broiler-Human:        PENDING
-    private const string GlobalUriUnescapedUri = "-_.!~*'();/?:@&=+$,#";
-
-    /// <summary>The characters <c>decodeURI</c> leaves escaped when it finds them escaped.</summary>
-    /// <remarks>
-    /// The mirror of the extra set above: decoding <c>%2F</c> to <c>/</c> would change the
-    /// structure of the URI rather than its content, so the escape is copied through verbatim.
-    /// <c>decodeURIComponent</c> passes the empty set and therefore decodes everything.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=320485
-    // Broiler-Human:        PENDING
-    private const string GlobalUriPreservedUri = ";/?:@&=+$,#";
-
-    /// <summary>The characters Annex B's <c>escape</c> leaves alone beyond the alphanumerics.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7DB1FE
-    // Broiler-Human:        PENDING
-    private const string GlobalEscapeUnescaped = "@*_+-./";
-
-    /// <summary>The escape hex alphabet, upper-case because the specification says upper-case.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=14437D
-    // Broiler-Human:        PENDING
-    private const string GlobalUriHexDigits = "0123456789ABCDEF";
-
     /// <summary>Builds the global object's non-constructor bindings.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A578B6
     // Broiler-Human:        PENDING
@@ -155,31 +123,34 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines the four URI functions and Annex B's two.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B348A4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=93664E
     // Broiler-Human:        PENDING
     private void SetupGlobalUriFunctions(JsObject host)
     {
+        // The codecs are the shared library's (JSD-0071), which charge what these functions
+        // charged before. `encodeURI` leaves the reserved characters and `#` alone and `decodeURI`
+        // keeps their escapes; the component functions pass the empty set.
         Method(host, "encodeURI", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUriEncode(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), GlobalUriUnescapedUri)));
+            GlobalUriAnswer(engine, UriCodec.Encode(engine.ToStringValue(ArgOfGlobal(arguments, 0)), UriCodec.ReservedAndNumberSign, out var result, out _, engine.WorkCharge), result));
 
         Method(host, "encodeURIComponent", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUriEncode(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), GlobalUriUnescapedComponent)));
+            GlobalUriAnswer(engine, UriCodec.Encode(engine.ToStringValue(ArgOfGlobal(arguments, 0)), string.Empty, out var result, out _, engine.WorkCharge), result));
 
         Method(host, "decodeURI", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUriDecode(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), GlobalUriPreservedUri)));
+            GlobalUriAnswer(engine, UriCodec.Decode(engine.ToStringValue(ArgOfGlobal(arguments, 0)), UriCodec.ReservedAndNumberSign, out var result, out _, engine.WorkCharge), result));
 
         Method(host, "decodeURIComponent", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUriDecode(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)), string.Empty)));
+            GlobalUriAnswer(engine, UriCodec.Decode(engine.ToStringValue(ArgOfGlobal(arguments, 0)), string.Empty, out var result, out _, engine.WorkCharge), result));
 
         // Annex B. `escape` and `unescape` are not the URI functions with different sets: they
         // work over code units rather than code points, they emit the `%uXXXX` form the URI
         // functions have never had, and `unescape` throws at nothing at all - a malformed escape
         // is copied through as the literal text it is.
         Method(host, "escape", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalEscapeText(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)))));
+            JsValue.String(UriCodec.Escape(engine.ToStringValue(ArgOfGlobal(arguments, 0)), engine.WorkCharge)));
 
         Method(host, "unescape", 1, static (engine, thisValue, arguments) =>
-            JsValue.String(GlobalUnescapeText(engine, engine.ToStringValue(ArgOfGlobal(arguments, 0)))));
+            JsValue.String(UriCodec.Unescape(engine.ToStringValue(ArgOfGlobal(arguments, 0)), engine.WorkCharge)));
     }
 
     /// <summary>Defines <c>print</c>, <c>$262</c> and <c>console</c>.</summary>
@@ -327,343 +298,18 @@ internal sealed partial class JsRealm
         engine.Write(line.ToString());
     }
 
-    /// <summary>The specification's <c>Encode</c> over an explicit unescaped set.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F908D8
-    // Broiler-Human:        PENDING
-    private static string GlobalUriEncode(JsEngine engine, string text, string unescaped)
-    {
-        var result = new StringBuilder(text.Length);
-
-        for (var at = 0; at < text.Length; at++)
-        {
-            engine.Charge(1);
-            var current = text[at];
-
-            if (GlobalUriIsAlphanumeric(current) || GlobalUriInSet(unescaped, current))
-            {
-                result.Append(current);
-                continue;
-            }
-
-            int point;
-
-            if (current is >= '\uD800' and <= '\uDBFF')
-            {
-                // A leading surrogate is only half a code point. The other half has to be there
-                // and has to be a trailing surrogate; anything else is a URIError and not a
-                // replacement character, which is where every delegated implementation differs.
-                if (at + 1 >= text.Length || text[at + 1] is < '\uDC00' or > '\uDFFF')
-                {
-                    throw engine.Error("URIError", "URI malformed");
-                }
-
-                point = 0x10000 + ((current - 0xD800) << 10) + (text[at + 1] - 0xDC00);
-                at++;
-            }
-            else if (current is >= '\uDC00' and <= '\uDFFF')
-            {
-                throw engine.Error("URIError", "URI malformed");
-            }
-            else
-            {
-                point = current;
-            }
-
-            GlobalUriAppendUtf8(result, point);
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>The specification's <c>Decode</c> over an explicit preserved set.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=94518A
-    // Broiler-Human:        PENDING
-    private static string GlobalUriDecode(JsEngine engine, string text, string preserved)
-    {
-        var result = new StringBuilder(text.Length);
-        var at = 0;
-
-        while (at < text.Length)
-        {
-            engine.Charge(1);
-
-            if (text[at] != '%')
-            {
-                result.Append(text[at]);
-                at++;
-                continue;
-            }
-
-            var start = at;
-            var lead = GlobalUriOctetAt(engine, text, at);
-            at += 3;
-
-            if ((lead & 0x80) == 0)
-            {
-                var decoded = (char)lead;
-
-                if (GlobalUriInSet(preserved, decoded))
-                {
-                    // Preserved: the three characters of the escape are copied through unchanged,
-                    // so a second decode of the result is not a different string.
-                    result.Append(text, start, 3);
-                }
-                else
-                {
-                    result.Append(decoded);
-                }
-
-                continue;
-            }
-
-            var length = GlobalUriSequenceLength(engine, lead);
-            var point = lead & (0xFF >> (length + 1));
-
-            for (var extra = 1; extra < length; extra++)
-            {
-                engine.Charge(1);
-                var continuation = GlobalUriOctetAt(engine, text, at);
-                at += 3;
-
-                if ((continuation & 0xC0) != 0x80)
-                {
-                    throw engine.Error("URIError", "URI malformed");
-                }
-
-                point = (point << 6) | (continuation & 0x3F);
-            }
-
-            // An overlong encoding, a surrogate half and anything past the last plane are all
-            // sequences a naive decoder accepts and the specification calls malformed.
-            var minimum = length switch
-            {
-                2 => 0x80,
-                3 => 0x800,
-                _ => 0x10000,
-            };
-
-            if (point < minimum || point > 0x10FFFF || point is >= 0xD800 and <= 0xDFFF)
-            {
-                throw engine.Error("URIError", "URI malformed");
-            }
-
-            GlobalUriAppendCodePoint(result, point);
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>Reads the <c>%XX</c> at <paramref name="at"/>, or throws a <c>URIError</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1F9732
-    // Broiler-Human:        PENDING
-    private static int GlobalUriOctetAt(JsEngine engine, string text, int at)
-    {
-        if (at + 2 >= text.Length || text[at] != '%')
-        {
-            throw engine.Error("URIError", "URI malformed");
-        }
-
-        var high = GlobalUriHexValue(text[at + 1]);
-        var low = GlobalUriHexValue(text[at + 2]);
-
-        if (high < 0 || low < 0)
-        {
-            throw engine.Error("URIError", "URI malformed");
-        }
-
-        return (high << 4) | low;
-    }
-
-    /// <summary>How many octets the UTF-8 sequence opened by <paramref name="lead"/> has.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=27F987
-    // Broiler-Human:        PENDING
-    private static int GlobalUriSequenceLength(JsEngine engine, int lead) => lead switch
-    {
-        >= 0xC0 and <= 0xDF => 2,
-        >= 0xE0 and <= 0xEF => 3,
-        >= 0xF0 and <= 0xF7 => 4,
-        _ => throw engine.Error("URIError", "URI malformed"),
-    };
-
-    /// <summary>Appends the UTF-8 octets of a code point, each as <c>%XX</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6929F8
-    // Broiler-Human:        PENDING
-    private static void GlobalUriAppendUtf8(StringBuilder text, int point)
-    {
-        if (point <= 0x7F)
-        {
-            GlobalUriAppendOctet(text, point);
-        }
-        else if (point <= 0x7FF)
-        {
-            GlobalUriAppendOctet(text, 0xC0 | (point >> 6));
-            GlobalUriAppendOctet(text, 0x80 | (point & 0x3F));
-        }
-        else if (point <= 0xFFFF)
-        {
-            GlobalUriAppendOctet(text, 0xE0 | (point >> 12));
-            GlobalUriAppendOctet(text, 0x80 | ((point >> 6) & 0x3F));
-            GlobalUriAppendOctet(text, 0x80 | (point & 0x3F));
-        }
-        else
-        {
-            GlobalUriAppendOctet(text, 0xF0 | (point >> 18));
-            GlobalUriAppendOctet(text, 0x80 | ((point >> 12) & 0x3F));
-            GlobalUriAppendOctet(text, 0x80 | ((point >> 6) & 0x3F));
-            GlobalUriAppendOctet(text, 0x80 | (point & 0x3F));
-        }
-    }
-
-    /// <summary>Appends one octet as <c>%XX</c> in upper-case hex.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6F7D6E
-    // Broiler-Human:        PENDING
-    private static void GlobalUriAppendOctet(StringBuilder text, int octet)
-    {
-        text.Append('%');
-        text.Append(GlobalUriHexDigits[(octet >> 4) & 0xF]);
-        text.Append(GlobalUriHexDigits[octet & 0xF]);
-    }
-
-    /// <summary>Appends a code point as one code unit or as a surrogate pair.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E522D1
-    // Broiler-Human:        PENDING
-    private static void GlobalUriAppendCodePoint(StringBuilder text, int point)
-    {
-        if (point <= 0xFFFF)
-        {
-            text.Append((char)point);
-            return;
-        }
-
-        var shifted = point - 0x10000;
-        text.Append((char)(0xD800 + (shifted >> 10)));
-        text.Append((char)(0xDC00 + (shifted & 0x3FF)));
-    }
-
-    /// <summary>Annex B's <c>escape</c>, which works over code units and never throws.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=097487
-    // Broiler-Human:        PENDING
-    private static string GlobalEscapeText(JsEngine engine, string text)
-    {
-        var result = new StringBuilder(text.Length);
-
-        for (var at = 0; at < text.Length; at++)
-        {
-            engine.Charge(1);
-            var current = text[at];
-
-            if (GlobalUriIsAlphanumeric(current) || GlobalUriInSet(GlobalEscapeUnescaped, current))
-            {
-                result.Append(current);
-            }
-            else if (current < 256)
-            {
-                GlobalUriAppendOctet(result, current);
-            }
-            else
-            {
-                // The `%uXXXX` form is this function's alone: a code unit above 255 is emitted as
-                // itself rather than as the UTF-8 octets of the code point it may be half of.
-                result.Append("%u");
-                result.Append(GlobalUriHexDigits[(current >> 12) & 0xF]);
-                result.Append(GlobalUriHexDigits[(current >> 8) & 0xF]);
-                result.Append(GlobalUriHexDigits[(current >> 4) & 0xF]);
-                result.Append(GlobalUriHexDigits[current & 0xF]);
-            }
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>Annex B's <c>unescape</c>, which copies a malformed escape through verbatim.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C2739F
-    // Broiler-Human:        PENDING
-    private static string GlobalUnescapeText(JsEngine engine, string text)
-    {
-        var result = new StringBuilder(text.Length);
-        var at = 0;
-
-        while (at < text.Length)
-        {
-            engine.Charge(1);
-            var current = text[at];
-
-            if (current == '%')
-            {
-                var first = at + 5 < text.Length && text[at + 1] == 'u'
-                    ? GlobalUriHexValue(text[at + 2])
-                    : -1;
-
-                if (first >= 0)
-                {
-                    var second = GlobalUriHexValue(text[at + 3]);
-                    var third = GlobalUriHexValue(text[at + 4]);
-                    var fourth = GlobalUriHexValue(text[at + 5]);
-
-                    if (second >= 0 && third >= 0 && fourth >= 0)
-                    {
-                        current = (char)((first << 12) | (second << 8) | (third << 4) | fourth);
-                        at += 5;
-                        result.Append(current);
-                        at++;
-                        continue;
-                    }
-                }
-
-                if (at + 2 < text.Length)
-                {
-                    var high = GlobalUriHexValue(text[at + 1]);
-                    var low = GlobalUriHexValue(text[at + 2]);
-
-                    if (high >= 0 && low >= 0)
-                    {
-                        current = (char)((high << 4) | low);
-                        at += 2;
-                    }
-                }
-            }
-
-            result.Append(current);
-            at++;
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>The value of one hex digit, or a negative number when it is not one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5E655A
-    // Broiler-Human:        PENDING
-    private static int GlobalUriHexValue(char character) => character switch
-    {
-        >= '0' and <= '9' => character - '0',
-        >= 'a' and <= 'f' => character - 'a' + 10,
-        >= 'A' and <= 'F' => character - 'A' + 10,
-        _ => -1,
-    };
-
-    /// <summary>Whether <paramref name="character"/> is an ASCII letter or digit.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D0AF08
-    // Broiler-Human:        PENDING
-    private static bool GlobalUriIsAlphanumeric(char character) =>
-        character is (>= 'A' and <= 'Z') or (>= 'a' and <= 'z') or (>= '0' and <= '9');
-
-    /// <summary>Whether <paramref name="set"/> holds <paramref name="character"/>.</summary>
+    /// <summary>A URI function's answer: the codec's String, or its <c>URIError</c>.</summary>
     /// <remarks>
-    /// A loop rather than <c>IndexOf</c>: the sets are under twenty characters, and a hand-written
-    /// scan has no culture to specify and no analyzer to satisfy about which comparison it means.
+    /// A lone surrogate to encode, and an escape that is malformed, an octet that cannot lead or
+    /// continue a sequence, an overlong sequence, an encoded surrogate or a value past the last plane
+    /// to decode, are all one error in the language. The library names which; this message does not.
+    /// Neither does it turn a lone surrogate into a replacement character, which is where every
+    /// delegated implementation differs.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BACFBC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=143113
     // Broiler-Human:        PENDING
-    private static bool GlobalUriInSet(string set, char character)
-    {
-        for (var at = 0; at < set.Length; at++)
-        {
-            if (set[at] == character)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    private static JsValue GlobalUriAnswer(JsEngine engine, ResultStatus status, string result) =>
+        status == ResultStatus.Completed
+            ? JsValue.String(result)
+            : throw engine.Error("URIError", "URI malformed");
 }

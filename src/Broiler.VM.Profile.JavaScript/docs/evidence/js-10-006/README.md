@@ -106,5 +106,8 @@ files in every package; their sizes differ, the notices among them.
    `0.2.0-preview.1`, which `nuspecs.txt` declares, will not be published. The committed feed now holds
    the published package, whose content hash differs from the one `consumer.log` lists, and the
    checkout references it (JSC-303). Rule N37 still holds this baseline, which declares a version at or
-   above the one the allow-list pins; a pack of the checkout declares `0.1.0-preview.2`.)*
+   above the one the allow-list pins; a pack of the checkout declares `0.1.0-preview.2`.)* *(Added
+   2026-10-15, after collection: the text cut-over admits `0.1.0-preview.3`, packed from Broiler.JS
+   `0db9042` and not yet published, and the checkout references it (JSC-304). Rule N37 still holds this
+   baseline, for the same reason; a pack of the checkout declares `0.1.0-preview.3`.)*
 5. **Not reviewed.** Release gate 11 publishes nothing a named human has not read.

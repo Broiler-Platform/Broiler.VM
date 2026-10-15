@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 7081 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 7035 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 336 |
-| Code units | 12222 |
-| Relevant | 7081 |
-| Exempt | 5141 |
-| Assessed | 7081 of 7081 (100%) |
-| Human reviewed | 0 of 7081 (0%) |
-| Unverified | 7081 |
+| Code units | 12170 |
+| Relevant | 7035 |
+| Exempt | 5135 |
+| Assessed | 7035 of 7035 (100%) |
+| Human reviewed | 0 of 7035 (0%) |
+| Unverified | 7035 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 7081 |
+| HUMAN_PENDING | 7035 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5141 |
+| EXEMPT | 5135 |
 
 ## 5. Aliases In The Tree
 
@@ -168,7 +168,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.SupportingTypes.cs` | 101 | 23 | 78 | 23 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Walk.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 70 | 23 | 47 | 23 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsJsonModule.cs` | 18 | 15 | 3 | 15 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsJsonModule.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 23 | 12 | 11 | 12 | None | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeCompiler.cs` | 9 | 7 | 2 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` | 14 | 12 | 2 | 12 | None | High | 5/5 |
@@ -298,7 +298,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 39 | 38 | 1 | 38 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.ArrayFromAsync.cs` | 23 | 14 | 9 | 14 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` | 19 | 14 | 5 | 14 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Base64.cs` | 23 | 20 | 3 | 20 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Base64.cs` | 12 | 12 | 0 | 12 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.BigInt.cs` | 6 | 5 | 1 | 5 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` | 45 | 38 | 7 | 38 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Boolean.cs` | 4 | 4 | 0 | 4 | Low | Low | 0/0 |
@@ -314,11 +314,11 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs` | 12 | 9 | 3 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 11 | 8 | 3 | 8 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs` | 12 | 9 | 3 | 9 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs` | 26 | 25 | 1 | 25 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs` | 10 | 9 | 1 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs` | 33 | 22 | 11 | 22 | Low | Medium | 3/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Iterator.cs` | 29 | 16 | 13 | 16 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.IteratorHelpers.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs` | 49 | 39 | 10 | 39 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs` | 40 | 30 | 10 | 30 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Lexical.cs` | 10 | 5 | 5 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.ListFormat.cs` | 15 | 9 | 6 | 9 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs` | 29 | 19 | 10 | 19 | Low | Low | 0/0 |
@@ -335,7 +335,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Segmenter.cs` | 23 | 12 | 11 | 12 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.ShadowRealm.cs` | 7 | 5 | 2 | 5 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Shared.cs` | 14 | 12 | 2 | 12 | Low | High | 3/3 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 31 | 31 | 0 | 31 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 28 | 28 | 0 | 28 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 48 | 26 | 22 | 26 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Temporal.cs` | 21 | 13 | 8 | 13 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalDuration.cs` | 8 | 8 | 0 | 8 | Low | Low | 0/0 |
@@ -2430,7 +2430,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a realm builds SharedArrayBuffer or Atomics without the binary and shared surfaces, or a shared buffer is reachable as an ArrayBuffer
 - `Broiler.VM.Profile.JavaScript.JsRealm.AtomicsDoWait(JsEngine, JsValue[], bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Shared.cs` - Security=High, Spec=none cited, `2373E3`, PENDING
   - Falsified if: Atomics.wait blocks an agent whose host did not say it may block
-- `Broiler.VM.Profile.JavaScript.JsRealm.NormalizeText(JsEngine, string, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, Spec=none cited, `2BD89E`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsRealm.NormalizeText(JsEngine, string, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, Spec=none cited, `DD3536`, PENDING
   - Falsified if: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
 - `Broiler.VM.Profile.JavaScript.JsAtomicAccess` in `src/Broiler.VM.Profile.JavaScript/JsShared.cs` - Security=High, Spec=none cited, `501B83`, PENDING
   - Falsified if: an atomic access is not sequentially consistent with another atomic access to the same element, or a four-byte one takes a lock
@@ -4244,7 +4244,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6943 of the 7081 assessed units declare
+That is not a figure of speech. 6897 of the 7035 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

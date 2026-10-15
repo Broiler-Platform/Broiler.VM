@@ -3,19 +3,21 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
+// Relevant units:   28
+// Annotated:        28/28
 // Exempt:           0
-// Human-reviewed:   0/31
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  4/10 max
-// Unverified:       31
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Text;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -58,7 +60,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3E4FBA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=36D659
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -256,29 +258,22 @@ internal sealed partial class JsRealm
                 return JsValue.Undefined;
             }
 
-            var at = (int)position;
-            var first = text[at];
-
             // A CODE POINT IS NOT A CODE UNIT. `codePointAt` is the method that exists to say so:
             // a high surrogate followed by a low one is one astral character, and reporting the
-            // surrogate is what `charCodeAt` is for.
-            return char.IsHighSurrogate(first) &&
-                at + 1 < text.Length &&
-                char.IsLowSurrogate(text[at + 1])
-                ? JsValue.Number(char.ConvertToUtf32(first, text[at + 1]))
-                : JsValue.Number(first);
+            // surrogate is what `charCodeAt` is for. The reading is the shared library's CodePointAt
+            // (JSD-0070).
+            return JsValue.Number(Utf16.CodePointAt(text, (int)position).CodePoint);
         });
 
         Method(prototype, "at", 1, static (engine, thisValue, arguments) =>
         {
             var text = StringThis(engine, thisValue);
             var relative = engine.ToInteger(ArgOfString(arguments, 0));
-            var at = relative < 0 ? text.Length + relative : relative;
             StringCharge(engine, 1);
 
-            return at < 0 || at >= text.Length
-                ? JsValue.Undefined
-                : JsValue.String(text[(int)at].ToString());
+            return RelativeIndex.TryElement(relative, text.Length, out var at)
+                ? JsValue.String(text[(int)at].ToString())
+                : JsValue.Undefined;
         });
 
         // A STRING IS A SEQUENCE OF UTF-16 UNITS AND NOT OF TEXT, and these two are where the
@@ -290,44 +285,20 @@ internal sealed partial class JsRealm
         {
             _ = arguments;
             var text = StringThis(engine, thisValue);
-            StringCharge(engine, text.Length + 1);
-            return JsValue.Boolean(StringWellFormed(text));
+
+            // The shared IsStringWellFormedUnicode charges the text's length and one more, first.
+            return JsValue.Boolean(Utf16.IsWellFormed(text, engine.WorkCharge));
         });
 
         Method(prototype, "toWellFormed", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
             var text = StringThis(engine, thisValue);
-            StringCharge(engine, text.Length + 1);
 
-            if (StringWellFormed(text))
-            {
-                return JsValue.String(text);
-            }
-
-            var built = new System.Text.StringBuilder(text.Length);
-
-            for (var at = 0; at < text.Length; at++)
-            {
-                var unit = text[at];
-
-                if (char.IsHighSurrogate(unit) &&
-                    at + 1 < text.Length &&
-                    char.IsLowSurrogate(text[at + 1]))
-                {
-                    built.Append(unit).Append(text[at + 1]);
-                    at++;
-                    continue;
-                }
-
-                // THE REPLACEMENT IS ONE UNIT PER LONE SURROGATE, so the answer has the same length
-                // as the receiver. That is the language's rule and it is worth stating, because a
-                // reader who expects an encoder's behaviour would expect a lone surrogate to become
-                // three bytes and the two lengths to differ.
-                built.Append(char.IsSurrogate(unit) ? '\ufffd' : unit);
-            }
-
-            return JsValue.String(built.ToString());
+            // THE REPLACEMENT IS ONE UNIT PER LONE SURROGATE, so the answer has the same length as
+            // the receiver, and a well-formed receiver is the answer itself. The shared toWellFormed
+            // charges the text's length and one more, first.
+            return JsValue.String(Utf16.ToWellFormed(text, engine.WorkCharge));
         });
 
         Method(prototype, "indexOf", 1, static (engine, thisValue, arguments) =>
@@ -412,12 +383,12 @@ internal sealed partial class JsRealm
         Method(prototype, "slice", 2, static (engine, thisValue, arguments) =>
         {
             var text = StringThis(engine, thisValue);
-            var from = StringRelativeIndex(engine.ToInteger(ArgOfString(arguments, 0)), text.Length);
+            var from = (int)RelativeIndex.Clamped(engine.ToInteger(ArgOfString(arguments, 0)), text.Length);
             var endArgument = ArgOfString(arguments, 1);
 
             var to = endArgument.Type == JsType.Undefined
                 ? text.Length
-                : StringRelativeIndex(engine.ToInteger(endArgument), text.Length);
+                : (int)RelativeIndex.Clamped(engine.ToInteger(endArgument), text.Length);
 
             return StringSlice(engine, text, from, to < from ? from : to);
         });
@@ -443,11 +414,7 @@ internal sealed partial class JsRealm
         Method(prototype, "substr", 2, static (engine, thisValue, arguments) =>
         {
             var text = StringThis(engine, thisValue);
-            var requested = engine.ToInteger(ArgOfString(arguments, 0));
-
-            var start = requested < 0
-                ? System.Math.Max(text.Length + requested, 0)
-                : System.Math.Min(requested, text.Length);
+            var start = (double)RelativeIndex.Clamped(engine.ToInteger(ArgOfString(arguments, 0)), text.Length);
 
             var lengthArgument = ArgOfString(arguments, 1);
 
@@ -689,33 +656,6 @@ internal sealed partial class JsRealm
         });
     }
 
-    /// <summary>Whether every surrogate in the text is half of a pair.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E44D92
-    // Broiler-Human:        PENDING
-    private static bool StringWellFormed(string text)
-    {
-        for (var at = 0; at < text.Length; at++)
-        {
-            var unit = text[at];
-
-            if (!char.IsSurrogate(unit))
-            {
-                continue;
-            }
-
-            if (!char.IsHighSurrogate(unit) ||
-                at + 1 >= text.Length ||
-                !char.IsLowSurrogate(text[at + 1]))
-            {
-                return false;
-            }
-
-            at++;
-        }
-
-        return true;
-    }
-
     /// <summary>
     /// The Unicode normalization of <paramref name="text"/>'s code points: NFD, NFKD with
     /// <paramref name="compatibility"/>, and NFC or NFKC with <paramref name="compose"/>.
@@ -741,7 +681,7 @@ internal sealed partial class JsRealm
     /// ordering is a counting sort per run, so a long run of combining marks is linear work too.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=2BD89E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=DD3536
     // Broiler-Falsified-If: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
     // Broiler-Human:        PENDING
     internal static string NormalizeText(JsEngine engine, string text, bool compose, bool compatibility)
@@ -758,7 +698,9 @@ internal sealed partial class JsRealm
 
         for (var at = 0; at < text.Length;)
         {
-            var codePoint = ReadCodePoint(text, ref at);
+            var read = Utf16.CodePointAt(text, at);
+            at += read.CodeUnitCount;
+            var codePoint = read.CodePoint;
 
             if (JsUnicodeNormalization.TryGetDecomposition(codePoint, compatibility, out var mapping))
             {
@@ -789,7 +731,9 @@ internal sealed partial class JsRealm
 
         for (var at = 0; at < text.Length;)
         {
-            var codePoint = ReadCodePoint(text, ref at);
+            var read = Utf16.CodePointAt(text, at);
+            at += read.CodeUnitCount;
+            var codePoint = read.CodePoint;
 
             if (JsUnicodeNormalization.TryGetDecomposition(codePoint, compatibility, out var mapping))
             {
@@ -823,7 +767,7 @@ internal sealed partial class JsRealm
     /// forms), or when its <c>NFC_QC</c> or <c>NFKC_QC</c> is not Yes (the composed forms, where
     /// Maybe needs the full algorithm to answer). An ASCII unit is class 0 and Yes in every form.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F6938D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=68E403
     // Broiler-Human:        PENDING
     private static bool IsNormalizedAlready(string text, bool compose, bool compatibility)
     {
@@ -838,7 +782,9 @@ internal sealed partial class JsRealm
                 continue;
             }
 
-            var codePoint = ReadCodePoint(text, ref at);
+            var read = Utf16.CodePointAt(text, at);
+            at += read.CodeUnitCount;
+            var codePoint = read.CodePoint;
             var combiningClass = JsUnicodeNormalization.CombiningClass(codePoint);
 
             if (combiningClass != 0 && lastClass > combiningClass)
@@ -857,24 +803,6 @@ internal sealed partial class JsRealm
         }
 
         return true;
-    }
-
-    /// <summary>
-    /// The code point at <paramref name="at"/>, advancing past it: a surrogate pair is one code
-    /// point, and a lone surrogate is itself.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=182C76
-    // Broiler-Human:        PENDING
-    private static int ReadCodePoint(string text, ref int at)
-    {
-        var unit = text[at++];
-
-        if (char.IsHighSurrogate(unit) && at < text.Length && char.IsLowSurrogate(text[at]))
-        {
-            return char.ConvertToUtf32(unit, text[at++]);
-        }
-
-        return unit;
     }
 
     /// <summary>
@@ -1135,20 +1063,6 @@ internal sealed partial class JsRealm
         if (position <= 0)
         {
             return 0;
-        }
-
-        return position >= length ? length : (int)position;
-    }
-
-    /// <summary>Resolves a relative position, where a negative one counts from the end.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=33F84B
-    // Broiler-Human:        PENDING
-    private static int StringRelativeIndex(double position, int length)
-    {
-        if (position < 0)
-        {
-            var shifted = length + position;
-            return shifted <= 0 ? 0 : (int)shifted;
         }
 
         return position >= length ? length : (int)position;
@@ -1452,7 +1366,15 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The shared body of <c>padStart</c> and <c>padEnd</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=23990B
+    /// <remarks>
+    /// <b>The filler is converted before the ceiling is consulted</b>, as StringPaddingBuiltinsImpl
+    /// converts it before StringPad, and an empty filler answers the receiver whatever the length
+    /// (JSD-0070, corrections P1 and P2): until SJL-5.4 a length past the ceiling was refused first, so
+    /// a filler's <c>toString</c> was never called and <c>"x".padEnd(2 ** 24 + 1, "")</c> threw. The
+    /// builder is the shared StringPad under this family's ceiling, which charges the early answer
+    /// max(1, length) and a built String its length.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=413A4D
     // Broiler-Human:        PENDING
     private static JsValue StringPadTo(
         JsEngine engine, JsValue thisValue, JsValue[] arguments, bool atStart)
@@ -1466,43 +1388,26 @@ internal sealed partial class JsRealm
             return JsValue.String(text);
         }
 
-        if (target > StringLengthCeiling)
-        {
-            throw engine.Error("RangeError", "Invalid string length");
-        }
-
         var fillArgument = ArgOfString(arguments, 1);
 
         var filler = fillArgument.Type == JsType.Undefined
             ? " "
             : engine.ToStringValue(fillArgument);
 
-        if (filler.Length == 0)
-        {
-            StringCharge(engine, text.Length);
-            return JsValue.String(text);
-        }
+        // ToLength's ceiling, 2^53 - 1: the target is past the receiver's length, so it is positive.
+        var maxLength = target >= 9007199254740991d ? 9007199254740991L : (long)target;
+        var status = StringPadding.Pad(
+            text,
+            maxLength,
+            filler,
+            atStart ? PadPlacement.Start : PadPlacement.End,
+            new LengthLimit(StringLengthCeiling),
+            out var padded,
+            engine.WorkCharge);
 
-        var total = (int)target;
-        StringCharge(engine, total);
-        var builder = new System.Text.StringBuilder(total);
-
-        if (!atStart)
-        {
-            builder.Append(text);
-        }
-
-        for (var written = 0; written < total - text.Length; written++)
-        {
-            builder.Append(filler[written % filler.Length]);
-        }
-
-        if (atStart)
-        {
-            builder.Append(text);
-        }
-
-        return JsValue.String(builder.ToString());
+        return status == ResultStatus.Completed
+            ? JsValue.String(padded)
+            : throw engine.Error("RangeError", "Invalid string length");
     }
 
     /// <summary>
@@ -1514,9 +1419,12 @@ internal sealed partial class JsRealm
     /// declared deviation - <c>"a1".replace(/\d/, "x")</c> here looks for the literal characters of
     /// the regular expression's source and finds nothing. <c>SetupRegExp</c> replaces both methods
     /// with versions that dispatch through <c>Symbol.replace</c> first, and <c>replaceAll</c> still
-    /// arrives here when its pattern does not answer that Symbol.
+    /// arrives here when its pattern does not answer that Symbol. <b>A replacement that is not callable
+    /// is converted before the search</b>, as the language's step 7 does, so its <c>toString</c> runs
+    /// once even when nothing matches (JSD-0070, correction S1); its template is parsed once by the
+    /// shared parser and its parts are evaluated at each match.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3B939C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=332A6C
     // Broiler-Human:        PENDING
     private static JsValue StringReplaceWith(
         JsEngine engine, JsValue thisValue, JsValue[] arguments, bool all)
@@ -1524,6 +1432,8 @@ internal sealed partial class JsRealm
         var text = StringThis(engine, thisValue);
         var pattern = engine.ToStringValue(ArgOfString(arguments, 0));
         var replacement = ArgOfString(arguments, 1);
+        var callable = replacement.IsObject && replacement.AsObject().IsCallable;
+        var template = callable ? string.Empty : engine.ToStringValue(replacement);
         StringCharge(engine, text.Length + pattern.Length);
 
         var found = text.IndexOf(pattern, System.StringComparison.Ordinal);
@@ -1533,12 +1443,15 @@ internal sealed partial class JsRealm
             return JsValue.String(text);
         }
 
-        var callable = replacement.IsObject && replacement.AsObject().IsCallable;
-        var template = callable ? string.Empty : engine.ToStringValue(replacement);
+        ReplacementPart[] parts = [];
 
         if (!callable)
         {
             StringCharge(engine, template.Length);
+
+            // A string pattern has no captures and no groups, so only `$$`, `$&`, `` $` `` and `$'`
+            // are substitutions; the parse is charged above, as the template's length.
+            parts = ReplacementTemplate.Parse(template, 0, false);
         }
 
         var builder = new System.Text.StringBuilder(text.Length);
@@ -1561,7 +1474,7 @@ internal sealed partial class JsRealm
             }
             else
             {
-                builder.Append(StringExpandDollars(template, pattern, text, found));
+                StringSubstitute(builder, parts, template, pattern, text, found);
             }
 
             copied = found + pattern.Length;
@@ -1596,68 +1509,45 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// Expands the dollar escapes a string replacement may carry.
+    /// Evaluates a replacement template's parts against one match of a string pattern, which has no
+    /// captures and no groups: <c>$$</c> is one dollar, <c>$&amp;</c> the match, <c>$`</c> what came
+    /// before it and <c>$'</c> what came after; every other part is the template's own text.
     /// </summary>
-    /// <remarks>
-    /// <c>$$</c> is one dollar, <c>$&amp;</c> the match, <c>$`</c> what came before it and
-    /// <c>$'</c> what came after. A dollar followed by anything else is a dollar: the specification
-    /// leaves an unrecognised escape alone rather than dropping it.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=55285F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CD3EC1
     // Broiler-Human:        PENDING
-    private static string StringExpandDollars(
-        string template, string matched, string text, int position)
+    private static void StringSubstitute(
+        System.Text.StringBuilder builder,
+        ReplacementPart[] parts,
+        string template,
+        string matched,
+        string text,
+        int position)
     {
-        if (template.IndexOf('$', System.StringComparison.Ordinal) < 0)
+        foreach (var part in parts)
         {
-            return template;
-        }
-
-        var builder = new System.Text.StringBuilder(template.Length);
-
-        for (var at = 0; at < template.Length; at++)
-        {
-            var character = template[at];
-
-            if (character != '$' || at + 1 >= template.Length)
+            switch (part.Kind)
             {
-                builder.Append(character);
-                continue;
-            }
-
-            switch (template[at + 1])
-            {
-                case '$':
+                case ReplacementPartKind.Dollar:
                     builder.Append('$');
-                    at++;
                     break;
 
-                case '&':
+                case ReplacementPartKind.Match:
                     builder.Append(matched);
-                    at++;
                     break;
 
-                case '`':
+                case ReplacementPartKind.Before:
                     builder.Append(text, 0, position);
-                    at++;
                     break;
 
-                case '\'':
-                    builder.Append(
-                        text,
-                        position + matched.Length,
-                        text.Length - position - matched.Length);
-
-                    at++;
+                case ReplacementPartKind.After:
+                    builder.Append(text, position + matched.Length, text.Length - position - matched.Length);
                     break;
 
                 default:
-                    builder.Append(character);
+                    builder.Append(template, part.Start, part.Length);
                     break;
             }
         }
-
-        return builder.ToString();
     }
 
     /// <summary>

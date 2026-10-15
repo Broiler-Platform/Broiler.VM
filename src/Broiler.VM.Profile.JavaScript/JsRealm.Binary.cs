@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Text;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -931,7 +932,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The searches, <c>join</c>, <c>at</c> and <c>toString</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D4CBFF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7CB91B
     // Broiler-Human:        PENDING
     private void SetupTypedArrayReaders()
     {
@@ -959,9 +960,7 @@ internal sealed partial class JsRealm
                 return JsValue.Number(-1);
             }
 
-            var start = from >= 0 ? from : Math.Max(length + from, 0);
-
-            for (var at = (int)start; at < length; at++)
+            for (var at = (int)RelativeIndex.Clamped(from, length); at < length; at++)
             {
                 engine.Charge(1);
 
@@ -989,14 +988,7 @@ internal sealed partial class JsRealm
                 ? engine.ToInteger(arguments[1])
                 : length - 1;
 
-            var start = from >= 0 ? Math.Min(from, length - 1) : length + from;
-
-            if (start < 0)
-            {
-                return JsValue.Number(-1);
-            }
-
-            for (var at = (int)start; at >= 0; at--)
+            for (var at = (int)RelativeIndex.LastSearchStart(from, length); at >= 0; at--)
             {
                 engine.Charge(1);
 
@@ -1029,9 +1021,7 @@ internal sealed partial class JsRealm
                 return JsValue.False;
             }
 
-            var start = from >= 0 ? from : Math.Max(length + from, 0);
-
-            for (var at = (int)start; at < length; at++)
+            for (var at = (int)RelativeIndex.Clamped(from, length); at < length; at++)
             {
                 engine.Charge(1);
 
@@ -1130,9 +1120,10 @@ internal sealed partial class JsRealm
             var array = BinaryLiveTypedArray(engine, thisValue, "at");
             var length = array.Length;
             var relative = engine.ToInteger(ArgOfBinary(arguments, 0));
-            var at = relative >= 0 ? relative : length + relative;
 
-            return at < 0 || at >= length ? JsValue.Undefined : array.ElementAt((int)at);
+            return RelativeIndex.TryElement(relative, length, out var at)
+                ? array.ElementAt((int)at)
+                : JsValue.Undefined;
         });
 
         // `toString` IS ARRAY'S OWN FUNCTION OBJECT, as the specification makes it
