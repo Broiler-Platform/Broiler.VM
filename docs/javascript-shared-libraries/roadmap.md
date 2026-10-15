@@ -243,6 +243,10 @@ meet its gate before SJL-3 meets SJL-3's.)*
 workflow, queued by the owner before any other work of SJL-6 and before SJL-6.1's rules are written.
 It changes no product code, so it may start before SJL-3 is met. The order above is unchanged.)*
 
+*(Added 2026-10-15, at SJL-6.4: SJL-6's later work packages, SJL-6.1 to SJL-6.4, went ahead before SJL-3
+was met, by the owner's direction of each, which the [ledger](status.md) records late. The order above is
+unchanged, and so is what it gates: SJL-6 may not meet its gate before SJL-3 meets SJL-3's.)*
+
 **What can start today:**
 
 - SJL-0 in full;
