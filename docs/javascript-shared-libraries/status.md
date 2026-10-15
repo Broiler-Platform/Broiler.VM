@@ -600,6 +600,15 @@ for it at SJL-6.1, and the records of SJL-6.1 to SJL-6.3 carried only that SJL-6
 before SJL-3 meets SJL-3's. The choice moves no gate. SJL-6 stays `In progress`: Broiler.JS's cut-over
 and the evidence of SJL-6.6 follow, and no clause is met by records.
 
+**2026-10-15, later again: the Date area is published as `0.1.0-preview.4`.** On the owner's instruction,
+Broiler.JS's publish-shared workflow published `Broiler.ECMAScript.Algorithms` `0.1.0-preview.4` to
+nuget.org from Broiler.JS `d1e4b11` (run 38813070829), whose library code is `e04874d`'s, and tagged it
+`ecmascript-v0.1.0-preview.4`. The committed feed holds the published package, and the pin, the
+allow-list, both lock files and the notices row record it
+([JSC-307](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-307)). The vectors run
+with it gives the report bundle `sjl-6-001` retains, byte for byte. Nothing moves: SJL-6 stays
+`In progress`.
+
 ---
 
 ## 1. Reading this ledger

@@ -114,5 +114,8 @@ files in every package; their sizes differ, the notices among them.
    with the same library code, and the committed feed now holds the published package (JSC-305).)*
    *(Added 2026-10-15, later again: the Date cut-over admits `0.1.0-preview.4`, packed from Broiler.JS
    `e04874d` and not yet published, and the checkout references it (JSC-306). Rule N37 still holds this
-   baseline, for the same reason; a pack of the checkout declares `0.1.0-preview.4`.)*
+   baseline, for the same reason; a pack of the checkout declares `0.1.0-preview.4`.)* *(Added
+   2026-10-15, later again: `0.1.0-preview.4` was published to nuget.org that day, from Broiler.JS
+   `d1e4b11`, with the same library code, and the committed feed now holds the published package
+   (JSC-307).)*
 5. **Not reviewed.** Release gate 11 publishes nothing a named human has not read.

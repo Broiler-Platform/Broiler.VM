@@ -200,3 +200,10 @@ whose build log replaces revision 15's in [`vectors/build-conformance.log`](vect
 The twelve vectors of revision 16 match this family's expectation, its dialect as the library ports it.
 This is the cut-over's record, not part A or part B: SJL-6.6 takes the after runs both parts judge.
 `area-manifest.json` lists the new files.
+
+**The published package.** `0.1.0-preview.4` was published to nuget.org later the same day, from
+Broiler.JS `d1e4b11`, whose library code is `e04874d`'s, and the committed feed now holds it as published
+([JSC-307](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-307)). The run above
+used the copy packed from `e04874d`. With the published package, the same conformance root's run on
+revision 16 gives a report identical byte for byte to `run-revision-16.tsv.gz`'s, and its negative control
+reports its one vector; neither run is retained, since neither differs.

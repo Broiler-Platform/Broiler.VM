@@ -22,7 +22,7 @@
     {
       "id": "Broiler.ECMAScript.Algorithms",
       "version": "0.1.0-preview.4",
-      "contentHash": "ouVhgiEHIzWYuLtmtNEZk9ICTXN966P6KzqvMfYYPVxm4FHDBBBK3ivpc4rJ9kQpPPGRQMhC5RrQv3Oth069ZA==",
+      "contentHash": "fv6d0u0cFEf1HSr59woiaK7zqyfFKDzuBX4FIcTXL/62/E9X7Q3m2/5/+8ao4uz3+x1vSZIH9JLG6UBad3GsxA==",
       "use": "product",
       "projects": [
         "Broiler.VM.Profile.JavaScript",
@@ -34,7 +34,7 @@
         "nuget.org"
       ],
       "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.4.pin",
-      "admittedBy": "SJL-6.4 and JSD-0072: the Date area beside the text, numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.4, packed locally from Broiler.JS e04874d and on the committed feed only. It replaced 0.1.0-preview.3, admitted by SJL-5.4 and JSD-0070 for the text area beside the numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.3, packed locally from Broiler.JS 0db9042 and on the committed feed only; published to nuget.org that day from Broiler.JS 6e20998, with the same library code (JSC-305), which both sources now serve with one content hash. It replaced 0.1.0-preview.2, admitted by SJL-4.4 and JSD-0067 for the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
+      "admittedBy": "SJL-6.4 and JSD-0072: the Date area beside the text, numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.4, packed locally from Broiler.JS e04874d and on the committed feed only; published to nuget.org that day from Broiler.JS d1e4b11, with the same library code (JSC-307), which both sources now serve with one content hash. It replaced 0.1.0-preview.3, admitted by SJL-5.4 and JSD-0070 for the text area beside the numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.3, packed locally from Broiler.JS 0db9042 and on the committed feed only; published to nuget.org that day from Broiler.JS 6e20998, with the same library code (JSC-305), which both sources now serve with one content hash. It replaced 0.1.0-preview.2, admitted by SJL-4.4 and JSD-0067 for the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
     }
   ]
 }
