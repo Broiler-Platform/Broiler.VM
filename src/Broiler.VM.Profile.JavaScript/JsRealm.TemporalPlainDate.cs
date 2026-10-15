@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -24,7 +25,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=38E527
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7EA270
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainDate(JsObject temporal)
     {
@@ -38,7 +39,7 @@ internal sealed partial class JsRealm
             var day = JsTemporal.IntegerWithTruncation(engine, TemporalArgument(arguments, 2));
             var calendar = TemporalCalendarArgument(engine, TemporalArgument(arguments, 3));
 
-            if (!JsTemporalCore.IsValidIsoDate(year, month, day))
+            if (!IsoCalendarMath.IsValidIsoDate((long)year, (int)month, (int)day))
             {
                 throw engine.Error("RangeError", "Temporal.PlainDate: the date is not valid");
             }

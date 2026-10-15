@@ -53,7 +53,9 @@ public sealed class I5RetiredDuplicatesRuleTests
                                          "src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsValue.cs", "src/Broiler.VM.Profile.JavaScript/JsBinary.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs",
-                                         "src/Broiler.VM.Profile.JavaScript/JsDecimal.cs", "src/Broiler.VM.Profile.JavaScript/JsBigInt.cs"])
+                                         "src/Broiler.VM.Profile.JavaScript/JsDecimal.cs", "src/Broiler.VM.Profile.JavaScript/JsBigInt.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs", "src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs"])
         {
             Assert.Contains(covered, file2 => string.Equals(file2.RelativePath, file, StringComparison.Ordinal));
         }

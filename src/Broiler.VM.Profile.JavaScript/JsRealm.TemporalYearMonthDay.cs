@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Time;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary><c>Temporal.PlainYearMonth</c> (Temporal s9) and <c>Temporal.PlainMonthDay</c> (s10; JSD-0054).</summary>
@@ -22,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FF3A8D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2089B1
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainYearMonth(JsObject temporal)
     {
@@ -37,7 +39,7 @@ internal sealed partial class JsRealm
             var calendar = TemporalCalendarArgument(engine, TemporalArgument(arguments, 2));
             var day = referenceDay.Type == JsType.Undefined ? 1 : JsTemporal.IntegerWithTruncation(engine, referenceDay);
 
-            if (!JsTemporalCore.IsValidIsoDate(year, month, day))
+            if (!IsoCalendarMath.IsValidIsoDate((long)year, (int)month, (int)day))
             {
                 throw engine.Error("RangeError", "Temporal.PlainYearMonth: the date is not valid");
             }
@@ -209,7 +211,7 @@ internal sealed partial class JsRealm
 
     // ---- Temporal.PlainMonthDay -----------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FAC405
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=84E629
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainMonthDay(JsObject temporal)
     {
@@ -224,7 +226,7 @@ internal sealed partial class JsRealm
             var calendar = TemporalCalendarArgument(engine, TemporalArgument(arguments, 2));
             var year = referenceYear.Type == JsType.Undefined ? 1972 : JsTemporal.IntegerWithTruncation(engine, referenceYear);
 
-            if (!JsTemporalCore.IsValidIsoDate(year, month, day))
+            if (!IsoCalendarMath.IsValidIsoDate((long)year, (int)month, (int)day))
             {
                 throw engine.Error("RangeError", "Temporal.PlainMonthDay: the date is not valid");
             }

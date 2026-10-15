@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Time;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>The enumeration keys of Table 19, in its order.</summary>
@@ -570,13 +572,13 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's RegulateISODate (s3.5.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=82579A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=979CB9
     // Broiler-Human:        PENDING
     internal static JsIsoDate RegulateDate(JsEngine engine, double year, double month, double day, bool reject)
     {
         if (reject)
         {
-            if (!JsTemporalCore.IsValidIsoDate(year, month, day))
+            if (!IsoCalendarMath.IsValidIsoDate((long)year, (int)month, (int)day))
             {
                 throw engine.Error("RangeError", "Temporal: " + year + "-" + month + "-" + day + " is not a date");
             }
@@ -587,7 +589,7 @@ internal static partial class JsTemporal
         // OUT-OF-RANGE YEARS STAY AS THEY ARE: the caller's limits refuse them afterwards.
         var clampedMonth = (int)System.Math.Clamp(month, 1, 12);
         var y = (long)System.Math.Clamp(year, -1e15, 1e15);
-        var clampedDay = (int)System.Math.Clamp(day, 1, JsTemporalCore.DaysInMonth(y, clampedMonth));
+        var clampedDay = (int)System.Math.Clamp(day, 1, IsoCalendarMath.DaysInMonth(y, clampedMonth));
         return new JsIsoDate(y, clampedMonth, clampedDay);
     }
 
@@ -638,7 +640,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarMonthDayFromFields (s12.3.14) and CalendarMonthDayToISOReferenceDate (s12.3.24).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=15432F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=67438B
     // Broiler-Human:        PENDING
     internal static JsIsoDate MonthDayFromFields(JsEngine engine, string calendar, JsCalendarFields fields, bool reject)
     {
@@ -651,9 +653,12 @@ internal static partial class JsTemporal
 
         var year = fields.Year ?? 1972;
 
+        // A YEAR PAST 1E9 IS REDUCED TO ITS REMAINDER MODULO 400 (G3, JSD-0073), which is exact in
+        // floating point and keeps the year's leap year, so its February's length; a base that is not
+        // a multiple of 400, as 1972 was, does not.
         if (System.Math.Abs(year) > 1e9)
         {
-            year = 1972 + (year % 400);
+            year %= 400;
         }
 
         var regulated = RegulateDate(engine, year, fields.Month!.Value, fields.Day!.Value, reject);
@@ -661,7 +666,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarDateAdd (s12.3.7); another calendar adds by NonISODateAdd.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E9DB8B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B8E1E3
     // Broiler-Human:        PENDING
     internal static JsIsoDate DateAdd(JsEngine engine, string calendar, JsIsoDate date, JsDateDuration duration, bool reject)
     {
@@ -676,7 +681,7 @@ internal static partial class JsTemporal
             return NonIsoDateAdd(engine, calendar, date, duration, reject);
         }
 
-        var (year, month) = JsTemporalCore.BalanceYearMonth(date.Year + (long)duration.Years, date.Month + (long)duration.Months);
+        var (year, month) = IsoCalendarMath.BalanceYearMonth(date.Year + (long)duration.Years, date.Month + (long)duration.Months);
         var intermediate = RegulateDate(engine, year, month, date.Day, reject);
         var result = JsTemporalCore.AddDays(intermediate, (long)duration.Days + (7 * (long)duration.Weeks));
 
@@ -717,7 +722,7 @@ internal static partial class JsTemporal
     /// text returns false whenever months is zero, which would never end its own weeks loop, so the
     /// weeks and days are reckoned in whole days afterwards, as the proposal's polyfill reckons them.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9E627D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1EA5BD
     // Broiler-Human:        PENDING
     private static bool DateSurpasses(int sign, JsIsoDate baseDate, JsIsoDate target, long years, long months)
     {
@@ -733,7 +738,7 @@ internal static partial class JsTemporal
             return false;
         }
 
-        var (year, month) = JsTemporalCore.BalanceYearMonth(y0, baseDate.Month + months);
+        var (year, month) = IsoCalendarMath.BalanceYearMonth(y0, baseDate.Month + months);
         return Surpasses(sign, year, month, baseDate.Day, target);
     }
 
@@ -743,7 +748,7 @@ internal static partial class JsTemporal
     /// than by counting up one at a time; then the weeks and days between the constrained
     /// intermediate date and the second date.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AF1573
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=72F20E
     // Broiler-Human:        PENDING
     internal static JsDateDuration DateUntil(JsEngine engine, string calendar, JsIsoDate one, JsIsoDate two, TemporalUnit largestUnit)
     {
@@ -790,9 +795,9 @@ internal static partial class JsTemporal
             months = Largest(estimate, m => DateSurpasses(sign, one, two, years, m));
         }
 
-        var (yearAfter, monthAfter) = JsTemporalCore.BalanceYearMonth(one.Year + years, one.Month + months);
-        var constrained = new JsIsoDate(yearAfter, monthAfter, System.Math.Min(one.Day, JsTemporalCore.DaysInMonth(yearAfter, monthAfter)));
-        var days = JsTemporalCore.EpochDays(two) - JsTemporalCore.EpochDays(constrained);
+        var (yearAfter, monthAfter) = IsoCalendarMath.BalanceYearMonth(one.Year + years, one.Month + months);
+        var constrained = new JsIsoDate(yearAfter, monthAfter, System.Math.Min(one.Day, IsoCalendarMath.DaysInMonth(yearAfter, monthAfter)));
+        var days = IsoCalendarMath.EpochDays(two.Year, two.Month, two.Day) - IsoCalendarMath.EpochDays(constrained.Year, constrained.Month, constrained.Day);
         long weeks = 0;
 
         if (largestUnit == TemporalUnit.Week)
@@ -805,7 +810,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's CalendarISOToDate (s12.3.26).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=58DE38
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=291F49
     // Broiler-Human:        PENDING
     internal static JsCalendarDate IsoToDate(JsEngine engine, string calendar, JsIsoDate date)
     {
@@ -814,7 +819,7 @@ internal static partial class JsTemporal
             return NonIsoToDate(engine, calendar, date);
         }
 
-        var (week, weekYear) = JsTemporalCore.WeekOfYear(date);
+        var (week, weekYear) = IsoCalendarMath.WeekOfYear(date.Year, date.Month, date.Day);
 
         return new JsCalendarDate(
             null,
@@ -823,14 +828,14 @@ internal static partial class JsTemporal
             date.Month,
             "M" + JsTemporalCore.Padded(date.Month, 2),
             date.Day,
-            JsTemporalCore.DayOfWeek(date),
-            JsTemporalCore.DayOfYear(date),
+            IsoCalendarMath.DayOfWeek(date.Year, date.Month, date.Day),
+            IsoCalendarMath.DayOfYear(date.Year, date.Month, date.Day),
             week,
             weekYear,
-            JsTemporalCore.DaysInMonth(date.Year, date.Month),
-            JsTemporalCore.DaysInYear(date.Year),
+            IsoCalendarMath.DaysInMonth(date.Year, date.Month),
+            IsoCalendarMath.DaysInYear(date.Year),
             12,
-            JsTemporalCore.IsLeapYear(date.Year));
+            IsoCalendarMath.IsLeapYear(date.Year));
     }
 
     /// <summary>The proposal's ISODateToFields (s13.42).</summary>

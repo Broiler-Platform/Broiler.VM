@@ -3,17 +3,19 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
+// Relevant units:   29
+// Annotated:        29/29
 // Exempt:           13
-// Human-reviewed:   0/31
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       31
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -586,7 +588,7 @@ internal sealed class JsZone
         return events;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=75F443
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5CA216
     // Broiler-Human:        PENDING
     private static long Day(int year, JsZoneRule rule)
     {
@@ -595,9 +597,9 @@ internal sealed class JsZone
         switch (rule.OnKind)
         {
             case 1:
-                day = DaysFromCivil(year, rule.Month, MonthLength(year, rule.Month));
+                day = IsoCalendarMath.EpochDays(year, rule.Month, IsoCalendarMath.DaysInMonth(year, rule.Month));
 
-                while (Weekday(day) != rule.Weekday)
+                while (MondayFirst(day) != rule.Weekday)
                 {
                     day--;
                 }
@@ -606,9 +608,9 @@ internal sealed class JsZone
 
             case 2:
             case 3:
-                day = DaysFromCivil(year, rule.Month, rule.Day);
+                day = IsoCalendarMath.EpochDays(year, rule.Month, rule.Day);
 
-                while (Weekday(day) != rule.Weekday)
+                while (MondayFirst(day) != rule.Weekday)
                 {
                     day += rule.OnKind == 2 ? 1 : -1;
                 }
@@ -616,32 +618,15 @@ internal sealed class JsZone
                 return day;
 
             default:
-                return DaysFromCivil(year, rule.Month, rule.Day);
+                return IsoCalendarMath.EpochDays(year, rule.Month, rule.Day);
         }
     }
 
-    /// <summary>Days since 1970-01-01 of a proleptic Gregorian date.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DD6C08
+    /// <summary>
+    /// The weekday of a day since 1970-01-01 as a zone rule counts it, Monday 0 to Sunday 6: the shared
+    /// WeekDay (Sunday 0) of that day's first instant, mapped (G4).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E3D297
     // Broiler-Human:        PENDING
-    internal static long DaysFromCivil(long year, int month, int day)
-    {
-        year -= month <= 2 ? 1 : 0;
-        var era = (year >= 0 ? year : year - 399) / 400;
-        var yearOfEra = year - (era * 400);
-        var dayOfYear = ((153 * (month + (month > 2 ? -3 : 9))) + 2) / 5 + day - 1;
-        var dayOfEra = (yearOfEra * 365) + (yearOfEra / 4) - (yearOfEra / 100) + dayOfYear;
-        return (era * 146097) + dayOfEra - 719468;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=226F53
-    // Broiler-Human:        PENDING
-    private static int MonthLength(int year, int month) =>
-        month == 2
-            ? (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0) ? 29 : 28)
-            : month is 4 or 6 or 9 or 11 ? 30 : 31;
-
-    /// <summary>Monday 0 to Sunday 6; the epoch was a Thursday.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E5108A
-    // Broiler-Human:        PENDING
-    private static int Weekday(long day) => (int)(((day + 3) % 7 + 7) % 7);
+    private static int MondayFirst(long day) => ((int)EcmaTime.WeekDay(day * EcmaTime.MsPerDay) + 6) % 7;
 }

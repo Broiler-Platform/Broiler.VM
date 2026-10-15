@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -290,11 +291,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>A time value TimeClip keeps, or the <c>RangeError</c> for one it does not.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6118D5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D70498
     // Broiler-Human:        PENDING
     private static double ClippedTime(JsEngine engine, double x)
     {
-        var clipped = DateTimeClip(x);
+        var clipped = EcmaTime.TimeClip(x);
 
         if (double.IsNaN(clipped))
         {

@@ -21,7 +21,7 @@ repository holds it the way it holds test262: as the archive of one named revisi
 
 ```bash
 dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.Conformance -c Release -- \
-  --vectors src/tests/vectors/pins/broiler-js-vectors-a3452d9709ab1fcddbf6661e83c97491531c18a7.tar.gz \
+  --vectors src/tests/vectors/pins/broiler-js-vectors-6f29debdad87b61000fd995b23dc2e229210b7ce.tar.gz \
   --expect src/tests/vectors/pins/vectors.pin --report vectors-report.tsv
 ```
 

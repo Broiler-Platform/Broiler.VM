@@ -20,7 +20,13 @@
     "the status to RangeError; JsRealm.StringSubstitute and RegExpSubstitute, which evaluate the shared parser's parts;",
     "RegExpAdvanceIndex and ArrayRelative, one line each; GlobalUriAnswer, which maps a status to URIError; the Base64",
     "option readers, receiver, destination and result; JsonRead and JsonBuild with its object and array halves, which",
-    "build the values, the records and the errors; JsonApplySpace; and JsJsonModule.TryTranslate, the writer."
+    "build the values, the records and the errors; JsonApplySpace; and JsJsonModule.TryTranslate, the writer.",
+    "",
+    "SJL-6.4 (JSD-0073): the Date area. What stays as adapters is not here: JsRealm.DateParseText, which charges the one",
+    "unit beyond the shared parser's and reads a local result in this profile's zone; DateTimeText, toTimeString's",
+    "TimeString and TimeZoneString; DateFromFields, DateSetTimeFields and DateSetDateFields, which keep the conversion and",
+    "its order; JsTemporalCore.AddDays, one line; JsLocalTime.From, which reads the shared field operations; and",
+    "JsZone.MondayFirst, which maps the shared WeekDay to the zone rules' Monday 0."
   ],
   "retired": [
     {
@@ -632,6 +638,271 @@
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsJsonModule.Reader",
       "milestone": "SJL-5.4",
       "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsJsonModule.TryTranslate"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMsPerSecond",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MsPerSecond"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMsPerMinute",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MsPerMinute"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMsPerHour",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MsPerHour"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMsPerDay",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MsPerDay"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMaxTimeValue",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MaxTimeValue"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateZoneText",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter.TimeZoneString, over JsRealm.DateZone"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateFloorMod",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime's field operations, which take their modulo themselves"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateDay",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.Day"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateTimeWithinDay",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.TimeWithinDay"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateDaysInYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.DaysInYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateDayFromYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.DayFromYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateTimeFromYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.TimeFromYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateYearFromTime",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.YearFromTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateInLeapYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.InLeapYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateDayWithinYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.DayWithinYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMonthStartDay",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MonthFromTime and DateFromTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMonthFromTime",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MonthFromTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateDateFromTime",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.DateFromTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateWeekDay",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.WeekDay"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateHourFromTime",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.HourFromTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMinFromTime",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MinFromTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateSecFromTime",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.SecFromTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMsFromTime",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MsFromTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMakeTime",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MakeTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMakeDay",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MakeDay"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMakeDate",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.MakeDate"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateTimeClip",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.TimeClip"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateParseTextual",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateParser.Parse in DateParseDialect.BroilerVM, behind JsRealm.DateParseText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMonthByName",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateParser.Parse in DateParseDialect.BroilerVM, behind JsRealm.DateParseText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateWholeNumber",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateParser.Parse in DateParseDialect.BroilerVM, behind JsRealm.DateParseText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateReadDigits",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateParser.Parse in DateParseDialect.BroilerVM, behind JsRealm.DateParseText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DatePadded",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateWeekDayName",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateMonthName",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateToCalendarText",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter.DateString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateToClockText",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter.TimeString, behind JsRealm.DateTimeText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateToFullText",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter.ToDateString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateToUtcText",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter.ToUtcString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateToIsoText",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaDateFormatter.TryToIsoString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.IsLeapYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.IsLeapYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.DaysInMonth",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.DaysInMonth"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.DaysInYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.DaysInYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.EpochDays",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.EpochDays"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.FromEpochDays",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.FromEpochDays"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.IsValidIsoDate",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.IsValidIsoDate"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.BalanceYearMonth",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.BalanceYearMonth"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.DayOfWeek",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.DayOfWeek"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.DayOfYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.DayOfYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.WeekOfYear",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.WeekOfYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsZone.DaysFromCivil",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.EpochDays"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsZone.MonthLength",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.DaysInMonth"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsZone.Weekday",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.EcmaTime.WeekDay, behind JsZone.MondayFirst"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.ValidMonthDay",
+      "milestone": "SJL-6.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.IsValidIsoDate"
     }
   ]
 }
