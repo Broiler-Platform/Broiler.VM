@@ -21,7 +21,7 @@ repository holds it the way it holds test262: as the archive of one named revisi
 
 ```bash
 dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.Conformance -c Release -- \
-  --vectors src/tests/vectors/pins/broiler-js-vectors-bb1fc664df8d1979be4522a9d39adb9407271e06.tar.gz \
+  --vectors src/tests/vectors/pins/broiler-js-vectors-a3452d9709ab1fcddbf6661e83c97491531c18a7.tar.gz \
   --expect src/tests/vectors/pins/vectors.pin --report vectors-report.tsv
 ```
 
@@ -49,5 +49,8 @@ else; its third witness names the directory from the profile's own project file.
 The corpus is Broiler.JS's, under Apache-2.0, the licence and the copyright holder of this
 repository. It quotes no specification text and copies no Unicode data file: its provenance names
 ECMA-262 clauses by their identifiers and states which code points a set holds. No vector at this
-revision is derived from test262. [`THIRD_PARTY_NOTICES.md`](../../../../THIRD_PARTY_NOTICES.md)
+revision is derived from test262: eight vectors of the Date area name a test262 test in their
+provenance, as a test that confirms their expected value, and their scripts and values are the
+corpus's own. *(Revised 2026-10-15, at SJL-6.2, when the pin moved to revision 15. The sentence
+ended at "derived from test262.")* [`THIRD_PARTY_NOTICES.md`](../../../../THIRD_PARTY_NOTICES.md)
 lists it with the other material this repository ingests.

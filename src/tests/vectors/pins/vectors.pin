@@ -3,7 +3,7 @@
 # The shared conformance vectors of the shared JavaScript libraries programme (milestone SJL-1): a
 # corpus whose home is the Broiler.JS repository, retained here as the archive of one named corpus
 # revision. `revision` is the Broiler.JS commit that carries it, an immutable commit and never a
-# branch name, and the corpus at that commit is at corpus revision 13 (its REVISIONS.md).
+# branch name, and the corpus at that commit is at corpus revision 15 (its REVISIONS.md).
 #
 # HOW IT WAS TAKEN. On 2026-10-15, with `git archive` of that commit, twice, into two files: the two
 # were byte-identical. The second was extracted into a fresh directory and its files hashed there,
@@ -13,10 +13,11 @@
 #
 #   git archive --format=tar.gz <revision> -- conformance/vectors ':(exclude)conformance/vectors/controls'
 #
-# WHAT IS HERE. One file of 821,813 bytes hashing to `archive-sha256`, which extracts to the 30
+# WHAT IS HERE. One file of 970,459 bytes hashing to `archive-sha256`, which extracts to the 37
 # files `content-sha256` is over: the number area's ten vector files, the numerics area's eight, the
-# text area's six, the schema, the README, the revision log, the prelude and the two source pins. The negative controls stay in Broiler.JS; the
-# home's validator is the one that reads them.
+# text area's six, the Date area's seven, the schema, the README, the revision log, the prelude and
+# the two source pins. The negative controls stay in Broiler.JS; the home's validator is the one that
+# reads them.
 #
 # HOW IT IS READ. `--vectors <archive> --expect <this file>` of the conformance root checks both
 # digests and the count before any vector runs. `content-sha256` is over the files' paths below
@@ -44,14 +45,20 @@
 # retires every divergence field of the text area: this profile's five, which its SJL-5.4 cut-over
 # corrected, and Broiler.JS's 42, which its SJL-5.5 cut-over corrected. Its header read, for revision
 # 12: "the corpus at that commit is at corpus revision 12", "On 2026-10-14" and "One file of 824,087
-# bytes hashing to `archive-sha256`"; the number of files did not change.
+# bytes hashing to `archive-sha256`"; the number of files did not change. Moved to revision 15 on
+# 2026-10-15, at milestone SJL-6.2: revision 14 adds the Date area, and revision 15 classifies both
+# engines' first runs on it, this profile's sixteen differences among them, which its SJL-6.4 cut-over
+# corrects. Its header read, for revision 13: "the corpus at that commit is at corpus revision 13" and
+# "One file of 821,813 bytes hashing to `archive-sha256`, which extracts to the 30 files
+# `content-sha256` is over: the number area's ten vector files, the numerics area's eight, the text
+# area's six, the schema, the README, the revision log, the prelude and the two source pins."
 
 suite broiler-js-vectors
 upstream Broiler-Platform/broiler.js
-revision bb1fc664df8d1979be4522a9d39adb9407271e06
-archive git archive --format=tar.gz bb1fc664df8d1979be4522a9d39adb9407271e06 -- conformance/vectors :(exclude)conformance/vectors/controls
-archive-sha256 a6829aa9d1e6238989fa21b5db26f63efc2a1151bf86357cacad86df64d4d727
-content-sha256 d4a1596a10fb02a3c87f175673f662112eec16fc5a520f08553f9eecd03ea5b8
-files 30
+revision a3452d9709ab1fcddbf6661e83c97491531c18a7
+archive git archive --format=tar.gz a3452d9709ab1fcddbf6661e83c97491531c18a7 -- conformance/vectors :(exclude)conformance/vectors/controls
+archive-sha256 a92989a9883e6dd58054a98db02dd9de73b50dbba0c6a171bb5b57d00b255f77
+content-sha256 081f0c98a8d1c829514b6167ed7ef1fdd93b88d15548d9f4554a3b6bd2fd5e57
+files 37
 archived yes
-archived-at src/tests/vectors/pins/broiler-js-vectors-bb1fc664df8d1979be4522a9d39adb9407271e06.tar.gz
+archived-at src/tests/vectors/pins/broiler-js-vectors-a3452d9709ab1fcddbf6661e83c97491531c18a7.tar.gz

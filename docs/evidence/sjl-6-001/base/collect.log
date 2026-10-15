@@ -1,0 +1,37 @@
+# collect-area.py's output, step by step, in the order the steps ran on 2026-10-15. The import and the
+# completeness ran first, at 15:05Z, from an identity taken at 99ad3e1, the merge that dispatched the hosted
+# run; the run's run.txt names 2df523a as its tested commit, whose tree is 99ad3e1's, so the identity was
+# taken again at 2df523a, from a clean checkout of it, before the twins. Only that identity is retained.
+== base-import 2026-10-15T15:05:26Z
+import: 54 entries
+== base-complete 2026-10-15T15:05:26Z
+complete: both forms
+== base-identity 2026-10-15T15:05:38Z
+base-identity: 2df523a70b1e3e7266d37b49e51134067650c756 (clean tree)
+== base-twins 2026-10-15T16:12:35Z
+base-twins: wide/array-loop.small.js bytecode 73082
+base-twins: wide/array-loop.small.js native 73082
+base-twins: wide/call-loop.small.js bytecode 28026
+base-twins: wide/call-loop.small.js native 28026
+base-twins: wide/closure-loop.small.js bytecode 31044
+base-twins: wide/closure-loop.small.js native 31044
+base-twins: wide/fib.small.js bytecode 7682
+base-twins: wide/fib.small.js native 7682
+base-twins: wide/generator-loop.small.js bytecode 40075
+base-twins: wide/generator-loop.small.js native 40075
+base-twins: wide/numeric-loop.small.js bytecode 23022
+base-twins: wide/numeric-loop.small.js native 23022
+base-twins: wide/property-loop.small.js bytecode 29029
+base-twins: wide/property-loop.small.js native 29029
+base-twins: wide/string-loop.small.js bytecode 26083
+base-twins: wide/string-loop.small.js native 26083
+base-twins: wide/throw-loop.small.js bytecode 34026
+base-twins: wide/throw-loop.small.js native 34026
+base-twins: wide/try-loop.small.js bytecode 34022
+base-twins: wide/try-loop.small.js native 34022
+base-twins: date/parse.small.js bytecode 71850
+base-twins: date/parse.small.js native 71850
+base-twins: date/renderings.small.js bytecode 27282
+base-twins: date/renderings.small.js native 27282
+base-twins: date/time-arithmetic.small.js bytecode 124617
+base-twins: date/time-arithmetic.small.js native 124617
