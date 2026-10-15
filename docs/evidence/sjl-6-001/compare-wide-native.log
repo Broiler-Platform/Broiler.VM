@@ -1,0 +1,15 @@
+$ /usr/bin/python3 <tree>/eng/compare-test262-forms.py <scratch>/local-wide-native.report <scratch>/hosted-wide-native.report --same-form --exempt-guest-loads --suite <suite>
+# reference <scratch>/local-wide-native.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   total|53469|101723|100338|188|0|44|1153
+# candidate <scratch>/hosted-wide-native.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   total|53469|101723|100338|188|0|44|1153
+# same-form: two native runs, from two builds, read on either side - class (c') is admitted at any wall allowance, because two builds differ in speed by construction and were run at different times; classes (a) and (b) are read on either side; class (b) is admitted
+# 101723 variants in both reports, 1 differ; 0 variant(s) present in only one report were ignored
+
+## (c') a wall-clock exhaustion on one side, against an answer or another allowance: 1 - admitted
+  test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [strict]: Exhausted/NestedLoadFanOut -> Exhausted/WallClock  the allowance was spent running the test
+
+# every difference is in an admitted class
+exit code: 0

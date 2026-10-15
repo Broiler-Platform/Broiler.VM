@@ -1,0 +1,10 @@
+bundle sjl-6-001
+milestone SJL-6, work package SJL-6.0
+collected 2026-10-15T12:09:49Z
+collector-commit e2433834ac4c391bf4cf87c7a756ec35e0cc7fe4
+collector-tree clean
+rule docs/evidence/sjl-6-001/decision-rule.md sha256=60d426aebd4400086c0f848168cfcc60bcd63dbfbb6da839eee11f1282f33d18
+tested-commit 72ad941e1c3248780af8231e548c3656b0984f99 (bundle sjl-5-001's after commit)
+local-runs docs/evidence/sjl-5-001/after/wide-bytecode.report.gz, wide-native.report.gz
+sdk 10.0.401
+machine Linux-6.18.44-fc-v114-x86_64-with-glibc2.39 x86_64 cpus=4
