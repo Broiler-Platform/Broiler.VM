@@ -1,0 +1,125 @@
+# SJL-5.6 search for a surviving duplicate of the text area, Broiler.VM at 72ad941e1c3248780af8231e548c3656b0984f99: every construct
+# that reads or writes UTF-16 by the platform or by the surrogate constants, pads by the platform,
+# converts base64, hex or a URI by the platform, reads JSON by System.Text.Json, writes a \uXXXX
+# escape by format string, or spells a line terminator or the byte order mark, in the component's
+# C# product sources (src/, every tests/ excluded).
+# pattern: char\.Is(High|Low)?Surrogate\(|char\.ConvertToUtf32\(|char\.ConvertFromUtf32\(|0xD800|0xDC00|0xDBFF|0xDFFF|\.PadLeft\(|\.PadRight\(|Convert\.(To|From|TryFrom)(Base64|Hex)|Uri\.(Escape|Unescape)DataString|WebUtility|HttpUtility|System\.Text\.Json|Utf8JsonReader|JsonDocument|JsonSerializer|"[xX]4"|0x2028|0x2029|0xFEFF|0x180E
+# hits: 117; each is reviewed in the bundle's README
+
+src/Broiler.VM.Profile.JavaScript.Compiler/JsJsonModule.cs:194:                written.Append("\\u").Append(((int)unit).ToString("X4", CultureInfo.InvariantCulture));
+src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs:1341:            if (char.IsHighSurrogate(text[at]) && at + 1 < text.Length && char.IsLowSurrogate(text[at + 1]))
+src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs:1345:            else if (char.IsSurrogate(text[at]))
+src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs:6874:        cooked.Append((char)(0xD800 + (shifted >> 10)));
+src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs:6875:        cooked.Append((char)(0xDC00 + (shifted & 0x3FF)));
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:827:                    scalar.ToString("X4", System.Globalization.CultureInfo.InvariantCulture) +
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:863:        into.Append(char.ConvertFromUtf32(scalar));
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:2543:        if (char.IsHighSurrogate(unit) && at + 1 < source.Length && char.IsLowSurrogate(source[at + 1]))
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:2546:            return char.ConvertToUtf32(unit, source[at + 1]);
+src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs:882:            if (char.IsHighSurrogate(unit) && at + 1 < value.Length && char.IsLowSurrogate(value[at + 1]))
+src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs:884:                var scalar = char.ConvertToUtf32(unit, value[at + 1]);
+src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs:983:                built.Append(char.ConvertFromUtf32(scalar));
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:592:        0x2028, 0x2029, 0x202F, 0x202F, 0x205F, 0x205F, 0x3000, 0x3000, 0xFEFF, 0xFEFF,
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:859:            char.IsHighSurrogate(input[index]) &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:860:            char.IsLowSurrogate(input[index + 1]))
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:877:            char.IsHighSurrogate(unit) &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:879:            char.IsLowSurrogate(input[at + 1]))
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:881:            codePoint = char.ConvertToUtf32(unit, input[at + 1]);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1342:                    folded.Append(char.ConvertFromUtf32(JsUnicodeCaseFolding.SimpleFold(char.ConvertToUtf32(text, at))));
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1636:                    if (codePoint <= 0xFFFF && char.IsHighSurrogate((char)codePoint))
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1642:                            trail <= 0xFFFF && char.IsLowSurrogate((char)trail))
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1644:                            codePoint = char.ConvertToUtf32((char)codePoint, (char)trail);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1649:                else if (char.IsHighSurrogate(raw[at]) && at + 1 < raw.Length && char.IsLowSurrogate(raw[at + 1]))
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1651:                    codePoint = char.ConvertToUtf32(raw[at], raw[at + 1]);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1665:                decoded.Append(char.ConvertFromUtf32(codePoint));
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1959:                char.IsHighSurrogate(unit) &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1961:                char.IsLowSurrogate(pattern[at + 1]))
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1964:                return char.ConvertToUtf32(unit, pattern[at - 1]);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1987:                set.Add(0x2028, 0x2029);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:2845:                        var single = char.ConvertToUtf32(current.ToString(), 0);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:2866:                current.Append(char.ConvertFromUtf32(ReadClassSetCharacter()));
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:2985:                    codePoints.Add(char.ConvertToUtf32(text, at));
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:3355:                first is >= 0xD800 and <= 0xDBFF &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:3364:                if (second is >= 0xDC00 and <= 0xDFFF)
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:3366:                    return char.ConvertToUtf32((char)first, (char)second);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4167:            unit is '\n' or '\r' or (char)0x2028 or (char)0x2029;
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4327:                    char.IsHighSurrogate(unit) &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4329:                    char.IsLowSurrogate(input[position + 1]))
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4332:                    return char.ConvertToUtf32(unit, input[position + 1]);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4342:                char.IsLowSurrogate(last) &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4344:                char.IsHighSurrogate(input[position - 2]))
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4347:                return char.ConvertToUtf32(input[position - 2], last);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4483:                    char.IsLowSurrogate(input[position - 1]) &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4484:                    char.IsHighSurrogate(input[position - 2])
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4491:                char.IsHighSurrogate(input[position]) &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:4492:                char.IsLowSurrogate(input[position + 1])
+src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeLexical.cs:78:        codePoint is 0x09 or 0x0B or 0x0C or 0x20 or 0xA0 or 0xFEFF ||
+src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.cs:92:                text.Append(char.ConvertFromUtf32(JsUnicodeProperties.ReadInt24(CodePointDictionary, index * 3)));
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:415:                    var extended = key + char.ConvertFromUtf32(Valid(text[next]));
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:461:        if (tailoring is not null && tailoring.Entries.TryGetValue(char.ConvertFromUtf32(Valid(first)), out var tailored))
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:501:            key.Append(char.ConvertFromUtf32(Valid(text[index])));
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:510:    private static int Valid(int codePoint) => codePoint is >= 0xD800 and <= 0xDFFF ? 0xFFFD : codePoint;
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:579:            key.Append(char.ConvertFromUtf32(Valid(codePoint)));
+src/Broiler.VM.Profile.JavaScript/JsCollator.cs:124:            if (char.IsHighSurrogate(nfd[at]) && at + 1 < nfd.Length && char.IsLowSurrogate(nfd[at + 1]))
+src/Broiler.VM.Profile.JavaScript/JsCollator.cs:126:                codePoints.Add(char.ConvertToUtf32(nfd[at], nfd[at + 1]));
+src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs:310:                var width = char.IsHighSurrogate(digits[at]) && at + 1 < digits.Length ? 2 : 1;
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:1069:            if (char.IsHighSurrogate(text[at]) && at + 1 < text.Length && char.IsLowSurrogate(text[at + 1]))
+src/Broiler.VM.Profile.JavaScript/JsRealm.DurationFormat.cs:471:        var text = BigInteger.Abs(total).ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(digits + 1, '0');
+src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs:343:            var starts = char.IsLetter(c) || char.IsSurrogate(c) || c is '$' or '_';
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1469:            if (char.IsHighSurrogate(text[at]) && at + 1 < text.Length &&
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1470:                char.IsLowSurrogate(text[at + 1]))
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1472:                codePoint = char.ConvertToUtf32(text[at], text[at + 1]);
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1539:            builder.Append(char.ConvertFromUtf32(codePoint));
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1547:        if (unit is '\uFEFF' or '\u2028' or '\u2029' || char.IsSurrogate(unit) ||
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1569:            digits == 2 ? "x2" : "x4", System.Globalization.CultureInfo.InvariantCulture));
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1856:                    if (character == (char)0x2028)
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1860:                    else if (character == (char)0x2029)
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1927:            char.IsLowSurrogate(input[(int)start]) &&
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1928:            char.IsHighSurrogate(input[(int)start - 1]))
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:147:                // invocation as a contract violation. The language says `fromCodePoint(0xD800)` is
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:149:                // `fromCharCode(0xD800)` answers.
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:150:                if (code >= 0xD800 && code <= 0xDFFF)
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:156:                builder.Append(char.ConvertFromUtf32((int)code));
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:954:                    span[written++] = (char)(0xDC00 | (codePoint & 0x3FF));
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:1337:        built.Append(char.ConvertFromUtf32(codePoint));
+src/Broiler.VM.Profile.JavaScript/JsSegmenter.cs:191:            if (char.IsHighSurrogate(text[at]) && at + 1 < text.Length && char.IsLowSurrogate(text[at + 1]))
+src/Broiler.VM.Profile.JavaScript/JsSegmenter.cs:193:                points.Add(char.ConvertToUtf32(text[at], text[at + 1]));
+src/Broiler.VM.Profile.JavaScript/JsSegmenter.cs:596:            var codePoint = char.IsHighSurrogate(text[at]) && at + 1 < end && char.IsLowSurrogate(text[at + 1])
+src/Broiler.VM.Profile.JavaScript/JsSegmenter.cs:597:                ? char.ConvertToUtf32(text[at], text[at + 1])
+src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs:680:        value.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(width, '0');
+src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.cs:169:        if (start + 1 < text.Length && char.IsHighSurrogate(text[start]) && char.IsLowSurrogate(text[start + 1]))
+src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.cs:172:            return char.ConvertToUtf32(text[start], text[start + 1]);
+src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.cs:184:        if (end >= 2 && char.IsLowSurrogate(text[end - 1]) && char.IsHighSurrogate(text[end - 2]))
+src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.cs:187:            return char.ConvertToUtf32(text[end - 2], text[end - 1]);
+src/Broiler.VM.Runtime/VmDescriptorValidation.cs:436:                code == 0x2028 || code == 0x2029)
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Measurement.cs:107:        Console.WriteLine($"workload source={Path.GetFileName(sourcePath)} source-bytes={System.Text.Encoding.UTF8.GetByteCount(source)} a
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Suite.cs:81:        Convert.ToHexStringLower(SHA256.HashData(bytes));
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Checks.cs:8:using System.Text.Json;
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Checks.cs:48:        TheJsonDocumentParsesAndCarriesEveryDeclaredMember(),
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Checks.cs:482:    private static (string, bool, string) TheJsonDocumentParsesAndCarriesEveryDeclaredMember()
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Checks.cs:493:            using var document = JsonDocument.Parse(Test262Json.Render(report));
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Checks.cs:494:            using var schema = JsonDocument.Parse(Test262Json.Schema());
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Failures.cs:240:                "#     " + Count(row.Count).PadLeft(7) + "  " + row.Name + "  e.g. " + row.Example);
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Failures.cs:246:                "#     " + Count(rows.Count - head).PadLeft(7) +
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Families.cs:148:                "#   " + row.Count.ToString(CultureInfo.InvariantCulture).PadLeft(7) + "  " +
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Json.cs:341:                        text.Append("\\u").Append(((int)character).ToString("x4", CultureInfo.InvariantCulture));
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Json.cs:343:                    else if (char.IsHighSurrogate(character) &&
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Json.cs:345:                        char.IsLowSurrogate(value[index + 1]))
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Json.cs:353:                    else if (char.IsSurrogate(character))
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/VectorsCommand.cs:620:                builder.Append('\\').Append('u').Append(((int)c).ToString("X4", CultureInfo.InvariantCulture));
+src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/CorpusReplay.cs:114:        var hash = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(bytes));
+src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/RegExpFuzzing.cs:294:                    : "\\u" + ((int)character).ToString("x4", System.Globalization.CultureInfo.InvariantCulture));
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/JsArm64GoldenChecks.cs:757:    private static string Hex(byte[] bytes) => System.Convert.ToHexString(bytes);
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeLifecycle.cs:172:            var hash = Convert.ToHexStringLower(
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:1385:                    "control " + System.Convert.ToHexString(control.Fixed) + " named `" + control.Text +
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:2035:        var written = System.Convert.ToHexString(code);
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:2128:                lines.Add("  " + at.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(5) + "  " + instru
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs:3331:                ? System.Convert.ToHexString(emitted)
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs:548:        Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(bytes));
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideCorpus.cs:771:        var payload = System.Convert.FromHexString(BaselineLayoutPayload);
+src/compositions/Broiler.VM.Composition.Ubc.Fixture/FixtureCorpus.cs:237:    private static string Hash(ReadOnlySpan<byte> bytes) => Convert.ToHexStringLower(SHA256.HashData(bytes));
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusReplay.cs:150:                Convert.ToHexStringLower(SHA256.HashData(entry.Bytes)),
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusReplay.cs:281:            var hash = Convert.ToHexStringLower(SHA256.HashData(bytes));
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptText.cs:316:                    if (digits == 0 || scalar > 0x10FFFF || scalar is >= 0xD800 and <= 0xDFFF)
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptText.cs:321:                    bytes.AddRange(Encoding.UTF8.GetBytes(char.ConvertFromUtf32(scalar)));
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs:553:            .Select(path => (Path: Path.GetRelativePath(directory, path).Replace('\\', '/'), Hash: Convert.ToHexStringLower(SHA256.HashData(Fil
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs:564:        var digest = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(text.ToString())));

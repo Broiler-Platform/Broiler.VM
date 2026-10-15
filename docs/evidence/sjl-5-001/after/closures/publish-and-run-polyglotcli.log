@@ -1,0 +1,237 @@
+[polyglotcli/jit] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o <tree>/artifacts/js-publish/polyglotcli/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
+  Determining projects to restore...
+  Restored <tree>/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 209 ms).
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 209 ms).
+  Restored <tree>/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 209 ms).
+  Restored <tree>/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 47 ms).
+  Restored <tree>/src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj (in 47 ms).
+  Restored <tree>/src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj (in 121 ms).
+  Restored <tree>/src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj (in 177 ms).
+  Restored <tree>/src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj (in 5 ms).
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 433 ms).
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 122 ms).
+  Broiler.VM.Binary -> <tree>/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> <tree>/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> <tree>/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Ubc -> <tree>/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> <tree>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Emitter.Bytecode -> <tree>/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly -> <tree>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Profile.JavaScript -> <tree>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Runtime -> <tree>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Composition.PolyglotCli -> <tree>/src/compositions/Broiler.VM.Composition.PolyglotCli/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.PolyglotCli.dll
+  Broiler.VM.Composition.PolyglotCli -> <tree>/artifacts/js-publish/polyglotcli/jit/
+
+
+[polyglotcli/jit] closure exit 0
+# broiler-vm-composition core-contract-version=1 ubc-contract-version=2
+composition Broiler.VM.Composition.PolyglotCli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 2
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 4
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 2 0
+manifest broiler.javascript.slice broiler.javascript.wide broiler.javascript.numeric broiler.webassembly.slice
+format-versions 1 2 1 1
+lowering Broiler.VM.Profile.JavaScript.Compiler
+translator broiler.webassembly.translator 1
+form bytecode 2
+native-backends arm64-aapcs64 x86-64-sysv x86-64-win64
+native-executes x86-64-sysv x86-64-win64
+native-emitting-only arm64-aapcs64
+
+
+[polyglotcli/jit] version exit 0
+broiler broiler.javascript manifest broiler.javascript.wide format 2
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+broiler broiler.webassembly manifest broiler.webassembly.slice format 1
+core-contract-version 1
+
+
+[polyglotcli/jit] run docs/evidence/vm-7-cli-001/inputs/adder.wasm exit 0
+42
+
+
+[polyglotcli/jit] run docs/evidence/vm-7-cli-001/inputs/adder.wasm --invoke add --arg i32:7 --arg i32:35 exit 0
+42
+
+
+[polyglotcli/jit] run docs/evidence/vm-7-cli-001/inputs/hello.js docs/evidence/vm-7-cli-001/inputs/adder.wasm exit 0
+ok       docs/evidence/vm-7-cli-001/inputs/adder.wasm  42
+hello from broiler.javascript
+fib(20) = 6765
+ok       docs/evidence/vm-7-cli-001/inputs/hello.js  2,4,6
+# 2 files
+# Completed: 2
+
+
+[polyglotcli/jit] run docs/evidence/vm-7-cli-001/inputs/nottext.wasm exit 2
+broiler: docs/evidence/vm-7-cli-001/inputs/nottext.wasm: is named `.wasm` and does not open with the WebAssembly preamble 00 61 73 6D, so this host declines to hand it to a decoder that would report a byte-zero failure instead of a mislabelled file
+
+
+[polyglotcli/jit] run docs/evidence/vm-7-cli-001/inputs/hello.js exit 0
+hello from broiler.javascript
+fib(20) = 6765
+2,4,6
+
+
+[polyglotcli/trimmed] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o <tree>/artifacts/js-publish/polyglotcli/trimmed -r linux-x64 --self-contained true
+  Determining projects to restore...
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 393 ms).
+  Restored <tree>/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 9 ms).
+  Restored <tree>/src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj (in 434 ms).
+  Restored <tree>/src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj (in 433 ms).
+  Restored <tree>/src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj (in 6 ms).
+  Restored <tree>/src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj (in 434 ms).
+  Restored <tree>/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 5 ms).
+  Restored <tree>/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 5 ms).
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 19 ms).
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 25 ms).
+  Broiler.VM.Binary -> <tree>/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> <tree>/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> <tree>/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> <tree>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> <tree>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Runtime -> <tree>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> <tree>/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Emitter.Bytecode -> <tree>/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly -> <tree>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.PolyglotCli -> <tree>/src/compositions/Broiler.VM.Composition.PolyglotCli/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.PolyglotCli.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.PolyglotCli -> <tree>/artifacts/js-publish/polyglotcli/trimmed/
+
+
+[polyglotcli/trimmed] closure exit 0
+# broiler-vm-composition core-contract-version=1 ubc-contract-version=2
+composition Broiler.VM.Composition.PolyglotCli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 2
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 4
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 2 0
+manifest broiler.javascript.slice broiler.javascript.wide broiler.javascript.numeric broiler.webassembly.slice
+format-versions 1 2 1 1
+lowering Broiler.VM.Profile.JavaScript.Compiler
+translator broiler.webassembly.translator 1
+form bytecode 2
+native-backends arm64-aapcs64 x86-64-sysv x86-64-win64
+native-executes x86-64-sysv x86-64-win64
+native-emitting-only arm64-aapcs64
+
+
+[polyglotcli/trimmed] version exit 0
+broiler broiler.javascript manifest broiler.javascript.wide format 2
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+broiler broiler.webassembly manifest broiler.webassembly.slice format 1
+core-contract-version 1
+
+
+[polyglotcli/trimmed] run docs/evidence/vm-7-cli-001/inputs/adder.wasm exit 0
+42
+
+
+[polyglotcli/trimmed] run docs/evidence/vm-7-cli-001/inputs/adder.wasm --invoke add --arg i32:7 --arg i32:35 exit 0
+42
+
+
+[polyglotcli/trimmed] run docs/evidence/vm-7-cli-001/inputs/hello.js docs/evidence/vm-7-cli-001/inputs/adder.wasm exit 0
+ok       docs/evidence/vm-7-cli-001/inputs/adder.wasm  42
+hello from broiler.javascript
+fib(20) = 6765
+ok       docs/evidence/vm-7-cli-001/inputs/hello.js  2,4,6
+# 2 files
+# Completed: 2
+
+
+[polyglotcli/trimmed] run docs/evidence/vm-7-cli-001/inputs/nottext.wasm exit 2
+broiler: docs/evidence/vm-7-cli-001/inputs/nottext.wasm: is named `.wasm` and does not open with the WebAssembly preamble 00 61 73 6D, so this host declines to hand it to a decoder that would report a byte-zero failure instead of a mislabelled file
+
+
+[polyglotcli/trimmed] run docs/evidence/vm-7-cli-001/inputs/hello.js exit 0
+hello from broiler.javascript
+fib(20) = 6765
+2,4,6
+
+
+[polyglotcli/aot] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o <tree>/artifacts/js-publish/polyglotcli/aot -r linux-x64 -p:PublishAot=true -p:IlcGenerateMstatFile=true
+  Determining projects to restore...
+  Restored <tree>/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 533 ms).
+  Restored <tree>/src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj (in 530 ms).
+  Restored <tree>/src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj (in 531 ms).
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 531 ms).
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 11 ms).
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 14 ms).
+  Restored <tree>/src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj (in 15 ms).
+  Restored <tree>/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 10 ms).
+  Restored <tree>/src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj (in 21 ms).
+  Restored <tree>/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 9 ms).
+  Broiler.VM.Binary -> <tree>/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> <tree>/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> <tree>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Format -> <tree>/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Ubc -> <tree>/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Emitter.Bytecode -> <tree>/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> <tree>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.WebAssembly -> <tree>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Profile.JavaScript -> <tree>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.PolyglotCli -> <tree>/src/compositions/Broiler.VM.Composition.PolyglotCli/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.PolyglotCli.dll
+  Generating native code
+  Broiler.VM.Composition.PolyglotCli -> <tree>/artifacts/js-publish/polyglotcli/aot/
+
+
+[polyglotcli/aot] closure exit 0
+# broiler-vm-composition core-contract-version=1 ubc-contract-version=2
+composition Broiler.VM.Composition.PolyglotCli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 2
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 4
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 2 0
+manifest broiler.javascript.slice broiler.javascript.wide broiler.javascript.numeric broiler.webassembly.slice
+format-versions 1 2 1 1
+lowering Broiler.VM.Profile.JavaScript.Compiler
+translator broiler.webassembly.translator 1
+form bytecode 2
+native-backends arm64-aapcs64 x86-64-sysv x86-64-win64
+native-executes x86-64-sysv x86-64-win64
+native-emitting-only arm64-aapcs64
+
+
+[polyglotcli/aot] version exit 0
+broiler broiler.javascript manifest broiler.javascript.wide format 2
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+broiler broiler.webassembly manifest broiler.webassembly.slice format 1
+core-contract-version 1
+
+
+[polyglotcli/aot] run docs/evidence/vm-7-cli-001/inputs/adder.wasm exit 0
+42
+
+
+[polyglotcli/aot] run docs/evidence/vm-7-cli-001/inputs/adder.wasm --invoke add --arg i32:7 --arg i32:35 exit 0
+42
+
+
+[polyglotcli/aot] run docs/evidence/vm-7-cli-001/inputs/hello.js docs/evidence/vm-7-cli-001/inputs/adder.wasm exit 0
+ok       docs/evidence/vm-7-cli-001/inputs/adder.wasm  42
+hello from broiler.javascript
+fib(20) = 6765
+ok       docs/evidence/vm-7-cli-001/inputs/hello.js  2,4,6
+# 2 files
+# Completed: 2
+
+
+[polyglotcli/aot] run docs/evidence/vm-7-cli-001/inputs/nottext.wasm exit 2
+broiler: docs/evidence/vm-7-cli-001/inputs/nottext.wasm: is named `.wasm` and does not open with the WebAssembly preamble 00 61 73 6D, so this host declines to hand it to a decoder that would report a byte-zero failure instead of a mislabelled file
+
+
+[polyglotcli/aot] run docs/evidence/vm-7-cli-001/inputs/hello.js exit 0
+hello from broiler.javascript
+fib(20) = 6765
+2,4,6
+
+
+[polyglotcli] catalog tables identical across modes: True

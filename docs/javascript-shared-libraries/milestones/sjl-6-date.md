@@ -24,6 +24,40 @@
 
 ## Work packages
 
+### SJL-6.0 — Broiler.VM's hosted test262 evidence workflow
+
+*(Added 2026-10-15, at the owner's direction, during SJL-5.6 and before any work of SJL-6. It comes
+before SJL-6.1, so that SJL-6's rule can name it, and it changes no product code, so it may start
+before SJL-3 is met.)*
+
+Broiler.JS takes its whole-suite test262 runs for a bundle on GitHub's hosted runners, through its
+`test262-evidence.yml`. Broiler.VM takes both forms on one local machine, and an area's after arm
+holds that machine for the length of its runs. Broiler.VM gains a workflow that takes the runs its
+bundles' part A asks for in the same way:
+
+- **a dispatch input naming the commit to test**, and both forms, bytecode and native, in one dispatch;
+- **the procedure the bundles' rules name**: `eng/run-test262.py` at the pin, with the allowances and
+  floors `eng/collect-js-release-candidate.py` fixes, run per shard and merged by the harness; or, if the
+  existing `test262-javascript-profile.yml` sharding is kept, a shown equivalence between its merged
+  report and that procedure's;
+- **every file the bundle collectors retain from a run**: the report, the run, merge and floor logs,
+  the JSON report and the failure manifest;
+- **the conformance binary's digest on every shard**, so that a run which mixed builds is visible;
+- **the runner configuration recorded with the run**: the image, the processor count and the native
+  backend;
+- **a read-only token**: it writes nothing, opens nothing and commits nothing. A bundle imports its
+  artifact unchanged, as Broiler.JS's bundles import theirs.
+
+It does not take class C4's re-runs, (c') and (e): each runs one row alone at both commits on one
+machine, and the bundle's rule says where. The wall clock differs between machines, so a hosted run is
+compared with another hosted run, never with a local one, except in the check below, whose differences
+are classified rather than judged.
+
+*Done when* the workflow has run once in both forms at a commit already run locally, the two runs are
+compared per variant through `eng/compare-test262-forms.py --same-form` with every difference
+classified, and the comparison is retained in bundle `sjl-6-001`; and SJL-6.1's decision rule names the
+workflow for both its base and its after runs.
+
 ### SJL-6.1 — Area verdict and comparison rules
 
 Applied as in SJL-4.1, with one verdict for each of the four sub-areas: time arithmetic, civil-day

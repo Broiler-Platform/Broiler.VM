@@ -1,0 +1,5 @@
+# part C: each commit's two runs against each other, then each document's line at the base
+# (base/json-modules-1.txt) and after (after/json-modules-1.txt); the README reads them under the rule
+base: run 1 has 42 documents, run 2 has 42, 0 differ
+after: run 1 has 42 documents, run 2 has 42, 0 differ
+base against after: 42 documents, 42 the same, 0 differ

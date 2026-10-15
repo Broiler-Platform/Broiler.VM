@@ -1,0 +1,4 @@
+path	variant	base run	after run	base re-run	after re-run	re-runs agree
+test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js	strict	Exhausted/WallClock	Exhausted/NestedLoadFanOut	Exhausted/NestedLoadFanOut	Exhausted/NestedLoadFanOut	yes
+test/staging/sm/TypedArray/element-setting-converts-using-ToNumber.js	sloppy	Exhausted/WallClock	Passed	Passed	Passed	yes
+test/staging/sm/TypedArray/element-setting-converts-using-ToNumber.js	strict	Exhausted/WallClock	Passed	Passed	Passed	yes

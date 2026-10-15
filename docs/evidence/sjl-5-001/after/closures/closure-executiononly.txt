@@ -1,0 +1,23 @@
+# closure Broiler.VM.Composition.JavaScript.ExecutionOnly rid=linux-x64
+
+[jit] 7 non-framework assemblies
+Broiler.ECMAScript.Algorithms
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.JavaScript.ExecutionOnly
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Runtime
+
+[trimmed] 7 non-framework assemblies
+Broiler.ECMAScript.Algorithms
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.JavaScript.ExecutionOnly
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Runtime
+
+[aot] 0 non-framework assemblies
+
+[aot] the image's record is mstat-executiononly.mstat

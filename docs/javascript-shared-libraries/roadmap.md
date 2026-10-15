@@ -239,6 +239,10 @@ meet its gate before SJL-3 meets SJL-3's.)*
 [ledger](status.md) records. The order above is unchanged, and so is what it gates: SJL-5 may not
 meet its gate before SJL-3 meets SJL-3's.)*
 
+*(Added 2026-10-15: SJL-6 begins with work package SJL-6.0, Broiler.VM's hosted test262 evidence
+workflow, queued by the owner before any other work of SJL-6 and before SJL-6.1's rules are written.
+It changes no product code, so it may start before SJL-3 is met. The order above is unchanged.)*
+
 **What can start today:**
 
 - SJL-0 in full;
@@ -428,6 +432,10 @@ JIT, trimming and Native AOT. Details, comparison-rule templates and bundle shap
 | SJL-14 | Old against new tree comparisons over Broiler.JS's corpora and test262; the portable compiler's tests; the Native AOT sample, regenerated, published and run | Broiler.JS | As SJL-3 |
 | SJL-15 | Both lowerings' full suites under the predeclared rules; byte-identical Broiler.VM artifacts; the slice corpus's census counts, slot order and refusals | Both | As SJL-3 |
 | SJL-16 | The sweep of every record and deletion list against the trees | All | The sweep |
+
+*(Added 2026-10-15: from SJL-6, Broiler.VM's whole-suite test262 runs for a bundle are taken by the
+hosted evidence workflow of SJL-6.0, as Broiler.JS's already are, and SJL-6's rule takes both its base
+and its after runs there. Until then they are taken on one local machine.)*
 
 **What no milestone runs:** a comparison of one engine's speed against the other's; a run on a
 runtime identifier Broiler.VM's ADR 0012 does not declare; any test whose result a plan document
