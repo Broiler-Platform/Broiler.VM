@@ -1,0 +1,355 @@
+# AN EVIDENCE BUNDLE'S TEST262 RUNS, BOTH FORMS, ON GITHUB'S HOSTED RUNNERS. A button that only measures.
+#
+# WHAT IT IS FOR. The shared JavaScript libraries programme's bundles take the pinned suite in both
+# forms, bytecode and native, through bundle sjl-0-001's procedure, which is
+# eng/collect-js-release-candidate.py's: eng/run-test262.py at the pin, the wide manifest, 100,000,000
+# fuel and 5,000 ms per variant, each form held to its floor, and every file of the run retained. On
+# one machine an area's after arm holds that machine for the length of its runs. This workflow takes
+# the same runs here instead, at a commit the dispatch names, in one dispatch (milestone SJL-6, work
+# package SJL-6.0, docs/javascript-shared-libraries/milestones/sjl-6-date.md).
+#
+# THE PROCEDURE IS THE TESTED COMMIT'S OWN. Each job checks out the commit under test and builds its
+# conformance root as the collectors do (`dotnet build -c Release`). eng/test262-evidence.py, from the
+# dispatched ref, loads that checkout's eng/run-test262.py and calls it: its pin check verifies the
+# extracted suite before anything runs, and its `shard()` builds and runs every shard's command line,
+# --expect included. The merge, the retention verdict and the floor are the harness's, taken with the
+# commands run-test262.py gives and ranked by its rule.
+#
+# THE PARTITION IS THE LOCAL ONE. A local run on four processors cuts a form into sixteen shards, four
+# per process. Here each form is four runners of four shards, one process per vCPU of the standard
+# runner, so every shard holds the files it holds locally, and the merge is handed all sixteen.
+#
+# WHAT IT RETAINS, in the artifact `test262-evidence`, under the names bundle sjl-0-001's collector
+# gives them: per form, the merged report (`<run>.report.gz`), its JSON report, the run, merge and floor
+# logs, the failure manifest and the effective limit vector; every shard's transcript; the digest of
+# every assembly of the conformance root on every runner and on the merging job, with the count of
+# distinct lists (one is one build); each runner's configuration (image, processors, SDK, native
+# backend); and `run.txt`, what was run where. A bundle imports the artifact unchanged.
+#
+# WHAT IT DOES NOT DO. It takes none of a rule's re-runs of single rows (class C4's (c') and (e)): those
+# run one row alone at both commits on one machine, and the bundle's rule says where. The wall clock
+# differs between machines, so a hosted run is compared with another hosted run, never with a local
+# one, except where a rule classifies the differences rather than judging them. It compares nothing
+# itself.
+#
+# IT WRITES NOTHING. Its token reads the repository and nothing else: it opens no issue, comments on
+# nothing, commits nothing and leaves the floors as they are.
+#
+# WHAT FAILS IT. A commit input that is not 40 hexadecimal digits; a build that fails; a shard that
+# exits with anything but 0 or 1; and, per form, a run run-test262.py's rule calls untaken (2) or
+# unretainable (3), or one whose runners built different assemblies. A crossed floor (4) does not:
+# that is a measurement, as the collectors read it. Failing cases do not either.
+
+name: test262 evidence
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: >-
+          The commit to build and test, all 40 hexadecimal digits. Empty tests the dispatched ref's
+          head. A shorter form is refused, because the checkout would read it as a branch name.
+        required: false
+        default: ''
+        type: string
+      forms:
+        description: The forms to take. A bundle's part A takes both.
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - bytecode
+          - native
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_UI_LANGUAGE: en
+
+  # THE PARTITION: four runners of four shards per form, sixteen shards, the local run's.
+  RUNNERS_PER_FORM: 4
+  SHARDS_PER_RUNNER: 4
+
+  CONFORMANCE_PROJECT: src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj
+  CONFORMANCE_OUTPUT: src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0
+
+jobs:
+  prepare:
+    name: resolve the commit and the slices
+    runs-on: ubuntu-latest
+    outputs:
+      commit: ${{ steps.plan.outputs.commit }}
+      forms: ${{ steps.plan.outputs.forms }}
+      slices: ${{ steps.plan.outputs.slices }}
+    steps:
+      # THE INPUTS REACH THE SCRIPT THROUGH THE ENVIRONMENT AND NOT THROUGH `${{ }}`, so a caller's
+      # string is shell data rather than shell source.
+      - name: Check the commit and plan the slices
+        id: plan
+        env:
+          COMMIT: ${{ inputs.commit }}
+          FORMS: ${{ inputs.forms }}
+          DISPATCHED: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          commit="$(printf '%s' "${COMMIT:-$DISPATCHED}" | tr 'A-F' 'a-f')"
+          if ! [[ "$commit" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::commit must be all 40 hexadecimal digits of a commit, and was '$COMMIT'"
+            exit 1
+          fi
+          case "$FORMS" in
+            both) forms='bytecode native' ;;
+            bytecode|native) forms="$FORMS" ;;
+            *) echo "::error::forms must be both, bytecode or native, and was '$FORMS'"; exit 1 ;;
+          esac
+          slices=$(python3 -c "
+          import json, sys
+          forms, runners = sys.argv[1].split(), int(sys.argv[2])
+          print(json.dumps([{'form': form, 'runner': runner} for form in forms for runner in range(runners)]))
+          " "$forms" "$RUNNERS_PER_FORM")
+          {
+            echo "commit=$commit"
+            echo "forms=$forms"
+            echo "slices=$slices"
+          } >> "$GITHUB_OUTPUT"
+          echo "commit $commit; forms $forms; $RUNNERS_PER_FORM runners x $SHARDS_PER_RUNNER shards per form"
+
+  shard:
+    name: score ${{ matrix.slice.form }} shards (runner ${{ matrix.slice.runner }})
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        slice: ${{ fromJSON(needs.prepare.outputs.slices) }}
+    steps:
+      - name: Check out this workflow's driver
+        uses: actions/checkout@v7
+        with:
+          path: driver
+          sparse-checkout: eng/test262-evidence.py
+          sparse-checkout-cone-mode: false
+
+      - name: Check out the commit under test
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.prepare.outputs.commit }}
+          path: tested
+          fetch-depth: 1
+          submodules: false
+
+      - name: Confirm the checkout is that commit
+        env:
+          COMMIT: ${{ needs.prepare.outputs.commit }}
+        run: test "$(git -C tested rev-parse HEAD)" = "$COMMIT"
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build the conformance root
+        working-directory: tested
+        run: |
+          set -o pipefail
+          mkdir -p ../slice
+          dotnet build "$CONFORMANCE_PROJECT" -c Release 2>&1 | tee ../slice/build-conformance.log
+
+      - name: Extract the pinned suite
+        run: |
+          set -euo pipefail
+          mkdir -p suite
+          tar xzf tested/src/tests/conformance/pins/test262-*.tar.gz -C suite
+
+      - name: Score this runner's shards
+        env:
+          FORM: ${{ matrix.slice.form }}
+          RUNNER: ${{ matrix.slice.runner }}
+        run: |
+          set -euo pipefail
+          suite=$(find suite -maxdepth 1 -mindepth 1 -type d)
+          python3 driver/eng/test262-evidence.py shards --tree tested --suite "$suite" \
+            --binary-directory "tested/$CONFORMANCE_OUTPUT" --form "$FORM" \
+            --shards "$((RUNNERS_PER_FORM * SHARDS_PER_RUNNER))" \
+            --first "$((RUNNER * SHARDS_PER_RUNNER))" --count "$SHARDS_PER_RUNNER" --out slice
+
+      - name: Retain this runner's slice
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: slice-${{ matrix.slice.form }}-${{ matrix.slice.runner }}
+          path: slice
+          if-no-files-found: error
+          retention-days: 14
+
+  collect:
+    name: merge each form and retain the run
+    needs: [prepare, shard]
+    # A merge runs even when a shard job failed, because the merge is what names a missing shard; the
+    # last step still fails the workflow for it.
+    if: ${{ always() && !cancelled() && needs.prepare.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out this workflow's driver
+        uses: actions/checkout@v7
+        with:
+          path: driver
+          sparse-checkout: eng/test262-evidence.py
+          sparse-checkout-cone-mode: false
+
+      - name: Check out the commit under test
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.prepare.outputs.commit }}
+          path: tested
+          fetch-depth: 1
+          submodules: false
+
+      - name: Confirm the checkout is that commit
+        env:
+          COMMIT: ${{ needs.prepare.outputs.commit }}
+        run: test "$(git -C tested rev-parse HEAD)" = "$COMMIT"
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build the conformance root
+        working-directory: tested
+        run: |
+          set -o pipefail
+          mkdir -p ../evidence
+          dotnet build "$CONFORMANCE_PROJECT" -c Release 2>&1 | sed "s#$GITHUB_WORKSPACE/tested#<tree>#g" \
+            | tee ../evidence/build-conformance.log
+
+      - name: Extract the pinned suite
+        run: |
+          set -euo pipefail
+          mkdir -p suite
+          tar xzf tested/src/tests/conformance/pins/test262-*.tar.gz -C suite
+
+      - name: Collect every runner's slice
+        uses: actions/download-artifact@v8
+        with:
+          pattern: slice-*
+          path: slices
+
+      - name: Merge each form
+        id: merge
+        env:
+          FORMS: ${{ needs.prepare.outputs.forms }}
+        run: |
+          set -uo pipefail
+          suite=$(find suite -maxdepth 1 -mindepth 1 -type d)
+          mkdir -p slices
+          status=0
+          for form in $FORMS; do
+            python3 driver/eng/test262-evidence.py merge --tree tested --suite "$suite" \
+              --binary-directory "tested/$CONFORMANCE_OUTPUT" --form "$form" \
+              --shards "$((RUNNERS_PER_FORM * SHARDS_PER_RUNNER))" --slices slices --out evidence \
+              || status=1
+          done
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Record what was run
+        if: always()
+        env:
+          COMMIT: ${{ needs.prepare.outputs.commit }}
+          FORMS: ${{ needs.prepare.outputs.forms }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          INPUTS: ${{ toJson(inputs) }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, importlib.util, json, os, pathlib, platform, subprocess
+
+          spec = importlib.util.spec_from_file_location("driver", "driver/eng/test262-evidence.py")
+          driver = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(driver)
+
+          def git(*args):
+              return subprocess.run(["git", "-C", "tested", *args], capture_output=True, text=True).stdout.strip()
+
+          pin = pathlib.Path("tested/src/tests/conformance/pins/test262.pin")
+          sdk = subprocess.run(["dotnet", "--version"], capture_output=True, text=True).stdout.strip()
+          runners, per = int(os.environ["RUNNERS_PER_FORM"]), int(os.environ["SHARDS_PER_RUNNER"])
+          lines = [
+              f"repository: {os.environ['GITHUB_REPOSITORY']}",
+              f"workflow run: {os.environ['RUN_URL']} (attempt {os.environ['GITHUB_RUN_ATTEMPT']})",
+              f"dispatched ref: {os.environ['GITHUB_REF']} at {os.environ['GITHUB_SHA']}",
+              f"tested commit: {git('rev-parse', 'HEAD')}",
+              f"tested tree: {'clean' if not git('status', '--porcelain') else 'dirty'}",
+              f"inputs: {json.dumps(json.loads(os.environ['INPUTS']), sort_keys=True)}",
+              f"forms: {os.environ['FORMS']}",
+              f"partition: {runners} runners of {per} shards per form, {runners * per} shards",
+              f"allowance: fuel={driver.FUEL} wallClockMs={driver.WALL}",
+              f"suite pin: src/tests/conformance/pins/test262.pin sha256="
+              + hashlib.sha256(pin.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
+              f"merging job: image {os.environ.get('ImageOS', '(unknown)')} {os.environ.get('ImageVersion', '(unknown)')}; "
+              f"{platform.platform()} {platform.machine()} cpus={os.cpu_count()}; sdk {sdk}",
+              "runners: each form's <run>.runners.txt",
+          ]
+          pathlib.Path("evidence").mkdir(exist_ok=True)
+          pathlib.Path("evidence/run.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print("\n".join(lines))
+          PY
+
+      - name: Summarise
+        if: always()
+        env:
+          FORMS: ${{ needs.prepare.outputs.forms }}
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+
+          names = {"bytecode": "wide-bytecode", "native": "wide-native"}
+          lines = ["## test262 evidence", ""]
+          for form in os.environ["FORMS"].split():
+              name = names[form]
+              document = pathlib.Path("evidence") / f"{name}.test262.json"
+              log = pathlib.Path("evidence") / f"{name}.run.log"
+              exit_line = log.read_text(encoding="utf-8").strip().splitlines()[-1] if log.is_file() else "(no run log)"
+              lines.append(f"### `{name}`: {exit_line}")
+              if document.is_file():
+                  report = json.loads(document.read_text(encoding="utf-8"))
+                  totals = report["totals"]
+                  lines += ["", "| files | variants | passed | failed | unsupported | exhausted | skipped |",
+                            "|---:|---:|---:|---:|---:|---:|---:|",
+                            "| {files} | {variants} | {passed} | {failed} | {unsupported} | {exhausted} | {skipped} |".format(**totals),
+                            "", f"Retainable: `{report['retention']['retainable']}`"]
+              binaries = pathlib.Path("evidence") / f"{name}.binaries.log"
+              if binaries.is_file():
+                  lines += ["", binaries.read_text(encoding="utf-8").strip().splitlines()[-1]]
+              lines.append("")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("\n".join(lines) + "\n")
+          PY
+
+      - name: Retain the run
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test262-evidence
+          path: evidence
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Require a complete run
+        env:
+          STATUS: ${{ steps.merge.outputs.status }}
+          SHARDS_RESULT: ${{ needs.shard.result }}
+        run: |
+          set -euo pipefail
+          if [ "$STATUS" != 0 ]; then
+            echo "::error::a form's run was not taken, may not be retained, or mixed builds; see its run and binaries logs"
+            exit 1
+          fi
+          if [ "$SHARDS_RESULT" != success ]; then
+            echo "::error::at least one shard job did not succeed ($SHARDS_RESULT)"
+            exit 1
+          fi
