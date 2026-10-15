@@ -462,6 +462,14 @@ published package, and the pin, the allow-list, both lock files and the notices 
 `sjl-5-001`'s runs used the earlier copy, and its README says what was run again with the published one.
 Nothing moves: SJL-5 stays `In progress`.
 
+**2026-10-15, later: SJL-6.0 is queued.** At the owner's direction, SJL-6 begins with a new work
+package, [SJL-6.0](milestones/sjl-6-date.md#sjl-60--broilervms-hosted-test262-evidence-workflow): a
+hosted workflow that takes Broiler.VM's whole-suite test262 runs in both forms, as Broiler.JS's
+`test262-evidence.yml` takes that engine's, so that an area's base and after runs no longer hold the
+one local machine for their length. It comes before SJL-6.1, so that SJL-6's rule can name it for both
+runs, and it changes no product code. SJL-5's runs are not moved: its rule took its base on the local
+machine. Nothing moves: SJL-6 stays `Not started`.
+
 ---
 
 ## 1. Reading this ledger
