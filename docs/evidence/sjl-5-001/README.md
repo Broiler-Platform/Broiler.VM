@@ -14,8 +14,12 @@ role (EX-30), and nobody independent has read this bundle.
 [`decision-rule.md`](decision-rule.md) as written, with no revision (sections 5 to 7). Every row the
 test262 comparisons changed is a wall-clock exhaustion at the base whose re-runs alone agree at both
 commits, and no row needed class C1, C3 or (e). The vectors, the closures, the rules, the packages and
-the simplification check are sections 8 to 10, and section 12 holds the Broiler.VM clauses, each met.
-*(Revised 2026-10-15, at SJL-5.6. The paragraph read: "**State:** collection in progress. Nothing here is
+the simplification check are sections 8, 10 and 11, section 9 holds the exclusions, and section 12 holds
+the Broiler.VM clauses, each met. *(Revised 2026-10-15, later the same day: the exclusions moved to
+section 9, the one section rule H2 reads a definition from, ahead of the closures and the simplification
+check, which were sections 9 and 10; their content is unchanged. The sentence read "The vectors, the
+closures, the rules, the packages and the simplification check are sections 8 to 10, and section 12
+holds the Broiler.VM clauses, each met.")* *(Revised 2026-10-15, at SJL-5.6. The paragraph read: "**State:** collection in progress. Nothing here is
 a verdict until its section says so. **Taken:** the base (section 1) and the first engine-level runs on
 the text area (section 2). The after runs, their comparisons and the rest of SJL-5.6 are added when
 SJL-5.4's cut-over has landed; [`collect.py`](collect.py) gains their steps then.")*
@@ -116,7 +120,7 @@ the contract suite 473 of 473.)*
 | Commit | `72ad941`, a clean checkout ([`after/identity.txt`](after/identity.txt)). Its product sources are the cut-over commit's, `6614fa9` (JSD-0071), but for the 11 files outside the documents the identity lists: the published package on the committed feed with its pin, the allow-list, both lock files, the feed's README and the notices row (JSC-305), and this family's pin of the shared corpus at revision 13 with its archive and README (section 3). The published package's library code is the one `6614fa9` was built with |
 | Rule and harness | [`decision-rule.md`](decision-rule.md) and [`json-modules.cs`](json-modules.cs), each with the same SHA-256 at the base and after (both identities) |
 | Collector | [`collect.py`](collect.py) at `72ad941`, whose after steps reuse bundle `sjl-4-001`'s collector, and through it `sjl-3-001`'s and `sjl-0-001`'s |
-| Taken | 2026-10-15, 07:11Z to 08:20Z, step by step - `after-identity`, `after-test262`, `after-twins`, `after-json-modules`, `compare`, `rerun`, `wall-race`, `vectors`, `closures`, `rules`, `simplification` - on an otherwise idle machine, into [`after/`](after/) and [`vectors/`](vectors/). Then, from 08:20Z, `eng/collect-js-packages.py` at the same commit into [`after/packages/`](after/packages/) (section 9). Broiler.JS's after run took place on GitHub's runners meanwhile, not on this machine |
+| Taken | 2026-10-15, 07:11Z to 08:20Z, step by step - `after-identity`, `after-test262`, `after-twins`, `after-json-modules`, `compare`, `rerun`, `wall-race`, `vectors`, `closures`, `rules`, `simplification` - on an otherwise idle machine, into [`after/`](after/) and [`vectors/`](vectors/). Then, from 08:20Z, `eng/collect-js-packages.py` at the same commit into [`after/packages/`](after/packages/) (section 10). Broiler.JS's after run took place on GitHub's runners meanwhile, not on this machine |
 | Machine | the base's: `linux-x64`, four logical processors, .NET SDK 10.0.401, four jobs, the native backend `x86-64-sysv` |
 | Base side of the re-runs | a clean checkout of the base commit `e600da2`, whose conformance root has the SHA-256 the base's runs record ([`base/test262-binary.txt`](base/test262-binary.txt)) |
 
@@ -183,7 +187,13 @@ section 3's `vectors/run-revision-13.tsv.gz`. The negative control changes the e
 `text/trim/0001` in memory, and the run reports that vector, and only it, as an unclassified difference
 ([`vectors/after-negative-control-revision-13.log`](vectors/after-negative-control-revision-13.log)).
 
-## 9. Closures, the rules and the packages
+## 9. Exclusions
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-128 | Open | **The text code that left this component's assurance coverage.** The 44 members rule I5 registers for SJL-5.4 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`), and the inline readings, template walks and normalisations JSD-0071 section 3 names, left the JavaScript family's sources at SJL-5.4. What computes them now is `Broiler.ECMAScript.Algorithms`, namespace `Broiler.ECMAScript.Text`, which the home's own assurance component covers in the Broiler.JS repository (`Broiler.ECMAScript/assurance.config.json`: an annotation on every relevant declaration, its manifest generated and checked in CI, rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count them. The adapters stay in this family and stay covered. EX-125 and EX-127 say the same of the earlier areas |
+
+## 10. Closures, the rules and the packages
 
 **Every JavaScript root this machine can publish was published and run in three modes, and each
 closure declares the algorithms assembly.** [`after/closures/`](after/closures/) holds, for
@@ -214,14 +224,14 @@ restore, and the Native AOT consumer ran. Its nuspecs that declare a shared depe
 `Broiler.ECMAScript.Algorithms` `0.1.0-preview.3`, which rule N37 admits. It does not replace the profile's
 package baseline, bundle JS-10-006, which rule N37 still holds (JSD-0071 section 1).
 
-## 10. The simplification check
+## 11. The simplification check
 
 **The deletion check.** [`after/simplification/deletion-check.log`](after/simplification/deletion-check.log)
 searches the simple name of every member rule I5 registers - 122, SJL-3.4's, SJL-4.4's and SJL-5.4's -
 as a declaration in the JavaScript family's sources. **All 44 of SJL-5.4's are declared nowhere.** 106 of
 the 122 are declared nowhere; the other 16 are the earlier areas' names that bundle `sjl-4-001` section 8
 read, matching other members of the same simple name in other types, or the adapters that keep a deleted
-member's name. Rule I5 decides by the fully qualified name, and it passes (section 9).
+member's name. Rule I5 decides by the fully qualified name, and it passes (section 10).
 
 **The duplicate search.** [`after/simplification/duplicate-search.log`](after/simplification/duplicate-search.log)
 searches the component's product sources for the constructs that would mean a surviving copy of the area:
@@ -251,19 +261,13 @@ pair read that `Utf16.CodePointAt` could serve. They stay, and this bundle names
 that own their code, SJL-7 (case mapping) and SJL-13 (the lexer). No clause of SJL-5 reads the duplicate
 search.
 
-## 11. Exclusions
-
-| ID | Status | Exclusion |
-|---|---|---|
-| EX-128 | Open | **The text code that left this component's assurance coverage.** The 44 members rule I5 registers for SJL-5.4 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`), and the inline readings, template walks and normalisations JSD-0071 section 3 names, left the JavaScript family's sources at SJL-5.4. What computes them now is `Broiler.ECMAScript.Algorithms`, namespace `Broiler.ECMAScript.Text`, which the home's own assurance component covers in the Broiler.JS repository (`Broiler.ECMAScript/assurance.config.json`: an annotation on every relevant declaration, its manifest generated and checked in CI, rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count them. The adapters stay in this family and stay covered. EX-125 and EX-127 say the same of the earlier areas |
-
 ## 12. The Broiler.VM clauses
 
 | Clause | What it asks | Where | State |
 |---|---|---|---|
-| 6 | Rules I1 to I7 hold, and rule I5 holds the deletion list | section 9, [`after/rules.log`](after/rules.log) | **Met** at `72ad941`: 381 of 381, I5 among them |
+| 6 | Rules I1 to I7 hold, and rule I5 holds the deletion list | section 10, [`after/rules.log`](after/rules.log) | **Met** at `72ad941`: 381 of 381, I5 among them |
 | 7 | test262 in both forms meets the area rule, and the fuel twins agree | sections 5 and 6 | **Met**: part A MET in both pairs, every change a (c') row whose re-runs agree; part B MET; the exhaustion verdicts hold |
-| 8 | Every root is published and run in three modes | section 9 | **Met** for every root this machine can publish, at `72ad941`; Android is EX-126 |
+| 8 | Every root is published and run in three modes | section 10 | **Met** for every root this machine can publish, at `72ad941`; Android is EX-126 |
 | 9 | Compile-time JSON modules produce byte-identical artifacts for the retained module corpus, or every difference is classified | section 7 | **Met**: 42 of 42 documents identical, no difference |
 
 Clauses 1 and 2, the home's, and 3 to 5, Broiler.JS's, are judged in Broiler.JS's bundle of the same
