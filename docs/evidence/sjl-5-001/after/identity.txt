@@ -1,0 +1,28 @@
+bundle sjl-5-001, its after arm
+milestone SJL-5, work package SJL-5.6, Broiler.VM's half
+collected 2026-10-15T07:11:38Z
+after-commit 72ad941e1c3248780af8231e548c3656b0984f99
+after-tree clean
+cut-over-commit 6614fa9eadcadae474518fd5a8ba8c46c1e54d7c
+base-commit e600da2a07e385dbdd4bd04d6d0c8f2842c3b462 (base/identity.txt)
+rule docs/evidence/sjl-5-001/decision-rule.md sha256=4ce1406a0fe7d60537cafb3f6c1bcf97f2fb1f229c618a79523832c46c9aee9c
+harness docs/evidence/sjl-5-001/json-modules.cs sha256=0dacdae637b599f6140f7ea766fa700e484a8b493b86fd666ae5705d9eb5c415
+sdk 10.0.401
+machine Linux-6.18.44-fc-v114-x86_64-with-glibc2.39 x86_64 cpus=4
+suite-pin src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+allowance fuel=100000000 wallClockMs=5000
+twin-allowance ceiling=1000000000 wallClockMs=600000
+jobs 4
+native-backend x86-64-sysv
+since-cut-over 6614fa9eadcadae474518fd5a8ba8c46c1e54d7c, outside the documents: 11 files
+  THIRD_PARTY_NOTICES.md
+  eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.3.nupkg
+  eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.3.pin
+  eng/packages/README.md
+  src/Broiler.VM.Profile.JavaScript.Compiler/packages.lock.json
+  src/Broiler.VM.Profile.JavaScript/packages.lock.json
+  src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json
+  src/tests/vectors/pins/README.md
+  src/tests/vectors/pins/broiler-js-vectors-9ae67ee50195be074beb963173312fb7772dd455.tar.gz
+  src/tests/vectors/pins/broiler-js-vectors-bb1fc664df8d1979be4522a9d39adb9407271e06.tar.gz
+  src/tests/vectors/pins/vectors.pin
