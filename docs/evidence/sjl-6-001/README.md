@@ -77,3 +77,20 @@ hosted run did, so neither machine is the one that runs out of wall clock throug
   another hosted run, never with a local one, as the workflow's own header says.
 - **The workflow takes no re-run of a single row.** A rule that re-runs a (c') or (e) row says where.
 - **Nothing here judges an engine change**: the commit it ran at is one bundle `sjl-5-001` already judged.
+
+## 5. SJL-6's area rule (SJL-6.1)
+
+*(Added 2026-10-15, at SJL-6.1. Nothing above changes.)* Two files join this bundle with the Date area's
+verdict, [JSD-0072](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0072-date-algorithms-move-to-the-shared-algorithms-library.md),
+before any code of SJL-6 exists:
+
+- [`correspondence.md`](correspondence.md), the verdict's input: both engines' Date algorithms by file and
+  line, and every difference numbered and classified;
+- [`decision-rule-area.md`](decision-rule-area.md), the area's rule for this repository's clause 7. Its
+  part A takes SJL-6's base and after runs with the workflow this bundle's check judged, which completes
+  SJL-6.0's done-when; its part B holds the fuel-parity twins and the probes in `src/tests/forms/date` to
+  the base.
+
+The area's runs will be retained here under directories of their own, beside `hosted/`, which stays
+SJL-6.0's. [`manifest.json`](manifest.json) lists what SJL-6.0's collection retained; the area's collection
+writes its own.

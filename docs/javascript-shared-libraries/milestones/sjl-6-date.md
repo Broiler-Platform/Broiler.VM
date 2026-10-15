@@ -65,6 +65,10 @@ and retainable from one build, and every difference from the same commit's local
 race between the machines, which the rule admits. What remains of this done-when is SJL-6.1's rule naming
 the workflow.)*
 
+*(2026-10-15, later: SJL-6.1's rule for this repository, bundle `sjl-6-001`'s
+[`decision-rule-area.md`](../../evidence/sjl-6-001/decision-rule-area.md), names the workflow for both
+SJL-6's base and its after runs, so this done-when is met.)*
+
 ### SJL-6.1 — Area verdict and comparison rules
 
 Applied as in SJL-4.1, with one verdict for each of the four sub-areas: time arithmetic, civil-day
@@ -114,6 +118,9 @@ The algorithms library gains:
 - the civil-day copies: `JsTemporalCore`'s calendar members, `JsTimeZones`' `DaysFromCivil`,
   `MonthLength` and `Weekday`, and `JsLocalTime.From` in the date-time formatter.
 
+*(Corrected 2026-10-15, at SJL-6.1, by [JSD-0072](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0072-date-algorithms-move-to-the-shared-algorithms-library.md): the three are `JsZone`'s, in `JsTimeZones.cs`. The
+record extends this list with the copies its correspondence found.)*
+
 **Unchanged:** the provider Broiler.VM passes is UTC, under JSD-0053 §7.
 
 ### SJL-6.5 — Broiler.JS's cut-over
@@ -121,12 +128,16 @@ The algorithms library gains:
 **Deleted:**
 
 - `JSDateMath`'s arithmetic;
-- `JSDateStatic`'s `DaysInMonth` and `TryParseExtendedIso`;
+- `JSDateStatic`'s `DaysInMonth` and `TryParseExtendedIso`; *(corrected 2026-10-15, at SJL-6.1, by
+  [JSD-0072](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0072-date-algorithms-move-to-the-shared-algorithms-library.md): both are members of `JSDate`, in `JSDateStatic.cs`)*
 - the leap-year, civil-day and week-helper copies in every Temporal type.
 
 **`DateParser` (public)** keeps its type. Its standard grammars forward to the library
 ([SJL-D-25](../decisions.md#sjl-d-25) (a)), and its .NET-culture fallback stays in it as Broiler.JS's
-dialect ([SJL-D-17](../decisions.md#sjl-d-17)).
+dialect ([SJL-D-17](../decisions.md#sjl-d-17)). *(Corrected 2026-10-15, at SJL-6.1, by [JSD-0072](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0072-date-algorithms-move-to-the-shared-algorithms-library.md):
+`DateParser` is public, but its `Parse` is internal, so it has no public member to forward. Its lists of
+the format go, and its `N/N/N` heuristic, other format lists and culture parses stay as Broiler.JS's
+fallback, which it calls after the strict dialect and before Broiler.VM's.)*
 
 **Date storage.** Broiler.JS stores a `DateTimeOffset` plus a raw double today. Moving to a single
 time value as the source of truth is part of this cut-over, because otherwise the getters and
@@ -134,7 +145,9 @@ setters cannot use the shared arithmetic outside 0001 to 9999.
 
 **The local-time provider** wraps the host `TimeZoneInfo`. Alternatively, once SJL-8 lands, it wraps
 the shared IANA data. Either way, Broiler.JS's `Date` and its `Temporal` stop reading different
-time-zone data.
+time-zone data. *(Corrected 2026-10-15, at SJL-6.1, by [JSD-0072](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0072-date-algorithms-move-to-the-shared-algorithms-library.md): only the second way
+does. Broiler.JS's `Temporal` reads its bundled tzdata, so while the provider wraps the host's
+`TimeZoneInfo`, `Date` and `Temporal` still read different data; SJL-8 ends that.)*
 
 **Corrections, listed:**
 
@@ -142,6 +155,12 @@ time-zone data.
 - `TimeClip` kept −0;
 - `MakeTime` did not truncate its arguments;
 - setters kept fractional arguments;
+
+  *(Corrected 2026-10-15, at SJL-6.1, by [JSD-0072](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0072-date-algorithms-move-to-the-shared-algorithms-library.md): the three items after the first were corrected
+  at SJL-4.5 and are in Broiler.JS's changelog there, so they are not SJL-6's. The record names the rest
+  of this cut-over's corrections.)*
+
+
 - setters returned `NaN` for valid dates outside 0001 to 9999;
 - the offset base mixed DST-aware and DST-unaware values;
 - out-of-range dates took the current season's offset.
