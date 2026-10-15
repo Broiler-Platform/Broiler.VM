@@ -454,6 +454,14 @@ both engines' runs on revision 12 after their cut-overs having shown that none s
 family's pin moves to it. SJL-5 stays `In progress`: SJL-5.6's evidence follows, and no clause is met by
 records.
 
+**2026-10-15, later: the text area is published as `0.1.0-preview.3`.** On the owner's instruction,
+Broiler.JS's publish-shared workflow published `Broiler.ECMAScript.Algorithms` `0.1.0-preview.3` to
+nuget.org from Broiler.JS `6e20998`, whose library code is `0db9042`'s. The committed feed holds the
+published package, and the pin, the allow-list, both lock files and the notices row record it
+([JSC-305](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-305)). Bundle
+`sjl-5-001`'s runs used the earlier copy, and its README says what was run again with the published one.
+Nothing moves: SJL-5 stays `In progress`.
+
 ---
 
 ## 1. Reading this ledger

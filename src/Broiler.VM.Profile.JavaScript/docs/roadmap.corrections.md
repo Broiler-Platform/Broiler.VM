@@ -13198,3 +13198,28 @@ version the allow-list pins.
 **Authority and date.** [JSD-0071](decisions/0071-the-profile-on-the-shared-text-algorithms.md) section 1,
 on [JSD-0070](decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md) and the programme's
 work package SJL-5.4. 2026-10-15.
+
+### JSC-305
+
+**Where:** the records that carry the package's identity: the committed feed `eng/packages/` with its
+README and the package's pin, the allow-list's entry, both lock files and `THIRD_PARTY_NOTICES.md`'s row
+for the package. [JSD-0071](decisions/0071-the-profile-on-the-shared-text-algorithms.md) is not edited.
+
+**What the plan said.** JSD-0071 section 1: "`Broiler.ECMAScript.Algorithms` `0.1.0-preview.3`, the
+shared stream's next preview, packed from Broiler.JS `0db90422c8aca642926acff6b715d788cb17f9c6` and
+restored from the committed feed `eng/packages/` with lock files. It is not on nuget.org at this
+record." And [JSC-304](#jsc-304): "packed from Broiler.JS `0db9042` and not yet on nuget.org".
+
+**What replaced it.** The version does not move. Broiler.JS's publish-shared workflow published
+`0.1.0-preview.3` to nuget.org on 2026-10-15 (run 38693270741) from Broiler.JS `6e20998`, and the feed
+holds the package exactly as that run pushed it. Between `0db9042` and `6e20998` nothing under
+`Broiler.ECMAScript/` changes outside its tests, so the library code is the same. The package differs in
+the commit its nuspec and assembly record, the case of the repository URL, and its
+`THIRD_PARTY_NOTICES.md`, whose sentence on Broiler.JS's `UriHelper` Broiler.JS's SJL-5.5 revised.
+Its content hash differs, so the pin, the allow-list (whose sources already name nuget.org), both lock
+files and the notices row record the published package; each quotes what it read before. Rule I1's
+witness keeps its own hash and does not move. Everything else JSD-0071 decided stands.
+
+**Authority and date.** The owner's instruction of 2026-10-15 to publish `0.1.0-preview.3`, on
+[JSD-0071](decisions/0071-the-profile-on-the-shared-text-algorithms.md) section 1 and the programme's
+work package SJL-5.4. 2026-10-15.

@@ -6,7 +6,7 @@
         "type": "Direct",
         "requested": "[0.1.0-preview.3, )",
         "resolved": "0.1.0-preview.3",
-        "contentHash": "PGmwRgBhD2LYe7KgV8xUTh4Lm8Os11BAxJhYcLdmultCvLFltDaNgZlPKgFvQr/nACAmw/v8B0Rpn7jqZ53Sgw=="
+        "contentHash": "cLMz53DAFAhaA1pJPk6migLRBygv7tyjhXw4gSd2GI3GQ6b7eCRFEEFAQ4wHNnHZvy2ppVsIIF1pG+BEUl2zTg=="
       },
       "broiler.vm.abstractions": {
         "type": "Project"

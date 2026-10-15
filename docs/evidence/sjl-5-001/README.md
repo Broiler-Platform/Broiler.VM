@@ -94,3 +94,11 @@ classified divergences, 0 unclassified differences.** The negative control
 ([`vectors/negative-control-revision-13.log`](vectors/negative-control-revision-13.log)) changes the
 expected value of `text/trim/0001` in memory, and the run reports that vector, and only it, as an
 unclassified difference.
+
+*(Added 2026-10-15, after the runs. The package was published to nuget.org that day as
+`Broiler.ECMAScript.Algorithms` `0.1.0-preview.3`, from Broiler.JS `6e20998`, whose library code is
+`0db9042`'s. The committed feed now holds the published package, and the checkout references it
+(JSC-305). Every run of this bundle used the copy packed from `0db9042`. With the published package, the
+same conformance root gives a report identical byte for byte to `vectors/run-revision-13.tsv.gz`, the
+negative control again reports `text/trim/0001` alone, and the architecture suite passes 381 of 381 and
+the contract suite 473 of 473.)*
