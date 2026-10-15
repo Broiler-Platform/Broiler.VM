@@ -21,8 +21,8 @@
   "packages": [
     {
       "id": "Broiler.ECMAScript.Algorithms",
-      "version": "0.1.0-preview.2",
-      "contentHash": "V1b57mCiAxulP7R+V4sZOSLcnqWjgIR1Q7z0Q8DDXkOBiVws1KTWMiMG7N5fKZ+ZR28NWjxUGtfPm00AXhSkEw==",
+      "version": "0.1.0-preview.3",
+      "contentHash": "cLMz53DAFAhaA1pJPk6migLRBygv7tyjhXw4gSd2GI3GQ6b7eCRFEEFAQ4wHNnHZvy2ppVsIIF1pG+BEUl2zTg==",
       "use": "product",
       "projects": [
         "Broiler.VM.Profile.JavaScript",
@@ -33,8 +33,8 @@
         "committed-feed",
         "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.2.pin",
-      "admittedBy": "SJL-4.4 and JSD-0067: the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
+      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.3.pin",
+      "admittedBy": "SJL-5.4 and JSD-0070: the text area beside the numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.3, packed locally from Broiler.JS 0db9042 and on the committed feed only; published to nuget.org that day from Broiler.JS 6e20998, with the same library code (JSC-305), which both sources now serve with one content hash. It replaced 0.1.0-preview.2, admitted by SJL-4.4 and JSD-0067 for the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
     }
   ]
 }

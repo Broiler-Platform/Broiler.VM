@@ -13173,3 +13173,53 @@ allow-list pins; the bundle notes the change.
 shared stream's `0.1.0` prefix, which Broiler.JS `b3d54f7` records in `Broiler.ECMAScript/CHANGELOG.md`;
 on [JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md) section 1 and the programme's work
 package SJL-4.4. 2026-10-14.
+
+### JSC-304
+
+**Where:** [`packages.md`](packages.md), the paragraph "No foreign dependency".
+
+**What the plan said.** "`Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms
+package, which rule I1 admits for shipping and which `Broiler.VM.Profile.JavaScript` and `.Compiler`
+declare at `0.1.0-preview.2`, the version it was published under, since 2026-10-14; they declared it at
+`0.2.0-preview.1`, the version first planned for it, from the numerics cut-over
+([JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md)) until then, as the baseline's
+candidate pack does, and at `0.1.0-preview.1` from the number-conversion cut-over
+([JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md))
+*(corrected: JSC-301, JSC-303)*."
+
+**What replaced it.** The two packages declare `0.1.0-preview.3` since the text cut-over, the shared
+stream's next preview, which carries the text area beside the number conversions and the numerics,
+packed from Broiler.JS `0db9042` and not yet on nuget.org; they declared `0.1.0-preview.2` from
+2026-10-14 until then. Rule I1 admits one version of a package, so the allow-list, the committed feed,
+both lock files and rule I1's witness moved to it together. Bundle JS-10-006's candidate pack, the
+package baseline, declares `0.2.0-preview.1`, which rule N37 still accepts, since it is above the
+version the allow-list pins.
+
+**Authority and date.** [JSD-0071](decisions/0071-the-profile-on-the-shared-text-algorithms.md) section 1,
+on [JSD-0070](decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md) and the programme's
+work package SJL-5.4. 2026-10-15.
+
+### JSC-305
+
+**Where:** the records that carry the package's identity: the committed feed `eng/packages/` with its
+README and the package's pin, the allow-list's entry, both lock files and `THIRD_PARTY_NOTICES.md`'s row
+for the package. [JSD-0071](decisions/0071-the-profile-on-the-shared-text-algorithms.md) is not edited.
+
+**What the plan said.** JSD-0071 section 1: "`Broiler.ECMAScript.Algorithms` `0.1.0-preview.3`, the
+shared stream's next preview, packed from Broiler.JS `0db90422c8aca642926acff6b715d788cb17f9c6` and
+restored from the committed feed `eng/packages/` with lock files. It is not on nuget.org at this
+record." And [JSC-304](#jsc-304): "packed from Broiler.JS `0db9042` and not yet on nuget.org".
+
+**What replaced it.** The version does not move. Broiler.JS's publish-shared workflow published
+`0.1.0-preview.3` to nuget.org on 2026-10-15 (run 38693270741) from Broiler.JS `6e20998`, and the feed
+holds the package exactly as that run pushed it. Between `0db9042` and `6e20998` nothing under
+`Broiler.ECMAScript/` changes outside its tests, so the library code is the same. The package differs in
+the commit its nuspec and assembly record, the case of the repository URL, and its
+`THIRD_PARTY_NOTICES.md`, whose sentence on Broiler.JS's `UriHelper` Broiler.JS's SJL-5.5 revised.
+Its content hash differs, so the pin, the allow-list (whose sources already name nuget.org), both lock
+files and the notices row record the published package; each quotes what it read before. Rule I1's
+witness keeps its own hash and does not move. Everything else JSD-0071 decided stands.
+
+**Authority and date.** The owner's instruction of 2026-10-15 to publish `0.1.0-preview.3`, on
+[JSD-0071](decisions/0071-the-profile-on-the-shared-text-algorithms.md) section 1 and the programme's
+work package SJL-5.4. 2026-10-15.

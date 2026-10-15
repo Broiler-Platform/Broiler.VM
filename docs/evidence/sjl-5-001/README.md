@@ -74,3 +74,31 @@ read that Broiler.JS refuses `JSON.parse("1e400")`, and its first run answers `I
 specification does. JSD-0070's "J2 to J4" sentence is not edited; Broiler.JS's plan records the
 correction, and that engine's changelog will not list J4. Rows P4, X1 and X2 have no vector, and row
 J5's vectors match on Linux, where both runs were taken.
+
+## 3. The cut-over's vectors (SJL-5.4) and corpus revision 13
+
+**After this family's cut-over (`6614fa9`, JSD-0071), every vector matches.** With the conformance root of
+that commit, built in Release, on the archive pinned at revision 12
+([`vectors/cut-over-revision-12.log`](vectors/cut-over-revision-12.log),
+[`vectors/cut-over-revision-12.tsv.gz`](vectors/cut-over-revision-12.tsv.gz)): **42,943 vectors, 42,943
+match, 0 classified divergences, 0 unclassified differences.** Each of the five vectors of section 2 that
+carried a `divergence.broiler-vm` field reports "divergence no longer holds".
+
+**Corpus revision 13 (Broiler.JS `bb1fc66`) retires the text area's divergence fields**, this family's five
+and Broiler.JS's 42, which its own cut-over (SJL-5.5) corrects, and this family's pin moves to it. `git
+archive` of the commit, run twice, gave byte-identical files, and the second, extracted afresh and hashed
+there, gave the pin's content digest, which the harness's own reading agrees with. On the pinned archive,
+with the same conformance root ([`vectors/run-revision-13.log`](vectors/run-revision-13.log),
+[`vectors/run-revision-13.tsv.gz`](vectors/run-revision-13.tsv.gz)): **42,943 vectors, 42,943 match, 0
+classified divergences, 0 unclassified differences.** The negative control
+([`vectors/negative-control-revision-13.log`](vectors/negative-control-revision-13.log)) changes the
+expected value of `text/trim/0001` in memory, and the run reports that vector, and only it, as an
+unclassified difference.
+
+*(Added 2026-10-15, after the runs. The package was published to nuget.org that day as
+`Broiler.ECMAScript.Algorithms` `0.1.0-preview.3`, from Broiler.JS `6e20998`, whose library code is
+`0db9042`'s. The committed feed now holds the published package, and the checkout references it
+(JSC-305). Every run of this bundle used the copy packed from `0db9042`. With the published package, the
+same conformance root gives a report identical byte for byte to `vectors/run-revision-13.tsv.gz`, the
+negative control again reports `text/trim/0001` alone, and the architecture suite passes 381 of 381 and
+the contract suite 473 of 473.)*

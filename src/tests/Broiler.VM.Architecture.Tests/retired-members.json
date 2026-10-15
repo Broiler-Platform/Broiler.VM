@@ -14,7 +14,13 @@
     "stays as adapters is not here: JsBigInt, the value wrapper whose operations are one line over BigIntMath and",
     "BigIntText; JsElements.Narrow; JsRealm.MathHypotOperands and MathSumPrecise, which keep the coercion, the iteration and",
     "the charges; JsRealm.BinaryToIndex, which keeps the coercion and the RangeError; and JavaScriptValue.ToInt32 and",
-    "ToUint32, public forwarders."
+    "ToUint32, public forwarders.",
+    "",
+    "SJL-5.4 (JSD-0071): the text area. What stays as adapters is not here: StringPadTo, which converts the filler and maps",
+    "the status to RangeError; JsRealm.StringSubstitute and RegExpSubstitute, which evaluate the shared parser's parts;",
+    "RegExpAdvanceIndex and ArrayRelative, one line each; GlobalUriAnswer, which maps a status to URIError; the Base64",
+    "option readers, receiver, destination and result; JsonRead and JsonBuild with its object and array halves, which",
+    "build the values, the records and the errors; JsonApplySpace; and JsJsonModule.TryTranslate, the writer."
   ],
   "retired": [
     {
@@ -406,6 +412,226 @@
       "member": "Broiler.VM.Profile.JavaScript.JsBigInt.LeafCost",
       "milestone": "SJL-4.4",
       "replacedBy": "Broiler.ECMAScript.Numbers.BigIntMath.LeafCost"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.StringWellFormed",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Utf16.IsWellFormed and ToWellFormed"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ReadCodePoint",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Utf16.CodePointAt"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.StringRelativeIndex",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.RelativeIndex.Clamped"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.StringExpandDollars",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.ReplacementTemplate.Parse, evaluated by JsRealm.StringSubstitute"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriEncode",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Encode and Decode, behind JsRealm.GlobalUriAnswer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriDecode",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Encode and Decode, behind JsRealm.GlobalUriAnswer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriOctetAt",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Encode and Decode, behind JsRealm.GlobalUriAnswer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriSequenceLength",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Encode and Decode, behind JsRealm.GlobalUriAnswer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriAppendUtf8",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Encode and Decode, behind JsRealm.GlobalUriAnswer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriAppendOctet",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Encode and Decode, behind JsRealm.GlobalUriAnswer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriAppendCodePoint",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Encode and Decode, behind JsRealm.GlobalUriAnswer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalEscapeText",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Escape"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUnescapeText",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Unescape"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriHexValue",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.HexDigitValue"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriIsAlphanumeric",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec, which holds the unescaped sets"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriInSet",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec, which holds the unescaped sets"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriUnescapedComponent",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Encode, whose unescaped set is uriUnescaped"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriUnescapedUri",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.ReservedAndNumberSign"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriPreservedUri",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.ReservedAndNumberSign"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalEscapeUnescaped",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.Escape"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.GlobalUriHexDigits",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64Alphabet",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Base64Codec"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64Encode",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Base64Codec.ToBase64"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64Result",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Base64Codec.FromBase64 and FromHex, which report what they read and wrote"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64SkipSpace",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Base64Codec.FromBase64"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64Decode",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Base64Codec.FromBase64"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64DecodeFull",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Base64Codec.FromBase64"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64DecodeFinal",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Base64Codec.FromBase64"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64HexDigit",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.HexDigitValue, behind Base64Codec.FromHex"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Base64DecodeHex",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.Base64Codec.FromHex"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonSkipSpace",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonParseValue",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonValueStart",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonParseUnrecorded",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonParseObject",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonParseArray",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonParseString",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonParseHex",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonParseNumber",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonParseKeyword",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsRealm.JsonRead and JsonBuild"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonHexDigit",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.UriCodec.HexDigitValue, behind JsonReader"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonQuote",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonText.Quote"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsonIsLoneSurrogate",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonText.Quote"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsJsonModule.Reader",
+      "milestone": "SJL-5.4",
+      "replacedBy": "Broiler.ECMAScript.Text.JsonReader, behind JsJsonModule.TryTranslate"
     }
   ]
 }

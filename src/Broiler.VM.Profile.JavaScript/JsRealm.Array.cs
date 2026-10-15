@@ -17,6 +17,7 @@
 
 using System.Collections.Generic;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Text;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -264,7 +265,7 @@ internal sealed partial class JsRealm
     /// left alone.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7E4066
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=587316
     // Broiler-Human:        PENDING
     private void SetupArrayLaterAdditions()
     {
@@ -273,9 +274,10 @@ internal sealed partial class JsRealm
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
             var relative = engine.ToInteger(ArgOfArray(arguments, 0));
-            var at = relative < 0 ? length + relative : relative;
 
-            return at < 0 || at >= length ? JsValue.Undefined : ArrayGetAt(engine, target, at);
+            return RelativeIndex.TryElement(relative, (long)length, out var at)
+                ? ArrayGetAt(engine, target, at)
+                : JsValue.Undefined;
         });
 
         Method(ArrayPrototype, "findLast", 1, (engine, thisValue, arguments) =>
@@ -375,7 +377,7 @@ internal sealed partial class JsRealm
     /// copy which preserved holes would have to be an Array exotic object built by a different
     /// path than the one that produces every other result here.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=82AA9F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8599AE
     // Broiler-Human:        PENDING
     private void SetupArrayChangeByCopy()
     {
@@ -456,9 +458,8 @@ internal sealed partial class JsRealm
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
             var relative = engine.ToInteger(ArgOfArray(arguments, 0));
-            var at = relative < 0 ? length + relative : relative;
 
-            if (at < 0 || at >= length)
+            if (!RelativeIndex.TryElement(relative, (long)length, out var at))
             {
                 return engine.ThrowRangeError("Array.prototype.with: the index is out of range");
             }
@@ -909,7 +910,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>slice</c>, <c>concat</c>, <c>join</c>, <c>toString</c> and the three searches.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A16EA7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C3FF56
     // Broiler-Human:        PENDING
     private void SetupArrayReaders()
     {
@@ -1065,14 +1066,7 @@ internal sealed partial class JsRealm
                 return JsValue.Number(-1);
             }
 
-            var at = from >= 0 ? from : length + from;
-
-            if (at < 0)
-            {
-                at = 0;
-            }
-
-            for (; at < length; at++)
+            for (double at = RelativeIndex.Clamped(from, (long)length); at < length; at++)
             {
                 engine.Charge(1);
 
@@ -1101,11 +1095,7 @@ internal sealed partial class JsRealm
                 ? engine.ToInteger(arguments[1])
                 : length - 1;
 
-            var at = from >= 0
-                ? System.Math.Min(from, length - 1)
-                : length + from;
-
-            for (; at >= 0; at--)
+            for (double at = RelativeIndex.LastSearchStart(from, (long)length); at >= 0; at--)
             {
                 engine.Charge(1);
 
@@ -1133,14 +1123,8 @@ internal sealed partial class JsRealm
 
             var wanted = ArgOfArray(arguments, 0);
             var from = engine.ToInteger(ArgOfArray(arguments, 1));
-            var at = from >= 0 ? from : length + from;
 
-            if (at < 0)
-            {
-                at = 0;
-            }
-
-            for (; at < length; at++)
+            for (double at = RelativeIndex.Clamped(from, (long)length); at < length; at++)
             {
                 engine.Charge(1);
 
@@ -1604,20 +1588,10 @@ internal sealed partial class JsRealm
         engine.SetProperty(target, "length", JsValue.Number(length), true);
 
     /// <summary>The relative-index rule a negative or out-of-range bound is clamped by.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=206341
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=314E8E
     // Broiler-Human:        PENDING
-    private static double ArrayRelative(JsEngine engine, JsValue value, double length)
-    {
-        var relative = engine.ToInteger(value);
-
-        if (relative < 0)
-        {
-            relative += length;
-            return relative < 0 ? 0 : relative;
-        }
-
-        return relative > length ? length : relative;
-    }
+    private static double ArrayRelative(JsEngine engine, JsValue value, double length) =>
+        RelativeIndex.Clamped(engine.ToInteger(value), (long)length);
 
     /// <summary>How many elements a <c>splice</c> removes.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=812676
