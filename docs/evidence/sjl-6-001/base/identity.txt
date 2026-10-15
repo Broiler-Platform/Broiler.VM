@@ -1,0 +1,18 @@
+bundle sjl-6-001, the Date area's base
+milestone SJL-6, the Date area; the base is this family after SJL-5
+collected 2026-10-15T15:05:38Z
+base-commit 2df523a70b1e3e7266d37b49e51134067650c756
+base-tree clean
+rule docs/evidence/sjl-6-001/decision-rule-area.md sha256=ffa5229bc76e8937fbbdb76a0d98eb2401192612e859bb202b66f76d4693f1eb
+sdk 10.0.401
+machine Linux-6.18.44-fc-v114-x86_64-with-glibc2.39 x86_64 cpus=4
+twin-allowance ceiling=1000000000 wallClockMs=600000
+native-backend x86-64-sysv
+twin-folders src/tests/forms/wide, src/tests/forms/date
+since-sjl-5-merge 72ad941e1c3248780af8231e548c3656b0984f99, outside the documents: 6 files
+  .github/workflows/test262-evidence.yml
+  eng/test262-evidence.py
+  src/tests/forms/date/README.md
+  src/tests/forms/date/parse.small.js
+  src/tests/forms/date/renderings.small.js
+  src/tests/forms/date/time-arithmetic.small.js

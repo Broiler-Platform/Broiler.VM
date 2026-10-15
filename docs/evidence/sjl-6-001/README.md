@@ -94,3 +94,87 @@ before any code of SJL-6 exists:
 The area's runs will be retained here under directories of their own, beside `hosted/`, which stays
 SJL-6.0's. [`manifest.json`](manifest.json) lists what SJL-6.0's collection retained; the area's collection
 writes its own.
+
+## 6. The Date area's base and its first vectors (SJL-6.2)
+
+*(Added 2026-10-15, at SJL-6.2. Nothing above changes.)* The area's collector is
+[`collect-area.py`](collect-area.py), which reuses SJL-6.0's [`collect.py`](collect.py) for a hosted run's
+import and completeness, and bundle `sjl-5-001`'s collector for the twin bisection, so that each arm runs the
+code an earlier arm ran. It writes into [`base/`](base/) and [`vectors/`](vectors/), and lists what it retains
+in [`area-manifest.json`](area-manifest.json); the steps' output is [`base/collect.log`](base/collect.log).
+
+**The base commit is `2df523a`**, the commit that carries [`decision-rule-area.md`](decision-rule-area.md),
+whose tree is the merge `99ad3e1`'s; outside the documents it differs from the default branch after SJL-5,
+`72ad941`, by the workflow, its driver and the Date probes alone ([`base/identity.txt`](base/identity.txt)).
+
+### Part A's base, on hosted runners
+
+| | |
+|---|---|
+| Run | [38752500179](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/38752500179), attempt 1, dispatched from `main` at `99ad3e1` on 2026-10-15 at 14:33:44Z with both forms and the commit `2df523a` named by all forty digits, completed at 14:41:59Z ([`base/hosted/run.txt`](base/hosted/run.txt)) |
+| Retained | [`base/hosted/`](base/hosted/): the artifact `test262-evidence`, every file unchanged, with [`base/hosted/imported.txt`](base/hosted/imported.txt), which records the digest of the zip as downloaded, the digest GitHub records |
+| Complete | both forms, as the rule states it ([`base/completeness.log`](base/completeness.log)): `wide-bytecode` exits 1 and `wide-native` 4, the floor having been set in the `x86-64-win64` form; each whole and retainable, no shard finding, one assembly list per form |
+| Runners | GitHub's standard Linux runner, four processors, .NET SDK 10.0.402, `x86-64-sysv`. Bytecode runners 0 to 2, native runners 0 and 3 and the merging job ran image `ubuntu24` 20261012.334.1, and bytecode runner 3 and native runners 1 and 2 ran 20261004.327.1 (each form's `base/hosted/<run>.runners.txt`); the assemblies they built are the same |
+
+The after runs are compared with this one under the rule, per variant; this section judges nothing.
+
+### Part B's base: the fuel-parity twins and probes
+
+Taken locally on 2026-10-15 from 16:12Z, from a clean checkout of `2df523a`, on the programme's local machine
+(four processors, .NET SDK 10.0.401, Linux), otherwise idle, by `collect-area.py --only base-twins`
+([`base/fuel-parity.log`](base/fuel-parity.log), [`base/build-cli.log`](base/build-cli.log)). **Every twin
+of `src/tests/forms/wide` and every probe of `src/tests/forms/date`, 13 in all, completes at its bisected
+figure and is refused one fuel unit below it with an exhaustion on fuel, in both forms, with the same answer
+in both.** The ten wide twins' figures and answers are those of bundle `sjl-5-001`'s after run, at
+`72ad941`. The three probes' answers are those Node.js 22 gives for the same scripts under `TZ=UTC`, as their
+README requires:
+
+| Probe | Figure | Answer |
+|---|---|---|
+| `date/parse.small.js` | 71,850 | 22044730 |
+| `date/renderings.small.js` | 27,282 | 153540 |
+| `date/time-arithmetic.small.js` | 124,617 | -49431117 |
+
+### Engine-level vectors: the first runs on the Date area
+
+Corpus revision 14 (Broiler.JS `ff6cd24`) adds the Date area. This family's first run on it used a scratch
+pin that records the archive's digests ([`vectors/revision-14.pin`](vectors/revision-14.pin)); `git archive`
+of the commit, run twice, gave byte-identical files, and the archive is not committed. The conformance root
+was the base commit's, built in Release:
+
+| Run | Corpus | Result | Files |
+|---|---|---|---|
+| Revision 14 | `ff6cd24`, 37 files, content `0e0c1704...` | 50,715 vectors: 50,699 match, 0 classified divergences, 16 unclassified differences | [`run-revision-14.log`](vectors/run-revision-14.log), [`run-revision-14.tsv.gz`](vectors/run-revision-14.tsv.gz) |
+
+The sixteen are the three rows of [`correspondence.md`](correspondence.md) that JSD-0072 classes as
+corrections of this family:
+
+| Vector | Expected | Broiler.VM | Row |
+|---|---|---|---|
+| `date/make-day/0863` | May of year 0, the month 1e19 taken modulo 12 exactly | January: the modulo is taken in floating point | T4 |
+| `date/month-day/0021`, `0022`, `0025`, `0026`, `0037`, `0038`, `0041`, `0042` | February 29 regulated in the year given, 1000000100, 1000000128, 2000000100 and -1000000100 | regulated in `1972 + year % 400` | G3 |
+| `date/round-trip/0001`, `0005`, `0007`, `0009`, `0011`, `0013`, `0015` | `Date.parse` of this family's own `toUTCString` answers the time value | NaN for a negative year | P9 |
+
+This family reads back its renderings of year 0 and of every year past 9999, as JSD-0072's "for years 0 and
+above only" says; row P9's cell "past 9999, the same" means the same time value.
+
+**Every vector of corpus revision 15 has a classified result in this family.** Revision 15 (Broiler.JS
+`a3452d9`) classifies both engines' first runs, and this family's pin
+([`src/tests/vectors/pins/vectors.pin`](../../../src/tests/vectors/pins/vectors.pin)) moves to it; the
+archive was taken twice, the copies byte-identical, and the second extracted afresh and hashed there. On
+the pinned archive, with the same conformance root
+([`vectors/run-revision-15.log`](vectors/run-revision-15.log),
+[`vectors/run-revision-15.tsv.gz`](vectors/run-revision-15.tsv.gz)): **50,715 vectors, 50,699 match, 16
+classified divergences, 0 unclassified differences.** The 16 are the `divergence.broiler-vm` fields revision
+15 adds: T4's one (`vm-month-float-modulo`), G3's eight (`vm-month-day-reduced-year`) and P9's seven
+(`vm-parse-negative-year`), each naming SJL-6.4. The negative control
+([`vectors/run-negative-control-revision-15.log`](vectors/run-negative-control-revision-15.log)) changes
+the expected value of `text/trim/0001` in memory, and the run reports that vector, and only it, as an
+unclassified difference. The run of the negative control on revision 14 is retained beside it and judges
+nothing.
+
+**What the runs say of JSD-0072.** Every difference this family's first run found is one the
+correspondence classified, so the record's first falsifier does not fire, and no new record is needed.
+The 22 numeric slash dates, `impl-defined`, match this family's expectation, an invalid date. Broiler.JS's
+first runs, in UTC and in `America/New_York`, are its own bundle's; corpus revision 15 classifies them under
+the rows that bundle names.
