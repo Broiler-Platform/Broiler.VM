@@ -58,6 +58,13 @@ compared per variant through `eng/compare-test262-forms.py --same-form` with eve
 classified, and the comparison is retained in bundle `sjl-6-001`; and SJL-6.1's decision rule names the
 workflow for both its base and its after runs.
 
+*(2026-10-15: the workflow and its driver, `eng/test262-evidence.py`, landed in `9c3d809`
+(Broiler-Platform/Broiler.VM#128), with bundle [`sjl-6-001`](../../evidence/sjl-6-001/README.md)'s rule. Its
+first run, at bundle `sjl-5-001`'s after commit with both forms, meets that rule: each hosted run is whole
+and retainable from one build, and every difference from the same commit's local runs is a wall-clock
+race between the machines, which the rule admits. What remains of this done-when is SJL-6.1's rule naming
+the workflow.)*
+
 ### SJL-6.1 — Area verdict and comparison rules
 
 Applied as in SJL-4.1, with one verdict for each of the four sub-areas: time arithmetic, civil-day

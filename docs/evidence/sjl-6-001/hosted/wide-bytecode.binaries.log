@@ -1,0 +1,7 @@
+# the SHA-256 of each list of the conformance root's assemblies, wide-bytecode; one distinct list is one build
+2213119cf777ba4f8381e16b2e08ba52119c59dc0c091b15085d65150ccd3f6c  merge
+2213119cf777ba4f8381e16b2e08ba52119c59dc0c091b15085d65150ccd3f6c  slice-bytecode-0
+2213119cf777ba4f8381e16b2e08ba52119c59dc0c091b15085d65150ccd3f6c  slice-bytecode-1
+2213119cf777ba4f8381e16b2e08ba52119c59dc0c091b15085d65150ccd3f6c  slice-bytecode-2
+2213119cf777ba4f8381e16b2e08ba52119c59dc0c091b15085d65150ccd3f6c  slice-bytecode-3
+runners: 4; lists: 5; distinct lists: 1
