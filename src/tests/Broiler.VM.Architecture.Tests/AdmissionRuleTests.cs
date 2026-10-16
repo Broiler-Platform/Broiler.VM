@@ -28,10 +28,34 @@ public sealed class AdmissionRuleTests
         });
         Assert.Empty(violations);
 
+        // REVISED 2026-10-16, at SJL-7.4: a test project holds an admitted reference through a
+        // test-only entry that names it. The architecture tests take the owner's generator so; its
+        // reference is read with its lock file like a shipping project's, and the sweep is not
+        // vacuous over it.
+        var testProjects = ComponentGraph.Projects
+            .Where(static project => project.IsTestOnly && project.PackageReferences.Any(AdmissionRules.IsBroilerPackage))
+            .ToArray();
+        Assert.Contains(testProjects, static project => project.AssemblyName == "Broiler.VM.Architecture.Tests");
+        Assert.Empty(testProjects.SelectMany(static project =>
+        {
+            var lockPath = Path.Combine(Path.GetDirectoryName(project.Path)!, "packages.lock.json");
+            return AdmissionRules.I1(project, File.Exists(lockPath) ? AdmissionRules.ReadLockFile(File.ReadAllText(lockPath)) : null);
+        }));
+
         // The list itself: every entry agrees with its pin, its package is on the committed feed at
-        // that hash, and every project it names is in the JavaScript family.
+        // that hash, and every project it names is in the JavaScript family - or, for a test-only
+        // entry, a test project.
         Assert.NotEmpty(AdmissionRules.AllowList);
         Assert.Empty(AdmissionRules.I1Entries(AdmissionRules.AllowList));
+        Assert.Contains(AdmissionRules.AllowList, static package => package.IsTestOnly && package.Projects.Contains("Broiler.VM.Architecture.Tests"));
+
+        // The revision's two witnesses: a product entry naming a test project, and a test-only
+        // entry naming a project that ships. Each is otherwise a real entry, so its pin, hash and
+        // feed copy agree and the refusal is the one the revision adds.
+        var productEntry = AdmissionRules.I1Entries(AdmissionRules.LoadAllowList(Path.Combine(WitnessAssemblies.Directory, "I1-product-entry-names-a-test-project.json.witness"))).ToArray();
+        Assert.Equal(["Broiler.Unicode.Algorithms: admitted for product use, and the allow-list names the test project Broiler.VM.Architecture.Tests; only a test-only entry may name one"], productEntry);
+        var testOnlyEntry = AdmissionRules.I1Entries(AdmissionRules.LoadAllowList(Path.Combine(WitnessAssemblies.Directory, "I1-test-only-entry-names-a-shipping-project.json.witness"))).ToArray();
+        Assert.Equal(["Broiler.Unicode.Generation: admitted test-only, and the allow-list names Broiler.VM.Profile.JavaScript.Format, which ships or composes"], testOnlyEntry);
 
         // The witnesses: an unlisted package, a listed one in the runtime, a listed one in Format.
         Assert.Contains(

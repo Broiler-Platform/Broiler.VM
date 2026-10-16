@@ -382,6 +382,7 @@
         "Broiler.VM.Runtime"
       ],
       "packageReferences": [
+        "Broiler.Unicode.Generation",
         "Microsoft.CodeAnalysis.CSharp",
         "Microsoft.NET.Test.Sdk",
         "System.Reflection.MetadataLoadContext",

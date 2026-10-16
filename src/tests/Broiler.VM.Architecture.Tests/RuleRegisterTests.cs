@@ -434,10 +434,13 @@ public sealed class RuleRegisterTests
         // is Vacuous after it; the Deferred row is unchanged.
         // SJL-3.4 adds I5, retired duplicates, over the register of members the number area's
         // cut-over removed (JSD-0065). Active when minted; no other count moves.
-        Assert.Equal(124, byStatus["Active"]);
+        // SJL-7.4 adds I4, data agreement: the Unicode pin equal to the owner's, and every version
+        // an admitted library declares equal to the pin's (JSD-0074, decision SJL-D-6 (c)). Active
+        // when minted; no other count moves.
+        Assert.Equal(125, byStatus["Active"]);
         Assert.Equal(0, byStatus.GetValueOrDefault("Vacuous"));
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(125, Loaded.Rules.Count);
+        Assert.Equal(126, Loaded.Rules.Count);
     }
 
     private static Register Load()

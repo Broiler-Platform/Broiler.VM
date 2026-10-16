@@ -6,10 +6,12 @@ Milestone SJL-2.7's done-when clause, as a procedure anyone can repeat. Each res
 directory with a fresh package folder and no HTTP cache, against a copy of this repository's
 NuGet.config whose relative paths are made absolute and which is otherwise unchanged:
 
-  1. THE COMMITTED FEED. A scratch project references the admitted shared package at its pinned
-     version; the source mapping sends the Broiler.ECMAScript prefix to eng/packages/ (and nuget.org),
-     and the restore succeeds from the committed feed. Its lock file's content hash is printed beside
-     the allow-list's pin.
+  1. THE COMMITTED FEED. A scratch project references the first admitted shared package at its pinned
+     version; the source mapping sends the Broiler.ECMAScript and Broiler.Unicode prefixes to
+     eng/packages/ (and nuget.org), and the restore succeeds from the committed feed. Its lock file's
+     content hash is printed beside the allow-list's pin. (Revised 2026-10-16, at SJL-7.4, when the
+     Broiler.Unicode prefix was mapped. It read "the admitted shared package" and "sends the
+     Broiler.ECMAScript prefix to eng/packages/".)
   2. NUGET.ORG. A scratch project references a package only nuget.org holds, the one this repository's
      architecture tests already take (System.Reflection.MetadataLoadContext); the restore succeeds.
   3. AN UNMAPPED IDENTIFIER, REFUSED. A package whose identifier is outside the shared prefix is packed

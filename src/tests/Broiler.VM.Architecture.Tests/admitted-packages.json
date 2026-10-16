@@ -6,7 +6,7 @@
     "Each entry names: the package identifier; the pinned version; the NuGet content hash a lock file records",
     "for it (base64 SHA-512 of the .nupkg), which rule I1 compares with the lock file of every project that",
     "references it; the assemblies (by assembly name) of the projects that may reference it, every one in the",
-    "JavaScript family; whether it is product or test-only; and its sources under decision SJL-D-4 (c), the",
+    "JavaScript family, or for a test-only entry a test project; whether it is product or test-only; and its sources under decision SJL-D-4 (c), the",
     "committed feed eng/packages/ and nuget.org once a Broiler.VM package release depends on it.",
     "",
     "The list is a file of the architecture-test project, not a field of graph.manifest.json: the manifest",
@@ -16,7 +16,8 @@
     "",
     "Admitting a package is a decision: the milestone or JSD that admits it is named in 'admittedBy', and the",
     "allow-list changes in the same commit as the reference it allows. A test-only package is admitted for no",
-    "product project, whatever 'projects' says."
+    "product project, whatever 'projects' says, and only a test-only entry may name a test project (rule I1 as revised on",
+    "2026-10-16, at SJL-7.4, when the owner's generator reached the architecture tests as a pinned, test-only package)."
   ],
   "packages": [
     {
@@ -35,6 +36,21 @@
       ],
       "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.4.pin",
       "admittedBy": "SJL-6.4 and JSD-0072: the Date area beside the text, numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.4, packed locally from Broiler.JS e04874d and on the committed feed only; published to nuget.org that day from Broiler.JS d1e4b11, with the same library code (JSC-307), which both sources now serve with one content hash. It replaced 0.1.0-preview.3, admitted by SJL-5.4 and JSD-0070 for the text area beside the numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.3, packed locally from Broiler.JS 0db9042 and on the committed feed only; published to nuget.org that day from Broiler.JS 6e20998, with the same library code (JSC-305), which both sources now serve with one content hash. It replaced 0.1.0-preview.2, admitted by SJL-4.4 and JSD-0067 for the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
+    },
+    {
+      "id": "Broiler.Unicode.Generation",
+      "version": "0.1.0-preview.4",
+      "contentHash": "IHm/YZylbdUFdQA1+9GpqU2HypqO3CDN1Ls8JgO9ACq/mJ6poh7KaVP1X0TgJyQDrN+/RuqUfTH0YCTNsKSb/g==",
+      "use": "test-only",
+      "projects": [
+        "Broiler.VM.Architecture.Tests"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.Unicode.Generation.0.1.0-preview.4.pin",
+      "admittedBy": "SJL-7.4 and JSD-0074 (decision SJL-D-6 (c)): the owner's table generator and pin, which rules N22 and N28 regenerate this repository's embedded tables with and rule I4 compares this repository's pin with; admitted test-only for the architecture tests, the first test project an entry names (rule I1 as revised on 2026-10-16), on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only. It depends on Broiler.Unicode.Algorithms 0.1.0-preview.4, which the committed feed holds beside it with its own pin and which reaches the test project transitively."
     }
   ]
 }

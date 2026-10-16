@@ -1,0 +1,26 @@
+{
+  "$comment": [
+    "Violates I1 (revised 2026-10-16, at SJL-7.4): a test-only entry naming a project that ships. The generator is",
+    "admitted test-only, and naming the JavaScript profile's Format assembly for it would put a test-only package in",
+    "a product closure, which decision SJL-D-6 (c) forbids; Format is in the JavaScript family, so only the entry's",
+    "use refuses it."
+  ],
+  "packages": [
+    {
+      "id": "Broiler.Unicode.Generation",
+      "version": "0.1.0-preview.4",
+      "contentHash": "IHm/YZylbdUFdQA1+9GpqU2HypqO3CDN1Ls8JgO9ACq/mJ6poh7KaVP1X0TgJyQDrN+/RuqUfTH0YCTNsKSb/g==",
+      "use": "test-only",
+      "projects": [
+        "Broiler.VM.Architecture.Tests",
+        "Broiler.VM.Profile.JavaScript.Format"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.Unicode.Generation.0.1.0-preview.4.pin",
+      "admittedBy": "witness"
+    }
+  ]
+}
