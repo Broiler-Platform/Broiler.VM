@@ -250,6 +250,11 @@ unchanged, and so is what it gates: SJL-6 may not meet its gate before SJL-3 mee
 *(Added 2026-10-16, at SJL-6.5: so did SJL-6.5, Broiler.JS's cut-over, by the owner's direction of
 2026-10-16, which the [ledger](status.md) records. The order and what it gates are unchanged.)*
 
+*(Added 2026-10-16: SJL-7 started before SJL-3 was met, by the owner's dated choice, which the
+[ledger](status.md) records. SJL-7 is on the critical path; the order above is unchanged, and so is what it
+gates: SJL-7 may not meet its gate before SJL-3 meets SJL-3's, and SJL-9, SJL-11 and SJL-13 still wait on
+SJL-7's.)*
+
 **What can start today:**
 
 - SJL-0 in full;
