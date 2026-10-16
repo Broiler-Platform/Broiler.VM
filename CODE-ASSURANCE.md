@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 334 |
-| Files carrying an annotation | 334 |
-| Code units | 12035 |
-| Relevant | 6964 |
-| Exempt by predicate | 5071 |
-| Annotated | 6964 of 6964 (100%) |
-| Human reviewed | 0 of 6964 (0%) |
-| Unverified | 6964 |
+| Files scanned | 331 |
+| Files carrying an annotation | 331 |
+| Code units | 11987 |
+| Relevant | 6927 |
+| Exempt by predicate | 5060 |
+| Annotated | 6927 of 6927 (100%) |
+| Human reviewed | 0 of 6927 (0%) |
+| Unverified | 6927 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6964 |
+| HUMAN_PENDING | 6927 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5071 |
+| EXEMPT | 5060 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1642 |
-| Low | 6880 |
+| Low | 6836 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 2227 |
-| Medium | 4496 |
-| High | 1627 |
+| Low | 2214 |
+| Medium | 4464 |
+| High | 1628 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.6 / 10 |
-| Units scored | 6964 |
+| Units scored | 6927 |
 
 ## High-security review areas
 
@@ -1051,6 +1051,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsRealm.SetupShared()` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Shared.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.AtomicsDoWait(JsEngine, JsValue[], bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Shared.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.NormalizeText(JsEngine, string, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsRealm.ChangeCase(JsEngine, string, bool, CaseLanguage)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsAtomicAccess` in `src/Broiler.VM.Profile.JavaScript/JsShared.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsAtomicAccess.ReadModifyWrite(byte[], int, int, object, System.Func<long, long, long>, long)` in `src/Broiler.VM.Profile.JavaScript/JsShared.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
@@ -1951,8 +1952,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2037 |
-| Units required to carry one | 1880 |
+| Units carrying a criterion | 2038 |
+| Units required to carry one | 1881 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1979,14 +1980,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1672 |
-| ParameterAssigningConstructor | 152 |
+| TrivialPropertyOrAccessor | 1671 |
+| ParameterAssigningConstructor | 151 |
 | TrivialExpressionBodiedMember | 80 |
 | CompilerSuppliedRecordOrEnumMember | 30 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 956 |
-| EnumMemberOfADeclaredVocabulary | 1994 |
+| FieldDeclaringStorage | 951 |
+| EnumMemberOfADeclaredVocabulary | 1990 |
 | DeclaredInSource | 66 |
 
 ## Per-unit exemptions
@@ -2028,7 +2029,6 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Aliases` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Extensions` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Locales` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
-- `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.SoftDotted` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.NumberLocales` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.Currencies` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
 - `Broiler.VM.Profile.JavaScript.Intl.JsCldrTables.CurrencyDigits` in `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` - CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
@@ -2053,25 +2053,26 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 - `Broiler.VM.Profile.JavaScript.Intl.JsTzdbTables.TimeZoneIds` in `src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs` - tzdb 2026e table data written by TzdbTableGenerator from the members tzdb.pin names, compared byte for byte by rule N30
 - `Broiler.VM.Profile.JavaScript.Intl.JsTzdbTables.TimeZoneRegions` in `src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs` - tzdb 2026e table data written by TzdbTableGenerator from the members tzdb.pin names, compared byte for byte by rule N30
 - `Broiler.VM.Profile.JavaScript.Intl.JsUnicodeTableData.SegmentBreaks` in `src/Broiler.VM.Profile.JavaScript.Intl/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
-- `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.MaxMappingLength` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.UpperIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.LowerIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.MappingPool` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.CasedRanges` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeCasing.CaseIgnorableRanges` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeNormalization.MaxDecompositionLength` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeNormalization.CombiningClassData` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeNormalization.CanonicalIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeNormalization.CompatibilityIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeNormalization.DecompositionPool` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeNormalization.CompositionData` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeNormalization.QuickCheckData` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
-- `Broiler.VM.Profile.JavaScript.JsUnicodeNormalization.QuickCheckIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` - Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.NormalizationLayout` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.CombiningClassData` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.CanonicalIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.CompatibilityIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.DecompositionPool` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.CompositionData` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.QuickCheckData` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.QuickCheckIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.CasingLayout` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.UpperIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.LowerIndex` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.MappingPool` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.CasedRanges` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.CaseIgnorableRanges` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
+- `Broiler.VM.Profile.JavaScript.JsUnicodeTableData.SoftDottedRanges` in `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` - Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28
 
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-12035 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11987 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2079,7 +2080,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 334 of them - with a
+Beside the units it lists **every covered file** - 331 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

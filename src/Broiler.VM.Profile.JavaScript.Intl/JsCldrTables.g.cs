@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           25
+// Exempt:           24
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -10307,47 +10307,6 @@ internal static class JsCldrTables
         en
         en-US
         und
-        """u8;
-
-    /// <summary>The ranges of Unicode 17.0.0's Soft_Dotted, which Lithuanian's casing reads: first, last, in hexadecimal.</summary>
-    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
-    // Broiler-Human:        PENDING
-    internal static ReadOnlySpan<byte> SoftDotted =>
-        """
-        0069|006A
-        012F|012F
-        0249|0249
-        0268|0268
-        029D|029D
-        02B2|02B2
-        03F3|03F3
-        0456|0456
-        0458|0458
-        1D62|1D62
-        1D96|1D96
-        1DA4|1DA4
-        1DA8|1DA8
-        1E2D|1E2D
-        1ECB|1ECB
-        2071|2071
-        2148|2149
-        2C7C|2C7C
-        1D422|1D423
-        1D456|1D457
-        1D48A|1D48B
-        1D4BE|1D4BF
-        1D4F2|1D4F3
-        1D526|1D527
-        1D55A|1D55B
-        1D58E|1D58F
-        1D5C2|1D5C3
-        1D5F6|1D5F7
-        1D62A|1D62B
-        1D65E|1D65F
-        1D692|1D693
-        1DF1A|1DF1A
-        1E04C|1E04D
-        1E068|1E068
         """u8;
 
     /// <summary>The number data of each supported language for the latn numbering system, flattened: language, key, value.</summary>

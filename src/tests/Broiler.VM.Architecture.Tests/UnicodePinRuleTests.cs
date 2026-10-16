@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using Broiler.Unicode.Algorithms;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -38,15 +39,24 @@ public sealed class UnicodePinRuleTests
     {
         var generation = UnicodeTableGenerator.Current;
 
-        // Non-vacuous: five files, every one of them non-trivial, from a pin naming every input the
-        // decision lists - thirteen UCD files, the licence and three specification tables - and
-        // SpecialCasing.txt, added on 2026-10-03 for the full case mappings (JSD-0027 N2), and the two
-        // emoji sequence files, added on 2026-10-04 for the properties of strings (phase F2), and the
-        // six auxiliary/ files of UAX #29, added the same day for Intl.Segmenter (JSD-0050), whose
-        // tables the CLDR generator writes into the Intl data assembly.
+        // Non-vacuous: two files since SJL-7.4, Format's and the profile's, which the owner's generator
+        // writes (JSD-0074), where this repository's generator wrote five before it; every one of them
+        // non-trivial, from a pin naming every input the decision lists - thirteen UCD files, the
+        // licence and three specification tables - and SpecialCasing.txt, added on 2026-10-03 for the
+        // full case mappings (JSD-0027 N2), and the two emoji sequence files, added on 2026-10-04 for
+        // the properties of strings (phase F2), and the six auxiliary/ files of UAX #29, added the same
+        // day for Intl.Segmenter (JSD-0050), whose table is written into the Intl data assembly and
+        // held by rule N28: by the owner's generator since SJL-7.4, by the CLDR generator before.
         Assert.Equal(UnicodeTableGenerator.OutputPaths, generation.Artefacts.Select(static artefact => artefact.RelativePath));
         Assert.Equal(26, UnicodePin.Load().Entries.Count);
         Assert.All(generation.Artefacts, static artefact => Assert.True(artefact.Desired.Length > 10_000));
+
+        // The matcher's two charge factors, MaxUnicodeVariants and MaxVariants, were constants of 4
+        // until SJL-7.4 and are since the owner's MaxOrbit and MaxUpperOrbit over Format's tables: a
+        // regeneration that moved either would move what a case-insensitive match charges (JSD-0075).
+        var folding = new UnicodeCaseFolding(new GeneratedTables(UnicodeTableEmbedding.Current));
+        Assert.Equal(4, folding.MaxOrbit);
+        Assert.Equal(4, folding.MaxUpperOrbit);
 
         // And the probes slice U3 runs through the end-user host: every part of
         // NormalizationTest.txt and every span of the code space, each probe non-trivial.
@@ -235,11 +245,14 @@ public sealed class UnicodePinRuleTests
         // the two full mappings, their pool, and the Cased and Case_Ignorable ranges; and the six of
         // the properties of strings from phase F2 (2026-10-04): their code point ranges, the sequence
         // dictionary, the sequences, the per-property index and the names with their index.
-        // SINCE SJL-7.4 THE OWNER'S GENERATOR WRITES FORMAT'S TABLES (JSD-0074, decision SJL-D-6
-        // (c)): its 21 property, folding and string-property tables, three of them the layouts that
-        // carry what were C# constants, beside the profile's twelve this generator still writes.
-        Assert.Equal(33, generation.Tables.Count);
+        // SINCE SJL-7.4 THE OWNER'S GENERATOR WRITES EVERY TABLE (JSD-0074, decision SJL-D-6 (c)):
+        // Format's 21 property, folding and string-property tables, three of them the layouts that
+        // carry what were C# constants, and the profile's fifteen, the eight of normalization and the
+        // seven of case mapping, two of them layouts and one Soft_Dotted's ranges, which the Intl data
+        // held until then.
+        Assert.Equal(36, generation.Tables.Count);
         Assert.Equal(21, generation.Tables.Count(static table => table.File == UnicodeTableEmbedding.FormatPath));
+        Assert.Equal(15, generation.Tables.Count(static table => table.File == UnicodeTableEmbedding.ProfilePath));
     }
 
     /// <summary>
@@ -270,4 +283,13 @@ public sealed class UnicodePinRuleTests
 
     private static string Witness(string name) =>
         Path.Combine(ComponentGraph.Root, "src/tests/Broiler.VM.Architecture.Tests/witnesses/register", name);
+
+    /// <summary>The owner's generation, as the family's providers hand its tables to the owner's algorithms.</summary>
+    private sealed class GeneratedTables(IReadOnlyList<KeyValuePair<UnicodeTable, byte[]>> tables) : IUnicodeTables
+    {
+        public string UnicodeVersion => "17.0.0";
+
+        public ReadOnlySpan<byte> Table(UnicodeTable table) =>
+            tables.FirstOrDefault(entry => entry.Key == table).Value;
+    }
 }

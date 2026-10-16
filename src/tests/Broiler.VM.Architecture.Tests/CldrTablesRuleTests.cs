@@ -41,13 +41,16 @@ public sealed class CldrTablesRuleTests
         // SINCE SJL-7.4 the break table is not here: the owner's generator writes it into the Intl
         // assembly's JsUnicodeTables.g.cs, below, and the break properties' value names, which the
         // owner's enumerations number, are gone with the profile's decoder (JSD-0074, decision SJL-D-6
-        // (c)). The list read "... DisplayNames, SegmentBreakValues, SegmentBreaks, Units ...".
-        foreach (var table in new[] { "LikelySubtags", "Aliases", "Extensions", "Locales", "SoftDotted", "NumberLocales", "Currencies", "CurrencyDigits", "NumberingSystems", "Plurals", "PluralRanges", "Ordinals", "ListPatterns", "RelativeTimes", "DisplayNames", "Units", "DateLocales", "TimeData", "DayPeriods", "WeekData", "Scripts", "CollationRoot", "CollationTailorings" })
+        // (c)). Nor is Soft_Dotted, which the owner's casing tables carry in the profile. The list read
+        // "... Locales, SoftDotted, NumberLocales ... DisplayNames, SegmentBreakValues, SegmentBreaks,
+        // Units ...".
+        foreach (var table in new[] { "LikelySubtags", "Aliases", "Extensions", "Locales", "NumberLocales", "Currencies", "CurrencyDigits", "NumberingSystems", "Plurals", "PluralRanges", "Ordinals", "ListPatterns", "RelativeTimes", "DisplayNames", "Units", "DateLocales", "TimeData", "DayPeriods", "WeekData", "Scripts", "CollationRoot", "CollationTailorings" })
         {
             Assert.Contains($"internal static ReadOnlySpan<byte> {table} =>", artefact.Desired, StringComparison.Ordinal);
         }
 
         Assert.DoesNotContain("SegmentBreaks", artefact.Desired, StringComparison.Ordinal);
+        Assert.DoesNotContain("SoftDotted", artefact.Desired, StringComparison.Ordinal);
 
         // And the Intl assembly's Unicode file: the one table the owner's generator writes for
         // segmentation, from the pin rule N22 reads, whole and byte for byte.

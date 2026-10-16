@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           14
-// Human-reviewed:   0/27
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           13
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       27
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -67,10 +67,6 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsCollationData> collation;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8CD2C4
-    // Broiler-Human:        PENDING
-    private readonly Lazy<(int First, int Last)[]> softDotted;
-
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A521AC
     // Broiler-Human:        PENDING
     private readonly Lazy<JsNumberData> numbers;
@@ -95,7 +91,7 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsZoneNames> zoneNames;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D6201C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DE40B2
     // Broiler-Human:        PENDING
     internal JsIntlTables(IJsIntlData data)
     {
@@ -105,7 +101,6 @@ internal sealed class JsIntlTables
         extensions = new(ReadExtensions);
         locales = new(() => [.. Lines(JsIntlTable.Locales)]);
         collation = new(() => new JsCollationData(data.Table(JsIntlTable.CollationRoot), data.Table(JsIntlTable.CollationTailorings)));
-        softDotted = new(ReadRanges);
         numbers = new(ReadNumbers);
         dates = new(ReadDates);
         localeInfo = new(ReadLocaleInfo);
@@ -180,36 +175,6 @@ internal sealed class JsIntlTables
         }
 
         preferred = type;
-        return false;
-    }
-
-    /// <summary>Whether a code point is Soft_Dotted: an <c>i</c> or <c>j</c> whose dot an accent above replaces.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65A410
-    // Broiler-Human:        PENDING
-    internal bool IsSoftDotted(int codePoint)
-    {
-        var ranges = softDotted.Value;
-        var low = 0;
-        var high = ranges.Length - 1;
-
-        while (low <= high)
-        {
-            var middle = (low + high) >>> 1;
-
-            if (codePoint < ranges[middle].First)
-            {
-                high = middle - 1;
-            }
-            else if (codePoint > ranges[middle].Last)
-            {
-                low = middle + 1;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
         return false;
     }
 
@@ -547,24 +512,6 @@ internal sealed class JsIntlTables
         }
 
         return pairs;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=F4CF0D
-    // Broiler-Human:        PENDING
-    private (int First, int Last)[] ReadRanges()
-    {
-        var lines = Lines(JsIntlTable.SoftDotted);
-        var ranges = new (int First, int Last)[lines.Count];
-
-        for (var at = 0; at < lines.Count; at++)
-        {
-            var bar = lines[at].IndexOf('|');
-            ranges[at] = (
-                int.Parse(lines[at][..bar], NumberStyles.HexNumber, CultureInfo.InvariantCulture),
-                int.Parse(lines[at][(bar + 1)..], NumberStyles.HexNumber, CultureInfo.InvariantCulture));
-        }
-
-        return ranges;
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=4E9FB9

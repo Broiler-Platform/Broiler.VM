@@ -50,6 +50,8 @@ internal static class UnicodeTableEmbedding
 {
     internal const string FormatPath = "src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeTables.g.cs";
 
+    internal const string ProfilePath = "src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs";
+
     internal const string IntlPath = "src/Broiler.VM.Profile.JavaScript.Intl/JsUnicodeTables.g.cs";
 
     /// <summary>The per-unit exemption reason every embedded table states.</summary>
@@ -63,6 +65,16 @@ internal static class UnicodeTableEmbedding
         UnicodeTable.PropertyLayout,
         UnicodeTable.StringPropertyNameIndex,
         "The Unicode 17.0.0 property, case folding and string property tables the matcher and the compiler read through the owner's algorithms.",
+        "N22",
+        "BROILER_UNICODE_WRITE");
+
+    /// <summary>The profile's tables: normalization and case mapping, Soft_Dotted among them.</summary>
+    internal static readonly UnicodeEmbeddedFile Profile = new(
+        ProfilePath,
+        "Broiler.VM.Profile.JavaScript",
+        UnicodeTable.NormalizationLayout,
+        UnicodeTable.SoftDottedRanges,
+        "The Unicode 17.0.0 normalization and case mapping tables normalize and the case conversions read through the owner's algorithms.",
         "N22",
         "BROILER_UNICODE_WRITE");
 

@@ -86,12 +86,6 @@ internal static class CldrTableGenerator
         TextTable(text, "Aliases", "CLDR's language, script, region, variant and subdivision aliases: kind, from, replacement.", Aliases(cldr));
         TextTable(text, "Extensions", "The BCP 47 extension keys and their types: extension, key, type, preferred type.", Extensions(cldr));
         TextTable(text, "Locales", "The locales this data supports.", SupportedLocales);
-        TextTable(
-            text,
-            "SoftDotted",
-            "The ranges of Unicode 17.0.0's Soft_Dotted, which Lithuanian's casing reads: first, last, in hexadecimal.",
-            database.BinaryProperties.Single(static property => property.ShortName == "Soft_Dotted").Ranges
-                .Select(static range => range.First.ToString("X4", CultureInfo.InvariantCulture) + "|" + range.Last.ToString("X4", CultureInfo.InvariantCulture)));
         TextTable(text, "NumberLocales", "The number data of each supported language for the latn numbering system, flattened: language, key, value.", NumberLocales(cldr));
         TextTable(text, "Currencies", "The currency names of each supported language: language, code, symbol, narrow symbol, singular name, plural name, name, and whether each symbol's first and last characters are symbols or separators.", Currencies(cldr, database));
         TextTable(text, "CurrencyDigits", "The currencies whose fraction digits are not 2: code, digits.", CurrencyDigits(cldr));

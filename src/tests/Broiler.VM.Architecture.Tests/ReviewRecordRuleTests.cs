@@ -1323,8 +1323,10 @@ public sealed class ReviewRecordRuleTests
         // tables, and JsTextSegmentation.cs, the interface the profile reaches the Intl data's
         // segmentation through; the compiler's JsCompilerUnicode.cs; and the profile's JsUnicode.cs. All
         // six are covered on the same terms as every other product file, and nothing in them has been
-        // read by a human.
-        Assert.Equal(334, AssuranceSources.Files.Count);
+        // read by a human. Then normalization and casing moved too, which took four more away - the
+        // profile's JsUnicodeNormalization and JsUnicodeCasing, each with its generated half - and added
+        // one, the profile's JsUnicodeTables.g.cs, covered on the same terms.
+        Assert.Equal(331, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

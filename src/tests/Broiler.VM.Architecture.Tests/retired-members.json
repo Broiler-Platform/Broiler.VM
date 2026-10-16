@@ -33,7 +33,8 @@
     "segmentation types. What stays as adapters is not here: the matcher's JsRegExpCase and its class sets, which call",
     "the owner; JsRealm.FunctionIsNativeName and RegExpEscapeCodePoint, which ask the owner's lexical classes; and",
     "JsRealm.Segmenter's objects and iterators, which ask the Intl data's segmentation through Format's",
-    "IJsTextSegmentation."
+    "IJsTextSegmentation; and, beside normalization and casing, JsRealm.NormalizeText, StringChangeCase and TransformCase,",
+    "which keep the form's and the locale's resolution, the language pass's charge and the RangeError, and call the owner."
   ],
   "retired": [
     {
@@ -975,6 +976,86 @@
       "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Breaks",
       "milestone": "SJL-7.4",
       "replacedBy": "Broiler.Unicode.Segmentation.UnicodeSegmenter, behind JsIntlTables.Segmentation"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsUnicodeNormalization",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeNormalization, over the profile's JsUnicodeTables.g.cs"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNormalizationQuickCheck",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.NormalizationQuickCheck"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsUnicodeCodePoints",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeNormalization and UnicodeCaseMapping, which read their mappings themselves"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsUnicodeCasing",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping, behind JsRealm.ChangeCase"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.IsNormalizedAlready",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeNormalization.Transform, behind JsRealm.NormalizeText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.OrderCanonically",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeNormalization.Transform, behind JsRealm.NormalizeText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ComposeCanonically",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeNormalization.Transform, behind JsRealm.NormalizeText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.WriteCodePoints",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeNormalization.Transform, behind JsRealm.NormalizeText"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.LanguageCasing",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping's language pass, behind JsRealm.ChangeCase"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.AfterCapitalI",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping's language pass"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.AfterSoftDotted",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping's language pass"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.BeforeDot",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping's language pass"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.MoreAbove",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping's language pass"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.AppendCodePoint",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping, which writes its result itself"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.IsSoftDotted",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping.IsSoftDotted, over the profile's SoftDottedRanges"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.ReadRanges",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping, which reads SoftDottedRanges itself"
     }
   ]
 }
