@@ -247,6 +247,9 @@ It changes no product code, so it may start before SJL-3 is met. The order above
 was met, by the owner's direction of each, which the [ledger](status.md) records late. The order above is
 unchanged, and so is what it gates: SJL-6 may not meet its gate before SJL-3 meets SJL-3's.)*
 
+*(Added 2026-10-16, at SJL-6.5: so did SJL-6.5, Broiler.JS's cut-over, by the owner's direction of
+2026-10-16, which the [ledger](status.md) records. The order and what it gates are unchanged.)*
+
 **What can start today:**
 
 - SJL-0 in full;
