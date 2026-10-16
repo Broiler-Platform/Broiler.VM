@@ -3,7 +3,7 @@
 # The shared conformance vectors of the shared JavaScript libraries programme (milestone SJL-1): a
 # corpus whose home is the Broiler.JS repository, retained here as the archive of one named corpus
 # revision. `revision` is the Broiler.JS commit that carries it, an immutable commit and never a
-# branch name, and the corpus at that commit is at corpus revision 19 (its REVISIONS.md).
+# branch name, and the corpus at that commit is at corpus revision 20 (its REVISIONS.md).
 #
 # HOW IT WAS TAKEN. On 2026-10-16, with `git archive` of that commit, twice, into two files: the two
 # were byte-identical. The second was extracted into a fresh directory and its files hashed there,
@@ -13,7 +13,7 @@
 #
 #   git archive --format=tar.gz <revision> -- conformance/vectors ':(exclude)conformance/vectors/controls'
 #
-# WHAT IS HERE. One file of 1,688,124 bytes hashing to `archive-sha256`, which extracts to the 42
+# WHAT IS HERE. One file of 1,665,723 bytes hashing to `archive-sha256`, which extracts to the 42
 # files `content-sha256` is over: the number area's ten vector files, the numerics area's eight, the
 # text area's six, the Date area's seven, the Unicode area's five, the schema, the README, the revision
 # log, the prelude and the two source pins. The negative controls stay in Broiler.JS; the home's validator is the one that
@@ -71,14 +71,18 @@
 # 17" and "One file of 961,285 bytes hashing to `archive-sha256`, which extracts to the 37 files
 # `content-sha256` is over: the number area's ten vector files, the numerics area's eight, the text area's
 # six, the Date area's seven, the schema, the README, the revision log, the prelude and the two source
-# pins."
+# pins." Moved to revision 20 on 2026-10-16, at milestone SJL-7.5: revision 20 retires Broiler.JS's 3,678
+# divergences of the Unicode area, which its cut-over corrects; the Unicode area's five files are
+# revision 18's again, and this profile's expectations are unchanged. Its header read, for revision 19:
+# "the corpus at that commit is at corpus revision 19" and "One file of 1,688,124 bytes hashing to
+# `archive-sha256`"; the number of files did not change.
 
 suite broiler-js-vectors
 upstream Broiler-Platform/broiler.js
-revision c976cbea647717a3a4ca6636aec2deb1129825cc
-archive git archive --format=tar.gz c976cbea647717a3a4ca6636aec2deb1129825cc -- conformance/vectors :(exclude)conformance/vectors/controls
-archive-sha256 b41b4d6edd1f46fa5d7adf158e5c29afdca6bfae2c8e8b4132f1561ca5038c24
-content-sha256 244cce40b415588ef0429328665ce81268d1c49106f68151187b6284f3c236ca
+revision a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71
+archive git archive --format=tar.gz a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71 -- conformance/vectors :(exclude)conformance/vectors/controls
+archive-sha256 7dc0e6d065a8a635b85556652344a6b7f1e60cc118aeaf88ad6dc1be76d09bde
+content-sha256 d1ee6d3ba73a086855151d50b0cf283da29f44098c6def453b6106a11773a7e2
 files 42
 archived yes
-archived-at src/tests/vectors/pins/broiler-js-vectors-c976cbea647717a3a4ca6636aec2deb1129825cc.tar.gz
+archived-at src/tests/vectors/pins/broiler-js-vectors-a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71.tar.gz
