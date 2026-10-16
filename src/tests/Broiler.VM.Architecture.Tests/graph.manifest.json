@@ -89,7 +89,8 @@
         "Broiler.VM.Profile.JavaScript.Format"
       ],
       "packageReferences": [
-        "Broiler.ECMAScript.Algorithms"
+        "Broiler.ECMAScript.Algorithms",
+        "Broiler.Unicode.Algorithms"
       ]
     },
     {
@@ -104,7 +105,8 @@
         "Broiler.VM.Profile.JavaScript.Format"
       ],
       "packageReferences": [
-        "Broiler.ECMAScript.Algorithms"
+        "Broiler.ECMAScript.Algorithms",
+        "Broiler.Unicode.Algorithms"
       ]
     },
     {
@@ -115,7 +117,9 @@
       "isPackable": false,
       "isTestProject": false,
       "projectReferences": [],
-      "packageReferences": []
+      "packageReferences": [
+        "Broiler.Unicode.Algorithms"
+      ]
     },
     {
       "path": "src/Broiler.VM.Profile.JavaScript.Intl/Broiler.VM.Profile.JavaScript.Intl.csproj",
@@ -127,7 +131,10 @@
       "projectReferences": [
         "Broiler.VM.Profile.JavaScript.Format"
       ],
-      "packageReferences": []
+      "packageReferences": [
+        "Broiler.Unicode.Algorithms",
+        "Broiler.Unicode.Segmentation"
+      ]
     },
     {
       "path": "src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj",

@@ -68,6 +68,15 @@ public sealed class AdmissionRuleTests
             AdmissionRules.I1(ComponentGraph.Witness("I1-admitted-package-in-the-format.csproj.witness"), null),
             static message => message.Contains("admits it for [Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.JavaScript.Compiler, Broiler.VM.Profile.JavaScript.AdmissionProbe] only", StringComparison.Ordinal));
 
+        // SINCE SJL-7.4 Format holds an admitted reference, the Unicode area's code package, which
+        // JSD-0074's X5 widens the list for; the segmentation package beside it is admitted for the
+        // Intl data alone, and is refused there. No lock file is read, so the admitted reference is
+        // reported for that alone.
+        var format = AdmissionRules.I1(ComponentGraph.Witness("I1-segmentation-package-in-the-format.csproj.witness"), null).ToArray();
+        Assert.Contains(format, static message => message.Contains("-> package Broiler.Unicode.Segmentation: the allow-list admits it for [Broiler.VM.Profile.JavaScript.Intl] only", StringComparison.Ordinal));
+        Assert.DoesNotContain(format, static message => message.Contains("Broiler.Unicode.Algorithms: the allow-list", StringComparison.Ordinal));
+        Assert.Contains(AdmissionRules.Admitted("Broiler.Unicode.Algorithms")!.Projects, static project => project == "Broiler.VM.Profile.JavaScript.Format");
+
         // And a lock file whose content hash is not the pin, read with the probe's own project file.
         using var probe = AdmissionProbe.Create();
         Assert.Contains(
@@ -118,6 +127,18 @@ public sealed class AdmissionRuleTests
         Assert.Equal(
             ["Broiler.VM.Composition.JavaScript.ExecutionOnly is compiler-free and its closure holds Broiler.ECMAScript.Frontend"],
             AdmissionRules.I3("Broiler.VM.Composition.JavaScript.ExecutionOnly", listing, declaring));
+
+        // SINCE SJL-7.4 the Unicode area's optional segmentation package is optional data too
+        // (JSD-0074's X5): the roots that carry the Intl assembly carry it, and the witness, the
+        // execution-only root carrying the package without that assembly, is refused for it alone.
+        Assert.All(declaring, root => Assert.Contains("Broiler.Unicode.Segmentation", AdmissionRules.GraphClosure(root)));
+        var segmentation = WitnessText("I3-execution-only-closure-carries-the-segmentation-package.txt.witness")
+            .Split('\n')
+            .Select(static line => line.Trim())
+            .Where(static line => line.Length > 0 && !line.StartsWith('#'));
+        Assert.Equal(
+            ["Broiler.VM.Composition.JavaScript.ExecutionOnly declares no Intl or zoned-Temporal surface and its closure holds Broiler.Unicode.Segmentation"],
+            AdmissionRules.I3("Broiler.VM.Composition.JavaScript.ExecutionOnly", segmentation, declaring));
 
         // Every image record a bundle retains (mstat-<root>.mstat, which the JavaScript collector
         // requests since SJL-2.7) is read the same way. None is retained before the first run of

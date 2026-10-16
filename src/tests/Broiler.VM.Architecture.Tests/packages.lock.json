@@ -54,11 +54,6 @@
         "resolved": "2.5.3",
         "contentHash": "HFFL6O+QLEOfs555SqHii48ovVa4CqGYanY+B32BjLpPptdE+wEJmCFNXlLHdEOD5LYeayb9EroaUpydGpcybg=="
       },
-      "Broiler.Unicode.Algorithms": {
-        "type": "Transitive",
-        "resolved": "0.1.0-preview.4",
-        "contentHash": "p2baubLfU1h/ReXoB/348D6FXF2N2dI0YrgSUEQ4f+ftGyegpSGahQrkFsiHiQIFjM/OPxLhtjLB7zdvQ0D2cA=="
-      },
       "Microsoft.CodeAnalysis.Analyzers": {
         "type": "Transitive",
         "resolved": "5.3.0-2.25625.1",
@@ -181,6 +176,12 @@
           "Broiler.VM.Abstractions": "[0.1.0-preview.1, )",
           "Broiler.VM.Binary": "[0.1.0-preview.1, )"
         }
+      },
+      "Broiler.Unicode.Algorithms": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.0-preview.4, )",
+        "resolved": "0.1.0-preview.4",
+        "contentHash": "p2baubLfU1h/ReXoB/348D6FXF2N2dI0YrgSUEQ4f+ftGyegpSGahQrkFsiHiQIFjM/OPxLhtjLB7zdvQ0D2cA=="
       }
     }
   }

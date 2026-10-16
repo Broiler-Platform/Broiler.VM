@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           32
+// Exempt:           30
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EBD5C1
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2273CE
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -145,14 +145,9 @@ public enum JsIntlTable
     /// </summary>
     RelativeTimes = 22,
 
-    /// <summary>The break properties' value names in code order: <c>property</c>, then its values.</summary>
-    SegmentBreakValues = 23,
-
-    /// <summary>
-    /// The break properties over the code space: the combination count and combinations of five value
-    /// codes, then a little-endian run count and each run's three-byte first code point and combination.
-    /// </summary>
-    SegmentBreaks = 24,
+    // 23 and 24 were the break properties' value names and the break table until SJL-7.4, when
+    // segmentation moved to the Unicode area's owner and its table to the Intl assembly's own
+    // provider (JSD-0074); the numbers are not reused.
 
     /// <summary>
     /// Each language's display names: <c>language</c>, <c>kind</c> (language, region, script, variant,

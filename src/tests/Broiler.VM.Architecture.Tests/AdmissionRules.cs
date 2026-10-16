@@ -333,8 +333,12 @@ internal static class AdmissionRules
     internal static readonly string[] CompilerFreeRoots =
         ["Broiler.VM.Composition.JavaScript.ExecutionOnly", "Broiler.VM.Composition.JavaScript.Android"];
 
-    /// <summary>Optional data: the assemblies a root carries only when it has an Intl or zoned-Temporal surface.</summary>
-    internal static readonly string[] OptionalDataAssemblies = ["Broiler.VM.Profile.JavaScript.Intl"];
+    /// <summary>
+    /// Optional data: the assemblies a root carries only when it has an Intl or zoned-Temporal surface.
+    /// Since SJL-7.4 the Unicode area's optional segmentation package is one (JSD-0074's X5): only the
+    /// Intl data assembly references it.
+    /// </summary>
+    internal static readonly string[] OptionalDataAssemblies = ["Broiler.VM.Profile.JavaScript.Intl", "Broiler.Unicode.Segmentation"];
 
     /// <summary>
     /// I3: a compiler-free root's closure holds no frontend assembly, and a root carries optional data

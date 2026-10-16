@@ -1,0 +1,15 @@
+<!-- Violates I1 (since SJL-7.4): the Unicode area's optional segmentation package referenced from the
+     JavaScript profile's Format assembly. Format is in the JavaScript family and the package is admitted
+     for product use, but for the Intl data assembly alone, so that only a root carrying that assembly
+     carries segmentation (JSD-0074's X5, rule I3). The code package beside it is admitted for Format and
+     is not reported. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Broiler.Unicode.Algorithms" Version="0.1.0-preview.4" />
+    <PackageReference Include="Broiler.Unicode.Segmentation" Version="0.1.0-preview.4" />
+  </ItemGroup>
+</Project>

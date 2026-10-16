@@ -1,0 +1,33 @@
+# broiler-shared-package pin 1
+#
+# One package of the committed, hash-pinned feed (decision SJL-D-4 (c); milestone SJL-2.7): a shared
+# library package whose home is the Broiler.Unicode repository, retained here byte for byte so that a
+# restore needs no other repository's folder and no network for it. NuGet.config's package source
+# mapping sends the Broiler.Unicode prefix to this directory and to nuget.org; the lock file of a project
+# that references it records `content-hash`, and rule I1 holds that hash to this pin and to the
+# allow-list.
+#
+# HOW IT WAS TAKEN. Packed on 2026-10-16 in the Broiler.Unicode repository, from `upstream-commit`, in a
+# clean worktree of it, with `dotnet pack src/Unicode.Segmentation/Unicode.Segmentation.csproj -c Release
+# -p:Version=0.1.0-preview.4 -p:PackageVersion=0.1.0-preview.4 -p:ContinuousIntegrationBuild=true`. The
+# nuspec's repository element records the same commit, which rule I7 reads. `content-hash` is NuGet's: the
+# base64 SHA-512 of the .nupkg's bytes, which is what a lock file records. `sha256` is over the same
+# bytes. It is not on nuget.org: a Broiler.VM package release that depends on it waits for its
+# publication (eng/verify-feed.ps1), and the pin is then taken again from the published package, as
+# Broiler.ECMAScript.Algorithms' pins were.
+#
+# WHAT IT IS. The optional segmentation package of the Unicode area (milestone SJL-7.2; Broiler.VM's
+# JSD-0074), namespace Broiler.Unicode.Segmentation: UAX #29's grapheme, word and sentence boundaries and
+# the word status, over the break table the caller supplies; it carries no table (decision SJL-D-6 (c)) and
+# depends on Broiler.Unicode.Algorithms 0.1.0-preview.4. Admitted for PRODUCT use by
+# Broiler.VM.Profile.JavaScript.Intl alone at SJL-7.4, so that only a root whose closure carries the Intl
+# assembly carries it (rule I3). It carries no third-party component; its THIRD_PARTY_NOTICES.md is the
+# owner's repository's, as above.
+
+id Broiler.Unicode.Segmentation
+version 0.1.0-preview.4
+file Broiler.Unicode.Segmentation.0.1.0-preview.4.nupkg
+content-hash isy48tsvEepWMNioqobvVQfIHlRmFUkskubW5TUfULWSBOlAuy5tPbrUQTL7FhTZ2O8dxahljb2hJQ/ADrik5Q==
+sha256 f9e56e606f57e108b62fd9363d5413976a3394450c044c6df147dffbec8a1d3a
+upstream Broiler-Platform/broiler.unicode
+upstream-commit 6e14f93ad753094c99f0013d22269b47550ae552

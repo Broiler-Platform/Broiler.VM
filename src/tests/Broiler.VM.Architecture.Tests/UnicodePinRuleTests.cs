@@ -235,7 +235,11 @@ public sealed class UnicodePinRuleTests
         // the two full mappings, their pool, and the Cased and Case_Ignorable ranges; and the six of
         // the properties of strings from phase F2 (2026-10-04): their code point ranges, the sequence
         // dictionary, the sequences, the per-property index and the names with their index.
-        Assert.Equal(30, generation.Tables.Count);
+        // SINCE SJL-7.4 THE OWNER'S GENERATOR WRITES FORMAT'S TABLES (JSD-0074, decision SJL-D-6
+        // (c)): its 21 property, folding and string-property tables, three of them the layouts that
+        // carry what were C# constants, beside the profile's twelve this generator still writes.
+        Assert.Equal(33, generation.Tables.Count);
+        Assert.Equal(21, generation.Tables.Count(static table => table.File == UnicodeTableEmbedding.FormatPath));
     }
 
     /// <summary>

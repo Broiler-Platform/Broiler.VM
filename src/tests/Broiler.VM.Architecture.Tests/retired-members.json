@@ -26,7 +26,14 @@
     "unit beyond the shared parser's and reads a local result in this profile's zone; DateTimeText, toTimeString's",
     "TimeString and TimeZoneString; DateFromFields, DateSetTimeFields and DateSetDateFields, which keep the conversion and",
     "its order; JsTemporalCore.AddDays, one line; JsLocalTime.From, which reads the shared field operations; and",
-    "JsZone.MondayFirst, which maps the shared WeekDay to the zone rules' Monday 0."
+    "JsZone.MondayFirst, which maps the shared WeekDay to the zone rules' Monday 0.",
+    "",
+    "SJL-7.4 (JSD-0075, applying JSD-0074): the Unicode area, whose owner is Broiler.Unicode. Format's lookups, its",
+    "lexical classes and its folding and string-property readers are registered by type; so are the profile's",
+    "segmentation types. What stays as adapters is not here: the matcher's JsRegExpCase and its class sets, which call",
+    "the owner; JsRealm.FunctionIsNativeName and RegExpEscapeCodePoint, which ask the owner's lexical classes; and",
+    "JsRealm.Segmenter's objects and iterators, which ask the Intl data's segmentation through Format's",
+    "IJsTextSegmentation."
   ],
   "retired": [
     {
@@ -903,6 +910,71 @@
       "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.ValidMonthDay",
       "milestone": "SJL-6.4",
       "replacedBy": "Broiler.ECMAScript.Time.IsoCalendarMath.IsValidIsoDate"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Format.JsUnicodeProperties",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeProperties, over Format's JsUnicodeTables.g.cs"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Format.JsUnicodeSet",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.CodePointSet"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Format.JsUnicodeCaseFolding",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseFolding, behind JsRegExpCase"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Format.JsUnicodeStringProperties",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.UnicodeStringProperties, behind the matcher's CollectStringProperty"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Algorithms.EcmaScriptLexical"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsSegmentation",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Segmentation.UnicodeSegmenter, behind JsCldrData's IJsTextSegmentation"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBreakData",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Segmentation.UnicodeSegmenter, which decodes the break table itself"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsBreakProperties",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Segmentation.BreakProperties"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsGraphemeBreak",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Segmentation.GraphemeBreak"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsWordBreak",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Segmentation.WordBreak"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsSentenceBreak",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Segmentation.SentenceBreak"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIndicConjunctBreak",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Segmentation.ConjunctBreak"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Breaks",
+      "milestone": "SJL-7.4",
+      "replacedBy": "Broiler.Unicode.Segmentation.UnicodeSegmenter, behind JsIntlTables.Segmentation"
     }
   ]
 }

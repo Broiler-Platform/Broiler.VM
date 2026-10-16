@@ -38,6 +38,39 @@
       "admittedBy": "SJL-6.4 and JSD-0072: the Date area beside the text, numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.4, packed locally from Broiler.JS e04874d and on the committed feed only; published to nuget.org that day from Broiler.JS d1e4b11, with the same library code (JSC-307), which both sources now serve with one content hash. It replaced 0.1.0-preview.3, admitted by SJL-5.4 and JSD-0070 for the text area beside the numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.3, packed locally from Broiler.JS 0db9042 and on the committed feed only; published to nuget.org that day from Broiler.JS 6e20998, with the same library code (JSC-305), which both sources now serve with one content hash. It replaced 0.1.0-preview.2, admitted by SJL-4.4 and JSD-0067 for the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
     },
     {
+      "id": "Broiler.Unicode.Algorithms",
+      "version": "0.1.0-preview.4",
+      "contentHash": "p2baubLfU1h/ReXoB/348D6FXF2N2dI0YrgSUEQ4f+ftGyegpSGahQrkFsiHiQIFjM/OPxLhtjLB7zdvQ0D2cA==",
+      "use": "product",
+      "projects": [
+        "Broiler.VM.Profile.JavaScript.Format",
+        "Broiler.VM.Profile.JavaScript",
+        "Broiler.VM.Profile.JavaScript.Compiler",
+        "Broiler.VM.Profile.JavaScript.Intl"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.4.pin",
+      "admittedBy": "SJL-7.4 and JSD-0074: the Unicode area's code package - property lookups, lexical classes, case folding, case mapping, normalization and properties of strings over tables this repository embeds - referenced by Format, which holds the lookups the compiler and the runtime both read (the edge JSD-0074's X5 widens this list for), by the runtime, the compiler and the Intl data; admitted on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only. The same package reaches the architecture tests as Broiler.Unicode.Generation's dependency, through no reference of their own."
+    },
+    {
+      "id": "Broiler.Unicode.Segmentation",
+      "version": "0.1.0-preview.4",
+      "contentHash": "isy48tsvEepWMNioqobvVQfIHlRmFUkskubW5TUfULWSBOlAuy5tPbrUQTL7FhTZ2O8dxahljb2hJQ/ADrik5Q==",
+      "use": "product",
+      "projects": [
+        "Broiler.VM.Profile.JavaScript.Intl"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.4.pin",
+      "admittedBy": "SJL-7.4 and JSD-0074: the Unicode area's optional segmentation, referenced by the Intl data assembly alone, so that only a root whose closure carries that assembly carries it (rule I3); admitted on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only."
+    },
+    {
       "id": "Broiler.Unicode.Generation",
       "version": "0.1.0-preview.4",
       "contentHash": "IHm/YZylbdUFdQA1+9GpqU2HypqO3CDN1Ls8JgO9ACq/mJ6poh7KaVP1X0TgJyQDrN+/RuqUfTH0YCTNsKSb/g==",

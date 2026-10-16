@@ -40,11 +40,18 @@ internal sealed class UnicodePin
     /// <summary>The one version this repository's tables are generated from.</summary>
     internal const string PinnedVersion = "17.0.0";
 
-    private UnicodePin(IReadOnlyDictionary<string, string> values, IReadOnlyList<UnicodePinEntry> entries)
+    private UnicodePin(string text, IReadOnlyDictionary<string, string> values, IReadOnlyList<UnicodePinEntry> entries)
     {
+        Text = text;
         Values = values;
         Entries = entries;
     }
+
+    /// <summary>
+    /// The pin's text as parsed, which the owner's generator parses again for itself (JSD-0074,
+    /// decision SJL-D-6 (c)): the bytes it verifies are named by the same file.
+    /// </summary>
+    internal string Text { get; }
 
     /// <summary>The single-valued keys: <c>version</c>, <c>source</c>, <c>archived</c> and the rest.</summary>
     internal IReadOnlyDictionary<string, string> Values { get; }
@@ -95,7 +102,7 @@ internal sealed class UnicodePin
             }
         }
 
-        return new UnicodePin(values, entries);
+        return new UnicodePin(text, values, entries);
     }
 
     /// <summary>The entry for a UCD-relative or pin-relative name, e.g. <c>ucd-17.0.0/Scripts.txt</c>.</summary>

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   27
 // Annotated:        27/27
-// Exempt:           15
+// Exempt:           14
 // Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Medium
@@ -83,10 +83,6 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsLocaleInfo> localeInfo;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B2406B
-    // Broiler-Human:        PENDING
-    private readonly Lazy<JsBreakData> breaks;
-
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BC9E62
     // Broiler-Human:        PENDING
     private readonly Lazy<JsTimeZones> timeZones;
@@ -99,7 +95,7 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsZoneNames> zoneNames;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=46DF78
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D6201C
     // Broiler-Human:        PENDING
     internal JsIntlTables(IJsIntlData data)
     {
@@ -113,7 +109,6 @@ internal sealed class JsIntlTables
         numbers = new(ReadNumbers);
         dates = new(ReadDates);
         localeInfo = new(ReadLocaleInfo);
-        breaks = new(() => new JsBreakData(Lines(JsIntlTable.SegmentBreakValues), data.Table(JsIntlTable.SegmentBreaks)));
         timeZones = new(() => new JsTimeZones(Lines(JsIntlTable.TimeZoneIds), Lines(JsIntlTable.TimeZoneRegions), data.Table(JsIntlTable.TimeZones)));
         calendars = new(() => new JsCalendars(data.Table(JsIntlTable.Calendars)));
         zoneNames = new(() => new JsZoneNames(Lines(JsIntlTable.MetaZones), TimeZones));
@@ -233,10 +228,19 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal JsLocaleInfo LocaleInfo => localeInfo.Value;
 
-    /// <summary>The break properties <c>Intl.Segmenter</c> reads, decoded the first time a string is segmented.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=82FD5A
+    /// <summary>
+    /// The text segmentation <c>Intl.Segmenter</c> reads, which the composition's data offers beside its
+    /// tables, or null when it offers none (JSD-0074; milestone SJL-7.4).
+    /// </summary>
+    /// <remarks>
+    /// Until SJL-7.4 this was the break table, decoded here and segmented by the profile's own
+    /// <c>JsSegmentation</c>. Segmentation is now the Unicode area's owner's optional package, which the
+    /// Intl data assembly alone references, so the profile reaches it through the data, as it reaches
+    /// the tables (<see cref="IJsTextSegmentation"/>).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=31E0CD
     // Broiler-Human:        PENDING
-    internal JsBreakData Breaks => breaks.Value;
+    internal IJsTextSegmentation? Segmentation => data as IJsTextSegmentation;
 
     /// <summary>A table value with its <c>\uXXXX</c> escapes resolved.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E0016

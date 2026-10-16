@@ -37,6 +37,12 @@ Steps, each with `--only`:
   manifest       the SHA-256 of every file this collector writes or reads as its own (base/, this file, the
                  rule and the correspondence), and of the engine-level vector runs retained beside them
                  (vectors/), with the base commit base/identity.txt names, into area-manifest.json.
+  cutover-closures
+                 every JavaScript composition root under JIT, trimming and Native AOT, as bundle sjl-3-001's
+                 closures step publishes and runs them, at the tree of SJL-7.4's change that adds the Unicode
+                 area's package references, into cutover/closures/, with cutover/identity.txt naming the
+                 commit and the digest of its product sources (added at SJL-7.4, for rules K3, K4 and I7, which
+                 read the closures a composition register row's evidence cell names).
 
 The after steps join this file at SJL-7.6, when there is an after commit to run them at, as bundle sjl-6-001's
 did at SJL-6.6.
@@ -44,6 +50,7 @@ did at SJL-6.6.
 
 import argparse
 import datetime
+import hashlib
 import importlib.util
 import json
 import os
@@ -71,7 +78,7 @@ RULE = os.path.join("docs", "evidence", "sjl-7-001", "decision-rule-area.md")
 # The default branch after SJL-6's merges, whose product sources the rule says the base commit carries.
 SJL_6_MERGE = "24632b16b570a85163599e6daf45bea1c63c81d3"
 TWIN_FOLDERS = [os.path.join("src", "tests", "forms", "wide"), os.path.join("src", "tests", "forms", "unicode")]
-STEPS = ("base-identity", "base-import", "base-complete", "base-twins", "manifest")
+STEPS = ("base-identity", "base-import", "base-complete", "base-twins", "manifest", "cutover-closures")
 
 
 class Collector(area6.Collector):
@@ -117,6 +124,30 @@ class Collector(area6.Collector):
         # the Unicode probes.
         area6.text.TWIN_FOLDERS = TWIN_FOLDERS
         return area6.text.Collector.base_twins(self)
+
+    def cutover_closures(self):
+        """Every JavaScript root published and run in three modes, by bundle sjl-3-001's closures step, into
+        cutover/closures/, beside cutover/identity.txt."""
+        self.into("cutover")
+        commit = self.run(["git", "rev-parse", "HEAD"])[1].strip()
+        status = self.run(["git", "status", "--porcelain"])[1]
+        listing = self.run(["git", "ls-tree", "-r", "HEAD"])[1]
+        product = [line for line in listing.splitlines()
+                   if not line.split("\t", 1)[-1].startswith("docs/") and "/docs/" not in line.split("\t", 1)[-1]]
+        digest = hashlib.sha256(("\n".join(product) + "\n").encode("utf-8")).hexdigest()
+        lines = [
+            "bundle sjl-7-001, the closures at SJL-7.4's cut-over",
+            "collected " + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "commit " + commit,
+            "tree " + ("clean" if not status.strip() else "dirty"),
+            "product-sources sha256=%s over %d entries of `git ls-tree -r`, every path outside docs/ and outside any"
+            " docs/ directory" % (digest, len(product)),
+            "sdk " + self.run(["dotnet", "--version"])[1].strip(),
+            "machine " + platform.platform() + " " + platform.machine() + " cpus=" + str(os.cpu_count()),
+        ]
+        self.write("identity.txt", "\n".join(lines) + "\n")
+        print("cutover-closures: %s (%s tree)" % (commit, "clean" if not status.strip() else "DIRTY"), flush=True)
+        return area6.text.numerics.prior.Collector.closures(self) | (0 if not status.strip() else 1)
 
     def manifest(self):
         files = {}

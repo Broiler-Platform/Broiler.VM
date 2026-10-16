@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
-// Exempt:           1
-// Human-reviewed:   0/15
+// Relevant units:   17
+// Annotated:        17/17
+// Exempt:           3
+// Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/6
+// Criteria:         8/8
 // Resource impact:  5/10 max
-// Unverified:       15
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -118,6 +118,42 @@ internal sealed partial class JsEngine
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6CED30
     // Broiler-Human:        PENDING
     private WorkCharge? workCharge;
+
+    /// <summary>
+    /// This engine's <see cref="Charge"/> as the Unicode area's owner's meter (JSD-0074, decision 4),
+    /// made once per engine so that a call allocates no delegate.
+    /// </summary>
+    /// <remarks>
+    /// Normalization and casing charge through it in this family's units, rows N7 and C13 of the
+    /// correspondence, exactly what this engine charged for the same text before SJL-7.4; the language
+    /// pass's extra input length stays the adapter's own charge.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=939542
+    // Broiler-Falsified-If: a normalization or case mapping charges through it a total, or exhausts at a point, other than this engine's own charge for the same text did before SJL-7.4
+    // Broiler-Human:        PENDING
+    internal Broiler.Unicode.Algorithms.UnicodeWorkCharge UnicodeCharge => unicodeCharge ??= Charge;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=56D1DD
+    // Broiler-Human:        PENDING
+    private Broiler.Unicode.Algorithms.UnicodeWorkCharge? unicodeCharge;
+
+    /// <summary>
+    /// This engine's <see cref="Charge"/> as the meter the Intl data's segmentation takes, through
+    /// Format's <see cref="Broiler.VM.Profile.JavaScript.Format.IJsTextSegmentation"/>, made once per
+    /// engine.
+    /// </summary>
+    /// <remarks>
+    /// Segmentation charges one unit per code point it classifies or reads, JSD-0074's decision 4,
+    /// which corrects the profile's own segmenter's charge (row G5).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=06F2B2
+    // Broiler-Falsified-If: a segmentation reads a code point it has not charged for through this meter
+    // Broiler-Human:        PENDING
+    internal System.Action<ulong> SegmentationCharge => segmentationCharge ??= Charge;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7858C7
+    // Broiler-Human:        PENDING
+    private System.Action<ulong>? segmentationCharge;
 
     /// <summary>Charges one crossing of the host surface: a host call, and its fuel.</summary>
     /// <remarks>

@@ -790,7 +790,7 @@ public sealed class SliceTokenizer
     /// the position (<see cref="SliceToken.IsEscaped"/>).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=91F171
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B61766
     // Broiler-Falsified-If: an escaped identifier and its unescaped spelling are different names, or an escape naming a code point the literal spelling would refuse is admitted
     // Broiler-Human:        PENDING
     private bool ReadIdentifierEscape(System.Text.StringBuilder name, bool first, int startLine, int startColumn)
@@ -819,7 +819,7 @@ public sealed class SliceTokenizer
             return false;
         }
 
-        if (first ? !JsUnicodeLexical.IsIdentifierStart(scalar) : !JsUnicodeLexical.IsIdentifierPart(scalar))
+        if (first ? !JsCompilerUnicode.Lexical.IsIdentifierStart(scalar) : !JsCompilerUnicode.Lexical.IsIdentifierPart(scalar))
         {
             Refuse(
                 SliceSourceDiagnosticCode.UnexpectedCharacter,
@@ -2460,16 +2460,17 @@ public sealed class SliceTokenizer
 
     /// <summary>Whether <paramref name="c"/> is the language's <c>WhiteSpace</c>.</summary>
     /// <remarks>
-    /// TAB, VT, FF, ZWNBSP and <c>Space_Separator</c>, from the pinned Unicode 17.0.0 table
-    /// (<see cref="JsUnicodeLexical.IsWhiteSpace"/>). This read <c>char.IsWhiteSpace</c>, which
+    /// TAB, VT, FF, ZWNBSP and <c>Space_Separator</c>, from the pinned Unicode 17.0.0 table, through
+    /// the owner's <c>EcmaScriptLexical.IsWhiteSpace</c> since SJL-7.4 (<see cref="JsCompilerUnicode"/>;
+    /// Format's <c>JsUnicodeLexical</c> until then). This read <c>char.IsWhiteSpace</c>, which
     /// also admits U+0085 and U+001C to U+001F, so <c>1</c> U+0085 <c>+1</c> ran and answered 2.
     /// Every <c>WhiteSpace</c> code point is in the Basic Multilingual Plane, so one code unit is
     /// the whole question; the line terminators are asked about first, by
     /// <see cref="IsLineTerminator"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=F7C40B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=529023
     // Broiler-Human:        PENDING
-    private static bool IsWhiteSpace(char c) => JsUnicodeLexical.IsWhiteSpace(c);
+    private static bool IsWhiteSpace(char c) => JsCompilerUnicode.Lexical.IsWhiteSpace(c);
 
     /// <summary>
     /// Whether the code point at <paramref name="at"/> may start an identifier.
@@ -2486,8 +2487,9 @@ public sealed class SliceTokenizer
     /// </para>
     /// <para>
     /// <b>The set is the pinned one and the question is asked of a code point.</b> Since JSeal slice
-    /// JSD-0031-later the answer is <see cref="JsUnicodeLexical.IsIdentifierStart"/>, the Unicode
-    /// 17.0.0 <c>ID_Start</c> the matcher's group names also read, instead of the platform's
+    /// JSD-0031-later the answer is the pinned Unicode 17.0.0 <c>ID_Start</c> the matcher's group
+    /// names also read - since SJL-7.4 the owner's <c>EcmaScriptLexical.IsIdentifierStart</c>
+    /// (<see cref="JsCompilerUnicode"/>) - instead of the platform's
     /// Unicode 16 categories with a hand-written <c>Other_ID_Start</c> list. A surrogate pair is
     /// one code point, so <c>var</c> U+1D400 <c>= 1</c> - which refused as two unexpected
     /// surrogates - is a declaration, and a lone surrogate is not an identifier character.
@@ -2502,13 +2504,13 @@ public sealed class SliceTokenizer
     /// The code units of the identifier-start code point at <paramref name="at"/>: 1 or 2, or 0
     /// when the code point there may not start an identifier.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=FD9372
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DEA672
     // Broiler-Human:        PENDING
     private int IdentifierStartWidth(int at)
     {
         var codePoint = CodePointAt(at, out var width);
 
-        return JsUnicodeLexical.IsIdentifierStart(codePoint) ? width : 0;
+        return JsCompilerUnicode.Lexical.IsIdentifierStart(codePoint) ? width : 0;
     }
 
     /// <summary>
@@ -2519,15 +2521,15 @@ public sealed class SliceTokenizer
     /// <b>A zero-width joiner and non-joiner are identifier characters</b>, which is the clause most
     /// often missed: the grammar names them in <c>IdentifierPartChar</c> outright rather than
     /// reaching them through a property, because they are format characters.
-    /// <see cref="JsUnicodeLexical.IsIdentifierPart"/> names them with <c>$</c>.
+    /// The owner's <c>EcmaScriptLexical.IsIdentifierPart</c> names them with <c>$</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=ED8314
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=86CEEC
     // Broiler-Human:        PENDING
     private int IdentifierPartWidth(int at)
     {
         var codePoint = CodePointAt(at, out var width);
 
-        return JsUnicodeLexical.IsIdentifierPart(codePoint) ? width : 0;
+        return JsCompilerUnicode.Lexical.IsIdentifierPart(codePoint) ? width : 0;
     }
 
     /// <summary>

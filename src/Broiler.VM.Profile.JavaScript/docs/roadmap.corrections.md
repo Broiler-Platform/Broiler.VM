@@ -13274,3 +13274,39 @@ before. Rule I1's witness keeps its own hash and does not move. Everything else 
 **Authority and date.** The owner's instruction of 2026-10-15 to publish `0.1.0-preview.4`, on
 [JSD-0073](decisions/0073-the-profile-on-the-shared-date-algorithms.md) section 1 and the programme's
 work package SJL-6.4. 2026-10-15.
+
+### JSC-308
+
+**Where:** [`packages.md`](packages.md): its opening paragraph, the four rows, the paragraph "No
+foreign dependency" and the section "The consumer"; and [`support.md`](support.md), section 9, the
+paragraph on the frozen packages.
+
+**What the plan said.** The baseline was "the candidate pack of **bundle
+[JS-10-006](evidence/js-10-006/README.md)**"; the runtime's package depended on "`Broiler.VM.Abstractions`,
+`Broiler.VM.Binary`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.ECMAScript.Algorithms`", the
+compiler's on "`Broiler.VM.Abstractions`, `Broiler.VM.Profile.JavaScript.Format`,
+`Broiler.ECMAScript.Algorithms`", Format's on "none" and Intl's on "`Broiler.VM.Profile.JavaScript.Format`";
+"Every dependency above is a Broiler.VM package but one: `Broiler.ECMAScript.Algorithms`", which the two
+packages declared "at `0.2.0-preview.1`, the version first planned for it, from the numerics cut-over
+([JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md)), as the baseline's candidate pack
+does"; "it restores `Broiler.ECMAScript.Algorithms` through them. Bundle JS-10-006 records it restoring
+and running with upstream feeds unreachable, from a local feed that holds the shared package beside the
+family's"; and section 9 of the support table named "the candidate pack of bundle
+[JS-10-006](evidence/js-10-006/README.md), where a pristine consumer restored and ran them, and the
+shared algorithms package they depend on".
+
+**What replaced it.** The baseline is bundle JS-10-007's candidate pack, taken at the tree of the
+Unicode cut-over's change that adds the Unicode area's package references (the bundle's section 2 says
+how that tree stands to the change). All four packages depend on `Broiler.Unicode.Algorithms`
+`0.1.0-preview.4`, and Intl's on `Broiler.Unicode.Segmentation` `0.1.0-preview.4` too, both packed from
+Broiler.Unicode `6e14f93` and not yet on nuget.org; rule I1 admits each for shipping, for those projects
+alone. The candidate pack declares `Broiler.ECMAScript.Algorithms` `0.1.0-preview.4`, the version the
+checkout references, so "as the baseline's candidate pack does" moves to that clause. Bundle JS-10-007
+records the pristine consumer restoring and running from a local feed that holds the shared packages
+beside the family's, with upstream unreachable, rolling back and forward, refusing the negative control,
+and running as Native AOT.
+
+**Authority and date.** JSD-0075, the cut-over's record, on
+[JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md) and
+[JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md), and the programme's work
+package SJL-7.4. 2026-10-16.

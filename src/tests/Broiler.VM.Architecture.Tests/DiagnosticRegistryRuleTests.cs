@@ -692,7 +692,11 @@ public sealed class DiagnosticRegistryRuleTests
         // THE THIRTY-FIRST IS THE JSON MODULE READING (phase F1, JSC-255), a reader over one text
         // whose cursor lives in an instance made per call and nowhere longer.
         // The compiler's split adds nineteen partial files; every part remains in this scan.
-        Assert.Equal(50, lowering.Length);
+        //
+        // THE FIFTY-FIRST IS THE COMPILER'S UNICODE ADAPTER (SJL-7.4, JSD-0074): the owner's lexical
+        // classes and property lookups over Format's tables, held in static read-only references to
+        // immutable objects, which this rule reads and correctly does not report.
+        Assert.Equal(51, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

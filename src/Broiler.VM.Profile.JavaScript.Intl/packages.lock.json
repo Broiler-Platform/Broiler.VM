@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "Broiler.Unicode.Algorithms": {
+        "type": "Direct",
+        "requested": "[0.1.0-preview.4, )",
+        "resolved": "0.1.0-preview.4",
+        "contentHash": "p2baubLfU1h/ReXoB/348D6FXF2N2dI0YrgSUEQ4f+ftGyegpSGahQrkFsiHiQIFjM/OPxLhtjLB7zdvQ0D2cA=="
+      },
+      "Broiler.Unicode.Segmentation": {
+        "type": "Direct",
+        "requested": "[0.1.0-preview.4, )",
+        "resolved": "0.1.0-preview.4",
+        "contentHash": "isy48tsvEepWMNioqobvVQfIHlRmFUkskubW5TUfULWSBOlAuy5tPbrUQTL7FhTZ2O8dxahljb2hJQ/ADrik5Q==",
+        "dependencies": {
+          "Broiler.Unicode.Algorithms": "0.1.0-preview.4"
+        }
+      },
+      "broiler.vm.profile.javascript.format": {
+        "type": "Project",
+        "dependencies": {
+          "Broiler.Unicode.Algorithms": "[0.1.0-preview.4, )"
+        }
+      }
+    }
+  }
+}
