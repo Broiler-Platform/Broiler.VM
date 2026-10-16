@@ -1,0 +1,4 @@
+manifest docs/evidence/sjl-6-001/after/packages/manifest.txt (clean tree)
+consumer runs: [0, 0, 0]; negative control exit 1; native AOT exit 0
+ALL STEPS AS EXPECTED
+exit code: 0
