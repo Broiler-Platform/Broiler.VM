@@ -7,14 +7,25 @@
 # that references it records `content-hash`, and rule I1 holds that hash to this pin and to the
 # allow-list.
 #
-# HOW IT WAS TAKEN. Packed on 2026-10-16 in the Broiler.Unicode repository, from `upstream-commit`, in a
-# clean worktree of it, with `dotnet pack src/Unicode.Generation/Unicode.Generation.csproj -c Release
+# HOW IT WAS TAKEN. The package exactly as Broiler.Unicode's Publish workflow pushed it to nuget.org on
+# 2026-10-16 (run 38952273946, its artifact nuget-packages, whose digest GitHub records and the zip as
+# downloaded has), packed from `upstream-commit`; the nuspec's repository element records the same commit,
+# which rule I7 reads. nuget.org serves the same package with its repository signature (.signature.p7s)
+# added, and NuGet's content hash of a signed package leaves the signature out, so a restore from either
+# source records `content-hash`, the base64 SHA-512 of this file's bytes. `sha256` is over the same bytes.
+# (Revised 2026-10-16, when the package was published. Until then this feed held a copy packed locally
+# from the same commit; the library code is the same, and the package differs in its build (the
+# workflow's, on its Windows leg) and in carrying the package's README, icon and notices. The paragraph
+# read: "Packed on 2026-10-16 in the Broiler.Unicode repository, from `upstream-commit`, in a clean
+# worktree of it, with `dotnet pack src/Unicode.Generation/Unicode.Generation.csproj -c Release
 # -p:Version=0.1.0-preview.4 -p:PackageVersion=0.1.0-preview.4 -p:ContinuousIntegrationBuild=true`. The
 # nuspec's repository element records the same commit, which rule I7 reads. `content-hash` is NuGet's: the
 # base64 SHA-512 of the .nupkg's bytes, which is what a lock file records. `sha256` is over the same
-# bytes. It is not on nuget.org: a Broiler.VM package release that depends on it waits for its
-# publication (eng/verify-feed.ps1), and the pin is then taken again from the published package, as
-# Broiler.ECMAScript.Algorithms' pins were.
+# bytes. It is not on nuget.org: a Broiler.VM package release that depends on it waits for its publication
+# (eng/verify-feed.ps1), and the pin is then taken again from the published package, as
+# Broiler.ECMAScript.Algorithms' pins were." The identity lines read: content-hash
+# IHm/YZylbdUFdQA1+9GpqU2HypqO3CDN1Ls8JgO9ACq/mJ6poh7KaVP1X0TgJyQDrN+/RuqUfTH0YCTNsKSb/g==, sha256
+# 69c6e2b2f8fb4d04414ad3479e6f40f3f9f6fb4675efe53adfc3eb58beb4f32b.)
 #
 # WHAT IT IS. The owner's table generator and pin reader (milestone SJL-7.2; Broiler.VM's JSD-0074),
 # namespace Broiler.Unicode.Generation, which depends on Broiler.Unicode.Algorithms 0.1.0-preview.4 and
@@ -28,7 +39,7 @@
 id Broiler.Unicode.Generation
 version 0.1.0-preview.4
 file Broiler.Unicode.Generation.0.1.0-preview.4.nupkg
-content-hash IHm/YZylbdUFdQA1+9GpqU2HypqO3CDN1Ls8JgO9ACq/mJ6poh7KaVP1X0TgJyQDrN+/RuqUfTH0YCTNsKSb/g==
-sha256 69c6e2b2f8fb4d04414ad3479e6f40f3f9f6fb4675efe53adfc3eb58beb4f32b
+content-hash ai2J9zGFRnIVVqSlA/hkGbYUADObivp5Ee74QhAYlQuYQTPHQxxlD/cloFQlY9LWmGnVi8nZIMnxVWQXrb2GNw==
+sha256 fb97a52092ee5b734416f52f589748c8fd158f4eebb0acdf87a75ad7c6b028e9
 upstream Broiler-Platform/broiler.unicode
 upstream-commit 6e14f93ad753094c99f0013d22269b47550ae552

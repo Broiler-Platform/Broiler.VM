@@ -126,4 +126,7 @@ and the Native AOT image is 7,643,472 bytes, where JS-10-006's was 7,602,160.
    algorithms package as published from Broiler.JS `d1e4b11`. Nothing was restored from nuget.org.
    `eng/verify-feed.ps1` fails a release whose consumer cannot restore every dependency outside it from
    nuget.org, so no release of these packages can be cut until the Unicode packages are published.
+   *(Noted 2026-10-16: they were published the same day from the same commit, and the feed now holds
+   them as published (JSC-310). This bundle's pack and consumer ran with the copies packed locally, which
+   differ from the published ones in their build, not in their code; it is not taken again.)*
 5. **Not reviewed.** Release gate 11 publishes nothing a named human has not read.

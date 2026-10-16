@@ -52,7 +52,7 @@ package rule I1 admits for shipping, for the projects that declare it and no oth
 - `Broiler.Unicode.Algorithms`, the Unicode area's code package, which all four declare at
   `0.1.0-preview.4` since the Unicode cut-over (JSD-0075, on
   [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md)), packed from
-  Broiler.Unicode `6e14f93` and not yet on nuget.org *(added: JSC-308)*;
+  Broiler.Unicode `6e14f93` and published to nuget.org on 2026-10-16 *(added: JSC-308; until JSC-310 it read "and not yet on nuget.org")*;
 - `Broiler.Unicode.Segmentation`, its optional segmentation package, which `.Intl` alone declares, at
   the same version and from the same commit, so that a composition that declines the Intl surface
   carries none of it (rule I3) *(added: JSC-308)*.

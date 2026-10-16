@@ -13334,3 +13334,33 @@ co-signing each row's scoping clears its blocker, as for the others.
 **Authority and date.** [JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) section 11, on
 [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md) and the
 programme's work package SJL-7.4. 2026-10-16.
+
+### JSC-310
+
+**Where:** the records that carry the Unicode packages' identity: the committed feed `eng/packages/` with
+its README and the three packages' pins, the allow-list's three entries, the five lock files, the two rows
+of `THIRD_PARTY_NOTICES.md` that name the packages, rule I1's two witnesses that hold their entries,
+[`packages.md`](packages.md)'s dependency list, the
+decision index's row of JSD-0075, and a note in bundle [JS-10-007](evidence/js-10-007/README.md).
+[JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) is not edited.
+
+**What the plan said.** JSD-0075 section 1: "`Broiler.Unicode.Algorithms`, `Broiler.Unicode.Segmentation`
+and `Broiler.Unicode.Generation` `0.1.0-preview.4`, the owner's stream's next preview, packed locally from
+Broiler.Unicode `6e14f93ad753094c99f0013d22269b47550ae552` and restored from the committed feed
+`eng/packages/` with lock files. They are not on nuget.org at this record".
+
+**What replaced it.** The version does not move. Broiler.Unicode's Publish workflow published all of its
+packages at `0.1.0-preview.4` to nuget.org on 2026-10-16 (run 38952273946) from the same commit, `6e14f93`,
+on the owner's instruction, and the feed holds the three this family admits exactly as that run pushed them
+(its artifact `nuget-packages`, whose digest GitHub records and the zip as downloaded has). The library code
+is the same. The packages differ from the copies packed locally in their build, the workflow's, and in
+carrying each package's README, icon and notices. Their content hashes differ, so the pins, the allow-list,
+the lock files and the notices rows record the published packages; each quotes what it read before. Rule
+I1's two new witnesses, each an allow-list entry with one field made wrong, take the new hashes too, so
+that each still fails for its one reason alone. The evidence taken with the copies packed
+locally - bundle sjl-7-001's `cutover/` closures and bundle JS-10-007's pack and consumer - is not taken
+again; each says so. Everything else JSD-0075 decided stands.
+
+**Authority and date.** The owner's instruction of 2026-10-16 to publish `0.1.0-preview.4`, on
+[JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) section 1 and the programme's work package
+SJL-7.4. 2026-10-16.

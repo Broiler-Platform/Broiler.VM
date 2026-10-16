@@ -9,7 +9,7 @@
     {
       "id": "Broiler.Unicode.Generation",
       "version": "0.1.0-preview.4",
-      "contentHash": "IHm/YZylbdUFdQA1+9GpqU2HypqO3CDN1Ls8JgO9ACq/mJ6poh7KaVP1X0TgJyQDrN+/RuqUfTH0YCTNsKSb/g==",
+      "contentHash": "ai2J9zGFRnIVVqSlA/hkGbYUADObivp5Ee74QhAYlQuYQTPHQxxlD/cloFQlY9LWmGnVi8nZIMnxVWQXrb2GNw==",
       "use": "test-only",
       "projects": [
         "Broiler.VM.Architecture.Tests",

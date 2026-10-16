@@ -6,7 +6,7 @@
         "type": "Direct",
         "requested": "[0.1.0-preview.4, )",
         "resolved": "0.1.0-preview.4",
-        "contentHash": "IHm/YZylbdUFdQA1+9GpqU2HypqO3CDN1Ls8JgO9ACq/mJ6poh7KaVP1X0TgJyQDrN+/RuqUfTH0YCTNsKSb/g==",
+        "contentHash": "ai2J9zGFRnIVVqSlA/hkGbYUADObivp5Ee74QhAYlQuYQTPHQxxlD/cloFQlY9LWmGnVi8nZIMnxVWQXrb2GNw==",
         "dependencies": {
           "Broiler.Unicode.Algorithms": "0.1.0-preview.4"
         }
@@ -181,7 +181,7 @@
         "type": "CentralTransitive",
         "requested": "[0.1.0-preview.4, )",
         "resolved": "0.1.0-preview.4",
-        "contentHash": "p2baubLfU1h/ReXoB/348D6FXF2N2dI0YrgSUEQ4f+ftGyegpSGahQrkFsiHiQIFjM/OPxLhtjLB7zdvQ0D2cA=="
+        "contentHash": "8M7PNntCj6RfQF0VIkFXgrClg3RxCdbCKyFIQB+n6Q08jX4S3Mz3ged9qwz83ggzEJ+z60Yg5trOhZ5qaxS3Vg=="
       }
     }
   }

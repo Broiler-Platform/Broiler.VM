@@ -28,6 +28,13 @@ git ls-tree -r HEAD | python3 -c "import sys,hashlib; l=[x for x in sys.stdin.re
 The assemblies the closures carry name `+a9be9f1b57fc4a342f88a4674142f4dbdebec380` in their informational
 version for the same reason.
 
+**The packages it ran with** were the copies of `0.1.0-preview.4` packed locally from Broiler.Unicode
+`6e14f93`, which [`closures/admitted-packages.json`](closures/admitted-packages.json) names by their content
+hashes. *(Noted 2026-10-16: the same day the owner published `0.1.0-preview.4` from the same commit, and the
+committed feed now holds the packages as published (JSC-310). They carry the same library code from a
+different build; the closures are not taken again here, and SJL-7.6's after runs take them with the
+published packages.)*
+
 ## What it holds
 
 **Every JavaScript root this machine can publish was published and run in three modes**: ExecutionOnly,
