@@ -467,7 +467,7 @@ Broiler.VM rules are in its register. `SL` rules are in the shared libraries' ow
 | SJL-2 | I1, I2, I3, I6, I7 | A2, B3 (to `Active`), N1, N37, A7 with `graph.manifest.json`, E4 | SL1 to SL10 |
 | SJL-3 | I5 | K2 and K4 with the compositions register; N11's corpus remarks | Per-area vectors |
 | SJL-4 to SJL-6 | (none) | I5 rows added | (none) |
-| SJL-7 | I4 | N22 kept in Broiler.VM, regenerating with the owner's generator from Broiler.VM's pin, which `I4` holds equal to the owner's (`SJL-D-6` (c)); N23 and N18 remarks and vacuity guards | SL7 for Unicode |
+| SJL-7 | I4 | N22 kept in Broiler.VM, regenerating with the owner's generator from Broiler.VM's pin, which `I4` holds equal to the owner's (`SJL-D-6` (c)); N28 likewise for the segmentation tables and Soft_Dotted, which the Intl assembly holds; I1's allow-list widened for the owner's code package in Format; N23 and N18 remarks and vacuity guards *(corrected 2026-10-16, at SJL-7.1, by [JSD-0074](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md); the cell named N22 alone, and not I1)* | SL7 for Unicode |
 | SJL-8 | (none) | N29 to N32 kept, regenerating with the shared generator, and given the register rows they lack | SL7 for time data |
 | SJL-9 | (none) | N27, N28 kept, regenerating with the shared generator | SL7 for locale data |
 | SJL-10 | (none) | (none beyond I5) | (none) |
