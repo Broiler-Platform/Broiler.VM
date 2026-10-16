@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Time;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -48,14 +50,14 @@ internal static partial class JsTemporal
     private const long YearBound = 300_000;
 
     /// <summary>-271821-04-19, the first day ISODateWithinLimits admits.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D7FDA9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F27C5A
     // Broiler-Human:        PENDING
-    private static readonly long MinDay = JsTemporalCore.EpochDays(-271821, 4, 19);
+    private static readonly long MinDay = IsoCalendarMath.EpochDays(-271821, 4, 19);
 
     /// <summary>275760-09-13, the last day ISODateWithinLimits admits.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C17397
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F2C7B5
     // Broiler-Human:        PENDING
-    private static readonly long MaxDay = JsTemporalCore.EpochDays(275760, 9, 13);
+    private static readonly long MaxDay = IsoCalendarMath.EpochDays(275760, 9, 13);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=271368
     // Broiler-Human:        PENDING
@@ -166,7 +168,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>NonISOCalendarDateToISO (s4.1.20).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0085A8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C50ACB
     // Broiler-Human:        PENDING
     private static JsIsoDate NonIsoDateToIso(JsEngine engine, string calendar, JsCalendarFields fields, bool reject)
     {
@@ -180,7 +182,7 @@ internal static partial class JsTemporal
 
         var month = Regulated(engine, fields.Month!.Value, year.Months, reject, "month");
         var day = Regulated(engine, fields.Day!.Value, year.DaysInMonth(month), reject, "day");
-        return JsTemporalCore.FromEpochDays(year.Start + year.Offsets[month - 1] + day - 1);
+        return new JsIsoDate(IsoCalendarMath.FromEpochDays(year.Start + year.Offsets[month - 1] + day - 1));
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=03A586
@@ -201,7 +203,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>NonISOMonthDayToISOReferenceDate (s4.1.21).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7D9B4C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E91F4B
     // Broiler-Human:        PENDING
     private static JsIsoDate NonIsoMonthDayToReferenceDate(JsEngine engine, string calendar, JsCalendarFields fields, bool reject)
     {
@@ -245,17 +247,17 @@ internal static partial class JsTemporal
             }
 
             var isoYear = system.TableReferenceYear(monthCode, day)!.Value;
-            return ReferenceDate(system, monthCode, day, JsTemporalCore.EpochDays(isoYear, 1, 1), JsTemporalCore.EpochDays(isoYear, 12, 31), latest: true) ??
+            return ReferenceDate(system, monthCode, day, IsoCalendarMath.EpochDays(isoYear, 1, 1), IsoCalendarMath.EpochDays(isoYear, 12, 31), latest: true) ??
                 throw engine.Error("RangeError", "Temporal: the reference year " + isoYear + " has no " + monthCode + " day " + day);
         }
 
-        return ReferenceDate(system, monthCode, day, JsTemporalCore.EpochDays(1900, 1, 1), JsTemporalCore.EpochDays(1972, 12, 31), latest: true) ??
-            ReferenceDate(system, monthCode, day, JsTemporalCore.EpochDays(1973, 1, 1), JsTemporalCore.EpochDays(2035, 12, 31), latest: false) ??
+        return ReferenceDate(system, monthCode, day, IsoCalendarMath.EpochDays(1900, 1, 1), IsoCalendarMath.EpochDays(1972, 12, 31), latest: true) ??
+            ReferenceDate(system, monthCode, day, IsoCalendarMath.EpochDays(1973, 1, 1), IsoCalendarMath.EpochDays(2035, 12, 31), latest: false) ??
             throw engine.Error("RangeError", "Temporal: no year of the " + calendar + " calendar has " + monthCode + " day " + day);
     }
 
     /// <summary>The latest or earliest ISO date between two days whose month code and day are the given ones.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8EDD12
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BA29C6
     // Broiler-Human:        PENDING
     private static JsIsoDate? ReferenceDate(JsCalendarSystem system, string monthCode, int day, long from, long to, bool latest)
     {
@@ -278,21 +280,21 @@ internal static partial class JsTemporal
 
                 if (days >= from && days <= to)
                 {
-                    return JsTemporalCore.FromEpochDays(days);
+                    return new JsIsoDate(IsoCalendarMath.FromEpochDays(days));
                 }
             }
         }
     }
 
     /// <summary>The most days a month code has in any year (s4.1.21), from the years 1900 to 2035.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4FADE8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6F3CB5
     // Broiler-Human:        PENDING
     private static int MaxDaysInMonth(JsCalendarSystem system, string monthCode)
     {
         var most = 0;
-        var last = system.YearOf(JsTemporalCore.EpochDays(2035, 12, 31));
+        var last = system.YearOf(IsoCalendarMath.EpochDays(2035, 12, 31));
 
-        for (var y = system.YearOf(JsTemporalCore.EpochDays(1900, 1, 1)); y <= last; y++)
+        for (var y = system.YearOf(IsoCalendarMath.EpochDays(1900, 1, 1)); y <= last; y++)
         {
             var year = system.Year(y);
             var ordinal = JsCalendarSystem.Ordinal(year, monthCode);
@@ -338,12 +340,12 @@ internal static partial class JsTemporal
     }
 
     /// <summary>NonISODateAdd (s4.1.18).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=614369
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=02EBD3
     // Broiler-Human:        PENDING
     private static JsIsoDate NonIsoDateAdd(JsEngine engine, string calendar, JsIsoDate date, JsDateDuration duration, bool reject)
     {
         var system = SystemOf(engine, calendar);
-        var (year, month, day) = system.FromEpochDays(JsTemporalCore.EpochDays(date));
+        var (year, month, day) = system.FromEpochDays(IsoCalendarMath.EpochDays(date.Year, date.Month, date.Day));
         var y0 = CalendarYear(engine, system, year.Year + duration.Years);
         var m0 = JsCalendarSystem.Ordinal(y0, ConstrainMonthCode(engine, system, y0, JsCalendarSystem.MonthCode(year, month), reject));
 
@@ -358,7 +360,7 @@ internal static partial class JsTemporal
             throw engine.Error("RangeError", "Temporal: the date is outside the representable range");
         }
 
-        return JsTemporalCore.FromEpochDays(days);
+        return new JsIsoDate(IsoCalendarMath.FromEpochDays(days));
     }
 
     /// <summary>A Calendar Date Record's year, month code, ordinal month and day, for CompareSurpasses.</summary>
@@ -405,13 +407,13 @@ internal static partial class JsTemporal
     }
 
     /// <summary>NonISODateUntil (s4.1.19), its loops counted from estimates.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BA4155
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AFB60C
     // Broiler-Human:        PENDING
     private static JsDateDuration NonIsoDateUntil(JsEngine engine, string calendar, JsIsoDate one, JsIsoDate two, TemporalUnit largestUnit, int sign)
     {
         var system = SystemOf(engine, calendar);
-        var oneDays = JsTemporalCore.EpochDays(one);
-        var twoDays = JsTemporalCore.EpochDays(two);
+        var oneDays = IsoCalendarMath.EpochDays(one.Year, one.Month, one.Day);
+        var twoDays = IsoCalendarMath.EpochDays(two.Year, two.Month, two.Day);
         long years = 0;
         long months = 0;
         var intermediate = oneDays;
@@ -486,12 +488,12 @@ internal static partial class JsTemporal
     }
 
     /// <summary>NonISOCalendarISOToDate (Temporal s12.3.25, the Intl era and month code proposal's s4.1.14).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DDEA47
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CA8AEF
     // Broiler-Human:        PENDING
     private static JsCalendarDate NonIsoToDate(JsEngine engine, string calendar, JsIsoDate date)
     {
         var system = SystemOf(engine, calendar);
-        var days = JsTemporalCore.EpochDays(date);
+        var days = IsoCalendarMath.EpochDays(date.Year, date.Month, date.Day);
         var (year, month, day) = system.FromEpochDays(days);
         var (era, eraYear) = system.EraOf(year.Year, days);
 
@@ -502,7 +504,7 @@ internal static partial class JsTemporal
             month,
             JsCalendarSystem.MonthCode(year, month),
             day,
-            JsTemporalCore.DayOfWeek(date),
+            IsoCalendarMath.DayOfWeek(date.Year, date.Month, date.Day),
             (int)(days - year.Start) + 1,
             null,
             null,

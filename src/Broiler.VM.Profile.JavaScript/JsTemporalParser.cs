@@ -3,19 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   39
-// Annotated:        39/39
+// Relevant units:   38
+// Annotated:        38/38
 // Exempt:           29
-// Human-reviewed:   0/39
+// Human-reviewed:   0/38
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       39
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -280,13 +281,8 @@ internal sealed class JsTemporalParser
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E699A3
-    // Broiler-Human:        PENDING
-    private bool ValidMonthDay() =>
-        !(day == "31" && month is "02" or "04" or "06" or "09" or "11") && !(month == "02" && day == "30");
-
     /// <summary>DateSpec[Extended] with IsValidDate.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8720EA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=51CB7A
     // Broiler-Human:        PENDING
     private bool DateSpec()
     {
@@ -298,8 +294,10 @@ internal sealed class JsTemporalParser
 
             if (DateYear() && (!extended || Eat('-')) && DateMonth() && (!extended || Eat('-')) && DateDay())
             {
-                if (!ValidMonthDay() ||
-                    (month == "02" && day == "29" && !JsTemporalCore.IsLeapYear(long.Parse(year!, System.Globalization.CultureInfo.InvariantCulture))))
+                if (!IsoCalendarMath.IsValidIsoDate(
+                    long.Parse(year!, System.Globalization.CultureInfo.InvariantCulture),
+                    int.Parse(month!, System.Globalization.CultureInfo.InvariantCulture),
+                    int.Parse(day!, System.Globalization.CultureInfo.InvariantCulture)))
                 {
                     // AN EARLY ERROR, not an alternative: the date matched and is not a date.
                     at = start;
@@ -331,7 +329,7 @@ internal sealed class JsTemporalParser
         return false;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4F4BCC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8BFC6A
     // Broiler-Human:        PENDING
     private bool DateSpecMonthDay()
     {
@@ -350,7 +348,11 @@ internal sealed class JsTemporalParser
 
             if (DateMonth() && (!extended || Eat('-')) && DateDay())
             {
-                if (!ValidMonthDay())
+                // THE PROPOSAL'S REFERENCE YEAR, a leap year: a month-day admits February 29.
+                if (!IsoCalendarMath.IsValidIsoDate(
+                    1972,
+                    int.Parse(month!, System.Globalization.CultureInfo.InvariantCulture),
+                    int.Parse(day!, System.Globalization.CultureInfo.InvariantCulture)))
                 {
                     at = start;
                     return false;

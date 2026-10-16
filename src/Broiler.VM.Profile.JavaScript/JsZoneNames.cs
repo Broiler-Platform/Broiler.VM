@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Time;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -132,14 +134,14 @@ internal sealed class JsZoneNames
     }
 
     /// <summary>A metazone period's bound, <c>yyyy-MM-dd HH:mm</c> UTC, in milliseconds.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=019E48
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86D0A1
     // Broiler-Human:        PENDING
     private static long Time(string text)
     {
         static int Number(string text, int at, int length) =>
             int.Parse(text.Substring(at, length), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture);
 
-        var days = JsTemporalCore.EpochDays(Number(text, 0, 4), Number(text, 5, 2), Number(text, 8, 2));
+        var days = IsoCalendarMath.EpochDays(Number(text, 0, 4), Number(text, 5, 2), Number(text, 8, 2));
         return ((days * 1440) + (Number(text, 11, 2) * 60) + Number(text, 14, 2)) * 60_000;
     }
 

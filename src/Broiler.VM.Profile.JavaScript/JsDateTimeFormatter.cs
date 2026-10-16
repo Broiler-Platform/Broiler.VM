@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -98,11 +99,11 @@ internal readonly record struct JsLocalTime(long Year, int Month, int Day, int W
     /// year, ordinal month, day and day of the year, its era as CLDR numbers it, and how its month is
     /// named and numbered.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B6BF1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=550C70
     // Broiler-Human:        PENDING
     internal JsLocalTime InCalendar(JsCalendarSystem system)
     {
-        var days = JsTemporalCore.EpochDays(Year, Month, Day);
+        var days = IsoCalendarMath.EpochDays(Year, Month, Day);
         var (year, month, day) = system.FromEpochDays(days);
         var (era, eraYear) = system.EraOf(year.Year, days);
         var code = JsCalendarSystem.MonthCode(year, month);
@@ -149,40 +150,24 @@ internal readonly record struct JsLocalTime(long Year, int Month, int Day, int W
     };
 
     /// <summary>The fields of <paramref name="time"/>, an integral time value, <paramref name="offsetMinutes"/> from UTC.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=227A46
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=97F7F0
     // Broiler-Human:        PENDING
     internal static JsLocalTime From(double time, int offsetSeconds)
     {
-        var local = (long)time + (offsetSeconds * 1_000L);
-        var days = local >= 0 ? local / 86_400_000L : -((-local + 86_399_999L) / 86_400_000L);
-        var within = local - (days * 86_400_000L);
-
-        // HOWARD HINNANT'S civil_from_days, exact over the whole time-value range.
-        var z = days + 719_468;
-        var era = (z >= 0 ? z : z - 146_096) / 146_097;
-        var dayOfEra = z - (era * 146_097);
-        var yearOfEra = (dayOfEra - (dayOfEra / 1_460) + (dayOfEra / 36_524) - (dayOfEra / 146_096)) / 365;
-        var dayOfYearMarch = dayOfEra - ((365 * yearOfEra) + (yearOfEra / 4) - (yearOfEra / 100));
-        var monthMarch = ((5 * dayOfYearMarch) + 2) / 153;
-        var day = (int)(dayOfYearMarch - (((153 * monthMarch) + 2) / 5) + 1);
-        var month = (int)(monthMarch < 10 ? monthMarch + 3 : monthMarch - 9);
-        var year = yearOfEra + (era * 400) + (month <= 2 ? 1 : 0);
-        var weekday = (int)(((days % 7) + 11) % 7);
-
-        var leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
-        int[] starts = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-        var dayOfYear = starts[month - 1] + day + (leap && month > 2 ? 1 : 0);
+        // THE SHARED FIELD OPERATIONS (JSD-0073): an integral time value and an offset of at most a
+        // day keep the local time well inside the 2^62 they take.
+        var local = time + (offsetSeconds * 1_000.0);
 
         return new JsLocalTime(
-            year,
-            month,
-            day,
-            weekday,
-            (int)(within / 3_600_000),
-            (int)(within / 60_000 % 60),
-            (int)(within / 1_000 % 60),
-            (int)(within % 1_000),
-            dayOfYear,
+            (long)EcmaTime.YearFromTime(local),
+            (int)EcmaTime.MonthFromTime(local) + 1,
+            (int)EcmaTime.DateFromTime(local),
+            (int)EcmaTime.WeekDay(local),
+            (int)EcmaTime.HourFromTime(local),
+            (int)EcmaTime.MinFromTime(local),
+            (int)EcmaTime.SecFromTime(local),
+            (int)EcmaTime.MsFromTime(local),
+            (int)EcmaTime.DayWithinYear(local) + 1,
             (long)time);
     }
 }

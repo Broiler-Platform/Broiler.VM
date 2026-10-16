@@ -67,15 +67,19 @@
   "collect-area.py": "e1346f121fb09c045822945d993b33f6043fd101f9c95e435590f5766b4e42e5",
   "correspondence.md": "b3bd19663ae14c11bcf94eb3535bbf1e6a9c1240163c00c949a37cc5a747a51d",
   "decision-rule-area.md": "ffa5229bc76e8937fbbdb76a0d98eb2401192612e859bb202b66f76d4693f1eb",
-  "vectors/build-conformance.log": "72d15d63124b36273273327d246836a23d52e6288f5634b877856a462d3a6635",
+  "vectors/build-conformance.log": "cbed6642a6248a1d6fbc84241ef84d731f855832b82107ce3342bfce83d636e9",
   "vectors/revision-14.pin": "44ab95803176dd118303a14602690647539ed2a19cd0f6dbad8ac4d1f403f547",
   "vectors/run-negative-control-revision-14.log": "90f53b56a61ed8ab59562ad11b2bcb7996508c61faa85907760ae9f0736e63dd",
   "vectors/run-negative-control-revision-14.tsv.gz": "c4a9f366a09773528c77e274031c08fe862204a8814316e43e58997ac3485be6",
   "vectors/run-negative-control-revision-15.log": "6136a80a1c79e3bd2cc175f7e4dfd70438f6ecbdfe65dea27fe7ea261951113f",
   "vectors/run-negative-control-revision-15.tsv.gz": "bfb55ce43c14c5a44ccc760f1278d93ab6e42a3b1fad39f9b76316d7540f7f8f",
+  "vectors/run-negative-control-revision-16.log": "f3ea78c9503211cf0ac366f913f286ee235ab223f97512b659f4d63c62629f2d",
+  "vectors/run-negative-control-revision-16.tsv.gz": "7571195f026297bd1bc202292c7026bf1f4657a58111ccae15d353c0d447d3bf",
   "vectors/run-revision-14.log": "73a006a567cc7b3a3c6e94b772c2c26bacf550114c3ceac51884b969bde7142d",
   "vectors/run-revision-14.tsv.gz": "99fcbedd23abce93e01797c55a98ad617bfbf648d6df88b847498b1b8d78638d",
   "vectors/run-revision-15.log": "af5d0e426065147171558f5d892ead58e6f45c30002041317a0dd61047f30cd8",
-  "vectors/run-revision-15.tsv.gz": "c56feadd2ab46bfa3a8b61fd26a75914f9c82ebe010756e5969d8b3931486797"
+  "vectors/run-revision-15.tsv.gz": "c56feadd2ab46bfa3a8b61fd26a75914f9c82ebe010756e5969d8b3931486797",
+  "vectors/run-revision-16.log": "ad77aae1a5a4fcbbe488178f1c41c4f689b9fef5ca001fa6e6f615f1d3289f4f",
+  "vectors/run-revision-16.tsv.gz": "be8ac374070d57c4dd056dfd270853a2a6aac6aa0f3240fa3aadd3a2a3999c85"
  }
 }

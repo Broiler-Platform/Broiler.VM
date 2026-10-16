@@ -178,3 +178,32 @@ correspondence classified, so the record's first falsifier does not fire, and no
 The 22 numeric slash dates, `impl-defined`, match this family's expectation, an invalid date. Broiler.JS's
 first runs, in UTC and in `America/New_York`, are its own bundle's; corpus revision 15 classifies them under
 the rows that bundle names.
+
+## 7. The vectors after this family's cut-over (SJL-6.4)
+
+This family's Date area is the shared library's since `31f405b`
+([JSD-0073](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0073-the-profile-on-the-shared-date-algorithms.md)),
+and its pin moves with it to corpus revision 16 (Broiler.JS `6f29deb`), which adds twelve `impl-defined`
+vectors of strings outside the format and keeps revision 15's sixteen divergence fields. The archive was
+taken twice, the copies byte-identical, and the second extracted afresh and hashed there. The area
+collector's `vectors` step ran at `31f405b` from a clean checkout and rebuilt the conformance root there,
+whose build log replaces revision 15's in [`vectors/build-conformance.log`](vectors/build-conformance.log)
+(the earlier one is in this repository's history):
+
+| Run | Corpus | Result | Files |
+|---|---|---|---|
+| Revision 16 | `6f29deb`, 37 files, content `819c526e...` | 50,727 vectors: 50,727 match, 0 classified divergences, 0 unclassified differences | [`run-revision-16.log`](vectors/run-revision-16.log), [`run-revision-16.tsv.gz`](vectors/run-revision-16.tsv.gz) |
+| Its negative control, `text/trim/0001` | the same | 50,726 match, 1 unclassified difference, that vector | [`run-negative-control-revision-16.log`](vectors/run-negative-control-revision-16.log), [`run-negative-control-revision-16.tsv.gz`](vectors/run-negative-control-revision-16.tsv.gz) |
+
+**Each of the sixteen divergence fields reports "divergence no longer holds"**: T4's
+`date/make-day/0863`, G3's eight and P9's seven, the vectors of section 6's table, and nothing else does.
+The twelve vectors of revision 16 match this family's expectation, its dialect as the library ports it.
+This is the cut-over's record, not part A or part B: SJL-6.6 takes the after runs both parts judge.
+`area-manifest.json` lists the new files.
+
+**The published package.** `0.1.0-preview.4` was published to nuget.org later the same day, from
+Broiler.JS `d1e4b11`, whose library code is `e04874d`'s, and the committed feed now holds it as published
+([JSC-307](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-307)). The run above
+used the copy packed from `e04874d`. With the published package, the same conformance root's run on
+revision 16 gives a report identical byte for byte to `run-revision-16.tsv.gz`'s, and its negative control
+reports its one vector; neither run is retained, since neither differs.

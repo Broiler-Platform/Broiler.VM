@@ -3,20 +3,21 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   74
-// Annotated:        74/74
+// Relevant units:   64
+// Annotated:        64/64
 // Exempt:           13
-// Human-reviewed:   0/74
+// Human-reviewed:   0/64
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       74
+// Unverified:       64
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -44,9 +45,18 @@ internal enum TemporalUnit
 }
 
 /// <summary>An ISO Date Record (s3.5.1): a valid ISO 8601 date, the year not necessarily within Temporal's range.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A8BAB2
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4242D4
 // Broiler-Human:        PENDING
-internal readonly record struct JsIsoDate(long Year, int Month, int Day);
+internal readonly record struct JsIsoDate(long Year, int Month, int Day)
+{
+    /// <summary>The record of the year, month and day the shared library answers (IsoCalendarMath.FromEpochDays).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=993F6D
+    // Broiler-Human:        PENDING
+    internal JsIsoDate((long Year, int Month, int Day) date)
+        : this(date.Year, date.Month, date.Day)
+    {
+    }
+}
 
 /// <summary>A Time Record (s4.5.1): a valid clock time and a number of overflow days.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=652EBE
@@ -172,81 +182,17 @@ internal static class JsTemporalCore
     };
 
     // ---- ISO dates --------------------------------------------------------------------------
+    //
+    // The ISO calendar's civil-day operations are the shared library's since SJL-6.4 (JSD-0073):
+    // IsoCalendarMath's IsLeapYear, DaysInMonth, DaysInYear, EpochDays, FromEpochDays, DayOfWeek,
+    // DayOfYear, WeekOfYear, BalanceYearMonth and IsValidIsoDate, which each caller calls with this
+    // family's record unpacked. What stays here is the record and the one-line adapter below.
 
-    /// <summary>Whether a year is a leap year in the proleptic Gregorian calendar.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DC089B
+    /// <summary>The proposal's AddDaysToISODate (s3.5.9), over the shared epoch days.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F00BE
     // Broiler-Human:        PENDING
-    internal static bool IsLeapYear(long year) => year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
-
-    /// <summary>The proposal's ISODaysInMonth (s12.3.17).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F76245
-    // Broiler-Human:        PENDING
-    internal static int DaysInMonth(long year, int month) => month switch
-    {
-        2 => IsLeapYear(year) ? 29 : 28,
-        4 or 6 or 9 or 11 => 30,
-        _ => 31,
-    };
-
-    /// <summary>The proposal's MathematicalDaysInYear.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=53E22E
-    // Broiler-Human:        PENDING
-    internal static int DaysInYear(long year) => IsLeapYear(year) ? 366 : 365;
-
-    /// <summary>Days since 1970-01-01 of a valid ISO date (ISODateToEpochDays with a 1-based month).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3DB4D5
-    // Broiler-Human:        PENDING
-    internal static long EpochDays(long year, int month, int day)
-    {
-        var y = year - (month <= 2 ? 1 : 0);
-        var era = (y >= 0 ? y : y - 399) / 400;
-        var yearOfEra = y - (era * 400);
-        var dayOfYear = (((153 * (month + (month > 2 ? -3 : 9))) + 2) / 5) + day - 1;
-        var dayOfEra = (yearOfEra * 365) + (yearOfEra / 4) - (yearOfEra / 100) + dayOfYear;
-        return (era * 146097) + dayOfEra - 719468;
-    }
-
-    /// <summary>Days since the epoch of an ISO date.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=38B27E
-    // Broiler-Human:        PENDING
-    internal static long EpochDays(JsIsoDate date) => EpochDays(date.Year, date.Month, date.Day);
-
-    /// <summary>The ISO date of a day since the epoch.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B7626C
-    // Broiler-Human:        PENDING
-    internal static JsIsoDate FromEpochDays(long days)
-    {
-        var z = days + 719468;
-        var era = (z >= 0 ? z : z - 146096) / 146097;
-        var dayOfEra = z - (era * 146097);
-        var yearOfEra = (dayOfEra - (dayOfEra / 1460) + (dayOfEra / 36524) - (dayOfEra / 146096)) / 365;
-        var dayOfYear = dayOfEra - ((365 * yearOfEra) + (yearOfEra / 4) - (yearOfEra / 100));
-        var monthPart = ((5 * dayOfYear) + 2) / 153;
-        var day = (int)(dayOfYear - (((153 * monthPart) + 2) / 5) + 1);
-        var month = (int)(monthPart < 10 ? monthPart + 3 : monthPart - 9);
-        return new JsIsoDate(yearOfEra + (era * 400) + (month <= 2 ? 1 : 0), month, day);
-    }
-
-    /// <summary>The proposal's IsValidISODate (s3.5.8).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E9762
-    // Broiler-Human:        PENDING
-    internal static bool IsValidIsoDate(double year, double month, double day) =>
-        month is >= 1 and <= 12 && day >= 1 && day <= DaysInMonth((long)year, (int)month);
-
-    /// <summary>The proposal's AddDaysToISODate (s3.5.9).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BB5D60
-    // Broiler-Human:        PENDING
-    internal static JsIsoDate AddDays(JsIsoDate date, long days) => FromEpochDays(EpochDays(date) + days);
-
-    /// <summary>The proposal's BalanceISOYearMonth: a year and a month 1 to 12.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AE72EE
-    // Broiler-Human:        PENDING
-    internal static (long Year, int Month) BalanceYearMonth(long year, long month)
-    {
-        var zeroBased = month - 1;
-        var carry = zeroBased >= 0 ? zeroBased / 12 : ((zeroBased + 1) / 12) - 1;
-        return (year + carry, (int)(zeroBased - (carry * 12)) + 1);
-    }
+    internal static JsIsoDate AddDays(JsIsoDate date, long days) =>
+        new(IsoCalendarMath.FromEpochDays(IsoCalendarMath.EpochDays(date.Year, date.Month, date.Day) + days));
 
     /// <summary>The proposal's CompareISODate (s3.5.13).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F9B18
@@ -257,61 +203,17 @@ internal static class JsTemporalCore
         : one.Day != two.Day ? (one.Day > two.Day ? 1 : -1)
         : 0;
 
-    /// <summary>The proposal's ISODayOfWeek (s12.3.20): Monday 1 to Sunday 7.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B3F7BE
-    // Broiler-Human:        PENDING
-    internal static int DayOfWeek(JsIsoDate date)
-    {
-        var weekday = (int)(((EpochDays(date) + 4) % 7 + 7) % 7);
-        return weekday == 0 ? 7 : weekday;
-    }
-
-    /// <summary>The proposal's ISODayOfYear (s12.3.19).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F4F876
-    // Broiler-Human:        PENDING
-    internal static int DayOfYear(JsIsoDate date) => (int)(EpochDays(date) - EpochDays(date.Year, 1, 1)) + 1;
-
-    /// <summary>The proposal's ISOWeekOfYear (s12.3.18): the week and the week-year.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=42B6F7
-    // Broiler-Human:        PENDING
-    internal static (int Week, long Year) WeekOfYear(JsIsoDate date)
-    {
-        var year = date.Year;
-        var dayOfYear = DayOfYear(date);
-        var dayOfWeek = DayOfWeek(date);
-        var week = (dayOfYear + 7 - dayOfWeek + 3) / 7;
-
-        if (week < 1)
-        {
-            var jan1 = DayOfWeek(new JsIsoDate(year, 1, 1));
-
-            if (jan1 == 5 || (jan1 == 6 && IsLeapYear(year - 1)))
-            {
-                return (53, year - 1);
-            }
-
-            return (52, year - 1);
-        }
-
-        if (week == 53 && DaysInYear(year) - dayOfYear < 4 - dayOfWeek)
-        {
-            return (1, year + 1);
-        }
-
-        return (week, year);
-    }
-
     /// <summary>The proposal's ISODateWithinLimits (s3.5.12): the date at noon is a representable date-time.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DEC44D
     // Broiler-Human:        PENDING
     internal static bool DateWithinLimits(JsIsoDate date) => DateTimeWithinLimits(new JsIsoDateTime(date, JsTimeRecord.Noon));
 
     /// <summary>The proposal's ISODateTimeWithinLimits (s5.5.4).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ACBAF5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8F290A
     // Broiler-Human:        PENDING
     internal static bool DateTimeWithinLimits(JsIsoDateTime dateTime)
     {
-        if (System.Math.Abs(EpochDays(dateTime.Date)) > 100_000_001)
+        if (System.Math.Abs(IsoCalendarMath.EpochDays(dateTime.Date.Year, dateTime.Date.Month, dateTime.Date.Day)) > 100_000_001)
         {
             return false;
         }
@@ -328,9 +230,9 @@ internal static class JsTemporalCore
         !(date.Year == -271821 && date.Month < 4) && !(date.Year == 275760 && date.Month > 9);
 
     /// <summary>The proposal's CheckISODaysRange (s13.4): whether the date is within 10^8 days of the epoch.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0E5416
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=96029C
     // Broiler-Human:        PENDING
-    internal static bool DaysWithinRange(JsIsoDate date) => System.Math.Abs(EpochDays(date)) <= 100_000_000;
+    internal static bool DaysWithinRange(JsIsoDate date) => System.Math.Abs(IsoCalendarMath.EpochDays(date.Year, date.Month, date.Day)) <= 100_000_000;
 
     // ---- Times ------------------------------------------------------------------------------
 
@@ -434,10 +336,10 @@ internal static class JsTemporalCore
     // ---- Date-times and epoch nanoseconds ---------------------------------------------------
 
     /// <summary>The proposal's GetUTCEpochNanoseconds (s14.6.1).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=360DA9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D2706D
     // Broiler-Human:        PENDING
     internal static BigInteger UtcEpochNs(JsIsoDateTime dateTime) =>
-        ((BigInteger)EpochDays(dateTime.Date) * NsPerDay) + TimeNs(dateTime.Time);
+        ((BigInteger)IsoCalendarMath.EpochDays(dateTime.Date.Year, dateTime.Date.Month, dateTime.Date.Day) * NsPerDay) + TimeNs(dateTime.Time);
 
     /// <summary>The proposal's IsValidEpochNanoseconds (s8.5.1).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9FB51D
@@ -445,12 +347,12 @@ internal static class JsTemporalCore
     internal static bool IsValidEpochNs(BigInteger ns) => ns >= NsMinInstant && ns <= NsMaxInstant;
 
     /// <summary>The proposal's GetISOPartsFromEpoch (s11.1.2), for any integer.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FD6639
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0468FA
     // Broiler-Human:        PENDING
     internal static JsIsoDateTime FromEpochNs(BigInteger ns)
     {
         var time = BalanceTime(ns);
-        return new JsIsoDateTime(FromEpochDays(time.Days), time with { Days = 0 });
+        return new JsIsoDateTime(new JsIsoDate(IsoCalendarMath.FromEpochDays(time.Days)), time with { Days = 0 });
     }
 
     /// <summary>The proposal's BalanceISODateTime (s5.5.7), the time part given in nanoseconds from the date's midnight.</summary>

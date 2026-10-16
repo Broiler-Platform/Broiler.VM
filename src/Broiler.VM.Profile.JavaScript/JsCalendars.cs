@@ -17,6 +17,7 @@
 
 using System;
 using System.Globalization;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -291,7 +292,7 @@ internal sealed class JsGregorianCalendar : JsCalendarSystem
         this.isoOffset = isoOffset;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BBE84D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0CE51F
     // Broiler-Human:        PENDING
     internal override JsCalendarYear Year(long year)
     {
@@ -300,15 +301,15 @@ internal sealed class JsGregorianCalendar : JsCalendarSystem
 
         for (var month = 1; month <= 12; month++)
         {
-            lengths[month - 1] = JsTemporalCore.DaysInMonth(iso, month);
+            lengths[month - 1] = IsoCalendarMath.DaysInMonth(iso, month);
         }
 
-        return new JsCalendarYear(year, JsTemporalCore.EpochDays(iso, 1, 1), JsCalendarYear.FromLengths(lengths));
+        return new JsCalendarYear(year, IsoCalendarMath.EpochDays(iso, 1, 1), JsCalendarYear.FromLengths(lengths));
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=023792
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=136932
     // Broiler-Human:        PENDING
-    internal override long YearOf(long epochDays) => JsTemporalCore.FromEpochDays(epochDays).Year - isoOffset;
+    internal override long YearOf(long epochDays) => IsoCalendarMath.FromEpochDays(epochDays).Year - isoOffset;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=93750F
     // Broiler-Human:        PENDING
@@ -322,7 +323,7 @@ internal sealed class JsGregorianCalendar : JsCalendarSystem
     // Broiler-Human:        PENDING
     internal override bool MidYearEras => Id == "japanese";
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AC441F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C272C9
     // Broiler-Human:        PENDING
     internal override (string? Era, long? EraYear) EraOf(long year, long epochDays)
     {
@@ -334,27 +335,27 @@ internal sealed class JsGregorianCalendar : JsCalendarSystem
                 return year >= 1 ? ("roc", year) : ("broc", 1 - year);
             case "japanese":
                 // THE MODERN ERAS by the date each began (Table 2's offsets), then Gregorian years.
-                if (epochDays >= JsTemporalCore.EpochDays(2019, 5, 1))
+                if (epochDays >= IsoCalendarMath.EpochDays(2019, 5, 1))
                 {
                     return ("reiwa", year - 2018);
                 }
 
-                if (epochDays >= JsTemporalCore.EpochDays(1989, 1, 8))
+                if (epochDays >= IsoCalendarMath.EpochDays(1989, 1, 8))
                 {
                     return ("heisei", year - 1988);
                 }
 
-                if (epochDays >= JsTemporalCore.EpochDays(1926, 12, 25))
+                if (epochDays >= IsoCalendarMath.EpochDays(1926, 12, 25))
                 {
                     return ("showa", year - 1925);
                 }
 
-                if (epochDays >= JsTemporalCore.EpochDays(1912, 7, 30))
+                if (epochDays >= IsoCalendarMath.EpochDays(1912, 7, 30))
                 {
                     return ("taisho", year - 1911);
                 }
 
-                if (epochDays >= JsTemporalCore.EpochDays(1873, 1, 1))
+                if (epochDays >= IsoCalendarMath.EpochDays(1873, 1, 1))
                 {
                     return ("meiji", year - 1867);
                 }
@@ -491,19 +492,19 @@ internal sealed class JsIndianCalendar : JsCalendarSystem
     // Broiler-Human:        PENDING
     internal JsIndianCalendar() : base("indian") { }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CD642E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B1C06D
     // Broiler-Human:        PENDING
     internal override JsCalendarYear Year(long year)
     {
         var iso = year + 78;
-        var leap = JsTemporalCore.IsLeapYear(iso);
+        var leap = IsoCalendarMath.IsLeapYear(iso);
         ReadOnlySpan<int> lengths = [leap ? 31 : 30, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30];
-        return new JsCalendarYear(year, JsTemporalCore.EpochDays(iso, 3, leap ? 21 : 22), JsCalendarYear.FromLengths(lengths));
+        return new JsCalendarYear(year, IsoCalendarMath.EpochDays(iso, 3, leap ? 21 : 22), JsCalendarYear.FromLengths(lengths));
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9FF4C7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6628AC
     // Broiler-Human:        PENDING
-    internal override long YearOf(long epochDays) => AdjustYear(JsTemporalCore.FromEpochDays(epochDays).Year - 78, epochDays);
+    internal override long YearOf(long epochDays) => AdjustYear(IsoCalendarMath.FromEpochDays(epochDays).Year - 78, epochDays);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=93750F
     // Broiler-Human:        PENDING
@@ -864,11 +865,11 @@ internal sealed class JsEastAsianCalendar : JsCalendarSystem
         return Approximate(year > 1912 ? (korean ? UtcPlus9 : UtcPlus8) : BeijingMeanTime, year);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=09A256
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E7249
     // Broiler-Human:        PENDING
     internal override long YearOf(long epochDays)
     {
-        var related = JsTemporalCore.FromEpochDays(epochDays).Year;
+        var related = IsoCalendarMath.FromEpochDays(epochDays).Year;
         return Year(related).Start > epochDays ? related - 1 : related;
     }
 
@@ -942,9 +943,9 @@ internal sealed class JsEastAsianCalendar : JsCalendarSystem
         return new Moment(day, within);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=190027
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=095349
     // Broiler-Human:        PENDING
-    private static long RataDie(long year, int month, int day) => JsTemporalCore.EpochDays(year, month, day) + RataDieOfEpoch;
+    private static long RataDie(long year, int month, int day) => IsoCalendarMath.EpochDays(year, month, day) + RataDieOfEpoch;
 
     /// <summary>A year by mean solar terms and mean new moons at a UTC offset, after the píngqì rule.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=125E02
@@ -1087,7 +1088,7 @@ internal sealed class JsCalendarData
     }
 
     /// <summary>A published Chinese or Korean year (Qing years before 1912 for both), or null.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1696C1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A3B6A3
     // Broiler-Human:        PENDING
     internal JsCalendarYear? EastAsianYear(bool korean, long relatedIso)
     {
@@ -1110,7 +1111,7 @@ internal sealed class JsCalendarData
             lengths[month] = 29 + ((packed >> month) & 1);
         }
 
-        var newYear = JsTemporalCore.EpochDays(relatedIso, 1, 19) + (packed >> 17);
+        var newYear = IsoCalendarMath.EpochDays(relatedIso, 1, 19) + (packed >> 17);
         return new JsCalendarYear(relatedIso, newYear, JsCalendarYear.FromLengths(lengths), leapMonth);
     }
 

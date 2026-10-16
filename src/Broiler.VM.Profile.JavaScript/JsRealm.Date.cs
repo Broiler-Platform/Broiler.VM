@@ -3,21 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   56
-// Annotated:        56/56
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           9
-// Human-reviewed:   0/56
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
-// Resource impact:  1/10 max
-// Unverified:       56
+// Criteria:         1/0
+// Resource impact:  2/10 max
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
-using System.Globalization;
-using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -31,59 +30,42 @@ namespace Broiler.VM.Profile.JavaScript;
 /// 275760, and <c>System.DateTime</c> covers 0001 to 9999. Every operation outside that window -
 /// <c>new Date(-8.64e15)</c>, <c>new Date(275760, 8, 13)</c>, and every conformance test built on
 /// them - would be an <c>ArgumentOutOfRangeException</c> in a conversion where the language answers
-/// a number. So <c>Day</c>, <c>YearFromTime</c>, <c>MakeDay</c> and the rest are written here as
-/// double arithmetic that has no representable range of its own, and the only clock call in the
-/// file is the one that reads the current instant.
+/// a number. Since milestone SJL-6.4 (JSD-0073) the arithmetic, the Date string grammar and the
+/// renderings are the shared library's, <c>Broiler.ECMAScript.Time</c>: <c>EcmaTime</c> over doubles,
+/// <c>EcmaDateParser</c> in this profile's dialect and <c>EcmaDateFormatter</c>. What stays here is
+/// the adapters: argument conversion and its order, the time value's storage, the charge,
+/// <c>toISOString</c>'s <c>RangeError</c>, <c>toJSON</c>'s object protocol and <c>toLocale*</c>'s
+/// routing. The only clock call in the file is the one that reads the current instant.
 /// </para>
 /// <para>
-/// <b>This profile fixes the local time zone to UTC.</b> The specification's <c>LocalTime</c> and
-/// <c>UTC</c> operations are therefore the identity, which is why <c>getHours</c> and
-/// <c>getUTCHours</c> are literally the same function body, why <c>getTimezoneOffset</c> answers
-/// zero, and why a date-time string with no offset is read as UTC. A host time zone would make a
-/// benchmark's numbers depend on where it ran, and this profile is built to be measured.
+/// <b>This profile fixes the local time zone to UTC</b> (JSD-0053 section 7; decision SJL-D-19 makes
+/// it the provider this profile supplies). The specification's <c>LocalTime</c> and <c>UTC</c> are
+/// therefore the identity, which is why <c>getHours</c> and <c>getUTCHours</c> are literally the same
+/// function body, why <c>getTimezoneOffset</c> answers zero, and why a date-time string with no offset
+/// is read as UTC. The provider, <see cref="DateZone"/>, goes where the shared library takes one: the
+/// renderings, and a parse's local result. A host time zone would make a benchmark's numbers depend on
+/// where it ran, and this profile is built to be measured.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=60DD8D
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    /// <summary>Milliseconds in a second.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8F794D
-    // Broiler-Human:        PENDING
-    private const double DateMsPerSecond = 1000;
-
-    /// <summary>Milliseconds in a minute.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5D8F9D
-    // Broiler-Human:        PENDING
-    private const double DateMsPerMinute = 60000;
-
-    /// <summary>Milliseconds in an hour.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0F7604
-    // Broiler-Human:        PENDING
-    private const double DateMsPerHour = 3600000;
-
-    /// <summary>Milliseconds in a day.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AEB3AA
-    // Broiler-Human:        PENDING
-    private const double DateMsPerDay = 86400000;
-
-    /// <summary>The largest magnitude a time value may have before it clips to NaN.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F88230
-    // Broiler-Human:        PENDING
-    private const double DateMaxTimeValue = 8.64e15;
-
     /// <summary>What every string-producing method answers for a NaN time value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=76C62D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4B9F73
     // Broiler-Human:        PENDING
-    private const string DateInvalidText = "Invalid Date";
+    private const string DateInvalidText = EcmaDateFormatter.InvalidDate;
 
-    /// <summary>The zone tail this profile's fixed UTC offset produces.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E611F2
+    /// <summary>
+    /// This profile's local time zone: UTC, an offset of zero named <c>Coordinated Universal Time</c>,
+    /// as the renderings write it (decision SJL-D-19; JSD-0053 section 7).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9D3FD5
     // Broiler-Human:        PENDING
-    private const string DateZoneText = " GMT+0000 (Coordinated Universal Time)";
+    private static readonly FixedOffsetLocalTimeProvider DateZone = new(0, "Coordinated Universal Time");
 
     /// <summary>Builds <c>Date</c>, its statics and <c>Date.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D2E6AD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3CFF7B
     // Broiler-Human:        PENDING
     private void SetupDate()
     {
@@ -95,7 +77,7 @@ internal sealed partial class JsRealm
             // CALLED AS A FUNCTION, `Date` IGNORES ITS ARGUMENTS AND RETURNS A STRING.
             // `Date(2020, 0, 1)` is not a shorthand for `new Date(2020, 0, 1)`; it is the current
             // instant rendered, and code that drops the `new` gets a String rather than an object.
-            static (engine, thisValue, arguments) => JsValue.String(DateToFullText(DateCurrentTime())),
+            static (engine, thisValue, arguments) => JsValue.String(EcmaDateFormatter.ToDateString(DateCurrentTime(), DateZone)),
 
             static (engine, thisValue, arguments) =>
             {
@@ -150,7 +132,7 @@ internal sealed partial class JsRealm
         Method(DatePrototype, "setTime", 1, static (engine, thisValue, arguments) =>
         {
             var date = DateReceiver(engine, thisValue);
-            var time = DateTimeClip(engine.ToNumber(DateArg(arguments, 0)));
+            var time = EcmaTime.TimeClip(engine.ToNumber(DateArg(arguments, 0)));
             date.TimeValue = time;
             return JsValue.Number(time);
         });
@@ -183,23 +165,23 @@ internal sealed partial class JsRealm
         DateSetterPair("setSeconds", "setUTCSeconds", 2, static (engine, thisValue, arguments) => DateSetTimeFields(engine, thisValue, arguments, 2));
         DateSetterPair("setMilliseconds", "setUTCMilliseconds", 1, static (engine, thisValue, arguments) => DateSetTimeFields(engine, thisValue, arguments, 3));
 
-        Method(DatePrototype, "toString", 0, static (engine, thisValue, arguments) => JsValue.String(DateToFullText(DateReceiver(engine, thisValue).TimeValue)));
+        Method(DatePrototype, "toString", 0, static (engine, thisValue, arguments) => JsValue.String(EcmaDateFormatter.ToDateString(DateReceiver(engine, thisValue).TimeValue, DateZone)));
         Method(DatePrototype, "toDateString", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
-            return JsValue.String(double.IsNaN(time) ? DateInvalidText : DateToCalendarText(time));
+            return JsValue.String(double.IsNaN(time) ? DateInvalidText : EcmaDateFormatter.DateString(EcmaLocalTime.LocalTime(time, DateZone)));
         });
 
         Method(DatePrototype, "toTimeString", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
-            return JsValue.String(double.IsNaN(time) ? DateInvalidText : DateToClockText(time) + DateZoneText);
+            return JsValue.String(double.IsNaN(time) ? DateInvalidText : DateTimeText(time));
         });
 
         Method(DatePrototype, "toUTCString", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
-            return JsValue.String(double.IsNaN(time) ? DateInvalidText : DateToUtcText(time));
+            return JsValue.String(EcmaDateFormatter.ToUtcString(time));
         });
 
         // ANNEX B'S `toGMTString` IS `toUTCString` ITSELF, the same function object (JSP-7, JSC-239).
@@ -214,7 +196,7 @@ internal sealed partial class JsRealm
         Method(DatePrototype, "getYear", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
-            return JsValue.Number(double.IsNaN(time) ? double.NaN : DateYearFromTime(time) - 1900);
+            return JsValue.Number(double.IsNaN(time) ? double.NaN : EcmaTime.YearFromTime(time) - 1900);
         });
 
         Method(DatePrototype, "setYear", 1, static (engine, thisValue, arguments) =>
@@ -229,11 +211,8 @@ internal sealed partial class JsRealm
                 return JsValue.Number(double.NaN);
             }
 
-            var whole = IntegerConversions.ToIntegerOrInfinity(year);
-            var full = whole is >= 0 and <= 99 ? 1900 + whole : year;
-
-            var day = DateMakeDay(full, DateMonthFromTime(time), DateDateFromTime(time));
-            var clipped = DateTimeClip(DateMakeDate(day, DateTimeWithinDay(time)));
+            var day = EcmaTime.MakeDay(EcmaTime.MakeFullYear(year), EcmaTime.MonthFromTime(time), EcmaTime.DateFromTime(time));
+            var clipped = EcmaTime.TimeClip(EcmaTime.MakeDate(day, EcmaTime.TimeWithinDay(time)));
             date.TimeValue = clipped;
             return JsValue.Number(clipped);
         });
@@ -244,9 +223,9 @@ internal sealed partial class JsRealm
 
             // AN INVALID DATE THROWS HERE AND NOWHERE ELSE. Every other renderer answers
             // "Invalid Date"; this one has no such string in its grammar, so it has to throw.
-            return double.IsNaN(time)
-                ? engine.ThrowRangeError("Invalid time value")
-                : JsValue.String(DateToIsoText(time));
+            return EcmaDateFormatter.TryToIsoString(time, out var text)
+                ? JsValue.String(text)
+                : engine.ThrowRangeError("Invalid time value");
         });
 
         // GENERIC BY DEFINITION, NOT A DATE METHOD (ES2026 Date.prototype.toJSON; since
@@ -279,7 +258,7 @@ internal sealed partial class JsRealm
 
             if (engine.Realm.DateTimeFormatPrototype is null)
             {
-                return JsValue.String(DateToFullText(time));
+                return JsValue.String(EcmaDateFormatter.ToDateString(time, DateZone));
             }
 
             return JsValue.String(double.IsNaN(time) ? DateInvalidText : ToLocaleDateString(engine, time, arguments, "any", "all"));
@@ -295,7 +274,7 @@ internal sealed partial class JsRealm
             }
 
             return JsValue.String(engine.Realm.DateTimeFormatPrototype is null
-                ? DateToCalendarText(time)
+                ? EcmaDateFormatter.DateString(EcmaLocalTime.LocalTime(time, DateZone))
                 : ToLocaleDateString(engine, time, arguments, "date", "date"));
         });
 
@@ -309,7 +288,7 @@ internal sealed partial class JsRealm
             }
 
             return JsValue.String(engine.Realm.DateTimeFormatPrototype is null
-                ? DateToClockText(time) + DateZoneText
+                ? DateTimeText(time)
                 : ToLocaleDateString(engine, time, arguments, "time", "time"));
         });
 
@@ -382,7 +361,7 @@ internal sealed partial class JsRealm
         DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     /// <summary>One broken-down field of a receiver's time value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=739F75
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A06590
     // Broiler-Human:        PENDING
     private static JsValue DateFieldOf(JsEngine engine, JsValue thisValue, DateFieldKind field)
     {
@@ -397,21 +376,30 @@ internal sealed partial class JsRealm
 
         return JsValue.Number(field switch
         {
-            DateFieldKind.Year => DateYearFromTime(time),
-            DateFieldKind.Month => DateMonthFromTime(time),
-            DateFieldKind.DayOfMonth => DateDateFromTime(time),
-            DateFieldKind.DayOfWeek => DateWeekDay(time),
-            DateFieldKind.Hour => DateHourFromTime(time),
-            DateFieldKind.Minute => DateMinFromTime(time),
-            DateFieldKind.Second => DateSecFromTime(time),
-            _ => DateMsFromTime(time),
+            DateFieldKind.Year => EcmaTime.YearFromTime(time),
+            DateFieldKind.Month => EcmaTime.MonthFromTime(time),
+            DateFieldKind.DayOfMonth => EcmaTime.DateFromTime(time),
+            DateFieldKind.DayOfWeek => EcmaTime.WeekDay(time),
+            DateFieldKind.Hour => EcmaTime.HourFromTime(time),
+            DateFieldKind.Minute => EcmaTime.MinFromTime(time),
+            DateFieldKind.Second => EcmaTime.SecFromTime(time),
+            _ => EcmaTime.MsFromTime(time),
         });
     }
+
+    /// <summary>
+    /// What <c>toTimeString</c> answers for a valid date: the specification's <c>TimeString</c> of the
+    /// local time and <c>TimeZoneString</c> (21.4.4.42), <c>"00:00:00 GMT+0000 (Coordinated Universal Time)"</c>.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4FEFA9
+    // Broiler-Human:        PENDING
+    private static string DateTimeText(double time) =>
+        EcmaDateFormatter.TimeString(EcmaLocalTime.LocalTime(time, DateZone)) + EcmaDateFormatter.TimeZoneString(time, DateZone);
 
     // ---- the one-argument constructor ------------------------------------------------------------
 
     /// <summary>The time value <c>new Date(value)</c> produces.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2105CA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B82B8F
     // Broiler-Human:        PENDING
     private static double DateTimeValueOf(JsEngine engine, JsValue value)
     {
@@ -426,14 +414,14 @@ internal sealed partial class JsRealm
 
         return primitive.IsString
             ? DateParseText(engine, primitive.AsString())
-            : DateTimeClip(engine.ToNumber(primitive));
+            : EcmaTime.TimeClip(engine.ToNumber(primitive));
     }
 
     /// <summary>
     /// The time value the seven-field form produces, shared by <c>new Date(y, m, …)</c> and
     /// <c>Date.UTC</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2F3B60
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E389C9
     // Broiler-Human:        PENDING
     private static double DateFromFields(JsEngine engine, JsValue[] arguments)
     {
@@ -447,19 +435,10 @@ internal sealed partial class JsRealm
         var second = arguments.Length > 5 ? engine.ToNumber(arguments[5]) : 0;
         var milli = arguments.Length > 6 ? engine.ToNumber(arguments[6]) : 0;
 
-        if (!double.IsNaN(year))
-        {
-            var integral = IntegerConversions.ToIntegerOrInfinity(year);
-
-            // THE TWO-DIGIT YEAR WINDOW: 0..99 MEANS 1900..1999. It is a compatibility wart the
-            // language kept, and `new Date(99, 0, 1)` being 1999 rather than year 99 is observable.
-            if (integral >= 0 && integral <= 99)
-            {
-                year = 1900 + integral;
-            }
-        }
-
-        return DateTimeClip(DateMakeDate(DateMakeDay(year, month, day), DateMakeTime(hour, minute, second, milli)));
+        // THE TWO-DIGIT YEAR WINDOW: 0..99 MEANS 1900..1999 (MakeFullYear). It is a compatibility wart the
+        // language kept, and `new Date(99, 0, 1)` being 1999 rather than year 99 is observable.
+        return EcmaTime.TimeClip(EcmaTime.MakeDate(
+            EcmaTime.MakeDay(EcmaTime.MakeFullYear(year), month, day), EcmaTime.MakeTime(hour, minute, second, milli)));
     }
 
     // ---- the setters -----------------------------------------------------------------------------
@@ -499,7 +478,7 @@ internal sealed partial class JsRealm
 
     /// <summary>The shared body of <c>setHours</c>, <c>setMinutes</c>, <c>setSeconds</c> and
     /// <c>setMilliseconds</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7EAFC0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5F73FB
     // Broiler-Human:        PENDING
     private static JsValue DateSetTimeFields(JsEngine engine, JsValue thisValue, JsValue[] arguments, int firstField)
     {
@@ -520,33 +499,33 @@ internal sealed partial class JsRealm
 
         if (!DateFieldSupplied(arguments, firstField, 0))
         {
-            hour = DateHourFromTime(time);
+            hour = EcmaTime.HourFromTime(time);
         }
 
         if (!DateFieldSupplied(arguments, firstField, 1))
         {
-            minute = DateMinFromTime(time);
+            minute = EcmaTime.MinFromTime(time);
         }
 
         if (!DateFieldSupplied(arguments, firstField, 2))
         {
-            second = DateSecFromTime(time);
+            second = EcmaTime.SecFromTime(time);
         }
 
         if (!DateFieldSupplied(arguments, firstField, 3))
         {
-            milli = DateMsFromTime(time);
+            milli = EcmaTime.MsFromTime(time);
         }
 
-        var result = DateTimeClip(
-            DateMakeDate(DateDay(time), DateMakeTime(hour, minute, second, milli)));
+        var result = EcmaTime.TimeClip(
+            EcmaTime.MakeDate(EcmaTime.Day(time), EcmaTime.MakeTime(hour, minute, second, milli)));
 
         date.TimeValue = result;
         return JsValue.Number(result);
     }
 
     /// <summary>The shared body of <c>setFullYear</c>, <c>setMonth</c> and <c>setDate</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8C97AF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=22DA3D
     // Broiler-Human:        PENDING
     private static JsValue DateSetDateFields(JsEngine engine, JsValue thisValue, JsValue[] arguments, int firstField)
     {
@@ -571,786 +550,60 @@ internal sealed partial class JsRealm
 
         if (!DateFieldSupplied(arguments, firstField, 0))
         {
-            year = DateYearFromTime(time);
+            year = EcmaTime.YearFromTime(time);
         }
 
         if (!DateFieldSupplied(arguments, firstField, 1))
         {
-            month = DateMonthFromTime(time);
+            month = EcmaTime.MonthFromTime(time);
         }
 
         if (!DateFieldSupplied(arguments, firstField, 2))
         {
-            day = DateDateFromTime(time);
+            day = EcmaTime.DateFromTime(time);
         }
 
-        var result = DateTimeClip(
-            DateMakeDate(DateMakeDay(year, month, day), DateTimeWithinDay(time)));
+        var result = EcmaTime.TimeClip(
+            EcmaTime.MakeDate(EcmaTime.MakeDay(year, month, day), EcmaTime.TimeWithinDay(time)));
 
         date.TimeValue = result;
         return JsValue.Number(result);
     }
 
-    // ---- the specification's own operations over a time value ------------------------------------
-
-    /// <summary>
-    /// The specification's <c>modulo</c>, which takes the sign of the divisor.
-    /// </summary>
-    /// <remarks>
-    /// C#'s <c>%</c> takes the sign of the dividend, so <c>-1 % 24</c> is <c>-1</c> where the
-    /// language needs <c>23</c>. Every clock field of a pre-epoch date depends on the difference.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=779815
-    // Broiler-Human:        PENDING
-    private static double DateFloorMod(double left, double right) => left - (right * Math.Floor(left / right));
-
-    /// <summary>The specification's <c>Day</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=36C5B0
-    // Broiler-Human:        PENDING
-    private static double DateDay(double time) => Math.Floor(time / DateMsPerDay);
-
-    /// <summary>The specification's <c>TimeWithinDay</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F1D0A3
-    // Broiler-Human:        PENDING
-    private static double DateTimeWithinDay(double time) => DateFloorMod(time, DateMsPerDay);
-
-    /// <summary>The specification's <c>DaysInYear</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EB8CD3
-    // Broiler-Human:        PENDING
-    private static int DateDaysInYear(double year)
-    {
-        if (year % 4 != 0)
-        {
-            return 365;
-        }
-
-        if (year % 100 != 0)
-        {
-            return 366;
-        }
-
-        return year % 400 != 0 ? 365 : 366;
-    }
-
-    /// <summary>The specification's <c>DayFromYear</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F738B2
-    // Broiler-Human:        PENDING
-    private static double DateDayFromYear(double year) =>
-        (365 * (year - 1970)) +
-        Math.Floor((year - 1969) / 4) -
-        Math.Floor((year - 1901) / 100) +
-        Math.Floor((year - 1601) / 400);
-
-    /// <summary>The specification's <c>TimeFromYear</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0A3134
-    // Broiler-Human:        PENDING
-    private static double DateTimeFromYear(double year) => DateMsPerDay * DateDayFromYear(year);
-
-    /// <summary>The specification's <c>YearFromTime</c>.</summary>
-    /// <remarks>
-    /// The mean Gregorian year puts the estimate within one of the answer for every representable
-    /// time value, so the two corrections below run at most twice between them. A search would be
-    /// correct too and would cost a hundred times as much on the hot path <c>getFullYear</c> is on.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=826A41
-    // Broiler-Human:        PENDING
-    private static double DateYearFromTime(double time)
-    {
-        var year = Math.Floor(time / (DateMsPerDay * 365.2425)) + 1970;
-
-        while (DateTimeFromYear(year) > time)
-        {
-            year--;
-        }
-
-        while (DateTimeFromYear(year + 1) <= time)
-        {
-            year++;
-        }
-
-        return year;
-    }
-
-    /// <summary>The specification's <c>InLeapYear</c>, as the zero or one it adds to a month start.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C0673A
-    // Broiler-Human:        PENDING
-    private static int DateInLeapYear(double time) =>
-        DateDaysInYear(DateYearFromTime(time)) == 366 ? 1 : 0;
-
-    /// <summary>The specification's <c>DayWithinYear</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EC48D2
-    // Broiler-Human:        PENDING
-    private static double DateDayWithinYear(double time) =>
-        DateDay(time) - DateDayFromYear(DateYearFromTime(time));
-
-    /// <summary>The day of the year the given month starts on.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E2F2FE
-    // Broiler-Human:        PENDING
-    private static double DateMonthStartDay(int month, int leap) => month switch
-    {
-        0 => 0,
-        1 => 31,
-        2 => 59 + leap,
-        3 => 90 + leap,
-        4 => 120 + leap,
-        5 => 151 + leap,
-        6 => 181 + leap,
-        7 => 212 + leap,
-        8 => 243 + leap,
-        9 => 273 + leap,
-        10 => 304 + leap,
-        _ => 334 + leap,
-    };
-
-    /// <summary>The specification's <c>MonthFromTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CE1BCC
-    // Broiler-Human:        PENDING
-    private static double DateMonthFromTime(double time)
-    {
-        var within = DateDayWithinYear(time);
-        var leap = DateInLeapYear(time);
-
-        if (within < 31)
-        {
-            return 0;
-        }
-
-        if (within < 59 + leap)
-        {
-            return 1;
-        }
-
-        if (within < 90 + leap)
-        {
-            return 2;
-        }
-
-        if (within < 120 + leap)
-        {
-            return 3;
-        }
-
-        if (within < 151 + leap)
-        {
-            return 4;
-        }
-
-        if (within < 181 + leap)
-        {
-            return 5;
-        }
-
-        if (within < 212 + leap)
-        {
-            return 6;
-        }
-
-        if (within < 243 + leap)
-        {
-            return 7;
-        }
-
-        if (within < 273 + leap)
-        {
-            return 8;
-        }
-
-        if (within < 304 + leap)
-        {
-            return 9;
-        }
-
-        return within < 334 + leap ? 10 : 11;
-    }
-
-    /// <summary>The specification's <c>DateFromTime</c>: the one-based day of the month.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=33FEE9
-    // Broiler-Human:        PENDING
-    private static double DateDateFromTime(double time) =>
-        DateDayWithinYear(time) -
-        DateMonthStartDay((int)DateMonthFromTime(time), DateInLeapYear(time)) +
-        1;
-
-    /// <summary>The specification's <c>WeekDay</c>: Sunday is zero.</summary>
-    /// <remarks>
-    /// The <c>+ 4</c> is the epoch's own weekday: 1970-01-01 was a Thursday.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0B9042
-    // Broiler-Human:        PENDING
-    private static double DateWeekDay(double time) => DateFloorMod(DateDay(time) + 4, 7);
-
-    /// <summary>The specification's <c>HourFromTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=90BED3
-    // Broiler-Human:        PENDING
-    private static double DateHourFromTime(double time) =>
-        DateFloorMod(Math.Floor(time / DateMsPerHour), 24);
-
-    /// <summary>The specification's <c>MinFromTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DA2558
-    // Broiler-Human:        PENDING
-    private static double DateMinFromTime(double time) =>
-        DateFloorMod(Math.Floor(time / DateMsPerMinute), 60);
-
-    /// <summary>The specification's <c>SecFromTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B88A0D
-    // Broiler-Human:        PENDING
-    private static double DateSecFromTime(double time) =>
-        DateFloorMod(Math.Floor(time / DateMsPerSecond), 60);
-
-    /// <summary>The specification's <c>msFromTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=40A5B0
-    // Broiler-Human:        PENDING
-    private static double DateMsFromTime(double time) => DateFloorMod(time, DateMsPerSecond);
-
-    /// <summary>The specification's <c>MakeTime</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=65B0BA
-    // Broiler-Human:        PENDING
-    private static double DateMakeTime(double hour, double minute, double second, double milli)
-    {
-        if (!double.IsFinite(hour) || !double.IsFinite(minute) ||
-            !double.IsFinite(second) || !double.IsFinite(milli))
-        {
-            return double.NaN;
-        }
-
-        return (IntegerConversions.ToIntegerOrInfinity(hour) * DateMsPerHour) +
-            (IntegerConversions.ToIntegerOrInfinity(minute) * DateMsPerMinute) +
-            (IntegerConversions.ToIntegerOrInfinity(second) * DateMsPerSecond) +
-            IntegerConversions.ToIntegerOrInfinity(milli);
-    }
-
-    /// <summary>The specification's <c>MakeDay</c>.</summary>
-    /// <remarks>
-    /// The fields roll over rather than being validated: month 12 is January of the next year and
-    /// day 0 is the last day of the previous month. That is not leniency, it is the operation
-    /// <c>setMonth</c> and <c>new Date(y, m, 0)</c> are both defined in terms of.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2E8472
-    // Broiler-Human:        PENDING
-    private static double DateMakeDay(double year, double month, double day)
-    {
-        if (!double.IsFinite(year) || !double.IsFinite(month) || !double.IsFinite(day))
-        {
-            return double.NaN;
-        }
-
-        var wholeYear = IntegerConversions.ToIntegerOrInfinity(year);
-        var wholeMonth = IntegerConversions.ToIntegerOrInfinity(month);
-        var wholeDay = IntegerConversions.ToIntegerOrInfinity(day);
-        var carried = wholeYear + Math.Floor(wholeMonth / 12);
-
-        if (!double.IsFinite(carried))
-        {
-            return double.NaN;
-        }
-
-        var within = DateFloorMod(wholeMonth, 12);
-        var leap = DateDaysInYear(carried) == 366 ? 1 : 0;
-
-        return DateDayFromYear(carried) + DateMonthStartDay((int)within, leap) + wholeDay - 1;
-    }
-
-    /// <summary>The specification's <c>MakeDate</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=203675
-    // Broiler-Human:        PENDING
-    private static double DateMakeDate(double day, double time)
-    {
-        if (!double.IsFinite(day) || !double.IsFinite(time))
-        {
-            return double.NaN;
-        }
-
-        return (day * DateMsPerDay) + time;
-    }
-
-    /// <summary>The specification's <c>TimeClip</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ECFC97
-    // Broiler-Human:        PENDING
-    private static double DateTimeClip(double time)
-    {
-        if (!double.IsFinite(time) || Math.Abs(time) > DateMaxTimeValue)
-        {
-            return double.NaN;
-        }
-
-        // 𝔽(! ToIntegerOrInfinity(time)), the shared library's (SJL-4.6): a negative zero, and a time in
-        // (-1, 0), is +0, which keeps `new Date(-0.5).getTime()` from printing "-0".
-        return IntegerConversions.ToIntegerOrInfinity(time);
-    }
-
     // ---- parsing ---------------------------------------------------------------------------------
 
     /// <summary>
-    /// Parses the Date Time String Format, answering NaN for anything else.
+    /// <c>Date.parse</c> and the string constructor: the shared parser, in this profile's dialect.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The accepted shapes are <c>YYYY</c>, <c>YYYY-MM</c> and <c>YYYY-MM-DD</c>, each optionally
-    /// followed by <c>THH:mm</c>, <c>THH:mm:ss</c> or <c>THH:mm:ss.sss</c>, and that optionally
-    /// followed by <c>Z</c> or <c>±HH:mm</c>. Nothing else parses - no leading or trailing space,
-    /// no expanded <c>±YYYYYY</c> year, and none of the legacy shapes an engine accepts for
-    /// compatibility with the web.
+    /// <b>The charge is this profile's, <c>length + 1</c> at entry</b> (JSD-0072, decision 4). The shared
+    /// parser charges the text's length before it reads a character, when the text is not empty; this
+    /// adapter charges the one unit beyond it first, so every total, and every exhaustion's point, is what
+    /// it was before SJL-6.4 (the split JSD-0065, decision 2, made for number parsing).
     /// </para>
     /// <para>
-    /// A date-only form is UTC and a date-time form without an offset is local time; this profile
-    /// fixes local time to UTC, so the two agree and one computation serves both.
+    /// <b>The dialect is this profile's</b>, <c>DateParseDialect.BroilerVM</c>: the Date Time String Format
+    /// with a day past its month's length carried into the next month, and for any other text the textual
+    /// reading of the renderings, which reads a sign and digits as a year, so that the renderings of
+    /// negative years read back (correction P9). A local result - a date-time form with no offset, or a
+    /// textual form with no zone - is read in this profile's zone, UTC.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DB9CFA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=046E47
+    // Broiler-Falsified-If: Date.parse charges a total, or exhausts at a point, other than length + 1 at entry
     // Broiler-Human:        PENDING
     private static double DateParseText(JsEngine engine, string text)
     {
-        engine.Charge((ulong)text.Length + 1);
+        engine.Charge(1UL);
+        var (kind, value) = EcmaDateParser.Parse(text, DateParseDialect.BroilerVM, engine.WorkCharge);
 
-        var at = 0;
-        double year;
-
-        // THE EXPANDED YEAR: a sign and exactly six digits, which is how `toISOString` writes a
-        // year outside 0 to 9999, so `Date.parse` must read it back; `-000000` is not a year
-        // (21.4.1.32.1). Until 2026-10-03 every such string parsed as NaN (JSC-252).
-        if (text.Length > 0 && (text[0] == '+' || text[0] == '-'))
+        return kind switch
         {
-            var negative = text[0] == '-';
-            at = 1;
-
-            if (!DateReadDigits(text, ref at, 6, out year) || (negative && year == 0))
-            {
-                return double.NaN;
-            }
-
-            if (negative)
-            {
-                year = -year;
-            }
-        }
-        else if (!DateReadDigits(text, ref at, 4, out year))
-        {
-            // NOT ISO 8601, SO TRY THE TWO FORMS THIS REALM ITSELF PRODUCES. The specification
-            // requires `Date.parse` to accept whatever `toString` and `toUTCString` answered, and
-            // a parser that read only the ISO form failed its own output: `Date.parse(d.toUTCString())`
-            // was `NaN`, so a round trip through the format a program is most likely to have stored
-            // did not come back.
-            return DateParseTextual(text);
-        }
-
-        double month = 1;
-        double day = 1;
-        double hour = 0;
-        double minute = 0;
-        double second = 0;
-        double milli = 0;
-        var offsetMinutes = 0.0;
-
-        if (at < text.Length && text[at] == '-')
-        {
-            at++;
-
-            if (!DateReadDigits(text, ref at, 2, out month))
-            {
-                return double.NaN;
-            }
-
-            if (at < text.Length && text[at] == '-')
-            {
-                at++;
-
-                if (!DateReadDigits(text, ref at, 2, out day))
-                {
-                    return double.NaN;
-                }
-            }
-        }
-
-        if (at < text.Length && text[at] == 'T')
-        {
-            at++;
-
-            if (!DateReadDigits(text, ref at, 2, out hour) || at >= text.Length || text[at] != ':')
-            {
-                return double.NaN;
-            }
-
-            at++;
-
-            if (!DateReadDigits(text, ref at, 2, out minute))
-            {
-                return double.NaN;
-            }
-
-            if (at < text.Length && text[at] == ':')
-            {
-                at++;
-
-                if (!DateReadDigits(text, ref at, 2, out second))
-                {
-                    return double.NaN;
-                }
-
-                if (at < text.Length && text[at] == '.')
-                {
-                    at++;
-
-                    if (!DateReadDigits(text, ref at, 3, out milli))
-                    {
-                        return double.NaN;
-                    }
-                }
-            }
-
-            if (at < text.Length && text[at] == 'Z')
-            {
-                at++;
-            }
-            else if (at < text.Length && (text[at] == '+' || text[at] == '-'))
-            {
-                var negative = text[at] == '-';
-                at++;
-
-                if (!DateReadDigits(text, ref at, 2, out var offsetHour) ||
-                    at >= text.Length || text[at] != ':')
-                {
-                    return double.NaN;
-                }
-
-                at++;
-
-                if (!DateReadDigits(text, ref at, 2, out var offsetMinute) ||
-                    offsetHour > 23 || offsetMinute > 59)
-                {
-                    return double.NaN;
-                }
-
-                offsetMinutes = (offsetHour * 60) + offsetMinute;
-
-                if (negative)
-                {
-                    offsetMinutes = -offsetMinutes;
-                }
-            }
-        }
-
-        if (at != text.Length ||
-            month < 1 || month > 12 ||
-            day < 1 || day > 31 ||
-            minute > 59 || second > 59 ||
-            hour > 24 || (hour == 24 && (minute != 0 || second != 0 || milli != 0)))
-        {
-            return double.NaN;
-        }
-
-        var parsed = DateMakeDate(
-            DateMakeDay(year, month - 1, day), DateMakeTime(hour, minute, second, milli));
-
-        return DateTimeClip(parsed - (offsetMinutes * DateMsPerMinute));
-    }
-
-    /// <summary>
-    /// Parses the two textual forms this realm renders: <c>toUTCString</c>'s and <c>toString</c>'s.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>It is written to accept what this realm PRODUCES and a little either side, not to be a
-    /// date-string parser.</b> The specification leaves every non-ISO format implementation-defined
-    /// and requires exactly one thing: that the output of <c>toString</c>, <c>toUTCString</c> and
-    /// <c>toISOString</c> parse back. Accepting more than that would be inventing a dialect nobody
-    /// asked for, and every program that relied on it would be relying on this implementation.
-    /// </para>
-    /// <para>
-    /// The reader is deliberately positional-by-token rather than by character: a weekday if one is
-    /// there, a month name and a day in either order, a four-digit year, an optional clock, and an
-    /// optional zone. That covers <c>Thu, 01 Jan 1970 00:00:00 GMT</c>,
-    /// <c>Thu Jan 01 1970 00:00:00 GMT+0000 (…)</c> and <c>Thu Jan 01 1970</c> with one walk.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C29062
-    // Broiler-Human:        PENDING
-    private static double DateParseTextual(string text)
-    {
-        double month = -1;
-        double day = -1;
-        double year = double.NaN;
-        double hour = 0;
-        double minute = 0;
-        double second = 0;
-        var offsetMinutes = 0.0;
-
-        foreach (var token in text.Split(
-            [' ', ',', '\t'], StringSplitOptions.RemoveEmptyEntries))
-        {
-            if (token.Length != 0 && token[0] == '(')
-            {
-                // The parenthesised zone NAME, which `toString` appends and which carries nothing
-                // the offset has not already said.
-                break;
-            }
-
-            var named = DateMonthByName(token);
-
-            if (named >= 0 && month < 0)
-            {
-                month = named;
-                continue;
-            }
-
-            if (token.Contains(':', StringComparison.Ordinal))
-            {
-                var parts = token.Split(':');
-
-                if (parts.Length is < 2 or > 3 ||
-                    !DateWholeNumber(parts[0], out hour) ||
-                    !DateWholeNumber(parts[1], out minute) ||
-                    (parts.Length == 3 && !DateWholeNumber(parts[2], out second)))
-                {
-                    return double.NaN;
-                }
-
-                continue;
-            }
-
-            if (token.StartsWith("GMT", StringComparison.Ordinal) ||
-                token.StartsWith("UTC", StringComparison.Ordinal))
-            {
-                var zone = token[3..];
-
-                if (zone.Length == 0)
-                {
-                    continue;
-                }
-
-                if (zone.Length != 5 || (zone[0] != '+' && zone[0] != '-') ||
-                    !DateWholeNumber(zone[1..3], out var zoneHour) ||
-                    !DateWholeNumber(zone[3..], out var zoneMinute))
-                {
-                    return double.NaN;
-                }
-
-                offsetMinutes = (zoneHour * 60) + zoneMinute;
-
-                if (zone[0] == '-')
-                {
-                    offsetMinutes = -offsetMinutes;
-                }
-
-                continue;
-            }
-
-            if (!DateWholeNumber(token, out var number))
-            {
-                // A weekday name, or anything else this form carries and the value does not need.
-                continue;
-            }
-
-            if (token.Length >= 3 || (day >= 0 && double.IsNaN(year)))
-            {
-                year = number;
-            }
-            else
-            {
-                day = number;
-            }
-        }
-
-        if (month < 0 || day < 1 || day > 31 || double.IsNaN(year) ||
-            hour > 24 || minute > 59 || second > 59)
-        {
-            return double.NaN;
-        }
-
-        var parsed = DateMakeDate(
-            DateMakeDay(year, month, day), DateMakeTime(hour, minute, second, 0));
-
-        return DateTimeClip(parsed - (offsetMinutes * DateMsPerMinute));
-    }
-
-    /// <summary>The month a three-letter name stands for, or <c>-1</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C6EE3D
-    // Broiler-Human:        PENDING
-    private static int DateMonthByName(string token) => token switch
-    {
-        "Jan" => 0,
-        "Feb" => 1,
-        "Mar" => 2,
-        "Apr" => 3,
-        "May" => 4,
-        "Jun" => 5,
-        "Jul" => 6,
-        "Aug" => 7,
-        "Sep" => 8,
-        "Oct" => 9,
-        "Nov" => 10,
-        "Dec" => 11,
-        _ => -1,
-    };
-
-    /// <summary>Reads a token that is entirely decimal digits.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5A0680
-    // Broiler-Human:        PENDING
-    private static bool DateWholeNumber(string token, out double value)
-    {
-        value = 0;
-
-        if (token.Length == 0)
-        {
-            return false;
-        }
-
-        foreach (var character in token)
-        {
-            if (character is < '0' or > '9')
-            {
-                value = 0;
-                return false;
-            }
-
-            value = (value * 10) + (character - '0');
-        }
-
-        return true;
-    }
-
-    /// <summary>Reads exactly <paramref name="count"/> decimal digits, advancing the cursor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5F9DF1
-    // Broiler-Human:        PENDING
-    private static bool DateReadDigits(string text, ref int at, int count, out double value)
-    {
-        value = 0;
-
-        if (at + count > text.Length)
-        {
-            return false;
-        }
-
-        for (var step = 0; step < count; step++)
-        {
-            var character = text[at + step];
-
-            if (character is < '0' or > '9')
-            {
-                return false;
-            }
-
-            value = (value * 10) + (character - '0');
-        }
-
-        at += count;
-        return true;
-    }
-
-    // ---- rendering -------------------------------------------------------------------------------
-
-    /// <summary>A non-negative field as a zero-padded decimal, with a sign when it is negative.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F280FE
-    // Broiler-Human:        PENDING
-    private static string DatePadded(double value, int width)
-    {
-        var negative = value < 0;
-        var digits = ((long)Math.Abs(value)).ToString(CultureInfo.InvariantCulture);
-
-        if (digits.Length < width)
-        {
-            digits = new string('0', width - digits.Length) + digits;
-        }
-
-        return negative ? "-" + digits : digits;
-    }
-
-    /// <summary>The three-letter weekday name.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A048CC
-    // Broiler-Human:        PENDING
-    private static string DateWeekDayName(double time)
-    {
-        var weekDay = (int)DateWeekDay(time);
-
-        return weekDay switch
-        {
-            0 => "Sun",
-            1 => "Mon",
-            2 => "Tue",
-            3 => "Wed",
-            4 => "Thu",
-            5 => "Fri",
-            _ => "Sat",
+            EcmaParsedKind.Utc => value,
+            EcmaParsedKind.Local => EcmaTime.TimeClip(EcmaLocalTime.Utc(value, DateZone)),
+            _ => double.NaN,
         };
-    }
-
-    /// <summary>The three-letter month name.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CEF1FB
-    // Broiler-Human:        PENDING
-    private static string DateMonthName(double time)
-    {
-        var month = (int)DateMonthFromTime(time);
-
-        return month switch
-        {
-            0 => "Jan",
-            1 => "Feb",
-            2 => "Mar",
-            3 => "Apr",
-            4 => "May",
-            5 => "Jun",
-            6 => "Jul",
-            7 => "Aug",
-            8 => "Sep",
-            9 => "Oct",
-            10 => "Nov",
-            _ => "Dec",
-        };
-    }
-
-    /// <summary>The specification's <c>DateString</c>: <c>"Thu Jan 01 1970"</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=19D890
-    // Broiler-Human:        PENDING
-    private static string DateToCalendarText(double time) =>
-        DateWeekDayName(time) + " " + DateMonthName(time) + " " +
-        DatePadded(DateDateFromTime(time), 2) + " " + DatePadded(DateYearFromTime(time), 4);
-
-    /// <summary>The clock half of the specification's <c>TimeString</c>: <c>"00:00:00"</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4CE5DE
-    // Broiler-Human:        PENDING
-    private static string DateToClockText(double time) =>
-        DatePadded(DateHourFromTime(time), 2) + ":" +
-        DatePadded(DateMinFromTime(time), 2) + ":" +
-        DatePadded(DateSecFromTime(time), 2);
-
-    /// <summary>What <c>Date.prototype.toString</c> answers.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A1CDA6
-    // Broiler-Human:        PENDING
-    private static string DateToFullText(double time) =>
-        double.IsNaN(time)
-            ? DateInvalidText
-            : DateToCalendarText(time) + " " + DateToClockText(time) + DateZoneText;
-
-    /// <summary>What <c>Date.prototype.toUTCString</c> answers.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B60E8B
-    // Broiler-Human:        PENDING
-    private static string DateToUtcText(double time) =>
-        DateWeekDayName(time) + ", " + DatePadded(DateDateFromTime(time), 2) + " " +
-        DateMonthName(time) + " " + DatePadded(DateYearFromTime(time), 4) + " " +
-        DateToClockText(time) + " GMT";
-
-    /// <summary>What <c>Date.prototype.toISOString</c> answers.</summary>
-    /// <remarks>
-    /// A year outside 0000..9999 takes the expanded six-digit form with a mandatory sign, so
-    /// <c>new Date(8.64e15).toISOString()</c> is <c>"+275760-09-13T00:00:00.000Z"</c> rather than a
-    /// truncation that would parse back as a different year.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C68FC2
-    // Broiler-Human:        PENDING
-    private static string DateToIsoText(double time)
-    {
-        var year = DateYearFromTime(time);
-
-        var yearText = year >= 0 && year <= 9999
-            ? DatePadded(year, 4)
-            : (year < 0 ? "-" : "+") + DatePadded(Math.Abs(year), 6);
-
-        return yearText + "-" +
-            DatePadded(DateMonthFromTime(time) + 1, 2) + "-" +
-            DatePadded(DateDateFromTime(time), 2) + "T" +
-            DatePadded(DateHourFromTime(time), 2) + ":" +
-            DatePadded(DateMinFromTime(time), 2) + ":" +
-            DatePadded(DateSecFromTime(time), 2) + "." +
-            DatePadded(DateMsFromTime(time), 3) + "Z";
     }
 
     /// <summary>A Date: an ordinary object carrying one number.</summary>

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 7035 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6985 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 336 |
-| Code units | 12170 |
-| Relevant | 7035 |
+| Code units | 12120 |
+| Relevant | 6985 |
 | Exempt | 5135 |
-| Assessed | 7035 of 7035 (100%) |
-| Human reviewed | 0 of 7035 (0%) |
-| Unverified | 7035 |
+| Assessed | 6985 of 6985 (100%) |
+| Human reviewed | 0 of 6985 (0%) |
+| Unverified | 6985 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 7035 |
+| HUMAN_PENDING | 6985 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -305,7 +305,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` | 53 | 36 | 17 | 36 | Low | High | 22/22 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.CollectionIterators.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs` | 36 | 29 | 7 | 29 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs` | 65 | 56 | 9 | 56 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs` | 28 | 19 | 9 | 19 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs` | 51 | 36 | 15 | 36 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs` | 18 | 10 | 8 | 10 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` | 57 | 36 | 21 | 36 | Low | High | 6/6 |
@@ -355,11 +355,11 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs` | 45 | 45 | 0 | 45 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs` | 30 | 27 | 3 | 27 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs` | 17 | 17 | 0 | 17 | Low | Low | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs` | 87 | 74 | 13 | 74 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs` | 77 | 64 | 13 | 64 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsTemporalObjects.cs` | 30 | 16 | 14 | 16 | Low | Low | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs` | 68 | 39 | 29 | 39 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs` | 67 | 38 | 29 | 38 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsThrow.cs` | 10 | 5 | 5 | 5 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs` | 44 | 31 | 13 | 31 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs` | 42 | 29 | 13 | 29 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.cs` | 10 | 10 | 0 | 10 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs` | 7 | 1 | 6 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
@@ -4244,7 +4244,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6897 of the 7035 assessed units declare
+That is not a figure of speech. 6847 of the 6985 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

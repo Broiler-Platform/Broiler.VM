@@ -17,6 +17,7 @@
 
 using BigInteger = System.Numerics.BigInteger;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -690,7 +691,7 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's DateDurationDays (s7.5.29).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2EA63D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2C3230
     // Broiler-Human:        PENDING
     internal static double DateDurationDays(JsEngine engine, string calendar, JsDateDuration date, JsIsoDate relativeTo)
     {
@@ -702,7 +703,7 @@ internal static partial class JsTemporal
         }
 
         var later = DateAdd(engine, calendar, relativeTo, yearsMonthsWeeks, reject: false);
-        return date.Days + (JsTemporalCore.EpochDays(later) - JsTemporalCore.EpochDays(relativeTo));
+        return date.Days + (IsoCalendarMath.EpochDays(later.Year, later.Month, later.Day) - IsoCalendarMath.EpochDays(relativeTo.Year, relativeTo.Month, relativeTo.Day));
     }
 
     // ---- Rounding relative to a date (s7.5.33 to s7.5.39) ---------------------------------------
