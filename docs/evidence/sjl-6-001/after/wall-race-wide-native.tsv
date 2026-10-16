@@ -1,0 +1,5 @@
+path	variant	base	after	same verdict	either on the wall clock
+test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy	Exhausted/Fuel	Exhausted/Fuel	yes	no
+test/staging/sm/Date/dst-offset-caching-2-of-8.js	sloppy	Exhausted/Fuel	Exhausted/Fuel	yes	no
+test/staging/sm/Date/dst-offset-caching-2-of-8.js	strict	Exhausted/Fuel	Exhausted/Fuel	yes	no
+test/staging/sm/Date/dst-offset-caching-8-of-8.js	strict	Exhausted/Fuel	Exhausted/Fuel	yes	no
