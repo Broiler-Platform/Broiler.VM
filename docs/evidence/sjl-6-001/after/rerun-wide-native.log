@@ -1,0 +1,101 @@
+# part A, class C4 (c'): the 17 variants of 9 paths compare-wide-native.log admits as (c'), run again alone
+
+## base: Broiler.VM.Composition.JavaScript.Conformance.dll sha256=1550f76bc5d9cb614f8c92d904838b9aef806f2c6178d482ad20844177851766, started 2026-10-16T10:57:22Z, exit 1
+ng the test
+exhausted   test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy]  WallClock: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/TypedArray/sort_large_countingsort.js [strict]  WallClock: the allowance was spent running the test
+exhausted   test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy]  Fuel: the allowance was spent running the test
+# this run met no construct outside the manifest
+# exhausted dimensions: 3 distinct, 18 variants
+#        14  Fuel  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]
+#         2  NestedLoadFanOut  e.g. test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [sloppy]
+#         2  WallClock  e.g. test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy]
+# exhausted test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [sloppy] on NestedLoadFanOut
+# exhausted test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [strict] on NestedLoadFanOut
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-1-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy] on Fuel
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [strict] on WallClock
+# no variant failed, so there is nothing to classify
+# test262 9 files, 18 variants: pass 0, fail 0, unsupported 0, exhausted 18, skipped 0
+coverage partial a named selection rather than the whole test tree: test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js test/staging/sm/Date/dst-offset-caching-1-of-8.js test/staging/sm/Date/dst-offset-caching-2-of-8.js test/staging/sm/Date/dst-offset-caching-4-of-8.js test/staging/sm/Date/dst-offset-caching-7-of-8.js test/staging/sm/Date/dst-offset-caching-8-of-8.js test/staging/sm/TypedArray/sort_large_countingsort.js; configuration failure NoExecutedTests
+CONFIGURATION NoExecutedTests: 18 variants ran and none of them reached a verdict about the engine
+
+## after: Broiler.VM.Composition.JavaScript.Conformance.dll sha256=7939514d9d374807b94139698aa9e472a542e92309aff0445cc1ed23356844f4, started 2026-10-16T10:58:41Z, exit 1
+d   test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict]  WallClock: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy]  WallClock: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict]  WallClock: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/TypedArray/sort_large_countingsort.js [strict]  WallClock: the allowance was spent running the test
+exhausted   test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy]  Fuel: the allowance was spent running the test
+# this run met no construct outside the manifest
+# exhausted dimensions: 3 distinct, 18 variants
+#        12  Fuel  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]
+#         4  WallClock  e.g. test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy]
+#         2  NestedLoadFanOut  e.g. test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [sloppy]
+# exhausted test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [sloppy] on NestedLoadFanOut
+# exhausted test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [strict] on NestedLoadFanOut
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-1-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict] on WallClock
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy] on Fuel
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [strict] on WallClock
+# no variant failed, so there is nothing to classify
+# test262 9 files, 18 variants: pass 0, fail 0, unsupported 0, exhausted 18, skipped 0
+coverage partial a named selection rather than the whole test tree: test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js test/staging/sm/Date/dst-offset-caching-1-of-8.js test/staging/sm/Date/dst-offset-caching-2-of-8.js test/staging/sm/Date/dst-offset-caching-4-of-8.js test/staging/sm/Date/dst-offset-caching-7-of-8.js test/staging/sm/Date/dst-offset-caching-8-of-8.js test/staging/sm/TypedArray/sort_large_countingsort.js; configuration failure NoExecutedTests
+CONFIGURATION NoExecutedTests: 18 variants ran and none of them reached a verdict about the engine
+
+## the two re-runs compared, --same-form
+# reference <scratch>/rerun-wide-native-base.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   total|9|18|0|0|0|18|0
+# candidate <scratch>/rerun-wide-native-after.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   total|9|18|0|0|0|18|0
+# same-form: two native runs, from two builds, read on either side - class (c') is admitted at any wall allowance, because two builds differ in speed by construction and were run at different times; classes (a) and (b) are read on either side; class (b) is admitted
+# 18 variants in both reports, 4 differ; 0 variant(s) present in only one report were ignored
+
+## (c') a wall-clock exhaustion on one side, against an answer or another allowance: 4 - admitted
+  test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy]: Exhausted/WallClock -> Exhausted/Fuel  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+
+# every difference is in an admitted class
+exit code: 0

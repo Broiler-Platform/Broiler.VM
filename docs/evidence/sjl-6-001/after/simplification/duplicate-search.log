@@ -1,0 +1,46 @@
+# SJL-6.6 search for a surviving duplicate of the Date area, Broiler.VM at 24632b16b570a85163599e6daf45bea1c63c81d3: every construct
+# that spells a civil-day or time constant (the 400-year cycle's days, the civil epoch's shift, the
+# day's milliseconds, the time value's limit), uses the platform's dates or zones, names a civil-day
+# helper, or spells a month or weekday name, in the component's C# product sources (src/, every
+# tests/ excluded).
+# pattern: 146097|719468|\b86400000\b|8\.64e15|8640000000000000|\bSystem\.DateTime\b|\bDateTimeOffset\b|\bnew DateTime\(|\bDateTime\.(Now|UtcNow|Today|Parse|TryParse|ParseExact|TryParseExact|DaysInMonth|IsLeapYear|SpecifyKind)\b|\bTimeZoneInfo\b|\bDate(Only|TimeKind)\b|DaysFromCivil|CivilFromDays|IsLeapYear|DaysInMonth|"(Sun|Mon|Tue|Wed|Thu|Fri|Sat)"|"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
+# hits: 38; each is reviewed in the bundle's README
+
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:72:    internal int DaysInMonth(int month) => Offsets[month] - Offsets[month - 1];
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:304:            lengths[month - 1] = IsoCalendarMath.DaysInMonth(iso, month);
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:500:        var leap = IsoCalendarMath.IsLeapYear(iso);
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:808:    /// <summary>The mean Gregorian year, 146097/400 days.</summary>
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:28:/// <b>The calendar is the specification's own arithmetic and not <c>System.DateTime</c>.</b> The
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:29:/// language's time value ranges over ±8.64e15 milliseconds, which is roughly the years -271821 to
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:30:/// 275760, and <c>System.DateTime</c> covers 0001 to 9999. Every operation outside that window -
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:31:/// <c>new Date(-8.64e15)</c>, <c>new Date(275760, 8, 13)</c>, and every conformance test built on
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:361:        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+src/Broiler.VM.Profile.JavaScript/JsRealm.Temporal.cs:204:                    "daysInMonth" => JsValue.Number(parts.DaysInMonth),
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:162:    int DaysInMonth,
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:592:        var clampedDay = (int)System.Math.Clamp(day, 1, IsoCalendarMath.DaysInMonth(y, clampedMonth));
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:799:        var constrained = new JsIsoDate(yearAfter, monthAfter, System.Math.Min(one.Day, IsoCalendarMath.DaysInMonth(yearAfter, monthAfter)));
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:835:            IsoCalendarMath.DaysInMonth(date.Year, date.Month),
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:838:            IsoCalendarMath.IsLeapYear(date.Year));
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:184:        var day = Regulated(engine, fields.Day!.Value, year.DaysInMonth(month), reject, "day");
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:227:            daysInMonth = year.DaysInMonth(month);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:232:            daysInMonth = system is JsEastAsianCalendar ? 30 : MaxDaysInMonth(system, monthCode);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:277:            if (ordinal > 0 && day <= year.DaysInMonth(ordinal))
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:292:    private static int MaxDaysInMonth(JsCalendarSystem system, string monthCode)
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:304:                most = System.Math.Max(most, year.DaysInMonth(ordinal));
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:355:        var regulated = Regulated(engine, day, target.DaysInMonth(endMonth), reject, "day");
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:475:            intermediate = end.Start + end.Offsets[endMonth - 1] + System.Math.Min(day1, end.DaysInMonth(endMonth)) - 1;
+src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs:511:            year.DaysInMonth(month),
+src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs:187:    // IsoCalendarMath's IsLeapYear, DaysInMonth, DaysInYear, EpochDays, FromEpochDays, DayOfWeek,
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:685:    private bool DateTimeOffset(bool allowZ)
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:726:            if (!DateTimeOffset(allowZ: zoned || instant))
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:762:        if (!TimeSpec() || !DateTimeOffset(allowZ: false))
+src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs:600:                day = IsoCalendarMath.EpochDays(year, rule.Month, IsoCalendarMath.DaysInMonth(year, rule.Month));
+src/Broiler.VM.Runtime/VmInstanceImplementation.cs:375:            var deadline = System.DateTime.UtcNow + drainBudget;
+src/Broiler.VM.Runtime/VmInstanceImplementation.cs:379:                var remaining = deadline - System.DateTime.UtcNow;
+src/Broiler.VM.Runtime/VmRuntime.cs:558:        var deadline = System.DateTime.UtcNow + options.DisposeDrainBudget;
+src/Broiler.VM.Runtime/VmRuntime.cs:562:            var remaining = deadline - System.DateTime.UtcNow;
+src/compositions/Broiler.VM.Composition.JavaScript.Cli/HostSurfaceChecks.Clone.cs:43:            list: [1, , 3], when: new Date(86400000), re: /ab+c/gi,
+src/compositions/Broiler.VM.Composition.JavaScript.Cli/HostSurfaceChecks.Clone.cs:197:                "values=original,3,false,86400000,ab+c/gi,out of range,12345678,3",
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262DigestCache.cs:120:            new DateTimeOffset(File.GetLastWriteTimeUtc(path), TimeSpan.Zero).ToUnixTimeSeconds() ==
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/CloneChecks.cs:199:            var d = new Date(86400000); d.note = 'x';
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/CloneChecks.cs:204:            "[object Date],true,86400000,false,true,true"),
