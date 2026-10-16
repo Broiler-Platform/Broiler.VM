@@ -14,15 +14,16 @@ whose input is [`correspondence.md`](correspondence.md).
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State, 2026-10-16, at SJL-7.3: the base is taken, the engine-level vectors are run and the pin is at corpus
-revision 19, and nothing here is a verdict.**
+**State, 2026-10-16, at SJL-7.4: the base is taken, the vectors are at corpus revision 19, and the cut-over has
+landed (section 4); nothing here is a verdict.**
 - Parts A and B's bases were taken at the commit that carries the rule, `7b44dc7`, before any code of SJL-7
   lands. Section 2 records them.
 - Part C's base arm is built from the same commit when the after arm exists, because the rule interleaves
   the arms inside each repetition.
-- The after runs follow SJL-7.4's cut-over.
+- The after runs follow SJL-7.4's cut-over, at SJL-7.6.
 
-*(Revised 2026-10-16, at SJL-7.3, when the vectors were run. The heading read "at SJL-7.2: the base is taken, and
+*(Revised 2026-10-16, at SJL-7.4. The heading read "at SJL-7.3: the base is taken, the engine-level vectors are
+run and the pin is at corpus revision 19, and nothing here is a verdict.")* *(Revised 2026-10-16, at SJL-7.3, when the vectors were run. The heading read "at SJL-7.2: the base is taken, and
 nothing here is a verdict.")* *(Revised 2026-10-16, at SJL-7.2, when the base was taken. The state read: "rules and correspondence only,
 2026-10-16, at SJL-7.1. **Nothing here is a verdict, and nothing has been taken.**", with the bullets "The base
 of all three parts is taken at the commit that carries the rule, before any code of SJL-7 lands.", "The after
@@ -129,3 +130,46 @@ two against a copy of this profile's code, and part B's fuel parity holds the un
 **The record.** That comparison's first run found differences of Broiler.JS that this bundle's correspondence did
 not name. It found none of this profile's. Rows C2, C3, C6 and N1 are revised in [`9b031e9`](correspondence.md),
 each with a dated note, and so is JSD-0074's list of Broiler.JS's data-policy rows.
+
+## 4. The cut-over (SJL-7.4)
+
+[JSD-0075](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0075-the-profile-on-broiler-unicode.md) records
+it. The changes, each building, with the tests it touches green:
+
+| Commit | What it does |
+|---|---|
+| `093feb8` | The owner's generator reaches the architecture tests, test-only, under a dated revision of rule I1; rule I4 holds this family's Unicode pin to the owner's and each admitted assembly's Unicode version to the pin's |
+| `0271008` | The lookups, lexical classes, folding, properties of strings and segmentation move to the owner. Format, the runtime, the compiler and the Intl data reference `Broiler.Unicode.Algorithms`, and the Intl data alone `Broiler.Unicode.Segmentation`. The closures of every JavaScript root in three modes ([`cutover/`](cutover/README.md)) and bundle JS-10-007's pack land with them |
+| `b0ac6e2` | Normalization and case mapping move to the owner, and Soft_Dotted leaves the Intl data |
+| `8aa88db` | Rules N18 and N23 read the Intl data assembly, and say where the moved code is held |
+| `d4f7d54` | JSD-0075, the record |
+| `8e9e411` | The committed feed holds the three packages as Broiler.Unicode's Publish workflow pushed them to nuget.org (JSC-310), from the commit the copies before it were packed from |
+
+**This family's three corrections, and their consequence.**
+- **C12 and N6.** The casing and normalization ceilings are checked on the whole result.
+- **G5.** Segmentation charges every code point it reads.
+- **The consequence:** a text longer than the ceiling is refused even when the operation would leave it unchanged.
+  Such a text is reachable only by concatenation.
+
+JSD-0075's section 6 lists each, with the cells it checked.
+
+**At `8e9e411`, from a clean tree, with the packages as published:**
+- **The shared vectors at corpus revision 19 match, every one:** 88,465 vectors, 88,465 match, 0 classified
+  divergences, 0 unclassified differences
+  ([`vectors/cut-over-revision-19.log`](vectors/cut-over-revision-19.log),
+  [`vectors/cut-over-revision-19.tsv.gz`](vectors/cut-over-revision-19.tsv.gz)).
+- **Part B's twins and probes keep their base figures.** Each of the ten wide twins and the three Unicode probes
+  completes at the figure section 2's table gives, with its answer, and is refused on fuel at one less, in both
+  forms. [`cutover/fuel-parity.log`](cutover/fuel-parity.log) is identical to the base's
+  [`base/fuel-parity.log`](base/fuel-parity.log) line for line. Part B's after run is SJL-7.6's, at the commit
+  this bundle names then. This is the same check, taken at the cut-over.
+- **The tests pass:** 383 architecture tests and 473 contract tests, after a locked restore.
+
+**Also run at the cut-over's own commits** (JSD-0075, section 7):
+- **The vectors and the twins:** at `0271008`'s and `b0ac6e2`'s trees, with the copies packed locally.
+- **The CLI acceptance suite:** 375 of 375.
+- **The differential probes.** One probe fails, a `Math.cbrt` digit, which fails identically at the base and is
+  not this area's.
+- **A local test262 subset over the area's directories:** the same verdict as the base on every variant.
+
+SJL-7.6 judges parts A and B; this section judges nothing.

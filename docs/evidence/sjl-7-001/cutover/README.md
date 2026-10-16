@@ -57,4 +57,5 @@ design - and each Native AOT publish leaves no managed assembly beside the image
 | Record | What it holds |
 |---|---|
 | [`closures/admitted-packages.json`](closures/admitted-packages.json) | Rule I7's identity of each admitted package the closures carry: its version, its content hash as the allow-list pins it and as the committed feed's copy has it, and the commit its nuspec names |
+| [`fuel-parity.log`](fuel-parity.log) | Part B's twins and probes at `8e9e411`, the feed holding the packages as published, from a clean tree: identical to the base's line for line (added 2026-10-16; the bundle's README, section 4) |
 | [`closures/mstat.sha256`](closures/mstat.sha256) | The SHA-256 of each root's Native AOT image record. The records are not committed, as in the bundles before this one; rule I3 read them once at this change, placed in the tree for that run alone |
