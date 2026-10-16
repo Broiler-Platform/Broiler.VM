@@ -1,0 +1,22 @@
+bundle sjl-7-001, the Unicode area's base
+milestone SJL-7, the Unicode area; the base is this family after SJL-6
+collected 2026-10-16T16:23:59Z
+base-commit 7b44dc7f036ebe09ca92dcd0f1f9811aba84ec7e
+base-tree clean
+rule docs/evidence/sjl-7-001/decision-rule-area.md sha256=b49087731652bdc17aa5b54a23198e4fd10045d5c8f96b2b535b7c8f25b755cd
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+twin-allowance ceiling=1000000000 wallClockMs=600000
+native-backend x86-64-sysv
+twin-folders src/tests/forms/wide, src/tests/forms/unicode
+since-sjl-6-merge 24632b16b570a85163599e6daf45bea1c63c81d3, outside the documents: 10 files
+  src/tests/forms/unicode/README.md
+  src/tests/forms/unicode/casing.control.js
+  src/tests/forms/unicode/casing.js
+  src/tests/forms/unicode/casing.small.js
+  src/tests/forms/unicode/identifiers.control.js
+  src/tests/forms/unicode/identifiers.js
+  src/tests/forms/unicode/normalize.control.js
+  src/tests/forms/unicode/normalize.js
+  src/tests/forms/unicode/normalize.small.js
+  src/tests/forms/unicode/properties.small.js
