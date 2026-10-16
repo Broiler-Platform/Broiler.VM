@@ -35,8 +35,8 @@ Steps, each with `--only`:
                  smallest completing fuel allowance bisected under the bytecode form, then each form run at
                  that figure and at one less, with the answer it completes with, into base/fuel-parity.log;
   manifest       the SHA-256 of every file this collector writes or reads as its own (base/, this file, the
-                 rule and the correspondence), with the base commit base/identity.txt names, into
-                 area-manifest.json.
+                 rule and the correspondence), and of the engine-level vector runs retained beside them
+                 (vectors/), with the base commit base/identity.txt names, into area-manifest.json.
 
 The after steps join this file at SJL-7.6, when there is an after commit to run them at, as bundle sjl-6-001's
 did at SJL-6.6.
@@ -120,7 +120,7 @@ class Collector(area6.Collector):
 
     def manifest(self):
         files = {}
-        for folder in ("base",):
+        for folder in ("base", "vectors"):
             for root, _, names in os.walk(os.path.join(self.root_out, folder)):
                 for name in names:
                     path = os.path.join(root, name)

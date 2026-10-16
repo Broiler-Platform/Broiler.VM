@@ -63,8 +63,15 @@
   "base/hosted/wide-native.runners.txt": "dee4f3b947948b4750901c62fced78498e6b37f2888a95a0773170407d2b3d2f",
   "base/hosted/wide-native.test262.json": "e68f24875287d076ed6ccd034800863e13352370eed6bc978ab34bdaafd3f260",
   "base/identity.txt": "17c425a6645c4734b7652d0781450e0aee98f82016fe1650d9dd705dc5202e42",
-  "collect-area.py": "f3aa9ead7a443ae0b92c2df1e73b7f77ce040b238e0846a801a0718844366b12",
-  "correspondence.md": "aee310074195ac9d88776ddb9d983fa92e09611abcdec087e0eebd8b246baacb",
-  "decision-rule-area.md": "b49087731652bdc17aa5b54a23198e4fd10045d5c8f96b2b535b7c8f25b755cd"
+  "collect-area.py": "171cef97524212741dc047efde4adcc8f6e72ce6a42c2901fc63fd3f2484d03c",
+  "correspondence.md": "f49a25efcaabd8dea8eafd0fcbcd72ec74fbe90a1a43043887de065e07cbe43e",
+  "decision-rule-area.md": "b49087731652bdc17aa5b54a23198e4fd10045d5c8f96b2b535b7c8f25b755cd",
+  "vectors/revision-18.pin": "0e164e3e41258a513b8f84c63986830c9db676e62d160c5a17ea27d33db232c0",
+  "vectors/run-negative-control-revision-19.log": "a0336f51eb617f2cfe0db1a50df0c1fc8d1d6248f143adc2c746cb3a94573e09",
+  "vectors/run-negative-control-revision-19.tsv.gz": "1f3f557f2d652d7b6c78de10d583b4755bc6c15d7a7a96597b2eda2b18614f46",
+  "vectors/run-revision-18.log": "56458bb7be36216ef496b7f57e08e06cc11c02c77562bfb77e10506d8809d595",
+  "vectors/run-revision-18.tsv.gz": "0c6d045d6f6a463da0b48218964a94bbc2737b42c16dba6f85296f8998ba2526",
+  "vectors/run-revision-19.log": "d428465bbd0084a8dbed3c637ddb4ea38d1d78beea542160b1d6ae8285be2a56",
+  "vectors/run-revision-19.tsv.gz": "6c62d52d5713d45d191b69129b603b02ebf54c08d2f44a18cb3908edbbb90a57"
  }
 }

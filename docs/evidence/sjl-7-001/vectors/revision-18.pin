@@ -1,0 +1,16 @@
+# broiler-js-conformance retained suite pin 1
+#
+# A scratch pin of corpus revision 18 (Broiler.JS b69eb70919043a9486fa6e978bd2228a5da6a30f), for this family's first engine-level run on the
+# Unicode area (milestone SJL-7.3). Taken on 2026-10-16 with git archive of that commit, twice, the two
+# files byte-identical; the second extracted and its files hashed there. Not committed: the pin moves
+# at revision 19, which classifies the first runs.
+
+suite broiler-js-vectors
+upstream Broiler-Platform/broiler.js
+revision b69eb70919043a9486fa6e978bd2228a5da6a30f
+archive git archive --format=tar.gz b69eb70919043a9486fa6e978bd2228a5da6a30f -- conformance/vectors :(exclude)conformance/vectors/controls
+archive-sha256 bbcba7b69aec643f4f50707e56a1af4e5c544599ff07e569e0e26511c7cb49b8
+content-sha256 335955034c0b76855f07576b2ac099c558302d530b7e73d287c10432fcb80de7
+files 42
+archived yes
+archived-at src/tests/vectors/pins/broiler-js-vectors-b69eb70919043a9486fa6e978bd2228a5da6a30f.tar.gz

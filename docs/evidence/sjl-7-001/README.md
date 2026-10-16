@@ -14,14 +14,16 @@ whose input is [`correspondence.md`](correspondence.md).
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State, 2026-10-16, at SJL-7.2: the base is taken, and nothing here is a verdict.**
+**State, 2026-10-16, at SJL-7.3: the base is taken, the engine-level vectors are run and the pin is at corpus
+revision 19, and nothing here is a verdict.**
 - Parts A and B's bases were taken at the commit that carries the rule, `7b44dc7`, before any code of SJL-7
   lands. Section 2 records them.
 - Part C's base arm is built from the same commit when the after arm exists, because the rule interleaves
   the arms inside each repetition.
 - The after runs follow SJL-7.4's cut-over.
 
-*(Revised 2026-10-16, at SJL-7.2, when the base was taken. The state read: "rules and correspondence only,
+*(Revised 2026-10-16, at SJL-7.3, when the vectors were run. The heading read "at SJL-7.2: the base is taken, and
+nothing here is a verdict.")* *(Revised 2026-10-16, at SJL-7.2, when the base was taken. The state read: "rules and correspondence only,
 2026-10-16, at SJL-7.1. **Nothing here is a verdict, and nothing has been taken.**", with the bullets "The base
 of all three parts is taken at the commit that carries the rule, before any code of SJL-7 lands.", "The after
 runs follow SJL-7.4's cut-over." and "A collector joins this bundle when there is a run to take.")*
@@ -102,5 +104,28 @@ sources.
 | `unicode/normalize` | 607,821 | 420519 |
 | `unicode/properties` | 14,348,623 | 35050 |
 
-[`area-manifest.json`](area-manifest.json) lists the digest of every file of the base, the collector, the rule
-and the correspondence.
+[`area-manifest.json`](area-manifest.json) lists the digest of every file of the base and of the vector runs
+(section 3), the collector, the rule and the correspondence.
+
+## 3. Engine-level vectors on the Unicode area (SJL-7.3)
+
+Broiler.JS's corpus revision 18 (`b69eb709`) adds the Unicode area: 37,738 vectors in five files. This
+profile's conformance root ran on it, and every vector matched. Revision 19 (`c976cbea`) classifies both engines'
+first runs. It holds none of this profile's differences, since there were none, and 3,678 of Broiler.JS's. The
+pin then moved to revision 19, in `d81c0c1`, by its README's procedure: the archive made twice,
+byte-identical, its 42 files hashed after extraction.
+
+| Run | Commit | Result | Files |
+|---|---|---|---|
+| Revision 18 | `286fd23`, whose product sources are `24632b1`'s, taken 2026-10-16 from 17:43Z with the pin [`vectors/revision-18.pin`](vectors/revision-18.pin) beside a scratch copy of its archive, which `git archive` of `b69eb709` makes again | 88,465 vectors: 88,465 match, 0 classified divergences, 0 unclassified differences | [`run-revision-18.log`](vectors/run-revision-18.log), [`run-revision-18.tsv.gz`](vectors/run-revision-18.tsv.gz) |
+| Revision 19 | `d81c0c1`, clean, from 18:35Z, on the committed pin | 88,465 vectors: 88,465 match | [`run-revision-19.log`](vectors/run-revision-19.log), [`run-revision-19.tsv.gz`](vectors/run-revision-19.tsv.gz) |
+| Its negative control | the same, with `--mutate unicode/casing-upper/0001` | 88,464 match, 1 unclassified difference, the mutated vector | [`run-negative-control-revision-19.log`](vectors/run-negative-control-revision-19.log), [`run-negative-control-revision-19.tsv.gz`](vectors/run-negative-control-revision-19.tsv.gz) |
+
+**What the vectors cannot show of this profile's corrections.** The area verdict names three: the casing
+ceiling, the normalization ceiling and the segmenter's charge, each on the whole result (rows C12, N6 and G5).
+None is visible in a vector of an ordinary length. Broiler.Unicode's reference-arm comparison holds the first
+two against a copy of this profile's code, and part B's fuel parity holds the units.
+
+**The record.** That comparison's first run found differences of Broiler.JS that this bundle's correspondence did
+not name. It found none of this profile's. Rows C2, C3, C6 and N1 are revised in [`9b031e9`](correspondence.md),
+each with a dated note, and so is JSD-0074's list of Broiler.JS's data-policy rows.
