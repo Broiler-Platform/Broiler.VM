@@ -13310,3 +13310,27 @@ and running as Native AOT.
 [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md) and
 [JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md), and the programme's work
 package SJL-7.4. 2026-10-16.
+
+### JSC-309
+
+**Where:** [`release-gate.md`](release-gate.md), the blockers of gate 12 ("Licence and attribution").
+
+**What the plan said.** Six gate-12 blockers: five unconfirmed ingesting-components rows of
+`THIRD_PARTY_NOTICES.md` (the specification, the Unicode Character Database as
+`G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format`, Octane, the shared
+conformance vectors and the shared algorithms package) and the Intl assembly with no row.
+
+**What replaced it.** Seven. The ingesting-components table gains the row of the Unicode area's owner's
+packages, which the four family assemblies now ingest - `Broiler.Unicode.Algorithms` and
+`Broiler.Unicode.Segmentation` `0.1.0-preview.4` - and the row is not yet confirmed, so the gate names
+`G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format-broiler.vm.profile.javascript.compiler-broiler.vm.profile.javascript.intl`.
+The Unicode Character Database row names the Intl assembly too, whose break table the owner's generator
+writes from the same pin since the cut-over, so its blocker is
+`G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format-broiler.vm.profile.javascript.intl`.
+The Intl assembly's no-row blocker stands, and the gate now clears it only for a row naming the assembly
+whose ingested cell names CLDR, since the two Unicode rows name it for other data. The release owner
+co-signing each row's scoping clears its blocker, as for the others.
+
+**Authority and date.** [JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) section 11, on
+[JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md) and the
+programme's work package SJL-7.4. 2026-10-16.

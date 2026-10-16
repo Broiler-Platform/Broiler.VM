@@ -54,11 +54,11 @@ blocker, and rule N38's two witnesses show the gate refusing both.
 | `G11-units-undecided` | 11 | Every relevant unit's `// Broiler-Human:` line | A named human recording a decision on each, bound to its fingerprint |
 | `G11-published-before-review` | 11 | [`support.md`](support.md) section 9; ADR 0001's revision of 2026-09-28 | The owner's answer to the two versions published before review |
 | `G12-unconfirmed-broiler.vm.profile.javascript` | 12 | [`THIRD_PARTY_NOTICES.md`](../../../THIRD_PARTY_NOTICES.md), the specification row | The release owner co-signing the scoping |
-| `G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format-broiler.vm.profile.javascript.intl` | 12 | The same file, the Unicode Character Database row (revised 2026-10-16, programme milestone SJL-7.4, when the row named the Intl assembly too) | The same |
+| `G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format-broiler.vm.profile.javascript.intl` | 12 | The same file, the Unicode Character Database row (revised 2026-10-16, programme milestone SJL-7.4, when the row named the Intl assembly too; [JSC-309](roadmap.corrections.md#jsc-309)) | The same |
 | `G12-unconfirmed-broiler.vm.composition.javascript.cli` | 12 | The same file, the Octane row | The same |
 | `G12-unconfirmed-broiler.vm.composition.javascript.conformance` | 12 | The same file, the shared conformance vectors' row (added 2026-10-12, programme milestone SJL-1) | The same |
 | `G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.compiler` | 12 | The same file, the shared algorithms package's row (added 2026-10-12, programme milestone SJL-3.4; [JSC-299](roadmap.corrections.md#jsc-299)) | The same |
-| `G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format-broiler.vm.profile.javascript.compiler-broiler.vm.profile.javascript.intl` | 12 | The same file, the Unicode area's owner packages' row (added 2026-10-16, programme milestone SJL-7.4; JSD-0075) | The same |
+| `G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format-broiler.vm.profile.javascript.compiler-broiler.vm.profile.javascript.intl` | 12 | The same file, the Unicode area's owner packages' row (added 2026-10-16, programme milestone SJL-7.4; [JSC-309](roadmap.corrections.md#jsc-309)) | The same |
 | `G12-no-row-broiler.vm.profile.javascript.intl` | 12 | The same file's ingesting-components table, which has no CLDR or tzdb row | A row for the Intl assembly, confirmed |
 | `G13-vacant-diagnostics` | 13 | [`support.md`](support.md) section 10 | The owner naming a holder |
 | `G13-vacant-cancellation` | 13 | The same | The same |
