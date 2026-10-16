@@ -333,7 +333,12 @@ The programme took SJL-D-6 (c) on 2026-10-11, and this record, the first data ar
   moves it.
 - **The data version stays 17.0.0** in both engines. SJL-7 moves no pin.
 - **For Broiler.JS**, each behaviour that changes because pinned data replaces the host's is a correction
-  under SJL-D-16, class C5 in its rule: I2, C3, N2, N3 and G3.
+  under SJL-D-16, class C5 in its rule: I2, C2, C3, N2, N3 and G3. *(Revised 2026-10-16, at SJL-7.2, when
+  Broiler.Unicode's first reference-arm comparison showed that row C2's Cased and Case_Ignorable come from the
+  runtime's data, as row C3's mappings do; the correspondence's row C2 is revised the same day. The list read
+  "I2, C3, N2, N3 and G3". Broiler.JS's part A rule, committed before its base, admits I2, C3, N2, N3 and G3
+  in its class C5 and is not revised: a test262 row that changes by row C2 alone is judged by that rule as
+  written.)*
 
 ## JSD-0031 §4(b): how each reason is answered
 
