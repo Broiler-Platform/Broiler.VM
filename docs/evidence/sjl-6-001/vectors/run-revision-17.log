@@ -1,0 +1,4 @@
+== run at 99d494562d020e8c272c4b95afd03f3897be3ad5 (clean tree), pin src/tests/vectors/pins/vectors.pin sha256=48418f2a5c1df836204ff8ec3ebc74c69929926656b085f76fb20c843ab04256, 2026-10-16T09:10:41Z
+broiler-js-conformance: vectors broiler-js-vectors Broiler-Platform/broiler.js@520ecf95a5ff5c6880fc07b7b2fcba4ac4e2a0fb content sha256 7d2193beb9928e3c98259c4b6d1455993592ce3da25517e943c86b10d320ef61 over 37 files - archived at src/tests/vectors/pins/broiler-js-vectors-520ecf95a5ff5c6880fc07b7b2fcba4ac4e2a0fb.tar.gz
+broiler-js-conformance: 50727 vectors: 50727 match, 0 classified divergences, 0 unclassified differences
+exit code: 0

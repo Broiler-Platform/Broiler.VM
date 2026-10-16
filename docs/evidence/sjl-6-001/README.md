@@ -207,3 +207,23 @@ Broiler.JS `d1e4b11`, whose library code is `e04874d`'s, and the committed feed 
 used the copy packed from `e04874d`. With the published package, the same conformance root's run on
 revision 16 gives a report identical byte for byte to `run-revision-16.tsv.gz`'s, and its negative control
 reports its one vector; neither run is retained, since neither differs.
+
+## 8. The vectors at corpus revision 17 (SJL-6.5)
+
+Broiler.JS's Date area is the shared library's since its `31c0480` (SJL-6.5), and corpus revision 17
+(Broiler.JS `520ecf9`) retires every divergence field of the Date area, this family's sixteen of section 7
+and Broiler.JS's 1,016, and gives Broiler.JS's expectation of `date/outside-format/0001` and `0010` its
+reading since that cut-over, which is this family's dialect's; no expectation of this family changes. This
+family's pin moves to it in `99d4945`. The archive was taken twice, the copies byte-identical, and the second
+extracted afresh and hashed there. The area collector's `vectors` step ran at `99d4945` from a clean checkout
+and rebuilt the conformance root there, whose build log replaces revision 16's in
+[`vectors/build-conformance.log`](vectors/build-conformance.log) (the earlier one is in this repository's
+history):
+
+| Run | Corpus | Result | Files |
+|---|---|---|---|
+| Revision 17 | `520ecf9`, 37 files, content `7d2193be...` | 50,727 vectors: 50,727 match, 0 classified divergences, 0 unclassified differences | [`run-revision-17.log`](vectors/run-revision-17.log), [`run-revision-17.tsv.gz`](vectors/run-revision-17.tsv.gz) |
+| Its negative control, `text/trim/0001` | the same | 50,726 match, 1 unclassified difference, that vector | [`run-negative-control-revision-17.log`](vectors/run-negative-control-revision-17.log), [`run-negative-control-revision-17.tsv.gz`](vectors/run-negative-control-revision-17.tsv.gz) |
+
+The vectors that carried this family's sixteen fields are `normative` again, and match. This is not part A
+or part B: SJL-6.6 takes the after runs both parts judge. `area-manifest.json` lists the new files.
