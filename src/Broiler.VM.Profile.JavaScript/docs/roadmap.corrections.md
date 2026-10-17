@@ -13401,3 +13401,29 @@ Unicode package, that the provider contract and the bytes it costs do not bind, 
 rather than the runtime embedding fewer tables; on
 [JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) and the programme's milestone SJL-7.
 2026-10-17.
+
+### JSC-312
+
+**Where:** [`packages.md`](packages.md): its opening paragraph, the paragraph "No foreign dependency" and
+the section "The consumer"; and [`support.md`](support.md), section 9, the paragraph on the frozen
+packages.
+
+**What the plan said.** The baseline was "the candidate pack of **bundle
+[JS-10-008](evidence/js-10-008/README.md)**", and the runtime and the compiler declared
+`Broiler.ECMAScript.Algorithms` "at `0.1.0-preview.4` since the Date cut-over
+([JSD-0073](decisions/0073-the-profile-on-the-shared-date-algorithms.md)), as the baseline's candidate pack
+does"; the consumer section and support section 9 named bundle JS-10-008.
+
+**What replaced it.** The two packages declare `0.1.0-preview.5` since the time-zone and calendar
+cut-over, the shared stream's next preview, which carries the time-zone and calendar area of milestone
+SJL-8.3 beside the areas `0.1.0-preview.4` carried, packed from Broiler.JS `2d37a38` and not yet on
+nuget.org. Rule I1 admits one version of a package, so the allow-list, the committed feed, both lock
+files and rule I1's witness moved to it together, in `4df595b`; and rule N37 holds the baseline's
+candidate to declaring the version the allow-list pins or a later one, which JS-10-008's candidate,
+declaring `0.1.0-preview.4`, did not. The baseline is bundle [JS-10-009](evidence/js-10-009/README.md)'s
+candidate pack, taken at `4df595b`; every condition holds as JS-10-008's did, and the Native AOT consumer
+is 8,012,112 bytes, built with another SDK than JS-10-008's. Each record quotes what it read before.
+
+**Authority and date.** The programme's work package SJL-8.5, on
+[JSD-0076](decisions/0076-time-zone-and-calendar-data-move-to-the-data-home.md), whose cut-over this
+admission begins. 2026-10-17.
