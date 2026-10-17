@@ -15,10 +15,11 @@ whose input is [`correspondence.md`](correspondence.md), with every probe and bo
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules, correspondence and the base, 2026-10-17. **Nothing here is a verdict.**
+**State:** rules, correspondence, the base, the vectors and the cut-over, 2026-10-17. **Nothing here is a verdict.**
 - The base of all three parts was taken at the commit that carries the rule, `431c20e`, before any code of SJL-8
   landed (section 2).
-- The after runs follow SJL-8.5's cut-over.
+- SJL-8.5's cut-over is in place, with the checks it ran (section 4).
+- The after runs are SJL-8.7's.
 
 The data home's clauses and Broiler.JS's are judged in Broiler.JS's bundle of the same name. This bundle reads
 none of its runs.
@@ -158,3 +159,54 @@ on the shared corpus disagree only where JSD-0076 says Broiler.JS's policy or co
 
 The pin is at revision 22 (`src/tests/vectors/pins/vectors.pin`). Its archive is taken twice, byte-identical, and
 its 49 files are hashed from an extracted copy.
+
+## 4. The cut-over (SJL-8.5)
+
+[JSD-0077](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0077-the-profile-on-the-shared-time-zones-and-calendars.md)
+records it. The changes, each building, with the tests it touches green:
+
+| Commit | What it does |
+|---|---|
+| `4df595b` | `Broiler.ECMAScript.Algorithms` `0.1.0-preview.5`, packed at Broiler.JS `2d37a38a` and not yet published, is admitted from the committed feed in place of `0.1.0-preview.4` |
+| `f09a0dd` | The package baseline is bundle JS-10-009's (JSC-312), as rule N37 asks |
+| `c5943b1` | The data home's generator, `Broiler.ECMAScript.Generation` `0.1.0-preview.5`, reaches the architecture tests, test-only. The tz compiler, both table generators and their pin readers leave this repository. Rules N29 to N32 regenerate the tables with the home's generator from this repository's pins and are registered. Rule I4 holds the tz pin, the calendar pin and CLDR's `bcp47/timezone.json` to the home's by digest, and the package's six version constants to this repository's pins |
+| `186a1d3` | The profile's zones and calendar years are the shared library's: `TimeZoneDatabase` and `CalendarTables` over the Intl data's tables, `ZonedTime`, `OffsetTimeZones` and `CalendarYears`. Each status maps to the RangeError this family threw before, with the same message |
+| `8613309` | Intl data that does not carry the new tz-release table reads its zones as before, with a slice-compiler check that says so |
+| `eed568a` | Rule I5 registers the area's 24 deleted members and types, and the notices say where the ICU4X port went |
+| `05f99db` | JSD-0077, the record |
+
+**This family has no correction of its own in the area** (JSD-0076), and the cut-over admits none.
+
+**Checked at the product tree of `8613309`.** `eed568a` and `05f99db` change no product file. The files are in
+[`cutover/`](cutover/):
+- **The generated tables.**
+  - Regenerated with the home's generator in write mode, both files stay byte-identical to the base's.
+  - A changed byte of either is refused, by N30 or by N32 ([`cutover/n30-negative-control.log`](cutover/n30-negative-control.log),
+    [`cutover/n32-negative-control.log`](cutover/n32-negative-control.log)).
+- **Part B's reference datasets.**
+  - Each of the seven named checks prints the line the base's [`base/datasets/named-checks.txt`](base/datasets/named-checks.txt)
+    gives ([`cutover/named-checks.txt`](cutover/named-checks.txt)).
+  - No file under `src/tests/cldr/timezones/` or `src/tests/temporal/` changed.
+  - The slice compiler passes 649 checks: the base's 648 and `8613309`'s one.
+- **The shared vectors at revision 22 match, every one:** 92,434 vectors, 92,434 match, 0 classified divergences,
+  0 unclassified differences ([`vectors/run-cut-over-revision-22.log`](vectors/run-cut-over-revision-22.log)).
+- **Part C's twins keep their base figures.** Each of the ten wide twins completes at its base figure, with its
+  answer, and is refused on fuel at one less, in both forms. The rows of
+  [`cutover/fuel-parity.log`](cutover/fuel-parity.log) are the base's [`base/fuel-parity.log`](base/fuel-parity.log)
+  line for line.
+- **A local test262 subset, bytecode form,** over the area's directories and `Date`: 7,696 files and 15,330 variants,
+  every one with the hosted base's verdict ([`cutover/test262-subset.txt`](cutover/test262-subset.txt)).
+  - On both sides, 15,240 variants passed, 12 failed, 16 exhausted their allowance and 62 were skipped.
+  - The sixteen exhausted variants are `staging/sm/Date/dst-offset-caching`'s. They read no zone, because this
+    profile's local time is UTC.
+  - Eleven of them ran out of wall clock on this machine where the base ran out of fuel. With a wall clock of 120
+    seconds, all sixteen exhaust on fuel.
+- **The tests pass:** the architecture tests, rule I4's two new tests among them, and the contract tests, with
+  JSD-0077's figures. A full Release build has no warning.
+
+JSD-0077's section 7 gives each in full, and its departures name the edges the cut-over leaves:
+- the region lists asked code by code;
+- the lunisolar month counts at the ±300,000-year bound;
+- the generated files' stale header text, kept because the bytes must not change.
+
+SJL-8.7 judges parts A to C; this section judges nothing.

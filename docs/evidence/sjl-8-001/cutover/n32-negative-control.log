@@ -1,0 +1,12 @@
+Test run for /home/user/vm-sjl85/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:03.96]     Broiler.VM.Architecture.Tests.CalendarRuleTests.N32_The_Generated_Table_Is_What_The_Pinned_Archives_Generate [FAIL]
+  Failed Broiler.VM.Architecture.Tests.CalendarRuleTests.N32_The_Generated_Table_Is_What_The_Pinned_Archives_Generate [3 s]
+  Error Message:
+   src/Broiler.VM.Profile.JavaScript.Intl/JsCalendarTables.g.cs is not what the time data home's calendar table generator writes from this repository's pin; change the generator in its home, or a pinned archive, and run with BROILER_CALENDARS_WRITE=1, never edit the file
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.CalendarRuleTests.N32_The_Generated_Table_Is_What_The_Pinned_Archives_Generate() in /home/user/vm-sjl85/src/tests/Broiler.VM.Architecture.Tests/CalendarRuleTests.cs:line 121
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 3 s - Broiler.VM.Architecture.Tests.dll (net10.0)

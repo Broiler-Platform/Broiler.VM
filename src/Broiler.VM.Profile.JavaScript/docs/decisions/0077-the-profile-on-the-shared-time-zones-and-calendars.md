@@ -202,7 +202,7 @@ Eleven of them ran out of wall clock locally, under four parallel processes, whe
 out of fuel; the hosted base's own sixteen were thirteen on fuel and three on the wall clock. Run again
 with a wall clock of 120 seconds, all sixteen exhaust on fuel.
 
-**Part B's twins**, through the command-line root, each at the base figure `base/fuel-parity.log` gives
+**Part C's twins**, through the command-line root, each at the base figure `base/fuel-parity.log` gives
 and at one less, in both forms: every one completes at its figure with the base's answer and is refused
 with `AllowanceExhausted on Fuel` at one less, line for line as the base's log.
 
