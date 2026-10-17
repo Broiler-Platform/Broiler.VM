@@ -13364,3 +13364,40 @@ again; each says so. Everything else JSD-0075 decided stands.
 **Authority and date.** The owner's instruction of 2026-10-16 to publish `0.1.0-preview.4`, on
 [JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) section 1 and the programme's work package
 SJL-7.4. 2026-10-16.
+
+### JSC-311
+
+**Where:** the records that carry the Unicode packages' version and identity: `Directory.Packages.props`,
+the committed feed `eng/packages/` with its README and the three packages' pins, the allow-list's three
+entries, the five lock files, rule I1's witnesses that hold those entries, the two rows of
+`THIRD_PARTY_NOTICES.md` that name the packages, [`packages.md`](packages.md) and
+[`support.md`](support.md) section 9; rule N22's table set and budget in the architecture tests
+(`UnicodeTableEmbedding.cs`, `UnicodeTableGenerator.cs`, `UnicodePinRuleTests.cs`); and the runtime's
+Unicode table provider, `JsUnicode.cs`, with the generated table files.
+[JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) is not edited.
+
+**What the plan said.** JSD-0075 and JSC-310: the four family packages declare `Broiler.Unicode.Algorithms`
+`0.1.0-preview.4`, and `.Intl` `Broiler.Unicode.Segmentation` `0.1.0-preview.4`, published from
+Broiler.Unicode `6e14f93`; the package baseline was bundle [JS-10-007](evidence/js-10-007/README.md)'s
+candidate pack. Rule N22 held the runtime's embedded Unicode tables to the set the owner's preview.4
+served and to a budget of 300 KB (307,200 bytes).
+
+**What replaced it.** The packages move to `0.1.0-preview.5`, published to nuget.org on 2026-10-17 from
+Broiler.Unicode `b802014` (its Publish workflow, run 39028782865), and the feed holds the three this family
+admits exactly as that run pushed them. preview.5 makes normalization and case mapping faster - ASCII and
+Latin-1 fast paths, one lookup per code point, and constant-time tries the owner's generator writes - and
+returns and charges exactly what preview.4 did; the owner's tests compare the two implementations on every
+form, metered and unmetered. The tries are new tables the owner's provider contract serves, so the runtime
+embeds them: rule N22's table set drops the twelve tables preview.5 no longer reads and takes its eleven
+new ones (22 in Format's file, 11 in the runtime's, 1 in Intl's), and its budget moves from 300 KB to
+640 KB (655,360 bytes; 642,028 used). The runtime's provider serves its own embedded tables first and
+Format's after. The package baseline is bundle [JS-10-008](evidence/js-10-008/README.md)'s candidate pack,
+taken at the tree of this change before the bundle was added; every condition holds as JS-10-007's did,
+and the Native AOT consumer grows from 7,643,472 to 8,032,880 bytes. Each record quotes what it read
+before. No decision rule of the profile moves and no milestone measurement is taken again.
+
+**Authority and date.** The owner's instruction of 2026-10-17 that the JavaScript engines take the faster
+Unicode package, that the provider contract and the bytes it costs do not bind, and that rule N22 changes
+rather than the runtime embedding fewer tables; on
+[JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) and the programme's milestone SJL-7.
+2026-10-17.
