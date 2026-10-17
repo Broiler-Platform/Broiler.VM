@@ -69,8 +69,18 @@
   "base/hosted/wide-native.runners.txt": "065819a0f16bd2c98323548c50fdc9bb4746f8c7d28dd596e35d750e066abc31",
   "base/hosted/wide-native.test262.json": "526840ed54ac7caa8b437ef52fbbf9d1062065863817dfd588b43614d746b71a",
   "base/identity.txt": "c4dcb7a33c850d99d3d947d2db76e1c012c11413b4ae5f19209ea684bcbbc195",
-  "collect-area.py": "fdc35acedaa110a2a5b53d7e9413a659d34fd588ef2b2d436e4bb5981eda93e7",
+  "collect-area.py": "b653dbaf3ee7313bc6d34ab7749c56c545ee764be2f352b074207c6504b60bf4",
   "correspondence.md": "feb79a7f982b8849a04c9bb86d8d7bb57fd25b5f8c1e849b4abe325fc2f339ba",
-  "decision-rule-area.md": "dbd07094751826cd4d5fbd649866f99fa53b502505001caf4c750e1282f9cf2d"
+  "decision-rule-area.md": "dbd07094751826cd4d5fbd649866f99fa53b502505001caf4c750e1282f9cf2d",
+  "vectors/build-conformance.log": "87475add41865048fff78a15d07fa9b16f6f01314cf7ece8726a22ea8000674f",
+  "vectors/revision-21.pin": "fe363047a6b853a112be80a4afbbe90b34a33f503040e1f259afbb4b2916b5da",
+  "vectors/run-negative-control-revision-21.log": "07e8857ea3fcbfdfee0197de6651ce500c57fb4391f8a4b9650fbb4ae4dd9aa2",
+  "vectors/run-negative-control-revision-21.tsv.gz": "221fd1377c74dddfd7503071891ddade37eba59e53f3378893dc3b5d91e16143",
+  "vectors/run-negative-control-revision-22.log": "2964de3e8ca7d4aacc92e050005e0dd52476739c485c13695067b76edf553037",
+  "vectors/run-negative-control-revision-22.tsv.gz": "65bfccf7539ba7fcd48959a8f630130ab35acbc4d85ec29617f6b3d08f84f846",
+  "vectors/run-revision-21.log": "9f31d639afde7ddde74ccb77a73e9147282a7f9a9c85b93792ef2923149aeacf",
+  "vectors/run-revision-21.tsv.gz": "d89ade555f5e16e2c6999678e7e9e9d649124c2d6654b5c2c26c26458077b7eb",
+  "vectors/run-revision-22.log": "5165df947e9ac4f776d599435b7a84179c7ab97d1bb74593aebe64d7331d6f66",
+  "vectors/run-revision-22.tsv.gz": "82097942694bb4542ef96fa66b87a7a7eefcc2df95703e7ce73b24dd2b683edb"
  }
 }

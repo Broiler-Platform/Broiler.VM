@@ -125,3 +125,36 @@ row, and its class C4 (c') covers that split.
 
 [`area-manifest.json`](area-manifest.json) lists the digest of every file of the base, the collector, the rule and
 the correspondence. `correspondence-runs/` is the correspondence's own record and is not listed.
+
+## 3. Engine-level vectors on the time-zone area (SJL-8.4)
+
+Broiler.JS's corpus revision 21 (`09fa9ac5`) adds the time-zone area: 3,969 vectors in seven files under
+`conformance/vectors/time-zones/`.
+- **Where they come from.** Every expected value is `scripts/conformance/tzref.py`'s, an independent reference. It
+  compiles the data home's pinned tzdb 2026e with the host's `zic -b fat`, reads the compiled files with its own
+  reader, and applies SJL-D-20's policy. It shares no code with the generator or the shared library.
+- **What they cover.** Instants on both sides of every policy difference and correction JSD-0076 lists, and a
+  sample of ordinary offsets, transitions, gaps, overlaps and starts of day.
+- **Two kinds are implementation-defined:**
+  - the name a formatter resolves a non-primary identifier to (row Z8), whose expectation for this profile is the
+    primary;
+  - a region's zones (row Z12).
+
+Revision 22 (`4ce20ac7`) classifies Broiler.JS's first run: 1,161 differences, every one under a row the area
+verdict names. It holds none of this profile's.
+
+The collector's `vectors` step, bundle `sjl-6-001`'s, ran the conformance root in Release.
+
+| Run | Taken | Result | Files |
+|---|---|---|---|
+| Revision 21 | At `431c20e`, the base, from 16:57Z, with the scratch pin [`vectors/revision-21.pin`](vectors/revision-21.pin) beside a scratch copy of its archive, which `git archive` wrote twice, byte-identical | 92,434 vectors: 92,434 match | [`run-revision-21.log`](vectors/run-revision-21.log), [`run-revision-21.tsv.gz`](vectors/run-revision-21.tsv.gz) |
+| Its negative control | The same, with `--mutate text/trim/0001` | 92,433 match, 1 unclassified difference, the mutated vector | [`run-negative-control-revision-21.log`](vectors/run-negative-control-revision-21.log) |
+| Revision 22 | At `15da5fd`, clean, on the committed pin, which moves to revision 22 there | 92,434 vectors: 92,434 match, 0 classified divergences, 0 unclassified differences | [`run-revision-22.log`](vectors/run-revision-22.log), [`run-revision-22.tsv.gz`](vectors/run-revision-22.tsv.gz) |
+| Its negative control | The same, with `--mutate text/trim/0001` | 92,433 match, 1 unclassified difference, the mutated vector | [`run-negative-control-revision-22.log`](vectors/run-negative-control-revision-22.log) |
+
+**This profile matches every time-zone vector, each of its own `per-engine` expectations included.** The vectors
+confirm the correspondence's reading that this family has no correction of its own in the area. Both engines' runs
+on the shared corpus disagree only where JSD-0076 says Broiler.JS's policy or code differs.
+
+The pin is at revision 22 (`src/tests/vectors/pins/vectors.pin`). Its archive is taken twice, byte-identical, and
+its 49 files are hashed from an extracted copy.
