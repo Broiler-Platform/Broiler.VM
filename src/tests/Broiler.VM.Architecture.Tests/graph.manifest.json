@@ -389,6 +389,7 @@
         "Broiler.VM.Runtime"
       ],
       "packageReferences": [
+        "Broiler.ECMAScript.Generation",
         "Broiler.Unicode.Generation",
         "Microsoft.CodeAnalysis.CSharp",
         "Microsoft.NET.Test.Sdk",

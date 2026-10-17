@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           29
+// Exempt:           30
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=373E5C
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=93CA68
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -157,8 +157,9 @@ public enum JsIntlTable
 
     /// <summary>
     /// The IANA Time Zone Database's zones' UTC offsets (JSD-0053): a zone count, then each zone's
-    /// first offset, offset palette, transitions and recurring rules, in the layout <c>JsTimeZones</c>
-    /// reads.
+    /// first offset, offset palette, transitions and recurring rules, in the layout the shared
+    /// library's <c>TimeZoneDatabase</c> reads (JSD-0076; until SJL-8.5 the profile's own
+    /// <c>JsTimeZones</c> read it).
     /// </summary>
     TimeZones = 26,
 
@@ -173,7 +174,8 @@ public enum JsIntlTable
 
     /// <summary>
     /// The published years of the Chinese, Korean and Umm al-Qura calendars and the Persian
-    /// calendar's corrections to its 33-year rule, binary.
+    /// calendar's corrections to its 33-year rule, binary, in the layout the shared library's
+    /// <c>CalendarTables</c> reads (JSD-0076).
     /// </summary>
     Calendars = 29,
 
@@ -183,4 +185,12 @@ public enum JsIntlTable
     /// country and its primary zone.
     /// </summary>
     MetaZones = 30,
+
+    /// <summary>
+    /// The IANA Time Zone Database release the three time zone tables were compiled from, ASCII, for
+    /// example <c>2026e</c>: the release the shared library's <c>TimeZoneDatabase</c> states for them
+    /// (JSD-0076; added at SJL-8.5). Data that does not carry it reads as before, and the database
+    /// states the release <c>unstated</c>; nothing in the profile reads the release (JSD-0077).
+    /// </summary>
+    TimeZoneRelease = 31,
 }

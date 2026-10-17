@@ -56,6 +56,14 @@
          test-only for this project alone, the lock file below records its content hash and that of
          Broiler.Unicode.Algorithms, which it depends on, and CI restores the lock file in locked mode. -->
     <PackageReference Include="Broiler.Unicode.Generation" />
+
+    <!-- THE TIME DATA HOME'S GENERATOR (JSD-0076, decision SJL-D-6 (c); milestone SJL-8.5): rules N29 to N32
+         regenerate the time zone and calendar tables with it from this repository's pins, and rule I4 holds
+         the data versions it declares to those pins. It reaches this project as the Unicode area's
+         generator does, "as a pinned, test-only package, and never a product closure": rule I1's
+         allow-list admits it test-only for this project alone, and the lock file below records its
+         content hash. -->
+    <PackageReference Include="Broiler.ECMAScript.Generation" />
   </ItemGroup>
 
   <PropertyGroup>

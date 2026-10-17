@@ -212,10 +212,10 @@ internal sealed class JsDateTimeFormatter
     // Broiler-Human:        PENDING
     private JsDateIntervalFormat? interval;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=762321
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3A2215
     // Broiler-Human:        PENDING
     internal JsDateTimeFormatter(JsDateData data, string language, string[] digits, string timeZone, int offsetMinutes, JsZoneKind zoneKind,
-        string pattern, Func<JsDateIntervalFormat> intervals, JsZone? zone = null, JsCalendarSystem? calendar = null, JsZoneNaming? naming = null)
+        string pattern, Func<JsDateIntervalFormat> intervals, ITimeZoneRules? zone = null, JsCalendarSystem? calendar = null, JsZoneNaming? naming = null)
     {
         this.zone = zone;
         this.calendar = calendar;
@@ -230,10 +230,10 @@ internal sealed class JsDateTimeFormatter
         Pattern = pattern;
     }
 
-    /// <summary>The IANA zone whose offsets apply, or nothing for UTC and a fixed offset.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B6CCEC
+    /// <summary>The IANA zone whose offsets apply, the shared database's rules of it, or nothing for UTC and a fixed offset.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C10B36
     // Broiler-Human:        PENDING
-    private readonly JsZone? zone;
+    private readonly ITimeZoneRules? zone;
 
     /// <summary>The calendar the fields are written in, or nothing for the Gregorian and ISO 8601 ones (JSD-0057).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2174A5
@@ -265,10 +265,10 @@ internal sealed class JsDateTimeFormatter
     internal int OffsetMinutes { get; }
 
     /// <summary>The offset, in seconds, in force at a time value: the fixed one, or the IANA zone's then.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DC4D5C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=71591B
     // Broiler-Human:        PENDING
     internal int OffsetSecondsAt(double time) =>
-        zone is null ? OffsetMinutes * 60 : zone.OffsetAt((long)Math.Floor(time / 1000));
+        zone is null ? OffsetMinutes * 60 : zone.OffsetSecondsAt((long)Math.Floor(time / 1000));
 
     /// <summary>Which kind of zone it is.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=39D641

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           13
-// Human-reviewed:   0/25
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Broiler.ECMAScript.Time;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -79,9 +80,14 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsLocaleInfo> localeInfo;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BC9E62
+    /// <summary>The release the database states for data that does not carry <see cref="JsIntlTable.TimeZoneRelease"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4E10B0
     // Broiler-Human:        PENDING
-    private readonly Lazy<JsTimeZones> timeZones;
+    private const string UnstatedRelease = "unstated";
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=708F96
+    // Broiler-Human:        PENDING
+    private readonly Lazy<TimeZoneDatabase> timeZones;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2E37CC
     // Broiler-Human:        PENDING
@@ -91,7 +97,7 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsZoneNames> zoneNames;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DE40B2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DF9B7F
     // Broiler-Human:        PENDING
     internal JsIntlTables(IJsIntlData data)
     {
@@ -104,7 +110,13 @@ internal sealed class JsIntlTables
         numbers = new(ReadNumbers);
         dates = new(ReadDates);
         localeInfo = new(ReadLocaleInfo);
-        timeZones = new(() => new JsTimeZones(Lines(JsIntlTable.TimeZoneIds), Lines(JsIntlTable.TimeZoneRegions), data.Table(JsIntlTable.TimeZones)));
+        // DATA THAT DOES NOT CARRY THE RELEASE, as an embedder's written before SJL-8.5 does not, still
+        // reads: the database states the release and nothing in the profile reads it (JSD-0077).
+        timeZones = new(() => new TimeZoneDatabase(
+            data.Table(JsIntlTable.TimeZoneRelease).IsEmpty ? UnstatedRelease : Encoding.ASCII.GetString(data.Table(JsIntlTable.TimeZoneRelease)),
+            data.Table(JsIntlTable.TimeZones),
+            data.Table(JsIntlTable.TimeZoneIds),
+            data.Table(JsIntlTable.TimeZoneRegions)));
         calendars = new(() => new JsCalendars(data.Table(JsIntlTable.Calendars)));
         zoneNames = new(() => new JsZoneNames(Lines(JsIntlTable.MetaZones), TimeZones));
     }
@@ -119,10 +131,14 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal IReadOnlyList<string> Locales => locales.Value;
 
-    /// <summary>The IANA Time Zone Database's identifiers and offsets, decoded the first time a zone is named.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5A12A5
+    /// <summary>
+    /// The IANA Time Zone Database's identifiers, regions and offsets: the shared library's decoder over
+    /// the three tables and the release the data hands in (JSD-0076, JSD-0077), made the first time a zone
+    /// is named and decoding each zone the first time its rules are read.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0B9661
     // Broiler-Human:        PENDING
-    internal JsTimeZones TimeZones => timeZones.Value;
+    internal ITimeZoneDatabase TimeZones => timeZones.Value;
 
     /// <summary>The calendars other than ISO 8601, built the first time Temporal names one.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F73E47

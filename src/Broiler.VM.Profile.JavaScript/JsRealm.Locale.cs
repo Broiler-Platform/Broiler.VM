@@ -60,7 +60,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] WeekdayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C1DB3E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F2253E
     // Broiler-Human:        PENDING
     private void SetupLocale(JsObject intl)
     {
@@ -168,10 +168,11 @@ internal sealed partial class JsRealm
             var locale = LocaleOfThis(engine, thisValue, "getTimeZones");
 
             // THE ZONES IN USE IN A REGION are zone.tab's for it, each a primary identifier
-            // (ECMA-402 6.5 and 15.5.13, JSD-0053), in ordinal order.
+            // (ECMA-402 6.5 and 15.5.13, JSD-0053), in ordinal order: the shared database's answer
+            // since SJL-8.5 (JSD-0076).
             return Tag(locale.Locale).Region is not { } region
                 ? JsValue.Undefined
-                : StringArray(engine, [.. engine.Intl!.TimeZones.Region(region)]);
+                : StringArray(engine, [.. engine.Intl!.TimeZones.RegionTimeZones(region)]);
         });
 
         Method(prototype, "getTextInfo", 0, static (engine, thisValue, arguments) =>

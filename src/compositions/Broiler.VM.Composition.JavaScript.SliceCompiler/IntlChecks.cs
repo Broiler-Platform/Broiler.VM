@@ -4,6 +4,7 @@
 using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
+using Broiler.VM.Profile.JavaScript.Format;
 using Broiler.VM.Profile.JavaScript.Intl;
 using System.Collections.Immutable;
 
@@ -52,6 +53,7 @@ internal static class IntlChecks
         TimeZonesMatchIcu(),
         ADoorHandedNoDataBuildsNoTemporal(),
         TemporalWithoutIntlAndBigIntIsRefused(),
+        DataWithoutTheTzReleaseReadsItsZones(),
         TemporalMatchesTheReferencePolyfill(),
         IntlOverTemporalMatchesTheReferencePolyfill(),
         CalendarsMatchTheReferencePolyfill(),
@@ -273,6 +275,32 @@ internal static class IntlChecks
             Name,
             refusals == 2 && answer == "bigint",
             $"{refusals} of the 2 descriptors lacking Intl or BigInt were refused, and one naming all three answered `{answer}`");
+    }
+
+    /// <summary>
+    /// JSD-0077: Intl data that does not carry <see cref="JsIntlTable.TimeZoneRelease"/>, as an embedder's
+    /// written before SJL-8.5 does not, reads its time zones as the family's own data does.
+    /// </summary>
+    private static (string, bool, string) DataWithoutTheTzReleaseReadsItsZones()
+    {
+        const string Name = "temporal/t1/data-without-the-tz-release-reads-its-zones";
+        const string Program =
+            "Temporal.Instant.from('2020-07-01T00:00Z').toZonedDateTimeISO('America/New_York').offset + ' ' + " +
+            "Temporal.ZonedDateTime.from('2021-03-14T02:30[America/New_York]').hour + ' ' + " +
+            "new Intl.DateTimeFormat('en', { timeZone: 'asia/calcutta' }).resolvedOptions().timeZone;";
+        VmProfileDescriptor With(IJsIntlData data) => JavaScriptProfile.DescriptorComposing(new JsComposition
+        {
+            Surfaces = [JavaScriptProfile.TemporalManifest, JavaScriptProfile.IntlManifest, JavaScriptProfile.BigIntManifest],
+            IntlData = data,
+        });
+
+        var own = Evaluate(Program, With(JsCldrData.Instance));
+        var without = Evaluate(Program, With(new DataWithoutTheTzRelease()));
+
+        return (
+            Name,
+            own == "-04:00 3 Asia/Kolkata" && without == own,
+            $"the family's data answered `{own}`, and the same data without the release `{without}`");
     }
 
     /// <summary>
@@ -747,6 +775,15 @@ internal static class IntlChecks
             guestLoadBounds: VmGuestLoadBoundsSpec.AdoptProfileMaxima,
             externalSuspension: VmExternalSuspensionMode.Enabled,
             capabilities: []);
+    }
+
+    /// <summary>The family's Intl data, but for the tz release, which it does not carry.</summary>
+    private sealed class DataWithoutTheTzRelease : IJsIntlData
+    {
+        public string CldrVersion => JsCldrData.Instance.CldrVersion;
+
+        public System.ReadOnlySpan<byte> Table(JsIntlTable table) =>
+            table == JsIntlTable.TimeZoneRelease ? default : JsCldrData.Instance.Table(table);
     }
 
     /// <summary>An embedder that installs nothing.</summary>

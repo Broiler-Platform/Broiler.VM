@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   64
-// Annotated:        64/64
+// Relevant units:   63
+// Annotated:        63/63
 // Exempt:           13
-// Human-reviewed:   0/64
+// Human-reviewed:   0/63
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       64
+// Unverified:       63
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -651,16 +651,6 @@ internal static class JsTemporalCore
     internal static string DateToString(JsIsoDate date) =>
         PadYear(date.Year) + "-" + Padded(date.Month, 2) + "-" + Padded(date.Day, 2);
 
-    /// <summary>The proposal's FormatOffsetTimeZoneIdentifier (s11.1.5).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E45B76
-    // Broiler-Human:        PENDING
-    internal static string FormatOffsetMinutes(long offsetMinutes, bool separated = true)
-    {
-        var sign = offsetMinutes >= 0 ? "+" : "-";
-        var absolute = System.Math.Abs(offsetMinutes);
-        return sign + FormatTime((int)(absolute / 60), (int)(absolute % 60), 0, 0, PrecisionMinute, separated);
-    }
-
     /// <summary>The proposal's FormatUTCOffsetNanoseconds (s11.1.6).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9028D0
     // Broiler-Human:        PENDING
@@ -675,13 +665,16 @@ internal static class JsTemporalCore
         return sign + FormatTime(hour, minute, second, sub, second == 0 && sub == 0 ? PrecisionMinute : PrecisionAuto);
     }
 
-    /// <summary>The proposal's FormatDateTimeUTCOffsetRounded (s11.1.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E50F6A
+    /// <summary>
+    /// The proposal's FormatDateTimeUTCOffsetRounded (s11.1.7): the offset rounded to the minute, as
+    /// FormatOffsetTimeZoneIdentifier writes it, which is the shared library's since SJL-8.5 (JSD-0077).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F99160
     // Broiler-Human:        PENDING
     internal static string FormatOffsetRounded(long offsetNanoseconds)
     {
         var rounded = ExactRounding.RoundNumberToIncrement(offsetNanoseconds, BigInteger.One, new BigInteger(60_000_000_000L), RoundingMode.HalfExpand);
-        return FormatOffsetMinutes((long)(rounded / 60_000_000_000L));
+        return OffsetTimeZones.FormatOffsetIdentifier((int)(rounded / 60_000_000_000L));
     }
 
     /// <summary>The proposal's TemporalDurationToString (s7.5.40).</summary>

@@ -153,7 +153,7 @@ public sealed class CldrTablesRuleTests
     {
         // SINCE SJL-7.4 the Intl assembly's Unicode file is counted too: it holds the break table the
         // CLDR generator wrote until then, now the owner's generator's (JSD-0074).
-        var text = CldrTableGenerator.Current.Desired + TzdbTableGenerator.Current.Desired + CalendarTableGenerator.Current.Desired
+        var text = CldrTableGenerator.Current.Desired + TimeTableEmbedding.TzdbCurrent.Desired + TimeTableEmbedding.CalendarsCurrent.Desired
             + IntlUnicodeArtefact.Desired;
 
         var bytes = Regex.Matches(text, @"new byte\[\]\s*\{(?<body>[^}]*)\}")
