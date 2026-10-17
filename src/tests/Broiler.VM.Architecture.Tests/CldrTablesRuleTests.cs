@@ -38,16 +38,36 @@ public sealed class CldrTablesRuleTests
 
         Assert.True(artefact.Desired.Length > 100_000, "the generated tables are not the size of the archive's data");
 
-        foreach (var table in new[] { "LikelySubtags", "Aliases", "Extensions", "Locales", "SoftDotted", "NumberLocales", "Currencies", "CurrencyDigits", "NumberingSystems", "Plurals", "PluralRanges", "Ordinals", "ListPatterns", "RelativeTimes", "DisplayNames", "SegmentBreakValues", "SegmentBreaks", "Units", "DateLocales", "TimeData", "DayPeriods", "WeekData", "Scripts", "CollationRoot", "CollationTailorings" })
+        // SINCE SJL-7.4 the break table is not here: the owner's generator writes it into the Intl
+        // assembly's JsUnicodeTables.g.cs, below, and the break properties' value names, which the
+        // owner's enumerations number, are gone with the profile's decoder (JSD-0074, decision SJL-D-6
+        // (c)). Nor is Soft_Dotted, which the owner's casing tables carry in the profile. The list read
+        // "... Locales, SoftDotted, NumberLocales ... DisplayNames, SegmentBreakValues, SegmentBreaks,
+        // Units ...".
+        foreach (var table in new[] { "LikelySubtags", "Aliases", "Extensions", "Locales", "NumberLocales", "Currencies", "CurrencyDigits", "NumberingSystems", "Plurals", "PluralRanges", "Ordinals", "ListPatterns", "RelativeTimes", "DisplayNames", "Units", "DateLocales", "TimeData", "DayPeriods", "WeekData", "Scripts", "CollationRoot", "CollationTailorings" })
         {
             Assert.Contains($"internal static ReadOnlySpan<byte> {table} =>", artefact.Desired, StringComparison.Ordinal);
         }
+
+        Assert.DoesNotContain("SegmentBreaks", artefact.Desired, StringComparison.Ordinal);
+        Assert.DoesNotContain("SoftDotted", artefact.Desired, StringComparison.Ordinal);
+
+        // And the Intl assembly's Unicode file: the one table the owner's generator writes for
+        // segmentation, from the pin rule N22 reads, whole and byte for byte.
+        var unicode = IntlUnicodeArtefact;
+
+        Assert.Contains("UnicodeTable.SegmentBreaks => SegmentBreaks,", unicode.Desired, StringComparison.Ordinal);
+        Assert.True(unicode.Desired.Length > 10_000, "the break table is not the size of the code space's runs");
 
         if (CldrTableGenerator.WriteRequested)
         {
             File.WriteAllText(
                 Path.Combine(ComponentGraph.Root, CldrTableGenerator.OutputPath.Replace('/', Path.DirectorySeparatorChar)),
                 artefact.Desired,
+                AssuranceSources.Utf8NoBom);
+            File.WriteAllText(
+                Path.Combine(ComponentGraph.Root, UnicodeTableEmbedding.IntlPath.Replace('/', Path.DirectorySeparatorChar)),
+                unicode.Desired,
                 AssuranceSources.Utf8NoBom);
             return;
         }
@@ -56,7 +76,15 @@ public sealed class CldrTablesRuleTests
             artefact.IsCurrent,
             $"{CldrTableGenerator.OutputPath} is not what the CLDR table generator writes; change the generator or a " +
             $"pinned archive and run with {CldrTableGenerator.WriteVariable}=1, never edit the file");
+        Assert.True(
+            unicode.IsCurrent,
+            $"{UnicodeTableEmbedding.IntlPath} is not what the owner's Unicode generator writes; change the pinned archive " +
+            $"or the admitted generator and run with {CldrTableGenerator.WriteVariable}=1, never edit the file");
     }
+
+    /// <summary>The Intl assembly's Unicode file, as the owner's generator writes it, beside the file on disk.</summary>
+    internal static UnicodeArtefact IntlUnicodeArtefact =>
+        UnicodeTableEmbedding.Artefact(UnicodeTableEmbedding.Intl, UnicodeTableEmbedding.Current, UnicodeTableEmbedding.OnDisk);
 
     /// <summary>Generation twice yields byte-identical text, so nothing in it reads a clock or an order the archive does not fix.</summary>
     [Fact]
@@ -108,17 +136,25 @@ public sealed class CldrTablesRuleTests
         Assert.Contains("Copyright \u00a9 2004-2026 Unicode, Inc.", licence, StringComparison.Ordinal);
         Assert.Contains(licence, notices, StringComparison.Ordinal);
         Assert.Contains(CldrTableGenerator.OutputPath, notices, StringComparison.Ordinal);
+
+        // Since SJL-7.4 the assembly ships a second generated file, the break table, which the notices
+        // name beside the Unicode data it is derived from.
+        Assert.Contains(UnicodeTableEmbedding.IntlPath, notices, StringComparison.Ordinal);
     }
 
     /// <summary>
     /// The table data, counted from the generated literals, stays under the owner's budget: the CLDR
     /// tables and, since phase F8, the time zone tables rule N30 holds and the calendar table rule N32
-    /// holds, which ship in the same assembly (JSD-0053, JSD-0056).
+    /// holds, which ship in the same assembly (JSD-0053, JSD-0056), and since SJL-7.4 the break table
+    /// the owner's Unicode generator writes into the same assembly (JSD-0074).
     /// </summary>
     [Fact]
     public void N28_The_Table_Data_Stays_Under_The_Budget()
     {
-        var text = CldrTableGenerator.Current.Desired + TzdbTableGenerator.Current.Desired + CalendarTableGenerator.Current.Desired;
+        // SINCE SJL-7.4 the Intl assembly's Unicode file is counted too: it holds the break table the
+        // CLDR generator wrote until then, now the owner's generator's (JSD-0074).
+        var text = CldrTableGenerator.Current.Desired + TzdbTableGenerator.Current.Desired + CalendarTableGenerator.Current.Desired
+            + IntlUnicodeArtefact.Desired;
 
         var bytes = Regex.Matches(text, @"new byte\[\]\s*\{(?<body>[^}]*)\}")
             .Sum(static match => match.Groups["body"].Value.Count(static c => c == ','));

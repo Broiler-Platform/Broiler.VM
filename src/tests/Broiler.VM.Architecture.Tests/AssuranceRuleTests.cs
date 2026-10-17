@@ -1643,8 +1643,16 @@ public sealed class AssuranceRuleTests
                 return;
             }
 
+            // (Revised 2026-10-16, at SJL-7.4: the owner's generator writes Format's and the Intl
+            // assembly's Unicode files, each member stating that generator's reason, JSD-0074.)
+            if (string.Equals(unit.File.RelativePath, UnicodeTableEmbedding.IntlPath, StringComparison.Ordinal))
+            {
+                Assert.Equal(UnicodeTableEmbedding.ExemptReason, unit.Annotation!.ExemptReason);
+                return;
+            }
+
             Assert.Contains(unit.File.RelativePath, UnicodeTableGenerator.OutputPaths);
-            Assert.Equal(UnicodeTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+            Assert.Equal(UnicodeTableGenerator.ExemptReasonOf(unit.File.RelativePath), unit.Annotation!.ExemptReason);
         });
         Assert.Contains($"| Per-unit exemptions | {declared.Count} |", ComponentReport, StringComparison.Ordinal);
         Assert.All(declared, unit => Assert.Contains($"`{unit.Name}` in `{unit.File.RelativePath}`", ComponentReport, StringComparison.Ordinal));

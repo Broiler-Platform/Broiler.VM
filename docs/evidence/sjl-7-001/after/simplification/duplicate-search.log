@@ -1,0 +1,132 @@
+# SJL-7.6 search for a surviving duplicate of the Unicode area, Broiler.VM at be0b610c0510b849a7d67a0f9f4cf7a925c5b634, in the
+# component's C# product sources (src/, every tests/ excluded), in three parts, each with its
+# pattern and its hits; every hit is reviewed in the bundle's README.
+
+## host: the platform's Unicode classification, casing, normalization and text elements
+# pattern: \b(char|Char|Rune)\.(IsLetter|IsLetterOrDigit|IsDigit|IsNumber|IsWhiteSpace|IsUpper|IsLower|IsPunctuation|IsSymbol|IsSeparator|IsControl|GetUnicodeCategory|GetNumericValue|ToUpper|ToLower|ToUpperInvariant|ToLowerInvariant)\(|\bCharUnicodeInfo\b|\bUnicodeCategory\b|\.Normalize\(|\.IsNormalized\(|\bNormalizationForm\b|\bStringInfo\b|\bTextInfo\b|\bTextElementEnumerator\b|\.To(Upper|Lower)(Invariant)?\(
+# hits: 46
+src/Broiler.VM.HyperV/samples/Broiler.VM.HyperV.Cli/Program.cs:33:            return args[0].ToLowerInvariant() switch
+src/Broiler.VM.HyperV/samples/Broiler.VM.HyperV.Cli/Program.cs:266:    private static GuestMode ParseMode(string value) => value.ToLowerInvariant() switch
+src/Broiler.VM.HyperV/samples/Broiler.VM.HyperV.Cli/Program.cs:281:        return char.ToLowerInvariant(suffix) switch
+src/Broiler.VM.HyperV/samples/Broiler.VM.HyperV.Cli/SampleProgram.cs:273:            exit.FaultAccess?.ToString().ToLowerInvariant() ?? "reach",
+src/Broiler.VM.HyperV/src/Broiler.VM.HyperV/PicoVm.cs:442:                    unclaimedMemoryAccess.ToString().ToLowerInvariant(),
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:2776:                        return char.IsUpper(marker) ? ClassSetValue.Complement(listed, foldsCase) : listed;
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:3523:            character <= '9' ? character - '0' : (char.ToLowerInvariant(character) - 'a') + 10;
+src/Broiler.VM.Profile.JavaScript/JsLocaleTag.cs:106:        var subtags = text.ToLowerInvariant().Split('-');
+src/Broiler.VM.Profile.JavaScript/JsLocaleTag.cs:223:            tag.Region = subtags[at++].ToUpperInvariant();
+src/Broiler.VM.Profile.JavaScript/JsLocaleTag.cs:382:    private static string TitleCase(string subtag) => char.ToUpperInvariant(subtag[0]) + subtag[1..].ToLowerInvariant();
+src/Broiler.VM.Profile.JavaScript/JsLocaleTag.cs:784:                t.Append(TransformLanguage.LanguageId().ToLowerInvariant());
+src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs:204:                return code.ToUpperInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs:212:                return char.ToUpperInvariant(code[0]) + code[1..].ToLowerInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs:220:                return code.ToLowerInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs:236:                return code.ToUpperInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs:359:            if (!data.TryGetValue(names.Language + "|variant|" + variant.ToUpperInvariant(), out var variantName))
+src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs:366:                variantName = variant.ToUpperInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:451:                var canonical = optionValue.ToLowerInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:334:        var lower = value.ToLowerInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:385:            var lower = variants.ToLowerInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.NumberFormat.cs:368:            var upper = currency!.ToUpperInvariant();
+src/Broiler.VM.Profile.JavaScript/JsRealm.NumberFormat.cs:390:            Currency = style == "currency" ? currency!.ToUpperInvariant() : null,
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:1548:        // asked the platform's CharUnicodeInfo (correspondence row W4), which answers the same set.
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:1067:            var designator = char.ToUpperInvariant(text[at++]);
+src/compositions/Broiler.VM.Composition.JavaScript.Cli/HostSurfaceChecks.BigInt.cs:433:                            ? "true:" + (left.GetHashCode() == right.GetHashCode()).ToString().ToLowerInvariant()
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ConformanceTest.cs:349:            Suite.Normalize(path),
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Measurement.cs:67:        AppContext.GetData(name)?.ToString()?.ToLowerInvariant() ?? "default";
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Program.cs:610:                    $"{(observed.Status == ConformanceStatus.Passed ? "ok  " : observed.Status.ToString().ToUpperInvariant())} " +
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Selection.cs:97:        foreach (var value in Encoding.UTF8.GetBytes(Suite.Normalize(path)))
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Selection.cs:326:            paths.Add(Suite.Normalize(parts[0].Trim()));
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SelfCheck.cs:147:            declared[Suite.Normalize(parts[0])] = (status, completion);
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Adapter.cs:260:            Suite.Normalize(path),
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Adapter.cs:284:            Suite.Normalize(path),
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Command.cs:344:            wanted.Add(Suite.Normalize(relative));
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Command.cs:350:            var normalized = Suite.Normalize(relative);
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Command.cs:402:            .Select(file => Suite.Normalize(Path.GetRelativePath(suiteRoot, file)));
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262DigestCache.cs:173:            entries[Suite.Normalize(line[(third + 1)..])] =
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Failures.cs:127:        var segments = Suite.Normalize(path).Split('/');
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/VectorsCommand.cs:247:            var name = Suite.Normalize(entry.Name);
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs:88:        $"{Id} L{Line.ToString(CultureInfo.InvariantCulture)} {Command} | {Answer} | {Verdict.ToString().ToLowerInvariant()}";
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs:506:        var type = kind.ToString().ToLowerInvariant();
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs:532:            $"{kind.ToString().ToLowerInvariant()}:{((uint)bits).ToString("X8", CultureInfo.InvariantCulture)}",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs:533:        _ => $"{kind.ToString().ToLowerInvariant()}:{bits.ToString("X16", CultureInfo.InvariantCulture)}",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs:529:                Console.WriteLine($"# self-check {(agrees ? "ok  " : "FAIL")} {commands[index]} (declared {expected?.ToString().ToLowerInvarian
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs:647:            text.Append(command.Id).Append(' ').Append(command.Verdict.ToString().ToLowerInvariant()).Append('\n');
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/TextModule.cs:943:                : throw new ScriptReadException($"unknown {space.ToString().ToLowerInvariant()} {atom.Text}", atom.Line);
+
+## algorithm: the area's algorithms by their names and constants
+# pattern: \b0x(AC00|D7A3|1161|11A7)\b|\b(SBase|LBase|VBase|TBase|SCount|LCount|VCount|NCount|TCount)\b|\bHangul|\bFinal_?Sigma|\bSoft_?Dotted|\bMore_?Above|\bBefore_?Dot|\bAfter_?(Capital_?I|Soft_?Dotted)|\bCombiningClass|\bCanonical_?Combining|\b[Dd]ecompos|\b[Rr]ecompos|\bCompose(Canonically|Pair)|\bGrapheme_?Break|\bWord_?Break|\bSentence_?Break|\bExtended_?Pictographic|\bRegional_?Indicator|\b(Other_)?ID_(Start|Continue)\b|Pattern_?(Syntax|White_?Space)|Default_?Ignorable|\bSpecialCasing|\bCaseFolding\.txt|\bUnicodeData\.txt
+# hits: 56
+src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs:93:/// decomposition is written beside it.</b> A reader checking an encoder against the architecture
+src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs:94:/// manual needs the field boundaries, not the hexadecimal; a constant with no decomposition beside
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:721:            // THE FIRST CHARACTER OF THE NAME IS HELD TO ID_Start AND THE REST TO ID_Continue, and a
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:784:    /// language's early error: <c>ID_Start</c>, <c>$</c> or <c>_</c> in first position, and
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:785:    /// <c>ID_Continue</c>, <c>$</c> or a joiner after it. Until JSeal slice JSD-0031-later nothing
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:2480:    /// <b>It is <c>ID_Start</c> and not "a letter", and the difference is a thousand refusals.</b>
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:2483:    /// identifier - and the characters Unicode lists as <c>Other_ID_Start</c>, of which
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:2490:    /// JSD-0031-later the answer is the pinned Unicode 17.0.0 <c>ID_Start</c> the matcher's group
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs:2493:    /// Unicode 16 categories with a hand-written <c>Other_ID_Start</c> list. A surrogate pair is
+src/Broiler.VM.Profile.JavaScript.Format/JsIntlData.cs:83:    // 7 was the ranges of Soft_Dotted until SJL-7.4, when Lithuanian's casing moved to the Unicode area's
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:86:/// <see cref="Canonicalize"/> is <c>CaseFolding.txt</c>'s status <c>C</c> and <c>S</c> mapping and
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:94:/// <c>UnicodeData.txt</c>'s simple upper case of one code unit from the same generated file, with
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:99:/// the full upper-case mapping, <c>SpecialCasing.txt</c> included. *(Corrected 2026-10-16, at SJL-7.4:
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:548:/// folding under <c>u</c> is the pinned <c>CaseFolding.txt</c> table; without <c>u</c> it is the
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:550:/// classified by the pinned <c>ID_Start</c> and <c>ID_Continue</c> through the owner's
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1635:        /// every <c>ID_Start</c> and <c>ID_Continue</c> character, and a character outside the basic
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1644:        /// <b>The sets are the pinned Unicode 17.0.0 <c>ID_Start</c> and <c>ID_Continue</c></b>, read
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1648:        /// platform's general categories (Unicode 16) with hand-written <c>Other_ID_Start</c> and
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1649:        /// <c>Other_ID_Continue</c> lists until JSeal slice JSD-0031-later, so a Unicode 17.0 letter
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1781:        /// <summary>Whether a code point may start a group name: <c>ID_Start</c>, <c>$</c> or <c>_</c>.</summary>
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:1786:        /// <summary>Whether a code point may continue a group name: <c>ID_Continue</c>, <c>$</c> or a joiner.</summary>
+src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs:12769:        de|script|Hang|Hangul
+src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs:14043:        en|script|Hang|Hangul
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:402:                    var ccc = JsUnicode.Normalization.CombiningClass(text[next]);
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:232:            separator = (separator.Length != 0 && IsPatternWhiteSpace(separator[0]) ? string.Empty : " ") + separator +
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:233:                (separator.Length != 0 && IsPatternWhiteSpace(separator[^1]) ? string.Empty : " ");
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:351:            while (start < end && IsDefaultIgnorable(segment.Text[start]))
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:356:            while (end > start && IsDefaultIgnorable(segment.Text[end - 1]))
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:400:    private static bool IsDefaultIgnorable(char c) =>
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:408:    /// <summary>Pattern_White_Space, which the range separator is tested against.</summary>
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:411:    private static bool IsPatternWhiteSpace(char c) =>
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:89:/// is <c>CaseFolding.txt</c>'s simple folding; without it, <c>UnicodeData.txt</c>'s simple upper
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:94:/// so stay themselves; <c>SpecialCasing.txt</c> is not archived, and they match their title-case
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:114:/// Basic Multilingual Plane - are classified by the pinned Unicode 17.0.0 <c>ID_Start</c> and
+src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs:115:/// <c>ID_Continue</c> the tokenizer also reads (JSeal slice JSD-0031-later). The second
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:671:    /// <c>ComposeCanonically</c> and <c>WriteCodePoints</c>), over its own reading of the same tables.
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:676:    /// per code point of its full decomposition, each charged through this engine's meter before the
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:683:    /// checked the decomposition, so an NFC or NFKC result that would fit could be refused. It also
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:823:    /// The Unicode Default Case Conversion over the pinned tables: full mappings, and Final_Sigma
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:833:    /// the language rules of SpecialCasing.txt when it is Turkish, Azeri or Lithuanian; without
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:870:    /// input, each mapping's length in code points, and the code units each Final_Sigma test reads. The
+src/Broiler.VM.Profile.JavaScript/JsUnicode.cs:32:/// tables, Soft_Dotted's among them, are this profile's own, <c>JsUnicodeTables.g.cs</c>. Each table is
+src/Broiler.VM.Profile.JavaScript/JsUnicode.cs:90:            table is >= UnicodeTable.NormalizationLayout and <= UnicodeTable.SoftDottedRanges
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:45:        UnicodeTable.CombiningClassData => CombiningClassData,
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:48:        UnicodeTable.DecompositionPool => DecompositionPool,
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:58:        UnicodeTable.SoftDottedRanges => SoftDottedRanges,
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:70:    /// <summary>CombiningClassData, 2,821 bytes, in the layout the owner's UnicodeTable states for it.</summary>
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:73:    private static ReadOnlySpan<byte> CombiningClassData => new byte[]
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:1725:    /// <summary>DecompositionPool, 27,666 bytes, in the layout the owner's UnicodeTable states for it.</summary>
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:1728:    private static ReadOnlySpan<byte> DecompositionPool => new byte[]
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:4615:    /// <summary>SoftDottedRanges, 204 bytes, in the layout the owner's UnicodeTable states for it.</summary>
+src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs:4618:    private static ReadOnlySpan<byte> SoftDottedRanges => new byte[]
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs:44:        BreakTestFile("grapheme", "GraphemeBreakTest.txt", 700),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs:45:        BreakTestFile("word", "WordBreakTest.txt", 1800),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs:46:        BreakTestFile("sentence", "SentenceBreakTest.txt", 500),
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/JsArm64GoldenChecks.cs:31:/// <b>Every expected word carries its field decomposition beside it, so a reader can CHECK the
+
+## ranges: tables of code-point ranges and inline range tests above ASCII
+# pattern: [({]\s*0x[0-9A-Fa-f]{4,6}\s*,\s*0x[0-9A-Fa-f]{4,6}\s*[)}]|>=?\s*(0x[0-9A-Fa-f]{3,6}|'\\u[0-9A-Fa-f]{4}')\s*(&&|and)[^;]*<=?\s*(0x[0-9A-Fa-f]{3,6}|'\\u[0-9A-Fa-f]{4}')
+# hits: 13
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:2024:                set.Add(0x2028, 0x2029);
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:3445:                first is >= 0xD800 and <= 0xDBFF &&
+src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs:3454:                if (second is >= 0xDC00 and <= 0xDFFF)
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:351:        var core = codePoint is (>= 0x4E00 and <= 0x9FFF) or (>= 0xF900 and <= 0xFAFF);
+src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:510:    private static int Valid(int codePoint) => codePoint is >= 0xD800 and <= 0xDFFF ? 0xFFFD : codePoint;
+src/Broiler.VM.Profile.JavaScript/JsEngine.Eval.cs:110:        if (text.Length != 0 && (text[0] <= '\u0008' || text[0] is >= '\u000E' and <= '\u001F'))
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:402:        || c is >= '\u2000' and <= '\u200a'
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:403:        || c is >= '\u202a' and <= '\u202e'
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:404:        || c is >= '\u2066' and <= '\u2069'
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:405:        || c is >= '\ufe00' and <= '\ufe0f'
+src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs:406:        || c is >= '\u180b' and <= '\u180d' or '\u180f';
+src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs:151:                if (code >= 0xD800 && code <= 0xDFFF)
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptText.cs:316:                    if (digits == 0 || scalar > 0x10FFFF || scalar is >= 0xD800 and <= 0xDFFF)
+
+# hits in all three parts: 115

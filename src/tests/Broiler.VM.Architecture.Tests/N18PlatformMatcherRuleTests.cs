@@ -40,19 +40,30 @@ namespace Broiler.VM.Architecture.Tests;
 /// itself parses annotations with a platform regular expression, and a rule that forbade that
 /// would be forbidding the tool rather than the product.
 /// </para>
+/// <para>
+/// <b>Code that moved to a shared owner is held where it went</b> (re-pointed 2026-10-16, programme
+/// milestone SJL-7.4; JSD-0074, JSD-0075). Since SJL-7.4 the property lookups, case folding and the
+/// properties of strings the matcher reads are <c>Broiler.Unicode.Algorithms</c>'s, which this rule
+/// cannot read, being over this repository's sources. Rule I2 reads every admitted assembly's image for
+/// the platform's regular-expression types, and the owner's own <c>SL</c> rules and its convention 14
+/// hold its sources. This rule reads the Intl data assembly too, since it now holds segmentation's
+/// adapter: until SJL-7.4 it read the three other product assemblies alone.
+/// </para>
 /// </remarks>
 public sealed class N18PlatformMatcherRuleTests
 {
-    /// <summary>The profile's three product assemblies, which are the ones this rule is about.</summary>
+    /// <summary>The profile's four product assemblies, which are the ones this rule is about.</summary>
     /// <remarks>
     /// The core's three are covered by the assurance scanner too and are not this rule's subject: a
-    /// binary reader has no dialect to be wrong about, and JSW-4's clause is the profile's.
+    /// binary reader has no dialect to be wrong about, and JSW-4's clause is the profile's. The Intl
+    /// data assembly joined the other three at SJL-7.4, when it took segmentation's adapter.
     /// </remarks>
     private static readonly string[] ProfileAssemblies =
     [
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.JavaScript.Format",
+        "Broiler.VM.Profile.JavaScript.Intl",
     ];
 
     /// <summary>The spellings that reach the platform engine, whichever way a file names it.</summary>
@@ -76,10 +87,10 @@ public sealed class N18PlatformMatcherRuleTests
 
         // Non-vacuous in both of the ways this rule can be empty for the wrong reason: it passes by
         // finding nothing, so a renamed assembly or a moved path would be its cleanest-looking
-        // result. All three assemblies have to be represented - the matcher is in the format one,
-        // the literal that reaches it is compiled by the compiler one, and the realm that
-        // constructs a `RegExp` is in the profile one - and the file the matcher lives in has to be
-        // among them by name.
+        // result. All four assemblies have to be represented - the matcher is in the format one,
+        // the literal that reaches it is compiled by the compiler one, the realm that constructs a
+        // `RegExp` is in the profile one, and the Intl data, which segments text since SJL-7.4, is
+        // the fourth - and the file the matcher lives in has to be among them by name.
         Assert.Equal(
             ProfileAssemblies.Order(StringComparer.Ordinal),
             covered.Select(static file => file.Assembly).Distinct().Order(StringComparer.Ordinal));

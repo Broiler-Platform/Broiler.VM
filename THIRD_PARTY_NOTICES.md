@@ -45,6 +45,7 @@ any Native AOT image.
 | `xunit.runner.visualstudio` | 2.5.3 | Apache-2.0 | Runs the tests | As above |
 | `Microsoft.NET.Test.Sdk` | 17.8.0 | MIT | Test host | As above |
 | `Microsoft.CodeAnalysis.CSharp` | 5.3.0 | MIT | Used by the architecture suite to read source for the Code Assurance rules | Test-only. It is the reason rule B1 has a real witness: the test assembly genuinely violates the framework-only rule, which is what makes that rule falsifiable |
+| `Broiler.Unicode.Generation`, and `Broiler.Unicode.Algorithms` as its dependency | 0.1.0-preview.4, published to nuget.org on 2026-10-16 from `Broiler-Platform/broiler.unicode` commit `6e14f93ad753094c99f0013d22269b47550ae552` (it read "packed locally from" until then, JSC-310) and held on the committed feed at [`eng/packages/`](eng/packages/README.md) | Apache-2.0, under this repository's own copyright holder | The owner's table generator and pin for the Unicode area (JSD-0074, decision SJL-D-6 (c)): rules N22 and N28 regenerate the embedded Unicode tables with it from this repository's pin, and rule I4 compares that pin with the owner's, which the package carries. Neither package carries a Unicode table; their own `THIRD_PARTY_NOTICES.md` names the Unicode data and ECMA-262's property tables the owner's repository archives, and the code ported from this repository *(added 2026-10-16, programme milestone SJL-7.4)* | Admitted test-only for `Broiler.VM.Architecture.Tests` alone by rule I1's allow-list, which refuses a test-only package in any shipping project; `eng/verify-feed.ps1` refuses a release that depends on one |
 
 **The closure reports are the check that this table is true, for every dependency whose name is
 not a framework name.** Every published composition's closure is listed in each evidence bundle,
@@ -140,11 +141,12 @@ was confirmed.
 |---|---|---|
 | `Broiler.VM.Profile.JavaScript` | **The ECMAScript Language Specification, ECMA-262, 17th edition (ES2026)**, four files - the edition and, since 2026-09-22, the three property tables it imports - retained at [`src/Broiler.VM.Profile.JavaScript/docs/specification/`](src/Broiler.VM.Profile.JavaScript/docs/specification/README.md) | 2026-09-03; the three tables not yet confirmed |
 | `Broiler.VM.Composition.JavaScript.Conformance` | **test262**, the ECMAScript conformance suite, at `tc39/test262` commit `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` — archived as the retrieved archive at [`src/tests/conformance/pins/`](src/tests/conformance/pins/README.md), with its licence beside it | 2026-09-03 |
-| `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.JavaScript.Format` | **The Unicode Character Database 17.0.0** - thirteen UCD files and the Unicode licence text, archived at [`src/tests/unicode/pins/`](src/tests/unicode/pins/README.md) - and **tables derived from it that are compiled into both assemblies**; see [below](#unicode-data-and-the-tables-derived-from-it) | **not yet confirmed** |
+| `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Intl` | **The Unicode Character Database 17.0.0** - thirteen UCD files and the Unicode licence text, archived at [`src/tests/unicode/pins/`](src/tests/unicode/pins/README.md) - and **tables derived from it that are compiled into the three assemblies**; see [below](#unicode-data-and-the-tables-derived-from-it) *(revised 2026-10-16, programme milestone SJL-7.4, when the Unicode area's owner's generator began writing the Intl assembly's break table from the same pin; the row named the first two assemblies alone and read "compiled into both assemblies")* | **not yet confirmed** |
 | `Broiler.VM.Composition.JavaScript.Cli` | **Octane**, the retired JavaScript benchmark suite, at `chromium/octane` commit `570ad1ccfe86e3eecba0636c8f932ac08edec517` — archived as the retrieved archive at [`src/tests/octane/pins/`](src/tests/octane/pins/README.md), BSD 3-Clause, with its licence beside it as that licence requires | **not yet confirmed** |
 | `Broiler.VM.Composition.WebAssembly.Harness` | **The WebAssembly specification's core test scripts**, the 73 `.wast` files of `test/core` at `WebAssembly/spec` commit `977f97014c962f7bd1291fcc6d28b41a924882bf` (tag `wg-1.0`) — archived unmodified at [`src/tests/wasm/spec/`](src/tests/wasm/spec/README.md), Apache-2.0, with its licence beside it | **not yet confirmed** |
-| `Broiler.VM.Composition.JavaScript.Conformance` | **The shared conformance vectors** of the shared JavaScript libraries programme, at `Broiler-Platform/broiler.js` commit `520ecf95a5ff5c6880fc07b7b2fcba4ac4e2a0fb` (corpus revision 17, pinned on 2026-10-16; revision 16, commit `6f29deb`, on 2026-10-15; revision 15, commit `a3452d9`, earlier on 2026-10-15; revision 13, commit `bb1fc66`, earlier on 2026-10-15; revision 12, commit `9ae67ee`, from 2026-10-14; revision 9, commit `f2c3597`, earlier on 2026-10-14; revision 7, commit `b725bb0`, from 2026-10-13; and revision 3, commit `593f2c5`, until then) — archived as `git archive` wrote it at [`src/tests/vectors/pins/`](src/tests/vectors/pins/README.md), Apache-2.0, under this repository's own copyright holder | **not yet confirmed** |
+| `Broiler.VM.Composition.JavaScript.Conformance` | **The shared conformance vectors** of the shared JavaScript libraries programme, at `Broiler-Platform/broiler.js` commit `a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71` (corpus revision 20, pinned on 2026-10-16; revision 19, commit `c976cbe`, earlier on 2026-10-16; revision 17, commit `520ecf9`, earlier on 2026-10-16; revision 16, commit `6f29deb`, on 2026-10-15; revision 15, commit `a3452d9`, earlier on 2026-10-15; revision 13, commit `bb1fc66`, earlier on 2026-10-15; revision 12, commit `9ae67ee`, from 2026-10-14; revision 9, commit `f2c3597`, earlier on 2026-10-14; revision 7, commit `b725bb0`, from 2026-10-13; and revision 3, commit `593f2c5`, until then) — archived as `git archive` wrote it at [`src/tests/vectors/pins/`](src/tests/vectors/pins/README.md), Apache-2.0, under this repository's own copyright holder | **not yet confirmed** |
 | `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.JavaScript.Compiler` | **`Broiler.ECMAScript.Algorithms` `0.1.0-preview.4`**, the shared JavaScript libraries' algorithms package, published to nuget.org from `Broiler-Platform/broiler.js` commit `d1e4b1163b65708ca94257d3654db133f69a833a` and admitted from the committed feed at [`eng/packages/`](eng/packages/README.md), which holds the published package, under rule I1 (added 2026-10-12, programme milestone SJL-3.4; revised 2026-10-13, programme milestone SJL-4.4, when the numerics area moved to it. It read "**`Broiler.ECMAScript.Algorithms` `0.1.0-preview.1`**", "published to nuget.org from `Broiler-Platform/broiler.js` commit `2cb52757c78f793af2a275b6ea7e8730552f0a5a` and admitted from the committed feed at [`eng/packages/`](eng/packages/README.md), which holds the published package" and "It carries one third-party component, a C# port of **Ryu**'s double-to-shortest-decimal routine (Copyright 2018 Ulf Adams, Apache-2.0), named in the package's own `THIRD_PARTY_NOTICES.md`"; revised 2026-10-14, when the package was published under the shared stream's 0.1.0 prefix, JSC-303. It read "**`Broiler.ECMAScript.Algorithms` `0.2.0-preview.1`**" and "packed from `Broiler-Platform/broiler.js` commit `01209c43a3a244b9e502908e68fcded49e9bc198` and admitted from the committed feed at [`eng/packages/`](eng/packages/README.md)"; revised 2026-10-15, programme milestone SJL-5.4, when the text area moved to it. It read "**`Broiler.ECMAScript.Algorithms` `0.1.0-preview.2`**" and "published to nuget.org from `Broiler-Platform/broiler.js` commit `b3d54f7c9c01f84abbd56a823482200dd695f222` and admitted from the committed feed at [`eng/packages/`](eng/packages/README.md), which holds the published package"; revised 2026-10-15, later, when the package was published, JSC-305. It read "packed from `Broiler-Platform/broiler.js` commit `0db90422c8aca642926acff6b715d788cb17f9c6` and admitted from the committed feed at [`eng/packages/`](eng/packages/README.md)"; revised 2026-10-15, programme milestone SJL-6.4, when the Date area moved to it. It read "**`Broiler.ECMAScript.Algorithms` `0.1.0-preview.3`**", "published to nuget.org from `Broiler-Platform/broiler.js` commit `6e20998fae9b4124ab3051a773c5348eca6feca3` and admitted from the committed feed at [`eng/packages/`](eng/packages/README.md), which holds the published package" and, of what it carries, "and one table generated from the Unicode Character Database 17.0.0, the `Space_Separator` members of the white-space set"; revised 2026-10-15, later, when the package was published, JSC-307. It read "packed from `Broiler-Platform/broiler.js` commit `e04874d069f10a3f71bbcdd66e497a5b37069368` and admitted from the committed feed at [`eng/packages/`](eng/packages/README.md)"). Apache-2.0, under this repository's own copyright holder. It carries two third-party components, named in the package's own `THIRD_PARTY_NOTICES.md`: a C# port of **Ryu**'s double-to-shortest-decimal routine (Copyright 2018 Ulf Adams, Apache-2.0), and a C# port of **fdlibm** 5.3's `expm1` and `log1p` as FreeBSD's `msun` keeps them (Copyright (C) 1993 by Sun Microsystems, Inc., under the notice it carries, SPDX `SunPro`); one table generated from the Unicode Character Database 17.0.0, the `Space_Separator` members of the white-space set; and it implements **Howard Hinnant**'s civil-day formulas, `days_from_civil` and `civil_from_days`, which their author donated to the public domain, credited there | **not yet confirmed** |
+| `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler`, `Broiler.VM.Profile.JavaScript.Intl` | **`Broiler.Unicode.Algorithms` `0.1.0-preview.4`**, the Unicode area's code package, referenced by all four, and **`Broiler.Unicode.Segmentation` `0.1.0-preview.4`**, its optional segmentation package, referenced by the Intl data assembly alone; both packed from `Broiler-Platform/broiler.unicode` commit `6e14f93ad753094c99f0013d22269b47550ae552` and admitted from the committed feed at [`eng/packages/`](eng/packages/README.md) under rule I1, as published to nuget.org on 2026-10-16 (added 2026-10-16, programme milestone SJL-7.4; JSD-0074, JSD-0075; revised the same day when they were published, JSC-310: the cell read "not yet on nuget.org" where it now reads "as published to nuget.org on 2026-10-16"). Apache-2.0, under this repository's own copyright holder. Neither carries a Unicode table or any third-party component: their algorithms read the tables this family embeds, which [below](#unicode-data-and-the-tables-derived-from-it) describes, and each package's own `THIRD_PARTY_NOTICES.md` names the Unicode data and ECMA-262's property tables the owner's repository archives, and the code it ported from this repository | **not yet confirmed** |
 
 **What that entry is and what it is not.** It is a **normative reference document**, archived
 because roadmap section 24 asks for the pinned edition to be retrieved, hashed **and archived**,
@@ -299,9 +301,10 @@ continuing the roadmap at the owner's request, with no permission specific to it
 so). `auxiliary/GraphemeBreakProperty.txt`, `auxiliary/WordBreakProperty.txt` and
 `auxiliary/SentenceBreakProperty.txt`, with the three matching `*BreakTest.txt` files (test input
 only), were retrieved the same way on 2026-10-04 for `Intl.Segmenter` (decision
-[JSD-0050](src/Broiler.VM.Profile.JavaScript/docs/decisions/0050-intl-segmenter.md)). Their tables are
-generated not here but by `CldrTableGenerator` into the Intl data assembly, described in the CLDR
-entry below.
+[JSD-0050](src/Broiler.VM.Profile.JavaScript/docs/decisions/0050-intl-segmenter.md)). Their table is
+generated into the Intl data assembly, by the owner's generator since 2026-10-16 (below) *(revised
+2026-10-16, programme milestone SJL-7.4; it read "Their tables are generated not here but by
+`CldrTableGenerator` into the Intl data assembly, described in the CLDR entry below")*.
 
 **What is derived, and where it ships.** `UnicodeTableGenerator` (architecture test project, not
 shipped) writes four source files of tables from those files:
@@ -320,6 +323,25 @@ shipped) writes four source files of tables from those files:
   `Broiler.VM.Composition.PolyglotCli`, and the **Android** application
   `Broiler.VM.Composition.JavaScript.Android`, which is not packable but carries both assemblies in
   its image with trimming off.
+
+**Since 2026-10-16 the owner's generator writes Format's tables** (programme milestone SJL-7.4; decisions
+JSD-0074 and JSD-0075). `Broiler.Unicode.Generation`, admitted test-only for the architecture tests, is
+run over the same archived files, and `UnicodeTableEmbedding` writes what it generates into
+`src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeTables.g.cs`, which replaces
+`JsUnicodeProperties.g.cs`, `JsUnicodeCaseFolding.g.cs` and `JsUnicodeStringProperties.g.cs` byte for byte
+in their tables, and into `src/Broiler.VM.Profile.JavaScript.Intl/JsUnicodeTables.g.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.Intl.dll`** and so into the package of that name and the images of
+`.Conformance` and `.SliceCompiler`: the break table `Intl.Segmenter` reads, which `CldrTableGenerator`
+wrote into `JsCldrTables.g.cs` until then. **The same day it began writing the profile's tables**, into
+`src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.dll`**, which replaces `JsUnicodeNormalization.g.cs` and
+`JsUnicodeCasing.g.cs` byte for byte in their tables and holds one table more: the Soft_Dotted ranges
+the language-sensitive case mappings read, which `CldrTableGenerator` wrote into `JsCldrTables.g.cs` until
+then. Those ranges therefore ship in the profile's package and in every composition image that carries
+the realm, where until then only the images that admit `Intl` carried them. The three files are Unicode
+data under the same terms; rule N22 holds Format's and the profile's to that generation byte for byte,
+and rule N28 the Intl assembly's. `UnicodeTableGenerator` writes no table since then: it is the gate
+that compares them, and it writes the probes below.
 
 The same generator also writes the conformance probes `src/tests/differential/the-unicode-normalization-*.js`,
 which carry the vectors of `NormalizationTest.txt` (Unicode data) as JavaScript string literals.
@@ -456,19 +478,21 @@ shipped) writes one source file of tables from those files and the pinned UCD:
 `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs`, compiled into
 **`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N28** holds to the generator byte for
 byte. It carries likely subtags, the language, script, region, variant and subdivision aliases, the
-BCP 47 keys and types, the supported locales, the root collation and three tailorings, the UCD's
-Soft_Dotted ranges, and since slice I2 each language's number patterns and symbols, currency names,
+BCP 47 keys and types, the supported locales, the root collation and three tailorings, and since slice
+I2 each language's number patterns and symbols, currency names,
 unit patterns and plural rules, the currency fraction digits and the numbering systems' digits, and
 since slice I3 each language's Gregorian calendar names and patterns, date field names and UTC and GMT
 zone names, the hour cycles of the supported regions and the day period rules, and since slice I4
 the hour cycles and weeks of every region, the scripts' line directions, and each language's ordinal
 plural rules, list patterns, relative time patterns and duration patterns, and each language's names
-of languages, regions, scripts, variants, calendars and date fields, and from the UCD the break
-properties `Intl.Segmenter` reads, and since slice T4 each language's names and patterns in the
+of languages, regions, scripts, variants, calendars and date fields, and since slice T4 each language's names and patterns in the
 calendars of the Intl era and month code proposal, as layers over its Gregorian data, and since
 slice T5 each language's metazone and zone names and exemplar cities, and the metazone periods,
-golden zones and primary zones those names are chosen by. The derived tables
-therefore ship in:
+golden zones and primary zones those names are chosen by. *(Revised 2026-10-16, programme milestone
+SJL-7.4: the list named "the UCD's Soft_Dotted ranges" after the tailorings, and "from the UCD the break
+properties `Intl.Segmenter` reads" after the names of date fields. Since then the Unicode area's owner's
+generator writes the break table into the same assembly's `JsUnicodeTables.g.cs`, and the Soft_Dotted
+ranges into the profile's; the UCD entry above describes both.)* The derived tables therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);
 - **the composition images that admit `Intl`**: the published outputs of

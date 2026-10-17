@@ -38,4 +38,13 @@
     <PackageReference Include="Broiler.ECMAScript.Algorithms" />
   </ItemGroup>
 
+  <!--
+    THE UNICODE AREA'S OWNER (JSD-0074; milestone SJL-7.4): the tokenizer's identifier and white-space
+    classes and the parser's routing checks, over the tables Format embeds, which this project reads
+    through Format's JsUnicodeData. Same feed, pin, lock file and rule as above.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Broiler.Unicode.Algorithms" />
+  </ItemGroup>
+
 </Project>

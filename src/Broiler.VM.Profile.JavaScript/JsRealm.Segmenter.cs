@@ -3,17 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
+// Relevant units:   13
+// Annotated:        13/13
 // Exempt:           11
-// Human-reviewed:   0/12
+// Human-reviewed:   0/13
 // IP risk:          Low
-// Security risk:    Low
+// Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       12
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using System;
+using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -23,8 +26,14 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </summary>
 /// <remarks>
 /// <b>A Segments object finds its boundaries once.</b> The first <c>containing</c> or iteration of a
-/// Segments object runs <see cref="JsSegmentation"/> over its whole string and keeps the boundaries;
-/// FindBoundary is then a binary search, and every iterator of the object shares them.
+/// Segments object asks the composition's segmentation for its whole string's boundaries and keeps
+/// them; FindBoundary is then a binary search, and every iterator of the object shares them.
+/// <b>The segmentation is the Unicode area's owner's since SJL-7.4</b> (JSD-0074): UAX #29's default
+/// rules over the break table the Intl data embeds, reached through Format's
+/// <see cref="IJsTextSegmentation"/>, which that data implements. It charges one unit per code point it
+/// classifies or reads, look-arounds and the word-likeness scan included, which corrects the profile's
+/// own segmenter's charge of one unit per sixteen code points (row G5). The objects, the iterators and
+/// the one unit each segment's data object costs stay here.
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
 // Broiler-Human:        PENDING
@@ -196,8 +205,19 @@ internal sealed partial class JsRealm
         return JsValue.Object(new JsSegmenterObject(prototype, resolved.Locale, granularity));
     }
 
+    /// <summary>
+    /// The composition's text segmentation, or the <c>TypeError</c> when its Intl data offers none: an
+    /// embedder's own <see cref="IJsIntlData"/> implements <see cref="IJsTextSegmentation"/> beside it for
+    /// <c>Intl.Segmenter</c> (JSD-0075).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DE5245
+    // Broiler-Human:        PENDING
+    internal static IJsTextSegmentation Segmentation(JsEngine engine) =>
+        engine.Intl?.Segmentation ??
+        throw engine.Error("TypeError", "Intl.Segmenter needs text segmentation, and the composition's Intl data offers none");
+
     /// <summary>ECMA-402's CreateSegmentDataObject (s19.7.1): segment, index, input, and isWordLike for words.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=94DC7A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=253189
     // Broiler-Human:        PENDING
     private static JsObject SegmentData(JsEngine engine, JsSegmentsObject segments, int start, int end)
     {
@@ -209,7 +229,7 @@ internal sealed partial class JsRealm
 
         if (segments.Segmenter.Granularity == "word")
         {
-            result.DefineOrdinary("isWordLike", JsValue.Boolean(JsSegmentation.IsWordLike(engine.Intl!.Breaks, segments.Text, start, end)));
+            result.DefineOrdinary("isWordLike", JsValue.Boolean(Segmentation(engine).IsWordLike(segments.Text.AsSpan(start, end - start), engine.SegmentationCharge)));
         }
 
         return result;
@@ -270,10 +290,18 @@ internal sealed class JsSegmentsObject : JsObject
     internal string Text { get; }
 
     /// <summary>The code unit indices that begin a segment, then the string's length, found the first time they are asked for.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3293F0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=290932
     // Broiler-Human:        PENDING
     internal int[] Boundaries(JsEngine engine) =>
-        boundaries ??= JsSegmentation.Boundaries(engine, engine.Intl!.Breaks, Text, Segmenter.Granularity);
+        boundaries ??= JsRealm.Segmentation(engine).Boundaries(
+            Text,
+            Segmenter.Granularity switch
+            {
+                "word" => JsSegmentGranularity.Word,
+                "sentence" => JsSegmentGranularity.Sentence,
+                _ => JsSegmentGranularity.Grapheme,
+            },
+            engine.SegmentationCharge);
 }
 
 /// <summary>A Segment Iterator: its Segments object and the index of its next segment.</summary>

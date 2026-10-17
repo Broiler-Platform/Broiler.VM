@@ -1,0 +1,7 @@
+bundle sjl-7-001, the closures at SJL-7.4's cut-over
+collected 2026-10-16T20:01:27Z
+commit a9be9f1b57fc4a342f88a4674142f4dbdebec380
+tree clean
+product-sources sha256=2aa865dde55b4661d443d9ca8204bc64c3c467f0bc56f7a542d431a0cee18eae over 3154 entries of `git ls-tree -r`, every path outside docs/ and outside any docs/ directory
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4

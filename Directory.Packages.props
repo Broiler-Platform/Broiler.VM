@@ -22,6 +22,13 @@
          allow-list, src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json, and to its pin. -->
     <PackageVersion Include="Broiler.ECMAScript.Algorithms" Version="0.1.0-preview.4" />
 
+    <!-- The Unicode area's owner packages (JSD-0074; milestone SJL-7.4), from the same committed feed and
+         under the same rule. Broiler.Unicode.Generation is admitted test-only, for the architecture
+         tests alone; Broiler.Unicode.Tables is not admitted (decision SJL-D-6 (c)). -->
+    <PackageVersion Include="Broiler.Unicode.Algorithms" Version="0.1.0-preview.4" />
+    <PackageVersion Include="Broiler.Unicode.Segmentation" Version="0.1.0-preview.4" />
+    <PackageVersion Include="Broiler.Unicode.Generation" Version="0.1.0-preview.4" />
+
     <!-- Broiler.VM.Architecture.Tests only; see that project for why each is pinned. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
     <PackageVersion Include="System.Reflection.MetadataLoadContext" Version="9.0.0" />

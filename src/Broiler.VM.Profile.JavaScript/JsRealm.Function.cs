@@ -16,7 +16,6 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
-using System.Globalization;
 using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -317,7 +316,14 @@ internal sealed partial class JsRealm
     /// Whether <paramref name="name"/> can stand in a NativeFunction's name position: an identifier
     /// name or a bracketed one, after an optional <c>get</c> or <c>set</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0C5024
+    /// <remarks>
+    /// The identifier name is the language's: its first code point an IdentifierStartChar and every
+    /// other an IdentifierPartChar, from the pinned Unicode 17.0.0 tables through the owner's
+    /// <c>EcmaScriptLexical</c> (JSD-0074; milestone SJL-7.4). Until then it asked the platform's
+    /// <c>char.IsLetter</c> and <c>char.GetUnicodeCategory</c> of each code unit (correspondence row
+    /// I4); every native name is ASCII, so no answer moves.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BBEA35
     // Broiler-Human:        PENDING
     private static bool FunctionIsNativeName(string name)
     {
@@ -337,19 +343,16 @@ internal sealed partial class JsRealm
             return name[^1] == ']';
         }
 
-        for (var at = 0; at < name.Length; at++)
+        for (var at = 0; at < name.Length;)
         {
-            var c = name[at];
-            var starts = char.IsLetter(c) || char.IsSurrogate(c) || c is '$' or '_';
-            var continues = char.IsDigit(c) || c is '\u200C' or '\u200D' || char.GetUnicodeCategory(c) is
-                UnicodeCategory.NonSpacingMark or
-                UnicodeCategory.SpacingCombiningMark or
-                UnicodeCategory.ConnectorPunctuation;
+            var read = Broiler.ECMAScript.Text.Utf16.CodePointAt(name, at);
 
-            if (!starts && !(at > 0 && continues))
+            if (!(at == 0 ? JsUnicode.Lexical.IsIdentifierStart(read.CodePoint) : JsUnicode.Lexical.IsIdentifierPart(read.CodePoint)))
             {
                 return false;
             }
+
+            at += read.CodeUnitCount;
         }
 
         return true;

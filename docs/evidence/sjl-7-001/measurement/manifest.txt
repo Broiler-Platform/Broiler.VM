@@ -1,0 +1,27 @@
+sub-bundle sjl-7-001/measurement
+evidence-class measurement
+decision docs/evidence/sjl-7-001/decision-rule-area.md part C, as written: MET if and only if every lane's condition passes, before and after, for every workload and form; every effective-configuration line is identical across arms, lanes and repetitions; and for every workload and form D <= N.
+rule docs/evidence/sjl-7-001/decision-rule-area.md sha256=b49087731652bdc17aa5b54a23198e4fd10045d5c8f96b2b535b7c8f25b755cd
+collector docs/evidence/sjl-7-001/collect-area.py sha256=eedabdbf239ae2655412049789446dfcd18f59281092a7638e62f2920082176b
+collected 2026-10-17T00:54:00Z
+arm-B-commit 7b44dc7f036ebe09ca92dcd0f1f9811aba84ec7e (the base commit base/identity.txt names; clean tree)
+arm-A-commit be0b610c0510b849a7d67a0f9f4cf7a925c5b634 (the after commit after/identity.txt names; clean tree)
+arm-A-again the arm A binaries, measured a second time under another lane name
+binary arm B Broiler.VM.Composition.JavaScript.Cli.dll sha256=8005f0981c6343582afedeae5269201034e391696542cc2551fe2e92b0a3b738; every file of its output, binaries-b.sha256 sha256=06406c8f950b712e41d271c5a48da6f104f98a81f0fda6aba1e2d6315fc78ef4
+binary arm A Broiler.VM.Composition.JavaScript.Cli.dll sha256=042842d75985a3284bc058eec561f92e58c03301a6a8f9f521be8543ea6d8b72; every file of its output, binaries-a.sha256 sha256=125e48b4f177621eddbc9fde9b541838c0f7f6fd53156f7d56883e8e9957bcee
+root src/compositions/Broiler.VM.Composition.JavaScript.Cli, Release, under the JIT
+rid linux-x64
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+repetitions 7 retained per lane (docs/baselines.md rule 4), 3 warm-up excluded from Q (eng/compare-forms.py's default)
+order in each repetition r (from 0): the arms rotated by r from B, A, A-again; each arm runs the workload, then its control
+allowance fuel=100000000000 wallClockMs=600000
+forms bytecode native
+native-backend x86-64-sysv
+configuration-check every child is run with --runtime; its line starting runtime-identifier= is kept
+workload src/tests/forms/unicode/normalize.js sha256=6e128b2fd1b8dc3b9ab3d0910a7452c4312ba64ec93ef21239d7cdce7eb8940a blob=0a5509f7ed619da0c1e103e1d7956b11b1f6830e (identical in both arms' trees)
+workload src/tests/forms/unicode/normalize.control.js sha256=dedcb0c1e96d95bd4c6f63609d330d0de69c420dca52e6a1e470675cfa9c0e94 blob=95ce73295a5cc519ce86a89cf7368e325ff79eb4 (identical in both arms' trees)
+workload src/tests/forms/unicode/casing.js sha256=c91cc3d72236de6c4f06436364022de5041b9c80723a5c8576c359f72e2fb802 blob=a8a29542135b00cb3e1175b76b2a1df897324ef1 (identical in both arms' trees)
+workload src/tests/forms/unicode/casing.control.js sha256=2b1c6c1c84e5b31ed11da66a5a3f1e3f03dfd600a79cb83ee732c55507d07066 blob=9df9d03aba32220d84ec6672c1dc81b1bf97bb0e (identical in both arms' trees)
+workload src/tests/forms/unicode/identifiers.js sha256=5b7c8016c213ccfe77e08827199e54174288216a570e15a359201029af304c7a blob=7991ed384e1c60f16e783eaac2e36915903bff62 (identical in both arms' trees)
+workload src/tests/forms/unicode/identifiers.control.js sha256=66ec56f0c53122dc9752fde1bcd0b3b983018d2405523ebd44de11932ac89f28 blob=e1d1be20abc2748d7f6dc8689eed7c22cfc1f3f2 (identical in both arms' trees)

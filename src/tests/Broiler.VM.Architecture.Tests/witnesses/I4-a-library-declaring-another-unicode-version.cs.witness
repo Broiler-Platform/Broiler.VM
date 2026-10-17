@@ -1,0 +1,13 @@
+// Witness for rule I4 (SJL-7.4): a library, compiled in memory under an admitted package's assembly name,
+// that declares the Unicode data version it reads as 16.0.0 while this repository's pin names 17.0.0. Rule
+// I4 must report the declaration; the second field, of another name, and the comment and string below
+// naming UnicodeVersion again are not declarations and must not be reported.
+namespace Broiler.Unicode.Algorithms
+{
+    public static class UnicodeAlgorithms
+    {
+        public const string UnicodeVersion = "16.0.0";
+
+        public const string Description = "UnicodeVersion 16.0.0, a description and not a declaration";
+    }
+}

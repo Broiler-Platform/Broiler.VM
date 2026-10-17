@@ -28,10 +28,34 @@ public sealed class AdmissionRuleTests
         });
         Assert.Empty(violations);
 
+        // REVISED 2026-10-16, at SJL-7.4: a test project holds an admitted reference through a
+        // test-only entry that names it. The architecture tests take the owner's generator so; its
+        // reference is read with its lock file like a shipping project's, and the sweep is not
+        // vacuous over it.
+        var testProjects = ComponentGraph.Projects
+            .Where(static project => project.IsTestOnly && project.PackageReferences.Any(AdmissionRules.IsBroilerPackage))
+            .ToArray();
+        Assert.Contains(testProjects, static project => project.AssemblyName == "Broiler.VM.Architecture.Tests");
+        Assert.Empty(testProjects.SelectMany(static project =>
+        {
+            var lockPath = Path.Combine(Path.GetDirectoryName(project.Path)!, "packages.lock.json");
+            return AdmissionRules.I1(project, File.Exists(lockPath) ? AdmissionRules.ReadLockFile(File.ReadAllText(lockPath)) : null);
+        }));
+
         // The list itself: every entry agrees with its pin, its package is on the committed feed at
-        // that hash, and every project it names is in the JavaScript family.
+        // that hash, and every project it names is in the JavaScript family - or, for a test-only
+        // entry, a test project.
         Assert.NotEmpty(AdmissionRules.AllowList);
         Assert.Empty(AdmissionRules.I1Entries(AdmissionRules.AllowList));
+        Assert.Contains(AdmissionRules.AllowList, static package => package.IsTestOnly && package.Projects.Contains("Broiler.VM.Architecture.Tests"));
+
+        // The revision's two witnesses: a product entry naming a test project, and a test-only
+        // entry naming a project that ships. Each is otherwise a real entry, so its pin, hash and
+        // feed copy agree and the refusal is the one the revision adds.
+        var productEntry = AdmissionRules.I1Entries(AdmissionRules.LoadAllowList(Path.Combine(WitnessAssemblies.Directory, "I1-product-entry-names-a-test-project.json.witness"))).ToArray();
+        Assert.Equal(["Broiler.Unicode.Algorithms: admitted for product use, and the allow-list names the test project Broiler.VM.Architecture.Tests; only a test-only entry may name one"], productEntry);
+        var testOnlyEntry = AdmissionRules.I1Entries(AdmissionRules.LoadAllowList(Path.Combine(WitnessAssemblies.Directory, "I1-test-only-entry-names-a-shipping-project.json.witness"))).ToArray();
+        Assert.Equal(["Broiler.Unicode.Generation: admitted test-only, and the allow-list names Broiler.VM.Profile.JavaScript.Format, which ships or composes"], testOnlyEntry);
 
         // The witnesses: an unlisted package, a listed one in the runtime, a listed one in Format.
         Assert.Contains(
@@ -43,6 +67,15 @@ public sealed class AdmissionRuleTests
         Assert.Contains(
             AdmissionRules.I1(ComponentGraph.Witness("I1-admitted-package-in-the-format.csproj.witness"), null),
             static message => message.Contains("admits it for [Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.JavaScript.Compiler, Broiler.VM.Profile.JavaScript.AdmissionProbe] only", StringComparison.Ordinal));
+
+        // SINCE SJL-7.4 Format holds an admitted reference, the Unicode area's code package, which
+        // JSD-0074's X5 widens the list for; the segmentation package beside it is admitted for the
+        // Intl data alone, and is refused there. No lock file is read, so the admitted reference is
+        // reported for that alone.
+        var format = AdmissionRules.I1(ComponentGraph.Witness("I1-segmentation-package-in-the-format.csproj.witness"), null).ToArray();
+        Assert.Contains(format, static message => message.Contains("-> package Broiler.Unicode.Segmentation: the allow-list admits it for [Broiler.VM.Profile.JavaScript.Intl] only", StringComparison.Ordinal));
+        Assert.DoesNotContain(format, static message => message.Contains("Broiler.Unicode.Algorithms: the allow-list", StringComparison.Ordinal));
+        Assert.Contains(AdmissionRules.Admitted("Broiler.Unicode.Algorithms")!.Projects, static project => project == "Broiler.VM.Profile.JavaScript.Format");
 
         // And a lock file whose content hash is not the pin, read with the probe's own project file.
         using var probe = AdmissionProbe.Create();
@@ -94,6 +127,18 @@ public sealed class AdmissionRuleTests
         Assert.Equal(
             ["Broiler.VM.Composition.JavaScript.ExecutionOnly is compiler-free and its closure holds Broiler.ECMAScript.Frontend"],
             AdmissionRules.I3("Broiler.VM.Composition.JavaScript.ExecutionOnly", listing, declaring));
+
+        // SINCE SJL-7.4 the Unicode area's optional segmentation package is optional data too
+        // (JSD-0074's X5): the roots that carry the Intl assembly carry it, and the witness, the
+        // execution-only root carrying the package without that assembly, is refused for it alone.
+        Assert.All(declaring, root => Assert.Contains("Broiler.Unicode.Segmentation", AdmissionRules.GraphClosure(root)));
+        var segmentation = WitnessText("I3-execution-only-closure-carries-the-segmentation-package.txt.witness")
+            .Split('\n')
+            .Select(static line => line.Trim())
+            .Where(static line => line.Length > 0 && !line.StartsWith('#'));
+        Assert.Equal(
+            ["Broiler.VM.Composition.JavaScript.ExecutionOnly declares no Intl or zoned-Temporal surface and its closure holds Broiler.Unicode.Segmentation"],
+            AdmissionRules.I3("Broiler.VM.Composition.JavaScript.ExecutionOnly", segmentation, declaring));
 
         // Every image record a bundle retains (mstat-<root>.mstat, which the JavaScript collector
         // requests since SJL-2.7) is read the same way. None is retained before the first run of

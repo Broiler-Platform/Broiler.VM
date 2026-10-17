@@ -1,0 +1,30 @@
+bundle sjl-7-001, the Unicode area's after arm
+milestone SJL-7, work package SJL-7.6, Broiler.VM's half
+collected 2026-10-17T00:07:28Z
+after-commit be0b610c0510b849a7d67a0f9f4cf7a925c5b634
+after-tree clean
+cut-over-commit 8e9e411a7fc8d460f8ab12af797c1910e3ae0a4c (SJL-7.4's cut-over, JSD-0075: its code in 093feb8, 0271008, b0ac6e2 and 8aa88db, its record in d4f7d54, and the committed feed re-pinned to Broiler.Unicode 0.1.0-preview.4 as published in 8e9e411)
+cut-over-is-ancestor yes
+base-commit 7b44dc7f036ebe09ca92dcd0f1f9811aba84ec7e (base/identity.txt)
+rule docs/evidence/sjl-7-001/decision-rule-area.md sha256=b49087731652bdc17aa5b54a23198e4fd10045d5c8f96b2b535b7c8f25b755cd
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+suite-pin src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+allowance fuel=100000000 wallClockMs=5000
+twin-allowance ceiling=1000000000 wallClockMs=600000
+jobs 4
+native-backend x86-64-sysv
+since-cut-over 8e9e411a7fc8d460f8ab12af797c1910e3ae0a4c, outside the documents: 5 files
+  THIRD_PARTY_NOTICES.md
+  src/tests/vectors/pins/README.md
+  src/tests/vectors/pins/broiler-js-vectors-a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71.tar.gz
+  src/tests/vectors/pins/broiler-js-vectors-c976cbea647717a3a4ca6636aec2deb1129825cc.tar.gz
+  src/tests/vectors/pins/vectors.pin
+commits since the cut-over, each with its files outside the documents:
+  250d6b98415ad93825c683e4fdd5c40b9c47d632 SJL-7.4: bundle sjl-7-001 records the cut-over, and the ledger records SJL-7.4: none
+  be0b610c0510b849a7d67a0f9f4cf7a925c5b634 SJL-7.5: the vectors pin moves to corpus revision 20, the Unicode divergences retired: 5 files
+    THIRD_PARTY_NOTICES.md
+    src/tests/vectors/pins/README.md
+    src/tests/vectors/pins/broiler-js-vectors-a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71.tar.gz
+    src/tests/vectors/pins/broiler-js-vectors-c976cbea647717a3a4ca6636aec2deb1129825cc.tar.gz
+    src/tests/vectors/pins/vectors.pin

@@ -1,0 +1,24 @@
+{
+  "$comment": [
+    "Violates I1 (revised 2026-10-16, at SJL-7.4): a product entry naming a test project. Only a test-only entry may",
+    "name a test project; the entry is otherwise the real one for the generator's dependency, so its pin, hash and",
+    "feed copy agree and the refusal is for the project it names alone."
+  ],
+  "packages": [
+    {
+      "id": "Broiler.Unicode.Algorithms",
+      "version": "0.1.0-preview.4",
+      "contentHash": "8M7PNntCj6RfQF0VIkFXgrClg3RxCdbCKyFIQB+n6Q08jX4S3Mz3ged9qwz83ggzEJ+z60Yg5trOhZ5qaxS3Vg==",
+      "use": "product",
+      "projects": [
+        "Broiler.VM.Architecture.Tests"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.4.pin",
+      "admittedBy": "witness"
+    }
+  ]
+}
