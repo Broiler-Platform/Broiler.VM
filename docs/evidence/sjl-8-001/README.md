@@ -144,6 +144,9 @@ Broiler.JS's corpus revision 21 (`09fa9ac5`) adds the time-zone area: 3,969 vect
 Revision 22 (`4ce20ac7`) classifies Broiler.JS's first run: 1,161 differences, every one under a row the area
 verdict names. It holds none of this profile's.
 
+Revision 23 (`2d496a55`) retires those 1,161 fields, which Broiler.JS's cut-over (SJL-8.6) corrects. The area's seven
+files are revision 21's again, and this profile's expectations are unchanged.
+
 The collector's `vectors` step, bundle `sjl-6-001`'s, ran the conformance root in Release.
 
 | Run | Taken | Result | Files |
@@ -152,13 +155,15 @@ The collector's `vectors` step, bundle `sjl-6-001`'s, ran the conformance root i
 | Its negative control | The same, with `--mutate text/trim/0001` | 92,433 match, 1 unclassified difference, the mutated vector | [`run-negative-control-revision-21.log`](vectors/run-negative-control-revision-21.log) |
 | Revision 22 | At `15da5fd`, clean, on the committed pin, which moves to revision 22 there | 92,434 vectors: 92,434 match, 0 classified divergences, 0 unclassified differences | [`run-revision-22.log`](vectors/run-revision-22.log), [`run-revision-22.tsv.gz`](vectors/run-revision-22.tsv.gz) |
 | Its negative control | The same, with `--mutate text/trim/0001` | 92,433 match, 1 unclassified difference, the mutated vector | [`run-negative-control-revision-22.log`](vectors/run-negative-control-revision-22.log) |
+| Revision 23 | At `458c10a`, clean, on the committed pin, which moves to revision 23 there | 92,434 vectors: 92,434 match, 0 classified divergences, 0 unclassified differences | [`run-revision-23.log`](vectors/run-revision-23.log), [`run-revision-23.tsv.gz`](vectors/run-revision-23.tsv.gz) |
+| Its negative control | The same, with `--mutate text/trim/0001` | 92,433 match, 1 unclassified difference, the mutated vector | [`run-negative-control-revision-23.log`](vectors/run-negative-control-revision-23.log) |
 
 **This profile matches every time-zone vector, each of its own `per-engine` expectations included.** The vectors
 confirm the correspondence's reading that this family has no correction of its own in the area. Both engines' runs
 on the shared corpus disagree only where JSD-0076 says Broiler.JS's policy or code differs.
 
-The pin is at revision 22 (`src/tests/vectors/pins/vectors.pin`). Its archive is taken twice, byte-identical, and
-its 49 files are hashed from an extracted copy.
+The pin is at revision 23 (`src/tests/vectors/pins/vectors.pin`) since `458c10a`, and was at revision 22 from `15da5fd`.
+Each time its archive is taken twice, byte-identical, and its 49 files are hashed from an extracted copy.
 
 ## 4. The cut-over (SJL-8.5)
 
