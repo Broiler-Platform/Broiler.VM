@@ -287,9 +287,21 @@ its base figure with the base's answer, and is refused with `AllowanceExhausted 
 
 ## 8. Engine-level vectors at corpus revision 20
 
-> **PLACEHOLDER: not yet in this bundle.** The conformance root of `be0b610` over this family's pin at corpus
-> revision 20, with its negative control, was run outside this collection. It joins this bundle with its files
-> under [`vectors/`](vectors/) and this section, and the manifest step is run again when it does.
+Broiler.JS's corpus revision 20 (`a34b1f78`) retires Broiler.JS's 3,678 divergences of the Unicode area, which
+its cut-over corrects; the Unicode area's five files are revision 18's again, and none of this family's
+expectations changes. This family's pin moved to it in `be0b610`, by its README's procedure: the archive made
+twice, byte-identical, its 42 files hashed after extraction. The conformance root of `be0b610`, built in Release
+from a clean checkout, ran over the committed pin, by the commands of section 3's runs, outside the collector and
+on the same machine:
+
+| Run | Commit | Result | Files |
+|---|---|---|---|
+| Revision 20 | `be0b610`, clean, from 2026-10-16 23:56Z, on the committed pin | 88,465 vectors: 88,465 match, 0 classified divergences, 0 unclassified differences | [`run-revision-20.log`](vectors/run-revision-20.log), [`run-revision-20.tsv.gz`](vectors/run-revision-20.tsv.gz) |
+| Its negative control | the same, from 2026-10-17 00:01Z, with `--mutate unicode/casing-upper/0001` | 88,464 match, 1 unclassified difference, the mutated vector | [`run-negative-control-revision-20.log`](vectors/run-negative-control-revision-20.log), [`run-negative-control-revision-20.tsv.gz`](vectors/run-negative-control-revision-20.tsv.gz) |
+
+Every vector matches after the cut-over, at revision 19 (section 4) and at revision 20. Broiler.JS's run on the
+same revision, in its bundle of the same name, matches every vector but its number area's four classified
+divergences.
 
 ## 9. Exclusions
 
@@ -460,7 +472,6 @@ search.
 | 12 | Every root is published and run in three modes | section 10 | **Met** for every root this machine can publish, at `be0b610`, with the packages as published; Android is EX-126 |
 | 13 | N22's and N28's size budgets hold for the regenerated tables, and the bundle restates them by citation | section 10 | **Met**: 291,891 of 307,200 bytes and 840,365 of 851,968, both budget tests passing at `be0b610` |
 
-**Not yet in this bundle:** part C's measurement (section 12) and the engine-level vectors at corpus revision 20
-(section 8), which are no Broiler.VM clause of their own. The owner's clauses, 1 to 4, are judged in
+**Not yet in this bundle:** part C's measurement (section 12), which is no Broiler.VM clause of its own. The owner's clauses, 1 to 4, are judged in
 Broiler.Unicode's bundle of the same name, and Broiler.JS's, 5 to 8, in Broiler.JS's. None is accepted: review is
 deferred, and SJL-7 may not meet its gate before SJL-3 meets SJL-3's.
