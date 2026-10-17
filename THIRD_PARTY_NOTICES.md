@@ -617,8 +617,9 @@ given.**
 The fourth entry in this file whose material is compiled into a shipped assembly; it shares the CLDR
 entry's assembly.**
 
-This repository contains two crates of the ICU4X project, a table generated from them, and code
-ported from one of them:
+This repository contains two crates of the ICU4X project and a table generated from them; until
+programme milestone SJL-8.5 it also contained code ported from one of them, which the shared algorithms
+package carries now:
 
 - **`icu_calendar` 2.3.0**, under the Unicode License v3 (SPDX `Unicode-3.0`), whose text the CLDR
   entry above carries; its own copy is the crate's `LICENSE`, `Copyright © 2020-2024 Unicode, Inc.`
@@ -640,17 +641,27 @@ since programme milestone SJL-8.5, run by the architecture test project from the
 calendar's 78 corrections, and writes `src/Broiler.VM.Profile.JavaScript.Intl/JsCalendarTables.g.cs`,
 compiled into **`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N32** holds to the generator
 byte for byte. **The years remain subject to the Unicode License v3**, and the corrections to the
-Apache License 2.0; the generated file says so. **One function of `icu_calendar` is ported**: the
-approximation of a Chinese or Korean year by mean new moons and mean solar terms
+Apache License 2.0; the generated file says so. **One function of `icu_calendar` is ported, in the
+shared algorithms package**: the approximation of a Chinese or Korean year by mean new moons and mean
+solar terms (`src/cal/east_asian_traditional/simple.rs`), which `CalendarYears` in
+**`Broiler.ECMAScript.Algorithms`** answers beyond the table and which that package's own
+`THIRD_PARTY_NOTICES.md` and its row among the ingesting components above name; this repository
+no longer compiles a copy. The table is read by that package's `CalendarTables`, and the calendars'
+arithmetic that stays in `src/Broiler.VM.Profile.JavaScript/JsCalendars.cs` is written from
+*Calendrical Calculations*' published formulas and the calendars' own rules. *(Revised 2026-10-17,
+programme milestone SJL-8.5 (JSD-0076), when the generator moved from this repository's architecture
+tests to the Broiler.JS repository, the time data home, under decision SJL-D-6 (c); the pin, the
+crates and the generated file stay here, unchanged. The paragraph began "`CalendarTableGenerator`
+(architecture test project, not shipped) reads". Revised again the same day, at the same milestone's
+cut-over (JSD-0077), when the port moved to the package and this repository's copy was deleted. The
+sentence on the port read "**One function of `icu_calendar` is ported**: the approximation of a
+Chinese or Korean year by mean new moons and mean solar terms
 (`src/cal/east_asian_traditional/simple.rs`), as `JsEastAsianCalendar.Approximate` in
 `src/Broiler.VM.Profile.JavaScript/JsCalendars.cs`, compiled into
 **`Broiler.VM.Profile.JavaScript.dll`**; that port is a derivative of Unicode-licensed software, and
 this entry is the notice the licence's condition (b) asks associated documentation to carry. The other
-calendars' arithmetic in that file is written from *Calendrical Calculations*' published formulas and
-the calendars' own rules. *(Revised 2026-10-17, programme milestone SJL-8.5 (JSD-0076), when the
-generator moved from this repository's architecture tests to the Broiler.JS repository, the time data
-home, under decision SJL-D-6 (c); the pin, the crates and the generated file stay here, unchanged. The
-paragraph began "`CalendarTableGenerator` (architecture test project, not shipped) reads".)*
+calendars' arithmetic in that file is written from", and the entry's opening sentence read "a table
+generated from them, and code ported from one of them:".)*
 
 **Used to test, not shipped.** `src/tests/temporal/calendars/icu4x-reference.rs` is a program this
 repository wrote; built against the archived crates and the `icu_calendar_data` 2.3.0 crate, which is
