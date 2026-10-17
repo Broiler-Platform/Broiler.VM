@@ -1,0 +1,49 @@
+   ZonedDateTime ctor "+05:30" | VM: +05:30 +05:30 | BJS: +05:30 +05:30
+   DateTimeFormat "+05:30" | VM: +05:30 | BJS: +05:30
+   ZonedDateTime ctor "-05:30" | VM: -05:30 -05:30 | BJS: -05:30 -05:30
+   DateTimeFormat "-05:30" | VM: -05:30 | BJS: -05:30
+   ZonedDateTime ctor "+0530" | VM: +05:30 +05:30 | BJS: +05:30 +05:30
+   DateTimeFormat "+0530" | VM: +05:30 | BJS: +05:30
+   ZonedDateTime ctor "+05" | VM: +05:00 +05:00 | BJS: +05:00 +05:00
+   DateTimeFormat "+05" | VM: +05:00 | BJS: +05:00
+   ZonedDateTime ctor "-00:00" | VM: +00:00 +00:00 | BJS: +00:00 +00:00
+   DateTimeFormat "-00:00" | VM: +00:00 | BJS: +00:00
+   ZonedDateTime ctor "+00:00" | VM: +00:00 +00:00 | BJS: +00:00 +00:00
+   DateTimeFormat "+00:00" | VM: +00:00 | BJS: +00:00
+   ZonedDateTime ctor "-00" | VM: +00:00 +00:00 | BJS: +00:00 +00:00
+   DateTimeFormat "-00" | VM: +00:00 | BJS: +00:00
+   ZonedDateTime ctor "+23:59" | VM: +23:59 +23:59 | BJS: +23:59 +23:59
+   DateTimeFormat "+23:59" | VM: +23:59 | BJS: +23:59
+   ZonedDateTime ctor "-23:59" | VM: -23:59 -23:59 | BJS: -23:59 -23:59
+   DateTimeFormat "-23:59" | VM: -23:59 | BJS: -23:59
+!! ZonedDateTime ctor "+24:00" | VM: THROWS RangeError: Temporal: +24:00 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+24:00"
+!! DateTimeFormat "+24:00" | VM: THROWS RangeError: Intl.DateTimeFormat: +24:00 is not an available time zone | BJS: THROWS RangeError: Invalid timeZone option: +24:00
+!! ZonedDateTime ctor "+05:60" | VM: THROWS RangeError: Temporal: +05:60 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:60"
+!! DateTimeFormat "+05:60" | VM: THROWS RangeError: Intl.DateTimeFormat: +05:60 is not an available time zone | BJS: THROWS RangeError: Invalid timeZone option: +05:60
+!! ZonedDateTime ctor "+05:30:15" | VM: THROWS RangeError: Temporal: +05:30:15 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:30:15"
+!! DateTimeFormat "+05:30:15" | VM: THROWS RangeError: Intl.DateTimeFormat: a time zone offset cannot have seconds: +05:30:15 | BJS: THROWS RangeError: Invalid timeZone option: +05:30:15
+!! ZonedDateTime ctor "+05:30:00" | VM: THROWS RangeError: Temporal: +05:30:00 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:30:00"
+!! DateTimeFormat "+05:30:00" | VM: THROWS RangeError: Intl.DateTimeFormat: a time zone offset cannot have seconds: +05:30:00 | BJS: THROWS RangeError: Invalid timeZone option: +05:30:00
+!! ZonedDateTime ctor "+053015" | VM: THROWS RangeError: Temporal: +053015 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+053015"
+!! DateTimeFormat "+053015" | VM: THROWS RangeError: Intl.DateTimeFormat: a time zone offset cannot have seconds: +053015 | BJS: THROWS RangeError: Invalid timeZone option: +053015
+!! ZonedDateTime ctor "+05:30:15.5" | VM: THROWS RangeError: Temporal: +05:30:15.5 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:30:15.5"
+!! DateTimeFormat "+05:30:15.5" | VM: THROWS RangeError: Intl.DateTimeFormat: a time zone offset cannot have seconds: +05:30:15.5 | BJS: THROWS RangeError: Invalid timeZone option: +05:30:15.5
+!! ZonedDateTime ctor "−05:00" | VM: THROWS RangeError: Temporal: −05:00 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "−05:00"
+!! DateTimeFormat "−05:00" | VM: THROWS RangeError: Intl.DateTimeFormat: −05:00 is not an available time zone | BJS: THROWS RangeError: Invalid timeZone option
+!! ZonedDateTime ctor "+٠٥:٣٠" | VM: THROWS RangeError: Temporal: +٠٥:٣٠ is not a time zone identifier | BJS: THROWS Error: System.FormatException: The input string '٠٥' was not in a correct format.
+!! DateTimeFormat "+٠٥:٣٠" | VM: THROWS RangeError: Intl.DateTimeFormat: +٠٥:٣٠ is not an available time zone | BJS: THROWS Error: System.FormatException: The input string '٠٥' was not in a correct format.
+!! ZonedDateTime ctor "+05:3" | VM: THROWS RangeError: Temporal: +05:3 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:3"
+!! DateTimeFormat "+05:3" | VM: THROWS RangeError: Intl.DateTimeFormat: +05:3 is not an available time zone | BJS: THROWS RangeError: Invalid timeZone option: +05:3
+!! ZonedDateTime ctor "05:30" | VM: THROWS RangeError: Temporal: 05:30 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "05:30"
+!! DateTimeFormat "05:30" | VM: THROWS RangeError: Intl.DateTimeFormat: 05:30 is not an available time zone | BJS: THROWS RangeError: Temporal: unknown time zone "05:30"
+!! ZonedDateTime ctor "+5:30" | VM: THROWS RangeError: Temporal: +5:30 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+5:30"
+!! DateTimeFormat "+5:30" | VM: THROWS RangeError: Intl.DateTimeFormat: +5:30 is not an available time zone | BJS: THROWS RangeError: Invalid timeZone option: +5:30
+   Instant.toString({timeZone:"-00:00"}) | VM: 2020-01-01T00:00:00+00:00 | BJS: 2020-01-01T00:00:00+00:00
+!! ZonedDateTime.from with [+05:30:15] annotation | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00+05:30:15[+05:30:15]' | BJS: THROWS RangeError: Temporal: sub-minute offset in time zone annotation "[+05:30:15]" in "2020-01-01T00:00+05:30:15[+05:30:15]"
+!! ZonedDateTime.from with offset +05:30 and no annotation | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00+05:30' | BJS: THROWS RangeError: Cannot parse Temporal.ZonedDateTime from "2020-01-01T00:00+05:30"
+   toZonedDateTimeISO("2020-01-01T00:00+05:30") | VM: +05:30 | BJS: +05:30
+!! toZonedDateTimeISO("2020-01-01T00:00+05:30:15") | VM: THROWS RangeError: Temporal: a time zone offset cannot have seconds: +05:30:15 | BJS: THROWS RangeError: Temporal: unknown time zone "2020-01-01T00:00+05:30:15"
+!! DateTimeFormat +05:30 hour at epoch | VM: 05:30 | BJS: 5:30
+   +00:00 equals UTC | VM: false | BJS: false
+   +05:30 equals +0530 | VM: true | BJS: true
+   -12:00 wall 2020-01-01T00:00 to instant | VM: 2020-01-01T12:00:00Z | BJS: 2020-01-01T12:00:00Z

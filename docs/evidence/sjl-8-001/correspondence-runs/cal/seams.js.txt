@@ -1,0 +1,17 @@
+persian 0622-03-21 => 1/M01/1 round-trip 0622-03-22
+persian 0622-03-22 => 1/M01/1 after 1/M01/1 (daysInMonth 31, monthsInYear 12)
+persian window 0622-01-01..0623-06-30 => 546 days, 2 anomalies
+persian +010000-01-01 => 9378/M10/11 round-trip 9999-12-29 after 9378/M10/13 (daysInMonth 30, monthsInYear 12)
+persian +010000-01-02 => 9378/M10/12 round-trip 9999-12-30
+persian +010000-01-03 => 9378/M10/13 round-trip 9999-12-31
+persian window 9999-01-01..+010001-06-30 => 912 days, 3 anomalies
+persian window 2123-01-01..2124-12-31 => 731 days, 0 anomalies
+chinese window 1899-06-01..1902-06-30 => 1125 days, 0 anomalies
+chinese window 1911-06-01..1912-06-30 => 396 days, 0 anomalies
+chinese window 2100-06-01..2104-06-30 => 1491 days, 0 anomalies
+dangi window 0917-06-01..0918-06-30 => 395 days, 0 anomalies
+dangi window 1899-06-01..1902-06-30 => 1125 days, 0 anomalies
+dangi window 2050-06-01..2052-06-30 => 761 days, 0 anomalies
+dangi window 2100-06-01..2104-06-30 => 1491 days, 0 anomalies
+islamic-umalqura window 1881-06-01..1883-12-31 => 944 days, 0 anomalies
+islamic-umalqura window 2173-06-01..2175-06-30 => 760 days, 0 anomalies

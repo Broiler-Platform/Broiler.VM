@@ -1,0 +1,546 @@
+138c138
+< chinese 1850-01-01 => ,,1849,12,M11,18,343,29,384,13,true
+---
+> chinese 1850-01-01 => ,,1849,12,M11,19,343,30,384,13,true
+140c140
+< chinese 1853-05-11 => ,,1853,4,M04,4,92,30,354,12,false
+---
+> chinese 1853-05-11 => ,,1853,4,M04,4,93,30,355,12,false
+142,143c142,143
+< chinese 1856-09-18 => ,,1856,8,M08,19,226,29,355,12,false
+< chinese 1858-05-24 => ,,1858,4,M04,12,101,30,355,12,false
+---
+> chinese 1856-09-18 => ,,1856,8,M08,20,226,30,355,12,false
+> chinese 1858-05-24 => ,,1858,4,M04,12,100,29,354,12,false
+148,167c148,167
+< chinese 1866-10-14 => ,,1866,9,M09,6,242,30,354,12,false
+< chinese 1868-06-18 => ,,1868,5,M04,28,146,29,384,13,true
+< chinese 1870-02-21 => ,,1870,1,M01,21,21,29,384,13,true
+< chinese 1871-10-27 => ,,1871,9,M09,14,250,30,354,12,false
+< chinese 1873-07-01 => ,,1873,6,M06,7,154,30,383,13,true
+< chinese 1875-03-06 => ,,1875,1,M01,29,29,29,354,12,false
+< chinese 1876-11-08 => ,,1876,10,M09,22,288,29,384,13,true
+< chinese 1878-07-14 => ,,1878,6,M06,15,163,30,384,13,true
+< chinese 1880-03-18 => ,,1880,2,M02,8,37,30,354,12,false
+< chinese 1881-11-21 => ,,1881,11,M10,1,296,30,384,13,true
+< chinese 1883-07-27 => ,,1883,6,M06,23,171,30,355,12,false
+< chinese 1885-03-31 => ,,1885,2,M02,16,45,30,354,12,false
+< chinese 1886-12-04 => ,,1886,11,M11,9,304,30,354,12,false
+< chinese 1888-08-08 => ,,1888,7,M07,2,179,30,355,12,false
+< chinese 1890-04-13 => ,,1890,2,M02,24,53,30,354,12,false
+< chinese 1891-12-17 => ,,1891,11,M11,17,312,30,354,12,false
+< chinese 1893-08-21 => ,,1893,7,M07,10,187,30,355,12,false
+< chinese 1895-04-26 => ,,1895,4,M04,3,91,30,384,13,true
+< chinese 1896-12-29 => ,,1896,11,M11,25,320,30,354,12,false
+< chinese 1898-09-03 => ,,1898,8,M07,18,224,30,383,13,true
+---
+> chinese 1866-10-14 => ,,1866,9,M09,6,242,29,355,12,false
+> chinese 1868-06-18 => ,,1868,5,M04L,28,146,29,383,13,true
+> chinese 1870-02-21 => ,,1870,1,M01,22,22,30,384,13,true
+> chinese 1871-10-27 => ,,1871,9,M09,14,251,30,355,12,false
+> chinese 1873-07-01 => ,,1873,6,M06,7,154,29,384,13,true
+> chinese 1875-03-06 => ,,1875,1,M01,29,29,30,354,12,false
+> chinese 1876-11-08 => ,,1876,10,M09,23,288,30,384,13,true
+> chinese 1878-07-14 => ,,1878,6,M06,15,163,30,354,12,false
+> chinese 1880-03-18 => ,,1880,2,M02,8,38,29,355,12,false
+> chinese 1881-11-21 => ,,1881,10,M09,30,296,30,384,13,true
+> chinese 1883-07-27 => ,,1883,6,M06,24,170,30,354,12,false
+> chinese 1885-03-31 => ,,1885,2,M02,15,45,29,354,12,false
+> chinese 1886-12-04 => ,,1886,11,M11,9,304,29,354,12,false
+> chinese 1888-08-08 => ,,1888,7,M07,1,179,29,354,12,false
+> chinese 1890-04-13 => ,,1890,3,M02L,24,83,29,384,13,true
+> chinese 1891-12-17 => ,,1891,11,M11,17,312,30,355,12,false
+> chinese 1893-08-21 => ,,1893,7,M07,10,186,29,354,12,false
+> chinese 1895-04-26 => ,,1895,4,M04,2,91,29,383,13,true
+> chinese 1896-12-29 => ,,1896,11,M11,25,321,29,355,12,false
+> chinese 1898-09-03 => ,,1898,8,M07,18,225,30,384,13,true
+258,261c258,261
+< chinese -000500-07-01 => ,,-500,6,M05,9,156,30,384,13,true
+< chinese 0000-01-01 => ,,-1,12,M12,9,333,30,383,13,true
+< chinese 0001-01-01 => ,,0,11,M11,20,316,29,355,12,false
+< chinese 0622-07-19 => ,,622,6,M06,3,151,29,355,12,false
+---
+> chinese -000500-07-01 => ,,-500,6,M05,9,157,30,384,13,true
+> chinese 0000-01-01 => ,,-1,12,M12,9,333,30,354,12,false
+> chinese 0001-01-01 => ,,0,12,M11,21,345,30,384,13,true
+> chinese 0622-07-19 => ,,622,6,M06,3,151,29,354,12,false
+263,264c263,264
+< chinese 1582-10-15 => ,,1582,9,M09,19,255,30,354,12,false
+< chinese 1700-03-01 => ,,1700,1,M01,11,11,29,354,12,false
+---
+> chinese 1582-10-15 => ,,1582,9,M09,19,255,29,355,12,false
+> chinese 1700-03-01 => ,,1700,1,M01,11,11,30,354,12,false
+273,274c273,274
+< chinese 3000-09-01 => ,,3000,8,M07,11,218,30,384,13,true
+< chinese +010000-01-01 => ,,9999,12,M12,2,327,30,355,12,false
+---
+> chinese 3000-09-01 => ,,3000,8,M07,11,217,29,383,13,true
+> chinese +010000-01-01 => ,,9999,12,M12,4,328,30,354,12,false
+412c412
+< dangi 1850-01-01 => ,,1849,12,M11,18,343,29,384,13,true
+---
+> dangi 1850-01-01 => ,,1849,12,M11,19,343,30,384,13,true
+414c414
+< dangi 1853-05-11 => ,,1853,4,M04,4,92,30,354,12,false
+---
+> dangi 1853-05-11 => ,,1853,4,M04,4,93,30,355,12,false
+416,417c416,417
+< dangi 1856-09-18 => ,,1856,8,M08,19,226,29,355,12,false
+< dangi 1858-05-24 => ,,1858,4,M04,12,101,30,355,12,false
+---
+> dangi 1856-09-18 => ,,1856,8,M08,20,226,30,355,12,false
+> dangi 1858-05-24 => ,,1858,4,M04,12,100,29,354,12,false
+422,441c422,441
+< dangi 1866-10-14 => ,,1866,9,M09,6,242,30,354,12,false
+< dangi 1868-06-18 => ,,1868,5,M04,28,146,29,384,13,true
+< dangi 1870-02-21 => ,,1870,1,M01,21,21,29,384,13,true
+< dangi 1871-10-27 => ,,1871,9,M09,14,250,30,354,12,false
+< dangi 1873-07-01 => ,,1873,6,M06,7,154,30,383,13,true
+< dangi 1875-03-06 => ,,1875,1,M01,29,29,29,354,12,false
+< dangi 1876-11-08 => ,,1876,10,M09,22,288,29,384,13,true
+< dangi 1878-07-14 => ,,1878,6,M06,15,163,30,384,13,true
+< dangi 1880-03-18 => ,,1880,2,M02,8,37,30,354,12,false
+< dangi 1881-11-21 => ,,1881,11,M10,1,296,30,384,13,true
+< dangi 1883-07-27 => ,,1883,6,M06,23,171,30,355,12,false
+< dangi 1885-03-31 => ,,1885,2,M02,16,45,30,354,12,false
+< dangi 1886-12-04 => ,,1886,11,M11,9,304,30,354,12,false
+< dangi 1888-08-08 => ,,1888,7,M07,2,179,30,355,12,false
+< dangi 1890-04-13 => ,,1890,2,M02,24,53,30,354,12,false
+< dangi 1891-12-17 => ,,1891,11,M11,17,312,30,354,12,false
+< dangi 1893-08-21 => ,,1893,7,M07,10,187,30,355,12,false
+< dangi 1895-04-26 => ,,1895,4,M04,3,91,30,384,13,true
+< dangi 1896-12-29 => ,,1896,11,M11,25,320,30,354,12,false
+< dangi 1898-09-03 => ,,1898,8,M07,18,224,30,383,13,true
+---
+> dangi 1866-10-14 => ,,1866,9,M09,6,242,29,355,12,false
+> dangi 1868-06-18 => ,,1868,5,M04L,28,146,29,383,13,true
+> dangi 1870-02-21 => ,,1870,1,M01,22,22,30,384,13,true
+> dangi 1871-10-27 => ,,1871,9,M09,14,251,30,355,12,false
+> dangi 1873-07-01 => ,,1873,6,M06,7,154,29,384,13,true
+> dangi 1875-03-06 => ,,1875,1,M01,29,29,30,354,12,false
+> dangi 1876-11-08 => ,,1876,10,M09,23,288,30,384,13,true
+> dangi 1878-07-14 => ,,1878,6,M06,15,163,30,354,12,false
+> dangi 1880-03-18 => ,,1880,2,M02,8,38,29,355,12,false
+> dangi 1881-11-21 => ,,1881,10,M09,30,296,30,384,13,true
+> dangi 1883-07-27 => ,,1883,6,M06,24,170,30,354,12,false
+> dangi 1885-03-31 => ,,1885,2,M02,15,45,29,354,12,false
+> dangi 1886-12-04 => ,,1886,11,M11,9,304,29,354,12,false
+> dangi 1888-08-08 => ,,1888,7,M07,1,179,29,354,12,false
+> dangi 1890-04-13 => ,,1890,3,M02L,24,83,29,384,13,true
+> dangi 1891-12-17 => ,,1891,11,M11,17,312,30,355,12,false
+> dangi 1893-08-21 => ,,1893,7,M07,10,186,29,354,12,false
+> dangi 1895-04-26 => ,,1895,4,M04,2,91,29,383,13,true
+> dangi 1896-12-29 => ,,1896,11,M11,25,321,29,355,12,false
+> dangi 1898-09-03 => ,,1898,8,M07,18,225,30,384,13,true
+532,538c532,538
+< dangi -000500-07-01 => ,,-500,6,M05,9,156,30,384,13,true
+< dangi 0000-01-01 => ,,-1,12,M12,9,333,30,383,13,true
+< dangi 0001-01-01 => ,,0,11,M11,20,316,29,355,12,false
+< dangi 0622-07-19 => ,,622,6,M06,3,151,29,355,12,false
+< dangi 1000-06-15 => ,,1000,5,M05,5,123,29,354,12,false
+< dangi 1582-10-15 => ,,1582,9,M09,19,255,30,354,12,false
+< dangi 1700-03-01 => ,,1700,1,M01,11,11,29,354,12,false
+---
+> dangi -000500-07-01 => ,,-500,6,M05,9,157,30,384,13,true
+> dangi 0000-01-01 => ,,-1,12,M12,9,333,30,354,12,false
+> dangi 0001-01-01 => ,,0,12,M11,21,345,30,384,13,true
+> dangi 0622-07-19 => ,,622,6,M06,3,151,29,354,12,false
+> dangi 1000-06-15 => ,,1000,5,M05,6,123,29,354,12,false
+> dangi 1582-10-15 => ,,1582,9,M09,19,255,29,355,12,false
+> dangi 1700-03-01 => ,,1700,1,M01,11,11,30,354,12,false
+547,548c547,548
+< dangi 3000-09-01 => ,,3000,8,M07,11,218,30,384,13,true
+< dangi +010000-01-01 => ,,9999,12,M12,2,327,30,355,12,false
+---
+> dangi 3000-09-01 => ,,3000,8,M07,11,217,29,383,13,true
+> dangi +010000-01-01 => ,,9999,12,M12,4,328,30,354,12,false
+1905c1905
+< persian 0622-07-19 => ap,1,1,4,M04,28,121,31,366,12,true
+---
+> persian 0622-07-19 => ap,1,1,4,M04,27,120,31,365,12,false
+1908c1908
+< persian 1700-03-01 => ap,1078,1078,12,M12,11,347,30,366,12,true
+---
+> persian 1700-03-01 => ap,1078,1078,12,M12,10,346,29,365,12,false
+2129,2130c2129,2130
+< buddhist toPlainYearMonth => 2023-03-01[u-ca=buddhist]
+< buddhist toPlainMonthDay => 1972-03-15[u-ca=buddhist]
+---
+> buddhist toPlainYearMonth => 2023-03-15[u-ca=buddhist]
+> buddhist toPlainMonthDay => 03-15
+2180c2180
+< chinese until 1999-01-01 round months => -P24Y3M
+---
+> chinese until 1999-01-01 round months => -P24Y3M10D
+2186c2186
+< chinese until 2023-03-14 round months => PT0S
+---
+> chinese until 2023-03-14 round months => -P1D
+2192c2192
+< chinese until 2024-02-29 round months => P12M
+---
+> chinese until 2024-02-29 round months => P11M26D
+2198c2198
+< chinese until 2030-12-31 round months => P7Y9M
+---
+> chinese until 2030-12-31 round months => P7Y9M13D
+2204c2204
+< chinese until 1850-06-06 round months => -P172Y10M
+---
+> chinese until 1850-06-06 round months => -P172Y9M27D
+2208c2208
+< chinese toPlainYearMonth => 2023-02-20[u-ca=chinese]
+---
+> chinese toPlainYearMonth => 2023-03-15[u-ca=chinese]
+2214,2215c2214,2215
+< chinese duration round relativeTo => P2Y8M26D
+< chinese duration total relativeTo => 33.86666666666667
+---
+> chinese duration round relativeTo => throws Error
+> chinese duration total relativeTo => throws Error
+2262c2262
+< coptic until 1999-01-01 round months => -P24Y2M
+---
+> coptic until 1999-01-01 round months => -P24Y2M13D
+2268c2268
+< coptic until 2023-03-14 round months => PT0S
+---
+> coptic until 2023-03-14 round months => -P1D
+2274c2274
+< coptic until 2024-02-29 round months => P1Y
+---
+> coptic until 2024-02-29 round months => P12M15D
+2280c2280
+< coptic until 2030-12-31 round months => P7Y11M
+---
+> coptic until 2030-12-31 round months => P7Y10M16D
+2286c2286
+< coptic until 1850-06-06 round months => -P172Y10M
+---
+> coptic until 1850-06-06 round months => -P172Y10M6D
+2290c2290
+< coptic toPlainYearMonth => 2023-03-10[u-ca=coptic]
+---
+> coptic toPlainYearMonth => 2023-03-15[u-ca=coptic]
+2296,2297c2296,2297
+< coptic duration round relativeTo => P2Y9M24D
+< coptic duration total relativeTo => 35.8
+---
+> coptic duration round relativeTo => throws Error
+> coptic duration total relativeTo => throws Error
+2341c2341
+< dangi until 1999-01-01 round months => -P24Y3M
+---
+> dangi until 1999-01-01 round months => -P24Y3M10D
+2347c2347
+< dangi until 2023-03-14 round months => PT0S
+---
+> dangi until 2023-03-14 round months => -P1D
+2353c2353
+< dangi until 2024-02-29 round months => P12M
+---
+> dangi until 2024-02-29 round months => P11M26D
+2359c2359
+< dangi until 2030-12-31 round months => P7Y9M
+---
+> dangi until 2030-12-31 round months => P7Y9M13D
+2365c2365
+< dangi until 1850-06-06 round months => -P172Y10M
+---
+> dangi until 1850-06-06 round months => -P172Y9M27D
+2369c2369
+< dangi toPlainYearMonth => 2023-02-20[u-ca=dangi]
+---
+> dangi toPlainYearMonth => 2023-03-15[u-ca=dangi]
+2375,2376c2375,2376
+< dangi duration round relativeTo => P2Y8M26D
+< dangi duration total relativeTo => 33.86666666666667
+---
+> dangi duration round relativeTo => throws Error
+> dangi duration total relativeTo => throws Error
+2423c2423
+< ethioaa until 1999-01-01 round months => -P24Y2M
+---
+> ethioaa until 1999-01-01 round months => -P24Y2M13D
+2429c2429
+< ethioaa until 2023-03-14 round months => PT0S
+---
+> ethioaa until 2023-03-14 round months => -P1D
+2435c2435
+< ethioaa until 2024-02-29 round months => P1Y
+---
+> ethioaa until 2024-02-29 round months => P12M15D
+2441c2441
+< ethioaa until 2030-12-31 round months => P7Y11M
+---
+> ethioaa until 2030-12-31 round months => P7Y10M16D
+2447c2447
+< ethioaa until 1850-06-06 round months => -P172Y10M
+---
+> ethioaa until 1850-06-06 round months => -P172Y10M6D
+2451c2451
+< ethioaa toPlainYearMonth => 2023-03-10[u-ca=ethioaa]
+---
+> ethioaa toPlainYearMonth => 2023-03-15[u-ca=ethioaa]
+2457,2458c2457,2458
+< ethioaa duration round relativeTo => P2Y9M24D
+< ethioaa duration total relativeTo => 35.8
+---
+> ethioaa duration round relativeTo => throws Error
+> ethioaa duration total relativeTo => throws Error
+2505c2505
+< ethiopic until 1999-01-01 round months => -P24Y2M
+---
+> ethiopic until 1999-01-01 round months => -P24Y2M13D
+2511c2511
+< ethiopic until 2023-03-14 round months => PT0S
+---
+> ethiopic until 2023-03-14 round months => -P1D
+2517c2517
+< ethiopic until 2024-02-29 round months => P1Y
+---
+> ethiopic until 2024-02-29 round months => P12M15D
+2523c2523
+< ethiopic until 2030-12-31 round months => P7Y11M
+---
+> ethiopic until 2030-12-31 round months => P7Y10M16D
+2529c2529
+< ethiopic until 1850-06-06 round months => -P172Y10M
+---
+> ethiopic until 1850-06-06 round months => -P172Y10M6D
+2533c2533
+< ethiopic toPlainYearMonth => 2023-03-10[u-ca=ethiopic]
+---
+> ethiopic toPlainYearMonth => 2023-03-15[u-ca=ethiopic]
+2539,2540c2539,2540
+< ethiopic duration round relativeTo => P2Y9M24D
+< ethiopic duration total relativeTo => 35.8
+---
+> ethiopic duration round relativeTo => throws Error
+> ethiopic duration total relativeTo => throws Error
+2615,2616c2615,2616
+< gregory toPlainYearMonth => 2023-03-01[u-ca=gregory]
+< gregory toPlainMonthDay => 1972-03-15[u-ca=gregory]
+---
+> gregory toPlainYearMonth => 2023-03-15[u-ca=gregory]
+> gregory toPlainMonthDay => 03-15
+2669c2669
+< hebrew until 1999-01-01 round months => -P24Y2M
+---
+> hebrew until 1999-01-01 round months => -P24Y2M9D
+2675c2675
+< hebrew until 2023-03-14 round months => PT0S
+---
+> hebrew until 2023-03-14 round months => -P1D
+2681c2681
+< hebrew until 2024-02-29 round months => P12M
+---
+> hebrew until 2024-02-29 round months => P11M28D
+2687c2687
+< hebrew until 2030-12-31 round months => P7Y9M
+---
+> hebrew until 2030-12-31 round months => P7Y9M13D
+2693c2693
+< hebrew until 1850-06-06 round months => -P172Y10M
+---
+> hebrew until 1850-06-06 round months => -P172Y9M26D
+2697c2697
+< hebrew toPlainYearMonth => 2023-02-22[u-ca=hebrew]
+---
+> hebrew toPlainYearMonth => 2023-03-15[u-ca=hebrew]
+2703,2704c2703,2704
+< hebrew duration round relativeTo => P2Y8M26D
+< hebrew duration total relativeTo => 33.89655172413793
+---
+> hebrew duration round relativeTo => throws Error
+> hebrew duration total relativeTo => throws Error
+2711c2711
+< indian from M13 => throws RangeError
+---
+> indian from M13 => 2023-02-20[u-ca=indian]
+2751c2751
+< indian until 1999-01-01 round months => -P24Y2M
+---
+> indian until 1999-01-01 round months => -P24Y2M13D
+2757c2757
+< indian until 2023-03-14 round months => PT0S
+---
+> indian until 2023-03-14 round months => -P1D
+2763c2763
+< indian until 2024-02-29 round months => P1Y
+---
+> indian until 2024-02-29 round months => P11M16D
+2769c2769
+< indian until 2030-12-31 round months => P7Y10M
+---
+> indian until 2030-12-31 round months => P7Y9M16D
+2775c2775
+< indian until 1850-06-06 round months => -P172Y9M
+---
+> indian until 1850-06-06 round months => -P172Y9M8D
+2779c2779
+< indian toPlainYearMonth => 2023-02-20[u-ca=indian]
+---
+> indian toPlainYearMonth => 2023-03-15[u-ca=indian]
+2785,2786c2785,2786
+< indian duration round relativeTo => P2Y8M24D
+< indian duration total relativeTo => 32.8
+---
+> indian duration round relativeTo => throws Error
+> indian duration total relativeTo => throws Error
+2793c2793
+< islamic-civil from M13 => throws RangeError
+---
+> islamic-civil from M13 => 2023-06-20[u-ca=islamic-civil]
+2833c2833
+< islamic-civil until 1999-01-01 round months => -P24Y11M
+---
+> islamic-civil until 1999-01-01 round months => -P24Y11M9D
+2839c2839
+< islamic-civil until 2023-03-14 round months => PT0S
+---
+> islamic-civil until 2023-03-14 round months => -P1D
+2845c2845
+< islamic-civil until 2024-02-29 round months => P1Y
+---
+> islamic-civil until 2024-02-29 round months => P11M27D
+2851c2851
+< islamic-civil until 2030-12-31 round months => P8Y
+---
+> islamic-civil until 2030-12-31 round months => P8Y13D
+2857c2857
+< islamic-civil until 1850-06-06 round months => -P178Y1M
+---
+> islamic-civil until 1850-06-06 round months => -P178Y27D
+2861c2861
+< islamic-civil toPlainYearMonth => 2023-02-22[u-ca=islamic-civil]
+---
+> islamic-civil toPlainYearMonth => 2023-03-15[u-ca=islamic-civil]
+2867,2868c2867,2868
+< islamic-civil duration round relativeTo => P2Y9M26D
+< islamic-civil duration total relativeTo => 33.86666666666667
+---
+> islamic-civil duration round relativeTo => throws Error
+> islamic-civil duration total relativeTo => throws Error
+2875c2875
+< islamic-tbla from M13 => throws RangeError
+---
+> islamic-tbla from M13 => 2023-06-19[u-ca=islamic-tbla]
+2915c2915
+< islamic-tbla until 1999-01-01 round months => -P24Y11M
+---
+> islamic-tbla until 1999-01-01 round months => -P24Y11M9D
+2921c2921
+< islamic-tbla until 2023-03-14 round months => PT0S
+---
+> islamic-tbla until 2023-03-14 round months => -P1D
+2927c2927
+< islamic-tbla until 2024-02-29 round months => P1Y
+---
+> islamic-tbla until 2024-02-29 round months => P11M27D
+2933c2933
+< islamic-tbla until 2030-12-31 round months => P8Y
+---
+> islamic-tbla until 2030-12-31 round months => P8Y13D
+2939c2939
+< islamic-tbla until 1850-06-06 round months => -P178Y1M
+---
+> islamic-tbla until 1850-06-06 round months => -P178Y27D
+2943c2943
+< islamic-tbla toPlainYearMonth => 2023-02-21[u-ca=islamic-tbla]
+---
+> islamic-tbla toPlainYearMonth => 2023-03-15[u-ca=islamic-tbla]
+2949,2950c2949,2950
+< islamic-tbla duration round relativeTo => P2Y9M26D
+< islamic-tbla duration total relativeTo => 33.86666666666667
+---
+> islamic-tbla duration round relativeTo => throws Error
+> islamic-tbla duration total relativeTo => throws Error
+2957c2957
+< islamic-umalqura from M13 => throws RangeError
+---
+> islamic-umalqura from M13 => 2023-06-19[u-ca=islamic-umalqura]
+2997c2997
+< islamic-umalqura until 1999-01-01 round months => -P24Y11M
+---
+> islamic-umalqura until 1999-01-01 round months => -P24Y11M10D
+3003c3003
+< islamic-umalqura until 2023-03-14 round months => PT0S
+---
+> islamic-umalqura until 2023-03-14 round months => -P1D
+3009c3009
+< islamic-umalqura until 2024-02-29 round months => P1Y
+---
+> islamic-umalqura until 2024-02-29 round months => P11M25D
+3015c3015
+< islamic-umalqura until 2030-12-31 round months => P8Y
+---
+> islamic-umalqura until 2030-12-31 round months => P8Y12D
+3021c3021
+< islamic-umalqura until 1850-06-06 round months => -P178Y1M
+---
+> islamic-umalqura until 1850-06-06 round months => -P178Y28D
+3025c3025
+< islamic-umalqura toPlainYearMonth => 2023-02-21[u-ca=islamic-umalqura]
+---
+> islamic-umalqura toPlainYearMonth => 2023-03-15[u-ca=islamic-umalqura]
+3031,3032c3031,3032
+< islamic-umalqura duration round relativeTo => P2Y9M25D
+< islamic-umalqura duration total relativeTo => 33.833333333333336
+---
+> islamic-umalqura duration round relativeTo => throws Error
+> islamic-umalqura duration total relativeTo => throws Error
+3107,3108c3107,3108
+< japanese toPlainYearMonth => 2023-03-01[u-ca=japanese]
+< japanese toPlainMonthDay => 1972-03-15[u-ca=japanese]
+---
+> japanese toPlainYearMonth => 2023-03-15[u-ca=japanese]
+> japanese toPlainMonthDay => 03-15
+3121c3121
+< persian from M13 => throws RangeError
+---
+> persian from M13 => 2023-02-20[u-ca=persian]
+3161c3161
+< persian until 1999-01-01 round months => -P24Y2M
+---
+> persian until 1999-01-01 round months => -P24Y2M13D
+3167c3167
+< persian until 2023-03-14 round months => PT0S
+---
+> persian until 2023-03-14 round months => -P1D
+3173c3173
+< persian until 2024-02-29 round months => P1Y
+---
+> persian until 2024-02-29 round months => P11M16D
+3179c3179
+< persian until 2030-12-31 round months => P7Y10M
+---
+> persian until 2030-12-31 round months => P7Y9M16D
+3185c3185
+< persian until 1850-06-06 round months => -P172Y9M
+---
+> persian until 1850-06-06 round months => -P172Y9M8D
+3189c3189
+< persian toPlainYearMonth => 2023-02-20[u-ca=persian]
+---
+> persian toPlainYearMonth => 2023-03-15[u-ca=persian]
+3195,3196c3195,3196
+< persian duration round relativeTo => P2Y8M24D
+< persian duration total relativeTo => 32.8
+---
+> persian duration round relativeTo => throws Error
+> persian duration total relativeTo => throws Error
+3271,3272c3271,3272
+< roc toPlainYearMonth => 2023-03-01[u-ca=roc]
+< roc toPlainMonthDay => 1972-03-15[u-ca=roc]
+---
+> roc toPlainYearMonth => 2023-03-15[u-ca=roc]
+> roc toPlainMonthDay => 03-15
+3327c3327
+< buddhist month-day to date => 2001-02-10[u-ca=buddhist]
+---
+> buddhist month-day to date => 2544-02-10[u-ca=buddhist]
+3999c3999
+< roc month-day to date => 2001-02-10[u-ca=roc]
+---
+> roc month-day to date => 0090-02-10[u-ca=roc]

@@ -1,0 +1,7 @@
+!! Temporal.Now.timeZoneId() | VM: UTC | BJS: America/New_York
+!! Intl.DateTimeFormat().resolvedOptions().timeZone | VM: UTC | BJS: America/New_York
+   typeof Temporal.Now.zonedDateTimeISO() | VM: object | BJS: object
+!! new Date(2040, 6, 1, 12).getTimezoneOffset() | VM: 0 | BJS: 240
+!! new Date(2026, 6, 1, 12).getTimezoneOffset() | VM: 0 | BJS: 240
+!! America/New_York 2040-07-01 Temporal offset | VM: -04:00 | BJS: -05:00
+!! DateTimeFormat (default zone) hour at 2040-07-01T16:00Z | VM: 16 | BJS: 12

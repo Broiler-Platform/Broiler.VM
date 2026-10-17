@@ -1,0 +1,78 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl8/a2-disambiguation.js [raw]  uncaught Error: OUT<<gap 2026-03-08T02:30 America/New_York compatible => 2026-03-08T03:30:00-04:00[America/New_York]
+gap 2026-03-08T02:30 America/New_York earlier => 2026-03-08T01:30:00-05:00[America/New_York]
+gap 2026-03-08T02:30 America/New_York later => 2026-03-08T03:30:00-04:00[America/New_York]
+gap 2026-03-08T02:30 America/New_York reject => THROWS RangeError: Temporal: the local time does not exist in America/New_York
+overlap 2026-11-01T01:30 America/New_York compatible => 2026-11-01T01:30:00-04:00[America/New_York]
+overlap 2026-11-01T01:30 America/New_York earlier => 2026-11-01T01:30:00-04:00[America/New_York]
+overlap 2026-11-01T01:30 America/New_York later => 2026-11-01T01:30:00-05:00[America/New_York]
+overlap 2026-11-01T01:30 America/New_York reject => THROWS RangeError: Temporal: the local time is ambiguous in America/New_York
+gap 2026-03-29T02:30 Europe/Berlin compatible => 2026-03-29T03:30:00+02:00[Europe/Berlin]
+gap 2026-03-29T02:30 Europe/Berlin earlier => 2026-03-29T01:30:00+01:00[Europe/Berlin]
+gap 2026-03-29T02:30 Europe/Berlin later => 2026-03-29T03:30:00+02:00[Europe/Berlin]
+gap 2026-03-29T02:30 Europe/Berlin reject => THROWS RangeError: Temporal: the local time does not exist in Europe/Berlin
+overlap 2026-10-25T02:30 Europe/Berlin compatible => 2026-10-25T02:30:00+02:00[Europe/Berlin]
+overlap 2026-10-25T02:30 Europe/Berlin earlier => 2026-10-25T02:30:00+02:00[Europe/Berlin]
+overlap 2026-10-25T02:30 Europe/Berlin later => 2026-10-25T02:30:00+01:00[Europe/Berlin]
+overlap 2026-10-25T02:30 Europe/Berlin reject => THROWS RangeError: Temporal: the local time is ambiguous in Europe/Berlin
+overlap 30min 2026-04-05T01:45 Australia/Lord_Howe compatible => 2026-04-05T01:45:00+11:00[Australia/Lord_Howe]
+overlap 30min 2026-04-05T01:45 Australia/Lord_Howe earlier => 2026-04-05T01:45:00+11:00[Australia/Lord_Howe]
+overlap 30min 2026-04-05T01:45 Australia/Lord_Howe later => 2026-04-05T01:45:00+10:30[Australia/Lord_Howe]
+overlap 30min 2026-04-05T01:45 Australia/Lord_Howe reject => THROWS RangeError: Temporal: the local time is ambiguous in Australia/Lord_Howe
+gap 30min 2026-10-04T02:15 Australia/Lord_Howe compatible => 2026-10-04T02:45:00+11:00[Australia/Lord_Howe]
+gap 30min 2026-10-04T02:15 Australia/Lord_Howe earlier => 2026-10-04T01:45:00+10:30[Australia/Lord_Howe]
+gap 30min 2026-10-04T02:15 Australia/Lord_Howe later => 2026-10-04T02:45:00+11:00[Australia/Lord_Howe]
+gap 30min 2026-10-04T02:15 Australia/Lord_Howe reject => THROWS RangeError: Temporal: the local time does not exist in Australia/Lord_Howe
+gap 24h 1994-12-31T12:00 Pacific/Kiritimati compatible => 1995-01-01T12:00:00+14:00[Pacific/Kiritimati]
+gap 24h 1994-12-31T12:00 Pacific/Kiritimati earlier => 1994-12-30T12:00:00-10:00[Pacific/Kiritimati]
+gap 24h 1994-12-31T12:00 Pacific/Kiritimati later => 1995-01-01T12:00:00+14:00[Pacific/Kiritimati]
+gap 24h 1994-12-31T12:00 Pacific/Kiritimati reject => THROWS RangeError: Temporal: the local time does not exist in Pacific/Kiritimati
+gap 24h 2011-12-30T12:00 Pacific/Apia compatible => 2011-12-31T12:00:00+14:00[Pacific/Apia]
+gap 24h 2011-12-30T12:00 Pacific/Apia earlier => 2011-12-29T12:00:00-10:00[Pacific/Apia]
+gap 24h 2011-12-30T12:00 Pacific/Apia later => 2011-12-31T12:00:00+14:00[Pacific/Apia]
+gap 24h 2011-12-30T12:00 Pacific/Apia reject => THROWS RangeError: Temporal: the local time does not exist in Pacific/Apia
+overlap 24h 1867-10-19T12:00 America/Juneau compatible => 1867-10-19T12:00:00+15:02[America/Juneau]
+overlap 24h 1867-10-19T12:00 America/Juneau earlier => 1867-10-19T12:00:00+15:02[America/Juneau]
+overlap 24h 1867-10-19T12:00 America/Juneau later => 1867-10-19T12:00:00-08:58[America/Juneau]
+overlap 24h 1867-10-19T12:00 America/Juneau reject => THROWS RangeError: Temporal: the local time is ambiguous in America/Juneau
+gap sub-minute 1972-01-07T00:20:00 Africa/Monrovia compatible => 1972-01-07T01:04:30+00:00[Africa/Monrovia]
+gap sub-minute 1972-01-07T00:20:00 Africa/Monrovia earlier => 1972-01-06T23:35:30-00:45[Africa/Monrovia]
+gap sub-minute 1972-01-07T00:20:00 Africa/Monrovia later => 1972-01-07T01:04:30+00:00[Africa/Monrovia]
+gap sub-minute 1972-01-07T00:20:00 Africa/Monrovia reject => THROWS RangeError: Temporal: the local time does not exist in Africa/Monrovia
+gap after 2037 2040-03-11T02:30 America/New_York compatible => 2040-03-11T03:30:00-04:00[America/New_York]
+gap after 2037 2040-03-11T02:30 America/New_York earlier => 2040-03-11T01:30:00-05:00[America/New_York]
+gap after 2037 2040-03-11T02:30 America/New_York later => 2040-03-11T03:30:00-04:00[America/New_York]
+gap after 2037 2040-03-11T02:30 America/New_York reject => THROWS RangeError: Temporal: the local time does not exist in America/New_York
+overlap after 2037 2040-11-04T01:30 America/New_York compatible => 2040-11-04T01:30:00-04:00[America/New_York]
+overlap after 2037 2040-11-04T01:30 America/New_York earlier => 2040-11-04T01:30:00-04:00[America/New_York]
+overlap after 2037 2040-11-04T01:30 America/New_York later => 2040-11-04T01:30:00-05:00[America/New_York]
+overlap after 2037 2040-11-04T01:30 America/New_York reject => THROWS RangeError: Temporal: the local time is ambiguous in America/New_York
+plain 2026-07-01T12:00 America/New_York compatible => 2026-07-01T12:00:00-04:00[America/New_York]
+plain 2026-07-01T12:00 America/New_York earlier => 2026-07-01T12:00:00-04:00[America/New_York]
+plain 2026-07-01T12:00 America/New_York later => 2026-07-01T12:00:00-04:00[America/New_York]
+plain 2026-07-01T12:00 America/New_York reject => 2026-07-01T12:00:00-04:00[America/New_York]
+ZonedDateTime.from overlap with offset -05:00 => 2026-11-01T01:30:00-05:00[America/New_York]
+ZonedDateTime.from mismatched offset (reject default) => THROWS RangeError: Temporal: the offset does not agree with the time zone
+ZonedDateTime.from bag gap later => 2026-03-08T03:30:00-04:00[America/New_York]
+withPlainTime into gap => 2026-03-08T03:30:00-04:00[America/New_York]
+hoursInDay New York 2026-03-08 => 23
+hoursInDay New York 2026-11-01 => 25
+hoursInDay Apia 2011-12-29 => 24
+hoursInDay New York 2040-03-11 => 23>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl8/a2-disambiguation.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl8  e.g. test/sjl8/a2-disambiguation.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl8/a2-disambiguation.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

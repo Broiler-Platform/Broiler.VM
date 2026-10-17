@@ -1,0 +1,40 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl8/a1-offsets.js [raw]  uncaught Error: OUT<<America/New_York @ 2026-03-08T06:59:59Z => -05:00 -18000000000000
+America/New_York @ 2026-03-08T07:00:00Z => -04:00 -14400000000000
+America/New_York @ 2026-11-01T05:59:59Z => -04:00 -14400000000000
+America/New_York @ 2026-11-01T06:00:00Z => -05:00 -18000000000000
+America/New_York @ 1883-11-18T16:59:59Z => -04:56:02 -17762000000000
+Asia/Kolkata @ 2026-01-01T00:00Z => +05:30 19800000000000
+Australia/Lord_Howe @ 2026-01-01T00:00Z => +11:00 39600000000000
+Australia/Lord_Howe @ 2026-07-01T00:00Z => +10:30 37800000000000
+Pacific/Kiritimati @ 1994-12-30T00:00Z => -10:00 -36000000000000
+Pacific/Kiritimati @ 1995-01-02T00:00Z => +14:00 50400000000000
+Africa/Monrovia @ 1970-01-01T00:00Z => -00:44:30 -2670000000000
+Europe/Paris @ 1900-01-01T00:00Z => +00:09:21 561000000000
+Asia/Kathmandu @ 2026-01-01T00:00Z => +05:45 20700000000000
+America/St_Johns @ 2026-07-01T00:00Z => -02:30 -9000000000000
+Pacific/Apia @ 2011-12-29T12:00Z => -10:00 -36000000000000
+Pacific/Apia @ 2011-12-31T12:00Z => +14:00 50400000000000
+America/New_York @ -271821-04-20T00:00Z => -04:56:02 -17762000000000
+America/New_York @ +275760-09-13T00:00Z => -04:00 -14400000000000
+Europe/London @ 1971-07-01T00:00Z => +01:00 3600000000000
+Instant.toString({timeZone: "Africa/Monrovia"}) at 1970 => 1969-12-31T23:15:30-00:45
+ZonedDateTime Africa/Monrovia 1970 toString => 1969-12-31T23:15:30-00:45[Africa/Monrovia]
+Date.prototype.toTemporalInstant().toZonedDateTimeISO("Asia/Kolkata") => 1970-01-01T05:30:00+05:30[Asia/Kolkata]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl8/a1-offsets.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl8  e.g. test/sjl8/a1-offsets.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl8/a1-offsets.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

@@ -1,0 +1,4 @@
+new Temporal.ZonedDateTime(0n, "Factory") => THROWS RangeError: Temporal: Factory is not an available time zone
+new Temporal.ZonedDateTime(0n, "factory").timeZoneId => THROWS RangeError: Temporal: factory is not an available time zone
+Intl.DateTimeFormat timeZone Factory resolved => THROWS RangeError: Intl.DateTimeFormat: Factory is not an available time zone
+Intl.supportedValuesOf("timeZone") includes Factory => false

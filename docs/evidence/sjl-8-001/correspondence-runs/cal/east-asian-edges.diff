@@ -1,0 +1,68 @@
+18,19c18,19
+< dangi from 2099 M02L 1 reject => throws RangeError
+< dangi from 2099 M03L 1 reject => 2099-04-21
+---
+> dangi from 2099 M02L 1 reject => 2099-03-22
+> dangi from 2099 M03L 1 reject => throws RangeError
+22,26c22,26
+< chinese from 2104 M05L 1 reject => throws RangeError
+< chinese from 2104 M06L 1 reject => 2104-07-23
+< chinese from 2057 M08 30 reject => throws RangeError
+< chinese from 2057 M09 1 reject => 2057-09-28
+< dangi from 2057 M08 30 reject => 2057-09-28
+---
+> chinese from 2104 M05L 1 reject => 2104-06-23
+> chinese from 2104 M06L 1 reject => throws RangeError
+> chinese from 2057 M08 30 reject => 2057-09-28
+> chinese from 2057 M09 1 reject => 2057-09-29
+> dangi from 2057 M08 30 reject => throws RangeError
+43c43
+< chinese 2057-09-28 => 2057,9,M09,1,237,30,354,12,false back 2057-09-28
+---
+> chinese 2057-09-28 => 2057,8,M08,30,237,30,354,12,false back 2057-09-28
+49,51c49,51
+< chinese 2103-02-07 => 2103,1,M01,1,1,30,354,12,false back 2103-02-07
+< chinese 2104-01-27 => 2104,1,M01,1,1,30,384,13,true back 2104-01-27
+< chinese 2104-01-28 => 2104,1,M01,2,2,30,384,13,true back 2104-01-28
+---
+> chinese 2103-02-07 => 2103,1,M01,1,1,29,355,12,false back 2103-02-07
+> chinese 2104-01-27 => 2103,12,M12,30,355,30,355,12,false back 2104-01-27
+> chinese 2104-01-28 => 2104,1,M01,1,1,29,384,13,true back 2104-01-28
+54,57c54,57
+< chinese -271821-04-19 => -271821,3,M03,17,76,30,354,12,false back -271821-04-19
+< chinese -271000-01-01 => -271001,12,M12,8,333,30,355,12,false back -271000-01-01
+< chinese +275760-09-13 => 275760,7,M07,30,207,30,354,12,false back +275760-09-13
+< chinese +275000-01-01 => 274999,12,M11,13,338,29,384,13,true back +275000-01-01
+---
+> chinese -271821-04-19 => throws Error
+> chinese -271000-01-01 => throws Error
+> chinese +275760-09-13 => 275760,7,M07,13,204,31,356,12,false back +275760-09-13
+> chinese +275000-01-01 => 274999,10,M10,16,290,22,352,12,false back +275000-01-01
+74,76c74,76
+< dangi 2057-09-28 => 2057,8,M08,30,237,30,354,12,false back 2057-09-28
+< dangi 2061-01-21 => 2060,12,M12,30,355,30,355,12,false back 2061-01-21
+< dangi 2061-01-22 => 2061,1,M01,1,1,29,383,13,true back 2061-01-22
+---
+> dangi 2057-09-28 => 2057,9,M09,1,237,30,354,12,false back 2057-09-28
+> dangi 2061-01-21 => 2061,1,M01,1,1,30,384,13,true back 2061-01-21
+> dangi 2061-01-22 => 2061,1,M01,2,2,30,384,13,true back 2061-01-22
+80c80
+< dangi 2103-02-07 => 2103,1,M01,1,1,30,355,12,false back 2103-02-07
+---
+> dangi 2103-02-07 => 2103,1,M01,1,1,29,355,12,false back 2103-02-07
+82,83c82,83
+< dangi 2104-01-28 => 2104,1,M01,1,1,29,383,13,true back 2104-01-28
+< dangi 0918-02-19 => 918,1,M01,1,1,29,354,12,false back 0918-02-19
+---
+> dangi 2104-01-28 => 2104,1,M01,1,1,29,384,13,true back 2104-01-28
+> dangi 0918-02-19 => 918,1,M01,1,1,29,355,12,false back 0918-02-19
+85,88c85,88
+< dangi -271821-04-19 => -271821,3,M03,17,76,30,354,12,false back -271821-04-19
+< dangi -271000-01-01 => -271001,12,M12,8,333,30,355,12,false back -271000-01-01
+< dangi +275760-09-13 => 275760,7,M07,30,207,30,355,12,false back +275760-09-13
+< dangi +275000-01-01 => 274999,12,M11,13,338,29,384,13,true back +275000-01-01
+---
+> dangi -271821-04-19 => throws Error
+> dangi -271000-01-01 => throws Error
+> dangi +275760-09-13 => 275760,7,M07,13,204,31,356,12,false back +275760-09-13
+> dangi +275000-01-01 => 274999,10,M10,16,290,22,352,12,false back +275000-01-01

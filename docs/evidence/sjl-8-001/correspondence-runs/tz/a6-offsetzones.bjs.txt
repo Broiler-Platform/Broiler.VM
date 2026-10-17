@@ -1,0 +1,70 @@
+ZonedDateTime ctor "+05:30" => +05:30 +05:30
+DateTimeFormat "+05:30" => +05:30
+ZonedDateTime ctor "-05:30" => -05:30 -05:30
+DateTimeFormat "-05:30" => -05:30
+ZonedDateTime ctor "+0530" => +05:30 +05:30
+DateTimeFormat "+0530" => +05:30
+ZonedDateTime ctor "+05" => +05:00 +05:00
+DateTimeFormat "+05" => +05:00
+ZonedDateTime ctor "-00:00" => +00:00 +00:00
+DateTimeFormat "-00:00" => +00:00
+ZonedDateTime ctor "+00:00" => +00:00 +00:00
+DateTimeFormat "+00:00" => +00:00
+ZonedDateTime ctor "-00" => +00:00 +00:00
+DateTimeFormat "-00" => +00:00
+ZonedDateTime ctor "+23:59" => +23:59 +23:59
+DateTimeFormat "+23:59" => +23:59
+ZonedDateTime ctor "-23:59" => -23:59 -23:59
+DateTimeFormat "-23:59" => -23:59
+ZonedDateTime ctor "+24:00" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+24:00"
+DateTimeFormat "+24:00" => THROWS RangeError: Invalid timeZone option: +24:00
+ZonedDateTime ctor "+05:60" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:60"
+DateTimeFormat "+05:60" => THROWS RangeError: Invalid timeZone option: +05:60
+ZonedDateTime ctor "+05:30:15" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:30:15"
+DateTimeFormat "+05:30:15" => THROWS RangeError: Invalid timeZone option: +05:30:15
+ZonedDateTime ctor "+05:30:00" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:30:00"
+DateTimeFormat "+05:30:00" => THROWS RangeError: Invalid timeZone option: +05:30:00
+ZonedDateTime ctor "+053015" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+053015"
+DateTimeFormat "+053015" => THROWS RangeError: Invalid timeZone option: +053015
+ZonedDateTime ctor "+05:30:15.5" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:30:15.5"
+DateTimeFormat "+05:30:15.5" => THROWS RangeError: Invalid timeZone option: +05:30:15.5
+ZonedDateTime ctor "−05:00" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "−05:00"
+DateTimeFormat "−05:00" => THROWS RangeError: Invalid timeZone option
+ZonedDateTime ctor "+٠٥:٣٠" => THROWS Error: System.FormatException: The input string '٠٥' was not in a correct format.
+   at System.Number.ThrowFormatException[TChar](ReadOnlySpan`1 value)
+   at System.Int32.Parse(String s, IFormatProvider provider)
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalZonedDateTime.TryOffsetTimeZoneIdentifier(String id, Int64& offsetNs) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalZonedDateTime.cs:line 1645
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalZonedDateTime.TryCanonicalizeTimeZoneIdentifier(String id, String& canonical) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalZonedDateTime.cs:line 1621
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalZonedDateTime..ctor(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalZonedDateTime.cs:line 54
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalZonedDateTime.<>c.<CreateClass>b__200_0(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalZonedDateTime.g.cs:line 14
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.CreateInstance(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 894
+   at inline-<work>/runs/built/a6-offsetzones.js:26,32(Closures, Arguments&)
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at t-<work>/runs/built/a6-offsetzones.js:14,1(Closures, Arguments&)
+DateTimeFormat "+٠٥:٣٠" => THROWS Error: System.FormatException: The input string '٠٥' was not in a correct format.
+   at System.Number.ThrowFormatException[TChar](ReadOnlySpan`1 value)
+   at System.Int32.Parse(String s, IFormatProvider provider)
+   at Broiler.JavaScript.BuiltIns.Intl.JSIntl.TryNormalizeOffsetTimeZone(String timeZone, String& normalized) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Intl/JSIntl.cs:line 2879
+   at Broiler.JavaScript.BuiltIns.Intl.JSIntlDateTimeFormat.ReadTimeZoneOption(JSObject userOptions) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Intl/JSIntl.cs:line 7399
+   at Broiler.JavaScript.BuiltIns.Intl.JSIntlDateTimeFormat..ctor(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Intl/JSIntl.cs:line 7305
+   at Broiler.JavaScript.BuiltIns.Intl.JSIntl.<>c.<CreateDateTimeFormatConstructor>b__74_0(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Intl/JSIntl.cs:line 584
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.CreateInstance(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 894
+   at inline-<work>/runs/built/a6-offsetzones.js:27,28(Closures, Arguments&)
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at t-<work>/runs/built/a6-offsetzones.js:14,1(Closures, Arguments&)
+ZonedDateTime ctor "+05:3" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+05:3"
+DateTimeFormat "+05:3" => THROWS RangeError: Invalid timeZone option: +05:3
+ZonedDateTime ctor "05:30" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "05:30"
+DateTimeFormat "05:30" => THROWS RangeError: Temporal: unknown time zone "05:30"
+ZonedDateTime ctor "+5:30" => THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "+5:30"
+DateTimeFormat "+5:30" => THROWS RangeError: Invalid timeZone option: +5:30
+Instant.toString({timeZone:"-00:00"}) => 2020-01-01T00:00:00+00:00
+ZonedDateTime.from with [+05:30:15] annotation => THROWS RangeError: Temporal: sub-minute offset in time zone annotation "[+05:30:15]" in "2020-01-01T00:00+05:30:15[+05:30:15]"
+ZonedDateTime.from with offset +05:30 and no annotation => THROWS RangeError: Cannot parse Temporal.ZonedDateTime from "2020-01-01T00:00+05:30"
+toZonedDateTimeISO("2020-01-01T00:00+05:30") => +05:30
+toZonedDateTimeISO("2020-01-01T00:00+05:30:15") => THROWS RangeError: Temporal: unknown time zone "2020-01-01T00:00+05:30:15"
+DateTimeFormat +05:30 hour at epoch => 5:30
++00:00 equals UTC => false
++05:30 equals +0530 => true
+-12:00 wall 2020-01-01T00:00 to instant => 2020-01-01T12:00:00Z
+exit=0

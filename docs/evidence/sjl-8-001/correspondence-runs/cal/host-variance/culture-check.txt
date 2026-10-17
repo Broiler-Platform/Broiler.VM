@@ -1,0 +1,3 @@
+DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 TZ=UTC: en-US gregory UTC
+LANG=fa_IR.UTF-8 LC_ALL=fa_IR.UTF-8 TZ=Asia/Tehran: fa-IR gregory Asia/Tehran
+LANG=ko_KR.UTF-8 LC_ALL=ko_KR.UTF-8 TZ=Asia/Seoul: ko-KR gregory Asia/Seoul

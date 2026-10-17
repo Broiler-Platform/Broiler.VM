@@ -29,15 +29,15 @@ established that they are not equivalent:**
 |---|---|---|
 | Release | **2026e** | **2025b** |
 | Pinned | `src/tests/tzdb/pins/tzdb.pin`: archive hashes, member hashes; rules N29 and N30, which have tests but no register row | Not pinned. Copied from the build host's `tzdata.zi` and compiled zoneinfo by `scripts/tzdata/generate_tzdata.py`; not reproducible across hosts; committed once |
-| Built by | Its own compiler (`TzdbCompiler`), checked against `zic` output across its validated range | The host's `zic` output, read as TZif |
-| Backzone | Excluded (the default build) | Mostly included, so pre-1970 histories differ widely (for example Amsterdam and Reykjavik) |
-| Beyond the last listed transition | Recurring rules are evaluated for every later year | **The TZif footer is ignored, so the last offset holds forever.** On 2040-07-01, America/New_York reads −05:00 and Europe/Berlin +01:00, where Broiler.VM reads −04:00 and +02:00. |
-| Identifiers | Set A | Set A plus `Factory` |
+| Built by | Its own compiler (`TzdbCompiler`), checked against `zic` output once, by a prototype (JSD-0053 section 2), which no test repeats; SJL-8.1's correspondence repeated it for 1800 to 2037, where 593 of 597 names agree and the four others read their CLDR primaries by design *(Revised 2026-10-17, at SJL-8.1, by JSD-0076's correspondence; read "Its own compiler (`TzdbCompiler`), checked against `zic` output across its validated range")* | The host's `zic` output, read as TZif |
+| Backzone | Excluded (the default build) | Mostly included: 102 of backzone's 125 Zones, so 110 names' pre-1970 histories differ (for example Amsterdam and Reykjavik) *(Revised 2026-10-17, at SJL-8.1, by JSD-0076's correspondence; read "Mostly included, so pre-1970 histories differ widely (for example Amsterdam and Reykjavik)")* |
+| Beyond the last listed transition | Recurring rules are evaluated for every later year | **The TZif footer is ignored, so the last offset holds forever.** On 2040-07-01, America/New_York reads −05:00 and Europe/Berlin +01:00, where Broiler.VM reads −04:00 and +02:00. Southern zones freeze on daylight time: America/Santiago −03:00 and Australia/Sydney +11:00 that day *(added 2026-10-17, at SJL-8.1)*. |
+| Identifiers | Set A, 597 names; IANA's default build also compiles `factory`, which this family's pin leaves out *(added 2026-10-17, at SJL-8.1)* | Set A plus `Factory` |
 | Primary identifiers | From CLDR's `bcp47/timezone.json` (`Etc/UTC`, `Etc/GMT` and `GMT` resolve to `UTC`) | The tz database's link targets, plus hard-coded legacy aliases and a UTC-family rule; several names differ in which is primary (for example `Europe/Bratislava`) |
 | `Intl.DateTimeFormat`'s `timeZone` | Resolved to the primary; the `canonical-tz` test262 cases are skipped | Keeps the link name |
 | Lookup | ASCII case-insensitive; non-ASCII refused | Invariant upper-casing |
-| Algorithms | `PossibleEpochNs` samples the offset at the instant and a day either side, keeping candidates that round-trip; `StartOfDay` fails with `RangeError` if no instant exists | Two samples; an unknown named zone silently reads offset zero; `StartOfDay` falls back to local midnight; "next transition" is `null` after 2037 |
-| Format | Compact: varint transitions, an offset palette per zone, recurring rules; decoded lazily per zone | A DEFLATE-compressed blob of TZif files, inflated in full on first use |
+| Algorithms | `PossibleEpochNs` samples the offset at the instant and a day either side, keeping candidates that round-trip; `StartOfDay` fails with `RangeError` if no instant exists | Two samples, which give the same candidates on both datasets; an unknown named zone would read offset zero and `StartOfDay` would fall back to local midnight, but every entry point validates the name first and no gap lacks a following transition, so no input reaches either; "next transition" is `null` after 2037 *(Revised 2026-10-17, at SJL-8.1, by JSD-0076's correspondence; read "Two samples; an unknown named zone silently reads offset zero; `StartOfDay` falls back to local midnight; 'next transition' is `null` after 2037")* |
+| Format | Compact: varint transitions, an offset palette per zone, recurring rules; decoded lazily per zone | A DEFLATE-compressed blob of TZif files, inflated in full on first use; each zone's TZif parsed on its first read *(Revised 2026-10-17, at SJL-8.1, by JSD-0076's correspondence; read "A DEFLATE-compressed blob of TZif files, inflated in full on first use")* |
 | Optional | Yes: in the `.Intl` assembly, handed in by the composition roots that carry Intl | No: embedded in `BuiltIns`, always shipped |
 
 **Calendars:**
@@ -46,9 +46,22 @@ established that they are not equivalent:**
 |---|---|---|
 | Gregorian, Buddhist, ROC, Japanese; Coptic, Ethiopic; Indian; tabular Islamic; Hebrew | Formulas | The same formulas *(reading)* |
 | Umm al-Qura | ICU4X tables | The CLDR package's table, **identical** over its range |
-| Chinese, Korean | ICU4X's published years, with ICU4X's approximation outside them | .NET's lunisolar calendars in their range; outside it, the CLDR package's astronomical computation with an unbounded cache |
-| Persian | A 33-year rule with corrections from `calendrical_calculations` 0.2.4 | .NET's `PersianCalendar`; equivalence not established |
+| Chinese, Korean | ICU4X's years 1900 to 2102 (Qing, then China's or Korea's), which ICU4X computes and states agree with the observatories' published years, with ICU4X's approximation outside them *(Revised 2026-10-17, at SJL-8.1, by JSD-0076's correspondence; read "ICU4X's published years, with ICU4X's approximation outside them")* | .NET's lunisolar calendars in their range (`chinese` 1901-02-19 to 2101-01-28, `dangi` 0918-02-19 to 2051-02-10); outside it, the CLDR package's astronomical computation at Beijing's meridian, for `dangi` too, with an unbounded cache. They differ from ICU4X in `chinese` 2057, inside the published range, and fail far from the epoch *(Revised 2026-10-17, at SJL-8.1, by JSD-0076's correspondence; read ".NET's lunisolar calendars in their range; outside it, the CLDR package's astronomical computation with an unbounded cache")* |
+| Persian | A 33-year rule with corrections from `calendrical_calculations` 0.2.4, applied from 1502 to 2987 AP | .NET's `PersianCalendar` for years 1 to 9378, the 33-year rule outside; equal to Broiler.VM's over 1178 to 1534 AP, Table 1's 1206 to 1498 included, and different in 2,582 of years 1 to 9378, with two seams at .NET's bounds *(Revised 2026-10-17, at SJL-8.1, by JSD-0076's correspondence; read ".NET's `PersianCalendar`; equivalence not established")* |
 | Pinned | `src/tests/calendars/pins/calendars.pin` (ICU4X `icu_calendar` 2.3.0, `calendrical_calculations` 0.2.4); rules N31 and N32 | Not pinned |
+
+*(Added 2026-10-17, at SJL-8.1.)* The correspondence of
+[JSD-0076](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0076-time-zone-and-calendar-data-move-to-the-data-home.md),
+read from code and run in both engines (bundle [`sjl-8-001`](../../evidence/sjl-8-001/correspondence.md)), finds
+what the tables above omit:
+- **The engines' zone algorithms agree on every input inside the data both share.**
+- Broiler.JS's region lists for `getTimeZones` are a hand table of fourteen regions.
+- Broiler.JS's formatter takes an ISO date-time string as its `timeZone`.
+- An offset with non-ASCII digits surfaces a .NET `FormatException` in Broiler.JS.
+- Broiler.JS returns a host zone it cannot resolve, unvalidated.
+- Broiler.JS's `Date` reads the host's tz data while its `Temporal` reads the blob, so one zone has two offsets.
+- **Inside Table 1's published ranges the calendars differ in one year only**, `chinese` 2057; Broiler.JS's
+  calendar answers are the installed .NET runtime's.
 
 ---
 

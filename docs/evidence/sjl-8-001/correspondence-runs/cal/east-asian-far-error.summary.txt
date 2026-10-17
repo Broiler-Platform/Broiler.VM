@@ -1,0 +1,20 @@
+# Summary of east-asian-far-error.js.txt (Broiler.JS only): each line's first line; a thrown Error's .NET stack is in the full file.
+-271821-04-19 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+-250000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+-200000-01-01 => year -200001 M12 day 4; months 28,28,28,28,30,32,33,32,31,28,28,28 sum 354 daysInYear 354
+-150000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+-100000-01-01 => year -100001 M11 day 18; months 29,30,30,29,30,30,29,29,30,29,29,30 sum 354 daysInYear 354
+-050000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+-020000-01-01 => year -20001 M11 day 30; months 30,29,30,29,29,30,30,29,30,30,29,30,29 sum 384 daysInYear 384
+-010000-01-01 => year -10001 M11 day 19; months 30,30,29,30,30,30,29,29,30,29,29,30,29 sum 384 daysInYear 384
+-005000-01-01 => year -5001 M11 day 28; months 29,30,29,30,30,29,30,30,30,29,30,29 sum 355 daysInYear 355
++005000-01-01 => year 4999 M11 day 21; months 29,30,29,30,29,29,30,29,30,29,30,30,29 sum 383 daysInYear 383
++010000-01-01 => year 9999 M12 day 4; months 29,30,29,30,29,30,29,30,29,30,29,30 sum 354 daysInYear 354
++020000-01-01 => year 19999 M12L day 3; months 30,29,30,30,30,29,30,29,30,29,29,30,29 sum 384 daysInYear 384
++050000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
++100000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
++150000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
++200000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
++250000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
++275000-01-01 => year 274999 M10 day 16; months 42,41,31,24,22,26,31,31,26,22,24,32 sum 352 daysInYear 352
++275760-09-13 => throws RangeError: Temporal: date is out of range

@@ -1,0 +1,11 @@
+1,2c1,7
+< persian window 0622-01-01..0623-06-30 => 546 days, 0 anomalies
+< persian window 9999-01-01..+010001-06-30 => 912 days, 0 anomalies
+---
+> persian 0622-03-21 => 1/M01/1 round-trip 0622-03-22
+> persian 0622-03-22 => 1/M01/1 after 1/M01/1 (daysInMonth 31, monthsInYear 12)
+> persian window 0622-01-01..0623-06-30 => 546 days, 2 anomalies
+> persian +010000-01-01 => 9378/M10/11 round-trip 9999-12-29 after 9378/M10/13 (daysInMonth 30, monthsInYear 12)
+> persian +010000-01-02 => 9378/M10/12 round-trip 9999-12-30
+> persian +010000-01-03 => 9378/M10/13 round-trip 9999-12-31
+> persian window 9999-01-01..+010001-06-30 => 912 days, 3 anomalies

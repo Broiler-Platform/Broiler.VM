@@ -1,0 +1,5 @@
+new Temporal.ZonedDateTime(0n, "Factory") => 1970-01-01T00:00:00+00:00[Factory]
+new Temporal.ZonedDateTime(0n, "factory").timeZoneId => Factory
+Intl.DateTimeFormat timeZone Factory resolved => Factory
+Intl.supportedValuesOf("timeZone") includes Factory => true
+exit=0

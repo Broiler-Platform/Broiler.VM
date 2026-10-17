@@ -1,0 +1,67 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl8/a6-offsetzones.js [raw]  uncaught Error: OUT<<ZonedDateTime ctor "+05:30" => +05:30 +05:30
+DateTimeFormat "+05:30" => +05:30
+ZonedDateTime ctor "-05:30" => -05:30 -05:30
+DateTimeFormat "-05:30" => -05:30
+ZonedDateTime ctor "+0530" => +05:30 +05:30
+DateTimeFormat "+0530" => +05:30
+ZonedDateTime ctor "+05" => +05:00 +05:00
+DateTimeFormat "+05" => +05:00
+ZonedDateTime ctor "-00:00" => +00:00 +00:00
+DateTimeFormat "-00:00" => +00:00
+ZonedDateTime ctor "+00:00" => +00:00 +00:00
+DateTimeFormat "+00:00" => +00:00
+ZonedDateTime ctor "-00" => +00:00 +00:00
+DateTimeFormat "-00" => +00:00
+ZonedDateTime ctor "+23:59" => +23:59 +23:59
+DateTimeFormat "+23:59" => +23:59
+ZonedDateTime ctor "-23:59" => -23:59 -23:59
+DateTimeFormat "-23:59" => -23:59
+ZonedDateTime ctor "+24:00" => THROWS RangeError: Temporal: +24:00 is not a time zone identifier
+DateTimeFormat "+24:00" => THROWS RangeError: Intl.DateTimeFormat: +24:00 is not an available time zone
+ZonedDateTime ctor "+05:60" => THROWS RangeError: Temporal: +05:60 is not a time zone identifier
+DateTimeFormat "+05:60" => THROWS RangeError: Intl.DateTimeFormat: +05:60 is not an available time zone
+ZonedDateTime ctor "+05:30:15" => THROWS RangeError: Temporal: +05:30:15 is not a time zone identifier
+DateTimeFormat "+05:30:15" => THROWS RangeError: Intl.DateTimeFormat: a time zone offset cannot have seconds: +05:30:15
+ZonedDateTime ctor "+05:30:00" => THROWS RangeError: Temporal: +05:30:00 is not a time zone identifier
+DateTimeFormat "+05:30:00" => THROWS RangeError: Intl.DateTimeFormat: a time zone offset cannot have seconds: +05:30:00
+ZonedDateTime ctor "+053015" => THROWS RangeError: Temporal: +053015 is not a time zone identifier
+DateTimeFormat "+053015" => THROWS RangeError: Intl.DateTimeFormat: a time zone offset cannot have seconds: +053015
+ZonedDateTime ctor "+05:30:15.5" => THROWS RangeError: Temporal: +05:30:15.5 is not a time zone identifier
+DateTimeFormat "+05:30:15.5" => THROWS RangeError: Intl.DateTimeFormat: a time zone offset cannot have seconds: +05:30:15.5
+ZonedDateTime ctor "−05:00" => THROWS RangeError: Temporal: −05:00 is not a time zone identifier
+DateTimeFormat "−05:00" => THROWS RangeError: Intl.DateTimeFormat: −05:00 is not an available time zone
+ZonedDateTime ctor "+٠٥:٣٠" => THROWS RangeError: Temporal: +٠٥:٣٠ is not a time zone identifier
+DateTimeFormat "+٠٥:٣٠" => THROWS RangeError: Intl.DateTimeFormat: +٠٥:٣٠ is not an available time zone
+ZonedDateTime ctor "+05:3" => THROWS RangeError: Temporal: +05:3 is not a time zone identifier
+DateTimeFormat "+05:3" => THROWS RangeError: Intl.DateTimeFormat: +05:3 is not an available time zone
+ZonedDateTime ctor "05:30" => THROWS RangeError: Temporal: 05:30 is not a time zone identifier
+DateTimeFormat "05:30" => THROWS RangeError: Intl.DateTimeFormat: 05:30 is not an available time zone
+ZonedDateTime ctor "+5:30" => THROWS RangeError: Temporal: +5:30 is not a time zone identifier
+DateTimeFormat "+5:30" => THROWS RangeError: Intl.DateTimeFormat: +5:30 is not an available time zone
+Instant.toString({timeZone:"-00:00"}) => 2020-01-01T00:00:00+00:00
+ZonedDateTime.from with [+05:30:15] annotation => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00+05:30:15[+05:30:15]'
+ZonedDateTime.from with offset +05:30 and no annotation => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00+05:30'
+toZonedDateTimeISO("2020-01-01T00:00+05:30") => +05:30
+toZonedDateTimeISO("2020-01-01T00:00+05:30:15") => THROWS RangeError: Temporal: a time zone offset cannot have seconds: +05:30:15
+DateTimeFormat +05:30 hour at epoch => 05:30
++00:00 equals UTC => false
++05:30 equals +0530 => true
+-12:00 wall 2020-01-01T00:00 to instant => 2020-01-01T12:00:00Z>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl8/a6-offsetzones.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl8  e.g. test/sjl8/a6-offsetzones.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl8/a6-offsetzones.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

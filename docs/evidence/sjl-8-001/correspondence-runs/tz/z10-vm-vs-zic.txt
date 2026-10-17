@@ -1,0 +1,5 @@
+identifiers compared: 597 ; differing from zic -b fat of the same nine files, 1800-2037: 4
+   CST6CDT first at 1800-01-01T00:00:00 Broiler.VM -21036 zic -21600 (88 instants, the last at 1966-10-30T07:00:00)
+   EST5EDT first at 1800-01-01T00:00:00 Broiler.VM -17762 zic -18000 (88 instants, the last at 1966-10-30T06:00:00)
+   MST7MDT first at 1800-01-01T00:00:00 Broiler.VM -25196 zic -25200 (10 instants, the last at 1966-10-30T08:00:00)
+   PST8PDT first at 1800-01-01T00:00:00 Broiler.VM -28378 zic -28800 (38 instants, the last at 1966-10-30T09:00:00)

@@ -1,0 +1,7 @@
+bytes 1958 consumed 1958
+china 1912 2102 korea 1912 2102 qing 1900 1911 umalqura 1300 1600 persian corrections 78 1502 2987
+china == china_data.rs: True
+korea == korea_data.rs: True
+qing  == qing_data.rs:  True
+umalqura == ummalqura_data.rs: True
+persian == NON_LEAP_CORRECTION: True

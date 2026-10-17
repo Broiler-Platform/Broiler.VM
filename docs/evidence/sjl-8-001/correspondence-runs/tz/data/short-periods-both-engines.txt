@@ -1,0 +1,2 @@
+z10-transitions-dump.vm.txt : offsets in force under two days between two changes (1800-2037): 0 ; shortest period: 167.0 hours in America/Boa_Vista from epoch second 970977600
+z10-transitions-dump.bjs.txt : offsets in force under two days between two changes (1800-2037): 0 ; shortest period: 95.66666666666667 hours in Africa/Freetown from epoch second -957308400

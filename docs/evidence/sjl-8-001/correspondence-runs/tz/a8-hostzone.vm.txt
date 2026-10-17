@@ -1,0 +1,7 @@
+Temporal.Now.timeZoneId() => UTC
+Intl.DateTimeFormat().resolvedOptions().timeZone => UTC
+typeof Temporal.Now.zonedDateTimeISO() => object
+new Date(2040, 6, 1, 12).getTimezoneOffset() => 0
+new Date(2026, 6, 1, 12).getTimezoneOffset() => 0
+America/New_York 2040-07-01 Temporal offset => -04:00
+DateTimeFormat (default zone) hour at 2040-07-01T16:00Z => 16

@@ -1,0 +1,36 @@
+-271821-04-19 => -271821-04-19[u-ca=chinese]
+-200000-01-01 => -200000-01-01[u-ca=chinese]
+-100000-01-01 => -100000-01-01[u-ca=chinese]
+-50000-01-01 => throws RangeError: Cannot parse Temporal.PlainDate from "-50000-01-01"
+-20000-01-01 => throws RangeError: Cannot parse Temporal.PlainDate from "-20000-01-01"
+-10000-01-01 => throws RangeError: Cannot parse Temporal.PlainDate from "-10000-01-01"
+-5000-01-01 => throws RangeError: Cannot parse Temporal.PlainDate from "-5000-01-01"
++275000-01-01 => chinese year 274999 months 42,41,31,24,22,26,31,31,26,22,24,32 sum 352 daysInYear 352
+Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1617
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:6,109(Closures, Arguments&)
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeCallback(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1090
+   at Broiler.JavaScript.BuiltIns.Array.JSArray.ForEach(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Array/JSArrayPrototype.Iteration.cs:line 763
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at body-:0,0(Closures, Arguments&)
+   at Broiler.JavaScript.Engine.JSContext.Eval(String code, String codeFilePath, JSValue this) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/JSContext.cs:line 2636
+   at BroilerJS.Program.RunScriptHost(FileInfo file) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript/Program.cs:line 258
+   at BroilerJS.Program.<>c__DisplayClass4_0.<RunScriptHostOnOwnThread>b__0() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript/Program.cs:line 132
+   at BroilerJS.Program.<>c__DisplayClass5_0.<RunHostOnOwnThread>b__0() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript/Program.cs:line 142
+--- End of stack trace from previous location ---
+   at BroilerJS.Program.RunHostOnOwnThread(Action body) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript/Program.cs:line 170
+   at BroilerJS.Program.RunScriptHostOnOwnThread(FileInfo file) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript/Program.cs:line 132
+   at BroilerJS.Program.Main(String[] args) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript/Program.cs:line 99
+   at BroilerJS.Program.<Main>(String[] args)

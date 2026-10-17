@@ -1,0 +1,21 @@
+Broiler.VM identifiers: 597  primaries: 445
+Broiler.JS identifiers: 598 (zones 447 links 151 ) release 2025b
+only in Broiler.VM: []
+only in Broiler.JS: ['Factory']
+Broiler.JS links whose target is itself a link: []
+identifiers whose primary differs (identifier, Broiler.VM primary, Broiler.JS primary): 12
+   America/Kralendijk America/Kralendijk America/Curacao
+   America/Lower_Princes America/Lower_Princes America/Curacao
+   America/Marigot America/Marigot America/Port_of_Spain
+   America/St_Barthelemy America/St_Barthelemy America/Port_of_Spain
+   Arctic/Longyearbyen Arctic/Longyearbyen Europe/Oslo
+   Atlantic/Jan_Mayen Arctic/Longyearbyen Europe/Oslo
+   Europe/Bratislava Europe/Bratislava Europe/Prague
+   Europe/Busingen Europe/Busingen Europe/Zurich
+   Europe/Mariehamn Europe/Mariehamn Europe/Helsinki
+   Europe/Podgorica Europe/Podgorica Europe/Belgrade
+   Europe/San_Marino Europe/San_Marino Europe/Rome
+   Europe/Vatican Europe/Vatican Europe/Rome
+Broiler.JS primaries: 435
+primary in Broiler.VM only: ['America/Kralendijk', 'America/Lower_Princes', 'America/Marigot', 'America/St_Barthelemy', 'Arctic/Longyearbyen', 'Europe/Bratislava', 'Europe/Busingen', 'Europe/Mariehamn', 'Europe/Podgorica', 'Europe/San_Marino', 'Europe/Vatican']
+primary in Broiler.JS only: ['Factory']

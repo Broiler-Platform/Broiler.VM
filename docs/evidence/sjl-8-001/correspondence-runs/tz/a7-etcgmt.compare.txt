@@ -1,0 +1,30 @@
+   ZonedDateTime ctor Etc/GMT+5 | VM: Etc/GMT+5 -05:00 | BJS: Etc/GMT+5 -05:00
+   DateTimeFormat Etc/GMT+5 | VM: Etc/GMT+5 | BJS: Etc/GMT+5
+   ZonedDateTime ctor etc/gmt+5 | VM: Etc/GMT+5 -05:00 | BJS: Etc/GMT+5 -05:00
+   DateTimeFormat etc/gmt+5 | VM: Etc/GMT+5 | BJS: Etc/GMT+5
+   ZonedDateTime ctor ETC/GMT+5 | VM: Etc/GMT+5 -05:00 | BJS: Etc/GMT+5 -05:00
+   DateTimeFormat ETC/GMT+5 | VM: Etc/GMT+5 | BJS: Etc/GMT+5
+   ZonedDateTime ctor Etc/GMT-14 | VM: Etc/GMT-14 +14:00 | BJS: Etc/GMT-14 +14:00
+   DateTimeFormat Etc/GMT-14 | VM: Etc/GMT-14 | BJS: Etc/GMT-14
+   ZonedDateTime ctor Etc/GMT+12 | VM: Etc/GMT+12 -12:00 | BJS: Etc/GMT+12 -12:00
+   DateTimeFormat Etc/GMT+12 | VM: Etc/GMT+12 | BJS: Etc/GMT+12
+   ZonedDateTime ctor Etc/GMT-0 | VM: Etc/GMT-0 +00:00 | BJS: Etc/GMT-0 +00:00
+!! DateTimeFormat Etc/GMT-0 | VM: UTC | BJS: Etc/GMT-0
+   ZonedDateTime ctor Etc/GMT0 | VM: Etc/GMT0 +00:00 | BJS: Etc/GMT0 +00:00
+!! DateTimeFormat Etc/GMT0 | VM: UTC | BJS: Etc/GMT0
+   ZonedDateTime ctor Etc/GMT+0 | VM: Etc/GMT+0 +00:00 | BJS: Etc/GMT+0 +00:00
+!! DateTimeFormat Etc/GMT+0 | VM: UTC | BJS: Etc/GMT+0
+   ZonedDateTime ctor GMT+0 | VM: GMT+0 +00:00 | BJS: GMT+0 +00:00
+!! DateTimeFormat GMT+0 | VM: UTC | BJS: GMT+0
+   ZonedDateTime ctor GMT-0 | VM: GMT-0 +00:00 | BJS: GMT-0 +00:00
+!! DateTimeFormat GMT-0 | VM: UTC | BJS: GMT-0
+   ZonedDateTime ctor GMT0 | VM: GMT0 +00:00 | BJS: GMT0 +00:00
+!! DateTimeFormat GMT0 | VM: UTC | BJS: GMT0
+   ZonedDateTime ctor Etc/GMT | VM: Etc/GMT +00:00 | BJS: Etc/GMT +00:00
+!! DateTimeFormat Etc/GMT | VM: UTC | BJS: Etc/GMT
+   DateTimeFormat Etc/GMT+5 hour at epoch | VM: 19 | BJS: 19
+   DateTimeFormat Etc/GMT-14 hour at epoch | VM: 14 | BJS: 14
+   Etc/GMT+5 equals -05:00 | VM: false | BJS: false
+   Etc/GMT+5 next transition | VM: null | BJS: null
+   Etc/GMT+5 1850 offset | VM: -05:00 | BJS: -05:00
+   Intl.supportedValuesOf lists Etc/GMT+5 | VM: true | BJS: true

@@ -1,0 +1,16 @@
+Europe/Amsterdam @ 1850-01-01T12:00Z offset => +00:19:32
+Europe/Amsterdam @ 1937-07-01T12:00Z offset => +01:20
+Europe/Amsterdam @ 1939-01-15T12:00Z offset => +00:20
+Europe/Amsterdam @ 1980-07-01T12:00Z offset => +02:00
+Atlantic/Reykjavik @ 1900-01-01T12:00Z offset => -01:28
+Atlantic/Reykjavik @ 1960-01-15T12:00Z offset => -01:00
+Atlantic/Reykjavik @ 1980-01-15T12:00Z offset => +00:00
+Europe/Stockholm @ 1900-01-01T12:00Z offset => +01:00
+Europe/Oslo @ 1950-07-01T12:00Z offset => +01:00
+Europe/Brussels @ 1937-07-01T12:00Z offset => +01:00
+Africa/Abidjan @ 1960-01-15T12:00Z offset => +00:00
+Europe/Amsterdam offset changes 1800-1970 => 57
+Atlantic/Reykjavik offset changes 1800-1970 => 68
+Europe/Brussels offset changes 1800-1970 => 62
+Africa/Abidjan offset changes 1800-1970 => 1
+exit=0
