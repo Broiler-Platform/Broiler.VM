@@ -13427,3 +13427,30 @@ is 8,012,112 bytes, built with another SDK than JS-10-008's. Each record quotes 
 **Authority and date.** The programme's work package SJL-8.5, on
 [JSD-0076](decisions/0076-time-zone-and-calendar-data-move-to-the-data-home.md), whose cut-over this
 admission begins. 2026-10-17.
+
+### JSC-313
+
+**Where:** the records that carry the two packages' identities: the committed feed `eng/packages/` with its
+README and the packages' pins, the allow-list's entries, the three lock files and `THIRD_PARTY_NOTICES.md`'s
+rows for the packages. [JSD-0077](decisions/0077-the-profile-on-the-shared-time-zones-and-calendars.md) is not
+edited.
+
+**What the plan said.** JSD-0077 section 1: `Broiler.ECMAScript.Algorithms` `0.1.0-preview.5` and the
+test-only `Broiler.ECMAScript.Generation` `0.1.0-preview.5`, "packed locally from Broiler.JS `2d37a38`" and
+restored from the committed feed, not on nuget.org at that record. And [JSC-312](#jsc-312): "packed from
+Broiler.JS `2d37a38` and not yet on nuget.org".
+
+**What replaced it.** The version does not move. Broiler.JS's publish-shared workflow published both
+packages at `0.1.0-preview.5` to nuget.org on 2026-10-17 (run 39064131506) from Broiler.JS `a04cd44`, and the
+feed holds them exactly as that run pushed them. Between `2d37a38` and `a04cd44` nothing under
+`Broiler.ECMAScript/` changes but the shared changelog and the source's version suffix, which the
+workflow's version overrides, so the library code is the same. Each package differs in the commit its
+nuspec and assembly record, the identifiers derived from them, the case of the repository URL, and the
+branch its nuspec names. Their content hashes differ, so the pins, the allow-list (whose sources already
+name nuget.org), the lock files and the notices rows record the published packages; each quotes what it
+read before. A restore from nuget.org alone records the same content hashes. Rule I1's witness keeps its
+own hash and does not move. Everything else JSD-0077 decided stands.
+
+**Authority and date.** The owner's instruction of 2026-10-17 to publish `0.1.0-preview.5`, on
+[JSD-0077](decisions/0077-the-profile-on-the-shared-time-zones-and-calendars.md) section 1 and the
+programme's work package SJL-8.5. 2026-10-17.

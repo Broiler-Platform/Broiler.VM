@@ -1005,6 +1005,14 @@ SJL-8 stays `In progress`, every clause unmet until SJL-8.7's after runs. Next:
 - publishing `0.1.0-preview.5`, then re-pinning this family's feed to the published packages;
 - SJL-8.7's evidence.
 
+**2026-10-17, later again: the time-zone and calendar area is published as `0.1.0-preview.5`.** On the owner's
+instruction, Broiler.JS's publish-shared workflow published `Broiler.ECMAScript.Algorithms` and
+`Broiler.ECMAScript.Generation` `0.1.0-preview.5` to nuget.org from Broiler.JS `a04cd44` (run 39064131506),
+whose library code is `2d37a38`'s, and tagged them `ecmascript-v0.1.0-preview.5`. The committed feed holds the
+published packages, and the pins, the allow-list, the lock files and the notices rows record them
+([JSC-313](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-313)). The vectors run with them
+gives the report bundle `sjl-8-001` retains for the cut-over. Nothing moves: SJL-8 stays `In progress`.
+
 ---
 
 ## 1. Reading this ledger

@@ -209,4 +209,16 @@ JSD-0077's section 7 gives each in full, and its departures name the edges the c
 - the lunisolar month counts at the ±300,000-year bound;
 - the generated files' stale header text, kept because the bytes must not change.
 
+**The published packages.** Both packages were published to nuget.org later the same day, from Broiler.JS
+`a04cd44`, whose library code is `2d37a38`'s, and the committed feed now holds them as published
+([JSC-313](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-313)). The checks above used
+the copies packed from `2d37a38`. With the published packages:
+- a locked restore with an empty package cache succeeds, and the solution builds with no warning;
+- the architecture tests and the contract tests pass;
+- the conformance root's run on revision 22 gives a report identical byte for byte to
+  `run-revision-22.tsv.gz`'s, and its negative control's report is identical to
+  `run-negative-control-revision-22.tsv.gz`'s.
+
+Neither run is retained, since neither differs.
+
 SJL-8.7 judges parts A to C; this section judges nothing.

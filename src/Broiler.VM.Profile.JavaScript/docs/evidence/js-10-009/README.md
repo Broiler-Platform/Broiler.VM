@@ -9,7 +9,10 @@ does not close; JS-10, which it does not close either. **Owner:** the JavaScript
 algorithms dependency moved from `0.1.0-preview.4` to `0.1.0-preview.5`: `Broiler.ECMAScript.Algorithms`
 `0.1.0-preview.5`, which `Broiler.VM.Profile.JavaScript` and `.Compiler` declare, packed locally from
 Broiler.JS `2d37a38` and not yet on nuget.org (JSC-312). Its preview.5 adds the time-zone and calendar
-area of milestone SJL-8.3 beside the areas preview.4 carried, unchanged. The bundle holds the candidate
+area of milestone SJL-8.3 beside the areas preview.4 carried, unchanged. *(Added 2026-10-17, later:
+`0.1.0-preview.5` was published to nuget.org that day, from Broiler.JS `a04cd44`, with the same library
+code, and the committed feed now holds the published package (JSC-313). This bundle's pack used the copy
+packed from `2d37a38`.)* The bundle holds the candidate
 pack of the whole solution with every package's metadata and file list, a pristine consumer of the
 JavaScript profile's packages restoring and running with upstream feeds unreachable from a local feed
 that also holds the shared packages, a rollback to the package set that was actually published and a
