@@ -1,0 +1,96 @@
+# part A, class C4 (c'): the 12 variants of 8 paths compare-wide-bytecode.log admits as (c'), run again alone
+
+## base: Broiler.VM.Composition.JavaScript.Conformance.dll sha256=717a098b1bc5672dbeab31a547a1c3bc77a1b03efb73c4b480b029167755ed89, started 2026-10-17T00:39:08Z, exit 1
+
+exhausted   test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-5-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-5-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/TypedArray/sort_large_countingsort.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy]  Fuel: the allowance was spent running the test
+# this run met no construct outside the manifest
+# exhausted dimensions: 1 distinct, 16 variants
+#        16  Fuel  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-5-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-5-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy] on Fuel
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [strict] on Fuel
+# no variant failed, so there is nothing to classify
+# test262 8 files, 16 variants: pass 0, fail 0, unsupported 0, exhausted 16, skipped 0
+coverage partial a named selection rather than the whole test tree: test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js test/staging/sm/Date/dst-offset-caching-2-of-8.js test/staging/sm/Date/dst-offset-caching-4-of-8.js test/staging/sm/Date/dst-offset-caching-5-of-8.js test/staging/sm/Date/dst-offset-caching-7-of-8.js test/staging/sm/Date/dst-offset-caching-8-of-8.js test/staging/sm/TypedArray/sort_large_countingsort.js; configuration failure NoExecutedTests
+CONFIGURATION NoExecutedTests: 16 variants ran and none of them reached a verdict about the engine
+
+## after: Broiler.VM.Composition.JavaScript.Conformance.dll sha256=9cf6c61290e3bd072e57de3f1c64bb2183eabe6e26f04dfce588991388863f98, started 2026-10-17T00:39:57Z, exit 1
+
+exhausted   test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-5-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-5-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/TypedArray/sort_large_countingsort.js [strict]  Fuel: the allowance was spent running the test
+exhausted   test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy]  Fuel: the allowance was spent running the test
+# this run met no construct outside the manifest
+# exhausted dimensions: 1 distinct, 16 variants
+#        16  Fuel  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-5-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-5-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [sloppy] on Fuel
+# exhausted test/staging/sm/TypedArray/sort_large_countingsort.js [strict] on Fuel
+# no variant failed, so there is nothing to classify
+# test262 8 files, 16 variants: pass 0, fail 0, unsupported 0, exhausted 16, skipped 0
+coverage partial a named selection rather than the whole test tree: test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js test/staging/sm/Date/dst-offset-caching-2-of-8.js test/staging/sm/Date/dst-offset-caching-4-of-8.js test/staging/sm/Date/dst-offset-caching-5-of-8.js test/staging/sm/Date/dst-offset-caching-7-of-8.js test/staging/sm/Date/dst-offset-caching-8-of-8.js test/staging/sm/TypedArray/sort_large_countingsort.js; configuration failure NoExecutedTests
+CONFIGURATION NoExecutedTests: 16 variants ran and none of them reached a verdict about the engine
+
+## the two re-runs compared, --same-form
+# reference <scratch>/rerun-wide-bytecode-base.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   total|8|16|0|0|0|16|0
+# candidate <scratch>/rerun-wide-bytecode-after.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   total|8|16|0|0|0|16|0
+# same-form: two bytecode runs, from two builds, read on either side - class (c') is admitted at any wall allowance, because two builds differ in speed by construction and were run at different times; classes (a) and (b) are NOT read, because these are not two native runs; class (b) is not admitted without --exempt-guest-loads
+# 16 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+
+# every difference is in an admitted class
+exit code: 0

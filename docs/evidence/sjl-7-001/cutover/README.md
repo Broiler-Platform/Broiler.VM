@@ -9,7 +9,9 @@ SJL-7.4's change gave five JavaScript rows shared assemblies they had not declar
 `Broiler.Unicode.Algorithms` in each, and `Broiler.Unicode.Segmentation` in the two whose closure carries
 the Intl assembly. The rows' evidence cells name [`closures/`](closures/) since that change (JSD-0075,
 section 1). **What it is not:** part of the bundle's base or of SJL-7.6's after runs, which the bundle's
-README describes; the bundle's `area-manifest.json` does not list this directory.
+README describes; the bundle's `area-manifest.json` does not list this directory. *(Revised 2026-10-17, at SJL-7.6:
+the manifest step now lists this directory, as JSD-0075's departures said SJL-7.6 would when it regenerated the
+manifest; nothing in it changes.)*
 
 ## Which commit
 
