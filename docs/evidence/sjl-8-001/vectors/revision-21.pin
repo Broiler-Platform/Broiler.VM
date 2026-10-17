@@ -1,0 +1,16 @@
+# broiler-js-conformance retained suite pin 1
+#
+# A scratch pin of corpus revision 21 (Broiler.JS 09fa9ac5913f7a44c760da8068c99691239c7d75), for this family's first engine-level run
+# on the time-zone area (milestone SJL-8.4). The corpus at that commit is at corpus revision 21. Taken on 2026-10-17
+# with git archive of that commit, twice, the two files byte-identical; the second extracted and its files hashed
+# there. Not committed as the pin: the pin moves at revision 22, which classifies the first runs.
+
+suite broiler-js-vectors
+upstream Broiler-Platform/broiler.js
+revision 09fa9ac5913f7a44c760da8068c99691239c7d75
+archive git archive --format=tar.gz 09fa9ac5913f7a44c760da8068c99691239c7d75 -- conformance/vectors :(exclude)conformance/vectors/controls
+archive-sha256 743c040806d79ea19b481ea8c061e31a269e1a805f3d9917f0bcd501dda4cd47
+content-sha256 b15aa3f3ec33634492ab59e61b98c05e9e3e54b500b550ac8afd54889808d860
+files 49
+archived yes
+archived-at src/tests/vectors/pins/broiler-js-vectors-09fa9ac5913f7a44c760da8068c99691239c7d75.tar.gz

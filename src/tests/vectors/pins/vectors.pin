@@ -3,9 +3,9 @@
 # The shared conformance vectors of the shared JavaScript libraries programme (milestone SJL-1): a
 # corpus whose home is the Broiler.JS repository, retained here as the archive of one named corpus
 # revision. `revision` is the Broiler.JS commit that carries it, an immutable commit and never a
-# branch name, and the corpus at that commit is at corpus revision 20 (its REVISIONS.md).
+# branch name, and the corpus at that commit is at corpus revision 22 (its REVISIONS.md).
 #
-# HOW IT WAS TAKEN. On 2026-10-16, with `git archive` of that commit, twice, into two files: the two
+# HOW IT WAS TAKEN. On 2026-10-17, with `git archive` of that commit, twice, into two files: the two
 # were byte-identical. The second was extracted into a fresh directory and its files hashed there,
 # independently of the in-memory reading the harness makes, which is what makes `content-sha256` a
 # reading rather than a copy of an earlier one. The command, which anybody with the Broiler.JS
@@ -13,10 +13,10 @@
 #
 #   git archive --format=tar.gz <revision> -- conformance/vectors ':(exclude)conformance/vectors/controls'
 #
-# WHAT IS HERE. One file of 1,665,723 bytes hashing to `archive-sha256`, which extracts to the 42
+# WHAT IS HERE. One file of 1,777,001 bytes hashing to `archive-sha256`, which extracts to the 49
 # files `content-sha256` is over: the number area's ten vector files, the numerics area's eight, the
-# text area's six, the Date area's seven, the Unicode area's five, the schema, the README, the revision
-# log, the prelude and the two source pins. The negative controls stay in Broiler.JS; the home's validator is the one that
+# text area's six, the Date area's seven, the Unicode area's five, the time-zone area's seven, the
+# schema, the README, the revision log, the prelude and the two source pins. The negative controls stay in Broiler.JS; the home's validator is the one that
 # reads them.
 #
 # HOW IT IS READ. `--vectors <archive> --expect <this file>` of the conformance root checks both
@@ -75,14 +75,22 @@
 # divergences of the Unicode area, which its cut-over corrects; the Unicode area's five files are
 # revision 18's again, and this profile's expectations are unchanged. Its header read, for revision 19:
 # "the corpus at that commit is at corpus revision 19" and "One file of 1,688,124 bytes hashing to
-# `archive-sha256`"; the number of files did not change.
+# `archive-sha256`"; the number of files did not change. Moved to revision 22 on 2026-10-17, at milestone
+# SJL-8.4: revision 21 adds the time-zone area, and revision 22 classifies both engines' first runs on it.
+# This profile's run on revision 21 matched every vector, so revision 22 holds none of its divergences;
+# Broiler.JS's 1,161 are its policy changes and corrections under the area verdict, answered by its SJL-8.6
+# cut-over. Its header read, for revision 20: "the corpus at that commit is at corpus revision 20", "On
+# 2026-10-16" and "One file of 1,665,723 bytes hashing to `archive-sha256`, which extracts to the 42 files
+# `content-sha256` is over: the number area's ten vector files, the numerics area's eight, the text area's
+# six, the Date area's seven, the Unicode area's five, the schema, the README, the revision log, the prelude
+# and the two source pins."
 
 suite broiler-js-vectors
 upstream Broiler-Platform/broiler.js
-revision a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71
-archive git archive --format=tar.gz a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71 -- conformance/vectors :(exclude)conformance/vectors/controls
-archive-sha256 7dc0e6d065a8a635b85556652344a6b7f1e60cc118aeaf88ad6dc1be76d09bde
-content-sha256 d1ee6d3ba73a086855151d50b0cf283da29f44098c6def453b6106a11773a7e2
-files 42
+revision 4ce20ac79cc2ba3d80b15a62f4b8012a7aab8d94
+archive git archive --format=tar.gz 4ce20ac79cc2ba3d80b15a62f4b8012a7aab8d94 -- conformance/vectors :(exclude)conformance/vectors/controls
+archive-sha256 865db22b210987013b6841cbf47c55a8d8adb24d584f06b5bf334b133c3bbe52
+content-sha256 17b2128a8bc86b852a1d705df33e0e629a12f6ad7fb29eae00804ff708a090ec
+files 49
 archived yes
-archived-at src/tests/vectors/pins/broiler-js-vectors-a34b1f78cc4bda6bcdfe68ed943af6cc069c1b71.tar.gz
+archived-at src/tests/vectors/pins/broiler-js-vectors-4ce20ac79cc2ba3d80b15a62f4b8012a7aab8d94.tar.gz
