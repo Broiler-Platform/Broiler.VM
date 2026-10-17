@@ -189,7 +189,8 @@ public enum JsIntlTable
     /// <summary>
     /// The IANA Time Zone Database release the three time zone tables were compiled from, ASCII, for
     /// example <c>2026e</c>: the release the shared library's <c>TimeZoneDatabase</c> states for them
-    /// (JSD-0076; added at SJL-8.5).
+    /// (JSD-0076; added at SJL-8.5). Data that does not carry it reads as before, and the database
+    /// states the release <c>unstated</c>; nothing in the profile reads the release (JSD-0077).
     /// </summary>
     TimeZoneRelease = 31,
 }
