@@ -255,6 +255,10 @@ unchanged, and so is what it gates: SJL-6 may not meet its gate before SJL-3 mee
 gates: SJL-7 may not meet its gate before SJL-3 meets SJL-3's, and SJL-9, SJL-11 and SJL-13 still wait on
 SJL-7's.)*
 
+*(Added 2026-10-17: SJL-8 started before SJL-3 was met, at the owner's direction of 2026-10-17, which the
+[ledger](status.md) records. The order above is unchanged, and so is what it gates: SJL-8 may not meet its gate
+before SJL-3 meets SJL-3's, and SJL-9 and SJL-10 still wait on SJL-8's.)*
+
 **What can start today:**
 
 - SJL-0 in full;

@@ -22,6 +22,12 @@ and 7). Clauses 9, 10, 12 and 13 are met, and clause 11 is met on parts A and B 
 - **Part C, the measurement, is NOT MET on clause 3** (section 12): the after arm is slower than the base beyond
   the A/A floor for casing and for identifier scanning in the native form. JSD-0031's fifth reason therefore stays
   open for this engine for those two, in the native form.
+- **Part C, taken again under a rule revised after its first run, is MET** (section 14). The revised rule is
+  [`decision-rule-area-revised-2026-10-17.md`](decision-rule-area-revised-2026-10-17.md), and its decision is
+  weaker evidence. Arm A is this family on Broiler.Unicode `0.1.0-preview.5`, which made the owner's normalization,
+  casing and lexical classes faster. D is at or below the A/A floor in all six workloads and forms. JSD-0031's
+  fifth reason is answered for this engine on `0.1.0-preview.5`, as weaker evidence. *(Added 2026-10-17, after
+  SJL-7.6.)*
 - **Nothing is accepted.** Review is deferred, and SJL-7 may not meet its gate before SJL-3 meets SJL-3's.
 
 *(Revised 2026-10-17, later at SJL-7.6, when the vectors at revision 20 and part C were added. The first bullet
@@ -478,6 +484,9 @@ without deciding anything. In both, arm A's seven runs spread widely, and arm A-
 B's by more than the floor. A second run would be a new measurement under a dated revision of the rule, which is
 weaker evidence, and taking one is the owner's choice.
 
+*Added 2026-10-17, after SJL-7.6:* the owner had the owner's algorithms made faster, and the second run was taken
+under a dated revision, on `0.1.0-preview.5`. It is MET (section 14). This run stands as written.
+
 ## 13. The Broiler.VM clauses
 
 | Clause | What it asks | Where | State |
@@ -493,3 +502,43 @@ evidence item "each engine's measurement for `normalize`, casing and identifier 
 taken, and it leaves JSD-0031's fifth reason open for this engine for casing and identifiers in the native form. The owner's clauses, 1 to 4, are judged in
 Broiler.Unicode's bundle of the same name, and Broiler.JS's, 5 to 8, in Broiler.JS's. None is accepted: review is
 deferred, and SJL-7 may not meet its gate before SJL-3 meets SJL-3's.
+
+*Added 2026-10-17, after SJL-7.6:* part C was taken again under the revised rule, on `0.1.0-preview.5`, and is MET
+(section 14). As weaker evidence, it answers JSD-0031's fifth reason for this engine on the code it now runs. The
+rows above stand as read at `be0b610`.
+
+## 14. The measurement again, under the rule revised after its first run
+
+*Added 2026-10-17, after SJL-7.6.*
+
+**MET, under [`decision-rule-area-revised-2026-10-17.md`](decision-rule-area-revised-2026-10-17.md), which is
+weaker evidence.** That rule was written after section 12's run was seen and read NOT MET.
+- **Why it was written.** The run left the owner a choice: take a second measurement under a dated revision, or
+  leave the fifth reason open. The owner had Broiler.Unicode's normalization, case mapping and lexical classes
+  made faster, published as `0.1.0-preview.5`, and this family moved to it in #138 (`9508bd5`, JSC-311, bundle
+  JS-10-008).
+- **What it changes.** Arm A moves to the commit that carries the revised rule, `6cc39c8`, whose product sources
+  are `9508bd5`'s. That arm also carries #137's corrections of the `Intl.Locale` and Temporal casing defects
+  section 11 named.
+- **What it keeps.** Arm B, the workloads, the protocol and the MET line are the original's. One reading is added:
+  this is part C's last measurement.
+
+[`measurement-revised/`](measurement-revised/README.md) holds the run, a sub-bundle of its own like
+`measurement/`. `collect-area.py --only measure-revised` took it, its lanes running from 12:55:28Z to 13:00:43Z, with
+no other build, test or run beside it.
+
+| Clause | On this run |
+|---|---|
+| 1. Every lane's condition passes | **Holds**: no answer check differs from arm B's, in 72 checks, and no timed child's answer does |
+| 2. Every effective-configuration line identical | **Holds**: one line in every timed child and check |
+| 3. D <= N for every workload and form | **Holds for six of six.** D is negative in all six. Native casing, which failed the first run, has D = −90.0 ms against N = 27.7 ms. Native identifiers has D = −8.5 ms against N = 37.7 ms, below resolution |
+
+**What it answers, and what it does not.**
+- **What it answers:** JSD-0031's fifth reason, the owner's runtime cost, for this engine on Broiler.Unicode
+  `0.1.0-preview.5`, as weaker evidence. The after arm is within this machine's noise of the base on every
+  workload and form, and faster beyond it on three.
+- **What it does not say:** that the first run was wrong. Section 12's NOT MET stands for arm A at `be0b610`, on
+  `0.1.0-preview.4`.
+- **Parts A and B and clauses 9 to 13** stand as read at `be0b610`, on `0.1.0-preview.4`, and this section does not
+  take them again. JSC-311 and bundle JS-10-008 record that the move to `0.1.0-preview.5` regenerated N22's tables,
+  under a budget the owner raised to 640 KB, and re-collected the package baseline.

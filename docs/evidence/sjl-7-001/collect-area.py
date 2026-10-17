@@ -37,9 +37,10 @@ Steps, each with `--only`:
                  smallest completing fuel allowance bisected under the bytecode form, then each form run at
                  that figure and at one less, with the answer it completes with, into base/fuel-parity.log;
   manifest       the SHA-256 of every file this collector writes or reads as its own (base/, after/, cutover/,
-                 vectors/, this file, the rule and the correspondence), with the base commit base/identity.txt
-                 names and the after commit after/identity.txt names, into area-manifest.json. measurement/ is
-                 a sub-bundle of its own evidence class, with its own manifest and hashes, and is not listed.
+                 vectors/, this file, the rule, its revision of 2026-10-17 and the correspondence), with the base
+                 commit base/identity.txt names and the after commit after/identity.txt names, into
+                 area-manifest.json. measurement/ and measurement-revised/ are each a sub-bundle of its own
+                 evidence class, with its own manifest and hashes, and are not listed.
   cutover-closures
                  every JavaScript composition root under JIT, trimming and Native AOT, as bundle sjl-3-001's
                  closures step publishes and runs them, at the tree of SJL-7.4's change that adds the Unicode
@@ -97,6 +98,17 @@ imported as the base's was; every other step runs locally:
                   a sub-bundle of its own (its README is written by hand). A measurement/ holding a summary is
                   never run again; one without (a stopped run) is moved aside to measurement-stopped-<n>/ and
                   retained. With --dry-run it checks the arms and prints the plan, and builds and runs nothing.
+
+THE REVISED MEASUREMENT WAS ADDED ON 2026-10-17, after measure's run was seen, with
+decision-rule-area-revised-2026-10-17.md, which revises part C's arm A and nothing else:
+
+  measure-revised part C under the revised rule, as measure takes it, with arm A at --tree: a clean checkout of a
+                  commit that carries the revised rule, descends from 9508bd5 (this family on Broiler.Unicode
+                  0.1.0-preview.5) and differs from it in no file outside the documents; arm B is the base commit
+                  base/identity.txt names, as before; the sub-bundle's manifest also names every commit since the
+                  after commit after/identity.txt names, with its files outside the documents; into
+                  measurement-revised/, which measure's rules for a completed or stopped run govern as they govern
+                  measurement/.
 """
 
 import argparse
@@ -180,10 +192,21 @@ CONTROL = ".control.js"
 ARMS = ("B", "A", "A-again")
 FORMS = ("bytecode", "native")
 MEASUREMENT = "measurement"
+# The revised rule of 2026-10-17: part C again, arm A at a commit whose product sources are those of the default
+# branch after #138, this family on Broiler.Unicode 0.1.0-preview.5, into a sub-bundle of its own.
+REVISED_RULE = os.path.join("docs", "evidence", "sjl-7-001", "decision-rule-area-revised-2026-10-17.md")
+PREVIEW_5 = "9508bd5b9b6d0f6d009418dda351fb0e7d846745"
+MEASUREMENT_REVISED = "measurement-revised"
 
 STEPS = ("base-identity", "base-import", "base-complete", "base-twins",
          "after-identity", "after-import", "after-complete", "after-twins", "compare", "rerun", "wall-race",
-         "closures", "rules", "simplification", "packages", "measure", "manifest", "cutover-closures")
+         "closures", "rules", "simplification", "packages", "measure", "measure-revised", "manifest",
+         "cutover-closures")
+
+
+def outside_documents(names):
+    """The paths of a `git diff --name-only` listing outside docs/ and outside any docs/ directory."""
+    return [name for name in names.splitlines() if name and not name.startswith("docs/") and "/docs/" not in name]
 
 
 def recorded(path, key):
@@ -396,29 +419,64 @@ class Collector(area6.Collector):
         print("packages: exit %d" % code, flush=True)
         return code
 
-    # ---- part C, the measurement (SJL-7.6) ----------------------------------------------------
+    # ---- part C, the measurement (SJL-7.6), and its revision of 2026-10-17 ----------------------
     def measure(self):
-        """Part C of decision-rule-area.md. Every check that can refuse runs before anything is built; with
-        --dry-run nothing is built, written or run."""
+        """Part C of decision-rule-area.md."""
+        return self.part_c("measure", RULE, MEASUREMENT, revised=False)
+
+    def measure_revised(self):
+        """Part C of decision-rule-area-revised-2026-10-17.md: arm A at --tree, on 0.1.0-preview.5."""
+        return self.part_c("measure-revised", REVISED_RULE, MEASUREMENT_REVISED, revised=True)
+
+    def part_c(self, step, rule, subbundle, revised):
+        """Every check that can refuse runs before anything is built; with --dry-run nothing is built, written
+        or run."""
         dry = bool(getattr(self.arguments, "dry_run", False))
         problems = []
         if not self.base_tree:
-            print("measure: arm B needs --base-tree, a clean checkout of the base commit")
+            print("%s: arm B needs --base-tree, a clean checkout of the base commit" % step)
             return 1
+        after = recorded(os.path.join(self.root_out, "after", "identity.txt"), "after-commit")
         expected = {"B": recorded(os.path.join(self.root_out, "base", "identity.txt"), "base-commit"),
-                    "A": recorded(os.path.join(self.root_out, "after", "identity.txt"), "after-commit")}
+                    "A": after}
         trees = {"B": self.base_tree, "A": self.tree}
         commits = {}
         for arm in ("B", "A"):
             commits[arm] = self.run(["git", "rev-parse", "HEAD"], cwd=trees[arm])[1].strip()
             dirty = self.run(["git", "status", "--porcelain"], cwd=trees[arm])[1].strip()
-            if not expected[arm]:
+            if revised and arm == "A":
+                pass
+            elif not expected[arm]:
                 problems.append("arm %s: the bundle names no commit for it (%s/identity.txt)"
                                 % (arm, "base" if arm == "B" else "after"))
             elif commits[arm] != expected[arm]:
                 problems.append("arm %s: the tree is at %s, and the bundle names %s" % (arm, commits[arm], expected[arm]))
             if dirty:
                 problems.append("arm %s: the tree is not clean" % arm)
+        # Under the revised rule, arm A is the commit that carries it, whose product sources are PREVIEW_5's.
+        since = []
+        if revised:
+            if not os.path.isfile(os.path.join(self.tree, REVISED_RULE)):
+                problems.append("arm A: the tree does not carry %s" % REVISED_RULE.replace(os.sep, "/"))
+            if self.run(["git", "merge-base", "--is-ancestor", PREVIEW_5, commits["A"]], cwd=self.tree)[0] != 0:
+                problems.append("arm A: %s does not descend from %s" % (commits["A"], PREVIEW_5))
+            code, names = self.run(["git", "diff", "--name-only", PREVIEW_5, commits["A"]], cwd=self.tree)
+            differ = outside_documents(names)
+            if code != 0 or differ:
+                problems.append("arm A: %s differs from %s outside the documents: %s"
+                                % (commits["A"], PREVIEW_5, ", ".join(differ) or "git diff exit %d" % code))
+            if not after:
+                problems.append("the bundle names no after commit (after/identity.txt)")
+            else:
+                listing = self.run(["git", "log", "--reverse", "--format=%H%x09%s", "%s..%s" % (after, commits["A"])],
+                                   cwd=self.tree)[1]
+                for entry in listing.splitlines():
+                    if entry.strip():
+                        sha, subject = entry.split("\t", 1)
+                        touched = outside_documents(self.run(
+                            ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", sha], cwd=self.tree)[1])
+                        since.append("  %s %s: %s" % (sha, subject, (str(len(touched)) + " files") if touched else "none"))
+                        since.extend("    " + name for name in touched)
         # The workloads are the rule's, as committed with it: read from the base tree, and equal in both.
         folder = os.path.join(self.base_tree, WORKLOADS)
         workloads = []
@@ -441,21 +499,23 @@ class Collector(area6.Collector):
             problems.append("eng/compare-forms.py's warm-up default is not %d" % base.WARMUP)
         if not seven or base.REPETITIONS != 7:
             problems.append("docs/baselines.md rule 4 does not read seven per lane")
-        out = os.path.join(self.root_out, MEASUREMENT)
+        out = os.path.join(self.root_out, subbundle)
         stopped = None
         if os.path.isdir(out) and os.listdir(out):
             if os.path.isfile(os.path.join(out, "summary.txt")):
-                problems.append("%s/ holds a completed measurement; a measurement is not run again" % MEASUREMENT)
+                problems.append("%s/ holds a completed measurement; a measurement is not run again" % subbundle)
             else:
                 number = 1
-                while os.path.exists(os.path.join(self.root_out, "%s-stopped-%d" % (MEASUREMENT, number))):
+                while os.path.exists(os.path.join(self.root_out, "%s-stopped-%d" % (subbundle, number))):
                     number += 1
-                stopped = os.path.join(self.root_out, "%s-stopped-%d" % (MEASUREMENT, number))
+                stopped = os.path.join(self.root_out, "%s-stopped-%d" % (subbundle, number))
         children = len(FORMS) * len(WORKLOAD_STEMS) * len(ARMS) * 2 * (2 + base.WARMUP + base.REPETITIONS)
         plan = [
-            "measure: part C of %s" % RULE.replace(os.sep, "/"),
+            "%s: part C of %s" % (step, rule.replace(os.sep, "/")),
             "  arm B        %s at %s (the bundle names %s)" % (self.hide(trees["B"]), commits["B"], expected["B"]),
-            "  arm A        %s at %s (the bundle names %s)" % (self.hide(trees["A"]), commits["A"], expected["A"]),
+            "  arm A        %s at %s (%s)" % (self.hide(trees["A"]), commits["A"], ("the bundle names %s" % expected["A"])
+                                         if not revised else "the commit carrying the revised rule, on %s's product sources"
+                                         % PREVIEW_5),
             "  arm A-again  arm A's binaries, measured a second time under another lane name",
             "  root         %s, built in Release under the JIT in each arm's tree" % base.CLI.replace(os.sep, "/"),
             "  forms        %s; native under %s" % (", ".join(FORMS), base.NATIVE_BACKEND),
@@ -467,21 +527,21 @@ class Collector(area6.Collector):
             "  child        <arm>/%s --runtime [--native %s] --fuel %d --wall %d <workload>"
             % (base.CLI_BINARY, base.NATIVE_BACKEND, base.MEASURE_FUEL, base.MEASURE_WALL),
             "  children     %d timed or checked, plus two builds" % children,
-            "  into         %s/%s" % (self.hide(self.root_out), MEASUREMENT)
+            "  into         %s/%s" % (self.hide(self.root_out), subbundle)
             + ("; the stopped run there moves to %s" % os.path.basename(stopped) if stopped else ""),
         ]
         print("\n".join(plan), flush=True)
         for problem in problems:
-            print("measure: REFUSED: " + problem, flush=True)
+            print("%s: REFUSED: %s" % (step, problem), flush=True)
         if problems:
             return 1
         if dry:
-            print("measure: dry run; nothing was built, written or run", flush=True)
+            print("%s: dry run; nothing was built, written or run" % step, flush=True)
             return 0
 
         if stopped:
             os.rename(out, stopped)
-            print("measure: the stopped run is retained as %s" % os.path.basename(stopped), flush=True)
+            print("%s: the stopped run is retained as %s" % (step, os.path.basename(stopped)), flush=True)
         os.makedirs(out, exist_ok=True)
         binaries, listings = {}, {}
         for arm in ("B", "A"):
@@ -491,7 +551,7 @@ class Collector(area6.Collector):
             with open(os.path.join(out, "build-cli-%s.log" % arm.lower()), "w", encoding="utf-8", newline="\n") as stream:
                 stream.write(self.hide(output.strip() + "\nexit code: %d\n" % code))
             if code != 0:
-                print("measure: the command-line root did not build for arm %s" % arm)
+                print("%s: the command-line root did not build for arm %s" % (step, arm))
                 return 1
             copy = os.path.join(self.scratch, "cli-" + arm)
             shutil.copytree(os.path.join(tree, base.CLI, "bin", "Release", "net10.0"), copy, dirs_exist_ok=True)
@@ -510,18 +570,27 @@ class Collector(area6.Collector):
         binaries["A-again"] = binaries["A"]
 
         manifest = [
-            "sub-bundle sjl-7-001/measurement",
+            "sub-bundle sjl-7-001/%s" % subbundle,
             "evidence-class measurement",
-            "decision %s part C, as written: MET if and only if every lane's condition passes, before and after, for"
+            "decision %s part C, as %s: MET if and only if every lane's condition passes, before and after, for"
             " every workload and form; every effective-configuration line is identical across arms, lanes and"
-            " repetitions; and for every workload and form D <= N." % RULE.replace(os.sep, "/"),
-            "rule %s sha256=%s" % (RULE.replace(os.sep, "/"), self.sha256_lf(os.path.join(self.tree, RULE))),
+            " repetitions; and for every workload and form D <= N." % (rule.replace(os.sep, "/"),
+                                                                       "revised" if revised else "written"),
+            "rule %s sha256=%s" % (rule.replace(os.sep, "/"), self.sha256_lf(os.path.join(self.tree, rule))),
             "collector docs/evidence/sjl-7-001/collect-area.py sha256=%s" % self.sha256_lf(os.path.abspath(__file__)),
             "collected " + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "arm-B-commit %s (the base commit base/identity.txt names; clean tree)" % commits["B"],
-            "arm-A-commit %s (the after commit after/identity.txt names; clean tree)" % commits["A"],
+            ("arm-A-commit %s (the after commit after/identity.txt names; clean tree)" % commits["A"]) if not revised
+            else ("arm-A-commit %s (it carries the revised rule, descends from %s and differs from it in no file"
+                  " outside the documents; clean tree)" % (commits["A"], PREVIEW_5)),
             "arm-A-again the arm A binaries, measured a second time under another lane name",
         ]
+        if revised:
+            manifest[4:4] = ["rule-it-revises %s sha256=%s" % (RULE.replace(os.sep, "/"),
+                                                              self.sha256_lf(os.path.join(self.tree, RULE)))]
+            manifest.append("since-after-commit %s (after/identity.txt), each commit with its files outside the"
+                            " documents:" % after)
+            manifest.extend(since)
         for arm in ("B", "A"):
             manifest.append("binary arm %s %s.dll sha256=%s; every file of its output, binaries-%s.sha256 sha256=%s" % (
                 arm, base.CLI_BINARY, self.sha256(binaries[arm] + ".dll"), arm.lower(), listings[arm]))
@@ -548,7 +617,7 @@ class Collector(area6.Collector):
         with open(path, "w", encoding="utf-8", newline="\n") as stream:
             stream.write(self.hide("\n".join(manifest) + "\n"))
         os.chmod(path, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)
-        print("measure: manifest written and made read-only; the lanes start", flush=True)
+        print("%s: manifest written and made read-only; the lanes start" % step, flush=True)
 
         environment = dict(os.environ)
         environment["DOTNET_CLI_UI_LANGUAGE"] = "en"
@@ -573,7 +642,7 @@ class Collector(area6.Collector):
         conditions = open(os.path.join(out, "conditions.tsv"), "w", encoding="utf-8", newline="\n")
         runs.write("form\tworkload\trepetition\tretained\tposition\tarm\tfile\texit\tanswer-ok\tconfiguration\twall-ms\n")
         conditions.write("form\tworkload\tarm\tfile\twhen\texit\tanswer\tconfiguration\tequals arm B's\n")
-        summary = ["# part C of %s, measured %s to %%s" % (RULE.replace(os.sep, "/"),
+        summary = ["# part C of %s, measured %s to %%s" % (rule.replace(os.sep, "/"),
                    datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")),
                    "# Q is the median of the retained repetitions, in ms; N = |Q(A) - Q(A-again)|; D = Q(A) - Q(B);",
                    "# E(arm) = Q(workload, arm) - Q(control, arm), retained beside D and deciding nothing",
@@ -631,7 +700,7 @@ class Collector(area6.Collector):
                             q[("B", control)], q[("A", control)], q[("A-again", control)],
                             q[("B", workload)] - q[("B", control)], q[("A", workload)] - q[("A", control)],
                             q[("A-again", workload)] - q[("A-again", control)])]))
-                    print("measure: %s %s D=%.3f N=%.3f" % (form, stem, difference, floor), flush=True)
+                    print("%s: %s %s D=%.3f N=%.3f" % (step, form, stem, difference, floor), flush=True)
         finally:
             runs.close()
             conditions.close()
@@ -651,8 +720,8 @@ class Collector(area6.Collector):
                  for entry in sorted(os.listdir(out)) if entry not in ("hashes.txt", "README.md")]
         with open(os.path.join(out, "hashes.txt"), "w", encoding="utf-8", newline="\n") as stream:
             stream.write("\n".join(lines) + "\n")
-        print("measure: %d answer checks differ, %d timed children differ, %d configuration lines, D <= N in %d of %d"
-              % (failed_conditions, failed_runs, len(configurations), within, pairs), flush=True)
+        print("%s: %d answer checks differ, %d timed children differ, %d configuration lines, D <= N in %d of %d"
+              % (step, failed_conditions, failed_runs, len(configurations), within, pairs), flush=True)
         return 0 if failed_conditions == 0 and failed_runs == 0 and len(configurations) == 1 else 1
 
     def manifest(self):
@@ -664,16 +733,18 @@ class Collector(area6.Collector):
                     if name.endswith(".mstat") or "__pycache__" in path:
                         continue
                     files[os.path.relpath(path, self.root_out).replace(os.sep, "/")] = self.sha256(path)
-        for name in ("collect-area.py", "decision-rule-area.md", "correspondence.md"):
-            files[name] = self.sha256(os.path.join(self.root_out, name))
+        for name in ("collect-area.py", "decision-rule-area.md", "decision-rule-area-revised-2026-10-17.md",
+                     "correspondence.md"):
+            if os.path.isfile(os.path.join(self.root_out, name)):
+                files[name] = self.sha256(os.path.join(self.root_out, name))
         document = {"bundle": "sjl-7-001", "repository": "Broiler.VM", "part": "the Unicode area (SJL-7.2 onwards)",
                     "baseCommit": recorded(os.path.join(self.root_out, "base", "identity.txt"), "base-commit")
                     or "(absent)",
                     "afterCommit": recorded(os.path.join(self.root_out, "after", "identity.txt"), "after-commit")
                     or "(absent)",
-                    "notListed": "measurement/, a sub-bundle of its own evidence class with its own manifest.txt and"
-                                 " hashes.txt; any Native AOT image record (*.mstat), which after/closures/mstat.sha256"
-                                 " and cutover/closures/mstat.sha256 name",
+                    "notListed": "measurement/ and measurement-revised/, each a sub-bundle of its own evidence class"
+                                 " with its own manifest.txt and hashes.txt; any Native AOT image record (*.mstat), which"
+                                 " after/closures/mstat.sha256 and cutover/closures/mstat.sha256 name",
                     "files": dict(sorted(files.items()))}
         with open(os.path.join(self.root_out, "area-manifest.json"), "w", encoding="utf-8", newline="\n") as stream:
             stream.write(json.dumps(document, indent=1) + "\n")
@@ -693,7 +764,7 @@ def main():
     parser.add_argument("--run-url")
     parser.add_argument("--artifact-id")
     parser.add_argument("--run-times")
-    parser.add_argument("--dry-run", action="store_true", help="measure: check the arms and print the plan only")
+    parser.add_argument("--dry-run", action="store_true", help="measure, measure-revised: check the arms and print the plan only")
     parser.add_argument("--only", action="append", required=True, choices=STEPS)
     arguments = parser.parse_args()
     arguments.against_broiler_js = None
