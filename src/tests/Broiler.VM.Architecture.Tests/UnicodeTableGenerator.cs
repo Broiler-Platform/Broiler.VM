@@ -62,8 +62,14 @@ internal static class UnicodeTableGenerator
     /// <summary>Set to <c>1</c> to make the run write rather than assert.</summary>
     internal const string WriteVariable = "BROILER_UNICODE_WRITE";
 
-    /// <summary>The owner's hard cap on table data, 2026-09-22: 300 KB, taken as 300 x 1024 bytes.</summary>
-    internal const int BudgetBytes = 300 * 1024;
+    /// <summary>
+    /// The owner's hard cap on table data: 640 KB, taken as 640 x 1024 bytes, since 2026-10-17.
+    /// *(Revised 2026-10-17, when Broiler.Unicode.Algorithms 0.1.0-preview.5 moved normalization, casing
+    /// and the lexical classes onto constant-time tables, by the owner's decision that their speed comes
+    /// before their bytes: the 33 embedded tables hold 642,028 bytes. The summary read "The owner's hard
+    /// cap on table data, 2026-09-22: 300 KB, taken as 300 x 1024 bytes.", and the cap was 300 * 1024.)*
+    /// </summary>
+    internal const int BudgetBytes = 640 * 1024;
 
     /// <summary>
     /// The generated files rule N22 holds, in the order they are generated: Format's and the profile's,

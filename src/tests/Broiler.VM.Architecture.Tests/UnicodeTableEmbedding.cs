@@ -9,15 +9,14 @@ namespace Broiler.VM.Architecture.Tests;
 /// <summary>One file the embedding writes: where it is, its namespace, and the tables it holds.</summary>
 /// <param name="RelativePath">The file, relative to the repository root.</param>
 /// <param name="Namespace">The namespace of the class it declares.</param>
-/// <param name="First">The first table it holds, in <see cref="UnicodeTable"/> order.</param>
-/// <param name="Last">The last table it holds.</param>
+/// <param name="Tables">The tables it holds, in <see cref="UnicodeTable"/> order.</param>
 /// <param name="Summary">The class's summary.</param>
 /// <param name="Rule">The rule that holds it byte for byte, N22 or N28.</param>
 /// <param name="WriteVariable">The environment variable that turns that rule's gate into its write.</param>
-internal sealed record UnicodeEmbeddedFile(string RelativePath, string Namespace, UnicodeTable First, UnicodeTable Last, string Summary, string Rule, string WriteVariable)
+internal sealed record UnicodeEmbeddedFile(string RelativePath, string Namespace, IReadOnlyList<UnicodeTable> Tables, string Summary, string Rule, string WriteVariable)
 {
     /// <summary>Whether <paramref name="table"/> is one this file holds.</summary>
-    internal bool Holds(UnicodeTable table) => table >= First && table <= Last;
+    internal bool Holds(UnicodeTable table) => Tables.Contains(table);
 }
 
 /// <summary>
@@ -29,10 +28,17 @@ internal sealed record UnicodeEmbeddedFile(string RelativePath, string Namespace
 /// <b>The bytes are the owner's, the files are this repository's.</b>
 /// <c>Broiler.Unicode.Generation</c>'s <c>UnicodeTableGenerator.Generate</c> is run over the archive
 /// <c>src/tests/unicode/pins/unicode.pin</c> names - the owner's own <c>UnicodePin</c> verifying every
-/// file's length, hash and version header first - and its 37 tables are split by assembly as they
-/// were before the owner held the generator: the property, folding and string-property tables in
-/// Format, which the compiler and the runtime both read; normalization and casing in the profile; the
-/// break table in the optional Intl assembly. Each file is one internal class whose <c>Get</c> answers
+/// file's length, hash and version header first - and the tables the owner's algorithms read are split
+/// by assembly as they were before the owner held the generator: the property, folding,
+/// string-property and lexical tables in Format, which the compiler and the runtime both read;
+/// normalization and casing in the profile; the break table in the optional Intl assembly.
+/// *(Revised 2026-10-17, when Broiler.Unicode.Algorithms 0.1.0-preview.5 moved normalization, casing
+/// and the lexical classes onto constant-time tables, and twelve of the owner's 46 tables stopped being
+/// read: they are no longer embedded, and each file names its tables rather than a range of them. The
+/// sentence read "and its 37 tables are split by assembly as they were before the owner held the
+/// generator: the property, folding and string-property tables in Format, which the compiler and the
+/// runtime both read; normalization and casing in the profile; the break table in the optional Intl
+/// assembly.")* Each file is one internal class whose <c>Get</c> answers
 /// a <see cref="UnicodeTable"/> with a span over constant data, which the family's
 /// <see cref="IUnicodeTables"/> providers hand to the owner's algorithms.
 /// </para>
@@ -58,22 +64,32 @@ internal static class UnicodeTableEmbedding
     internal const string ExemptReason =
         "Unicode 17.0.0 table data written by Broiler.Unicode.Generation from the files unicode.pin names, compared byte for byte by rules N22 and N28";
 
-    /// <summary>The Format assembly's tables: properties, case folding and the properties of strings.</summary>
+    /// <summary>
+    /// The Format assembly's tables: properties, case folding, the properties of strings and the
+    /// lexical classes' trie, which <c>EcmaScriptLexical</c> reads.
+    /// </summary>
     internal static readonly UnicodeEmbeddedFile Format = new(
         FormatPath,
         "Broiler.VM.Profile.JavaScript.Format",
-        UnicodeTable.PropertyLayout,
-        UnicodeTable.StringPropertyNameIndex,
-        "The Unicode 17.0.0 property, case folding and string property tables the matcher and the compiler read through the owner's algorithms.",
+        [.. Enumerable.Range((int)UnicodeTable.PropertyLayout, UnicodeTable.StringPropertyNameIndex - UnicodeTable.PropertyLayout + 1).Select(static table => (UnicodeTable)table), UnicodeTable.LexicalTrie],
+        "The Unicode 17.0.0 property, case folding, string property and lexical tables the matcher and the compiler read through the owner's algorithms.",
         "N22",
         "BROILER_UNICODE_WRITE");
 
-    /// <summary>The profile's tables: normalization and case mapping, Soft_Dotted among them.</summary>
+    /// <summary>
+    /// The profile's tables: the ones normalization and case mapping read since 0.1.0-preview.5, their
+    /// layouts, the mapping pool and the constant-time tables. The range and index tables they read
+    /// before are not embedded: no type of the owner reads them any more.
+    /// </summary>
     internal static readonly UnicodeEmbeddedFile Profile = new(
         ProfilePath,
         "Broiler.VM.Profile.JavaScript",
-        UnicodeTable.NormalizationLayout,
-        UnicodeTable.SoftDottedRanges,
+        [
+            UnicodeTable.NormalizationLayout, UnicodeTable.CasingLayout, UnicodeTable.MappingPool,
+            UnicodeTable.NormalizationTrie, UnicodeTable.NormalizationRecords, UnicodeTable.CompositionLists,
+            UnicodeTable.CasingTrie, UnicodeTable.CasingRecords, UnicodeTable.DecompositionElements,
+            UnicodeTable.UpperDeltaTrie, UnicodeTable.LowerDeltaTrie,
+        ],
         "The Unicode 17.0.0 normalization and case mapping tables normalize and the case conversions read through the owner's algorithms.",
         "N22",
         "BROILER_UNICODE_WRITE");
@@ -82,8 +98,7 @@ internal static class UnicodeTableEmbedding
     internal static readonly UnicodeEmbeddedFile Intl = new(
         IntlPath,
         "Broiler.VM.Profile.JavaScript.Intl",
-        UnicodeTable.SegmentBreaks,
-        UnicodeTable.SegmentBreaks,
+        [UnicodeTable.SegmentBreaks],
         "The Unicode 17.0.0 break table Intl.Segmenter reads through the owner's segmenter.",
         "N28",
         "BROILER_CLDR_WRITE");
@@ -114,9 +129,9 @@ internal static class UnicodeTableEmbedding
     {
         var held = tables.Where(table => file.Holds(table.Key)).ToArray();
 
-        if (held.Length != (int)file.Last - (int)file.First + 1)
+        if (held.Length != file.Tables.Count)
         {
-            throw new InvalidDataException($"the owner's generator wrote {held.Length} of the tables {file.First} to {file.Last}");
+            throw new InvalidDataException($"the owner's generator wrote {held.Length} of the {file.Tables.Count} tables {file.RelativePath} holds");
         }
 
         var text = new StringBuilder();

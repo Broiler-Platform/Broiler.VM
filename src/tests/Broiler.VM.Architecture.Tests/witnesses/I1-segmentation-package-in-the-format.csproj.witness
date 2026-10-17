@@ -9,7 +9,7 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Broiler.Unicode.Algorithms" Version="0.1.0-preview.4" />
-    <PackageReference Include="Broiler.Unicode.Segmentation" Version="0.1.0-preview.4" />
+    <PackageReference Include="Broiler.Unicode.Algorithms" Version="0.1.0-preview.5" />
+    <PackageReference Include="Broiler.Unicode.Segmentation" Version="0.1.0-preview.5" />
   </ItemGroup>
 </Project>

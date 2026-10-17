@@ -219,8 +219,9 @@ public sealed class UnicodePinRuleTests
     }
 
     /// <summary>
-    /// The owner's size decision of 2026-09-22: total table data under a hard cap of 300 KB,
-    /// measured twice - by the generator, and by counting the byte literals in the checked-in files.
+    /// The owner's size decision: total table data under a hard cap, 640 KB since 2026-10-17 (300 KB from
+    /// 2026-09-22 until then), measured twice - by the generator, and by counting the byte literals in the
+    /// checked-in files.
     /// </summary>
     [Fact]
     public void N22_The_Table_Data_Stays_Under_The_Budget()
@@ -250,9 +251,14 @@ public sealed class UnicodePinRuleTests
         // carry what were C# constants, and the profile's fifteen, the eight of normalization and the
         // seven of case mapping, two of them layouts and one Soft_Dotted's ranges, which the Intl data
         // held until then.
-        Assert.Equal(36, generation.Tables.Count);
-        Assert.Equal(21, generation.Tables.Count(static table => table.File == UnicodeTableEmbedding.FormatPath));
-        Assert.Equal(15, generation.Tables.Count(static table => table.File == UnicodeTableEmbedding.ProfilePath));
+        // SINCE 2026-10-17 (Broiler.Unicode.Algorithms 0.1.0-preview.5) THE OWNER'S ALGORITHMS READ
+        // CONSTANT-TIME TABLES: Format adds the lexical classes' trie, 22 tables; the profile holds the
+        // two layouts, the mapping pool and the eight tables of the constant-time normalization and
+        // casing, 11, and no longer the twelve range and index tables nothing reads. The three counts
+        // read 36, 21 and 15.
+        Assert.Equal(33, generation.Tables.Count);
+        Assert.Equal(22, generation.Tables.Count(static table => table.File == UnicodeTableEmbedding.FormatPath));
+        Assert.Equal(11, generation.Tables.Count(static table => table.File == UnicodeTableEmbedding.ProfilePath));
     }
 
     /// <summary>

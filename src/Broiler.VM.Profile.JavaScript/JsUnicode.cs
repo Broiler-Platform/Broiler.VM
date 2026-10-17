@@ -84,11 +84,15 @@ internal static class JsUnicode
         public string UnicodeVersion => JsUnicodeData.UnicodeVersion;
 
         /// <inheritdoc/>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2C8F5B
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1DF522
         // Broiler-Human:        PENDING
-        public ReadOnlySpan<byte> Table(UnicodeTable table) =>
-            table is >= UnicodeTable.NormalizationLayout and <= UnicodeTable.SoftDottedRanges
-                ? JsUnicodeTableData.Get(table)
-                : JsUnicodeData.Table((int)table);
+        public ReadOnlySpan<byte> Table(UnicodeTable table)
+        {
+            // The profile embeds the normalization and casing tables, Format the rest; neither embeds
+            // a table the other does, so an empty answer here means the table is Format's or none.
+            var own = JsUnicodeTableData.Get(table);
+
+            return own.IsEmpty ? JsUnicodeData.Table((int)table) : own;
+        }
     }
 }

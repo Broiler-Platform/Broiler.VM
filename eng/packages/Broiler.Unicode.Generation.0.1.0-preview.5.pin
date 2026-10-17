@@ -1,0 +1,37 @@
+# broiler-shared-package pin 1
+#
+# One package of the committed, hash-pinned feed (decision SJL-D-4 (c); milestone SJL-2.7): a shared
+# library package whose home is the Broiler.Unicode repository, retained here byte for byte so that a
+# restore needs no other repository's folder and no network for it. NuGet.config's package source
+# mapping sends the Broiler.Unicode prefix to this directory and to nuget.org; the lock file of a project
+# that references it records `content-hash`, and rule I1 holds that hash to this pin and to the
+# allow-list.
+#
+# HOW IT WAS TAKEN. The package exactly as Broiler.Unicode's Publish workflow pushed it to nuget.org on
+# 2026-10-17 (run 39028782865, its artifact nuget-packages, whose digest GitHub records as
+# sha256:002c598c7e43eaf05afa48303b91dc7b8114fb7d1278d8f06e0510967348b716 and the zip as downloaded has),
+# packed from `upstream-commit`; the nuspec's repository element records the same commit, which rule I7
+# reads. nuget.org serves the same package with its repository signature (.signature.p7s) added, and
+# NuGet's content hash of a signed package leaves the signature out, so a restore from either source
+# records `content-hash`, the base64 SHA-512 of this file's bytes. `sha256` is over the same bytes.
+# (Revised 2026-10-17, when 0.1.0-preview.5 replaced 0.1.0-preview.4: the faster normalization and case
+# mapping, and the constant-time tables they read. The preview.4 pin's identity lines read: content-hash
+# ai2J9zGFRnIVVqSlA/hkGbYUADObivp5Ee74QhAYlQuYQTPHQxxlD/cloFQlY9LWmGnVi8nZIMnxVWQXrb2GNw==, sha256
+# fb97a52092ee5b734416f52f589748c8fd158f4eebb0acdf87a75ad7c6b028e9, upstream-commit 6e14f93ad753094c99f0013d22269b47550ae552.)
+#
+# WHAT IT IS. The owner's table generator and pin reader (milestone SJL-7.2; Broiler.VM's JSD-0074),
+# namespace Broiler.Unicode.Generation, which depends on Broiler.Unicode.Algorithms 0.1.0-preview.4 and
+# carries the owner's unicode.pin as a resource. Admitted TEST-ONLY for Broiler.VM.Architecture.Tests at
+# SJL-7.4: rules N22 and N28 regenerate the embedded tables with it from this repository's pin, and rule I4
+# holds that pin equal to the owner's (decision SJL-D-6 (c): "the generator reaches each engine's tests as
+# a pinned, test-only package, and never a product closure"). No release may ship it (eng/verify-feed.ps1).
+# It carries no third-party component and no Unicode data; its THIRD_PARTY_NOTICES.md is the owner's
+# repository's, as above.
+
+id Broiler.Unicode.Generation
+version 0.1.0-preview.5
+file Broiler.Unicode.Generation.0.1.0-preview.5.nupkg
+content-hash wVI62hdy+ujEfag6Uua4QJbBUzHA4+cHpB4RF8L91GNpmCJPRgHd/VDGDiwzZ66+CinNfs6/pX+zDc5xjFufGw==
+sha256 056006a5c859787e221cf7e6e74163279c07376dd227cd23478faa91423f2359
+upstream Broiler-Platform/broiler.unicode
+upstream-commit b80201436e8f8ff0402ed75c0b9657fe3616d730

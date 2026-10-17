@@ -198,12 +198,13 @@ before review. What each has been shown to do:
 
 **The family's four packages are frozen** in the [package baseline](packages.md), each with its
 dependencies and files, and rule N37 holds it to the checkout and to the candidate pack of bundle
-[JS-10-007](evidence/js-10-007/README.md), where a pristine consumer restored and ran them, and the
+[JS-10-008](evidence/js-10-008/README.md), where a pristine consumer restored and ran them, and the
 shared packages they depend on - the shared algorithms package and, since the Unicode cut-over, the
 Unicode area's code and segmentation packages - with upstream unreachable and rolled back to the
 published `0.1.0-preview.5` and forward again *(corrected: [JSC-300](roadmap.corrections.md#jsc-300),
-[JSC-302](roadmap.corrections.md#jsc-302), [JSC-308](roadmap.corrections.md#jsc-308); it named bundle
-JS-10-006, before that JS-10-005, and before that JS-10-002)*.
+[JSC-302](roadmap.corrections.md#jsc-302), [JSC-308](roadmap.corrections.md#jsc-308),
+[JSC-311](roadmap.corrections.md#jsc-311); it named bundle JS-10-007, before that JS-10-006, before that
+JS-10-005, and before that JS-10-002)*.
 
 **No composition is advertised.** Every JavaScript composition root is a demonstration and none is
 packable; the composition register is the authority, and rules K1 to K5 hold it to the checkout.

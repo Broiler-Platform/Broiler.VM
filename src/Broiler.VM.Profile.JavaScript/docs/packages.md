@@ -7,8 +7,9 @@
 **whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an
 addition and a removal each fail**. This is that baseline: the JavaScript family's packable set, each
 package's dependencies and each package's files, as the candidate pack of
-**bundle [JS-10-007](evidence/js-10-007/README.md)** produced them *(corrected: JSC-300, JSC-302,
-JSC-308; it was bundle JS-10-006's pack, before the Unicode cut-over gave the family's packages the
+**bundle [JS-10-008](evidence/js-10-008/README.md)** produced them *(corrected: JSC-300, JSC-302,
+JSC-308, JSC-311; it was bundle JS-10-007's pack, before the Unicode area's dependencies moved to
+`0.1.0-preview.5`, before that bundle JS-10-006's pack, before the Unicode cut-over gave the family's packages the
 Unicode area's dependencies, before that bundle JS-10-005's, before the numerics cut-over moved the
 shared dependency's version, and before that bundle JS-10-002's, before the family took its first
 shared dependency)*. Rule **N37** holds it to the
@@ -50,9 +51,10 @@ package rule I1 admits for shipping, for the projects that declare it and no oth
   ([JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md))
   *(corrected: JSC-301, JSC-303, JSC-304, JSC-306, JSC-308)*;
 - `Broiler.Unicode.Algorithms`, the Unicode area's code package, which all four declare at
-  `0.1.0-preview.4` since the Unicode cut-over (JSD-0075, on
-  [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md)), packed from
-  Broiler.Unicode `6e14f93` and published to nuget.org on 2026-10-16 *(added: JSC-308; until JSC-310 it read "and not yet on nuget.org")*;
+  `0.1.0-preview.5`, published to nuget.org from Broiler.Unicode `b802014` on 2026-10-17; they declared
+  it at `0.1.0-preview.4`, from Broiler.Unicode `6e14f93`, from the Unicode cut-over (JSD-0075, on
+  [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md)) until then
+  *(added: JSC-308; until JSC-310 it read "and not yet on nuget.org"; corrected: JSC-311)*;
 - `Broiler.Unicode.Segmentation`, its optional segmentation package, which `.Intl` alone declares, at
   the same version and from the same commit, so that a composition that declines the Intl surface
   carries none of it (rule I3) *(added: JSC-308)*.
@@ -66,9 +68,9 @@ a later one *(corrected: JSC-296, JSC-300)*.
 The pristine consumer, `samples/Broiler.VM.Sample.JavaScriptConsumer`, references the three core
 packages and these four and nothing else (rule A14); it restores `Broiler.ECMAScript.Algorithms`
 through them, and the Unicode area's `Broiler.Unicode.Algorithms` and `Broiler.Unicode.Segmentation`
-with them. Bundle JS-10-007 records it restoring and running with upstream feeds unreachable, from
+with them. Bundle JS-10-008 records it restoring and running with upstream feeds unreachable, from
 a local feed that holds the shared packages beside the family's, rolling back to the published
 `0.1.0-preview.5` set and forward again, failing to restore a version only nuget.org holds, and
 running as Native AOT; rule N37 holds the bundle's transcript to having done each *(corrected:
-JSC-300, JSC-302, JSC-308; it named bundle JS-10-006, before that bundle JS-10-005, and before that
+JSC-300, JSC-302, JSC-308, JSC-311; it named bundle JS-10-007, before that bundle JS-10-006, before that bundle JS-10-005, and before that
 bundle JS-10-002, whose consumer had no shared package to restore)*.
