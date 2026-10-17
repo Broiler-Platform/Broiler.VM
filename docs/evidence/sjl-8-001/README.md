@@ -15,11 +15,10 @@ whose input is [`correspondence.md`](correspondence.md), with every probe and bo
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules and correspondence only, 2026-10-17, at SJL-8.1. **Nothing here is a verdict, and nothing has
-been taken.**
-- The base of all three parts is taken at the commit that carries the rule, before any code of SJL-8 lands.
+**State:** rules, correspondence and the base, 2026-10-17. **Nothing here is a verdict.**
+- The base of all three parts was taken at the commit that carries the rule, `431c20e`, before any code of SJL-8
+  landed (section 2).
 - The after runs follow SJL-8.5's cut-over.
-- A collector joins this bundle when there is a run to take.
 
 The data home's clauses and Broiler.JS's are judged in Broiler.JS's bundle of the same name. This bundle reads
 none of its runs.
@@ -53,3 +52,76 @@ none of its runs.
 
 **The release both engines adopt** is tzdb 2026e, the one this family's pin records. JSD-0076 pins it by its dated
 record, from IANA's `NEWS` read on 2026-10-17.
+
+## 2. The base (SJL-8.2)
+
+[`collect-area.py`](collect-area.py) took it. It reuses bundle `sjl-7-001`'s area collector, and through it bundle
+`sjl-6-001`'s import of a hosted run and bundle `sjl-5-001`'s twin bisection, over the wide twins. It adds part B's
+step: the slice compiler's checks, with the digest of every dataset file. It judges nothing.
+
+| | |
+|---|---|
+| Commit | `431c20e`, the commit that carries the rule, from a clean checkout ([`base/identity.txt`](base/identity.txt)). Against the default branch after SJL-7's merges, `9508bd5`, it changes no file outside the documents, so its product sources are `9508bd5`'s, as the rule says |
+| Rule | [`decision-rule-area.md`](decision-rule-area.md), `sha256=dbd07094...` in the identity |
+| Taken | 2026-10-17: part A's base by the workflow from 13:50Z to 14:13Z; parts B and C locally from 13:55Z, on the programme's local machine (`linux-x64`, four logical processors, .NET SDK 10.0.401, the native backend `x86-64-sysv`), while other work ran beside it. Nothing in parts B and C is timed |
+
+**Part A's base.** [39038214808](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39038214808),
+attempt 1, was dispatched from `main` at `bb3e8aa` on 2026-10-17 at 13:50:25Z. It ran with both forms and the commit
+`431c20e`, named by all forty digits, and completed at 14:12:42Z ([`base/hosted/run.txt`](base/hosted/run.txt)).
+- The workflow and its driver at the dispatched ref are byte-identical to the rule commit's: `git diff bb3e8aa
+  431c20e` names neither.
+- The artifact `test262-evidence` is retained unchanged in [`base/hosted/`](base/hosted/).
+  [`base/hosted/imported.txt`](base/hosted/imported.txt) records the digest of the zip as downloaded, which is the
+  digest GitHub records.
+- Every runner and the merging job ran image `ubuntu24` 20261012.334.1.
+
+| Run | Complete ([`base/completeness.log`](base/completeness.log)) | Totals |
+|---|---|---|
+| `wide-bytecode` | exit 1, the floor holds; whole, retainable, no shard finding, one assembly list | pass 100,372, fail 154, exhausted 44, skipped 1,153, of 101,723 variants |
+| `wide-native` | exit 4, a re-base, as the rule admits; whole, retainable, no shard finding, one assembly list | pass 100,338, fail 188, exhausted 44, skipped 1,153, of 101,723 variants |
+
+The pass, fail, exhausted and skipped totals are bundle `sjl-7-001`'s after run's, figure for figure. The exhausted
+rows split differently between the wall clock and fuel, as hosted runs do. Part A's comparison reads them row by
+row, and its class C4 (c') covers that split.
+
+**Part B's base** ([`base/datasets/`](base/datasets/)).
+- **The method:** the slice compiler, built in Release at the base commit, ran `--checks --verbose`.
+  - [`checks.log`](base/datasets/checks.log) keeps its whole output, with the digest of the binary.
+  - [`named-checks.txt`](base/datasets/named-checks.txt) keeps the line of each check the rule names.
+  - [`files.sha256`](base/datasets/files.sha256) keeps the digest of every file under `src/tests/cldr/timezones/`
+    and `src/tests/temporal/`, 26 files.
+- **The result:** every named check passes. The whole run passed 648 checks. Three ran nowhere: the
+  `x86-64-win64` baseline rows, which this machine cannot enter.
+
+| Check | Lines |
+|---|---|
+| `tzdb/time-zone-offsets-match-icu` | 610, 51 of them as the divergences name |
+| `temporal/t1/temporal-matches-the-reference-polyfill` | 1,629, none as divergences |
+| `temporal/t2/intl-over-temporal-matches-the-reference-polyfill` | 1,233, 82 as divergences |
+| `temporal/t3/calendars-match-the-reference-polyfill` | 3,999, 70 as divergences |
+| `temporal/t3/calendar-conversions-match-icu4x` | 2,055 conversions |
+| `temporal/t4/calendar-formats-match-the-reference-polyfill` | 5,951, 1,395 as divergences |
+| `temporal/t5/zone-names-match-the-reference-polyfill` | 2,713, 275 as divergences |
+
+**Part C's base** ([`base/fuel-parity.log`](base/fuel-parity.log)).
+- **The method:** each wide twin's smallest completing fuel allowance was bisected under the bytecode form. Then
+  both forms ran at that figure and at one less.
+- **The result:** every twin completes at its figure and is refused on fuel at one less, in both forms, and both
+  forms complete with the same answer.
+- **Every figure and answer equals bundle `sjl-7-001`'s base.**
+
+| Twin | Figure | Answer |
+|---|---|---|
+| `wide/array-loop` | 73,082 | 999000 |
+| `wide/call-loop` | 28,026 | 1000 |
+| `wide/closure-loop` | 31,044 | 1000 |
+| `wide/fib` | 7,682 | 144 |
+| `wide/generator-loop` | 40,075 | 499500 |
+| `wide/numeric-loop` | 23,022 | 498497 |
+| `wide/property-loop` | 29,029 | 183125 |
+| `wide/string-loop` | 26,083 | 25 |
+| `wide/throw-loop` | 34,026 | 1000 |
+| `wide/try-loop` | 34,022 | 499500 |
+
+[`area-manifest.json`](area-manifest.json) lists the digest of every file of the base, the collector, the rule and
+the correspondence. `correspondence-runs/` is the correspondence's own record and is not listed.
