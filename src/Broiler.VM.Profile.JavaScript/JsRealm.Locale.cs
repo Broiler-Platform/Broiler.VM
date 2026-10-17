@@ -327,11 +327,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CanonicalizeUValue: the lower-case value, a deprecated one replaced, and <c>true</c> left implicit.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBB2D7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65CB3C
     // Broiler-Human:        PENDING
     private static string CanonicalizeUValue(JsIntlTables tables, string key, string value)
     {
-        var lower = value.ToLowerInvariant();
+        var lower = JsLocaleTag.AsciiLower(value);
 
         if (tables.TryType('u', key, lower, out var preferred))
         {
@@ -342,7 +342,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's UpdateLanguageId (s15.1.2): the language, script, region and variants the options replace.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=414677
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9BF4A2
     // Broiler-Human:        PENDING
     private static string UpdateLanguageId(JsEngine engine, string tag, JsValue options)
     {
@@ -382,7 +382,9 @@ internal sealed partial class JsRealm
                 throw engine.Error("RangeError", "Intl.Locale: the variants option is empty");
             }
 
-            var lower = variants.ToLowerInvariant();
+            // ASCII-lowercase, not the platform's casing, which would lower U+212A KELVIN SIGN to `k`
+            // and let it through the check below.
+            var lower = JsLocaleTag.AsciiLower(variants);
             var seen = new List<string>();
 
             foreach (var variant in lower.Split('-'))

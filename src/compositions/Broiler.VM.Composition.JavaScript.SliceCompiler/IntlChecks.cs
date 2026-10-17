@@ -59,6 +59,8 @@ internal static class IntlChecks
         CalendarFormatsMatchTheReferencePolyfill(),
         ZoneNamesMatchTheReferencePolyfill(),
         CanonicalizationReplacesAliases(),
+        AVariantsOptionIsLoweredByAsciiRules(),
+        ADurationDesignatorIsUpperCasedByAsciiRules(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
     ];
@@ -449,6 +451,45 @@ internal static class IntlChecks
             Composing());
 
         const string Expected = "zh-Hans-CN-t-ca-u-ca-x-t-u gss ru-RU hy-AM sl-1994-biske-rozaj und-u-kb und-u-ca-ethioaa en-t-he und-u-rg-no50";
+        return (Name, answer == Expected, $"answered `{answer}` (`{Expected}` expected)");
+    }
+
+    /// <summary>
+    /// <c>Intl.Locale</c>'s <c>variants</c> option is held to ECMA-402's ASCII-lowercase before its check: U+212A
+    /// KELVIN SIGN, which the platform lowers to <c>k</c>, is a <c>RangeError</c>, as it is in the tag itself.
+    /// </summary>
+    private static (string, bool, string) AVariantsOptionIsLoweredByAsciiRules()
+    {
+        const string Name = "intl/i4/a-variants-option-is-lowered-by-ascii-rules";
+        var answer = Evaluate(
+            "function kind(f) { try { return String(f()); } catch (e) { return e.constructor.name; } }" +
+            "kind(function () { return new Intl.Locale('en', { variants: '\\u212Aaaaa' }); }) + ' ' +" +
+            "kind(function () { return new Intl.Locale('en-\\u212Aaaaa'); }) + ' ' +" +
+            "kind(function () { return new Intl.Locale('en', { variants: 'KAAAA-1994' }); });",
+            Composing());
+
+        const string Expected = "RangeError RangeError en-1994-kaaaa";
+        return (Name, answer == Expected, $"answered `{answer}` (`{Expected}` expected)");
+    }
+
+    /// <summary>
+    /// A Temporal duration's designator is upper-cased by ASCII rules, so U+017F LATIN SMALL LETTER LONG S is
+    /// no seconds designator under any globalization mode, and an ASCII lower-case one still is.
+    /// </summary>
+    private static (string, bool, string) ADurationDesignatorIsUpperCasedByAsciiRules()
+    {
+        const string Name = "temporal/t1/a-duration-designator-is-upper-cased-by-ascii-rules";
+        var answer = Evaluate(
+            "function kind(f) { try { return String(f()); } catch (e) { return e.constructor.name; } }" +
+            "kind(function () { return Temporal.Duration.from('PT1\\u017F'); }) + ' ' +" +
+            "kind(function () { return Temporal.Duration.from('pt1h2m3s'); });",
+            JavaScriptProfile.DescriptorComposing(new JsComposition
+            {
+                Surfaces = [JavaScriptProfile.TemporalManifest, JavaScriptProfile.IntlManifest, JavaScriptProfile.BigIntManifest],
+                IntlData = JsCldrData.Instance,
+            }));
+
+        const string Expected = "RangeError PT1H2M3S";
         return (Name, answer == Expected, $"answered `{answer}` (`{Expected}` expected)");
     }
 

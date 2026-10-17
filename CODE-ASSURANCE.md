@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 331 |
 | Files carrying an annotation | 331 |
-| Code units | 11987 |
-| Relevant | 6927 |
+| Code units | 11988 |
+| Relevant | 6928 |
 | Exempt by predicate | 5060 |
-| Annotated | 6927 of 6927 (100%) |
-| Human reviewed | 0 of 6927 (0%) |
-| Unverified | 6927 |
+| Annotated | 6928 of 6928 (100%) |
+| Human reviewed | 0 of 6928 (0%) |
+| Unverified | 6928 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6927 |
+| HUMAN_PENDING | 6928 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -39,7 +39,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 1642 |
-| Low | 6836 |
+| Low | 6837 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,7 +50,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 2214 |
+| Low | 2215 |
 | Medium | 4464 |
 | High | 1628 |
 | Critical | 253 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.6 / 10 |
-| Units scored | 6927 |
+| Units scored | 6928 |
 
 ## High-security review areas
 
@@ -2072,7 +2072,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11987 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11988 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

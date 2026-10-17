@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 6927 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6928 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 331 |
-| Code units | 11987 |
-| Relevant | 6927 |
+| Code units | 11988 |
+| Relevant | 6928 |
 | Exempt | 5060 |
-| Assessed | 6927 of 6927 (100%) |
-| Human reviewed | 0 of 6927 (0%) |
-| Unverified | 6927 |
+| Assessed | 6928 of 6928 (100%) |
+| Human reviewed | 0 of 6928 (0%) |
+| Unverified | 6928 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6927 |
+| HUMAN_PENDING | 6928 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -280,7 +280,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 135 | 56 | 79 | 56 | Low | High | 9/9 |
 | `src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs` | 38 | 25 | 13 | 25 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsLocaleInfo.cs` | 6 | 1 | 5 | 1 | Low | Low | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsLocaleTag.cs` | 38 | 26 | 12 | 26 | Low | Medium | 2/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsLocaleTag.cs` | 39 | 27 | 12 | 27 | Low | Medium | 2/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 51 | 15 | 36 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 4 | 4 | 0 | 4 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` | 38 | 9 | 29 | 9 | Low | Critical | 24/24 |
@@ -4245,7 +4245,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6788 of the 6927 assessed units declare
+That is not a figure of speech. 6789 of the 6928 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

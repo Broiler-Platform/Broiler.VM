@@ -978,7 +978,7 @@ internal sealed class JsTemporalParser
     /// The proposal's ParseTemporalDurationString (s13.37): the ten fields, exact, or null where the
     /// string is not a duration.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7614CB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3FE5F8
     // Broiler-Human:        PENDING
     internal static double[]? Duration(string text)
     {
@@ -1064,7 +1064,14 @@ internal sealed class JsTemporalParser
                 return null;
             }
 
-            var designator = char.ToUpperInvariant(text[at++]);
+            // ASCII only: the platform's casing would read U+017F LATIN SMALL LETTER LONG S as `S` under ICU.
+            var designator = text[at++];
+
+            if (designator is >= 'a' and <= 'z')
+            {
+                designator = (char)(designator - 32);
+            }
+
             int rank;
 
             if (!inTime)
