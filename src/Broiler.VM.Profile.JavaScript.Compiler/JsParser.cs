@@ -828,7 +828,7 @@ internal sealed class JsParser
     /// semicolon, which is the ordinary syntax error and not a refusal of a surface.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9B9E2E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E6EEA0
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsImportAttribute> Attributes()
     {
@@ -851,8 +851,10 @@ internal sealed class JsParser
             // THE KEY IS AN IdentifierName AND NOT AN Identifier, which is the same rule an export
             // name obeys and for the same reason: nothing binds it, so a reserved word is a
             // perfectly good attribute name. The string form is in the grammar beside it.
+            // (The letter test is the pinned General_Category's since SJL-7.4, JSD-0074; it was the
+            // platform's char.IsLetter.)
             if (Current.Kind != SliceTokenKind.StringLiteral &&
-                (Current.RawText.Length == 0 || !char.IsLetter(Current.RawText[0])))
+                (Current.RawText.Length == 0 || !JsCompilerUnicode.IsLetter(Current.RawText[0])))
             {
                 Refuse(
                     at,
@@ -1360,7 +1362,7 @@ internal sealed class JsParser
     /// only the LOCAL side of a binding has to be a name the goal admits as an identifier. The
     /// string form is admitted too, because <c>export { x as "a b" }</c> is in the grammar.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B5DE19
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F47727
     // Broiler-Human:        PENDING
     private string ModuleExportName()
     {
@@ -1384,7 +1386,7 @@ internal sealed class JsParser
         }
 
         if (Current.Kind is SliceTokenKind.Identifier or SliceTokenKind.ReservedWord ||
-            Current.RawText.Length != 0 && char.IsLetter(Current.RawText[0]))
+            Current.RawText.Length != 0 && JsCompilerUnicode.IsLetter(Current.RawText[0]))
         {
             return MemberName();
         }
@@ -6214,7 +6216,7 @@ internal sealed class JsParser
     /// single node would have had to re-derive the difference from the first character of a string
     /// at every use.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5E2762
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5A2A9E
     // Broiler-Human:        PENDING
     private JsExpression AfterDot(SliceSourceSpan span, JsExpression target, bool optional)
     {
@@ -6222,7 +6224,7 @@ internal sealed class JsParser
         // errors. Until 2026-10-04 the literal's text was taken as the name (JSC-258).
         if (Current.Kind is SliceTokenKind.StringLiteral or SliceTokenKind.NumericLiteral ||
             Current.RawText.Length == 0 ||
-            !(char.IsLetter(Current.RawText[0]) || Current.RawText[0] is '_' or '$' or '\\' or '#' ||
+            !(char.IsAsciiLetter(Current.RawText[0]) || Current.RawText[0] is '_' or '$' or '\\' or '#' ||
                 Current.RawText[0] > 0x7F))
         {
             Refuse(
@@ -7555,7 +7557,7 @@ internal sealed class JsParser
         }
 
         /// <summary>Advances past the brace that closes the substitution the cursor is inside.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=90E31B
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=CF4993
         // Broiler-Falsified-If: a brace inside a string, a comment, a nested template or an object literal closes the substitution
         // Broiler-Human:        PENDING
         internal void ScanSubstitution()
@@ -7636,7 +7638,10 @@ internal sealed class JsParser
                     continue;
                 }
 
-                if (!char.IsWhiteSpace(c))
+                // White space and line terminators leave the last significant character as it was:
+                // the language's sets since SJL-7.4 (JSD-0074), where the platform's char.IsWhiteSpace
+                // also skipped U+0085 and U+001C to U+001F, which the tokenizer refuses anyway.
+                if (!(JsCompilerUnicode.Lexical.IsWhiteSpace(c) || Broiler.Unicode.Algorithms.EcmaScriptLexical.IsLineTerminator(c)))
                 {
                     previous = c;
                 }
@@ -7715,7 +7720,7 @@ internal sealed class JsParser
         }
 
         /// <summary>Advances past a regular-expression literal and its flags.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=03F502
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=88377D
         // Broiler-Human:        PENDING
         private void ScanRegularExpression()
         {
@@ -7758,7 +7763,9 @@ internal sealed class JsParser
                 {
                     Step();
 
-                    while (!AtEnd && (char.IsLetterOrDigit(Current) || Current is '$' or '_'))
+                    // The flags are what the tokenizer reads after the closing slash: identifier parts
+                    // (since SJL-7.4, JSD-0074; it was the platform's char.IsLetterOrDigit).
+                    while (!AtEnd && (JsCompilerUnicode.Lexical.IsIdentifierPart(Current) || Current is '$' or '_'))
                     {
                         Step();
                     }

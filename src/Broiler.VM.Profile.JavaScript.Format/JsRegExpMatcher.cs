@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   157
-// Annotated:        157/157
+// Relevant units:   159
+// Annotated:        159/159
 // Exempt:           107
-// Human-reviewed:   0/157
+// Human-reviewed:   0/159
 // IP risk:          Medium
 // Security risk:    Medium
 // Criteria:         1/0
 // Resource impact:  6/10 max
-// Unverified:       157
+// Unverified:       159
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -84,19 +84,22 @@ public sealed class JsRegExpOverflowError : System.Exception
 /// <para>
 /// <b>Both paths read the pinned Unicode 17.0.0 tables.</b> Under <c>u</c>,
 /// <see cref="Canonicalize"/> is <c>CaseFolding.txt</c>'s status <c>C</c> and <c>S</c> mapping and
-/// <see cref="UnicodeVariants"/> is its reverse, both from the generated table in
-/// <see cref="JsUnicodeCaseFolding"/> and both over the whole code space, supplementary planes
-/// included (decision JSD-0031 section 7). Literals, classes, back-references and property escapes
+/// <see cref="UnicodeVariants"/> is its reverse, both the Unicode area's owner's
+/// <c>UnicodeCaseFolding</c> over the table this assembly embeds since SJL-7.4 (JSD-0074), and both
+/// over the whole code space, supplementary planes included (decision JSD-0031 section 7). Literals,
+/// classes, back-references and property escapes
 /// all go through them, so one pattern cannot answer two ways. The table is why U+0130 and U+0131
 /// fold to themselves (the file gives them only Turkic and full mappings) and why the long s folds
 /// to <c>s</c> whatever the host's globalization mode is. Without <c>u</c> the canonical form is
 /// <c>UnicodeData.txt</c>'s simple upper case of one code unit from the same generated file, with
 /// the language's two exceptions already applied by the generator - so <c>/\uA7CE/i</c> matches
 /// U+A7CF, a Unicode 17.0 pair the platform's Unicode 16 data lacked. It no longer reads
-/// <c>char.ToUpperInvariant</c>. The one known difference from the specification is the 27 Greek
-/// letters with a ypogegrammeni, whose full upper case is two code points and which the language
-/// therefore leaves alone; <c>SpecialCasing.txt</c> is not archived, so they map to their
-/// title-case partner, as they did before (see <see cref="JsUnicodeCaseFolding"/>).
+/// <c>char.ToUpperInvariant</c>. The 27 Greek letters with a ypogegrammeni, whose full upper case is
+/// two code points, canonicalize to themselves, as the language says: the table is generated from
+/// the full upper-case mapping, <c>SpecialCasing.txt</c> included. *(Corrected 2026-10-16, at SJL-7.4:
+/// the sentence said that file was not archived and that those letters mapped to their title-case
+/// partner. It has been archived since 2026-10-03, and the generator and the data say otherwise, as
+/// the correspondence of bundle sjl-7-001 records.)*
 /// </para>
 /// <para>
 /// <b>Neither closure is built at run time.</b> A class such as <c>[k]</c> under <c>i</c> has to
@@ -110,21 +113,21 @@ public sealed class JsRegExpOverflowError : System.Exception
 // Broiler-Human:        PENDING
 internal static class JsRegExpCase
 {
-    /// <summary>The most code points <see cref="UnicodeVariants"/> ever writes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2FCE3F
+    /// <summary>The most code points <see cref="UnicodeVariants"/> ever writes: the owner's table states it (4).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=71E51F
     // Broiler-Human:        PENDING
-    internal const int MaxUnicodeVariants = JsUnicodeCaseFolding.MaxOrbit;
+    internal static readonly int MaxUnicodeVariants = JsFormatUnicode.Folding.MaxOrbit;
 
-    /// <summary>The most code units <see cref="Variants"/> ever writes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7D4DC6
+    /// <summary>The most code units <see cref="Variants"/> ever writes: the owner's table states it (4).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F7F987
     // Broiler-Human:        PENDING
-    internal const int MaxVariants = JsUnicodeCaseFolding.MaxUpperOrbit;
+    internal static readonly int MaxVariants = JsFormatUnicode.Folding.MaxUpperOrbit;
 
     /// <summary>The specification's <c>Canonicalize</c> for one code point.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=4DCBBB
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=BDF632
     // Broiler-Human:        PENDING
     internal static int Canonicalize(int codePoint, bool unicode) =>
-        unicode ? JsUnicodeCaseFolding.SimpleFold(codePoint) : JsUnicodeCaseFolding.SimpleUpper(codePoint);
+        unicode ? JsFormatUnicode.Folding.SimpleFold(codePoint) : JsFormatUnicode.Folding.SimpleUpper(codePoint);
 
     /// <summary>
     /// Writes every code unit whose non-<c>u</c> canonical form is that of
@@ -135,20 +138,20 @@ internal static class JsRegExpCase
     /// Outside <c>u</c> the matcher reads code units, so nothing above the Basic Multilingual Plane
     /// arrives here; one that did would answer itself alone, as the table holds no such entry.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=E3E08E
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=BBC038
     // Broiler-Human:        PENDING
     internal static int Variants(int codePoint, System.Span<int> destination) =>
-        JsUnicodeCaseFolding.UpperOrbit(codePoint, destination);
+        JsFormatUnicode.Folding.UpperOrbit(codePoint, destination);
 
     /// <summary>
     /// Writes every code point whose <c>u</c>-mode canonical form - its simple case folding - is
     /// that of <paramref name="codePoint"/>, itself included, into <paramref name="destination"/>
     /// and answers how many there are. Reads the generated table and allocates nothing.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=241C55
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EED2A3
     // Broiler-Human:        PENDING
     internal static int UnicodeVariants(int codePoint, System.Span<int> destination) =>
-        JsUnicodeCaseFolding.Orbit(codePoint, destination);
+        JsFormatUnicode.Folding.Orbit(codePoint, destination);
 }
 
 /// <summary>A set of code points: sorted, merged ranges and a negation bit.</summary>
@@ -173,9 +176,9 @@ internal sealed class JsRegExpCharSet
     private int count;
 
     /// <summary>The Unicode property sets the class holds by reference, each possibly complemented.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E6602E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F82B7D
     // Broiler-Human:        PENDING
-    private (JsUnicodeSet Set, bool Complement)[]? properties;
+    private (Broiler.Unicode.Algorithms.CodePointSet Set, bool Complement)[]? properties;
 
     /// <summary>How many entries of <see cref="properties"/> are in use.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C3A1F7
@@ -294,11 +297,11 @@ internal sealed class JsRegExpCharSet
     /// binary search per referenced property per character, and <see cref="Weight"/> is how the
     /// machine charges for it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3CADE0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A025F0
     // Broiler-Human:        PENDING
-    internal void AddProperty(JsUnicodeSet set, bool complement)
+    internal void AddProperty(Broiler.Unicode.Algorithms.CodePointSet set, bool complement)
     {
-        properties ??= new (JsUnicodeSet Set, bool Complement)[2];
+        properties ??= new (Broiler.Unicode.Algorithms.CodePointSet Set, bool Complement)[2];
 
         if (propertyCount == properties.Length)
         {
@@ -527,8 +530,9 @@ public sealed class JsRegExpMatch
 /// </para>
 /// <para>
 /// <b>Property escapes are <c>u</c>-mode only, and exact.</b> Under <c>u</c>, <c>\p{...}</c> and
-/// <c>\P{...}</c> resolve through <see cref="JsUnicodeProperties"/> - Unicode 17.0.0, by the exact
-/// names and aliases ES2026 admits - inside and outside classes; any other spelling is a
+/// <c>\P{...}</c> resolve through the Unicode area's owner's <c>UnicodeProperties</c> (JSD-0074) -
+/// Unicode 17.0.0, by the exact names and aliases ES2026 admits - inside and outside classes; any
+/// other spelling is a
 /// <c>SyntaxError</c>. Outside <c>u</c> they are the identity escape Annex B makes them.
 /// </para>
 /// <para>
@@ -542,10 +546,11 @@ public sealed class JsRegExpMatch
 /// <see cref="JsRegExpMatch.EndOf"/> (since 2026-09-29; this sentence read "no <c>indices</c>
 /// array is built for a result" until then). Case
 /// folding under <c>u</c> is the pinned <c>CaseFolding.txt</c> table; without <c>u</c> it is the
-/// pinned <c>UnicodeData.txt</c> simple upper case, which differs from the specification's full
-/// upper-casing for 27 Greek letters <see cref="JsRegExpCase"/> names. Group names are classified
-/// by the pinned <c>ID_Start</c> and <c>ID_Continue</c> through <see cref="JsUnicodeLexical"/>, as
-/// identifiers are (JSeal slice JSD-0031-later).
+/// pinned full upper case of one code unit, as <see cref="JsRegExpCase"/> says. Group names are
+/// classified by the pinned <c>ID_Start</c> and <c>ID_Continue</c> through the owner's
+/// <c>EcmaScriptLexical</c>, as identifiers are (JSeal slice JSD-0031-later; JSD-0074). *(Corrected
+/// 2026-10-16, at SJL-7.4: the sentence said the non-<c>u</c> mapping was the simple upper case and
+/// differed from the specification for 27 Greek letters, which it has not since 2026-10-03.)*
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=008C58
@@ -1177,18 +1182,50 @@ public sealed class JsRegExpMatcher
         private const int MaxCodePoint = 0x10FFFF;
 
         /// <summary>
-        /// Every code point with a simple case folding other than itself, as ranges: what the folded
-        /// universe of <c>vi</c> leaves out. Built once from the generated fold table.
+        /// Every code point with a simple case folding other than itself, and its folding, in code
+        /// point order: the fold table's entries, built once on first use.
         /// </summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6756FE
+        /// <remarks>
+        /// <b>A scan, because the owner states no enumeration</b> (SJL-7.4, JSD-0075's departure P2).
+        /// The fold table this assembly embeds is the owner's, read through its
+        /// <c>UnicodeCaseFolding</c>, which answers one code point at a time; until SJL-7.4 this list
+        /// was the table's own entries, read in order. The scan asks <c>SimpleFold</c> of every code
+        /// point once and keeps those it moves, which are exactly the table's entries: a status C or S
+        /// folding never maps a code point to itself. It runs at compile time, on the first <c>vi</c>
+        /// class that needs it, and is charged nothing, as the walk of the table it replaces was not.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1713C4
+        // Broiler-Human:        PENDING
+        private static readonly System.Lazy<(int Source, int Target)[]> foldEntries = new(static () =>
+        {
+            var entries = new System.Collections.Generic.List<(int Source, int Target)>();
+
+            for (var codePoint = 0; codePoint <= MaxCodePoint; codePoint++)
+            {
+                var target = JsFormatUnicode.Folding.SimpleFold(codePoint);
+
+                if (target != codePoint)
+                {
+                    entries.Add((codePoint, target));
+                }
+            }
+
+            return entries.ToArray();
+        });
+
+        /// <summary>
+        /// Every code point with a simple case folding other than itself, as ranges: what the folded
+        /// universe of <c>vi</c> leaves out. Built once from the fold table's entries.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=519108
         // Broiler-Human:        PENDING
         private static readonly System.Lazy<int[]> foldSources = new(static () =>
         {
-            var pairs = new System.Collections.Generic.List<int>(JsUnicodeCaseFolding.FoldCount * 2);
+            var entries = foldEntries.Value;
+            var pairs = new System.Collections.Generic.List<int>(entries.Length * 2);
 
-            for (var entry = 0; entry < JsUnicodeCaseFolding.FoldCount; entry++)
+            foreach (var (source, _) in entries)
             {
-                var source = JsUnicodeCaseFolding.FoldSource(entry);
                 pairs.Add(source);
                 pairs.Add(source);
             }
@@ -1315,17 +1352,16 @@ public sealed class JsRegExpMatcher
         /// gain the folding of each table entry they held: a pass over the table's entries rather than
         /// over the members.
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=42E2D5
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6DFB3A
         // Broiler-Human:        PENDING
         internal static ClassSetValue Fold(ClassSetValue value)
         {
             var pairs = new System.Collections.Generic.List<int>(IntersectRanges(value.Ranges, ComplementRanges(foldSources.Value)));
 
-            for (var entry = 0; entry < JsUnicodeCaseFolding.FoldCount; entry++)
+            foreach (var (source, target) in foldEntries.Value)
             {
-                if (Contains(value.Ranges, JsUnicodeCaseFolding.FoldSource(entry)))
+                if (Contains(value.Ranges, source))
                 {
-                    var target = JsUnicodeCaseFolding.FoldTarget(entry);
                     pairs.Add(target);
                     pairs.Add(target);
                 }
@@ -1339,7 +1375,7 @@ public sealed class JsRegExpMatcher
 
                 for (var at = 0; at < text.Length; at += char.IsSurrogatePair(text, at) ? 2 : 1)
                 {
-                    folded.Append(char.ConvertFromUtf32(JsUnicodeCaseFolding.SimpleFold(char.ConvertToUtf32(text, at))));
+                    folded.Append(char.ConvertFromUtf32(JsFormatUnicode.Folding.SimpleFold(char.ConvertToUtf32(text, at))));
                 }
 
                 strings.Add(folded.ToString());
@@ -1606,8 +1642,9 @@ public sealed class JsRegExpMatcher
         /// </para>
         /// <para>
         /// <b>The sets are the pinned Unicode 17.0.0 <c>ID_Start</c> and <c>ID_Continue</c></b>, read
-        /// through <see cref="JsUnicodeLexical"/> exactly as the tokenizer reads them for an
-        /// identifier, with <c>$</c>, <c>_</c> and the two joiners the grammar adds. They were the
+        /// through the owner's <c>EcmaScriptLexical</c> exactly as the tokenizer reads them for an
+        /// identifier, with <c>$</c>, <c>_</c> and the two joiners the grammar adds (JSD-0074; until
+        /// SJL-7.4 through this assembly's own <c>JsUnicodeLexical</c>). They were the
         /// platform's general categories (Unicode 16) with hand-written <c>Other_ID_Start</c> and
         /// <c>Other_ID_Continue</c> lists until JSeal slice JSD-0031-later, so a Unicode 17.0 letter
         /// such as U+A7CE was refused as a group name.
@@ -1742,14 +1779,14 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Whether a code point may start a group name: <c>ID_Start</c>, <c>$</c> or <c>_</c>.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0C7E39
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F76D1A
         // Broiler-Human:        PENDING
-        private static bool IsNameStart(int codePoint) => JsUnicodeLexical.IsIdentifierStart(codePoint);
+        private static bool IsNameStart(int codePoint) => JsFormatUnicode.Lexical.IsIdentifierStart(codePoint);
 
         /// <summary>Whether a code point may continue a group name: <c>ID_Continue</c>, <c>$</c> or a joiner.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=62B7E8
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7307B5
         // Broiler-Human:        PENDING
-        private static bool IsNamePart(int codePoint) => JsUnicodeLexical.IsIdentifierPart(codePoint);
+        private static bool IsNamePart(int codePoint) => JsFormatUnicode.Lexical.IsIdentifierPart(codePoint);
 
         /// <summary>The group names, indexed by group number.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=34336A
@@ -2480,7 +2517,7 @@ public sealed class JsRegExpMatcher
         /// <c>UnicodePropertyValueCharacters</c> - ASCII letters, digits and <c>_</c> - optionally as
         /// <c>name=value</c>; any other character, a missing brace or an empty name is refused before
         /// a table is read. The name, or the name and value, then go to
-        /// <see cref="JsUnicodeProperties"/>, which matches ordinally against the names ES2026 admits,
+        /// the owner's <c>UnicodeProperties</c>, which matches ordinally against the names ES2026 admits,
         /// so <c>\p{letter}</c>, <c>\p{Script_Extensions=greek}</c>, <c>\p{scx:Greek}</c> and
         /// <c>\p{ASCII=Y}</c> are refused exactly as the specification's early errors say. So are
         /// the seven properties of strings, which the language admits only under <c>v</c>.
@@ -2551,12 +2588,12 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>A code point property by its lone name, or by name and value at <paramref name="equals"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=ADC64A
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=4275C6
         // Broiler-Human:        PENDING
-        private static bool TryResolveCodePointProperty(System.ReadOnlySpan<char> body, int equals, out JsUnicodeSet property) =>
+        private static bool TryResolveCodePointProperty(System.ReadOnlySpan<char> body, int equals, out Broiler.Unicode.Algorithms.CodePointSet property) =>
             equals < 0
-                ? JsUnicodeProperties.TryResolveLone(body, out property)
-                : JsUnicodeProperties.TryResolve(body[..equals], body[(equals + 1)..], out property);
+                ? JsFormatUnicode.Properties.TryResolve(body, out property)
+                : JsFormatUnicode.Properties.TryResolve(body[..equals], body[(equals + 1)..], out property);
 
         // ---- the `v` flag's classes (phase F2) ----------------------------------------------------
 
@@ -2771,7 +2808,7 @@ public sealed class JsRegExpMatcher
         /// <c>\p{...}</c> or <c>\P{...}</c> under <c>v</c>: a code point property, its complement, or
         /// - for <c>\p</c> alone - one of the seven properties of strings.
         /// </summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=D27DB8
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=B2280A
         // Broiler-Human:        PENDING
         private ClassSetValue ParsePropertyValue(out bool mayContainStrings)
         {
@@ -2779,7 +2816,7 @@ public sealed class JsRegExpMatcher
             var body = System.MemoryExtensions.AsSpan(pattern, begin, end - begin);
             var pairs = new System.Collections.Generic.List<int>();
 
-            if (equals < 0 && JsUnicodeStringProperties.TryResolve(body, out var stringProperty))
+            if (equals < 0 && JsFormatUnicode.StringProperties.TryResolve(body, out var stringProperty))
             {
                 // A PROPERTY OF STRINGS HAS NO COMPLEMENT: `\P{RGI_Emoji}` is an early error.
                 if (complement)
@@ -2788,7 +2825,7 @@ public sealed class JsRegExpMatcher
                 }
 
                 var strings = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
-                JsUnicodeStringProperties.Collect(stringProperty, pairs, strings);
+                CollectStringProperty(stringProperty, pairs, strings);
                 mayContainStrings = true;
                 return MaybeFold(new ClassSetValue(ClassSetValue.Merge(pairs), strings));
             }
@@ -2807,6 +2844,59 @@ public sealed class JsRegExpMatcher
             mayContainStrings = false;
             var folded = MaybeFold(new ClassSetValue(ClassSetValue.Merge(pairs)));
             return complement ? ClassSetValue.Complement(folded, foldsCase) : folded;
+        }
+
+        /// <summary>
+        /// Adds <paramref name="property"/>'s single code points to <paramref name="ranges"/>, as
+        /// first-last pairs, and its sequences to <paramref name="strings"/>, each as the UTF-16 string
+        /// it spells; <c>RGI_Emoji</c> as the union of the other six, in their order.
+        /// </summary>
+        /// <remarks>
+        /// <b>The order is the one the generated table's reader kept before SJL-7.4</b>, when it was
+        /// this assembly's <c>JsUnicodeStringProperties.Collect</c>: the properties in id order, each
+        /// one's ranges and then its sequences in the table's order. The set of strings a class holds
+        /// is the same in any order, and its alternation is ordered by length, but a set's insertion
+        /// order decides how ties are enumerated, so it is kept rather than left to the owner's
+        /// reading (JSD-0074, decision 4: the matcher's work, and so its charge, does not move).
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D5E34E
+        // Broiler-Human:        PENDING
+        private static void CollectStringProperty(
+            Broiler.Unicode.Algorithms.StringProperty property,
+            System.Collections.Generic.List<int> ranges,
+            System.Collections.Generic.HashSet<string> strings)
+        {
+            if (property.IsUnion)
+            {
+                for (var each = 0; each < property.Id; each++)
+                {
+                    CollectStringProperty(JsFormatUnicode.StringProperties.Property(each), ranges, strings);
+                }
+
+                return;
+            }
+
+            for (var at = 0; at < property.CodePointRangeCount; at++)
+            {
+                ranges.Add(property.FirstCodePoint(at));
+                ranges.Add(property.LastCodePoint(at));
+            }
+
+            var sequences = property.GetSequences();
+            System.Span<int> codePoints = stackalloc int[Broiler.Unicode.Algorithms.StringPropertySequences.MaxSequenceLength];
+            var text = new System.Text.StringBuilder();
+
+            while (sequences.TryRead(codePoints, out var length))
+            {
+                text.Clear();
+
+                for (var step = 0; step < length; step++)
+                {
+                    text.Append(char.ConvertFromUtf32(codePoints[step]));
+                }
+
+                strings.Add(text.ToString());
+            }
         }
 
         /// <summary>

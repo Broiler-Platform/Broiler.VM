@@ -363,7 +363,7 @@ internal sealed class JsCollationData
     /// its discontiguous extension over unblocked non-starters, and implicit weights for the rest;
     /// numeric runs collapsed to their value when asked for.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=UTS10 s7; IP=Low; Security=Medium; Resources=4; Fingerprint=026FDB
+    // Broiler-AI:           Origin=AI; Spec=UTS10 s7; IP=Low; Security=Medium; Resources=4; Fingerprint=D6C0F1
     // Broiler-Falsified-If: a string's elements differ from the root collation's for any line of the archived CollationTest files
     // Broiler-Human:        PENDING
     internal void Elements(int[] text, Tailoring? tailoring, bool numeric, List<ulong> output)
@@ -399,7 +399,7 @@ internal sealed class JsCollationData
                         continue;
                     }
 
-                    var ccc = JsUnicodeNormalization.CombiningClass(text[next]);
+                    var ccc = JsUnicode.Normalization.CombiningClass(text[next]);
 
                     if (ccc == 0)
                     {

@@ -1503,7 +1503,7 @@ internal sealed partial class JsRealm
     /// past it; everything else is itself. The punctuators are escaped as hex rather than with a
     /// backslash because an identity escape of most of them is a SyntaxError under <c>u</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F4FC59
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DD35B6
     // Broiler-Human:        PENDING
     private static void RegExpEscapeCodePoint(System.Text.StringBuilder builder, int codePoint)
     {
@@ -1543,10 +1543,11 @@ internal sealed partial class JsRealm
         var unit = (char)codePoint;
 
         // WhiteSpace is TAB, VT, FF, ZWNBSP and every Zs character; LineTerminator is LF, CR, LS
-        // and PS. The ones with a ControlEscape were answered above.
-        if (unit is '\uFEFF' or '\u2028' or '\u2029' || char.IsSurrogate(unit) ||
-            System.Globalization.CharUnicodeInfo.GetUnicodeCategory(unit) ==
-                System.Globalization.UnicodeCategory.SpaceSeparator)
+        // and PS. The ones with a ControlEscape were answered above. Both are the language's sets
+        // from the pinned Unicode 17.0.0 tables since SJL-7.4 (JSD-0074): until then the Zs test
+        // asked the platform's CharUnicodeInfo (correspondence row W4), which answers the same set.
+        if (JsUnicode.Lexical.IsWhiteSpace(unit) || Broiler.Unicode.Algorithms.EcmaScriptLexical.IsLineTerminator(unit) ||
+            char.IsSurrogate(unit))
         {
             RegExpEscapeHex(builder, codePoint);
             return;

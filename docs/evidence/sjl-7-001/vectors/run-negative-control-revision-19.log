@@ -1,0 +1,5 @@
+== negative control at d81c0c1d44e07d37b3abaadcf105b6c78b7341fa, 2026-10-16T18:41:42Z
+broiler-js-conformance: vectors broiler-js-vectors Broiler-Platform/broiler.js@c976cbea647717a3a4ca6636aec2deb1129825cc content sha256 244cce40b415588ef0429328665ce81268d1c49106f68151187b6284f3c236ca over 42 files - archived at src/tests/vectors/pins/broiler-js-vectors-c976cbea647717a3a4ca6636aec2deb1129825cc.tar.gz
+broiler-js-conformance: negative control: unicode/casing-upper/0001 expects `value: str:"A0"`
+broiler-js-conformance: 88465 vectors: 88464 match, 0 classified divergences, 1 unclassified differences
+exit=1

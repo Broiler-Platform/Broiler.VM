@@ -98,12 +98,27 @@ internal static class AdmissionRules
     /// the JavaScript family, restored with a lock file whose content hash equals the list's pin.
     /// A test-only package is admitted for no product project.
     /// </summary>
+    /// <remarks>
+    /// <b>Revised 2026-10-16, at SJL-7.4</b>, when the owner's table generator reached the
+    /// architecture tests as a pinned, test-only package (JSD-0074, decision SJL-D-6 (c)): a test
+    /// project may hold an admitted reference through a test-only entry that names it, restored with
+    /// a lock file at the pin like any other, and never through a product entry. A test project's
+    /// test frameworks are not Broiler packages and are not this rule's subject; rule A2 refuses a
+    /// Broiler package outside the list in every project. Until then the rule read "every
+    /// PackageReference ... from a project the list names for it, in the JavaScript family", and a
+    /// test project outside the family was refused whatever its entry said.
+    /// </remarks>
     /// <param name="project">The project file.</param>
     /// <param name="lockFile">Its packages.lock.json, or null when it has none.</param>
     internal static IEnumerable<string> I1(ComponentGraph.ProjectFile project, IReadOnlyList<LockedPackage>? lockFile)
     {
         foreach (var reference in project.PackageReferences)
         {
+            if (project.IsTestOnly && !IsBroilerPackage(reference))
+            {
+                continue;
+            }
+
             var admitted = Admitted(reference);
             var where = $"{project.RelativePath} ({project.AssemblyName}) -> package {reference}";
 
@@ -113,7 +128,15 @@ internal static class AdmissionRules
                 continue;
             }
 
-            if (!IsJavaScriptFamily(project.AssemblyName))
+            if (project.IsTestOnly)
+            {
+                if (!admitted.IsTestOnly)
+                {
+                    yield return $"{where}: admitted for product use, and a test project holds an admitted reference only through a test-only entry";
+                    continue;
+                }
+            }
+            else if (!IsJavaScriptFamily(project.AssemblyName))
             {
                 yield return $"{where}: an admitted reference outside the JavaScript family";
                 continue;
@@ -156,15 +179,36 @@ internal static class AdmissionRules
     /// <summary>
     /// I1's other half: every allow-list entry agrees with its pin, its package is on the committed
     /// feed hashing to the pin when that is a source, and every project it names is in the
-    /// JavaScript family.
+    /// JavaScript family - or, for a test-only entry, a test project, and never a shipping one.
     /// </summary>
+    /// <remarks>
+    /// <b>Revised 2026-10-16, at SJL-7.4</b>, beside <see cref="I1"/>: a test-only entry may name a
+    /// test project of the graph, which is what admits the owner's generator to the architecture
+    /// tests. A product entry naming a test project, and a test-only entry naming a project that ships
+    /// or composes, are each refused. Until then every named project had to be in the JavaScript
+    /// family, whatever the entry's use.
+    /// </remarks>
     internal static IEnumerable<string> I1Entries(IReadOnlyList<AdmittedPackage> list)
     {
         foreach (var package in list)
         {
-            foreach (var project in package.Projects.Where(static p => !IsJavaScriptFamily(p)))
+            foreach (var project in package.Projects)
             {
-                yield return $"{package.Id}: the allow-list names {project}, outside the JavaScript family";
+                var graph = ComponentGraph.Projects.FirstOrDefault(p => string.Equals(p.AssemblyName, project, StringComparison.Ordinal));
+                var isTestProject = graph is { IsTestOnly: true };
+
+                if (package.IsTestOnly && graph is { IsTestOnly: false })
+                {
+                    yield return $"{package.Id}: admitted test-only, and the allow-list names {project}, which ships or composes";
+                }
+                else if (!package.IsTestOnly && isTestProject)
+                {
+                    yield return $"{package.Id}: admitted for product use, and the allow-list names the test project {project}; only a test-only entry may name one";
+                }
+                else if (!isTestProject && !IsJavaScriptFamily(project))
+                {
+                    yield return $"{package.Id}: the allow-list names {project}, outside the JavaScript family";
+                }
             }
 
             var pinPath = Path.Combine(ComponentGraph.Root, package.Pin);
@@ -289,8 +333,12 @@ internal static class AdmissionRules
     internal static readonly string[] CompilerFreeRoots =
         ["Broiler.VM.Composition.JavaScript.ExecutionOnly", "Broiler.VM.Composition.JavaScript.Android"];
 
-    /// <summary>Optional data: the assemblies a root carries only when it has an Intl or zoned-Temporal surface.</summary>
-    internal static readonly string[] OptionalDataAssemblies = ["Broiler.VM.Profile.JavaScript.Intl"];
+    /// <summary>
+    /// Optional data: the assemblies a root carries only when it has an Intl or zoned-Temporal surface.
+    /// Since SJL-7.4 the Unicode area's optional segmentation package is one (JSD-0074's X5): only the
+    /// Intl data assembly references it.
+    /// </summary>
+    internal static readonly string[] OptionalDataAssemblies = ["Broiler.VM.Profile.JavaScript.Intl", "Broiler.Unicode.Segmentation"];
 
     /// <summary>
     /// I3: a compiler-free root's closure holds no frontend assembly, and a root carries optional data
@@ -378,6 +426,82 @@ internal static class AdmissionRules
             .Select(static line => line.Split('`')[1])
             .ToHashSet(StringComparer.Ordinal);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>The names under which an admitted library declares the Unicode data version it reads.</summary>
+    internal static readonly string[] UnicodeVersionFields = ["UnicodeVersion", "PinnedVersion"];
+
+    /// <summary>
+    /// I4's pin clause: the pin this repository's embedded tables are generated from equals its home
+    /// repository's, file by file, by length and SHA-256, and by version (SJL-D-6 (c): the owner holds
+    /// the pin, and each engine generates from its own). The comparison is the owner's own
+    /// <c>UnicodePin.Differences</c>, which keys a UCD file by its pinned name and an ECMAScript
+    /// property table by its file name, wherever each repository keeps it.
+    /// </summary>
+    /// <param name="familyPin">This repository's pin, as the owner's generator parses it.</param>
+    /// <param name="homePin">The home repository's pin, as its generator package carries it.</param>
+    internal static IEnumerable<string> I4Pins(Broiler.Unicode.Generation.UnicodePin familyPin, Broiler.Unicode.Generation.UnicodePin homePin) =>
+        familyPin.Differences(homePin).Select(static difference =>
+            $"src/tests/unicode/pins/unicode.pin and Broiler.Unicode's pin disagree: {difference} (rule I4: a pin moves only by a dated decision, in both repositories at once)");
+
+    /// <summary>
+    /// I4's version clause: every Unicode data version an admitted assembly declares - a literal
+    /// string field named as <see cref="UnicodeVersionFields"/> lists, public or not - equals the
+    /// pin's version.
+    /// </summary>
+    /// <param name="pinVersion">The version the pin names.</param>
+    /// <param name="declared">Each declaration: its assembly, its field and its value.</param>
+    internal static IEnumerable<string> I4Versions(string pinVersion, IEnumerable<(string Assembly, string Field, string Value)> declared) =>
+        declared
+            .Where(declaration => !string.Equals(declaration.Value, pinVersion, StringComparison.Ordinal))
+            .Select(declaration =>
+                $"{declaration.Assembly} declares {declaration.Field} = \"{declaration.Value}\", and the pin names {pinVersion} (rule I4)");
+
+    /// <summary>
+    /// Every literal string field of an assembly image whose name <see cref="UnicodeVersionFields"/>
+    /// lists, read from its metadata tables without loading it.
+    /// </summary>
+    internal static IReadOnlyList<(string Assembly, string Field, string Value)> DeclaredUnicodeVersions(string assemblyName, byte[] image)
+    {
+        using var stream = new MemoryStream(image, writable: false);
+        using var pe = new System.Reflection.PortableExecutable.PEReader(stream);
+        var reader = System.Reflection.Metadata.PEReaderExtensions.GetMetadataReader(pe);
+        var found = new List<(string, string, string)>();
+
+        foreach (var typeHandle in reader.TypeDefinitions)
+        {
+            var type = reader.GetTypeDefinition(typeHandle);
+
+            foreach (var fieldHandle in type.GetFields())
+            {
+                var field = reader.GetFieldDefinition(fieldHandle);
+                var name = reader.GetString(field.Name);
+
+                if (!UnicodeVersionFields.Contains(name, StringComparer.Ordinal) || field.GetDefaultValue().IsNil)
+                {
+                    continue;
+                }
+
+                var constant = reader.GetConstant(field.GetDefaultValue());
+
+                if (constant.TypeCode == System.Reflection.Metadata.ConstantTypeCode.String)
+                {
+                    var value = reader.GetBlobReader(constant.Value).ReadUTF16(reader.GetBlobReader(constant.Value).Length);
+                    found.Add((assemblyName, reader.GetString(type.Namespace) + "." + reader.GetString(type.Name) + "." + name, value));
+                }
+            }
+        }
+
+        return found;
+    }
+
+    /// <summary>Every Unicode version every admitted assembly declares, read from the committed feed's packages.</summary>
+    internal static IReadOnlyList<(string Assembly, string Field, string Value)> AdmittedUnicodeVersions() => AllowList
+        .Where(static package => File.Exists(package.FeedPath))
+        .SelectMany(static package => PackageAssemblies(package.FeedPath))
+        .SelectMany(static assembly => DeclaredUnicodeVersions(assembly.Name, assembly.Image))
+        .ToArray();
 
     // ---------------------------------------------------------------------------------------------
 

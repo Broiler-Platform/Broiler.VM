@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           32
+// Exempt:           29
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -55,7 +55,7 @@ public interface IJsIntlData
 /// generator writes them; a character a line cannot carry is written <c>\uXXXX</c>. The collation
 /// tables are binary and their reader states their layout.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EBD5C1
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=373E5C
 // Broiler-Human:        PENDING
 public enum JsIntlTable
 {
@@ -80,8 +80,8 @@ public enum JsIntlTable
     /// <summary>The tailorings the supported locales use, binary, in weights scaled by 256.</summary>
     CollationTailorings = 6,
 
-    /// <summary>The ranges of Soft_Dotted, which Lithuanian's casing reads: <c>first</c>, <c>last</c>, in hexadecimal.</summary>
-    SoftDotted = 7,
+    // 7 was the ranges of Soft_Dotted until SJL-7.4, when Lithuanian's casing moved to the Unicode area's
+    // owner, whose casing tables carry them (JSD-0074); the number is not reused.
 
     /// <summary>Each language's number data for <c>latn</c>: <c>language</c>, a dotted <c>key</c>, <c>value</c>.</summary>
     NumberLocales = 8,
@@ -145,14 +145,9 @@ public enum JsIntlTable
     /// </summary>
     RelativeTimes = 22,
 
-    /// <summary>The break properties' value names in code order: <c>property</c>, then its values.</summary>
-    SegmentBreakValues = 23,
-
-    /// <summary>
-    /// The break properties over the code space: the combination count and combinations of five value
-    /// codes, then a little-endian run count and each run's three-byte first code point and combination.
-    /// </summary>
-    SegmentBreaks = 24,
+    // 23 and 24 were the break properties' value names and the break table until SJL-7.4, when
+    // segmentation moved to the Unicode area's owner and its table to the Intl assembly's own
+    // provider (JSD-0074); the numbers are not reused.
 
     /// <summary>
     /// Each language's display names: <c>language</c>, <c>kind</c> (language, region, script, variant,

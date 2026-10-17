@@ -52,4 +52,13 @@
     <PackageReference Include="Broiler.ECMAScript.Algorithms" />
   </ItemGroup>
 
+  <!--
+    THE UNICODE AREA'S OWNER (JSD-0074; milestone SJL-7.4): normalization, case mapping and the lexical
+    classes FunctionIsNativeName and RegExp.escape read, over the tables this assembly embeds and those
+    Format embeds. Same feed, pin, lock file and rule as above.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Broiler.Unicode.Algorithms" />
+  </ItemGroup>
+
 </Project>

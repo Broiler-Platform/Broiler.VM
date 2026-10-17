@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           15
-// Human-reviewed:   0/27
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           13
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       27
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -67,10 +67,6 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsCollationData> collation;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8CD2C4
-    // Broiler-Human:        PENDING
-    private readonly Lazy<(int First, int Last)[]> softDotted;
-
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A521AC
     // Broiler-Human:        PENDING
     private readonly Lazy<JsNumberData> numbers;
@@ -82,10 +78,6 @@ internal sealed class JsIntlTables
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=07F030
     // Broiler-Human:        PENDING
     private readonly Lazy<JsLocaleInfo> localeInfo;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B2406B
-    // Broiler-Human:        PENDING
-    private readonly Lazy<JsBreakData> breaks;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BC9E62
     // Broiler-Human:        PENDING
@@ -99,7 +91,7 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsZoneNames> zoneNames;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=46DF78
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DE40B2
     // Broiler-Human:        PENDING
     internal JsIntlTables(IJsIntlData data)
     {
@@ -109,11 +101,9 @@ internal sealed class JsIntlTables
         extensions = new(ReadExtensions);
         locales = new(() => [.. Lines(JsIntlTable.Locales)]);
         collation = new(() => new JsCollationData(data.Table(JsIntlTable.CollationRoot), data.Table(JsIntlTable.CollationTailorings)));
-        softDotted = new(ReadRanges);
         numbers = new(ReadNumbers);
         dates = new(ReadDates);
         localeInfo = new(ReadLocaleInfo);
-        breaks = new(() => new JsBreakData(Lines(JsIntlTable.SegmentBreakValues), data.Table(JsIntlTable.SegmentBreaks)));
         timeZones = new(() => new JsTimeZones(Lines(JsIntlTable.TimeZoneIds), Lines(JsIntlTable.TimeZoneRegions), data.Table(JsIntlTable.TimeZones)));
         calendars = new(() => new JsCalendars(data.Table(JsIntlTable.Calendars)));
         zoneNames = new(() => new JsZoneNames(Lines(JsIntlTable.MetaZones), TimeZones));
@@ -188,36 +178,6 @@ internal sealed class JsIntlTables
         return false;
     }
 
-    /// <summary>Whether a code point is Soft_Dotted: an <c>i</c> or <c>j</c> whose dot an accent above replaces.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65A410
-    // Broiler-Human:        PENDING
-    internal bool IsSoftDotted(int codePoint)
-    {
-        var ranges = softDotted.Value;
-        var low = 0;
-        var high = ranges.Length - 1;
-
-        while (low <= high)
-        {
-            var middle = (low + high) >>> 1;
-
-            if (codePoint < ranges[middle].First)
-            {
-                high = middle - 1;
-            }
-            else if (codePoint > ranges[middle].Last)
-            {
-                low = middle + 1;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /// <summary>The number, currency, unit and plural data, decoded the first time a number is formatted.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C30BD0
     // Broiler-Human:        PENDING
@@ -233,10 +193,19 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal JsLocaleInfo LocaleInfo => localeInfo.Value;
 
-    /// <summary>The break properties <c>Intl.Segmenter</c> reads, decoded the first time a string is segmented.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=82FD5A
+    /// <summary>
+    /// The text segmentation <c>Intl.Segmenter</c> reads, which the composition's data offers beside its
+    /// tables, or null when it offers none (JSD-0074; milestone SJL-7.4).
+    /// </summary>
+    /// <remarks>
+    /// Until SJL-7.4 this was the break table, decoded here and segmented by the profile's own
+    /// <c>JsSegmentation</c>. Segmentation is now the Unicode area's owner's optional package, which the
+    /// Intl data assembly alone references, so the profile reaches it through the data, as it reaches
+    /// the tables (<see cref="IJsTextSegmentation"/>).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=31E0CD
     // Broiler-Human:        PENDING
-    internal JsBreakData Breaks => breaks.Value;
+    internal IJsTextSegmentation? Segmentation => data as IJsTextSegmentation;
 
     /// <summary>A table value with its <c>\uXXXX</c> escapes resolved.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E0016
@@ -543,24 +512,6 @@ internal sealed class JsIntlTables
         }
 
         return pairs;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=F4CF0D
-    // Broiler-Human:        PENDING
-    private (int First, int Last)[] ReadRanges()
-    {
-        var lines = Lines(JsIntlTable.SoftDotted);
-        var ranges = new (int First, int Last)[lines.Count];
-
-        for (var at = 0; at < lines.Count; at++)
-        {
-            var bar = lines[at].IndexOf('|');
-            ranges[at] = (
-                int.Parse(lines[at][..bar], NumberStyles.HexNumber, CultureInfo.InvariantCulture),
-                int.Parse(lines[at][(bar + 1)..], NumberStyles.HexNumber, CultureInfo.InvariantCulture));
-        }
-
-        return ranges;
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=4E9FB9

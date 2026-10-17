@@ -259,6 +259,13 @@ internal static class JsReleaseGate
         return blockers;
     }
 
+    /// <summary>Gate 12's blockers, read off the ingesting-components table of the notices.</summary>
+    /// <remarks>
+    /// <b>The Intl assembly's missing row is a row that names it for CLDR</b>, since 2026-10-16 (SJL-7.4):
+    /// until then any row naming the assembly cleared the blocker, which said nothing because none did.
+    /// The Unicode area's owner packages' row names it, for the segmentation package it references, and
+    /// that is not the CLDR and tzdb row the blocker is about, so the check reads the ingested cell too.
+    /// </remarks>
     private static List<Blocker> NoticeBlockers(string notices)
     {
         var blockers = new List<Blocker>();
@@ -279,7 +286,10 @@ internal static class JsReleaseGate
                 continue;
             }
 
-            named.AddRange(Regex.Matches(cells[0], "`([^`]+)`").Select(static m => m.Groups[1].Value));
+            if (cells.Length > 1 && cells[1].Contains("CLDR", StringComparison.Ordinal))
+            {
+                named.AddRange(Regex.Matches(cells[0], "`([^`]+)`").Select(static m => m.Groups[1].Value));
+            }
 
             if (cells[^1].Contains("not yet confirmed", StringComparison.Ordinal))
             {
@@ -291,7 +301,7 @@ internal static class JsReleaseGate
         {
             if (!named.Contains(family, StringComparer.Ordinal))
             {
-                blockers.Add(new("G12-no-row-" + Slug(family), 12, "THIRD_PARTY_NOTICES.md, the ingesting-components table", $"no row names {family}, which ships tables derived from CLDR and tzdb"));
+                blockers.Add(new("G12-no-row-" + Slug(family), 12, "THIRD_PARTY_NOTICES.md, the ingesting-components table", $"no row names {family} for the CLDR it ships tables derived from, with tzdb's"));
             }
         }
 

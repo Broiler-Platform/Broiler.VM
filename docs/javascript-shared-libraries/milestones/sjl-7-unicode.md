@@ -69,12 +69,19 @@ per sub-area:
 - properties of strings;
 - segmentation.
 
+*(2026-10-16: filed as [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md): all six sub-areas accepted and placed with Broiler.Unicode, which adopts
+the four conditions by a dated record in its `docs/roadmap.md` and meets them in SJL-7.2; decision SJL-D-6
+recorded; and the comparison rules committed in each repository's bundle `sjl-7-001` before any code.)*
+
 ### SJL-7.2 — The owner's preparation (Broiler.Unicode)
 
 1. **Pinned inputs.** A pin file hashes the UCD 17.0.0 inputs: the same files Broiler.VM's
    `src/tests/unicode/pins/unicode.pin` names, the auxiliary break-test files included. The
    generators live in the repository: those Broiler.VM uses today (`UnicodeDatabase`,
    `UnicodeTableGenerator`), or ports of them. A byte-for-byte regeneration test is rule SL7.
+   *(Corrected 2026-10-16, at SJL-7.1, by [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md): Broiler.VM's segmentation tables and its
+   Soft_Dotted table are written by `CldrTableGenerator`, from the same `UnicodeDatabase`, so the Unicode
+   parts of that generator are ported too.)*
 2. **Public data version.** A public `UnicodeVersion` constant. The emoji version claim in the
    README is corrected: the code carries 17.0.
 3. **Exact property names.** A lookup that admits exactly the names and aliases ECMA-262's tables
@@ -133,7 +140,10 @@ The corpus gains engine-level vectors for:
 - the Soft_Dotted table in the Intl data, which the casing tables now carry;
 - `JsSegmenter`'s algorithm;
 - the platform classification that remains in `JsNumberFormat.IsWhiteSpace` (if any survived
-  SJL-3), `FunctionIsNativeName` and `RegExpEscapeCodePoint`.
+  SJL-3), `FunctionIsNativeName` and `RegExpEscapeCodePoint`. *(Corrected 2026-10-16, at SJL-7.1, by
+  [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md): `JsNumberFormat.IsWhiteSpace` did not survive SJL-3.4, and the
+  parser's five routing checks over `char.IsLetter`, `char.IsWhiteSpace` and `char.IsLetterOrDigit` join
+  the list.)*
 
 **Regenerated, not deleted** ([SJL-D-6](../decisions.md#sjl-d-6) (c)): the generated tables, which
 are the `.g.cs` files of the classes above and the segmentation break tables. The owner's generator
@@ -144,7 +154,10 @@ Format for what the compiler and the runtime both read, the profile for the rest
 **Generator and rules.** Broiler.VM's generator (`UnicodeTableGenerator` over `UnicodeDatabase`)
 moves to the owner, which starts from a copy of Broiler.VM's pin. Rule N22 stays in Broiler.VM: it
 regenerates the embedded tables with the owner's generator and holds them byte for byte under its
-budget. Rule `I4` checks that Broiler.VM's pin agrees with the owner's. The remarks and vacuity
+budget. *(Corrected 2026-10-16, at SJL-7.1, by [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md): the segmentation
+tables and Soft_Dotted are held by rule N28, in the Intl assembly, which regenerates them the same way under
+its own budget; the matcher's reference to the owner from Format needs rule I1's allow-list widened for
+Format, which today refuses an admitted package there.)* Rule `I4` checks that Broiler.VM's pin agrees with the owner's. The remarks and vacuity
 guards of N23 and N18 are re-pointed. The profile, the compiler and the matcher reference the
 owner's code packages, and the matcher's references stay until SJL-11 replaces the matcher.
 
@@ -162,7 +175,11 @@ owner's code packages, and the matcher's references stay until SJL-11 replaces t
 
 **The package dependency.** Broiler.JS references the owner's code packages directly, and embeds the
 tables the owner's generator produces, as Broiler.VM does ([SJL-D-6](../decisions.md#sjl-d-6) (c)).
-Today it uses `Broiler.Unicode.Properties` only transitively, through Broiler.Regex.
+Today it uses `Broiler.Unicode.Properties` only transitively, through Broiler.Regex. *(Corrected 2026-10-16,
+at SJL-7.1, by [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md): transitively by package reference, but its code calls
+both `Broiler.Unicode.Properties` and the emoji package directly. `NumberParser`'s white space is SJL-3's
+shared set since SJL-3.5, and the white space of the scanner and `RegExp.escape` is this milestone's, which
+revises Broiler.JS's record of SJL-5 that left it to SJL-14 and SJL-11.)*
 
 **Corrections, listed (decision [SJL-D-16](../decisions.md#sjl-d-16)):**
 
@@ -205,15 +222,23 @@ As in SJL-3.6, plus three items:
 **Broiler.VM clauses.**
 
 9. Rules `I1` to `I7` hold, and rule `I4` agrees with the pin.
-10. Rule N22 regenerates the embedded tables with the owner's generator from Broiler.VM's pin, which
-    rule `I4` holds equal to the owner's. Rules N18 and N23 are re-pointed. Each has its witnesses.
+10. Rules N22 and N28 regenerate the embedded tables with the owner's generator from Broiler.VM's pin,
+    which rule `I4` holds equal to the owner's. Rules N18 and N23 are re-pointed. Each has its witnesses.
 11. test262 in both forms meets the area rule.
 12. Every root is published and run in three modes.
-13. N22's size budget holds for the regenerated tables, and the bundle restates it by citation.
+13. N22's and N28's size budgets hold for the regenerated tables, and the bundle restates them by
+    citation.
 
 *(Revised 2026-10-11, when SJL-D-6 was taken as (c). Clause 10 read "Rules N18, N22 and N23 are
 re-homed as the decision chose, each with witnesses." Clause 13 read "The size budget is restated
 by citation for the moved tables.")*
+
+*(Revised 2026-10-16, at SJL-7.1, before any evidence of SJL-7 existed, by [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md):
+the segmentation tables and Soft_Dotted are written by Broiler.VM's `CldrTableGenerator` and held by rule
+N28, not N22, so both clauses name both rules. Clause 10 read "Rule N22 regenerates the embedded tables with
+the owner's generator from Broiler.VM's pin, which rule `I4` holds equal to the owner's. Rules N18 and N23
+are re-pointed. Each has its witnesses." Clause 13 read "N22's size budget holds for the regenerated tables,
+and the bundle restates it by citation.")*
 
 **Records.**
 

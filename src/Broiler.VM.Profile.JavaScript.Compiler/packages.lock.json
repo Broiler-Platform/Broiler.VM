@@ -8,11 +8,20 @@
         "resolved": "0.1.0-preview.4",
         "contentHash": "fv6d0u0cFEf1HSr59woiaK7zqyfFKDzuBX4FIcTXL/62/E9X7Q3m2/5/+8ao4uz3+x1vSZIH9JLG6UBad3GsxA=="
       },
+      "Broiler.Unicode.Algorithms": {
+        "type": "Direct",
+        "requested": "[0.1.0-preview.4, )",
+        "resolved": "0.1.0-preview.4",
+        "contentHash": "8M7PNntCj6RfQF0VIkFXgrClg3RxCdbCKyFIQB+n6Q08jX4S3Mz3ged9qwz83ggzEJ+z60Yg5trOhZ5qaxS3Vg=="
+      },
       "broiler.vm.abstractions": {
         "type": "Project"
       },
       "broiler.vm.profile.javascript.format": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Broiler.Unicode.Algorithms": "[0.1.0-preview.4, )"
+        }
       }
     }
   }

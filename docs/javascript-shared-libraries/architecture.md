@@ -60,6 +60,7 @@ flowchart TD
     VMP --> ALG
     VMP --> INTL
     VMP --> UNI
+    VMF --> UNI
     VMP --> RX
     BJC --> FE
     BJR --> ALG
@@ -80,6 +81,12 @@ flowchart TD
 *(Revised 2026-10-11, when decisions `SJL-D-1`, `SJL-D-6` and `SJL-D-22` were taken. The diagram drew
 optional data packages, "Time-zone and calendar data" and `Broiler.Unicode.Cldr.LocaleData`, with
 dashed dependency arrows from both engines' data assemblies.)*
+
+*(Revised 2026-10-16, at SJL-7.1, by
+[JSD-0074](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md):
+the arrow from Format to `Broiler.Unicode.*` is added. Format holds the property, lexical and folding lookups
+that the compiler and the runtime both read, so it calls the owner's code; the diagram had drawn only the
+profile's arrow.)*
 
 **Only the data is optional, and that is deliberate.**
 

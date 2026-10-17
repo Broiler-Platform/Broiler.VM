@@ -4,8 +4,10 @@
 conditions of SJL-7.1; otherwise the Broiler.JS repository (decision
 [SJL-D-1](../decisions.md#sjl-d-1) (b), taken on 2026-10-11). **Data:** the owner holds the
 generator and the pins, and each engine embeds the tables (decision
-[SJL-D-6](../decisions.md#sjl-d-6) (c)). **Status:** design. Data comparisons below were made by
-decoding the generated tables of both sides without executing either engine.
+[SJL-D-6](../decisions.md#sjl-d-6) (c)). **Status:** design; its verdict is [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), all six sub-areas
+accepted and placed with Broiler.Unicode under its owner conditions, and decision SJL-D-6 recorded, on
+2026-10-16. Data comparisons below were made by decoding the generated tables of both sides without executing
+either engine. *(Revised 2026-10-16: the status read "design.")*
 
 ---
 
@@ -60,9 +62,15 @@ The reason is that Format is the one assembly both may reference.
 - `JsSegmenter`;
 - the segmentation tables, in the optional `.Intl` assembly.
 
+*(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): there is no type `JsSegmenter`: the file `JsSegmenter.cs` declares `JsBreakData` and `JsSegmentation`.
+Soft_Dotted for the language casings is a table of the Intl assembly too)*
+
 **How the tables are produced.** The generator is `UnicodeTableGenerator` over `UnicodeDatabase`,
 reading `src/tests/unicode/pins/unicode.pin`. **Rule N22** regenerates the tables byte for byte under
 a size budget. **Rule N23** forbids the platform normalizer's identifiers in the profile's sources.
+*(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): the segmentation tables and Soft_Dotted are written by `CldrTableGenerator`, from the same
+`UnicodeDatabase`, into the Intl assembly, and **rule N28** holds them under its own budget; N22 holds the
+other five tables. Rule N23 reads the profile, the compiler and Format, not the Intl assembly)*
 
 **The platform reads that remain in Broiler.VM** are these:
 
@@ -71,17 +79,25 @@ a size budget. **Rule N23** forbids the platform normalizer's identifiers in the
 - `FunctionIsNativeName` uses `char.IsLetter`;
 - a few character heuristics remain in `JsParser`.
 
+*(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): `JsNumberFormat.IsWhiteSpace` was retired at SJL-3.4, and `trim` and `Number` read SJL-3's shared
+white-space set. `JsParser`'s heuristics are five routing checks over `char.IsLetter`, `char.IsWhiteSpace`
+and `char.IsLetterOrDigit`, W6)*
+
 **Broiler.JS's code** lives in:
 
 - `JSStringPrototype.Transform` (normalization, casing);
 - `Parser/CharExtensions` (identifiers);
 - `FastScanner`, `NumberParser`, `JSString.trimCharacters`, `StringSpan.Trim` and `JSRegExp.Escape`
-  (whitespace, in different sets);
+  (whitespace, in different sets); *(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): `JSString.trimCharacters` was deleted and `NumberParser`'s list
+  replaced at SJL-3.5, so `trim` and `Number` read the shared set and exclude U+0085; U+0085 remains white
+  space in the scanner, `RegExp.escape`, `StringSpan.Trim`, which has no caller, and the segmenter's word
+  categories, W1 and W2)*
 - `JSRegExp` (identifier classes and property lookups);
 - `JSIntl` (segmentation; normalization for the collator).
 
 It consumes `Broiler.Unicode.Properties` and the emoji package **only transitively**, through
-Broiler.Regex.
+Broiler.Regex. *(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): transitively by package reference, through `Broiler.Regex` `0.1.0-preview.4`, but its
+code calls both packages' namespaces directly, in `JSRegExp` and `JSStringPrototype.Transform`)*
 
 **Broiler.Unicode** has these characteristics:
 
@@ -112,6 +128,13 @@ Broiler.Regex.
 | U+2E2F in an identifier | refused (Pattern_Syntax) | accepted *(reading)* |
 | U+0085 as whitespace | not whitespace | whitespace in several Broiler.JS paths |
 | `new Intl.Segmenter("en", {granularity: "sentence"})` | UAX #29 sentences | one segment |
+
+*(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): the rows marked *(reading)* were run in both engines and hold as stated; so do the property rows,
+U+2E2F and sentences. The run found more: Broiler.JS reads Unicode 16's decompositions as nothing on a host
+whose ICU carries Unicode 15.1, N2; its Turkic lower case misses the Unicode 16 and 17 pairs, C4; its
+Lithuanian casing misses four Soft_Dotted code points and treats a class-0 mark as transparent, C5 and C6;
+`null` reads the host culture, C8; its words split `can't`, `a_b` and `c.d`, G2; and its group names accept
+U+2E2F, I3)*
 
 ---
 
@@ -206,12 +229,15 @@ reason stood.
 - the code of `JsUnicodeNormalization` and `JsUnicodeCasing`, from the profile;
 - in `JsRealm.String`: `IsNormalizedAlready`, `ReadCodePoint`, `OrderCanonically`,
   `ComposeCanonically`, `WriteCodePoints`, `LanguageCasing`, `AfterCapitalI`, `AfterSoftDotted`,
-  `BeforeDot`, `MoreAbove`, and the bodies of `NormalizeText` and `StringChangeCase`;
+  `BeforeDot`, `MoreAbove`, and the bodies of `NormalizeText` and `StringChangeCase`; *(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): `ReadCodePoint`
+  was retired at SJL-5.4; `AppendCodePoint` and `TransformCase`'s body but for the locale's resolution join
+  the list)*
 - Soft_Dotted in the Intl data;
 - `JsSegmenter`'s algorithm;
 - the remaining platform classification sites;
 - the generator's normalization, casing, folding, property and string-property parts, which move to
-  the owner.
+  the owner. *(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): so do the Unicode parts of `CldrTableGenerator`, the segmentation tables and
+  Soft_Dotted, and the platform classification sites include the parser's routing checks, W6)*
 
 **Broiler.VM keeps** the generated tables, including the segmentation tables, regenerated by the
 owner's generator and held by rule N22 ([SJL-D-6](../decisions.md#sjl-d-6) (c)).
@@ -224,6 +250,9 @@ owner's generator and held by rule N22 ([SJL-D-6](../decisions.md#sjl-d-6) (c)).
 - the whitespace lists;
 - `JSRegExp`'s identifier classes and loose property lookups;
 - `JSIntl`'s segmentation.
+
+*(Corrected 2026-10-16 at SJL-7.1, [JSD-0074](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md), rows of bundle `sjl-7-001`'s [correspondence](../../evidence/sjl-7-001/correspondence.md): also `IsValidNativeFunctionToStringName`'s `char.IsLetter`, I4, and the collator's
+`string.Normalize`, N1)*
 
 **The owner:**
 

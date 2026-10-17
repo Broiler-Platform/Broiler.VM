@@ -1,6 +1,3 @@
-using System.Globalization;
-using System.Text;
-
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>One generated table file: what is on disk, and what the generator says should be.</summary>
@@ -29,6 +26,14 @@ internal sealed record UnicodeGeneration(
 /// </summary>
 /// <remarks>
 /// <para>
+/// <b>Since SJL-7.4 the owner's generator writes every table</b> (JSD-0074, decision SJL-D-6 (c)):
+/// <see cref="Generate"/> takes them from <see cref="UnicodeTableEmbedding"/>, which runs
+/// <c>Broiler.Unicode.Generation</c> over the same verified archive, and the emitters that were here -
+/// properties, case folding, properties of strings, normalization and case mapping - are gone; their
+/// tables are the owner's byte for byte, in the same layouts. What stays here is the gate, the write,
+/// and the normalization probes, which are this repository's test assets.
+/// </para>
+/// <para>
 /// <b>The shape is rule J5's.</b> Decision JSD-0031 section 5 puts the generator here, in the
 /// architecture test project, following <see cref="AssuranceGenerator"/>: <see cref="Generate"/>
 /// computes every table file from the verified archive and is pure; with
@@ -44,11 +49,12 @@ internal sealed record UnicodeGeneration(
 /// records a time, a machine or a path outside the repository.
 /// </para>
 /// <para>
-/// <b>It annotates its own output.</b> Each table member carries the per-unit
-/// <c>EXEMPT=</c> hatch rule J3 accepts, the containing partial type carries an ordinary assessment,
-/// and the text is then passed through <see cref="AssuranceGenerator.DesiredSource"/> - the function
-/// the assurance gate itself uses - so the file header and the type's fingerprint are exactly what
-/// J5 would write. A regenerated file therefore needs no hand edit and changes no assurance rule.
+/// <b>It annotates its output.</b> Each table member carries the per-unit <c>EXEMPT=</c> hatch rule J3
+/// accepts, the class and its one method carry an ordinary assessment, and the text is then passed
+/// through <see cref="AssuranceGenerator.DesiredSource"/> - the function the assurance gate itself
+/// uses - so the file header and the fingerprints are exactly what J5 would write
+/// (<see cref="UnicodeTableEmbedding.Artefact"/>). A regenerated file therefore needs no hand edit and
+/// changes no assurance rule.
 /// </para>
 /// </remarks>
 internal static class UnicodeTableGenerator
@@ -59,18 +65,17 @@ internal static class UnicodeTableGenerator
     /// <summary>The owner's hard cap on table data, 2026-09-22: 300 KB, taken as 300 x 1024 bytes.</summary>
     internal const int BudgetBytes = 300 * 1024;
 
-    internal const string PropertiesPath = "src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs";
-    internal const string CaseFoldingPath = "src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs";
-    internal const string NormalizationPath = "src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs";
-    internal const string CasingPath = "src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs";
-    internal const string StringPropertiesPath = "src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeStringProperties.g.cs";
+    /// <summary>
+    /// The generated files rule N22 holds, in the order they are generated: Format's and the profile's,
+    /// which the owner's generator writes since SJL-7.4 (<see cref="UnicodeTableEmbedding"/>). Until then
+    /// they were five files of this generator's: <c>JsUnicodeProperties.g.cs</c>,
+    /// <c>JsUnicodeCaseFolding.g.cs</c> and <c>JsUnicodeStringProperties.g.cs</c> in Format, and
+    /// <c>JsUnicodeNormalization.g.cs</c> and <c>JsUnicodeCasing.g.cs</c> in the profile.
+    /// </summary>
+    internal static readonly string[] OutputPaths = [UnicodeTableEmbedding.FormatPath, UnicodeTableEmbedding.ProfilePath];
 
-    /// <summary>The generated files, in the order they are generated.</summary>
-    internal static readonly string[] OutputPaths = [PropertiesPath, CaseFoldingPath, NormalizationPath, CasingPath, StringPropertiesPath];
-
-    /// <summary>The per-unit exemption reason every generated table member states.</summary>
-    internal const string ExemptReason =
-        "Unicode 17.0.0 table data written by UnicodeTableGenerator from the files unicode.pin names, compared byte for byte by rule N22";
+    /// <summary>The per-unit exemption reason of each generated file: the owner's generator's.</summary>
+    internal static string ExemptReasonOf(string relativePath) => UnicodeTableEmbedding.ExemptReason;
 
     internal static bool WriteRequested =>
         string.Equals(Environment.GetEnvironmentVariable(WriteVariable), "1", StringComparison.Ordinal);
@@ -95,16 +100,13 @@ internal static class UnicodeTableGenerator
         Func<string, string> currentText)
     {
         var verified = pin.Verified(archive);
-        var database = UnicodeDatabase.Read(verified);
+        var owner = UnicodeTableEmbedding.Generate(pin, verified);
         var tables = new List<UnicodeTableSize>();
 
         var artefacts = new[]
         {
-            Emit(PropertiesPath, "Broiler.VM.Profile.JavaScript.Format", Properties(database), tables, currentText),
-            Emit(CaseFoldingPath, "Broiler.VM.Profile.JavaScript.Format", CaseFolding(database), tables, currentText),
-            Emit(NormalizationPath, "Broiler.VM.Profile.JavaScript", Normalization(database), tables, currentText),
-            Emit(CasingPath, "Broiler.VM.Profile.JavaScript", Casing(database), tables, currentText),
-            Emit(StringPropertiesPath, "Broiler.VM.Profile.JavaScript.Format", StringProperties(database), tables, currentText),
+            UnicodeTableEmbedding.Artefact(UnicodeTableEmbedding.Format, owner, currentText, tables),
+            UnicodeTableEmbedding.Artefact(UnicodeTableEmbedding.Profile, owner, currentText, tables),
         };
 
         // Slice U3's conformance probes: test files, not product source, so they carry no
@@ -145,590 +147,4 @@ internal static class UnicodeTableGenerator
 
     private static string Full(string relativePath) =>
         Path.Combine(ComponentGraph.Root, relativePath.Replace('/', Path.DirectorySeparatorChar));
-
-    // =============================================================================================
-    // The Format assembly: property sets, names and case folding
-    // =============================================================================================
-
-    private static GeneratedType Properties(UnicodeDatabase database)
-    {
-        var sets = new List<List<UnicodeRange>>();
-
-        sets.AddRange(database.GeneralCategories.Select(static value => value.Ranges));
-
-        var binaryBase = sets.Count;
-
-        sets.AddRange(database.BinaryProperties.Select(static value => value.Ranges));
-
-        var scriptBase = sets.Count;
-
-        sets.AddRange(database.Scripts.Select(static value => value.Ranges));
-
-        var extensionsBase = sets.Count;
-
-        sets.AddRange(database.ScriptExtensions);
-
-        var ranges = new ByteWriter();
-        var index = new ByteWriter();
-        var rangeCount = 0;
-
-        foreach (var set in sets)
-        {
-            index.Int24(rangeCount).Int24(set.Count);
-
-            foreach (var range in set)
-            {
-                ranges.Int24(range.First).Int24(range.Last);
-                rangeCount++;
-            }
-        }
-
-        var lone = database.GeneralCategories.SelectMany(static (value, id) => value.Names.Select(name => (name, id)))
-            .Concat(database.BinaryProperties.SelectMany((value, id) => value.Names.Select(name => (name, id: binaryBase + id))));
-        var (loneNames, loneIndex) = NameTable(lone);
-        var (propertyNames, propertyIndex) = NameTable(database.NonBinaryNames.Select(static name => (name.Name, name.Kind)));
-        var (scriptNames, scriptIndex) = NameTable(database.Scripts.SelectMany(static (value, id) => value.Names.Select(name => (name, id))));
-
-        return new GeneratedType(
-            "JsUnicodeProperties",
-            "The Unicode 17.0.0 code point sets and the names that select them, for the matcher's property escapes.",
-            [
-                Constant("string", "UnicodeVersion", $"\"{UnicodePin.PinnedVersion}\"", "The Unicode version every table here was generated from."),
-                Constant("int", "GeneralCategorySetCount", Number(database.GeneralCategories.Count), $"Set ids below this are General_Category: the {database.GeneralCategoryValueCount} values, then the groups."),
-                Constant("int", "BinarySetBase", Number(binaryBase), $"The first of the {database.BinaryProperties.Count} binary property sets, in ordinal order of canonical name."),
-                Constant("int", "ScriptSetBase", Number(scriptBase), "The first Script set; a script's id is its offset from here, in ordinal order of short name."),
-                Constant("int", "ScriptExtensionsSetBase", Number(extensionsBase), "The first Script_Extensions set, by the same script ids."),
-                Constant("int", "ScriptCount", Number(database.Scripts.Count), "The number of Script values, and of Script_Extensions sets."),
-                Constant("int", "IdStartSet", Number(BinarySet(database, binaryBase, "ID_Start")), "The ID_Start set, which the tokenizer and group names read through JsUnicodeLexical."),
-                Constant("int", "IdContinueSet", Number(BinarySet(database, binaryBase, "ID_Continue")), "The ID_Continue set, which the tokenizer and group names read through JsUnicodeLexical."),
-                Constant("int", "SpaceSeparatorSet", Number(database.GeneralCategories.FindIndex(static value => value.ShortName == "Zs")), "The General_Category=Space_Separator (Zs) set, the WhiteSpace production's USP."),
-                Table("RangeData", ranges, "Every set's ranges: first and last code point, inclusive, three bytes each, little-endian. Within a set they ascend and neither overlap nor touch."),
-                Table("SetData", index, "Per set id: the index of its first range in RangeData and its range count, three bytes each."),
-                Table("LoneNames", loneNames, "Every name the lone form admits - General_Category values and aliases, binary properties and aliases - in ordinal order: a length byte, the ASCII name, and the set id in two bytes."),
-                Table("LoneNameIndex", loneIndex, "The offset of each LoneNames entry, two bytes each, in the same order."),
-                Table("PropertyNames", propertyNames, "The names the name=value form admits, with 0 for General_Category, 1 for Script and 2 for Script_Extensions."),
-                Table("PropertyNameIndex", propertyIndex, "The offset of each PropertyNames entry."),
-                Table("ScriptNames", scriptNames, "Every Script value name and alias from PropertyValueAliases.txt, with its script id."),
-                Table("ScriptNameIndex", scriptIndex, "The offset of each ScriptNames entry."),
-            ]);
-    }
-
-    /// <summary>The first sequence byte that opens a two-byte dictionary index.</summary>
-    private const int ShortLimit = 0xF0;
-
-    /// <summary>
-    /// The seven properties of strings the <c>v</c> flag admits: each one's single code points as
-    /// ranges and its sequences, with the names that select them (phase F2).
-    /// </summary>
-    private static GeneratedType StringProperties(UnicodeDatabase database)
-    {
-        var ranges = new ByteWriter();
-        var sequences = new ByteWriter();
-        var index = new ByteWriter();
-        var dictionary = new ByteWriter();
-        var rangeCount = 0;
-        var sequenceCount = 0;
-
-        // THE SEQUENCES SPELL THEIR CODE POINTS THROUGH A DICTIONARY, most frequent first, so that
-        // almost every one is a single byte: 2,760 sequences of 11,196 code points use 436 distinct
-        // ones, and three bytes each would put the tables over the owner's cap. An index below
-        // SequenceShortLimit is one byte; any other is two, the first carrying its high bits.
-        var frequency = database.StringProperties
-            .SelectMany(static property => property.Sequences)
-            .SelectMany(static sequence => sequence)
-            .GroupBy(static codePoint => codePoint)
-            .OrderByDescending(static group => group.Count())
-            .ThenBy(static group => group.Key)
-            .Select(static group => group.Key)
-            .ToArray();
-        var position = frequency.Select(static (codePoint, at) => (codePoint, at)).ToDictionary(static pair => pair.codePoint, static pair => pair.at);
-
-        if (frequency.Length > (0x100 - ShortLimit) * 0x100)
-        {
-            throw new InvalidDataException($"{frequency.Length} distinct code points do not fit the sequence dictionary's two-byte indices");
-        }
-
-        foreach (var codePoint in frequency)
-        {
-            dictionary.Int24(codePoint);
-        }
-
-        foreach (var (_, codePoints, list) in database.StringProperties)
-        {
-            index.Int24(rangeCount).Int24(codePoints.Count).Int24(sequences.Count).Int24(list.Count);
-
-            foreach (var range in codePoints)
-            {
-                ranges.Int24(range.First).Int24(range.Last);
-                rangeCount++;
-            }
-
-            foreach (var sequence in list)
-            {
-                sequences.Byte(sequence.Length);
-
-                foreach (var codePoint in sequence)
-                {
-                    var at = position[codePoint];
-
-                    if (at < ShortLimit)
-                    {
-                        sequences.Byte(at);
-                    }
-                    else
-                    {
-                        sequences.Byte(ShortLimit + ((at - ShortLimit) >> 8)).Byte((at - ShortLimit) & 0xFF);
-                    }
-                }
-
-                sequenceCount++;
-            }
-        }
-
-        var (names, nameIndex) = NameTable(database.StringProperties.Select(static (property, id) => (property.Name, id)));
-
-        return new GeneratedType(
-            "JsUnicodeStringProperties",
-            "The Unicode 17.0.0 properties of strings the v flag admits, from the two emoji sequence files unicode.pin names.",
-            [
-                Constant("int", "PropertyCount", Number(database.StringProperties.Count), "How many properties of strings there are, in the ECMAScript table's row order."),
-                Constant("int", "UnionProperty", Number(database.StringProperties.Count - 1), "RGI_Emoji, the table's last row: the union of every other property, with no data of its own."),
-                Constant("int", "SequenceCount", Number(sequenceCount), "How many sequences the properties list in all."),
-                Constant("int", "SequenceShortLimit", Number(ShortLimit), "A SequenceData byte below this is a whole dictionary index; one at or above it and the byte after it are an index of SequenceShortLimit plus ((first - SequenceShortLimit) << 8 | second)."),
-                Table("RangeData", ranges, "The single code points of each property, as ranges: first and last, three bytes each, ascending and merged within a property."),
-                Table("CodePointDictionary", dictionary, "Every code point a sequence uses, most frequent first and then in code point order, three bytes each."),
-                Table("SequenceData", sequences, "Each property's sequences, in code point order: a length byte, then that many dictionary indices, each one byte or two as SequenceShortLimit says."),
-                Table("PropertyData", index, "Per property: its first range in RangeData, its range count, its first byte in SequenceData and its sequence count, three bytes each."),
-                Table("Names", names, "The property names, in ordinal order: a length byte, the ASCII name, and the property's id in two bytes."),
-                Table("NameIndex", nameIndex, "The offset of each Names entry, two bytes each, in the same order."),
-            ]);
-    }
-
-    /// <summary>The set id of a binary property by canonical name; a name the table lacks is a stop.</summary>
-    private static int BinarySet(UnicodeDatabase database, int binaryBase, string name)
-    {
-        var index = database.BinaryProperties.FindIndex(value => value.ShortName == name);
-
-        return index < 0 ? throw new InvalidDataException($"the binary property table has no `{name}`") : binaryBase + index;
-    }
-
-    /// <summary>
-    /// The non-<c>u</c> Canonicalize of every code unit it moves: UnicodeData.txt's simple upper
-    /// case, kept only where the language keeps it.
-    /// </summary>
-    /// <remarks>
-    /// ES2026 Canonicalize without <c>u</c> or <c>v</c> upper-cases one code unit and returns the
-    /// code unit unchanged when the result is not exactly one code unit, or when it would map a
-    /// non-ASCII code unit to ASCII. A surrogate code unit has no mapping. A simple mapping into
-    /// the supplementary planes (none exists in 17.0.0) would be more than one code unit and is
-    /// dropped by the same rule.
-    /// </remarks>
-    private static SortedDictionary<int, int> NonUnicodeCanonical(UnicodeDatabase database)
-    {
-        var canonical = new SortedDictionary<int, int>();
-
-        // THE FULL MAPPING, NOT THE SIMPLE ONE: the specification's toUppercase is the Default Case
-        // Conversion, so a code unit whose full upper case is two code points canonicalizes to
-        // itself. The 27 Greek letters with a ypogegrammeni are the code units where the two
-        // readings part; until SpecialCasing.txt was archived (2026-10-03) the simple one was used
-        // and each matched its title-case partner.
-        foreach (var (source, mapping) in database.FullUppercase)
-        {
-            if (mapping.Length != 1)
-            {
-                continue;
-            }
-
-            var upper = mapping[0];
-
-            if (source <= 0xFFFF && source is < 0xD800 or > 0xDFFF && upper <= 0xFFFF && !(source >= 128 && upper < 128))
-            {
-                canonical.Add(source, upper);
-            }
-        }
-
-        // The matcher closes a class by the reverse relation, which assumes one step reaches the
-        // canonical form: no target may be moved again.
-        foreach (var target in canonical.Values.Where(canonical.ContainsKey))
-        {
-            throw new InvalidDataException($"U+{target:X4} is a non-u canonical form and is moved again");
-        }
-
-        return canonical;
-    }
-
-    private static GeneratedType CaseFolding(UnicodeDatabase database)
-    {
-        var folds = database.SimpleFolding.ToArray();
-        var data = new ByteWriter();
-
-        foreach (var (source, target) in folds)
-        {
-            data.Int24(source).Int24(target);
-        }
-
-        var orbit = new ByteWriter();
-
-        foreach (var entry in folds.Select(static (fold, index) => (fold.Value, fold.Key, index)).Order())
-        {
-            orbit.UInt16(entry.index);
-        }
-
-        // The largest set of code points sharing one folding, the target itself included.
-        var maxOrbit = folds.GroupBy(static fold => fold.Value).Max(static group => group.Count() + 1);
-
-        var uppers = NonUnicodeCanonical(database).ToArray();
-        var upperData = new ByteWriter();
-
-        foreach (var (source, target) in uppers)
-        {
-            upperData.UInt16(source).UInt16(target);
-        }
-
-        var upperOrbit = new ByteWriter();
-
-        foreach (var entry in uppers.Select(static (upper, index) => (upper.Value, upper.Key, index)).Order())
-        {
-            upperOrbit.UInt16(entry.index);
-        }
-
-        var maxUpperOrbit = uppers.GroupBy(static upper => upper.Value).Max(static group => group.Count() + 1);
-
-        return new GeneratedType(
-            "JsUnicodeCaseFolding",
-            "The two Canonicalize mappings: CaseFolding.txt's simple foldings (status C and S) under the u flag, and UnicodeData.txt's simple upper case of one code unit without it.",
-            [
-                Constant("int", "MaxOrbit", Number(maxOrbit), "The most code points that share one simple folding, the folding itself included."),
-                Constant("int", "MaxUpperOrbit", Number(maxUpperOrbit), "The most code units that share one non-u canonical form, that form itself included."),
-                Table("FoldData", data, "Every code point with a C or S folding and its folding, three bytes each, in code point order."),
-                Table("OrbitIndex", orbit, "The FoldData entries ordered by folding and then by code point, as two-byte entry numbers."),
-                Table("UpperData", upperData, "Every code unit the non-u Canonicalize moves and the code unit it moves it to, two bytes each, in code unit order: the simple upper case, less mappings to ASCII from outside it."),
-                Table("UpperOrbitIndex", upperOrbit, "The UpperData entries ordered by canonical form and then by code unit, as two-byte entry numbers."),
-            ]);
-    }
-
-    // =============================================================================================
-    // The profile assembly: normalization
-    // =============================================================================================
-
-    private static GeneratedType Normalization(UnicodeDatabase database)
-    {
-        var combining = new ByteWriter();
-        var start = 0;
-
-        for (var codePoint = 1; codePoint <= database.CombiningClass.Length; codePoint++)
-        {
-            if (codePoint == database.CombiningClass.Length || database.CombiningClass[codePoint] != database.CombiningClass[start])
-            {
-                if (database.CombiningClass[start] != 0)
-                {
-                    combining.Int24(start).Int24(codePoint - 1).Byte(database.CombiningClass[start]);
-                }
-
-                start = codePoint;
-            }
-        }
-
-        var pool = new ByteWriter();
-        var poolLength = 0;
-
-        ByteWriter Index(SortedDictionary<int, int[]> decompositions)
-        {
-            var index = new ByteWriter();
-
-            foreach (var (codePoint, mapping) in decompositions)
-            {
-                index.Int24(codePoint).UInt16(poolLength).Byte(mapping.Length);
-
-                foreach (var part in mapping)
-                {
-                    pool.Int24(part);
-                }
-
-                poolLength += mapping.Length;
-            }
-
-            return index;
-        }
-
-        var canonical = Index(database.CanonicalDecomposition);
-        var compatibility = Index(database.CompatibilityDecomposition);
-        var compositions = new ByteWriter();
-
-        foreach (var ((first, second), composite) in database.Compositions)
-        {
-            compositions.Int24(first).Int24(second).Int24(composite);
-        }
-
-        var quick = new ByteWriter();
-        var quickIndex = new ByteWriter();
-        var quickCount = 0;
-
-        foreach (var set in database.QuickChecks)
-        {
-            quickIndex.UInt16(quickCount).UInt16(set.Count);
-
-            foreach (var range in set)
-            {
-                quick.Int24(range.First).Int24(range.Last);
-                quickCount++;
-            }
-        }
-
-        var longest = database.CanonicalDecomposition.Values.Concat(database.CompatibilityDecomposition.Values).Max(static mapping => mapping.Length);
-
-        return new GeneratedType(
-            "JsUnicodeNormalization",
-            "The Unicode 17.0.0 normalization data behind String.prototype.normalize: combining classes, full decompositions, primary composites and the composed-form quick checks.",
-            [
-                Constant("int", "MaxDecompositionLength", Number(longest), "The longest full decomposition, in code points; a Hangul syllable's is at most three."),
-                Table("CombiningClassData", combining, "Every run of one non-zero Canonical_Combining_Class: first and last code point, three bytes each, and the class in one byte."),
-                Table("CanonicalIndex", canonical, "Every code point with a canonical decomposition, Hangul excluded: the code point in three bytes, its offset in DecompositionPool in two and its length in one. The decomposition is full: applied recursively, not reordered."),
-                Table("CompatibilityIndex", compatibility, "Every code point whose full compatibility decomposition differs from its full canonical one, in CanonicalIndex's format."),
-                Table("DecompositionPool", pool, "The code points of every full decomposition, three bytes each."),
-                Table("CompositionData", compositions, "Every primary composite, Full_Composition_Exclusion and Hangul excluded: first, second and composite code point, three bytes each, ordered by first and then second."),
-                Table("QuickCheckData", quick, "The ranges of NFC_QC=No, NFC_QC=Maybe, NFKC_QC=No and NFKC_QC=Maybe, in RangeData's format."),
-                Table("QuickCheckIndex", quickIndex, "For each of those four sets: its first range and its range count, two bytes each."),
-            ]);
-    }
-
-    // =============================================================================================
-    // The profile assembly: case conversion
-    // =============================================================================================
-
-    private static GeneratedType Casing(UnicodeDatabase database)
-    {
-        var pool = new ByteWriter();
-        var poolLength = 0;
-
-        ByteWriter Index(SortedDictionary<int, int[]> mappings)
-        {
-            var index = new ByteWriter();
-
-            foreach (var (codePoint, mapping) in mappings)
-            {
-                index.Int24(codePoint).UInt16(poolLength).Byte(mapping.Length);
-
-                foreach (var part in mapping)
-                {
-                    pool.Int24(part);
-                }
-
-                poolLength += mapping.Length;
-            }
-
-            return index;
-        }
-
-        var upper = Index(database.FullUppercase);
-        var lower = Index(database.FullLowercase);
-
-        ByteWriter Ranges(string property)
-        {
-            var ranges = new ByteWriter();
-
-            foreach (var range in database.BinaryProperties.Single(value => value.ShortName == property).Ranges)
-            {
-                ranges.Int24(range.First).Int24(range.Last);
-            }
-
-            return ranges;
-        }
-        var longest = database.FullUppercase.Values.Concat(database.FullLowercase.Values).Max(static mapping => mapping.Length);
-
-        return new GeneratedType(
-            "JsUnicodeCasing",
-            "The Unicode 17.0.0 Default Case Conversion behind toUpperCase and toLowerCase: UnicodeData.txt's simple mappings with SpecialCasing.txt's unconditional ones over them.",
-            [
-                Constant("int", "MaxMappingLength", Number(longest), "The longest full case mapping, in code points."),
-                Table("UpperIndex", upper, "Every code point upper-casing changes: the code point in three bytes, its offset in MappingPool in two and its length in one, in code point order. A length of zero maps the code point to nothing."),
-                Table("LowerIndex", lower, "Every code point lower-casing changes, in UpperIndex's format. GREEK CAPITAL LETTER SIGMA maps to its ordinary small form here; Final_Sigma is applied by the caller."),
-                Table("MappingPool", pool, "The code points of every full case mapping, three bytes each."),
-                Table("CasedRanges", Ranges("Cased"), "The ranges of Cased, which the Final_Sigma condition reads: first and last code point, three bytes each."),
-                Table("CaseIgnorableRanges", Ranges("Case_Ignorable"), "The ranges of Case_Ignorable, which the Final_Sigma condition skips, in CasedRanges' format."),
-            ]);
-    }
-
-    // =============================================================================================
-    // Encoding
-    // =============================================================================================
-
-    /// <summary>A name table in ordinal order: a length byte, the ASCII name and a two-byte value, plus two-byte offsets.</summary>
-    private static (ByteWriter Names, ByteWriter Index) NameTable(IEnumerable<(string Name, int Value)> entries)
-    {
-        var names = new ByteWriter();
-        var index = new ByteWriter();
-        // PropertyValueAliases.txt writes a value whose short and long names coincide twice
-        // (`Ahom ; Ahom`); the same name for the same value is one entry, a name for two is a stop.
-        var ordered = entries.Distinct().OrderBy(static entry => entry.Name, StringComparer.Ordinal).ToArray();
-
-        foreach (var duplicate in ordered.GroupBy(static entry => entry.Name, StringComparer.Ordinal).Where(static group => group.Count() > 1))
-        {
-            throw new InvalidDataException($"the name `{duplicate.Key}` selects more than one table entry");
-        }
-
-        foreach (var (name, value) in ordered)
-        {
-            if (name.Length is 0 or > 255 || name.Any(static character => character is < '!' or > '~'))
-            {
-                throw new InvalidDataException($"the name `{name}` is not 1 to 255 printable ASCII characters");
-            }
-
-            index.UInt16(names.Count);
-            names.Byte(name.Length);
-
-            foreach (var character in name)
-            {
-                names.Byte(character);
-            }
-
-            names.UInt16(value);
-        }
-
-        return (names, index);
-    }
-
-    private static string Number(int value) => value.ToString(CultureInfo.InvariantCulture);
-
-    private static Member Constant(string type, string name, string value, string summary) =>
-        new(name, summary, $"internal const {type} {name} = {value};", null);
-
-    private static Member Table(string name, ByteWriter data, string summary) =>
-        new(name, summary, $"private static ReadOnlySpan<byte> {name} => new byte[]", data);
-
-    private sealed record Member(string Name, string Summary, string Declaration, ByteWriter? Data);
-
-    private sealed record GeneratedType(string Name, string Summary, IReadOnlyList<Member> Members);
-
-    private static UnicodeArtefact Emit(
-        string relativePath,
-        string ns,
-        GeneratedType type,
-        List<UnicodeTableSize> sizes,
-        Func<string, string> currentText)
-    {
-        var text = new StringBuilder();
-
-        text.Append("using System;\n\n");
-        text.Append("namespace ").Append(ns).Append(";\n\n");
-        text.Append("// Written by UnicodeTableGenerator (src/tests/Broiler.VM.Architecture.Tests) from the Unicode\n");
-        text.Append("// Character Database 17.0.0 files that src/tests/unicode/pins/unicode.pin names, under decision\n");
-        text.Append("// JSD-0031. Rule N22 regenerates this file and compares it byte for byte, so a change belongs in\n");
-        text.Append("// the generator or the pinned archive and never here: run the architecture tests with\n");
-        text.Append("// BROILER_UNICODE_WRITE=1.\n");
-        text.Append("//\n");
-        text.Append("// The table data is derived from Unicode data files and is subject to the Unicode License v3\n");
-        text.Append("// (SPDX Unicode-3.0), whose text THIRD_PARTY_NOTICES.md carries. The SPDX lines above are written\n");
-        text.Append("// on every product file by the code assurance generator and describe this file's code.\n\n");
-        text.Append("/// <summary>").Append(type.Summary).Append("</summary>\n");
-        text.Append("// Broiler-AI:           Origin=Derived; Spec=JSD-0031 s5; IP=Low; Security=Low; Resources=1; Fingerprint=TBF\n");
-        text.Append("// Broiler-Human:        PENDING\n");
-        text.Append("internal static partial class ").Append(type.Name).Append('\n');
-        text.Append("{\n");
-
-        for (var index = 0; index < type.Members.Count; index++)
-        {
-            var member = type.Members[index];
-
-            if (index > 0)
-            {
-                text.Append('\n');
-            }
-
-            text.Append("    /// <summary>").Append(member.Summary).Append("</summary>\n");
-            text.Append("    // Broiler-AI:           EXEMPT=").Append(ExemptReason).Append('\n');
-            text.Append("    // Broiler-Human:        PENDING\n");
-            text.Append("    ").Append(member.Declaration).Append('\n');
-
-            if (member.Data is { } data)
-            {
-                sizes.Add(new UnicodeTableSize(relativePath, $"{type.Name}.{member.Name}", data.Count));
-                data.Render(text);
-            }
-        }
-
-        text.Append("}\n");
-
-        var full = Full(relativePath);
-        var assembly = relativePath.Split('/')[1];
-        var raw = text.ToString();
-        var file = new AssuranceSourceFile(full, relativePath, assembly, raw, "\n", AssuranceSources.Parse(raw, full));
-
-        return new UnicodeArtefact(
-            relativePath,
-            currentText(relativePath),
-            AssuranceGenerator.DesiredSource(file, AssuranceScanner.Scan(file)));
-    }
-
-    /// <summary>Little-endian bytes, bounds-checked as they are written.</summary>
-    private sealed class ByteWriter
-    {
-        private readonly List<byte> bytes = [];
-
-        internal int Count => bytes.Count;
-
-        internal ByteWriter Byte(int value)
-        {
-            if (value is < 0 or > 0xFF)
-            {
-                throw new InvalidDataException($"{value} does not fit in a byte");
-            }
-
-            bytes.Add((byte)value);
-            return this;
-        }
-
-        internal ByteWriter UInt16(int value)
-        {
-            if (value is < 0 or > 0xFFFF)
-            {
-                throw new InvalidDataException($"{value} does not fit in two bytes");
-            }
-
-            bytes.Add((byte)value);
-            bytes.Add((byte)(value >> 8));
-            return this;
-        }
-
-        internal ByteWriter Int24(int value)
-        {
-            if (value is < 0 or > 0xFFFFFF)
-            {
-                throw new InvalidDataException($"{value} does not fit in three bytes");
-            }
-
-            bytes.Add((byte)value);
-            bytes.Add((byte)(value >> 8));
-            bytes.Add((byte)(value >> 16));
-            return this;
-        }
-
-        /// <summary>The initializer, at most 100 columns per line, in decimal.</summary>
-        internal void Render(StringBuilder text)
-        {
-            text.Append("    {\n");
-
-            var line = new StringBuilder("       ");
-
-            foreach (var value in bytes)
-            {
-                var item = value.ToString(CultureInfo.InvariantCulture);
-
-                if (line.Length + item.Length + 2 > 100)
-                {
-                    text.Append(line).Append('\n');
-                    line.Clear().Append("       ");
-                }
-
-                line.Append(' ').Append(item).Append(',');
-            }
-
-            if (bytes.Count > 0)
-            {
-                text.Append(line).Append('\n');
-            }
-
-            text.Append("    };\n");
-        }
-    }
 }

@@ -13274,3 +13274,93 @@ before. Rule I1's witness keeps its own hash and does not move. Everything else 
 **Authority and date.** The owner's instruction of 2026-10-15 to publish `0.1.0-preview.4`, on
 [JSD-0073](decisions/0073-the-profile-on-the-shared-date-algorithms.md) section 1 and the programme's
 work package SJL-6.4. 2026-10-15.
+
+### JSC-308
+
+**Where:** [`packages.md`](packages.md): its opening paragraph, the four rows, the paragraph "No
+foreign dependency" and the section "The consumer"; and [`support.md`](support.md), section 9, the
+paragraph on the frozen packages.
+
+**What the plan said.** The baseline was "the candidate pack of **bundle
+[JS-10-006](evidence/js-10-006/README.md)**"; the runtime's package depended on "`Broiler.VM.Abstractions`,
+`Broiler.VM.Binary`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.ECMAScript.Algorithms`", the
+compiler's on "`Broiler.VM.Abstractions`, `Broiler.VM.Profile.JavaScript.Format`,
+`Broiler.ECMAScript.Algorithms`", Format's on "none" and Intl's on "`Broiler.VM.Profile.JavaScript.Format`";
+"Every dependency above is a Broiler.VM package but one: `Broiler.ECMAScript.Algorithms`", which the two
+packages declared "at `0.2.0-preview.1`, the version first planned for it, from the numerics cut-over
+([JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md)), as the baseline's candidate pack
+does"; "it restores `Broiler.ECMAScript.Algorithms` through them. Bundle JS-10-006 records it restoring
+and running with upstream feeds unreachable, from a local feed that holds the shared package beside the
+family's"; and section 9 of the support table named "the candidate pack of bundle
+[JS-10-006](evidence/js-10-006/README.md), where a pristine consumer restored and ran them, and the
+shared algorithms package they depend on".
+
+**What replaced it.** The baseline is bundle JS-10-007's candidate pack, taken at the tree of the
+Unicode cut-over's change that adds the Unicode area's package references (the bundle's section 2 says
+how that tree stands to the change). All four packages depend on `Broiler.Unicode.Algorithms`
+`0.1.0-preview.4`, and Intl's on `Broiler.Unicode.Segmentation` `0.1.0-preview.4` too, both packed from
+Broiler.Unicode `6e14f93` and not yet on nuget.org; rule I1 admits each for shipping, for those projects
+alone. The candidate pack declares `Broiler.ECMAScript.Algorithms` `0.1.0-preview.4`, the version the
+checkout references, so "as the baseline's candidate pack does" moves to that clause. Bundle JS-10-007
+records the pristine consumer restoring and running from a local feed that holds the shared packages
+beside the family's, with upstream unreachable, rolling back and forward, refusing the negative control,
+and running as Native AOT.
+
+**Authority and date.** JSD-0075, the cut-over's record, on
+[JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md) and
+[JSD-0064](decisions/0064-the-package-baseline-admits-shared-dependencies.md), and the programme's work
+package SJL-7.4. 2026-10-16.
+
+### JSC-309
+
+**Where:** [`release-gate.md`](release-gate.md), the blockers of gate 12 ("Licence and attribution").
+
+**What the plan said.** Six gate-12 blockers: five unconfirmed ingesting-components rows of
+`THIRD_PARTY_NOTICES.md` (the specification, the Unicode Character Database as
+`G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format`, Octane, the shared
+conformance vectors and the shared algorithms package) and the Intl assembly with no row.
+
+**What replaced it.** Seven. The ingesting-components table gains the row of the Unicode area's owner's
+packages, which the four family assemblies now ingest - `Broiler.Unicode.Algorithms` and
+`Broiler.Unicode.Segmentation` `0.1.0-preview.4` - and the row is not yet confirmed, so the gate names
+`G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format-broiler.vm.profile.javascript.compiler-broiler.vm.profile.javascript.intl`.
+The Unicode Character Database row names the Intl assembly too, whose break table the owner's generator
+writes from the same pin since the cut-over, so its blocker is
+`G12-unconfirmed-broiler.vm.profile.javascript-broiler.vm.profile.javascript.format-broiler.vm.profile.javascript.intl`.
+The Intl assembly's no-row blocker stands, and the gate now clears it only for a row naming the assembly
+whose ingested cell names CLDR, since the two Unicode rows name it for other data. The release owner
+co-signing each row's scoping clears its blocker, as for the others.
+
+**Authority and date.** [JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) section 11, on
+[JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md) and the
+programme's work package SJL-7.4. 2026-10-16.
+
+### JSC-310
+
+**Where:** the records that carry the Unicode packages' identity: the committed feed `eng/packages/` with
+its README and the three packages' pins, the allow-list's three entries, the five lock files, the two rows
+of `THIRD_PARTY_NOTICES.md` that name the packages, rule I1's two witnesses that hold their entries,
+[`packages.md`](packages.md)'s dependency list, the
+decision index's row of JSD-0075, and a note in bundle [JS-10-007](evidence/js-10-007/README.md).
+[JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) is not edited.
+
+**What the plan said.** JSD-0075 section 1: "`Broiler.Unicode.Algorithms`, `Broiler.Unicode.Segmentation`
+and `Broiler.Unicode.Generation` `0.1.0-preview.4`, the owner's stream's next preview, packed locally from
+Broiler.Unicode `6e14f93ad753094c99f0013d22269b47550ae552` and restored from the committed feed
+`eng/packages/` with lock files. They are not on nuget.org at this record".
+
+**What replaced it.** The version does not move. Broiler.Unicode's Publish workflow published all of its
+packages at `0.1.0-preview.4` to nuget.org on 2026-10-16 (run 38952273946) from the same commit, `6e14f93`,
+on the owner's instruction, and the feed holds the three this family admits exactly as that run pushed them
+(its artifact `nuget-packages`, whose digest GitHub records and the zip as downloaded has). The library code
+is the same. The packages differ from the copies packed locally in their build, the workflow's, and in
+carrying each package's README, icon and notices. Their content hashes differ, so the pins, the allow-list,
+the lock files and the notices rows record the published packages; each quotes what it read before. Rule
+I1's two new witnesses, each an allow-list entry with one field made wrong, take the new hashes too, so
+that each still fails for its one reason alone. The evidence taken with the copies packed
+locally - bundle sjl-7-001's `cutover/` closures and bundle JS-10-007's pack and consumer - is not taken
+again; each says so. Everything else JSD-0075 decided stands.
+
+**Authority and date.** The owner's instruction of 2026-10-16 to publish `0.1.0-preview.4`, on
+[JSD-0075](decisions/0075-the-profile-on-broiler-unicode.md) section 1 and the programme's work package
+SJL-7.4. 2026-10-16.

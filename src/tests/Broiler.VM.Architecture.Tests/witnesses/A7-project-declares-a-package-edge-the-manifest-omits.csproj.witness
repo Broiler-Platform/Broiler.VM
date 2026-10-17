@@ -3,12 +3,15 @@
      edges, an empty list for none, so a package reaching a project without the manifest saying so is
      drift exactly as an undeclared project edge is. Revised 2026-10-12, at SJL-3.4, when the profile came
      to declare this edge and the manifest to record it: the witness's project was the profile, and is
-     now the format, whose manifest row records no package edge. -->
+     now the format, whose manifest row records no package edge. Revised 2026-10-16, at SJL-7.4, when the
+     format came to declare Broiler.Unicode.Algorithms and the manifest to record it: the witness declares
+     that edge too, so that the shared algorithms package is still its one undeclared edge. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Broiler.ECMAScript.Algorithms" />
+    <PackageReference Include="Broiler.Unicode.Algorithms" />
   </ItemGroup>
 </Project>

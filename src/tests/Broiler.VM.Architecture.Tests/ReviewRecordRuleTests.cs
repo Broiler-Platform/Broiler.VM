@@ -1314,7 +1314,19 @@ public sealed class ReviewRecordRuleTests
         // every other product file, and nothing in it has been read by a human.
         // The compiler's nineteen additional partial files each require a coverage row too.
         // Eighteen further partials keep the engine's operations separate from its dispatch loop.
-        Assert.Equal(336, AssuranceSources.Files.Count);
+        //
+        // AND THE UNICODE AREA'S CUT-OVER (SJL-7.4, JSD-0074 and JSD-0075) TOOK EIGHT AWAY AND ADDED SIX.
+        // Format's JsUnicodeProperties, JsUnicodeCaseFolding and JsUnicodeStringProperties, each with its
+        // generated half, and JsUnicodeLexical, and the profile's JsSegmenter.cs, are deleted: the owner's
+        // packages implement them. Format's JsUnicodeTables.g.cs and the Intl assembly's, which the owner's
+        // generator writes and rules N22 and N28 hold; Format's JsUnicodeData.cs, the provider of its
+        // tables, and JsTextSegmentation.cs, the interface the profile reaches the Intl data's
+        // segmentation through; the compiler's JsCompilerUnicode.cs; and the profile's JsUnicode.cs. All
+        // six are covered on the same terms as every other product file, and nothing in them has been
+        // read by a human. Then normalization and casing moved too, which took four more away - the
+        // profile's JsUnicodeNormalization and JsUnicodeCasing, each with its generated half - and added
+        // one, the profile's JsUnicodeTables.g.cs, covered on the same terms.
+        Assert.Equal(331, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

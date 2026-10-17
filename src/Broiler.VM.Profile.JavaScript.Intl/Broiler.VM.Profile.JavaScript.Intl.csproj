@@ -10,11 +10,32 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
-  <!-- The data references the format alone, for the one interface it implements: the profile reads
-       it through that interface and references nothing here, so a composition that declines the
-       surface carries no byte of it (JSD-0027 section 5 item 3, JSD-0043). -->
+  <!-- The data references the format alone of this family, for the interfaces it implements: the
+       profile reads it through them and references nothing here, so a composition that declines the
+       surface carries no byte of it (JSD-0027 section 5 item 3, JSD-0043). (Revised 2026-10-16, at
+       SJL-7.4. It read "references the format alone, for the one interface it implements": since
+       then it implements Format's IJsTextSegmentation too, over the owner's segmentation package
+       below.) -->
   <ItemGroup>
     <ProjectReference Include="../Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj" />
+  </ItemGroup>
+
+  <!--
+    THE UNICODE AREA'S OWNER (JSD-0074; milestone SJL-7.4): Intl.Segmenter's boundaries and word
+    statuses, over the break table this assembly embeds (JsUnicodeTables.g.cs, decision SJL-D-6 (c)).
+    The segmentation package is optional, as JSD-0074's X5 requires: only this assembly references it,
+    so only a root whose closure carries the Intl data carries it, which rule I3 holds. The packages
+    come from the committed feed eng/packages/ at their pins, the lock file records their content
+    hashes, and rule I1 holds both to the allow-list, which names this project.
+  -->
+  <PropertyGroup>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetLockFilePath Condition="'$(RuntimeIdentifier)' != ''">$(MSBuildProjectDirectory)/obj/packages.$(RuntimeIdentifier).lock.json</NuGetLockFilePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Broiler.Unicode.Algorithms" />
+    <PackageReference Include="Broiler.Unicode.Segmentation" />
   </ItemGroup>
 
 </Project>

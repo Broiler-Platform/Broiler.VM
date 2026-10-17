@@ -3,21 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   28
-// Annotated:        28/28
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           0
-// Human-reviewed:   0/28
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         1/1
+// Criteria:         2/2
 // Resource impact:  4/10 max
-// Unverified:       28
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.ECMAScript;
 using Broiler.ECMAScript.Numbers;
 using Broiler.ECMAScript.Text;
+using Broiler.Unicode.Algorithms;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -662,303 +663,40 @@ internal sealed partial class JsRealm
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The algorithm is UAX #15's, over the JSD-0031 tables.</b> Every code point is replaced by
-    /// its full decomposition, each run of non-starters is put in canonical order by combining
-    /// class, and for the composed forms each code point is combined with the last starter unless
-    /// something between them blocks it. A lone surrogate is read as the code point it is: class 0,
-    /// no mapping, no composite, so it passes through where the language says it does.
+    /// <b>The algorithm is the Unicode area's owner's since SJL-7.4</b> (JSD-0074; JSD-0075):
+    /// <c>UnicodeNormalization.Transform</c>, UAX #15 over the tables this family embeds, which rule N22
+    /// holds to the owner's generator. A lone surrogate is read as the code point it is - class 0, no
+    /// mapping, no composite - so it passes through where the language says it does. Until SJL-7.4 the
+    /// passes were this profile's own (<c>IsNormalizedAlready</c>, <c>OrderCanonically</c>,
+    /// <c>ComposeCanonically</c> and <c>WriteCodePoints</c>), over its own reading of the same tables.
     /// </para>
     /// <para>
-    /// <b>The common case costs one scan and allocates nothing.</b> <see cref="IsNormalizedAlready"/>
-    /// is the quick check: ASCII answers yes a unit at a time, and a string that is already in the
-    /// form is returned as it came. That is the fast path ASCII always had.
+    /// <b>The charge is this engine's, in its units</b> (correspondence row N7, JSD-0074's decision 4):
+    /// the text's length, and then, unless the text is in the form already, its length plus three units
+    /// per code point of its full decomposition, each charged through this engine's meter before the
+    /// work it pays for. A text in the form is answered as itself after the first charge, which is the
+    /// fast path ASCII always had.
     /// </para>
     /// <para>
-    /// <b>The expansion is measured before it is built.</b> A compatibility decomposition can be 18
-    /// code points long (U+FDFA), so the first pass counts the decomposition, refuses one past
-    /// <see cref="StringLengthCeiling"/> UTF-16 units with the <c>RangeError</c> <c>repeat</c> gives,
-    /// and charges the storage and the three passes over it before a buffer exists. The canonical
-    /// ordering is a counting sort per run, so a long run of combining marks is linear work too.
+    /// <b>The ceiling is checked on the result</b>, the <c>RangeError</c> <c>repeat</c> gives past
+    /// <see cref="StringLengthCeiling"/> UTF-16 units. This corrects row N6: the profile's own passes
+    /// checked the decomposition, so an NFC or NFKC result that would fit could be refused. It also
+    /// refuses a text that is in the form already and longer than the ceiling, which the profile's
+    /// quick check returned as it came (JSD-0075).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=DD3536
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=0BE9D3
     // Broiler-Falsified-If: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
     // Broiler-Human:        PENDING
     internal static string NormalizeText(JsEngine engine, string text, bool compose, bool compatibility)
     {
-        StringCharge(engine, text.Length);
+        var form = compose
+            ? compatibility ? NormalForm.Nfkc : NormalForm.Nfc
+            : compatibility ? NormalForm.Nfkd : NormalForm.Nfd;
 
-        if (IsNormalizedAlready(text, compose, compatibility))
-        {
-            return text;
-        }
-
-        long points = 0;
-        long units = 0;
-
-        for (var at = 0; at < text.Length;)
-        {
-            var read = Utf16.CodePointAt(text, at);
-            at += read.CodeUnitCount;
-            var codePoint = read.CodePoint;
-
-            if (JsUnicodeNormalization.TryGetDecomposition(codePoint, compatibility, out var mapping))
-            {
-                points += mapping.Length;
-
-                for (var index = 0; index < mapping.Length; index++)
-                {
-                    units += mapping[index] > 0xFFFF ? 2 : 1;
-                }
-            }
-            else
-            {
-                points++;
-                units += codePoint > 0xFFFF ? 2 : 1;
-            }
-        }
-
-        if (units > StringLengthCeiling)
-        {
-            throw engine.Error("RangeError", "Invalid string length");
-        }
-
-        // The storage, then the decomposition, reordering and composition passes over it.
-        StringCharge(engine, text.Length + ((int)points * 3));
-
-        var buffer = new int[(int)points];
-        var length = 0;
-
-        for (var at = 0; at < text.Length;)
-        {
-            var read = Utf16.CodePointAt(text, at);
-            at += read.CodeUnitCount;
-            var codePoint = read.CodePoint;
-
-            if (JsUnicodeNormalization.TryGetDecomposition(codePoint, compatibility, out var mapping))
-            {
-                for (var index = 0; index < mapping.Length; index++)
-                {
-                    buffer[length++] = mapping[index];
-                }
-            }
-            else
-            {
-                buffer[length++] = codePoint;
-            }
-        }
-
-        OrderCanonically(buffer, length);
-
-        if (compose)
-        {
-            length = ComposeCanonically(buffer, length);
-        }
-
-        return WriteCodePoints(buffer, length);
-    }
-
-    /// <summary>
-    /// The quick check: true when <paramref name="text"/> is certainly in the form already, so it
-    /// can be returned unchanged.
-    /// </summary>
-    /// <remarks>
-    /// A code point breaks it when it is out of canonical order, when it decomposes (the decomposed
-    /// forms), or when its <c>NFC_QC</c> or <c>NFKC_QC</c> is not Yes (the composed forms, where
-    /// Maybe needs the full algorithm to answer). An ASCII unit is class 0 and Yes in every form.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=68E403
-    // Broiler-Human:        PENDING
-    private static bool IsNormalizedAlready(string text, bool compose, bool compatibility)
-    {
-        var lastClass = 0;
-
-        for (var at = 0; at < text.Length;)
-        {
-            if (text[at] < 0x80)
-            {
-                lastClass = 0;
-                at++;
-                continue;
-            }
-
-            var read = Utf16.CodePointAt(text, at);
-            at += read.CodeUnitCount;
-            var codePoint = read.CodePoint;
-            var combiningClass = JsUnicodeNormalization.CombiningClass(codePoint);
-
-            if (combiningClass != 0 && lastClass > combiningClass)
-            {
-                return false;
-            }
-
-            if (compose
-                ? JsUnicodeNormalization.QuickCheck(codePoint, compatibility) != JsNormalizationQuickCheck.Yes
-                : JsUnicodeNormalization.TryGetDecomposition(codePoint, compatibility, out _))
-            {
-                return false;
-            }
-
-            lastClass = combiningClass;
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// The canonical ordering algorithm: each run of non-starters is sorted by combining class,
-    /// stably, so marks of one class keep their order.
-    /// </summary>
-    /// <remarks>
-    /// A counting sort over the 256 classes rather than the textbook exchange sort, whose work is
-    /// quadratic in a run's length - and a run's length is the guest's choice.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6AE9E6
-    // Broiler-Human:        PENDING
-    private static void OrderCanonically(int[] buffer, int length)
-    {
-        int[]? scratch = null;
-        System.Span<int> starts = stackalloc int[257];
-
-        for (var start = 0; start < length;)
-        {
-            var previous = JsUnicodeNormalization.CombiningClass(buffer[start]);
-
-            if (previous == 0)
-            {
-                start++;
-                continue;
-            }
-
-            var end = start + 1;
-            var ordered = true;
-
-            while (end < length)
-            {
-                var next = JsUnicodeNormalization.CombiningClass(buffer[end]);
-
-                if (next == 0)
-                {
-                    break;
-                }
-
-                ordered &= previous <= next;
-                previous = next;
-                end++;
-            }
-
-            if (!ordered)
-            {
-                var count = end - start;
-
-                if (scratch is null || scratch.Length < count)
-                {
-                    scratch = new int[count];
-                }
-
-                starts.Clear();
-
-                for (var at = start; at < end; at++)
-                {
-                    starts[JsUnicodeNormalization.CombiningClass(buffer[at]) + 1]++;
-                }
-
-                for (var value = 1; value < starts.Length; value++)
-                {
-                    starts[value] += starts[value - 1];
-                }
-
-                for (var at = start; at < end; at++)
-                {
-                    scratch[starts[JsUnicodeNormalization.CombiningClass(buffer[at])]++] = buffer[at];
-                }
-
-                System.Array.Copy(scratch, 0, buffer, start, count);
-            }
-
-            start = end;
-        }
-    }
-
-    /// <summary>
-    /// The canonical composition algorithm over a canonically ordered decomposition, in place;
-    /// answers the composed length.
-    /// </summary>
-    /// <remarks>
-    /// A code point is blocked from the last starter when something kept between them is a starter
-    /// or has a class at least its own. Because the input is in canonical order, the last code point
-    /// kept since the starter is the only one that has to be looked at.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AD023A
-    // Broiler-Human:        PENDING
-    private static int ComposeCanonically(int[] buffer, int length)
-    {
-        var starter = -1;
-        var keptSinceStarter = false;
-        var lastClass = 0;
-        var written = 0;
-
-        for (var at = 0; at < length; at++)
-        {
-            var codePoint = buffer[at];
-            var combiningClass = JsUnicodeNormalization.CombiningClass(codePoint);
-
-            if (starter >= 0 &&
-                !(keptSinceStarter && (lastClass == 0 || lastClass >= combiningClass)) &&
-                JsUnicodeNormalization.TryCompose(buffer[starter], codePoint, out var composite))
-            {
-                buffer[starter] = composite;
-                continue;
-            }
-
-            if (combiningClass == 0)
-            {
-                starter = written;
-                keptSinceStarter = false;
-            }
-            else
-            {
-                keptSinceStarter = true;
-            }
-
-            lastClass = combiningClass;
-            buffer[written++] = codePoint;
-        }
-
-        return written;
-    }
-
-    /// <summary>The UTF-16 string of <paramref name="length"/> code points from <paramref name="buffer"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B9F894
-    // Broiler-Human:        PENDING
-    private static string WriteCodePoints(int[] buffer, int length)
-    {
-        var units = 0;
-
-        for (var at = 0; at < length; at++)
-        {
-            units += buffer[at] > 0xFFFF ? 2 : 1;
-        }
-
-        return string.Create(units, (buffer, length), static (span, state) =>
-        {
-            var written = 0;
-
-            for (var at = 0; at < state.length; at++)
-            {
-                var codePoint = state.buffer[at];
-
-                if (codePoint > 0xFFFF)
-                {
-                    span[written++] = (char)(0xD7C0 + (codePoint >> 10));
-                    span[written++] = (char)(0xDC00 | (codePoint & 0x3FF));
-                }
-                else
-                {
-                    span[written++] = (char)codePoint;
-                }
-            }
-        });
+        return JsUnicode.Normalization.Transform(text, form, StringLengthCeiling, engine.UnicodeCharge, out var result) == UnicodeStatus.Success
+            ? result!
+            : throw engine.Error("RangeError", "Invalid string length");
     }
 
     /// <summary>Reads one argument, which may not have been passed.</summary>
@@ -1085,62 +823,22 @@ internal sealed partial class JsRealm
     /// The Unicode Default Case Conversion over the pinned tables: full mappings, and Final_Sigma
     /// for GREEK CAPITAL LETTER SIGMA when lowering. No language is applied.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F34134
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=06E58D
     // Broiler-Human:        PENDING
-    private static string StringChangeCase(JsEngine engine, string text, bool upper)
-    {
-        StringCharge(engine, text.Length);
-
-        // THE PINNED TABLES AND NOT THE PLATFORM'S TextInfo, which maps one code unit to one code
-        // unit and reads whatever Unicode version the host carries (JSD-0027 N2). The text is
-        // copied only from the first code point casing changes, so an unchanged string costs one
-        // pass and no allocation.
-        System.Text.StringBuilder? built = null;
-
-        for (var at = 0; at < text.Length;)
-        {
-            var codePoint = JsUnicodeCasing.NextCodePoint(text, at, out var width);
-            var start = at;
-            at += width;
-
-            if (!upper && codePoint == JsUnicodeCasing.CapitalSigma)
-            {
-                var final = JsUnicodeCasing.IsFinalSigma(text, start, width, out var scanned);
-                StringCharge(engine, scanned);
-                built ??= new System.Text.StringBuilder(text, 0, start, text.Length + 8);
-                built.Append((char)(final ? JsUnicodeCasing.FinalSigma : 0x03C3));
-                continue;
-            }
-
-            if (!JsUnicodeCasing.TryGetMapping(codePoint, upper, out var mapping))
-            {
-                built?.Append(text, start, width);
-                continue;
-            }
-
-            StringCharge(engine, mapping.Length);
-            built ??= new System.Text.StringBuilder(text, 0, start, text.Length + 8);
-
-            for (var index = 0; index < mapping.Length; index++)
-            {
-                AppendCodePoint(built, mapping[index]);
-            }
-
-            if (built.Length > StringLengthCeiling)
-            {
-                throw engine.Error("RangeError", "Invalid string length");
-            }
-        }
-
-        return built?.ToString() ?? text;
-    }
+    private static string StringChangeCase(JsEngine engine, string text, bool upper) =>
+        ChangeCase(engine, text, upper, CaseLanguage.Default);
 
     /// <summary>
     /// ECMA-402's <c>TransformCase</c> where the realm has <c>Intl</c>: the first requested locale, and
     /// the language rules of SpecialCasing.txt when it is Turkish, Azeri or Lithuanian; without
     /// <c>Intl</c>, the locale is ignored as JSD-0027 section 1 states.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.1.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=920956
+    /// <remarks>
+    /// The locale's resolution is this profile's, as it was; the mapping is the owner's since SJL-7.4
+    /// (JSD-0074, decision 8): <c>tr</c> and <c>az</c> are <c>CaseLanguage.Turkic</c>, <c>lt</c> is
+    /// <c>CaseLanguage.Lithuanian</c>, and anything else, <c>und</c> included, the default.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.1.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=84DDA4
     // Broiler-Human:        PENDING
     private static string TransformCase(JsEngine engine, string text, JsValue[] arguments, bool upper)
     {
@@ -1153,188 +851,52 @@ internal sealed partial class JsRealm
         var locale = JsLocaleTag.Parse(requested.Count != 0 ? requested[0] : DefaultLocale)!;
         var language = LookupMatchingLocale(["az", "lt", "tr"], [locale.WithoutUnicodeExtension()])?.Locale ?? "und";
 
-        return StringChangeCase(engine, LanguageCasing(engine, text, upper, language), upper);
+        return ChangeCase(engine, text, upper, language switch
+        {
+            "tr" or "az" => CaseLanguage.Turkic,
+            "lt" => CaseLanguage.Lithuanian,
+            _ => CaseLanguage.Default,
+        });
     }
 
     /// <summary>
-    /// SpecialCasing.txt's rules for one language, applied before the default conversion: each one's
-    /// output is a fixed point of the default mapping in its direction, so the two passes compose,
-    /// and each condition is read on the string as it was.
+    /// The full case mapping of <paramref name="text"/> in <paramref name="language"/>, by the Unicode
+    /// area's owner (<c>UnicodeCaseMapping</c>, JSD-0074), charged in this engine's units.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=Unicode SpecialCasing.txt; IP=Low; Security=Medium; Resources=3; Fingerprint=62B580
+    /// <remarks>
+    /// <para>
+    /// <b>The charge is the one this profile always made</b> (correspondence row C13; JSD-0074,
+    /// decision 4). The owner charges the default pass through this engine's meter: the length of its
+    /// input, each mapping's length in code points, and the code units each Final_Sigma test reads. The
+    /// language pass's extra input length is charged here, before the call and only for a language,
+    /// which is the split JSD-0065's decision 2 made for number parsing: until SJL-7.4 this profile's
+    /// <c>LanguageCasing</c> charged it and then handed its output to the default pass, as the owner
+    /// does.
+    /// </para>
+    /// <para>
+    /// <b>The ceiling is checked on the whole result</b>, the <c>RangeError</c> <c>repeat</c> gives
+    /// past <see cref="StringLengthCeiling"/> UTF-16 units. This corrects row C12: the profile's own
+    /// conversion checked it only after a mapping was appended, and not at all in the language pass. A
+    /// text casing does not change and that is longer than the ceiling is refused too (JSD-0075).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=58BAEA
+    // Broiler-Falsified-If: a case conversion charges a total, or exhausts at a point, other than this profile's own conversion did for the same text before SJL-7.4
     // Broiler-Human:        PENDING
-    private static string LanguageCasing(JsEngine engine, string text, bool upper, string language)
+    private static string ChangeCase(JsEngine engine, string text, bool upper, CaseLanguage language)
     {
-        if (language is not ("tr" or "az" or "lt"))
+        if (language != CaseLanguage.Default)
         {
-            return text;
+            StringCharge(engine, text.Length);
         }
 
-        StringCharge(engine, text.Length);
+        var status = upper
+            ? JsUnicode.Casing.ToUpperCase(text, language, StringLengthCeiling, engine.UnicodeCharge, out var result)
+            : JsUnicode.Casing.ToLowerCase(text, language, StringLengthCeiling, engine.UnicodeCharge, out result);
 
-        var points = new System.Collections.Generic.List<int>(text.Length);
-
-        for (var at = 0; at < text.Length;)
-        {
-            points.Add(JsUnicodeCasing.NextCodePoint(text, at, out var width));
-            at += width;
-        }
-
-        var built = new System.Text.StringBuilder(text.Length + 4);
-
-        for (var index = 0; index < points.Count; index++)
-        {
-            var point = points[index];
-
-            if (language is "tr" or "az")
-            {
-                if (!upper && point == 0x0130)
-                {
-                    built.Append('i');
-                    continue;
-                }
-
-                if (!upper && point == 0x0307 && AfterCapitalI(points, index))
-                {
-                    continue;
-                }
-
-                if (!upper && point == 'I')
-                {
-                    built.Append(BeforeDot(points, index) ? 'i' : '\u0131');
-                    continue;
-                }
-
-                if (upper && point == 'i')
-                {
-                    built.Append('\u0130');
-                    continue;
-                }
-            }
-            else
-            {
-                if (!upper && point is 'I' or 'J' or 0x012E && MoreAbove(points, index))
-                {
-                    built.Append(point == 0x012E ? '\u012F' : (char)(point + 0x20)).Append('\u0307');
-                    continue;
-                }
-
-                if (!upper && point is 0x00CC or 0x00CD or 0x0128)
-                {
-                    built.Append("i\u0307").Append(point switch { 0x00CC => '\u0300', 0x00CD => '\u0301', _ => '\u0303' });
-                    continue;
-                }
-
-                if (upper && point == 0x0307 && AfterSoftDotted(engine.Intl!, points, index))
-                {
-                    continue;
-                }
-            }
-
-            AppendCodePoint(built, point);
-        }
-
-        return built.ToString();
-    }
-
-    /// <summary>After_I: an upper-case I before, with no combining class 0 or 230 between.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DC6A33
-    // Broiler-Human:        PENDING
-    private static bool AfterCapitalI(System.Collections.Generic.List<int> points, int index)
-    {
-        for (var at = index - 1; at >= 0; at--)
-        {
-            if (points[at] == 'I')
-            {
-                return true;
-            }
-
-            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>After_Soft_Dotted: a Soft_Dotted character before, with no combining class 0 or 230 between.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0DC57E
-    // Broiler-Human:        PENDING
-    private static bool AfterSoftDotted(JsIntlTables intl, System.Collections.Generic.List<int> points, int index)
-    {
-        for (var at = index - 1; at >= 0; at--)
-        {
-            if (intl.IsSoftDotted(points[at]))
-            {
-                return true;
-            }
-
-            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>Before_Dot: COMBINING DOT ABOVE after, with only combining classes other than 0 and 230 between.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1DB648
-    // Broiler-Human:        PENDING
-    private static bool BeforeDot(System.Collections.Generic.List<int> points, int index)
-    {
-        for (var at = index + 1; at < points.Count; at++)
-        {
-            if (points[at] == 0x0307)
-            {
-                return true;
-            }
-
-            if (JsUnicodeNormalization.CombiningClass(points[at]) is 0 or 230)
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>More_Above: a combining class 230 after, with no combining class 0 between.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0640C3
-    // Broiler-Human:        PENDING
-    private static bool MoreAbove(System.Collections.Generic.List<int> points, int index)
-    {
-        for (var at = index + 1; at < points.Count; at++)
-        {
-            var combining = JsUnicodeNormalization.CombiningClass(points[at]);
-
-            if (combining == 230)
-            {
-                return true;
-            }
-
-            if (combining == 0)
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>Appends one code point as one or two code units.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2EBD3E
-    // Broiler-Human:        PENDING
-    private static void AppendCodePoint(System.Text.StringBuilder built, int codePoint)
-    {
-        if (codePoint <= 0xFFFF)
-        {
-            built.Append((char)codePoint);
-            return;
-        }
-
-        built.Append(char.ConvertFromUtf32(codePoint));
+        return status == UnicodeStatus.Success
+            ? result!
+            : throw engine.Error("RangeError", "Invalid string length");
     }
 
     /// <summary>Trims the ECMAScript whitespace set from one or both ends.</summary>
