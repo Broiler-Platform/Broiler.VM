@@ -1,0 +1,5 @@
+== run at 458c10a4e0da215939bc3ce37982e3a069a4122e (clean tree), pin src/tests/vectors/pins/vectors.pin sha256=70e67a9813df6df4a55f2cfce2e1652123b2bdacdccaf03551060ab57037effa, 2026-10-17T22:12:12Z
+broiler-js-conformance: vectors broiler-js-vectors Broiler-Platform/broiler.js@2d496a5544937e1fcf39b59d45e7eee95ecccd2b content sha256 6613d6a53951b5abf5fbcb492eb65165911b001f26d9466e07f45fa8c8b2e6e1 over 49 files - archived at src/tests/vectors/pins/broiler-js-vectors-2d496a5544937e1fcf39b59d45e7eee95ecccd2b.tar.gz
+broiler-js-conformance: negative control: text/trim/0001 expects `value: str:"x0"`
+broiler-js-conformance: 92434 vectors: 92433 match, 0 classified divergences, 1 unclassified differences
+exit code: 1
