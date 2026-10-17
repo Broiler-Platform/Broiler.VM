@@ -433,6 +433,21 @@ internal static class AdmissionRules
     internal static readonly string[] UnicodeVersionFields = ["UnicodeVersion", "PinnedVersion"];
 
     /// <summary>
+    /// The types whose <c>PinnedVersion</c> is not a Unicode version but the time data home's pin readers'
+    /// (JSD-0076): a tzdb release and a CLDR release, which I4's time clauses read instead.
+    /// </summary>
+    /// <remarks>
+    /// Added 2026-10-17, at SJL-8.5, when <c>Broiler.ECMAScript.Generation</c> was admitted: the Unicode
+    /// clause read a <c>PinnedVersion</c> of any type as a Unicode version, and the home's
+    /// <c>TzdbPin.PinnedVersion</c> is <c>2026e</c>.
+    /// </remarks>
+    internal static readonly string[] TimePinTypes =
+    [
+        "Broiler.ECMAScript.Generation.Time.TzdbPin",
+        "Broiler.ECMAScript.Generation.Time.CldrPin",
+    ];
+
+    /// <summary>
     /// I4's pin clause: the pin this repository's embedded tables are generated from equals its home
     /// repository's, file by file, by length and SHA-256, and by version (SJL-D-6 (c): the owner holds
     /// the pin, and each engine generates from its own). The comparison is the owner's own
@@ -447,8 +462,8 @@ internal static class AdmissionRules
 
     /// <summary>
     /// I4's version clause: every Unicode data version an admitted assembly declares - a literal
-    /// string field named as <see cref="UnicodeVersionFields"/> lists, public or not - equals the
-    /// pin's version.
+    /// string field named as <see cref="UnicodeVersionFields"/> lists, public or not, but a
+    /// <c>PinnedVersion</c> of one of the <see cref="TimePinTypes"/> - equals the pin's version.
     /// </summary>
     /// <param name="pinVersion">The version the pin names.</param>
     /// <param name="declared">Each declaration: its assembly, its field and its value.</param>
@@ -460,9 +475,20 @@ internal static class AdmissionRules
 
     /// <summary>
     /// Every literal string field of an assembly image whose name <see cref="UnicodeVersionFields"/>
-    /// lists, read from its metadata tables without loading it.
+    /// lists, read from its metadata tables without loading it, but a <c>PinnedVersion</c> of one of the
+    /// <see cref="TimePinTypes"/>.
     /// </summary>
-    internal static IReadOnlyList<(string Assembly, string Field, string Value)> DeclaredUnicodeVersions(string assemblyName, byte[] image)
+    internal static IReadOnlyList<(string Assembly, string Field, string Value)> DeclaredUnicodeVersions(string assemblyName, byte[] image) =>
+        DeclaredStrings(assemblyName, image, static (type, name) =>
+            UnicodeVersionFields.Contains(name, StringComparer.Ordinal) &&
+            !(name == "PinnedVersion" && TimePinTypes.Contains(type, StringComparer.Ordinal)));
+
+    /// <summary>
+    /// Every literal string field of an assembly image that <paramref name="select"/> chooses by its
+    /// declaring type's full name and its own name, read from its metadata tables without loading it.
+    /// </summary>
+    internal static IReadOnlyList<(string Assembly, string Field, string Value)> DeclaredStrings(
+        string assemblyName, byte[] image, Func<string, string, bool> select)
     {
         using var stream = new MemoryStream(image, writable: false);
         using var pe = new System.Reflection.PortableExecutable.PEReader(stream);
@@ -472,13 +498,14 @@ internal static class AdmissionRules
         foreach (var typeHandle in reader.TypeDefinitions)
         {
             var type = reader.GetTypeDefinition(typeHandle);
+            var typeName = reader.GetString(type.Namespace) + "." + reader.GetString(type.Name);
 
             foreach (var fieldHandle in type.GetFields())
             {
                 var field = reader.GetFieldDefinition(fieldHandle);
                 var name = reader.GetString(field.Name);
 
-                if (!UnicodeVersionFields.Contains(name, StringComparer.Ordinal) || field.GetDefaultValue().IsNil)
+                if (!select(typeName, name) || field.GetDefaultValue().IsNil)
                 {
                     continue;
                 }
@@ -488,7 +515,7 @@ internal static class AdmissionRules
                 if (constant.TypeCode == System.Reflection.Metadata.ConstantTypeCode.String)
                 {
                     var value = reader.GetBlobReader(constant.Value).ReadUTF16(reader.GetBlobReader(constant.Value).Length);
-                    found.Add((assemblyName, reader.GetString(type.Namespace) + "." + reader.GetString(type.Name) + "." + name, value));
+                    found.Add((assemblyName, typeName + "." + name, value));
                 }
             }
         }
@@ -502,6 +529,137 @@ internal static class AdmissionRules
         .SelectMany(static package => PackageAssemblies(package.FeedPath))
         .SelectMany(static assembly => DeclaredUnicodeVersions(assembly.Name, assembly.Image))
         .ToArray();
+
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The time data home's pins, as I4 holds this repository's to them (JSD-0076, decision SJL-D-6 (c);
+    /// milestone SJL-8.5): each home file's SHA-256 and length, read at Broiler.JS commit
+    /// <see cref="TimeHomeCommit"/> under <c>Broiler.ECMAScript/data/time/</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Why constants, and not the package.</b> The Unicode area's generator package carries its
+    /// owner's pin, so I4 reads it from the admitted package. The time data home's generator,
+    /// <c>Broiler.ECMAScript.Generation</c>, carries no pin file: its caller hands it the pins' text.
+    /// So the home's pins are recorded here as the digests of its files, with the commit they were read
+    /// at, and the package's own declared data versions are read from the admitted package (the version
+    /// clause). A move of the home's pins is a dated decision in both repositories at once (JSD-0076),
+    /// and these constants move with it, naming the new commit.
+    /// </para>
+    /// <para>
+    /// <b>What they are.</b> The home's <c>tzdb/tzdb.pin</c> and <c>calendars/calendars.pin</c> are
+    /// byte-identical copies of this repository's, taken at Broiler.VM <c>9508bd5</c> (milestone SJL-8.2),
+    /// so their digests are those of this repository's two pin files. The home's <c>cldr/cldr.pin</c>
+    /// names one of the 114 files this repository's names, CLDR 48.2.0's <c>bcp47/timezone.json</c>, by
+    /// this repository's own line for it; so the CLDR clause holds that one entry, by path, length and
+    /// SHA-256, and not the pin file whole. Each pin names its archive's or its members' digests, so
+    /// equal pins mean equal archived bytes, which rules N29 and N31 hold to the archives here.
+    /// </para>
+    /// </remarks>
+    internal const string TimeHomeCommit = "2d37a38a2560b076ebf2ca29989bfe20db64ed64";
+
+    /// <summary>The home's <c>Broiler.ECMAScript/data/time/tzdb/tzdb.pin</c>: its length and SHA-256 at <see cref="TimeHomeCommit"/>.</summary>
+    internal static readonly (long Bytes, string Sha256) TimeHomeTzdbPin =
+        (2775, "ef9c7443115a802db68895b29ad6c584ddec666280120b61e38061fcf5215f6f");
+
+    /// <summary>The home's <c>Broiler.ECMAScript/data/time/calendars/calendars.pin</c>: its length and SHA-256 at <see cref="TimeHomeCommit"/>.</summary>
+    internal static readonly (long Bytes, string Sha256) TimeHomeCalendarPin =
+        (3687, "53c5b2d380a8c69b06648ed2b57db76684619d8fd3493582c196942423d795da");
+
+    /// <summary>The one file the home's <c>cldr/cldr.pin</c> names, as its <c>file</c> line records it at <see cref="TimeHomeCommit"/>.</summary>
+    internal static readonly (string Name, long Bytes, string Sha256) TimeHomeCldrTimeZoneKeys =
+        ("cldr-48.2.0/json/cldr-bcp47/bcp47/timezone.json", 59702, "c11423884420f00cf52733c854de5c898ddb6657ce560334c638a2bd994a1448");
+
+    /// <summary>
+    /// I4's time pin clause: this repository's tzdb and calendar pin files equal the home's, by length
+    /// and SHA-256, and its CLDR pin names the home's one time zone file with the home's length and digest.
+    /// </summary>
+    /// <param name="tzdbPin">This repository's <c>src/tests/tzdb/pins/tzdb.pin</c>, as bytes.</param>
+    /// <param name="calendarPin">This repository's <c>src/tests/calendars/pins/calendars.pin</c>, as bytes.</param>
+    /// <param name="cldrEntries">The files this repository's <c>src/tests/cldr/pins/cldr.pin</c> names: path, length and SHA-256.</param>
+    internal static IEnumerable<string> I4TimePins(byte[] tzdbPin, byte[] calendarPin, IEnumerable<(string Name, long Bytes, string Sha256)> cldrEntries)
+    {
+        foreach (var (path, bytes, home) in new[]
+        {
+            ("src/tests/tzdb/pins/tzdb.pin", tzdbPin, TimeHomeTzdbPin),
+            ("src/tests/calendars/pins/calendars.pin", calendarPin, TimeHomeCalendarPin),
+        })
+        {
+            var digest = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
+
+            if (bytes.LongLength != home.Bytes || !string.Equals(digest, home.Sha256, StringComparison.Ordinal))
+            {
+                yield return $"{path} is {bytes.LongLength} bytes hashing to {digest} here, and the time data home's copy is {home.Bytes} bytes hashing to {home.Sha256} at Broiler.JS {TimeHomeCommit[..8]} (rule I4: a pin moves only by a dated decision, in both repositories at once)";
+            }
+        }
+
+        var keys = TimeHomeCldrTimeZoneKeys;
+        var named = cldrEntries.Where(entry => string.Equals(entry.Name, keys.Name, StringComparison.Ordinal)).ToArray();
+
+        if (named.Length != 1)
+        {
+            yield return $"src/tests/cldr/pins/cldr.pin names {keys.Name} {named.Length} times, and the time data home's cldr.pin names it once (rule I4)";
+        }
+        else if (named[0].Bytes != keys.Bytes || !string.Equals(named[0].Sha256, keys.Sha256, StringComparison.Ordinal))
+        {
+            yield return $"src/tests/cldr/pins/cldr.pin names {keys.Name} as {named[0].Bytes} bytes hashing to {named[0].Sha256}, and the time data home's cldr.pin as {keys.Bytes} bytes hashing to {keys.Sha256} at Broiler.JS {TimeHomeCommit[..8]} (rule I4)";
+        }
+    }
+
+    /// <summary>
+    /// The time data versions the home's generator declares and the pin of this repository that governs
+    /// each: the field's full name, and the key of the version it is held to - <c>tzdb</c>, <c>cldr</c>,
+    /// or a calendar crate's name.
+    /// </summary>
+    internal static readonly IReadOnlyDictionary<string, string> TimeVersionFields = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["Broiler.ECMAScript.Generation.Time.TimeDataVersions.TzdbRelease"] = "tzdb",
+        ["Broiler.ECMAScript.Generation.Time.TimeDataVersions.CldrVersion"] = "cldr",
+        ["Broiler.ECMAScript.Generation.Time.TimeDataVersions.IcuCalendarVersion"] = "icu_calendar",
+        ["Broiler.ECMAScript.Generation.Time.TimeDataVersions.CalendricalCalculationsVersion"] = "calendrical_calculations",
+        ["Broiler.ECMAScript.Generation.Time.TzdbPin.PinnedVersion"] = "tzdb",
+        ["Broiler.ECMAScript.Generation.Time.CldrPin.PinnedVersion"] = "cldr",
+    };
+
+    /// <summary>
+    /// Every time data version an assembly image declares: every literal string field of a type named
+    /// <c>TimeDataVersions</c>, and the <c>PinnedVersion</c> of one of the <see cref="TimePinTypes"/>, read
+    /// from its metadata tables without loading it.
+    /// </summary>
+    internal static IReadOnlyList<(string Assembly, string Field, string Value)> DeclaredTimeVersions(string assemblyName, byte[] image) =>
+        DeclaredStrings(assemblyName, image, static (type, name) =>
+            type.EndsWith(".TimeDataVersions", StringComparison.Ordinal) ||
+            (name == "PinnedVersion" && TimePinTypes.Contains(type, StringComparer.Ordinal)));
+
+    /// <summary>Every time data version every admitted assembly declares, read from the committed feed's packages.</summary>
+    internal static IReadOnlyList<(string Assembly, string Field, string Value)> AdmittedTimeVersions() => AllowList
+        .Where(static package => File.Exists(package.FeedPath))
+        .SelectMany(static package => PackageAssemblies(package.FeedPath))
+        .SelectMany(static assembly => DeclaredTimeVersions(assembly.Name, assembly.Image))
+        .ToArray();
+
+    /// <summary>
+    /// I4's time version clause: every time data version an admitted assembly declares equals the
+    /// version this repository's pin that governs it states; a declared version no pin governs is
+    /// reported too, so that a new constant cannot pass unread.
+    /// </summary>
+    /// <param name="pinned">The versions this repository's pins state, by <see cref="TimeVersionFields"/>' keys.</param>
+    /// <param name="declared">Each declaration: its assembly, its field and its value.</param>
+    internal static IEnumerable<string> I4TimeVersions(IReadOnlyDictionary<string, string> pinned, IEnumerable<(string Assembly, string Field, string Value)> declared)
+    {
+        foreach (var (assembly, field, value) in declared)
+        {
+            if (!TimeVersionFields.TryGetValue(field, out var key) || !pinned.TryGetValue(key, out var version))
+            {
+                yield return $"{assembly} declares {field} = \"{value}\", and no pin of this repository governs it (rule I4)";
+            }
+            else if (!string.Equals(value, version, StringComparison.Ordinal))
+            {
+                yield return $"{assembly} declares {field} = \"{value}\", and this repository's {key} pin states {version} (rule I4)";
+            }
+        }
+    }
 
     // ---------------------------------------------------------------------------------------------
 

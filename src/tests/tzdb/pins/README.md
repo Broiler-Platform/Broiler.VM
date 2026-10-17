@@ -35,6 +35,14 @@ shape of [`../../cldr/pins/`](../../cldr/pins/README.md): a `pins` directory und
 `src/tests/<subject>/`, a pin file beside the archive, under no product project directory and named by
 no project file.
 
+*(Revised 2026-10-17, at the shared libraries programme's SJL-8.5 (JSD-0076). The paragraph read
+"`TzdbTableGenerator` lives in the architecture test project and writes": the compiler, the table
+generator and the pin reader moved to the Broiler.JS repository, the time data home, under decision
+SJL-D-6 (c), and reach the architecture tests as the test-only package `Broiler.ECMAScript.Generation`,
+which reads this pin and this archive and writes the same file byte for byte; rule N30 still compares
+it. The home holds a byte-identical copy of this pin, taken at Broiler.VM `9508bd5`, and rule I4 holds
+the two equal: a later release moves both, by one dated decision.)*
+
 ## Updating
 
 A later release is a new archive and a new pin, by the same two retrievals; the generator then

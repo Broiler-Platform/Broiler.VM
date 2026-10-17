@@ -46,6 +46,7 @@ any Native AOT image.
 | `Microsoft.NET.Test.Sdk` | 17.8.0 | MIT | Test host | As above |
 | `Microsoft.CodeAnalysis.CSharp` | 5.3.0 | MIT | Used by the architecture suite to read source for the Code Assurance rules | Test-only. It is the reason rule B1 has a real witness: the test assembly genuinely violates the framework-only rule, which is what makes that rule falsifiable |
 | `Broiler.Unicode.Generation`, and `Broiler.Unicode.Algorithms` as its dependency | 0.1.0-preview.5, published to nuget.org on 2026-10-17 from `Broiler-Platform/broiler.unicode` commit `b80201436e8f8ff0402ed75c0b9657fe3616d730` (revised 2026-10-17: the cell read "0.1.0-preview.4, published to nuget.org on 2026-10-16 from `Broiler-Platform/broiler.unicode` commit `6e14f93ad753094c99f0013d22269b47550ae552` (it read "packed locally from" until then, JSC-310)") and held on the committed feed at [`eng/packages/`](eng/packages/README.md) | Apache-2.0, under this repository's own copyright holder | The owner's table generator and pin for the Unicode area (JSD-0074, decision SJL-D-6 (c)): rules N22 and N28 regenerate the embedded Unicode tables with it from this repository's pin, and rule I4 compares that pin with the owner's, which the package carries. Neither package carries a Unicode table; their own `THIRD_PARTY_NOTICES.md` names the Unicode data and ECMA-262's property tables the owner's repository archives, and the code ported from this repository *(added 2026-10-16, programme milestone SJL-7.4)* | Admitted test-only for `Broiler.VM.Architecture.Tests` alone by rule I1's allow-list, which refuses a test-only package in any shipping project; `eng/verify-feed.ps1` refuses a release that depends on one |
+| `Broiler.ECMAScript.Generation` | 0.1.0-preview.5, packed locally from `Broiler-Platform/broiler.js` commit `2d37a38a2560b076ebf2ca29989bfe20db64ed64` and held on the committed feed at [`eng/packages/`](eng/packages/README.md) | Apache-2.0, under this repository's own copyright holder | The time data home's generator for the time-zone and calendar area (JSD-0076, decision SJL-D-6 (c)): rules N29 to N32 regenerate the embedded time zone and calendar tables with it from this repository's pins, and rule I4 holds the data versions it declares to those pins. It carries no table and no pinned input; its own `THIRD_PARTY_NOTICES.md` names it as code ported from this repository's architecture tests, and its compiler as written from that code and the tz source format, not from `zic`'s *(added 2026-10-17, programme milestone SJL-8.5)* | Admitted test-only for `Broiler.VM.Architecture.Tests` alone by rule I1's allow-list, which refuses a test-only package in any shipping project; `eng/verify-feed.ps1` refuses a release that depends on one |
 
 **The closure reports are the check that this table is true, for every dependency whose name is
 not a framework name.** Every published composition's closure is listed in each evidence bundle,
@@ -589,14 +590,19 @@ source files `africa`, `antarctica`, `asia`, `australasia`, `europe`, `northamer
 checks them on every run of the architecture suite. The pin and its README record how and when the
 tarball was retrieved.
 
-**What is derived, and where it ships.** `TzdbTableGenerator` (architecture test project, not
-shipped) compiles the source files' zones into UTC offsets and writes
+**What is derived, and where it ships.** `TzdbTableGenerator`, the time data home's generator since
+programme milestone SJL-8.5, run by the architecture test project from the test-only package
+`Broiler.ECMAScript.Generation` (not shipped), compiles the source files' zones into UTC offsets and writes
 `src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs`, compiled into
 **`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N30** holds to the generator byte for byte.
 It carries each zone's offsets and transitions, every Zone and Link name with its primary identifier,
 which is taken from CLDR's `bcp47/timezone.json` under the CLDR entry above, and `zone.tab`'s zones of
 each country. The tables therefore ship where the CLDR tables ship: in the package
-`Broiler.VM.Profile.JavaScript.Intl` and the composition images that admit `Intl`.
+`Broiler.VM.Profile.JavaScript.Intl` and the composition images that admit `Intl`. *(Revised 2026-10-17, programme
+milestone SJL-8.5 (JSD-0076), when the compiler and the generator moved from this repository's
+architecture tests to the Broiler.JS repository, the time data home, under decision SJL-D-6 (c); the
+pin, the tarball and the generated file stay here, unchanged. The paragraph began "`TzdbTableGenerator`
+(architecture test project, not shipped) compiles".)*
 
 **Owner decisions, and what is not given.** The repository owner chose on 2026-10-05 to start phase
 F8 by archiving and pinning tzdb, which answers JSD-0027's owner decision (d). The tables count
@@ -628,8 +634,9 @@ crate's length, SHA-256 and SHA-512 and the length and SHA-256 of the nine membe
 of `calendrical_calculations`, and each crate's `Cargo.toml` and `LICENSE` - and rule **N31** checks
 them on every run of the architecture suite.
 
-**What is derived, and where it ships.** `CalendarTableGenerator` (architecture test project, not
-shipped) reads the Chinese, Korean, Qing-era and Umm al-Qura years those files state and the Persian
+**What is derived, and where it ships.** `CalendarTableGenerator`, the time data home's generator
+since programme milestone SJL-8.5, run by the architecture test project from the test-only package
+`Broiler.ECMAScript.Generation` (not shipped), reads the Chinese, Korean, Qing-era and Umm al-Qura years those files state and the Persian
 calendar's 78 corrections, and writes `src/Broiler.VM.Profile.JavaScript.Intl/JsCalendarTables.g.cs`,
 compiled into **`Broiler.VM.Profile.JavaScript.Intl.dll`**, which rule **N32** holds to the generator
 byte for byte. **The years remain subject to the Unicode License v3**, and the corrections to the
@@ -640,7 +647,10 @@ approximation of a Chinese or Korean year by mean new moons and mean solar terms
 **`Broiler.VM.Profile.JavaScript.dll`**; that port is a derivative of Unicode-licensed software, and
 this entry is the notice the licence's condition (b) asks associated documentation to carry. The other
 calendars' arithmetic in that file is written from *Calendrical Calculations*' published formulas and
-the calendars' own rules.
+the calendars' own rules. *(Revised 2026-10-17, programme milestone SJL-8.5 (JSD-0076), when the
+generator moved from this repository's architecture tests to the Broiler.JS repository, the time data
+home, under decision SJL-D-6 (c); the pin, the crates and the generated file stay here, unchanged. The
+paragraph began "`CalendarTableGenerator` (architecture test project, not shipped) reads".)*
 
 **Used to test, not shipped.** `src/tests/temporal/calendars/icu4x-reference.rs` is a program this
 repository wrote; built against the archived crates and the `icu_calendar_data` 2.3.0 crate, which is
