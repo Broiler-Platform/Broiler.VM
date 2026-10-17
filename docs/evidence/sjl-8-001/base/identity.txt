@@ -1,0 +1,13 @@
+bundle sjl-8-001, the time-zone and calendar area's base
+milestone SJL-8, the time-zone and calendar area; the base is this family after SJL-7
+collected 2026-10-17T13:55:38Z
+base-commit 431c20e00836c44bf4e80ee8d74060e86a197b00
+base-tree clean
+rule docs/evidence/sjl-8-001/decision-rule-area.md sha256=dbd07094751826cd4d5fbd649866f99fa53b502505001caf4c750e1282f9cf2d
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+twin-allowance ceiling=1000000000 wallClockMs=600000
+native-backend x86-64-sysv
+twin-folders src/tests/forms/wide
+dataset-folders src/tests/cldr/timezones, src/tests/temporal
+since-sjl-7-merge 9508bd5b9b6d0f6d009418dda351fb0e7d846745, outside the documents: none
