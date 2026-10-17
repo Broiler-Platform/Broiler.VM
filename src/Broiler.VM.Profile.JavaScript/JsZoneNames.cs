@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           6
-// Human-reviewed:   0/18
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       18
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -79,13 +79,13 @@ internal sealed class JsZoneNames
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.Dictionary<string, int> zonesInRegion = new(System.StringComparer.Ordinal);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F3037C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=24E3FC
     // Broiler-Human:        PENDING
-    private readonly JsTimeZones zones;
+    private readonly ITimeZoneDatabase zones;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BE0E32
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=20DE1B
     // Broiler-Human:        PENDING
-    internal JsZoneNames(System.Collections.Generic.IEnumerable<string> metaZones, JsTimeZones zones)
+    internal JsZoneNames(System.Collections.Generic.IEnumerable<string> metaZones, ITimeZoneDatabase zones)
     {
         this.zones = zones;
 
@@ -115,21 +115,45 @@ internal sealed class JsZoneNames
         }
 
         // A ZONE'S COUNTRY is zone.tab's, by primary identifier, and a country's zones are counted the
-        // same way: a country with one is named by it.
-        foreach (var region in zones.Regions)
+        // same way: a country with one is named by it. zone.tab's regions are ISO 3166 codes, two
+        // ASCII capitals; the shared database answers the zones of each and none for a code zone.tab does
+        // not list, and the codes are asked in ordinal order, the order its table lists them in.
+        foreach (var region in Regions())
         {
+            var listed = zones.RegionTimeZones(region);
+
+            if (listed.Count == 0)
+            {
+                continue;
+            }
+
             var distinct = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
 
-            foreach (var name in zones.Region(region))
+            foreach (var name in listed)
             {
-                if (zones.Find(name) is { } record)
+                if (zones.TryFind(name, out var id))
                 {
-                    countries.TryAdd(record.Primary, region);
-                    distinct.Add(record.Primary);
+                    var primary = zones.Primary(id).Identifier;
+                    countries.TryAdd(primary, region);
+                    distinct.Add(primary);
                 }
             }
 
             zonesInRegion[region] = distinct.Count;
+        }
+    }
+
+    /// <summary>Every region code of two ASCII capitals, in ordinal order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=211E36
+    // Broiler-Human:        PENDING
+    private static System.Collections.Generic.IEnumerable<string> Regions()
+    {
+        for (var first = 'A'; first <= 'Z'; first++)
+        {
+            for (var second = 'A'; second <= 'Z'; second++)
+            {
+                yield return new string([first, second]);
+            }
         }
     }
 
@@ -174,11 +198,11 @@ internal sealed class JsZoneNames
     /// A zone's specific name at a time value, long or short, in a language's date data: its own name
     /// for standard or daylight time, or its metazone's; nothing where neither has one.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ABB978
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=34D14D
     // Broiler-Human:        PENDING
-    internal string? Specific(JsDateData data, string language, string zone, JsZone offsets, long time, bool longForm)
+    internal string? Specific(JsDateData data, string language, string zone, ITimeZoneRules offsets, long time, bool longForm)
     {
-        var type = (longForm ? "l" : "s") + (offsets.DaylightAt(Seconds(time)) ? "d" : "s");
+        var type = (longForm ? "l" : "s") + (offsets.IsDaylightAt(Seconds(time)) ? "d" : "s");
         return Specific(data, language, zone, time, type);
     }
 
@@ -192,15 +216,15 @@ internal sealed class JsZoneNames
     /// A zone's generic name at a time value, long or short (ICU's TZGNCore::getDisplayName): its
     /// non-location name, or its location name; nothing where it has neither.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4A076E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=00BEE9
     // Broiler-Human:        PENDING
-    internal string? Generic(JsDateData data, string language, string region, System.Func<string, string?> regionName, string zone, JsZone offsets, long time, bool longForm) =>
+    internal string? Generic(JsDateData data, string language, string region, System.Func<string, string?> regionName, string zone, ITimeZoneRules offsets, long time, bool longForm) =>
         NonLocation(data, language, region, regionName, zone, offsets, time, longForm) ?? Location(data, language, regionName, zone);
 
     /// <summary>ICU's formatGenericNonLocationName.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DCC578
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=515D42
     // Broiler-Human:        PENDING
-    private string? NonLocation(JsDateData data, string language, string region, System.Func<string, string?> regionName, string zone, JsZone offsets, long time, bool longForm)
+    private string? NonLocation(JsDateData data, string language, string region, System.Func<string, string?> regionName, string zone, ITimeZoneRules offsets, long time, bool longForm)
     {
         var width = longForm ? "l" : "s";
 
@@ -219,7 +243,7 @@ internal sealed class JsZoneNames
 
         // STANDARD TIME IS NAMED AS SUCH where the zone keeps no daylight time within 184 days of the
         // instant, unless the standard name is the generic one.
-        if (!offsets.DaylightAt(seconds) && !DaylightNear(offsets, seconds) &&
+        if (!offsets.IsDaylightAt(seconds) && !DaylightNear(offsets, seconds) &&
             Specific(data, language, zone, time, width + "s") is { } standard &&
             (generic is null || !string.Equals(standard, generic, System.StringComparison.OrdinalIgnoreCase)))
         {
@@ -233,11 +257,11 @@ internal sealed class JsZoneNames
 
         // A ZONE THAT DOES NOT KEEP ITS METAZONE'S GOLDEN ZONE'S TIME at the instant is named by its
         // location as well.
-        if (Golden(metazone, region) is { } goldenZone && goldenZone != zone && zones.Find(goldenZone) is { } record)
+        if (Golden(metazone, region) is { } goldenZone && goldenZone != zone && zones.TryFind(goldenZone, out var id))
         {
-            var reference = zones.Zone(record);
+            var reference = zones.Rules(id);
 
-            if (reference.OffsetAt(seconds) != offsets.OffsetAt(seconds) || reference.DaylightAt(seconds) != offsets.DaylightAt(seconds))
+            if (reference.OffsetSecondsAt(seconds) != offsets.OffsetSecondsAt(seconds) || reference.IsDaylightAt(seconds) != offsets.IsDaylightAt(seconds))
             {
                 return Partial(data, language, regionName, zone, metazone, generic);
             }
@@ -247,16 +271,16 @@ internal sealed class JsZoneNames
     }
 
     /// <summary>Whether the transition before or after an instant, within 184 days, borders daylight time.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=497897
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=300908
     // Broiler-Human:        PENDING
-    private static bool DaylightNear(JsZone offsets, long seconds)
+    private static bool DaylightNear(ITimeZoneRules offsets, long seconds)
     {
-        if (offsets.PreviousTransition(seconds + 1, daylight: true) is { } before && seconds - before < DaylightRange && offsets.DaylightAt(before - 1))
+        if (offsets.PreviousTransition(seconds + 1, daylightFlag: true) is { } before && seconds - before < DaylightRange && offsets.IsDaylightAt(before - 1))
         {
             return true;
         }
 
-        return offsets.NextTransition(seconds, seconds + DaylightRange, daylight: true) is { } after && after - seconds < DaylightRange && offsets.DaylightAt(after);
+        return offsets.NextTransition(seconds, seconds + DaylightRange, daylightFlag: true) is { } after && after - seconds < DaylightRange && offsets.IsDaylightAt(after);
     }
 
     /// <summary>ICU's getPartialLocationName: the metazone's generic name and the zone's location in the fallback format.</summary>

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   108
-// Annotated:        108/108
-// Exempt:           39
-// Human-reviewed:   0/108
+// Relevant units:   90
+// Annotated:        90/90
+// Exempt:           32
+// Human-reviewed:   0/90
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       108
+// Unverified:       90
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -84,6 +84,21 @@ internal sealed class JsCalendarYear
         }
 
         return (month, dayOfYear - Offsets[month - 1]);
+    }
+
+    /// <summary>A year the shared library's calendar year sources answer (JSD-0076), as the arithmetic reads it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=179284
+    // Broiler-Human:        PENDING
+    internal static JsCalendarYear Of(CalendarYear year)
+    {
+        Span<int> lengths = stackalloc int[year.MonthsInYear];
+
+        for (var month = 1; month <= year.MonthsInYear; month++)
+        {
+            lengths[month - 1] = year.DaysInMonth(month);
+        }
+
+        return new JsCalendarYear(year.Year, year.NewYearEpochDays, FromLengths(lengths), year.LeapMonth);
     }
 
     /// <summary>Offsets from month lengths.</summary>
@@ -161,6 +176,14 @@ internal abstract class JsCalendarSystem(string id)
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2E17F4
     // Broiler-Human:        PENDING
     internal virtual long MonthsBefore(long year) => 12 * year;
+
+    /// <summary>
+    /// Whether <see cref="MonthsBefore"/> reads the calendar's years, which the shared library's sources
+    /// answer only within <see cref="CalendarYears.MaxYearMagnitude"/>: the Chinese and Korean calendars.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=62A054
+    // Broiler-Human:        PENDING
+    internal virtual bool MonthsBeforeReadsYears => false;
 
     /// <summary>The mean months in a year, for estimating which year a month count falls in.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=29859C
@@ -251,6 +274,19 @@ internal abstract class JsCalendarSystem(string id)
         var quotient = dividend / divisor;
         return (dividend % divisor != 0) && ((dividend < 0) != (divisor < 0)) ? quotient - 1 : quotient;
     }
+
+    /// <summary>
+    /// A table-backed calendar's year from the shared library's sources (JSD-0076): the table the Intl
+    /// data hands in inside its range, and ICU4X's approximation, the civil tabular year or the 33-year
+    /// rule outside it. Every caller keeps the year within the sources' bound, which is
+    /// <c>JsTemporal.YearBound</c>, beyond every year that holds a date within the ISO limits.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CA9B70
+    // Broiler-Human:        PENDING
+    protected static JsCalendarYear SharedYear(ICalendarTables tables, TableCalendar calendar, long year) =>
+        CalendarYears.GetYear(tables, calendar, year, out var result) == TimeStatus.Completed
+            ? JsCalendarYear.Of(result)
+            : throw new InvalidOperationException("The year " + year + " is beyond the calendar year sources' bound, which every caller keeps.");
 
     /// <summary>The year an estimate names, moved until it contains the day.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1FB334
@@ -525,8 +561,9 @@ internal sealed class JsIndianCalendar : JsCalendarSystem
 
 /// <summary>
 /// The Persian (Solar Hijri) calendar: six months of 31 days, five of 30 and Esfand of 29, or 30 in
-/// a leap year, which the 33-year rule decides, corrected after 1501 AP by the years
-/// <see cref="JsCalendarData.PersianNonLeapYears"/> lists (Calendrical Calculations, ch. 15).
+/// a leap year, which the 33-year rule decides, corrected after 1501 AP by the years the Intl data's
+/// calendar table lists (Calendrical Calculations, ch. 15). Its years are the shared library's since
+/// SJL-8.5 (JSD-0076); the arithmetic over them is this family's.
 /// </summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BE63C7
 // Broiler-Human:        PENDING
@@ -537,33 +574,17 @@ internal sealed class JsPersianCalendar : JsCalendarSystem
     // Broiler-Human:        PENDING
     private const long Epoch = 226896 - RataDieOfEpoch;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=01A035
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4DD1E4
     // Broiler-Human:        PENDING
-    private readonly int[] nonLeapYears;
+    private readonly ICalendarTables tables;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=52241A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A5FDDA
     // Broiler-Human:        PENDING
-    internal JsPersianCalendar(int[] nonLeapYears) : base("persian") => this.nonLeapYears = nonLeapYears;
+    internal JsPersianCalendar(ICalendarTables tables) : base("persian") => this.tables = tables;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6B953C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A93DD2
     // Broiler-Human:        PENDING
-    private bool Corrected(long year) =>
-        nonLeapYears.Length > 0 && year >= nonLeapYears[0] && year <= nonLeapYears[^1] &&
-        Array.BinarySearch(nonLeapYears, (int)year) >= 0;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CC41A2
-    // Broiler-Human:        PENDING
-    private long NewYear(long year) =>
-        Epoch - 1 + (365 * (year - 1)) + FloorDiv((8 * year) + 21, 33) - (Corrected(year - 1) ? 1 : 0);
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65506F
-    // Broiler-Human:        PENDING
-    internal override JsCalendarYear Year(long year)
-    {
-        var days = (int)(NewYear(year + 1) - NewYear(year));
-        ReadOnlySpan<int> lengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, days - 336];
-        return new JsCalendarYear(year, NewYear(year), JsCalendarYear.FromLengths(lengths));
-    }
+    internal override JsCalendarYear Year(long year) => SharedYear(tables, TableCalendar.Persian, year);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E6F78E
     // Broiler-Human:        PENDING
@@ -590,8 +611,8 @@ internal sealed class JsPersianCalendar : JsCalendarSystem
 /// <summary>
 /// The Hijri calendars: the tabular one with leap years 2, 5, 7, 10, 13, 16, 18, 21, 24, 26 and 29
 /// of each 30, from the civil (Friday) or the astronomical (Thursday) epoch; and Umm al-Qura, whose
-/// years 1300 to 1600 AH are KACST's (<see cref="JsCalendarData.UmmAlQura"/>) and whose other
-/// years are the civil tabular ones.
+/// years 1300 to 1600 AH are KACST's, from the Intl data's calendar table, and whose other years are
+/// the civil tabular ones, both the shared library's since SJL-8.5 (JSD-0076).
 /// </summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FB8D4F
 // Broiler-Human:        PENDING
@@ -605,13 +626,13 @@ internal sealed class JsHijriCalendar : JsCalendarSystem
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=75FB94
     // Broiler-Human:        PENDING
     private readonly long epoch;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=90B0A6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C064F
     // Broiler-Human:        PENDING
-    private readonly JsCalendarData? ummAlQura;
+    private readonly ICalendarTables? ummAlQura;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B10225
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=23FD7B
     // Broiler-Human:        PENDING
-    internal JsHijriCalendar(string id, bool thursday, JsCalendarData? ummAlQura = null)
+    internal JsHijriCalendar(string id, bool thursday, ICalendarTables? ummAlQura = null)
         : base(id)
     {
         epoch = CivilEpoch - (thursday ? 1 : 0);
@@ -624,13 +645,13 @@ internal sealed class JsHijriCalendar : JsCalendarSystem
     internal static long TabularNewYear(long epoch, long year) =>
         epoch + ((year - 1) * 354) + FloorDiv(3 + (11 * year), 30);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E4C7B6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0B7D3B
     // Broiler-Human:        PENDING
     internal override JsCalendarYear Year(long year)
     {
-        if (ummAlQura is not null && ummAlQura.UmmAlQuraYear(year) is { } table)
+        if (ummAlQura is not null)
         {
-            return table;
+            return SharedYear(ummAlQura, TableCalendar.IslamicUmmAlQura, year);
         }
 
         var lengths = new int[12];
@@ -779,63 +800,30 @@ internal sealed class JsHebrewCalendar : JsCalendarSystem
 /// <summary>
 /// The Chinese and Korean calendars: lunar months beginning on the day of the new moon in Beijing
 /// or Korean time, a leap month inserted in a year without a major solar term. Years 1900 to 2102
-/// are the published ones <see cref="JsCalendarData"/> holds; other years follow ICU4X's mean-motion
-/// approximation (<see cref="Approximate"/>), as Table 1 allows.
+/// are the published ones the Intl data's calendar table holds; other years follow ICU4X's
+/// mean-motion approximation, as Table 1 allows. Both are the shared library's since SJL-8.5
+/// (JSD-0076); the arithmetic over the years is this family's.
 /// </summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=05A813
 // Broiler-Human:        PENDING
 internal sealed class JsEastAsianCalendar : JsCalendarSystem
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3EB970
-    // Broiler-Human:        PENDING
-    private const long Day = 86_400_000;
-
-    /// <summary>UTC+8, Beijing time.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A0A1EC
-    // Broiler-Human:        PENDING
-    private const long UtcPlus8 = 28_800_000;
-
-    /// <summary>UTC+9, Korean time.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ADCFC5
-    // Broiler-Human:        PENDING
-    private const long UtcPlus9 = 32_400_000;
-
-    /// <summary>UTC+(1397/180) hours, Beijing's local mean time.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=792B54
-    // Broiler-Human:        PENDING
-    private const long BeijingMeanTime = 27_940_000;
-
-    /// <summary>The mean Gregorian year, 146097/400 days.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E8FBB1
-    // Broiler-Human:        PENDING
-    private const long MeanYear = 31_556_952_000;
-
-    /// <summary>The mean Gregorian solar term, a twelfth of the mean year.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D1EB80
-    // Broiler-Human:        PENDING
-    private const long MeanSolarTerm = 2_629_746_000;
-
-    /// <summary>The mean synodic month, 29.5305888531 days, truncated to milliseconds.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5326A4
-    // Broiler-Human:        PENDING
-    private const long MeanSynodicMonth = 2_551_442_876;
-
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0DAD3C
     // Broiler-Human:        PENDING
     private readonly bool korean;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EC45E4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4DD1E4
     // Broiler-Human:        PENDING
-    private readonly JsCalendarData data;
+    private readonly ICalendarTables tables;
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5FAF4F
     // Broiler-Human:        PENDING
     private readonly long anchor;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=344CFB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=20A320
     // Broiler-Human:        PENDING
-    internal JsEastAsianCalendar(string id, JsCalendarData data) : base(id)
+    internal JsEastAsianCalendar(string id, ICalendarTables tables) : base(id)
     {
         korean = id == "dangi";
-        this.data = data;
+        this.tables = tables;
         anchor = Year(2000).Start;
     }
 
@@ -853,17 +841,14 @@ internal sealed class JsEastAsianCalendar : JsCalendarSystem
     internal override long MonthsBefore(long year) =>
         (long)Math.Round((Year(year).Start - anchor) / 29.530588853, MidpointRounding.AwayFromZero);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7DA28A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AB95CD
     // Broiler-Human:        PENDING
-    internal override JsCalendarYear Year(long year)
-    {
-        if (data.EastAsianYear(korean, year) is { } table)
-        {
-            return table;
-        }
+    internal override bool MonthsBeforeReadsYears => true;
 
-        return Approximate(year > 1912 ? (korean ? UtcPlus9 : UtcPlus8) : BeijingMeanTime, year);
-    }
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=21EEE7
+    // Broiler-Human:        PENDING
+    internal override JsCalendarYear Year(long year) =>
+        SharedYear(tables, korean ? TableCalendar.Dangi : TableCalendar.Chinese, year);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E7249
     // Broiler-Human:        PENDING
@@ -912,232 +897,6 @@ internal sealed class JsEastAsianCalendar : JsCalendarSystem
 
         return day >= 30 ? years.Item2 : years.Item1;
     }
-
-    // ---- ICU4X's approximation ----------------------------------------------------------------
-    // Ported from icu_calendar 2.3.0, src/cal/east_asian_traditional/simple.rs (Unicode-3.0): R.D.
-    // days and milliseconds within them, so that the rounding of instants before R.D. 0 is ICU4X's.
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CC0E6F
-    // Broiler-Human:        PENDING
-    private readonly record struct Moment(long RataDie, long Milliseconds)
-    {
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5E724C
-        // Broiler-Human:        PENDING
-        public static Moment operator +(Moment moment, long duration)
-        {
-            var total = moment.Milliseconds + duration;
-            return new Moment(moment.RataDie + FloorDiv(total, Day), total - (FloorDiv(total, Day) * Day));
-        }
-    }
-
-    /// <summary>The latest moment <c>start + n * period</c> on or before the day <paramref name="rataDie"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=97E125
-    // Broiler-Human:        PENDING
-    private static Moment OnOrBefore(long rataDie, Moment start, long period)
-    {
-        var difference = ((rataDie - start.RataDie) * Day) - start.Milliseconds;
-        var periods = FloorDiv(difference + Day - 1, period);
-        var milliseconds = (start.RataDie * Day) + start.Milliseconds + (periods * period);
-        var day = (milliseconds / Day) - (milliseconds < 0 ? 1 : 0);
-        var within = (milliseconds % Day) + (milliseconds < 0 ? Day : 0);
-        return new Moment(day, within);
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=095349
-    // Broiler-Human:        PENDING
-    private static long RataDie(long year, int month, int day) => IsoCalendarMath.EpochDays(year, month, day) + RataDieOfEpoch;
-
-    /// <summary>A year by mean solar terms and mean new moons at a UTC offset, after the píngqì rule.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=125E02
-    // Broiler-Human:        PENDING
-    private static JsCalendarYear Approximate(long offset, long relatedIso)
-    {
-        // 1999-12-22T07:44Z, THE SOLSTICE; 2000-01-06T18:14Z, THE NEW MOON.
-        var solstice = new Moment(RataDie(1999, 12, 22), ((7 * 60) + 44) * 60 * 1000L) + offset;
-        var newMoonBase = new Moment(RataDie(2000, 1, 6), ((18 * 60) + 14) * 60 * 1000L) + offset;
-
-        var majorSolarTerm = OnOrBefore(RataDie(relatedIso, 1, 1) - 1, solstice, MeanYear);
-        var newMoon = OnOrBefore(majorSolarTerm.RataDie, newMoonBase, MeanSynodicMonth);
-        var nextNewMoon = newMoon + MeanSynodicMonth;
-        var solarTerm = -2;
-        var hadLeap = false;
-
-        while (solarTerm < 0 || (nextNewMoon.RataDie <= majorSolarTerm.RataDie && !hadLeap))
-        {
-            if (nextNewMoon.RataDie <= majorSolarTerm.RataDie && !hadLeap)
-            {
-                hadLeap = true;
-            }
-            else
-            {
-                solarTerm++;
-                majorSolarTerm += MeanSolarTerm;
-            }
-
-            (newMoon, nextNewMoon) = (nextNewMoon, nextNewMoon + MeanSynodicMonth);
-        }
-
-        var newYear = newMoon.RataDie;
-        var lengths = new System.Collections.Generic.List<int>(13);
-        var leapMonth = 0;
-
-        while (solarTerm < 12 || (nextNewMoon.RataDie <= majorSolarTerm.RataDie && !hadLeap))
-        {
-            lengths.Add((int)(nextNewMoon.RataDie - newMoon.RataDie));
-
-            if (nextNewMoon.RataDie <= majorSolarTerm.RataDie && !hadLeap)
-            {
-                hadLeap = true;
-                leapMonth = solarTerm + 1;
-            }
-            else
-            {
-                solarTerm++;
-                majorSolarTerm += MeanSolarTerm;
-            }
-
-            (newMoon, nextNewMoon) = (nextNewMoon, nextNewMoon + MeanSynodicMonth);
-        }
-
-        return new JsCalendarYear(relatedIso, newYear - RataDieOfEpoch, JsCalendarYear.FromLengths(lengths.ToArray()), leapMonth);
-    }
-}
-
-/// <summary>
-/// The published years the lunisolar and Umm al-Qura calendars read, from the Intl data's
-/// <c>Calendars</c> table (decision JSD-0056): sections of a first year, a count, and a record per
-/// year.
-/// </summary>
-/// <remarks>
-/// A Chinese, Korean or Qing year is three bytes: thirteen bits of month lengths (set for 30 days),
-/// four bits of the leap month's ordinal, and the new year's offset from 19 January. An Umm al-Qura
-/// year is two bytes: twelve bits of month lengths and the new year's offset, plus 8, from the civil
-/// tabular new year. The Persian section lists the years the 33-year rule makes leap and are not.
-/// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B98251
-// Broiler-Human:        PENDING
-internal sealed class JsCalendarData
-{
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=991E63
-    // Broiler-Human:        PENDING
-    private readonly byte[] china;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D21016
-    // Broiler-Human:        PENDING
-    private readonly byte[] korea;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=591A9A
-    // Broiler-Human:        PENDING
-    private readonly byte[] qing;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9ABCA4
-    // Broiler-Human:        PENDING
-    private readonly byte[] ummAlQura;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9AAFC7
-    // Broiler-Human:        PENDING
-    private readonly int chinaStart;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5F1E83
-    // Broiler-Human:        PENDING
-    private readonly int koreaStart;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=906333
-    // Broiler-Human:        PENDING
-    private readonly int qingStart;
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ED122B
-    // Broiler-Human:        PENDING
-    private readonly int ummAlQuraStart;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6DACD2
-    // Broiler-Human:        PENDING
-    internal JsCalendarData(ReadOnlySpan<byte> table)
-    {
-        var at = 0;
-        (chinaStart, china) = Section(table, ref at, 3);
-        (koreaStart, korea) = Section(table, ref at, 3);
-        (qingStart, qing) = Section(table, ref at, 3);
-        (ummAlQuraStart, ummAlQura) = Section(table, ref at, 2);
-
-        var count = U16(table, ref at);
-        PersianNonLeapYears = new int[count];
-
-        for (var i = 0; i < count; i++)
-        {
-            PersianNonLeapYears[i] = U16(table, ref at);
-        }
-    }
-
-    /// <summary>The years the 33-year rule makes leap and the Persian calendar does not, ascending.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=053F64
-    // Broiler-Human:        PENDING
-    internal int[] PersianNonLeapYears { get; }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F4B57B
-    // Broiler-Human:        PENDING
-    private static int U16(ReadOnlySpan<byte> table, ref int at)
-    {
-        var value = table[at] | (table[at + 1] << 8);
-        at += 2;
-        return value;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E43F1C
-    // Broiler-Human:        PENDING
-    private static (int Start, byte[] Records) Section(ReadOnlySpan<byte> table, ref int at, int size)
-    {
-        var start = U16(table, ref at);
-        var count = U16(table, ref at);
-        var records = table.Slice(at, count * size).ToArray();
-        at += count * size;
-        return (start, records);
-    }
-
-    /// <summary>A published Chinese or Korean year (Qing years before 1912 for both), or null.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A3B6A3
-    // Broiler-Human:        PENDING
-    internal JsCalendarYear? EastAsianYear(bool korean, long relatedIso)
-    {
-        var (start, records) = relatedIso >= 1912 ? (korean ? (koreaStart, korea) : (chinaStart, china)) : (qingStart, qing);
-        var index = relatedIso - start;
-
-        if (index < 0 || index >= records.Length / 3)
-        {
-            return null;
-        }
-
-        var at = (int)index * 3;
-        var packed = records[at] | (records[at + 1] << 8) | (records[at + 2] << 16);
-        var leapMonth = (packed >> 13) & 0xF;
-        var months = leapMonth == 0 ? 12 : 13;
-        var lengths = new int[months];
-
-        for (var month = 0; month < months; month++)
-        {
-            lengths[month] = 29 + ((packed >> month) & 1);
-        }
-
-        var newYear = IsoCalendarMath.EpochDays(relatedIso, 1, 19) + (packed >> 17);
-        return new JsCalendarYear(relatedIso, newYear, JsCalendarYear.FromLengths(lengths), leapMonth);
-    }
-
-    /// <summary>A published Umm al-Qura year, or null outside 1300 to 1600 AH.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4CB85F
-    // Broiler-Human:        PENDING
-    internal JsCalendarYear? UmmAlQuraYear(long year)
-    {
-        var index = year - ummAlQuraStart;
-
-        if (index < 0 || index >= ummAlQura.Length / 2)
-        {
-            return null;
-        }
-
-        var packed = ummAlQura[(int)index * 2] | (ummAlQura[((int)index * 2) + 1] << 8);
-        var lengths = new int[12];
-
-        for (var month = 0; month < 12; month++)
-        {
-            lengths[month] = 29 + ((packed >> month) & 1);
-        }
-
-        var start = JsHijriCalendar.TabularNewYear(JsHijriCalendar.CivilEpoch, year) + ((packed >> 12) - 8);
-        return new JsCalendarYear(year, start, JsCalendarYear.FromLengths(lengths));
-    }
 }
 
 /// <summary>The calendar systems of one Intl data set, by canonical calendar type.</summary>
@@ -1149,11 +908,13 @@ internal sealed class JsCalendars
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.Dictionary<string, JsCalendarSystem> systems;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E57B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AFCECF
     // Broiler-Human:        PENDING
     internal JsCalendars(ReadOnlySpan<byte> table)
     {
-        var data = new JsCalendarData(table);
+        // THE TABLE IS THE SHARED DECODER'S (JSD-0076): it is read once, here, and every table-backed
+        // calendar asks it for its years.
+        var data = new CalendarTables(table);
         systems = new System.Collections.Generic.Dictionary<string, JsCalendarSystem>(StringComparer.Ordinal)
         {
             ["buddhist"] = new JsGregorianCalendar("buddhist", -543),
@@ -1169,7 +930,7 @@ internal sealed class JsCalendars
             ["islamic-tbla"] = new JsHijriCalendar("islamic-tbla", thursday: true),
             ["islamic-umalqura"] = new JsHijriCalendar("islamic-umalqura", thursday: false, data),
             ["japanese"] = new JsGregorianCalendar("japanese", 0),
-            ["persian"] = new JsPersianCalendar(data.PersianNonLeapYears),
+            ["persian"] = new JsPersianCalendar(data),
             ["roc"] = new JsGregorianCalendar("roc", 1911),
         };
     }

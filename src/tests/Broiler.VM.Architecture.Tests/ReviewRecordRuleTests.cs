@@ -1288,7 +1288,8 @@ public sealed class ReviewRecordRuleTests
         // AND TIME ZONES (phase F8, 2026-10-05, JSD-0053): JsTimeZones.cs, the reader of the IANA Time
         // Zone Database's identifiers and offsets; and JsTzdbTables.g.cs, which TzdbTableGenerator
         // writes and rule N30 holds. Both are covered on the same terms as every other product file,
-        // and nothing in them has been read by a human.
+        // and nothing in them has been read by a human. (JsTimeZones.cs is deleted at SJL-8.5, below,
+        // and TzdbTableGenerator is the time data home's since then.)
         //
         // AND TEMPORAL (phase F8 slice T1, 2026-10-05, JSD-0054): sixteen files. Eight are the
         // proposal's abstract operations, apart from any realm: JsTemporalCore.cs (records, units,
@@ -1326,7 +1327,11 @@ public sealed class ReviewRecordRuleTests
         // read by a human. Then normalization and casing moved too, which took four more away - the
         // profile's JsUnicodeNormalization and JsUnicodeCasing, each with its generated half - and added
         // one, the profile's JsUnicodeTables.g.cs, covered on the same terms.
-        Assert.Equal(331, AssuranceSources.Files.Count);
+        //
+        // AND THE TIME-ZONE AND CALENDAR AREA'S CUT-OVER (SJL-8.5, JSD-0076 and JSD-0077) TOOK ONE AWAY:
+        // JsTimeZones.cs, whose decoder, lookup and zone rules the shared library's TimeZoneDatabase
+        // implements; JsTemporal.Zones.cs, JsCalendars.cs and the formatter's files stay, and call it.
+        Assert.Equal(330, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
