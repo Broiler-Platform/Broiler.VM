@@ -18,12 +18,16 @@ whose input is [`correspondence.md`](correspondence.md).
 [`decision-rule-area.md`](decision-rule-area.md) are MET as written, with no revision**: every changed test262
 verdict in either form is a race between allowances that class C4 admits, and no fuel charge moved (sections 6
 and 7). Clauses 9, 10, 12 and 13 are met, and clause 11 is met on parts A and B (section 13).
-- **Two things are not yet in this bundle:** part C, the measurement (section 12), and the engine-level vectors
-  at corpus revision 20 (section 8). Until part C is taken, the evidence item it answers, and with it JSD-0031's
-  fifth reason for this engine, stays open.
+- **The engine-level vectors at corpus revision 20 all match** (section 8).
+- **Part C, the measurement, is NOT MET on clause 3** (section 12): the after arm is slower than the base beyond
+  the A/A floor for casing and for identifier scanning in the native form. JSD-0031's fifth reason therefore stays
+  open for this engine for those two, in the native form.
 - **Nothing is accepted.** Review is deferred, and SJL-7 may not meet its gate before SJL-3 meets SJL-3's.
 
-*(Revised 2026-10-17, at SJL-7.6. The state read: "**State, 2026-10-16, at SJL-7.4: the base is taken, the
+*(Revised 2026-10-17, later at SJL-7.6, when the vectors at revision 20 and part C were added. The first bullet
+read "**Two things are not yet in this bundle:** part C, the measurement (section 12), and the engine-level
+vectors at corpus revision 20 (section 8). Until part C is taken, the evidence item it answers, and with it
+JSD-0031's fifth reason for this engine, stays open.")* *(Revised 2026-10-17, at SJL-7.6. The state read: "**State, 2026-10-16, at SJL-7.4: the base is taken, the
 vectors are at corpus revision 19, and the cut-over has landed (section 4); nothing here is a verdict.**", with
 the bullets "Parts A and B's bases were taken at the commit that carries the rule, `7b44dc7`, before any code of
 SJL-7 lands. Section 2 records them.", "Part C's base arm is built from the same commit when the after arm
@@ -183,8 +187,8 @@ SJL-7.6 judges parts A and B; this section judges nothing.
 ## 5. The after arm (SJL-7.6)
 
 *(Added 2026-10-17, at SJL-7.6. Sections 1 to 4 do not change. The exclusions are section 9, because rule H2
-reads an exclusion's definition from a bundle's section 9 alone; sections 8 and 12 hold the places of the
-vectors at corpus revision 20 and of part C's measurement, which are not yet in this bundle.)*
+reads an exclusion's definition from a bundle's section 9 alone; sections 8 and 12 hold the vectors at corpus
+revision 20 and part C's measurement, which were added to this bundle later the same day.)*
 
 The after steps were added to [`collect-area.py`](collect-area.py) at SJL-7.6, when there was an after commit to
 run them at. They write into [`after/`](after/) and run bundle `sjl-6-001`'s code wherever that bundle has the
@@ -456,11 +460,23 @@ search.
 
 ## 12. The measurement (rule part C)
 
-> **PLACEHOLDER: not yet taken.** Part C is a measurement, and it is taken on an otherwise idle machine by
-> `collect-area.py --only measure` into [`measurement/`](measurement/). That is a sub-bundle of its own evidence
-> class, with its own README, manifest and hashes, which [`area-manifest.json`](area-manifest.json) does not
-> list. Until it is taken, the evidence item "each engine's measurement for `normalize`, casing and identifier
-> scanning under predeclared rules", and with it JSD-0031's fifth reason for this engine, is open.
+**NOT MET, on clause 3.** [`measurement/`](measurement/README.md) holds the run, a sub-bundle of its own evidence
+class with its own README, manifest and hashes, which [`area-manifest.json`](area-manifest.json) does not list.
+`collect-area.py --only measure` took it on 2026-10-17, its lanes from 00:54:00Z to 00:58:31Z, on the base's
+machine with no other build, test or run beside it.
+
+| Clause | On this run |
+|---|---|
+| 1. Every lane's condition passes | **Holds**: no answer check differs from arm B's, in 72 checks, and no timed child's answer does |
+| 2. Every effective-configuration line identical | **Holds**: one line in every timed child and check |
+| 3. D <= N for every workload and form | **Fails for two of six.** It holds for normalization, casing and identifiers in the bytecode form and for normalization in the native form. It fails for casing in the native form, D = +55.1 ms against N = 25.6 ms, and for identifiers in the native form, D = +39.5 ms against N = 14.8 ms |
+
+The rule has no tolerance but the A/A lane and allows no re-run of a clause that fails, so this run stands. Under
+the rule's reading, **JSD-0031's fifth reason, the owner's runtime cost, stays open for this engine for casing and
+identifier scanning in the native form.** The sub-bundle's README gives every figure, and reads the two failures
+without deciding anything. In both, arm A's seven runs spread widely, and arm A-again's median also lies above arm
+B's by more than the floor. A second run would be a new measurement under a dated revision of the rule, which is
+weaker evidence, and taking one is the owner's choice.
 
 ## 13. The Broiler.VM clauses
 
@@ -468,10 +484,12 @@ search.
 |---|---|---|---|
 | 9 | Rules I1 to I7 hold, and rule I4 agrees with the pin | section 10, [`after/rules.log`](after/rules.log) | **Met** at `be0b610`: 383 of 383, I1 to I7 among them; I4 holds the pin equal to the owner's and every admitted version to the pin's, with its witnesses; I5's register holds SJL-7.4's 29 |
 | 10 | Rules N22 and N28 regenerate the embedded tables with the owner's generator from Broiler.VM's pin, which rule I4 holds equal to the owner's; N18 and N23 are re-pointed; each has its witnesses | section 10 | **Met** at `be0b610`: N22's eight tests, N28's five, N18's two and N23's two pass, each with its witness |
-| 11 | test262 in both forms meets the area rule | sections 6 and 7 | **Met** on parts A and B: part A MET in both pairs, every change a (b) row or a (c') row whose re-runs agree; part B MET; the exhaustion verdicts hold. Part C, the rule's measurement, answers the evidence item and is not yet taken (section 12) |
+| 11 | test262 in both forms meets the area rule | sections 6 and 7 | **Met** on parts A and B: part A MET in both pairs, every change a (b) row or a (c') row whose re-runs agree; part B MET; the exhaustion verdicts hold. Part C, the rule's measurement, answers the evidence item and is NOT MET on clause 3 (section 12) |
 | 12 | Every root is published and run in three modes | section 10 | **Met** for every root this machine can publish, at `be0b610`, with the packages as published; Android is EX-126 |
 | 13 | N22's and N28's size budgets hold for the regenerated tables, and the bundle restates them by citation | section 10 | **Met**: 291,891 of 307,200 bytes and 840,365 of 851,968, both budget tests passing at `be0b610` |
 
-**Not yet in this bundle:** part C's measurement (section 12), which is no Broiler.VM clause of its own. The owner's clauses, 1 to 4, are judged in
+**Part C's measurement** (section 12), which is no Broiler.VM clause of its own, is NOT MET on clause 3: the
+evidence item "each engine's measurement for `normalize`, casing and identifier scanning under predeclared rules" is
+taken, and it leaves JSD-0031's fifth reason open for this engine for casing and identifiers in the native form. The owner's clauses, 1 to 4, are judged in
 Broiler.Unicode's bundle of the same name, and Broiler.JS's, 5 to 8, in Broiler.JS's. None is accepted: review is
 deferred, and SJL-7 may not meet its gate before SJL-3 meets SJL-3's.

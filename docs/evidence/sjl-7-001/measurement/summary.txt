@@ -1,0 +1,14 @@
+# part C of docs/evidence/sjl-7-001/decision-rule-area.md, measured 2026-10-17T00:54:00Z to 2026-10-17T00:58:31Z
+# Q is the median of the retained repetitions, in ms; N = |Q(A) - Q(A-again)|; D = Q(A) - Q(B);
+# E(arm) = Q(workload, arm) - Q(control, arm), retained beside D and deciding nothing
+# form | workload | Q(B) | Q(A) | Q(A-again) | N | D | D <= N | Q(control, B) | Q(control, A) | Q(control, A-again) | E(B) | E(A) | E(A-again)
+bytecode | normalize | 515.225 | 514.619 | 498.451 | 16.169 | -0.606 | yes | 394.000 | 388.453 | 396.775 | 121.226 | 126.167 | 101.676
+bytecode | casing | 445.425 | 441.070 | 472.356 | 31.287 | -4.356 | yes | 336.742 | 346.729 | 355.137 | 108.683 | 94.340 | 117.219
+bytecode | identifiers | 805.120 | 791.853 | 804.841 | 12.988 | -13.266 | yes | 791.135 | 794.299 | 768.997 | 13.985 | -2.445 | 35.844
+native | normalize | 649.048 | 636.600 | 643.022 | 6.422 | -12.448 | yes | 469.981 | 486.095 | 485.422 | 179.067 | 150.505 | 157.600
+native | casing | 544.277 | 599.409 | 573.848 | 25.561 | 55.132 | NO | 424.114 | 422.474 | 441.482 | 120.163 | 176.935 | 132.366
+native | identifiers | 1018.929 | 1058.440 | 1043.625 | 14.815 | 39.511 | NO | 996.509 | 1005.270 | 1023.908 | 22.420 | 53.170 | 19.717
+# answer checks (conditions.tsv) that differ from arm B's: 0; timed children that do: 0
+# workloads and forms with D <= N: 4 of 6
+# effective-configuration lines seen: 1 (runs.tsv and conditions.tsv name each by its number)
+#   1: runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
