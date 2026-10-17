@@ -79,9 +79,9 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 331 |
-| Code units | 11988 |
+| Code units | 11985 |
 | Relevant | 6928 |
-| Exempt | 5060 |
+| Exempt | 5057 |
 | Assessed | 6928 of 6928 (100%) |
 | Human reviewed | 0 of 6928 (0%) |
 | Unverified | 6928 |
@@ -100,7 +100,7 @@ annotations and the current fingerprints; nothing stores them.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5060 |
+| EXEMPT | 5057 |
 
 ## 5. Aliases In The Tree
 
@@ -213,7 +213,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 20 | 20 | 0 | 20 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsTextSegmentation.cs` | 7 | 4 | 3 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeData.cs` | 12 | 11 | 1 | 11 | Low | Low | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeTables.g.cs` | 23 | 2 | 21 | 2 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeTables.g.cs` | 24 | 2 | 22 | 2 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` | 28 | 22 | 6 | 22 | Low | Critical | 20/20 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` | 181 | 61 | 120 | 61 | Low | Critical | 40/40 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` | 33 | 33 | 0 | 33 | Low | High | 10/10 |
@@ -358,7 +358,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsThrow.cs` | 10 | 5 | 5 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs` | 42 | 29 | 13 | 29 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsUnicode.cs` | 9 | 8 | 1 | 8 | Low | Low | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` | 17 | 2 | 15 | 2 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs` | 13 | 2 | 11 | 2 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsValue.cs` | 50 | 29 | 21 | 29 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` | 443 | 442 | 1 | 442 | Low | Critical | 443/443 |
 | `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` | 14 | 11 | 3 | 11 | Low | Critical | 7/7 |

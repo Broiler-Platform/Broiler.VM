@@ -4,23 +4,23 @@
     "net10.0": {
       "Broiler.Unicode.Algorithms": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.4, )",
-        "resolved": "0.1.0-preview.4",
-        "contentHash": "8M7PNntCj6RfQF0VIkFXgrClg3RxCdbCKyFIQB+n6Q08jX4S3Mz3ged9qwz83ggzEJ+z60Yg5trOhZ5qaxS3Vg=="
+        "requested": "[0.1.0-preview.5, )",
+        "resolved": "0.1.0-preview.5",
+        "contentHash": "KMLRX1YipkukyafcoZuVxKP2qC5I05FIHTv4z1eyUgOu5aUpPq2eLYXtt4CP6CKbBJFUaWAUCZBZoEeOe04qsw=="
       },
       "Broiler.Unicode.Segmentation": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.4, )",
-        "resolved": "0.1.0-preview.4",
-        "contentHash": "C5iyHvAUD+0xArtUHX1A9k02Q3Yv6dJm5DELYC4z7SsxNd5BGvCTbfd/dTr3aVa4xSG7ugLu40Fmxzz4f4u3HQ==",
+        "requested": "[0.1.0-preview.5, )",
+        "resolved": "0.1.0-preview.5",
+        "contentHash": "WnBeQxp37cxU4h4IoZITqRyap29LljycATTTDbD3K8DNvvW0TvEgIGstp0rhfH4qKlw07nc6ZkIpaPbDbBS3HA==",
         "dependencies": {
-          "Broiler.Unicode.Algorithms": "0.1.0-preview.4"
+          "Broiler.Unicode.Algorithms": "0.1.0-preview.5"
         }
       },
       "broiler.vm.profile.javascript.format": {
         "type": "Project",
         "dependencies": {
-          "Broiler.Unicode.Algorithms": "[0.1.0-preview.4, )"
+          "Broiler.Unicode.Algorithms": "[0.1.0-preview.5, )"
         }
       }
     }

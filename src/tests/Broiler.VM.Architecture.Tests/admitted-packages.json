@@ -39,8 +39,8 @@
     },
     {
       "id": "Broiler.Unicode.Algorithms",
-      "version": "0.1.0-preview.4",
-      "contentHash": "8M7PNntCj6RfQF0VIkFXgrClg3RxCdbCKyFIQB+n6Q08jX4S3Mz3ged9qwz83ggzEJ+z60Yg5trOhZ5qaxS3Vg==",
+      "version": "0.1.0-preview.5",
+      "contentHash": "KMLRX1YipkukyafcoZuVxKP2qC5I05FIHTv4z1eyUgOu5aUpPq2eLYXtt4CP6CKbBJFUaWAUCZBZoEeOe04qsw==",
       "use": "product",
       "projects": [
         "Broiler.VM.Profile.JavaScript.Format",
@@ -52,13 +52,13 @@
         "committed-feed",
         "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.4.pin",
-      "admittedBy": "SJL-7.4 and JSD-0074: the Unicode area's code package - property lookups, lexical classes, case folding, case mapping, normalization and properties of strings over tables this repository embeds - referenced by Format, which holds the lookups the compiler and the runtime both read (the edge JSD-0074's X5 widens this list for), by the runtime, the compiler and the Intl data; admitted on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only. The same package reaches the architecture tests as Broiler.Unicode.Generation's dependency, through no reference of their own."
+      "pin": "eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.5.pin",
+      "admittedBy": "Since 2026-10-17 0.1.0-preview.5, published to nuget.org that day from Broiler.Unicode b802014 (its Publish workflow, run 39028782865), which both sources serve with one content hash: the faster normalization and case mapping and the constant-time tables they read, which this repository embeds. It replaced 0.1.0-preview.4, admitted by SJL-7.4 and JSD-0074: the Unicode area's code package - property lookups, lexical classes, case folding, case mapping, normalization and properties of strings over tables this repository embeds - referenced by Format, which holds the lookups the compiler and the runtime both read (the edge JSD-0074's X5 widens this list for), by the runtime, the compiler and the Intl data; admitted on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only. The same package reaches the architecture tests as Broiler.Unicode.Generation's dependency, through no reference of their own."
     },
     {
       "id": "Broiler.Unicode.Segmentation",
-      "version": "0.1.0-preview.4",
-      "contentHash": "C5iyHvAUD+0xArtUHX1A9k02Q3Yv6dJm5DELYC4z7SsxNd5BGvCTbfd/dTr3aVa4xSG7ugLu40Fmxzz4f4u3HQ==",
+      "version": "0.1.0-preview.5",
+      "contentHash": "WnBeQxp37cxU4h4IoZITqRyap29LljycATTTDbD3K8DNvvW0TvEgIGstp0rhfH4qKlw07nc6ZkIpaPbDbBS3HA==",
       "use": "product",
       "projects": [
         "Broiler.VM.Profile.JavaScript.Intl"
@@ -67,13 +67,13 @@
         "committed-feed",
         "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.4.pin",
-      "admittedBy": "SJL-7.4 and JSD-0074: the Unicode area's optional segmentation, referenced by the Intl data assembly alone, so that only a root whose closure carries that assembly carries it (rule I3); admitted on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only."
+      "pin": "eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.5.pin",
+      "admittedBy": "Since 2026-10-17 0.1.0-preview.5, published to nuget.org that day from Broiler.Unicode b802014 (its Publish workflow, run 39028782865), which both sources serve with one content hash: the faster normalization and case mapping and the constant-time tables they read, which this repository embeds. It replaced 0.1.0-preview.4, admitted by SJL-7.4 and JSD-0074: the Unicode area's optional segmentation, referenced by the Intl data assembly alone, so that only a root whose closure carries that assembly carries it (rule I3); admitted on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only."
     },
     {
       "id": "Broiler.Unicode.Generation",
-      "version": "0.1.0-preview.4",
-      "contentHash": "ai2J9zGFRnIVVqSlA/hkGbYUADObivp5Ee74QhAYlQuYQTPHQxxlD/cloFQlY9LWmGnVi8nZIMnxVWQXrb2GNw==",
+      "version": "0.1.0-preview.5",
+      "contentHash": "wVI62hdy+ujEfag6Uua4QJbBUzHA4+cHpB4RF8L91GNpmCJPRgHd/VDGDiwzZ66+CinNfs6/pX+zDc5xjFufGw==",
       "use": "test-only",
       "projects": [
         "Broiler.VM.Architecture.Tests"
@@ -82,8 +82,8 @@
         "committed-feed",
         "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.Unicode.Generation.0.1.0-preview.4.pin",
-      "admittedBy": "SJL-7.4 and JSD-0074 (decision SJL-D-6 (c)): the owner's table generator and pin, which rules N22 and N28 regenerate this repository's embedded tables with and rule I4 compares this repository's pin with; admitted test-only for the architecture tests, the first test project an entry names (rule I1 as revised on 2026-10-16), on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only. It depends on Broiler.Unicode.Algorithms 0.1.0-preview.4, which the committed feed holds beside it with its own pin and which reaches the test project transitively."
+      "pin": "eng/packages/Broiler.Unicode.Generation.0.1.0-preview.5.pin",
+      "admittedBy": "Since 2026-10-17 0.1.0-preview.5, published to nuget.org that day from Broiler.Unicode b802014 (its Publish workflow, run 39028782865), which both sources serve with one content hash: the faster normalization and case mapping and the constant-time tables they read, which this repository embeds. It replaced 0.1.0-preview.4, admitted by SJL-7.4 and JSD-0074 (decision SJL-D-6 (c)): the owner's table generator and pin, which rules N22 and N28 regenerate this repository's embedded tables with and rule I4 compares this repository's pin with; admitted test-only for the architecture tests, the first test project an entry names (rule I1 as revised on 2026-10-16), on 2026-10-16 as 0.1.0-preview.4, packed locally from Broiler.Unicode 6e14f93 and on the committed feed only. It depends on Broiler.Unicode.Algorithms 0.1.0-preview.4, which the committed feed holds beside it with its own pin and which reaches the test project transitively."
     }
   ]
 }

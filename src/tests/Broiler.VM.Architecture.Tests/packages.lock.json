@@ -4,11 +4,11 @@
     "net10.0": {
       "Broiler.Unicode.Generation": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.4, )",
-        "resolved": "0.1.0-preview.4",
-        "contentHash": "ai2J9zGFRnIVVqSlA/hkGbYUADObivp5Ee74QhAYlQuYQTPHQxxlD/cloFQlY9LWmGnVi8nZIMnxVWQXrb2GNw==",
+        "requested": "[0.1.0-preview.5, )",
+        "resolved": "0.1.0-preview.5",
+        "contentHash": "wVI62hdy+ujEfag6Uua4QJbBUzHA4+cHpB4RF8L91GNpmCJPRgHd/VDGDiwzZ66+CinNfs6/pX+zDc5xjFufGw==",
         "dependencies": {
-          "Broiler.Unicode.Algorithms": "0.1.0-preview.4"
+          "Broiler.Unicode.Algorithms": "0.1.0-preview.5"
         }
       },
       "Microsoft.CodeAnalysis.CSharp": {
@@ -179,9 +179,9 @@
       },
       "Broiler.Unicode.Algorithms": {
         "type": "CentralTransitive",
-        "requested": "[0.1.0-preview.4, )",
-        "resolved": "0.1.0-preview.4",
-        "contentHash": "8M7PNntCj6RfQF0VIkFXgrClg3RxCdbCKyFIQB+n6Q08jX4S3Mz3ged9qwz83ggzEJ+z60Yg5trOhZ5qaxS3Vg=="
+        "requested": "[0.1.0-preview.5, )",
+        "resolved": "0.1.0-preview.5",
+        "contentHash": "KMLRX1YipkukyafcoZuVxKP2qC5I05FIHTv4z1eyUgOu5aUpPq2eLYXtt4CP6CKbBJFUaWAUCZBZoEeOe04qsw=="
       }
     }
   }
