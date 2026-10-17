@@ -1,0 +1,83 @@
+sub-bundle sjl-7-001/measurement-revised
+evidence-class measurement
+decision docs/evidence/sjl-7-001/decision-rule-area-revised-2026-10-17.md part C, as revised: MET if and only if every lane's condition passes, before and after, for every workload and form; every effective-configuration line is identical across arms, lanes and repetitions; and for every workload and form D <= N.
+rule docs/evidence/sjl-7-001/decision-rule-area-revised-2026-10-17.md sha256=bc276642d1da6f433df4b6825d65a196656190a8904c16aa0b9929828109c1e1
+rule-it-revises docs/evidence/sjl-7-001/decision-rule-area.md sha256=b49087731652bdc17aa5b54a23198e4fd10045d5c8f96b2b535b7c8f25b755cd
+collector docs/evidence/sjl-7-001/collect-area.py sha256=9438de27cd290dd7efb0ad0a55e78481c6a8c9db5dac3aa6e6f2d755d68be903
+collected 2026-10-17T12:55:28Z
+arm-B-commit 7b44dc7f036ebe09ca92dcd0f1f9811aba84ec7e (the base commit base/identity.txt names; clean tree)
+arm-A-commit 6cc39c8a7f82835af8d501224545c3fcee4e6648 (it carries the revised rule, descends from 9508bd5b9b6d0f6d009418dda351fb0e7d846745 and differs from it in no file outside the documents; clean tree)
+arm-A-again the arm A binaries, measured a second time under another lane name
+since-after-commit be0b610c0510b849a7d67a0f9f4cf7a925c5b634 (after/identity.txt), each commit with its files outside the documents:
+  8c61c71203f9e5066e8289c18c7eeeb1c0230f1d SJL-7.6: bundle sjl-7-001's collector gains the after steps and part C's measure step: none
+  52a287c6c0bcd09cee979e391a91d6cf9cb5ac22 SJL-7.6: bundle sjl-7-001's after arm at be0b610, parts A and B met: none
+  5f73d03eb0a95a4bea8b57fdc5896461d3b80ea7 SJL-7.6: bundle sjl-7-001 keeps the vectors at corpus revision 20: none
+  365a0b1f40d814a45116d6913ec8979b97314e01 SJL-7.6: part C, this family's measurement, NOT MET on clause 3: none
+  8fad11fa7e45a071dc2e0527c7189090bd07604b SJL-7.6: the ledger records SJL-7.5, corpus revision 20 and SJL-7.6's evidence: none
+  a9e98829992ceeaf50a61acdb7b9619aa6b3c7e1 Merge pull request #136 from Broiler-Platform/claude/busy-lamport-m3yprr: none
+  fdc5dd331683001563e08fef4576813e91cc895d JavaScript profile: ASCII casing for Intl.Locale's variants and Temporal's duration designators: 8 files
+    CODE-ASSURANCE.md
+    HUMAN_REVIEW.md
+    assurance.manifest.json
+    src/Broiler.VM.Profile.JavaScript/JsLocaleTag.cs
+    src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs
+    src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs
+    src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs
+  d8d79a7bc94b32b386a419f6507a1f9ff69aba27 Merge main (SJL-7, #136) into claude/sjl-7-unicode-defects: none
+  38f157914ebb20a24bc719ffc03aeb68757ce450 Merge pull request #137 from Broiler-Platform/claude/sjl-7-unicode-defects: none
+  84017dd05ad59f611646a5f2bca096beca2d5d01 The JavaScript family takes Broiler.Unicode.Algorithms 0.1.0-preview.5: 33 files
+    CODE-ASSURANCE.md
+    Directory.Packages.props
+    HUMAN_REVIEW.md
+    THIRD_PARTY_NOTICES.md
+    assurance.manifest.json
+    eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.4.nupkg
+    eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.4.pin
+    eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.5.nupkg
+    eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.5.pin
+    eng/packages/Broiler.Unicode.Generation.0.1.0-preview.4.nupkg
+    eng/packages/Broiler.Unicode.Generation.0.1.0-preview.4.pin
+    eng/packages/Broiler.Unicode.Generation.0.1.0-preview.5.nupkg
+    eng/packages/Broiler.Unicode.Generation.0.1.0-preview.5.pin
+    eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.4.nupkg
+    eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.4.pin
+    eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.5.nupkg
+    eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.5.pin
+    eng/packages/README.md
+    src/Broiler.VM.Profile.JavaScript.Compiler/packages.lock.json
+    src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeTables.g.cs
+    src/Broiler.VM.Profile.JavaScript.Format/packages.lock.json
+    src/Broiler.VM.Profile.JavaScript.Intl/packages.lock.json
+    src/Broiler.VM.Profile.JavaScript/JsUnicode.cs
+    src/Broiler.VM.Profile.JavaScript/JsUnicodeTables.g.cs
+    src/Broiler.VM.Profile.JavaScript/packages.lock.json
+    src/tests/Broiler.VM.Architecture.Tests/UnicodePinRuleTests.cs
+    src/tests/Broiler.VM.Architecture.Tests/UnicodeTableEmbedding.cs
+    src/tests/Broiler.VM.Architecture.Tests/UnicodeTableGenerator.cs
+    src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json
+    src/tests/Broiler.VM.Architecture.Tests/packages.lock.json
+    src/tests/Broiler.VM.Architecture.Tests/witnesses/I1-product-entry-names-a-test-project.json.witness
+    src/tests/Broiler.VM.Architecture.Tests/witnesses/I1-segmentation-package-in-the-format.csproj.witness
+    src/tests/Broiler.VM.Architecture.Tests/witnesses/I1-test-only-entry-names-a-shipping-project.json.witness
+  4c69be1633405c001a788d055442ac56acfb702e The package baseline is bundle JS-10-008's, after the Unicode area's preview.5: none
+  9508bd5b9b6d0f6d009418dda351fb0e7d846745 Merge pull request #138 from Broiler-Platform/claude/unicode-algorithms-preview-5: none
+  6cc39c8a7f82835af8d501224545c3fcee4e6648 SJL-7: bundle sjl-7-001's part C revised after its run, arm A on Broiler.Unicode 0.1.0-preview.5: none
+binary arm B Broiler.VM.Composition.JavaScript.Cli.dll sha256=49835f81a14075044a0680e1776e38006fc28b3c42556c7c5de7f84d5d5c2b4d; every file of its output, binaries-b.sha256 sha256=bb5e49ede8fd6878e7ce1652aa4fb8772e6ef7f861ab56a228d0958765d24cdc
+binary arm A Broiler.VM.Composition.JavaScript.Cli.dll sha256=1dba27d147165ad6eaa2f50bb19ea0232a336fd5bcaee783dc0c4bd61926a788; every file of its output, binaries-a.sha256 sha256=1ac53d2adda3635ed220eb763d541a9a75be44bcc8b923771c71b6c9d287b9fa
+root src/compositions/Broiler.VM.Composition.JavaScript.Cli, Release, under the JIT
+rid linux-x64
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+repetitions 7 retained per lane (docs/baselines.md rule 4), 3 warm-up excluded from Q (eng/compare-forms.py's default)
+order in each repetition r (from 0): the arms rotated by r from B, A, A-again; each arm runs the workload, then its control
+allowance fuel=100000000000 wallClockMs=600000
+forms bytecode native
+native-backend x86-64-sysv
+configuration-check every child is run with --runtime; its line starting runtime-identifier= is kept
+workload src/tests/forms/unicode/normalize.js sha256=6e128b2fd1b8dc3b9ab3d0910a7452c4312ba64ec93ef21239d7cdce7eb8940a blob=0a5509f7ed619da0c1e103e1d7956b11b1f6830e (identical in both arms' trees)
+workload src/tests/forms/unicode/normalize.control.js sha256=dedcb0c1e96d95bd4c6f63609d330d0de69c420dca52e6a1e470675cfa9c0e94 blob=95ce73295a5cc519ce86a89cf7368e325ff79eb4 (identical in both arms' trees)
+workload src/tests/forms/unicode/casing.js sha256=c91cc3d72236de6c4f06436364022de5041b9c80723a5c8576c359f72e2fb802 blob=a8a29542135b00cb3e1175b76b2a1df897324ef1 (identical in both arms' trees)
+workload src/tests/forms/unicode/casing.control.js sha256=2b1c6c1c84e5b31ed11da66a5a3f1e3f03dfd600a79cb83ee732c55507d07066 blob=9df9d03aba32220d84ec6672c1dc81b1bf97bb0e (identical in both arms' trees)
+workload src/tests/forms/unicode/identifiers.js sha256=5b7c8016c213ccfe77e08827199e54174288216a570e15a359201029af304c7a blob=7991ed384e1c60f16e783eaac2e36915903bff62 (identical in both arms' trees)
+workload src/tests/forms/unicode/identifiers.control.js sha256=66ec56f0c53122dc9752fde1bcd0b3b983018d2405523ebd44de11932ac89f28 blob=e1d1be20abc2748d7f6dc8689eed7c22cfc1f3f2 (identical in both arms' trees)

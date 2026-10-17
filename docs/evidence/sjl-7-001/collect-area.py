@@ -37,9 +37,10 @@ Steps, each with `--only`:
                  smallest completing fuel allowance bisected under the bytecode form, then each form run at
                  that figure and at one less, with the answer it completes with, into base/fuel-parity.log;
   manifest       the SHA-256 of every file this collector writes or reads as its own (base/, after/, cutover/,
-                 vectors/, this file, the rule and the correspondence), with the base commit base/identity.txt
-                 names and the after commit after/identity.txt names, into area-manifest.json. measurement/ is
-                 a sub-bundle of its own evidence class, with its own manifest and hashes, and is not listed.
+                 vectors/, this file, the rule, its revision of 2026-10-17 and the correspondence), with the base
+                 commit base/identity.txt names and the after commit after/identity.txt names, into
+                 area-manifest.json. measurement/ and measurement-revised/ are each a sub-bundle of its own
+                 evidence class, with its own manifest and hashes, and are not listed.
   cutover-closures
                  every JavaScript composition root under JIT, trimming and Native AOT, as bundle sjl-3-001's
                  closures step publishes and runs them, at the tree of SJL-7.4's change that adds the Unicode
@@ -732,16 +733,18 @@ class Collector(area6.Collector):
                     if name.endswith(".mstat") or "__pycache__" in path:
                         continue
                     files[os.path.relpath(path, self.root_out).replace(os.sep, "/")] = self.sha256(path)
-        for name in ("collect-area.py", "decision-rule-area.md", "correspondence.md"):
-            files[name] = self.sha256(os.path.join(self.root_out, name))
+        for name in ("collect-area.py", "decision-rule-area.md", "decision-rule-area-revised-2026-10-17.md",
+                     "correspondence.md"):
+            if os.path.isfile(os.path.join(self.root_out, name)):
+                files[name] = self.sha256(os.path.join(self.root_out, name))
         document = {"bundle": "sjl-7-001", "repository": "Broiler.VM", "part": "the Unicode area (SJL-7.2 onwards)",
                     "baseCommit": recorded(os.path.join(self.root_out, "base", "identity.txt"), "base-commit")
                     or "(absent)",
                     "afterCommit": recorded(os.path.join(self.root_out, "after", "identity.txt"), "after-commit")
                     or "(absent)",
-                    "notListed": "measurement/, a sub-bundle of its own evidence class with its own manifest.txt and"
-                                 " hashes.txt; any Native AOT image record (*.mstat), which after/closures/mstat.sha256"
-                                 " and cutover/closures/mstat.sha256 name",
+                    "notListed": "measurement/ and measurement-revised/, each a sub-bundle of its own evidence class"
+                                 " with its own manifest.txt and hashes.txt; any Native AOT image record (*.mstat), which"
+                                 " after/closures/mstat.sha256 and cutover/closures/mstat.sha256 name",
                     "files": dict(sorted(files.items()))}
         with open(os.path.join(self.root_out, "area-manifest.json"), "w", encoding="utf-8", newline="\n") as stream:
             stream.write(json.dumps(document, indent=1) + "\n")
