@@ -1,0 +1,60 @@
+   gap 2026-03-08T02:30 America/New_York compatible | VM: 2026-03-08T03:30:00-04:00[America/New_York] | BJS: 2026-03-08T03:30:00-04:00[America/New_York]
+   gap 2026-03-08T02:30 America/New_York earlier | VM: 2026-03-08T01:30:00-05:00[America/New_York] | BJS: 2026-03-08T01:30:00-05:00[America/New_York]
+   gap 2026-03-08T02:30 America/New_York later | VM: 2026-03-08T03:30:00-04:00[America/New_York] | BJS: 2026-03-08T03:30:00-04:00[America/New_York]
+!! gap 2026-03-08T02:30 America/New_York reject | VM: THROWS RangeError: Temporal: the local time does not exist in America/New_York | BJS: THROWS RangeError: Temporal: wall-clock time does not exist in this time zone
+   overlap 2026-11-01T01:30 America/New_York compatible | VM: 2026-11-01T01:30:00-04:00[America/New_York] | BJS: 2026-11-01T01:30:00-04:00[America/New_York]
+   overlap 2026-11-01T01:30 America/New_York earlier | VM: 2026-11-01T01:30:00-04:00[America/New_York] | BJS: 2026-11-01T01:30:00-04:00[America/New_York]
+   overlap 2026-11-01T01:30 America/New_York later | VM: 2026-11-01T01:30:00-05:00[America/New_York] | BJS: 2026-11-01T01:30:00-05:00[America/New_York]
+!! overlap 2026-11-01T01:30 America/New_York reject | VM: THROWS RangeError: Temporal: the local time is ambiguous in America/New_York | BJS: THROWS RangeError: Temporal: wall-clock time is ambiguous in this time zone
+   gap 2026-03-29T02:30 Europe/Berlin compatible | VM: 2026-03-29T03:30:00+02:00[Europe/Berlin] | BJS: 2026-03-29T03:30:00+02:00[Europe/Berlin]
+   gap 2026-03-29T02:30 Europe/Berlin earlier | VM: 2026-03-29T01:30:00+01:00[Europe/Berlin] | BJS: 2026-03-29T01:30:00+01:00[Europe/Berlin]
+   gap 2026-03-29T02:30 Europe/Berlin later | VM: 2026-03-29T03:30:00+02:00[Europe/Berlin] | BJS: 2026-03-29T03:30:00+02:00[Europe/Berlin]
+!! gap 2026-03-29T02:30 Europe/Berlin reject | VM: THROWS RangeError: Temporal: the local time does not exist in Europe/Berlin | BJS: THROWS RangeError: Temporal: wall-clock time does not exist in this time zone
+   overlap 2026-10-25T02:30 Europe/Berlin compatible | VM: 2026-10-25T02:30:00+02:00[Europe/Berlin] | BJS: 2026-10-25T02:30:00+02:00[Europe/Berlin]
+   overlap 2026-10-25T02:30 Europe/Berlin earlier | VM: 2026-10-25T02:30:00+02:00[Europe/Berlin] | BJS: 2026-10-25T02:30:00+02:00[Europe/Berlin]
+   overlap 2026-10-25T02:30 Europe/Berlin later | VM: 2026-10-25T02:30:00+01:00[Europe/Berlin] | BJS: 2026-10-25T02:30:00+01:00[Europe/Berlin]
+!! overlap 2026-10-25T02:30 Europe/Berlin reject | VM: THROWS RangeError: Temporal: the local time is ambiguous in Europe/Berlin | BJS: THROWS RangeError: Temporal: wall-clock time is ambiguous in this time zone
+   overlap 30min 2026-04-05T01:45 Australia/Lord_Howe compatible | VM: 2026-04-05T01:45:00+11:00[Australia/Lord_Howe] | BJS: 2026-04-05T01:45:00+11:00[Australia/Lord_Howe]
+   overlap 30min 2026-04-05T01:45 Australia/Lord_Howe earlier | VM: 2026-04-05T01:45:00+11:00[Australia/Lord_Howe] | BJS: 2026-04-05T01:45:00+11:00[Australia/Lord_Howe]
+   overlap 30min 2026-04-05T01:45 Australia/Lord_Howe later | VM: 2026-04-05T01:45:00+10:30[Australia/Lord_Howe] | BJS: 2026-04-05T01:45:00+10:30[Australia/Lord_Howe]
+!! overlap 30min 2026-04-05T01:45 Australia/Lord_Howe reject | VM: THROWS RangeError: Temporal: the local time is ambiguous in Australia/Lord_Howe | BJS: THROWS RangeError: Temporal: wall-clock time is ambiguous in this time zone
+   gap 30min 2026-10-04T02:15 Australia/Lord_Howe compatible | VM: 2026-10-04T02:45:00+11:00[Australia/Lord_Howe] | BJS: 2026-10-04T02:45:00+11:00[Australia/Lord_Howe]
+   gap 30min 2026-10-04T02:15 Australia/Lord_Howe earlier | VM: 2026-10-04T01:45:00+10:30[Australia/Lord_Howe] | BJS: 2026-10-04T01:45:00+10:30[Australia/Lord_Howe]
+   gap 30min 2026-10-04T02:15 Australia/Lord_Howe later | VM: 2026-10-04T02:45:00+11:00[Australia/Lord_Howe] | BJS: 2026-10-04T02:45:00+11:00[Australia/Lord_Howe]
+!! gap 30min 2026-10-04T02:15 Australia/Lord_Howe reject | VM: THROWS RangeError: Temporal: the local time does not exist in Australia/Lord_Howe | BJS: THROWS RangeError: Temporal: wall-clock time does not exist in this time zone
+   gap 24h 1994-12-31T12:00 Pacific/Kiritimati compatible | VM: 1995-01-01T12:00:00+14:00[Pacific/Kiritimati] | BJS: 1995-01-01T12:00:00+14:00[Pacific/Kiritimati]
+   gap 24h 1994-12-31T12:00 Pacific/Kiritimati earlier | VM: 1994-12-30T12:00:00-10:00[Pacific/Kiritimati] | BJS: 1994-12-30T12:00:00-10:00[Pacific/Kiritimati]
+   gap 24h 1994-12-31T12:00 Pacific/Kiritimati later | VM: 1995-01-01T12:00:00+14:00[Pacific/Kiritimati] | BJS: 1995-01-01T12:00:00+14:00[Pacific/Kiritimati]
+!! gap 24h 1994-12-31T12:00 Pacific/Kiritimati reject | VM: THROWS RangeError: Temporal: the local time does not exist in Pacific/Kiritimati | BJS: THROWS RangeError: Temporal: wall-clock time does not exist in this time zone
+   gap 24h 2011-12-30T12:00 Pacific/Apia compatible | VM: 2011-12-31T12:00:00+14:00[Pacific/Apia] | BJS: 2011-12-31T12:00:00+14:00[Pacific/Apia]
+   gap 24h 2011-12-30T12:00 Pacific/Apia earlier | VM: 2011-12-29T12:00:00-10:00[Pacific/Apia] | BJS: 2011-12-29T12:00:00-10:00[Pacific/Apia]
+   gap 24h 2011-12-30T12:00 Pacific/Apia later | VM: 2011-12-31T12:00:00+14:00[Pacific/Apia] | BJS: 2011-12-31T12:00:00+14:00[Pacific/Apia]
+!! gap 24h 2011-12-30T12:00 Pacific/Apia reject | VM: THROWS RangeError: Temporal: the local time does not exist in Pacific/Apia | BJS: THROWS RangeError: Temporal: wall-clock time does not exist in this time zone
+   overlap 24h 1867-10-19T12:00 America/Juneau compatible | VM: 1867-10-19T12:00:00+15:02[America/Juneau] | BJS: 1867-10-19T12:00:00+15:02[America/Juneau]
+   overlap 24h 1867-10-19T12:00 America/Juneau earlier | VM: 1867-10-19T12:00:00+15:02[America/Juneau] | BJS: 1867-10-19T12:00:00+15:02[America/Juneau]
+   overlap 24h 1867-10-19T12:00 America/Juneau later | VM: 1867-10-19T12:00:00-08:58[America/Juneau] | BJS: 1867-10-19T12:00:00-08:58[America/Juneau]
+!! overlap 24h 1867-10-19T12:00 America/Juneau reject | VM: THROWS RangeError: Temporal: the local time is ambiguous in America/Juneau | BJS: THROWS RangeError: Temporal: wall-clock time is ambiguous in this time zone
+   gap sub-minute 1972-01-07T00:20:00 Africa/Monrovia compatible | VM: 1972-01-07T01:04:30+00:00[Africa/Monrovia] | BJS: 1972-01-07T01:04:30+00:00[Africa/Monrovia]
+   gap sub-minute 1972-01-07T00:20:00 Africa/Monrovia earlier | VM: 1972-01-06T23:35:30-00:45[Africa/Monrovia] | BJS: 1972-01-06T23:35:30-00:45[Africa/Monrovia]
+   gap sub-minute 1972-01-07T00:20:00 Africa/Monrovia later | VM: 1972-01-07T01:04:30+00:00[Africa/Monrovia] | BJS: 1972-01-07T01:04:30+00:00[Africa/Monrovia]
+!! gap sub-minute 1972-01-07T00:20:00 Africa/Monrovia reject | VM: THROWS RangeError: Temporal: the local time does not exist in Africa/Monrovia | BJS: THROWS RangeError: Temporal: wall-clock time does not exist in this time zone
+!! gap after 2037 2040-03-11T02:30 America/New_York compatible | VM: 2040-03-11T03:30:00-04:00[America/New_York] | BJS: 2040-03-11T02:30:00-05:00[America/New_York]
+!! gap after 2037 2040-03-11T02:30 America/New_York earlier | VM: 2040-03-11T01:30:00-05:00[America/New_York] | BJS: 2040-03-11T02:30:00-05:00[America/New_York]
+!! gap after 2037 2040-03-11T02:30 America/New_York later | VM: 2040-03-11T03:30:00-04:00[America/New_York] | BJS: 2040-03-11T02:30:00-05:00[America/New_York]
+!! gap after 2037 2040-03-11T02:30 America/New_York reject | VM: THROWS RangeError: Temporal: the local time does not exist in America/New_York | BJS: 2040-03-11T02:30:00-05:00[America/New_York]
+!! overlap after 2037 2040-11-04T01:30 America/New_York compatible | VM: 2040-11-04T01:30:00-04:00[America/New_York] | BJS: 2040-11-04T01:30:00-05:00[America/New_York]
+!! overlap after 2037 2040-11-04T01:30 America/New_York earlier | VM: 2040-11-04T01:30:00-04:00[America/New_York] | BJS: 2040-11-04T01:30:00-05:00[America/New_York]
+   overlap after 2037 2040-11-04T01:30 America/New_York later | VM: 2040-11-04T01:30:00-05:00[America/New_York] | BJS: 2040-11-04T01:30:00-05:00[America/New_York]
+!! overlap after 2037 2040-11-04T01:30 America/New_York reject | VM: THROWS RangeError: Temporal: the local time is ambiguous in America/New_York | BJS: 2040-11-04T01:30:00-05:00[America/New_York]
+   plain 2026-07-01T12:00 America/New_York compatible | VM: 2026-07-01T12:00:00-04:00[America/New_York] | BJS: 2026-07-01T12:00:00-04:00[America/New_York]
+   plain 2026-07-01T12:00 America/New_York earlier | VM: 2026-07-01T12:00:00-04:00[America/New_York] | BJS: 2026-07-01T12:00:00-04:00[America/New_York]
+   plain 2026-07-01T12:00 America/New_York later | VM: 2026-07-01T12:00:00-04:00[America/New_York] | BJS: 2026-07-01T12:00:00-04:00[America/New_York]
+   plain 2026-07-01T12:00 America/New_York reject | VM: 2026-07-01T12:00:00-04:00[America/New_York] | BJS: 2026-07-01T12:00:00-04:00[America/New_York]
+   ZonedDateTime.from overlap with offset -05:00 | VM: 2026-11-01T01:30:00-05:00[America/New_York] | BJS: 2026-11-01T01:30:00-05:00[America/New_York]
+!! ZonedDateTime.from mismatched offset (reject default) | VM: THROWS RangeError: Temporal: the offset does not agree with the time zone | BJS: THROWS RangeError: Temporal.ZonedDateTime: offset does not match the time zone in "2026-07-01T12:00+01:00[America/New_York]"
+   ZonedDateTime.from bag gap later | VM: 2026-03-08T03:30:00-04:00[America/New_York] | BJS: 2026-03-08T03:30:00-04:00[America/New_York]
+   withPlainTime into gap | VM: 2026-03-08T03:30:00-04:00[America/New_York] | BJS: 2026-03-08T03:30:00-04:00[America/New_York]
+   hoursInDay New York 2026-03-08 | VM: 23 | BJS: 23
+   hoursInDay New York 2026-11-01 | VM: 25 | BJS: 25
+   hoursInDay Apia 2011-12-29 | VM: 24 | BJS: 24
+!! hoursInDay New York 2040-03-11 | VM: 23 | BJS: 24

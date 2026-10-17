@@ -1,0 +1,42 @@
+7,8c7,8
+< persian 1176 => 1797-03-20 false 365 29
+< persian 1177 => 1798-03-20 true 366 30
+---
+> persian 1176 => 1797-03-20 true 366 30
+> persian 1177 => 1798-03-21 false 365 29
+387c387
+< persian 1 => 0622-03-21 true 366 30
+---
+> persian 1 => 0622-03-22 false 365 29
+390c390
+< persian 100 => 0721-03-21 true 366 30
+---
+> persian 100 => 0721-03-22 false 365 29
+393c393
+< persian 1177 => 1798-03-20 true 366 30
+---
+> persian 1177 => 1798-03-21 false 365 29
+402,406c402,406
+< persian 5000 => 5621-03-20 true 366 30
+< persian 9000 => 9621-03-20 false 365 29
+< persian 9376 => 9997-03-20 false 365 29
+< persian 9377 => 9998-03-20 true 366 30
+< persian 9378 => 9999-03-21 false 365 29
+---
+> persian 5000 => 5621-03-20 false 365 29
+> persian 9000 => 9621-03-17 true 366 30
+> persian 9376 => 9997-03-17 false 365 29
+> persian 9377 => 9998-03-17 true 366 30
+> persian 9378 => 9999-03-18 false 365 29
+413,417c413,417
+< persian from 0622-03-21 => ap,1,1,M01,1,1,31,366,true back 0622-03-21
+< persian from 0622-03-22 => ap,1,1,M01,2,2,31,366,true back 0622-03-22
+< persian from 0622-03-23 => ap,1,1,M01,3,3,31,366,true back 0622-03-23
+< persian from 9999-12-31 => ap,9378,9378,M10,10,286,30,365,false back 9999-12-31
+< persian from +010000-01-01 => ap,9378,9378,M10,11,287,30,365,false back +010000-01-01
+---
+> persian from 0622-03-21 => ap,1,1,M01,1,1,31,365,false back 0622-03-22
+> persian from 0622-03-22 => ap,1,1,M01,1,1,31,365,false back 0622-03-22
+> persian from 0622-03-23 => ap,1,1,M01,2,2,31,365,false back 0622-03-23
+> persian from 9999-12-31 => ap,9378,9378,M10,13,289,30,365,false back 9999-12-31
+> persian from +010000-01-01 => ap,9378,9378,M10,11,287,30,365,false back 9999-12-29

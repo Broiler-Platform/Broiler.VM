@@ -1,0 +1,5 @@
+runtime 10.0.12 invariant=culture-invariant
+ChineseLunisolarCalendar 1901-02-19 .. 2101-01-28; years 1901..2100
+KoreanLunisolarCalendar  0918-02-19 .. 2051-02-10; years 918..2050
+PersianCalendar          0622-03-22 .. 9999-12-31; years 1..9378
+UmAlQuraCalendar (unused) 1900-04-30 .. 2077-11-16; years 1318..1500

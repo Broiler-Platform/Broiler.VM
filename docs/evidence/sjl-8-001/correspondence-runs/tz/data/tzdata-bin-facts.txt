@@ -1,0 +1,26 @@
+packed bytes 128107 sha256 7b87bc448aeeefc183dc3c170bd40ee671ba50d3cb80bcac439c0d56a9ae9f71
+inflated bytes 492972
+format 1 version 2025b
+zones 447 links 151 identifiers 598
+Factory: zone
+America/New_York: zone; TZif v2; 236 transitions; first [('1883-11-18T17:00:00Z', -18000), ('1918-03-31T07:00:00Z', -14400), ('1918-10-27T06:00:00Z', -18000)]; last 2037-11-01T06:00:00Z -> -18000; footer 'EST5EDT,M3.2.0,M11.1.0'; type0 (-17762, 0)
+Europe/Berlin: zone; TZif v2; 143 transitions; first [('1893-03-31T23:06:32Z', 3600), ('1916-04-30T22:00:00Z', 7200), ('1916-09-30T23:00:00Z', 3600)]; last 2037-10-25T01:00:00Z -> 3600; footer 'CET-1CEST,M3.5.0,M10.5.0/3'; type0 (3208, 0)
+Europe/Amsterdam: zone; TZif v2; 180 transitions; first [('1834-12-31T23:40:28Z', 1172), ('1916-04-30T23:40:28Z', 4772), ('1916-09-30T22:40:28Z', 1172)]; last 2037-10-25T01:00:00Z -> 3600; footer 'CET-1CEST,M3.5.0,M10.5.0/3'; type0 (1172, 0)
+Atlantic/Reykjavik: zone; TZif v2; 68 transitions; first [('1908-01-01T01:28:00Z', -3600), ('1917-02-20T00:00:00Z', 0), ('1917-10-21T01:00:00Z', -3600)]; last 1968-04-07T02:00:00Z -> 0; footer 'GMT0'; type0 (-5280, 0)
+Europe/Bratislava: link -> Europe/Prague; TZif v2; 144 transitions; first [('1849-12-31T23:02:16Z', 3464), ('1891-09-30T23:02:16Z', 3600), ('1916-04-30T22:00:00Z', 7200)]; last 2037-10-25T01:00:00Z -> 3600; footer 'CET-1CEST,M3.5.0,M10.5.0/3'; type0 (3464, 0)
+Asia/Calcutta: link -> Asia/Kolkata; TZif v2; 7 transitions; first [('1854-06-27T18:06:32Z', 21200), ('1869-12-31T18:06:40Z', 19270), ('1905-12-31T18:38:50Z', 19800)]; last 1945-10-14T17:30:00Z -> 19800; footer 'IST-5:30'; type0 (21208, 0)
+Asia/Kolkata: zone; TZif v2; 7 transitions; first [('1854-06-27T18:06:32Z', 21200), ('1869-12-31T18:06:40Z', 19270), ('1905-12-31T18:38:50Z', 19800)]; last 1945-10-14T17:30:00Z -> 19800; footer 'IST-5:30'; type0 (21208, 0)
+Factory: zone; TZif v2; 0 transitions; first []; last None -> None; footer '<-00>0'; type0 (0, 0)
+Etc/GMT+5: zone; TZif v2; 0 transitions; first []; last None -> None; footer '<-05>5'; type0 (-18000, 0)
+America/Santiago: zone; TZif v3; 160 transitions; first [('1890-01-01T04:42:45Z', -16965), ('1910-01-10T04:42:45Z', -18000), ('1916-07-01T05:00:00Z', -16965)]; last 2038-01-19T03:14:07Z -> -10800; footer '<-04>4<-03>,M9.1.6/24,M4.1.6/24'; type0 (-16965, 0)
+America/Havana: zone; TZif v2; 156 transitions; first [('1890-01-01T05:29:28Z', -19776), ('1925-07-19T17:29:36Z', -18000), ('1928-06-10T05:00:00Z', -14400)]; last 2037-11-01T05:00:00Z -> -18000; footer 'CST5CDT,M3.2.0/0,M11.1.0/1'; type0 (-19768, 0)
+Asia/Beirut: zone; TZif v2; 141 transitions; first [('1879-12-31T21:38:00Z', 7200), ('1920-03-27T22:00:00Z', 10800), ('1920-10-24T21:00:00Z', 7200)]; last 2037-10-24T21:00:00Z -> 7200; footer 'EET-2EEST,M3.5.0/0,M10.5.0/0'; type0 (8520, 0)
+Africa/Casablanca: zone; TZif v2; 196 transitions; first [('1913-10-26T00:30:20Z', 0), ('1939-09-12T00:00:00Z', 3600), ('1939-11-18T23:00:00Z', 0)]; last 2087-05-11T02:00:00Z -> 3600; footer '<+00>0<+01>,0/0,J365/25'; type0 (-1820, 0)
+UTC: link -> Etc/UTC; TZif v2; 0 transitions; first []; last None -> None; footer 'UTC0'; type0 (0, 0)
+Etc/UTC: zone; TZif v2; 0 transitions; first []; last None -> None; footer 'UTC0'; type0 (0, 0)
+GMT: link -> Etc/GMT; TZif v2; 0 transitions; first []; last None -> None; footer 'GMT0'; type0 (0, 0)
+EST5EDT: zone; TZif v2; 149 transitions; first [('1918-03-31T07:00:00Z', -14400), ('1918-10-27T06:00:00Z', -18000), ('1919-03-30T07:00:00Z', -14400)]; last 2037-11-01T06:00:00Z -> -18000; footer 'EST5EDT,M3.2.0,M11.1.0'; type0 (-18000, 0)
+CET: zone; TZif v2; 136 transitions; first [('1916-04-30T22:00:00Z', 7200), ('1916-09-30T23:00:00Z', 3600), ('1917-04-16T01:00:00Z', 7200)]; last 2037-10-25T01:00:00Z -> 3600; footer 'CET-1CEST,M3.5.0,M10.5.0/3'; type0 (3600, 0)
+Europe/Kiev: link -> Europe/Kyiv; TZif v2; 121 transitions; first [('1879-12-31T21:57:56Z', 7324), ('1924-05-01T21:57:56Z', 7200), ('1930-06-20T22:00:00Z', 10800)]; last 2037-10-25T01:00:00Z -> 7200; footer 'EET-2EEST,M3.5.0/3,M10.5.0/4'; type0 (7324, 0)
+Europe/Kyiv: zone; TZif v2; 121 transitions; first [('1879-12-31T21:57:56Z', 7324), ('1924-05-01T21:57:56Z', 7200), ('1930-06-20T22:00:00Z', 10800)]; last 2037-10-25T01:00:00Z -> 7200; footer 'EET-2EEST,M3.5.0/3,M10.5.0/4'; type0 (7324, 0)
+America/Buenos_Aires: link -> America/Argentina/Buenos_Aires; TZif v2; 62 transitions; first [('1894-10-31T03:53:48Z', -15408), ('1920-05-01T04:16:48Z', -14400), ('1930-12-01T04:00:00Z', -10800)]; last 2038-01-19T03:14:07Z -> -10800; footer '<-03>3'; type0 (-14028, 0)

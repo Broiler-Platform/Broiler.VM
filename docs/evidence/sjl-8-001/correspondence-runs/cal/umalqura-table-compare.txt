@@ -1,0 +1,3 @@
+ICU4X years 1300 .. 1600 301 ; CLDR years 1300 .. 1600 301
+years differing: 0
+ICU4C hex entries (in ICU4X test) 301 ; CLDR hex entries 301 ; identical: True

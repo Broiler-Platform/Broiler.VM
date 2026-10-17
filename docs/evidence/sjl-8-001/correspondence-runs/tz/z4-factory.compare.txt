@@ -1,0 +1,4 @@
+!! new Temporal.ZonedDateTime(0n, "Factory") | VM: THROWS RangeError: Temporal: Factory is not an available time zone | BJS: 1970-01-01T00:00:00+00:00[Factory]
+!! new Temporal.ZonedDateTime(0n, "factory").timeZoneId | VM: THROWS RangeError: Temporal: factory is not an available time zone | BJS: Factory
+!! Intl.DateTimeFormat timeZone Factory resolved | VM: THROWS RangeError: Intl.DateTimeFormat: Factory is not an available time zone | BJS: Factory
+!! Intl.supportedValuesOf("timeZone") includes Factory | VM: false | BJS: true

@@ -1,0 +1,476 @@
+6c6
+< Africa/Asmera | Africa/Asmera | Africa/Asmara | equals Africa/Asmara
+---
+> Africa/Asmera | Africa/Asmera | Africa/Asmera | equals Africa/Asmara
+51c51
+< Africa/Timbuktu | Africa/Timbuktu | Africa/Bamako | equals Africa/Bamako
+---
+> Africa/Timbuktu | Africa/Timbuktu | Africa/Timbuktu | equals Africa/Bamako
+62c62
+< America/Argentina/ComodRivadavia | America/Argentina/ComodRivadavia | America/Argentina/Catamarca | equals America/Argentina/Catamarca
+---
+> America/Argentina/ComodRivadavia | America/Argentina/ComodRivadavia | America/Argentina/ComodRivadavia | equals America/Argentina/Catamarca
+76c76
+< America/Atka | America/Atka | America/Adak | equals America/Adak
+---
+> America/Atka | America/Atka | America/Atka | equals America/Adak
+86c86
+< America/Buenos_Aires | America/Buenos_Aires | America/Argentina/Buenos_Aires | equals America/Argentina/Buenos_Aires
+---
+> America/Buenos_Aires | America/Buenos_Aires | America/Buenos_Aires | equals America/Argentina/Buenos_Aires
+91c91
+< America/Catamarca | America/Catamarca | America/Argentina/Catamarca | equals America/Argentina/Catamarca
+---
+> America/Catamarca | America/Catamarca | America/Catamarca | equals America/Argentina/Catamarca
+97,98c97,98
+< America/Coral_Harbour | America/Coral_Harbour | America/Atikokan | equals America/Atikokan
+< America/Cordoba | America/Cordoba | America/Argentina/Cordoba | equals America/Argentina/Cordoba
+---
+> America/Coral_Harbour | America/Coral_Harbour | America/Coral_Harbour | equals America/Atikokan
+> America/Cordoba | America/Cordoba | America/Cordoba | equals America/Argentina/Cordoba
+113c113
+< America/Ensenada | America/Ensenada | America/Tijuana | equals America/Tijuana
+---
+> America/Ensenada | America/Ensenada | America/Ensenada | equals America/Tijuana
+115c115
+< America/Fort_Wayne | America/Fort_Wayne | America/Indiana/Indianapolis | equals America/Indiana/Indianapolis
+---
+> America/Fort_Wayne | America/Fort_Wayne | America/Fort_Wayne | equals America/Indiana/Indianapolis
+118c118
+< America/Godthab | America/Godthab | America/Nuuk | equals America/Nuuk
+---
+> America/Godthab | America/Godthab | America/Godthab | equals America/Nuuk
+137c137
+< America/Indianapolis | America/Indianapolis | America/Indiana/Indianapolis | equals America/Indiana/Indianapolis
+---
+> America/Indianapolis | America/Indianapolis | America/Indianapolis | equals America/Indiana/Indianapolis
+141c141
+< America/Jujuy | America/Jujuy | America/Argentina/Jujuy | equals America/Argentina/Jujuy
+---
+> America/Jujuy | America/Jujuy | America/Jujuy | equals America/Argentina/Jujuy
+145,146c145,146
+< America/Knox_IN | America/Knox_IN | America/Indiana/Knox | equals America/Indiana/Knox
+< America/Kralendijk | America/Kralendijk | America/Kralendijk | listed
+---
+> America/Knox_IN | America/Knox_IN | America/Knox_IN | equals America/Indiana/Knox
+> America/Kralendijk | America/Kralendijk | America/Kralendijk | equals America/Curacao
+150,151c150,151
+< America/Louisville | America/Louisville | America/Kentucky/Louisville | equals America/Kentucky/Louisville
+< America/Lower_Princes | America/Lower_Princes | America/Lower_Princes | listed
+---
+> America/Louisville | America/Louisville | America/Louisville | equals America/Kentucky/Louisville
+> America/Lower_Princes | America/Lower_Princes | America/Lower_Princes | equals America/Curacao
+155c155
+< America/Marigot | America/Marigot | America/Marigot | listed
+---
+> America/Marigot | America/Marigot | America/Marigot | equals America/Port_of_Spain
+159c159
+< America/Mendoza | America/Mendoza | America/Argentina/Mendoza | equals America/Argentina/Mendoza
+---
+> America/Mendoza | America/Mendoza | America/Mendoza | equals America/Argentina/Mendoza
+168c168
+< America/Montreal | America/Montreal | America/Toronto | equals America/Toronto
+---
+> America/Montreal | America/Montreal | America/Montreal | equals America/Toronto
+172c172
+< America/Nipigon | America/Nipigon | America/Toronto | equals America/Toronto
+---
+> America/Nipigon | America/Nipigon | America/Nipigon | equals America/Toronto
+181c181
+< America/Pangnirtung | America/Pangnirtung | America/Iqaluit | equals America/Iqaluit
+---
+> America/Pangnirtung | America/Pangnirtung | America/Pangnirtung | equals America/Iqaluit
+186c186
+< America/Porto_Acre | America/Porto_Acre | America/Rio_Branco | equals America/Rio_Branco
+---
+> America/Porto_Acre | America/Porto_Acre | America/Porto_Acre | equals America/Rio_Branco
+190c190
+< America/Rainy_River | America/Rainy_River | America/Winnipeg | equals America/Winnipeg
+---
+> America/Rainy_River | America/Rainy_River | America/Rainy_River | equals America/Winnipeg
+196,197c196,197
+< America/Rosario | America/Rosario | America/Argentina/Cordoba | equals America/Argentina/Cordoba
+< America/Santa_Isabel | America/Santa_Isabel | America/Tijuana | equals America/Tijuana
+---
+> America/Rosario | America/Rosario | America/Rosario | equals America/Argentina/Cordoba
+> America/Santa_Isabel | America/Santa_Isabel | America/Santa_Isabel | equals America/Tijuana
+203c203
+< America/Shiprock | America/Shiprock | America/Denver | equals America/Denver
+---
+> America/Shiprock | America/Shiprock | America/Shiprock | equals America/Denver
+205c205
+< America/St_Barthelemy | America/St_Barthelemy | America/St_Barthelemy | listed
+---
+> America/St_Barthelemy | America/St_Barthelemy | America/St_Barthelemy | equals America/Port_of_Spain
+214c214
+< America/Thunder_Bay | America/Thunder_Bay | America/Toronto | equals America/Toronto
+---
+> America/Thunder_Bay | America/Thunder_Bay | America/Thunder_Bay | equals America/Toronto
+219c219
+< America/Virgin | America/Virgin | America/St_Thomas | equals America/St_Thomas
+---
+> America/Virgin | America/Virgin | America/Virgin | equals America/St_Thomas
+223c223
+< America/Yellowknife | America/Yellowknife | America/Edmonton | equals America/Edmonton
+---
+> America/Yellowknife | America/Yellowknife | America/Yellowknife | equals America/Edmonton
+232c232
+< Antarctica/South_Pole | Antarctica/South_Pole | Antarctica/McMurdo | equals Antarctica/McMurdo
+---
+> Antarctica/South_Pole | Antarctica/South_Pole | Antarctica/South_Pole | equals Antarctica/McMurdo
+236c236
+< Arctic/Longyearbyen | Arctic/Longyearbyen | Arctic/Longyearbyen | listed
+---
+> Arctic/Longyearbyen | Arctic/Longyearbyen | Arctic/Longyearbyen | equals Europe/Oslo
+244c244
+< Asia/Ashkhabad | Asia/Ashkhabad | Asia/Ashgabat | equals Asia/Ashgabat
+---
+> Asia/Ashkhabad | Asia/Ashkhabad | Asia/Ashkhabad | equals Asia/Ashgabat
+254c254
+< Asia/Calcutta | Asia/Calcutta | Asia/Kolkata | equals Asia/Kolkata
+---
+> Asia/Calcutta | Asia/Calcutta | Asia/Calcutta | equals Asia/Kolkata
+256,258c256,258
+< Asia/Choibalsan | Asia/Choibalsan | Asia/Ulaanbaatar | equals Asia/Ulaanbaatar
+< Asia/Chongqing | Asia/Chongqing | Asia/Shanghai | equals Asia/Shanghai
+< Asia/Chungking | Asia/Chungking | Asia/Shanghai | equals Asia/Shanghai
+---
+> Asia/Choibalsan | Asia/Choibalsan | Asia/Choibalsan | equals Asia/Ulaanbaatar
+> Asia/Chongqing | Asia/Chongqing | Asia/Chongqing | equals Asia/Shanghai
+> Asia/Chungking | Asia/Chungking | Asia/Chungking | equals Asia/Shanghai
+260c260
+< Asia/Dacca | Asia/Dacca | Asia/Dhaka | equals Asia/Dhaka
+---
+> Asia/Dacca | Asia/Dacca | Asia/Dacca | equals Asia/Dhaka
+268c268
+< Asia/Harbin | Asia/Harbin | Asia/Shanghai | equals Asia/Shanghai
+---
+> Asia/Harbin | Asia/Harbin | Asia/Harbin | equals Asia/Shanghai
+274c274
+< Asia/Istanbul | Asia/Istanbul | Europe/Istanbul | equals Europe/Istanbul
+---
+> Asia/Istanbul | Asia/Istanbul | Asia/Istanbul | equals Europe/Istanbul
+281c281
+< Asia/Kashgar | Asia/Kashgar | Asia/Urumqi | equals Asia/Urumqi
+---
+> Asia/Kashgar | Asia/Kashgar | Asia/Kashgar | equals Asia/Urumqi
+283c283
+< Asia/Katmandu | Asia/Katmandu | Asia/Kathmandu | equals Asia/Kathmandu
+---
+> Asia/Katmandu | Asia/Katmandu | Asia/Katmandu | equals Asia/Kathmandu
+290c290
+< Asia/Macao | Asia/Macao | Asia/Macau | equals Asia/Macau
+---
+> Asia/Macao | Asia/Macao | Asia/Macao | equals Asia/Macau
+307c307
+< Asia/Rangoon | Asia/Rangoon | Asia/Yangon | equals Asia/Yangon
+---
+> Asia/Rangoon | Asia/Rangoon | Asia/Rangoon | equals Asia/Yangon
+309c309
+< Asia/Saigon | Asia/Saigon | Asia/Ho_Chi_Minh | equals Asia/Ho_Chi_Minh
+---
+> Asia/Saigon | Asia/Saigon | Asia/Saigon | equals Asia/Ho_Chi_Minh
+320,321c320,321
+< Asia/Tel_Aviv | Asia/Tel_Aviv | Asia/Jerusalem | equals Asia/Jerusalem
+< Asia/Thimbu | Asia/Thimbu | Asia/Thimphu | equals Asia/Thimphu
+---
+> Asia/Tel_Aviv | Asia/Tel_Aviv | Asia/Tel_Aviv | equals Asia/Jerusalem
+> Asia/Thimbu | Asia/Thimbu | Asia/Thimbu | equals Asia/Thimphu
+325c325
+< Asia/Ujung_Pandang | Asia/Ujung_Pandang | Asia/Makassar | equals Asia/Makassar
+---
+> Asia/Ujung_Pandang | Asia/Ujung_Pandang | Asia/Ujung_Pandang | equals Asia/Makassar
+327c327
+< Asia/Ulan_Bator | Asia/Ulan_Bator | Asia/Ulaanbaatar | equals Asia/Ulaanbaatar
+---
+> Asia/Ulan_Bator | Asia/Ulan_Bator | Asia/Ulan_Bator | equals Asia/Ulaanbaatar
+340c340
+< Atlantic/Faeroe | Atlantic/Faeroe | Atlantic/Faroe | equals Atlantic/Faroe
+---
+> Atlantic/Faeroe | Atlantic/Faeroe | Atlantic/Faeroe | equals Atlantic/Faroe
+342c342
+< Atlantic/Jan_Mayen | Atlantic/Jan_Mayen | Arctic/Longyearbyen | equals Arctic/Longyearbyen
+---
+> Atlantic/Jan_Mayen | Atlantic/Jan_Mayen | Atlantic/Jan_Mayen | equals Europe/Oslo
+348c348
+< Australia/ACT | Australia/ACT | Australia/Sydney | equals Australia/Sydney
+---
+> Australia/ACT | Australia/ACT | Australia/ACT | equals Australia/Sydney
+352,353c352,353
+< Australia/Canberra | Australia/Canberra | Australia/Sydney | equals Australia/Sydney
+< Australia/Currie | Australia/Currie | Australia/Hobart | equals Australia/Hobart
+---
+> Australia/Canberra | Australia/Canberra | Australia/Canberra | equals Australia/Sydney
+> Australia/Currie | Australia/Currie | Australia/Currie | equals Australia/Hobart
+357c357
+< Australia/LHI | Australia/LHI | Australia/Lord_Howe | equals Australia/Lord_Howe
+---
+> Australia/LHI | Australia/LHI | Australia/LHI | equals Australia/Lord_Howe
+361,362c361,362
+< Australia/NSW | Australia/NSW | Australia/Sydney | equals Australia/Sydney
+< Australia/North | Australia/North | Australia/Darwin | equals Australia/Darwin
+---
+> Australia/NSW | Australia/NSW | Australia/NSW | equals Australia/Sydney
+> Australia/North | Australia/North | Australia/North | equals Australia/Darwin
+364,365c364,365
+< Australia/Queensland | Australia/Queensland | Australia/Brisbane | equals Australia/Brisbane
+< Australia/South | Australia/South | Australia/Adelaide | equals Australia/Adelaide
+---
+> Australia/Queensland | Australia/Queensland | Australia/Queensland | equals Australia/Brisbane
+> Australia/South | Australia/South | Australia/South | equals Australia/Adelaide
+367,394c367,394
+< Australia/Tasmania | Australia/Tasmania | Australia/Hobart | equals Australia/Hobart
+< Australia/Victoria | Australia/Victoria | Australia/Melbourne | equals Australia/Melbourne
+< Australia/West | Australia/West | Australia/Perth | equals Australia/Perth
+< Australia/Yancowinna | Australia/Yancowinna | Australia/Broken_Hill | equals Australia/Broken_Hill
+< Brazil/Acre | Brazil/Acre | America/Rio_Branco | equals America/Rio_Branco
+< Brazil/DeNoronha | Brazil/DeNoronha | America/Noronha | equals America/Noronha
+< Brazil/East | Brazil/East | America/Sao_Paulo | equals America/Sao_Paulo
+< Brazil/West | Brazil/West | America/Manaus | equals America/Manaus
+< CET | CET | Europe/Brussels | equals Europe/Brussels
+< CST6CDT | CST6CDT | America/Chicago | equals America/Chicago
+< Canada/Atlantic | Canada/Atlantic | America/Halifax | equals America/Halifax
+< Canada/Central | Canada/Central | America/Winnipeg | equals America/Winnipeg
+< Canada/Eastern | Canada/Eastern | America/Toronto | equals America/Toronto
+< Canada/Mountain | Canada/Mountain | America/Edmonton | equals America/Edmonton
+< Canada/Newfoundland | Canada/Newfoundland | America/St_Johns | equals America/St_Johns
+< Canada/Pacific | Canada/Pacific | America/Vancouver | equals America/Vancouver
+< Canada/Saskatchewan | Canada/Saskatchewan | America/Regina | equals America/Regina
+< Canada/Yukon | Canada/Yukon | America/Whitehorse | equals America/Whitehorse
+< Chile/Continental | Chile/Continental | America/Santiago | equals America/Santiago
+< Chile/EasterIsland | Chile/EasterIsland | Pacific/Easter | equals Pacific/Easter
+< Cuba | Cuba | America/Havana | equals America/Havana
+< EET | EET | Europe/Athens | equals Europe/Athens
+< EST | EST | America/Panama | equals America/Panama
+< EST5EDT | EST5EDT | America/New_York | equals America/New_York
+< Egypt | Egypt | Africa/Cairo | equals Africa/Cairo
+< Eire | Eire | Europe/Dublin | equals Europe/Dublin
+< Etc/GMT | Etc/GMT | UTC | equals UTC
+< Etc/GMT+0 | Etc/GMT+0 | UTC | equals UTC
+---
+> Australia/Tasmania | Australia/Tasmania | Australia/Tasmania | equals Australia/Hobart
+> Australia/Victoria | Australia/Victoria | Australia/Victoria | equals Australia/Melbourne
+> Australia/West | Australia/West | Australia/West | equals Australia/Perth
+> Australia/Yancowinna | Australia/Yancowinna | Australia/Yancowinna | equals Australia/Broken_Hill
+> Brazil/Acre | Brazil/Acre | Brazil/Acre | equals America/Rio_Branco
+> Brazil/DeNoronha | Brazil/DeNoronha | Brazil/DeNoronha | equals America/Noronha
+> Brazil/East | Brazil/East | Brazil/East | equals America/Sao_Paulo
+> Brazil/West | Brazil/West | Brazil/West | equals America/Manaus
+> CET | CET | CET | equals Europe/Brussels
+> CST6CDT | CST6CDT | CST6CDT | equals America/Chicago
+> Canada/Atlantic | Canada/Atlantic | Canada/Atlantic | equals America/Halifax
+> Canada/Central | Canada/Central | Canada/Central | equals America/Winnipeg
+> Canada/Eastern | Canada/Eastern | Canada/Eastern | equals America/Toronto
+> Canada/Mountain | Canada/Mountain | Canada/Mountain | equals America/Edmonton
+> Canada/Newfoundland | Canada/Newfoundland | Canada/Newfoundland | equals America/St_Johns
+> Canada/Pacific | Canada/Pacific | Canada/Pacific | equals America/Vancouver
+> Canada/Saskatchewan | Canada/Saskatchewan | Canada/Saskatchewan | equals America/Regina
+> Canada/Yukon | Canada/Yukon | Canada/Yukon | equals America/Whitehorse
+> Chile/Continental | Chile/Continental | Chile/Continental | equals America/Santiago
+> Chile/EasterIsland | Chile/EasterIsland | Chile/EasterIsland | equals Pacific/Easter
+> Cuba | Cuba | Cuba | equals America/Havana
+> EET | EET | EET | equals Europe/Athens
+> EST | EST | EST | equals America/Panama
+> EST5EDT | EST5EDT | EST5EDT | equals America/New_York
+> Egypt | Egypt | Egypt | equals Africa/Cairo
+> Eire | Eire | Eire | equals Europe/Dublin
+> Etc/GMT | Etc/GMT | Etc/GMT | equals UTC
+> Etc/GMT+0 | Etc/GMT+0 | Etc/GMT+0 | equals UTC
+407c407
+< Etc/GMT-0 | Etc/GMT-0 | UTC | equals UTC
+---
+> Etc/GMT-0 | Etc/GMT-0 | Etc/GMT-0 | equals UTC
+422,427c422,427
+< Etc/GMT0 | Etc/GMT0 | UTC | equals UTC
+< Etc/Greenwich | Etc/Greenwich | UTC | equals UTC
+< Etc/UCT | Etc/UCT | UTC | equals UTC
+< Etc/UTC | Etc/UTC | UTC | equals UTC
+< Etc/Universal | Etc/Universal | UTC | equals UTC
+< Etc/Zulu | Etc/Zulu | UTC | equals UTC
+---
+> Etc/GMT0 | Etc/GMT0 | Etc/GMT0 | equals UTC
+> Etc/Greenwich | Etc/Greenwich | Etc/Greenwich | equals UTC
+> Etc/UCT | Etc/UCT | Etc/UCT | equals UTC
+> Etc/UTC | Etc/UTC | Etc/UTC | equals UTC
+> Etc/Universal | Etc/Universal | Etc/Universal | equals UTC
+> Etc/Zulu | Etc/Zulu | Etc/Zulu | equals UTC
+432c432
+< Europe/Belfast | Europe/Belfast | Europe/London | equals Europe/London
+---
+> Europe/Belfast | Europe/Belfast | Europe/Belfast | equals Europe/London
+435c435
+< Europe/Bratislava | Europe/Bratislava | Europe/Bratislava | listed
+---
+> Europe/Bratislava | Europe/Bratislava | Europe/Bratislava | equals Europe/Prague
+439c439
+< Europe/Busingen | Europe/Busingen | Europe/Busingen | listed
+---
+> Europe/Busingen | Europe/Busingen | Europe/Busingen | equals Europe/Zurich
+450c450
+< Europe/Kiev | Europe/Kiev | Europe/Kyiv | equals Europe/Kyiv
+---
+> Europe/Kiev | Europe/Kiev | Europe/Kiev | equals Europe/Kyiv
+459c459
+< Europe/Mariehamn | Europe/Mariehamn | Europe/Mariehamn | listed
+---
+> Europe/Mariehamn | Europe/Mariehamn | Europe/Mariehamn | equals Europe/Helsinki
+463c463
+< Europe/Nicosia | Europe/Nicosia | Asia/Nicosia | equals Asia/Nicosia
+---
+> Europe/Nicosia | Europe/Nicosia | Europe/Nicosia | equals Asia/Nicosia
+466c466
+< Europe/Podgorica | Europe/Podgorica | Europe/Podgorica | listed
+---
+> Europe/Podgorica | Europe/Podgorica | Europe/Podgorica | equals Europe/Belgrade
+471c471
+< Europe/San_Marino | Europe/San_Marino | Europe/San_Marino | listed
+---
+> Europe/San_Marino | Europe/San_Marino | Europe/San_Marino | equals Europe/Rome
+480c480
+< Europe/Tiraspol | Europe/Tiraspol | Europe/Chisinau | equals Europe/Chisinau
+---
+> Europe/Tiraspol | Europe/Tiraspol | Europe/Tiraspol | equals Europe/Chisinau
+482c482
+< Europe/Uzhgorod | Europe/Uzhgorod | Europe/Kyiv | equals Europe/Kyiv
+---
+> Europe/Uzhgorod | Europe/Uzhgorod | Europe/Uzhgorod | equals Europe/Kyiv
+484c484
+< Europe/Vatican | Europe/Vatican | Europe/Vatican | listed
+---
+> Europe/Vatican | Europe/Vatican | Europe/Vatican | equals Europe/Rome
+490c490
+< Europe/Zaporozhye | Europe/Zaporozhye | Europe/Kyiv | equals Europe/Kyiv
+---
+> Europe/Zaporozhye | Europe/Zaporozhye | Europe/Zaporozhye | equals Europe/Kyiv
+492,502c492,502
+< Factory | THROWS RangeError | THROWS RangeError | THROWS RangeError
+< GB | GB | Europe/London | equals Europe/London
+< GB-Eire | GB-Eire | Europe/London | equals Europe/London
+< GMT | GMT | UTC | equals UTC
+< GMT+0 | GMT+0 | UTC | equals UTC
+< GMT-0 | GMT-0 | UTC | equals UTC
+< GMT0 | GMT0 | UTC | equals UTC
+< Greenwich | Greenwich | UTC | equals UTC
+< HST | HST | Pacific/Honolulu | equals Pacific/Honolulu
+< Hongkong | Hongkong | Asia/Hong_Kong | equals Asia/Hong_Kong
+< Iceland | Iceland | Atlantic/Reykjavik | equals Atlantic/Reykjavik
+---
+> Factory | Factory | Factory | listed
+> GB | GB | GB | equals Europe/London
+> GB-Eire | GB-Eire | GB-Eire | equals Europe/London
+> GMT | GMT | GMT | equals UTC
+> GMT+0 | GMT+0 | GMT+0 | equals UTC
+> GMT-0 | GMT-0 | GMT-0 | equals UTC
+> GMT0 | GMT0 | GMT0 | equals UTC
+> Greenwich | Greenwich | Greenwich | equals UTC
+> HST | HST | HST | equals Pacific/Honolulu
+> Hongkong | Hongkong | Hongkong | equals Asia/Hong_Kong
+> Iceland | Iceland | Iceland | equals Atlantic/Reykjavik
+514,530c514,530
+< Iran | Iran | Asia/Tehran | equals Asia/Tehran
+< Israel | Israel | Asia/Jerusalem | equals Asia/Jerusalem
+< Jamaica | Jamaica | America/Jamaica | equals America/Jamaica
+< Japan | Japan | Asia/Tokyo | equals Asia/Tokyo
+< Kwajalein | Kwajalein | Pacific/Kwajalein | equals Pacific/Kwajalein
+< Libya | Libya | Africa/Tripoli | equals Africa/Tripoli
+< MET | MET | Europe/Brussels | equals Europe/Brussels
+< MST | MST | America/Phoenix | equals America/Phoenix
+< MST7MDT | MST7MDT | America/Denver | equals America/Denver
+< Mexico/BajaNorte | Mexico/BajaNorte | America/Tijuana | equals America/Tijuana
+< Mexico/BajaSur | Mexico/BajaSur | America/Mazatlan | equals America/Mazatlan
+< Mexico/General | Mexico/General | America/Mexico_City | equals America/Mexico_City
+< NZ | NZ | Pacific/Auckland | equals Pacific/Auckland
+< NZ-CHAT | NZ-CHAT | Pacific/Chatham | equals Pacific/Chatham
+< Navajo | Navajo | America/Denver | equals America/Denver
+< PRC | PRC | Asia/Shanghai | equals Asia/Shanghai
+< PST8PDT | PST8PDT | America/Los_Angeles | equals America/Los_Angeles
+---
+> Iran | Iran | Iran | equals Asia/Tehran
+> Israel | Israel | Israel | equals Asia/Jerusalem
+> Jamaica | Jamaica | Jamaica | equals America/Jamaica
+> Japan | Japan | Japan | equals Asia/Tokyo
+> Kwajalein | Kwajalein | Kwajalein | equals Pacific/Kwajalein
+> Libya | Libya | Libya | equals Africa/Tripoli
+> MET | MET | MET | equals Europe/Brussels
+> MST | MST | MST | equals America/Phoenix
+> MST7MDT | MST7MDT | MST7MDT | equals America/Denver
+> Mexico/BajaNorte | Mexico/BajaNorte | Mexico/BajaNorte | equals America/Tijuana
+> Mexico/BajaSur | Mexico/BajaSur | Mexico/BajaSur | equals America/Mazatlan
+> Mexico/General | Mexico/General | Mexico/General | equals America/Mexico_City
+> NZ | NZ | NZ | equals Pacific/Auckland
+> NZ-CHAT | NZ-CHAT | NZ-CHAT | equals Pacific/Chatham
+> Navajo | Navajo | Navajo | equals America/Denver
+> PRC | PRC | PRC | equals Asia/Shanghai
+> PST8PDT | PST8PDT | PST8PDT | equals America/Los_Angeles
+538c538
+< Pacific/Enderbury | Pacific/Enderbury | Pacific/Kanton | equals Pacific/Kanton
+---
+> Pacific/Enderbury | Pacific/Enderbury | Pacific/Enderbury | equals Pacific/Kanton
+547c547
+< Pacific/Johnston | Pacific/Johnston | Pacific/Honolulu | equals Pacific/Honolulu
+---
+> Pacific/Johnston | Pacific/Johnston | Pacific/Johnston | equals Pacific/Honolulu
+563c563
+< Pacific/Ponape | Pacific/Ponape | Pacific/Pohnpei | equals Pacific/Pohnpei
+---
+> Pacific/Ponape | Pacific/Ponape | Pacific/Ponape | equals Pacific/Pohnpei
+567c567
+< Pacific/Samoa | Pacific/Samoa | Pacific/Pago_Pago | equals Pacific/Pago_Pago
+---
+> Pacific/Samoa | Pacific/Samoa | Pacific/Samoa | equals Pacific/Pago_Pago
+571c571
+< Pacific/Truk | Pacific/Truk | Pacific/Chuuk | equals Pacific/Chuuk
+---
+> Pacific/Truk | Pacific/Truk | Pacific/Truk | equals Pacific/Chuuk
+574,593c574,593
+< Pacific/Yap | Pacific/Yap | Pacific/Chuuk | equals Pacific/Chuuk
+< Poland | Poland | Europe/Warsaw | equals Europe/Warsaw
+< Portugal | Portugal | Europe/Lisbon | equals Europe/Lisbon
+< ROC | ROC | Asia/Taipei | equals Asia/Taipei
+< ROK | ROK | Asia/Seoul | equals Asia/Seoul
+< Singapore | Singapore | Asia/Singapore | equals Asia/Singapore
+< Turkey | Turkey | Europe/Istanbul | equals Europe/Istanbul
+< UCT | UCT | UTC | equals UTC
+< US/Alaska | US/Alaska | America/Anchorage | equals America/Anchorage
+< US/Aleutian | US/Aleutian | America/Adak | equals America/Adak
+< US/Arizona | US/Arizona | America/Phoenix | equals America/Phoenix
+< US/Central | US/Central | America/Chicago | equals America/Chicago
+< US/East-Indiana | US/East-Indiana | America/Indiana/Indianapolis | equals America/Indiana/Indianapolis
+< US/Eastern | US/Eastern | America/New_York | equals America/New_York
+< US/Hawaii | US/Hawaii | Pacific/Honolulu | equals Pacific/Honolulu
+< US/Indiana-Starke | US/Indiana-Starke | America/Indiana/Knox | equals America/Indiana/Knox
+< US/Michigan | US/Michigan | America/Detroit | equals America/Detroit
+< US/Mountain | US/Mountain | America/Denver | equals America/Denver
+< US/Pacific | US/Pacific | America/Los_Angeles | equals America/Los_Angeles
+< US/Samoa | US/Samoa | Pacific/Pago_Pago | equals Pacific/Pago_Pago
+---
+> Pacific/Yap | Pacific/Yap | Pacific/Yap | equals Pacific/Chuuk
+> Poland | Poland | Poland | equals Europe/Warsaw
+> Portugal | Portugal | Portugal | equals Europe/Lisbon
+> ROC | ROC | ROC | equals Asia/Taipei
+> ROK | ROK | ROK | equals Asia/Seoul
+> Singapore | Singapore | Singapore | equals Asia/Singapore
+> Turkey | Turkey | Turkey | equals Europe/Istanbul
+> UCT | UCT | UCT | equals UTC
+> US/Alaska | US/Alaska | US/Alaska | equals America/Anchorage
+> US/Aleutian | US/Aleutian | US/Aleutian | equals America/Adak
+> US/Arizona | US/Arizona | US/Arizona | equals America/Phoenix
+> US/Central | US/Central | US/Central | equals America/Chicago
+> US/East-Indiana | US/East-Indiana | US/East-Indiana | equals America/Indiana/Indianapolis
+> US/Eastern | US/Eastern | US/Eastern | equals America/New_York
+> US/Hawaii | US/Hawaii | US/Hawaii | equals Pacific/Honolulu
+> US/Indiana-Starke | US/Indiana-Starke | US/Indiana-Starke | equals America/Indiana/Knox
+> US/Michigan | US/Michigan | US/Michigan | equals America/Detroit
+> US/Mountain | US/Mountain | US/Mountain | equals America/Denver
+> US/Pacific | US/Pacific | US/Pacific | equals America/Los_Angeles
+> US/Samoa | US/Samoa | US/Samoa | equals Pacific/Pago_Pago
+595,598c595,598
+< Universal | Universal | UTC | equals UTC
+< W-SU | W-SU | Europe/Moscow | equals Europe/Moscow
+< WET | WET | Europe/Lisbon | equals Europe/Lisbon
+< Zulu | Zulu | UTC | equals UTC
+---
+> Universal | Universal | Universal | equals UTC
+> W-SU | W-SU | W-SU | equals Europe/Moscow
+> WET | WET | WET | equals Europe/Lisbon
+> Zulu | Zulu | Zulu | equals UTC

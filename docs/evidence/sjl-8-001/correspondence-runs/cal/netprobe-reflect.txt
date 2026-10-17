@@ -1,0 +1,18 @@
+runtime 10.0.12 invariant=culture-invariant
+ChineseLunisolarCalendar 1901-02-19 .. 2101-01-28; years 1901..2100
+KoreanLunisolarCalendar  0918-02-19 .. 2051-02-10; years 918..2050
+PersianCalendar          0622-03-22 .. 9999-12-31; years 1..9378
+UmAlQuraCalendar (unused) 1900-04-30 .. 2077-11-16; years 1318..1500
+System.Globalization.ChineseLunisolarCalendar in System.Private.CoreLib 10.0.0.0
+  static DateTime s_minDate = 02/19/1901 00:00:00
+  static DateTime s_maxDate = 01/28/2101 23:59:59
+  static Int32[,] s_yinfo = array[200,4]
+System.Globalization.KoreanLunisolarCalendar in System.Private.CoreLib 10.0.0.0
+  static DateTime s_minDate = 02/19/0918 00:00:00
+  static DateTime s_maxDate = 02/10/2051 23:59:59
+  static Int32[,] s_yinfo = array[1133,4]
+System.Globalization.PersianCalendar in System.Private.CoreLib 10.0.0.0
+  static Int64 s_persianEpoch = 226895
+  static DateTime s_minDate = 03/22/0622 00:00:00
+  static DateTime s_maxDate = 12/31/9999 23:59:59
+CalendricalCalculationsHelper present in CoreLib: True

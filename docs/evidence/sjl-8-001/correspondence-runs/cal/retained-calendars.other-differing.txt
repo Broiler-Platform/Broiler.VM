@@ -1,0 +1,309 @@
+# Non-conversion lines (arithmetic, from-fields, month-days) of temporal-calendars.js where Broiler.JS answers otherwise than Broiler.VM: SJL-10's.
+VM buddhist toPlainYearMonth => 2023-03-01[u-ca=buddhist]
+JS 2023-03-15[u-ca=buddhist]
+
+VM buddhist toPlainMonthDay => 1972-03-15[u-ca=buddhist]
+JS 03-15
+
+VM chinese until 1999-01-01 round months => -P24Y3M
+JS -P24Y3M10D
+
+VM chinese until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM chinese until 2024-02-29 round months => P12M
+JS P11M26D
+
+VM chinese until 2030-12-31 round months => P7Y9M
+JS P7Y9M13D
+
+VM chinese until 1850-06-06 round months => -P172Y10M
+JS -P172Y9M27D
+
+VM chinese toPlainYearMonth => 2023-02-20[u-ca=chinese]
+JS 2023-03-15[u-ca=chinese]
+
+VM chinese duration round relativeTo => P2Y8M26D
+JS throws Error
+
+VM chinese duration total relativeTo => 33.86666666666667
+JS throws Error
+
+VM coptic until 1999-01-01 round months => -P24Y2M
+JS -P24Y2M13D
+
+VM coptic until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM coptic until 2024-02-29 round months => P1Y
+JS P12M15D
+
+VM coptic until 2030-12-31 round months => P7Y11M
+JS P7Y10M16D
+
+VM coptic until 1850-06-06 round months => -P172Y10M
+JS -P172Y10M6D
+
+VM coptic toPlainYearMonth => 2023-03-10[u-ca=coptic]
+JS 2023-03-15[u-ca=coptic]
+
+VM coptic duration round relativeTo => P2Y9M24D
+JS throws Error
+
+VM coptic duration total relativeTo => 35.8
+JS throws Error
+
+VM dangi until 1999-01-01 round months => -P24Y3M
+JS -P24Y3M10D
+
+VM dangi until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM dangi until 2024-02-29 round months => P12M
+JS P11M26D
+
+VM dangi until 2030-12-31 round months => P7Y9M
+JS P7Y9M13D
+
+VM dangi until 1850-06-06 round months => -P172Y10M
+JS -P172Y9M27D
+
+VM dangi toPlainYearMonth => 2023-02-20[u-ca=dangi]
+JS 2023-03-15[u-ca=dangi]
+
+VM dangi duration round relativeTo => P2Y8M26D
+JS throws Error
+
+VM dangi duration total relativeTo => 33.86666666666667
+JS throws Error
+
+VM ethioaa until 1999-01-01 round months => -P24Y2M
+JS -P24Y2M13D
+
+VM ethioaa until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM ethioaa until 2024-02-29 round months => P1Y
+JS P12M15D
+
+VM ethioaa until 2030-12-31 round months => P7Y11M
+JS P7Y10M16D
+
+VM ethioaa until 1850-06-06 round months => -P172Y10M
+JS -P172Y10M6D
+
+VM ethioaa toPlainYearMonth => 2023-03-10[u-ca=ethioaa]
+JS 2023-03-15[u-ca=ethioaa]
+
+VM ethioaa duration round relativeTo => P2Y9M24D
+JS throws Error
+
+VM ethioaa duration total relativeTo => 35.8
+JS throws Error
+
+VM ethiopic until 1999-01-01 round months => -P24Y2M
+JS -P24Y2M13D
+
+VM ethiopic until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM ethiopic until 2024-02-29 round months => P1Y
+JS P12M15D
+
+VM ethiopic until 2030-12-31 round months => P7Y11M
+JS P7Y10M16D
+
+VM ethiopic until 1850-06-06 round months => -P172Y10M
+JS -P172Y10M6D
+
+VM ethiopic toPlainYearMonth => 2023-03-10[u-ca=ethiopic]
+JS 2023-03-15[u-ca=ethiopic]
+
+VM ethiopic duration round relativeTo => P2Y9M24D
+JS throws Error
+
+VM ethiopic duration total relativeTo => 35.8
+JS throws Error
+
+VM gregory toPlainYearMonth => 2023-03-01[u-ca=gregory]
+JS 2023-03-15[u-ca=gregory]
+
+VM gregory toPlainMonthDay => 1972-03-15[u-ca=gregory]
+JS 03-15
+
+VM hebrew until 1999-01-01 round months => -P24Y2M
+JS -P24Y2M9D
+
+VM hebrew until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM hebrew until 2024-02-29 round months => P12M
+JS P11M28D
+
+VM hebrew until 2030-12-31 round months => P7Y9M
+JS P7Y9M13D
+
+VM hebrew until 1850-06-06 round months => -P172Y10M
+JS -P172Y9M26D
+
+VM hebrew toPlainYearMonth => 2023-02-22[u-ca=hebrew]
+JS 2023-03-15[u-ca=hebrew]
+
+VM hebrew duration round relativeTo => P2Y8M26D
+JS throws Error
+
+VM hebrew duration total relativeTo => 33.89655172413793
+JS throws Error
+
+VM indian from M13 => throws RangeError
+JS 2023-02-20[u-ca=indian]
+
+VM indian until 1999-01-01 round months => -P24Y2M
+JS -P24Y2M13D
+
+VM indian until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM indian until 2024-02-29 round months => P1Y
+JS P11M16D
+
+VM indian until 2030-12-31 round months => P7Y10M
+JS P7Y9M16D
+
+VM indian until 1850-06-06 round months => -P172Y9M
+JS -P172Y9M8D
+
+VM indian toPlainYearMonth => 2023-02-20[u-ca=indian]
+JS 2023-03-15[u-ca=indian]
+
+VM indian duration round relativeTo => P2Y8M24D
+JS throws Error
+
+VM indian duration total relativeTo => 32.8
+JS throws Error
+
+VM islamic-civil from M13 => throws RangeError
+JS 2023-06-20[u-ca=islamic-civil]
+
+VM islamic-civil until 1999-01-01 round months => -P24Y11M
+JS -P24Y11M9D
+
+VM islamic-civil until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM islamic-civil until 2024-02-29 round months => P1Y
+JS P11M27D
+
+VM islamic-civil until 2030-12-31 round months => P8Y
+JS P8Y13D
+
+VM islamic-civil until 1850-06-06 round months => -P178Y1M
+JS -P178Y27D
+
+VM islamic-civil toPlainYearMonth => 2023-02-22[u-ca=islamic-civil]
+JS 2023-03-15[u-ca=islamic-civil]
+
+VM islamic-civil duration round relativeTo => P2Y9M26D
+JS throws Error
+
+VM islamic-civil duration total relativeTo => 33.86666666666667
+JS throws Error
+
+VM islamic-tbla from M13 => throws RangeError
+JS 2023-06-19[u-ca=islamic-tbla]
+
+VM islamic-tbla until 1999-01-01 round months => -P24Y11M
+JS -P24Y11M9D
+
+VM islamic-tbla until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM islamic-tbla until 2024-02-29 round months => P1Y
+JS P11M27D
+
+VM islamic-tbla until 2030-12-31 round months => P8Y
+JS P8Y13D
+
+VM islamic-tbla until 1850-06-06 round months => -P178Y1M
+JS -P178Y27D
+
+VM islamic-tbla toPlainYearMonth => 2023-02-21[u-ca=islamic-tbla]
+JS 2023-03-15[u-ca=islamic-tbla]
+
+VM islamic-tbla duration round relativeTo => P2Y9M26D
+JS throws Error
+
+VM islamic-tbla duration total relativeTo => 33.86666666666667
+JS throws Error
+
+VM islamic-umalqura from M13 => throws RangeError
+JS 2023-06-19[u-ca=islamic-umalqura]
+
+VM islamic-umalqura until 1999-01-01 round months => -P24Y11M
+JS -P24Y11M10D
+
+VM islamic-umalqura until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM islamic-umalqura until 2024-02-29 round months => P1Y
+JS P11M25D
+
+VM islamic-umalqura until 2030-12-31 round months => P8Y
+JS P8Y12D
+
+VM islamic-umalqura until 1850-06-06 round months => -P178Y1M
+JS -P178Y28D
+
+VM islamic-umalqura toPlainYearMonth => 2023-02-21[u-ca=islamic-umalqura]
+JS 2023-03-15[u-ca=islamic-umalqura]
+
+VM islamic-umalqura duration round relativeTo => P2Y9M25D
+JS throws Error
+
+VM islamic-umalqura duration total relativeTo => 33.833333333333336
+JS throws Error
+
+VM japanese toPlainYearMonth => 2023-03-01[u-ca=japanese]
+JS 2023-03-15[u-ca=japanese]
+
+VM japanese toPlainMonthDay => 1972-03-15[u-ca=japanese]
+JS 03-15
+
+VM persian from M13 => throws RangeError
+JS 2023-02-20[u-ca=persian]
+
+VM persian until 1999-01-01 round months => -P24Y2M
+JS -P24Y2M13D
+
+VM persian until 2023-03-14 round months => PT0S
+JS -P1D
+
+VM persian until 2024-02-29 round months => P1Y
+JS P11M16D
+
+VM persian until 2030-12-31 round months => P7Y10M
+JS P7Y9M16D
+
+VM persian until 1850-06-06 round months => -P172Y9M
+JS -P172Y9M8D
+
+VM persian toPlainYearMonth => 2023-02-20[u-ca=persian]
+JS 2023-03-15[u-ca=persian]
+
+VM persian duration round relativeTo => P2Y8M24D
+JS throws Error
+
+VM persian duration total relativeTo => 32.8
+JS throws Error
+
+VM roc toPlainYearMonth => 2023-03-01[u-ca=roc]
+JS 2023-03-15[u-ca=roc]
+
+VM roc toPlainMonthDay => 1972-03-15[u-ca=roc]
+JS 03-15
+
+VM buddhist month-day to date => 2001-02-10[u-ca=buddhist]
+JS 2544-02-10[u-ca=buddhist]
+
+VM roc month-day to date => 2001-02-10[u-ca=roc]
+JS 0090-02-10[u-ca=roc]

@@ -1,0 +1,13 @@
+tzdata 2026c: 447 zones, 151 links
+raw 490,364 bytes -> packed 127,194 bytes -> <work>/runs/data/tzdata-regenerated-on-this-host.bin
+packed bytes 127194 sha256 1f4be48ed269a8a002ae2002862e7ab8fcaa84ccbdeae8650251365bdda5d39d
+inflated bytes 490364
+format 1 version 2026c
+zones 447 links 151 identifiers 598
+Factory: zone
+America/New_York: zone; TZif v2; 236 transitions; first [('1883-11-18T17:00:00Z', -18000), ('1918-03-31T07:00:00Z', -14400), ('1918-10-27T06:00:00Z', -18000)]; last 2037-11-01T06:00:00Z -> -18000; footer 'EST5EDT,M3.2.0,M11.1.0'; type0 (-17762, 0)
+Europe/Amsterdam: zone; TZif v2; 180 transitions; first [('1834-12-31T23:40:28Z', 1172), ('1916-04-30T23:40:28Z', 4772), ('1916-09-30T22:40:28Z', 1172)]; last 2037-10-25T01:00:00Z -> 3600; footer 'CET-1CEST,M3.5.0,M10.5.0/3'; type0 (1172, 0)
+Atlantic/Reykjavik: zone; TZif v2; 68 transitions; first [('1908-01-01T01:28:00Z', -3600), ('1917-02-20T00:00:00Z', 0), ('1917-10-21T01:00:00Z', -3600)]; last 1968-04-07T02:00:00Z -> 0; footer 'GMT0'; type0 (-5280, 0)
+Factory: zone; TZif v2; 0 transitions; first []; last None -> None; footer '<-00>0'; type0 (0, 0)
+Africa/Casablanca: zone; TZif v2; 72 transitions; first [('1913-10-26T00:30:20Z', 0), ('1939-09-12T00:00:00Z', 3600), ('1939-11-18T23:00:00Z', 0)]; last 2038-01-19T03:14:07Z -> 0; footer '<+00>0'; type0 (-1820, 0)
+America/Santiago: zone; TZif v3; 160 transitions; first [('1890-01-01T04:42:45Z', -16965), ('1910-01-10T04:42:45Z', -18000), ('1916-07-01T05:00:00Z', -16965)]; last 2038-01-19T03:14:07Z -> -10800; footer '<-04>4<-03>,M9.1.6/24,M4.1.6/24'; type0 (-16965, 0)

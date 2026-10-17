@@ -1,0 +1,4 @@
+TimeZones (binary) bytes: 78428
+TimeZoneIds lines: 597 bytes (UTF-8, as the raw literal holds them): 14056
+TimeZoneRegions lines: 247 bytes (UTF-8, as the raw literal holds them): 7627
+file bytes: 383709

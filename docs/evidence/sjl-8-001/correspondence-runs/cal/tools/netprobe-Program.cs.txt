@@ -1,0 +1,75 @@
+using System;
+using System.Globalization;
+using System.Linq;
+using UnicodeCldr.LocaleData;
+
+// Prints the .NET calendar classes' supported ranges, and compares the CLDR package's Umm al-Qura
+// table with .NET's UmAlQuraCalendar for reference (Broiler.JS does not use the latter).
+class P
+{
+    static string D(DateTime d) => d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    static void Main(string[] args)
+    {
+        Console.WriteLine("runtime " + Environment.Version + " invariant=" + (CultureInfo.CurrentCulture.Name == "" ? "culture-invariant" : CultureInfo.CurrentCulture.Name));
+        var ch = new ChineseLunisolarCalendar(); var ko = new KoreanLunisolarCalendar(); var pe = new PersianCalendar(); var uq = new UmAlQuraCalendar();
+        Console.WriteLine($"ChineseLunisolarCalendar {D(ch.MinSupportedDateTime)} .. {D(ch.MaxSupportedDateTime)}; years {ch.GetYear(ch.MinSupportedDateTime)}..{ch.GetYear(ch.MaxSupportedDateTime)}");
+        Console.WriteLine($"KoreanLunisolarCalendar  {D(ko.MinSupportedDateTime)} .. {D(ko.MaxSupportedDateTime)}; years {ko.GetYear(ko.MinSupportedDateTime)}..{ko.GetYear(ko.MaxSupportedDateTime)}");
+        Console.WriteLine($"PersianCalendar          {D(pe.MinSupportedDateTime)} .. {D(pe.MaxSupportedDateTime)}; years {pe.GetYear(pe.MinSupportedDateTime)}..{pe.GetYear(pe.MaxSupportedDateTime)}");
+        Console.WriteLine($"UmAlQuraCalendar (unused) {D(uq.MinSupportedDateTime)} .. {D(uq.MaxSupportedDateTime)}; years {uq.GetYear(uq.MinSupportedDateTime)}..{uq.GetYear(uq.MaxSupportedDateTime)}");
+
+        if (args.Length > 0 && args[0] == "reflect")
+        {
+            var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+            foreach (var t in new[] { typeof(ChineseLunisolarCalendar), typeof(KoreanLunisolarCalendar), typeof(PersianCalendar) })
+            {
+                Console.WriteLine(t.FullName + " in " + t.Assembly.GetName().Name + " " + t.Assembly.GetName().Version);
+                foreach (var f in t.GetFields(flags))
+                {
+                    object v = null; try { v = f.GetValue(null); } catch { }
+                    var shape = v is Array a ? $"array[{string.Join(",", System.Linq.Enumerable.Range(0, a.Rank).Select(r => a.GetLength(r)))}]" : (v?.ToString() ?? "null");
+                    Console.WriteLine($"  static {f.FieldType.Name} {f.Name} = {shape}");
+                }
+            }
+            var helper = typeof(PersianCalendar).Assembly.GetType("System.Globalization.CalendricalCalculationsHelper");
+            Console.WriteLine("CalendricalCalculationsHelper present in CoreLib: " + (helper != null));
+        }
+
+        if (args.Length > 0 && args[0] == "eastasian")
+        {
+            // One line per related ISO year: new year, leap ordinal (0 none), month lengths (l/s), from
+            // .NET's two lunisolar classes in their ranges and from the CLDR package's computation.
+            var e1970 = new DateTime(1970, 1, 1);
+            foreach (var (name, cal) in new (string, EastAsianLunisolarCalendar)[] { ("net-chinese", new ChineseLunisolarCalendar()), ("net-korean", new KoreanLunisolarCalendar()) })
+            {
+                for (int y = 1890; y <= 2110; y++)
+                {
+                    int ny;
+                    try { ny = cal.GetYear(new DateTime(y, 6, 1)); } catch (ArgumentOutOfRangeException) { continue; }
+                    var first = cal.ToDateTime(ny, 1, 1, 0, 0, 0, 0);
+                    if (first.Year != y) continue;
+                    var s = ""; int n = cal.GetMonthsInYear(ny);
+                    for (int m = 1; m <= n; m++) s += cal.GetDaysInMonth(ny, m) == 30 ? "l" : "s";
+                    Console.WriteLine($"{name} {y} {D(first)} {cal.GetLeapMonth(ny)} {s}");
+                }
+            }
+            for (int y = 1890; y <= 2110; y++)
+            {
+                var info = CldrChineseCalendar.GetYear(y); var s = "";
+                for (int m = 1; m <= info.MonthCount; m++) s += info.DaysInMonth(m) == 30 ? "l" : "s";
+                Console.WriteLine($"cldr-chinese {y} {D(e1970.AddDays(info.NewYearEpochDay))} {info.LeapMonthOrdinal} {s}");
+            }
+        }
+        if (args.Length > 0 && args[0] == "umalqura")
+        {
+            // CldrUmmAlQura: 1 Muharram = RD 227015 + YearStartDay(y) (Broiler.JS's EpochDaysFromYmd), month lengths MSB-first.
+            var epoch1970 = new DateTime(1970, 1, 1);
+            for (int y = CldrUmmAlQura.FirstYear; y <= CldrUmmAlQura.LastYear; y++)
+            {
+                long ed = (227015 - 719163) + CldrUmmAlQura.YearStartDay(y);
+                var s = "";
+                for (int m = 1; m <= 12; m++) s += CldrUmmAlQura.MonthLength(y, m) == 30 ? "l" : "s";
+                Console.WriteLine($"cldr {y} {D(epoch1970.AddDays(ed))} {s}");
+            }
+        }
+    }
+}

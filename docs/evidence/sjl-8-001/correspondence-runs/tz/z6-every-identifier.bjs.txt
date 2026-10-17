@@ -1,0 +1,599 @@
+Africa/Abidjan | Africa/Abidjan | Africa/Abidjan | listed
+Africa/Accra | Africa/Accra | Africa/Accra | listed
+Africa/Addis_Ababa | Africa/Addis_Ababa | Africa/Addis_Ababa | listed
+Africa/Algiers | Africa/Algiers | Africa/Algiers | listed
+Africa/Asmara | Africa/Asmara | Africa/Asmara | listed
+Africa/Asmera | Africa/Asmera | Africa/Asmera | equals Africa/Asmara
+Africa/Bamako | Africa/Bamako | Africa/Bamako | listed
+Africa/Bangui | Africa/Bangui | Africa/Bangui | listed
+Africa/Banjul | Africa/Banjul | Africa/Banjul | listed
+Africa/Bissau | Africa/Bissau | Africa/Bissau | listed
+Africa/Blantyre | Africa/Blantyre | Africa/Blantyre | listed
+Africa/Brazzaville | Africa/Brazzaville | Africa/Brazzaville | listed
+Africa/Bujumbura | Africa/Bujumbura | Africa/Bujumbura | listed
+Africa/Cairo | Africa/Cairo | Africa/Cairo | listed
+Africa/Casablanca | Africa/Casablanca | Africa/Casablanca | listed
+Africa/Ceuta | Africa/Ceuta | Africa/Ceuta | listed
+Africa/Conakry | Africa/Conakry | Africa/Conakry | listed
+Africa/Dakar | Africa/Dakar | Africa/Dakar | listed
+Africa/Dar_es_Salaam | Africa/Dar_es_Salaam | Africa/Dar_es_Salaam | listed
+Africa/Djibouti | Africa/Djibouti | Africa/Djibouti | listed
+Africa/Douala | Africa/Douala | Africa/Douala | listed
+Africa/El_Aaiun | Africa/El_Aaiun | Africa/El_Aaiun | listed
+Africa/Freetown | Africa/Freetown | Africa/Freetown | listed
+Africa/Gaborone | Africa/Gaborone | Africa/Gaborone | listed
+Africa/Harare | Africa/Harare | Africa/Harare | listed
+Africa/Johannesburg | Africa/Johannesburg | Africa/Johannesburg | listed
+Africa/Juba | Africa/Juba | Africa/Juba | listed
+Africa/Kampala | Africa/Kampala | Africa/Kampala | listed
+Africa/Khartoum | Africa/Khartoum | Africa/Khartoum | listed
+Africa/Kigali | Africa/Kigali | Africa/Kigali | listed
+Africa/Kinshasa | Africa/Kinshasa | Africa/Kinshasa | listed
+Africa/Lagos | Africa/Lagos | Africa/Lagos | listed
+Africa/Libreville | Africa/Libreville | Africa/Libreville | listed
+Africa/Lome | Africa/Lome | Africa/Lome | listed
+Africa/Luanda | Africa/Luanda | Africa/Luanda | listed
+Africa/Lubumbashi | Africa/Lubumbashi | Africa/Lubumbashi | listed
+Africa/Lusaka | Africa/Lusaka | Africa/Lusaka | listed
+Africa/Malabo | Africa/Malabo | Africa/Malabo | listed
+Africa/Maputo | Africa/Maputo | Africa/Maputo | listed
+Africa/Maseru | Africa/Maseru | Africa/Maseru | listed
+Africa/Mbabane | Africa/Mbabane | Africa/Mbabane | listed
+Africa/Mogadishu | Africa/Mogadishu | Africa/Mogadishu | listed
+Africa/Monrovia | Africa/Monrovia | Africa/Monrovia | listed
+Africa/Nairobi | Africa/Nairobi | Africa/Nairobi | listed
+Africa/Ndjamena | Africa/Ndjamena | Africa/Ndjamena | listed
+Africa/Niamey | Africa/Niamey | Africa/Niamey | listed
+Africa/Nouakchott | Africa/Nouakchott | Africa/Nouakchott | listed
+Africa/Ouagadougou | Africa/Ouagadougou | Africa/Ouagadougou | listed
+Africa/Porto-Novo | Africa/Porto-Novo | Africa/Porto-Novo | listed
+Africa/Sao_Tome | Africa/Sao_Tome | Africa/Sao_Tome | listed
+Africa/Timbuktu | Africa/Timbuktu | Africa/Timbuktu | equals Africa/Bamako
+Africa/Tripoli | Africa/Tripoli | Africa/Tripoli | listed
+Africa/Tunis | Africa/Tunis | Africa/Tunis | listed
+Africa/Windhoek | Africa/Windhoek | Africa/Windhoek | listed
+America/Adak | America/Adak | America/Adak | listed
+America/Anchorage | America/Anchorage | America/Anchorage | listed
+America/Anguilla | America/Anguilla | America/Anguilla | listed
+America/Antigua | America/Antigua | America/Antigua | listed
+America/Araguaina | America/Araguaina | America/Araguaina | listed
+America/Argentina/Buenos_Aires | America/Argentina/Buenos_Aires | America/Argentina/Buenos_Aires | listed
+America/Argentina/Catamarca | America/Argentina/Catamarca | America/Argentina/Catamarca | listed
+America/Argentina/ComodRivadavia | America/Argentina/ComodRivadavia | America/Argentina/ComodRivadavia | equals America/Argentina/Catamarca
+America/Argentina/Cordoba | America/Argentina/Cordoba | America/Argentina/Cordoba | listed
+America/Argentina/Jujuy | America/Argentina/Jujuy | America/Argentina/Jujuy | listed
+America/Argentina/La_Rioja | America/Argentina/La_Rioja | America/Argentina/La_Rioja | listed
+America/Argentina/Mendoza | America/Argentina/Mendoza | America/Argentina/Mendoza | listed
+America/Argentina/Rio_Gallegos | America/Argentina/Rio_Gallegos | America/Argentina/Rio_Gallegos | listed
+America/Argentina/Salta | America/Argentina/Salta | America/Argentina/Salta | listed
+America/Argentina/San_Juan | America/Argentina/San_Juan | America/Argentina/San_Juan | listed
+America/Argentina/San_Luis | America/Argentina/San_Luis | America/Argentina/San_Luis | listed
+America/Argentina/Tucuman | America/Argentina/Tucuman | America/Argentina/Tucuman | listed
+America/Argentina/Ushuaia | America/Argentina/Ushuaia | America/Argentina/Ushuaia | listed
+America/Aruba | America/Aruba | America/Aruba | listed
+America/Asuncion | America/Asuncion | America/Asuncion | listed
+America/Atikokan | America/Atikokan | America/Atikokan | listed
+America/Atka | America/Atka | America/Atka | equals America/Adak
+America/Bahia | America/Bahia | America/Bahia | listed
+America/Bahia_Banderas | America/Bahia_Banderas | America/Bahia_Banderas | listed
+America/Barbados | America/Barbados | America/Barbados | listed
+America/Belem | America/Belem | America/Belem | listed
+America/Belize | America/Belize | America/Belize | listed
+America/Blanc-Sablon | America/Blanc-Sablon | America/Blanc-Sablon | listed
+America/Boa_Vista | America/Boa_Vista | America/Boa_Vista | listed
+America/Bogota | America/Bogota | America/Bogota | listed
+America/Boise | America/Boise | America/Boise | listed
+America/Buenos_Aires | America/Buenos_Aires | America/Buenos_Aires | equals America/Argentina/Buenos_Aires
+America/Cambridge_Bay | America/Cambridge_Bay | America/Cambridge_Bay | listed
+America/Campo_Grande | America/Campo_Grande | America/Campo_Grande | listed
+America/Cancun | America/Cancun | America/Cancun | listed
+America/Caracas | America/Caracas | America/Caracas | listed
+America/Catamarca | America/Catamarca | America/Catamarca | equals America/Argentina/Catamarca
+America/Cayenne | America/Cayenne | America/Cayenne | listed
+America/Cayman | America/Cayman | America/Cayman | listed
+America/Chicago | America/Chicago | America/Chicago | listed
+America/Chihuahua | America/Chihuahua | America/Chihuahua | listed
+America/Ciudad_Juarez | America/Ciudad_Juarez | America/Ciudad_Juarez | listed
+America/Coral_Harbour | America/Coral_Harbour | America/Coral_Harbour | equals America/Atikokan
+America/Cordoba | America/Cordoba | America/Cordoba | equals America/Argentina/Cordoba
+America/Costa_Rica | America/Costa_Rica | America/Costa_Rica | listed
+America/Coyhaique | America/Coyhaique | America/Coyhaique | listed
+America/Creston | America/Creston | America/Creston | listed
+America/Cuiaba | America/Cuiaba | America/Cuiaba | listed
+America/Curacao | America/Curacao | America/Curacao | listed
+America/Danmarkshavn | America/Danmarkshavn | America/Danmarkshavn | listed
+America/Dawson | America/Dawson | America/Dawson | listed
+America/Dawson_Creek | America/Dawson_Creek | America/Dawson_Creek | listed
+America/Denver | America/Denver | America/Denver | listed
+America/Detroit | America/Detroit | America/Detroit | listed
+America/Dominica | America/Dominica | America/Dominica | listed
+America/Edmonton | America/Edmonton | America/Edmonton | listed
+America/Eirunepe | America/Eirunepe | America/Eirunepe | listed
+America/El_Salvador | America/El_Salvador | America/El_Salvador | listed
+America/Ensenada | America/Ensenada | America/Ensenada | equals America/Tijuana
+America/Fort_Nelson | America/Fort_Nelson | America/Fort_Nelson | listed
+America/Fort_Wayne | America/Fort_Wayne | America/Fort_Wayne | equals America/Indiana/Indianapolis
+America/Fortaleza | America/Fortaleza | America/Fortaleza | listed
+America/Glace_Bay | America/Glace_Bay | America/Glace_Bay | listed
+America/Godthab | America/Godthab | America/Godthab | equals America/Nuuk
+America/Goose_Bay | America/Goose_Bay | America/Goose_Bay | listed
+America/Grand_Turk | America/Grand_Turk | America/Grand_Turk | listed
+America/Grenada | America/Grenada | America/Grenada | listed
+America/Guadeloupe | America/Guadeloupe | America/Guadeloupe | listed
+America/Guatemala | America/Guatemala | America/Guatemala | listed
+America/Guayaquil | America/Guayaquil | America/Guayaquil | listed
+America/Guyana | America/Guyana | America/Guyana | listed
+America/Halifax | America/Halifax | America/Halifax | listed
+America/Havana | America/Havana | America/Havana | listed
+America/Hermosillo | America/Hermosillo | America/Hermosillo | listed
+America/Indiana/Indianapolis | America/Indiana/Indianapolis | America/Indiana/Indianapolis | listed
+America/Indiana/Knox | America/Indiana/Knox | America/Indiana/Knox | listed
+America/Indiana/Marengo | America/Indiana/Marengo | America/Indiana/Marengo | listed
+America/Indiana/Petersburg | America/Indiana/Petersburg | America/Indiana/Petersburg | listed
+America/Indiana/Tell_City | America/Indiana/Tell_City | America/Indiana/Tell_City | listed
+America/Indiana/Vevay | America/Indiana/Vevay | America/Indiana/Vevay | listed
+America/Indiana/Vincennes | America/Indiana/Vincennes | America/Indiana/Vincennes | listed
+America/Indiana/Winamac | America/Indiana/Winamac | America/Indiana/Winamac | listed
+America/Indianapolis | America/Indianapolis | America/Indianapolis | equals America/Indiana/Indianapolis
+America/Inuvik | America/Inuvik | America/Inuvik | listed
+America/Iqaluit | America/Iqaluit | America/Iqaluit | listed
+America/Jamaica | America/Jamaica | America/Jamaica | listed
+America/Jujuy | America/Jujuy | America/Jujuy | equals America/Argentina/Jujuy
+America/Juneau | America/Juneau | America/Juneau | listed
+America/Kentucky/Louisville | America/Kentucky/Louisville | America/Kentucky/Louisville | listed
+America/Kentucky/Monticello | America/Kentucky/Monticello | America/Kentucky/Monticello | listed
+America/Knox_IN | America/Knox_IN | America/Knox_IN | equals America/Indiana/Knox
+America/Kralendijk | America/Kralendijk | America/Kralendijk | equals America/Curacao
+America/La_Paz | America/La_Paz | America/La_Paz | listed
+America/Lima | America/Lima | America/Lima | listed
+America/Los_Angeles | America/Los_Angeles | America/Los_Angeles | listed
+America/Louisville | America/Louisville | America/Louisville | equals America/Kentucky/Louisville
+America/Lower_Princes | America/Lower_Princes | America/Lower_Princes | equals America/Curacao
+America/Maceio | America/Maceio | America/Maceio | listed
+America/Managua | America/Managua | America/Managua | listed
+America/Manaus | America/Manaus | America/Manaus | listed
+America/Marigot | America/Marigot | America/Marigot | equals America/Port_of_Spain
+America/Martinique | America/Martinique | America/Martinique | listed
+America/Matamoros | America/Matamoros | America/Matamoros | listed
+America/Mazatlan | America/Mazatlan | America/Mazatlan | listed
+America/Mendoza | America/Mendoza | America/Mendoza | equals America/Argentina/Mendoza
+America/Menominee | America/Menominee | America/Menominee | listed
+America/Merida | America/Merida | America/Merida | listed
+America/Metlakatla | America/Metlakatla | America/Metlakatla | listed
+America/Mexico_City | America/Mexico_City | America/Mexico_City | listed
+America/Miquelon | America/Miquelon | America/Miquelon | listed
+America/Moncton | America/Moncton | America/Moncton | listed
+America/Monterrey | America/Monterrey | America/Monterrey | listed
+America/Montevideo | America/Montevideo | America/Montevideo | listed
+America/Montreal | America/Montreal | America/Montreal | equals America/Toronto
+America/Montserrat | America/Montserrat | America/Montserrat | listed
+America/Nassau | America/Nassau | America/Nassau | listed
+America/New_York | America/New_York | America/New_York | listed
+America/Nipigon | America/Nipigon | America/Nipigon | equals America/Toronto
+America/Nome | America/Nome | America/Nome | listed
+America/Noronha | America/Noronha | America/Noronha | listed
+America/North_Dakota/Beulah | America/North_Dakota/Beulah | America/North_Dakota/Beulah | listed
+America/North_Dakota/Center | America/North_Dakota/Center | America/North_Dakota/Center | listed
+America/North_Dakota/New_Salem | America/North_Dakota/New_Salem | America/North_Dakota/New_Salem | listed
+America/Nuuk | America/Nuuk | America/Nuuk | listed
+America/Ojinaga | America/Ojinaga | America/Ojinaga | listed
+America/Panama | America/Panama | America/Panama | listed
+America/Pangnirtung | America/Pangnirtung | America/Pangnirtung | equals America/Iqaluit
+America/Paramaribo | America/Paramaribo | America/Paramaribo | listed
+America/Phoenix | America/Phoenix | America/Phoenix | listed
+America/Port-au-Prince | America/Port-au-Prince | America/Port-au-Prince | listed
+America/Port_of_Spain | America/Port_of_Spain | America/Port_of_Spain | listed
+America/Porto_Acre | America/Porto_Acre | America/Porto_Acre | equals America/Rio_Branco
+America/Porto_Velho | America/Porto_Velho | America/Porto_Velho | listed
+America/Puerto_Rico | America/Puerto_Rico | America/Puerto_Rico | listed
+America/Punta_Arenas | America/Punta_Arenas | America/Punta_Arenas | listed
+America/Rainy_River | America/Rainy_River | America/Rainy_River | equals America/Winnipeg
+America/Rankin_Inlet | America/Rankin_Inlet | America/Rankin_Inlet | listed
+America/Recife | America/Recife | America/Recife | listed
+America/Regina | America/Regina | America/Regina | listed
+America/Resolute | America/Resolute | America/Resolute | listed
+America/Rio_Branco | America/Rio_Branco | America/Rio_Branco | listed
+America/Rosario | America/Rosario | America/Rosario | equals America/Argentina/Cordoba
+America/Santa_Isabel | America/Santa_Isabel | America/Santa_Isabel | equals America/Tijuana
+America/Santarem | America/Santarem | America/Santarem | listed
+America/Santiago | America/Santiago | America/Santiago | listed
+America/Santo_Domingo | America/Santo_Domingo | America/Santo_Domingo | listed
+America/Sao_Paulo | America/Sao_Paulo | America/Sao_Paulo | listed
+America/Scoresbysund | America/Scoresbysund | America/Scoresbysund | listed
+America/Shiprock | America/Shiprock | America/Shiprock | equals America/Denver
+America/Sitka | America/Sitka | America/Sitka | listed
+America/St_Barthelemy | America/St_Barthelemy | America/St_Barthelemy | equals America/Port_of_Spain
+America/St_Johns | America/St_Johns | America/St_Johns | listed
+America/St_Kitts | America/St_Kitts | America/St_Kitts | listed
+America/St_Lucia | America/St_Lucia | America/St_Lucia | listed
+America/St_Thomas | America/St_Thomas | America/St_Thomas | listed
+America/St_Vincent | America/St_Vincent | America/St_Vincent | listed
+America/Swift_Current | America/Swift_Current | America/Swift_Current | listed
+America/Tegucigalpa | America/Tegucigalpa | America/Tegucigalpa | listed
+America/Thule | America/Thule | America/Thule | listed
+America/Thunder_Bay | America/Thunder_Bay | America/Thunder_Bay | equals America/Toronto
+America/Tijuana | America/Tijuana | America/Tijuana | listed
+America/Toronto | America/Toronto | America/Toronto | listed
+America/Tortola | America/Tortola | America/Tortola | listed
+America/Vancouver | America/Vancouver | America/Vancouver | listed
+America/Virgin | America/Virgin | America/Virgin | equals America/St_Thomas
+America/Whitehorse | America/Whitehorse | America/Whitehorse | listed
+America/Winnipeg | America/Winnipeg | America/Winnipeg | listed
+America/Yakutat | America/Yakutat | America/Yakutat | listed
+America/Yellowknife | America/Yellowknife | America/Yellowknife | equals America/Edmonton
+Antarctica/Casey | Antarctica/Casey | Antarctica/Casey | listed
+Antarctica/Davis | Antarctica/Davis | Antarctica/Davis | listed
+Antarctica/DumontDUrville | Antarctica/DumontDUrville | Antarctica/DumontDUrville | listed
+Antarctica/Macquarie | Antarctica/Macquarie | Antarctica/Macquarie | listed
+Antarctica/Mawson | Antarctica/Mawson | Antarctica/Mawson | listed
+Antarctica/McMurdo | Antarctica/McMurdo | Antarctica/McMurdo | listed
+Antarctica/Palmer | Antarctica/Palmer | Antarctica/Palmer | listed
+Antarctica/Rothera | Antarctica/Rothera | Antarctica/Rothera | listed
+Antarctica/South_Pole | Antarctica/South_Pole | Antarctica/South_Pole | equals Antarctica/McMurdo
+Antarctica/Syowa | Antarctica/Syowa | Antarctica/Syowa | listed
+Antarctica/Troll | Antarctica/Troll | Antarctica/Troll | listed
+Antarctica/Vostok | Antarctica/Vostok | Antarctica/Vostok | listed
+Arctic/Longyearbyen | Arctic/Longyearbyen | Arctic/Longyearbyen | equals Europe/Oslo
+Asia/Aden | Asia/Aden | Asia/Aden | listed
+Asia/Almaty | Asia/Almaty | Asia/Almaty | listed
+Asia/Amman | Asia/Amman | Asia/Amman | listed
+Asia/Anadyr | Asia/Anadyr | Asia/Anadyr | listed
+Asia/Aqtau | Asia/Aqtau | Asia/Aqtau | listed
+Asia/Aqtobe | Asia/Aqtobe | Asia/Aqtobe | listed
+Asia/Ashgabat | Asia/Ashgabat | Asia/Ashgabat | listed
+Asia/Ashkhabad | Asia/Ashkhabad | Asia/Ashkhabad | equals Asia/Ashgabat
+Asia/Atyrau | Asia/Atyrau | Asia/Atyrau | listed
+Asia/Baghdad | Asia/Baghdad | Asia/Baghdad | listed
+Asia/Bahrain | Asia/Bahrain | Asia/Bahrain | listed
+Asia/Baku | Asia/Baku | Asia/Baku | listed
+Asia/Bangkok | Asia/Bangkok | Asia/Bangkok | listed
+Asia/Barnaul | Asia/Barnaul | Asia/Barnaul | listed
+Asia/Beirut | Asia/Beirut | Asia/Beirut | listed
+Asia/Bishkek | Asia/Bishkek | Asia/Bishkek | listed
+Asia/Brunei | Asia/Brunei | Asia/Brunei | listed
+Asia/Calcutta | Asia/Calcutta | Asia/Calcutta | equals Asia/Kolkata
+Asia/Chita | Asia/Chita | Asia/Chita | listed
+Asia/Choibalsan | Asia/Choibalsan | Asia/Choibalsan | equals Asia/Ulaanbaatar
+Asia/Chongqing | Asia/Chongqing | Asia/Chongqing | equals Asia/Shanghai
+Asia/Chungking | Asia/Chungking | Asia/Chungking | equals Asia/Shanghai
+Asia/Colombo | Asia/Colombo | Asia/Colombo | listed
+Asia/Dacca | Asia/Dacca | Asia/Dacca | equals Asia/Dhaka
+Asia/Damascus | Asia/Damascus | Asia/Damascus | listed
+Asia/Dhaka | Asia/Dhaka | Asia/Dhaka | listed
+Asia/Dili | Asia/Dili | Asia/Dili | listed
+Asia/Dubai | Asia/Dubai | Asia/Dubai | listed
+Asia/Dushanbe | Asia/Dushanbe | Asia/Dushanbe | listed
+Asia/Famagusta | Asia/Famagusta | Asia/Famagusta | listed
+Asia/Gaza | Asia/Gaza | Asia/Gaza | listed
+Asia/Harbin | Asia/Harbin | Asia/Harbin | equals Asia/Shanghai
+Asia/Hebron | Asia/Hebron | Asia/Hebron | listed
+Asia/Ho_Chi_Minh | Asia/Ho_Chi_Minh | Asia/Ho_Chi_Minh | listed
+Asia/Hong_Kong | Asia/Hong_Kong | Asia/Hong_Kong | listed
+Asia/Hovd | Asia/Hovd | Asia/Hovd | listed
+Asia/Irkutsk | Asia/Irkutsk | Asia/Irkutsk | listed
+Asia/Istanbul | Asia/Istanbul | Asia/Istanbul | equals Europe/Istanbul
+Asia/Jakarta | Asia/Jakarta | Asia/Jakarta | listed
+Asia/Jayapura | Asia/Jayapura | Asia/Jayapura | listed
+Asia/Jerusalem | Asia/Jerusalem | Asia/Jerusalem | listed
+Asia/Kabul | Asia/Kabul | Asia/Kabul | listed
+Asia/Kamchatka | Asia/Kamchatka | Asia/Kamchatka | listed
+Asia/Karachi | Asia/Karachi | Asia/Karachi | listed
+Asia/Kashgar | Asia/Kashgar | Asia/Kashgar | equals Asia/Urumqi
+Asia/Kathmandu | Asia/Kathmandu | Asia/Kathmandu | listed
+Asia/Katmandu | Asia/Katmandu | Asia/Katmandu | equals Asia/Kathmandu
+Asia/Khandyga | Asia/Khandyga | Asia/Khandyga | listed
+Asia/Kolkata | Asia/Kolkata | Asia/Kolkata | listed
+Asia/Krasnoyarsk | Asia/Krasnoyarsk | Asia/Krasnoyarsk | listed
+Asia/Kuala_Lumpur | Asia/Kuala_Lumpur | Asia/Kuala_Lumpur | listed
+Asia/Kuching | Asia/Kuching | Asia/Kuching | listed
+Asia/Kuwait | Asia/Kuwait | Asia/Kuwait | listed
+Asia/Macao | Asia/Macao | Asia/Macao | equals Asia/Macau
+Asia/Macau | Asia/Macau | Asia/Macau | listed
+Asia/Magadan | Asia/Magadan | Asia/Magadan | listed
+Asia/Makassar | Asia/Makassar | Asia/Makassar | listed
+Asia/Manila | Asia/Manila | Asia/Manila | listed
+Asia/Muscat | Asia/Muscat | Asia/Muscat | listed
+Asia/Nicosia | Asia/Nicosia | Asia/Nicosia | listed
+Asia/Novokuznetsk | Asia/Novokuznetsk | Asia/Novokuznetsk | listed
+Asia/Novosibirsk | Asia/Novosibirsk | Asia/Novosibirsk | listed
+Asia/Omsk | Asia/Omsk | Asia/Omsk | listed
+Asia/Oral | Asia/Oral | Asia/Oral | listed
+Asia/Phnom_Penh | Asia/Phnom_Penh | Asia/Phnom_Penh | listed
+Asia/Pontianak | Asia/Pontianak | Asia/Pontianak | listed
+Asia/Pyongyang | Asia/Pyongyang | Asia/Pyongyang | listed
+Asia/Qatar | Asia/Qatar | Asia/Qatar | listed
+Asia/Qostanay | Asia/Qostanay | Asia/Qostanay | listed
+Asia/Qyzylorda | Asia/Qyzylorda | Asia/Qyzylorda | listed
+Asia/Rangoon | Asia/Rangoon | Asia/Rangoon | equals Asia/Yangon
+Asia/Riyadh | Asia/Riyadh | Asia/Riyadh | listed
+Asia/Saigon | Asia/Saigon | Asia/Saigon | equals Asia/Ho_Chi_Minh
+Asia/Sakhalin | Asia/Sakhalin | Asia/Sakhalin | listed
+Asia/Samarkand | Asia/Samarkand | Asia/Samarkand | listed
+Asia/Seoul | Asia/Seoul | Asia/Seoul | listed
+Asia/Shanghai | Asia/Shanghai | Asia/Shanghai | listed
+Asia/Singapore | Asia/Singapore | Asia/Singapore | listed
+Asia/Srednekolymsk | Asia/Srednekolymsk | Asia/Srednekolymsk | listed
+Asia/Taipei | Asia/Taipei | Asia/Taipei | listed
+Asia/Tashkent | Asia/Tashkent | Asia/Tashkent | listed
+Asia/Tbilisi | Asia/Tbilisi | Asia/Tbilisi | listed
+Asia/Tehran | Asia/Tehran | Asia/Tehran | listed
+Asia/Tel_Aviv | Asia/Tel_Aviv | Asia/Tel_Aviv | equals Asia/Jerusalem
+Asia/Thimbu | Asia/Thimbu | Asia/Thimbu | equals Asia/Thimphu
+Asia/Thimphu | Asia/Thimphu | Asia/Thimphu | listed
+Asia/Tokyo | Asia/Tokyo | Asia/Tokyo | listed
+Asia/Tomsk | Asia/Tomsk | Asia/Tomsk | listed
+Asia/Ujung_Pandang | Asia/Ujung_Pandang | Asia/Ujung_Pandang | equals Asia/Makassar
+Asia/Ulaanbaatar | Asia/Ulaanbaatar | Asia/Ulaanbaatar | listed
+Asia/Ulan_Bator | Asia/Ulan_Bator | Asia/Ulan_Bator | equals Asia/Ulaanbaatar
+Asia/Urumqi | Asia/Urumqi | Asia/Urumqi | listed
+Asia/Ust-Nera | Asia/Ust-Nera | Asia/Ust-Nera | listed
+Asia/Vientiane | Asia/Vientiane | Asia/Vientiane | listed
+Asia/Vladivostok | Asia/Vladivostok | Asia/Vladivostok | listed
+Asia/Yakutsk | Asia/Yakutsk | Asia/Yakutsk | listed
+Asia/Yangon | Asia/Yangon | Asia/Yangon | listed
+Asia/Yekaterinburg | Asia/Yekaterinburg | Asia/Yekaterinburg | listed
+Asia/Yerevan | Asia/Yerevan | Asia/Yerevan | listed
+Atlantic/Azores | Atlantic/Azores | Atlantic/Azores | listed
+Atlantic/Bermuda | Atlantic/Bermuda | Atlantic/Bermuda | listed
+Atlantic/Canary | Atlantic/Canary | Atlantic/Canary | listed
+Atlantic/Cape_Verde | Atlantic/Cape_Verde | Atlantic/Cape_Verde | listed
+Atlantic/Faeroe | Atlantic/Faeroe | Atlantic/Faeroe | equals Atlantic/Faroe
+Atlantic/Faroe | Atlantic/Faroe | Atlantic/Faroe | listed
+Atlantic/Jan_Mayen | Atlantic/Jan_Mayen | Atlantic/Jan_Mayen | equals Europe/Oslo
+Atlantic/Madeira | Atlantic/Madeira | Atlantic/Madeira | listed
+Atlantic/Reykjavik | Atlantic/Reykjavik | Atlantic/Reykjavik | listed
+Atlantic/South_Georgia | Atlantic/South_Georgia | Atlantic/South_Georgia | listed
+Atlantic/St_Helena | Atlantic/St_Helena | Atlantic/St_Helena | listed
+Atlantic/Stanley | Atlantic/Stanley | Atlantic/Stanley | listed
+Australia/ACT | Australia/ACT | Australia/ACT | equals Australia/Sydney
+Australia/Adelaide | Australia/Adelaide | Australia/Adelaide | listed
+Australia/Brisbane | Australia/Brisbane | Australia/Brisbane | listed
+Australia/Broken_Hill | Australia/Broken_Hill | Australia/Broken_Hill | listed
+Australia/Canberra | Australia/Canberra | Australia/Canberra | equals Australia/Sydney
+Australia/Currie | Australia/Currie | Australia/Currie | equals Australia/Hobart
+Australia/Darwin | Australia/Darwin | Australia/Darwin | listed
+Australia/Eucla | Australia/Eucla | Australia/Eucla | listed
+Australia/Hobart | Australia/Hobart | Australia/Hobart | listed
+Australia/LHI | Australia/LHI | Australia/LHI | equals Australia/Lord_Howe
+Australia/Lindeman | Australia/Lindeman | Australia/Lindeman | listed
+Australia/Lord_Howe | Australia/Lord_Howe | Australia/Lord_Howe | listed
+Australia/Melbourne | Australia/Melbourne | Australia/Melbourne | listed
+Australia/NSW | Australia/NSW | Australia/NSW | equals Australia/Sydney
+Australia/North | Australia/North | Australia/North | equals Australia/Darwin
+Australia/Perth | Australia/Perth | Australia/Perth | listed
+Australia/Queensland | Australia/Queensland | Australia/Queensland | equals Australia/Brisbane
+Australia/South | Australia/South | Australia/South | equals Australia/Adelaide
+Australia/Sydney | Australia/Sydney | Australia/Sydney | listed
+Australia/Tasmania | Australia/Tasmania | Australia/Tasmania | equals Australia/Hobart
+Australia/Victoria | Australia/Victoria | Australia/Victoria | equals Australia/Melbourne
+Australia/West | Australia/West | Australia/West | equals Australia/Perth
+Australia/Yancowinna | Australia/Yancowinna | Australia/Yancowinna | equals Australia/Broken_Hill
+Brazil/Acre | Brazil/Acre | Brazil/Acre | equals America/Rio_Branco
+Brazil/DeNoronha | Brazil/DeNoronha | Brazil/DeNoronha | equals America/Noronha
+Brazil/East | Brazil/East | Brazil/East | equals America/Sao_Paulo
+Brazil/West | Brazil/West | Brazil/West | equals America/Manaus
+CET | CET | CET | equals Europe/Brussels
+CST6CDT | CST6CDT | CST6CDT | equals America/Chicago
+Canada/Atlantic | Canada/Atlantic | Canada/Atlantic | equals America/Halifax
+Canada/Central | Canada/Central | Canada/Central | equals America/Winnipeg
+Canada/Eastern | Canada/Eastern | Canada/Eastern | equals America/Toronto
+Canada/Mountain | Canada/Mountain | Canada/Mountain | equals America/Edmonton
+Canada/Newfoundland | Canada/Newfoundland | Canada/Newfoundland | equals America/St_Johns
+Canada/Pacific | Canada/Pacific | Canada/Pacific | equals America/Vancouver
+Canada/Saskatchewan | Canada/Saskatchewan | Canada/Saskatchewan | equals America/Regina
+Canada/Yukon | Canada/Yukon | Canada/Yukon | equals America/Whitehorse
+Chile/Continental | Chile/Continental | Chile/Continental | equals America/Santiago
+Chile/EasterIsland | Chile/EasterIsland | Chile/EasterIsland | equals Pacific/Easter
+Cuba | Cuba | Cuba | equals America/Havana
+EET | EET | EET | equals Europe/Athens
+EST | EST | EST | equals America/Panama
+EST5EDT | EST5EDT | EST5EDT | equals America/New_York
+Egypt | Egypt | Egypt | equals Africa/Cairo
+Eire | Eire | Eire | equals Europe/Dublin
+Etc/GMT | Etc/GMT | Etc/GMT | equals UTC
+Etc/GMT+0 | Etc/GMT+0 | Etc/GMT+0 | equals UTC
+Etc/GMT+1 | Etc/GMT+1 | Etc/GMT+1 | listed
+Etc/GMT+10 | Etc/GMT+10 | Etc/GMT+10 | listed
+Etc/GMT+11 | Etc/GMT+11 | Etc/GMT+11 | listed
+Etc/GMT+12 | Etc/GMT+12 | Etc/GMT+12 | listed
+Etc/GMT+2 | Etc/GMT+2 | Etc/GMT+2 | listed
+Etc/GMT+3 | Etc/GMT+3 | Etc/GMT+3 | listed
+Etc/GMT+4 | Etc/GMT+4 | Etc/GMT+4 | listed
+Etc/GMT+5 | Etc/GMT+5 | Etc/GMT+5 | listed
+Etc/GMT+6 | Etc/GMT+6 | Etc/GMT+6 | listed
+Etc/GMT+7 | Etc/GMT+7 | Etc/GMT+7 | listed
+Etc/GMT+8 | Etc/GMT+8 | Etc/GMT+8 | listed
+Etc/GMT+9 | Etc/GMT+9 | Etc/GMT+9 | listed
+Etc/GMT-0 | Etc/GMT-0 | Etc/GMT-0 | equals UTC
+Etc/GMT-1 | Etc/GMT-1 | Etc/GMT-1 | listed
+Etc/GMT-10 | Etc/GMT-10 | Etc/GMT-10 | listed
+Etc/GMT-11 | Etc/GMT-11 | Etc/GMT-11 | listed
+Etc/GMT-12 | Etc/GMT-12 | Etc/GMT-12 | listed
+Etc/GMT-13 | Etc/GMT-13 | Etc/GMT-13 | listed
+Etc/GMT-14 | Etc/GMT-14 | Etc/GMT-14 | listed
+Etc/GMT-2 | Etc/GMT-2 | Etc/GMT-2 | listed
+Etc/GMT-3 | Etc/GMT-3 | Etc/GMT-3 | listed
+Etc/GMT-4 | Etc/GMT-4 | Etc/GMT-4 | listed
+Etc/GMT-5 | Etc/GMT-5 | Etc/GMT-5 | listed
+Etc/GMT-6 | Etc/GMT-6 | Etc/GMT-6 | listed
+Etc/GMT-7 | Etc/GMT-7 | Etc/GMT-7 | listed
+Etc/GMT-8 | Etc/GMT-8 | Etc/GMT-8 | listed
+Etc/GMT-9 | Etc/GMT-9 | Etc/GMT-9 | listed
+Etc/GMT0 | Etc/GMT0 | Etc/GMT0 | equals UTC
+Etc/Greenwich | Etc/Greenwich | Etc/Greenwich | equals UTC
+Etc/UCT | Etc/UCT | Etc/UCT | equals UTC
+Etc/UTC | Etc/UTC | Etc/UTC | equals UTC
+Etc/Universal | Etc/Universal | Etc/Universal | equals UTC
+Etc/Zulu | Etc/Zulu | Etc/Zulu | equals UTC
+Europe/Amsterdam | Europe/Amsterdam | Europe/Amsterdam | listed
+Europe/Andorra | Europe/Andorra | Europe/Andorra | listed
+Europe/Astrakhan | Europe/Astrakhan | Europe/Astrakhan | listed
+Europe/Athens | Europe/Athens | Europe/Athens | listed
+Europe/Belfast | Europe/Belfast | Europe/Belfast | equals Europe/London
+Europe/Belgrade | Europe/Belgrade | Europe/Belgrade | listed
+Europe/Berlin | Europe/Berlin | Europe/Berlin | listed
+Europe/Bratislava | Europe/Bratislava | Europe/Bratislava | equals Europe/Prague
+Europe/Brussels | Europe/Brussels | Europe/Brussels | listed
+Europe/Bucharest | Europe/Bucharest | Europe/Bucharest | listed
+Europe/Budapest | Europe/Budapest | Europe/Budapest | listed
+Europe/Busingen | Europe/Busingen | Europe/Busingen | equals Europe/Zurich
+Europe/Chisinau | Europe/Chisinau | Europe/Chisinau | listed
+Europe/Copenhagen | Europe/Copenhagen | Europe/Copenhagen | listed
+Europe/Dublin | Europe/Dublin | Europe/Dublin | listed
+Europe/Gibraltar | Europe/Gibraltar | Europe/Gibraltar | listed
+Europe/Guernsey | Europe/Guernsey | Europe/Guernsey | listed
+Europe/Helsinki | Europe/Helsinki | Europe/Helsinki | listed
+Europe/Isle_of_Man | Europe/Isle_of_Man | Europe/Isle_of_Man | listed
+Europe/Istanbul | Europe/Istanbul | Europe/Istanbul | listed
+Europe/Jersey | Europe/Jersey | Europe/Jersey | listed
+Europe/Kaliningrad | Europe/Kaliningrad | Europe/Kaliningrad | listed
+Europe/Kiev | Europe/Kiev | Europe/Kiev | equals Europe/Kyiv
+Europe/Kirov | Europe/Kirov | Europe/Kirov | listed
+Europe/Kyiv | Europe/Kyiv | Europe/Kyiv | listed
+Europe/Lisbon | Europe/Lisbon | Europe/Lisbon | listed
+Europe/Ljubljana | Europe/Ljubljana | Europe/Ljubljana | listed
+Europe/London | Europe/London | Europe/London | listed
+Europe/Luxembourg | Europe/Luxembourg | Europe/Luxembourg | listed
+Europe/Madrid | Europe/Madrid | Europe/Madrid | listed
+Europe/Malta | Europe/Malta | Europe/Malta | listed
+Europe/Mariehamn | Europe/Mariehamn | Europe/Mariehamn | equals Europe/Helsinki
+Europe/Minsk | Europe/Minsk | Europe/Minsk | listed
+Europe/Monaco | Europe/Monaco | Europe/Monaco | listed
+Europe/Moscow | Europe/Moscow | Europe/Moscow | listed
+Europe/Nicosia | Europe/Nicosia | Europe/Nicosia | equals Asia/Nicosia
+Europe/Oslo | Europe/Oslo | Europe/Oslo | listed
+Europe/Paris | Europe/Paris | Europe/Paris | listed
+Europe/Podgorica | Europe/Podgorica | Europe/Podgorica | equals Europe/Belgrade
+Europe/Prague | Europe/Prague | Europe/Prague | listed
+Europe/Riga | Europe/Riga | Europe/Riga | listed
+Europe/Rome | Europe/Rome | Europe/Rome | listed
+Europe/Samara | Europe/Samara | Europe/Samara | listed
+Europe/San_Marino | Europe/San_Marino | Europe/San_Marino | equals Europe/Rome
+Europe/Sarajevo | Europe/Sarajevo | Europe/Sarajevo | listed
+Europe/Saratov | Europe/Saratov | Europe/Saratov | listed
+Europe/Simferopol | Europe/Simferopol | Europe/Simferopol | listed
+Europe/Skopje | Europe/Skopje | Europe/Skopje | listed
+Europe/Sofia | Europe/Sofia | Europe/Sofia | listed
+Europe/Stockholm | Europe/Stockholm | Europe/Stockholm | listed
+Europe/Tallinn | Europe/Tallinn | Europe/Tallinn | listed
+Europe/Tirane | Europe/Tirane | Europe/Tirane | listed
+Europe/Tiraspol | Europe/Tiraspol | Europe/Tiraspol | equals Europe/Chisinau
+Europe/Ulyanovsk | Europe/Ulyanovsk | Europe/Ulyanovsk | listed
+Europe/Uzhgorod | Europe/Uzhgorod | Europe/Uzhgorod | equals Europe/Kyiv
+Europe/Vaduz | Europe/Vaduz | Europe/Vaduz | listed
+Europe/Vatican | Europe/Vatican | Europe/Vatican | equals Europe/Rome
+Europe/Vienna | Europe/Vienna | Europe/Vienna | listed
+Europe/Vilnius | Europe/Vilnius | Europe/Vilnius | listed
+Europe/Volgograd | Europe/Volgograd | Europe/Volgograd | listed
+Europe/Warsaw | Europe/Warsaw | Europe/Warsaw | listed
+Europe/Zagreb | Europe/Zagreb | Europe/Zagreb | listed
+Europe/Zaporozhye | Europe/Zaporozhye | Europe/Zaporozhye | equals Europe/Kyiv
+Europe/Zurich | Europe/Zurich | Europe/Zurich | listed
+Factory | Factory | Factory | listed
+GB | GB | GB | equals Europe/London
+GB-Eire | GB-Eire | GB-Eire | equals Europe/London
+GMT | GMT | GMT | equals UTC
+GMT+0 | GMT+0 | GMT+0 | equals UTC
+GMT-0 | GMT-0 | GMT-0 | equals UTC
+GMT0 | GMT0 | GMT0 | equals UTC
+Greenwich | Greenwich | Greenwich | equals UTC
+HST | HST | HST | equals Pacific/Honolulu
+Hongkong | Hongkong | Hongkong | equals Asia/Hong_Kong
+Iceland | Iceland | Iceland | equals Atlantic/Reykjavik
+Indian/Antananarivo | Indian/Antananarivo | Indian/Antananarivo | listed
+Indian/Chagos | Indian/Chagos | Indian/Chagos | listed
+Indian/Christmas | Indian/Christmas | Indian/Christmas | listed
+Indian/Cocos | Indian/Cocos | Indian/Cocos | listed
+Indian/Comoro | Indian/Comoro | Indian/Comoro | listed
+Indian/Kerguelen | Indian/Kerguelen | Indian/Kerguelen | listed
+Indian/Mahe | Indian/Mahe | Indian/Mahe | listed
+Indian/Maldives | Indian/Maldives | Indian/Maldives | listed
+Indian/Mauritius | Indian/Mauritius | Indian/Mauritius | listed
+Indian/Mayotte | Indian/Mayotte | Indian/Mayotte | listed
+Indian/Reunion | Indian/Reunion | Indian/Reunion | listed
+Iran | Iran | Iran | equals Asia/Tehran
+Israel | Israel | Israel | equals Asia/Jerusalem
+Jamaica | Jamaica | Jamaica | equals America/Jamaica
+Japan | Japan | Japan | equals Asia/Tokyo
+Kwajalein | Kwajalein | Kwajalein | equals Pacific/Kwajalein
+Libya | Libya | Libya | equals Africa/Tripoli
+MET | MET | MET | equals Europe/Brussels
+MST | MST | MST | equals America/Phoenix
+MST7MDT | MST7MDT | MST7MDT | equals America/Denver
+Mexico/BajaNorte | Mexico/BajaNorte | Mexico/BajaNorte | equals America/Tijuana
+Mexico/BajaSur | Mexico/BajaSur | Mexico/BajaSur | equals America/Mazatlan
+Mexico/General | Mexico/General | Mexico/General | equals America/Mexico_City
+NZ | NZ | NZ | equals Pacific/Auckland
+NZ-CHAT | NZ-CHAT | NZ-CHAT | equals Pacific/Chatham
+Navajo | Navajo | Navajo | equals America/Denver
+PRC | PRC | PRC | equals Asia/Shanghai
+PST8PDT | PST8PDT | PST8PDT | equals America/Los_Angeles
+Pacific/Apia | Pacific/Apia | Pacific/Apia | listed
+Pacific/Auckland | Pacific/Auckland | Pacific/Auckland | listed
+Pacific/Bougainville | Pacific/Bougainville | Pacific/Bougainville | listed
+Pacific/Chatham | Pacific/Chatham | Pacific/Chatham | listed
+Pacific/Chuuk | Pacific/Chuuk | Pacific/Chuuk | listed
+Pacific/Easter | Pacific/Easter | Pacific/Easter | listed
+Pacific/Efate | Pacific/Efate | Pacific/Efate | listed
+Pacific/Enderbury | Pacific/Enderbury | Pacific/Enderbury | equals Pacific/Kanton
+Pacific/Fakaofo | Pacific/Fakaofo | Pacific/Fakaofo | listed
+Pacific/Fiji | Pacific/Fiji | Pacific/Fiji | listed
+Pacific/Funafuti | Pacific/Funafuti | Pacific/Funafuti | listed
+Pacific/Galapagos | Pacific/Galapagos | Pacific/Galapagos | listed
+Pacific/Gambier | Pacific/Gambier | Pacific/Gambier | listed
+Pacific/Guadalcanal | Pacific/Guadalcanal | Pacific/Guadalcanal | listed
+Pacific/Guam | Pacific/Guam | Pacific/Guam | listed
+Pacific/Honolulu | Pacific/Honolulu | Pacific/Honolulu | listed
+Pacific/Johnston | Pacific/Johnston | Pacific/Johnston | equals Pacific/Honolulu
+Pacific/Kanton | Pacific/Kanton | Pacific/Kanton | listed
+Pacific/Kiritimati | Pacific/Kiritimati | Pacific/Kiritimati | listed
+Pacific/Kosrae | Pacific/Kosrae | Pacific/Kosrae | listed
+Pacific/Kwajalein | Pacific/Kwajalein | Pacific/Kwajalein | listed
+Pacific/Majuro | Pacific/Majuro | Pacific/Majuro | listed
+Pacific/Marquesas | Pacific/Marquesas | Pacific/Marquesas | listed
+Pacific/Midway | Pacific/Midway | Pacific/Midway | listed
+Pacific/Nauru | Pacific/Nauru | Pacific/Nauru | listed
+Pacific/Niue | Pacific/Niue | Pacific/Niue | listed
+Pacific/Norfolk | Pacific/Norfolk | Pacific/Norfolk | listed
+Pacific/Noumea | Pacific/Noumea | Pacific/Noumea | listed
+Pacific/Pago_Pago | Pacific/Pago_Pago | Pacific/Pago_Pago | listed
+Pacific/Palau | Pacific/Palau | Pacific/Palau | listed
+Pacific/Pitcairn | Pacific/Pitcairn | Pacific/Pitcairn | listed
+Pacific/Pohnpei | Pacific/Pohnpei | Pacific/Pohnpei | listed
+Pacific/Ponape | Pacific/Ponape | Pacific/Ponape | equals Pacific/Pohnpei
+Pacific/Port_Moresby | Pacific/Port_Moresby | Pacific/Port_Moresby | listed
+Pacific/Rarotonga | Pacific/Rarotonga | Pacific/Rarotonga | listed
+Pacific/Saipan | Pacific/Saipan | Pacific/Saipan | listed
+Pacific/Samoa | Pacific/Samoa | Pacific/Samoa | equals Pacific/Pago_Pago
+Pacific/Tahiti | Pacific/Tahiti | Pacific/Tahiti | listed
+Pacific/Tarawa | Pacific/Tarawa | Pacific/Tarawa | listed
+Pacific/Tongatapu | Pacific/Tongatapu | Pacific/Tongatapu | listed
+Pacific/Truk | Pacific/Truk | Pacific/Truk | equals Pacific/Chuuk
+Pacific/Wake | Pacific/Wake | Pacific/Wake | listed
+Pacific/Wallis | Pacific/Wallis | Pacific/Wallis | listed
+Pacific/Yap | Pacific/Yap | Pacific/Yap | equals Pacific/Chuuk
+Poland | Poland | Poland | equals Europe/Warsaw
+Portugal | Portugal | Portugal | equals Europe/Lisbon
+ROC | ROC | ROC | equals Asia/Taipei
+ROK | ROK | ROK | equals Asia/Seoul
+Singapore | Singapore | Singapore | equals Asia/Singapore
+Turkey | Turkey | Turkey | equals Europe/Istanbul
+UCT | UCT | UCT | equals UTC
+US/Alaska | US/Alaska | US/Alaska | equals America/Anchorage
+US/Aleutian | US/Aleutian | US/Aleutian | equals America/Adak
+US/Arizona | US/Arizona | US/Arizona | equals America/Phoenix
+US/Central | US/Central | US/Central | equals America/Chicago
+US/East-Indiana | US/East-Indiana | US/East-Indiana | equals America/Indiana/Indianapolis
+US/Eastern | US/Eastern | US/Eastern | equals America/New_York
+US/Hawaii | US/Hawaii | US/Hawaii | equals Pacific/Honolulu
+US/Indiana-Starke | US/Indiana-Starke | US/Indiana-Starke | equals America/Indiana/Knox
+US/Michigan | US/Michigan | US/Michigan | equals America/Detroit
+US/Mountain | US/Mountain | US/Mountain | equals America/Denver
+US/Pacific | US/Pacific | US/Pacific | equals America/Los_Angeles
+US/Samoa | US/Samoa | US/Samoa | equals Pacific/Pago_Pago
+UTC | UTC | UTC | listed
+Universal | Universal | Universal | equals UTC
+W-SU | W-SU | W-SU | equals Europe/Moscow
+WET | WET | WET | equals Europe/Lisbon
+Zulu | Zulu | Zulu | equals UTC
+exit=0

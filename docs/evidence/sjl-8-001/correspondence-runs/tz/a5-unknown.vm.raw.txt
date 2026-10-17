@@ -1,0 +1,90 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl8/a5-unknown.js [raw]  uncaught Error: OUT<<ZonedDateTime ctor "Mars/Olympus" => THROWS RangeError: Temporal: Mars/Olympus is not an available time zone
+ZonedDateTime.from annotation "Mars/Olympus" => THROWS RangeError: Temporal: Mars/Olympus is not an available time zone
+Instant.toZonedDateTimeISO "Mars/Olympus" => THROWS RangeError: Temporal: Mars/Olympus is not an available time zone
+Instant.toString timeZone "Mars/Olympus" => THROWS RangeError: Temporal: Mars/Olympus is not an available time zone
+PlainDate.toZonedDateTime "Mars/Olympus" => THROWS RangeError: Temporal: Mars/Olympus is not an available time zone
+Now.zonedDateTimeISO "Mars/Olympus" => THROWS RangeError: Temporal: Mars/Olympus is not an available time zone
+Duration.round relativeTo bag "Mars/Olympus" => THROWS RangeError: Temporal: Mars/Olympus is not an available time zone
+DateTimeFormat "Mars/Olympus" => THROWS RangeError: Intl.DateTimeFormat: Mars/Olympus is not an available time zone
+ZonedDateTime ctor "Etc/Unknown" => THROWS RangeError: Temporal: Etc/Unknown is not an available time zone
+ZonedDateTime.from annotation "Etc/Unknown" => THROWS RangeError: Temporal: Etc/Unknown is not an available time zone
+Instant.toZonedDateTimeISO "Etc/Unknown" => THROWS RangeError: Temporal: Etc/Unknown is not an available time zone
+Instant.toString timeZone "Etc/Unknown" => THROWS RangeError: Temporal: Etc/Unknown is not an available time zone
+PlainDate.toZonedDateTime "Etc/Unknown" => THROWS RangeError: Temporal: Etc/Unknown is not an available time zone
+Now.zonedDateTimeISO "Etc/Unknown" => THROWS RangeError: Temporal: Etc/Unknown is not an available time zone
+Duration.round relativeTo bag "Etc/Unknown" => THROWS RangeError: Temporal: Etc/Unknown is not an available time zone
+DateTimeFormat "Etc/Unknown" => THROWS RangeError: Intl.DateTimeFormat: Etc/Unknown is not an available time zone
+ZonedDateTime ctor "" => THROWS RangeError: Temporal:  is not a time zone identifier
+ZonedDateTime.from annotation "" => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00[]'
+Instant.toZonedDateTimeISO "" => THROWS RangeError: Temporal: cannot parse ''
+Instant.toString timeZone "" => THROWS RangeError: Temporal: cannot parse ''
+PlainDate.toZonedDateTime "" => THROWS RangeError: Temporal: cannot parse ''
+Now.zonedDateTimeISO "" => THROWS RangeError: Temporal: cannot parse ''
+Duration.round relativeTo bag "" => THROWS RangeError: Temporal: cannot parse ''
+DateTimeFormat "" => THROWS RangeError: Intl.DateTimeFormat:  is not an available time zone
+ZonedDateTime ctor "America/New York" => THROWS RangeError: Temporal: America/New York is not a time zone identifier
+ZonedDateTime.from annotation "America/New York" => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00[America/New York]'
+Instant.toZonedDateTimeISO "America/New York" => THROWS RangeError: Temporal: cannot parse 'America/New York'
+Instant.toString timeZone "America/New York" => THROWS RangeError: Temporal: cannot parse 'America/New York'
+PlainDate.toZonedDateTime "America/New York" => THROWS RangeError: Temporal: cannot parse 'America/New York'
+Now.zonedDateTimeISO "America/New York" => THROWS RangeError: Temporal: cannot parse 'America/New York'
+Duration.round relativeTo bag "America/New York" => THROWS RangeError: Temporal: cannot parse 'America/New York'
+DateTimeFormat "America/New York" => THROWS RangeError: Intl.DateTimeFormat: America/New York is not an available time zone
+ZonedDateTime ctor "Europe/Berlin " => THROWS RangeError: Temporal: Europe/Berlin  is not a time zone identifier
+ZonedDateTime.from annotation "Europe/Berlin " => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00[Europe/Berlin ]'
+Instant.toZonedDateTimeISO "Europe/Berlin " => THROWS RangeError: Temporal: cannot parse 'Europe/Berlin '
+Instant.toString timeZone "Europe/Berlin " => THROWS RangeError: Temporal: cannot parse 'Europe/Berlin '
+PlainDate.toZonedDateTime "Europe/Berlin " => THROWS RangeError: Temporal: cannot parse 'Europe/Berlin '
+Now.zonedDateTimeISO "Europe/Berlin " => THROWS RangeError: Temporal: cannot parse 'Europe/Berlin '
+Duration.round relativeTo bag "Europe/Berlin " => THROWS RangeError: Temporal: cannot parse 'Europe/Berlin '
+DateTimeFormat "Europe/Berlin " => THROWS RangeError: Intl.DateTimeFormat: Europe/Berlin  is not an available time zone
+ZonedDateTime ctor "EST5" => THROWS RangeError: Temporal: EST5 is not an available time zone
+ZonedDateTime.from annotation "EST5" => THROWS RangeError: Temporal: EST5 is not an available time zone
+Instant.toZonedDateTimeISO "EST5" => THROWS RangeError: Temporal: EST5 is not an available time zone
+Instant.toString timeZone "EST5" => THROWS RangeError: Temporal: EST5 is not an available time zone
+PlainDate.toZonedDateTime "EST5" => THROWS RangeError: Temporal: EST5 is not an available time zone
+Now.zonedDateTimeISO "EST5" => THROWS RangeError: Temporal: EST5 is not an available time zone
+Duration.round relativeTo bag "EST5" => THROWS RangeError: Temporal: EST5 is not an available time zone
+DateTimeFormat "EST5" => THROWS RangeError: Intl.DateTimeFormat: EST5 is not an available time zone
+ZonedDateTime ctor "Etc/GMT+13" => THROWS RangeError: Temporal: Etc/GMT+13 is not an available time zone
+ZonedDateTime.from annotation "Etc/GMT+13" => THROWS RangeError: Temporal: Etc/GMT+13 is not an available time zone
+Instant.toZonedDateTimeISO "Etc/GMT+13" => THROWS RangeError: Temporal: Etc/GMT+13 is not an available time zone
+Instant.toString timeZone "Etc/GMT+13" => THROWS RangeError: Temporal: Etc/GMT+13 is not an available time zone
+PlainDate.toZonedDateTime "Etc/GMT+13" => THROWS RangeError: Temporal: Etc/GMT+13 is not an available time zone
+Now.zonedDateTimeISO "Etc/GMT+13" => THROWS RangeError: Temporal: Etc/GMT+13 is not an available time zone
+Duration.round relativeTo bag "Etc/GMT+13" => THROWS RangeError: Temporal: Etc/GMT+13 is not an available time zone
+DateTimeFormat "Etc/GMT+13" => THROWS RangeError: Intl.DateTimeFormat: Etc/GMT+13 is not an available time zone
+ZonedDateTime ctor "Etc/GMT-15" => THROWS RangeError: Temporal: Etc/GMT-15 is not an available time zone
+ZonedDateTime.from annotation "Etc/GMT-15" => THROWS RangeError: Temporal: Etc/GMT-15 is not an available time zone
+Instant.toZonedDateTimeISO "Etc/GMT-15" => THROWS RangeError: Temporal: Etc/GMT-15 is not an available time zone
+Instant.toString timeZone "Etc/GMT-15" => THROWS RangeError: Temporal: Etc/GMT-15 is not an available time zone
+PlainDate.toZonedDateTime "Etc/GMT-15" => THROWS RangeError: Temporal: Etc/GMT-15 is not an available time zone
+Now.zonedDateTimeISO "Etc/GMT-15" => THROWS RangeError: Temporal: Etc/GMT-15 is not an available time zone
+Duration.round relativeTo bag "Etc/GMT-15" => THROWS RangeError: Temporal: Etc/GMT-15 is not an available time zone
+DateTimeFormat "Etc/GMT-15" => THROWS RangeError: Intl.DateTimeFormat: Etc/GMT-15 is not an available time zone
+ZonedDateTime ctor "Etc/GMT+05" => THROWS RangeError: Temporal: Etc/GMT+05 is not an available time zone
+ZonedDateTime.from annotation "Etc/GMT+05" => THROWS RangeError: Temporal: Etc/GMT+05 is not an available time zone
+Instant.toZonedDateTimeISO "Etc/GMT+05" => THROWS RangeError: Temporal: Etc/GMT+05 is not an available time zone
+Instant.toString timeZone "Etc/GMT+05" => THROWS RangeError: Temporal: Etc/GMT+05 is not an available time zone
+PlainDate.toZonedDateTime "Etc/GMT+05" => THROWS RangeError: Temporal: Etc/GMT+05 is not an available time zone
+Now.zonedDateTimeISO "Etc/GMT+05" => THROWS RangeError: Temporal: Etc/GMT+05 is not an available time zone
+Duration.round relativeTo bag "Etc/GMT+05" => THROWS RangeError: Temporal: Etc/GMT+05 is not an available time zone
+DateTimeFormat "Etc/GMT+05" => THROWS RangeError: Intl.DateTimeFormat: Etc/GMT+05 is not an available time zone>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl8/a5-unknown.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl8  e.g. test/sjl8/a5-unknown.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl8/a5-unknown.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

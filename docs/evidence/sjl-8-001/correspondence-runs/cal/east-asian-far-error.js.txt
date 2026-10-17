@@ -1,0 +1,163 @@
+-271821-04-19 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
+-250000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
+-200000-01-01 => year -200001 M12 day 4; months 28,28,28,28,30,32,33,32,31,28,28,28 sum 354 daysInYear 354
+-150000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
+-100000-01-01 => year -100001 M11 day 18; months 29,30,30,29,30,30,29,29,30,29,29,30 sum 354 daysInYear 354
+-050000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
+-020000-01-01 => year -20001 M11 day 30; months 30,29,30,29,29,30,30,29,30,30,29,30,29 sum 384 daysInYear 384
+-010000-01-01 => year -10001 M11 day 19; months 30,30,29,30,30,30,29,29,30,29,29,30,29 sum 384 daysInYear 384
+-005000-01-01 => year -5001 M11 day 28; months 29,30,29,30,30,29,30,30,30,29,30,29 sum 355 daysInYear 355
++005000-01-01 => year 4999 M11 day 21; months 29,30,29,30,29,29,30,29,30,29,30,30,29 sum 383 daysInYear 383
++010000-01-01 => year 9999 M12 day 4; months 29,30,29,30,29,30,29,30,29,30,29,30 sum 354 daysInYear 354
++020000-01-01 => year 19999 M12L day 3; months 30,29,30,30,30,29,30,29,30,29,29,30,29 sum 384 daysInYear 384
++050000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
++100000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
++150000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
++200000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
++250000-01-01 => throws Error: System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at UnicodeCldr.LocaleData.ChineseYear.DaysInMonth(Int32 ordinalMonth)
+   at UnicodeCldr.LocaleData.CldrChineseCalendar.FromEpochDay(Int64 epochDay)
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalLunisolarCalendar.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalLunisolarCalendar.cs:line 93
+   at Broiler.JavaScript.BuiltIns.Temporal.TemporalCalendarMath.YmdFromEpochDays(String id, Int64 epoch) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/TemporalCalendarMath.cs:line 44
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.CalendarYmd() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 81
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.get_YearValue() in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Temporal/JSTemporalPlainDate.cs:line 106
+   at Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.<>c.<CreateClass>b__113_4(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/obj/Release/net10.0/Broiler.JavaScript.JSClassGenerator/Broiler.JavaScript.JSClassGenerator.JSClassGenerator/Broiler.JavaScript.BuiltIns.Temporal.JSTemporalPlainDate.g.cs:line 58
+   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1024
+   at Broiler.JavaScript.Engine.Core.JSValueCoreExtensions.<>c.<InitializeFactories>b__0_2(IPropertyAccessor getter, JSValue receiver) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Engine/Core/JSValueCoreExtensions.cs:line 33
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1642
+   at Broiler.JavaScript.Runtime.JSValue.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSValue.cs:line 1307
+   at Broiler.JavaScript.Runtime.JSObject.GetValue(KeyString key, JSValue receiver, Boolean throwError) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 1654
+   at Broiler.JavaScript.Runtime.JSObject.get_Item(KeyString name) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/JSObject.PropertyStorage.cs:line 739
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.PropertyInlineCache.Get(Int32 site, JSValue target, KeyString& property) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 844
+   at Broiler.JavaScript.Runtime.PropertyInlineCacheSite.Get(Int32 site, JSValue target, KeyString key) in <Broiler.JS>/Broiler.JS/Broiler.JavaScript.Runtime/ObjectShape.cs:line 326
+   at inline-<work>/runs/east-asian-far-error.broilerjs-input.js:3,180(Closures, Arguments&)
++275000-01-01 => year 274999 M10 day 16; months 42,41,31,24,22,26,31,31,26,22,24,32 sum 352 daysInYear 352
++275760-09-13 => throws RangeError: Temporal: date is out of range

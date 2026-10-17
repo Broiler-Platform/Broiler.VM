@@ -1,0 +1,7 @@
+Temporal.Now.timeZoneId() => UTC
+new Date(2027, 0, 15, 12).getTimezoneOffset() => 0
+Temporal offset of the host zone at 2027-01-15T20:00Z => +00:00
+Temporal.Now.zonedDateTimeISO().offset (now) => +00:00
+new Date().getTimezoneOffset() (now) => 0
+new Date(2040, 6, 1, 12).getTimezoneOffset() => 0
+Temporal offset of the host zone at 2040-07-01T19:00Z => +00:00

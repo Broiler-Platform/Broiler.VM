@@ -144,6 +144,13 @@ host zone ([SJL-D-19](../decisions.md#sjl-d-19)).
 - unknown zones silently reading as offset zero;
 - the calendar years that change source.
 
+*(Added 2026-10-17, at SJL-8.1, by JSD-0076.)* Two of these delete code that no input reaches: every entry point
+validates a name before reading it, and no gap lacks a following transition (the correspondence's A6 and A11).
+Five more corrections are listed with them, as the verdict classifies them: lookup by ASCII case only (Z10), no
+ISO string as the formatter's zone (Z11), the region lists (Z12), non-ASCII offset digits (A13) and an unvalidated
+host zone (A16). The calendar years that change source are the policy changes K4 to K6 and K11, beside three
+corrections: `chinese` 2057 (K2), the far lunisolar dates (K7) and the Persian seams at .NET's bounds (K12).
+
 ### SJL-8.7 — Evidence
 
 As in SJL-3.6, plus the reference datasets in both engines. **Broiler.VM's Intl data budget is

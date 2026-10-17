@@ -1,0 +1,26 @@
+132d131
+< primary America/Kralendijk
+136d134
+< primary America/Lower_Princes
+140d137
+< primary America/Marigot
+181d177
+< primary America/St_Barthelemy
+208d203
+< primary Arctic/Longyearbyen
+344d338
+< primary Europe/Bratislava
+348d341
+< primary Europe/Busingen
+367d359
+< primary Europe/Mariehamn
+373d364
+< primary Europe/Podgorica
+378d368
+< primary Europe/San_Marino
+389d378
+< primary Europe/Vatican
+395a385
+> primary Factory
+Intl.supportedValuesOf("timeZone").length => 445
+Intl.supportedValuesOf("timeZone").length => 435

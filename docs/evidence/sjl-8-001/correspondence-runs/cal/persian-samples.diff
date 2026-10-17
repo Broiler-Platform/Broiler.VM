@@ -1,0 +1,24 @@
+11,12c11,12
+< persian 1535 => 2156-03-20 true 366
+< persian 1536 => 2157-03-21 false 365
+---
+> persian 1535 => 2156-03-20 false 365
+> persian 1536 => 2157-03-20 true 366
+15,16c15,16
+< persian 2026 => 2647-03-21 true 366
+< persian 2027 => 2648-03-21 false 365
+---
+> persian 2026 => 2647-03-21 false 365
+> persian 2027 => 2648-03-20 true 366
+18,22c18,22
+< persian 2092 => 2713-03-21 true 366
+< persian 2093 => 2714-03-22 false 365
+< persian 1535-12-30 reject => 2157-03-20
+< persian 1536-12-30 reject => throws RangeError
+< ISO 2157-03-20 to persian => 2157-03-20 M12-30
+---
+> persian 2092 => 2713-03-21 false 365
+> persian 2093 => 2714-03-21 true 366
+> persian 1535-12-30 reject => throws RangeError
+> persian 1536-12-30 reject => 2158-03-20
+> ISO 2157-03-20 to persian => 2157-03-20 M01-1

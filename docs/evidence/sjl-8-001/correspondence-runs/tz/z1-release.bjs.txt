@@ -1,0 +1,14 @@
+America/Vancouver @ 2026-07-01T12:00Z offset => -07:00
+America/Vancouver @ 2027-01-15T12:00Z offset => -08:00
+America/Edmonton @ 2027-01-15T12:00Z offset => -07:00
+America/Winnipeg @ 2027-01-15T12:00Z offset => -06:00
+America/Inuvik @ 2027-01-15T12:00Z offset => -07:00
+Africa/Casablanca @ 2026-07-01T12:00Z offset => +01:00
+Africa/Casablanca @ 2027-01-15T12:00Z offset => +01:00
+Europe/Chisinau @ 2026-03-29T00:30Z offset => +03:00
+Europe/Chisinau @ 2026-10-25T00:30Z offset => +02:00
+Europe/Dublin @ 1925-09-25T12:00Z offset => +01:00
+America/Bogota @ 1992-05-02T12:00Z offset => -05:00
+America/Vancouver next transition after 2026-07-01 => 2026-11-01T01:00:00-08:00[America/Vancouver]
+Africa/Casablanca next transition after 2026-10-01 => 2027-02-07T02:00:00+00:00[Africa/Casablanca]
+exit=0

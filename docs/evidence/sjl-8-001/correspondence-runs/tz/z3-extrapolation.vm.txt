@@ -1,0 +1,13 @@
+America/New_York @ 2037-07-01T12:00Z offset => -04:00
+America/New_York @ 2040-07-01T12:00Z offset => -04:00
+America/New_York @ 2400-07-01T12:00Z offset => -04:00
+Europe/Berlin @ 2037-07-01T12:00Z offset => +02:00
+Europe/Berlin @ 2040-07-01T12:00Z offset => +02:00
+America/Santiago @ 2040-01-15T12:00Z offset => -03:00
+America/Santiago @ 2040-07-01T12:00Z offset => -04:00
+Australia/Sydney @ 2040-01-15T12:00Z offset => +11:00
+Australia/Sydney @ 2040-07-01T12:00Z offset => +10:00
+Asia/Kolkata @ 2040-07-01T12:00Z offset => +05:30
+Intl.DateTimeFormat America/New_York hour at 2040-07-01T12:00Z => 08
+Intl.DateTimeFormat Europe/Berlin hour at 2040-07-01T12:00Z => 14
+America/New_York 2040-07-01T12:00 wall clock to instant => 2040-07-01T16:00:00Z

@@ -1,0 +1,8 @@
+Temporal.Now.timeZoneId() => posixrules
+Intl.DateTimeFormat().resolvedOptions().timeZone => THROWS RangeError: Temporal: unknown time zone "posixrules"
+typeof Temporal.Now.zonedDateTimeISO() => THROWS RangeError: Temporal: unknown time zone "posixrules"
+new Date(2040, 6, 1, 12).getTimezoneOffset() => 240
+new Date(2026, 6, 1, 12).getTimezoneOffset() => 240
+America/New_York 2040-07-01 Temporal offset => -05:00
+DateTimeFormat (default zone) hour at 2040-07-01T16:00Z => 12
+exit=0

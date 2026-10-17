@@ -1,0 +1,46 @@
+   Asia/Calcutta equals Asia/Kolkata | VM: true | BJS: true
+   Europe/Kiev equals Europe/Kyiv | VM: true | BJS: true
+!! Europe/Bratislava equals Europe/Prague | VM: false | BJS: true
+!! Arctic/Longyearbyen equals Europe/Oslo | VM: false | BJS: true
+   Atlantic/Jan_Mayen equals Arctic/Longyearbyen | VM: true | BJS: true
+!! Europe/Busingen equals Europe/Zurich | VM: false | BJS: true
+!! Europe/Vatican equals Europe/Rome | VM: false | BJS: true
+!! America/Marigot equals America/Port_of_Spain | VM: false | BJS: true
+   EST5EDT equals America/New_York | VM: true | BJS: true
+   CET equals Europe/Brussels | VM: true | BJS: true
+   Etc/UTC equals UTC | VM: true | BJS: true
+   Etc/GMT equals UTC | VM: true | BJS: true
+   GMT equals Etc/UTC | VM: true | BJS: true
+   Etc/GMT-0 equals UTC | VM: true | BJS: true
+   +00:00 equals UTC | VM: false | BJS: false
+   Europe/Amsterdam equals Europe/Brussels | VM: false | BJS: false
+   Atlantic/Reykjavik equals Africa/Abidjan | VM: false | BJS: false
+   US/Eastern equals America/New_York | VM: true | BJS: true
+   Temporal timeZoneId Asia/Calcutta | VM: Asia/Calcutta | BJS: Asia/Calcutta
+!! DateTimeFormat resolved timeZone Asia/Calcutta | VM: Asia/Kolkata | BJS: Asia/Calcutta
+   Temporal timeZoneId Europe/Kiev | VM: Europe/Kiev | BJS: Europe/Kiev
+!! DateTimeFormat resolved timeZone Europe/Kiev | VM: Europe/Kyiv | BJS: Europe/Kiev
+   Temporal timeZoneId Europe/Bratislava | VM: Europe/Bratislava | BJS: Europe/Bratislava
+   DateTimeFormat resolved timeZone Europe/Bratislava | VM: Europe/Bratislava | BJS: Europe/Bratislava
+   Temporal timeZoneId Arctic/Longyearbyen | VM: Arctic/Longyearbyen | BJS: Arctic/Longyearbyen
+   DateTimeFormat resolved timeZone Arctic/Longyearbyen | VM: Arctic/Longyearbyen | BJS: Arctic/Longyearbyen
+   Temporal timeZoneId Etc/UTC | VM: Etc/UTC | BJS: Etc/UTC
+!! DateTimeFormat resolved timeZone Etc/UTC | VM: UTC | BJS: Etc/UTC
+   Temporal timeZoneId Etc/GMT | VM: Etc/GMT | BJS: Etc/GMT
+!! DateTimeFormat resolved timeZone Etc/GMT | VM: UTC | BJS: Etc/GMT
+   Temporal timeZoneId GMT | VM: GMT | BJS: GMT
+!! DateTimeFormat resolved timeZone GMT | VM: UTC | BJS: GMT
+   Temporal timeZoneId US/Eastern | VM: US/Eastern | BJS: US/Eastern
+!! DateTimeFormat resolved timeZone US/Eastern | VM: America/New_York | BJS: US/Eastern
+   Temporal timeZoneId EST5EDT | VM: EST5EDT | BJS: EST5EDT
+!! DateTimeFormat resolved timeZone EST5EDT | VM: America/New_York | BJS: EST5EDT
+   Temporal timeZoneId CET | VM: CET | BJS: CET
+!! DateTimeFormat resolved timeZone CET | VM: Europe/Brussels | BJS: CET
+   Temporal timeZoneId Etc/GMT+5 | VM: Etc/GMT+5 | BJS: Etc/GMT+5
+   DateTimeFormat resolved timeZone Etc/GMT+5 | VM: Etc/GMT+5 | BJS: Etc/GMT+5
+   Temporal timeZoneId asia/calcutta | VM: Asia/Calcutta | BJS: Asia/Calcutta
+!! DateTimeFormat resolved timeZone asia/calcutta | VM: Asia/Kolkata | BJS: Asia/Calcutta
+   Europe/Bratislava 1940-07-01 offset | VM: +02:00 | BJS: +02:00
+   Europe/Prague 1940-07-01 offset | VM: +02:00 | BJS: +02:00
+   EST5EDT 1945-08-01 offset | VM: -04:00 | BJS: -04:00
+   EST5EDT 1960-07-01 offset | VM: -04:00 | BJS: -04:00

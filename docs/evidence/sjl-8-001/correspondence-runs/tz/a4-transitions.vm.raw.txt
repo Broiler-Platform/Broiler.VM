@@ -1,0 +1,43 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl8/a4-transitions.js [raw]  uncaught Error: OUT<<dst America/New_York next from 2026-07-01T12:00Z => 2026-11-01T01:00:00-05:00[America/New_York]
+dst America/New_York previous from 2026-07-01T12:00Z => 2026-03-08T03:00:00-04:00[America/New_York]
+at a transition America/New_York next from 2026-03-08T07:00:00Z => 2026-11-01T01:00:00-05:00[America/New_York]
+at a transition America/New_York previous from 2026-03-08T07:00:00Z => 2025-11-02T01:00:00-05:00[America/New_York]
+half a second after America/New_York previous from 2026-03-08T07:00:00.5Z => 2026-03-08T03:00:00-04:00[America/New_York]
+2037 America/New_York next from 2037-07-01T12:00Z => 2037-11-01T01:00:00-05:00[America/New_York]
+after 2037 America/New_York next from 2037-12-01T12:00Z => 2038-03-14T03:00:00-04:00[America/New_York]
+after 2037 America/New_York previous from 2040-07-01T12:00Z => 2040-03-11T03:00:00-04:00[America/New_York]
+far America/New_York previous from 2100-01-01T00:00Z => 2099-11-01T01:00:00-05:00[America/New_York]
+after 2037 America/Santiago next from 2037-12-01T12:00Z => 2038-04-03T23:00:00-04:00[America/Santiago]
+after 2037 Europe/Berlin next from 2040-07-01T12:00Z => 2040-10-28T02:00:00+01:00[Europe/Berlin]
+flag only (BST as standard 1968-1971) Europe/London next from 1968-07-01T12:00Z => 1971-10-31T02:00:00+00:00[Europe/London]
+flag only Europe/London previous from 1971-07-01T12:00Z => 1968-02-18T03:00:00+01:00[Europe/London]
+none since 1947 Asia/Riyadh next from 2000-01-01T00:00Z => null
+none since 1947 Asia/Riyadh previous from 2000-01-01T00:00Z => 1947-03-13T23:53:08+03:00[Asia/Riyadh]
+first America/New_York next from 1800-01-01T00:00Z => 1883-11-18T12:00:00-05:00[America/New_York]
+before first America/New_York previous from 1800-01-01T00:00Z => null
+30 min Australia/Lord_Howe next from 2026-01-01T00:00Z => 2026-04-05T01:30:00+10:30[Australia/Lord_Howe]
+fixed Etc/GMT+5 next from 2026-01-01T00:00Z => null
+fixed +05:30 next from 2026-01-01T00:00Z => null
+fixed UTC previous from 2026-01-01T00:00Z => null
+lower limit America/New_York previous from -271821-04-20T00:00Z => null
+upper limit America/New_York next from +275760-09-13T00:00Z => null
+near upper limit America/New_York previous from +275760-09-01T00:00Z => +275760-03-09T03:00:00-04:00[America/New_York]
+getTimeZoneTransition({direction:"next"}) object form => 2026-10-25T02:00:00+01:00[Europe/Berlin]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl8/a4-transitions.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl8  e.g. test/sjl8/a4-transitions.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl8/a4-transitions.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
