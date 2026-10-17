@@ -1,8 +1,10 @@
+using Broiler.ECMAScript.Generation.Time;
+
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
 /// Rule N29: the archived tzdb release is the one <c>tzdb.pin</c> describes. Rule N30: the time zone
-/// tables are what <see cref="TzdbTableGenerator"/> writes from it.
+/// tables are what the time data home's <c>TzdbTableGenerator</c> writes from it.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -12,9 +14,17 @@ namespace Broiler.VM.Architecture.Tests;
 /// the real archive, as N27's are.
 /// </para>
 /// <para>
+/// <b>The generator is the home's since SJL-8.5</b> (JSD-0076, decision SJL-D-6 (c)). The pin reader,
+/// the compiler and the table generator moved from this project to the Broiler.JS repository, the time
+/// data home, and come back as the test-only package <c>Broiler.ECMAScript.Generation</c>; the pin, the
+/// archive and the generated file stay this repository's, and the two rules hold them as before, with
+/// the home's code (<see cref="TimeTableEmbedding"/>). Rule I4 holds the pin to the home's.
+/// </para>
+/// <para>
 /// <b>The compiler is checked beside its tables.</b> A table nobody reads is only as right as the
 /// compiler that wrote it, so N30 also holds a handful of offsets whose history is well known, read
-/// back from the compiled zones, to the values the release's own commentary states.
+/// back from the zones the home's compiler compiles from this repository's archive, to the values the
+/// release's own commentary states. The home's own tests hold the same histories.
 /// </para>
 /// </remarks>
 public sealed class TzdbRuleTests
@@ -23,10 +33,10 @@ public sealed class TzdbRuleTests
     [Fact]
     public void N29_The_Archive_Is_The_One_The_Pin_Describes()
     {
-        var pin = TzdbPin.Load();
-        var archive = pin.ReadArchive();
+        var pin = TimeTableEmbedding.LoadTzdbPin();
+        var archive = TimeTableEmbedding.ReadTzdbArchive(pin);
 
-        Assert.Empty(pin.TarballViolations(pin.ReadTarball()));
+        Assert.Empty(pin.TarballViolations(TimeTableEmbedding.ReadTzdbTarball(pin)));
         Assert.Empty(pin.Violations(archive));
         Assert.Equal(TzdbPin.PinnedVersion, pin.Version);
         Assert.Equal("2 byte-identical", pin.Values["retrievals"]);
@@ -42,7 +52,7 @@ public sealed class TzdbRuleTests
         Assert.StartsWith("Unless specified below, all files in the tz code and data", TzdbPin.Decode(archive["LICENSE"]), StringComparison.Ordinal);
 
         // NOTHING IS BESIDE THE PIN but the archive and the README.
-        var directory = Path.Combine(ComponentGraph.Root, TzdbPin.PinDirectory);
+        var directory = Path.Combine(ComponentGraph.Root, TimeTableEmbedding.TzdbPinDirectory);
         Assert.Equal(
             new[] { "README.md", pin.ArchiveName, "tzdb.pin" }.Order(StringComparer.Ordinal),
             Directory.EnumerateFiles(directory).Select(Path.GetFileName).Order(StringComparer.Ordinal));
@@ -52,15 +62,15 @@ public sealed class TzdbRuleTests
     [Fact]
     public void N29_Rejects_A_Changed_Byte()
     {
-        var pin = TzdbPin.Load();
-        var tarball = pin.ReadTarball();
+        var pin = TimeTableEmbedding.LoadTzdbPin();
+        var tarball = TimeTableEmbedding.ReadTzdbTarball(pin);
         tarball[tarball.Length / 2] ^= 1;
 
         var refused = Assert.Throws<InvalidDataException>(() => pin.Extract(tarball));
         Assert.Contains("nothing is generated from it", refused.Message, StringComparison.Ordinal);
         Assert.Contains("tzdata2026e.tar.gz hashes to", refused.Message, StringComparison.Ordinal);
 
-        var archive = new Dictionary<string, byte[]>(pin.ReadArchive(), StringComparer.Ordinal);
+        var archive = new Dictionary<string, byte[]>(TimeTableEmbedding.ReadTzdbArchive(pin), StringComparer.Ordinal);
         var europe = (byte[])archive["europe"].Clone();
         var at = Array.IndexOf(europe, (byte)'R', europe.Length / 2);
         europe[at + 1] = europe[at + 1] == (byte)'u' ? (byte)'v' : (byte)'u';
@@ -78,16 +88,16 @@ public sealed class TzdbRuleTests
     [Fact]
     public void N29_Rejects_Another_Release()
     {
-        var pin = TzdbPin.Load();
-        var archive = new Dictionary<string, byte[]>(pin.ReadArchive(), StringComparer.Ordinal)
+        var pin = TimeTableEmbedding.LoadTzdbPin();
+        var archive = new Dictionary<string, byte[]>(TimeTableEmbedding.ReadTzdbArchive(pin), StringComparer.Ordinal)
         {
             ["version"] = "2026d\n"u8.ToArray(),
         };
 
         Assert.Contains(pin.Violations(archive), static violation => violation.Contains("states version `2026d`", StringComparison.Ordinal));
         Assert.Contains(
-            TzdbPin.Parse(File.ReadAllText(Path.Combine(ComponentGraph.Root, TzdbPin.PinPath)).Replace("version 2026e", "version 2026d", StringComparison.Ordinal))
-                .TarballViolations(pin.ReadTarball()),
+            TzdbPin.Parse(File.ReadAllText(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.TzdbPinPath)).Replace("version 2026e", "version 2026d", StringComparison.Ordinal))
+                .TarballViolations(TimeTableEmbedding.ReadTzdbTarball(pin)),
             static violation => violation.Contains("names version `2026d`", StringComparison.Ordinal));
     }
 
@@ -95,17 +105,18 @@ public sealed class TzdbRuleTests
     [Fact]
     public void N30_The_Generated_Tables_Are_What_The_Pinned_Archives_Generate()
     {
-        var artefact = TzdbTableGenerator.Current;
+        var file = TimeTableEmbedding.Tzdb;
+        var artefact = TimeTableEmbedding.TzdbCurrent;
 
         foreach (var table in new[] { "TimeZones", "TimeZoneIds", "TimeZoneRegions" })
         {
             Assert.Contains($"internal static ReadOnlySpan<byte> {table} =>", artefact.Desired, StringComparison.Ordinal);
         }
 
-        if (TzdbTableGenerator.WriteRequested)
+        if (file.WriteRequested)
         {
             File.WriteAllText(
-                Path.Combine(ComponentGraph.Root, TzdbTableGenerator.OutputPath.Replace('/', Path.DirectorySeparatorChar)),
+                Path.Combine(ComponentGraph.Root, file.RelativePath.Replace('/', Path.DirectorySeparatorChar)),
                 artefact.Desired,
                 AssuranceSources.Utf8NoBom);
             return;
@@ -113,23 +124,27 @@ public sealed class TzdbRuleTests
 
         Assert.True(
             artefact.IsCurrent,
-            $"{TzdbTableGenerator.OutputPath} is not what the tzdb table generator writes; change the generator or a " +
-            $"pinned archive and run with {TzdbTableGenerator.WriteVariable}=1, never edit the file");
+            $"{file.RelativePath} is not what the time data home's tzdb table generator writes from this repository's pins; " +
+            $"change the generator in its home, or a pinned archive, and run with {file.WriteVariable}=1, never edit the file");
     }
 
     /// <summary>Generation twice yields byte-identical text, and a hand edit is reported.</summary>
     [Fact]
     public void N30_Generates_The_Same_Bytes_And_Rejects_A_Hand_Edit()
     {
-        var tzdb = TzdbPin.Load();
-        var cldr = CldrPin.Load();
-
-        var first = TzdbTableGenerator.Generate(tzdb, tzdb.ReadArchive(), cldr, cldr.ReadArchive());
-        var second = TzdbTableGenerator.Generate(tzdb, tzdb.ReadArchive(), cldr, cldr.ReadArchive());
+        var first = TimeTableEmbedding.TzdbSource(TimeTableEmbedding.GenerateTzdb());
+        var second = TimeTableEmbedding.TzdbSource(TimeTableEmbedding.GenerateTzdb());
         Assert.Equal(first, second);
 
-        var artefact = TzdbTableGenerator.Current;
+        var artefact = TimeTableEmbedding.TzdbCurrent;
         Assert.False((artefact with { Current = artefact.Desired.Replace("Europe/Vienna", "Europe/Wien", StringComparison.Ordinal) }).IsCurrent);
+
+        // ONE CHANGED BYTE of a table is a different file: the regenerated text with one byte literal
+        // moved is not the generator's, and the checked-in file is compared whole.
+        var at = artefact.Desired.IndexOf("new byte[]\n    {\n        ", StringComparison.Ordinal) + "new byte[]\n    {\n        ".Length;
+        var digit = artefact.Desired[at];
+        var changed = artefact.Desired[..at] + (digit == '9' ? '8' : (char)(digit + 1)) + artefact.Desired[(at + 1)..];
+        Assert.False((artefact with { Current = changed }).IsCurrent);
     }
 
     /// <summary>
@@ -140,7 +155,7 @@ public sealed class TzdbRuleTests
     [Fact]
     public void N30_The_Compiler_Reads_Known_Histories()
     {
-        var source = TzdbCompiler.Parse(TzdbPin.Load().ReadArchive());
+        var source = TzdbCompiler.Parse(TimeTableEmbedding.ReadTzdbArchive(TimeTableEmbedding.LoadTzdbPin()));
         var zones = TzdbTableGenerator.Zones(source).ToDictionary(static zone => zone.Name, static zone => zone.Zone, StringComparer.Ordinal);
 
         static long Utc(int year, int month, int day, int hour, int minute = 0) =>
@@ -173,7 +188,7 @@ public sealed class TzdbRuleTests
     [Fact]
     public void N30_The_Daylight_Flag_Is_The_Rearguard_One()
     {
-        var source = TzdbCompiler.Parse(TzdbPin.Load().ReadArchive());
+        var source = TzdbCompiler.Parse(TimeTableEmbedding.ReadTzdbArchive(TimeTableEmbedding.LoadTzdbPin()));
         var zones = TzdbTableGenerator.Zones(source).ToDictionary(static zone => zone.Name, static zone => zone.Zone, StringComparer.Ordinal);
 
         bool Daylight(string zone, int year, int month)

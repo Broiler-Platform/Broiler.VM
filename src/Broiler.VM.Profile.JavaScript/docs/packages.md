@@ -7,8 +7,9 @@
 **whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an
 addition and a removal each fail**. This is that baseline: the JavaScript family's packable set, each
 package's dependencies and each package's files, as the candidate pack of
-**bundle [JS-10-008](evidence/js-10-008/README.md)** produced them *(corrected: JSC-300, JSC-302,
-JSC-308, JSC-311; it was bundle JS-10-007's pack, before the Unicode area's dependencies moved to
+**bundle [JS-10-009](evidence/js-10-009/README.md)** produced them *(corrected: JSC-300, JSC-302,
+JSC-308, JSC-311, JSC-312; it was bundle JS-10-008's pack, before the shared algorithms dependency moved
+to `0.1.0-preview.5`, before that bundle JS-10-007's pack, before the Unicode area's dependencies moved to
 `0.1.0-preview.5`, before that bundle JS-10-006's pack, before the Unicode cut-over gave the family's packages the
 Unicode area's dependencies, before that bundle JS-10-005's, before the numerics cut-over moved the
 shared dependency's version, and before that bundle JS-10-002's, before the family took its first
@@ -40,16 +41,20 @@ restores. `Broiler.VM.Profile.MachineCode` is packable and is its own family's, 
 package rule I1 admits for shipping, for the projects that declare it and no other:
 
 - `Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms package, which
-  `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.4` since the Date cut-over
-  ([JSD-0073](decisions/0073-the-profile-on-the-shared-date-algorithms.md)), as the baseline's candidate
-  pack does; they declared it at `0.1.0-preview.3` from the text cut-over
+  `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.5` since the time-zone and
+  calendar cut-over (SJL-8.5, on
+  [JSD-0076](decisions/0076-time-zone-and-calendar-data-move-to-the-data-home.md)), packed from Broiler.JS
+  `2d37a38` and not yet on nuget.org, as the baseline's candidate pack does; they declared it at
+  `0.1.0-preview.4` from the Date cut-over
+  ([JSD-0073](decisions/0073-the-profile-on-the-shared-date-algorithms.md)) until then, at
+  `0.1.0-preview.3` from the text cut-over
   ([JSD-0071](decisions/0071-the-profile-on-the-shared-text-algorithms.md)) until then, at
   `0.1.0-preview.2`, the version it was published under, from 2026-10-14 until the text cut-over, at
   `0.2.0-preview.1`, the version first planned for it, from the numerics cut-over
   ([JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md)), and at `0.1.0-preview.1` from the
   number-conversion cut-over
   ([JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md))
-  *(corrected: JSC-301, JSC-303, JSC-304, JSC-306, JSC-308)*;
+  *(corrected: JSC-301, JSC-303, JSC-304, JSC-306, JSC-308, JSC-312)*;
 - `Broiler.Unicode.Algorithms`, the Unicode area's code package, which all four declare at
   `0.1.0-preview.5`, published to nuget.org from Broiler.Unicode `b802014` on 2026-10-17; they declared
   it at `0.1.0-preview.4`, from Broiler.Unicode `6e14f93`, from the Unicode cut-over (JSD-0075, on
@@ -68,9 +73,9 @@ a later one *(corrected: JSC-296, JSC-300)*.
 The pristine consumer, `samples/Broiler.VM.Sample.JavaScriptConsumer`, references the three core
 packages and these four and nothing else (rule A14); it restores `Broiler.ECMAScript.Algorithms`
 through them, and the Unicode area's `Broiler.Unicode.Algorithms` and `Broiler.Unicode.Segmentation`
-with them. Bundle JS-10-008 records it restoring and running with upstream feeds unreachable, from
+with them. Bundle JS-10-009 records it restoring and running with upstream feeds unreachable, from
 a local feed that holds the shared packages beside the family's, rolling back to the published
 `0.1.0-preview.5` set and forward again, failing to restore a version only nuget.org holds, and
 running as Native AOT; rule N37 holds the bundle's transcript to having done each *(corrected:
-JSC-300, JSC-302, JSC-308, JSC-311; it named bundle JS-10-007, before that bundle JS-10-006, before that bundle JS-10-005, and before that
+JSC-300, JSC-302, JSC-308, JSC-311, JSC-312; it named bundle JS-10-008, before that bundle JS-10-007, before that bundle JS-10-006, before that bundle JS-10-005, and before that
 bundle JS-10-002, whose consumer had no shared package to restore)*.

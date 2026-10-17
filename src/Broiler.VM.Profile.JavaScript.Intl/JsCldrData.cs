@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           3
-// Human-reviewed:   0/9
+// Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       9
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -42,6 +42,13 @@ namespace Broiler.VM.Profile.JavaScript.Intl;
 /// rule N28 holds byte for byte. The package is referenced here and nowhere else in the family, so only a
 /// root that carries this assembly carries it (rule I3).
 /// </para>
+/// <para>
+/// <b>Its time zone and calendar tables are the shared decoder's input since SJL-8.5</b> (JSD-0076):
+/// this assembly hands their bytes and the tzdb release they were compiled from to the profile, which
+/// reads them with <c>Broiler.ECMAScript.Algorithms</c>' <c>TimeZoneDatabase</c> and
+/// <c>CalendarTables</c>; the tables are what the time data home's generator writes from this
+/// repository's pins, and rules N30 and N32 hold them byte for byte.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=52FE6A
 // Broiler-Human:        PENDING
@@ -58,6 +65,11 @@ public sealed class JsCldrData : IJsIntlData, IJsTextSegmentation
     {
     }
 
+    /// <summary>The tzdb release the time zone tables were generated from, as the table <see cref="JsIntlTable.TimeZoneRelease"/> answers it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=498D2A
+    // Broiler-Human:        PENDING
+    private static readonly byte[] TimeZoneRelease = System.Text.Encoding.ASCII.GetBytes(JsTzdbTables.Version);
+
     /// <summary>The one instance.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F80706
     // Broiler-Human:        PENDING
@@ -69,7 +81,7 @@ public sealed class JsCldrData : IJsIntlData, IJsTextSegmentation
     public string CldrVersion => JsCldrTables.Version;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6648FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3F0762
     // Broiler-Human:        PENDING
     public System.ReadOnlySpan<byte> Table(JsIntlTable table) => table switch
     {
@@ -98,6 +110,7 @@ public sealed class JsCldrData : IJsIntlData, IJsTextSegmentation
         JsIntlTable.TimeZones => JsTzdbTables.TimeZones,
         JsIntlTable.TimeZoneIds => JsTzdbTables.TimeZoneIds,
         JsIntlTable.TimeZoneRegions => JsTzdbTables.TimeZoneRegions,
+        JsIntlTable.TimeZoneRelease => TimeZoneRelease,
         JsIntlTable.Calendars => JsCalendarTables.Calendars,
         JsIntlTable.MetaZones => JsCldrTables.MetaZones,
         _ => default,

@@ -44,10 +44,13 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal static partial class JsTemporal
 {
-    /// <summary>A year bound beyond every calendar's years within the ISO limits (the Hijri ones reach 283,583).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=228960
+    /// <summary>
+    /// A year bound beyond every calendar's years within the ISO limits (the Hijri ones reach 283,583):
+    /// since SJL-8.5 the shared calendar year sources' own, which answer no year beyond it (JSD-0076).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=48419E
     // Broiler-Human:        PENDING
-    private const long YearBound = 300_000;
+    private const long YearBound = CalendarYears.MaxYearMagnitude;
 
     /// <summary>-271821-04-19, the first day ISODateWithinLimits admits.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F27C5A
@@ -312,7 +315,13 @@ internal static partial class JsTemporal
     /// BalanceNonISODate's months (s4.1.16): the year and ordinal month a possibly out-of-range
     /// month of a year names, or null when that year is beyond <see cref="YearBound"/>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E237C
+    /// <remarks>
+    /// The Chinese and Korean calendars count months from their years, which the shared sources answer
+    /// only within the bound (JSD-0077). A balance that would read a year past it reaches a year no date
+    /// within the ISO limits is in, and is null, as an estimate past it is; its callers' RangeError is
+    /// the one that year's date gave.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C6DD31
     // Broiler-Human:        PENDING
     private static (long Year, int Month)? BalanceMonths(JsCalendarSystem system, long year, long month)
     {
@@ -325,14 +334,30 @@ internal static partial class JsTemporal
 
         var total = system.MonthsBefore(year) + month - 1;
         var y = estimate;
+        var bounded = system.MonthsBeforeReadsYears;
 
         while (system.MonthsBefore(y) > total)
         {
             y--;
+
+            if (bounded && y < -YearBound)
+            {
+                return null;
+            }
         }
 
-        while (system.MonthsBefore(y + 1) <= total)
+        while (true)
         {
+            if (bounded && y + 1 > YearBound)
+            {
+                return null;
+            }
+
+            if (system.MonthsBefore(y + 1) > total)
+            {
+                break;
+            }
+
             y++;
         }
 

@@ -1,0 +1,7 @@
+broiler-js-conformance: vectors broiler-js-vectors Broiler-Platform/broiler.js@4ce20ac79cc2ba3d80b15a62f4b8012a7aab8d94 content sha256 17b2128a8bc86b852a1d705df33e0e629a12f6ad7fb29eae00804ff708a090ec over 49 files - archived at src/tests/vectors/pins/broiler-js-vectors-4ce20ac79cc2ba3d80b15a62f4b8012a7aab8d94.tar.gz
+broiler-js-conformance: 92434 vectors: 92434 match, 0 classified divergences, 0 unclassified differences
+
+real	18m16.573s
+user	3m15.079s
+sys	1m43.198s
+exit code: 0

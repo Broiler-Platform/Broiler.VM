@@ -38,9 +38,11 @@ Steps, each with `--only`:
                  whole output into base/datasets/checks.log, the line of each check the rule names (or its
                  absence) into base/datasets/named-checks.txt, and the SHA-256 of every file under
                  src/tests/cldr/timezones/ and src/tests/temporal/ into base/datasets/files.sha256;
-  manifest       the SHA-256 of every file this collector writes or reads as its own (base/, after/, vectors/,
-                 this file, the rule and the correspondence), with the base commit base/identity.txt names, into
-                 area-manifest.json. correspondence-runs/ is the correspondence's own record and is not listed.
+  manifest       the SHA-256 of every file this collector writes or reads as its own (base/, cutover/, after/,
+                 vectors/, this file, the rule and the correspondence), with the base commit base/identity.txt
+                 names, into area-manifest.json. correspondence-runs/ is the correspondence's own record and is not
+                 listed. cutover/ holds the checks SJL-8.5 ran at its cut-over, retained by hand (README section 4),
+                 and is listed from SJL-8.5.
 
 THE VECTORS STEP WAS ADDED AT SJL-8.4, when the shared corpus gained the time-zone area. It is bundle sjl-6-001's
 step, unchanged:
@@ -184,7 +186,7 @@ class Collector(area7.Collector):
 
     def manifest(self):
         files = {}
-        for folder in ("base", "after", "vectors"):
+        for folder in ("base", "cutover", "after", "vectors"):
             for root, _, names in os.walk(os.path.join(self.root_out, folder)):
                 for name in names:
                     path = os.path.join(root, name)

@@ -34,7 +34,18 @@
     "the owner; JsRealm.FunctionIsNativeName and RegExpEscapeCodePoint, which ask the owner's lexical classes; and",
     "JsRealm.Segmenter's objects and iterators, which ask the Intl data's segmentation through Format's",
     "IJsTextSegmentation; and, beside normalization and casing, JsRealm.NormalizeText, StringChangeCase and TransformCase,",
-    "which keep the form's and the locale's resolution, the language pass's charge and the RangeError, and call the owner."
+    "which keep the form's and the locale's resolution, the language pass's charge and the RangeError, and call the owner.",
+    "",
+    "SJL-8.5 (JSD-0077, applying JSD-0076): the time-zone and calendar area, whose shared home is",
+    "Broiler.ECMAScript.Algorithms' Time namespace. The zone decoder's types and the calendar table's reader are",
+    "registered by type. What stays as adapters is not here: JsTemporal's zone operations (ParseZone, RulesOf,",
+    "OffsetNanosecondsFor, PossibleEpochNs, Disambiguate, EpochNsFor, StartOfDay, NextTransition, PreviousTransition and",
+    "TimeZoneEquals), which convert the profile's values, call ZonedTime and map its status to a RangeError in ZoneError;",
+    "JsRealm.ResolveTimeZone, which keeps the option's conversion and its two RangeErrors and asks OffsetTimeZones and the",
+    "database; JsZoneNames, which reads the database's regions, rules and daylight flag; the calendar systems' Year, which",
+    "reads CalendarYears through JsCalendarSystem.SharedYear; and JsIntlTables.TimeZones and Calendars, which build the",
+    "database and the tables once per data instance. JsZone.MondayFirst, which SJL-6.4's paragraph names as an adapter",
+    "that stays, went with its type: the zone rules it fed are the shared library's."
   ],
   "retired": [
     {
@@ -1056,6 +1067,126 @@
       "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.ReadRanges",
       "milestone": "SJL-7.4",
       "replacedBy": "Broiler.Unicode.Algorithms.UnicodeCaseMapping, which reads SoftDottedRanges itself"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTimeZones",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.TimeZoneDatabase, which decodes the Intl data's zone, identifier and region tables"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTimeZoneId",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.TimeZoneId, which TimeZoneDatabase.TryFind and Primary answer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsZone",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.ITimeZoneRules, which TimeZoneDatabase.Rules answers and ZonedTime reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsZoneRule",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.TimeZoneDatabase's recurring rules, behind ITimeZoneRules"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCalendarData",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarTables, over the Intl data's JsCalendarTables.g.cs"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.Approximate",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear, whose lunisolar approximation beyond the table is the shared library's"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.Moment",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.OnOrBefore",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.RataDie",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.Day",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.UtcPlus8",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.UtcPlus9",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.BeijingMeanTime",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.MeanYear",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.MeanSolarTerm",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar.MeanSynodicMonth",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPersianCalendar.Corrected",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear, over CalendarTables' Persian corrections"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPersianCalendar.NewYear",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.GetYear"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.EtcGmtZones",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.OffsetTimeZones.TryGetEtcGmtOffset"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ParseOffset",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.OffsetTimeZones.IsTimeZoneOffsetString and TryParseOffsetIdentifier"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NamedOffsetSeconds",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.ZonedTime.GetOffsetNanosecondsFor, behind JsTemporal.OffsetNanosecondsFor"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.FloorSeconds",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.ZonedTime.GetOffsetNanosecondsFor"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NsPerSecond",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.ZonedTime.GetOffsetNanosecondsFor"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.FormatOffsetMinutes",
+      "milestone": "SJL-8.5",
+      "replacedBy": "Broiler.ECMAScript.Time.OffsetTimeZones.FormatOffsetIdentifier"
     }
   ]
 }

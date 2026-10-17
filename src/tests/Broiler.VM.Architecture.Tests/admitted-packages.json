@@ -22,8 +22,8 @@
   "packages": [
     {
       "id": "Broiler.ECMAScript.Algorithms",
-      "version": "0.1.0-preview.4",
-      "contentHash": "fv6d0u0cFEf1HSr59woiaK7zqyfFKDzuBX4FIcTXL/62/E9X7Q3m2/5/+8ao4uz3+x1vSZIH9JLG6UBad3GsxA==",
+      "version": "0.1.0-preview.5",
+      "contentHash": "fi/eRdQ5I2CUFg/HTWX0Js03+rgPwDK4+0q5x4AvM3Aqi57mkxz9Z0ykwuXNYe6Cd/h67+6pZcBwcVokD0FLmA==",
       "use": "product",
       "projects": [
         "Broiler.VM.Profile.JavaScript",
@@ -34,8 +34,23 @@
         "committed-feed",
         "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.4.pin",
-      "admittedBy": "SJL-6.4 and JSD-0072: the Date area beside the text, numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.4, packed locally from Broiler.JS e04874d and on the committed feed only; published to nuget.org that day from Broiler.JS d1e4b11, with the same library code (JSC-307), which both sources now serve with one content hash. It replaced 0.1.0-preview.3, admitted by SJL-5.4 and JSD-0070 for the text area beside the numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.3, packed locally from Broiler.JS 0db9042 and on the committed feed only; published to nuget.org that day from Broiler.JS 6e20998, with the same library code (JSC-305), which both sources now serve with one content hash. It replaced 0.1.0-preview.2, admitted by SJL-4.4 and JSD-0067 for the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
+      "pin": "eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.5.pin",
+      "admittedBy": "SJL-8.5 and JSD-0076: the time-zone and calendar area beside the Date, text, numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-17 as 0.1.0-preview.5, packed locally from Broiler.JS 2d37a38 and on the committed feed only; published to nuget.org that day from Broiler.JS a04cd44, with the same library code (JSC-313), which both sources now serve with one content hash. It replaced 0.1.0-preview.4, admitted by SJL-6.4 and JSD-0072 for the Date area beside the text, numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.4, packed locally from Broiler.JS e04874d and on the committed feed only; published to nuget.org that day from Broiler.JS d1e4b11, with the same library code (JSC-307), which both sources now serve with one content hash. It replaced 0.1.0-preview.3, admitted by SJL-5.4 and JSD-0070 for the text area beside the numerics and number-conversion areas, referenced by the runtime and the compiler; admitted on 2026-10-15 as 0.1.0-preview.3, packed locally from Broiler.JS 0db9042 and on the committed feed only; published to nuget.org that day from Broiler.JS 6e20998, with the same library code (JSC-305), which both sources now serve with one content hash. It replaced 0.1.0-preview.2, admitted by SJL-4.4 and JSD-0067 for the numerics area beside the number-conversion area, referenced by the runtime and the compiler; the admission probe of SJL-2.9 restores, builds and checks the same package. It replaced 0.1.0-preview.1, admitted by SJL-3.4 and JSD-0065 and published to nuget.org on 2026-10-13, which itself replaced the probe pre-release 0.0.1-probe.1 of SJL-2.9. Admitted on 2026-10-13 as 0.2.0-preview.1, packed locally and on the committed feed only; published to nuget.org on 2026-10-14 as 0.1.0-preview.2 (JSC-303), which both sources now serve with one content hash."
+    },
+    {
+      "id": "Broiler.ECMAScript.Generation",
+      "version": "0.1.0-preview.5",
+      "contentHash": "hSr6pHU/u/hy5WfVA/CDI4GojJH4SsZAf3zhsVWWpCmwa4jjvey+1CLHGb9KLZfvcFTy98+lTMZtRvOcLQ4ncg==",
+      "use": "test-only",
+      "projects": [
+        "Broiler.VM.Architecture.Tests"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.ECMAScript.Generation.0.1.0-preview.5.pin",
+      "admittedBy": "SJL-8.5 and JSD-0076 (decision SJL-D-6 (c)): the time data home's generator - the tz, CLDR time zone key and calendar pin readers, the tz compiler and the table generators, ported from this repository's architecture tests - which rules N29 to N32 regenerate this repository's embedded time zone and calendar tables with and rule I4 holds this repository's tz, CLDR and calendar pins to; admitted test-only for the architecture tests on 2026-10-17 as 0.1.0-preview.5, packed locally from Broiler.JS 2d37a38 and on the committed feed only; published to nuget.org that day from Broiler.JS a04cd44, with the same library code (JSC-313), which both sources now serve with one content hash. It has no dependency and carries no table and no pin file."
     },
     {
       "id": "Broiler.Unicode.Algorithms",

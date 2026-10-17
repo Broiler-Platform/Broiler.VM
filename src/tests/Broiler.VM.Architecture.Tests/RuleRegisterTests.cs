@@ -437,10 +437,14 @@ public sealed class RuleRegisterTests
         // SJL-7.4 adds I4, data agreement: the Unicode pin equal to the owner's, and every version
         // an admitted library declares equal to the pin's (JSD-0074, decision SJL-D-6 (c)). Active
         // when minted; no other count moves.
-        Assert.Equal(125, byStatus["Active"]);
+        // SJL-8.5 registers N29 to N32, which had run since phase F8 with no row: the tzdb archive and
+        // its time zone tables, the calendar crates and their table, now regenerated with the time data
+        // home's generator (JSD-0076). All four were Active in fact before they had rows; registering
+        // them moves the Active count by four, and no other count moves.
+        Assert.Equal(129, byStatus["Active"]);
         Assert.Equal(0, byStatus.GetValueOrDefault("Vacuous"));
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(126, Loaded.Rules.Count);
+        Assert.Equal(130, Loaded.Rules.Count);
     }
 
     private static Register Load()

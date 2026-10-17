@@ -1620,6 +1620,9 @@ public sealed class AssuranceRuleTests
         //
         // (Revised 2026-10-05: and the calendar table. Decision JSD-0056 chose it for the published
         // calendar years' generated file, held to CalendarTableGenerator byte for byte by rule N32.)
+        //
+        // (Revised 2026-10-17, at SJL-8.5: the two generators are the time data home's since then,
+        // JSD-0076, and TimeTableEmbedding names the files and the reasons they state, unchanged.)
         var declared = AssuranceScanner.DeclaredExemptions(ProductUnits);
 
         Assert.NotEmpty(declared);
@@ -1631,15 +1634,15 @@ public sealed class AssuranceRuleTests
                 return;
             }
 
-            if (string.Equals(unit.File.RelativePath, TzdbTableGenerator.OutputPath, StringComparison.Ordinal))
+            if (string.Equals(unit.File.RelativePath, TimeTableEmbedding.Tzdb.RelativePath, StringComparison.Ordinal))
             {
-                Assert.Equal(TzdbTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                Assert.Equal(TimeTableEmbedding.Tzdb.ExemptReason, unit.Annotation!.ExemptReason);
                 return;
             }
 
-            if (string.Equals(unit.File.RelativePath, CalendarTableGenerator.OutputPath, StringComparison.Ordinal))
+            if (string.Equals(unit.File.RelativePath, TimeTableEmbedding.Calendars.RelativePath, StringComparison.Ordinal))
             {
-                Assert.Equal(CalendarTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                Assert.Equal(TimeTableEmbedding.Calendars.ExemptReason, unit.Annotation!.ExemptReason);
                 return;
             }
 

@@ -3,43 +3,52 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   20
+// Annotated:        20/20
 // Exempt:           0
-// Human-reviewed:   0/17
+// Human-reviewed:   0/20
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       17
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Time;
 using BigInteger = System.Numerics.BigInteger;
+using ZoneDisambiguation = Broiler.ECMAScript.Time.Disambiguation;
 
 namespace Broiler.VM.Profile.JavaScript;
+
+// THE TIME-ZONE OPERATIONS ARE THE SHARED LIBRARY'S since SJL-8.5 (JSD-0076, JSD-0077): ZonedTime
+// computes the offsets, the possible instants, their disambiguation, the start of a day, the
+// transitions and the equality of two zones, over the rules of a named zone the Intl data's
+// TimeZoneDatabase answers or of an offset zone FixedOffsetTimeZoneRules answers, and OffsetTimeZones
+// reads and writes the offset identifiers. What stays here is the engine's: the conversion of the
+// arguments, the parsing of ISO strings and their annotations, a realm without Intl data knowing UTC
+// alone, and each status mapped to the RangeError this family threw before, with the same message.
 
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9FF4AD
 // Broiler-Human:        PENDING
 internal static partial class JsTemporal
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=97E0CF
+    /// <summary>UTC's rules: the one named zone a realm without Intl data reads (JSD-0053), and every offset zone of zero.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3765AE
     // Broiler-Human:        PENDING
-    private static readonly BigInteger NsPerSecond = new(1_000_000_000L);
+    private static readonly FixedOffsetTimeZoneRules UtcRules = new(0);
 
     /// <summary>
     /// The proposal's ParseTimeZoneIdentifier (s11.1.16) of an identifier already known to parse: the
-    /// IANA name, or the offset in minutes.
+    /// IANA name, or the offset in minutes, which the shared library's offset branch reads.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=88EF1F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=61A8B5
     // Broiler-Human:        PENDING
     internal static (string? Name, long OffsetMinutes) ParseZone(string identifier) =>
-        identifier.Length > 0 && identifier[0] is '+' or '-'
-            ? (null, JsTemporalParser.OffsetNanoseconds(identifier) / 60_000_000_000L)
-            : (identifier, 0);
+        OffsetTimeZones.TryParseOffsetIdentifier(identifier, out var minutes) ? (null, minutes) : (identifier, 0);
 
     /// <summary>The proposal's ToTemporalTimeZoneIdentifier (s11.1.8).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BEC91B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=08291D
     // Broiler-Human:        PENDING
     internal static string ToTimeZoneIdentifier(JsEngine engine, JsValue value)
     {
@@ -102,17 +111,17 @@ internal static partial class JsTemporal
 
         if (offsetMinutes is { } offset)
         {
-            return JsTemporalCore.FormatOffsetMinutes(offset);
+            return OffsetTimeZones.FormatOffsetIdentifier((int)offset);
         }
 
-        return NamedZone(engine, name!).Identifier;
+        return NamedZone(engine, name!);
     }
 
     /// <summary>
     /// The time zone the ZonedDateTime constructor accepts (s6.1.1): ParseTimeZoneIdentifier of the
     /// string, then the available identifier or the normalized offset.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E3AFAA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=837E22
     // Broiler-Human:        PENDING
     internal static string TimeZoneFromIdentifier(JsEngine engine, string text)
     {
@@ -122,47 +131,111 @@ internal static partial class JsTemporal
         }
 
         var (name, minutes) = ParseZone(text);
-        return name is null ? JsTemporalCore.FormatOffsetMinutes(minutes) : NamedZone(engine, name).Identifier;
+        return name is null ? OffsetTimeZones.FormatOffsetIdentifier((int)minutes) : NamedZone(engine, name);
     }
 
-    /// <summary>GetAvailableNamedTimeZoneIdentifier (s11.1.1), or the RangeError.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EC1B8A
+    /// <summary>
+    /// GetAvailableNamedTimeZoneIdentifier (s11.1.1), or the RangeError: the identifier in the database's
+    /// case, which the shared database's lookup finds under the policy's case rule; <c>UTC</c> alone where
+    /// the realm carries no Intl data.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AB9C0C
     // Broiler-Human:        PENDING
-    private static JsTimeZoneId NamedZone(JsEngine engine, string name) =>
-        engine.Intl?.TimeZones.Find(name) ??
-        (string.Equals(name, "UTC", System.StringComparison.OrdinalIgnoreCase) ? new JsTimeZoneId("UTC", "UTC", -1) : null) ??
-        throw engine.Error("RangeError", "Temporal: " + name + " is not an available time zone");
-
-    /// <summary>The offset, in seconds, of a named zone at an instant.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C126E9
-    // Broiler-Human:        PENDING
-    private static long NamedOffsetSeconds(JsEngine engine, string name, BigInteger epochNs)
+    private static string NamedZone(JsEngine engine, string name)
     {
-        var record = NamedZone(engine, name);
-
-        if (record.Zone < 0 || engine.Intl is null)
+        if (engine.Intl is { } intl && intl.TimeZones.TryFind(name, out var id))
         {
-            return 0;
+            return id.Identifier;
         }
 
-        var seconds = BigInteger.Divide(epochNs, NsPerSecond);
-
-        if (epochNs.Sign < 0 && !(seconds * NsPerSecond).Equals(epochNs))
-        {
-            seconds -= 1;
-        }
-
-        return engine.Intl.TimeZones.Zone(record).OffsetAt((long)seconds);
+        return string.Equals(name, "UTC", System.StringComparison.OrdinalIgnoreCase)
+            ? "UTC"
+            : throw engine.Error("RangeError", "Temporal: " + name + " is not an available time zone");
     }
 
-    /// <summary>The proposal's GetOffsetNanosecondsFor (s11.1.9).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2FE396
+    /// <summary>
+    /// The rules of a zone: an offset zone's fixed offset, a named zone's from the shared database, which
+    /// reads its primary identifier's zone, or UTC's in a realm without Intl data; the RangeError for a
+    /// name that is not available.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2B4DCD
     // Broiler-Human:        PENDING
-    internal static long OffsetNanosecondsFor(JsEngine engine, string timeZone, BigInteger epochNs)
+    private static ITimeZoneRules RulesOf(JsEngine engine, string timeZone)
     {
         var (name, minutes) = ParseZone(timeZone);
-        return name is null ? minutes * 60_000_000_000L : NamedOffsetSeconds(engine, name, epochNs) * 1_000_000_000L;
+
+        if (name is null)
+        {
+            return minutes == 0 ? UtcRules : new FixedOffsetTimeZoneRules((int)minutes * 60);
+        }
+
+        if (engine.Intl is { } intl && intl.TimeZones.TryFind(name, out var id))
+        {
+            return intl.TimeZones.Rules(id);
+        }
+
+        return string.Equals(name, "UTC", System.StringComparison.OrdinalIgnoreCase)
+            ? UtcRules
+            : throw engine.Error("RangeError", "Temporal: " + name + " is not an available time zone");
     }
+
+    /// <summary>
+    /// The RangeError a status other than completion is, with the message this family has always given
+    /// it (JSD-0077): an instant or a wall time outside the range, a time a transition repeats or skips
+    /// refused under <c>reject</c>, and a day with no first instant.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7CFE76
+    // Broiler-Human:        PENDING
+    private static JsThrow ZoneError(JsEngine engine, TimeStatus status, string timeZone) => status switch
+    {
+        TimeStatus.Ambiguous => engine.Error("RangeError", "Temporal: the local time is ambiguous in " + timeZone),
+        TimeStatus.Skipped => engine.Error("RangeError", "Temporal: the local time does not exist in " + timeZone),
+        TimeStatus.NoStartOfDay => engine.Error("RangeError", "Temporal: the start of the day cannot be found in " + timeZone),
+        _ => engine.Error("RangeError", "Temporal: the date-time is outside the representable range"),
+    };
+
+    /// <summary>
+    /// An offset zone's CheckISODaysRange (s11.1.13 step 1), the RangeError naming the date that this
+    /// family gives before the shared operation's, which reports the same wall time as an instant out of
+    /// range.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AD5082
+    // Broiler-Human:        PENDING
+    private static void CheckOffsetZoneDays(JsEngine engine, string timeZone, JsIsoDateTime dateTime)
+    {
+        var (name, minutes) = ParseZone(timeZone);
+
+        if (name is null &&
+            !JsTemporalCore.DaysWithinRange(JsTemporalCore.BalanceDateTime(dateTime.Date, JsTemporalCore.TimeNs(dateTime.Time) - (minutes * 60_000_000_000L)).Date))
+        {
+            throw engine.Error("RangeError", "Temporal: the date is outside the representable range");
+        }
+    }
+
+    /// <summary>A date-time as the shared library's record; the time's overflow days are not part of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B66B6D
+    // Broiler-Human:        PENDING
+    private static IsoDateTime IsoOf(JsIsoDateTime dateTime) =>
+        new(
+            new IsoDate(dateTime.Date.Year, dateTime.Date.Month, dateTime.Date.Day),
+            new IsoTime(dateTime.Time.Hour, dateTime.Time.Minute, dateTime.Time.Second, dateTime.Time.Millisecond, dateTime.Time.Microsecond, dateTime.Time.Nanosecond));
+
+    /// <summary>The disambiguation option's value as the shared library's mode; <c>reject</c> for any other.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F10C6C
+    // Broiler-Human:        PENDING
+    private static ZoneDisambiguation ModeOf(string disambiguation) => disambiguation switch
+    {
+        "compatible" => ZoneDisambiguation.Compatible,
+        "earlier" => ZoneDisambiguation.Earlier,
+        "later" => ZoneDisambiguation.Later,
+        _ => ZoneDisambiguation.Reject,
+    };
+
+    /// <summary>The proposal's GetOffsetNanosecondsFor (s11.1.9).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B3F2F8
+    // Broiler-Human:        PENDING
+    internal static long OffsetNanosecondsFor(JsEngine engine, string timeZone, BigInteger epochNs) =>
+        ZonedTime.GetOffsetNanosecondsFor(RulesOf(engine, timeZone), epochNs);
 
     /// <summary>The proposal's GetISODateTimeFor (s11.1.10).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0D19DB
@@ -171,227 +244,79 @@ internal static partial class JsTemporal
         JsTemporalCore.FromEpochNs(epochNs + OffsetNanosecondsFor(engine, timeZone, epochNs));
 
     /// <summary>The proposal's GetPossibleEpochNanoseconds (s11.1.13), ascending.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8CEEBA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DD908E
     // Broiler-Human:        PENDING
     internal static System.Collections.Generic.List<BigInteger> PossibleEpochNs(JsEngine engine, string timeZone, JsIsoDateTime dateTime)
     {
-        var (name, minutes) = ParseZone(timeZone);
-        var possible = new System.Collections.Generic.List<BigInteger>(2);
+        var rules = RulesOf(engine, timeZone);
+        CheckOffsetZoneDays(engine, timeZone, dateTime);
 
-        if (name is null)
+        System.Span<BigInteger> found = new BigInteger[ZonedTime.MaxPossibleEpochNanoseconds];
+        var status = ZonedTime.GetPossibleEpochNanoseconds(rules, IsoOf(dateTime), found, out var count);
+
+        if (status != TimeStatus.Completed)
         {
-            var balanced = JsTemporalCore.BalanceDateTime(dateTime.Date, JsTemporalCore.TimeNs(dateTime.Time) - (minutes * 60_000_000_000L));
-
-            if (!JsTemporalCore.DaysWithinRange(balanced.Date))
-            {
-                throw engine.Error("RangeError", "Temporal: the date is outside the representable range");
-            }
-
-            possible.Add(JsTemporalCore.UtcEpochNs(balanced));
-        }
-        else
-        {
-            // GETNAMEDTIMEZONEEPOCHNANOSECONDS: each offset in force within a day either side, kept
-            // where the instant it implies does have that offset. A named zone's branch checks no day
-            // range: a wall time a day past the limit can still name a valid instant, west of UTC.
-            var utc = JsTemporalCore.UtcEpochNs(dateTime);
-            var offsets = new System.Collections.Generic.SortedSet<long>
-            {
-                NamedOffsetSeconds(engine, name, utc - JsTemporalCore.NsPerDay),
-                NamedOffsetSeconds(engine, name, utc),
-                NamedOffsetSeconds(engine, name, utc + JsTemporalCore.NsPerDay),
-            };
-
-            foreach (var offset in offsets)
-            {
-                var candidate = utc - (offset * NsPerSecond);
-
-                if (NamedOffsetSeconds(engine, name, candidate) == offset)
-                {
-                    possible.Add(candidate);
-                }
-            }
-
-            possible.Sort();
+            throw ZoneError(engine, status, timeZone);
         }
 
-        foreach (var candidate in possible)
-        {
-            if (!JsTemporalCore.IsValidEpochNs(candidate))
-            {
-                throw engine.Error("RangeError", "Temporal: the date-time is outside the representable range");
-            }
-        }
-
-        return possible;
+        return [.. found[..count]];
     }
 
     /// <summary>The proposal's DisambiguatePossibleEpochNanoseconds (s11.1.12).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=59BBB9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BBAD44
     // Broiler-Human:        PENDING
     internal static BigInteger Disambiguate(
         JsEngine engine, System.Collections.Generic.List<BigInteger> possible, string timeZone, JsIsoDateTime dateTime, string disambiguation)
     {
-        if (possible.Count == 1)
-        {
-            return possible[0];
-        }
-
-        if (possible.Count != 0)
-        {
-            return disambiguation switch
-            {
-                "earlier" or "compatible" => possible[0],
-                "later" => possible[^1],
-                _ => throw engine.Error("RangeError", "Temporal: the local time is ambiguous in " + timeZone),
-            };
-        }
-
-        if (disambiguation == "reject")
-        {
-            throw engine.Error("RangeError", "Temporal: the local time does not exist in " + timeZone);
-        }
-
-        // A GAP: the offsets before and after it, a day either side.
-        var utc = JsTemporalCore.UtcEpochNs(dateTime);
-        var before = OffsetNanosecondsFor(engine, timeZone, utc - JsTemporalCore.NsPerDay);
-        var after = OffsetNanosecondsFor(engine, timeZone, utc + JsTemporalCore.NsPerDay);
-        var nanoseconds = after - before;
-
-        if (disambiguation == "earlier")
-        {
-            var earlier = JsTemporalCore.BalanceDateTime(dateTime.Date, JsTemporalCore.TimeNs(dateTime.Time) - nanoseconds);
-            return PossibleEpochNs(engine, timeZone, earlier)[0];
-        }
-
-        var later = JsTemporalCore.BalanceDateTime(dateTime.Date, JsTemporalCore.TimeNs(dateTime.Time) + nanoseconds);
-        return PossibleEpochNs(engine, timeZone, later)[^1];
+        var status = ZonedTime.DisambiguatePossibleEpochNanoseconds(
+            RulesOf(engine, timeZone), System.Runtime.InteropServices.CollectionsMarshal.AsSpan(possible), IsoOf(dateTime), ModeOf(disambiguation), out var epochNs);
+        return status == TimeStatus.Completed ? epochNs : throw ZoneError(engine, status, timeZone);
     }
 
     /// <summary>The proposal's GetEpochNanosecondsFor (s11.1.11).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C39F64
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=798290
     // Broiler-Human:        PENDING
-    internal static BigInteger EpochNsFor(JsEngine engine, string timeZone, JsIsoDateTime dateTime, string disambiguation) =>
-        Disambiguate(engine, PossibleEpochNs(engine, timeZone, dateTime), timeZone, dateTime, disambiguation);
+    internal static BigInteger EpochNsFor(JsEngine engine, string timeZone, JsIsoDateTime dateTime, string disambiguation)
+    {
+        var rules = RulesOf(engine, timeZone);
+        CheckOffsetZoneDays(engine, timeZone, dateTime);
+
+        var status = ZonedTime.GetEpochNanosecondsFor(rules, IsoOf(dateTime), ModeOf(disambiguation), out var epochNs);
+        return status == TimeStatus.Completed ? epochNs : throw ZoneError(engine, status, timeZone);
+    }
 
     /// <summary>The proposal's GetStartOfDay (s11.1.14).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=37756F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7B912C
     // Broiler-Human:        PENDING
     internal static BigInteger StartOfDay(JsEngine engine, string timeZone, JsIsoDate date)
     {
-        var midnight = new JsIsoDateTime(date, JsTimeRecord.Midnight);
-        var possible = PossibleEpochNs(engine, timeZone, midnight);
+        var rules = RulesOf(engine, timeZone);
+        CheckOffsetZoneDays(engine, timeZone, new JsIsoDateTime(date, JsTimeRecord.Midnight));
 
-        if (possible.Count != 0)
-        {
-            return possible[0];
-        }
-
-        // MIDNIGHT IS IN A GAP: the day starts at the transition, the first instant after it.
-        var utc = JsTemporalCore.UtcEpochNs(midnight);
-        var transition = NextTransition(engine, timeZone, utc - JsTemporalCore.NsPerDay) ??
-            throw engine.Error("RangeError", "Temporal: the start of the day cannot be found in " + timeZone);
-        return transition;
+        var status = ZonedTime.GetStartOfDay(rules, new IsoDate(date.Year, date.Month, date.Day), out var epochNs);
+        return status == TimeStatus.Completed ? epochNs : throw ZoneError(engine, status, timeZone);
     }
 
-    /// <summary>The proposal's TimeZoneEquals (s11.1.15).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ABD481
+    /// <summary>
+    /// The proposal's TimeZoneEquals (s11.1.15), over the shared database; a realm without Intl data
+    /// stores no named zone but <c>UTC</c>, so its zones are equal as strings.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=609F53
     // Broiler-Human:        PENDING
-    internal static bool TimeZoneEquals(JsEngine engine, string one, string two)
-    {
-        if (one == two)
-        {
-            return true;
-        }
-
-        var (nameOne, _) = ParseZone(one);
-        var (nameTwo, _) = ParseZone(two);
-
-        if (nameOne is not null && nameTwo is not null)
-        {
-            return NamedZone(engine, nameOne).Primary == NamedZone(engine, nameTwo).Primary;
-        }
-
-        return false;
-    }
+    internal static bool TimeZoneEquals(JsEngine engine, string one, string two) =>
+        engine.Intl is { } intl
+            ? ZonedTime.TimeZoneEquals(intl.TimeZones, one, two)
+            : string.Equals(one, two, System.StringComparison.Ordinal);
 
     /// <summary>The proposal's GetNamedTimeZoneNextTransition (s11.1.3), or null for an offset zone or none.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AC9E6A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=781C93
     // Broiler-Human:        PENDING
-    internal static BigInteger? NextTransition(JsEngine engine, string timeZone, BigInteger epochNs)
-    {
-        var (name, _) = ParseZone(timeZone);
-
-        if (name is null || engine.Intl is null)
-        {
-            return null;
-        }
-
-        var record = NamedZone(engine, name);
-
-        if (record.Zone < 0)
-        {
-            return null;
-        }
-
-        // TRANSITIONS FALL ON WHOLE SECONDS: the next after the instant is the next after its second.
-        var seconds = FloorSeconds(epochNs);
-        var limitSeconds = (long)(JsTemporalCore.NsMaxInstant / NsPerSecond);
-        var next = engine.Intl.TimeZones.Zone(record).NextTransition(seconds, limitSeconds);
-
-        if (next is not { } found)
-        {
-            return null;
-        }
-
-        var ns = found * NsPerSecond;
-        return ns <= JsTemporalCore.NsMaxInstant ? ns : null;
-    }
+    internal static BigInteger? NextTransition(JsEngine engine, string timeZone, BigInteger epochNs) =>
+        ZonedTime.GetNextTransition(RulesOf(engine, timeZone), epochNs);
 
     /// <summary>The proposal's GetNamedTimeZonePreviousTransition (s11.1.4), or null.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CDACC7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0D91D3
     // Broiler-Human:        PENDING
-    internal static BigInteger? PreviousTransition(JsEngine engine, string timeZone, BigInteger epochNs)
-    {
-        var (name, _) = ParseZone(timeZone);
-
-        if (name is null || engine.Intl is null)
-        {
-            return null;
-        }
-
-        var record = NamedZone(engine, name);
-
-        if (record.Zone < 0)
-        {
-            return null;
-        }
-
-        // STRICTLY BEFORE: an instant within a second after a transition sees that transition.
-        var seconds = FloorSeconds(epochNs);
-        var exact = (seconds * NsPerSecond) == epochNs;
-        var previous = engine.Intl.TimeZones.Zone(record).PreviousTransition(exact ? seconds : seconds + 1);
-
-        if (previous is not { } found)
-        {
-            return null;
-        }
-
-        var ns = found * NsPerSecond;
-        return ns >= JsTemporalCore.NsMinInstant ? ns : null;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBBF6D
-    // Broiler-Human:        PENDING
-    private static long FloorSeconds(BigInteger epochNs)
-    {
-        var seconds = BigInteger.Divide(epochNs, NsPerSecond);
-
-        if (epochNs.Sign < 0 && !(seconds * NsPerSecond).Equals(epochNs))
-        {
-            seconds -= 1;
-        }
-
-        return (long)seconds;
-    }
+    internal static BigInteger? PreviousTransition(JsEngine engine, string timeZone, BigInteger epochNs) =>
+        ZonedTime.GetPreviousTransition(RulesOf(engine, timeZone), epochNs);
 }

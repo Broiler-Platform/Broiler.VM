@@ -1,0 +1,23 @@
+// Witness for rule I4 (SJL-8.5): the time data home's generator, compiled in memory under its admitted
+// package's assembly name, declaring the tzdb release its tables are taken from as 2026d while this
+// repository's tzdb.pin states 2026e. Rule I4 must report that one declaration; the calendar versions,
+// which equal the pin's, the field of a type of another name holding the same text, and the comment
+// and string naming TzdbRelease again are not reported.
+namespace Broiler.ECMAScript.Generation.Time
+{
+    public static class TimeDataVersions
+    {
+        public const string TzdbRelease = "2026d";
+
+        public const string IcuCalendarVersion = "2.3.0";
+
+        public const string CalendricalCalculationsVersion = "0.2.4";
+    }
+
+    public static class Releases
+    {
+        public const string TzdbRelease = "2026d";
+
+        public const string Description = "TzdbRelease 2026d, a description and not a declaration";
+    }
+}

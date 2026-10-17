@@ -47,15 +47,18 @@ public sealed class I5RetiredDuplicatesRuleTests
             .ToArray();
 
         // Non-vacuous: every assembly is read, and the files the retired members lived in are among
-        // them, so a register whose types no longer exist would not pass by finding nothing.
+        // them, so a register whose types no longer exist would not pass by finding nothing. (Revised
+        // 2026-10-17, at SJL-8.5: JsTimeZones.cs, which the list named since SJL-6.4, is deleted whole,
+        // its types retired; the files its adapters live in now, and the calendars', are named instead.)
         Assert.Equal(FamilyAssemblies.Order(StringComparer.Ordinal), covered.Select(static f => f.Assembly).Distinct().Order(StringComparer.Ordinal));
         foreach (var file in (string[])["src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs",
                                          "src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsValue.cs", "src/Broiler.VM.Profile.JavaScript/JsBinary.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsDecimal.cs", "src/Broiler.VM.Profile.JavaScript/JsBigInt.cs",
-                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs", "src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs",
-                                         "src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs"])
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs", "src/Broiler.VM.Profile.JavaScript/JsCalendars.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs"])
         {
             Assert.Contains(covered, file2 => string.Equals(file2.RelativePath, file, StringComparison.Ordinal));
         }

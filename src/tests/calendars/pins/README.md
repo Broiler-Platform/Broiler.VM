@@ -30,6 +30,13 @@ rather than implied. Nobody has signed anything.
 project and writes a table a build compiles, so a build needs neither these files nor a network.
 They sit in the same shape as [`../../tzdb/pins/`](../../tzdb/pins/README.md).
 
+*(Revised 2026-10-17, at the shared libraries programme's SJL-8.5 (JSD-0076). The paragraph said "a
+generator lives in the architecture test project": the calendar table generator and its pin reader moved
+to the Broiler.JS repository, the time data home, under decision SJL-D-6 (c), and reach the architecture
+tests as the test-only package `Broiler.ECMAScript.Generation`, which reads this pin and these crates
+and writes the same table byte for byte. The home holds a byte-identical copy of this pin, taken at
+Broiler.VM `9508bd5`, and rule I4 holds the two equal.)*
+
 **Both crates are declared `binary` in `.gitattributes`**, so no checkout filter rewrites a byte
 under a recorded hash.
 
