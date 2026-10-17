@@ -395,6 +395,12 @@ internal sealed class JsNumberFormatter
     }
 
     /// <summary>ICU's default-ignorable set: space separators, the tab, the bidirectional controls and the variation selectors.</summary>
+    /// <remarks>
+    /// Unicode classification written out here rather than read from the owner, Broiler.Unicode, and a
+    /// gap rather than a choice: this is not the UCD's Default_Ignorable_Code_Point but ICU's union of
+    /// the space separators, the tab, Bidi_Control and Variation_Selector, and the owner names no such
+    /// set in 0.1.0-preview.4. JSD-0074's correspondence does not list it.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8C71F7
     // Broiler-Human:        PENDING
     private static bool IsDefaultIgnorable(char c) =>
@@ -406,6 +412,11 @@ internal sealed class JsNumberFormatter
         || c is >= '\u180b' and <= '\u180d' or '\u180f';
 
     /// <summary>Pattern_White_Space, which the range separator is tested against.</summary>
+    /// <remarks>
+    /// Unicode classification written out here rather than read from the owner, Broiler.Unicode, and a
+    /// gap rather than a choice: the owner's <c>UnicodeProperties</c> and <c>EcmaScriptLexical</c>
+    /// (0.1.0-preview.4) name no Pattern_White_Space member. JSD-0074's correspondence does not list it.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B3E3F5
     // Broiler-Human:        PENDING
     private static bool IsPatternWhiteSpace(char c) =>

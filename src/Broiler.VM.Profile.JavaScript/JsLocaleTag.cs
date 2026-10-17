@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
+// Relevant units:   27
+// Annotated:        27/27
 // Exempt:           12
-// Human-reviewed:   0/26
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         2/0
 // Resource impact:  3/10 max
-// Unverified:       26
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -331,6 +331,28 @@ internal sealed class JsLocaleTag
     // Broiler-Human:        PENDING
     private static bool IsTransformKey(string subtag) =>
         subtag.Length == 2 && IsAlpha(subtag[..1]) && IsDigits(subtag[1..]);
+
+    /// <summary>ECMA-402's ASCII-lowercase: A to Z lowered, and every other code unit as it is.</summary>
+    /// <remarks>
+    /// The platform's invariant casing is not this: it lowers U+212A KELVIN SIGN to <c>k</c> and, under
+    /// ICU, more besides, so a subtag checked after it could pass with a character no tag may hold.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9CA6BE
+    // Broiler-Human:        PENDING
+    internal static string AsciiLower(string text)
+    {
+        var chars = text.ToCharArray();
+
+        for (var i = 0; i < chars.Length; i++)
+        {
+            if (chars[i] is >= 'A' and <= 'Z')
+            {
+                chars[i] = (char)(chars[i] + 32);
+            }
+        }
+
+        return new string(chars);
+    }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4382E4
     // Broiler-Human:        PENDING
