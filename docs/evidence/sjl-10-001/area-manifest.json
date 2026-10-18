@@ -70,8 +70,13 @@
   "base/hosted/wide-native.runners.txt": "d854adb5ba8c3ddffce04a881a1ebe263114641dba578c6ffa7da889a4d15788",
   "base/hosted/wide-native.test262.json": "526840ed54ac7caa8b437ef52fbbf9d1062065863817dfd588b43614d746b71a",
   "base/identity.txt": "f5bfff106f71879d4181c969957394ce0275f54c8616b8e71a8917a79b4f5e3c",
-  "collect-area.py": "45d7b6c8aa249892b81cc04498bc30e60c769552997e1fc051cee1c92c9718d8",
+  "collect-area.py": "b72b58474fd62b08685233655a8718d7b1f3c384022b4bbbb549524551da2182",
   "correspondence.md": "e04f7bceffc437c5980681e4ab2819d66d7f1b3d72447a909da343f658e1c904",
-  "decision-rule-area.md": "80dc072302a7824d0bf7ad7aaba7800ae493a248f6978733cf391adc59756593"
+  "decision-rule-area.md": "80dc072302a7824d0bf7ad7aaba7800ae493a248f6978733cf391adc59756593",
+  "vectors/build-conformance.log": "ce3c4293d4565dddb2da78eaf41f2ee307af1379759be2b57fea934f90a39a43",
+  "vectors/run-negative-control-revision-25.log": "53bc44db0f789b40c1ba273ed4dfc56db73f1a7e353143cfa0d4b3b27043159e",
+  "vectors/run-negative-control-revision-25.tsv.gz": "f78fc4b5eb03ca002a3ff3c266e08837209df73b0079fe3975887f51e0e49a6d",
+  "vectors/run-revision-25.log": "77d55652b4ce8256504a822af605a6cf879c6045fd3b4c1602a8269bf5665d81",
+  "vectors/run-revision-25.tsv.gz": "e140ea3e4400f6ed333117a8981e2490a9d28937e82d7f25702aa3a6e4ecf9cf"
  }
 }
