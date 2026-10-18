@@ -16,10 +16,14 @@ differences, and `syntax/` for the grammar, the calendars and serialization.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules, correspondence and the base, 2026-10-18, at SJL-10.2. **Nothing here is a verdict.**
+**State:** rules, correspondence, the base and the vectors, 2026-10-18, at SJL-10.2. **Nothing here is a verdict.**
 - The base of all three parts was taken at the commit that carries the rule, `99c9c9f`, before any code of SJL-10
   landed (section 2): part A's by the hosted workflow, parts B and C locally.
+- The engine-level vectors ran on this family's pin at corpus revision 25, which holds the Temporal area (section 3).
 - The after runs follow SJL-10.4's cut-over.
+
+*(Revised 2026-10-18, at SJL-10.2, when the pin moved to revision 25. The state read "rules, correspondence and the
+base", and had no item on the vectors.)*
 
 Broiler.JS's clauses and the home's are judged in Broiler.JS's bundle of the same name. This bundle reads none of
 its runs.
@@ -157,3 +161,50 @@ value form. It is operation 0 of each program, an addition, over `NaN` and `nan(
 
 [`area-manifest.json`](area-manifest.json) lists the digest of every file of the base, the collector, the rule and
 the correspondence. `correspondence-runs/` is the correspondence's own record and is not listed.
+
+## 3. Engine-level vectors on the Temporal area (SJL-10.2)
+
+Broiler.JS's corpus revision 24 adds the Temporal area: 10,878 vectors in six files under
+`conformance/vectors/temporal/`, all `normative`.
+- **Where they come from.** Every expected value is the answer of the proposal's own polyfill at `e8cc03fc`
+  (`ref:temporalref@1`), run under Node 22.22.0 with its dependencies pinned: JSD-0078's decision D10. Neither
+  engine's code is consulted.
+- **Where the pinned text and the polyfill disagree, the text rules** (decision D7). 73 vectors take the text's
+  answer and record the polyfill's beside it.
+- **What they cover.** The correspondence's probes with the edges of its rows: every row with a behavioural
+  difference, and the rows of agreement beside them.
+
+Revision 25 classifies both engines' first runs on revision 24.
+- **This profile has six `divergence.broiler-vm` fields, all row R6**, its one correction (decision D9), which
+  SJL-10.4 makes: `temporal/balancing/0078` to `0080`, `0084`, `0085` and `0088`. They are `new PlainDate` with a
+  year of 2^53 + 2 or of 10^20 of either sign, `new PlainDateTime` with 2^53 + 2 or 10^20, and `new PlainMonthDay`
+  with a reference year of 10^20. Each expects a `RangeError`, and this profile ends the invocation, rendered
+  `abort:` with `ProfileFault/ProfileContractViolation`. The row counts five such cases; `new PlainDateTime` with
+  2^53 + 2 is a sixth, of the same cause.
+- **Broiler.JS's 473 are its own corrections**, which its SJL-10.5 answers. No vector differs in both engines.
+
+**Where the first runs are.** This profile's first runs on revisions 24 and 25 were taken for Broiler.JS's
+classification, at `14072b0` from scratch pins, and Broiler.JS's bundle keeps them as the basis of those fields.
+This bundle does not read them. Its own run is on the committed pin, at revision 25 as Broiler.JS's default branch
+carries it, `66b77088` (Broiler-Platform/Broiler.JS#1051).
+
+The collector's `vectors` step, bundle `sjl-6-001`'s, added to [`collect-area.py`](collect-area.py) at `ad20ee5`,
+built the conformance root in Release ([`vectors/build-conformance.log`](vectors/build-conformance.log)) in a clean
+detached checkout of `389f3e0`, and ran it there.
+
+| Run | Taken | Result | Files |
+|---|---|---|---|
+| Revision 25 | At `389f3e0`, clean, on the committed pin, which moves to revision 25 there, from 16:01Z on 2026-10-18 | 103,312 vectors: 103,306 match, 6 classified divergences, the six of row R6, and 0 unclassified differences | [`run-revision-25.log`](vectors/run-revision-25.log), [`run-revision-25.tsv.gz`](vectors/run-revision-25.tsv.gz) |
+| Its negative control | The same, with `--mutate text/trim/0001` | 103,305 match, the same 6 classified divergences, and 1 unclassified difference, the mutated vector | [`run-negative-control-revision-25.log`](vectors/run-negative-control-revision-25.log), [`run-negative-control-revision-25.tsv.gz`](vectors/run-negative-control-revision-25.tsv.gz) |
+
+**This profile matches every Temporal vector but row R6's six, and revision 25 classifies those six.** None is
+unclassified, so the vectors find no correction of this family's that the correspondence missed. The product
+sources at `389f3e0` are `14072b0`'s. The report gives every vector the rendering and verdict that the first run on
+revision 25, in Broiler.JS's bundle, gave it, line for line. Only its header's corpus commit differs, with the same
+content digest.
+
+The pin is at revision 25 (`src/tests/vectors/pins/vectors.pin`) since `389f3e0`, and was at revision 23 from
+`458c10a` (SJL-8.6). Its archive is taken twice, byte-identical, and its 57 files are hashed from an extracted copy.
+The same method, applied to revision 23's commit, gives that pin's two digests and its count exactly.
+
+[`area-manifest.json`](area-manifest.json) lists the digest of every file of `vectors/` with the others.
