@@ -1,0 +1,4 @@
+manifest /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl87-vm/out/after/packages/manifest.txt (clean tree)
+consumer runs: [0, 0, 0]; negative control exit 1; native AOT exit 0
+ALL STEPS AS EXPECTED
+exit code: 0

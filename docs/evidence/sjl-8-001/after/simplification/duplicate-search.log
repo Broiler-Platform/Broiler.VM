@@ -1,0 +1,55 @@
+# SJL-8.7 search for a surviving duplicate of the time-zone and calendar area, Broiler.VM at 0a52e038db4d4037b7155a3ec7c04e3024a81426,
+# in the component's C# product sources (src/, every tests/ excluded), in three parts, each with
+# its pattern and its hits; every hit is reviewed in the bundle's README.
+
+## host: the platform's zones, local-time conversions and calendar classes
+# pattern: \bTimeZoneInfo\b|\bTimeZone\.CurrentTimeZone\b|\bDateTimeOffset\b|\.ToLocalTime\(|\.ToUniversalTime\(|\b(ChineseLunisolar|KoreanLunisolar|JapaneseLunisolar|TaiwanLunisolar|EastAsianLunisolar|UmAlQura|Persian|Hijri|Hebrew|Japanese|Taiwan|ThaiBuddhist|Korean|Gregorian|Julian)Calendar\b|\bCultureInfo\b[^;]*\.(Calendar|OptionalCalendars)\b
+# hits: 5
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:361:        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:685:    private bool DateTimeOffset(bool allowZ)
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:726:            if (!DateTimeOffset(allowZ: zoned || instant))
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:762:        if (!TimeSpec() || !DateTimeOffset(allowZ: false))
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262DigestCache.cs:120:            new DateTimeOffset(File.GetLastWriteTimeUtc(path), TimeSpan.Zero).ToUnixTimeSeconds() ==
+
+## algorithm: the area's algorithms by their names and constants
+# pattern: \bTZif\b|\bzic\b|zone1970\.tab|\bzone\.tab\b|\bbackzone\b|\btzdata\b|\bvarint|\bVarint|29\.530|365\.24[0-9]|[Ss]ynodic|[Ss]olar ?[Tt]erm|[Nn]ew ?[Mm]oons?\b|[Ss]olstice|[Ee]quinox|\bRataDie\b|33-year|\bMetonic\b|GetPossibleEpochNanoseconds|DisambiguatePossibleEpochNanoseconds|GetStartOfDay|GetNamedTimeZone(Next|Previous)Transition|GetNamedTimeZoneOffsetNanoseconds|GetNamedTimeZoneEpochNanoseconds
+# hits: 32
+src/Broiler.VM.Profile.JavaScript.Format/JsIntlData.cs:172:    /// <summary>The zones of each country, from <c>zone.tab</c>: <c>region</c>, then its zones.</summary>
+src/Broiler.VM.Profile.JavaScript.Format/JsIntlData.cs:177:    /// calendar's corrections to its 33-year rule, binary, in the layout the shared library's
+src/Broiler.VM.Profile.JavaScript.Intl/JsTzdbTables.g.cs:3104:    /// <summary>zone.tab's zones of each country, in ordinal order: region, zones.</summary>
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:280:    /// data hands in inside its range, and ICU4X's approximation, the civil tabular year or the 33-year
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:564:/// a leap year, which the 33-year rule decides, corrected after 1501 AP by the years the Intl data's
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:801:/// The Chinese and Korean calendars: lunar months beginning on the day of the new moon in Beijing
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:802:/// or Korean time, a leap month inserted in a year without a major solar term. Years 1900 to 2102
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:837:    internal override double MeanMonths => 365.2425 / 29.530588853;
+src/Broiler.VM.Profile.JavaScript/JsCalendars.cs:842:        (long)Math.Round((Year(year).Start - anchor) / 29.530588853, MidpointRounding.AwayFromZero);
+src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:36:/// region are the IANA Time Zone Database's <c>zone.tab</c> entries for it.
+src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:170:            // THE ZONES IN USE IN A REGION are zone.tab's for it, each a primary identifier
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs:246:    /// <summary>The proposal's GetPossibleEpochNanoseconds (s11.1.13), ascending.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs:255:        var status = ZonedTime.GetPossibleEpochNanoseconds(rules, IsoOf(dateTime), found, out var count);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs:265:    /// <summary>The proposal's DisambiguatePossibleEpochNanoseconds (s11.1.12).</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs:271:        var status = ZonedTime.DisambiguatePossibleEpochNanoseconds(
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs:288:    /// <summary>The proposal's GetStartOfDay (s11.1.14).</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs:296:        var status = ZonedTime.GetStartOfDay(rules, new IsoDate(date.Year, date.Month, date.Day), out var epochNs);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs:311:    /// <summary>The proposal's GetNamedTimeZoneNextTransition (s11.1.3), or null for an offset zone or none.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs:317:    /// <summary>The proposal's GetNamedTimeZonePreviousTransition (s11.1.4), or null.</summary>
+src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs:117:        // A ZONE'S COUNTRY is zone.tab's, by primary identifier, and a country's zones are counted the
+src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs:118:        // same way: a country with one is named by it. zone.tab's regions are ISO 3166 codes, two
+src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs:119:        // ASCII capitals; the shared database answers the zones of each and none for a code zone.tab does
+src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs:354:        // fixed width in this format, and reading it as a varint would accept encodings the format
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:126:        entries.AddRange(Varints());
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:245:    private static IEnumerable<CorpusEntry> Varints() =>
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:249:        new("varint-section-length-over-long", "varint",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:258:        new("varint-section-length-terminal-byte-has-unused-bits-set", "varint",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:265:        new("varint-a-vector-count-over-long", "varint",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:273:        new("varint-a-padded-vector-count-inside-a-body-is-accepted", "varint",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:280:        new("varint-a-padded-signed-constant-immediate-is-accepted", "varint",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:285:        new("varint-a-signed-constant-immediate-over-long", "varint",
+src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs:298:        new("varint-a-signed-constant-immediate-with-an-invalid-sign-extension", "varint",
+
+## identifiers: IANA zone identifiers spelled as string literals
+# pattern: "(Africa|America|Antarctica|Arctic|Asia|Atlantic|Australia|Europe|Indian|Pacific)/[A-Za-z_+-]|"Etc/
+# hits: 1
+src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs:326:        (zone.StartsWith("Etc/", System.StringComparison.Ordinal) || !zone.Contains('/', System.StringComparison.Ordinal)
+
+# hits in all three parts: 38
