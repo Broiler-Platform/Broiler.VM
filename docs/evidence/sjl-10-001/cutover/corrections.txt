@@ -1,0 +1,19 @@
+# the cut-over's two corrections (JSD-0079 section 4), each held by a slice-compiler check at the product tree of f14abb7, as it printed it
+ok   temporal/t1/a-year-past-2-to-the-53-is-a-range-error: answered `RangeError RangeError RangeError RangeError RangeError RangeError +275760-09-13` (`RangeError RangeError RangeError RangeError RangeError RangeError +275760-09-13` expected)
+ok   temporal/t1/a-day-window-a-zone-skips-is-a-range-error: answered `RangeError RangeError RangeError PT16H15M` (`RangeError RangeError RangeError PT16H15M` expected)
+
+# the same constructions and differences, one per file, through the conformance root at the base commit's product sources and at the cut-over's
+new Temporal.PlainDate(2**53 + 2, 1, 1) | base: NO OUTPUT: FAIL        test/spot/r6-0.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+new Temporal.PlainDate(1e20, 1, 1) | base: NO OUTPUT: FAIL        test/spot/r6-1.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+new Temporal.PlainDate(-1e20, 1, 1) | base: NO OUTPUT: FAIL        test/spot/r6-2.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+new Temporal.PlainDateTime(2**53 + 2, 1, 1) | base: NO OUTPUT: FAIL        test/spot/r6-3.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+new Temporal.PlainDateTime(1e20, 1, 1) | base: NO OUTPUT: FAIL        test/spot/r6-4.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+new Temporal.PlainMonthDay(1, 1, undefined, 1e20) | base: NO OUTPUT: FAIL        test/spot/r6-5.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+new Temporal.PlainMonthDay(2, 29, undefined, -1e20) | base: NO OUTPUT: FAIL        test/spot/r6-8.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+new Temporal.PlainYearMonth(1e20, 1) | base: throws RangeError | cut-over: throws RangeError
+new Temporal.PlainDate(275760, 9, 13) | base: +275760-09-13 | cut-over: +275760-09-13
+D12 since | base: NO OUTPUT: FAIL        test/spot/d12-0.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+D12 round | base: NO OUTPUT: FAIL        test/spot/d12-1.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+D12 total | base: NO OUTPUT: FAIL        test/spot/d12-2.js [raw]  the invocation answered ProfileFault/ProfileContractViolation and carried no payload | cut-over: throws RangeError
+D12 until | base: PT0S | cut-over: PT0S
+# "D12 until" runs until from 2011-12-31T00:00 to 16:15+14:00 [Pacific/Apia] in days with floor: its day window runs forward from the earlier date, does not reach the skipped day, and answers at both

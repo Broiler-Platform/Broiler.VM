@@ -1,0 +1,14 @@
+# the cut-over's report (cut-over-revision-25.tsv.gz) against the base's (run-revision-25.tsv.gz), every row but the header lines compared:
+# rows that differ, base (<) and cut-over (>); every other row is the same, rendering and verdict
+< temporal/balancing/0078	divergence	error: RangeError	abort: #host-turn answered ProfileFault/ProfileContractViolation	classified-divergence
+< temporal/balancing/0079	divergence	error: RangeError	abort: #host-turn answered ProfileFault/ProfileContractViolation	classified-divergence
+< temporal/balancing/0080	divergence	error: RangeError	abort: #host-turn answered ProfileFault/ProfileContractViolation	classified-divergence
+> temporal/balancing/0078	divergence	error: RangeError	error: RangeError	match (divergence no longer holds)
+> temporal/balancing/0079	divergence	error: RangeError	error: RangeError	match (divergence no longer holds)
+> temporal/balancing/0080	divergence	error: RangeError	error: RangeError	match (divergence no longer holds)
+< temporal/balancing/0084	divergence	error: RangeError	abort: #host-turn answered ProfileFault/ProfileContractViolation	classified-divergence
+< temporal/balancing/0085	divergence	error: RangeError	abort: #host-turn answered ProfileFault/ProfileContractViolation	classified-divergence
+> temporal/balancing/0084	divergence	error: RangeError	error: RangeError	match (divergence no longer holds)
+> temporal/balancing/0085	divergence	error: RangeError	error: RangeError	match (divergence no longer holds)
+< temporal/balancing/0088	divergence	error: RangeError	abort: #host-turn answered ProfileFault/ProfileContractViolation	classified-divergence
+> temporal/balancing/0088	divergence	error: RangeError	error: RangeError	match (divergence no longer holds)
