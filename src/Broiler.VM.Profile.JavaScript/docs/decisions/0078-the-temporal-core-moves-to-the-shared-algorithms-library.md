@@ -552,6 +552,40 @@ design's table names what it omits:
 - **Sharing the option reads, `relativeTo` resolution, `Temporal.Now`'s clock or Intl formatting**: they stay each
   engine's, or SJL-9's.
 
+## SJL-10.2's vectors, read against this record
+
+*(Added 2026-10-18, at SJL-10.2.)* Broiler.JS's corpus revision 24 adds the Temporal area's vectors, every expected
+value from the proposal's polyfill at `e8cc03fc` (decision D10, recorded in the ledger). Revision 25 classifies both
+engines' first runs on them. **They do not falsify this record**: every difference either engine shows is under a row
+this record classifies, and none needed a new row.
+- **Broiler.VM** differs on six vectors, all row R6. The correspondence counted five faulting cases. The vectors find a
+  sixth with the same cause, `new Temporal.PlainDateTime(2^53 + 2, ...)`, so decision D9 holds as written.
+- **Broiler.JS's differences** are all corrections this record lists: R7, B5, D3, D4, D6 to D8, D11, F4, F7, the grammar
+  rows and the calendar rows.
+- **Row D11 reaches one more input.** A `relativeTo` that is a `ZonedDateTime` in the `coptic` calendar is not refused
+  either: Broiler.JS rounds it in ISO months. It stays a correction under D11.
+- **Decision D7 decides more cases than row D8.** The vectors take the text's answer in 73 places and record the
+  polyfill's beside it. Beyond D8's nudge, which accounts for 28, the polyfill's parser and era table disagree with
+  the pinned texts in 45 vectors:
+  - two spaces as the date-time separator;
+  - an offset's decimal separator with no digit;
+  - the month-days `02-30` and `04-31`;
+  - calendar strings that are only a year-month or month-day;
+  - time-zone strings that are a time or partial date;
+  - the era aliases removed on 2025-11-21;
+  - one lenient regnal era.
+
+  Broiler.VM answers as the texts on all 45. Broiler.JS does so on 35, and its other 10 are corrections already listed
+  (G17, C9). No class changes.
+- **JSD-0054 section 4's places stand, as decision D7's last item says.** In ComputeNudgeWindow the vectors keep the
+  polyfill's answer, which both engines give, and each such vector's note gives the literal text's answer.
+- **Not vectored**, because the reference cannot vouch for them:
+  - Hebrew years before AM 1, and 5806 to 5807, where ICU4C and Calendrical Calculations disagree;
+  - non-ISO fields at the ISO limits;
+  - the table calendars outside Table 1's published years.
+
+  The library's own tests, and the reference datasets, hold these where they can.
+
 ## Settling condition
 
 This record is settled when SJL-10.4's and SJL-10.5's cut-overs land with the deletion lists absent from both engines
