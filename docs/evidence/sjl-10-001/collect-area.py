@@ -40,9 +40,16 @@ Steps, each with `--only`:
                  whole output into base/datasets/checks.log, the line of each of the six checks the rule names
                  (or its absence) into base/datasets/named-checks.txt, and the SHA-256 of every file under
                  src/tests/temporal/ into base/datasets/files.sha256 (bundle sjl-8-001's step);
-  manifest       the SHA-256 of every file this collector writes or reads as its own (base/, after/, this file,
-                 the rule and the correspondence), with the base commit base/identity.txt names, into
+  manifest       the SHA-256 of every file this collector writes or reads as its own (base/, after/, vectors/,
+                 this file, the rule and the correspondence), with the base commit base/identity.txt names, into
                  area-manifest.json. correspondence-runs/ is the correspondence's own record and is not listed.
+
+THE VECTORS STEP WAS ADDED AT SJL-10.2, when this family's pin of the shared corpus moved to revision 25, which
+holds the Temporal area. It is bundle sjl-6-001's step, unchanged, as bundle sjl-8-001's collector added it:
+
+  vectors        the conformance root over a retained pin of the shared corpus (--pin, by default the tree's own
+                 src/tests/vectors/pins/vectors.pin), and its negative control, into
+                 vectors/<label>-revision-<n>.* and vectors/<label>-negative-control-revision-<n>.*.
 
 The after steps join this file when there is an after commit to run them at, SJL-10.4's cut-over, as bundle
 sjl-8-001's did at SJL-8.7.
@@ -90,7 +97,7 @@ DATASET_CHECKS = (
 )
 DATASET_FOLDERS = (os.path.join("src", "tests", "temporal"),)
 
-STEPS = ("base-identity", "base-import", "base-complete", "base-twins", "base-datasets", "manifest")
+STEPS = ("base-identity", "base-import", "base-complete", "base-twins", "base-datasets", "vectors", "manifest")
 
 
 class Collector(area8.Collector):
@@ -145,7 +152,7 @@ class Collector(area8.Collector):
 
     def manifest(self):
         files = {}
-        for folder in ("base", "after"):
+        for folder in ("base", "after", "vectors"):
             for root, _, names in os.walk(os.path.join(self.root_out, folder)):
                 for name in names:
                     path = os.path.join(root, name)
@@ -180,13 +187,13 @@ def main():
     parser.add_argument("--run-url")
     parser.add_argument("--artifact-id")
     parser.add_argument("--run-times")
+    parser.add_argument("--pin", help="vectors: a retained suite pin of the shared corpus, by default the tree's")
+    parser.add_argument("--label", help="vectors: the run's name in its files, by default 'run'")
     parser.add_argument("--only", action="append", required=True, choices=STEPS)
     arguments = parser.parse_args()
     # The earlier collectors' constructors read these; no base step uses them.
     arguments.base_tree = None
     arguments.images = None
-    arguments.pin = None
-    arguments.label = None
     arguments.against_broiler_js = None
     arguments.against_root = None
     arguments.dry_run = False
