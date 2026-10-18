@@ -1,0 +1,117 @@
+   Instant#toZonedDateTimeISO("UTC").timeZoneId | VM: UTC | BJS: UTC
+   ZonedDateTime.from({..., timeZone: "UTC"}).timeZoneId | VM: UTC | BJS: UTC
+   new ZonedDateTime(0n, "UTC").timeZoneId | VM: UTC | BJS: UTC
+   Instant#toZonedDateTimeISO("2020-01-01T00:00Z").timeZoneId | VM: UTC | BJS: UTC
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z"}).timeZoneId | VM: UTC | BJS: UTC
+   new ZonedDateTime(0n, "2020-01-01T00:00Z").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00z").timeZoneId | VM: UTC | BJS: UTC
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00z"}).timeZoneId | VM: UTC | BJS: UTC
+   new ZonedDateTime(0n, "2020-01-01T00:00z").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00+01:00").timeZoneId | VM: +01:00 | BJS: +01:00
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+01:00"}).timeZoneId | VM: +01:00 | BJS: +01:00
+   new ZonedDateTime(0n, "2020-01-01T00:00+01:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00+01:00:01").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+01:00:01"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01T00:00+01:00:01").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00+01:00:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+01:00:00"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01T00:00+01:00:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01[Europe/Berlin]").timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   ZonedDateTime.from({..., timeZone: "2020-01-01[Europe/Berlin]"}).timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   new ZonedDateTime(0n, "2020-01-01[Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00Z[Europe/Berlin]").timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z[Europe/Berlin]"}).timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   new ZonedDateTime(0n, "2020-01-01T00:00Z[Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Instant#toZonedDateTimeISO("T10:00Z").timeZoneId | VM: THROWS RangeError | BJS: UTC
+!! ZonedDateTime.from({..., timeZone: "T10:00Z"}).timeZoneId | VM: THROWS RangeError | BJS: UTC
+   new ZonedDateTime(0n, "T10:00Z").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Instant#toZonedDateTimeISO("10:00Z").timeZoneId | VM: THROWS RangeError | BJS: UTC
+!! ZonedDateTime.from({..., timeZone: "10:00Z"}).timeZoneId | VM: THROWS RangeError | BJS: UTC
+   new ZonedDateTime(0n, "10:00Z").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("10:00+01:00").timeZoneId | VM: +01:00 | BJS: +01:00
+   ZonedDateTime.from({..., timeZone: "10:00+01:00"}).timeZoneId | VM: +01:00 | BJS: +01:00
+   new ZonedDateTime(0n, "10:00+01:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("T10:00+01:00").timeZoneId | VM: +01:00 | BJS: +01:00
+   ZonedDateTime.from({..., timeZone: "T10:00+01:00"}).timeZoneId | VM: +01:00 | BJS: +01:00
+   new ZonedDateTime(0n, "T10:00+01:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("10:00[Europe/Berlin]").timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   ZonedDateTime.from({..., timeZone: "10:00[Europe/Berlin]"}).timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   new ZonedDateTime(0n, "10:00[Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01T00:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00[u-ca=gregory]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00[u-ca=gregory]"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01T00:00[u-ca=gregory]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01[Europe/Berlin]").timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   ZonedDateTime.from({..., timeZone: "2020-01[Europe/Berlin]"}).timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   new ZonedDateTime(0n, "2020-01[Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("01-01[Europe/Berlin]").timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   ZonedDateTime.from({..., timeZone: "01-01[Europe/Berlin]"}).timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   new ZonedDateTime(0n, "01-01[Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01[]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01[]"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01[]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00+25:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+25:00"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01T00:00+25:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00+23:60").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+23:60"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01T00:00+23:60").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Instant#toZonedDateTimeISO("2020-01-01[u-ca=gregory][Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: Europe/Berlin
+!! ZonedDateTime.from({..., timeZone: "2020-01-01[u-ca=gregory][Europe/Berlin]"}).timeZoneId | VM: THROWS RangeError | BJS: Europe/Berlin
+   new ZonedDateTime(0n, "2020-01-01[u-ca=gregory][Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Instant#toZonedDateTimeISO("2020-01-01[foo=bar][Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: Europe/Berlin
+!! ZonedDateTime.from({..., timeZone: "2020-01-01[foo=bar][Europe/Berlin]"}).timeZoneId | VM: THROWS RangeError | BJS: Europe/Berlin
+   new ZonedDateTime(0n, "2020-01-01[foo=bar][Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("+01:00").timeZoneId | VM: +01:00 | BJS: +01:00
+   ZonedDateTime.from({..., timeZone: "+01:00"}).timeZoneId | VM: +01:00 | BJS: +01:00
+   new ZonedDateTime(0n, "+01:00").timeZoneId | VM: +01:00 | BJS: +01:00
+   Instant#toZonedDateTimeISO("+0100").timeZoneId | VM: +01:00 | BJS: +01:00
+   ZonedDateTime.from({..., timeZone: "+0100"}).timeZoneId | VM: +01:00 | BJS: +01:00
+   new ZonedDateTime(0n, "+0100").timeZoneId | VM: +01:00 | BJS: +01:00
+   Instant#toZonedDateTimeISO("+01").timeZoneId | VM: +01:00 | BJS: +01:00
+   ZonedDateTime.from({..., timeZone: "+01"}).timeZoneId | VM: +01:00 | BJS: +01:00
+   new ZonedDateTime(0n, "+01").timeZoneId | VM: +01:00 | BJS: +01:00
+   Instant#toZonedDateTimeISO("-00:00").timeZoneId | VM: +00:00 | BJS: +00:00
+   ZonedDateTime.from({..., timeZone: "-00:00"}).timeZoneId | VM: +00:00 | BJS: +00:00
+   new ZonedDateTime(0n, "-00:00").timeZoneId | VM: +00:00 | BJS: +00:00
+   Instant#toZonedDateTimeISO("+01:00:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "+01:00:00"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "+01:00:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("+01:00:00.5").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "+01:00:00.5"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "+01:00:00.5").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("+24:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "+24:00"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "+24:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00+01:00[+02:00]").timeZoneId | VM: +02:00 | BJS: +02:00
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+01:00[+02:00]"}).timeZoneId | VM: +02:00 | BJS: +02:00
+   new ZonedDateTime(0n, "2020-01-01T00:00+01:00[+02:00]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00Z[+02:00]").timeZoneId | VM: +02:00 | BJS: +02:00
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z[+02:00]"}).timeZoneId | VM: +02:00 | BJS: +02:00
+   new ZonedDateTime(0n, "2020-01-01T00:00Z[+02:00]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T12:3045Z").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2020-01-01T12:3045Z"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2020-01-01T12:3045Z").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2021-12").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., timeZone: "2021-12"}).timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "2021-12").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Instant#toZonedDateTimeISO("1214Z").timeZoneId | VM: THROWS RangeError | BJS: UTC
+!! ZonedDateTime.from({..., timeZone: "1214Z"}).timeZoneId | VM: THROWS RangeError | BJS: UTC
+   new ZonedDateTime(0n, "1214Z").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00Z[!Europe/Berlin]").timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z[!Europe/Berlin]"}).timeZoneId | VM: Europe/Berlin | BJS: Europe/Berlin
+   new ZonedDateTime(0n, "2020-01-01T00:00Z[!Europe/Berlin]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Instant#toZonedDateTimeISO("2020-01-01T00:00Z[u-ca=gregory][!foo=bar]").timeZoneId | VM: THROWS RangeError | BJS: UTC
+!! ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z[u-ca=gregory][!foo=bar]"}).timeZoneId | VM: THROWS RangeError | BJS: UTC
+   new ZonedDateTime(0n, "2020-01-01T00:00Z[u-ca=gregory][!foo=bar]").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00-00:00").timeZoneId | VM: +00:00 | BJS: +00:00
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00-00:00"}).timeZoneId | VM: +00:00 | BJS: +00:00
+   new ZonedDateTime(0n, "2020-01-01T00:00-00:00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant#toZonedDateTimeISO("2020-01-01T00:00-00").timeZoneId | VM: +00:00 | BJS: +00:00
+   ZonedDateTime.from({..., timeZone: "2020-01-01T00:00-00"}).timeZoneId | VM: +00:00 | BJS: +00:00
+   new ZonedDateTime(0n, "2020-01-01T00:00-00").timeZoneId | VM: THROWS RangeError | BJS: THROWS RangeError

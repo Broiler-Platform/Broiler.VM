@@ -1,0 +1,13 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+PlainTime("23:59:59.999999999").add({nanoseconds: 1}) => Temporal.PlainTime 00:00:00
+PlainTime("00:00").subtract({nanoseconds: 1}) => Temporal.PlainTime 23:59:59.999999999
+PlainTime("12:00").add({hours: 1e9}) => Temporal.PlainTime 04:00:00
+PlainTime("12:00").subtract({hours: 2501999792983, minutes: 36}) => Temporal.PlainTime 04:24:00
+PlainTime("12:00").add({nanoseconds: 9e24}) => Temporal.PlainTime 04:00:00.385875968
+PlainTime("12:00").add({days: 3, hours: 1}) => Temporal.PlainTime 13:00:00
+PlainTime("12:00").add({years: 1, months: 1, weeks: 1}) => Temporal.PlainTime 12:00:00
+PlainTime("12:00").add({minutes: 90, seconds: 3600}) => Temporal.PlainTime 14:30:00
+PlainTime("01:00").subtract({minutes: 61}) => Temporal.PlainTime 23:59:00
+PlainTime("12:00").add("-PT36H") => Temporal.PlainTime 00:00:00
+exit=0

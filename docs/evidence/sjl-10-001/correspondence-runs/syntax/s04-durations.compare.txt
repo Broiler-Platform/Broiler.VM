@@ -1,0 +1,121 @@
+   Duration {} | VM: THROWS TypeError | BJS: THROWS TypeError
+   Duration {} fractionalSecondDigits 0 | VM: THROWS TypeError | BJS: THROWS TypeError
+   Duration {} fractionalSecondDigits 3 | VM: THROWS TypeError | BJS: THROWS TypeError
+   Duration {"years":1} | VM: P1Y | BJS: P1Y
+   Duration {"years":1} fractionalSecondDigits 0 | VM: P1YT0S | BJS: P1YT0S
+   Duration {"years":1} fractionalSecondDigits 3 | VM: P1YT0.000S | BJS: P1YT0.000S
+   Duration {"years":-1} | VM: -P1Y | BJS: -P1Y
+   Duration {"years":-1} fractionalSecondDigits 0 | VM: -P1YT0S | BJS: -P1YT0S
+   Duration {"years":-1} fractionalSecondDigits 3 | VM: -P1YT0.000S | BJS: -P1YT0.000S
+   Duration {"weeks":3,"days":4} | VM: P3W4D | BJS: P3W4D
+   Duration {"weeks":3,"days":4} fractionalSecondDigits 0 | VM: P3W4DT0S | BJS: P3W4DT0S
+   Duration {"weeks":3,"days":4} fractionalSecondDigits 3 | VM: P3W4DT0.000S | BJS: P3W4DT0.000S
+   Duration {"hours":25} | VM: PT25H | BJS: PT25H
+   Duration {"hours":25} fractionalSecondDigits 0 | VM: PT25H0S | BJS: PT25H0S
+   Duration {"hours":25} fractionalSecondDigits 3 | VM: PT25H0.000S | BJS: PT25H0.000S
+   Duration {"minutes":61} | VM: PT61M | BJS: PT61M
+   Duration {"minutes":61} fractionalSecondDigits 0 | VM: PT61M0S | BJS: PT61M0S
+   Duration {"minutes":61} fractionalSecondDigits 3 | VM: PT61M0.000S | BJS: PT61M0.000S
+   Duration {"seconds":61} | VM: PT61S | BJS: PT61S
+   Duration {"seconds":61} fractionalSecondDigits 0 | VM: PT61S | BJS: PT61S
+   Duration {"seconds":61} fractionalSecondDigits 3 | VM: PT61.000S | BJS: PT61.000S
+   Duration {"milliseconds":1500} | VM: PT1.5S | BJS: PT1.5S
+   Duration {"milliseconds":1500} fractionalSecondDigits 0 | VM: PT1S | BJS: PT1S
+   Duration {"milliseconds":1500} fractionalSecondDigits 3 | VM: PT1.500S | BJS: PT1.500S
+   Duration {"milliseconds":1000} | VM: PT1S | BJS: PT1S
+   Duration {"milliseconds":1000} fractionalSecondDigits 0 | VM: PT1S | BJS: PT1S
+   Duration {"milliseconds":1000} fractionalSecondDigits 3 | VM: PT1.000S | BJS: PT1.000S
+   Duration {"microseconds":1000001} | VM: PT1.000001S | BJS: PT1.000001S
+   Duration {"microseconds":1000001} fractionalSecondDigits 0 | VM: PT1S | BJS: PT1S
+   Duration {"microseconds":1000001} fractionalSecondDigits 3 | VM: PT1.000S | BJS: PT1.000S
+   Duration {"nanoseconds":1000000001} | VM: PT1.000000001S | BJS: PT1.000000001S
+   Duration {"nanoseconds":1000000001} fractionalSecondDigits 0 | VM: PT1S | BJS: PT1S
+   Duration {"nanoseconds":1000000001} fractionalSecondDigits 3 | VM: PT1.000S | BJS: PT1.000S
+   Duration {"seconds":1,"milliseconds":999,"microseconds":999,"nanoseconds":1000} | VM: PT2S | BJS: PT2S
+   Duration {"seconds":1,"milliseconds":999,"microseconds":999,"nanoseconds":1000} fractionalSecondDigits 0 | VM: PT2S | BJS: PT2S
+   Duration {"seconds":1,"milliseconds":999,"microseconds":999,"nanoseconds":1000} fractionalSecondDigits 3 | VM: PT2.000S | BJS: PT2.000S
+   Duration {"milliseconds":0} | VM: PT0S | BJS: PT0S
+   Duration {"milliseconds":0} fractionalSecondDigits 0 | VM: PT0S | BJS: PT0S
+   Duration {"milliseconds":0} fractionalSecondDigits 3 | VM: PT0.000S | BJS: PT0.000S
+   Duration {"years":4294967295} | VM: P4294967295Y | BJS: P4294967295Y
+   Duration {"years":4294967295} fractionalSecondDigits 0 | VM: P4294967295YT0S | BJS: P4294967295YT0S
+   Duration {"years":4294967295} fractionalSecondDigits 3 | VM: P4294967295YT0.000S | BJS: P4294967295YT0.000S
+   Duration {"months":4294967295} | VM: P4294967295M | BJS: P4294967295M
+   Duration {"months":4294967295} fractionalSecondDigits 0 | VM: P4294967295MT0S | BJS: P4294967295MT0S
+   Duration {"months":4294967295} fractionalSecondDigits 3 | VM: P4294967295MT0.000S | BJS: P4294967295MT0.000S
+   Duration {"weeks":4294967295} | VM: P4294967295W | BJS: P4294967295W
+   Duration {"weeks":4294967295} fractionalSecondDigits 0 | VM: P4294967295WT0S | BJS: P4294967295WT0S
+   Duration {"weeks":4294967295} fractionalSecondDigits 3 | VM: P4294967295WT0.000S | BJS: P4294967295WT0.000S
+   Duration {"days":104249991374} | VM: P104249991374D | BJS: P104249991374D
+   Duration {"days":104249991374} fractionalSecondDigits 0 | VM: P104249991374DT0S | BJS: P104249991374DT0S
+   Duration {"days":104249991374} fractionalSecondDigits 3 | VM: P104249991374DT0.000S | BJS: P104249991374DT0.000S
+   Duration {"hours":2501999792983} | VM: PT2501999792983H | BJS: PT2501999792983H
+   Duration {"hours":2501999792983} fractionalSecondDigits 0 | VM: PT2501999792983H0S | BJS: PT2501999792983H0S
+   Duration {"hours":2501999792983} fractionalSecondDigits 3 | VM: PT2501999792983H0.000S | BJS: PT2501999792983H0.000S
+   Duration {"minutes":150119987579016} | VM: PT150119987579016M | BJS: PT150119987579016M
+   Duration {"minutes":150119987579016} fractionalSecondDigits 0 | VM: PT150119987579016M0S | BJS: PT150119987579016M0S
+   Duration {"minutes":150119987579016} fractionalSecondDigits 3 | VM: PT150119987579016M0.000S | BJS: PT150119987579016M0.000S
+   Duration {"seconds":9007199254740991} | VM: PT9007199254740991S | BJS: PT9007199254740991S
+   Duration {"seconds":9007199254740991} fractionalSecondDigits 0 | VM: PT9007199254740991S | BJS: PT9007199254740991S
+   Duration {"seconds":9007199254740991} fractionalSecondDigits 3 | VM: PT9007199254740991.000S | BJS: PT9007199254740991.000S
+   Duration {"milliseconds":9007199254740991} | VM: PT9007199254740.991S | BJS: PT9007199254740.991S
+   Duration {"milliseconds":9007199254740991} fractionalSecondDigits 0 | VM: PT9007199254740S | BJS: PT9007199254740S
+   Duration {"milliseconds":9007199254740991} fractionalSecondDigits 3 | VM: PT9007199254740.991S | BJS: PT9007199254740.991S
+   Duration {"microseconds":9007199254740991} | VM: PT9007199254.740991S | BJS: PT9007199254.740991S
+   Duration {"microseconds":9007199254740991} fractionalSecondDigits 0 | VM: PT9007199254S | BJS: PT9007199254S
+   Duration {"microseconds":9007199254740991} fractionalSecondDigits 3 | VM: PT9007199254.740S | BJS: PT9007199254.740S
+   Duration {"nanoseconds":9007199254740991} | VM: PT9007199.254740991S | BJS: PT9007199.254740991S
+   Duration {"nanoseconds":9007199254740991} fractionalSecondDigits 0 | VM: PT9007199S | BJS: PT9007199S
+   Duration {"nanoseconds":9007199254740991} fractionalSecondDigits 3 | VM: PT9007199.254S | BJS: PT9007199.254S
+   Duration {"seconds":9007199254740991,"nanoseconds":999999999} | VM: PT9007199254740991.999999999S | BJS: PT9007199254740991.999999999S
+   Duration {"seconds":9007199254740991,"nanoseconds":999999999} fractionalSecondDigits 0 | VM: PT9007199254740991S | BJS: PT9007199254740991S
+   Duration {"seconds":9007199254740991,"nanoseconds":999999999} fractionalSecondDigits 3 | VM: PT9007199254740991.999S | BJS: PT9007199254740991.999S
+   Duration {"milliseconds":9007199254740992000} | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration {"milliseconds":9007199254740992000} fractionalSecondDigits 0 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration {"milliseconds":9007199254740992000} fractionalSecondDigits 3 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration {"days":-1,"hours":-1} | VM: -P1DT1H | BJS: -P1DT1H
+   Duration {"days":-1,"hours":-1} fractionalSecondDigits 0 | VM: -P1DT1H0S | BJS: -P1DT1H0S
+   Duration {"days":-1,"hours":-1} fractionalSecondDigits 3 | VM: -P1DT1H0.000S | BJS: -P1DT1H0.000S
+   Duration {"hours":1,"nanoseconds":1} | VM: PT1H0.000000001S | BJS: PT1H0.000000001S
+   Duration {"hours":1,"nanoseconds":1} fractionalSecondDigits 0 | VM: PT1H0S | BJS: PT1H0S
+   Duration {"hours":1,"nanoseconds":1} fractionalSecondDigits 3 | VM: PT1H0.000S | BJS: PT1H0.000S
+   Duration {"minutes":1,"seconds":0} | VM: PT1M | BJS: PT1M
+   Duration {"minutes":1,"seconds":0} fractionalSecondDigits 0 | VM: PT1M0S | BJS: PT1M0S
+   Duration {"minutes":1,"seconds":0} fractionalSecondDigits 3 | VM: PT1M0.000S | BJS: PT1M0.000S
+   Duration {"seconds":0} | VM: PT0S | BJS: PT0S
+   Duration {"seconds":0} fractionalSecondDigits 0 | VM: PT0S | BJS: PT0S
+   Duration {"seconds":0} fractionalSecondDigits 3 | VM: PT0.000S | BJS: PT0.000S
+   Duration PT59.999999999S ceil fractionalSecondDigits 0 | VM: PT60S | BJS: PT60S
+   Duration PT59.999999999S ceil smallestUnit second | VM: PT60S | BJS: PT60S
+   Duration PT59.5S halfExpand fractionalSecondDigits 0 | VM: PT60S | BJS: PT60S
+   Duration PT59.5S halfExpand smallestUnit second | VM: PT60S | BJS: PT60S
+   Duration PT59M59.5S halfExpand fractionalSecondDigits 0 | VM: PT60M0S | BJS: PT60M0S
+   Duration PT59M59.5S halfExpand smallestUnit second | VM: PT60M0S | BJS: PT60M0S
+   Duration PT23H59M59.5S halfExpand fractionalSecondDigits 0 | VM: PT24H0S | BJS: PT24H0S
+   Duration PT23H59M59.5S halfExpand smallestUnit second | VM: PT24H0S | BJS: PT24H0S
+   Duration P1DT23H59M59.5S halfExpand fractionalSecondDigits 0 | VM: P2DT0S | BJS: P2DT0S
+   Duration P1DT23H59M59.5S halfExpand smallestUnit second | VM: P2DT0S | BJS: P2DT0S
+   Duration P1WT23H59M59.5S halfExpand fractionalSecondDigits 0 | VM: P1W1DT0S | BJS: P1W1DT0S
+   Duration P1WT23H59M59.5S halfExpand smallestUnit second | VM: P1W1DT0S | BJS: P1W1DT0S
+   Duration P1YT23H59M59.5S halfExpand fractionalSecondDigits 0 | VM: P1Y1DT0S | BJS: P1Y1DT0S
+   Duration P1YT23H59M59.5S halfExpand smallestUnit second | VM: P1Y1DT0S | BJS: P1Y1DT0S
+   Duration PT0.5S halfEven fractionalSecondDigits 0 | VM: PT0S | BJS: PT0S
+   Duration PT0.5S halfEven smallestUnit second | VM: PT0S | BJS: PT0S
+   Duration PT1.5S halfEven fractionalSecondDigits 0 | VM: PT2S | BJS: PT2S
+   Duration PT1.5S halfEven smallestUnit second | VM: PT2S | BJS: PT2S
+   Duration -PT59.5S halfExpand fractionalSecondDigits 0 | VM: -PT60S | BJS: -PT60S
+   Duration -PT59.5S halfExpand smallestUnit second | VM: -PT60S | BJS: -PT60S
+   Duration -PT59.5S floor fractionalSecondDigits 0 | VM: -PT60S | BJS: -PT60S
+   Duration -PT59.5S floor smallestUnit second | VM: -PT60S | BJS: -PT60S
+   Duration -PT59.5S ceil fractionalSecondDigits 0 | VM: -PT59S | BJS: -PT59S
+   Duration -PT59.5S ceil smallestUnit second | VM: -PT59S | BJS: -PT59S
+   Duration PT1H59M59.999S ceil fractionalSecondDigits 2 | VM: PT2H0.00S | BJS: PT2H0.00S
+   Duration PT1H59M59.999S ceil smallestUnit second | VM: PT2H0S | BJS: PT2H0S
+   Duration PT2501999792983H59M59.999999999S ceil fractionalSecondDigits 0 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration PT2501999792983H59M59.999999999S ceil smallestUnit second | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration PT9007199254740991.999999999S ceil fractionalSecondDigits 0 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration PT9007199254740991.999999999S ceil smallestUnit second | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration PT9007199254740991.5S halfExpand fractionalSecondDigits 0 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration PT9007199254740991.5S halfExpand smallestUnit second | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration PT9007199254740990.5S halfEven fractionalSecondDigits 0 | VM: PT9007199254740990S | BJS: PT9007199254740990S
+   Duration PT9007199254740990.5S halfEven smallestUnit second | VM: PT9007199254740990S | BJS: PT9007199254740990S

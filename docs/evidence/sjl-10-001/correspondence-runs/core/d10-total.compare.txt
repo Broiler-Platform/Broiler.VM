@@ -1,0 +1,21 @@
+   {hours: 1, minutes: 30}.total("hour") | VM: 1.5 | BJS: 1.5 | REF: 1.5
+   {days: 45}.total({unit: "month", relativeTo: "2020-01-01"}) | VM: 1.4827586206896552 | BJS: 1.4827586206896552 | REF: 1.4827586206896552
+   {days: 45}.total({unit: "month", relativeTo: "2020-01-01T00:00[UTC]"}) | VM: 1.4827586206896552 | BJS: 1.4827586206896552 | REF: 1.4827586206896552
+   {nanoseconds: MAX_SAFE_INTEGER}.total("second") | VM: 9007199.25474099 | BJS: 9007199.25474099 | REF: 9007199.25474099
+   {seconds: 2**53 - 1, nanoseconds: 999999999}.total("nanosecond") | VM: 9.007199254740992e+24 | BJS: 9.007199254740992e+24 | REF: 9.007199254740992e+24
+   {seconds: 2**53 - 1, nanoseconds: 999999999}.total("day") | VM: 104249991374.31703 | BJS: 104249991374.31703 | REF: 104249991374.31703
+   {days: 1}.total({unit: "hour", relativeTo: NY spring}) | VM: 23 | BJS: 23 | REF: 23
+   {hours: 12}.total({unit: "day", relativeTo: NY spring}) | VM: 0.5217391304347826 | BJS: 0.5217391304347826 | REF: 0.5217391304347826
+   {hours: 12}.total({unit: "day", relativeTo: NY fall}) | VM: 0.48 | BJS: 0.48 | REF: 0.48
+   {months: 1}.total({unit: "day", relativeTo: "2020-02-01"}) | VM: 29 | BJS: 29 | REF: 29
+   {years: 1}.total({unit: "week", relativeTo: "2020-01-01"}) | VM: 52.285714285714285 | BJS: 52.285714285714285 | REF: 52.285714285714285
+~~ {months: 1}.total("day") | VM: THROWS RangeError: Temporal.Duration.prototype.total: a total in years, months or weeks needs a relativeTo date | BJS: THROWS RangeError: Temporal.Duration.prototype.total with calendar units (years, months, weeks) requires a relativeTo option | REF: THROWS RangeError: a starting point is required for months total
+   {days: 1}.total("day") | VM: 1 | BJS: 1 | REF: 1
+~~ {days: 1}.total({unit: "month"}) | VM: THROWS RangeError: Temporal.Duration.prototype.total: a total in years, months or weeks needs a relativeTo date | BJS: THROWS RangeError: Temporal.Duration.prototype.total with calendar units (years, months, weeks) requires a relativeTo option | REF: THROWS RangeError: a starting point is required for months total
+~~ {days: 1}.total({}) | VM: THROWS RangeError: Temporal: the unit option is required | BJS: THROWS RangeError: Temporal.Duration.prototype.total requires a unit | REF: THROWS RangeError: unit option is required
+   {months: 10, days: 29, hours: 12}.total({unit: "month", relativeTo: "2019-03-31"}) | VM: 11.016129032258064 | BJS: 11.016129032258064 | REF: 11.016129032258064
+   {months: 10, days: 29, hours: 12}.total({unit: "year", relativeTo: "2019-03-31T00:00[UTC]"}) | VM: 0.9166666666666666 | BJS: 0.9166666666666666 | REF: 0.9166666666666666
+   {days: -45}.total({unit: "month", relativeTo: "2020-03-15"}) | VM: -1.5161290322580645 | BJS: -1.5161290322580645 | REF: -1.5161290322580645
+~~ {days: 1}.total({unit: "day", relativeTo: "+275760-09-12T00:00:01[UTC]"}) | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal: the date-time is outside the representable range | REF: THROWS RangeError: date/time value is outside of supported range
+~~ {hours: 1}.total({unit: "day", relativeTo: "+275760-09-12T12:00[UTC]"}) | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal: the date-time is outside the representable range | REF: THROWS RangeError: date/time value is outside of supported range
+   {days: 1}.total({unit: "day", relativeTo: "+275760-09-12"}) | VM: 1 | BJS: 1 | REF: 1

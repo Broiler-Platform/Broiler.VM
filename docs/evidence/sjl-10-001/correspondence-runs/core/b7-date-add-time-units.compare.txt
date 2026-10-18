@@ -1,0 +1,9 @@
+   PlainDate("2020-01-01").add({hours: 47}) | VM: Temporal.PlainDate 2020-01-02 | BJS: Temporal.PlainDate 2020-01-02 | REF: Temporal.PlainDate 2020-01-02
+   PlainDate("2020-01-01").add({hours: 48}) | VM: Temporal.PlainDate 2020-01-03 | BJS: Temporal.PlainDate 2020-01-03 | REF: Temporal.PlainDate 2020-01-03
+   PlainDate("2020-01-01").subtract({hours: 25}) | VM: Temporal.PlainDate 2019-12-31 | BJS: Temporal.PlainDate 2019-12-31 | REF: Temporal.PlainDate 2019-12-31
+   PlainDate("2020-01-01").subtract({hours: 23}) | VM: Temporal.PlainDate 2020-01-01 | BJS: Temporal.PlainDate 2020-01-01 | REF: Temporal.PlainDate 2020-01-01
+   PlainDate("2020-01-01").add({nanoseconds: 86400e9 - 1}) | VM: Temporal.PlainDate 2020-01-01 | BJS: Temporal.PlainDate 2020-01-01 | REF: Temporal.PlainDate 2020-01-01
+   PlainDate("2020-01-01").add({days: 1, hours: 24}) | VM: Temporal.PlainDate 2020-01-03 | BJS: Temporal.PlainDate 2020-01-03 | REF: Temporal.PlainDate 2020-01-03
+   PlainDate("2020-01-31").add({months: 1, hours: 24}) | VM: Temporal.PlainDate 2020-03-01 | BJS: Temporal.PlainDate 2020-03-01 | REF: Temporal.PlainDate 2020-03-01
+~~ PlainDate("2020-01-01").add({seconds: 2**53 - 1}) | VM: THROWS RangeError: Temporal: the result is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDate: result is out of range | REF: THROWS RangeError: +285428801-11-11 is outside of supported range
+~~ PlainDate("2020-01-01").add({hours: 2501999792983}) | VM: THROWS RangeError: Temporal: the result is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDate: result is out of range | REF: THROWS RangeError: +285428801-11-11 is outside of supported range

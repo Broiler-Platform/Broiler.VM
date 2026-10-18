@@ -1,0 +1,21 @@
+// R7: integer narrowing inside addition (the milestone's "integer narrowing that wraps").
+t('PlainDateTime("2020-06-15T12:00").add({years: 4294967295})', function () { return PDT('2020-06-15T12:00').add({ years: 4294967295 }); });
+t('PlainDateTime("2020-06-15T12:00").subtract({years: 4294967295})', function () { return PDT('2020-06-15T12:00').subtract({ years: 4294967295 }); });
+t('PlainDateTime("2020-06-15T12:00").add({years: 4294967295 - 2020 - 1000})', function () { return PDT('2020-06-15T12:00').add({ years: 4294967295 - 2020 - 1000 }); });
+t('PlainDateTime("2020-06-15T12:00").add({months: 4294967295})', function () { return PDT('2020-06-15T12:00').add({ months: 4294967295 }); });
+t('PlainYearMonth("2020-06").add({years: 4294967295})', function () { return PYM('2020-06').add({ years: 4294967295 }); });
+t('PlainYearMonth("2020-06").subtract({years: 4294967295})', function () { return PYM('2020-06').subtract({ years: 4294967295 }); });
+t('PlainDate("2020-06-15").add({years: 4294967295})', function () { return PD('2020-06-15').add({ years: 4294967295 }); });
+t('ZonedDateTime("2020-06-15T12:00[UTC]").add({years: 4294967295})', function () { return Z('2020-06-15T12:00[UTC]').add({ years: 4294967295 }); });
+t('PlainDate("2020-06-15[u-ca=hebrew]").add({years: 4294967295})', function () { return PD('2020-06-15[u-ca=hebrew]').add({ years: 4294967295 }); });
+t('PlainDate("2020-06-15[u-ca=coptic]").subtract({years: 4294967295})', function () { return PD('2020-06-15[u-ca=coptic]').subtract({ years: 4294967295 }); });
+t('PlainDate("2020-01-01").add({nanoseconds: 9e24})', function () { return PD('2020-01-01').add({ nanoseconds: 9e24 }); });
+t('PlainDate("2020-01-01").add({microseconds: 9e21})', function () { return PD('2020-01-01').add({ microseconds: 9e21 }); });
+t('PlainDate("2020-01-01").add({milliseconds: 9e18})', function () { return PD('2020-01-01').add({ milliseconds: 9e18 }); });
+t('PlainDateTime("2020-01-01T00:00").add({nanoseconds: 9e24})', function () { return PDT('2020-01-01T00:00').add({ nanoseconds: 9e24 }); });
+t('PlainDateTime("2020-01-01T00:00").add({microseconds: 9e21})', function () { return PDT('2020-01-01T00:00').add({ microseconds: 9e21 }); });
+t('ZonedDateTime("2020-01-01T00:00[UTC]").add({nanoseconds: 9e24})', function () { return Z('2020-01-01T00:00[UTC]').add({ nanoseconds: 9e24 }); });
+t('Duration({nanoseconds: 9e24}).round({smallestUnit: "second", relativeTo: "2020-01-01"})', function () { return D({ nanoseconds: 9e24 }).round({ smallestUnit: 'second', relativeTo: '2020-01-01' }); });
+t('Duration({nanoseconds: 9e24}).round({largestUnit: "year", relativeTo: "2020-01-01"})', function () { return D({ nanoseconds: 9e24 }).round({ largestUnit: 'year', relativeTo: '2020-01-01' }); });
+t('Duration({nanoseconds: 9e24}).total({unit: "day", relativeTo: "2020-01-01"})', function () { return D({ nanoseconds: 9e24 }).total({ unit: 'day', relativeTo: '2020-01-01' }); });
+t('Duration({nanoseconds: 9e24}).total("day")', function () { return D({ nanoseconds: 9e24 }).total('day'); });

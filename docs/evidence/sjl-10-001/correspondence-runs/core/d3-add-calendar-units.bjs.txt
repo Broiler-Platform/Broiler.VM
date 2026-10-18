@@ -1,0 +1,12 @@
+Duration({years: 1}).add({months: 1}) => THROWS RangeError: Temporal.Duration.prototype.add/subtract with calendar units (years, months, weeks) requires a relativeTo option
+Duration({years: 1}).add({months: 1}, {relativeTo: "2020-01-01"}) => THROWS Error: Temporal.Duration.prototype.add/subtract with a relativeTo calendar/time-zone is not yet implemented
+Duration({years: 1}).subtract({months: 1}, {relativeTo: "2020-01-01"}) => THROWS Error: Temporal.Duration.prototype.add/subtract with a relativeTo calendar/time-zone is not yet implemented
+Duration({years: 1}).add({months: 1}, {relativeTo: ZonedDateTime}) => THROWS Error: Temporal.Duration.prototype.add/subtract with a relativeTo calendar/time-zone is not yet implemented
+Duration({weeks: 1}).add({days: 1}) => THROWS RangeError: Temporal.Duration.prototype.add/subtract with calendar units (years, months, weeks) requires a relativeTo option
+Duration({hours: 1}).add({months: 1}) => THROWS RangeError: Temporal.Duration.prototype.add/subtract with calendar units (years, months, weeks) requires a relativeTo option
+Duration({years: 1}).add({years: -1}) => THROWS RangeError: Temporal.Duration.prototype.add/subtract with calendar units (years, months, weeks) requires a relativeTo option
+Duration({hours: 1}).add({hours: 1}, 5) => THROWS TypeError: Temporal.Duration options must be an object or undefined
+Duration({hours: 1}).add({hours: 1}, null) => THROWS TypeError: Temporal.Duration options must be an object or undefined
+Duration({hours: 1}).add({hours: 1}, {get relativeTo() {...}}) and the reads => PT2H reads=[relativeTo]
+Duration.prototype.add.length => 1
+exit=0

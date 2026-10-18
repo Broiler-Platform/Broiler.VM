@@ -1,0 +1,12 @@
+   new PlainDate(-271821, 4, 19) | VM: Temporal.PlainDate -271821-04-19 | BJS: Temporal.PlainDate -271821-04-19 | REF: Temporal.PlainDate -271821-04-19
+~~ new PlainDate(-271821, 4, 18) | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDate: invalid ISO date | REF: THROWS RangeError: -271821-04-18 is outside of supported range
+   new PlainDate(275760, 9, 13) | VM: Temporal.PlainDate +275760-09-13 | BJS: Temporal.PlainDate +275760-09-13 | REF: Temporal.PlainDate +275760-09-13
+~~ new PlainDate(275760, 9, 14) | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDate: invalid ISO date | REF: THROWS RangeError: +275760-09-14 is outside of supported range
+   PlainDate.from("-271821-04-19") | VM: Temporal.PlainDate -271821-04-19 | BJS: Temporal.PlainDate -271821-04-19 | REF: Temporal.PlainDate -271821-04-19
+~~ PlainDate.from("-271821-04-18") | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Cannot parse Temporal.PlainDate from "-271821-04-18" | REF: THROWS RangeError: -271821-04-18 is outside of supported range
+~~ PlainDate.from("+275760-09-14") | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Cannot parse Temporal.PlainDate from "+275760-09-14" | REF: THROWS RangeError: +275760-09-14 is outside of supported range
+~~ PlainDate.from({year: -271821, month: 4, day: 18}) | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDate: date is out of range | REF: THROWS RangeError: -271821-04-18 is outside of supported range
+   PlainDate.from({year: 275760, month: 9, day: 13}) | VM: Temporal.PlainDate +275760-09-13 | BJS: Temporal.PlainDate +275760-09-13 | REF: Temporal.PlainDate +275760-09-13
+~~ PlainMonthDay(4, 18, undefined, -271821) | VM: THROWS RangeError: Temporal: the month-day is outside the representable range | BJS: THROWS RangeError: Temporal.PlainMonthDay: reference date is out of range | REF: THROWS RangeError: -271821-04-18 is outside of supported range
+   PlainMonthDay(4, 19, undefined, -271821) | VM: 04-19 | BJS: 04-19 | REF: 04-19
+~~ PlainMonthDay(9, 14, undefined, 275760) | VM: THROWS RangeError: Temporal: the month-day is outside the representable range | BJS: THROWS RangeError: Temporal.PlainMonthDay: reference date is out of range | REF: THROWS RangeError: +275760-09-14 is outside of supported range

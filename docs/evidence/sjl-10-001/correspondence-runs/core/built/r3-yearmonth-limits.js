@@ -1,0 +1,42 @@
+// Shared prelude (SJL-8's form): Broiler.JS's shell has print; Broiler.VM's test262 realm has none, so
+// the lines are collected and handed back in one uncaught Error the conformance root prints.
+var __lines = [];
+var __host = typeof __vmTest === 'undefined' && typeof print === 'function';
+function out(s) { s = String(s); if (__host) print(s); else __lines.push(s); }
+function show(v) {
+  if (v === null) return 'null';
+  if (v === undefined) return 'undefined';
+  if (typeof v === 'bigint') return v + 'n';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number') return Object.is(v, -0) ? '-0' : String(v);
+  if (Array.isArray(v)) return '[' + v.map(show).join(', ') + ']';
+  if (v && typeof v === 'object' && typeof v.toString === 'function' && v[Symbol.toStringTag]) return v[Symbol.toStringTag] + ' ' + v.toString();
+  return String(v);
+}
+function t(label, fn) {
+  var r;
+  try { r = show(fn()); }
+  catch (e) { r = 'THROWS ' + ((e && e.constructor && e.constructor.name) || typeof e) + (e && e.name && e.constructor && e.name !== e.constructor.name ? '(' + e.name + ')' : '') + ': ' + (e && e.message); }
+  out(label + ' => ' + r);
+}
+var T = Temporal;
+function D(x) { return T.Duration.from(x); }
+function PD(x) { return T.PlainDate.from(x); }
+function PDT(x) { return T.PlainDateTime.from(x); }
+function PT(x) { return T.PlainTime.from(x); }
+function PYM(x) { return T.PlainYearMonth.from(x); }
+function I(x) { return T.Instant.from(x); }
+function Z(x) { return T.ZonedDateTime.from(x); }
+// R3: ISO year-month limits (ISOYearMonthWithinLimits: April -271821 to September 275760).
+t('new PlainYearMonth(-271821, 4)', function () { return new T.PlainYearMonth(-271821, 4); });
+t('new PlainYearMonth(-271821, 3)', function () { return new T.PlainYearMonth(-271821, 3); });
+t('new PlainYearMonth(275760, 9)', function () { return new T.PlainYearMonth(275760, 9); });
+t('new PlainYearMonth(275760, 10)', function () { return new T.PlainYearMonth(275760, 10); });
+t('new PlainYearMonth(-271821, 4, undefined, 1)', function () { return new T.PlainYearMonth(-271821, 4, undefined, 1).toString(); });
+t('new PlainYearMonth(-271821, 4, undefined, 19)', function () { return new T.PlainYearMonth(-271821, 4, undefined, 19).toString(); });
+t('PlainYearMonth.from("-271821-04")', function () { return PYM('-271821-04'); });
+t('PlainYearMonth.from("-271821-03")', function () { return PYM('-271821-03'); });
+t('PlainYearMonth.from("+275760-09")', function () { return PYM('+275760-09'); });
+t('PlainYearMonth.from({year: 275760, month: 10})', function () { return PYM({ year: 275760, month: 10 }); });
+t('PlainDate("-271821-04-19").toPlainYearMonth()', function () { return PD('-271821-04-19').toPlainYearMonth(); });
+if (!__host) throw new Error('OUT<<' + __lines.join('\n') + '>>OUT');

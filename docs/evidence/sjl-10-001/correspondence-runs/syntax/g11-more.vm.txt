@@ -1,0 +1,38 @@
+PlainYearMonth.from("2020-01T12:00") => THROWS RangeError
+PlainYearMonth.from("202001T1200") => THROWS RangeError
+PlainYearMonth.from("2020-01 12:00") => THROWS RangeError
+PlainYearMonth.from("2020-01T12:00Z") => THROWS RangeError
+PlainYearMonth.from("2020-01T12:00[u-ca=iso8601]") => THROWS RangeError
+PlainYearMonth.from("2020-01T25:00") => THROWS RangeError
+PlainMonthDay.from("01-01T12:00") => THROWS RangeError
+PlainMonthDay.from("0101T12:00") => THROWS RangeError
+PlainMonthDay.from("--01-01T12:00") => THROWS RangeError
+PlainTime.from("2020-02-30T12:00") => THROWS RangeError
+PlainTime.from("2021-02-29T12:00") => THROWS RangeError
+PlainTime.from("2020-00-01T12:00") => THROWS RangeError
+PlainTime.from("2020-01-32T12:00") => THROWS RangeError
+PlainTime.from("-000000-01-01T12:00") => THROWS RangeError
+PlainTime.from("2020-0101T12:00") => THROWS RangeError
+withCalendar("2020-01-01[u-ca=gregory][u-ca=japanese]") => gregory
+PlainDate.from("2020-01-01[u-ca=gregory][u-ca=japanese]") => gregory
+withCalendar("2020-01-01[u-ca=japanese][u-ca=gregory]") => japanese
+PlainDate.from("2020-01-01[u-ca=japanese][u-ca=gregory]") => japanese
+withCalendar("2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]") => hebrew
+PlainDate.from("2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]") => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]'
+withCalendar("2020-01-01[u-ca=gregory][u-ca=bogus]") => gregory
+PlainDate.from("2020-01-01[u-ca=gregory][u-ca=bogus]") => gregory
+withCalendar("2020-01-01[u-ca=bogus][u-ca=gregory]") => THROWS RangeError: Temporal: the calendar bogus is not supported
+PlainDate.from("2020-01-01[u-ca=bogus][u-ca=gregory]") => THROWS RangeError: Temporal: the calendar bogus is not supported
+toZonedDateTimeISO("2020-01-01T00:00Z[Europe/Berlin][UTC]") => THROWS RangeError
+toZonedDateTimeISO("2020-01-01T00:00Z[u-ca=iso8601][Europe/Berlin]") => THROWS RangeError
+toZonedDateTimeISO("2020-01-01T00:00Z[Europe/Berlin][u-ca=iso8601]") => Europe/Berlin
+PlainMonthDay.from("2020-01-15[u-ca=hebrew]") => 1972-12-23[u-ca=hebrew]
+PlainYearMonth.from("2020-01-15[u-ca=hebrew]") => 2019-12-29[u-ca=hebrew]
+PlainMonthDay.from("2020-03-01[u-ca=chinese]") => 1972-03-22[u-ca=chinese]
+PlainYearMonth.from("2020-03-01[u-ca=chinese]") => 2020-02-23[u-ca=chinese]
+PlainMonthDay.from("2023-03-22[u-ca=chinese]") => 1947-03-23[u-ca=chinese]
+PlainYearMonth.from("2023-03-22[u-ca=chinese]") => 2023-03-22[u-ca=chinese]
+PlainMonthDay.from("2020-01-15[u-ca=persian]") => 1972-01-15[u-ca=persian]
+PlainYearMonth.from("2020-01-15[u-ca=persian]") => 2019-12-22[u-ca=persian]
+PlainMonthDay.from("2019-09-11[u-ca=coptic]") => 1971-09-11[u-ca=coptic]
+PlainYearMonth.from("2019-09-11[u-ca=coptic]") => 2019-09-06[u-ca=coptic]

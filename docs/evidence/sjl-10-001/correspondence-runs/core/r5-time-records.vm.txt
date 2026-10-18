@@ -1,0 +1,16 @@
+new PlainTime(23, 59, 59, 999, 999, 999) => Temporal.PlainTime 23:59:59.999999999
+new PlainTime(24) => THROWS RangeError: Temporal.PlainTime: the time is not valid
+new PlainTime(0, 60) => THROWS RangeError: Temporal.PlainTime: the time is not valid
+new PlainTime(0, 0, 0, 1000) => THROWS RangeError: Temporal.PlainTime: the time is not valid
+new PlainTime(-1) => THROWS RangeError: Temporal.PlainTime: the time is not valid
+new PlainTime(1.9, 2.9) => Temporal.PlainTime 01:02:00
+new PlainTime(-0.5) => Temporal.PlainTime 00:00:00
+new PlainTime(NaN) => THROWS RangeError: Temporal: NaN is not a finite number
+new PlainTime(Infinity) => THROWS RangeError: Temporal: Infinity is not a finite number
+new PlainTime(undefined, 5) => Temporal.PlainTime 00:05:00
+new PlainDateTime(2020, 1, 1, 24) => THROWS RangeError: Temporal.PlainDateTime: the time is not valid
+new PlainDate(2020, 2, 30) => THROWS RangeError: Temporal.PlainDate: the date is not valid
+new PlainDate(2021, 2, 29) => THROWS RangeError: Temporal.PlainDate: the date is not valid
+new PlainDate(2020, 13, 1) => THROWS RangeError: Temporal.PlainDate: the date is not valid
+new PlainDate(2020, 0, 1) => THROWS RangeError: Temporal.PlainDate: the date is not valid
+new PlainDate(2020.7, 1.2, 1.9) => Temporal.PlainDate 2020-01-01

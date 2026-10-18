@@ -1,0 +1,3 @@
+typeof Temporal => object
+PlainDate.from => 2020-01-01
+PlainDate.from bad => THROWS RangeError

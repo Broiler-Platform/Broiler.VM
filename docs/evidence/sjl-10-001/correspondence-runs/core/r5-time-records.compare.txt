@@ -1,0 +1,16 @@
+   new PlainTime(23, 59, 59, 999, 999, 999) | VM: Temporal.PlainTime 23:59:59.999999999 | BJS: Temporal.PlainTime 23:59:59.999999999 | REF: Temporal.PlainTime 23:59:59.999999999
+~~ new PlainTime(24) | VM: THROWS RangeError: Temporal.PlainTime: the time is not valid | BJS: THROWS RangeError: Temporal.PlainTime: time component out of range | REF: THROWS RangeError: value out of range: 0 <= 24 <= 23
+~~ new PlainTime(0, 60) | VM: THROWS RangeError: Temporal.PlainTime: the time is not valid | BJS: THROWS RangeError: Temporal.PlainTime: time component out of range | REF: THROWS RangeError: value out of range: 0 <= 60 <= 59
+~~ new PlainTime(0, 0, 0, 1000) | VM: THROWS RangeError: Temporal.PlainTime: the time is not valid | BJS: THROWS RangeError: Temporal.PlainTime: time component out of range | REF: THROWS RangeError: value out of range: 0 <= 1000 <= 999
+~~ new PlainTime(-1) | VM: THROWS RangeError: Temporal.PlainTime: the time is not valid | BJS: THROWS RangeError: Temporal.PlainTime: time component out of range | REF: THROWS RangeError: value out of range: 0 <= -1 <= 23
+   new PlainTime(1.9, 2.9) | VM: Temporal.PlainTime 01:02:00 | BJS: Temporal.PlainTime 01:02:00 | REF: Temporal.PlainTime 01:02:00
+   new PlainTime(-0.5) | VM: Temporal.PlainTime 00:00:00 | BJS: Temporal.PlainTime 00:00:00 | REF: Temporal.PlainTime 00:00:00
+~~ new PlainTime(NaN) | VM: THROWS RangeError: Temporal: NaN is not a finite number | BJS: THROWS RangeError: Temporal.PlainTime: time component must be finite | REF: THROWS RangeError: invalid number value
+~~ new PlainTime(Infinity) | VM: THROWS RangeError: Temporal: Infinity is not a finite number | BJS: THROWS RangeError: Temporal.PlainTime: time component must be finite | REF: THROWS RangeError: invalid number value
+   new PlainTime(undefined, 5) | VM: Temporal.PlainTime 00:05:00 | BJS: Temporal.PlainTime 00:05:00 | REF: Temporal.PlainTime 00:05:00
+~~ new PlainDateTime(2020, 1, 1, 24) | VM: THROWS RangeError: Temporal.PlainDateTime: the time is not valid | BJS: THROWS RangeError: Temporal.PlainDateTime: time component out of range | REF: THROWS RangeError: value out of range: 0 <= 24 <= 23
+~~ new PlainDate(2020, 2, 30) | VM: THROWS RangeError: Temporal.PlainDate: the date is not valid | BJS: THROWS RangeError: Temporal.PlainDate: invalid ISO date | REF: THROWS RangeError: value out of range: 1 <= 30 <= 29
+~~ new PlainDate(2021, 2, 29) | VM: THROWS RangeError: Temporal.PlainDate: the date is not valid | BJS: THROWS RangeError: Temporal.PlainDate: invalid ISO date | REF: THROWS RangeError: value out of range: 1 <= 29 <= 28
+~~ new PlainDate(2020, 13, 1) | VM: THROWS RangeError: Temporal.PlainDate: the date is not valid | BJS: THROWS RangeError: Temporal.PlainDate: invalid ISO date | REF: THROWS RangeError: value out of range: 1 <= 13 <= 12
+~~ new PlainDate(2020, 0, 1) | VM: THROWS RangeError: Temporal.PlainDate: the date is not valid | BJS: THROWS RangeError: Temporal.PlainDate: invalid ISO date | REF: THROWS RangeError: value out of range: 1 <= 0 <= 12
+   new PlainDate(2020.7, 1.2, 1.9) | VM: Temporal.PlainDate 2020-01-01 | BJS: Temporal.PlainDate 2020-01-01 | REF: Temporal.PlainDate 2020-01-01

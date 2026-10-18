@@ -1,0 +1,18 @@
+ ! hebrew PlainDate 2020-01-01 until 2020-07-20 smallest month halfExpand | VM: Temporal.Duration P7M | BJS: Temporal.Duration P6M24D | REF: Temporal.Duration P7M
+   hebrew PlainDate 2020-01-01 until 2020-07-20 largest month (no rounding) | VM: Temporal.Duration P6M24D | BJS: Temporal.Duration P6M24D | REF: Temporal.Duration P6M24D
+ ! hebrew PlainDate 2020-01-01 until 2021-10-20 smallest year halfExpand | VM: Temporal.Duration P2Y | BJS: Temporal.Duration P1Y10M10D | REF: Temporal.Duration P2Y
+ ! hebrew PlainDate 2020-01-01 since 2020-07-20 smallest month halfExpand | VM: Temporal.Duration -P7M | BJS: Temporal.Duration -P6M24D | REF: Temporal.Duration -P7M
+ ! coptic PlainDate 2020-01-01 until 2020-03-20 smallest week ceil | VM: Temporal.Duration P12W | BJS: Temporal.Duration P11W2D | REF: Temporal.Duration P12W
+ ! islamic-civil PlainDate 2020-01-01 until 2020-03-20 smallest day increment 7 | VM: Temporal.Duration P77D | BJS: Temporal.Duration P79D | REF: Temporal.Duration P77D
+   gregory PlainDate 2020-01-01 until 2020-07-20 smallest month halfExpand | VM: Temporal.Duration P7M | BJS: Temporal.Duration P7M | REF: Temporal.Duration P7M
+   hebrew PlainDateTime 2020-01-01T00:00 until 2020-01-03T13:00 smallest day halfExpand | VM: Temporal.Duration P3D | BJS: Temporal.Duration P3D | REF: Temporal.Duration P3D
+   hebrew PlainDateTime 2020-01-01T00:00 until 2020-07-20T00:00 smallest month halfExpand | VM: Temporal.Duration P7M | BJS: Temporal.Duration P7M | REF: Temporal.Duration P7M
+   hebrew PlainDateTime 2020-01-01T00:00 until 2020-01-03T13:20 largest day smallest hour halfExpand | VM: Temporal.Duration P2DT13H | BJS: Temporal.Duration P2DT13H | REF: Temporal.Duration P2DT13H
+ ! hebrew ZonedDateTime until +2 d 13 h smallest day halfExpand | VM: Temporal.Duration P3D | BJS: Temporal.Duration P2DT13H | REF: Temporal.Duration P3D
+ ! hebrew ZonedDateTime until 2020-07-20 largest month smallest month halfExpand | VM: Temporal.Duration P7M | BJS: Temporal.Duration P6M24D | REF: Temporal.Duration P7M
+ ! hebrew ZonedDateTime until +2 d 13 h 20 min largest day smallest hour halfExpand | VM: Temporal.Duration P2DT13H | BJS: Temporal.Duration P2DT13H20M | REF: Temporal.Duration P2DT13H
+ ! hebrew PlainYearMonth 5780-04 until 5781-03 smallest year halfExpand | VM: Temporal.Duration P1Y | BJS: Temporal.Duration P11M | REF: Temporal.Duration P1Y
+   hebrew PlainYearMonth 5780-04 until 5781-03 (no rounding) | VM: Temporal.Duration P11M | BJS: Temporal.Duration P11M | REF: Temporal.Duration P11M
+ ! hebrew PlainDateTime 2020-01-01T00:00 until 2020-01-16T00:00 smallest month halfExpand | VM: Temporal.Duration P1M | BJS: Temporal.Duration PT0S | REF: Temporal.Duration P1M
+ ! hebrew PlainDate 2020-01-01 until 2020-01-16 smallest month halfExpand | VM: Temporal.Duration P1M | BJS: Temporal.Duration P15D | REF: Temporal.Duration P1M
+ ! hebrew PlainDateTime 2020-01-01T00:00 until 2020-01-16T00:00 smallest month largest year halfExpand | VM: Temporal.Duration P1M | BJS: Temporal.Duration PT0S | REF: Temporal.Duration P1M

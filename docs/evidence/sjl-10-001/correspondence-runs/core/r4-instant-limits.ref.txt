@@ -1,0 +1,20 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+Instant.fromEpochNanoseconds(8640000000000000000000n) => Temporal.Instant +275760-09-13T00:00:00Z
+Instant.fromEpochNanoseconds(8640000000000000000001n) => THROWS RangeError: date/time value is outside of supported range
+Instant.fromEpochNanoseconds(-8640000000000000000000n) => Temporal.Instant -271821-04-20T00:00:00Z
+Instant.fromEpochNanoseconds(-8640000000000000000001n) => THROWS RangeError: date/time value is outside of supported range
+Instant.fromEpochMilliseconds(8.64e15) => Temporal.Instant +275760-09-13T00:00:00Z
+Instant.fromEpochMilliseconds(8.64e15 + 1) => THROWS RangeError: date/time value is outside of supported range
+Instant.from("-271821-04-20T00:00Z") => Temporal.Instant -271821-04-20T00:00:00Z
+Instant.from("-271821-04-19T23:59:59.999999999Z") => THROWS RangeError: date/time value -271821-4-19 is outside the supported range
+Instant.from("+275760-09-13T00:00Z") => Temporal.Instant +275760-09-13T00:00:00Z
+Instant.from("+275760-09-13T00:00:00.000000001Z") => THROWS RangeError: date/time value is outside of supported range
+Instant.from("+275760-09-13T01:00+01:00") => Temporal.Instant +275760-09-13T00:00:00Z
+Instant.from("-271821-04-19T23:00-01:00") => Temporal.Instant -271821-04-20T00:00:00Z
+new ZonedDateTime(max, "Etc/GMT-14").toPlainDateTime() => Temporal.PlainDateTime +275760-09-13T14:00:00
+new ZonedDateTime(max, "Etc/GMT-14").toPlainDate() => Temporal.PlainDate +275760-09-13
+new ZonedDateTime(min, "Etc/GMT+12").toPlainDateTime() => Temporal.PlainDateTime -271821-04-19T12:00:00
+new ZonedDateTime(min, "-23:59").toPlainDateTime() => Temporal.PlainDateTime -271821-04-19T00:01:00
+new ZonedDateTime(max + 1n, "UTC") => THROWS RangeError: date/time value is outside of supported range
+exit=0

@@ -1,0 +1,54 @@
+   PlainDate reads | VM: calendarName => 2020-01-01 | BJS: calendarName => 2020-01-01
+     PlainDate invalid calendarName read: calendarName | VM:   PlainDate invalid calendarName read: calendarName | BJS:   PlainDate invalid calendarName read: calendarName
+   PlainDate with an invalid calendarName, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth reads | VM: calendarName => 2020-01 | BJS: calendarName => 2020-01
+     PlainYearMonth invalid calendarName read: calendarName | VM:   PlainYearMonth invalid calendarName read: calendarName | BJS:   PlainYearMonth invalid calendarName read: calendarName
+   PlainYearMonth with an invalid calendarName, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay reads | VM: calendarName => 01-01 | BJS: calendarName => 01-01
+     PlainMonthDay invalid calendarName read: calendarName | VM:   PlainMonthDay invalid calendarName read: calendarName | BJS:   PlainMonthDay invalid calendarName read: calendarName
+   PlainMonthDay with an invalid calendarName, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime reads | VM: fractionalSecondDigits,roundingMode,smallestUnit => 12:00:00 | BJS: fractionalSecondDigits,roundingMode,smallestUnit => 12:00:00
+     PlainTime invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit | VM:   PlainTime invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit | BJS:   PlainTime invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit
+   PlainTime with an invalid smallestUnit, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     PlainTime invalid roundingMode read: fractionalSecondDigits,roundingMode | VM:   PlainTime invalid roundingMode read: fractionalSecondDigits,roundingMode | BJS:   PlainTime invalid roundingMode read: fractionalSecondDigits,roundingMode
+   PlainTime with an invalid roundingMode, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     PlainTime invalid fractionalSecondDigits read: fractionalSecondDigits | VM:   PlainTime invalid fractionalSecondDigits read: fractionalSecondDigits | BJS:   PlainTime invalid fractionalSecondDigits read: fractionalSecondDigits
+   PlainTime with an invalid fractionalSecondDigits, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime reads | VM: calendarName,fractionalSecondDigits,roundingMode,smallestUnit => 2020-01-01T12:00:00 | BJS: calendarName,fractionalSecondDigits,roundingMode,smallestUnit => 2020-01-01T12:00:00
+     PlainDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,roundingMode,smallestUnit | VM:   PlainDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,roundingMode,smallestUnit | BJS:   PlainDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,roundingMode,smallestUnit
+   PlainDateTime with an invalid smallestUnit, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     PlainDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,roundingMode | VM:   PlainDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,roundingMode | BJS:   PlainDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,roundingMode
+   PlainDateTime with an invalid roundingMode, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     PlainDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits | VM:   PlainDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits | BJS:   PlainDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits
+   PlainDateTime with an invalid fractionalSecondDigits, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     PlainDateTime invalid calendarName read: calendarName | VM:   PlainDateTime invalid calendarName read: calendarName | BJS:   PlainDateTime invalid calendarName read: calendarName
+   PlainDateTime with an invalid calendarName, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant reads | VM: fractionalSecondDigits,roundingMode,smallestUnit,timeZone => 2020-01-01T12:00:00+00:00 | BJS: fractionalSecondDigits,roundingMode,smallestUnit,timeZone => 2020-01-01T12:00:00+00:00
+     Instant invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone | VM:   Instant invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone | BJS:   Instant invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone
+   Instant with an invalid smallestUnit, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     Instant invalid roundingMode read: fractionalSecondDigits,roundingMode | VM:   Instant invalid roundingMode read: fractionalSecondDigits,roundingMode | BJS:   Instant invalid roundingMode read: fractionalSecondDigits,roundingMode
+   Instant with an invalid roundingMode, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     Instant invalid fractionalSecondDigits read: fractionalSecondDigits | VM:   Instant invalid fractionalSecondDigits read: fractionalSecondDigits | BJS:   Instant invalid fractionalSecondDigits read: fractionalSecondDigits
+   Instant with an invalid fractionalSecondDigits, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     Instant invalid timeZone read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone | VM:   Instant invalid timeZone read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone | BJS:   Instant invalid timeZone read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone
+   Instant with an invalid timeZone, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime reads | VM: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName => 2020-01-01T12:00:00+00:00[UTC] | BJS: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName => 2020-01-01T12:00:00+00:00[UTC]
+     ZonedDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName | VM:   ZonedDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName | BJS:   ZonedDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName
+   ZonedDateTime with an invalid smallestUnit, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     ZonedDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,offset,roundingMode | VM:   ZonedDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,offset,roundingMode | BJS:   ZonedDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,offset,roundingMode
+   ZonedDateTime with an invalid roundingMode, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     ZonedDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits | VM:   ZonedDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits | BJS:   ZonedDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits
+   ZonedDateTime with an invalid fractionalSecondDigits, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     ZonedDateTime invalid calendarName read: calendarName | VM:   ZonedDateTime invalid calendarName read: calendarName | BJS:   ZonedDateTime invalid calendarName read: calendarName
+   ZonedDateTime with an invalid calendarName, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     ZonedDateTime invalid offset read: calendarName,fractionalSecondDigits,offset | VM:   ZonedDateTime invalid offset read: calendarName,fractionalSecondDigits,offset | BJS:   ZonedDateTime invalid offset read: calendarName,fractionalSecondDigits,offset
+   ZonedDateTime with an invalid offset, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     ZonedDateTime invalid timeZoneName read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName | VM:   ZonedDateTime invalid timeZoneName read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName | BJS:   ZonedDateTime invalid timeZoneName read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName
+   ZonedDateTime with an invalid timeZoneName, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration reads | VM: fractionalSecondDigits,roundingMode,smallestUnit => PT1S | BJS: fractionalSecondDigits,roundingMode,smallestUnit => PT1S
+     Duration invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit | VM:   Duration invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit | BJS:   Duration invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit
+   Duration with an invalid smallestUnit, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     Duration invalid roundingMode read: fractionalSecondDigits,roundingMode | VM:   Duration invalid roundingMode read: fractionalSecondDigits,roundingMode | BJS:   Duration invalid roundingMode read: fractionalSecondDigits,roundingMode
+   Duration with an invalid roundingMode, reads | VM: THROWS RangeError | BJS: THROWS RangeError
+     Duration invalid fractionalSecondDigits read: fractionalSecondDigits | VM:   Duration invalid fractionalSecondDigits read: fractionalSecondDigits | BJS:   Duration invalid fractionalSecondDigits read: fractionalSecondDigits
+   Duration with an invalid fractionalSecondDigits, reads | VM: THROWS RangeError | BJS: THROWS RangeError

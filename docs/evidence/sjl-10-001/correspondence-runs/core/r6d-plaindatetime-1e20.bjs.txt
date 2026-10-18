@@ -1,0 +1,2 @@
+new PlainDateTime(1e20, 1, 1) => THROWS RangeError: Temporal.PlainDateTime: invalid ISO date-time
+exit=0

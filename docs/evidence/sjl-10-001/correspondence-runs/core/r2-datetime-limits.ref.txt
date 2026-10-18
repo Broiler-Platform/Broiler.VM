@@ -1,0 +1,14 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+new PlainDateTime(-271821, 4, 19) => THROWS RangeError: -271821-04-19T00:00:00 is outside of supported range
+new PlainDateTime(-271821, 4, 19, 0, 0, 0, 0, 0, 1) => Temporal.PlainDateTime -271821-04-19T00:00:00.000000001
+new PlainDateTime(275760, 9, 13, 23, 59, 59, 999, 999, 999) => Temporal.PlainDateTime +275760-09-13T23:59:59.999999999
+new PlainDateTime(275760, 9, 14) => THROWS RangeError: +275760-09-14T00:00:00 is outside of supported range
+PlainDateTime.from("-271821-04-19T00:00") => THROWS RangeError: -271821-04-19T00:00:00 is outside of supported range
+PlainDateTime.from("-271821-04-19T00:00:00.000000001") => Temporal.PlainDateTime -271821-04-19T00:00:00.000000001
+PlainDate("-271821-04-19").toPlainDateTime() => THROWS RangeError: -271821-04-19T00:00:00 is outside of supported range
+PlainDate("-271821-04-19").toPlainDateTime("00:00:00.000000001") => Temporal.PlainDateTime -271821-04-19T00:00:00.000000001
+PlainDate("+275760-09-13").toPlainDateTime("23:59:59.999999999") => Temporal.PlainDateTime +275760-09-13T23:59:59.999999999
+PlainDateTime.from({year: -271821, month: 4, day: 19}) => THROWS RangeError: -271821-04-19T00:00:00 is outside of supported range
+PlainDateTime.from({year: -271821, month: 4, day: 19, nanosecond: 1}) => Temporal.PlainDateTime -271821-04-19T00:00:00.000000001
+exit=0

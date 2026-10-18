@@ -1,0 +1,326 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/s01-forms.js [raw]  uncaught Error: OUT<<PlainDate 0 => 0000-01-02
+PlainYearMonth 0 => 0000-03
+PlainDateTime 0 => 0000-01-02T03:04:05.006007008
+Instant 0 => 0000-01-02T03:04:05.000000006Z
+ZonedDateTime 0 => 0000-01-02T03:04:05+01:00[+01:00]
+PlainDate 1 => 0001-01-02
+PlainYearMonth 1 => 0001-03
+PlainDateTime 1 => 0001-01-02T03:04:05.006007008
+Instant 1 => 0001-01-02T03:04:05.000000006Z
+ZonedDateTime 1 => 0001-01-02T03:04:05+01:00[+01:00]
+PlainDate 999 => 0999-01-02
+PlainYearMonth 999 => 0999-03
+PlainDateTime 999 => 0999-01-02T03:04:05.006007008
+Instant 999 => 0999-01-02T03:04:05.000000006Z
+ZonedDateTime 999 => 0999-01-02T03:04:05+01:00[+01:00]
+PlainDate 1000 => 1000-01-02
+PlainYearMonth 1000 => 1000-03
+PlainDateTime 1000 => 1000-01-02T03:04:05.006007008
+Instant 1000 => 1000-01-02T03:04:05.000000006Z
+ZonedDateTime 1000 => 1000-01-02T03:04:05+01:00[+01:00]
+PlainDate 9999 => 9999-01-02
+PlainYearMonth 9999 => 9999-03
+PlainDateTime 9999 => 9999-01-02T03:04:05.006007008
+Instant 9999 => 9999-01-02T03:04:05.000000006Z
+ZonedDateTime 9999 => 9999-01-02T03:04:05+01:00[+01:00]
+PlainDate 10000 => +010000-01-02
+PlainYearMonth 10000 => +010000-03
+PlainDateTime 10000 => +010000-01-02T03:04:05.006007008
+Instant 10000 => +010000-01-02T03:04:05.000000006Z
+ZonedDateTime 10000 => +010000-01-02T03:04:05+01:00[+01:00]
+PlainDate -1 => -000001-01-02
+PlainYearMonth -1 => -000001-03
+PlainDateTime -1 => -000001-01-02T03:04:05.006007008
+Instant -1 => -000001-01-02T03:04:05.000000006Z
+ZonedDateTime -1 => -000001-01-02T03:04:05+01:00[+01:00]
+PlainDate -9999 => -009999-01-02
+PlainYearMonth -9999 => -009999-03
+PlainDateTime -9999 => -009999-01-02T03:04:05.006007008
+Instant -9999 => -009999-01-02T03:04:05.000000006Z
+ZonedDateTime -9999 => -009999-01-02T03:04:05+01:00[+01:00]
+PlainDate -10000 => -010000-01-02
+PlainYearMonth -10000 => -010000-03
+PlainDateTime -10000 => -010000-01-02T03:04:05.006007008
+Instant -10000 => -010000-01-02T03:04:05.000000006Z
+ZonedDateTime -10000 => -010000-01-02T03:04:05+01:00[+01:00]
+PlainDate 123456 => +123456-01-02
+PlainYearMonth 123456 => +123456-03
+PlainDateTime 123456 => +123456-01-02T03:04:05.006007008
+Instant 123456 => +123456-01-02T03:04:05.000000006Z
+ZonedDateTime 123456 => +123456-01-02T03:04:05+01:00[+01:00]
+PlainDate -123456 => -123456-01-02
+PlainYearMonth -123456 => -123456-03
+PlainDateTime -123456 => -123456-01-02T03:04:05.006007008
+Instant -123456 => -123456-01-02T03:04:05.000000006Z
+ZonedDateTime -123456 => -123456-01-02T03:04:05+01:00[+01:00]
+PlainDate min => -271821-04-19
+PlainDate max => +275760-09-13
+PlainYearMonth min => -271821-04
+Instant min => -271821-04-20T00:00:00Z
+Instant max => +275760-09-13T00:00:00Z
+PlainMonthDay ISO with reference 1972 => 02-29
+PlainMonthDay ISO with reference 2000 => 02-29
+PlainYearMonth ISO with reference day 15 => 2020-02
+PlainDate iso8601 calendarName "auto" => 2020-03-15
+PlainDateTime iso8601 calendarName "auto" => 2020-03-15T12:00:00
+PlainYearMonth iso8601 calendarName "auto" => 2020-02
+PlainMonthDay iso8601 calendarName "auto" => 02-10
+ZonedDateTime iso8601 calendarName "auto" => 2020-03-15T12:00:00+00:00[UTC]
+PlainDate gregory calendarName "auto" => 2020-03-15[u-ca=gregory]
+PlainDateTime gregory calendarName "auto" => 2020-03-15T12:00:00[u-ca=gregory]
+PlainYearMonth gregory calendarName "auto" => 2020-02-01[u-ca=gregory]
+PlainMonthDay gregory calendarName "auto" => 1972-02-10[u-ca=gregory]
+ZonedDateTime gregory calendarName "auto" => 2020-03-15T12:00:00+00:00[UTC][u-ca=gregory]
+PlainDate hebrew calendarName "auto" => 2020-03-15[u-ca=hebrew]
+PlainDateTime hebrew calendarName "auto" => 2020-03-15T12:00:00[u-ca=hebrew]
+PlainYearMonth hebrew calendarName "auto" => 2019-10-30[u-ca=hebrew]
+PlainMonthDay hebrew calendarName "auto" => 1972-10-18[u-ca=hebrew]
+ZonedDateTime hebrew calendarName "auto" => 2020-03-15T12:00:00+00:00[UTC][u-ca=hebrew]
+PlainDate chinese calendarName "auto" => 2020-03-15[u-ca=chinese]
+PlainDateTime chinese calendarName "auto" => 2020-03-15T12:00:00[u-ca=chinese]
+PlainYearMonth chinese calendarName "auto" => 2020-02-23[u-ca=chinese]
+PlainMonthDay chinese calendarName "auto" => 1972-03-24[u-ca=chinese]
+ZonedDateTime chinese calendarName "auto" => 2020-03-15T12:00:00+00:00[UTC][u-ca=chinese]
+PlainDate iso8601 calendarName "always" => 2020-03-15[u-ca=iso8601]
+PlainDateTime iso8601 calendarName "always" => 2020-03-15T12:00:00[u-ca=iso8601]
+PlainYearMonth iso8601 calendarName "always" => 2020-02-01[u-ca=iso8601]
+PlainMonthDay iso8601 calendarName "always" => 1972-02-10[u-ca=iso8601]
+ZonedDateTime iso8601 calendarName "always" => 2020-03-15T12:00:00+00:00[UTC][u-ca=iso8601]
+PlainDate gregory calendarName "always" => 2020-03-15[u-ca=gregory]
+PlainDateTime gregory calendarName "always" => 2020-03-15T12:00:00[u-ca=gregory]
+PlainYearMonth gregory calendarName "always" => 2020-02-01[u-ca=gregory]
+PlainMonthDay gregory calendarName "always" => 1972-02-10[u-ca=gregory]
+ZonedDateTime gregory calendarName "always" => 2020-03-15T12:00:00+00:00[UTC][u-ca=gregory]
+PlainDate hebrew calendarName "always" => 2020-03-15[u-ca=hebrew]
+PlainDateTime hebrew calendarName "always" => 2020-03-15T12:00:00[u-ca=hebrew]
+PlainYearMonth hebrew calendarName "always" => 2019-10-30[u-ca=hebrew]
+PlainMonthDay hebrew calendarName "always" => 1972-10-18[u-ca=hebrew]
+ZonedDateTime hebrew calendarName "always" => 2020-03-15T12:00:00+00:00[UTC][u-ca=hebrew]
+PlainDate chinese calendarName "always" => 2020-03-15[u-ca=chinese]
+PlainDateTime chinese calendarName "always" => 2020-03-15T12:00:00[u-ca=chinese]
+PlainYearMonth chinese calendarName "always" => 2020-02-23[u-ca=chinese]
+PlainMonthDay chinese calendarName "always" => 1972-03-24[u-ca=chinese]
+ZonedDateTime chinese calendarName "always" => 2020-03-15T12:00:00+00:00[UTC][u-ca=chinese]
+PlainDate iso8601 calendarName "never" => 2020-03-15
+PlainDateTime iso8601 calendarName "never" => 2020-03-15T12:00:00
+PlainYearMonth iso8601 calendarName "never" => 2020-02
+PlainMonthDay iso8601 calendarName "never" => 02-10
+ZonedDateTime iso8601 calendarName "never" => 2020-03-15T12:00:00+00:00[UTC]
+PlainDate gregory calendarName "never" => 2020-03-15
+PlainDateTime gregory calendarName "never" => 2020-03-15T12:00:00
+PlainYearMonth gregory calendarName "never" => 2020-02-01
+PlainMonthDay gregory calendarName "never" => 1972-02-10
+ZonedDateTime gregory calendarName "never" => 2020-03-15T12:00:00+00:00[UTC]
+PlainDate hebrew calendarName "never" => 2020-03-15
+PlainDateTime hebrew calendarName "never" => 2020-03-15T12:00:00
+PlainYearMonth hebrew calendarName "never" => 2019-10-30
+PlainMonthDay hebrew calendarName "never" => 1972-10-18
+ZonedDateTime hebrew calendarName "never" => 2020-03-15T12:00:00+00:00[UTC]
+PlainDate chinese calendarName "never" => 2020-03-15
+PlainDateTime chinese calendarName "never" => 2020-03-15T12:00:00
+PlainYearMonth chinese calendarName "never" => 2020-02-23
+PlainMonthDay chinese calendarName "never" => 1972-03-24
+ZonedDateTime chinese calendarName "never" => 2020-03-15T12:00:00+00:00[UTC]
+PlainDate iso8601 calendarName "critical" => 2020-03-15[!u-ca=iso8601]
+PlainDateTime iso8601 calendarName "critical" => 2020-03-15T12:00:00[!u-ca=iso8601]
+PlainYearMonth iso8601 calendarName "critical" => 2020-02-01[!u-ca=iso8601]
+PlainMonthDay iso8601 calendarName "critical" => 1972-02-10[!u-ca=iso8601]
+ZonedDateTime iso8601 calendarName "critical" => 2020-03-15T12:00:00+00:00[UTC][!u-ca=iso8601]
+PlainDate gregory calendarName "critical" => 2020-03-15[!u-ca=gregory]
+PlainDateTime gregory calendarName "critical" => 2020-03-15T12:00:00[!u-ca=gregory]
+PlainYearMonth gregory calendarName "critical" => 2020-02-01[!u-ca=gregory]
+PlainMonthDay gregory calendarName "critical" => 1972-02-10[!u-ca=gregory]
+ZonedDateTime gregory calendarName "critical" => 2020-03-15T12:00:00+00:00[UTC][!u-ca=gregory]
+PlainDate hebrew calendarName "critical" => 2020-03-15[!u-ca=hebrew]
+PlainDateTime hebrew calendarName "critical" => 2020-03-15T12:00:00[!u-ca=hebrew]
+PlainYearMonth hebrew calendarName "critical" => 2019-10-30[!u-ca=hebrew]
+PlainMonthDay hebrew calendarName "critical" => 1972-10-18[!u-ca=hebrew]
+ZonedDateTime hebrew calendarName "critical" => 2020-03-15T12:00:00+00:00[UTC][!u-ca=hebrew]
+PlainDate chinese calendarName "critical" => 2020-03-15[!u-ca=chinese]
+PlainDateTime chinese calendarName "critical" => 2020-03-15T12:00:00[!u-ca=chinese]
+PlainYearMonth chinese calendarName "critical" => 2020-02-23[!u-ca=chinese]
+PlainMonthDay chinese calendarName "critical" => 1972-03-24[!u-ca=chinese]
+ZonedDateTime chinese calendarName "critical" => 2020-03-15T12:00:00+00:00[UTC][!u-ca=chinese]
+PlainDate iso8601 calendarName undefined => 2020-03-15
+PlainDateTime iso8601 calendarName undefined => 2020-03-15T12:00:00
+PlainYearMonth iso8601 calendarName undefined => 2020-02
+PlainMonthDay iso8601 calendarName undefined => 02-10
+ZonedDateTime iso8601 calendarName undefined => 2020-03-15T12:00:00+00:00[UTC]
+PlainDate gregory calendarName undefined => 2020-03-15[u-ca=gregory]
+PlainDateTime gregory calendarName undefined => 2020-03-15T12:00:00[u-ca=gregory]
+PlainYearMonth gregory calendarName undefined => 2020-02-01[u-ca=gregory]
+PlainMonthDay gregory calendarName undefined => 1972-02-10[u-ca=gregory]
+ZonedDateTime gregory calendarName undefined => 2020-03-15T12:00:00+00:00[UTC][u-ca=gregory]
+PlainDate hebrew calendarName undefined => 2020-03-15[u-ca=hebrew]
+PlainDateTime hebrew calendarName undefined => 2020-03-15T12:00:00[u-ca=hebrew]
+PlainYearMonth hebrew calendarName undefined => 2019-10-30[u-ca=hebrew]
+PlainMonthDay hebrew calendarName undefined => 1972-10-18[u-ca=hebrew]
+ZonedDateTime hebrew calendarName undefined => 2020-03-15T12:00:00+00:00[UTC][u-ca=hebrew]
+PlainDate chinese calendarName undefined => 2020-03-15[u-ca=chinese]
+PlainDateTime chinese calendarName undefined => 2020-03-15T12:00:00[u-ca=chinese]
+PlainYearMonth chinese calendarName undefined => 2020-02-23[u-ca=chinese]
+PlainMonthDay chinese calendarName undefined => 1972-03-24[u-ca=chinese]
+ZonedDateTime chinese calendarName undefined => 2020-03-15T12:00:00+00:00[UTC][u-ca=chinese]
+PlainDate iso8601 calendarName "x" => THROWS RangeError
+PlainDateTime iso8601 calendarName "x" => THROWS RangeError
+PlainYearMonth iso8601 calendarName "x" => THROWS RangeError
+PlainMonthDay iso8601 calendarName "x" => THROWS RangeError
+ZonedDateTime iso8601 calendarName "x" => THROWS RangeError
+PlainDate gregory calendarName "x" => THROWS RangeError
+PlainDateTime gregory calendarName "x" => THROWS RangeError
+PlainYearMonth gregory calendarName "x" => THROWS RangeError
+PlainMonthDay gregory calendarName "x" => THROWS RangeError
+ZonedDateTime gregory calendarName "x" => THROWS RangeError
+PlainDate hebrew calendarName "x" => THROWS RangeError
+PlainDateTime hebrew calendarName "x" => THROWS RangeError
+PlainYearMonth hebrew calendarName "x" => THROWS RangeError
+PlainMonthDay hebrew calendarName "x" => THROWS RangeError
+ZonedDateTime hebrew calendarName "x" => THROWS RangeError
+PlainDate chinese calendarName "x" => THROWS RangeError
+PlainDateTime chinese calendarName "x" => THROWS RangeError
+PlainYearMonth chinese calendarName "x" => THROWS RangeError
+PlainMonthDay chinese calendarName "x" => THROWS RangeError
+ZonedDateTime chinese calendarName "x" => THROWS RangeError
+PlainDate iso8601 calendarName "AUTO" => THROWS RangeError
+PlainDateTime iso8601 calendarName "AUTO" => THROWS RangeError
+PlainYearMonth iso8601 calendarName "AUTO" => THROWS RangeError
+PlainMonthDay iso8601 calendarName "AUTO" => THROWS RangeError
+ZonedDateTime iso8601 calendarName "AUTO" => THROWS RangeError
+PlainDate gregory calendarName "AUTO" => THROWS RangeError
+PlainDateTime gregory calendarName "AUTO" => THROWS RangeError
+PlainYearMonth gregory calendarName "AUTO" => THROWS RangeError
+PlainMonthDay gregory calendarName "AUTO" => THROWS RangeError
+ZonedDateTime gregory calendarName "AUTO" => THROWS RangeError
+PlainDate hebrew calendarName "AUTO" => THROWS RangeError
+PlainDateTime hebrew calendarName "AUTO" => THROWS RangeError
+PlainYearMonth hebrew calendarName "AUTO" => THROWS RangeError
+PlainMonthDay hebrew calendarName "AUTO" => THROWS RangeError
+ZonedDateTime hebrew calendarName "AUTO" => THROWS RangeError
+PlainDate chinese calendarName "AUTO" => THROWS RangeError
+PlainDateTime chinese calendarName "AUTO" => THROWS RangeError
+PlainYearMonth chinese calendarName "AUTO" => THROWS RangeError
+PlainMonthDay chinese calendarName "AUTO" => THROWS RangeError
+ZonedDateTime chinese calendarName "AUTO" => THROWS RangeError
+PlainDate iso8601 calendarName "" => THROWS RangeError
+PlainDateTime iso8601 calendarName "" => THROWS RangeError
+PlainYearMonth iso8601 calendarName "" => THROWS RangeError
+PlainMonthDay iso8601 calendarName "" => THROWS RangeError
+ZonedDateTime iso8601 calendarName "" => THROWS RangeError
+PlainDate gregory calendarName "" => THROWS RangeError
+PlainDateTime gregory calendarName "" => THROWS RangeError
+PlainYearMonth gregory calendarName "" => THROWS RangeError
+PlainMonthDay gregory calendarName "" => THROWS RangeError
+ZonedDateTime gregory calendarName "" => THROWS RangeError
+PlainDate hebrew calendarName "" => THROWS RangeError
+PlainDateTime hebrew calendarName "" => THROWS RangeError
+PlainYearMonth hebrew calendarName "" => THROWS RangeError
+PlainMonthDay hebrew calendarName "" => THROWS RangeError
+ZonedDateTime hebrew calendarName "" => THROWS RangeError
+PlainDate chinese calendarName "" => THROWS RangeError
+PlainDateTime chinese calendarName "" => THROWS RangeError
+PlainYearMonth chinese calendarName "" => THROWS RangeError
+PlainMonthDay chinese calendarName "" => THROWS RangeError
+ZonedDateTime chinese calendarName "" => THROWS RangeError
+PlainDate iso8601 calendarName null => THROWS RangeError
+PlainDateTime iso8601 calendarName null => THROWS RangeError
+PlainYearMonth iso8601 calendarName null => THROWS RangeError
+PlainMonthDay iso8601 calendarName null => THROWS RangeError
+ZonedDateTime iso8601 calendarName null => THROWS RangeError
+PlainDate gregory calendarName null => THROWS RangeError
+PlainDateTime gregory calendarName null => THROWS RangeError
+PlainYearMonth gregory calendarName null => THROWS RangeError
+PlainMonthDay gregory calendarName null => THROWS RangeError
+ZonedDateTime gregory calendarName null => THROWS RangeError
+PlainDate hebrew calendarName null => THROWS RangeError
+PlainDateTime hebrew calendarName null => THROWS RangeError
+PlainYearMonth hebrew calendarName null => THROWS RangeError
+PlainMonthDay hebrew calendarName null => THROWS RangeError
+ZonedDateTime hebrew calendarName null => THROWS RangeError
+PlainDate chinese calendarName null => THROWS RangeError
+PlainDateTime chinese calendarName null => THROWS RangeError
+PlainYearMonth chinese calendarName null => THROWS RangeError
+PlainMonthDay chinese calendarName null => THROWS RangeError
+ZonedDateTime chinese calendarName null => THROWS RangeError
+PlainDate iso8601 calendarName 1 => THROWS RangeError
+PlainDateTime iso8601 calendarName 1 => THROWS RangeError
+PlainYearMonth iso8601 calendarName 1 => THROWS RangeError
+PlainMonthDay iso8601 calendarName 1 => THROWS RangeError
+ZonedDateTime iso8601 calendarName 1 => THROWS RangeError
+PlainDate gregory calendarName 1 => THROWS RangeError
+PlainDateTime gregory calendarName 1 => THROWS RangeError
+PlainYearMonth gregory calendarName 1 => THROWS RangeError
+PlainMonthDay gregory calendarName 1 => THROWS RangeError
+ZonedDateTime gregory calendarName 1 => THROWS RangeError
+PlainDate hebrew calendarName 1 => THROWS RangeError
+PlainDateTime hebrew calendarName 1 => THROWS RangeError
+PlainYearMonth hebrew calendarName 1 => THROWS RangeError
+PlainMonthDay hebrew calendarName 1 => THROWS RangeError
+ZonedDateTime hebrew calendarName 1 => THROWS RangeError
+PlainDate chinese calendarName 1 => THROWS RangeError
+PlainDateTime chinese calendarName 1 => THROWS RangeError
+PlainYearMonth chinese calendarName 1 => THROWS RangeError
+PlainMonthDay chinese calendarName 1 => THROWS RangeError
+ZonedDateTime chinese calendarName 1 => THROWS RangeError
+PlainDate iso8601 calendarName true => THROWS RangeError
+PlainDateTime iso8601 calendarName true => THROWS RangeError
+PlainYearMonth iso8601 calendarName true => THROWS RangeError
+PlainMonthDay iso8601 calendarName true => THROWS RangeError
+ZonedDateTime iso8601 calendarName true => THROWS RangeError
+PlainDate gregory calendarName true => THROWS RangeError
+PlainDateTime gregory calendarName true => THROWS RangeError
+PlainYearMonth gregory calendarName true => THROWS RangeError
+PlainMonthDay gregory calendarName true => THROWS RangeError
+ZonedDateTime gregory calendarName true => THROWS RangeError
+PlainDate hebrew calendarName true => THROWS RangeError
+PlainDateTime hebrew calendarName true => THROWS RangeError
+PlainYearMonth hebrew calendarName true => THROWS RangeError
+PlainMonthDay hebrew calendarName true => THROWS RangeError
+ZonedDateTime hebrew calendarName true => THROWS RangeError
+PlainDate chinese calendarName true => THROWS RangeError
+PlainDateTime chinese calendarName true => THROWS RangeError
+PlainYearMonth chinese calendarName true => THROWS RangeError
+PlainMonthDay chinese calendarName true => THROWS RangeError
+ZonedDateTime chinese calendarName true => THROWS RangeError
+PlainDate toJSON => 2020-03-15[u-ca=hebrew]
+PlainYearMonth toJSON => 2020-02-26[u-ca=hebrew]
+PlainMonthDay toJSON => 1972-03-05[u-ca=hebrew]
+PlainMonthDay ISO toJSON => 03-15
+PlainDateTime toJSON => 2020-03-15T12:00:00.5[u-ca=japanese]
+PlainTime toJSON => 12:00:00.000001
+ZonedDateTime toJSON => 2020-03-15T12:00:00.1+05:30[Asia/Kolkata][u-ca=roc]
+Instant toJSON => 2020-03-15T12:00:00.12Z
+Duration toJSON => P1Y2M3W4DT5H6M7.00800901S
+PlainDate#toString(null) => THROWS TypeError
+PlainDate#toString(1) => THROWS TypeError
+PlainDate#toString("x") => THROWS TypeError
+PlainDate#toString(true) => THROWS TypeError
+PlainTime#toString(null) => THROWS TypeError
+PlainTime#toString(1) => THROWS TypeError
+PlainTime#toString("x") => THROWS TypeError
+PlainTime#toString(true) => THROWS TypeError
+Duration#toString(null) => THROWS TypeError
+Duration#toString(1) => THROWS TypeError
+Duration#toString("x") => THROWS TypeError
+Duration#toString(true) => THROWS TypeError
+Instant#toString(null) => THROWS TypeError
+Instant#toString(1) => THROWS TypeError
+Instant#toString("x") => THROWS TypeError
+Instant#toString(true) => THROWS TypeError>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/s01-forms.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/s01-forms.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/s01-forms.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

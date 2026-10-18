@@ -1,0 +1,415 @@
+lines: Broiler.VM 3999, Broiler.JS 3999, polyfill 3999, divergences named 70
+Broiler.VM lines that are neither the polyfill's nor a named divergence: 0
+Broiler.JS lines that differ from Broiler.VM: 103
+  #2129
+    VM  buddhist toPlainYearMonth => 2023-03-01[u-ca=buddhist]
+    BJS buddhist toPlainYearMonth => 2023-03-15[u-ca=buddhist]
+    PF  buddhist toPlainYearMonth => 2023-03-01[u-ca=buddhist]
+  #2130
+    VM  buddhist toPlainMonthDay => 1972-03-15[u-ca=buddhist]
+    BJS buddhist toPlainMonthDay => 03-15
+    PF  buddhist toPlainMonthDay => 1972-03-15[u-ca=buddhist]
+  #2180
+    VM  chinese until 1999-01-01 round months => -P24Y3M
+    BJS chinese until 1999-01-01 round months => -P24Y3M10D
+    PF  chinese until 1999-01-01 round months => -P24Y3M
+  #2186
+    VM  chinese until 2023-03-14 round months => PT0S
+    BJS chinese until 2023-03-14 round months => -P1D
+    PF  chinese until 2023-03-14 round months => PT0S
+  #2192
+    VM  chinese until 2024-02-29 round months => P12M
+    BJS chinese until 2024-02-29 round months => P11M26D
+    PF  chinese until 2024-02-29 round months => P12M
+  #2198
+    VM  chinese until 2030-12-31 round months => P7Y9M
+    BJS chinese until 2030-12-31 round months => P7Y9M13D
+    PF  chinese until 2030-12-31 round months => P7Y9M
+  #2204
+    VM  chinese until 1850-06-06 round months => -P172Y10M
+    BJS chinese until 1850-06-06 round months => -P172Y9M27D
+    PF  chinese until 1850-06-06 round months => -P172Y10M
+  #2208
+    VM  chinese toPlainYearMonth => 2023-02-20[u-ca=chinese]
+    BJS chinese toPlainYearMonth => 2023-03-15[u-ca=chinese]
+    PF  chinese toPlainYearMonth => 2023-02-20[u-ca=chinese]
+  #2214
+    VM  chinese duration round relativeTo => P2Y8M26D
+    BJS chinese duration round relativeTo => throws Error
+    PF  chinese duration round relativeTo => P2Y8M26D
+  #2215
+    VM  chinese duration total relativeTo => 33.86666666666667
+    BJS chinese duration total relativeTo => throws Error
+    PF  chinese duration total relativeTo => 33.86666666666667
+  #2262
+    VM  coptic until 1999-01-01 round months => -P24Y2M
+    BJS coptic until 1999-01-01 round months => -P24Y2M13D
+    PF  coptic until 1999-01-01 round months => -P24Y2M
+  #2268
+    VM  coptic until 2023-03-14 round months => PT0S
+    BJS coptic until 2023-03-14 round months => -P1D
+    PF  coptic until 2023-03-14 round months => PT0S
+  #2274
+    VM  coptic until 2024-02-29 round months => P1Y
+    BJS coptic until 2024-02-29 round months => P12M15D
+    PF  coptic until 2024-02-29 round months => P1Y
+  #2280
+    VM  coptic until 2030-12-31 round months => P7Y11M
+    BJS coptic until 2030-12-31 round months => P7Y10M16D
+    PF  coptic until 2030-12-31 round months => P7Y11M
+  #2286
+    VM  coptic until 1850-06-06 round months => -P172Y10M
+    BJS coptic until 1850-06-06 round months => -P172Y10M6D
+    PF  coptic until 1850-06-06 round months => -P172Y10M
+  #2290
+    VM  coptic toPlainYearMonth => 2023-03-10[u-ca=coptic]
+    BJS coptic toPlainYearMonth => 2023-03-15[u-ca=coptic]
+    PF  coptic toPlainYearMonth => 2023-03-10[u-ca=coptic]
+  #2296
+    VM  coptic duration round relativeTo => P2Y9M24D
+    BJS coptic duration round relativeTo => throws Error
+    PF  coptic duration round relativeTo => P2Y9M24D
+  #2297
+    VM  coptic duration total relativeTo => 35.8
+    BJS coptic duration total relativeTo => throws Error
+    PF  coptic duration total relativeTo => 35.8
+  #2341
+    VM  dangi until 1999-01-01 round months => -P24Y3M
+    BJS dangi until 1999-01-01 round months => -P24Y3M10D
+    PF  dangi until 1999-01-01 round months => -P24Y3M
+  #2347
+    VM  dangi until 2023-03-14 round months => PT0S
+    BJS dangi until 2023-03-14 round months => -P1D
+    PF  dangi until 2023-03-14 round months => PT0S
+  #2353
+    VM  dangi until 2024-02-29 round months => P12M
+    BJS dangi until 2024-02-29 round months => P11M26D
+    PF  dangi until 2024-02-29 round months => P12M
+  #2359
+    VM  dangi until 2030-12-31 round months => P7Y9M
+    BJS dangi until 2030-12-31 round months => P7Y9M13D
+    PF  dangi until 2030-12-31 round months => P7Y9M
+  #2365
+    VM  dangi until 1850-06-06 round months => -P172Y10M
+    BJS dangi until 1850-06-06 round months => -P172Y9M27D
+    PF  dangi until 1850-06-06 round months => -P172Y10M
+  #2369
+    VM  dangi toPlainYearMonth => 2023-02-20[u-ca=dangi]
+    BJS dangi toPlainYearMonth => 2023-03-15[u-ca=dangi]
+    PF  dangi toPlainYearMonth => 2023-02-20[u-ca=dangi]
+  #2375
+    VM  dangi duration round relativeTo => P2Y8M26D
+    BJS dangi duration round relativeTo => throws Error
+    PF  dangi duration round relativeTo => P2Y8M26D
+  #2376
+    VM  dangi duration total relativeTo => 33.86666666666667
+    BJS dangi duration total relativeTo => throws Error
+    PF  dangi duration total relativeTo => 33.86666666666667
+  #2423
+    VM  ethioaa until 1999-01-01 round months => -P24Y2M
+    BJS ethioaa until 1999-01-01 round months => -P24Y2M13D
+    PF  ethioaa until 1999-01-01 round months => -P24Y2M
+  #2429
+    VM  ethioaa until 2023-03-14 round months => PT0S
+    BJS ethioaa until 2023-03-14 round months => -P1D
+    PF  ethioaa until 2023-03-14 round months => PT0S
+  #2435
+    VM  ethioaa until 2024-02-29 round months => P1Y
+    BJS ethioaa until 2024-02-29 round months => P12M15D
+    PF  ethioaa until 2024-02-29 round months => P1Y
+  #2441
+    VM  ethioaa until 2030-12-31 round months => P7Y11M
+    BJS ethioaa until 2030-12-31 round months => P7Y10M16D
+    PF  ethioaa until 2030-12-31 round months => P7Y11M
+  #2447
+    VM  ethioaa until 1850-06-06 round months => -P172Y10M
+    BJS ethioaa until 1850-06-06 round months => -P172Y10M6D
+    PF  ethioaa until 1850-06-06 round months => -P172Y10M
+  #2451
+    VM  ethioaa toPlainYearMonth => 2023-03-10[u-ca=ethioaa]
+    BJS ethioaa toPlainYearMonth => 2023-03-15[u-ca=ethioaa]
+    PF  ethioaa toPlainYearMonth => 2023-03-10[u-ca=ethioaa]
+  #2457
+    VM  ethioaa duration round relativeTo => P2Y9M24D
+    BJS ethioaa duration round relativeTo => throws Error
+    PF  ethioaa duration round relativeTo => P2Y9M24D
+  #2458
+    VM  ethioaa duration total relativeTo => 35.8
+    BJS ethioaa duration total relativeTo => throws Error
+    PF  ethioaa duration total relativeTo => 35.8
+  #2505
+    VM  ethiopic until 1999-01-01 round months => -P24Y2M
+    BJS ethiopic until 1999-01-01 round months => -P24Y2M13D
+    PF  ethiopic until 1999-01-01 round months => -P24Y2M
+  #2511
+    VM  ethiopic until 2023-03-14 round months => PT0S
+    BJS ethiopic until 2023-03-14 round months => -P1D
+    PF  ethiopic until 2023-03-14 round months => PT0S
+  #2517
+    VM  ethiopic until 2024-02-29 round months => P1Y
+    BJS ethiopic until 2024-02-29 round months => P12M15D
+    PF  ethiopic until 2024-02-29 round months => P1Y
+  #2523
+    VM  ethiopic until 2030-12-31 round months => P7Y11M
+    BJS ethiopic until 2030-12-31 round months => P7Y10M16D
+    PF  ethiopic until 2030-12-31 round months => P7Y11M
+  #2529
+    VM  ethiopic until 1850-06-06 round months => -P172Y10M
+    BJS ethiopic until 1850-06-06 round months => -P172Y10M6D
+    PF  ethiopic until 1850-06-06 round months => -P172Y10M
+  #2533
+    VM  ethiopic toPlainYearMonth => 2023-03-10[u-ca=ethiopic]
+    BJS ethiopic toPlainYearMonth => 2023-03-15[u-ca=ethiopic]
+    PF  ethiopic toPlainYearMonth => 2023-03-10[u-ca=ethiopic]
+  #2539
+    VM  ethiopic duration round relativeTo => P2Y9M24D
+    BJS ethiopic duration round relativeTo => throws Error
+    PF  ethiopic duration round relativeTo => P2Y9M24D
+  #2540
+    VM  ethiopic duration total relativeTo => 35.8
+    BJS ethiopic duration total relativeTo => throws Error
+    PF  ethiopic duration total relativeTo => 35.8
+  #2615
+    VM  gregory toPlainYearMonth => 2023-03-01[u-ca=gregory]
+    BJS gregory toPlainYearMonth => 2023-03-15[u-ca=gregory]
+    PF  gregory toPlainYearMonth => 2023-03-01[u-ca=gregory]
+  #2616
+    VM  gregory toPlainMonthDay => 1972-03-15[u-ca=gregory]
+    BJS gregory toPlainMonthDay => 03-15
+    PF  gregory toPlainMonthDay => 1972-03-15[u-ca=gregory]
+  #2669
+    VM  hebrew until 1999-01-01 round months => -P24Y2M
+    BJS hebrew until 1999-01-01 round months => -P24Y2M9D
+    PF  hebrew until 1999-01-01 round months => -P24Y2M
+  #2675
+    VM  hebrew until 2023-03-14 round months => PT0S
+    BJS hebrew until 2023-03-14 round months => -P1D
+    PF  hebrew until 2023-03-14 round months => PT0S
+  #2681
+    VM  hebrew until 2024-02-29 round months => P12M
+    BJS hebrew until 2024-02-29 round months => P11M28D
+    PF  hebrew until 2024-02-29 round months => P12M
+  #2687
+    VM  hebrew until 2030-12-31 round months => P7Y9M
+    BJS hebrew until 2030-12-31 round months => P7Y9M13D
+    PF  hebrew until 2030-12-31 round months => P7Y9M
+  #2693
+    VM  hebrew until 1850-06-06 round months => -P172Y10M
+    BJS hebrew until 1850-06-06 round months => -P172Y9M26D
+    PF  hebrew until 1850-06-06 round months => -P172Y10M
+  #2697
+    VM  hebrew toPlainYearMonth => 2023-02-22[u-ca=hebrew]
+    BJS hebrew toPlainYearMonth => 2023-03-15[u-ca=hebrew]
+    PF  hebrew toPlainYearMonth => 2023-02-22[u-ca=hebrew]
+  #2703
+    VM  hebrew duration round relativeTo => P2Y8M26D
+    BJS hebrew duration round relativeTo => throws Error
+    PF  hebrew duration round relativeTo => P2Y8M26D
+  #2704
+    VM  hebrew duration total relativeTo => 33.89655172413793
+    BJS hebrew duration total relativeTo => throws Error
+    PF  hebrew duration total relativeTo => 33.89655172413793
+  #2711
+    VM  indian from M13 => throws RangeError
+    BJS indian from M13 => 2023-02-20[u-ca=indian]
+    PF  indian from M13 => throws RangeError
+  #2751
+    VM  indian until 1999-01-01 round months => -P24Y2M
+    BJS indian until 1999-01-01 round months => -P24Y2M13D
+    PF  indian until 1999-01-01 round months => -P24Y2M
+  #2757
+    VM  indian until 2023-03-14 round months => PT0S
+    BJS indian until 2023-03-14 round months => -P1D
+    PF  indian until 2023-03-14 round months => PT0S
+  #2763
+    VM  indian until 2024-02-29 round months => P1Y
+    BJS indian until 2024-02-29 round months => P11M16D
+    PF  indian until 2024-02-29 round months => P1Y
+  #2769
+    VM  indian until 2030-12-31 round months => P7Y10M
+    BJS indian until 2030-12-31 round months => P7Y9M16D
+    PF  indian until 2030-12-31 round months => P7Y10M
+  #2775
+    VM  indian until 1850-06-06 round months => -P172Y9M
+    BJS indian until 1850-06-06 round months => -P172Y9M8D
+    PF  indian until 1850-06-06 round months => -P172Y9M
+  #2779
+    VM  indian toPlainYearMonth => 2023-02-20[u-ca=indian]
+    BJS indian toPlainYearMonth => 2023-03-15[u-ca=indian]
+    PF  indian toPlainYearMonth => 2023-02-20[u-ca=indian]
+  #2785
+    VM  indian duration round relativeTo => P2Y8M24D
+    BJS indian duration round relativeTo => throws Error
+    PF  indian duration round relativeTo => P2Y8M24D
+  #2786
+    VM  indian duration total relativeTo => 32.8
+    BJS indian duration total relativeTo => throws Error
+    PF  indian duration total relativeTo => 32.8
+  #2793
+    VM  islamic-civil from M13 => throws RangeError
+    BJS islamic-civil from M13 => 2023-06-20[u-ca=islamic-civil]
+    PF  islamic-civil from M13 => throws RangeError
+  #2833
+    VM  islamic-civil until 1999-01-01 round months => -P24Y11M
+    BJS islamic-civil until 1999-01-01 round months => -P24Y11M9D
+    PF  islamic-civil until 1999-01-01 round months => -P24Y11M
+  #2839
+    VM  islamic-civil until 2023-03-14 round months => PT0S
+    BJS islamic-civil until 2023-03-14 round months => -P1D
+    PF  islamic-civil until 2023-03-14 round months => PT0S
+  #2845
+    VM  islamic-civil until 2024-02-29 round months => P1Y
+    BJS islamic-civil until 2024-02-29 round months => P11M27D
+    PF  islamic-civil until 2024-02-29 round months => P1Y
+  #2851
+    VM  islamic-civil until 2030-12-31 round months => P8Y
+    BJS islamic-civil until 2030-12-31 round months => P8Y13D
+    PF  islamic-civil until 2030-12-31 round months => P8Y
+  #2857
+    VM  islamic-civil until 1850-06-06 round months => -P178Y1M
+    BJS islamic-civil until 1850-06-06 round months => -P178Y27D
+    PF  islamic-civil until 1850-06-06 round months => -P178Y1M
+  #2861
+    VM  islamic-civil toPlainYearMonth => 2023-02-22[u-ca=islamic-civil]
+    BJS islamic-civil toPlainYearMonth => 2023-03-15[u-ca=islamic-civil]
+    PF  islamic-civil toPlainYearMonth => 2023-02-22[u-ca=islamic-civil]
+  #2867
+    VM  islamic-civil duration round relativeTo => P2Y9M26D
+    BJS islamic-civil duration round relativeTo => throws Error
+    PF  islamic-civil duration round relativeTo => P2Y9M26D
+  #2868
+    VM  islamic-civil duration total relativeTo => 33.86666666666667
+    BJS islamic-civil duration total relativeTo => throws Error
+    PF  islamic-civil duration total relativeTo => 33.86666666666667
+  #2875
+    VM  islamic-tbla from M13 => throws RangeError
+    BJS islamic-tbla from M13 => 2023-06-19[u-ca=islamic-tbla]
+    PF  islamic-tbla from M13 => throws RangeError
+  #2915
+    VM  islamic-tbla until 1999-01-01 round months => -P24Y11M
+    BJS islamic-tbla until 1999-01-01 round months => -P24Y11M9D
+    PF  islamic-tbla until 1999-01-01 round months => -P24Y11M
+  #2921
+    VM  islamic-tbla until 2023-03-14 round months => PT0S
+    BJS islamic-tbla until 2023-03-14 round months => -P1D
+    PF  islamic-tbla until 2023-03-14 round months => PT0S
+  #2927
+    VM  islamic-tbla until 2024-02-29 round months => P1Y
+    BJS islamic-tbla until 2024-02-29 round months => P11M27D
+    PF  islamic-tbla until 2024-02-29 round months => P1Y
+  #2933
+    VM  islamic-tbla until 2030-12-31 round months => P8Y
+    BJS islamic-tbla until 2030-12-31 round months => P8Y13D
+    PF  islamic-tbla until 2030-12-31 round months => P8Y
+  #2939
+    VM  islamic-tbla until 1850-06-06 round months => -P178Y1M
+    BJS islamic-tbla until 1850-06-06 round months => -P178Y27D
+    PF  islamic-tbla until 1850-06-06 round months => -P178Y1M
+  #2943
+    VM  islamic-tbla toPlainYearMonth => 2023-02-21[u-ca=islamic-tbla]
+    BJS islamic-tbla toPlainYearMonth => 2023-03-15[u-ca=islamic-tbla]
+    PF  islamic-tbla toPlainYearMonth => 2023-02-21[u-ca=islamic-tbla]
+  #2949
+    VM  islamic-tbla duration round relativeTo => P2Y9M26D
+    BJS islamic-tbla duration round relativeTo => throws Error
+    PF  islamic-tbla duration round relativeTo => P2Y9M26D
+  #2950
+    VM  islamic-tbla duration total relativeTo => 33.86666666666667
+    BJS islamic-tbla duration total relativeTo => throws Error
+    PF  islamic-tbla duration total relativeTo => 33.86666666666667
+  #2957
+    VM  islamic-umalqura from M13 => throws RangeError
+    BJS islamic-umalqura from M13 => 2023-06-19[u-ca=islamic-umalqura]
+    PF  islamic-umalqura from M13 => throws RangeError
+  #2997
+    VM  islamic-umalqura until 1999-01-01 round months => -P24Y11M
+    BJS islamic-umalqura until 1999-01-01 round months => -P24Y11M10D
+    PF  islamic-umalqura until 1999-01-01 round months => -P24Y11M
+  #3003
+    VM  islamic-umalqura until 2023-03-14 round months => PT0S
+    BJS islamic-umalqura until 2023-03-14 round months => -P1D
+    PF  islamic-umalqura until 2023-03-14 round months => PT0S
+  #3009
+    VM  islamic-umalqura until 2024-02-29 round months => P1Y
+    BJS islamic-umalqura until 2024-02-29 round months => P11M25D
+    PF  islamic-umalqura until 2024-02-29 round months => P1Y
+  #3015
+    VM  islamic-umalqura until 2030-12-31 round months => P8Y
+    BJS islamic-umalqura until 2030-12-31 round months => P8Y12D
+    PF  islamic-umalqura until 2030-12-31 round months => P8Y
+  #3021
+    VM  islamic-umalqura until 1850-06-06 round months => -P178Y1M
+    BJS islamic-umalqura until 1850-06-06 round months => -P178Y28D
+    PF  islamic-umalqura until 1850-06-06 round months => -P178Y1M
+  #3025
+    VM  islamic-umalqura toPlainYearMonth => 2023-02-21[u-ca=islamic-umalqura]
+    BJS islamic-umalqura toPlainYearMonth => 2023-03-15[u-ca=islamic-umalqura]
+    PF  islamic-umalqura toPlainYearMonth => 2023-02-21[u-ca=islamic-umalqura]
+  #3031
+    VM  islamic-umalqura duration round relativeTo => P2Y9M25D
+    BJS islamic-umalqura duration round relativeTo => throws Error
+    PF  islamic-umalqura duration round relativeTo => P2Y9M25D
+  #3032
+    VM  islamic-umalqura duration total relativeTo => 33.833333333333336
+    BJS islamic-umalqura duration total relativeTo => throws Error
+    PF  islamic-umalqura duration total relativeTo => 33.833333333333336
+  #3107
+    VM  japanese toPlainYearMonth => 2023-03-01[u-ca=japanese]
+    BJS japanese toPlainYearMonth => 2023-03-15[u-ca=japanese]
+    PF  japanese toPlainYearMonth => 2023-03-01[u-ca=japanese]
+  #3108
+    VM  japanese toPlainMonthDay => 1972-03-15[u-ca=japanese]
+    BJS japanese toPlainMonthDay => 03-15
+    PF  japanese toPlainMonthDay => 1972-03-15[u-ca=japanese]
+  #3121
+    VM  persian from M13 => throws RangeError
+    BJS persian from M13 => 2023-02-20[u-ca=persian]
+    PF  persian from M13 => throws RangeError
+  #3161
+    VM  persian until 1999-01-01 round months => -P24Y2M
+    BJS persian until 1999-01-01 round months => -P24Y2M13D
+    PF  persian until 1999-01-01 round months => -P24Y2M
+  #3167
+    VM  persian until 2023-03-14 round months => PT0S
+    BJS persian until 2023-03-14 round months => -P1D
+    PF  persian until 2023-03-14 round months => PT0S
+  #3173
+    VM  persian until 2024-02-29 round months => P1Y
+    BJS persian until 2024-02-29 round months => P11M16D
+    PF  persian until 2024-02-29 round months => P1Y
+  #3179
+    VM  persian until 2030-12-31 round months => P7Y10M
+    BJS persian until 2030-12-31 round months => P7Y9M16D
+    PF  persian until 2030-12-31 round months => P7Y10M
+  #3185
+    VM  persian until 1850-06-06 round months => -P172Y9M
+    BJS persian until 1850-06-06 round months => -P172Y9M8D
+    PF  persian until 1850-06-06 round months => -P172Y9M
+  #3189
+    VM  persian toPlainYearMonth => 2023-02-20[u-ca=persian]
+    BJS persian toPlainYearMonth => 2023-03-15[u-ca=persian]
+    PF  persian toPlainYearMonth => 2023-02-20[u-ca=persian]
+  #3195
+    VM  persian duration round relativeTo => P2Y8M24D
+    BJS persian duration round relativeTo => throws Error
+    PF  persian duration round relativeTo => P2Y8M24D
+  #3196
+    VM  persian duration total relativeTo => 32.8
+    BJS persian duration total relativeTo => throws Error
+    PF  persian duration total relativeTo => 32.8
+  #3271
+    VM  roc toPlainYearMonth => 2023-03-01[u-ca=roc]
+    BJS roc toPlainYearMonth => 2023-03-15[u-ca=roc]
+    PF  roc toPlainYearMonth => 2023-03-01[u-ca=roc]
+  #3272
+    VM  roc toPlainMonthDay => 1972-03-15[u-ca=roc]
+    BJS roc toPlainMonthDay => 03-15
+    PF  roc toPlainMonthDay => 1972-03-15[u-ca=roc]
+  #3327
+    VM  buddhist month-day to date => 2001-02-10[u-ca=buddhist]
+    BJS buddhist month-day to date => 2544-02-10[u-ca=buddhist]
+    PF  buddhist month-day to date => 2001-02-10[u-ca=buddhist]
+  #3999
+    VM  roc month-day to date => 2001-02-10[u-ca=roc]
+    BJS roc month-day to date => 0090-02-10[u-ca=roc]
+    PF  roc month-day to date => 2001-02-10[u-ca=roc]

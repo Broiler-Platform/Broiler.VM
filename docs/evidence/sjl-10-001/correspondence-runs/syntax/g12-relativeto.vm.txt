@@ -1,0 +1,58 @@
+Duration#round relativeTo "2020-01-01" => P1M
+Duration#total relativeTo "2020-01-01" => 31
+Duration#round relativeTo "2020-01-01T00:00" => P1M
+Duration#total relativeTo "2020-01-01T00:00" => 31
+Duration#round relativeTo "2020-01-01T00:00[UTC]" => P1M
+Duration#total relativeTo "2020-01-01T00:00[UTC]" => 31
+Duration#round relativeTo "2020-01-01T00:00Z[UTC]" => P1M
+Duration#total relativeTo "2020-01-01T00:00Z[UTC]" => 31
+Duration#round relativeTo "2020-01-01T00:00Z" => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00Z'
+Duration#total relativeTo "2020-01-01T00:00Z" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00+01:00" => P1M
+Duration#total relativeTo "2020-01-01T00:00+01:00" => 31
+Duration#round relativeTo "2020-01-01T00:00+01:00[Europe/Berlin]" => P1M
+Duration#total relativeTo "2020-01-01T00:00+01:00[Europe/Berlin]" => 31
+Duration#round relativeTo "2020-01-01T00:00+02:00[Europe/Berlin]" => THROWS RangeError: Temporal: the offset does not agree with the time zone
+Duration#total relativeTo "2020-01-01T00:00+02:00[Europe/Berlin]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[]" => THROWS RangeError: Temporal: cannot parse '2020-01-01[]'
+Duration#total relativeTo "2020-01-01[]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[u-ca=iso8601][UTC]" => THROWS RangeError: Temporal: cannot parse '2020-01-01[u-ca=iso8601][UTC]'
+Duration#total relativeTo "2020-01-01[u-ca=iso8601][UTC]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[foo=bar][UTC]" => THROWS RangeError: Temporal: cannot parse '2020-01-01[foo=bar][UTC]'
+Duration#total relativeTo "2020-01-01[foo=bar][UTC]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[!foo=bar]" => THROWS RangeError: Temporal: the critical annotation foo is not recognized in 2020-01-01[!foo=bar]
+Duration#total relativeTo "2020-01-01[!foo=bar]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[u-ca=hebrew]" => P1M
+Duration#total relativeTo "2020-01-01[u-ca=hebrew]" => 29
+Duration#round relativeTo "2020-01-01T00:00+25:00" => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00+25:00'
+Duration#total relativeTo "2020-01-01T00:00+25:00" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00+01:0000" => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00+01:0000'
+Duration#total relativeTo "2020-01-01T00:00+01:0000" => THROWS RangeError
+Duration#round relativeTo "2020-01" => THROWS RangeError: Temporal: cannot parse '2020-01'
+Duration#total relativeTo "2020-01" => THROWS RangeError
+Duration#round relativeTo "01-01" => THROWS RangeError: Temporal: cannot parse '01-01'
+Duration#total relativeTo "01-01" => THROWS RangeError
+Duration#round relativeTo "T00:00" => THROWS RangeError: Temporal: cannot parse 'T00:00'
+Duration#total relativeTo "T00:00" => THROWS RangeError
+Duration#round relativeTo "00:00" => THROWS RangeError: Temporal: cannot parse '00:00'
+Duration#total relativeTo "00:00" => THROWS RangeError
+Duration#round relativeTo "2020-02-30" => THROWS RangeError: Temporal: cannot parse '2020-02-30'
+Duration#total relativeTo "2020-02-30" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T24:00" => THROWS RangeError: Temporal: cannot parse '2020-01-01T24:00'
+Duration#total relativeTo "2020-01-01T24:00" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[Mars Olympus]" => THROWS RangeError: Temporal: cannot parse '2020-01-01[Mars Olympus]'
+Duration#total relativeTo "2020-01-01[Mars Olympus]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[UTC][UTC]" => THROWS RangeError: Temporal: cannot parse '2020-01-01[UTC][UTC]'
+Duration#total relativeTo "2020-01-01[UTC][UTC]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00−01:00" => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00−01:00'
+Duration#total relativeTo "2020-01-01T00:00−01:00" => THROWS RangeError
+Duration#round relativeTo "٢٠٢٠-٠١-٠١" => THROWS RangeError: Temporal: cannot parse '٢٠٢٠-٠١-٠١'
+Duration#total relativeTo "٢٠٢٠-٠١-٠١" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T12:3045" => THROWS RangeError: Temporal: cannot parse '2020-01-01T12:3045'
+Duration#total relativeTo "2020-01-01T12:3045" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00+01:00:00.5[UTC]" => THROWS RangeError: Temporal: the offset does not agree with the time zone
+Duration#total relativeTo "2020-01-01T00:00+01:00:00.5[UTC]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00Z[u-ca=hebrew]" => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00Z[u-ca=hebrew]'
+Duration#total relativeTo "2020-01-01T00:00Z[u-ca=hebrew]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]" => THROWS RangeError: Temporal: a critical calendar annotation conflicts with another in 2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]
+Duration#total relativeTo "2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]" => THROWS RangeError

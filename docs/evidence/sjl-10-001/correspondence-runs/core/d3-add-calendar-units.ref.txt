@@ -1,0 +1,14 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+Duration({years: 1}).add({months: 1}) => THROWS RangeError: For years, months, or weeks arithmetic, use date arithmetic relative to a starting point
+Duration({years: 1}).add({months: 1}, {relativeTo: "2020-01-01"}) => THROWS RangeError: For years, months, or weeks arithmetic, use date arithmetic relative to a starting point
+Duration({years: 1}).subtract({months: 1}, {relativeTo: "2020-01-01"}) => THROWS RangeError: For years, months, or weeks arithmetic, use date arithmetic relative to a starting point
+Duration({years: 1}).add({months: 1}, {relativeTo: ZonedDateTime}) => THROWS RangeError: For years, months, or weeks arithmetic, use date arithmetic relative to a starting point
+Duration({weeks: 1}).add({days: 1}) => THROWS RangeError: For years, months, or weeks arithmetic, use date arithmetic relative to a starting point
+Duration({hours: 1}).add({months: 1}) => THROWS RangeError: For years, months, or weeks arithmetic, use date arithmetic relative to a starting point
+Duration({years: 1}).add({years: -1}) => THROWS RangeError: For years, months, or weeks arithmetic, use date arithmetic relative to a starting point
+Duration({hours: 1}).add({hours: 1}, 5) => Temporal.Duration PT2H
+Duration({hours: 1}).add({hours: 1}, null) => Temporal.Duration PT2H
+Duration({hours: 1}).add({hours: 1}, {get relativeTo() {...}}) and the reads => PT2H reads=[]
+Duration.prototype.add.length => 1
+exit=0

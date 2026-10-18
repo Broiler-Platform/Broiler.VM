@@ -1,0 +1,56 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/g11-more.js [raw]  uncaught Error: OUT<<PlainYearMonth.from("2020-01T12:00") => THROWS RangeError
+PlainYearMonth.from("202001T1200") => THROWS RangeError
+PlainYearMonth.from("2020-01 12:00") => THROWS RangeError
+PlainYearMonth.from("2020-01T12:00Z") => THROWS RangeError
+PlainYearMonth.from("2020-01T12:00[u-ca=iso8601]") => THROWS RangeError
+PlainYearMonth.from("2020-01T25:00") => THROWS RangeError
+PlainMonthDay.from("01-01T12:00") => THROWS RangeError
+PlainMonthDay.from("0101T12:00") => THROWS RangeError
+PlainMonthDay.from("--01-01T12:00") => THROWS RangeError
+PlainTime.from("2020-02-30T12:00") => THROWS RangeError
+PlainTime.from("2021-02-29T12:00") => THROWS RangeError
+PlainTime.from("2020-00-01T12:00") => THROWS RangeError
+PlainTime.from("2020-01-32T12:00") => THROWS RangeError
+PlainTime.from("-000000-01-01T12:00") => THROWS RangeError
+PlainTime.from("2020-0101T12:00") => THROWS RangeError
+withCalendar("2020-01-01[u-ca=gregory][u-ca=japanese]") => gregory
+PlainDate.from("2020-01-01[u-ca=gregory][u-ca=japanese]") => gregory
+withCalendar("2020-01-01[u-ca=japanese][u-ca=gregory]") => japanese
+PlainDate.from("2020-01-01[u-ca=japanese][u-ca=gregory]") => japanese
+withCalendar("2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]") => hebrew
+PlainDate.from("2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]") => THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]'
+withCalendar("2020-01-01[u-ca=gregory][u-ca=bogus]") => gregory
+PlainDate.from("2020-01-01[u-ca=gregory][u-ca=bogus]") => gregory
+withCalendar("2020-01-01[u-ca=bogus][u-ca=gregory]") => THROWS RangeError: Temporal: the calendar bogus is not supported
+PlainDate.from("2020-01-01[u-ca=bogus][u-ca=gregory]") => THROWS RangeError: Temporal: the calendar bogus is not supported
+toZonedDateTimeISO("2020-01-01T00:00Z[Europe/Berlin][UTC]") => THROWS RangeError
+toZonedDateTimeISO("2020-01-01T00:00Z[u-ca=iso8601][Europe/Berlin]") => THROWS RangeError
+toZonedDateTimeISO("2020-01-01T00:00Z[Europe/Berlin][u-ca=iso8601]") => Europe/Berlin
+PlainMonthDay.from("2020-01-15[u-ca=hebrew]") => 1972-12-23[u-ca=hebrew]
+PlainYearMonth.from("2020-01-15[u-ca=hebrew]") => 2019-12-29[u-ca=hebrew]
+PlainMonthDay.from("2020-03-01[u-ca=chinese]") => 1972-03-22[u-ca=chinese]
+PlainYearMonth.from("2020-03-01[u-ca=chinese]") => 2020-02-23[u-ca=chinese]
+PlainMonthDay.from("2023-03-22[u-ca=chinese]") => 1947-03-23[u-ca=chinese]
+PlainYearMonth.from("2023-03-22[u-ca=chinese]") => 2023-03-22[u-ca=chinese]
+PlainMonthDay.from("2020-01-15[u-ca=persian]") => 1972-01-15[u-ca=persian]
+PlainYearMonth.from("2020-01-15[u-ca=persian]") => 2019-12-22[u-ca=persian]
+PlainMonthDay.from("2019-09-11[u-ca=coptic]") => 1971-09-11[u-ca=coptic]
+PlainYearMonth.from("2019-09-11[u-ca=coptic]") => 2019-09-06[u-ca=coptic]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/g11-more.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/g11-more.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/g11-more.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

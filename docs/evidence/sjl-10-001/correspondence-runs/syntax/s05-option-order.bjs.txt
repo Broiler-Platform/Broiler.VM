@@ -1,0 +1,55 @@
+PlainDate reads => calendarName => 2020-01-01
+  PlainDate invalid calendarName read: calendarName
+PlainDate with an invalid calendarName, reads => THROWS RangeError
+PlainYearMonth reads => calendarName => 2020-01
+  PlainYearMonth invalid calendarName read: calendarName
+PlainYearMonth with an invalid calendarName, reads => THROWS RangeError
+PlainMonthDay reads => calendarName => 01-01
+  PlainMonthDay invalid calendarName read: calendarName
+PlainMonthDay with an invalid calendarName, reads => THROWS RangeError
+PlainTime reads => fractionalSecondDigits,roundingMode,smallestUnit => 12:00:00
+  PlainTime invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit
+PlainTime with an invalid smallestUnit, reads => THROWS RangeError
+  PlainTime invalid roundingMode read: fractionalSecondDigits,roundingMode
+PlainTime with an invalid roundingMode, reads => THROWS RangeError
+  PlainTime invalid fractionalSecondDigits read: fractionalSecondDigits
+PlainTime with an invalid fractionalSecondDigits, reads => THROWS RangeError
+PlainDateTime reads => calendarName,fractionalSecondDigits,roundingMode,smallestUnit => 2020-01-01T12:00:00
+  PlainDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,roundingMode,smallestUnit
+PlainDateTime with an invalid smallestUnit, reads => THROWS RangeError
+  PlainDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,roundingMode
+PlainDateTime with an invalid roundingMode, reads => THROWS RangeError
+  PlainDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits
+PlainDateTime with an invalid fractionalSecondDigits, reads => THROWS RangeError
+  PlainDateTime invalid calendarName read: calendarName
+PlainDateTime with an invalid calendarName, reads => THROWS RangeError
+Instant reads => fractionalSecondDigits,roundingMode,smallestUnit,timeZone => 2020-01-01T12:00:00+00:00
+  Instant invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone
+Instant with an invalid smallestUnit, reads => THROWS RangeError
+  Instant invalid roundingMode read: fractionalSecondDigits,roundingMode
+Instant with an invalid roundingMode, reads => THROWS RangeError
+  Instant invalid fractionalSecondDigits read: fractionalSecondDigits
+Instant with an invalid fractionalSecondDigits, reads => THROWS RangeError
+  Instant invalid timeZone read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone
+Instant with an invalid timeZone, reads => THROWS RangeError
+ZonedDateTime reads => calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName => 2020-01-01T12:00:00+00:00[UTC]
+  ZonedDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName
+ZonedDateTime with an invalid smallestUnit, reads => THROWS RangeError
+  ZonedDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,offset,roundingMode
+ZonedDateTime with an invalid roundingMode, reads => THROWS RangeError
+  ZonedDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits
+ZonedDateTime with an invalid fractionalSecondDigits, reads => THROWS RangeError
+  ZonedDateTime invalid calendarName read: calendarName
+ZonedDateTime with an invalid calendarName, reads => THROWS RangeError
+  ZonedDateTime invalid offset read: calendarName,fractionalSecondDigits,offset
+ZonedDateTime with an invalid offset, reads => THROWS RangeError
+  ZonedDateTime invalid timeZoneName read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName
+ZonedDateTime with an invalid timeZoneName, reads => THROWS RangeError
+Duration reads => fractionalSecondDigits,roundingMode,smallestUnit => PT1S
+  Duration invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit
+Duration with an invalid smallestUnit, reads => THROWS RangeError
+  Duration invalid roundingMode read: fractionalSecondDigits,roundingMode
+Duration with an invalid roundingMode, reads => THROWS RangeError
+  Duration invalid fractionalSecondDigits read: fractionalSecondDigits
+Duration with an invalid fractionalSecondDigits, reads => THROWS RangeError
+exit=0

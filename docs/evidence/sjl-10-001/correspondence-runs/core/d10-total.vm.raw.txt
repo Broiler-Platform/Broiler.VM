@@ -1,0 +1,39 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/d10-total.js [raw]  uncaught Error: OUT<<{hours: 1, minutes: 30}.total("hour") => 1.5
+{days: 45}.total({unit: "month", relativeTo: "2020-01-01"}) => 1.4827586206896552
+{days: 45}.total({unit: "month", relativeTo: "2020-01-01T00:00[UTC]"}) => 1.4827586206896552
+{nanoseconds: MAX_SAFE_INTEGER}.total("second") => 9007199.25474099
+{seconds: 2**53 - 1, nanoseconds: 999999999}.total("nanosecond") => 9.007199254740992e+24
+{seconds: 2**53 - 1, nanoseconds: 999999999}.total("day") => 104249991374.31703
+{days: 1}.total({unit: "hour", relativeTo: NY spring}) => 23
+{hours: 12}.total({unit: "day", relativeTo: NY spring}) => 0.5217391304347826
+{hours: 12}.total({unit: "day", relativeTo: NY fall}) => 0.48
+{months: 1}.total({unit: "day", relativeTo: "2020-02-01"}) => 29
+{years: 1}.total({unit: "week", relativeTo: "2020-01-01"}) => 52.285714285714285
+{months: 1}.total("day") => THROWS RangeError: Temporal.Duration.prototype.total: a total in years, months or weeks needs a relativeTo date
+{days: 1}.total("day") => 1
+{days: 1}.total({unit: "month"}) => THROWS RangeError: Temporal.Duration.prototype.total: a total in years, months or weeks needs a relativeTo date
+{days: 1}.total({}) => THROWS RangeError: Temporal: the unit option is required
+{months: 10, days: 29, hours: 12}.total({unit: "month", relativeTo: "2019-03-31"}) => 11.016129032258064
+{months: 10, days: 29, hours: 12}.total({unit: "year", relativeTo: "2019-03-31T00:00[UTC]"}) => 0.9166666666666666
+{days: -45}.total({unit: "month", relativeTo: "2020-03-15"}) => -1.5161290322580645
+{days: 1}.total({unit: "day", relativeTo: "+275760-09-12T00:00:01[UTC]"}) => THROWS RangeError: Temporal: the date-time is outside the representable range
+{hours: 1}.total({unit: "day", relativeTo: "+275760-09-12T12:00[UTC]"}) => THROWS RangeError: Temporal: the date-time is outside the representable range
+{days: 1}.total({unit: "day", relativeTo: "+275760-09-12"}) => 1>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/d10-total.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/d10-total.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/d10-total.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

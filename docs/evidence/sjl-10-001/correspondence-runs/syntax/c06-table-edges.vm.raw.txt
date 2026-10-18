@@ -1,0 +1,52 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/c06-table-edges.js [raw]  uncaught Error: OUT<<chinese 1899 => 1899-02-10 355 12 lsllslslslsl 
+chinese 1900 => 1900-01-31 384 13 slsslsllsllsl M08L@9
+chinese 1901 => 1901-02-19 354 12 slsslslsllls 
+chinese 2050 => 2050-01-23 384 13 slslslsllslls M03L@4
+chinese 2051 => 2051-02-11 355 12 lsslssllslll 
+chinese 2100 => 2100-02-09 354 12 llslslslssls 
+chinese 2101 => 2101-01-29 384 13 llsllslslssls M07L@8
+chinese 2102 => 2102-02-17 355 12 lsllslsllsls 
+chinese 2103 => 2103-02-07 354 12 lslslslslsls 
+dangi 1899 => 1899-02-10 355 12 lsllslslslsl 
+dangi 1900 => 1900-01-31 384 13 slsslsllsllsl M08L@9
+dangi 1901 => 1901-02-19 354 12 slsslslsllls 
+dangi 2050 => 2050-01-23 384 13 lsslslsllslls M03L@4
+dangi 2051 => 2051-02-11 355 12 lsslslslslll 
+dangi 2100 => 2100-02-09 354 12 llslslslssls 
+dangi 2101 => 2101-01-29 384 13 llsllslslslss M07L@8
+dangi 2102 => 2102-02-17 355 12 lsllslsllsls 
+dangi 2103 => 2103-02-07 355 12 lslslslslsll 
+islamic-umalqura 1299 => 1881-11-23 354 12 lslslslslsls 
+islamic-umalqura 1300 => 1882-11-12 354 12 lslslslslsls 
+islamic-umalqura 1301 => 1883-11-01 354 12 llslslslslss 
+islamic-umalqura 1599 => 2172-12-17 355 12 slslslslllsl 
+islamic-umalqura 1600 => 2173-12-07 354 12 sslslsslllsl 
+islamic-umalqura 1601 => 2174-11-26 354 12 lslslslslsls 
+persian 1501 => 2122-03-21 365 12 ssssssllllls 
+persian 1502 => 2123-03-21 365 12 ssssssllllls 
+persian 2987 => 3608-03-20 365 12 ssssssllllls 
+persian 2988 => 3609-03-20 366 12 ssssssllllll 
+chinese 1900-01-15 + {"years":1} => 1900/M12/15 1901-02-03 until months P13M
+chinese 2102-06-01 + {"years":1} => 2103/M04/16 2103-05-22 until months P12M
+chinese 2102-06-01 + {"months":13} => 2103/M05/16 2103-06-20 until months P13M
+islamic-umalqura 2173-12-01 + {"months":1} => 1600/M01/25 2173-12-31 until months P1M
+islamic-umalqura 1882-11-01 + {"months":1} => 1300/M01/19 1882-11-30 until months P1M
+persian 2123-03-01 + {"years":1} => 1502/M12/10 2124-02-29 until months P12M>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/c06-table-edges.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/c06-table-edges.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/c06-table-edges.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

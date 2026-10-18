@@ -1,0 +1,59 @@
+Duration#round relativeTo "2020-01-01" => P1M
+Duration#total relativeTo "2020-01-01" => 31
+Duration#round relativeTo "2020-01-01T00:00" => P1M
+Duration#total relativeTo "2020-01-01T00:00" => 31
+Duration#round relativeTo "2020-01-01T00:00[UTC]" => P1M
+Duration#total relativeTo "2020-01-01T00:00[UTC]" => 31
+Duration#round relativeTo "2020-01-01T00:00Z[UTC]" => P1M
+Duration#total relativeTo "2020-01-01T00:00Z[UTC]" => 31
+Duration#round relativeTo "2020-01-01T00:00Z" => THROWS RangeError: Temporal.Duration: relativeTo with a UTC (Z) designator requires a time-zone annotation
+Duration#total relativeTo "2020-01-01T00:00Z" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00+01:00" => P1M
+Duration#total relativeTo "2020-01-01T00:00+01:00" => 31
+Duration#round relativeTo "2020-01-01T00:00+01:00[Europe/Berlin]" => P1M
+Duration#total relativeTo "2020-01-01T00:00+01:00[Europe/Berlin]" => 31
+Duration#round relativeTo "2020-01-01T00:00+02:00[Europe/Berlin]" => THROWS RangeError: Temporal.ZonedDateTime: offset does not match the time zone in "2020-01-01T00:00+02:00[Europe/Berlin]"
+Duration#total relativeTo "2020-01-01T00:00+02:00[Europe/Berlin]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[]" => THROWS RangeError: Temporal: unknown time zone ""
+Duration#total relativeTo "2020-01-01[]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[u-ca=iso8601][UTC]" => P1M
+Duration#total relativeTo "2020-01-01[u-ca=iso8601][UTC]" => 31
+Duration#round relativeTo "2020-01-01[foo=bar][UTC]" => P1M
+Duration#total relativeTo "2020-01-01[foo=bar][UTC]" => 31
+Duration#round relativeTo "2020-01-01[!foo=bar]" => THROWS RangeError: Temporal: unknown annotation with critical flag "[!foo=bar]" in "2020-01-01[!foo=bar]"
+Duration#total relativeTo "2020-01-01[!foo=bar]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[u-ca=hebrew]" => THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented
+Duration#total relativeTo "2020-01-01[u-ca=hebrew]" => THROWS Error
+Duration#round relativeTo "2020-01-01T00:00+25:00" => P1M
+Duration#total relativeTo "2020-01-01T00:00+25:00" => 31
+Duration#round relativeTo "2020-01-01T00:00+01:0000" => THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-01-01T00:00+01:0000"
+Duration#total relativeTo "2020-01-01T00:00+01:0000" => THROWS RangeError
+Duration#round relativeTo "2020-01" => THROWS RangeError: Cannot parse Temporal.PlainDate from "2020-01"
+Duration#total relativeTo "2020-01" => THROWS RangeError
+Duration#round relativeTo "01-01" => THROWS RangeError: Cannot parse Temporal.PlainDate from "01-01"
+Duration#total relativeTo "01-01" => THROWS RangeError
+Duration#round relativeTo "T00:00" => THROWS RangeError: Cannot parse Temporal.PlainDate from "T00:00"
+Duration#total relativeTo "T00:00" => THROWS RangeError
+Duration#round relativeTo "00:00" => THROWS RangeError: Cannot parse Temporal.PlainDate from "00:00"
+Duration#total relativeTo "00:00" => THROWS RangeError
+Duration#round relativeTo "2020-02-30" => THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-02-30"
+Duration#total relativeTo "2020-02-30" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T24:00" => THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-01-01T24:00"
+Duration#total relativeTo "2020-01-01T24:00" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[Mars Olympus]" => THROWS RangeError: Temporal: unknown time zone "Mars Olympus"
+Duration#total relativeTo "2020-01-01[Mars Olympus]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01[UTC][UTC]" => THROWS RangeError: Temporal: more than one time zone annotation in "2020-01-01[UTC][UTC]"
+Duration#total relativeTo "2020-01-01[UTC][UTC]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00−01:00" => THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-01-01T00:00−01:00"
+Duration#total relativeTo "2020-01-01T00:00−01:00" => THROWS RangeError
+Duration#round relativeTo "٢٠٢٠-٠١-٠١" => THROWS Error: System.FormatException: The input string '٢٠٢٠' was not in a correct format.
+Duration#total relativeTo "٢٠٢٠-٠١-٠١" => THROWS Error
+Duration#round relativeTo "2020-01-01T12:3045" => THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-01-01T12:3045"
+Duration#total relativeTo "2020-01-01T12:3045" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00+01:00:00.5[UTC]" => THROWS RangeError: Temporal.ZonedDateTime: offset does not match the time zone in "2020-01-01T00:00+01:00:00.5[UTC]"
+Duration#total relativeTo "2020-01-01T00:00+01:00:00.5[UTC]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00Z[u-ca=hebrew]" => THROWS RangeError: Temporal.Duration: relativeTo with a UTC (Z) designator requires a time-zone annotation
+Duration#total relativeTo "2020-01-01T00:00Z[u-ca=hebrew]" => THROWS RangeError
+Duration#round relativeTo "2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]" => THROWS RangeError: Temporal: more than one calendar annotation in "2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]"
+Duration#total relativeTo "2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]" => THROWS RangeError
+exit=0

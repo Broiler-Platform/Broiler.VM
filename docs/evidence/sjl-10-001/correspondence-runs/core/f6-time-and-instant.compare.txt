@@ -1,0 +1,15 @@
+   PlainTime 10:00 until 08:30 | VM: Temporal.Duration -PT1H30M | BJS: Temporal.Duration -PT1H30M | REF: Temporal.Duration -PT1H30M
+   PlainTime 10:00 since 08:29:31 minute halfExpand | VM: Temporal.Duration PT1H30M | BJS: Temporal.Duration PT1H30M | REF: Temporal.Duration PT1H30M
+   PlainTime 10:00 since 08:29:31 largest minute | VM: Temporal.Duration PT90M29S | BJS: Temporal.Duration PT90M29S | REF: Temporal.Duration PT90M29S
+   PlainTime 08:29:31 since 10:00 minute floor | VM: Temporal.Duration -PT1H31M | BJS: Temporal.Duration -PT1H31M | REF: Temporal.Duration -PT1H31M
+   PlainTime 00:00 until 23:59:59.999999999 hour increment 6 halfEven | VM: Temporal.Duration PT12H | BJS: Temporal.Duration PT12H | REF: Temporal.Duration PT12H
+   PlainTime 00:00 until 21:00 hour increment 6 halfEven | VM: Temporal.Duration PT24H | BJS: Temporal.Duration PT24H | REF: Temporal.Duration PT24H
+   PlainTime 00:00 until 23:59:59.999999999 largest nanosecond | VM: Temporal.Duration PT86399.999999999S | BJS: Temporal.Duration PT86399.999999999S | REF: Temporal.Duration PT86399.999999999S
+   Instant min until max largest hour | VM: Temporal.Duration PT4800000000H | BJS: Temporal.Duration PT4800000000H | REF: Temporal.Duration PT4800000000H
+   Instant min until max largest nanosecond | VM: Temporal.Duration PT17280000000000S | BJS: Temporal.Duration PT17280000000000S | REF: Temporal.Duration PT17280000000000S
+   Instant min until max largest microsecond | VM: 17280000000000000000 | BJS: 17280000000000000000 | REF: 17280000000000000000
+   Instant until 1 h 29 min hour halfExpand | VM: Temporal.Duration PT1H | BJS: Temporal.Duration PT1H | REF: Temporal.Duration PT1H
+   Instant since 1 h 30 min hour halfTrunc | VM: Temporal.Duration PT1H | BJS: Temporal.Duration PT1H | REF: Temporal.Duration PT1H
+   Instant since -1 h 30 min hour halfTrunc | VM: Temporal.Duration -PT1H | BJS: Temporal.Duration -PT1H | REF: Temporal.Duration -PT1H
+   Instant since -1 h 30 min hour halfCeil | VM: Temporal.Duration -PT1H | BJS: Temporal.Duration -PT1H | REF: Temporal.Duration -PT1H
+   Instant until 3 h 29 min, 30-minute increments, expand | VM: Temporal.Duration PT3H30M | BJS: Temporal.Duration PT3H30M | REF: Temporal.Duration PT3H30M

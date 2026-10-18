@@ -1,0 +1,138 @@
+!! PlainDate.from("2020-01-01[]") | VM: THROWS RangeError | BJS: 2020-01-01
+!! PlainYearMonth.from("2020-02-30") | VM: THROWS RangeError | BJS: 2020-02
+!! PlainTime.from("2021-13-45T12:00") | VM: THROWS RangeError | BJS: 12:00:00
+   PlainYearMonth.from("2020-01") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("202001") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("+00202001") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("+002020-01") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("-00202001") | VM: -002020-01 | BJS: -002020-01
+   PlainYearMonth.from("2020-1") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-001") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-13") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-01-01") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("2020-01[u-ca=gregory]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-01[u-ca=iso8601]") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("2020-01[!u-ca=iso8601]") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("2020-01[u-ca=ISO8601]") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("1976-11[u-ca=ISO8601]") | VM: 1976-11 | BJS: 1976-11
+   PlainYearMonth.from("2020-01-01[u-ca=gregory]") | VM: 2020-01-01[u-ca=gregory] | BJS: 2020-01-01[u-ca=gregory]
+   PlainYearMonth.from("2020-01-15[u-ca=hebrew]") | VM: 2019-12-29[u-ca=hebrew] | BJS: 2019-12-29[u-ca=hebrew]
+   PlainYearMonth.from("2020-01[UTC]") | VM: 2020-01 | BJS: 2020-01
+   PlainYearMonth.from("2020-01[foo=bar]") | VM: 2020-01 | BJS: 2020-01
+!! PlainYearMonth.from("2020-01T12:00") | VM: THROWS RangeError | BJS: 2020-01
+   PlainYearMonth.from("2020-01Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("202001[u-ca=gregory]") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("2020-02-30[u-ca=gregory]") | VM: THROWS RangeError | BJS: 2020-02-01[u-ca=gregory]
+   PlainYearMonth.from("+275760-09") | VM: +275760-09 | BJS: +275760-09
+   PlainYearMonth.from("+275760-10") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-271821-04") | VM: -271821-04 | BJS: -271821-04
+   PlainYearMonth.from("-271821-03") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-271821-04-01[u-ca=gregory]") | VM: -271821-04-01[u-ca=gregory] | BJS: -271821-04-01[u-ca=gregory]
+   PlainYearMonth.from("2020-01[u-ca=chinese]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("01-01") | VM: 01-01 | BJS: 01-01
+   PlainMonthDay.from("0101") | VM: 01-01 | BJS: 01-01
+   PlainMonthDay.from("--01-01") | VM: 01-01 | BJS: 01-01
+   PlainMonthDay.from("--0101") | VM: 01-01 | BJS: 01-01
+   PlainMonthDay.from("-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("---01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("--1-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("02-29") | VM: 02-29 | BJS: 02-29
+   PlainMonthDay.from("02-30") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("04-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("00-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("13-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("01-00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("01-32") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("--01-01[u-ca=iso8601]") | VM: 01-01 | BJS: 01-01
+   PlainMonthDay.from("11-18[+01:00][u-ca=ISO8601]") | VM: 11-18 | BJS: 11-18
+   PlainMonthDay.from("01-01[u-ca=gregory]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("01-01[!u-ca=iso8601]") | VM: 01-01 | BJS: 01-01
+   PlainMonthDay.from("2020-01-01[u-ca=gregory]") | VM: 1972-01-01[u-ca=gregory] | BJS: 1972-01-01[u-ca=gregory]
+   PlainMonthDay.from("2021-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-02-29") | VM: 02-29 | BJS: 02-29
+   PlainMonthDay.from("01-01T12:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("--01-01T12:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("01-01[UTC]") | VM: 01-01 | BJS: 01-01
+   PlainMonthDay.from("01-01Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-01-01[u-ca=hebrew]") | VM: 1972-12-09[u-ca=hebrew] | BJS: 1972-12-09[u-ca=hebrew]
+   PlainMonthDay.from("1972-02-29[u-ca=gregory]") | VM: 1972-02-29[u-ca=gregory] | BJS: 1972-02-29[u-ca=gregory]
+   PlainMonthDay.from("+275760-09-13[u-ca=gregory]") | VM: 1972-09-13[u-ca=gregory] | BJS: 1972-09-13[u-ca=gregory]
+   PlainMonthDay.from("-271821-04-19[u-ca=gregory]") | VM: 1972-04-19[u-ca=gregory] | BJS: 1972-04-19[u-ca=gregory]
+   PlainMonthDay.from("-271821-04-19[u-ca=hebrew]") | VM: 1972-07-15[u-ca=hebrew] | BJS: 1972-07-15[u-ca=hebrew]
+   PlainMonthDay.from("+275760-09-13[u-ca=hebrew]") | VM: 1972-05-24[u-ca=hebrew] | BJS: 1972-05-24[u-ca=hebrew]
+   ZonedDateTime.from("2020-01-01[UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from("2020-01-01T00:00Z[UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from("2020-01-01T00:00z[UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from("2020-01-01T00:00+00:00[UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from("2020-01-01T00:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01Z[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01T00:00[!UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+!! ZonedDateTime.from("2020-01-01T00:00[u-ca=iso8601][UTC]") | VM: THROWS RangeError | BJS: 2020-01-01T00:00:00+00:00[UTC]
+!! ZonedDateTime.from("2020-01-01T00:00[foo=bar][UTC]") | VM: THROWS RangeError | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from("2020-01-01T00:00[UTC][foo=bar]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from("2020-01-01T00:00[UTC][!foo=bar]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01T00:00[UTC][u-ca=hebrew]") | VM: 2020-01-01T00:00:00+00:00[UTC][u-ca=hebrew] | BJS: 2020-01-01T00:00:00+00:00[UTC][u-ca=hebrew]
+   ZonedDateTime.from("2020-01-01T00:00[+01:00]") | VM: 2020-01-01T00:00:00+01:00[+01:00] | BJS: 2020-01-01T00:00:00+01:00[+01:00]
+   ZonedDateTime.from("2020-01-01T00:00[+0100]") | VM: 2020-01-01T00:00:00+01:00[+01:00] | BJS: 2020-01-01T00:00:00+01:00[+01:00]
+   ZonedDateTime.from("2020-01-01T00:00[+01]") | VM: 2020-01-01T00:00:00+01:00[+01:00] | BJS: 2020-01-01T00:00:00+01:00[+01:00]
+   ZonedDateTime.from("2020-01-01T00:00[-00:00]") | VM: 2020-01-01T00:00:00+00:00[+00:00] | BJS: 2020-01-01T00:00:00+00:00[+00:00]
+   ZonedDateTime.from("2020-01-01T00:00[+01:00:00]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01T00:00[Europe/Berlin]") | VM: 2020-01-01T00:00:00+01:00[Europe/Berlin] | BJS: 2020-01-01T00:00:00+01:00[Europe/Berlin]
+   ZonedDateTime.from("2020-01-01T00:00[europe/berlin]") | VM: 2020-01-01T00:00:00+01:00[Europe/Berlin] | BJS: 2020-01-01T00:00:00+01:00[Europe/Berlin]
+   ZonedDateTime.from("2020-01-01T00:00[]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01T00:00[!]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01T00:00[Mars Olympus]") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! ZonedDateTime.from("2020-01-01[u-ca=iso8601][UTC]") | VM: THROWS RangeError | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from("2020-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("T00:00[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01T00:00+01:00[Europe/Berlin]") | VM: 2020-01-01T00:00:00+01:00[Europe/Berlin] | BJS: 2020-01-01T00:00:00+01:00[Europe/Berlin]
+   ZonedDateTime.from("2020-01-01T00:00+0100[Europe/Berlin]") | VM: 2020-01-01T00:00:00+01:00[Europe/Berlin] | BJS: 2020-01-01T00:00:00+01:00[Europe/Berlin]
+   ZonedDateTime.from("2020-01-01T00:00+01[Europe/Berlin]") | VM: 2020-01-01T00:00:00+01:00[Europe/Berlin] | BJS: 2020-01-01T00:00:00+01:00[Europe/Berlin]
+   ZonedDateTime.from("2020-01-01T00:00+01:00:00[Europe/Berlin]") | VM: 2020-01-01T00:00:00+01:00[Europe/Berlin] | BJS: 2020-01-01T00:00:00+01:00[Europe/Berlin]
+   ZonedDateTime.from("2020-01-01T00:00+01:00:00.000000001[Europe/Berlin]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("1970-01-01T00:00-00:44:30[Africa/Monrovia]") | VM: 1970-01-01T00:00:00-00:45[Africa/Monrovia] | BJS: 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+   ZonedDateTime.from("1970-01-01T00:00-00:45[Africa/Monrovia]") | VM: 1970-01-01T00:00:00-00:45[Africa/Monrovia] | BJS: 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+   ZonedDateTime.from("1970-01-01T00:00-00:44[Africa/Monrovia]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("1970-01-01T00:00-00:44:30.0[Africa/Monrovia]") | VM: 1970-01-01T00:00:00-00:45[Africa/Monrovia] | BJS: 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+   ZonedDateTime.from("1970-01-01T00:00-0044[Africa/Monrovia]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-01T00:00Z") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("2020-01-01T00:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-01Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-01T00Z") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("2020-01-01T00+01") | VM: 2019-12-31T23:00:00Z | BJS: 2019-12-31T23:00:00Z
+   Instant.from("2020-01-01T00:00Z[UTC]") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("2020-01-01T00:00Z[Mars/Olympus]") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("2020-01-01T00:00Z[u-ca=hebrew]") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("2020-01-01T00:00Z[!u-ca=hebrew]") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("2020-01-01T00:00Z[u-ca=unknowncal]") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("2020-01-01T00:00Z[!foo=bar]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-01 00:00Z") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("20200101T0000Z") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   Instant.from("-271821-04-20T00:00Z") | VM: -271821-04-20T00:00:00Z | BJS: -271821-04-20T00:00:00Z
+   Instant.from("-271821-04-19T23:59:59.999999999Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("-271821-04-19T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("+275760-09-13T00:00Z") | VM: +275760-09-13T00:00:00Z | BJS: +275760-09-13T00:00:00Z
+   Instant.from("+275760-09-13T00:00:00.000000001Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("-271821-04-19T23:00-01:00") | VM: -271821-04-20T00:00:00Z | BJS: -271821-04-20T00:00:00Z
+   Instant.from("+275760-09-13T01:00+01:00") | VM: +275760-09-13T00:00:00Z | BJS: +275760-09-13T00:00:00Z
+   Instant.from("+275760-09-14T00:00+01:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("-271821-04-18T23:00-01:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-01-01T12:00") | VM: 12:00:00 | BJS: 12:00:00
+   PlainTime.from("2020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainTime.from("2020-13-01T12:00") | VM: THROWS RangeError | BJS: 12:00:00
+   PlainTime.from("2020-01-01T12:00[u-ca=hebrew]") | VM: 12:00:00 | BJS: 12:00:00
+   PlainTime.from("2020-01-01T12:00[u-ca=unknowncal]") | VM: 12:00:00 | BJS: 12:00:00
+   PlainTime.from("2020-01-01T12:00[!u-ca=hebrew]") | VM: 12:00:00 | BJS: 12:00:00
+   PlainTime.from("2020-01-01T12:00+01:00[Europe/Berlin]") | VM: 12:00:00 | BJS: 12:00:00
+   PlainDate.from("2020-01-01[u-ca=GREGORY]") | VM: 2020-01-01[u-ca=gregory] | BJS: 2020-01-01[u-ca=gregory]
+   PlainDate.from("2020-01-01[u-ca=Gregory]") | VM: 2020-01-01[u-ca=gregory] | BJS: 2020-01-01[u-ca=gregory]
+   PlainDate.from("2020-01-01[u-ca=ethiopic-amete-alem]") | VM: 2020-01-01[u-ca=ethioaa] | BJS: 2020-01-01[u-ca=ethioaa]
+   PlainDate.from("2020-01-01[u-ca=islamicc]") | VM: 2020-01-01[u-ca=islamic-civil] | BJS: 2020-01-01[u-ca=islamic-civil]
+!! PlainDate.from("2020-01-01[u-ca=gregorian]") | VM: THROWS RangeError | BJS: 2020-01-01[u-ca=gregory]
+!! PlainDate.from("2020-01-01[u-ca=minguo]") | VM: THROWS RangeError | BJS: 2020-01-01[u-ca=roc]
+   PlainDate.from("2020-01-01[u-ca=islamic]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-01-01[u-ca=islamic-rgsa]") | VM: THROWS RangeError | BJS: THROWS RangeError

@@ -1,0 +1,20 @@
+14c14
+< duration P1Y2M3W4DT5H6M7.008009010S round month ceil rel 2020-01-31 => P1Y2M30D
+---
+> duration P1Y2M3W4DT5H6M7.008009010S round month ceil rel 2020-01-31 => P1Y3M
+16c16
+< duration P1Y2M3W4DT5H6M7.008009010S round month expand rel 2020-01-31 => P1Y2M30D
+---
+> duration P1Y2M3W4DT5H6M7.008009010S round month expand rel 2020-01-31 => P1Y3M
+18,22c18,22
+< duration P1Y2M3W4DT5H6M7.008009010S round month halfCeil rel 2020-01-31 => P1Y2M30D
+< duration P1Y2M3W4DT5H6M7.008009010S round month halfFloor rel 2020-01-31 => P1Y2M30D
+< duration P1Y2M3W4DT5H6M7.008009010S round month halfExpand rel 2020-01-31 => P1Y2M30D
+< duration P1Y2M3W4DT5H6M7.008009010S round month halfTrunc rel 2020-01-31 => P1Y2M30D
+< duration P1Y2M3W4DT5H6M7.008009010S round month halfEven rel 2020-01-31 => P1Y2M30D
+---
+> duration P1Y2M3W4DT5H6M7.008009010S round month halfCeil rel 2020-01-31 => P1Y3M
+> duration P1Y2M3W4DT5H6M7.008009010S round month halfFloor rel 2020-01-31 => P1Y3M
+> duration P1Y2M3W4DT5H6M7.008009010S round month halfExpand rel 2020-01-31 => P1Y3M
+> duration P1Y2M3W4DT5H6M7.008009010S round month halfTrunc rel 2020-01-31 => P1Y3M
+> duration P1Y2M3W4DT5H6M7.008009010S round month halfEven rel 2020-01-31 => P1Y3M

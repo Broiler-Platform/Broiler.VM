@@ -1,0 +1,56 @@
+   Temporal.Calendar (removed b8892420, 2024-09-05) | VM: undefined | BJS: undefined
+   Temporal.TimeZone (removed b8892420, 2024-09-05) | VM: undefined | BJS: undefined
+   PlainDate.prototype.getISOFields (removed 7899d593, 2024-09-05) | VM: undefined | BJS: undefined
+   PlainDate.prototype.getCalendar (removed 92b19abd, 2024-07-19) | VM: undefined | BJS: undefined
+   ZonedDateTime.prototype.getTimeZone (removed 92b19abd, 2024-07-19) | VM: undefined | BJS: undefined
+   ZonedDateTime.prototype.getTimeZoneTransition (added 133921b2, 2024-07-19) | VM: function | BJS: function
+   PlainDateTime.prototype.withPlainDate (removed f7acbd2f, 2024-06-13) | VM: undefined | BJS: undefined
+   PlainTime.prototype.toPlainDateTime (removed f81d05fa, 2024-06-13) | VM: undefined | BJS: undefined
+   PlainTime.prototype.toZonedDateTime (removed f81d05fa, 2024-06-13) | VM: undefined | BJS: undefined
+   Instant.prototype.epochSeconds (removed a6cffb25, 2024-06-13) | VM: undefined | BJS: undefined
+   Instant.prototype.epochMicroseconds (removed a6cffb25, 2024-06-13) | VM: undefined | BJS: undefined
+   Instant.fromEpochSeconds (removed a6cffb25, 2024-06-13) | VM: undefined | BJS: undefined
+   PlainDateTime.prototype.toPlainYearMonth (removed efebfa2c, 2024-06-13) | VM: undefined | BJS: undefined
+   ZonedDateTime.prototype.toPlainMonthDay (removed efebfa2c, 2024-06-13) | VM: undefined | BJS: undefined
+   Temporal.Now.plainDate (removed 2ae23dde, 2024-06-13) | VM: undefined | BJS: undefined
+   Temporal.Now.plainDateISO | VM: function | BJS: function
+   Temporal.Now.zonedDateTime (removed 2ae23dde, 2024-06-13) | VM: undefined | BJS: undefined
+   PlainDate.prototype.toPlainYearMonth (kept) | VM: function | BJS: function
+   PlainDate.prototype.yearOfWeek (added 7fa4d189, 2022-11-29) | VM: number | BJS: number
+   Temporal[Symbol.toStringTag] | VM: Temporal | BJS: Temporal
+   Object.getOwnPropertyNames(Temporal) | VM: Duration Instant Now PlainDate PlainDateTime PlainMonthDay PlainTime PlainYearMonth ZonedDateTime | BJS: Duration Instant Now PlainDate PlainDateTime PlainMonthDay PlainTime PlainYearMonth ZonedDateTime
+!! Duration#add with a calendar unit and relativeTo (relativeTo removed 8ae0dbd7, 2024-06-13) | VM: THROWS RangeError | BJS: THROWS Error
+   Duration.from({years: 2**32}) (limited 1104cad8, 2024-01-31) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime offset with a nanosecond that does not match (strict 1117eaf8, 2025-06-02) | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth#add({days: 1}) (refused 41faca47, 2026-01-29) | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth#add({weeks: 1}) (refused 41faca47, 2026-01-29) | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth#add({hours: 1}) (refused 41faca47, 2026-01-29) | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth#add({months: 1, days: 0}) (41faca47, 2026-01-29) | VM: 2020-02 | BJS: 2020-02
+   PlainYearMonth#subtract({days: 40}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("+999999-01-01[u-ca=gregory]") (refused bd5ac121, 2025-02-21) | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("+999999-01-01") (ISO, allowed bd5ac121) | VM: 01-01 | BJS: 01-01
+   PlainMonthDay.from("11-18[+01:00][u-ca=ISO8601]") (polyfill 385b479b, 2026-02-26) | VM: 11-18 | BJS: 11-18
+   PlainYearMonth.from("1976-11[u-ca=ISO8601]") (polyfill 385b479b, 2026-02-26) | VM: 1976-11 | BJS: 1976-11
+   PlainDate.from("2020-01-01[u-ca=ISO8601]").calendarId (canonicalised ba56a48a, 2024-07-01) | VM: iso8601 | BJS: iso8601
+   PlainMonthDay chinese M11L 1 reference (1973-2035 allowed 10f83f39, 2025-09-23; Table 6 ad5028b, 2026-01-21) | VM: 2033-12-22 | BJS: 2033-12-22
+   PlainMonthDay hebrew year 1e10 (polyfill 69a60a2a, 2026-05-11) | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("−002020-01-01") (U+2212 reverted ae9c7855, 2024-07-04) | VM: THROWS RangeError | BJS: THROWS RangeError
+   new ZonedDateTime(0n, "+01:00:01") (minute offsets 70bc509f, 2023-07-18) | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration#round with relativeTo "2022-08-18T17:01Z" (refused 2dc20bf6, 2022-10-11) | VM: THROWS RangeError | BJS: THROWS RangeError
+!! era gregory-inverse in gregory | VM: THROWS RangeError | BJS: bce
+!! era gregory in gregory | VM: THROWS RangeError | BJS: ce
+!! era minguo in roc | VM: THROWS RangeError | BJS: roc
+!! era before-roc in roc | VM: THROWS RangeError | BJS: broc
+   era minguo-qian in roc | VM: THROWS RangeError | BJS: THROWS RangeError
+   era roc-inverse in roc | VM: THROWS RangeError | BJS: THROWS RangeError
+   era incar in ethiopic | VM: THROWS RangeError | BJS: THROWS RangeError
+!! era mundi in ethiopic | VM: THROWS RangeError | BJS: aa
+   era ethiopic-amete-alem in ethiopic | VM: THROWS RangeError | BJS: THROWS RangeError
+!! era coptic in coptic | VM: THROWS RangeError | BJS: am
+   era coptic-inverse in coptic | VM: THROWS RangeError | BJS: THROWS RangeError
+!! era saka in indian | VM: THROWS RangeError | BJS: shaka
+!! era persian in persian | VM: THROWS RangeError | BJS: ap
+   era japanese in japanese | VM: THROWS RangeError | BJS: THROWS RangeError
+   era japanese-inverse in japanese | VM: THROWS RangeError | BJS: THROWS RangeError
+   era islamicc in islamic-civil | VM: THROWS RangeError | BJS: THROWS RangeError
+!! era hebrew in hebrew | VM: THROWS RangeError | BJS: am

@@ -1,0 +1,118 @@
+Instant#toZonedDateTimeISO("UTC").timeZoneId => UTC
+ZonedDateTime.from({..., timeZone: "UTC"}).timeZoneId => UTC
+new ZonedDateTime(0n, "UTC").timeZoneId => UTC
+Instant#toZonedDateTimeISO("2020-01-01T00:00Z").timeZoneId => UTC
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z"}).timeZoneId => UTC
+new ZonedDateTime(0n, "2020-01-01T00:00Z").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00z").timeZoneId => UTC
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00z"}).timeZoneId => UTC
+new ZonedDateTime(0n, "2020-01-01T00:00z").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00+01:00").timeZoneId => +01:00
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+01:00"}).timeZoneId => +01:00
+new ZonedDateTime(0n, "2020-01-01T00:00+01:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00+01:00:01").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+01:00:01"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01T00:00+01:00:01").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00+01:00:00").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+01:00:00"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01T00:00+01:00:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01[Europe/Berlin]").timeZoneId => Europe/Berlin
+ZonedDateTime.from({..., timeZone: "2020-01-01[Europe/Berlin]"}).timeZoneId => Europe/Berlin
+new ZonedDateTime(0n, "2020-01-01[Europe/Berlin]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00Z[Europe/Berlin]").timeZoneId => Europe/Berlin
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z[Europe/Berlin]"}).timeZoneId => Europe/Berlin
+new ZonedDateTime(0n, "2020-01-01T00:00Z[Europe/Berlin]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("T10:00Z").timeZoneId => UTC
+ZonedDateTime.from({..., timeZone: "T10:00Z"}).timeZoneId => UTC
+new ZonedDateTime(0n, "T10:00Z").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("10:00Z").timeZoneId => UTC
+ZonedDateTime.from({..., timeZone: "10:00Z"}).timeZoneId => UTC
+new ZonedDateTime(0n, "10:00Z").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("10:00+01:00").timeZoneId => +01:00
+ZonedDateTime.from({..., timeZone: "10:00+01:00"}).timeZoneId => +01:00
+new ZonedDateTime(0n, "10:00+01:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("T10:00+01:00").timeZoneId => +01:00
+ZonedDateTime.from({..., timeZone: "T10:00+01:00"}).timeZoneId => +01:00
+new ZonedDateTime(0n, "T10:00+01:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("10:00[Europe/Berlin]").timeZoneId => Europe/Berlin
+ZonedDateTime.from({..., timeZone: "10:00[Europe/Berlin]"}).timeZoneId => Europe/Berlin
+new ZonedDateTime(0n, "10:00[Europe/Berlin]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01T00:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00[u-ca=gregory]").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00[u-ca=gregory]"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01T00:00[u-ca=gregory]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01[Europe/Berlin]").timeZoneId => Europe/Berlin
+ZonedDateTime.from({..., timeZone: "2020-01[Europe/Berlin]"}).timeZoneId => Europe/Berlin
+new ZonedDateTime(0n, "2020-01[Europe/Berlin]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("01-01[Europe/Berlin]").timeZoneId => Europe/Berlin
+ZonedDateTime.from({..., timeZone: "01-01[Europe/Berlin]"}).timeZoneId => Europe/Berlin
+new ZonedDateTime(0n, "01-01[Europe/Berlin]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01[]").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01[]"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01[]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00+25:00").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+25:00"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01T00:00+25:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00+23:60").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+23:60"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01T00:00+23:60").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01[u-ca=gregory][Europe/Berlin]").timeZoneId => Europe/Berlin
+ZonedDateTime.from({..., timeZone: "2020-01-01[u-ca=gregory][Europe/Berlin]"}).timeZoneId => Europe/Berlin
+new ZonedDateTime(0n, "2020-01-01[u-ca=gregory][Europe/Berlin]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01[foo=bar][Europe/Berlin]").timeZoneId => Europe/Berlin
+ZonedDateTime.from({..., timeZone: "2020-01-01[foo=bar][Europe/Berlin]"}).timeZoneId => Europe/Berlin
+new ZonedDateTime(0n, "2020-01-01[foo=bar][Europe/Berlin]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("+01:00").timeZoneId => +01:00
+ZonedDateTime.from({..., timeZone: "+01:00"}).timeZoneId => +01:00
+new ZonedDateTime(0n, "+01:00").timeZoneId => +01:00
+Instant#toZonedDateTimeISO("+0100").timeZoneId => +01:00
+ZonedDateTime.from({..., timeZone: "+0100"}).timeZoneId => +01:00
+new ZonedDateTime(0n, "+0100").timeZoneId => +01:00
+Instant#toZonedDateTimeISO("+01").timeZoneId => +01:00
+ZonedDateTime.from({..., timeZone: "+01"}).timeZoneId => +01:00
+new ZonedDateTime(0n, "+01").timeZoneId => +01:00
+Instant#toZonedDateTimeISO("-00:00").timeZoneId => +00:00
+ZonedDateTime.from({..., timeZone: "-00:00"}).timeZoneId => +00:00
+new ZonedDateTime(0n, "-00:00").timeZoneId => +00:00
+Instant#toZonedDateTimeISO("+01:00:00").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "+01:00:00"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "+01:00:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("+01:00:00.5").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "+01:00:00.5"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "+01:00:00.5").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("+24:00").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "+24:00"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "+24:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00+01:00[+02:00]").timeZoneId => +02:00
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00+01:00[+02:00]"}).timeZoneId => +02:00
+new ZonedDateTime(0n, "2020-01-01T00:00+01:00[+02:00]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00Z[+02:00]").timeZoneId => +02:00
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z[+02:00]"}).timeZoneId => +02:00
+new ZonedDateTime(0n, "2020-01-01T00:00Z[+02:00]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T12:3045Z").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2020-01-01T12:3045Z"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2020-01-01T12:3045Z").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2021-12").timeZoneId => THROWS RangeError
+ZonedDateTime.from({..., timeZone: "2021-12"}).timeZoneId => THROWS RangeError
+new ZonedDateTime(0n, "2021-12").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("1214Z").timeZoneId => UTC
+ZonedDateTime.from({..., timeZone: "1214Z"}).timeZoneId => UTC
+new ZonedDateTime(0n, "1214Z").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00Z[!Europe/Berlin]").timeZoneId => Europe/Berlin
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z[!Europe/Berlin]"}).timeZoneId => Europe/Berlin
+new ZonedDateTime(0n, "2020-01-01T00:00Z[!Europe/Berlin]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00Z[u-ca=gregory][!foo=bar]").timeZoneId => UTC
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00Z[u-ca=gregory][!foo=bar]"}).timeZoneId => UTC
+new ZonedDateTime(0n, "2020-01-01T00:00Z[u-ca=gregory][!foo=bar]").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00-00:00").timeZoneId => +00:00
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00-00:00"}).timeZoneId => +00:00
+new ZonedDateTime(0n, "2020-01-01T00:00-00:00").timeZoneId => THROWS RangeError
+Instant#toZonedDateTimeISO("2020-01-01T00:00-00").timeZoneId => +00:00
+ZonedDateTime.from({..., timeZone: "2020-01-01T00:00-00"}).timeZoneId => +00:00
+new ZonedDateTime(0n, "2020-01-01T00:00-00").timeZoneId => THROWS RangeError
+exit=0

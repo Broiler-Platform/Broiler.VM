@@ -1,0 +1,139 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/s04-durations.js [raw]  uncaught Error: OUT<<Duration {} => THROWS TypeError
+Duration {} fractionalSecondDigits 0 => THROWS TypeError
+Duration {} fractionalSecondDigits 3 => THROWS TypeError
+Duration {"years":1} => P1Y
+Duration {"years":1} fractionalSecondDigits 0 => P1YT0S
+Duration {"years":1} fractionalSecondDigits 3 => P1YT0.000S
+Duration {"years":-1} => -P1Y
+Duration {"years":-1} fractionalSecondDigits 0 => -P1YT0S
+Duration {"years":-1} fractionalSecondDigits 3 => -P1YT0.000S
+Duration {"weeks":3,"days":4} => P3W4D
+Duration {"weeks":3,"days":4} fractionalSecondDigits 0 => P3W4DT0S
+Duration {"weeks":3,"days":4} fractionalSecondDigits 3 => P3W4DT0.000S
+Duration {"hours":25} => PT25H
+Duration {"hours":25} fractionalSecondDigits 0 => PT25H0S
+Duration {"hours":25} fractionalSecondDigits 3 => PT25H0.000S
+Duration {"minutes":61} => PT61M
+Duration {"minutes":61} fractionalSecondDigits 0 => PT61M0S
+Duration {"minutes":61} fractionalSecondDigits 3 => PT61M0.000S
+Duration {"seconds":61} => PT61S
+Duration {"seconds":61} fractionalSecondDigits 0 => PT61S
+Duration {"seconds":61} fractionalSecondDigits 3 => PT61.000S
+Duration {"milliseconds":1500} => PT1.5S
+Duration {"milliseconds":1500} fractionalSecondDigits 0 => PT1S
+Duration {"milliseconds":1500} fractionalSecondDigits 3 => PT1.500S
+Duration {"milliseconds":1000} => PT1S
+Duration {"milliseconds":1000} fractionalSecondDigits 0 => PT1S
+Duration {"milliseconds":1000} fractionalSecondDigits 3 => PT1.000S
+Duration {"microseconds":1000001} => PT1.000001S
+Duration {"microseconds":1000001} fractionalSecondDigits 0 => PT1S
+Duration {"microseconds":1000001} fractionalSecondDigits 3 => PT1.000S
+Duration {"nanoseconds":1000000001} => PT1.000000001S
+Duration {"nanoseconds":1000000001} fractionalSecondDigits 0 => PT1S
+Duration {"nanoseconds":1000000001} fractionalSecondDigits 3 => PT1.000S
+Duration {"seconds":1,"milliseconds":999,"microseconds":999,"nanoseconds":1000} => PT2S
+Duration {"seconds":1,"milliseconds":999,"microseconds":999,"nanoseconds":1000} fractionalSecondDigits 0 => PT2S
+Duration {"seconds":1,"milliseconds":999,"microseconds":999,"nanoseconds":1000} fractionalSecondDigits 3 => PT2.000S
+Duration {"milliseconds":0} => PT0S
+Duration {"milliseconds":0} fractionalSecondDigits 0 => PT0S
+Duration {"milliseconds":0} fractionalSecondDigits 3 => PT0.000S
+Duration {"years":4294967295} => P4294967295Y
+Duration {"years":4294967295} fractionalSecondDigits 0 => P4294967295YT0S
+Duration {"years":4294967295} fractionalSecondDigits 3 => P4294967295YT0.000S
+Duration {"months":4294967295} => P4294967295M
+Duration {"months":4294967295} fractionalSecondDigits 0 => P4294967295MT0S
+Duration {"months":4294967295} fractionalSecondDigits 3 => P4294967295MT0.000S
+Duration {"weeks":4294967295} => P4294967295W
+Duration {"weeks":4294967295} fractionalSecondDigits 0 => P4294967295WT0S
+Duration {"weeks":4294967295} fractionalSecondDigits 3 => P4294967295WT0.000S
+Duration {"days":104249991374} => P104249991374D
+Duration {"days":104249991374} fractionalSecondDigits 0 => P104249991374DT0S
+Duration {"days":104249991374} fractionalSecondDigits 3 => P104249991374DT0.000S
+Duration {"hours":2501999792983} => PT2501999792983H
+Duration {"hours":2501999792983} fractionalSecondDigits 0 => PT2501999792983H0S
+Duration {"hours":2501999792983} fractionalSecondDigits 3 => PT2501999792983H0.000S
+Duration {"minutes":150119987579016} => PT150119987579016M
+Duration {"minutes":150119987579016} fractionalSecondDigits 0 => PT150119987579016M0S
+Duration {"minutes":150119987579016} fractionalSecondDigits 3 => PT150119987579016M0.000S
+Duration {"seconds":9007199254740991} => PT9007199254740991S
+Duration {"seconds":9007199254740991} fractionalSecondDigits 0 => PT9007199254740991S
+Duration {"seconds":9007199254740991} fractionalSecondDigits 3 => PT9007199254740991.000S
+Duration {"milliseconds":9007199254740991} => PT9007199254740.991S
+Duration {"milliseconds":9007199254740991} fractionalSecondDigits 0 => PT9007199254740S
+Duration {"milliseconds":9007199254740991} fractionalSecondDigits 3 => PT9007199254740.991S
+Duration {"microseconds":9007199254740991} => PT9007199254.740991S
+Duration {"microseconds":9007199254740991} fractionalSecondDigits 0 => PT9007199254S
+Duration {"microseconds":9007199254740991} fractionalSecondDigits 3 => PT9007199254.740S
+Duration {"nanoseconds":9007199254740991} => PT9007199.254740991S
+Duration {"nanoseconds":9007199254740991} fractionalSecondDigits 0 => PT9007199S
+Duration {"nanoseconds":9007199254740991} fractionalSecondDigits 3 => PT9007199.254S
+Duration {"seconds":9007199254740991,"nanoseconds":999999999} => PT9007199254740991.999999999S
+Duration {"seconds":9007199254740991,"nanoseconds":999999999} fractionalSecondDigits 0 => PT9007199254740991S
+Duration {"seconds":9007199254740991,"nanoseconds":999999999} fractionalSecondDigits 3 => PT9007199254740991.999S
+Duration {"milliseconds":9007199254740992000} => THROWS RangeError
+Duration {"milliseconds":9007199254740992000} fractionalSecondDigits 0 => THROWS RangeError
+Duration {"milliseconds":9007199254740992000} fractionalSecondDigits 3 => THROWS RangeError
+Duration {"days":-1,"hours":-1} => -P1DT1H
+Duration {"days":-1,"hours":-1} fractionalSecondDigits 0 => -P1DT1H0S
+Duration {"days":-1,"hours":-1} fractionalSecondDigits 3 => -P1DT1H0.000S
+Duration {"hours":1,"nanoseconds":1} => PT1H0.000000001S
+Duration {"hours":1,"nanoseconds":1} fractionalSecondDigits 0 => PT1H0S
+Duration {"hours":1,"nanoseconds":1} fractionalSecondDigits 3 => PT1H0.000S
+Duration {"minutes":1,"seconds":0} => PT1M
+Duration {"minutes":1,"seconds":0} fractionalSecondDigits 0 => PT1M0S
+Duration {"minutes":1,"seconds":0} fractionalSecondDigits 3 => PT1M0.000S
+Duration {"seconds":0} => PT0S
+Duration {"seconds":0} fractionalSecondDigits 0 => PT0S
+Duration {"seconds":0} fractionalSecondDigits 3 => PT0.000S
+Duration PT59.999999999S ceil fractionalSecondDigits 0 => PT60S
+Duration PT59.999999999S ceil smallestUnit second => PT60S
+Duration PT59.5S halfExpand fractionalSecondDigits 0 => PT60S
+Duration PT59.5S halfExpand smallestUnit second => PT60S
+Duration PT59M59.5S halfExpand fractionalSecondDigits 0 => PT60M0S
+Duration PT59M59.5S halfExpand smallestUnit second => PT60M0S
+Duration PT23H59M59.5S halfExpand fractionalSecondDigits 0 => PT24H0S
+Duration PT23H59M59.5S halfExpand smallestUnit second => PT24H0S
+Duration P1DT23H59M59.5S halfExpand fractionalSecondDigits 0 => P2DT0S
+Duration P1DT23H59M59.5S halfExpand smallestUnit second => P2DT0S
+Duration P1WT23H59M59.5S halfExpand fractionalSecondDigits 0 => P1W1DT0S
+Duration P1WT23H59M59.5S halfExpand smallestUnit second => P1W1DT0S
+Duration P1YT23H59M59.5S halfExpand fractionalSecondDigits 0 => P1Y1DT0S
+Duration P1YT23H59M59.5S halfExpand smallestUnit second => P1Y1DT0S
+Duration PT0.5S halfEven fractionalSecondDigits 0 => PT0S
+Duration PT0.5S halfEven smallestUnit second => PT0S
+Duration PT1.5S halfEven fractionalSecondDigits 0 => PT2S
+Duration PT1.5S halfEven smallestUnit second => PT2S
+Duration -PT59.5S halfExpand fractionalSecondDigits 0 => -PT60S
+Duration -PT59.5S halfExpand smallestUnit second => -PT60S
+Duration -PT59.5S floor fractionalSecondDigits 0 => -PT60S
+Duration -PT59.5S floor smallestUnit second => -PT60S
+Duration -PT59.5S ceil fractionalSecondDigits 0 => -PT59S
+Duration -PT59.5S ceil smallestUnit second => -PT59S
+Duration PT1H59M59.999S ceil fractionalSecondDigits 2 => PT2H0.00S
+Duration PT1H59M59.999S ceil smallestUnit second => PT2H0S
+Duration PT2501999792983H59M59.999999999S ceil fractionalSecondDigits 0 => THROWS RangeError
+Duration PT2501999792983H59M59.999999999S ceil smallestUnit second => THROWS RangeError
+Duration PT9007199254740991.999999999S ceil fractionalSecondDigits 0 => THROWS RangeError
+Duration PT9007199254740991.999999999S ceil smallestUnit second => THROWS RangeError
+Duration PT9007199254740991.5S halfExpand fractionalSecondDigits 0 => THROWS RangeError
+Duration PT9007199254740991.5S halfExpand smallestUnit second => THROWS RangeError
+Duration PT9007199254740990.5S halfEven fractionalSecondDigits 0 => PT9007199254740990S
+Duration PT9007199254740990.5S halfEven smallestUnit second => PT9007199254740990S>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/s04-durations.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/s04-durations.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/s04-durations.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

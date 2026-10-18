@@ -1,0 +1,20 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+PlainDate.from({year: 2021, month: 2, day: 31}) => Temporal.PlainDate 2021-02-28
+PlainDate.from({year: 2021, month: 13, day: 1}) => Temporal.PlainDate 2021-12-01
+PlainDate.from({year: 2021, month: 2, day: 31}, reject) => THROWS RangeError: value out of range: 1 <= 31 <= 28
+PlainDate.from({year: 2021, month: 0, day: 1}) => THROWS RangeError: property 'month' cannot be a a number less than one
+PlainDate.from({year: 2021, month: 1, day: 0}) => THROWS RangeError: property 'day' cannot be a a number less than one
+PlainTime.from({hour: 25, minute: 61, second: 61, millisecond: 1000}) => Temporal.PlainTime 23:59:59.999
+PlainTime.from({hour: 25}, reject) => THROWS RangeError: value out of range: 0 <= 25 <= 23
+PlainTime.from({hour: -1, minute: -1}) => Temporal.PlainTime 00:00:00
+PlainTime.from({hour: -1}, reject) => THROWS RangeError: value out of range: 0 <= -1 <= 23
+PlainTime.from({microsecond: 1000, nanosecond: 1000}) => Temporal.PlainTime 00:00:00.000999999
+PlainDateTime.from({year: 2020, month: 1, day: 1, second: 60}) => Temporal.PlainDateTime 2020-01-01T00:00:59
+PlainDateTime.from({year: 2020, month: 1, day: 1, second: 60}, reject) => THROWS RangeError: value out of range: 0 <= 60 <= 59
+PlainYearMonth.from({year: 2020, month: 13}) => Temporal.PlainYearMonth 2020-12
+PlainYearMonth.from({year: 2020, month: 13}, reject) => THROWS RangeError: value out of range: 1 <= 13 <= 12
+PlainDateTime("2020-02-29T12:00").with({year: 2021}) => Temporal.PlainDateTime 2021-02-28T12:00:00
+PlainDateTime("2020-02-29T12:00").with({year: 2021}, reject) => THROWS RangeError: value out of range: 1 <= 29 <= 28
+PlainTime("12:00").with({minute: 75}) => Temporal.PlainTime 12:59:00
+exit=0

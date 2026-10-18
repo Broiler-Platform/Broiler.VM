@@ -1,0 +1,139 @@
+PlainDate.from("2020-01-01[]") => 2020-01-01
+PlainYearMonth.from("2020-02-30") => 2020-02
+PlainTime.from("2021-13-45T12:00") => 12:00:00
+PlainYearMonth.from("2020-01") => 2020-01
+PlainYearMonth.from("202001") => 2020-01
+PlainYearMonth.from("+00202001") => 2020-01
+PlainYearMonth.from("+002020-01") => 2020-01
+PlainYearMonth.from("-00202001") => -002020-01
+PlainYearMonth.from("2020-1") => THROWS RangeError
+PlainYearMonth.from("2020-001") => THROWS RangeError
+PlainYearMonth.from("2020-00") => THROWS RangeError
+PlainYearMonth.from("2020-13") => THROWS RangeError
+PlainYearMonth.from("2020-01-01") => 2020-01
+PlainYearMonth.from("2020-01[u-ca=gregory]") => THROWS RangeError
+PlainYearMonth.from("2020-01[u-ca=iso8601]") => 2020-01
+PlainYearMonth.from("2020-01[!u-ca=iso8601]") => 2020-01
+PlainYearMonth.from("2020-01[u-ca=ISO8601]") => 2020-01
+PlainYearMonth.from("1976-11[u-ca=ISO8601]") => 1976-11
+PlainYearMonth.from("2020-01-01[u-ca=gregory]") => 2020-01-01[u-ca=gregory]
+PlainYearMonth.from("2020-01-15[u-ca=hebrew]") => 2019-12-29[u-ca=hebrew]
+PlainYearMonth.from("2020-01[UTC]") => 2020-01
+PlainYearMonth.from("2020-01[foo=bar]") => 2020-01
+PlainYearMonth.from("2020-01T12:00") => 2020-01
+PlainYearMonth.from("2020-01Z") => THROWS RangeError
+PlainYearMonth.from("202001[u-ca=gregory]") => THROWS RangeError
+PlainYearMonth.from("2020-02-30[u-ca=gregory]") => 2020-02-01[u-ca=gregory]
+PlainYearMonth.from("+275760-09") => +275760-09
+PlainYearMonth.from("+275760-10") => THROWS RangeError
+PlainYearMonth.from("-271821-04") => -271821-04
+PlainYearMonth.from("-271821-03") => THROWS RangeError
+PlainYearMonth.from("-271821-04-01[u-ca=gregory]") => -271821-04-01[u-ca=gregory]
+PlainYearMonth.from("2020-01[u-ca=chinese]") => THROWS RangeError
+PlainMonthDay.from("01-01") => 01-01
+PlainMonthDay.from("0101") => 01-01
+PlainMonthDay.from("--01-01") => 01-01
+PlainMonthDay.from("--0101") => 01-01
+PlainMonthDay.from("-01-01") => THROWS RangeError
+PlainMonthDay.from("---01-01") => THROWS RangeError
+PlainMonthDay.from("--1-01") => THROWS RangeError
+PlainMonthDay.from("02-29") => 02-29
+PlainMonthDay.from("02-30") => THROWS RangeError
+PlainMonthDay.from("04-31") => THROWS RangeError
+PlainMonthDay.from("00-01") => THROWS RangeError
+PlainMonthDay.from("13-01") => THROWS RangeError
+PlainMonthDay.from("01-00") => THROWS RangeError
+PlainMonthDay.from("01-32") => THROWS RangeError
+PlainMonthDay.from("--01-01[u-ca=iso8601]") => 01-01
+PlainMonthDay.from("11-18[+01:00][u-ca=ISO8601]") => 11-18
+PlainMonthDay.from("01-01[u-ca=gregory]") => THROWS RangeError
+PlainMonthDay.from("01-01[!u-ca=iso8601]") => 01-01
+PlainMonthDay.from("2020-01-01[u-ca=gregory]") => 1972-01-01[u-ca=gregory]
+PlainMonthDay.from("2021-02-29") => THROWS RangeError
+PlainMonthDay.from("2020-02-29") => 02-29
+PlainMonthDay.from("01-01T12:00") => THROWS RangeError
+PlainMonthDay.from("--01-01T12:00") => THROWS RangeError
+PlainMonthDay.from("01-01[UTC]") => 01-01
+PlainMonthDay.from("01-01Z") => THROWS RangeError
+PlainMonthDay.from("2020-01-01[u-ca=hebrew]") => 1972-12-09[u-ca=hebrew]
+PlainMonthDay.from("1972-02-29[u-ca=gregory]") => 1972-02-29[u-ca=gregory]
+PlainMonthDay.from("+275760-09-13[u-ca=gregory]") => 1972-09-13[u-ca=gregory]
+PlainMonthDay.from("-271821-04-19[u-ca=gregory]") => 1972-04-19[u-ca=gregory]
+PlainMonthDay.from("-271821-04-19[u-ca=hebrew]") => 1972-07-15[u-ca=hebrew]
+PlainMonthDay.from("+275760-09-13[u-ca=hebrew]") => 1972-05-24[u-ca=hebrew]
+ZonedDateTime.from("2020-01-01[UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00Z[UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00z[UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00+00:00[UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00") => THROWS RangeError
+ZonedDateTime.from("2020-01-01Z[UTC]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00Z") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[!UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00[u-ca=iso8601][UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00[foo=bar][UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00[UTC][foo=bar]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00[UTC][!foo=bar]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[UTC][u-ca=hebrew]") => 2020-01-01T00:00:00+00:00[UTC][u-ca=hebrew]
+ZonedDateTime.from("2020-01-01T00:00[+01:00]") => 2020-01-01T00:00:00+01:00[+01:00]
+ZonedDateTime.from("2020-01-01T00:00[+0100]") => 2020-01-01T00:00:00+01:00[+01:00]
+ZonedDateTime.from("2020-01-01T00:00[+01]") => 2020-01-01T00:00:00+01:00[+01:00]
+ZonedDateTime.from("2020-01-01T00:00[-00:00]") => 2020-01-01T00:00:00+00:00[+00:00]
+ZonedDateTime.from("2020-01-01T00:00[+01:00:00]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00[europe/berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00[]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[!]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[Mars Olympus]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01[u-ca=iso8601][UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01[UTC]") => THROWS RangeError
+ZonedDateTime.from("01-01[UTC]") => THROWS RangeError
+ZonedDateTime.from("T00:00[UTC]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00+01:00[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00+0100[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00+01[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00+01:00:00[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00+01:00:00.000000001[Europe/Berlin]") => THROWS RangeError
+ZonedDateTime.from("1970-01-01T00:00-00:44:30[Africa/Monrovia]") => 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+ZonedDateTime.from("1970-01-01T00:00-00:45[Africa/Monrovia]") => 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+ZonedDateTime.from("1970-01-01T00:00-00:44[Africa/Monrovia]") => THROWS RangeError
+ZonedDateTime.from("1970-01-01T00:00-00:44:30.0[Africa/Monrovia]") => 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+ZonedDateTime.from("1970-01-01T00:00-0044[Africa/Monrovia]") => THROWS RangeError
+Instant.from("2020-01-01T00:00Z") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00") => THROWS RangeError
+Instant.from("2020-01-01") => THROWS RangeError
+Instant.from("2020-01-01Z") => THROWS RangeError
+Instant.from("2020-01-01T00Z") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00+01") => 2019-12-31T23:00:00Z
+Instant.from("2020-01-01T00:00Z[UTC]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[Mars/Olympus]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[u-ca=hebrew]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[!u-ca=hebrew]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[u-ca=unknowncal]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[!foo=bar]") => THROWS RangeError
+Instant.from("2020-01-01 00:00Z") => 2020-01-01T00:00:00Z
+Instant.from("20200101T0000Z") => 2020-01-01T00:00:00Z
+Instant.from("-271821-04-20T00:00Z") => -271821-04-20T00:00:00Z
+Instant.from("-271821-04-19T23:59:59.999999999Z") => THROWS RangeError
+Instant.from("-271821-04-19T00:00Z") => THROWS RangeError
+Instant.from("+275760-09-13T00:00Z") => +275760-09-13T00:00:00Z
+Instant.from("+275760-09-13T00:00:00.000000001Z") => THROWS RangeError
+Instant.from("-271821-04-19T23:00-01:00") => -271821-04-20T00:00:00Z
+Instant.from("+275760-09-13T01:00+01:00") => +275760-09-13T00:00:00Z
+Instant.from("+275760-09-14T00:00+01:00") => THROWS RangeError
+Instant.from("-271821-04-18T23:00-01:00") => THROWS RangeError
+PlainTime.from("2020-01-01T12:00") => 12:00:00
+PlainTime.from("2020-01-01") => THROWS RangeError
+PlainTime.from("2020-13-01T12:00") => 12:00:00
+PlainTime.from("2020-01-01T12:00[u-ca=hebrew]") => 12:00:00
+PlainTime.from("2020-01-01T12:00[u-ca=unknowncal]") => 12:00:00
+PlainTime.from("2020-01-01T12:00[!u-ca=hebrew]") => 12:00:00
+PlainTime.from("2020-01-01T12:00+01:00[Europe/Berlin]") => 12:00:00
+PlainDate.from("2020-01-01[u-ca=GREGORY]") => 2020-01-01[u-ca=gregory]
+PlainDate.from("2020-01-01[u-ca=Gregory]") => 2020-01-01[u-ca=gregory]
+PlainDate.from("2020-01-01[u-ca=ethiopic-amete-alem]") => 2020-01-01[u-ca=ethioaa]
+PlainDate.from("2020-01-01[u-ca=islamicc]") => 2020-01-01[u-ca=islamic-civil]
+PlainDate.from("2020-01-01[u-ca=gregorian]") => 2020-01-01[u-ca=gregory]
+PlainDate.from("2020-01-01[u-ca=minguo]") => 2020-01-01[u-ca=roc]
+PlainDate.from("2020-01-01[u-ca=islamic]") => THROWS RangeError
+PlainDate.from("2020-01-01[u-ca=islamic-rgsa]") => THROWS RangeError
+exit=0

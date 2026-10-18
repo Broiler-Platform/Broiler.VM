@@ -1,0 +1,19 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+new PlainTime(23, 59, 59, 999, 999, 999) => Temporal.PlainTime 23:59:59.999999999
+new PlainTime(24) => THROWS RangeError: value out of range: 0 <= 24 <= 23
+new PlainTime(0, 60) => THROWS RangeError: value out of range: 0 <= 60 <= 59
+new PlainTime(0, 0, 0, 1000) => THROWS RangeError: value out of range: 0 <= 1000 <= 999
+new PlainTime(-1) => THROWS RangeError: value out of range: 0 <= -1 <= 23
+new PlainTime(1.9, 2.9) => Temporal.PlainTime 01:02:00
+new PlainTime(-0.5) => Temporal.PlainTime 00:00:00
+new PlainTime(NaN) => THROWS RangeError: invalid number value
+new PlainTime(Infinity) => THROWS RangeError: invalid number value
+new PlainTime(undefined, 5) => Temporal.PlainTime 00:05:00
+new PlainDateTime(2020, 1, 1, 24) => THROWS RangeError: value out of range: 0 <= 24 <= 23
+new PlainDate(2020, 2, 30) => THROWS RangeError: value out of range: 1 <= 30 <= 29
+new PlainDate(2021, 2, 29) => THROWS RangeError: value out of range: 1 <= 29 <= 28
+new PlainDate(2020, 13, 1) => THROWS RangeError: value out of range: 1 <= 13 <= 12
+new PlainDate(2020, 0, 1) => THROWS RangeError: value out of range: 1 <= 0 <= 12
+new PlainDate(2020.7, 1.2, 1.9) => Temporal.PlainDate 2020-01-01
+exit=0

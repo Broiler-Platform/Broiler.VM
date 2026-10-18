@@ -1,0 +1,375 @@
+   PlainTime fractionalSecondDigits undefined | VM: 12:34:56.123456789 | BJS: 12:34:56.123456789
+   PlainTime fractionalSecondDigits "auto" | VM: 12:34:56.123456789 | BJS: 12:34:56.123456789
+   PlainTime fractionalSecondDigits 0 | VM: 12:34:56 | BJS: 12:34:56
+   PlainTime fractionalSecondDigits 1 | VM: 12:34:56.1 | BJS: 12:34:56.1
+   PlainTime fractionalSecondDigits 2 | VM: 12:34:56.12 | BJS: 12:34:56.12
+   PlainTime fractionalSecondDigits 3 | VM: 12:34:56.123 | BJS: 12:34:56.123
+   PlainTime fractionalSecondDigits 4 | VM: 12:34:56.1234 | BJS: 12:34:56.1234
+   PlainTime fractionalSecondDigits 5 | VM: 12:34:56.12345 | BJS: 12:34:56.12345
+   PlainTime fractionalSecondDigits 6 | VM: 12:34:56.123456 | BJS: 12:34:56.123456
+   PlainTime fractionalSecondDigits 7 | VM: 12:34:56.1234567 | BJS: 12:34:56.1234567
+   PlainTime fractionalSecondDigits 8 | VM: 12:34:56.12345678 | BJS: 12:34:56.12345678
+   PlainTime fractionalSecondDigits 9 | VM: 12:34:56.123456789 | BJS: 12:34:56.123456789
+   PlainTime fractionalSecondDigits 10 | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits -1 | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits 2.5 | VM: 12:34:56.12 | BJS: 12:34:56.12
+   PlainTime fractionalSecondDigits 9.9 | VM: 12:34:56.123456789 | BJS: 12:34:56.123456789
+   PlainTime fractionalSecondDigits -0.5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits "3" | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits "x" | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits NaN | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits -Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits true | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits null | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits "AUTO" | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime fractionalSecondDigits 3n | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime smallestUnit minute | VM: 12:34 | BJS: 12:34
+   PlainTime smallestUnit second | VM: 12:34:56 | BJS: 12:34:56
+   PlainTime smallestUnit millisecond | VM: 12:34:56.123 | BJS: 12:34:56.123
+   PlainTime smallestUnit microsecond | VM: 12:34:56.123456 | BJS: 12:34:56.123456
+   PlainTime smallestUnit nanosecond | VM: 12:34:56.123456789 | BJS: 12:34:56.123456789
+   PlainTime smallestUnit hour | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime smallestUnit day | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime smallestUnit year | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime smallestUnit minutes | VM: 12:34 | BJS: 12:34
+   PlainTime smallestUnit seconds | VM: 12:34:56 | BJS: 12:34:56
+   PlainTime smallestUnit MINUTE | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime smallestUnit auto | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime smallestUnit  | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime smallestUnit week | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime smallestUnit second with fractionalSecondDigits 5 | VM: 12:34:56 | BJS: 12:34:56
+   PlainTime smallestUnit millisecond with fractionalSecondDigits 0 | VM: 12:34:56.123 | BJS: 12:34:56.123
+   PlainDateTime fractionalSecondDigits undefined | VM: 2020-01-01T12:34:56.123456789 | BJS: 2020-01-01T12:34:56.123456789
+   PlainDateTime fractionalSecondDigits "auto" | VM: 2020-01-01T12:34:56.123456789 | BJS: 2020-01-01T12:34:56.123456789
+   PlainDateTime fractionalSecondDigits 0 | VM: 2020-01-01T12:34:56 | BJS: 2020-01-01T12:34:56
+   PlainDateTime fractionalSecondDigits 1 | VM: 2020-01-01T12:34:56.1 | BJS: 2020-01-01T12:34:56.1
+   PlainDateTime fractionalSecondDigits 2 | VM: 2020-01-01T12:34:56.12 | BJS: 2020-01-01T12:34:56.12
+   PlainDateTime fractionalSecondDigits 3 | VM: 2020-01-01T12:34:56.123 | BJS: 2020-01-01T12:34:56.123
+   PlainDateTime fractionalSecondDigits 4 | VM: 2020-01-01T12:34:56.1234 | BJS: 2020-01-01T12:34:56.1234
+   PlainDateTime fractionalSecondDigits 5 | VM: 2020-01-01T12:34:56.12345 | BJS: 2020-01-01T12:34:56.12345
+   PlainDateTime fractionalSecondDigits 6 | VM: 2020-01-01T12:34:56.123456 | BJS: 2020-01-01T12:34:56.123456
+   PlainDateTime fractionalSecondDigits 7 | VM: 2020-01-01T12:34:56.1234567 | BJS: 2020-01-01T12:34:56.1234567
+   PlainDateTime fractionalSecondDigits 8 | VM: 2020-01-01T12:34:56.12345678 | BJS: 2020-01-01T12:34:56.12345678
+   PlainDateTime fractionalSecondDigits 9 | VM: 2020-01-01T12:34:56.123456789 | BJS: 2020-01-01T12:34:56.123456789
+   PlainDateTime fractionalSecondDigits 10 | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits -1 | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits 2.5 | VM: 2020-01-01T12:34:56.12 | BJS: 2020-01-01T12:34:56.12
+   PlainDateTime fractionalSecondDigits 9.9 | VM: 2020-01-01T12:34:56.123456789 | BJS: 2020-01-01T12:34:56.123456789
+   PlainDateTime fractionalSecondDigits -0.5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits "3" | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits "x" | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits NaN | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits -Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits true | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits null | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits "AUTO" | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime fractionalSecondDigits 3n | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime smallestUnit minute | VM: 2020-01-01T12:34 | BJS: 2020-01-01T12:34
+   PlainDateTime smallestUnit second | VM: 2020-01-01T12:34:56 | BJS: 2020-01-01T12:34:56
+   PlainDateTime smallestUnit millisecond | VM: 2020-01-01T12:34:56.123 | BJS: 2020-01-01T12:34:56.123
+   PlainDateTime smallestUnit microsecond | VM: 2020-01-01T12:34:56.123456 | BJS: 2020-01-01T12:34:56.123456
+   PlainDateTime smallestUnit nanosecond | VM: 2020-01-01T12:34:56.123456789 | BJS: 2020-01-01T12:34:56.123456789
+   PlainDateTime smallestUnit hour | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime smallestUnit day | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime smallestUnit year | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime smallestUnit minutes | VM: 2020-01-01T12:34 | BJS: 2020-01-01T12:34
+   PlainDateTime smallestUnit seconds | VM: 2020-01-01T12:34:56 | BJS: 2020-01-01T12:34:56
+   PlainDateTime smallestUnit MINUTE | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime smallestUnit auto | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime smallestUnit  | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime smallestUnit week | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime smallestUnit second with fractionalSecondDigits 5 | VM: 2020-01-01T12:34:56 | BJS: 2020-01-01T12:34:56
+   PlainDateTime smallestUnit millisecond with fractionalSecondDigits 0 | VM: 2020-01-01T12:34:56.123 | BJS: 2020-01-01T12:34:56.123
+   Instant fractionalSecondDigits undefined | VM: 2020-01-01T12:34:56.123456789Z | BJS: 2020-01-01T12:34:56.123456789Z
+   Instant fractionalSecondDigits "auto" | VM: 2020-01-01T12:34:56.123456789Z | BJS: 2020-01-01T12:34:56.123456789Z
+   Instant fractionalSecondDigits 0 | VM: 2020-01-01T12:34:56Z | BJS: 2020-01-01T12:34:56Z
+   Instant fractionalSecondDigits 1 | VM: 2020-01-01T12:34:56.1Z | BJS: 2020-01-01T12:34:56.1Z
+   Instant fractionalSecondDigits 2 | VM: 2020-01-01T12:34:56.12Z | BJS: 2020-01-01T12:34:56.12Z
+   Instant fractionalSecondDigits 3 | VM: 2020-01-01T12:34:56.123Z | BJS: 2020-01-01T12:34:56.123Z
+   Instant fractionalSecondDigits 4 | VM: 2020-01-01T12:34:56.1234Z | BJS: 2020-01-01T12:34:56.1234Z
+   Instant fractionalSecondDigits 5 | VM: 2020-01-01T12:34:56.12345Z | BJS: 2020-01-01T12:34:56.12345Z
+   Instant fractionalSecondDigits 6 | VM: 2020-01-01T12:34:56.123456Z | BJS: 2020-01-01T12:34:56.123456Z
+   Instant fractionalSecondDigits 7 | VM: 2020-01-01T12:34:56.1234567Z | BJS: 2020-01-01T12:34:56.1234567Z
+   Instant fractionalSecondDigits 8 | VM: 2020-01-01T12:34:56.12345678Z | BJS: 2020-01-01T12:34:56.12345678Z
+   Instant fractionalSecondDigits 9 | VM: 2020-01-01T12:34:56.123456789Z | BJS: 2020-01-01T12:34:56.123456789Z
+   Instant fractionalSecondDigits 10 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits -1 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits 2.5 | VM: 2020-01-01T12:34:56.12Z | BJS: 2020-01-01T12:34:56.12Z
+   Instant fractionalSecondDigits 9.9 | VM: 2020-01-01T12:34:56.123456789Z | BJS: 2020-01-01T12:34:56.123456789Z
+   Instant fractionalSecondDigits -0.5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits "3" | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits "x" | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits NaN | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits -Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits true | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits null | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits "AUTO" | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant fractionalSecondDigits 3n | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant smallestUnit minute | VM: 2020-01-01T12:34Z | BJS: 2020-01-01T12:34Z
+   Instant smallestUnit second | VM: 2020-01-01T12:34:56Z | BJS: 2020-01-01T12:34:56Z
+   Instant smallestUnit millisecond | VM: 2020-01-01T12:34:56.123Z | BJS: 2020-01-01T12:34:56.123Z
+   Instant smallestUnit microsecond | VM: 2020-01-01T12:34:56.123456Z | BJS: 2020-01-01T12:34:56.123456Z
+   Instant smallestUnit nanosecond | VM: 2020-01-01T12:34:56.123456789Z | BJS: 2020-01-01T12:34:56.123456789Z
+   Instant smallestUnit hour | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant smallestUnit day | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant smallestUnit year | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant smallestUnit minutes | VM: 2020-01-01T12:34Z | BJS: 2020-01-01T12:34Z
+   Instant smallestUnit seconds | VM: 2020-01-01T12:34:56Z | BJS: 2020-01-01T12:34:56Z
+   Instant smallestUnit MINUTE | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant smallestUnit auto | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant smallestUnit  | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant smallestUnit week | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant smallestUnit second with fractionalSecondDigits 5 | VM: 2020-01-01T12:34:56Z | BJS: 2020-01-01T12:34:56Z
+   Instant smallestUnit millisecond with fractionalSecondDigits 0 | VM: 2020-01-01T12:34:56.123Z | BJS: 2020-01-01T12:34:56.123Z
+   ZonedDateTime fractionalSecondDigits undefined | VM: 2020-01-01T12:34:56.123456789+00:00[UTC] | BJS: 2020-01-01T12:34:56.123456789+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits "auto" | VM: 2020-01-01T12:34:56.123456789+00:00[UTC] | BJS: 2020-01-01T12:34:56.123456789+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 0 | VM: 2020-01-01T12:34:56+00:00[UTC] | BJS: 2020-01-01T12:34:56+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 1 | VM: 2020-01-01T12:34:56.1+00:00[UTC] | BJS: 2020-01-01T12:34:56.1+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 2 | VM: 2020-01-01T12:34:56.12+00:00[UTC] | BJS: 2020-01-01T12:34:56.12+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 3 | VM: 2020-01-01T12:34:56.123+00:00[UTC] | BJS: 2020-01-01T12:34:56.123+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 4 | VM: 2020-01-01T12:34:56.1234+00:00[UTC] | BJS: 2020-01-01T12:34:56.1234+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 5 | VM: 2020-01-01T12:34:56.12345+00:00[UTC] | BJS: 2020-01-01T12:34:56.12345+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 6 | VM: 2020-01-01T12:34:56.123456+00:00[UTC] | BJS: 2020-01-01T12:34:56.123456+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 7 | VM: 2020-01-01T12:34:56.1234567+00:00[UTC] | BJS: 2020-01-01T12:34:56.1234567+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 8 | VM: 2020-01-01T12:34:56.12345678+00:00[UTC] | BJS: 2020-01-01T12:34:56.12345678+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 9 | VM: 2020-01-01T12:34:56.123456789+00:00[UTC] | BJS: 2020-01-01T12:34:56.123456789+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 10 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits -1 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits 2.5 | VM: 2020-01-01T12:34:56.12+00:00[UTC] | BJS: 2020-01-01T12:34:56.12+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits 9.9 | VM: 2020-01-01T12:34:56.123456789+00:00[UTC] | BJS: 2020-01-01T12:34:56.123456789+00:00[UTC]
+   ZonedDateTime fractionalSecondDigits -0.5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits "3" | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits "x" | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits NaN | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits -Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits true | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits null | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits "AUTO" | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime fractionalSecondDigits 3n | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime smallestUnit minute | VM: 2020-01-01T12:34+00:00[UTC] | BJS: 2020-01-01T12:34+00:00[UTC]
+   ZonedDateTime smallestUnit second | VM: 2020-01-01T12:34:56+00:00[UTC] | BJS: 2020-01-01T12:34:56+00:00[UTC]
+   ZonedDateTime smallestUnit millisecond | VM: 2020-01-01T12:34:56.123+00:00[UTC] | BJS: 2020-01-01T12:34:56.123+00:00[UTC]
+   ZonedDateTime smallestUnit microsecond | VM: 2020-01-01T12:34:56.123456+00:00[UTC] | BJS: 2020-01-01T12:34:56.123456+00:00[UTC]
+   ZonedDateTime smallestUnit nanosecond | VM: 2020-01-01T12:34:56.123456789+00:00[UTC] | BJS: 2020-01-01T12:34:56.123456789+00:00[UTC]
+   ZonedDateTime smallestUnit hour | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime smallestUnit day | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime smallestUnit year | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime smallestUnit minutes | VM: 2020-01-01T12:34+00:00[UTC] | BJS: 2020-01-01T12:34+00:00[UTC]
+   ZonedDateTime smallestUnit seconds | VM: 2020-01-01T12:34:56+00:00[UTC] | BJS: 2020-01-01T12:34:56+00:00[UTC]
+   ZonedDateTime smallestUnit MINUTE | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime smallestUnit auto | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime smallestUnit  | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime smallestUnit week | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime smallestUnit second with fractionalSecondDigits 5 | VM: 2020-01-01T12:34:56+00:00[UTC] | BJS: 2020-01-01T12:34:56+00:00[UTC]
+   ZonedDateTime smallestUnit millisecond with fractionalSecondDigits 0 | VM: 2020-01-01T12:34:56.123+00:00[UTC] | BJS: 2020-01-01T12:34:56.123+00:00[UTC]
+   Duration fractionalSecondDigits undefined | VM: PT12H34M56.123456789S | BJS: PT12H34M56.123456789S
+   Duration fractionalSecondDigits "auto" | VM: PT12H34M56.123456789S | BJS: PT12H34M56.123456789S
+   Duration fractionalSecondDigits 0 | VM: PT12H34M56S | BJS: PT12H34M56S
+   Duration fractionalSecondDigits 1 | VM: PT12H34M56.1S | BJS: PT12H34M56.1S
+   Duration fractionalSecondDigits 2 | VM: PT12H34M56.12S | BJS: PT12H34M56.12S
+   Duration fractionalSecondDigits 3 | VM: PT12H34M56.123S | BJS: PT12H34M56.123S
+   Duration fractionalSecondDigits 4 | VM: PT12H34M56.1234S | BJS: PT12H34M56.1234S
+   Duration fractionalSecondDigits 5 | VM: PT12H34M56.12345S | BJS: PT12H34M56.12345S
+   Duration fractionalSecondDigits 6 | VM: PT12H34M56.123456S | BJS: PT12H34M56.123456S
+   Duration fractionalSecondDigits 7 | VM: PT12H34M56.1234567S | BJS: PT12H34M56.1234567S
+   Duration fractionalSecondDigits 8 | VM: PT12H34M56.12345678S | BJS: PT12H34M56.12345678S
+   Duration fractionalSecondDigits 9 | VM: PT12H34M56.123456789S | BJS: PT12H34M56.123456789S
+   Duration fractionalSecondDigits 10 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits -1 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits 2.5 | VM: PT12H34M56.12S | BJS: PT12H34M56.12S
+   Duration fractionalSecondDigits 9.9 | VM: PT12H34M56.123456789S | BJS: PT12H34M56.123456789S
+   Duration fractionalSecondDigits -0.5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits "3" | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits "x" | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits NaN | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits -Infinity | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits true | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits null | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits "AUTO" | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration fractionalSecondDigits 3n | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit minute | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit second | VM: PT12H34M56S | BJS: PT12H34M56S
+   Duration smallestUnit millisecond | VM: PT12H34M56.123S | BJS: PT12H34M56.123S
+   Duration smallestUnit microsecond | VM: PT12H34M56.123456S | BJS: PT12H34M56.123456S
+   Duration smallestUnit nanosecond | VM: PT12H34M56.123456789S | BJS: PT12H34M56.123456789S
+   Duration smallestUnit hour | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit day | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit year | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit minutes | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit seconds | VM: PT12H34M56S | BJS: PT12H34M56S
+   Duration smallestUnit MINUTE | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit auto | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit  | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit week | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration smallestUnit second with fractionalSecondDigits 5 | VM: PT12H34M56S | BJS: PT12H34M56S
+   Duration smallestUnit millisecond with fractionalSecondDigits 0 | VM: PT12H34M56.123S | BJS: PT12H34M56.123S
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode ceil | VM: 12:34:57 | BJS: 12:34:57
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode floor | VM: 12:34:56 | BJS: 12:34:56
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode expand | VM: 12:34:57 | BJS: 12:34:57
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode trunc | VM: 12:34:56 | BJS: 12:34:56
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode halfCeil | VM: 12:34:57 | BJS: 12:34:57
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode halfFloor | VM: 12:34:56 | BJS: 12:34:56
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode halfExpand | VM: 12:34:57 | BJS: 12:34:57
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode halfTrunc | VM: 12:34:56 | BJS: 12:34:56
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode halfEven | VM: 12:34:56 | BJS: 12:34:56
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #0 PlainTime 12:34:56.5 {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode ceil | VM: 12:34:58 | BJS: 12:34:58
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode floor | VM: 12:34:57 | BJS: 12:34:57
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode expand | VM: 12:34:58 | BJS: 12:34:58
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode trunc | VM: 12:34:57 | BJS: 12:34:57
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode halfCeil | VM: 12:34:58 | BJS: 12:34:58
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode halfFloor | VM: 12:34:57 | BJS: 12:34:57
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode halfExpand | VM: 12:34:58 | BJS: 12:34:58
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode halfTrunc | VM: 12:34:57 | BJS: 12:34:57
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode halfEven | VM: 12:34:58 | BJS: 12:34:58
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #1 PlainTime 12:34:57.5 {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode ceil | VM: 00:00:00.00000000 | BJS: 00:00:00.00000000
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode floor | VM: 23:59:59.99999999 | BJS: 23:59:59.99999999
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode expand | VM: 00:00:00.00000000 | BJS: 00:00:00.00000000
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode trunc | VM: 23:59:59.99999999 | BJS: 23:59:59.99999999
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode halfCeil | VM: 00:00:00.00000000 | BJS: 00:00:00.00000000
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode halfFloor | VM: 23:59:59.99999999 | BJS: 23:59:59.99999999
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode halfExpand | VM: 00:00:00.00000000 | BJS: 00:00:00.00000000
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode halfTrunc | VM: 23:59:59.99999999 | BJS: 23:59:59.99999999
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode halfEven | VM: 00:00:00.00000000 | BJS: 00:00:00.00000000
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #2 PlainTime 23:59:59.999999995 {"fractionalSecondDigits":8} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode ceil | VM: 00:00 | BJS: 00:00
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode floor | VM: 23:59 | BJS: 23:59
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode expand | VM: 00:00 | BJS: 00:00
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode trunc | VM: 23:59 | BJS: 23:59
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode halfCeil | VM: 00:00 | BJS: 00:00
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode halfFloor | VM: 23:59 | BJS: 23:59
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode halfExpand | VM: 00:00 | BJS: 00:00
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode halfTrunc | VM: 23:59 | BJS: 23:59
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode halfEven | VM: 00:00 | BJS: 00:00
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #3 PlainTime 23:59:30 {"smallestUnit":"minute"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode ceil | VM: 2021-01-01T00:00:00 | BJS: 2021-01-01T00:00:00
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode floor | VM: 2020-12-31T23:59:59 | BJS: 2020-12-31T23:59:59
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode expand | VM: 2021-01-01T00:00:00 | BJS: 2021-01-01T00:00:00
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode trunc | VM: 2020-12-31T23:59:59 | BJS: 2020-12-31T23:59:59
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode halfCeil | VM: 2021-01-01T00:00:00 | BJS: 2021-01-01T00:00:00
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode halfFloor | VM: 2020-12-31T23:59:59 | BJS: 2020-12-31T23:59:59
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode halfExpand | VM: 2021-01-01T00:00:00 | BJS: 2021-01-01T00:00:00
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode halfTrunc | VM: 2020-12-31T23:59:59 | BJS: 2020-12-31T23:59:59
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode halfEven | VM: 2021-01-01T00:00:00 | BJS: 2021-01-01T00:00:00
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #4 PlainDateTime 2020-12-31T23:59:59.5 {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode ceil | VM: 1970-01-01T00:00:00Z | BJS: 1970-01-01T00:00:00Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode floor | VM: 1969-12-31T23:59:59Z | BJS: 1969-12-31T23:59:59Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode expand | VM: 1970-01-01T00:00:00Z | BJS: 1970-01-01T00:00:00Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode trunc | VM: 1969-12-31T23:59:59Z | BJS: 1969-12-31T23:59:59Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode halfCeil | VM: 1970-01-01T00:00:00Z | BJS: 1970-01-01T00:00:00Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode halfFloor | VM: 1969-12-31T23:59:59Z | BJS: 1969-12-31T23:59:59Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode halfExpand | VM: 1970-01-01T00:00:00Z | BJS: 1970-01-01T00:00:00Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode halfTrunc | VM: 1969-12-31T23:59:59Z | BJS: 1969-12-31T23:59:59Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode halfEven | VM: 1970-01-01T00:00:00Z | BJS: 1970-01-01T00:00:00Z
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #5 Instant 1969-12-31T23:59:59.5Z {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode ceil | VM: 1969-12-31T23:59:59Z | BJS: 1969-12-31T23:59:59Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode floor | VM: 1969-12-31T23:59:58Z | BJS: 1969-12-31T23:59:58Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode expand | VM: 1969-12-31T23:59:59Z | BJS: 1969-12-31T23:59:59Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode trunc | VM: 1969-12-31T23:59:58Z | BJS: 1969-12-31T23:59:58Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode halfCeil | VM: 1969-12-31T23:59:59Z | BJS: 1969-12-31T23:59:59Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode halfFloor | VM: 1969-12-31T23:59:58Z | BJS: 1969-12-31T23:59:58Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode halfExpand | VM: 1969-12-31T23:59:59Z | BJS: 1969-12-31T23:59:59Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode halfTrunc | VM: 1969-12-31T23:59:58Z | BJS: 1969-12-31T23:59:58Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode halfEven | VM: 1969-12-31T23:59:58Z | BJS: 1969-12-31T23:59:58Z
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #6 Instant 1969-12-31T23:59:58.5Z {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode ceil | VM: 1969-12-31T23:59:59.3Z | BJS: 1969-12-31T23:59:59.3Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode floor | VM: 1969-12-31T23:59:59.2Z | BJS: 1969-12-31T23:59:59.2Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode expand | VM: 1969-12-31T23:59:59.3Z | BJS: 1969-12-31T23:59:59.3Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode trunc | VM: 1969-12-31T23:59:59.2Z | BJS: 1969-12-31T23:59:59.2Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode halfCeil | VM: 1969-12-31T23:59:59.3Z | BJS: 1969-12-31T23:59:59.3Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode halfFloor | VM: 1969-12-31T23:59:59.2Z | BJS: 1969-12-31T23:59:59.2Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode halfExpand | VM: 1969-12-31T23:59:59.3Z | BJS: 1969-12-31T23:59:59.3Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode halfTrunc | VM: 1969-12-31T23:59:59.2Z | BJS: 1969-12-31T23:59:59.2Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode halfEven | VM: 1969-12-31T23:59:59.2Z | BJS: 1969-12-31T23:59:59.2Z
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #7 Instant 1969-12-31T23:59:59.25Z {"fractionalSecondDigits":1} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode ceil | VM: 2020-01-02T00:00:00-05:00[America/New_York] | BJS: 2020-01-02T00:00:00-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode floor | VM: 2020-01-01T23:59:59-05:00[America/New_York] | BJS: 2020-01-01T23:59:59-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode expand | VM: 2020-01-02T00:00:00-05:00[America/New_York] | BJS: 2020-01-02T00:00:00-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode trunc | VM: 2020-01-01T23:59:59-05:00[America/New_York] | BJS: 2020-01-01T23:59:59-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode halfCeil | VM: 2020-01-02T00:00:00-05:00[America/New_York] | BJS: 2020-01-02T00:00:00-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode halfFloor | VM: 2020-01-01T23:59:59-05:00[America/New_York] | BJS: 2020-01-01T23:59:59-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode halfExpand | VM: 2020-01-02T00:00:00-05:00[America/New_York] | BJS: 2020-01-02T00:00:00-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode halfTrunc | VM: 2020-01-01T23:59:59-05:00[America/New_York] | BJS: 2020-01-01T23:59:59-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode halfEven | VM: 2020-01-02T00:00:00-05:00[America/New_York] | BJS: 2020-01-02T00:00:00-05:00[America/New_York]
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #8 ZonedDateTime 2020-01-01T23:59:59.5-05:00[America/New_York] {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode ceil | VM: PT2S | BJS: PT2S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode floor | VM: PT1S | BJS: PT1S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode expand | VM: PT2S | BJS: PT2S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode trunc | VM: PT1S | BJS: PT1S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode halfCeil | VM: PT2S | BJS: PT2S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode halfFloor | VM: PT1S | BJS: PT1S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode halfExpand | VM: PT2S | BJS: PT2S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode halfTrunc | VM: PT1S | BJS: PT1S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode halfEven | VM: PT2S | BJS: PT2S
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #9 Duration PT1.5S {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode ceil | VM: -PT1S | BJS: -PT1S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode floor | VM: -PT2S | BJS: -PT2S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode expand | VM: -PT2S | BJS: -PT2S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode trunc | VM: -PT1S | BJS: -PT1S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode halfCeil | VM: -PT1S | BJS: -PT1S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode halfFloor | VM: -PT2S | BJS: -PT2S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode halfExpand | VM: -PT2S | BJS: -PT2S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode halfTrunc | VM: -PT1S | BJS: -PT1S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode halfEven | VM: -PT2S | BJS: -PT2S
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #10 Duration -PT1.5S {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode ceil | VM: -PT2S | BJS: -PT2S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode floor | VM: -PT3S | BJS: -PT3S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode expand | VM: -PT3S | BJS: -PT3S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode trunc | VM: -PT2S | BJS: -PT2S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode halfCeil | VM: -PT2S | BJS: -PT2S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode halfFloor | VM: -PT3S | BJS: -PT3S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode halfExpand | VM: -PT3S | BJS: -PT3S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode halfTrunc | VM: -PT2S | BJS: -PT2S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode halfEven | VM: -PT2S | BJS: -PT2S
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #11 Duration -PT2.5S {"smallestUnit":"second"} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode ceil | VM: -PT0.00000001S | BJS: -PT0.00000001S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode floor | VM: -PT0.00000002S | BJS: -PT0.00000002S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode expand | VM: -PT0.00000002S | BJS: -PT0.00000002S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode trunc | VM: -PT0.00000001S | BJS: -PT0.00000001S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode halfCeil | VM: -PT0.00000001S | BJS: -PT0.00000001S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode halfFloor | VM: -PT0.00000002S | BJS: -PT0.00000002S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode halfExpand | VM: -PT0.00000002S | BJS: -PT0.00000002S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode halfTrunc | VM: -PT0.00000001S | BJS: -PT0.00000001S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode halfEven | VM: -PT0.00000002S | BJS: -PT0.00000002S
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode x | VM: THROWS RangeError | BJS: THROWS RangeError
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode HALFEXPAND | VM: THROWS RangeError | BJS: THROWS RangeError
+   #12 Duration -PT0.000000015S {"fractionalSecondDigits":8} roundingMode halfexpand | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime max rounded up | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime min rounded down | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant max rounded up | VM: +275760-09-13T00:00Z | BJS: +275760-09-13T00:00Z
+   Instant max - 1 rounded up | VM: +275760-09-13T00:00:00Z | BJS: +275760-09-13T00:00:00Z
+   Instant min rounded down | VM: -271821-04-20T00:00Z | BJS: -271821-04-20T00:00Z
+   Instant min + 1 rounded down | VM: -271821-04-20T00:00Z | BJS: -271821-04-20T00:00Z
+   ZonedDateTime max rounded up | VM: +275760-09-13T00:00+00:00[UTC] | BJS: +275760-09-13T00:00+00:00[UTC]
+   PlainTime 23:59:59.9 rounded up to a second | VM: 00:00:00 | BJS: 00:00:00
+   PlainDateTime 2020-12-31T23:59:59.9 rounded up | VM: 2021-01-01T00:00:00 | BJS: 2021-01-01T00:00:00

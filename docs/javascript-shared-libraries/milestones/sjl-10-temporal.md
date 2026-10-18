@@ -87,6 +87,14 @@ companions). The corpus gains library-level vectors for:
 
 **Unchanged:** the realm files keep the objects, the spec-order reads and the errors.
 
+*(Added 2026-10-18, at SJL-10.1, by
+[JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md),
+decision D9.)* **Broiler.VM's correction R6 is made here**, its only correction in the area. `new PlainDate`, `new
+PlainDateTime` and `new PlainMonthDay`'s reference year end the invocation on a year above 2^53, because the shared
+`IsoCalendarMath.EpochDays` precondition throws before the limit check. The cut-over checks the limits first, through
+the library, whose limit checks take any year and answer a status, so each constructor throws the `RangeError` the
+specification asks for.
+
 ### SJL-10.5 — Broiler.JS's cut-over
 
 **Deleted:**
@@ -98,7 +106,16 @@ companions). The corpus gains library-level vectors for:
 - the per-type regular-expression parsers;
 - the separate relative-rounding implementations;
 - `JSTemporalRoundingOptions`' arithmetic;
-- `TemporalNonIso`'s calendar parts.
+- `TemporalNonIso`'s calendar parts;
+- the other calendar copies: the formula calendars, `TemporalArithmeticCalendar`; the arithmetic of
+  `TemporalTableCalendar` over SJL-8's years; their dispatch, `TemporalCalendarMath`; the Gregorian family's
+  identifiers, years and era tables in `JSTemporalCalendar.cs`; and the five per-type month-code copies.
+
+*(Revised 2026-10-18, at SJL-10.1, before any evidence of SJL-10 existed, by
+[JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md),
+decision D3: SJL-10 takes the formula calendars into the library, so the list reaches Broiler.JS's other calendar
+copies, two of which JSD-0076's X6 kept "for the formula calendars". The list's last item read "`TemporalNonIso`'s
+calendar parts.", and no item followed it.)*
 
 **Kept:** the public `JSTemporal*` types stay as shells
 ([SJL-D-25](../decisions.md#sjl-d-25)).
@@ -112,6 +129,24 @@ companions). The corpus gains library-level vectors for:
 - day rounding that ignores daylight-saving changes;
 - invalid month codes silently constrained;
 - reference years computed without the proposal's table.
+
+*(Added 2026-10-18, at SJL-10.1, by JSD-0078.)* The correspondence confirms each of these, two in part: day rounding
+that ignores daylight saving holds for `until` and `since` only (F7), and the reference years answer as the
+proposal's table does, so the table replaces the search with no answer changed (C10). The lenient acceptances are
+wider than the area design named (G3, G4, G6, G8, G9, G11 to G13, G16 to G20, G22), and the narrowing also saturates
+an ISO month-day's year past 2^31 (C12). Further corrections are listed with them, as the verdict classifies them:
+- a year-month subtraction at the lower limit (B5);
+- `compare`'s range check (D4);
+- rounding to months through a clamped difference (D6, D7);
+- the nudge after a shifted window, where the pinned text rules over its polyfill (D8, decision D7);
+- a `relativeTo` in another calendar (D11);
+- the calendar aliases `gregorian` and `minguo` (C2, decision D5);
+- month codes with digits other than ASCII (C6);
+- era names of earlier drafts (C9, decision D4);
+- the calendar a `PlainMonthDay` lends (C13);
+- the three conversions that lose a calendar's day, calendar or year (C15 to C17).
+
+Code no input reaches is deleted with its file (D12, G10, C3, C10, S8).
 
 ### SJL-10.6 — Evidence
 

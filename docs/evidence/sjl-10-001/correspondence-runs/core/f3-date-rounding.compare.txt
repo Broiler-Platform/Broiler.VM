@@ -1,0 +1,19 @@
+   2020-01-01 until 2020-07-20 smallest month (trunc) | VM: Temporal.Duration P6M | BJS: Temporal.Duration P6M | REF: Temporal.Duration P6M
+   2020-01-01 until 2020-07-20 smallest month halfExpand | VM: Temporal.Duration P7M | BJS: Temporal.Duration P7M | REF: Temporal.Duration P7M
+   2020-01-01 until 2020-07-02 smallest year halfExpand | VM: Temporal.Duration P1Y | BJS: Temporal.Duration P1Y | REF: Temporal.Duration P1Y
+   2020-01-01 until 2020-07-02 smallest year halfTrunc | VM: Temporal.Duration PT0S | BJS: Temporal.Duration PT0S | REF: Temporal.Duration PT0S
+   2020-01-17 since 2020-01-01 smallest week floor | VM: Temporal.Duration P2W | BJS: Temporal.Duration P2W | REF: Temporal.Duration P2W
+   2020-01-01 since 2020-01-17 smallest week floor | VM: Temporal.Duration -P3W | BJS: Temporal.Duration -P3W | REF: Temporal.Duration -P3W
+   2020-01-01 until 2020-01-17 smallest week ceil | VM: Temporal.Duration P3W | BJS: Temporal.Duration P3W | REF: Temporal.Duration P3W
+   2020-01-17 until 2020-01-01 smallest week ceil | VM: Temporal.Duration -P2W | BJS: Temporal.Duration -P2W | REF: Temporal.Duration -P2W
+   2020-01-01 until 2020-03-19 month/day increment 5 halfExpand | VM: Temporal.Duration P2M20D | BJS: Temporal.Duration P2M20D | REF: Temporal.Duration P2M20D
+   2020-01-01 until 2020-03-30 month/day increment 5 halfExpand | VM: Temporal.Duration P2M30D | BJS: Temporal.Duration P2M30D | REF: Temporal.Duration P2M30D
+   2020-01-01 until 2020-04-15 smallest month increment 2 (trunc) | VM: Temporal.Duration P2M | BJS: Temporal.Duration P2M | REF: Temporal.Duration P2M
+   2020-01-01 until 2020-04-15 smallest month increment 2 halfExpand | VM: Temporal.Duration P4M | BJS: Temporal.Duration P4M | REF: Temporal.Duration P4M
+   2020-01-01 until 2021-12-20 smallest month largest year halfExpand | VM: Temporal.Duration P2Y | BJS: Temporal.Duration P2Y | REF: Temporal.Duration P2Y
+   2020-01-01 until 2020-01-29 smallest week largest month halfExpand | VM: Temporal.Duration P4W | BJS: Temporal.Duration P4W | REF: Temporal.Duration P4W
+   2020-01-31 until 2020-02-29 smallest month | VM: Temporal.Duration P1M | BJS: Temporal.Duration P1M | REF: Temporal.Duration P1M
+   2020-01-31 until 2020-02-29 smallest month halfExpand | VM: Temporal.Duration P1M | BJS: Temporal.Duration P1M | REF: Temporal.Duration P1M
+   2020-01-01 until 2020-01-02 smallest day increment 1e9 ceil | VM: Temporal.Duration P1000000000D | BJS: Temporal.Duration P1000000000D | REF: Temporal.Duration P1000000000D
+~~ +275760-09-12 until +275760-09-13 smallest month ceil | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDate: result is out of range | REF: THROWS RangeError: +275760-10-12 is outside of supported range
+~~ -271821-04-20 since -271821-04-19 smallest year ceil | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDate: result is out of range | REF: THROWS RangeError: -271822-04-20 is outside of supported range

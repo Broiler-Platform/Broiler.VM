@@ -1,0 +1,1060 @@
+   iso8601 era "ce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "bce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "ad" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "bc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "CE" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "Ce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "gregory" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "gregory-inverse" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "be" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "roc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "broc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "minguo" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "before-roc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "reiwa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "heisei" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "showa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "taisho" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "meiji" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "am" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "aa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "AM" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "coptic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "hebrew" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "incarnation" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "mundi" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "ethiopic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "ethioaa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "shaka" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "saka" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "ap" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "persian" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "ah" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "bh" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "AH" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "islamic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "x" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 era "" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   buddhist era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "be" eraYear 5 | VM: be 5 year 5 iso -000538-01-01 | BJS: be 5 year 5 iso -000538-01-01
+   buddhist era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   chinese era "ce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "bce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "ad" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "bc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "CE" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "Ce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "gregory" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "gregory-inverse" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "be" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "roc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "broc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "minguo" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "before-roc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "reiwa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "heisei" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "showa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "taisho" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "meiji" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "am" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "aa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "AM" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "coptic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "hebrew" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "incarnation" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "mundi" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "ethiopic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "ethioaa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "shaka" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "saka" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "ap" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "persian" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "ah" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "bh" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "AH" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "islamic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "x" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese era "" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   coptic era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "am" eraYear 5 | VM: am 5 year 5 iso 0288-08-29 | BJS: am 5 year 5 iso 0288-08-29
+   coptic era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+!! coptic era "AM" eraYear 5 | VM: THROWS RangeError | BJS: am 5 year 5 iso 0288-08-29
+!! coptic era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: am 5 year 5 iso 0288-08-29
+   coptic era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   dangi era "ce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "bce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "ad" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "bc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "CE" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "Ce" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "gregory" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "gregory-inverse" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "be" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "roc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "broc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "minguo" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "before-roc" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "reiwa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "heisei" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "showa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "taisho" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "meiji" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "am" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "aa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "AM" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "coptic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "hebrew" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "incarnation" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "mundi" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "ethiopic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "ethioaa" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "shaka" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "saka" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "ap" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "persian" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "ah" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "bh" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "AH" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "islamic" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "x" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   dangi era "" eraYear 5 | VM: THROWS TypeError | BJS: THROWS TypeError
+   ethioaa era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "aa" eraYear 5 | VM: aa 5 year 5 iso -005488-07-17 | BJS: aa 5 year 5 iso -005488-07-17
+   ethioaa era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+!! ethioaa era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: aa 5 year 5 iso -005488-07-17
+   ethioaa era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+!! ethioaa era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: aa 5 year 5 iso -005488-07-17
+   ethioaa era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethioaa era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "am" eraYear 5 | VM: am 5 year 5 iso 0012-08-27 | BJS: am 5 year 5 iso 0012-08-27
+   ethiopic era "aa" eraYear 5 | VM: aa 5 year -5495 iso -005488-07-17 | BJS: aa 5 year -5495 iso -005488-07-17
+!! ethiopic era "AM" eraYear 5 | VM: THROWS RangeError | BJS: am 5 year 5 iso 0012-08-27
+   ethiopic era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+!! ethiopic era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: am 5 year 5 iso 0012-08-27
+!! ethiopic era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: aa 5 year -5495 iso -005488-07-17
+!! ethiopic era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: am 5 year 5 iso 0012-08-27
+!! ethiopic era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: aa 5 year -5495 iso -005488-07-17
+   ethiopic era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "ce" eraYear 5 | VM: ce 5 year 5 iso 0005-01-01 | BJS: ce 5 year 5 iso 0005-01-01
+   gregory era "bce" eraYear 5 | VM: bce 5 year -4 iso -000004-01-01 | BJS: bce 5 year -4 iso -000004-01-01
+   gregory era "ad" eraYear 5 | VM: ce 5 year 5 iso 0005-01-01 | BJS: ce 5 year 5 iso 0005-01-01
+   gregory era "bc" eraYear 5 | VM: bce 5 year -4 iso -000004-01-01 | BJS: bce 5 year -4 iso -000004-01-01
+!! gregory era "CE" eraYear 5 | VM: THROWS RangeError | BJS: ce 5 year 5 iso 0005-01-01
+!! gregory era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: ce 5 year 5 iso 0005-01-01
+!! gregory era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: ce 5 year 5 iso 0005-01-01
+!! gregory era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: bce 5 year -4 iso -000004-01-01
+   gregory era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "am" eraYear 5 | VM: am 5 year 5 iso -003756-08-24 | BJS: am 5 year 5 iso -003756-08-24
+   hebrew era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+!! hebrew era "AM" eraYear 5 | VM: THROWS RangeError | BJS: am 5 year 5 iso -003756-08-24
+   hebrew era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+!! hebrew era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: am 5 year 5 iso -003756-08-24
+   hebrew era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "shaka" eraYear 5 | VM: shaka 5 year 5 iso 0083-03-22 | BJS: shaka 5 year 5 iso 0083-03-22
+!! indian era "saka" eraYear 5 | VM: THROWS RangeError | BJS: shaka 5 year 5 iso 0083-03-22
+   indian era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   indian era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "ah" eraYear 5 | VM: ah 5 year 5 iso 0626-06-05 | BJS: ah 5 year 5 iso 0626-06-05
+   islamic-civil era "bh" eraYear 5 | VM: bh 5 year -4 iso 0617-09-11 | BJS: bh 5 year -4 iso 0617-09-11
+!! islamic-civil era "AH" eraYear 5 | VM: THROWS RangeError | BJS: ah 5 year 5 iso 0626-06-05
+   islamic-civil era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "ah" eraYear 5 | VM: ah 5 year 5 iso 0626-06-04 | BJS: ah 5 year 5 iso 0626-06-04
+   islamic-tbla era "bh" eraYear 5 | VM: bh 5 year -4 iso 0617-09-10 | BJS: bh 5 year -4 iso 0617-09-10
+!! islamic-tbla era "AH" eraYear 5 | VM: THROWS RangeError | BJS: ah 5 year 5 iso 0626-06-04
+   islamic-tbla era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-tbla era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "ah" eraYear 5 | VM: ah 5 year 5 iso 0626-06-05 | BJS: ah 5 year 5 iso 0626-06-05
+   islamic-umalqura era "bh" eraYear 5 | VM: bh 5 year -4 iso 0617-09-11 | BJS: bh 5 year -4 iso 0617-09-11
+!! islamic-umalqura era "AH" eraYear 5 | VM: THROWS RangeError | BJS: ah 5 year 5 iso 0626-06-05
+   islamic-umalqura era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-umalqura era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "ce" eraYear 5 | VM: ce 5 year 5 iso 0005-01-01 | BJS: ce 5 year 5 iso 0005-01-01
+   japanese era "bce" eraYear 5 | VM: bce 5 year -4 iso -000004-01-01 | BJS: bce 5 year -4 iso -000004-01-01
+   japanese era "ad" eraYear 5 | VM: ce 5 year 5 iso 0005-01-01 | BJS: ce 5 year 5 iso 0005-01-01
+   japanese era "bc" eraYear 5 | VM: bce 5 year -4 iso -000004-01-01 | BJS: bce 5 year -4 iso -000004-01-01
+!! japanese era "CE" eraYear 5 | VM: THROWS RangeError | BJS: ce 5 year 5 iso 0005-01-01
+!! japanese era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: ce 5 year 5 iso 0005-01-01
+   japanese era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "reiwa" eraYear 5 | VM: reiwa 5 year 2023 iso 2023-01-01 | BJS: reiwa 5 year 2023 iso 2023-01-01
+   japanese era "heisei" eraYear 5 | VM: heisei 5 year 1993 iso 1993-01-01 | BJS: heisei 5 year 1993 iso 1993-01-01
+   japanese era "showa" eraYear 5 | VM: showa 5 year 1930 iso 1930-01-01 | BJS: showa 5 year 1930 iso 1930-01-01
+   japanese era "taisho" eraYear 5 | VM: taisho 5 year 1916 iso 1916-01-01 | BJS: taisho 5 year 1916 iso 1916-01-01
+   japanese era "meiji" eraYear 5 | VM: ce 1872 year 1872 iso 1872-01-01 | BJS: ce 1872 year 1872 iso 1872-01-01
+   japanese era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "broc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "ap" eraYear 5 | VM: ap 5 year 5 iso 0626-03-21 | BJS: ap 5 year 5 iso 0626-03-21
+!! persian era "persian" eraYear 5 | VM: THROWS RangeError | BJS: ap 5 year 5 iso 0626-03-21
+   persian era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "bce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "ad" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "bc" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "CE" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "Ce" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "gregory" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "gregory-inverse" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "be" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "roc" eraYear 5 | VM: roc 5 year 5 iso 1916-01-01 | BJS: roc 5 year 5 iso 1916-01-01
+   roc era "broc" eraYear 5 | VM: broc 5 year -4 iso 1907-01-01 | BJS: broc 5 year -4 iso 1907-01-01
+!! roc era "minguo" eraYear 5 | VM: THROWS RangeError | BJS: roc 5 year 5 iso 1916-01-01
+!! roc era "before-roc" eraYear 5 | VM: THROWS RangeError | BJS: broc 5 year -4 iso 1907-01-01
+   roc era "reiwa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "heisei" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "showa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "taisho" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "meiji" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "am" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "aa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "AM" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "coptic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "hebrew" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "incarnation" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "mundi" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "ethiopic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "ethioaa" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "shaka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "saka" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "ap" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "persian" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "ah" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "bh" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "AH" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "islamic" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "x" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era "" eraYear 5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   buddhist -271821-04-19 | VM: be -271278 / -271278 M04 19 | BJS: be -271278 / -271278 M04 19
+   chinese -271821-04-19 | VM: undefined undefined / -271821 M03 17 | BJS: undefined undefined / -271821 M03 17
+   coptic -271821-04-19 | VM: am -272099 / -272099 M03 23 | BJS: am -272099 / -272099 M03 23
+   dangi -271821-04-19 | VM: undefined undefined / -271821 M03 17 | BJS: undefined undefined / -271821 M03 17
+   ethioaa -271821-04-19 | VM: aa -266323 / -266323 M03 23 | BJS: aa -266323 / -266323 M03 23
+   ethiopic -271821-04-19 | VM: aa -266323 / -271823 M03 23 | BJS: aa -266323 / -271823 M03 23
+   gregory -271821-04-19 | VM: bce 271822 / -271821 M04 19 | BJS: bce 271822 / -271821 M04 19
+   hebrew -271821-04-19 | VM: am -268058 / -268058 M11 4 | BJS: am -268058 / -268058 M11 4
+   indian -271821-04-19 | VM: shaka -271899 / -271899 M01 29 | BJS: shaka -271899 / -271899 M01 29
+   islamic-civil -271821-04-19 | VM: bh 280805 / -280804 M03 21 | BJS: bh 280805 / -280804 M03 21
+   islamic-tbla -271821-04-19 | VM: bh 280805 / -280804 M03 22 | BJS: bh 280805 / -280804 M03 22
+   islamic-umalqura -271821-04-19 | VM: bh 280805 / -280804 M03 21 | BJS: bh 280805 / -280804 M03 21
+   japanese -271821-04-19 | VM: bce 271822 / -271821 M04 19 | BJS: bce 271822 / -271821 M04 19
+   persian -271821-04-19 | VM: ap -272442 / -272442 M01 9 | BJS: ap -272442 / -272442 M01 9
+   roc -271821-04-19 | VM: broc 273733 / -273732 M04 19 | BJS: broc 273733 / -273732 M04 19
+   buddhist -000001-12-31 | VM: be 542 / 542 M12 31 | BJS: be 542 / 542 M12 31
+   chinese -000001-12-31 | VM: undefined undefined / -1 M12 8 | BJS: undefined undefined / -1 M12 8
+   coptic -000001-12-31 | VM: am -284 / -284 M05 6 | BJS: am -284 / -284 M05 6
+   dangi -000001-12-31 | VM: undefined undefined / -1 M12 8 | BJS: undefined undefined / -1 M12 8
+   ethioaa -000001-12-31 | VM: aa 5492 / 5492 M05 6 | BJS: aa 5492 / 5492 M05 6
+   ethiopic -000001-12-31 | VM: aa 5492 / -8 M05 6 | BJS: aa 5492 / -8 M05 6
+   gregory -000001-12-31 | VM: bce 2 / -1 M12 31 | BJS: bce 2 / -1 M12 31
+   hebrew -000001-12-31 | VM: am 3760 / 3760 M05 7 | BJS: am 3760 / 3760 M05 7
+   indian -000001-12-31 | VM: shaka -79 / -79 M10 10 | BJS: shaka -79 / -79 M10 10
+   islamic-civil -000001-12-31 | VM: bh 642 / -641 M05 5 | BJS: bh 642 / -641 M05 5
+   islamic-tbla -000001-12-31 | VM: bh 642 / -641 M05 6 | BJS: bh 642 / -641 M05 6
+   islamic-umalqura -000001-12-31 | VM: bh 642 / -641 M05 5 | BJS: bh 642 / -641 M05 5
+   japanese -000001-12-31 | VM: bce 2 / -1 M12 31 | BJS: bce 2 / -1 M12 31
+   persian -000001-12-31 | VM: ap -622 / -622 M10 10 | BJS: ap -622 / -622 M10 10
+   roc -000001-12-31 | VM: broc 1913 / -1912 M12 31 | BJS: broc 1913 / -1912 M12 31
+   buddhist 0000-01-01 | VM: be 543 / 543 M01 1 | BJS: be 543 / 543 M01 1
+   chinese 0000-01-01 | VM: undefined undefined / -1 M12 9 | BJS: undefined undefined / -1 M12 9
+   coptic 0000-01-01 | VM: am -284 / -284 M05 7 | BJS: am -284 / -284 M05 7
+   dangi 0000-01-01 | VM: undefined undefined / -1 M12 9 | BJS: undefined undefined / -1 M12 9
+   ethioaa 0000-01-01 | VM: aa 5492 / 5492 M05 7 | BJS: aa 5492 / 5492 M05 7
+   ethiopic 0000-01-01 | VM: aa 5492 / -8 M05 7 | BJS: aa 5492 / -8 M05 7
+   gregory 0000-01-01 | VM: bce 1 / 0 M01 1 | BJS: bce 1 / 0 M01 1
+   hebrew 0000-01-01 | VM: am 3760 / 3760 M05 8 | BJS: am 3760 / 3760 M05 8
+   indian 0000-01-01 | VM: shaka -79 / -79 M10 11 | BJS: shaka -79 / -79 M10 11
+   islamic-civil 0000-01-01 | VM: bh 642 / -641 M05 6 | BJS: bh 642 / -641 M05 6
+   islamic-tbla 0000-01-01 | VM: bh 642 / -641 M05 7 | BJS: bh 642 / -641 M05 7
+   islamic-umalqura 0000-01-01 | VM: bh 642 / -641 M05 6 | BJS: bh 642 / -641 M05 6
+   japanese 0000-01-01 | VM: bce 1 / 0 M01 1 | BJS: bce 1 / 0 M01 1
+   persian 0000-01-01 | VM: ap -622 / -622 M10 11 | BJS: ap -622 / -622 M10 11
+   roc 0000-01-01 | VM: broc 1912 / -1911 M01 1 | BJS: broc 1912 / -1911 M01 1
+   buddhist 0000-12-31 | VM: be 543 / 543 M12 31 | BJS: be 543 / 543 M12 31
+   chinese 0000-12-31 | VM: undefined undefined / 0 M11 19 | BJS: undefined undefined / 0 M11 19
+   coptic 0000-12-31 | VM: am -283 / -283 M05 7 | BJS: am -283 / -283 M05 7
+   dangi 0000-12-31 | VM: undefined undefined / 0 M11 19 | BJS: undefined undefined / 0 M11 19
+   ethioaa 0000-12-31 | VM: aa 5493 / 5493 M05 7 | BJS: aa 5493 / 5493 M05 7
+   ethiopic 0000-12-31 | VM: aa 5493 / -7 M05 7 | BJS: aa 5493 / -7 M05 7
+   gregory 0000-12-31 | VM: bce 1 / 0 M12 31 | BJS: bce 1 / 0 M12 31
+   hebrew 0000-12-31 | VM: am 3761 / 3761 M04 17 | BJS: am 3761 / 3761 M04 17
+   indian 0000-12-31 | VM: shaka -78 / -78 M10 10 | BJS: shaka -78 / -78 M10 10
+   islamic-civil 0000-12-31 | VM: bh 641 / -640 M05 17 | BJS: bh 641 / -640 M05 17
+   islamic-tbla 0000-12-31 | VM: bh 641 / -640 M05 18 | BJS: bh 641 / -640 M05 18
+   islamic-umalqura 0000-12-31 | VM: bh 641 / -640 M05 17 | BJS: bh 641 / -640 M05 17
+   japanese 0000-12-31 | VM: bce 1 / 0 M12 31 | BJS: bce 1 / 0 M12 31
+   persian 0000-12-31 | VM: ap -621 / -621 M10 10 | BJS: ap -621 / -621 M10 10
+   roc 0000-12-31 | VM: broc 1912 / -1911 M12 31 | BJS: broc 1912 / -1911 M12 31
+   buddhist 0001-01-01 | VM: be 544 / 544 M01 1 | BJS: be 544 / 544 M01 1
+   chinese 0001-01-01 | VM: undefined undefined / 0 M11 20 | BJS: undefined undefined / 0 M11 20
+   coptic 0001-01-01 | VM: am -283 / -283 M05 8 | BJS: am -283 / -283 M05 8
+   dangi 0001-01-01 | VM: undefined undefined / 0 M11 20 | BJS: undefined undefined / 0 M11 20
+   ethioaa 0001-01-01 | VM: aa 5493 / 5493 M05 8 | BJS: aa 5493 / 5493 M05 8
+   ethiopic 0001-01-01 | VM: aa 5493 / -7 M05 8 | BJS: aa 5493 / -7 M05 8
+   gregory 0001-01-01 | VM: ce 1 / 1 M01 1 | BJS: ce 1 / 1 M01 1
+   hebrew 0001-01-01 | VM: am 3761 / 3761 M04 18 | BJS: am 3761 / 3761 M04 18
+   indian 0001-01-01 | VM: shaka -78 / -78 M10 11 | BJS: shaka -78 / -78 M10 11
+   islamic-civil 0001-01-01 | VM: bh 641 / -640 M05 18 | BJS: bh 641 / -640 M05 18
+   islamic-tbla 0001-01-01 | VM: bh 641 / -640 M05 19 | BJS: bh 641 / -640 M05 19
+   islamic-umalqura 0001-01-01 | VM: bh 641 / -640 M05 18 | BJS: bh 641 / -640 M05 18
+   japanese 0001-01-01 | VM: ce 1 / 1 M01 1 | BJS: ce 1 / 1 M01 1
+   persian 0001-01-01 | VM: ap -621 / -621 M10 11 | BJS: ap -621 / -621 M10 11
+   roc 0001-01-01 | VM: broc 1911 / -1910 M01 1 | BJS: broc 1911 / -1910 M01 1
+   buddhist 0284-08-29 | VM: be 827 / 827 M08 29 | BJS: be 827 / 827 M08 29
+   chinese 0284-08-29 | VM: undefined undefined / 284 M08 1 | BJS: undefined undefined / 284 M08 1
+   coptic 0284-08-29 | VM: am 1 / 1 M01 1 | BJS: am 1 / 1 M01 1
+   dangi 0284-08-29 | VM: undefined undefined / 284 M08 1 | BJS: undefined undefined / 284 M08 1
+   ethioaa 0284-08-29 | VM: aa 5777 / 5777 M01 1 | BJS: aa 5777 / 5777 M01 1
+   ethiopic 0284-08-29 | VM: am 277 / 277 M01 1 | BJS: am 277 / 277 M01 1
+   gregory 0284-08-29 | VM: ce 284 / 284 M08 29 | BJS: ce 284 / 284 M08 29
+   hebrew 0284-08-29 | VM: am 4044 / 4044 M12 29 | BJS: am 4044 / 4044 M12 29
+   indian 0284-08-29 | VM: shaka 206 / 206 M06 7 | BJS: shaka 206 / 206 M06 7
+   islamic-civil 0284-08-29 | VM: bh 349 / -348 M09 29 | BJS: bh 349 / -348 M09 29
+   islamic-tbla 0284-08-29 | VM: bh 349 / -348 M09 30 | BJS: bh 349 / -348 M09 30
+   islamic-umalqura 0284-08-29 | VM: bh 349 / -348 M09 29 | BJS: bh 349 / -348 M09 29
+   japanese 0284-08-29 | VM: ce 284 / 284 M08 29 | BJS: ce 284 / 284 M08 29
+   persian 0284-08-29 | VM: ap -337 / -337 M06 8 | BJS: ap -337 / -337 M06 8
+   roc 0284-08-29 | VM: broc 1628 / -1627 M08 29 | BJS: broc 1628 / -1627 M08 29
+   buddhist 0284-08-30 | VM: be 827 / 827 M08 30 | BJS: be 827 / 827 M08 30
+   chinese 0284-08-30 | VM: undefined undefined / 284 M08 2 | BJS: undefined undefined / 284 M08 2
+   coptic 0284-08-30 | VM: am 1 / 1 M01 2 | BJS: am 1 / 1 M01 2
+   dangi 0284-08-30 | VM: undefined undefined / 284 M08 2 | BJS: undefined undefined / 284 M08 2
+   ethioaa 0284-08-30 | VM: aa 5777 / 5777 M01 2 | BJS: aa 5777 / 5777 M01 2
+   ethiopic 0284-08-30 | VM: am 277 / 277 M01 2 | BJS: am 277 / 277 M01 2
+   gregory 0284-08-30 | VM: ce 284 / 284 M08 30 | BJS: ce 284 / 284 M08 30
+   hebrew 0284-08-30 | VM: am 4045 / 4045 M01 1 | BJS: am 4045 / 4045 M01 1
+   indian 0284-08-30 | VM: shaka 206 / 206 M06 8 | BJS: shaka 206 / 206 M06 8
+   islamic-civil 0284-08-30 | VM: bh 349 / -348 M09 30 | BJS: bh 349 / -348 M09 30
+   islamic-tbla 0284-08-30 | VM: bh 349 / -348 M10 1 | BJS: bh 349 / -348 M10 1
+   islamic-umalqura 0284-08-30 | VM: bh 349 / -348 M09 30 | BJS: bh 349 / -348 M09 30
+   japanese 0284-08-30 | VM: ce 284 / 284 M08 30 | BJS: ce 284 / 284 M08 30
+   persian 0284-08-30 | VM: ap -337 / -337 M06 9 | BJS: ap -337 / -337 M06 9
+   roc 0284-08-30 | VM: broc 1628 / -1627 M08 30 | BJS: broc 1628 / -1627 M08 30
+   buddhist 0008-08-27 | VM: be 551 / 551 M08 27 | BJS: be 551 / 551 M08 27
+   chinese 0008-08-27 | VM: undefined undefined / 8 M07 10 | BJS: undefined undefined / 8 M07 10
+   coptic 0008-08-27 | VM: am -275 / -275 M01 1 | BJS: am -275 / -275 M01 1
+   dangi 0008-08-27 | VM: undefined undefined / 8 M07 10 | BJS: undefined undefined / 8 M07 10
+   ethioaa 0008-08-27 | VM: aa 5501 / 5501 M01 1 | BJS: aa 5501 / 5501 M01 1
+   ethiopic 0008-08-27 | VM: am 1 / 1 M01 1 | BJS: am 1 / 1 M01 1
+   gregory 0008-08-27 | VM: ce 8 / 8 M08 27 | BJS: ce 8 / 8 M08 27
+   hebrew 0008-08-27 | VM: am 3768 / 3768 M12 8 | BJS: am 3768 / 3768 M12 8
+   indian 0008-08-27 | VM: shaka -70 / -70 M06 5 | BJS: shaka -70 / -70 M06 5
+   islamic-civil 0008-08-27 | VM: bh 633 / -632 M04 7 | BJS: bh 633 / -632 M04 7
+   islamic-tbla 0008-08-27 | VM: bh 633 / -632 M04 8 | BJS: bh 633 / -632 M04 8
+   islamic-umalqura 0008-08-27 | VM: bh 633 / -632 M04 7 | BJS: bh 633 / -632 M04 7
+   japanese 0008-08-27 | VM: ce 8 / 8 M08 27 | BJS: ce 8 / 8 M08 27
+   persian 0008-08-27 | VM: ap -613 / -613 M06 5 | BJS: ap -613 / -613 M06 5
+   roc 0008-08-27 | VM: broc 1904 / -1903 M08 27 | BJS: broc 1904 / -1903 M08 27
+   buddhist 0008-08-28 | VM: be 551 / 551 M08 28 | BJS: be 551 / 551 M08 28
+   chinese 0008-08-28 | VM: undefined undefined / 8 M07 11 | BJS: undefined undefined / 8 M07 11
+   coptic 0008-08-28 | VM: am -275 / -275 M01 2 | BJS: am -275 / -275 M01 2
+   dangi 0008-08-28 | VM: undefined undefined / 8 M07 11 | BJS: undefined undefined / 8 M07 11
+   ethioaa 0008-08-28 | VM: aa 5501 / 5501 M01 2 | BJS: aa 5501 / 5501 M01 2
+   ethiopic 0008-08-28 | VM: am 1 / 1 M01 2 | BJS: am 1 / 1 M01 2
+   gregory 0008-08-28 | VM: ce 8 / 8 M08 28 | BJS: ce 8 / 8 M08 28
+   hebrew 0008-08-28 | VM: am 3768 / 3768 M12 9 | BJS: am 3768 / 3768 M12 9
+   indian 0008-08-28 | VM: shaka -70 / -70 M06 6 | BJS: shaka -70 / -70 M06 6
+   islamic-civil 0008-08-28 | VM: bh 633 / -632 M04 8 | BJS: bh 633 / -632 M04 8
+   islamic-tbla 0008-08-28 | VM: bh 633 / -632 M04 9 | BJS: bh 633 / -632 M04 9
+   islamic-umalqura 0008-08-28 | VM: bh 633 / -632 M04 8 | BJS: bh 633 / -632 M04 8
+   japanese 0008-08-28 | VM: ce 8 / 8 M08 28 | BJS: ce 8 / 8 M08 28
+   persian 0008-08-28 | VM: ap -613 / -613 M06 6 | BJS: ap -613 / -613 M06 6
+   roc 0008-08-28 | VM: broc 1904 / -1903 M08 28 | BJS: broc 1904 / -1903 M08 28
+   buddhist 0622-07-15 | VM: be 1165 / 1165 M07 15 | BJS: be 1165 / 1165 M07 15
+   chinese 0622-07-15 | VM: undefined undefined / 622 M05 29 | BJS: undefined undefined / 622 M05 29
+   coptic 0622-07-15 | VM: am 338 / 338 M11 18 | BJS: am 338 / 338 M11 18
+   dangi 0622-07-15 | VM: undefined undefined / 622 M05 29 | BJS: undefined undefined / 622 M05 29
+   ethioaa 0622-07-15 | VM: aa 6114 / 6114 M11 18 | BJS: aa 6114 / 6114 M11 18
+   ethiopic 0622-07-15 | VM: am 614 / 614 M11 18 | BJS: am 614 / 614 M11 18
+   gregory 0622-07-15 | VM: ce 622 / 622 M07 15 | BJS: ce 622 / 622 M07 15
+   hebrew 0622-07-15 | VM: am 4382 / 4382 M10 28 | BJS: am 4382 / 4382 M10 28
+   indian 0622-07-15 | VM: shaka 544 / 544 M04 24 | BJS: shaka 544 / 544 M04 24
+   islamic-civil 0622-07-15 | VM: bh 1 / 0 M12 26 | BJS: bh 1 / 0 M12 26
+   islamic-tbla 0622-07-15 | VM: bh 1 / 0 M12 27 | BJS: bh 1 / 0 M12 27
+   islamic-umalqura 0622-07-15 | VM: bh 1 / 0 M12 26 | BJS: bh 1 / 0 M12 26
+   japanese 0622-07-15 | VM: ce 622 / 622 M07 15 | BJS: ce 622 / 622 M07 15
+   persian 0622-07-15 | VM: ap 1 / 1 M04 24 | BJS: ap 1 / 1 M04 24
+   roc 0622-07-15 | VM: broc 1290 / -1289 M07 15 | BJS: broc 1290 / -1289 M07 15
+   buddhist 0622-07-16 | VM: be 1165 / 1165 M07 16 | BJS: be 1165 / 1165 M07 16
+   chinese 0622-07-16 | VM: undefined undefined / 622 M05 30 | BJS: undefined undefined / 622 M05 30
+   coptic 0622-07-16 | VM: am 338 / 338 M11 19 | BJS: am 338 / 338 M11 19
+   dangi 0622-07-16 | VM: undefined undefined / 622 M05 30 | BJS: undefined undefined / 622 M05 30
+   ethioaa 0622-07-16 | VM: aa 6114 / 6114 M11 19 | BJS: aa 6114 / 6114 M11 19
+   ethiopic 0622-07-16 | VM: am 614 / 614 M11 19 | BJS: am 614 / 614 M11 19
+   gregory 0622-07-16 | VM: ce 622 / 622 M07 16 | BJS: ce 622 / 622 M07 16
+   hebrew 0622-07-16 | VM: am 4382 / 4382 M10 29 | BJS: am 4382 / 4382 M10 29
+   indian 0622-07-16 | VM: shaka 544 / 544 M04 25 | BJS: shaka 544 / 544 M04 25
+   islamic-civil 0622-07-16 | VM: bh 1 / 0 M12 27 | BJS: bh 1 / 0 M12 27
+   islamic-tbla 0622-07-16 | VM: bh 1 / 0 M12 28 | BJS: bh 1 / 0 M12 28
+   islamic-umalqura 0622-07-16 | VM: bh 1 / 0 M12 27 | BJS: bh 1 / 0 M12 27
+   japanese 0622-07-16 | VM: ce 622 / 622 M07 16 | BJS: ce 622 / 622 M07 16
+   persian 0622-07-16 | VM: ap 1 / 1 M04 25 | BJS: ap 1 / 1 M04 25
+   roc 0622-07-16 | VM: broc 1290 / -1289 M07 16 | BJS: broc 1290 / -1289 M07 16
+   buddhist 0622-07-19 | VM: be 1165 / 1165 M07 19 | BJS: be 1165 / 1165 M07 19
+   chinese 0622-07-19 | VM: undefined undefined / 622 M06 3 | BJS: undefined undefined / 622 M06 3
+   coptic 0622-07-19 | VM: am 338 / 338 M11 22 | BJS: am 338 / 338 M11 22
+   dangi 0622-07-19 | VM: undefined undefined / 622 M06 3 | BJS: undefined undefined / 622 M06 3
+   ethioaa 0622-07-19 | VM: aa 6114 / 6114 M11 22 | BJS: aa 6114 / 6114 M11 22
+   ethiopic 0622-07-19 | VM: am 614 / 614 M11 22 | BJS: am 614 / 614 M11 22
+   gregory 0622-07-19 | VM: ce 622 / 622 M07 19 | BJS: ce 622 / 622 M07 19
+   hebrew 0622-07-19 | VM: am 4382 / 4382 M11 3 | BJS: am 4382 / 4382 M11 3
+   indian 0622-07-19 | VM: shaka 544 / 544 M04 28 | BJS: shaka 544 / 544 M04 28
+   islamic-civil 0622-07-19 | VM: ah 1 / 1 M01 1 | BJS: ah 1 / 1 M01 1
+   islamic-tbla 0622-07-19 | VM: ah 1 / 1 M01 2 | BJS: ah 1 / 1 M01 2
+   islamic-umalqura 0622-07-19 | VM: ah 1 / 1 M01 1 | BJS: ah 1 / 1 M01 1
+   japanese 0622-07-19 | VM: ce 622 / 622 M07 19 | BJS: ce 622 / 622 M07 19
+   persian 0622-07-19 | VM: ap 1 / 1 M04 28 | BJS: ap 1 / 1 M04 28
+   roc 0622-07-19 | VM: broc 1290 / -1289 M07 19 | BJS: broc 1290 / -1289 M07 19
+   buddhist 0079-03-21 | VM: be 622 / 622 M03 21 | BJS: be 622 / 622 M03 21
+   chinese 0079-03-21 | VM: undefined undefined / 79 M02 3 | BJS: undefined undefined / 79 M02 3
+   coptic 0079-03-21 | VM: am -205 / -205 M07 27 | BJS: am -205 / -205 M07 27
+   dangi 0079-03-21 | VM: undefined undefined / 79 M02 3 | BJS: undefined undefined / 79 M02 3
+   ethioaa 0079-03-21 | VM: aa 5571 / 5571 M07 27 | BJS: aa 5571 / 5571 M07 27
+   ethiopic 0079-03-21 | VM: am 71 / 71 M07 27 | BJS: am 71 / 71 M07 27
+   gregory 0079-03-21 | VM: ce 79 / 79 M03 21 | BJS: ce 79 / 79 M03 21
+   hebrew 0079-03-21 | VM: am 3839 / 3839 M07 1 | BJS: am 3839 / 3839 M07 1
+   indian 0079-03-21 | VM: shaka 0 / 0 M12 30 | BJS: shaka 0 / 0 M12 30
+   islamic-civil 0079-03-21 | VM: bh 561 / -560 M12 30 | BJS: bh 561 / -560 M12 30
+   islamic-tbla 0079-03-21 | VM: bh 560 / -559 M01 1 | BJS: bh 560 / -559 M01 1
+   islamic-umalqura 0079-03-21 | VM: bh 561 / -560 M12 30 | BJS: bh 561 / -560 M12 30
+   japanese 0079-03-21 | VM: ce 79 / 79 M03 21 | BJS: ce 79 / 79 M03 21
+   persian 0079-03-21 | VM: ap -542 / -542 M01 1 | BJS: ap -542 / -542 M01 1
+   roc 0079-03-21 | VM: broc 1833 / -1832 M03 21 | BJS: broc 1833 / -1832 M03 21
+   buddhist 0079-03-22 | VM: be 622 / 622 M03 22 | BJS: be 622 / 622 M03 22
+   chinese 0079-03-22 | VM: undefined undefined / 79 M02 4 | BJS: undefined undefined / 79 M02 4
+   coptic 0079-03-22 | VM: am -205 / -205 M07 28 | BJS: am -205 / -205 M07 28
+   dangi 0079-03-22 | VM: undefined undefined / 79 M02 4 | BJS: undefined undefined / 79 M02 4
+   ethioaa 0079-03-22 | VM: aa 5571 / 5571 M07 28 | BJS: aa 5571 / 5571 M07 28
+   ethiopic 0079-03-22 | VM: am 71 / 71 M07 28 | BJS: am 71 / 71 M07 28
+   gregory 0079-03-22 | VM: ce 79 / 79 M03 22 | BJS: ce 79 / 79 M03 22
+   hebrew 0079-03-22 | VM: am 3839 / 3839 M07 2 | BJS: am 3839 / 3839 M07 2
+   indian 0079-03-22 | VM: shaka 1 / 1 M01 1 | BJS: shaka 1 / 1 M01 1
+   islamic-civil 0079-03-22 | VM: bh 560 / -559 M01 1 | BJS: bh 560 / -559 M01 1
+   islamic-tbla 0079-03-22 | VM: bh 560 / -559 M01 2 | BJS: bh 560 / -559 M01 2
+   islamic-umalqura 0079-03-22 | VM: bh 560 / -559 M01 1 | BJS: bh 560 / -559 M01 1
+   japanese 0079-03-22 | VM: ce 79 / 79 M03 22 | BJS: ce 79 / 79 M03 22
+   persian 0079-03-22 | VM: ap -542 / -542 M01 2 | BJS: ap -542 / -542 M01 2
+   roc 0079-03-22 | VM: broc 1833 / -1832 M03 22 | BJS: broc 1833 / -1832 M03 22
+   buddhist 1867-12-31 | VM: be 2410 / 2410 M12 31 | BJS: be 2410 / 2410 M12 31
+   chinese 1867-12-31 | VM: undefined undefined / 1867 M12 6 | BJS: undefined undefined / 1867 M12 6
+   coptic 1867-12-31 | VM: am 1584 / 1584 M04 22 | BJS: am 1584 / 1584 M04 22
+   dangi 1867-12-31 | VM: undefined undefined / 1867 M12 6 | BJS: undefined undefined / 1867 M12 6
+   ethioaa 1867-12-31 | VM: aa 7360 / 7360 M04 22 | BJS: aa 7360 / 7360 M04 22
+   ethiopic 1867-12-31 | VM: am 1860 / 1860 M04 22 | BJS: am 1860 / 1860 M04 22
+   gregory 1867-12-31 | VM: ce 1867 / 1867 M12 31 | BJS: ce 1867 / 1867 M12 31
+   hebrew 1867-12-31 | VM: am 5628 / 5628 M04 5 | BJS: am 5628 / 5628 M04 5
+   indian 1867-12-31 | VM: shaka 1789 / 1789 M10 10 | BJS: shaka 1789 / 1789 M10 10
+   islamic-civil 1867-12-31 | VM: ah 1284 / 1284 M09 5 | BJS: ah 1284 / 1284 M09 5
+   islamic-tbla 1867-12-31 | VM: ah 1284 / 1284 M09 6 | BJS: ah 1284 / 1284 M09 6
+   islamic-umalqura 1867-12-31 | VM: ah 1284 / 1284 M09 5 | BJS: ah 1284 / 1284 M09 5
+   japanese 1867-12-31 | VM: ce 1867 / 1867 M12 31 | BJS: ce 1867 / 1867 M12 31
+   persian 1867-12-31 | VM: ap 1246 / 1246 M10 10 | BJS: ap 1246 / 1246 M10 10
+   roc 1867-12-31 | VM: broc 45 / -44 M12 31 | BJS: broc 45 / -44 M12 31
+   buddhist 1868-01-01 | VM: be 2411 / 2411 M01 1 | BJS: be 2411 / 2411 M01 1
+   chinese 1868-01-01 | VM: undefined undefined / 1867 M12 7 | BJS: undefined undefined / 1867 M12 7
+   coptic 1868-01-01 | VM: am 1584 / 1584 M04 23 | BJS: am 1584 / 1584 M04 23
+   dangi 1868-01-01 | VM: undefined undefined / 1867 M12 7 | BJS: undefined undefined / 1867 M12 7
+   ethioaa 1868-01-01 | VM: aa 7360 / 7360 M04 23 | BJS: aa 7360 / 7360 M04 23
+   ethiopic 1868-01-01 | VM: am 1860 / 1860 M04 23 | BJS: am 1860 / 1860 M04 23
+   gregory 1868-01-01 | VM: ce 1868 / 1868 M01 1 | BJS: ce 1868 / 1868 M01 1
+   hebrew 1868-01-01 | VM: am 5628 / 5628 M04 6 | BJS: am 5628 / 5628 M04 6
+   indian 1868-01-01 | VM: shaka 1789 / 1789 M10 11 | BJS: shaka 1789 / 1789 M10 11
+   islamic-civil 1868-01-01 | VM: ah 1284 / 1284 M09 6 | BJS: ah 1284 / 1284 M09 6
+   islamic-tbla 1868-01-01 | VM: ah 1284 / 1284 M09 7 | BJS: ah 1284 / 1284 M09 7
+   islamic-umalqura 1868-01-01 | VM: ah 1284 / 1284 M09 6 | BJS: ah 1284 / 1284 M09 6
+   japanese 1868-01-01 | VM: ce 1868 / 1868 M01 1 | BJS: ce 1868 / 1868 M01 1
+   persian 1868-01-01 | VM: ap 1246 / 1246 M10 11 | BJS: ap 1246 / 1246 M10 11
+   roc 1868-01-01 | VM: broc 44 / -43 M01 1 | BJS: broc 44 / -43 M01 1
+   buddhist 1872-12-31 | VM: be 2415 / 2415 M12 31 | BJS: be 2415 / 2415 M12 31
+   chinese 1872-12-31 | VM: undefined undefined / 1872 M12 2 | BJS: undefined undefined / 1872 M12 2
+   coptic 1872-12-31 | VM: am 1589 / 1589 M04 23 | BJS: am 1589 / 1589 M04 23
+   dangi 1872-12-31 | VM: undefined undefined / 1872 M12 2 | BJS: undefined undefined / 1872 M12 2
+   ethioaa 1872-12-31 | VM: aa 7365 / 7365 M04 23 | BJS: aa 7365 / 7365 M04 23
+   ethiopic 1872-12-31 | VM: am 1865 / 1865 M04 23 | BJS: am 1865 / 1865 M04 23
+   gregory 1872-12-31 | VM: ce 1872 / 1872 M12 31 | BJS: ce 1872 / 1872 M12 31
+   hebrew 1872-12-31 | VM: am 5633 / 5633 M04 1 | BJS: am 5633 / 5633 M04 1
+   indian 1872-12-31 | VM: shaka 1794 / 1794 M10 10 | BJS: shaka 1794 / 1794 M10 10
+   islamic-civil 1872-12-31 | VM: ah 1289 / 1289 M11 1 | BJS: ah 1289 / 1289 M11 1
+   islamic-tbla 1872-12-31 | VM: ah 1289 / 1289 M11 2 | BJS: ah 1289 / 1289 M11 2
+   islamic-umalqura 1872-12-31 | VM: ah 1289 / 1289 M11 1 | BJS: ah 1289 / 1289 M11 1
+   japanese 1872-12-31 | VM: ce 1872 / 1872 M12 31 | BJS: ce 1872 / 1872 M12 31
+   persian 1872-12-31 | VM: ap 1251 / 1251 M10 11 | BJS: ap 1251 / 1251 M10 11
+   roc 1872-12-31 | VM: broc 40 / -39 M12 31 | BJS: broc 40 / -39 M12 31
+   buddhist 1873-01-01 | VM: be 2416 / 2416 M01 1 | BJS: be 2416 / 2416 M01 1
+   chinese 1873-01-01 | VM: undefined undefined / 1872 M12 3 | BJS: undefined undefined / 1872 M12 3
+   coptic 1873-01-01 | VM: am 1589 / 1589 M04 24 | BJS: am 1589 / 1589 M04 24
+   dangi 1873-01-01 | VM: undefined undefined / 1872 M12 3 | BJS: undefined undefined / 1872 M12 3
+   ethioaa 1873-01-01 | VM: aa 7365 / 7365 M04 24 | BJS: aa 7365 / 7365 M04 24
+   ethiopic 1873-01-01 | VM: am 1865 / 1865 M04 24 | BJS: am 1865 / 1865 M04 24
+   gregory 1873-01-01 | VM: ce 1873 / 1873 M01 1 | BJS: ce 1873 / 1873 M01 1
+   hebrew 1873-01-01 | VM: am 5633 / 5633 M04 2 | BJS: am 5633 / 5633 M04 2
+   indian 1873-01-01 | VM: shaka 1794 / 1794 M10 11 | BJS: shaka 1794 / 1794 M10 11
+   islamic-civil 1873-01-01 | VM: ah 1289 / 1289 M11 2 | BJS: ah 1289 / 1289 M11 2
+   islamic-tbla 1873-01-01 | VM: ah 1289 / 1289 M11 3 | BJS: ah 1289 / 1289 M11 3
+   islamic-umalqura 1873-01-01 | VM: ah 1289 / 1289 M11 2 | BJS: ah 1289 / 1289 M11 2
+   japanese 1873-01-01 | VM: meiji 6 / 1873 M01 1 | BJS: meiji 6 / 1873 M01 1
+   persian 1873-01-01 | VM: ap 1251 / 1251 M10 12 | BJS: ap 1251 / 1251 M10 12
+   roc 1873-01-01 | VM: broc 39 / -38 M01 1 | BJS: broc 39 / -38 M01 1
+   buddhist 1911-12-31 | VM: be 2454 / 2454 M12 31 | BJS: be 2454 / 2454 M12 31
+   chinese 1911-12-31 | VM: undefined undefined / 1911 M11 12 | BJS: undefined undefined / 1911 M11 12
+   coptic 1911-12-31 | VM: am 1628 / 1628 M04 21 | BJS: am 1628 / 1628 M04 21
+   dangi 1911-12-31 | VM: undefined undefined / 1911 M11 12 | BJS: undefined undefined / 1911 M11 12
+   ethioaa 1911-12-31 | VM: aa 7404 / 7404 M04 21 | BJS: aa 7404 / 7404 M04 21
+   ethiopic 1911-12-31 | VM: am 1904 / 1904 M04 21 | BJS: am 1904 / 1904 M04 21
+   gregory 1911-12-31 | VM: ce 1911 / 1911 M12 31 | BJS: ce 1911 / 1911 M12 31
+   hebrew 1911-12-31 | VM: am 5672 / 5672 M04 10 | BJS: am 5672 / 5672 M04 10
+   indian 1911-12-31 | VM: shaka 1833 / 1833 M10 10 | BJS: shaka 1833 / 1833 M10 10
+   islamic-civil 1911-12-31 | VM: ah 1330 / 1330 M01 10 | BJS: ah 1330 / 1330 M01 10
+   islamic-tbla 1911-12-31 | VM: ah 1330 / 1330 M01 11 | BJS: ah 1330 / 1330 M01 11
+   islamic-umalqura 1911-12-31 | VM: ah 1330 / 1330 M01 10 | BJS: ah 1330 / 1330 M01 10
+   japanese 1911-12-31 | VM: meiji 44 / 1911 M12 31 | BJS: meiji 44 / 1911 M12 31
+   persian 1911-12-31 | VM: ap 1290 / 1290 M10 9 | BJS: ap 1290 / 1290 M10 9
+   roc 1911-12-31 | VM: broc 1 / 0 M12 31 | BJS: broc 1 / 0 M12 31
+   buddhist 1912-01-01 | VM: be 2455 / 2455 M01 1 | BJS: be 2455 / 2455 M01 1
+   chinese 1912-01-01 | VM: undefined undefined / 1911 M11 13 | BJS: undefined undefined / 1911 M11 13
+   coptic 1912-01-01 | VM: am 1628 / 1628 M04 22 | BJS: am 1628 / 1628 M04 22
+   dangi 1912-01-01 | VM: undefined undefined / 1911 M11 13 | BJS: undefined undefined / 1911 M11 13
+   ethioaa 1912-01-01 | VM: aa 7404 / 7404 M04 22 | BJS: aa 7404 / 7404 M04 22
+   ethiopic 1912-01-01 | VM: am 1904 / 1904 M04 22 | BJS: am 1904 / 1904 M04 22
+   gregory 1912-01-01 | VM: ce 1912 / 1912 M01 1 | BJS: ce 1912 / 1912 M01 1
+   hebrew 1912-01-01 | VM: am 5672 / 5672 M04 11 | BJS: am 5672 / 5672 M04 11
+   indian 1912-01-01 | VM: shaka 1833 / 1833 M10 11 | BJS: shaka 1833 / 1833 M10 11
+   islamic-civil 1912-01-01 | VM: ah 1330 / 1330 M01 11 | BJS: ah 1330 / 1330 M01 11
+   islamic-tbla 1912-01-01 | VM: ah 1330 / 1330 M01 12 | BJS: ah 1330 / 1330 M01 12
+   islamic-umalqura 1912-01-01 | VM: ah 1330 / 1330 M01 11 | BJS: ah 1330 / 1330 M01 11
+   japanese 1912-01-01 | VM: meiji 45 / 1912 M01 1 | BJS: meiji 45 / 1912 M01 1
+   persian 1912-01-01 | VM: ap 1290 / 1290 M10 10 | BJS: ap 1290 / 1290 M10 10
+   roc 1912-01-01 | VM: roc 1 / 1 M01 1 | BJS: roc 1 / 1 M01 1
+   buddhist 1912-07-29 | VM: be 2455 / 2455 M07 29 | BJS: be 2455 / 2455 M07 29
+   chinese 1912-07-29 | VM: undefined undefined / 1912 M06 16 | BJS: undefined undefined / 1912 M06 16
+   coptic 1912-07-29 | VM: am 1628 / 1628 M11 22 | BJS: am 1628 / 1628 M11 22
+   dangi 1912-07-29 | VM: undefined undefined / 1912 M06 16 | BJS: undefined undefined / 1912 M06 16
+   ethioaa 1912-07-29 | VM: aa 7404 / 7404 M11 22 | BJS: aa 7404 / 7404 M11 22
+   ethiopic 1912-07-29 | VM: am 1904 / 1904 M11 22 | BJS: am 1904 / 1904 M11 22
+   gregory 1912-07-29 | VM: ce 1912 / 1912 M07 29 | BJS: ce 1912 / 1912 M07 29
+   hebrew 1912-07-29 | VM: am 5672 / 5672 M11 15 | BJS: am 5672 / 5672 M11 15
+   indian 1912-07-29 | VM: shaka 1834 / 1834 M05 7 | BJS: shaka 1834 / 1834 M05 7
+   islamic-civil 1912-07-29 | VM: ah 1330 / 1330 M08 14 | BJS: ah 1330 / 1330 M08 14
+   islamic-tbla 1912-07-29 | VM: ah 1330 / 1330 M08 15 | BJS: ah 1330 / 1330 M08 15
+   islamic-umalqura 1912-07-29 | VM: ah 1330 / 1330 M08 14 | BJS: ah 1330 / 1330 M08 14
+   japanese 1912-07-29 | VM: meiji 45 / 1912 M07 29 | BJS: meiji 45 / 1912 M07 29
+   persian 1912-07-29 | VM: ap 1291 / 1291 M05 7 | BJS: ap 1291 / 1291 M05 7
+   roc 1912-07-29 | VM: roc 1 / 1 M07 29 | BJS: roc 1 / 1 M07 29
+   buddhist 1912-07-30 | VM: be 2455 / 2455 M07 30 | BJS: be 2455 / 2455 M07 30
+   chinese 1912-07-30 | VM: undefined undefined / 1912 M06 17 | BJS: undefined undefined / 1912 M06 17
+   coptic 1912-07-30 | VM: am 1628 / 1628 M11 23 | BJS: am 1628 / 1628 M11 23
+   dangi 1912-07-30 | VM: undefined undefined / 1912 M06 17 | BJS: undefined undefined / 1912 M06 17
+   ethioaa 1912-07-30 | VM: aa 7404 / 7404 M11 23 | BJS: aa 7404 / 7404 M11 23
+   ethiopic 1912-07-30 | VM: am 1904 / 1904 M11 23 | BJS: am 1904 / 1904 M11 23
+   gregory 1912-07-30 | VM: ce 1912 / 1912 M07 30 | BJS: ce 1912 / 1912 M07 30
+   hebrew 1912-07-30 | VM: am 5672 / 5672 M11 16 | BJS: am 5672 / 5672 M11 16
+   indian 1912-07-30 | VM: shaka 1834 / 1834 M05 8 | BJS: shaka 1834 / 1834 M05 8
+   islamic-civil 1912-07-30 | VM: ah 1330 / 1330 M08 15 | BJS: ah 1330 / 1330 M08 15
+   islamic-tbla 1912-07-30 | VM: ah 1330 / 1330 M08 16 | BJS: ah 1330 / 1330 M08 16
+   islamic-umalqura 1912-07-30 | VM: ah 1330 / 1330 M08 15 | BJS: ah 1330 / 1330 M08 15
+   japanese 1912-07-30 | VM: taisho 1 / 1912 M07 30 | BJS: taisho 1 / 1912 M07 30
+   persian 1912-07-30 | VM: ap 1291 / 1291 M05 8 | BJS: ap 1291 / 1291 M05 8
+   roc 1912-07-30 | VM: roc 1 / 1 M07 30 | BJS: roc 1 / 1 M07 30
+   buddhist 1926-12-24 | VM: be 2469 / 2469 M12 24 | BJS: be 2469 / 2469 M12 24
+   chinese 1926-12-24 | VM: undefined undefined / 1926 M11 20 | BJS: undefined undefined / 1926 M11 20
+   coptic 1926-12-24 | VM: am 1643 / 1643 M04 15 | BJS: am 1643 / 1643 M04 15
+   dangi 1926-12-24 | VM: undefined undefined / 1926 M11 20 | BJS: undefined undefined / 1926 M11 20
+   ethioaa 1926-12-24 | VM: aa 7419 / 7419 M04 15 | BJS: aa 7419 / 7419 M04 15
+   ethiopic 1926-12-24 | VM: am 1919 / 1919 M04 15 | BJS: am 1919 / 1919 M04 15
+   gregory 1926-12-24 | VM: ce 1926 / 1926 M12 24 | BJS: ce 1926 / 1926 M12 24
+   hebrew 1926-12-24 | VM: am 5687 / 5687 M04 19 | BJS: am 5687 / 5687 M04 19
+   indian 1926-12-24 | VM: shaka 1848 / 1848 M10 3 | BJS: shaka 1848 / 1848 M10 3
+   islamic-civil 1926-12-24 | VM: ah 1345 / 1345 M06 18 | BJS: ah 1345 / 1345 M06 18
+   islamic-tbla 1926-12-24 | VM: ah 1345 / 1345 M06 19 | BJS: ah 1345 / 1345 M06 19
+   islamic-umalqura 1926-12-24 | VM: ah 1345 / 1345 M06 18 | BJS: ah 1345 / 1345 M06 18
+   japanese 1926-12-24 | VM: taisho 15 / 1926 M12 24 | BJS: taisho 15 / 1926 M12 24
+   persian 1926-12-24 | VM: ap 1305 / 1305 M10 2 | BJS: ap 1305 / 1305 M10 2
+   roc 1926-12-24 | VM: roc 15 / 15 M12 24 | BJS: roc 15 / 15 M12 24
+   buddhist 1926-12-25 | VM: be 2469 / 2469 M12 25 | BJS: be 2469 / 2469 M12 25
+   chinese 1926-12-25 | VM: undefined undefined / 1926 M11 21 | BJS: undefined undefined / 1926 M11 21
+   coptic 1926-12-25 | VM: am 1643 / 1643 M04 16 | BJS: am 1643 / 1643 M04 16
+   dangi 1926-12-25 | VM: undefined undefined / 1926 M11 21 | BJS: undefined undefined / 1926 M11 21
+   ethioaa 1926-12-25 | VM: aa 7419 / 7419 M04 16 | BJS: aa 7419 / 7419 M04 16
+   ethiopic 1926-12-25 | VM: am 1919 / 1919 M04 16 | BJS: am 1919 / 1919 M04 16
+   gregory 1926-12-25 | VM: ce 1926 / 1926 M12 25 | BJS: ce 1926 / 1926 M12 25
+   hebrew 1926-12-25 | VM: am 5687 / 5687 M04 20 | BJS: am 5687 / 5687 M04 20
+   indian 1926-12-25 | VM: shaka 1848 / 1848 M10 4 | BJS: shaka 1848 / 1848 M10 4
+   islamic-civil 1926-12-25 | VM: ah 1345 / 1345 M06 19 | BJS: ah 1345 / 1345 M06 19
+   islamic-tbla 1926-12-25 | VM: ah 1345 / 1345 M06 20 | BJS: ah 1345 / 1345 M06 20
+   islamic-umalqura 1926-12-25 | VM: ah 1345 / 1345 M06 19 | BJS: ah 1345 / 1345 M06 19
+   japanese 1926-12-25 | VM: showa 1 / 1926 M12 25 | BJS: showa 1 / 1926 M12 25
+   persian 1926-12-25 | VM: ap 1305 / 1305 M10 3 | BJS: ap 1305 / 1305 M10 3
+   roc 1926-12-25 | VM: roc 15 / 15 M12 25 | BJS: roc 15 / 15 M12 25
+   buddhist 1989-01-07 | VM: be 2532 / 2532 M01 7 | BJS: be 2532 / 2532 M01 7
+   chinese 1989-01-07 | VM: undefined undefined / 1988 M11 30 | BJS: undefined undefined / 1988 M11 30
+   coptic 1989-01-07 | VM: am 1705 / 1705 M04 29 | BJS: am 1705 / 1705 M04 29
+   dangi 1989-01-07 | VM: undefined undefined / 1988 M11 30 | BJS: undefined undefined / 1988 M11 30
+   ethioaa 1989-01-07 | VM: aa 7481 / 7481 M04 29 | BJS: aa 7481 / 7481 M04 29
+   ethiopic 1989-01-07 | VM: am 1981 / 1981 M04 29 | BJS: am 1981 / 1981 M04 29
+   gregory 1989-01-07 | VM: ce 1989 / 1989 M01 7 | BJS: ce 1989 / 1989 M01 7
+   hebrew 1989-01-07 | VM: am 5749 / 5749 M05 1 | BJS: am 5749 / 5749 M05 1
+   indian 1989-01-07 | VM: shaka 1910 / 1910 M10 17 | BJS: shaka 1910 / 1910 M10 17
+   islamic-civil 1989-01-07 | VM: ah 1409 / 1409 M05 29 | BJS: ah 1409 / 1409 M05 29
+   islamic-tbla 1989-01-07 | VM: ah 1409 / 1409 M05 30 | BJS: ah 1409 / 1409 M05 30
+   islamic-umalqura 1989-01-07 | VM: ah 1409 / 1409 M05 28 | BJS: ah 1409 / 1409 M05 28
+   japanese 1989-01-07 | VM: showa 64 / 1989 M01 7 | BJS: showa 64 / 1989 M01 7
+   persian 1989-01-07 | VM: ap 1367 / 1367 M10 17 | BJS: ap 1367 / 1367 M10 17
+   roc 1989-01-07 | VM: roc 78 / 78 M01 7 | BJS: roc 78 / 78 M01 7
+   buddhist 1989-01-08 | VM: be 2532 / 2532 M01 8 | BJS: be 2532 / 2532 M01 8
+   chinese 1989-01-08 | VM: undefined undefined / 1988 M12 1 | BJS: undefined undefined / 1988 M12 1
+   coptic 1989-01-08 | VM: am 1705 / 1705 M04 30 | BJS: am 1705 / 1705 M04 30
+   dangi 1989-01-08 | VM: undefined undefined / 1988 M12 1 | BJS: undefined undefined / 1988 M12 1
+   ethioaa 1989-01-08 | VM: aa 7481 / 7481 M04 30 | BJS: aa 7481 / 7481 M04 30
+   ethiopic 1989-01-08 | VM: am 1981 / 1981 M04 30 | BJS: am 1981 / 1981 M04 30
+   gregory 1989-01-08 | VM: ce 1989 / 1989 M01 8 | BJS: ce 1989 / 1989 M01 8
+   hebrew 1989-01-08 | VM: am 5749 / 5749 M05 2 | BJS: am 5749 / 5749 M05 2
+   indian 1989-01-08 | VM: shaka 1910 / 1910 M10 18 | BJS: shaka 1910 / 1910 M10 18
+   islamic-civil 1989-01-08 | VM: ah 1409 / 1409 M05 30 | BJS: ah 1409 / 1409 M05 30
+   islamic-tbla 1989-01-08 | VM: ah 1409 / 1409 M06 1 | BJS: ah 1409 / 1409 M06 1
+   islamic-umalqura 1989-01-08 | VM: ah 1409 / 1409 M05 29 | BJS: ah 1409 / 1409 M05 29
+   japanese 1989-01-08 | VM: heisei 1 / 1989 M01 8 | BJS: heisei 1 / 1989 M01 8
+   persian 1989-01-08 | VM: ap 1367 / 1367 M10 18 | BJS: ap 1367 / 1367 M10 18
+   roc 1989-01-08 | VM: roc 78 / 78 M01 8 | BJS: roc 78 / 78 M01 8
+   buddhist 2019-04-30 | VM: be 2562 / 2562 M04 30 | BJS: be 2562 / 2562 M04 30
+   chinese 2019-04-30 | VM: undefined undefined / 2019 M03 26 | BJS: undefined undefined / 2019 M03 26
+   coptic 2019-04-30 | VM: am 1735 / 1735 M08 22 | BJS: am 1735 / 1735 M08 22
+   dangi 2019-04-30 | VM: undefined undefined / 2019 M03 26 | BJS: undefined undefined / 2019 M03 26
+   ethioaa 2019-04-30 | VM: aa 7511 / 7511 M08 22 | BJS: aa 7511 / 7511 M08 22
+   ethiopic 2019-04-30 | VM: am 2011 / 2011 M08 22 | BJS: am 2011 / 2011 M08 22
+   gregory 2019-04-30 | VM: ce 2019 / 2019 M04 30 | BJS: ce 2019 / 2019 M04 30
+   hebrew 2019-04-30 | VM: am 5779 / 5779 M07 25 | BJS: am 5779 / 5779 M07 25
+   indian 2019-04-30 | VM: shaka 1941 / 1941 M02 10 | BJS: shaka 1941 / 1941 M02 10
+   islamic-civil 2019-04-30 | VM: ah 1440 / 1440 M08 24 | BJS: ah 1440 / 1440 M08 24
+   islamic-tbla 2019-04-30 | VM: ah 1440 / 1440 M08 25 | BJS: ah 1440 / 1440 M08 25
+   islamic-umalqura 2019-04-30 | VM: ah 1440 / 1440 M08 25 | BJS: ah 1440 / 1440 M08 25
+   japanese 2019-04-30 | VM: heisei 31 / 2019 M04 30 | BJS: heisei 31 / 2019 M04 30
+   persian 2019-04-30 | VM: ap 1398 / 1398 M02 10 | BJS: ap 1398 / 1398 M02 10
+   roc 2019-04-30 | VM: roc 108 / 108 M04 30 | BJS: roc 108 / 108 M04 30
+   buddhist 2019-05-01 | VM: be 2562 / 2562 M05 1 | BJS: be 2562 / 2562 M05 1
+   chinese 2019-05-01 | VM: undefined undefined / 2019 M03 27 | BJS: undefined undefined / 2019 M03 27
+   coptic 2019-05-01 | VM: am 1735 / 1735 M08 23 | BJS: am 1735 / 1735 M08 23
+   dangi 2019-05-01 | VM: undefined undefined / 2019 M03 27 | BJS: undefined undefined / 2019 M03 27
+   ethioaa 2019-05-01 | VM: aa 7511 / 7511 M08 23 | BJS: aa 7511 / 7511 M08 23
+   ethiopic 2019-05-01 | VM: am 2011 / 2011 M08 23 | BJS: am 2011 / 2011 M08 23
+   gregory 2019-05-01 | VM: ce 2019 / 2019 M05 1 | BJS: ce 2019 / 2019 M05 1
+   hebrew 2019-05-01 | VM: am 5779 / 5779 M07 26 | BJS: am 5779 / 5779 M07 26
+   indian 2019-05-01 | VM: shaka 1941 / 1941 M02 11 | BJS: shaka 1941 / 1941 M02 11
+   islamic-civil 2019-05-01 | VM: ah 1440 / 1440 M08 25 | BJS: ah 1440 / 1440 M08 25
+   islamic-tbla 2019-05-01 | VM: ah 1440 / 1440 M08 26 | BJS: ah 1440 / 1440 M08 26
+   islamic-umalqura 2019-05-01 | VM: ah 1440 / 1440 M08 26 | BJS: ah 1440 / 1440 M08 26
+   japanese 2019-05-01 | VM: reiwa 1 / 2019 M05 1 | BJS: reiwa 1 / 2019 M05 1
+   persian 2019-05-01 | VM: ap 1398 / 1398 M02 11 | BJS: ap 1398 / 1398 M02 11
+   roc 2019-05-01 | VM: roc 108 / 108 M05 1 | BJS: roc 108 / 108 M05 1
+   buddhist +275760-09-13 | VM: be 276303 / 276303 M09 13 | BJS: be 276303 / 276303 M09 13
+   chinese +275760-09-13 | VM: undefined undefined / 275760 M07 30 | BJS: undefined undefined / 275760 M07 30
+   coptic +275760-09-13 | VM: am 275471 / 275471 M05 22 | BJS: am 275471 / 275471 M05 22
+   dangi +275760-09-13 | VM: undefined undefined / 275760 M07 30 | BJS: undefined undefined / 275760 M07 30
+   ethioaa +275760-09-13 | VM: aa 281247 / 281247 M05 22 | BJS: aa 281247 / 281247 M05 22
+   ethiopic +275760-09-13 | VM: am 275747 / 275747 M05 22 | BJS: am 275747 / 275747 M05 22
+   gregory +275760-09-13 | VM: ce 275760 / 275760 M09 13 | BJS: ce 275760 / 275760 M09 13
+   hebrew +275760-09-13 | VM: am 279517 / 279517 M09 11 | BJS: am 279517 / 279517 M09 11
+   indian +275760-09-13 | VM: shaka 275682 / 275682 M06 22 | BJS: shaka 275682 / 275682 M06 22
+   islamic-civil +275760-09-13 | VM: ah 283583 / 283583 M05 23 | BJS: ah 283583 / 283583 M05 23
+   islamic-tbla +275760-09-13 | VM: ah 283583 / 283583 M05 24 | BJS: ah 283583 / 283583 M05 24
+   islamic-umalqura +275760-09-13 | VM: ah 283583 / 283583 M05 23 | BJS: ah 283583 / 283583 M05 23
+   japanese +275760-09-13 | VM: reiwa 273742 / 275760 M09 13 | BJS: reiwa 273742 / 275760 M09 13
+   persian +275760-09-13 | VM: ap 275139 / 275139 M07 12 | BJS: ap 275139 / 275139 M07 12
+   roc +275760-09-13 | VM: roc 273849 / 273849 M09 13 | BJS: roc 273849 / 273849 M09 13
+   gregory era ce eraYear 0 | VM: bce 1 year 0 iso 0000-01-01 | BJS: bce 1 year 0 iso 0000-01-01
+   gregory era bce eraYear 0 | VM: ce 1 year 1 iso 0001-01-01 | BJS: ce 1 year 1 iso 0001-01-01
+   gregory era bce eraYear -1 | VM: ce 2 year 2 iso 0002-01-01 | BJS: ce 2 year 2 iso 0002-01-01
+   japanese era reiwa eraYear 0 | VM: heisei 30 year 2018 iso 2018-01-01 | BJS: heisei 30 year 2018 iso 2018-01-01
+   japanese era reiwa eraYear -1 | VM: heisei 29 year 2017 iso 2017-01-01 | BJS: heisei 29 year 2017 iso 2017-01-01
+   japanese era meiji eraYear 1 | VM: ce 1868 year 1868 iso 1868-01-01 | BJS: ce 1868 year 1868 iso 1868-01-01
+   japanese era meiji eraYear 6 | VM: meiji 6 year 1873 iso 1873-01-01 | BJS: meiji 6 year 1873 iso 1873-01-01
+   japanese era heisei eraYear 31 | VM: heisei 31 year 2019 iso 2019-01-01 | BJS: heisei 31 year 2019 iso 2019-01-01
+   japanese era heisei eraYear 40 | VM: reiwa 10 year 2028 iso 2028-01-01 | BJS: reiwa 10 year 2028 iso 2028-01-01
+   roc era broc eraYear 0 | VM: roc 1 year 1 iso 1912-01-01 | BJS: roc 1 year 1 iso 1912-01-01
+   roc era roc eraYear 0 | VM: broc 1 year 0 iso 1911-01-01 | BJS: broc 1 year 0 iso 1911-01-01
+   ethiopic era aa eraYear 5500 | VM: aa 5500 year 0 iso 0007-08-28 | BJS: aa 5500 year 0 iso 0007-08-28
+   ethiopic era aa eraYear 5501 | VM: am 1 year 1 iso 0008-08-27 | BJS: am 1 year 1 iso 0008-08-27
+   ethiopic era am eraYear 0 | VM: aa 5500 year 0 iso 0007-08-28 | BJS: aa 5500 year 0 iso 0007-08-28
+   islamic-civil era bh eraYear 0 | VM: ah 1 year 1 iso 0622-07-19 | BJS: ah 1 year 1 iso 0622-07-19
+   islamic-civil era ah eraYear 0 | VM: bh 1 year 0 iso 0621-07-30 | BJS: bh 1 year 0 iso 0621-07-30
+   coptic era am eraYear -5 | VM: am -5 year -5 iso 0278-08-29 | BJS: am -5 year -5 iso 0278-08-29
+   hebrew era am eraYear 0 | VM: am 0 year 0 iso -003761-08-20 | BJS: am 0 year 0 iso -003761-08-20
+   persian era ap eraYear -1 | VM: ap -1 year -1 iso 0620-03-21 | BJS: ap -1 year -1 iso 0620-03-21
+   indian era shaka eraYear 0 | VM: shaka 0 year 0 iso 0078-03-22 | BJS: shaka 0 year 0 iso 0078-03-22
+   buddhist era be eraYear 0 | VM: be 0 year 0 iso -000543-01-01 | BJS: be 0 year 0 iso -000543-01-01
+   gregory {"year":2020,"era":"ce","eraYear":2019} | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory {"year":2020,"era":"ce","eraYear":2020} | VM: ce 2020 year 2020 iso 2020-01-01 | BJS: ce 2020 year 2020 iso 2020-01-01
+   gregory {"era":"ce"} | VM: THROWS TypeError | BJS: THROWS TypeError
+   gregory {"eraYear":2020} | VM: THROWS TypeError | BJS: THROWS TypeError
+   gregory {"year":2020,"era":"ce"} | VM: THROWS TypeError | BJS: THROWS TypeError
+   gregory {"year":2020,"eraYear":2020} | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese {"era":"ce","eraYear":2020} | VM: THROWS TypeError | BJS: THROWS TypeError
+   chinese {"year":2020,"era":"x","eraYear":1} | VM: undefined undefined year 2020 iso 2020-01-25 | BJS: undefined undefined year 2020 iso 2020-01-25
+   iso8601 {"era":"ce","eraYear":2020} | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 {"year":2020,"era":"x","eraYear":1} | VM: undefined undefined year 2020 iso 2020-01-01 | BJS: undefined undefined year 2020 iso 2020-01-01
+   japanese {"year":2019,"era":"heisei","eraYear":31} | VM: heisei 31 year 2019 iso 2019-01-01 | BJS: heisei 31 year 2019 iso 2019-01-01
+   japanese {"year":2019,"era":"reiwa","eraYear":1} | VM: heisei 31 year 2019 iso 2019-01-01 | BJS: heisei 31 year 2019 iso 2019-01-01

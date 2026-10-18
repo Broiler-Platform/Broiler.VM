@@ -1,0 +1,38 @@
+!! PlainYearMonth.from("2020-01T12:00") | VM: THROWS RangeError | BJS: 2020-01
+!! PlainYearMonth.from("202001T1200") | VM: THROWS RangeError | BJS: 2020-01
+!! PlainYearMonth.from("2020-01 12:00") | VM: THROWS RangeError | BJS: 2020-01
+   PlainYearMonth.from("2020-01T12:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("2020-01T12:00[u-ca=iso8601]") | VM: THROWS RangeError | BJS: 2020-01
+   PlainYearMonth.from("2020-01T25:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("01-01T12:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("0101T12:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("--01-01T12:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainTime.from("2020-02-30T12:00") | VM: THROWS RangeError | BJS: 12:00:00
+!! PlainTime.from("2021-02-29T12:00") | VM: THROWS RangeError | BJS: 12:00:00
+!! PlainTime.from("2020-00-01T12:00") | VM: THROWS RangeError | BJS: 12:00:00
+!! PlainTime.from("2020-01-32T12:00") | VM: THROWS RangeError | BJS: 12:00:00
+   PlainTime.from("-000000-01-01T12:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-0101T12:00") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! withCalendar("2020-01-01[u-ca=gregory][u-ca=japanese]") | VM: gregory | BJS: japanese
+   PlainDate.from("2020-01-01[u-ca=gregory][u-ca=japanese]") | VM: gregory | BJS: gregory
+!! withCalendar("2020-01-01[u-ca=japanese][u-ca=gregory]") | VM: japanese | BJS: gregory
+   PlainDate.from("2020-01-01[u-ca=japanese][u-ca=gregory]") | VM: japanese | BJS: japanese
+!! withCalendar("2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]") | VM: hebrew | BJS: coptic
+!! PlainDate.from("2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]' | BJS: THROWS RangeError: Temporal: "2020-01-01T00:00Z[UTC][u-ca=hebrew][u-ca=coptic]" has a UTC (Z) designator but no time zone
+!! withCalendar("2020-01-01[u-ca=gregory][u-ca=bogus]") | VM: gregory | BJS: THROWS RangeError: Temporal: unsupported calendar "bogus"
+   PlainDate.from("2020-01-01[u-ca=gregory][u-ca=bogus]") | VM: gregory | BJS: gregory
+!! withCalendar("2020-01-01[u-ca=bogus][u-ca=gregory]") | VM: THROWS RangeError: Temporal: the calendar bogus is not supported | BJS: gregory
+!! PlainDate.from("2020-01-01[u-ca=bogus][u-ca=gregory]") | VM: THROWS RangeError: Temporal: the calendar bogus is not supported | BJS: THROWS RangeError: Temporal: unsupported calendar "bogus"
+!! toZonedDateTimeISO("2020-01-01T00:00Z[Europe/Berlin][UTC]") | VM: THROWS RangeError | BJS: UTC
+!! toZonedDateTimeISO("2020-01-01T00:00Z[u-ca=iso8601][Europe/Berlin]") | VM: THROWS RangeError | BJS: Europe/Berlin
+   toZonedDateTimeISO("2020-01-01T00:00Z[Europe/Berlin][u-ca=iso8601]") | VM: Europe/Berlin | BJS: Europe/Berlin
+   PlainMonthDay.from("2020-01-15[u-ca=hebrew]") | VM: 1972-12-23[u-ca=hebrew] | BJS: 1972-12-23[u-ca=hebrew]
+   PlainYearMonth.from("2020-01-15[u-ca=hebrew]") | VM: 2019-12-29[u-ca=hebrew] | BJS: 2019-12-29[u-ca=hebrew]
+   PlainMonthDay.from("2020-03-01[u-ca=chinese]") | VM: 1972-03-22[u-ca=chinese] | BJS: 1972-03-22[u-ca=chinese]
+   PlainYearMonth.from("2020-03-01[u-ca=chinese]") | VM: 2020-02-23[u-ca=chinese] | BJS: 2020-02-23[u-ca=chinese]
+   PlainMonthDay.from("2023-03-22[u-ca=chinese]") | VM: 1947-03-23[u-ca=chinese] | BJS: 1947-03-23[u-ca=chinese]
+   PlainYearMonth.from("2023-03-22[u-ca=chinese]") | VM: 2023-03-22[u-ca=chinese] | BJS: 2023-03-22[u-ca=chinese]
+   PlainMonthDay.from("2020-01-15[u-ca=persian]") | VM: 1972-01-15[u-ca=persian] | BJS: 1972-01-15[u-ca=persian]
+   PlainYearMonth.from("2020-01-15[u-ca=persian]") | VM: 2019-12-22[u-ca=persian] | BJS: 2019-12-22[u-ca=persian]
+   PlainMonthDay.from("2019-09-11[u-ca=coptic]") | VM: 1971-09-11[u-ca=coptic] | BJS: 1971-09-11[u-ca=coptic]
+   PlainYearMonth.from("2019-09-11[u-ca=coptic]") | VM: 2019-09-06[u-ca=coptic] | BJS: 2019-09-06[u-ca=coptic]

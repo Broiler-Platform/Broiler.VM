@@ -1,0 +1,11 @@
+   new PlainYearMonth(-271821, 4) | VM: Temporal.PlainYearMonth -271821-04 | BJS: Temporal.PlainYearMonth -271821-04 | REF: Temporal.PlainYearMonth -271821-04
+~~ new PlainYearMonth(-271821, 3) | VM: THROWS RangeError: Temporal: the year-month is outside the representable range | BJS: THROWS RangeError: Temporal.PlainYearMonth: invalid ISO year-month | REF: THROWS RangeError: value out of range: 4 <= 3 <= 12
+   new PlainYearMonth(275760, 9) | VM: Temporal.PlainYearMonth +275760-09 | BJS: Temporal.PlainYearMonth +275760-09 | REF: Temporal.PlainYearMonth +275760-09
+~~ new PlainYearMonth(275760, 10) | VM: THROWS RangeError: Temporal: the year-month is outside the representable range | BJS: THROWS RangeError: Temporal.PlainYearMonth: invalid ISO year-month | REF: THROWS RangeError: value out of range: 1 <= 10 <= 9
+   new PlainYearMonth(-271821, 4, undefined, 1) | VM: -271821-04 | BJS: -271821-04 | REF: -271821-04
+   new PlainYearMonth(-271821, 4, undefined, 19) | VM: -271821-04 | BJS: -271821-04 | REF: -271821-04
+   PlainYearMonth.from("-271821-04") | VM: Temporal.PlainYearMonth -271821-04 | BJS: Temporal.PlainYearMonth -271821-04 | REF: Temporal.PlainYearMonth -271821-04
+~~ PlainYearMonth.from("-271821-03") | VM: THROWS RangeError: Temporal: the year-month is outside the representable range | BJS: THROWS RangeError: Cannot parse Temporal.PlainYearMonth from "-271821-03" | REF: THROWS RangeError: value out of range: 4 <= 3 <= 12
+   PlainYearMonth.from("+275760-09") | VM: Temporal.PlainYearMonth +275760-09 | BJS: Temporal.PlainYearMonth +275760-09 | REF: Temporal.PlainYearMonth +275760-09
+~~ PlainYearMonth.from({year: 275760, month: 10}) | VM: THROWS RangeError: Temporal: the year-month is outside the representable range | BJS: THROWS RangeError: Temporal.PlainYearMonth: year-month is out of range | REF: THROWS RangeError: value out of range: 1 <= 10 <= 9
+   PlainDate("-271821-04-19").toPlainYearMonth() | VM: Temporal.PlainYearMonth -271821-04 | BJS: Temporal.PlainYearMonth -271821-04 | REF: Temporal.PlainYearMonth -271821-04

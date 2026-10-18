@@ -1,0 +1,30 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/r1-date-limits.js [raw]  uncaught Error: OUT<<new PlainDate(-271821, 4, 19) => Temporal.PlainDate -271821-04-19
+new PlainDate(-271821, 4, 18) => THROWS RangeError: Temporal: the date is outside the representable range
+new PlainDate(275760, 9, 13) => Temporal.PlainDate +275760-09-13
+new PlainDate(275760, 9, 14) => THROWS RangeError: Temporal: the date is outside the representable range
+PlainDate.from("-271821-04-19") => Temporal.PlainDate -271821-04-19
+PlainDate.from("-271821-04-18") => THROWS RangeError: Temporal: the date is outside the representable range
+PlainDate.from("+275760-09-14") => THROWS RangeError: Temporal: the date is outside the representable range
+PlainDate.from({year: -271821, month: 4, day: 18}) => THROWS RangeError: Temporal: the date is outside the representable range
+PlainDate.from({year: 275760, month: 9, day: 13}) => Temporal.PlainDate +275760-09-13
+PlainMonthDay(4, 18, undefined, -271821) => THROWS RangeError: Temporal: the month-day is outside the representable range
+PlainMonthDay(4, 19, undefined, -271821) => 04-19
+PlainMonthDay(9, 14, undefined, 275760) => THROWS RangeError: Temporal: the month-day is outside the representable range>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/r1-date-limits.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/r1-date-limits.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/r1-date-limits.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

@@ -1,0 +1,35 @@
+   PlainTime 12:30 round hour ceil | VM: Temporal.PlainTime 13:00:00 | BJS: Temporal.PlainTime 13:00:00 | REF: Temporal.PlainTime 13:00:00
+   Instant -1.5 s round second ceil | VM: Temporal.Instant 1969-12-31T23:59:59Z | BJS: Temporal.Instant 1969-12-31T23:59:59Z | REF: Temporal.Instant 1969-12-31T23:59:59Z
+   PlainTime 12:30 round hour floor | VM: Temporal.PlainTime 12:00:00 | BJS: Temporal.PlainTime 12:00:00 | REF: Temporal.PlainTime 12:00:00
+   Instant -1.5 s round second floor | VM: Temporal.Instant 1969-12-31T23:59:58Z | BJS: Temporal.Instant 1969-12-31T23:59:58Z | REF: Temporal.Instant 1969-12-31T23:59:58Z
+   PlainTime 12:30 round hour expand | VM: Temporal.PlainTime 13:00:00 | BJS: Temporal.PlainTime 13:00:00 | REF: Temporal.PlainTime 13:00:00
+   Instant -1.5 s round second expand | VM: Temporal.Instant 1969-12-31T23:59:59Z | BJS: Temporal.Instant 1969-12-31T23:59:59Z | REF: Temporal.Instant 1969-12-31T23:59:59Z
+   PlainTime 12:30 round hour trunc | VM: Temporal.PlainTime 12:00:00 | BJS: Temporal.PlainTime 12:00:00 | REF: Temporal.PlainTime 12:00:00
+   Instant -1.5 s round second trunc | VM: Temporal.Instant 1969-12-31T23:59:58Z | BJS: Temporal.Instant 1969-12-31T23:59:58Z | REF: Temporal.Instant 1969-12-31T23:59:58Z
+   PlainTime 12:30 round hour halfCeil | VM: Temporal.PlainTime 13:00:00 | BJS: Temporal.PlainTime 13:00:00 | REF: Temporal.PlainTime 13:00:00
+   Instant -1.5 s round second halfCeil | VM: Temporal.Instant 1969-12-31T23:59:59Z | BJS: Temporal.Instant 1969-12-31T23:59:59Z | REF: Temporal.Instant 1969-12-31T23:59:59Z
+   PlainTime 12:30 round hour halfFloor | VM: Temporal.PlainTime 12:00:00 | BJS: Temporal.PlainTime 12:00:00 | REF: Temporal.PlainTime 12:00:00
+   Instant -1.5 s round second halfFloor | VM: Temporal.Instant 1969-12-31T23:59:58Z | BJS: Temporal.Instant 1969-12-31T23:59:58Z | REF: Temporal.Instant 1969-12-31T23:59:58Z
+   PlainTime 12:30 round hour halfExpand | VM: Temporal.PlainTime 13:00:00 | BJS: Temporal.PlainTime 13:00:00 | REF: Temporal.PlainTime 13:00:00
+   Instant -1.5 s round second halfExpand | VM: Temporal.Instant 1969-12-31T23:59:59Z | BJS: Temporal.Instant 1969-12-31T23:59:59Z | REF: Temporal.Instant 1969-12-31T23:59:59Z
+   PlainTime 12:30 round hour halfTrunc | VM: Temporal.PlainTime 12:00:00 | BJS: Temporal.PlainTime 12:00:00 | REF: Temporal.PlainTime 12:00:00
+   Instant -1.5 s round second halfTrunc | VM: Temporal.Instant 1969-12-31T23:59:58Z | BJS: Temporal.Instant 1969-12-31T23:59:58Z | REF: Temporal.Instant 1969-12-31T23:59:58Z
+   PlainTime 12:30 round hour halfEven | VM: Temporal.PlainTime 12:00:00 | BJS: Temporal.PlainTime 12:00:00 | REF: Temporal.PlainTime 12:00:00
+   Instant -1.5 s round second halfEven | VM: Temporal.Instant 1969-12-31T23:59:58Z | BJS: Temporal.Instant 1969-12-31T23:59:58Z | REF: Temporal.Instant 1969-12-31T23:59:58Z
+   PlainTime 23:59:59.5 round second halfExpand | VM: Temporal.PlainTime 00:00:00 | BJS: Temporal.PlainTime 00:00:00 | REF: Temporal.PlainTime 00:00:00
+   PlainTime 13:00 round hour increment 12 ceil | VM: Temporal.PlainTime 00:00:00 | BJS: Temporal.PlainTime 00:00:00 | REF: Temporal.PlainTime 00:00:00
+   PlainDateTime 2020-12-31T23:59:59.5 round second | VM: Temporal.PlainDateTime 2021-01-01T00:00:00 | BJS: Temporal.PlainDateTime 2021-01-01T00:00:00 | REF: Temporal.PlainDateTime 2021-01-01T00:00:00
+   PlainDateTime 2020-12-31T12:00 round day | VM: Temporal.PlainDateTime 2021-01-01T00:00:00 | BJS: Temporal.PlainDateTime 2021-01-01T00:00:00 | REF: Temporal.PlainDateTime 2021-01-01T00:00:00
+~~ PlainDateTime 2020-12-31T12:00 round day increment 2 | VM: THROWS RangeError: Temporal: roundingIncrement 2 does not divide 1 evenly | BJS: THROWS RangeError: Temporal: roundingIncrement 2 is out of range | REF: THROWS RangeError: roundingIncrement must be at least 1 and less than 1, not 2
+~~ PlainDateTime +275760-09-13T12:00 round day | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDateTime: date-time is out of range | REF: THROWS RangeError: +275760-09-14T00:00:00 is outside of supported range
+~~ PlainDateTime -271821-04-19T00:00:00.000000001 round day floor | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDateTime: date-time is out of range | REF: THROWS RangeError: -271821-04-19T00:00:00 is outside of supported range
+~~ PlainDateTime -271821-04-19T00:00:00.000000001 round microsecond floor | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDateTime: date-time is out of range | REF: THROWS RangeError: -271821-04-19T00:00:00 is outside of supported range
+   Instant max round hour ceil | VM: Temporal.Instant +275760-09-13T00:00:00Z | BJS: Temporal.Instant +275760-09-13T00:00:00Z | REF: Temporal.Instant +275760-09-13T00:00:00Z
+   Instant max - 1 ns round day increment 1 halfExpand (hours 24) | VM: Temporal.Instant +275760-09-13T00:00:00Z | BJS: Temporal.Instant +275760-09-13T00:00:00Z | REF: Temporal.Instant +275760-09-13T00:00:00Z
+   Instant round minute increment 1440 | VM: Temporal.Instant 2020-01-02T00:00:00Z | BJS: Temporal.Instant 2020-01-02T00:00:00Z | REF: Temporal.Instant 2020-01-02T00:00:00Z
+~~ Instant round minute increment 1441 | VM: THROWS RangeError: Temporal: roundingIncrement 1441 does not divide 1440 evenly | BJS: THROWS RangeError: Temporal: roundingIncrement 1441 is out of range | REF: THROWS RangeError: roundingIncrement must be at least 1 and less than 1440, not 1441
+   ZonedDateTime NY 2026-03-08T01:59:59.5-05:00 round second | VM: Temporal.ZonedDateTime 2026-03-08T03:00:00-04:00[America/New_York] | BJS: Temporal.ZonedDateTime 2026-03-08T03:00:00-04:00[America/New_York] | REF: Temporal.ZonedDateTime 2026-03-08T03:00:00-04:00[America/New_York]
+   ZonedDateTime NY 2026-11-01T01:59:59.5-04:00 round second | VM: Temporal.ZonedDateTime 2026-11-01T02:00:00-05:00[America/New_York] | BJS: Temporal.ZonedDateTime 2026-11-01T02:00:00-05:00[America/New_York] | REF: Temporal.ZonedDateTime 2026-11-01T02:00:00-05:00[America/New_York]
+   ZonedDateTime NY 2026-11-01T01:30-05:00 round hour | VM: Temporal.ZonedDateTime 2026-11-01T02:00:00-05:00[America/New_York] | BJS: Temporal.ZonedDateTime 2026-11-01T02:00:00-05:00[America/New_York] | REF: Temporal.ZonedDateTime 2026-11-01T02:00:00-05:00[America/New_York]
+~~ ZonedDateTime UTC +275760-09-13T00:00 round day | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal: the date-time is outside the representable range | REF: THROWS RangeError: date/time value 275760-9-14 is outside the supported range
+   ZonedDateTime UTC +275760-09-12T12:00 round day | VM: Temporal.ZonedDateTime +275760-09-13T00:00:00+00:00[UTC] | BJS: Temporal.ZonedDateTime +275760-09-13T00:00:00+00:00[UTC] | REF: Temporal.ZonedDateTime +275760-09-13T00:00:00+00:00[UTC]

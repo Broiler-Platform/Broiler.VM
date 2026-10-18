@@ -1,0 +1,280 @@
+   PlainDate.from("2020-01-01") | VM: 2020-01-01 | BJS: 2020-01-01
+   PlainDateTime.from("2020-01-01") | VM: 2020-01-01T00:00:00 | BJS: 2020-01-01T00:00:00
+   PlainTime.from("2020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-01-01") | VM: 2020-01 | BJS: 2020-01
+   PlainMonthDay.from("2020-01-01") | VM: 01-01 | BJS: 01-01
+   ZonedDateTime.from("2020-01-01[UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   Instant.from("2020-01-01T00:00Z") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   PlainDate.from("20200101") | VM: 2020-01-01 | BJS: 2020-01-01
+   PlainDateTime.from("20200101") | VM: 2020-01-01T00:00:00 | BJS: 2020-01-01T00:00:00
+   PlainTime.from("20200101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("20200101") | VM: 2020-01 | BJS: 2020-01
+   PlainMonthDay.from("20200101") | VM: 01-01 | BJS: 01-01
+   ZonedDateTime.from("20200101[UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   Instant.from("20200101T00:00Z") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   PlainDate.from("2020-0101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-0101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-0101") | VM: 20:20:00 | BJS: 20:20:00
+   PlainYearMonth.from("2020-0101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-0101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-0101[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-0101T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("202001-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("202001-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("202001-01") | VM: 20:20:01 | BJS: 20:20:01
+   PlainYearMonth.from("202001-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("202001-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("202001-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("202001-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("+002020-01-01") | VM: 2020-01-01 | BJS: 2020-01-01
+   PlainDateTime.from("+002020-01-01") | VM: 2020-01-01T00:00:00 | BJS: 2020-01-01T00:00:00
+   PlainTime.from("+002020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("+002020-01-01") | VM: 2020-01 | BJS: 2020-01
+   PlainMonthDay.from("+002020-01-01") | VM: 01-01 | BJS: 01-01
+   ZonedDateTime.from("+002020-01-01[UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   Instant.from("+002020-01-01T00:00Z") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   PlainDate.from("+0020200101") | VM: 2020-01-01 | BJS: 2020-01-01
+   PlainDateTime.from("+0020200101") | VM: 2020-01-01T00:00:00 | BJS: 2020-01-01T00:00:00
+   PlainTime.from("+0020200101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("+0020200101") | VM: 2020-01 | BJS: 2020-01
+   PlainMonthDay.from("+0020200101") | VM: 01-01 | BJS: 01-01
+   ZonedDateTime.from("+0020200101[UTC]") | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   Instant.from("+0020200101T00:00Z") | VM: 2020-01-01T00:00:00Z | BJS: 2020-01-01T00:00:00Z
+   PlainDate.from("-002020-01-01") | VM: -002020-01-01 | BJS: -002020-01-01
+   PlainDateTime.from("-002020-01-01") | VM: -002020-01-01T00:00:00 | BJS: -002020-01-01T00:00:00
+   PlainTime.from("-002020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-002020-01-01") | VM: -002020-01 | BJS: -002020-01
+   PlainMonthDay.from("-002020-01-01") | VM: 01-01 | BJS: 01-01
+   ZonedDateTime.from("-002020-01-01[UTC]") | VM: -002020-01-01T00:00:00+00:00[UTC] | BJS: -002020-01-01T00:00:00+00:00[UTC]
+   Instant.from("-002020-01-01T00:00Z") | VM: -002020-01-01T00:00:00Z | BJS: -002020-01-01T00:00:00Z
+   PlainDate.from("-000000-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("-000000-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("-000000-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-000000-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("-000000-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("-000000-01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("-000000-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("+000000-01-01") | VM: 0000-01-01 | BJS: 0000-01-01
+   PlainDateTime.from("+000000-01-01") | VM: 0000-01-01T00:00:00 | BJS: 0000-01-01T00:00:00
+   PlainTime.from("+000000-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("+000000-01-01") | VM: 0000-01 | BJS: 0000-01
+   PlainMonthDay.from("+000000-01-01") | VM: 01-01 | BJS: 01-01
+   ZonedDateTime.from("+000000-01-01[UTC]") | VM: 0000-01-01T00:00:00+00:00[UTC] | BJS: 0000-01-01T00:00:00+00:00[UTC]
+   Instant.from("+000000-01-01T00:00Z") | VM: 0000-01-01T00:00:00Z | BJS: 0000-01-01T00:00:00Z
+   PlainDate.from("-0000000101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("-0000000101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("-0000000101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-0000000101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("-0000000101") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("-0000000101[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("-0000000101T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("+0020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("+0020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("+0020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("+0020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("+0020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("+0020-01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("+0020-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("02020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("02020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("02020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("02020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("02020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("02020-01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("02020-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("020-01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("020-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-1-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-1-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-1-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-1-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-1-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-1-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-1-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-01-1") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-01-1") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-01-1") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-01-1") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-01-1") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-1[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-1T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-00-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-00-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-00-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-00-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-00-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-00-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-00-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-13-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-13-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-13-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-13-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-13-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-13-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-13-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-01-00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-01-00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-01-00") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("2020-01-00") | VM: THROWS RangeError | BJS: 2020-01
+   PlainMonthDay.from("2020-01-00") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-00[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-00T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-01-32") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-01-32") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-01-32") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("2020-01-32") | VM: THROWS RangeError | BJS: 2020-01
+   PlainMonthDay.from("2020-01-32") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-32[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-32T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-02-29") | VM: 2020-02-29 | BJS: 2020-02-29
+   PlainDateTime.from("2020-02-29") | VM: 2020-02-29T00:00:00 | BJS: 2020-02-29T00:00:00
+   PlainTime.from("2020-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-02-29") | VM: 2020-02 | BJS: 2020-02
+   PlainMonthDay.from("2020-02-29") | VM: 02-29 | BJS: 02-29
+   ZonedDateTime.from("2020-02-29[UTC]") | VM: 2020-02-29T00:00:00+00:00[UTC] | BJS: 2020-02-29T00:00:00+00:00[UTC]
+   Instant.from("2020-02-29T00:00Z") | VM: 2020-02-29T00:00:00Z | BJS: 2020-02-29T00:00:00Z
+   PlainDate.from("2021-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2021-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2021-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("2021-02-29") | VM: THROWS RangeError | BJS: 2021-02
+   PlainMonthDay.from("2021-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2021-02-29[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2021-02-29T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-02-30") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-02-30") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-02-30") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("2020-02-30") | VM: THROWS RangeError | BJS: 2020-02
+   PlainMonthDay.from("2020-02-30") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-02-30[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-02-30T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-04-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-04-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-04-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("2020-04-31") | VM: THROWS RangeError | BJS: 2020-04
+   PlainMonthDay.from("2020-04-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-04-31[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-04-31T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("1900-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("1900-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("1900-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("1900-02-29") | VM: THROWS RangeError | BJS: 1900-02
+   PlainMonthDay.from("1900-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("1900-02-29[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("1900-02-29T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2000-02-29") | VM: 2000-02-29 | BJS: 2000-02-29
+   PlainDateTime.from("2000-02-29") | VM: 2000-02-29T00:00:00 | BJS: 2000-02-29T00:00:00
+   PlainTime.from("2000-02-29") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2000-02-29") | VM: 2000-02 | BJS: 2000-02
+   PlainMonthDay.from("2000-02-29") | VM: 02-29 | BJS: 02-29
+   ZonedDateTime.from("2000-02-29[UTC]") | VM: 2000-02-29T00:00:00+00:00[UTC] | BJS: 2000-02-29T00:00:00+00:00[UTC]
+   Instant.from("2000-02-29T00:00Z") | VM: 2000-02-29T00:00:00Z | BJS: 2000-02-29T00:00:00Z
+   PlainDate.from("−002020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("−002020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("−002020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("−002020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("−002020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("−002020-01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("−002020-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("+999999-12-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("+999999-12-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("+999999-12-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("+999999-12-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("+999999-12-31") | VM: 12-31 | BJS: 12-31
+   ZonedDateTime.from("+999999-12-31[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("+999999-12-31T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("-999999-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("-999999-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("-999999-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-999999-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("-999999-01-01") | VM: 01-01 | BJS: 01-01
+   ZonedDateTime.from("-999999-01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("-999999-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("-271821-04-19") | VM: -271821-04-19 | BJS: -271821-04-19
+   PlainDateTime.from("-271821-04-19") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("-271821-04-19") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-271821-04-19") | VM: -271821-04 | BJS: -271821-04
+   PlainMonthDay.from("-271821-04-19") | VM: 04-19 | BJS: 04-19
+   ZonedDateTime.from("-271821-04-19[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("-271821-04-19T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("-271821-04-18") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("-271821-04-18") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("-271821-04-18") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-271821-04-18") | VM: -271821-04 | BJS: -271821-04
+   PlainMonthDay.from("-271821-04-18") | VM: 04-18 | BJS: 04-18
+   ZonedDateTime.from("-271821-04-18[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("-271821-04-18T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("+275760-09-13") | VM: +275760-09-13 | BJS: +275760-09-13
+   PlainDateTime.from("+275760-09-13") | VM: +275760-09-13T00:00:00 | BJS: +275760-09-13T00:00:00
+   PlainTime.from("+275760-09-13") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("+275760-09-13") | VM: +275760-09 | BJS: +275760-09
+   PlainMonthDay.from("+275760-09-13") | VM: 09-13 | BJS: 09-13
+   ZonedDateTime.from("+275760-09-13[UTC]") | VM: +275760-09-13T00:00:00+00:00[UTC] | BJS: +275760-09-13T00:00:00+00:00[UTC]
+   Instant.from("+275760-09-13T00:00Z") | VM: +275760-09-13T00:00:00Z | BJS: +275760-09-13T00:00:00Z
+   PlainDate.from("+275760-09-14") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("+275760-09-14") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("+275760-09-14") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("+275760-09-14") | VM: +275760-09 | BJS: +275760-09
+   PlainMonthDay.from("+275760-09-14") | VM: 09-14 | BJS: 09-14
+   ZonedDateTime.from("+275760-09-14[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("+275760-09-14T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("0000-01-01") | VM: 0000-01-01 | BJS: 0000-01-01
+   PlainDateTime.from("0000-01-01") | VM: 0000-01-01T00:00:00 | BJS: 0000-01-01T00:00:00
+   PlainTime.from("0000-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("0000-01-01") | VM: 0000-01 | BJS: 0000-01
+   PlainMonthDay.from("0000-01-01") | VM: 01-01 | BJS: 01-01
+   ZonedDateTime.from("0000-01-01[UTC]") | VM: 0000-01-01T00:00:00+00:00[UTC] | BJS: 0000-01-01T00:00:00+00:00[UTC]
+   Instant.from("0000-01-01T00:00Z") | VM: 0000-01-01T00:00:00Z | BJS: 0000-01-01T00:00:00Z
+   PlainDate.from("-000001-12-31") | VM: -000001-12-31 | BJS: -000001-12-31
+   PlainDateTime.from("-000001-12-31") | VM: -000001-12-31T00:00:00 | BJS: -000001-12-31T00:00:00
+   PlainTime.from("-000001-12-31") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("-000001-12-31") | VM: -000001-12 | BJS: -000001-12
+   PlainMonthDay.from("-000001-12-31") | VM: 12-31 | BJS: 12-31
+   ZonedDateTime.from("-000001-12-31[UTC]") | VM: -000001-12-31T00:00:00+00:00[UTC] | BJS: -000001-12-31T00:00:00+00:00[UTC]
+   Instant.from("-000001-12-31T00:00Z") | VM: -000001-12-31T00:00:00Z | BJS: -000001-12-31T00:00:00Z
+   PlainDate.from(" 2020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from(" 2020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from(" 2020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from(" 2020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from(" 2020-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from(" 2020-01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from(" 2020-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("2020-01-01 ") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-01-01 ") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-01-01 ") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-01-01 ") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-01-01 ") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01 [UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-01 T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from("２０２０-01-01") | VM: THROWS RangeError | BJS: THROWS Error
+!! PlainDateTime.from("２０２０-01-01") | VM: THROWS RangeError | BJS: THROWS Error
+   PlainTime.from("２０２０-01-01") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("２０２０-01-01") | VM: THROWS RangeError | BJS: THROWS Error
+!! PlainMonthDay.from("２０２０-01-01") | VM: THROWS RangeError | BJS: THROWS Error
+!! ZonedDateTime.from("２０２０-01-01[UTC]") | VM: THROWS RangeError | BJS: THROWS Error
+!! Instant.from("２０２０-01-01T00:00Z") | VM: THROWS RangeError | BJS: THROWS Error
+!! PlainDate.from("٢٠٢٠-٠١-٠١") | VM: THROWS RangeError | BJS: THROWS Error
+!! PlainDateTime.from("٢٠٢٠-٠١-٠١") | VM: THROWS RangeError | BJS: THROWS Error
+   PlainTime.from("٢٠٢٠-٠١-٠١") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainYearMonth.from("٢٠٢٠-٠١-٠١") | VM: THROWS RangeError | BJS: THROWS Error
+!! PlainMonthDay.from("٢٠٢٠-٠١-٠١") | VM: THROWS RangeError | BJS: THROWS Error
+!! ZonedDateTime.from("٢٠٢٠-٠١-٠١[UTC]") | VM: THROWS RangeError | BJS: THROWS Error
+!! Instant.from("٢٠٢٠-٠١-٠١T00:00Z") | VM: THROWS RangeError | BJS: THROWS Error
+   PlainDate.from("2020-01-01\u0000") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("2020-01-01\u0000") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("2020-01-01\u0000") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("2020-01-01\u0000") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("2020-01-01\u0000") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("2020-01-01\u0000[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("2020-01-01\u0000T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from("") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDateTime.from("") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainTime.from("") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainYearMonth.from("") | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainMonthDay.from("") | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from("[UTC]") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Instant.from("T00:00Z") | VM: THROWS RangeError | BJS: THROWS RangeError

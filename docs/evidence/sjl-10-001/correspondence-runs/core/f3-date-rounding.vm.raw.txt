@@ -1,0 +1,37 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/f3-date-rounding.js [raw]  uncaught Error: OUT<<2020-01-01 until 2020-07-20 smallest month (trunc) => Temporal.Duration P6M
+2020-01-01 until 2020-07-20 smallest month halfExpand => Temporal.Duration P7M
+2020-01-01 until 2020-07-02 smallest year halfExpand => Temporal.Duration P1Y
+2020-01-01 until 2020-07-02 smallest year halfTrunc => Temporal.Duration PT0S
+2020-01-17 since 2020-01-01 smallest week floor => Temporal.Duration P2W
+2020-01-01 since 2020-01-17 smallest week floor => Temporal.Duration -P3W
+2020-01-01 until 2020-01-17 smallest week ceil => Temporal.Duration P3W
+2020-01-17 until 2020-01-01 smallest week ceil => Temporal.Duration -P2W
+2020-01-01 until 2020-03-19 month/day increment 5 halfExpand => Temporal.Duration P2M20D
+2020-01-01 until 2020-03-30 month/day increment 5 halfExpand => Temporal.Duration P2M30D
+2020-01-01 until 2020-04-15 smallest month increment 2 (trunc) => Temporal.Duration P2M
+2020-01-01 until 2020-04-15 smallest month increment 2 halfExpand => Temporal.Duration P4M
+2020-01-01 until 2021-12-20 smallest month largest year halfExpand => Temporal.Duration P2Y
+2020-01-01 until 2020-01-29 smallest week largest month halfExpand => Temporal.Duration P4W
+2020-01-31 until 2020-02-29 smallest month => Temporal.Duration P1M
+2020-01-31 until 2020-02-29 smallest month halfExpand => Temporal.Duration P1M
+2020-01-01 until 2020-01-02 smallest day increment 1e9 ceil => Temporal.Duration P1000000000D
++275760-09-12 until +275760-09-13 smallest month ceil => THROWS RangeError: Temporal: the date is outside the representable range
+-271821-04-20 since -271821-04-19 smallest year ceil => THROWS RangeError: Temporal: the date is outside the representable range>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/f3-date-rounding.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/f3-date-rounding.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/f3-date-rounding.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

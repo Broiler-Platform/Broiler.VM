@@ -1,0 +1,11 @@
+new PlainYearMonth(-271821, 4) => Temporal.PlainYearMonth -271821-04
+new PlainYearMonth(-271821, 3) => THROWS RangeError: Temporal: the year-month is outside the representable range
+new PlainYearMonth(275760, 9) => Temporal.PlainYearMonth +275760-09
+new PlainYearMonth(275760, 10) => THROWS RangeError: Temporal: the year-month is outside the representable range
+new PlainYearMonth(-271821, 4, undefined, 1) => -271821-04
+new PlainYearMonth(-271821, 4, undefined, 19) => -271821-04
+PlainYearMonth.from("-271821-04") => Temporal.PlainYearMonth -271821-04
+PlainYearMonth.from("-271821-03") => THROWS RangeError: Temporal: the year-month is outside the representable range
+PlainYearMonth.from("+275760-09") => Temporal.PlainYearMonth +275760-09
+PlainYearMonth.from({year: 275760, month: 10}) => THROWS RangeError: Temporal: the year-month is outside the representable range
+PlainDate("-271821-04-19").toPlainYearMonth() => Temporal.PlainYearMonth -271821-04

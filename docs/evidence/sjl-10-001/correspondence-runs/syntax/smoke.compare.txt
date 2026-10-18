@@ -1,0 +1,3 @@
+   typeof Temporal | VM: object | BJS: object
+   PlainDate.from | VM: 2020-01-01 | BJS: 2020-01-01
+   PlainDate.from bad | VM: THROWS RangeError | BJS: THROWS RangeError

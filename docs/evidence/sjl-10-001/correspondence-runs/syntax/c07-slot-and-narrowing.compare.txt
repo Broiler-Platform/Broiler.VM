@@ -1,0 +1,77 @@
+!! PlainDate.from({..., calendar: a PlainMonthDay in hebrew}).calendarId | VM: hebrew | BJS: iso8601
+!! PlainDate#withCalendar(a PlainMonthDay in hebrew).calendarId | VM: hebrew | BJS: iso8601
+!! PlainMonthDay.from({..., calendar: a PlainMonthDay in hebrew}).calendarId | VM: hebrew | BJS: iso8601
+   PlainDate.from({..., calendar: a PlainYearMonth in coptic}).calendarId | VM: coptic | BJS: coptic
+   PlainDate#withCalendar(a PlainYearMonth in coptic).calendarId | VM: coptic | BJS: coptic
+   PlainMonthDay.from({..., calendar: a PlainYearMonth in coptic}).calendarId | VM: coptic | BJS: coptic
+   PlainDate.from({..., calendar: a ZonedDateTime in japanese}).calendarId | VM: japanese | BJS: japanese
+   PlainDate#withCalendar(a ZonedDateTime in japanese).calendarId | VM: japanese | BJS: japanese
+   PlainMonthDay.from({..., calendar: a ZonedDateTime in japanese}).calendarId | VM: japanese | BJS: japanese
+   PlainDate.from({..., calendar: a PlainDateTime in indian}).calendarId | VM: indian | BJS: indian
+   PlainDate#withCalendar(a PlainDateTime in indian).calendarId | VM: indian | BJS: indian
+   PlainMonthDay.from({..., calendar: a PlainDateTime in indian}).calendarId | VM: indian | BJS: indian
+   PlainDate.from({..., calendar: a PlainTime}).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   PlainDate#withCalendar(a PlainTime).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   PlainMonthDay.from({..., calendar: a PlainTime}).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   PlainDate.from({..., calendar: a Duration}).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   PlainDate#withCalendar(a Duration).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   PlainMonthDay.from({..., calendar: a Duration}).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   PlainDate.from({..., calendar: an Instant}).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   PlainDate#withCalendar(an Instant).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   PlainMonthDay.from({..., calendar: an Instant}).calendarId | VM: THROWS TypeError | BJS: THROWS TypeError
+   iso8601 year 2^32+2024 | VM: THROWS RangeError | BJS: THROWS RangeError
+   iso8601 day 2^32+1 constrain | VM: 2024/M01/31 (1) iso 2024-01-31 | BJS: 2024/M01/31 (1) iso 2024-01-31
+   iso8601 day 2^32+1 reject | VM: THROWS RangeError | BJS: THROWS RangeError
+   iso8601 month 2^32+1 constrain | VM: 2024/M12/1 (12) iso 2024-12-01 | BJS: 2024/M12/1 (12) iso 2024-12-01
+   iso8601 PlainYearMonth year 2^32+2024 | VM: THROWS RangeError | BJS: THROWS RangeError
+   iso8601 PlainMonthDay year 2^32+2024 | VM: 01-01 | BJS: 01-01
+   gregory year 2^32+2024 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory day 2^32+1 constrain | VM: 2024/M01/31 (1) iso 2024-01-31 | BJS: 2024/M01/31 (1) iso 2024-01-31
+   gregory day 2^32+1 reject | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory month 2^32+1 constrain | VM: 2024/M12/1 (12) iso 2024-12-01 | BJS: 2024/M12/1 (12) iso 2024-12-01
+   gregory PlainYearMonth year 2^32+2024 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory PlainMonthDay year 2^32+2024 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese year 2^32+2024 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese day 2^32+1 constrain | VM: 2024/M01/31 (1) iso 2024-01-31 | BJS: 2024/M01/31 (1) iso 2024-01-31
+   japanese day 2^32+1 reject | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese month 2^32+1 constrain | VM: 2024/M12/1 (12) iso 2024-12-01 | BJS: 2024/M12/1 (12) iso 2024-12-01
+   japanese PlainYearMonth year 2^32+2024 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese PlainMonthDay year 2^32+2024 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew year 2^32+5784 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew day 2^32+1 constrain | VM: 5784/M01/30 (1) iso 2023-10-15 | BJS: 5784/M01/30 (1) iso 2023-10-15
+   hebrew day 2^32+1 reject | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew month 2^32+1 constrain | VM: 5784/M12/1 (13) iso 2024-09-04 | BJS: 5784/M12/1 (13) iso 2024-09-04
+   hebrew PlainYearMonth year 2^32+5784 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew PlainMonthDay year 2^32+5784 | VM: THROWS RangeError | BJS: THROWS RangeError
+   chinese year 2^32+2023 | VM: THROWS RangeError | BJS: THROWS RangeError
+   chinese day 2^32+1 constrain | VM: 2023/M01/29 (1) iso 2023-02-19 | BJS: 2023/M01/29 (1) iso 2023-02-19
+   chinese day 2^32+1 reject | VM: THROWS RangeError | BJS: THROWS RangeError
+   chinese month 2^32+1 constrain | VM: 2023/M12/1 (13) iso 2024-01-11 | BJS: 2023/M12/1 (13) iso 2024-01-11
+   chinese PlainYearMonth year 2^32+2023 | VM: THROWS RangeError | BJS: THROWS RangeError
+   chinese PlainMonthDay year 2^32+2023 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian year 2^32+1403 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian day 2^32+1 constrain | VM: 1403/M01/31 (1) iso 2024-04-19 | BJS: 1403/M01/31 (1) iso 2024-04-19
+   persian day 2^32+1 reject | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian month 2^32+1 constrain | VM: 1403/M12/1 (12) iso 2025-02-19 | BJS: 1403/M12/1 (12) iso 2025-02-19
+   persian PlainYearMonth year 2^32+1403 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian PlainMonthDay year 2^32+1403 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic year 2^32+1739 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic day 2^32+1 constrain | VM: 1739/M01/30 (1) iso 2022-10-10 | BJS: 1739/M01/30 (1) iso 2022-10-10
+   coptic day 2^32+1 reject | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic month 2^32+1 constrain | VM: 1739/M13/1 (13) iso 2023-09-06 | BJS: 1739/M13/1 (13) iso 2023-09-06
+   coptic PlainYearMonth year 2^32+1739 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic PlainMonthDay year 2^32+1739 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil year 2^32+1445 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil day 2^32+1 constrain | VM: 1445/M01/30 (1) iso 2023-08-17 | BJS: 1445/M01/30 (1) iso 2023-08-17
+   islamic-civil day 2^32+1 reject | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil month 2^32+1 constrain | VM: 1445/M12/1 (12) iso 2024-06-08 | BJS: 1445/M12/1 (12) iso 2024-06-08
+   islamic-civil PlainYearMonth year 2^32+1445 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil PlainMonthDay year 2^32+1445 | VM: THROWS RangeError | BJS: THROWS RangeError
+   gregory era ce eraYear 2^32+5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   japanese era reiwa eraYear 2^32+5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   roc era roc eraYear 2^32+5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   coptic era am eraYear 2^32+5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   ethiopic era am eraYear 2^32+5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   islamic-civil era ah eraYear 2^32+5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   hebrew era am eraYear 2^32+5 | VM: THROWS RangeError | BJS: THROWS RangeError
+   persian era ap eraYear 2^32+5 | VM: THROWS RangeError | BJS: THROWS RangeError

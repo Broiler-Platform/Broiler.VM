@@ -1,0 +1,58 @@
+   Duration#round relativeTo "2020-01-01" | VM: P1M | BJS: P1M
+   Duration#total relativeTo "2020-01-01" | VM: 31 | BJS: 31
+   Duration#round relativeTo "2020-01-01T00:00" | VM: P1M | BJS: P1M
+   Duration#total relativeTo "2020-01-01T00:00" | VM: 31 | BJS: 31
+   Duration#round relativeTo "2020-01-01T00:00[UTC]" | VM: P1M | BJS: P1M
+   Duration#total relativeTo "2020-01-01T00:00[UTC]" | VM: 31 | BJS: 31
+   Duration#round relativeTo "2020-01-01T00:00Z[UTC]" | VM: P1M | BJS: P1M
+   Duration#total relativeTo "2020-01-01T00:00Z[UTC]" | VM: 31 | BJS: 31
+!! Duration#round relativeTo "2020-01-01T00:00Z" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00Z' | BJS: THROWS RangeError: Temporal.Duration: relativeTo with a UTC (Z) designator requires a time-zone annotation
+   Duration#total relativeTo "2020-01-01T00:00Z" | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration#round relativeTo "2020-01-01T00:00+01:00" | VM: P1M | BJS: P1M
+   Duration#total relativeTo "2020-01-01T00:00+01:00" | VM: 31 | BJS: 31
+   Duration#round relativeTo "2020-01-01T00:00+01:00[Europe/Berlin]" | VM: P1M | BJS: P1M
+   Duration#total relativeTo "2020-01-01T00:00+01:00[Europe/Berlin]" | VM: 31 | BJS: 31
+!! Duration#round relativeTo "2020-01-01T00:00+02:00[Europe/Berlin]" | VM: THROWS RangeError: Temporal: the offset does not agree with the time zone | BJS: THROWS RangeError: Temporal.ZonedDateTime: offset does not match the time zone in "2020-01-01T00:00+02:00[Europe/Berlin]"
+   Duration#total relativeTo "2020-01-01T00:00+02:00[Europe/Berlin]" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01[]" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01[]' | BJS: THROWS RangeError: Temporal: unknown time zone ""
+   Duration#total relativeTo "2020-01-01[]" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01[u-ca=iso8601][UTC]" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01[u-ca=iso8601][UTC]' | BJS: P1M
+!! Duration#total relativeTo "2020-01-01[u-ca=iso8601][UTC]" | VM: THROWS RangeError | BJS: 31
+!! Duration#round relativeTo "2020-01-01[foo=bar][UTC]" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01[foo=bar][UTC]' | BJS: P1M
+!! Duration#total relativeTo "2020-01-01[foo=bar][UTC]" | VM: THROWS RangeError | BJS: 31
+!! Duration#round relativeTo "2020-01-01[!foo=bar]" | VM: THROWS RangeError: Temporal: the critical annotation foo is not recognized in 2020-01-01[!foo=bar] | BJS: THROWS RangeError: Temporal: unknown annotation with critical flag "[!foo=bar]" in "2020-01-01[!foo=bar]"
+   Duration#total relativeTo "2020-01-01[!foo=bar]" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01[u-ca=hebrew]" | VM: P1M | BJS: THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented
+!! Duration#total relativeTo "2020-01-01[u-ca=hebrew]" | VM: 29 | BJS: THROWS Error
+!! Duration#round relativeTo "2020-01-01T00:00+25:00" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00+25:00' | BJS: P1M
+!! Duration#total relativeTo "2020-01-01T00:00+25:00" | VM: THROWS RangeError | BJS: 31
+!! Duration#round relativeTo "2020-01-01T00:00+01:0000" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00+01:0000' | BJS: THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-01-01T00:00+01:0000"
+   Duration#total relativeTo "2020-01-01T00:00+01:0000" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01" | VM: THROWS RangeError: Temporal: cannot parse '2020-01' | BJS: THROWS RangeError: Cannot parse Temporal.PlainDate from "2020-01"
+   Duration#total relativeTo "2020-01" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "01-01" | VM: THROWS RangeError: Temporal: cannot parse '01-01' | BJS: THROWS RangeError: Cannot parse Temporal.PlainDate from "01-01"
+   Duration#total relativeTo "01-01" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "T00:00" | VM: THROWS RangeError: Temporal: cannot parse 'T00:00' | BJS: THROWS RangeError: Cannot parse Temporal.PlainDate from "T00:00"
+   Duration#total relativeTo "T00:00" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "00:00" | VM: THROWS RangeError: Temporal: cannot parse '00:00' | BJS: THROWS RangeError: Cannot parse Temporal.PlainDate from "00:00"
+   Duration#total relativeTo "00:00" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-02-30" | VM: THROWS RangeError: Temporal: cannot parse '2020-02-30' | BJS: THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-02-30"
+   Duration#total relativeTo "2020-02-30" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01T24:00" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T24:00' | BJS: THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-01-01T24:00"
+   Duration#total relativeTo "2020-01-01T24:00" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01[Mars Olympus]" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01[Mars Olympus]' | BJS: THROWS RangeError: Temporal: unknown time zone "Mars Olympus"
+   Duration#total relativeTo "2020-01-01[Mars Olympus]" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01[UTC][UTC]" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01[UTC][UTC]' | BJS: THROWS RangeError: Temporal: more than one time zone annotation in "2020-01-01[UTC][UTC]"
+   Duration#total relativeTo "2020-01-01[UTC][UTC]" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01T00:00−01:00" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00−01:00' | BJS: THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-01-01T00:00−01:00"
+   Duration#total relativeTo "2020-01-01T00:00−01:00" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "٢٠٢٠-٠١-٠١" | VM: THROWS RangeError: Temporal: cannot parse '٢٠٢٠-٠١-٠١' | BJS: THROWS Error: System.FormatException: The input string '٢٠٢٠' was not in a correct format.
+!! Duration#total relativeTo "٢٠٢٠-٠١-٠١" | VM: THROWS RangeError | BJS: THROWS Error
+!! Duration#round relativeTo "2020-01-01T12:3045" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T12:3045' | BJS: THROWS RangeError: Temporal.Duration: cannot parse relativeTo "2020-01-01T12:3045"
+   Duration#total relativeTo "2020-01-01T12:3045" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01T00:00+01:00:00.5[UTC]" | VM: THROWS RangeError: Temporal: the offset does not agree with the time zone | BJS: THROWS RangeError: Temporal.ZonedDateTime: offset does not match the time zone in "2020-01-01T00:00+01:00:00.5[UTC]"
+   Duration#total relativeTo "2020-01-01T00:00+01:00:00.5[UTC]" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01T00:00Z[u-ca=hebrew]" | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00Z[u-ca=hebrew]' | BJS: THROWS RangeError: Temporal.Duration: relativeTo with a UTC (Z) designator requires a time-zone annotation
+   Duration#total relativeTo "2020-01-01T00:00Z[u-ca=hebrew]" | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration#round relativeTo "2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]" | VM: THROWS RangeError: Temporal: a critical calendar annotation conflicts with another in 2020-01-01T00:00[u-ca=gregory][!u-ca=japanese] | BJS: THROWS RangeError: Temporal: more than one calendar annotation in "2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]"
+   Duration#total relativeTo "2020-01-01T00:00[u-ca=gregory][!u-ca=japanese]" | VM: THROWS RangeError | BJS: THROWS RangeError
