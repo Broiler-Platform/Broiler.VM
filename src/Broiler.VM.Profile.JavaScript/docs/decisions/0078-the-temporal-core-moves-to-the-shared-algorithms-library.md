@@ -586,6 +586,45 @@ this record classifies, and none needed a new row.
 
   The library's own tests, and the reference datasets, hold these where they can.
 
+## SJL-10.3's library, read against this record
+
+*(Added 2026-10-18, at SJL-10.3.)* Broiler.JS's `Broiler.ECMAScript.Algorithms` now holds the seven sub-areas, under
+`Broiler.ECMAScript.Temporal`.
+- **The check against this family's code.** A differential check against this family's code at `14072b0` finds no
+  difference in 76,814,791 comparisons, but one case.
+- **The vectors.** At library level the library answers all but 27 of corpus revision 25's Temporal vectors, and every
+  one it answers matches. The 27 are excluded by operation, because each depends on the engine: a built-in's `length`,
+  a getter's reads, and the calendar an object lends (row C13).
+- **Its records** are in Broiler.JS's bundle `sjl-10-001`, section 3.
+
+**Row D12 is reached.** This record classified row D12 as code no input reaches, in both engines. Pacific/Apia skipped
+2011-12-30, so a day nudge window back from 2011-12-31 ends on the skipped day and has no length. The specification
+asserts that this does not happen. For example:
+
+```
+ZonedDateTime.from("2011-12-31T16:15+14:00[Pacific/Apia]")
+  .since("2011-12-31T00:00+14:00[Pacific/Apia]", {largestUnit: "day", smallestUnit: "day"})
+```
+
+Each implementation answers differently:
+- this family's code ends the invocation with a .NET `ArgumentOutOfRangeException`;
+- Broiler.JS answers `PT0S`, from its own day arithmetic;
+- the polyfill fails its own assertion.
+
+**Decision D11 - where the pinned text asserts that a nudge window holds its destination and an input breaks the
+assertion, the answer is a `RangeError`.** Taken by the owner on 2026-10-18, under the same direction as D1 to D10.
+- The library's rounding and totals answer `OutOfRange` there, which each engine maps to a `RangeError`.
+- In this family, row D12's day window is a correction, made at its cut-over (SJL-10.4) beside R6: an escaping host
+  exception ends the invocation where a `RangeError` is catchable.
+- In Broiler.JS it is a policy change, `PT0S` to a `RangeError`, made at SJL-10.5 and listed in its changelog.
+- The reasons:
+  - The text gives no answer there, and the polyfill's assertion is not one an engine may surface.
+  - A `RangeError` is what the text gives wherever an operation's result is out of its range.
+  - Neither engine's current answer is one the text supports.
+
+The classification table above is read with this section. Row D12's week window remains code no input reaches; its day
+window is reached.
+
 ## Settling condition
 
 This record is settled when SJL-10.4's and SJL-10.5's cut-overs land with the deletion lists absent from both engines
