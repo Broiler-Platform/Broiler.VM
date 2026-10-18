@@ -321,9 +321,9 @@ internal sealed partial class JsRealm
     /// The duration format and formatToParts read: with Temporal admitted, ToTemporalDuration (the
     /// proposal's amendment of s15.10.1, which takes a string too); without it, ToDurationRecord.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D80BE2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86D636
     // Broiler-Human:        PENDING
-    private static double[] DurationFormatInput(JsEngine engine, JsValue input) => engine.Realm.TemporalDurationPrototype is not null ? JsTemporal.ToDuration(engine, input) : ToDurationRecord(engine, input);
+    private static double[] DurationFormatInput(JsEngine engine, JsValue input) => engine.Realm.TemporalDurationPrototype is not null ? JsTemporal.FieldsArray(JsTemporal.ToDuration(engine, input)) : ToDurationRecord(engine, input);
 
     /// <summary>
     /// ECMA-402's ToDurationRecord (s13.5.3): the ten fields read in alphabetical order, each an

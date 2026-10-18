@@ -17,6 +17,8 @@
 
 using BigInteger = System.Numerics.BigInteger;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Temporal;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -25,7 +27,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E8EDD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86A7F7
     // Broiler-Human:        PENDING
     private void SetupTemporalInstant(JsObject temporal)
     {
@@ -89,10 +91,13 @@ internal sealed partial class JsRealm
             var increment = JsTemporal.RoundingIncrement(engine, roundTo);
             var mode = JsTemporal.RoundingModeOption(engine, roundTo, RoundingMode.HalfExpand);
             var smallest = JsTemporal.UnitOption(engine, roundTo, "smallestUnit", required: true);
-            JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
-            var maximum = (long)(JsTemporalCore.NsPerDay / JsTemporalCore.UnitLength(smallest));
-            JsTemporal.ValidateIncrement(engine, increment, maximum, inclusive: true);
-            return JsValue.Object(JsTemporal.CreateInstant(engine, JsTemporal.RoundInstant(instant.EpochNanoseconds, increment, smallest, mode)));
+
+            if (!TemporalOptionRules.IsValidRoundOptions(TemporalType.Instant, smallest, increment))
+            {
+                throw engine.Error("RangeError", "Temporal.Instant.prototype.round: smallestUnit and roundingIncrement are not valid together");
+            }
+
+            return JsValue.Object(JsTemporal.CreateInstant(engine, IsoArithmetic.RoundTemporalInstant(instant.EpochNanoseconds, increment, smallest, mode)));
         });
 
         Method(prototype, "equals", 1, static (engine, thisValue, arguments) =>
@@ -106,19 +111,18 @@ internal sealed partial class JsRealm
             var instant = TemporalThis<JsInstantObject>(engine, thisValue, "Instant", "toString");
             var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0));
             var digits = JsTemporal.FractionalSecondDigits(engine, options);
-            var mode = JsTemporal.RoundingModeOption(engine, options, RoundingMode.Trunc);
+            var mode = JsTemporal.RoundingModeOption(engine, options, TemporalOptionRules.DefaultToStringRoundingMode);
             var smallest = JsTemporal.UnitOption(engine, options, "smallestUnit", required: false);
             var timeZoneValue = engine.GetProperty(JsValue.Object(options), "timeZone");
-            JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
 
-            if (smallest == TemporalUnit.Hour)
+            if (!TemporalOptionRules.IsValidToStringSmallestUnit(smallest, duration: false))
             {
-                throw engine.Error("RangeError", "Temporal.Instant.prototype.toString: smallestUnit cannot be hour");
+                throw engine.Error("RangeError", "Temporal.Instant.prototype.toString: smallestUnit must be a minute or smaller");
             }
 
             var timeZone = timeZoneValue.Type == JsType.Undefined ? null : JsTemporal.ToTimeZoneIdentifier(engine, timeZoneValue);
-            var precision = JsTemporal.Precision(smallest, digits);
-            var rounded = JsTemporal.RoundInstant(instant.EpochNanoseconds, precision.Increment, precision.Unit, mode);
+            var precision = TemporalOptionRules.ToSecondsStringPrecisionRecord(smallest, digits);
+            var rounded = IsoArithmetic.RoundTemporalInstant(instant.EpochNanoseconds, precision.Increment, precision.Unit, mode);
             return JsValue.String(JsTemporal.InstantString(engine, rounded, timeZone, precision.Precision));
         });
 
@@ -133,7 +137,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
         {
             var instant = TemporalThis<JsInstantObject>(engine, thisValue, "Instant", "toJSON");
-            return JsValue.String(JsTemporal.InstantString(engine, instant.EpochNanoseconds, null, JsTemporalCore.PrecisionAuto));
+            return JsValue.String(JsTemporal.InstantString(engine, instant.EpochNanoseconds, null, TemporalFormat.AutoPrecision));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) => TemporalValueOf(engine, "Instant"));
@@ -176,7 +180,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The proposal's AddDurationToInstant (s8.5.10).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FA7867
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=952CDD
     // Broiler-Human:        PENDING
     private static JsInstantObject AddDurationToInstant(JsEngine engine, JsInstantObject instant, JsValue durationLike, bool subtract)
     {
@@ -184,30 +188,30 @@ internal sealed partial class JsRealm
 
         if (subtract)
         {
-            fields = JsTemporal.Negated(fields);
+            fields = DurationMath.Negate(fields);
         }
 
-        if (JsTemporalCore.IsDateUnit(JsTemporalCore.DefaultLargestUnit(fields)))
+        if (TemporalOptionRules.IsDateUnit(DurationMath.DefaultLargestUnit(fields)))
         {
             throw engine.Error("RangeError", "Temporal.Instant: a duration with days or larger units cannot be added to an instant");
         }
 
-        var internalDuration = JsTemporalCore.ToInternalWith24HourDays(fields);
-        return JsTemporal.CreateInstant(engine, JsTemporal.AddInstant(engine, instant.EpochNanoseconds, internalDuration.Time));
+        var internalDuration = DurationMath.ToInternalWith24HourDays(fields);
+        return JsTemporal.CreateInstant(engine, JsTemporal.AddInstant(engine, instant.EpochNanoseconds, internalDuration.TimeNanoseconds));
     }
 
-    /// <summary>The proposal's DifferenceTemporalInstant (s8.5.9).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CAB4AC
+    /// <summary>The proposal's DifferenceTemporalInstant (s8.5.9): the reads here, the difference the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2ABE08
     // Broiler-Human:        PENDING
     private static JsDurationObject DifferenceTemporalInstant(JsEngine engine, JsInstantObject instant, JsValue[] arguments, bool since)
     {
         var other = JsTemporal.ToInstant(engine, TemporalArgument(arguments, 0));
         var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1));
-        var settings = JsTemporal.DifferenceSettings(engine, since, options, JsTemporal.UnitGroup.Time, [], TemporalUnit.Nanosecond, TemporalUnit.Second);
-        var internalDuration = JsTemporal.DifferenceInstant(
-            engine, instant.EpochNanoseconds, other, settings.RoundingIncrement, settings.SmallestUnit, settings.RoundingMode);
-        var result = JsTemporalCore.FromInternal(internalDuration, settings.LargestUnit);
-        return JsTemporal.CreateDuration(engine, since ? JsTemporal.Negated(result) : result);
+        var operation = since ? DifferenceOperation.Since : DifferenceOperation.Until;
+        var settings = JsTemporal.DifferenceSettingsOf(engine, operation, options, TemporalType.Instant);
+        JsTemporal.Check(
+            engine, TemporalDifferences.DifferenceTemporalInstant(operation, instant.EpochNanoseconds, other, settings, out var result), "the difference");
+        return JsTemporal.CreateDuration(engine, result);
     }
 
     // ---- Temporal.Now ---------------------------------------------------------------------------
@@ -268,9 +272,9 @@ internal sealed partial class JsRealm
         new BigInteger(DateCurrentTime()) * 1_000_000;
 
     /// <summary>The proposal's SystemDateTime (s2.3.4).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7B178D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4101F9
     // Broiler-Human:        PENDING
-    private static JsIsoDateTime SystemDateTime(JsEngine engine, JsValue timeZoneLike)
+    private static IsoDateTime SystemDateTime(JsEngine engine, JsValue timeZoneLike)
     {
         var timeZone = timeZoneLike.Type == JsType.Undefined ? SystemTimeZone(engine) : JsTemporal.ToTimeZoneIdentifier(engine, timeZoneLike);
         return JsTemporal.IsoDateTimeFor(engine, timeZone, SystemEpochNs());

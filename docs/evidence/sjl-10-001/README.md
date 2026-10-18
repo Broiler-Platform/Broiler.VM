@@ -16,14 +16,17 @@ differences, and `syntax/` for the grammar, the calendars and serialization.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules, correspondence, the base and the vectors, 2026-10-18, at SJL-10.2. **Nothing here is a verdict.**
+**State:** rules, correspondence, the base, the vectors and the cut-over, 2026-10-18, at SJL-10.4. **Nothing here is a
+verdict.**
 - The base of all three parts was taken at the commit that carries the rule, `99c9c9f`, before any code of SJL-10
   landed (section 2): part A's by the hosted workflow, parts B and C locally.
 - The engine-level vectors ran on this family's pin at corpus revision 25, which holds the Temporal area (section 3).
-- The after runs follow SJL-10.4's cut-over.
+- SJL-10.4's cut-over is in place, with the checks it ran (section 4).
+- The after runs are SJL-10.6's.
 
 *(Revised 2026-10-18, at SJL-10.2, when the pin moved to revision 25. The state read "rules, correspondence and the
-base", and had no item on the vectors.)*
+base", and had no item on the vectors.)* *(Revised 2026-10-18, at SJL-10.4. The state read "rules, correspondence,
+the base and the vectors, 2026-10-18, at SJL-10.2", and its last item "The after runs follow SJL-10.4's cut-over.")*
 
 Broiler.JS's clauses and the home's are judged in Broiler.JS's bundle of the same name. This bundle reads none of
 its runs.
@@ -208,3 +211,90 @@ The pin is at revision 25 (`src/tests/vectors/pins/vectors.pin`) since `389f3e0`
 The same method, applied to revision 23's commit, gives that pin's two digests and its count exactly.
 
 [`area-manifest.json`](area-manifest.json) lists the digest of every file of `vectors/` with the others.
+
+## 4. The cut-over (SJL-10.4)
+
+*(Added 2026-10-18, at SJL-10.4.)*
+[JSD-0079](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0079-the-profile-on-the-shared-temporal-core.md)
+records it. The changes, each building, with the tests it touches green:
+
+| Commit | What it does |
+|---|---|
+| `66b0877` | `Broiler.ECMAScript.Algorithms` and the test-only `Broiler.ECMAScript.Generation` `0.1.0-preview.6`, packed at Broiler.JS `bf81d1b7` (SJL-10.3's library at `e33b53e6`, its version moved) and not yet published, are admitted from the committed feed in place of `0.1.0-preview.5` |
+| `a13a41c` | The package baseline is bundle JS-10-010's (JSC-314), as rule N37 asks |
+| `f14abb7` | The profile's Temporal core is the shared `Broiler.ECMAScript.Temporal`'s: `JsTemporalCore.cs`, `JsCalendars.cs` and `JsTemporal.CalendarNonIso.cs` are deleted whole, `JsTemporalParser` is a thin wrapper over the grammar, and the realm files keep the objects, the reads and the errors. Rows R6 and D12's day window are corrected, each held by a slice-compiler check |
+| `9b7eead` | Rule I5 registers the 147 deleted types and members, and the notices say where the calendars' arithmetic went |
+| `c0355f4` | JSD-0079, the record |
+
+**This family's corrections are made**, and no other answer moves:
+- **Row R6** (decision D9): `new PlainDate` and `new PlainDateTime` with a year of 2^53 + 2 or ±10^20, and `new
+  PlainMonthDay` with a reference year of ±10^20, throw a `RangeError` where the invocation ended.
+- **Row D12's day window** (decision D11): `since` in days, and `Duration`'s `round` and `total` in days, relative to
+  Pacific/Apia's 2011-12-31, throw a `RangeError` where a .NET `ArgumentOutOfRangeException` ended the invocation.
+
+[`cutover/corrections.txt`](cutover/corrections.txt) gives both checks' lines, and each construction run alone at the
+base's product sources and at the cut-over's.
+
+**Checked at the product tree of `f14abb7`.** `9b7eead` and the record change no product file. The files are in
+[`cutover/`](cutover/) and [`vectors/`](vectors/):
+- **Part B's reference datasets.**
+  - Each of the six named checks prints the line the base's [`base/datasets/named-checks.txt`](base/datasets/named-checks.txt)
+    gives ([`cutover/named-checks.txt`](cutover/named-checks.txt)).
+  - No file under `src/tests/temporal/` changed.
+  - The slice compiler passes 651 checks: the base's 649, all passing this time, and the two corrections' checks.
+- **The shared vectors at revision 25 match, every one**, through the conformance root on the committed pin, from the
+  clean tree of `9b7eead`:
+  - 103,312 vectors, 103,312 match, 0 classified divergences, 0 unclassified differences
+    ([`vectors/cut-over-revision-25.log`](vectors/cut-over-revision-25.log),
+    [`vectors/cut-over-revision-25.tsv.gz`](vectors/cut-over-revision-25.tsv.gz));
+  - **row R6's six `divergence.broiler-vm` fields no longer hold.** `temporal/balancing/0078` to `0080`, `0084`, `0085`
+    and `0088` render `error: RangeError`, the expected value, where section 3's run rendered the ended invocation, and
+    the report marks each "divergence no longer holds". Retiring the fields is the corpus's to do, in Broiler.JS;
+  - every other vector renders as section 3's run rendered it, line for line
+    ([`vectors/cut-over-revision-25.against-base.txt`](vectors/cut-over-revision-25.against-base.txt));
+  - the negative control reports the mutated vector alone
+    ([`vectors/cut-over-negative-control-revision-25.log`](vectors/cut-over-negative-control-revision-25.log)).
+- **The correspondence's probes**, run again through the conformance root as their scripts run them
+  ([`cutover/correspondence-probes.txt`](cutover/correspondence-probes.txt)):
+  - 54 of the 70 with a retained answer of this family's answer line for line as retained;
+  - row R6's five answer `RangeError` where the invocation ended;
+  - eleven differ in messages alone, on 44 lines, each with the same error type. JSD-0079 section 7 says why: a
+    message now names the status the library answers, where this family named a cause it no longer meets.
+- **Part C's twins keep their base figures.** Each of the ten wide twins completes at its base figure, with its
+  answer, and is refused on fuel at one less, in both forms. The rows of
+  [`cutover/fuel-parity.log`](cutover/fuel-parity.log) are the base's [`base/fuel-parity.log`](base/fuel-parity.log)
+  line for line.
+- **A local test262 subset, bytecode form,** over the area's directories and `Date`
+  ([`cutover/test262-subset.txt`](cutover/test262-subset.txt)): 7,696 files and 15,330 variants, every one with the
+  hosted base's verdict.
+  - On both sides, 15,240 variants passed, 12 failed, 16 exhausted their allowance and 62 were skipped. No case reaches
+    row R6 or row D12, as part A's rule expected of R6.
+  - The sixteen exhausted variants are `staging/sm/Date/dst-offset-caching`'s. They read no zone, because this
+    profile's local time is UTC.
+  - Fourteen of them ran out of wall clock on this machine, and two out of fuel; the hosted base's were six and ten.
+    With a wall clock of 120 seconds, all sixteen exhaust on fuel.
+- **The tests pass:** the architecture tests, rule I5's among them over the 147 new rows, and the contract tests,
+  with JSD-0079's figures. A full Release build has no warning.
+
+**The assurance coverage.** The code the cut-over deleted left this component's assurance coverage: the 147 types and
+members rule I5 registers for SJL-10.4, with the bodies JSD-0079 section 8 names. What computes them now is
+`Broiler.ECMAScript.Algorithms`, namespace `Broiler.ECMAScript.Temporal`, which the home's own assurance component
+covers in the Broiler.JS repository (`Broiler.ECMAScript/assurance.config.json`). The adapters and seams that stay are
+covered here. The exclusion is filed with SJL-10.6's evidence, in this bundle's exclusion section, as SJL-8.7 filed
+EX-131 for the time-zone and calendar code: rule H2 reads a definition only there.
+
+**The published packages.** *(Added 2026-10-18, later.)* Both packages were published to nuget.org later the
+same day, from Broiler.JS `fc829f8a`, a merge whose tree is `bf81d1b7`'s, and the committed feed now holds them
+as published ([JSC-315](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-315)). The
+checks above used the copies packed from `bf81d1b7`. With the published packages:
+- a locked restore with an empty package cache succeeds, and the solution builds in Release with no warning;
+- the architecture tests and the contract tests pass;
+- the conformance root's run on revision 25 gives a report identical byte for byte to
+  `cut-over-revision-25.tsv.gz`'s, and prints the lines `cut-over-revision-25.log` holds below its collector
+  header;
+- its negative control prints the lines `cut-over-negative-control-revision-25.log` holds below its collector
+  header, and its report is the one the cut-over's negative control wrote, byte for byte.
+
+Neither run is retained, since neither differs.
+
+SJL-10.6 judges parts A to C; this section judges nothing.

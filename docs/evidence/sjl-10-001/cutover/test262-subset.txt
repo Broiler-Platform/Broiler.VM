@@ -1,0 +1,21 @@
+# local test262 subset, bytecode, wide manifest, 100,000,000 fuel and 5,000 ms per variant, four processes, at the product tree of f14abb7,
+# compared variant by variant with the hosted base at 99c9c9f (base/hosted/wide-bytecode.report.gz) over the same paths;
+# exhausted counts fuel and wall clock alike. The 16 exhausted variants are test/staging/sm/Date/dst-offset-caching-*'s: 14 exhausted the wall
+# clock here and 2 fuel, where the hosted base's were 6 and 10; at 120,000 ms per variant all 16 exhaust on fuel.
+base results in the paths: 15330
+after results in the paths: 15330
+base {'Exhausted': 16, 'Failed': 12, 'Passed': 15240, 'Skipped': 62}
+after {'Exhausted': 16, 'Failed': 12, 'Passed': 15240, 'Skipped': 62}
+only in base: 0
+only in after: 0
+verdict changed: 0
+per directory (variants compared, verdicts changed):
+   test/built-ins/Temporal 9176 0
+   test/intl402/Temporal 3997 0
+   test/intl402/DateTimeFormat 492 0
+   test/intl402/Intl 132 0
+   test/intl402/Locale 261 0
+   test/intl402/Date 24 0
+   test/built-ins/Date 1188 0
+   test/staging/Temporal 4 0
+   test/staging/sm/Date 56 0

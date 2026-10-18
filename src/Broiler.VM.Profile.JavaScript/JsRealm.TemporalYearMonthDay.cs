@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -24,7 +25,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2089B1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DFA9E8
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainYearMonth(JsObject temporal)
     {
@@ -39,12 +40,12 @@ internal sealed partial class JsRealm
             var calendar = TemporalCalendarArgument(engine, TemporalArgument(arguments, 2));
             var day = referenceDay.Type == JsType.Undefined ? 1 : JsTemporal.IntegerWithTruncation(engine, referenceDay);
 
-            if (!IsoCalendarMath.IsValidIsoDate((long)year, (int)month, (int)day))
+            if (!IsoCalendarMath.IsValidIsoDate(JsTemporal.Year(year), (int)month, (int)day))
             {
                 throw engine.Error("RangeError", "Temporal.PlainYearMonth: the date is not valid");
             }
 
-            return JsValue.Object(JsTemporal.CreateYearMonth(engine, new JsIsoDate((long)year, (int)month, (int)day), calendar, newTarget));
+            return JsValue.Object(JsTemporal.CreateYearMonth(engine, new IsoDate(JsTemporal.Year(year), (int)month, (int)day), calendar, newTarget));
         });
 
         Method(constructor, "from", 1, static (engine, thisValue, arguments) =>
@@ -54,7 +55,7 @@ internal sealed partial class JsRealm
         {
             var one = JsTemporal.ToYearMonth(engine, TemporalArgument(arguments, 0));
             var two = JsTemporal.ToYearMonth(engine, TemporalArgument(arguments, 1));
-            return JsValue.Number(JsTemporalCore.Compare(one.Date, two.Date));
+            return JsValue.Number(IsoArithmetic.CompareIsoDate(one.Date, two.Date));
         });
 
         TemporalCalendarGetters(
@@ -71,12 +72,12 @@ internal sealed partial class JsRealm
             var yearMonth = TemporalThis<JsPlainYearMonthObject>(engine, thisValue, "PlainYearMonth", "with");
             var partial = PartialTemporalObject(engine, TemporalArgument(arguments, 0), "PlainYearMonth");
             var calendar = yearMonth.Calendar;
-            var fields = JsTemporal.DateToFields(engine, calendar, yearMonth.Date, JsTemporal.FieldsType.YearMonth);
+            var fields = JsTemporal.DateToFields(engine, calendar, yearMonth.Date, CalendarFieldsType.YearMonth);
             var partialFields = JsTemporal.PrepareFields(
                 engine, calendar, partial, [CalendarField.Year, CalendarField.Month, CalendarField.MonthCode], [], null, partial: true);
             fields = JsTemporal.MergeFields(calendar, fields, partialFields);
-            var reject = JsTemporal.Reject(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
-            return JsValue.Object(JsTemporal.CreateYearMonth(engine, JsTemporal.YearMonthFromFields(engine, calendar, fields, reject), calendar));
+            var overflow = JsTemporal.Overflow(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
+            return JsValue.Object(JsTemporal.CreateYearMonth(engine, JsTemporal.YearMonthFromFields(engine, calendar, fields, overflow), calendar));
         });
 
         Method(prototype, "add", 1, static (engine, thisValue, arguments) =>
@@ -95,14 +96,14 @@ internal sealed partial class JsRealm
         {
             var yearMonth = TemporalThis<JsPlainYearMonthObject>(engine, thisValue, "PlainYearMonth", "equals");
             var other = JsTemporal.ToYearMonth(engine, TemporalArgument(arguments, 0));
-            return JsValue.Boolean(JsTemporalCore.Compare(yearMonth.Date, other.Date) == 0 && yearMonth.Calendar == other.Calendar);
+            return JsValue.Boolean(IsoArithmetic.CompareIsoDate(yearMonth.Date, other.Date) == 0 && yearMonth.Calendar == other.Calendar);
         });
 
         Method(prototype, "toString", 0, static (engine, thisValue, arguments) =>
         {
             var yearMonth = TemporalThis<JsPlainYearMonthObject>(engine, thisValue, "PlainYearMonth", "toString");
-            var showCalendar = JsTemporal.ShowCalendar(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0)));
-            return JsValue.String(JsTemporal.YearMonthString(yearMonth.Date, yearMonth.Calendar, showCalendar));
+            var showCalendar = JsTemporal.ShowCalendarOption(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0)));
+            return JsValue.String(TemporalFormat.YearMonthToString(yearMonth.Date, yearMonth.Calendar, showCalendar));
         });
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
@@ -114,7 +115,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
         {
             var yearMonth = TemporalThis<JsPlainYearMonthObject>(engine, thisValue, "PlainYearMonth", "toJSON");
-            return JsValue.String(JsTemporal.YearMonthString(yearMonth.Date, yearMonth.Calendar, "auto"));
+            return JsValue.String(TemporalFormat.YearMonthToString(yearMonth.Date, yearMonth.Calendar, ShowCalendarName.Auto));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) => TemporalValueOf(engine, "PlainYearMonth"));
@@ -130,39 +131,42 @@ internal sealed partial class JsRealm
             }
 
             var calendar = yearMonth.Calendar;
-            var fields = JsTemporal.DateToFields(engine, calendar, yearMonth.Date, JsTemporal.FieldsType.YearMonth);
             var inputFields = JsTemporal.PrepareFields(engine, calendar, item.AsObject(), [CalendarField.Day], [], []);
-            var merged = JsTemporal.MergeFields(calendar, fields, inputFields);
-            return JsValue.Object(JsTemporal.CreatePlainDate(engine, JsTemporal.DateFromFields(engine, calendar, merged, reject: false), calendar));
+            JsTemporal.Check(
+                engine, JsTemporal.Calendars(engine).YearMonthToDate(JsTemporal.CalendarIdOf(calendar), yearMonth.Date, inputFields.Calendar, out var date), calendar);
+            return JsValue.Object(JsTemporal.CreatePlainDate(engine, date, calendar));
         });
     }
 
-    /// <summary>The proposal's AddDurationToYearMonth (s9.5.8).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D1F9B3
+    /// <summary>
+    /// The proposal's AddDurationToYearMonth (s9.5.8): its checks here, and the month's first day, the
+    /// addition and the year-month from its fields the shared calendars'.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2504B3
     // Broiler-Human:        PENDING
     private static JsPlainYearMonthObject AddDurationToYearMonth(JsEngine engine, JsPlainYearMonthObject yearMonth, JsValue[] arguments, bool subtract)
     {
         var fields = SignedDuration(engine, TemporalArgument(arguments, 0), subtract);
-        var internalDuration = JsTemporalCore.ToInternal(fields);
-        var reject = JsTemporal.Reject(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
+        var internalDuration = DurationMath.ToInternal(fields);
+        var overflow = JsTemporal.Overflow(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
         var durationToAdd = internalDuration.Date;
 
-        if (durationToAdd.Weeks != 0 || durationToAdd.Days != 0 || !internalDuration.Time.IsZero)
+        if (durationToAdd.Weeks != 0 || durationToAdd.Days != 0 || !internalDuration.TimeNanoseconds.IsZero)
         {
             throw engine.Error("RangeError", "Temporal.PlainYearMonth: only years and months can be added to a year-month");
         }
 
         var calendar = yearMonth.Calendar;
-        var startFields = JsTemporal.DateToFields(engine, calendar, yearMonth.Date, JsTemporal.FieldsType.YearMonth);
+        var startFields = JsTemporal.DateToFields(engine, calendar, yearMonth.Date, CalendarFieldsType.YearMonth);
         startFields.Day = 1;
-        var date = JsTemporal.DateFromFields(engine, calendar, startFields, reject: false);
-        var added = JsTemporal.DateAdd(engine, calendar, date, durationToAdd, reject);
-        var addedFields = JsTemporal.DateToFields(engine, calendar, added, JsTemporal.FieldsType.YearMonth);
-        return JsTemporal.CreateYearMonth(engine, JsTemporal.YearMonthFromFields(engine, calendar, addedFields, reject), calendar);
+        var date = JsTemporal.DateFromFields(engine, calendar, startFields, TemporalOverflow.Constrain);
+        var added = JsTemporal.DateAdd(engine, calendar, date, durationToAdd, overflow);
+        var addedFields = JsTemporal.DateToFields(engine, calendar, added, CalendarFieldsType.YearMonth);
+        return JsTemporal.CreateYearMonth(engine, JsTemporal.YearMonthFromFields(engine, calendar, addedFields, overflow), calendar);
     }
 
-    /// <summary>The proposal's DifferenceTemporalPlainYearMonth (s9.5.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=23212C
+    /// <summary>The proposal's DifferenceTemporalPlainYearMonth (s9.5.7): the reads here, the difference the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AE8FFE
     // Broiler-Human:        PENDING
     private static JsDurationObject DifferenceTemporalPlainYearMonth(JsEngine engine, JsPlainYearMonthObject yearMonth, JsValue[] arguments, bool since)
     {
@@ -170,48 +174,19 @@ internal sealed partial class JsRealm
         var calendar = yearMonth.Calendar;
         RequireSameCalendar(engine, calendar, other.Calendar);
         var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1));
-        var settings = JsTemporal.DifferenceSettings(
-            engine, since, options, JsTemporal.UnitGroup.Date, [TemporalUnit.Week, TemporalUnit.Day], TemporalUnit.Month, TemporalUnit.Year);
-
-        if (JsTemporalCore.Compare(yearMonth.Date, other.Date) == 0)
-        {
-            return JsTemporal.CreateDuration(engine, new double[10]);
-        }
-
-        var thisFields = JsTemporal.DateToFields(engine, calendar, yearMonth.Date, JsTemporal.FieldsType.YearMonth);
-        thisFields.Day = 1;
-        var thisDate = JsTemporal.DateFromFields(engine, calendar, thisFields, reject: false);
-        var otherFields = JsTemporal.DateToFields(engine, calendar, other.Date, JsTemporal.FieldsType.YearMonth);
-        otherFields.Day = 1;
-        var otherDate = JsTemporal.DateFromFields(engine, calendar, otherFields, reject: false);
-        var dateDifference = JsTemporal.DateUntil(engine, calendar, thisDate, otherDate, settings.LargestUnit);
-        var duration = new JsInternalDuration(JsTemporal.AdjustDate(engine, dateDifference, 0, 0), 0);
-
-        if (settings.SmallestUnit != TemporalUnit.Month || settings.RoundingIncrement != 1)
-        {
-            var origin = new JsIsoDateTime(thisDate, JsTimeRecord.Midnight);
-            var destination = new JsIsoDateTime(otherDate, JsTimeRecord.Midnight);
-            duration = JsTemporal.RoundRelativeDuration(
-                engine,
-                duration,
-                JsTemporalCore.UtcEpochNs(origin),
-                JsTemporalCore.UtcEpochNs(destination),
-                origin,
-                null,
-                calendar,
-                settings.LargestUnit,
-                settings.RoundingIncrement,
-                settings.SmallestUnit,
-                settings.RoundingMode);
-        }
-
-        var result = JsTemporalCore.FromInternal(duration, TemporalUnit.Day);
-        return JsTemporal.CreateDuration(engine, since ? JsTemporal.Negated(result) : result);
+        var operation = since ? DifferenceOperation.Since : DifferenceOperation.Until;
+        var settings = JsTemporal.DifferenceSettingsOf(engine, operation, options, TemporalType.PlainYearMonth);
+        JsTemporal.Check(
+            engine,
+            TemporalDifferences.DifferenceTemporalPlainYearMonth(
+                operation, JsTemporal.Calendars(engine), JsTemporal.CalendarIdOf(calendar), yearMonth.Date, other.Date, settings, out var result),
+            "the date");
+        return JsTemporal.CreateDuration(engine, result);
     }
 
     // ---- Temporal.PlainMonthDay -----------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=84E629
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=36C685
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainMonthDay(JsObject temporal)
     {
@@ -226,12 +201,14 @@ internal sealed partial class JsRealm
             var calendar = TemporalCalendarArgument(engine, TemporalArgument(arguments, 2));
             var year = referenceYear.Type == JsType.Undefined ? 1972 : JsTemporal.IntegerWithTruncation(engine, referenceYear);
 
-            if (!IsoCalendarMath.IsValidIsoDate((long)year, (int)month, (int)day))
+            if (!IsoCalendarMath.IsValidIsoDate(JsTemporal.Year(year), (int)month, (int)day))
             {
                 throw engine.Error("RangeError", "Temporal.PlainMonthDay: the date is not valid");
             }
 
-            return JsValue.Object(JsTemporal.CreateMonthDay(engine, new JsIsoDate((long)year, (int)month, (int)day), calendar, newTarget));
+            // ROW R6 (decision D9): the reference year's limits are checked through the shared library,
+            // which takes any year, so a year past 2^53 is the RangeError the specification asks for.
+            return JsValue.Object(JsTemporal.CreateMonthDay(engine, new IsoDate(JsTemporal.Year(year), (int)month, (int)day), calendar, newTarget));
         });
 
         Method(constructor, "from", 1, static (engine, thisValue, arguments) =>
@@ -248,26 +225,26 @@ internal sealed partial class JsRealm
             var monthDay = TemporalThis<JsPlainMonthDayObject>(engine, thisValue, "PlainMonthDay", "with");
             var partial = PartialTemporalObject(engine, TemporalArgument(arguments, 0), "PlainMonthDay");
             var calendar = monthDay.Calendar;
-            var fields = JsTemporal.DateToFields(engine, calendar, monthDay.Date, JsTemporal.FieldsType.MonthDay);
+            var fields = JsTemporal.DateToFields(engine, calendar, monthDay.Date, CalendarFieldsType.MonthDay);
             var partialFields = JsTemporal.PrepareFields(
                 engine, calendar, partial, [CalendarField.Year, CalendarField.Month, CalendarField.MonthCode, CalendarField.Day], [], null, partial: true);
             fields = JsTemporal.MergeFields(calendar, fields, partialFields);
-            var reject = JsTemporal.Reject(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
-            return JsValue.Object(JsTemporal.CreateMonthDay(engine, JsTemporal.MonthDayFromFields(engine, calendar, fields, reject), calendar));
+            var overflow = JsTemporal.Overflow(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
+            return JsValue.Object(JsTemporal.CreateMonthDay(engine, JsTemporal.MonthDayFromFields(engine, calendar, fields, overflow), calendar));
         });
 
         Method(prototype, "equals", 1, static (engine, thisValue, arguments) =>
         {
             var monthDay = TemporalThis<JsPlainMonthDayObject>(engine, thisValue, "PlainMonthDay", "equals");
             var other = JsTemporal.ToMonthDay(engine, TemporalArgument(arguments, 0));
-            return JsValue.Boolean(JsTemporalCore.Compare(monthDay.Date, other.Date) == 0 && monthDay.Calendar == other.Calendar);
+            return JsValue.Boolean(IsoArithmetic.CompareIsoDate(monthDay.Date, other.Date) == 0 && monthDay.Calendar == other.Calendar);
         });
 
         Method(prototype, "toString", 0, static (engine, thisValue, arguments) =>
         {
             var monthDay = TemporalThis<JsPlainMonthDayObject>(engine, thisValue, "PlainMonthDay", "toString");
-            var showCalendar = JsTemporal.ShowCalendar(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0)));
-            return JsValue.String(JsTemporal.MonthDayString(monthDay.Date, monthDay.Calendar, showCalendar));
+            var showCalendar = JsTemporal.ShowCalendarOption(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0)));
+            return JsValue.String(TemporalFormat.MonthDayToString(monthDay.Date, monthDay.Calendar, showCalendar));
         });
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
@@ -279,7 +256,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
         {
             var monthDay = TemporalThis<JsPlainMonthDayObject>(engine, thisValue, "PlainMonthDay", "toJSON");
-            return JsValue.String(JsTemporal.MonthDayString(monthDay.Date, monthDay.Calendar, "auto"));
+            return JsValue.String(TemporalFormat.MonthDayToString(monthDay.Date, monthDay.Calendar, ShowCalendarName.Auto));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) => TemporalValueOf(engine, "PlainMonthDay"));
@@ -295,10 +272,10 @@ internal sealed partial class JsRealm
             }
 
             var calendar = monthDay.Calendar;
-            var fields = JsTemporal.DateToFields(engine, calendar, monthDay.Date, JsTemporal.FieldsType.MonthDay);
             var inputFields = JsTemporal.PrepareFields(engine, calendar, item.AsObject(), [CalendarField.Year], [], []);
-            var merged = JsTemporal.MergeFields(calendar, fields, inputFields);
-            return JsValue.Object(JsTemporal.CreatePlainDate(engine, JsTemporal.DateFromFields(engine, calendar, merged, reject: false), calendar));
+            JsTemporal.Check(
+                engine, JsTemporal.Calendars(engine).MonthDayToDate(JsTemporal.CalendarIdOf(calendar), monthDay.Date, inputFields.Calendar, out var date), calendar);
+            return JsValue.Object(JsTemporal.CreatePlainDate(engine, date, calendar));
         });
     }
 }

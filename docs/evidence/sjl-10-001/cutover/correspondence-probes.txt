@@ -1,0 +1,127 @@
+# SJL-10.1's correspondence probes (correspondence-runs/core and syntax), each run again through the conformance root at the
+# cut-over's product tree as correspondence-runs/*/run-probe.sh runs it, and compared line by line with the retained .vm.txt
+# answer. "message": the same error type, another message; "row R6": the retained answer is the ended invocation.
+# probe | lines | result
+core/b1-balance-time | 10 lines | identical
+core/b2-balance-datetime | 10 lines | identical
+core/b3-add-iso-date | 17 lines | message
+core/b4-regulate | 17 lines | message
+core/b5-limits-in-addition | 17 lines | message
+core/b6-zoned-addition | 9 lines | identical
+core/b7-date-add-time-units | 9 lines | identical
+core/b8-yearmonth-addition | 8 lines | identical
+core/b9-round-points | 35 lines | message
+core/d1-sign-and-shape | 10 lines | identical
+core/d10-total | 21 lines | identical
+core/d11-non-iso-relative | 9 lines | identical
+core/d2-largest-unit-and-balance | 15 lines | identical
+core/d3-add-calendar-units | 11 lines | identical
+core/d4-compare | 16 lines | identical
+core/d5-round-time | 57 lines | message
+core/d6-round-plain-relative | 24 lines | message
+core/d8-shifted-window | 7 lines | identical
+core/d9-round-zoned-relative | 18 lines | identical
+core/f1-settings-and-defaults | 29 lines | message
+core/f2-date-differences | 14 lines | identical
+core/f3-date-rounding | 19 lines | identical
+core/f4-non-iso-rounding | 18 lines | identical
+core/f5-datetime-differences | 15 lines | identical
+core/f6-time-and-instant | 15 lines | identical
+core/f7-zoned-differences | 21 lines | identical
+core/f8-yearmonth-differences | 11 lines | identical
+core/r1-date-limits | 12 lines | identical
+core/r2-datetime-limits | 11 lines | identical
+core/r3-yearmonth-limits | 11 lines | identical
+core/r4-instant-limits | 17 lines | message
+core/r5-time-records | 16 lines | identical
+core/r6-integer-conversion | 21 lines | message
+core/r6b-plaindate-1e20 | 1 lines | row R6
+core/r6c-plaindate-minus-1e20 | 1 lines | row R6
+core/r6d-plaindatetime-1e20 | 1 lines | row R6
+core/r6e-plainmonthday-1e20 | 1 lines | row R6
+core/r6f-plaindate-2e53-plus-2 | 1 lines | row R6
+core/r7-narrowing-in-addition | 20 lines | message
+core/r8-duration-limits | 22 lines | identical
+syntax/c01-identifiers | 83 lines | identical
+syntax/c02-month-codes | 704 lines | identical
+syntax/c03-eras | 1060 lines | identical
+syntax/c04-reference-years | 1670 lines | identical
+syntax/c05-formula-edges | 558 lines | identical
+syntax/c06-table-edges | 34 lines | identical
+syntax/c07-slot-and-narrowing | 77 lines | identical
+syntax/c08-saturation | 19 lines | identical
+syntax/c09-conversions | 144 lines | identical
+syntax/c10-monthcode-digits | 88 lines | identical
+syntax/d-retained-temporal | no retained answer (the probe runs a retained dataset, which part B judges)
+syntax/d-retained-temporal-calendars | no retained answer (the probe runs a retained dataset, which part B judges)
+syntax/g01-dates | 280 lines | identical
+syntax/g02-times | 253 lines | identical
+syntax/g03-offsets | 253 lines | identical
+syntax/g04-annotations | 476 lines | identical
+syntax/g05-goals | 138 lines | identical
+syntax/g06-durations | 78 lines | identical
+syntax/g07-calendar-strings | 132 lines | identical
+syntax/g08-timezone-strings | 117 lines | identical
+syntax/g09-offset-strings | 46 lines | identical
+syntax/g10-nonascii | 40 lines | identical
+syntax/g11-more | 38 lines | identical
+syntax/g12-relativeto | 58 lines | message
+syntax/g13-zoned-option-reads | 20 lines | identical
+syntax/r01-revision-markers | 56 lines | identical
+syntax/s01-forms | 308 lines | identical
+syntax/s02-precision | 375 lines | identical
+syntax/s03-zoned-instant | 81 lines | identical
+syntax/s04-durations | 121 lines | identical
+syntax/s05-option-order | 54 lines | identical
+syntax/smoke | 3 lines | identical
+
+# every changed line: probe | kind | retained answer | answer at the cut-over
+core/b3-add-iso-date | message | PlainDate("2020-01-31").add({months: 1}, reject) => THROWS RangeError: Temporal: 2020-2-31 is not a date | THROWS RangeError: Temporal: the month or day is out of range in the iso8601 calendar
+core/b3-add-iso-date | message | PlainDate("2020-02-29").add({years: 1}, reject) => THROWS RangeError: Temporal: 2021-2-29 is not a date | THROWS RangeError: Temporal: the month or day is out of range in the iso8601 calendar
+core/b3-add-iso-date | message | PlainDate("2020-01-01").add({days: 1e11}) => THROWS RangeError: Temporal: the date is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range
+core/b3-add-iso-date | message | PlainDateTime("2020-01-31T10:00").add({months: 1}, reject) => THROWS RangeError: Temporal: 2020-2-31 is not a date | THROWS RangeError: Temporal: the month or day is out of range in the iso8601 calendar
+core/b3-add-iso-date | message | ZonedDateTime("2020-01-31T12:00[UTC]").add({months: 1}, reject) => THROWS RangeError: Temporal: 2020-2-31 is not a date | THROWS RangeError: Temporal: the result is not a valid date
+core/b4-regulate | message | PlainDate.from({year: 2021, month: 2, day: 31}, reject) => THROWS RangeError: Temporal: 2021-2-31 is not a date | THROWS RangeError: Temporal: the month or day is out of range in the iso8601 calendar
+core/b4-regulate | message | PlainYearMonth.from({year: 2020, month: 13}, reject) => THROWS RangeError: Temporal: 2020-13-1 is not a date | THROWS RangeError: Temporal: the month or day is out of range in the iso8601 calendar
+core/b4-regulate | message | PlainDateTime("2020-02-29T12:00").with({year: 2021}, reject) => THROWS RangeError: Temporal: 2021-2-29 is not a date | THROWS RangeError: Temporal: the month or day is out of range in the iso8601 calendar
+core/b5-limits-in-addition | message | PlainDate("+275760-09-13").add({days: 1}) => THROWS RangeError: Temporal: the date is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range
+core/b5-limits-in-addition | message | PlainDate("-271821-04-19").subtract({days: 1}) => THROWS RangeError: Temporal: the date is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range
+core/b5-limits-in-addition | message | PlainDate("1970-01-01").add({days: 100000001}) => THROWS RangeError: Temporal: the date is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range
+core/b5-limits-in-addition | message | PlainDateTime("+275760-09-13T00:00").add({days: 1}) => THROWS RangeError: Temporal: the date is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range
+core/b5-limits-in-addition | message | PlainYearMonth("+275760-09").add({months: 1}) => THROWS RangeError: Temporal: the date is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range
+core/b5-limits-in-addition | message | PlainYearMonth("-271821-05").subtract({months: 1}) => THROWS RangeError: Temporal: the date is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range
+core/b5-limits-in-addition | message | ZonedDateTime("+275760-09-12T12:00[UTC]").add({days: 1}) => THROWS RangeError: Temporal: the date-time is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range of instants
+core/b9-round-points | message | PlainDateTime 2020-12-31T12:00 round day increment 2 => THROWS RangeError: Temporal: roundingIncrement 2 does not divide 1 evenly | THROWS RangeError: Temporal.PlainDateTime.prototype.round: smallestUnit and roundingIncrement are not valid together
+core/b9-round-points | message | Instant round minute increment 1441 => THROWS RangeError: Temporal: roundingIncrement 1441 does not divide 1440 evenly | THROWS RangeError: Temporal.Instant.prototype.round: smallestUnit and roundingIncrement are not valid together
+core/d5-round-time | message | Duration({hours: 1}).round({}) => THROWS RangeError: Temporal.Duration.prototype.round: smallestUnit or largestUnit is required | THROWS RangeError: Temporal.Duration.prototype.round: smallestUnit, largestUnit and roundingIncrement are not valid together
+core/d5-round-time | message | Duration({hours: 1}).round({largestUnit: "hour", smallestUnit: "day"}) => THROWS RangeError: Temporal.Duration.prototype.round: largestUnit must be at least as large as smallestUnit | THROWS RangeError: Temporal.Duration.prototype.round: smallestUnit, largestUnit and roundingIncrement are not valid together
+core/d5-round-time | message | Duration({hours: 1}).round({smallestUnit: "hour", roundingIncrement: 5}) => THROWS RangeError: Temporal: roundingIncrement 5 does not divide 24 evenly | THROWS RangeError: Temporal.Duration.prototype.round: smallestUnit, largestUnit and roundingIncrement are not valid together
+core/d5-round-time | message | Duration({hours: 1}).round({smallestUnit: "hour", roundingIncrement: 24}) => THROWS RangeError: Temporal: roundingIncrement 24 does not divide 24 evenly | THROWS RangeError: Temporal.Duration.prototype.round: smallestUnit, largestUnit and roundingIncrement are not valid together
+core/d5-round-time | message | Duration({days: 1}).round({smallestUnit: "day", roundingIncrement: 2, largestUnit: "month"}) => THROWS RangeError: Temporal.Duration.prototype.round: a date unit rounds by an increment only when it is also the largest unit | THROWS RangeError: Temporal.Duration.prototype.round: smallestUnit, largestUnit and roundingIncrement are not valid together
+core/d6-round-plain-relative | message | {days: 1} round largest year, relativeTo -271821-04-19 => THROWS RangeError: Temporal: a date-time is outside the representable range | THROWS RangeError: Temporal: the date-time is outside the representable range
+core/f1-settings-and-defaults | message | PlainDate until largestUnit hour => THROWS RangeError: Temporal: hour is not a valid unit here | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | PlainDate until smallestUnit hour => THROWS RangeError: Temporal: hour is not a valid unit here | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | PlainTime until largestUnit day => THROWS RangeError: Temporal: day is not a valid unit here | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | Instant until smallestUnit day => THROWS RangeError: Temporal: day is not a valid unit here | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | Instant until largestUnit day => THROWS RangeError: Temporal: day is not a valid unit here | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | PlainYearMonth until smallestUnit week => THROWS RangeError: Temporal: smallestUnit week is not allowed here | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | PlainYearMonth until largestUnit day => THROWS RangeError: Temporal: largestUnit day is not allowed here | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | PlainDate until smallestUnit year largestUnit month => THROWS RangeError: Temporal: largestUnit must be at least as large as smallestUnit | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | PlainTime until smallestUnit minute increment 7 => THROWS RangeError: Temporal: roundingIncrement 7 does not divide 60 evenly | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | PlainTime until smallestUnit minute increment 60 => THROWS RangeError: Temporal: roundingIncrement 60 does not divide 60 evenly | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/f1-settings-and-defaults | message | Instant until smallestUnit hour increment 24 => THROWS RangeError: Temporal: roundingIncrement 24 does not divide 24 evenly | THROWS RangeError: Temporal: largestUnit, smallestUnit and roundingIncrement are not valid together for this difference
+core/r4-instant-limits | message | Instant.from("-271821-04-19T23:59:59.999999999Z") => THROWS RangeError: Temporal: the instant is outside the representable range | THROWS RangeError: Temporal: the epoch nanoseconds are outside the representable range of instants
+core/r6-integer-conversion | message | PlainDate.from({year: 2**32 + 2020, month: 1, day: 1}) => THROWS RangeError: Temporal: the year is outside the representable range | THROWS RangeError: Temporal: the date is outside the representable range
+core/r6-integer-conversion | message | PlainDate.from({year: 1e20, month: 1, day: 1}) => THROWS RangeError: Temporal: the year is outside the representable range | THROWS RangeError: Temporal: the date is outside the representable range
+core/r6-integer-conversion | message | PlainDateTime("2020-01-01T00:00").with({year: 2**32 + 2020}) => THROWS RangeError: Temporal: the year is outside the representable range | THROWS RangeError: Temporal: the date is outside the representable range
+core/r6b-plaindate-1e20 | row R6 | NO OUTPUT; see raw transcript | THROWS RangeError: Temporal: the date is outside the representable range
+core/r6c-plaindate-minus-1e20 | row R6 | NO OUTPUT; see raw transcript | THROWS RangeError: Temporal: the date is outside the representable range
+core/r6d-plaindatetime-1e20 | row R6 | NO OUTPUT; see raw transcript | THROWS RangeError: Temporal: the date-time is outside the representable range
+core/r6e-plainmonthday-1e20 | row R6 | NO OUTPUT; see raw transcript | THROWS RangeError: Temporal: the month-day is outside the representable range
+core/r6f-plaindate-2e53-plus-2 | row R6 | NO OUTPUT; see raw transcript | THROWS RangeError: Temporal: the date is outside the representable range
+core/r7-narrowing-in-addition | message | PlainDateTime("2020-06-15T12:00").add({months: 4294967295}) => THROWS RangeError: Temporal: the date is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range
+core/r7-narrowing-in-addition | message | ZonedDateTime("2020-06-15T12:00[UTC]").add({years: 4294967295}) => THROWS RangeError: Temporal: the result is outside the representable range | THROWS RangeError: Temporal: the result is outside the representable range of instants
+core/r7-narrowing-in-addition | message | Duration({nanoseconds: 9e24}).round({smallestUnit: "second", relativeTo: "2020-01-01"}) => THROWS RangeError: Temporal: the result is outside the representable range | THROWS RangeError: Temporal: the date-time is outside the representable range
+core/r7-narrowing-in-addition | message | Duration({nanoseconds: 9e24}).round({largestUnit: "year", relativeTo: "2020-01-01"}) => THROWS RangeError: Temporal: the result is outside the representable range | THROWS RangeError: Temporal: the date-time is outside the representable range
+core/r7-narrowing-in-addition | message | Duration({nanoseconds: 9e24}).total({unit: "day", relativeTo: "2020-01-01"}) => THROWS RangeError: Temporal: the result is outside the representable range | THROWS RangeError: Temporal: the date-time is outside the representable range
+syntax/g12-relativeto | message | Duration#round relativeTo "2020-01-01[!foo=bar]" => THROWS RangeError: Temporal: the critical annotation foo is not recognized in 2020-01-01[!foo=bar] | THROWS RangeError: Temporal: a critical annotation is not recognized in 2020-01-01[!foo=bar]
