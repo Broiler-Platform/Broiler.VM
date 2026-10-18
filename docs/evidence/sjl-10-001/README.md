@@ -16,11 +16,9 @@ differences, and `syntax/` for the grammar, the calendars and serialization.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules, correspondence and the bases of parts B and C, 2026-10-18, at SJL-10.2. **Nothing here is a
-verdict.**
-- The bases of parts B and C were taken locally at the commit that carries the rule, `99c9c9f`, before any code of
-  SJL-10 landed (section 2).
-- Part A's base is the hosted run at the same commit, dispatched at SJL-10.1 and imported when it completes.
+**State:** rules, correspondence and the base, 2026-10-18, at SJL-10.2. **Nothing here is a verdict.**
+- The base of all three parts was taken at the commit that carries the rule, `99c9c9f`, before any code of SJL-10
+  landed (section 2): part A's by the hosted workflow, parts B and C locally.
 - The after runs follow SJL-10.4's cut-over.
 
 Broiler.JS's clauses and the home's are judged in Broiler.JS's bundle of the same name. This bundle reads none of
@@ -71,17 +69,36 @@ for byte, `src/tests/temporal/`. It judges nothing.
 |---|---|
 | Commit | `99c9c9f`, the commit that carries the rule, from a clean detached checkout built in Release there ([`base/identity.txt`](base/identity.txt)). Against the default branch after SJL-8's merges, `047dcec`, it changes no file outside the documents, so its product sources are `047dcec`'s, as the rule says |
 | Rule | [`decision-rule-area.md`](decision-rule-area.md), `sha256=80dc0723...` in the identity |
-| Taken | 2026-10-18: parts B and C locally from 11:42Z, on the programme's local machine (`linux-x64`, four logical processors, .NET SDK 10.0.401, the native backend `x86-64-sysv`), while other work ran beside it. Nothing in parts B and C is timed |
+| Taken | 2026-10-18: part A's base by the workflow from 11:36Z to 11:46Z; parts B and C locally from 11:42Z, on the programme's local machine (`linux-x64`, four logical processors, .NET SDK 10.0.401, the native backend `x86-64-sysv`), while other work ran beside it. Nothing in parts B and C is timed |
 
 **Why a fresh checkout.** A Release build of `14072b0` was at hand, whose product sources are `99c9c9f`'s. The rule
 takes parts B and C "from a clean checkout of the same commit", the commit that carries it, and voids a part taken
 at any other, so the base was built in a new detached worktree of `99c9c9f` instead.
 
-**Part A's base** is run
-[39123950609](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39123950609) of `test262-evidence.yml`,
-dispatched with both forms and `99c9c9f` named by all forty digits. It was still running when parts B and C were
-taken. The collector's `base-import` and `base-complete` steps import its artifact into `base/hosted/` and read
-its completeness into `base/completeness.log`, as bundle `sjl-8-001`'s did.
+**Part A's base.** [39123950609](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39123950609),
+attempt 1, was dispatched from `main` at `047dcec` on 2026-10-18 at 11:36:57Z. It ran with both forms and the commit
+`99c9c9f`, named by all forty digits, and completed at 11:46:23Z ([`base/hosted/run.txt`](base/hosted/run.txt)).
+- **The workflow and its driver at the dispatched ref are byte-identical to the rule commit's.**
+  `git diff --stat 047dcec 99c9c9f -- .github eng` prints nothing. The workflow
+  `.github/workflows/test262-evidence.yml`, its driver `eng/test262-evidence.py`, and the `eng/run-test262.py`,
+  `eng/collect-js-release-candidate.py` and `eng/compare-test262-forms.py` the rule names have the same blob at both
+  commits.
+- **The artifact** `test262-evidence` is retained unchanged in [`base/hosted/`](base/hosted/), imported by the
+  collector's `base-import` step. [`base/hosted/imported.txt`](base/hosted/imported.txt) records the digest of the
+  zip as downloaded, which is the digest GitHub records.
+- **Every runner and the merging job** ran image `ubuntu24` 20261012.334.1.
+
+| Run | Complete ([`base/completeness.log`](base/completeness.log)) | Totals |
+|---|---|---|
+| `wide-bytecode` | exit 1, the floor holds; whole, retainable, no shard finding, one assembly list | pass 100,372, fail 154, exhausted 44, skipped 1,153, of 101,723 variants |
+| `wide-native` | exit 4, a re-base, as the rule admits; whole, retainable, no shard finding, one assembly list | pass 100,338, fail 188, exhausted 44, skipped 1,153, of 101,723 variants |
+
+The pass, fail, exhausted and skipped totals are bundle `sjl-8-001`'s after run's, figure for figure. Each form's
+failure manifest lists the same rows with the same verdicts as that run's. The exhausted rows split differently
+between the wall clock and fuel (and, in one row of each form, the nested-load fan-out), as hosted runs do: 9
+bytecode rows and 13 native rows are exhausted on another dimension than in that run. Part A's comparison
+reads them row by row, and its class C4 (c') covers that split. No base row is judged: the rule compares the base
+with the after run at SJL-10.4's cut-over.
 
 **Part B's base** ([`base/datasets/`](base/datasets/)).
 - **The method:** the slice compiler, built in Release at the base commit, ran `--checks --verbose`.
@@ -138,5 +155,5 @@ value form. It is operation 0 of each program, an addition, over `NaN` and `nan(
 | `wide/throw-loop` | 34,026 | 1000 |
 | `wide/try-loop` | 34,022 | 499500 |
 
-[`area-manifest.json`](area-manifest.json) lists the digest of every file of the base taken so far, the collector,
-the rule and the correspondence. `correspondence-runs/` is the correspondence's own record and is not listed.
+[`area-manifest.json`](area-manifest.json) lists the digest of every file of the base, the collector, the rule and
+the correspondence. `correspondence-runs/` is the correspondence's own record and is not listed.
