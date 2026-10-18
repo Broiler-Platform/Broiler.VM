@@ -1051,6 +1051,16 @@ The data home's clauses, 1 to 6, and Broiler.JS's, 7 to 11, are judged in Broile
 this ledger records when it is observed. Nothing is accepted: review is deferred, and SJL-8 may not meet its gate
 before SJL-3 meets SJL-3's, so SJL-8 stays `In progress`.
 
+**2026-10-18, later: row Z16 comes into Broiler.JS's SJL-8.6, at the owner's direction** (observed). Broiler.JS's
+part C after run at `5f96cd40` found 128 lines of `timezones.js` that differ both by the resolved identifier (Z8)
+and by the `longOffset` name's dropped seconds (Z16). Its classes D1 and D2 each admit only one of those, so its
+part C was not met as written there.
+
+The owner chose to bring Z16's correction, which the correspondence and JSD-0076 left to SJL-9, into Broiler.JS's
+cut-over rather than revise its rule. An offset's GMT name there now keeps its seconds, as this family's formatter
+already writes it, and Broiler.JS's after arm is taken at the commit that lands that correction. Nothing moves in
+this family, and Z16 leaves SJL-9's list.
+
 ---
 
 ## 1. Reading this ledger
