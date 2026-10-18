@@ -1,0 +1,9 @@
+# part B's checks at 0a52e038db4d4037b7155a3ec7c04e3024a81426, as checks.log beside this file prints them
+ok   tzdb/time-zone-offsets-match-icu: all 610 lines answer as ICU 77.1 did, 51 of them as the divergences name
+ok   temporal/t1/temporal-matches-the-reference-polyfill: all 1629 lines answer as the reference polyfill did, 0 of them as the divergences name
+ok   temporal/t2/intl-over-temporal-matches-the-reference-polyfill: all 1233 lines answer as the reference polyfill did, 82 of them as the divergences name
+ok   temporal/t3/calendars-match-the-reference-polyfill: all 3999 lines answer as the reference polyfill did, 70 of them as the divergences name
+ok   temporal/t3/calendar-conversions-match-icu4x: all 2055 conversions answer as ICU4X 2.3.0 did
+ok   temporal/t4/calendar-formats-match-the-reference-polyfill: all 5951 lines answer as the reference polyfill did, 1395 of them as the divergences name
+ok   temporal/t5/zone-names-match-the-reference-polyfill: all 2713 lines answer as the reference polyfill did, 275 of them as the divergences name
+slice-compiler exit code 0

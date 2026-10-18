@@ -1,0 +1,6 @@
+path	variant	base run	after run	base re-run	after re-run	re-runs agree
+test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js	strict	Exhausted/WallClock	Exhausted/NestedLoadFanOut	Exhausted/NestedLoadFanOut	Exhausted/NestedLoadFanOut	yes
+test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy	Exhausted/WallClock	Exhausted/Fuel	Exhausted/Fuel	Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-3-of-8.js	strict	Exhausted/WallClock	Exhausted/Fuel	Exhausted/Fuel	Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-4-of-8.js	sloppy	Exhausted/Fuel	Exhausted/WallClock	Exhausted/Fuel	Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy	Exhausted/WallClock	Exhausted/Fuel	Exhausted/Fuel	Exhausted/Fuel	yes

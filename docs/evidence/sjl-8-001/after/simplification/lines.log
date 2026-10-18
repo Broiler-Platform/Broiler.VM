@@ -1,0 +1,38 @@
+# SJL-8.7 lines added and removed in every C# file between the base 431c20e00836c44bf4e80ee8d74060e86a197b00 and the after commit 0a52e038db4d4037b7155a3ec7c04e3024a81426,
+# by `git diff --numstat --no-renames <base> <after> -- '*.cs'` (exit 0), each file in one group: the
+# JavaScript family's product sources (src/Broiler.VM.Profile.JavaScript*), the other product sources,
+# and the tests (src/tests/ and every tests/ folder). Generated files count as written.
+
+group	added	removed	file
+family	15	5	src/Broiler.VM.Profile.JavaScript.Format/JsIntlData.cs
+family	18	5	src/Broiler.VM.Profile.JavaScript.Intl/JsCldrData.cs
+family	78	317	src/Broiler.VM.Profile.JavaScript/JsCalendars.cs
+family	7	7	src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs
+family	27	11	src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs
+family	25	130	src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs
+family	4	3	src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs
+family	30	5	src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs
+family	151	226	src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs
+family	10	17	src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs
+family	0	632	src/Broiler.VM.Profile.JavaScript/JsTimeZones.cs
+family	53	29	src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs
+other product	37	0	src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs
+tests	164	6	src/tests/Broiler.VM.Architecture.Tests/AdmissionRules.cs
+tests	7	4	src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs
+tests	0	319	src/tests/Broiler.VM.Architecture.Tests/CalendarPin.cs
+tests	71	47	src/tests/Broiler.VM.Architecture.Tests/CalendarRuleTests.cs
+tests	0	337	src/tests/Broiler.VM.Architecture.Tests/CalendarTableGenerator.cs
+tests	1	1	src/tests/Broiler.VM.Architecture.Tests/CldrTablesRuleTests.cs
+tests	112	1	src/tests/Broiler.VM.Architecture.Tests/I4DataAgreementRuleTests.cs
+tests	6	3	src/tests/Broiler.VM.Architecture.Tests/I5RetiredDuplicatesRuleTests.cs
+tests	7	2	src/tests/Broiler.VM.Architecture.Tests/ReviewRecordRuleTests.cs
+tests	6	2	src/tests/Broiler.VM.Architecture.Tests/RuleRegisterTests.cs
+tests	206	0	src/tests/Broiler.VM.Architecture.Tests/TimeTableEmbedding.cs
+tests	0	498	src/tests/Broiler.VM.Architecture.Tests/TzdbCompiler.cs
+tests	0	236	src/tests/Broiler.VM.Architecture.Tests/TzdbPin.cs
+tests	41	26	src/tests/Broiler.VM.Architecture.Tests/TzdbRuleTests.cs
+tests	0	346	src/tests/Broiler.VM.Architecture.Tests/TzdbTableGenerator.cs
+
+# family: 12 files, 418 lines added, 1387 removed, net -969
+# other product: 1 files, 37 lines added, 0 removed, net +37
+# tests: 15 files, 621 lines added, 1828 removed, net -1207

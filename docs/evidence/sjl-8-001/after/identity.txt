@@ -1,0 +1,35 @@
+bundle sjl-8-001, the time-zone and calendar area's after arm
+milestone SJL-8, work package SJL-8.7, Broiler.VM's half
+collected 2026-10-17T23:16:11Z
+after-commit 0a52e038db4d4037b7155a3ec7c04e3024a81426
+after-tree clean
+cut-over-commit 88f10812f8f1e89fa135c7bc37d8a35d88556212 (SJL-8.5's cut-over, JSD-0077: its code in 4df595b, f09a0dd, c5943b1, 186a1d3, 8613309 and eed568a, its record in 05f99db, and the committed feed pinned to Broiler.ECMAScript 0.1.0-preview.5 as published in 88f1081)
+cut-over-is-ancestor yes
+base-commit 431c20e00836c44bf4e80ee8d74060e86a197b00 (base/identity.txt)
+rule docs/evidence/sjl-8-001/decision-rule-area.md sha256=dbd07094751826cd4d5fbd649866f99fa53b502505001caf4c750e1282f9cf2d
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+suite-pin src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+allowance fuel=100000000 wallClockMs=5000
+twin-allowance ceiling=1000000000 wallClockMs=600000
+jobs 4
+native-backend x86-64-sysv
+twin-folders src/tests/forms/wide
+dataset-folders src/tests/cldr/timezones, src/tests/temporal
+since-cut-over 88f10812f8f1e89fa135c7bc37d8a35d88556212, outside the documents: 5 files
+  THIRD_PARTY_NOTICES.md
+  src/tests/vectors/pins/README.md
+  src/tests/vectors/pins/broiler-js-vectors-2d496a5544937e1fcf39b59d45e7eee95ecccd2b.tar.gz
+  src/tests/vectors/pins/broiler-js-vectors-4ce20ac79cc2ba3d80b15a62f4b8012a7aab8d94.tar.gz
+  src/tests/vectors/pins/vectors.pin
+commits since the cut-over, each with its files outside the documents:
+  4950f0d345e45d85ceb1d9b051245826b7a9f140 Merge pull request #143 from Broiler-Platform/claude/busy-lamport-m3yprr: none
+  458c10a4e0da215939bc3ce37982e3a069a4122e SJL-8.6: the vectors pin moves to corpus revision 23, the time-zone divergences retired: 5 files
+    THIRD_PARTY_NOTICES.md
+    src/tests/vectors/pins/README.md
+    src/tests/vectors/pins/broiler-js-vectors-2d496a5544937e1fcf39b59d45e7eee95ecccd2b.tar.gz
+    src/tests/vectors/pins/broiler-js-vectors-4ce20ac79cc2ba3d80b15a62f4b8012a7aab8d94.tar.gz
+    src/tests/vectors/pins/vectors.pin
+  ddff933ef267bdf5723072fdf030de2e8be8c515 SJL-8.6: this family's runs on corpus revision 23, bundle sjl-8-001 section 3, and the ledger records SJL-8.6: none
+  a74907fc33326814be6d5a95d9bf7c4fcf5c8f7a The ledger's SJL-8 row names 0.1.0-preview.5 as published: none
+  0a52e038db4d4037b7155a3ec7c04e3024a81426 Merge pull request #144 from Broiler-Platform/claude/busy-lamport-m3yprr: none

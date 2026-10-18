@@ -1,0 +1,24 @@
+# slice-native-0
+image ubuntu24 20261012.334.1
+runner GitHub Actions 1000019821 Linux X64
+machine Linux-6.17.0-1022-azure-x86_64-with-glibc2.39 x86_64 cpus=4
+sdk 10.0.402
+native backend, as the harness reports it: form native (x86-64-sysv)
+# slice-native-1
+image ubuntu24 20261012.334.1
+runner GitHub Actions 1000019830 Linux X64
+machine Linux-6.17.0-1022-azure-x86_64-with-glibc2.39 x86_64 cpus=4
+sdk 10.0.402
+native backend, as the harness reports it: form native (x86-64-sysv)
+# slice-native-2
+image ubuntu24 20261012.334.1
+runner GitHub Actions 1000019826 Linux X64
+machine Linux-6.17.0-1022-azure-x86_64-with-glibc2.39 x86_64 cpus=4
+sdk 10.0.402
+native backend, as the harness reports it: form native (x86-64-sysv)
+# slice-native-3
+image ubuntu24 20261012.334.1
+runner GitHub Actions 1000019829 Linux X64
+machine Linux-6.17.0-1022-azure-x86_64-with-glibc2.39 x86_64 cpus=4
+sdk 10.0.402
+native backend, as the harness reports it: form native (x86-64-sysv)

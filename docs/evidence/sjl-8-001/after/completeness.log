@@ -1,0 +1,4 @@
+# each hosted form's completeness, as decision-rule.md states it, read off the artifact
+# run | run-test262 exit code | coverage whole | retention retainable | shard findings | distinct assembly lists | complete
+wide-bytecode | 1 | true | true | none | 1 | yes
+wide-native | 4 | true | true | none | 1 | yes
