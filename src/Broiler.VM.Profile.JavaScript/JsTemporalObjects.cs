@@ -16,23 +16,25 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
+using Broiler.ECMAScript.Temporal;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
-/// <summary>A Temporal.Duration (s7.4): its ten fields, float64-representable integers of one sign.</summary>
+/// <summary>A Temporal.Duration (s7.4): its ten fields, float64-representable integers of one sign, as the shared library's record.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D1D24
 // Broiler-Human:        PENDING
 internal sealed class JsDurationObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6BFE67
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=132FAD
     // Broiler-Human:        PENDING
-    internal JsDurationObject(JsObject prototype, double[] fields)
+    internal JsDurationObject(JsObject prototype, DurationFields fields)
         : base(prototype) => Fields = fields;
 
-    /// <summary>[[Years]] to [[Nanoseconds]], in Table 21's order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1D4969
+    /// <summary>[[Years]] to [[Nanoseconds]].</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D35EF1
     // Broiler-Human:        PENDING
-    internal double[] Fields { get; }
+    internal DurationFields Fields { get; }
 }
 
 /// <summary>A Temporal.Instant (s8.4).</summary>
@@ -55,18 +57,18 @@ internal sealed class JsInstantObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsPlainDateObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C473F5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A5682F
     // Broiler-Human:        PENDING
-    internal JsPlainDateObject(JsObject prototype, JsIsoDate date, string calendar)
+    internal JsPlainDateObject(JsObject prototype, IsoDate date, string calendar)
         : base(prototype)
     {
         Date = date;
         Calendar = calendar;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5B923A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3EDEA2
     // Broiler-Human:        PENDING
-    internal JsIsoDate Date { get; }
+    internal IsoDate Date { get; }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3C89E4
     // Broiler-Human:        PENDING
@@ -78,14 +80,14 @@ internal sealed class JsPlainDateObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsPlainTimeObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5B1E77
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=55608C
     // Broiler-Human:        PENDING
-    internal JsPlainTimeObject(JsObject prototype, JsTimeRecord time)
-        : base(prototype) => Time = time with { Days = 0 };
+    internal JsPlainTimeObject(JsObject prototype, IsoTime time)
+        : base(prototype) => Time = time;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0E9A44
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8FDC10
     // Broiler-Human:        PENDING
-    internal JsTimeRecord Time { get; }
+    internal IsoTime Time { get; }
 }
 
 /// <summary>A Temporal.PlainDateTime (s5.4).</summary>
@@ -93,18 +95,18 @@ internal sealed class JsPlainTimeObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsPlainDateTimeObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CD50A1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=622857
     // Broiler-Human:        PENDING
-    internal JsPlainDateTimeObject(JsObject prototype, JsIsoDateTime dateTime, string calendar)
+    internal JsPlainDateTimeObject(JsObject prototype, IsoDateTime dateTime, string calendar)
         : base(prototype)
     {
-        DateTime = dateTime with { Time = dateTime.Time with { Days = 0 } };
+        DateTime = dateTime;
         Calendar = calendar;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A837E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=42C2A0
     // Broiler-Human:        PENDING
-    internal JsIsoDateTime DateTime { get; }
+    internal IsoDateTime DateTime { get; }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3C89E4
     // Broiler-Human:        PENDING
@@ -145,18 +147,18 @@ internal sealed class JsZonedDateTimeObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsPlainYearMonthObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ECFD6F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F52B79
     // Broiler-Human:        PENDING
-    internal JsPlainYearMonthObject(JsObject prototype, JsIsoDate date, string calendar)
+    internal JsPlainYearMonthObject(JsObject prototype, IsoDate date, string calendar)
         : base(prototype)
     {
         Date = date;
         Calendar = calendar;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5B923A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3EDEA2
     // Broiler-Human:        PENDING
-    internal JsIsoDate Date { get; }
+    internal IsoDate Date { get; }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3C89E4
     // Broiler-Human:        PENDING
@@ -168,18 +170,18 @@ internal sealed class JsPlainYearMonthObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsPlainMonthDayObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A810F2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=724D93
     // Broiler-Human:        PENDING
-    internal JsPlainMonthDayObject(JsObject prototype, JsIsoDate date, string calendar)
+    internal JsPlainMonthDayObject(JsObject prototype, IsoDate date, string calendar)
         : base(prototype)
     {
         Date = date;
         Calendar = calendar;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5B923A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3EDEA2
     // Broiler-Human:        PENDING
-    internal JsIsoDate Date { get; }
+    internal IsoDate Date { get; }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3C89E4
     // Broiler-Human:        PENDING

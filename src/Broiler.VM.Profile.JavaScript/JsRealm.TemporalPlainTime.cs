@@ -16,6 +16,8 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Temporal;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -28,7 +30,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] TimeFieldNames = ["hour", "minute", "second", "millisecond", "microsecond", "nanosecond"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=30CA67
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1BA459
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainTime(JsObject temporal)
     {
@@ -45,12 +47,13 @@ internal sealed partial class JsRealm
                 values[i] = argument.Type == JsType.Undefined ? 0 : JsTemporal.IntegerWithTruncation(engine, argument);
             }
 
-            if (!JsTemporalCore.IsValidTime(values[0], values[1], values[2], values[3], values[4], values[5]))
+            var time = new IsoTime((int)values[0], (int)values[1], (int)values[2], (int)values[3], (int)values[4], (int)values[5]);
+
+            if (!TemporalLimits.IsValidTime(time))
             {
                 throw engine.Error("RangeError", "Temporal.PlainTime: the time is not valid");
             }
 
-            var time = new JsTimeRecord(0, (int)values[0], (int)values[1], (int)values[2], (int)values[3], (int)values[4], (int)values[5]);
             return JsValue.Object(JsTemporal.CreatePlainTime(engine, time, newTarget));
         });
 
@@ -61,7 +64,7 @@ internal sealed partial class JsRealm
         {
             var one = JsTemporal.ToPlainTime(engine, TemporalArgument(arguments, 0));
             var two = JsTemporal.ToPlainTime(engine, TemporalArgument(arguments, 1));
-            return JsValue.Number(JsTemporalCore.Compare(one, two));
+            return JsValue.Number(IsoArithmetic.CompareTime(one, two));
         });
 
         TemporalTimeGetters(prototype, static (engine, thisValue, member) =>
@@ -78,7 +81,7 @@ internal sealed partial class JsRealm
             var plainTime = TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "with");
             var partial = JsTemporal.ToTimeRecord(engine, JsValue.Object(PartialTemporalObject(engine, TemporalArgument(arguments, 0), "PlainTime")), partial: true);
             var time = plainTime.Time;
-            var reject = JsTemporal.Reject(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
+            var overflow = JsTemporal.Overflow(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
             var result = JsTemporal.RegulateTime(
                 engine,
                 partial[0] ?? time.Hour,
@@ -87,7 +90,7 @@ internal sealed partial class JsRealm
                 partial[3] ?? time.Millisecond,
                 partial[4] ?? time.Microsecond,
                 partial[5] ?? time.Nanosecond,
-                reject);
+                overflow);
             return JsValue.Object(JsTemporal.CreatePlainTime(engine, result));
         });
 
@@ -104,15 +107,19 @@ internal sealed partial class JsRealm
             var increment = JsTemporal.RoundingIncrement(engine, roundTo);
             var mode = JsTemporal.RoundingModeOption(engine, roundTo, RoundingMode.HalfExpand);
             var smallest = JsTemporal.UnitOption(engine, roundTo, "smallestUnit", required: true);
-            JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
-            JsTemporal.ValidateIncrement(engine, increment, JsTemporalCore.MaximumIncrement(smallest), inclusive: false);
-            return JsValue.Object(JsTemporal.CreatePlainTime(engine, JsTemporalCore.RoundTime(plainTime.Time, increment, smallest, mode)));
+
+            if (!TemporalOptionRules.IsValidRoundOptions(TemporalType.PlainTime, smallest, increment))
+            {
+                throw engine.Error("RangeError", "Temporal.PlainTime.prototype.round: smallestUnit and roundingIncrement are not valid together");
+            }
+
+            return JsValue.Object(JsTemporal.CreatePlainTime(engine, IsoArithmetic.RoundTime(plainTime.Time, increment, smallest, mode, out _)));
         });
 
         Method(prototype, "equals", 1, static (engine, thisValue, arguments) =>
         {
             var plainTime = TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "equals");
-            return JsValue.Boolean(JsTemporalCore.Compare(plainTime.Time, JsTemporal.ToPlainTime(engine, TemporalArgument(arguments, 0))) == 0);
+            return JsValue.Boolean(IsoArithmetic.CompareTime(plainTime.Time, JsTemporal.ToPlainTime(engine, TemporalArgument(arguments, 0))) == 0);
         });
 
         Method(prototype, "toString", 0, static (engine, thisValue, arguments) =>
@@ -120,18 +127,15 @@ internal sealed partial class JsRealm
             var plainTime = TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "toString");
             var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0));
             var digits = JsTemporal.FractionalSecondDigits(engine, options);
-            var mode = JsTemporal.RoundingModeOption(engine, options, RoundingMode.Trunc);
+            var mode = JsTemporal.RoundingModeOption(engine, options, TemporalOptionRules.DefaultToStringRoundingMode);
             var smallest = JsTemporal.UnitOption(engine, options, "smallestUnit", required: false);
-            JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
 
-            if (smallest == TemporalUnit.Hour)
+            if (!TemporalOptionRules.IsValidToStringSmallestUnit(smallest, duration: false))
             {
-                throw engine.Error("RangeError", "Temporal.PlainTime.prototype.toString: smallestUnit cannot be hour");
+                throw engine.Error("RangeError", "Temporal.PlainTime.prototype.toString: smallestUnit must be a minute or smaller");
             }
 
-            var precision = JsTemporal.Precision(smallest, digits);
-            var rounded = JsTemporalCore.RoundTime(plainTime.Time, precision.Increment, precision.Unit, mode);
-            return JsValue.String(JsTemporalCore.TimeToString(rounded, precision.Precision));
+            return JsValue.String(TemporalFormat.PlainTimeToString(plainTime.Time, TemporalOptionRules.ToSecondsStringPrecisionRecord(smallest, digits), mode));
         });
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
@@ -141,16 +145,16 @@ internal sealed partial class JsRealm
         });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
-            JsValue.String(JsTemporalCore.TimeToString(
-                TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "toJSON").Time, JsTemporalCore.PrecisionAuto)));
+            JsValue.String(TemporalFormat.TimeToString(
+                TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "toJSON").Time, TemporalFormat.AutoPrecision)));
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) => TemporalValueOf(engine, "PlainTime"));
     }
 
     /// <summary>Reads a Temporal receiver's wall-clock time, or throws its TypeError.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=020B6B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1F2CA8
     // Broiler-Human:        PENDING
-    private delegate JsTimeRecord TemporalTimeReceiver(JsEngine engine, JsValue thisValue, string member);
+    private delegate IsoTime TemporalTimeReceiver(JsEngine engine, JsValue thisValue, string member);
 
     /// <summary>Defines the six time getters the time-bearing types share.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=658363
@@ -176,27 +180,26 @@ internal sealed partial class JsRealm
         }
     }
 
-    /// <summary>The proposal's AddDurationToTime (s4.5.18).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C0E506
+    /// <summary>The proposal's AddDurationToTime (s4.5.18): AddTime the shared library's, its carried days dropped.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FE1B39
     // Broiler-Human:        PENDING
     private static JsPlainTimeObject AddDurationToTime(JsEngine engine, JsPlainTimeObject plainTime, JsValue durationLike, bool subtract)
     {
         var fields = SignedDuration(engine, durationLike, subtract);
-        var internalDuration = JsTemporalCore.ToInternal(fields);
-        return JsTemporal.CreatePlainTime(engine, JsTemporalCore.AddTime(plainTime.Time, internalDuration.Time));
+        var internalDuration = DurationMath.ToInternal(fields);
+        return JsTemporal.CreatePlainTime(engine, IsoArithmetic.AddTime(plainTime.Time, internalDuration.TimeNanoseconds, out _));
     }
 
-    /// <summary>The proposal's DifferenceTemporalPlainTime (s4.5.17).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F31BE1
+    /// <summary>The proposal's DifferenceTemporalPlainTime (s4.5.17): the reads here, the difference the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E0D030
     // Broiler-Human:        PENDING
     private static JsDurationObject DifferenceTemporalPlainTime(JsEngine engine, JsPlainTimeObject plainTime, JsValue[] arguments, bool since)
     {
         var other = JsTemporal.ToPlainTime(engine, TemporalArgument(arguments, 0));
         var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1));
-        var settings = JsTemporal.DifferenceSettings(engine, since, options, JsTemporal.UnitGroup.Time, [], TemporalUnit.Nanosecond, TemporalUnit.Hour);
-        var time = JsTemporalCore.DifferenceTime(plainTime.Time, other);
-        time = JsTemporal.RoundTimeDuration(engine, time, settings.RoundingIncrement, settings.SmallestUnit, settings.RoundingMode);
-        var result = JsTemporalCore.FromInternal(new JsInternalDuration(default, time), settings.LargestUnit);
-        return JsTemporal.CreateDuration(engine, since ? JsTemporal.Negated(result) : result);
+        var operation = since ? DifferenceOperation.Since : DifferenceOperation.Until;
+        var settings = JsTemporal.DifferenceSettingsOf(engine, operation, options, TemporalType.PlainTime);
+        JsTemporal.Check(engine, TemporalDifferences.DifferenceTemporalPlainTime(operation, plainTime.Time, other, settings, out var result), "the difference");
+        return JsTemporal.CreateDuration(engine, result);
     }
 }

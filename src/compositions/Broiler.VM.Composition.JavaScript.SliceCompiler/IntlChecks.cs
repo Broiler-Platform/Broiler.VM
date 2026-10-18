@@ -63,6 +63,8 @@ internal static class IntlChecks
         CanonicalizationReplacesAliases(),
         AVariantsOptionIsLoweredByAsciiRules(),
         ADurationDesignatorIsUpperCasedByAsciiRules(),
+        AYearPast2To53IsARangeError(),
+        ADayWindowAZoneSkipsIsARangeError(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
     ];
@@ -518,6 +520,61 @@ internal static class IntlChecks
             }));
 
         const string Expected = "RangeError PT1H2M3S";
+        return (Name, answer == Expected, $"answered `{answer}` (`{Expected}` expected)");
+    }
+
+    /// <summary>
+    /// Row R6's correction (JSD-0078, decision D9; made at SJL-10.4, JSD-0079): a constructor's year past 2^53
+    /// is the RangeError the specification asks for, because the limits are checked through the shared
+    /// library, which takes any year; before the cut-over the shared epoch-day arithmetic's precondition ended
+    /// the invocation. A year at the limit still constructs.
+    /// </summary>
+    private static (string, bool, string) AYearPast2To53IsARangeError()
+    {
+        const string Name = "temporal/t1/a-year-past-2-to-the-53-is-a-range-error";
+        var answer = Evaluate(
+            "function kind(f) { try { return String(f()); } catch (e) { return e.constructor.name; } }" +
+            "[kind(function () { return new Temporal.PlainDate(2 ** 53 + 2, 1, 1); })," +
+            " kind(function () { return new Temporal.PlainDate(1e20, 1, 1); })," +
+            " kind(function () { return new Temporal.PlainDate(-1e20, 1, 1); })," +
+            " kind(function () { return new Temporal.PlainDateTime(2 ** 53 + 2, 1, 1); })," +
+            " kind(function () { return new Temporal.PlainDateTime(1e20, 1, 1); })," +
+            " kind(function () { return new Temporal.PlainMonthDay(1, 1, undefined, 1e20); })," +
+            " kind(function () { return new Temporal.PlainDate(275760, 9, 13); })].join(' ');",
+            JavaScriptProfile.DescriptorComposing(new JsComposition
+            {
+                Surfaces = [JavaScriptProfile.TemporalManifest, JavaScriptProfile.IntlManifest, JavaScriptProfile.BigIntManifest],
+                IntlData = JsCldrData.Instance,
+            }));
+
+        const string Expected = "RangeError RangeError RangeError RangeError RangeError RangeError +275760-09-13";
+        return (Name, answer == Expected, $"answered `{answer}` (`{Expected}` expected)");
+    }
+
+    /// <summary>
+    /// Row D12's day window (JSD-0078, decision D11; corrected at SJL-10.4, JSD-0079): Pacific/Apia skipped
+    /// 2011-12-30, so a day nudge window back from 2011-12-31 has no length, which the pinned text asserts
+    /// cannot happen. The shared library's rounding and totals answer OutOfRange there, a RangeError; before
+    /// the cut-over a .NET ArgumentOutOfRangeException ended the invocation. A difference in hours, which
+    /// opens no day window, still answers.
+    /// </summary>
+    private static (string, bool, string) ADayWindowAZoneSkipsIsARangeError()
+    {
+        const string Name = "temporal/t1/a-day-window-a-zone-skips-is-a-range-error";
+        var answer = Evaluate(
+            "function kind(f) { try { return String(f()); } catch (e) { return e.constructor.name; } }" +
+            "var apia = Temporal.ZonedDateTime.from('2011-12-31T16:15+14:00[Pacific/Apia]');" +
+            "[kind(function () { return apia.since('2011-12-31T00:00+14:00[Pacific/Apia]', { largestUnit: 'day', smallestUnit: 'day' }); })," +
+            " kind(function () { return Temporal.Duration.from('-PT16H15M').round({ smallestUnit: 'day', relativeTo: apia }); })," +
+            " kind(function () { return Temporal.Duration.from('-PT16H15M').total({ unit: 'day', relativeTo: apia }); })," +
+            " kind(function () { return apia.since('2011-12-31T00:00+14:00[Pacific/Apia]', { largestUnit: 'hour' }); })].join(' ');",
+            JavaScriptProfile.DescriptorComposing(new JsComposition
+            {
+                Surfaces = [JavaScriptProfile.TemporalManifest, JavaScriptProfile.IntlManifest, JavaScriptProfile.BigIntManifest],
+                IntlData = JsCldrData.Instance,
+            }));
+
+        const string Expected = "RangeError RangeError RangeError PT16H15M";
         return (Name, answer == Expected, $"answered `{answer}` (`{Expected}` expected)");
     }
 

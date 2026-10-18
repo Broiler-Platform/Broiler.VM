@@ -20,12 +20,12 @@
     <!-- The shared JavaScript libraries (ADR 0014), from the committed feed eng/packages/ while an
          area is in development (decision SJL-D-4 (c)). Rule I1 holds every reference to the
          allow-list, src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json, and to its pin. -->
-    <PackageVersion Include="Broiler.ECMAScript.Algorithms" Version="0.1.0-preview.5" />
+    <PackageVersion Include="Broiler.ECMAScript.Algorithms" Version="0.1.0-preview.6" />
 
     <!-- The time data home's generator (JSD-0076; milestone SJL-8.5), from the same committed feed and under
          the same rule, admitted test-only, for the architecture tests alone; no package carries the time
          zone or calendar tables (decision SJL-D-6 (c)). -->
-    <PackageVersion Include="Broiler.ECMAScript.Generation" Version="0.1.0-preview.5" />
+    <PackageVersion Include="Broiler.ECMAScript.Generation" Version="0.1.0-preview.6" />
 
     <!-- The Unicode area's owner packages (JSD-0074; milestone SJL-7.4), from the same committed feed and
          under the same rule. Broiler.Unicode.Generation is admitted test-only, for the architecture

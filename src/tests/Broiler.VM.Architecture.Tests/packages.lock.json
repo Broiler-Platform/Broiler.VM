@@ -4,9 +4,9 @@
     "net10.0": {
       "Broiler.ECMAScript.Generation": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.5, )",
-        "resolved": "0.1.0-preview.5",
-        "contentHash": "hSr6pHU/u/hy5WfVA/CDI4GojJH4SsZAf3zhsVWWpCmwa4jjvey+1CLHGb9KLZfvcFTy98+lTMZtRvOcLQ4ncg=="
+        "requested": "[0.1.0-preview.6, )",
+        "resolved": "0.1.0-preview.6",
+        "contentHash": "Xj+Of6vAnfenD49SBPCo0o2VawyIR4/Rn3iqiRj1cs5g6zXsdGDm4cXz/+xPaDbUSX/gxxOtqk097LwdBG2LiQ=="
       },
       "Broiler.Unicode.Generation": {
         "type": "Direct",
