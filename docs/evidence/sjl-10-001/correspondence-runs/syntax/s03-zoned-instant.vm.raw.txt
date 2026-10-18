@@ -1,0 +1,99 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/s03-zoned-instant.js [raw]  uncaught Error: OUT<<ZonedDateTime timeZoneName "auto" offset "auto" => 2020-07-01T12:00:00.5+02:00[Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName "auto" offset "never" => 2020-07-01T12:00:00.5[Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName "auto" offset undefined => 2020-07-01T12:00:00.5+02:00[Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName "auto" offset "x" => THROWS RangeError
+ZonedDateTime timeZoneName "auto" offset "critical" => THROWS RangeError
+ZonedDateTime timeZoneName "never" offset "auto" => 2020-07-01T12:00:00.5+02:00[u-ca=japanese]
+ZonedDateTime timeZoneName "never" offset "never" => 2020-07-01T12:00:00.5[u-ca=japanese]
+ZonedDateTime timeZoneName "never" offset undefined => 2020-07-01T12:00:00.5+02:00[u-ca=japanese]
+ZonedDateTime timeZoneName "never" offset "x" => THROWS RangeError
+ZonedDateTime timeZoneName "never" offset "critical" => THROWS RangeError
+ZonedDateTime timeZoneName "critical" offset "auto" => 2020-07-01T12:00:00.5+02:00[!Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName "critical" offset "never" => 2020-07-01T12:00:00.5[!Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName "critical" offset undefined => 2020-07-01T12:00:00.5+02:00[!Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName "critical" offset "x" => THROWS RangeError
+ZonedDateTime timeZoneName "critical" offset "critical" => THROWS RangeError
+ZonedDateTime timeZoneName undefined offset "auto" => 2020-07-01T12:00:00.5+02:00[Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName undefined offset "never" => 2020-07-01T12:00:00.5[Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName undefined offset undefined => 2020-07-01T12:00:00.5+02:00[Europe/Berlin][u-ca=japanese]
+ZonedDateTime timeZoneName undefined offset "x" => THROWS RangeError
+ZonedDateTime timeZoneName undefined offset "critical" => THROWS RangeError
+ZonedDateTime timeZoneName "x" offset "auto" => THROWS RangeError
+ZonedDateTime timeZoneName "x" offset "never" => THROWS RangeError
+ZonedDateTime timeZoneName "x" offset undefined => THROWS RangeError
+ZonedDateTime timeZoneName "x" offset "x" => THROWS RangeError
+ZonedDateTime timeZoneName "x" offset "critical" => THROWS RangeError
+ZonedDateTime timeZoneName "AUTO" offset "auto" => THROWS RangeError
+ZonedDateTime timeZoneName "AUTO" offset "never" => THROWS RangeError
+ZonedDateTime timeZoneName "AUTO" offset undefined => THROWS RangeError
+ZonedDateTime timeZoneName "AUTO" offset "x" => THROWS RangeError
+ZonedDateTime timeZoneName "AUTO" offset "critical" => THROWS RangeError
+ZonedDateTime timeZoneName null offset "auto" => THROWS RangeError
+ZonedDateTime timeZoneName null offset "never" => THROWS RangeError
+ZonedDateTime timeZoneName null offset undefined => THROWS RangeError
+ZonedDateTime timeZoneName null offset "x" => THROWS RangeError
+ZonedDateTime timeZoneName null offset "critical" => THROWS RangeError
+ZonedDateTime iso8601 calendarName auto timeZoneName critical => 2020-07-01T12:00:00+02:00[!Europe/Berlin]
+ZonedDateTime iso8601 calendarName always timeZoneName critical => 2020-07-01T12:00:00+02:00[!Europe/Berlin][u-ca=iso8601]
+ZonedDateTime iso8601 calendarName never timeZoneName critical => 2020-07-01T12:00:00+02:00[!Europe/Berlin]
+ZonedDateTime iso8601 calendarName critical timeZoneName critical => 2020-07-01T12:00:00+02:00[!Europe/Berlin][!u-ca=iso8601]
+ZonedDateTime Africa/Monrovia at 1970-01-01T00:00Z => 1969-12-31T23:15:30-00:45[Africa/Monrovia] offset -00:44:30 -2670000000000
+Instant 1970-01-01T00:00Z toString({timeZone: Africa/Monrovia}) => 1969-12-31T23:15:30-00:45
+round trip of Africa/Monrovia at 1970-01-01T00:00Z => 0n
+ZonedDateTime Europe/Amsterdam at 1930-06-01T00:00Z => 1930-06-01T01:00:00+01:00[Europe/Amsterdam] offset +01:00 3600000000000
+Instant 1930-06-01T00:00Z toString({timeZone: Europe/Amsterdam}) => 1930-06-01T01:00:00+01:00
+round trip of Europe/Amsterdam at 1930-06-01T00:00Z => -1249257600000000000n
+ZonedDateTime Europe/Amsterdam at 1938-06-01T00:00Z => 1938-06-01T01:00:00+01:00[Europe/Amsterdam] offset +01:00 3600000000000
+Instant 1938-06-01T00:00Z toString({timeZone: Europe/Amsterdam}) => 1938-06-01T01:00:00+01:00
+round trip of Europe/Amsterdam at 1938-06-01T00:00Z => -996796800000000000n
+ZonedDateTime Europe/Dublin at 1900-01-01T00:00Z => 1899-12-31T23:34:39-00:25[Europe/Dublin] offset -00:25:21 -1521000000000
+Instant 1900-01-01T00:00Z toString({timeZone: Europe/Dublin}) => 1899-12-31T23:34:39-00:25
+round trip of Europe/Dublin at 1900-01-01T00:00Z => -2208988800000000000n
+ZonedDateTime America/New_York at 1850-01-01T00:00Z => 1849-12-31T19:03:58-04:56[America/New_York] offset -04:56:02 -17762000000000
+Instant 1850-01-01T00:00Z toString({timeZone: America/New_York}) => 1849-12-31T19:03:58-04:56
+round trip of America/New_York at 1850-01-01T00:00Z => -3786825600000000000n
+ZonedDateTime Asia/Kolkata at 1850-01-01T00:00Z => 1850-01-01T05:53:28+05:53[Asia/Kolkata] offset +05:53:28 21208000000000
+Instant 1850-01-01T00:00Z toString({timeZone: Asia/Kolkata}) => 1850-01-01T05:53:28+05:53
+round trip of Asia/Kolkata at 1850-01-01T00:00Z => -3786825600000000000n
+ZonedDateTime Asia/Kolkata at 1900-01-01T00:00Z => 1900-01-01T05:21:10+05:21[Asia/Kolkata] offset +05:21:10 19270000000000
+Instant 1900-01-01T00:00Z toString({timeZone: Asia/Kolkata}) => 1900-01-01T05:21:10+05:21
+round trip of Asia/Kolkata at 1900-01-01T00:00Z => -2208988800000000000n
+ZonedDateTime Africa/Abidjan at 1850-01-01T00:00Z => 1849-12-31T23:43:52-00:16[Africa/Abidjan] offset -00:16:08 -968000000000
+Instant 1850-01-01T00:00Z toString({timeZone: Africa/Abidjan}) => 1849-12-31T23:43:52-00:16
+round trip of Africa/Abidjan at 1850-01-01T00:00Z => -3786825600000000000n
+Instant toString({timeZone: "UTC"}) => 2020-07-01T12:00:00.123+00:00
+Instant toString({timeZone: "+01:00"}) => 2020-07-01T13:00:00.123+01:00
+Instant toString({timeZone: "-00:00"}) => 2020-07-01T12:00:00.123+00:00
+Instant toString({timeZone: "+05:30"}) => 2020-07-01T17:30:00.123+05:30
+Instant toString({timeZone: "Asia/Kolkata"}) => 2020-07-01T17:30:00.123+05:30
+Instant toString({timeZone: "Europe/Berlin"}) => 2020-07-01T14:00:00.123+02:00
+Instant toString({timeZone: "utc"}) => 2020-07-01T12:00:00.123+00:00
+Instant toString({timeZone: "+0530"}) => 2020-07-01T17:30:00.123+05:30
+Instant toString({timeZone: "2020-01-01T00:00+01:00"}) => 2020-07-01T13:00:00.123+01:00
+Instant toString({timeZone: "Mars/Olympus"}) => THROWS RangeError
+Instant toString({timeZone: "+01:00:01"}) => THROWS RangeError
+Instant toString({timeZone: null}) => THROWS TypeError
+Instant toString({timeZone: 0}) => THROWS TypeError
+Instant toString({timeZone: Asia/Kolkata, smallestUnit: hour}) => THROWS RangeError
+Instant toString({timeZone: Asia/Kolkata, smallestUnit: minute}) => 2020-07-01T17:30+05:30
+ZonedDateTime toString rounding to the minute across a transition => 2020-03-29T02:00+01:00[Europe/London]
+ZonedDateTime toString rounding to the second in a fold => 2020-10-25T01:00:00+00:00[Europe/London]
+ZonedDateTime offset getter, Monrovia 1970 => -00:44:30>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/s03-zoned-instant.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/s03-zoned-instant.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/s03-zoned-instant.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

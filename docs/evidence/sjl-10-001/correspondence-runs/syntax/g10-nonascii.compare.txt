@@ -1,0 +1,40 @@
+!! PlainDate.from(Arabic-Indic "٢٠٢٠-٠١-٠١") | VM: THROWS RangeError: Temporal: cannot parse '٢٠٢٠-٠١-٠١' | BJS: THROWS Error: System.FormatException: The input string '٢٠٢٠' was not in a correct format.
+!! PlainDate.from(fullwidth "２０２０-０１-０１") | VM: THROWS RangeError: Temporal: cannot parse '２０２０-０１-０１' | BJS: THROWS Error: System.FormatException: The input string '２０２０' was not in a correct format.
+!! PlainDateTime.from(Arabic-Indic "٢٠٢٠-٠١-٠١T١٢:٠٠") | VM: THROWS RangeError: Temporal: cannot parse '٢٠٢٠-٠١-٠١T١٢:٠٠' | BJS: THROWS Error: System.FormatException: The input string '٢٠٢٠' was not in a correct format.
+!! PlainDateTime.from(fullwidth "２０２０-０１-０１T１２:００") | VM: THROWS RangeError: Temporal: cannot parse '２０２０-０１-０１T１２:００' | BJS: THROWS Error: System.FormatException: The input string '２０２０' was not in a correct format.
+!! PlainTime.from(Arabic-Indic "١٢:٣٠") | VM: THROWS RangeError: Temporal: cannot parse '١٢:٣٠' | BJS: THROWS Error: System.FormatException: The input string '١٢' was not in a correct format.
+!! PlainTime.from(fullwidth "１２:３０") | VM: THROWS RangeError: Temporal: cannot parse '１２:３０' | BJS: THROWS Error: System.FormatException: The input string '１２' was not in a correct format.
+!! PlainYearMonth.from(Arabic-Indic "٢٠٢٠-٠١") | VM: THROWS RangeError: Temporal: cannot parse '٢٠٢٠-٠١' | BJS: THROWS Error: System.FormatException: The input string '٢٠٢٠' was not in a correct format.
+!! PlainYearMonth.from(fullwidth "２０２０-０１") | VM: THROWS RangeError: Temporal: cannot parse '２０２０-０１' | BJS: THROWS Error: System.FormatException: The input string '２０２０' was not in a correct format.
+!! PlainMonthDay.from(Arabic-Indic "٠١-٠١") | VM: THROWS RangeError: Temporal: cannot parse '٠١-٠١' | BJS: THROWS Error: System.FormatException: The input string '٠١' was not in a correct format.
+!! PlainMonthDay.from(fullwidth "０１-０１") | VM: THROWS RangeError: Temporal: cannot parse '０１-０１' | BJS: THROWS Error: System.FormatException: The input string '０１' was not in a correct format.
+!! ZonedDateTime.from(Arabic-Indic "٢٠٢٠-٠١-٠١T١٢:٠٠[UTC]") | VM: THROWS RangeError: Temporal: cannot parse '٢٠٢٠-٠١-٠١T١٢:٠٠[UTC]' | BJS: THROWS Error: System.FormatException: The input string '٢٠٢٠' was not in a correct format.
+!! ZonedDateTime.from(fullwidth "２０２０-０１-０１T１２:００[UTC]") | VM: THROWS RangeError: Temporal: cannot parse '２０２０-０１-０１T１２:００[UTC]' | BJS: THROWS Error: System.FormatException: The input string '２０２０' was not in a correct format.
+!! Instant.from(Arabic-Indic "٢٠٢٠-٠١-٠١T١٢:٠٠Z") | VM: THROWS RangeError: Temporal: cannot parse '٢٠٢٠-٠١-٠١T١٢:٠٠Z' | BJS: THROWS Error: System.FormatException: The input string '٢٠٢٠' was not in a correct format.
+!! Instant.from(fullwidth "２０２０-０１-０１T１２:００Z") | VM: THROWS RangeError: Temporal: cannot parse '２０２０-０１-０１T１２:００Z' | BJS: THROWS Error: System.FormatException: The input string '２０２０' was not in a correct format.
+!! Duration.from(Arabic-Indic "P١D") | VM: THROWS RangeError: Temporal: P١D is not a duration | BJS: THROWS Error: System.FormatException: The input string '١' was not in a correct format.
+!! Duration.from(fullwidth "P１D") | VM: THROWS RangeError: Temporal: P１D is not a duration | BJS: THROWS Error: System.FormatException: The input string '１' was not in a correct format.
+!! PlainDate.from("2020-01-0١") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-0١' | BJS: THROWS Error: System.FormatException: The input string '0١' was not in a correct format.
+!! PlainDateTime.from("2020-01-01T12:0٠") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T12:0٠' | BJS: THROWS Error: System.FormatException: The input string '0٠' was not in a correct format.
+!! PlainDateTime.from("2020-01-01T12:00:00.١") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T12:00:00.١' | BJS: THROWS Error: System.FormatException: The input string '١00' was not in a correct format.
+!! Instant.from("2020-01-01T12:00+0١:00") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T12:00+0١:00' | BJS: THROWS Error: System.FormatException: The input string '0١' was not in a correct format.
+!! ZonedDateTime.from("2020-01-01T12:00+0١:00[UTC]") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T12:00+0١:00[UTC]' | BJS: THROWS Error: System.FormatException: The input string '0١' was not in a correct format.
+!! PlainDate.from("2020-01-01[u-ca=١]") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01[u-ca=١]' | BJS: THROWS RangeError: Temporal: malformed annotation "[u-ca=١]"
+!! PlainDate.from("2020-01-01[١=a]") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01[١=a]' | BJS: THROWS RangeError: Temporal: malformed annotation "[١=a]"
+!! Duration.from("PT1.٥S") | VM: THROWS RangeError: Temporal: PT1.٥S is not a duration | BJS: THROWS Error: System.FormatException: The value could not be parsed.
+!! PlainDate.from("−002020-01-01") | VM: THROWS RangeError: Temporal: cannot parse '−002020-01-01' | BJS: THROWS RangeError: Cannot parse Temporal.PlainDate from "−002020-01-01"
+!! PlainDateTime.from("−002020-01-01T00:00") | VM: THROWS RangeError: Temporal: cannot parse '−002020-01-01T00:00' | BJS: THROWS RangeError: Cannot parse Temporal.PlainDateTime from "−002020-01-01T00:00"
+!! PlainYearMonth.from("−002020-01") | VM: THROWS RangeError: Temporal: cannot parse '−002020-01' | BJS: THROWS RangeError: Cannot parse Temporal.PlainYearMonth from "−002020-01"
+!! PlainMonthDay.from("−002020-01-01") | VM: THROWS RangeError: Temporal: cannot parse '−002020-01-01' | BJS: THROWS RangeError: Cannot parse Temporal.PlainMonthDay from "−002020-01-01"
+!! ZonedDateTime.from("−002020-01-01T00:00[UTC]") | VM: THROWS RangeError: Temporal: cannot parse '−002020-01-01T00:00[UTC]' | BJS: THROWS RangeError: Cannot parse Temporal.ZonedDateTime from "−002020-01-01T00:00[UTC]"
+!! Instant.from("−002020-01-01T00:00Z") | VM: THROWS RangeError: Temporal: cannot parse '−002020-01-01T00:00Z' | BJS: THROWS RangeError: Cannot parse Temporal.Instant from "−002020-01-01T00:00Z"
+!! PlainDate.from("2020-01-01T00:00−01:00") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00−01:00' | BJS: THROWS RangeError: Cannot parse Temporal.PlainDate from "2020-01-01T00:00−01:00"
+!! PlainDateTime.from("2020-01-01T00:00−01:00") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00−01:00' | BJS: THROWS RangeError: Cannot parse Temporal.PlainDateTime from "2020-01-01T00:00−01:00"
+!! PlainTime.from("00:00−01:00") | VM: THROWS RangeError: Temporal: cannot parse '00:00−01:00' | BJS: THROWS RangeError: Cannot parse Temporal.PlainTime from "00:00−01:00"
+!! PlainYearMonth.from("2020-01-01T00:00−01:00") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00−01:00' | BJS: THROWS RangeError: Cannot parse Temporal.PlainYearMonth from "2020-01-01T00:00−01:00"
+!! PlainMonthDay.from("2020-01-01T00:00−01:00") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00−01:00' | BJS: THROWS RangeError: Cannot parse Temporal.PlainMonthDay from "2020-01-01T00:00−01:00"
+!! ZonedDateTime.from("2020-01-01T00:00−01:00[UTC]") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00−01:00[UTC]' | BJS: THROWS RangeError: Cannot parse Temporal.ZonedDateTime from "2020-01-01T00:00−01:00[UTC]"
+!! Instant.from("2020-01-01T00:00−01:00") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00−01:00' | BJS: THROWS RangeError: Cannot parse Temporal.Instant from "2020-01-01T00:00−01:00"
+!! ZonedDateTime.from("2020-01-01T00:00[−01:00]") | VM: THROWS RangeError: Temporal: cannot parse '2020-01-01T00:00[−01:00]' | BJS: THROWS RangeError: Temporal: unknown time zone "−01:00"
+!! Duration.from("−P1D") | VM: THROWS RangeError: Temporal: −P1D is not a duration | BJS: THROWS RangeError: Cannot parse Temporal.Duration from "−P1D"
+!! new ZonedDateTime(0n, "−01:00") | VM: THROWS RangeError: Temporal: −01:00 is not a time zone identifier | BJS: THROWS RangeError: Temporal.ZonedDateTime: invalid time zone identifier "−01:00"

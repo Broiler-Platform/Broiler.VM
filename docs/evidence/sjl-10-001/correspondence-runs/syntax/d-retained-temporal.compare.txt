@@ -1,0 +1,31 @@
+lines: Broiler.VM 1629, Broiler.JS 1629, polyfill 1629, divergences named 0
+Broiler.VM lines that are neither the polyfill's nor a named divergence: 0
+Broiler.JS lines that differ from Broiler.VM: 7
+  #14
+    VM  duration P1Y2M3W4DT5H6M7.008009010S round month ceil rel 2020-01-31 => P1Y3M
+    BJS duration P1Y2M3W4DT5H6M7.008009010S round month ceil rel 2020-01-31 => P1Y2M30D
+    PF  duration P1Y2M3W4DT5H6M7.008009010S round month ceil rel 2020-01-31 => P1Y3M
+  #16
+    VM  duration P1Y2M3W4DT5H6M7.008009010S round month expand rel 2020-01-31 => P1Y3M
+    BJS duration P1Y2M3W4DT5H6M7.008009010S round month expand rel 2020-01-31 => P1Y2M30D
+    PF  duration P1Y2M3W4DT5H6M7.008009010S round month expand rel 2020-01-31 => P1Y3M
+  #18
+    VM  duration P1Y2M3W4DT5H6M7.008009010S round month halfCeil rel 2020-01-31 => P1Y3M
+    BJS duration P1Y2M3W4DT5H6M7.008009010S round month halfCeil rel 2020-01-31 => P1Y2M30D
+    PF  duration P1Y2M3W4DT5H6M7.008009010S round month halfCeil rel 2020-01-31 => P1Y3M
+  #19
+    VM  duration P1Y2M3W4DT5H6M7.008009010S round month halfFloor rel 2020-01-31 => P1Y3M
+    BJS duration P1Y2M3W4DT5H6M7.008009010S round month halfFloor rel 2020-01-31 => P1Y2M30D
+    PF  duration P1Y2M3W4DT5H6M7.008009010S round month halfFloor rel 2020-01-31 => P1Y3M
+  #20
+    VM  duration P1Y2M3W4DT5H6M7.008009010S round month halfExpand rel 2020-01-31 => P1Y3M
+    BJS duration P1Y2M3W4DT5H6M7.008009010S round month halfExpand rel 2020-01-31 => P1Y2M30D
+    PF  duration P1Y2M3W4DT5H6M7.008009010S round month halfExpand rel 2020-01-31 => P1Y3M
+  #21
+    VM  duration P1Y2M3W4DT5H6M7.008009010S round month halfTrunc rel 2020-01-31 => P1Y3M
+    BJS duration P1Y2M3W4DT5H6M7.008009010S round month halfTrunc rel 2020-01-31 => P1Y2M30D
+    PF  duration P1Y2M3W4DT5H6M7.008009010S round month halfTrunc rel 2020-01-31 => P1Y3M
+  #22
+    VM  duration P1Y2M3W4DT5H6M7.008009010S round month halfEven rel 2020-01-31 => P1Y3M
+    BJS duration P1Y2M3W4DT5H6M7.008009010S round month halfEven rel 2020-01-31 => P1Y2M30D
+    PF  duration P1Y2M3W4DT5H6M7.008009010S round month halfEven rel 2020-01-31 => P1Y3M

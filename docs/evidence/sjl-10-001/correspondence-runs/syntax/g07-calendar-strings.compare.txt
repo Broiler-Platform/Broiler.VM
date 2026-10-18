@@ -1,0 +1,132 @@
+   PlainDate.from({..., calendar: "iso8601"}).calendarId | VM: iso8601 | BJS: iso8601
+   PlainDate#withCalendar("iso8601").calendarId | VM: iso8601 | BJS: iso8601
+   new PlainDate(2020, 1, 1, "iso8601").calendarId | VM: iso8601 | BJS: iso8601
+   PlainDate.from({..., calendar: "ISO8601"}).calendarId | VM: iso8601 | BJS: iso8601
+   PlainDate#withCalendar("ISO8601").calendarId | VM: iso8601 | BJS: iso8601
+   new PlainDate(2020, 1, 1, "ISO8601").calendarId | VM: iso8601 | BJS: iso8601
+   PlainDate.from({..., calendar: "gregory"}).calendarId | VM: gregory | BJS: gregory
+   PlainDate#withCalendar("gregory").calendarId | VM: gregory | BJS: gregory
+   new PlainDate(2020, 1, 1, "gregory").calendarId | VM: gregory | BJS: gregory
+   PlainDate.from({..., calendar: "2020-01-01"}).calendarId | VM: iso8601 | BJS: iso8601
+   PlainDate#withCalendar("2020-01-01").calendarId | VM: iso8601 | BJS: iso8601
+   new PlainDate(2020, 1, 1, "2020-01-01").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-01-01[u-ca=gregory]"}).calendarId | VM: gregory | BJS: gregory
+   PlainDate#withCalendar("2020-01-01[u-ca=gregory]").calendarId | VM: gregory | BJS: gregory
+   new PlainDate(2020, 1, 1, "2020-01-01[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-01-01T00:00Z[UTC][u-ca=hebrew]"}).calendarId | VM: hebrew | BJS: hebrew
+   PlainDate#withCalendar("2020-01-01T00:00Z[UTC][u-ca=hebrew]").calendarId | VM: hebrew | BJS: hebrew
+   new PlainDate(2020, 1, 1, "2020-01-01T00:00Z[UTC][u-ca=hebrew]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-01-01T00:00Z[u-ca=hebrew]"}).calendarId | VM: hebrew | BJS: hebrew
+   PlainDate#withCalendar("2020-01-01T00:00Z[u-ca=hebrew]").calendarId | VM: hebrew | BJS: hebrew
+   new PlainDate(2020, 1, 1, "2020-01-01T00:00Z[u-ca=hebrew]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "T10:00Z"}).calendarId | VM: THROWS RangeError | BJS: iso8601
+!! PlainDate#withCalendar("T10:00Z").calendarId | VM: THROWS RangeError | BJS: iso8601
+   new PlainDate(2020, 1, 1, "T10:00Z").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "10:00Z"}).calendarId | VM: THROWS RangeError | BJS: iso8601
+!! PlainDate#withCalendar("10:00Z").calendarId | VM: THROWS RangeError | BJS: iso8601
+   new PlainDate(2020, 1, 1, "10:00Z").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "T10:00[u-ca=hebrew]"}).calendarId | VM: hebrew | BJS: hebrew
+   PlainDate#withCalendar("T10:00[u-ca=hebrew]").calendarId | VM: hebrew | BJS: hebrew
+   new PlainDate(2020, 1, 1, "T10:00[u-ca=hebrew]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "10:00[u-ca=hebrew]"}).calendarId | VM: hebrew | BJS: hebrew
+   PlainDate#withCalendar("10:00[u-ca=hebrew]").calendarId | VM: hebrew | BJS: hebrew
+   new PlainDate(2020, 1, 1, "10:00[u-ca=hebrew]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "2020-01[u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: gregory
+!! PlainDate#withCalendar("2020-01[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: gregory
+   new PlainDate(2020, 1, 1, "2020-01[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-01[u-ca=iso8601]"}).calendarId | VM: iso8601 | BJS: iso8601
+   PlainDate#withCalendar("2020-01[u-ca=iso8601]").calendarId | VM: iso8601 | BJS: iso8601
+   new PlainDate(2020, 1, 1, "2020-01[u-ca=iso8601]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "01-01[u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: gregory
+!! PlainDate#withCalendar("01-01[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: gregory
+   new PlainDate(2020, 1, 1, "01-01[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "--01-01"}).calendarId | VM: iso8601 | BJS: iso8601
+   PlainDate#withCalendar("--01-01").calendarId | VM: iso8601 | BJS: iso8601
+   new PlainDate(2020, 1, 1, "--01-01").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "2020-01-01[]"}).calendarId | VM: THROWS RangeError | BJS: iso8601
+!! PlainDate#withCalendar("2020-01-01[]").calendarId | VM: THROWS RangeError | BJS: iso8601
+   new PlainDate(2020, 1, 1, "2020-01-01[]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "2020-01-01[u-ca=gregory][UTC]"}).calendarId | VM: THROWS RangeError | BJS: gregory
+!! PlainDate#withCalendar("2020-01-01[u-ca=gregory][UTC]").calendarId | VM: THROWS RangeError | BJS: gregory
+   new PlainDate(2020, 1, 1, "2020-01-01[u-ca=gregory][UTC]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-01-01[UTC][u-ca=gregory]"}).calendarId | VM: gregory | BJS: gregory
+   PlainDate#withCalendar("2020-01-01[UTC][u-ca=gregory]").calendarId | VM: gregory | BJS: gregory
+   new PlainDate(2020, 1, 1, "2020-01-01[UTC][u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "2020-01-01[!foo=bar]"}).calendarId | VM: THROWS RangeError | BJS: iso8601
+!! PlainDate#withCalendar("2020-01-01[!foo=bar]").calendarId | VM: THROWS RangeError | BJS: iso8601
+   new PlainDate(2020, 1, 1, "2020-01-01[!foo=bar]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "2020-01-01[u-ca=gregory][!u-ca=japanese]"}).calendarId | VM: THROWS RangeError | BJS: japanese
+!! PlainDate#withCalendar("2020-01-01[u-ca=gregory][!u-ca=japanese]").calendarId | VM: THROWS RangeError | BJS: japanese
+   new PlainDate(2020, 1, 1, "2020-01-01[u-ca=gregory][!u-ca=japanese]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "gregory-x"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("gregory-x").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "gregory-x").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: ""}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "-"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("-").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "-").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "a_b"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("a_b").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "a_b").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-13-01"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("2020-13-01").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "2020-13-01").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-01-01T25:00[u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("2020-01-01T25:00[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "2020-01-01T25:00[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "2020-01-01T12:00+25:00[u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: gregory
+!! PlainDate#withCalendar("2020-01-01T12:00+25:00[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: gregory
+   new PlainDate(2020, 1, 1, "2020-01-01T12:00+25:00[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-01-01T12:00+01:00:00.5[u-ca=gregory]"}).calendarId | VM: gregory | BJS: gregory
+   PlainDate#withCalendar("2020-01-01T12:00+01:00:00.5[u-ca=gregory]").calendarId | VM: gregory | BJS: gregory
+   new PlainDate(2020, 1, 1, "2020-01-01T12:00+01:00:00.5[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "2020-01-01[Mars Olympus][u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: gregory
+!! PlainDate#withCalendar("2020-01-01[Mars Olympus][u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: gregory
+   new PlainDate(2020, 1, 1, "2020-01-01[Mars Olympus][u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-02-30[u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("2020-02-30[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "2020-02-30[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "1214[u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: gregory
+!! PlainDate#withCalendar("1214[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: gregory
+   new PlainDate(2020, 1, 1, "1214[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "T1214[u-ca=gregory]"}).calendarId | VM: gregory | BJS: gregory
+   PlainDate#withCalendar("T1214[u-ca=gregory]").calendarId | VM: gregory | BJS: gregory
+   new PlainDate(2020, 1, 1, "T1214[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "2020-01-01T12:3045Z[u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("2020-01-01T12:3045Z[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "2020-01-01T12:3045Z[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+!! PlainDate.from({..., calendar: "gregorian"}).calendarId | VM: THROWS RangeError | BJS: gregory
+!! PlainDate#withCalendar("gregorian").calendarId | VM: THROWS RangeError | BJS: gregory
+!! new PlainDate(2020, 1, 1, "gregorian").calendarId | VM: THROWS RangeError | BJS: gregory
+!! PlainDate.from({..., calendar: "minguo"}).calendarId | VM: THROWS RangeError | BJS: roc
+!! PlainDate#withCalendar("minguo").calendarId | VM: THROWS RangeError | BJS: roc
+!! new PlainDate(2020, 1, 1, "minguo").calendarId | VM: THROWS RangeError | BJS: roc
+   PlainDate.from({..., calendar: "islamic"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("islamic").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "islamic").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "japanese "}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("japanese ").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "japanese ").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: " japanese"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar(" japanese").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, " japanese").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "JAPANESE"}).calendarId | VM: japanese | BJS: japanese
+   PlainDate#withCalendar("JAPANESE").calendarId | VM: japanese | BJS: japanese
+   new PlainDate(2020, 1, 1, "JAPANESE").calendarId | VM: japanese | BJS: japanese
+   PlainDate.from({..., calendar: "ethiopic-amete-alem"}).calendarId | VM: ethioaa | BJS: ethioaa
+   PlainDate#withCalendar("ethiopic-amete-alem").calendarId | VM: ethioaa | BJS: ethioaa
+   new PlainDate(2020, 1, 1, "ethiopic-amete-alem").calendarId | VM: ethioaa | BJS: ethioaa
+   PlainDate.from({..., calendar: "islamicc"}).calendarId | VM: islamic-civil | BJS: islamic-civil
+   PlainDate#withCalendar("islamicc").calendarId | VM: islamic-civil | BJS: islamic-civil
+   new PlainDate(2020, 1, 1, "islamicc").calendarId | VM: islamic-civil | BJS: islamic-civil
+   PlainDate.from({..., calendar: "islamic-civil"}).calendarId | VM: islamic-civil | BJS: islamic-civil
+   PlainDate#withCalendar("islamic-civil").calendarId | VM: islamic-civil | BJS: islamic-civil
+   new PlainDate(2020, 1, 1, "islamic-civil").calendarId | VM: islamic-civil | BJS: islamic-civil
+   PlainDate.from({..., calendar: "u-ca=gregory"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("u-ca=gregory").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "u-ca=gregory").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate.from({..., calendar: "[u-ca=gregory]"}).calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   PlainDate#withCalendar("[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError
+   new PlainDate(2020, 1, 1, "[u-ca=gregory]").calendarId | VM: THROWS RangeError | BJS: THROWS RangeError

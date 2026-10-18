@@ -1,0 +1,20 @@
+  reads for "2020-01-01T00:00[UTC]": disambiguation,offset,overflow
+ZonedDateTime.from("2020-01-01T00:00[UTC]", options) => 2020-01-01T00:00:00+00:00[UTC]
+  reads for "2020-01-01T00:00+01:00[Europe/Berlin]": disambiguation,offset,overflow
+ZonedDateTime.from("2020-01-01T00:00+01:00[Europe/Berlin]", options) => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+  reads for "2020-01-01T00:00+02:00[Europe/Berlin]": disambiguation,offset,overflow
+ZonedDateTime.from("2020-01-01T00:00+02:00[Europe/Berlin]", options) => THROWS RangeError
+  reads for "2020-13-01T00:00[UTC]": 
+ZonedDateTime.from("2020-13-01T00:00[UTC]", options) => THROWS RangeError
+  reads for "2020-01-01T00:00[Mars/Olympus]": 
+ZonedDateTime.from("2020-01-01T00:00[Mars/Olympus]", options) => THROWS RangeError
+  reads for "2020-01-01T00:00[UTC][u-ca=bogus]": 
+ZonedDateTime.from("2020-01-01T00:00[UTC][u-ca=bogus]", options) => THROWS RangeError
+  reads for "2020-01-01T00:00[]": 
+ZonedDateTime.from("2020-01-01T00:00[]", options) => THROWS RangeError
+  reads for "2020-01-01T00:00": 
+ZonedDateTime.from("2020-01-01T00:00", options) => THROWS RangeError
+  reads for "2020-01-01T00:00+25:00[UTC]": 
+ZonedDateTime.from("2020-01-01T00:00+25:00[UTC]", options) => THROWS RangeError
+  reads for "2020-01-01T00:00[UTC][!foo=bar]": 
+ZonedDateTime.from("2020-01-01T00:00[UTC][!foo=bar]", options) => THROWS RangeError

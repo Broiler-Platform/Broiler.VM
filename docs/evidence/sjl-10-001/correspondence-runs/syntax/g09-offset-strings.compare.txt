@@ -1,0 +1,46 @@
+!! ZonedDateTime#with({offset: "Z"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: 2020-01-01T00:00:00+00:00[UTC]
+!! ZonedDateTime.from({..., offset: "Z", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: 2020-01-01T00:00:00+00:00[UTC]
+!! ZonedDateTime#with({offset: "z"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: 2020-01-01T00:00:00+00:00[UTC]
+!! ZonedDateTime.from({..., offset: "z", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime#with({offset: "+00:00"}, {offset: "ignore"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from({..., offset: "+00:00", timeZone: "UTC"}, {offset: "use"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime#with({offset: "-00:00"}, {offset: "ignore"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from({..., offset: "-00:00", timeZone: "UTC"}, {offset: "use"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime#with({offset: "+25:00"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "+25:00", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "+24:00"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "+24:00", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "+23:59"}, {offset: "ignore"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from({..., offset: "+23:59", timeZone: "UTC"}, {offset: "use"}) | VM: 2019-12-31T00:01:00+00:00[UTC] | BJS: 2019-12-31T00:01:00+00:00[UTC]
+   ZonedDateTime#with({offset: "+01:00:00.5"}, {offset: "ignore"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from({..., offset: "+01:00:00.5", timeZone: "UTC"}, {offset: "use"}) | VM: 2019-12-31T22:59:59.5+00:00[UTC] | BJS: 2019-12-31T22:59:59.5+00:00[UTC]
+   ZonedDateTime#with({offset: "+01:00:00.123456789"}, {offset: "ignore"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from({..., offset: "+01:00:00.123456789", timeZone: "UTC"}, {offset: "use"}) | VM: 2019-12-31T22:59:59.876543211+00:00[UTC] | BJS: 2019-12-31T22:59:59.876543211+00:00[UTC]
+   ZonedDateTime#with({offset: "+01:00:00.1234567890"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "+01:00:00.1234567890", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "+0100"}, {offset: "ignore"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from({..., offset: "+0100", timeZone: "UTC"}, {offset: "use"}) | VM: 2019-12-31T23:00:00+00:00[UTC] | BJS: 2019-12-31T23:00:00+00:00[UTC]
+   ZonedDateTime#with({offset: "+01"}, {offset: "ignore"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from({..., offset: "+01", timeZone: "UTC"}, {offset: "use"}) | VM: 2019-12-31T23:00:00+00:00[UTC] | BJS: 2019-12-31T23:00:00+00:00[UTC]
+   ZonedDateTime#with({offset: "-00"}, {offset: "ignore"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime.from({..., offset: "-00", timeZone: "UTC"}, {offset: "use"}) | VM: 2020-01-01T00:00:00+00:00[UTC] | BJS: 2020-01-01T00:00:00+00:00[UTC]
+   ZonedDateTime#with({offset: "+01:00:60"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "+01:00:60", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "+01:0000"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "+01:0000", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "−01:00"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "−01:00", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "+٠١:٠٠"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "+٠١:٠٠", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: ""}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "UTC"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "UTC", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "+1"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "+1", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: "+01:00Z"}, {offset: "ignore"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime.from({..., offset: "+01:00Z", timeZone: "UTC"}, {offset: "use"}) | VM: THROWS RangeError | BJS: THROWS RangeError
+   ZonedDateTime#with({offset: 0}) | VM: THROWS TypeError | BJS: THROWS TypeError
+   ZonedDateTime#with({offset: null}) | VM: THROWS TypeError | BJS: THROWS TypeError
+   ZonedDateTime#with({offset: true}) | VM: THROWS TypeError | BJS: THROWS TypeError
+   ZonedDateTime#with({offset: 1}) | VM: THROWS TypeError | BJS: THROWS TypeError

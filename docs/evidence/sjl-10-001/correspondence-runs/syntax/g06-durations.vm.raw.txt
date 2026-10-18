@@ -1,0 +1,96 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/g06-durations.js [raw]  uncaught Error: OUT<<Duration.from("P1Y") => P1Y
+Duration.from("p1y") => P1Y
+Duration.from("P1Y2M3W4DT5H6M7S") => P1Y2M3W4DT5H6M7S
+Duration.from("P1Y1M1W1D") => P1Y1M1W1D
+Duration.from("P1M1W") => P1M1W
+Duration.from("P1W1D") => P1W1D
+Duration.from("PT0S") => PT0S
+Duration.from("P0D") => PT0S
+Duration.from("-P1D") => -P1D
+Duration.from("+P1D") => P1D
+Duration.from("−P1D") => THROWS RangeError
+Duration.from("P") => THROWS RangeError
+Duration.from("PT") => THROWS RangeError
+Duration.from("P1YT") => THROWS RangeError
+Duration.from("P1DT") => THROWS RangeError
+Duration.from("P1Dt") => THROWS RangeError
+Duration.from("PT1H1.5M") => PT1H1M30S
+Duration.from("PT1.5H") => PT1H30M
+Duration.from("PT1.5H30M") => THROWS RangeError
+Duration.from("PT1.5M30S") => THROWS RangeError
+Duration.from("PT1,5S") => PT1.5S
+Duration.from("PT0.123456789S") => PT0.123456789S
+Duration.from("PT0.1234567890S") => THROWS RangeError
+Duration.from("PT1.S") => THROWS RangeError
+Duration.from("PT.5S") => THROWS RangeError
+Duration.from("P1.5D") => THROWS RangeError
+Duration.from("P1.5Y") => THROWS RangeError
+Duration.from("P1.5W") => THROWS RangeError
+Duration.from("P1D1H") => THROWS RangeError
+Duration.from("P1H") => THROWS RangeError
+Duration.from("PT1D") => THROWS RangeError
+Duration.from("P1M1Y") => THROWS RangeError
+Duration.from("P1W1M") => THROWS RangeError
+Duration.from("PT1S1M") => THROWS RangeError
+Duration.from("PT1M1H") => THROWS RangeError
+Duration.from("P 1D") => THROWS RangeError
+Duration.from("P1D ") => THROWS RangeError
+Duration.from(" P1D") => THROWS RangeError
+Duration.from("PT46H66M71.50040904S") => PT46H66M71.50040904S
+Duration.from("P4294967295Y") => P4294967295Y
+Duration.from("P4294967296Y") => THROWS RangeError
+Duration.from("P4294967295M") => P4294967295M
+Duration.from("P4294967295W") => P4294967295W
+Duration.from("P104249991374D") => P104249991374D
+Duration.from("P104249991375D") => THROWS RangeError
+Duration.from("PT9007199254740991S") => PT9007199254740991S
+Duration.from("PT9007199254740991.999999999S") => PT9007199254740991.999999999S
+Duration.from("PT9007199254740992S") => THROWS RangeError
+Duration.from("PT2501999792983H") => PT2501999792983H
+Duration.from("PT2501999792984H") => THROWS RangeError
+Duration.from("PT150119987579016M") => PT150119987579016M
+Duration.from("PT2501999792983.999999999H") => THROWS RangeError
+Duration.from("P1Y1Y") => THROWS RangeError
+Duration.from("PT1H1H") => THROWS RangeError
+Duration.from("P١D") => THROWS RangeError
+Duration.from("PT١H") => THROWS RangeError
+Duration.from("P1d") => P1D
+Duration.from("pt1h") => PT1H
+Duration.from("PT1h") => PT1H
+Duration.from("P1Dt1H") => P1DT1H
+Duration.from("P1DT1H1M1.123456789S") => P1DT1H1M1.123456789S
+Duration.from("PT0.000000001H") => PT0.0000036S
+Duration.from("PT0.000000001M") => PT0.00000006S
+Duration.from("PT1.999999999H") => PT1H59M59.9999964S
+Duration.from("-PT1.000000001M") => -PT1M0.00000006S
+Duration.from("P0Y0M0W0DT0H0M0.000000000S") => PT0S
+Duration.from("PT00000000000000000000001S") => PT1S
+Duration.from("P00000000000000000000001D") => P1D
+Duration.from("PT1.5H0M") => THROWS RangeError
+Duration.from("PT1H0.5M") => PT1H30S
+Duration.from("-P1Y-1M") => THROWS RangeError
+Duration.from("P-1D") => THROWS RangeError
+Duration.from("P1Y2M3W4DT5H6M7.008009010S") => P1Y2M3W4DT5H6M7.00800901S
+fields of "PT46H66M71.50040904S" => 46,66,71,500,409,40
+fields of "PT1.5H" => 1,30,0,0,0,0
+fields of "PT0.000000001H" => 0,0,0,0,3,600
+fields of "-PT1.000000001M" => 0,-1,0,0,0,-60
+fields of "PT2501999792983.999999999H" => THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/g06-durations.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/g06-durations.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/g06-durations.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

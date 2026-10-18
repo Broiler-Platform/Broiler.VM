@@ -1,0 +1,72 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/s05-option-order.js [raw]  uncaught Error: OUT<<PlainDate reads => calendarName => 2020-01-01
+  PlainDate invalid calendarName read: calendarName
+PlainDate with an invalid calendarName, reads => THROWS RangeError
+PlainYearMonth reads => calendarName => 2020-01
+  PlainYearMonth invalid calendarName read: calendarName
+PlainYearMonth with an invalid calendarName, reads => THROWS RangeError
+PlainMonthDay reads => calendarName => 01-01
+  PlainMonthDay invalid calendarName read: calendarName
+PlainMonthDay with an invalid calendarName, reads => THROWS RangeError
+PlainTime reads => fractionalSecondDigits,roundingMode,smallestUnit => 12:00:00
+  PlainTime invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit
+PlainTime with an invalid smallestUnit, reads => THROWS RangeError
+  PlainTime invalid roundingMode read: fractionalSecondDigits,roundingMode
+PlainTime with an invalid roundingMode, reads => THROWS RangeError
+  PlainTime invalid fractionalSecondDigits read: fractionalSecondDigits
+PlainTime with an invalid fractionalSecondDigits, reads => THROWS RangeError
+PlainDateTime reads => calendarName,fractionalSecondDigits,roundingMode,smallestUnit => 2020-01-01T12:00:00
+  PlainDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,roundingMode,smallestUnit
+PlainDateTime with an invalid smallestUnit, reads => THROWS RangeError
+  PlainDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,roundingMode
+PlainDateTime with an invalid roundingMode, reads => THROWS RangeError
+  PlainDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits
+PlainDateTime with an invalid fractionalSecondDigits, reads => THROWS RangeError
+  PlainDateTime invalid calendarName read: calendarName
+PlainDateTime with an invalid calendarName, reads => THROWS RangeError
+Instant reads => fractionalSecondDigits,roundingMode,smallestUnit,timeZone => 2020-01-01T12:00:00+00:00
+  Instant invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone
+Instant with an invalid smallestUnit, reads => THROWS RangeError
+  Instant invalid roundingMode read: fractionalSecondDigits,roundingMode
+Instant with an invalid roundingMode, reads => THROWS RangeError
+  Instant invalid fractionalSecondDigits read: fractionalSecondDigits
+Instant with an invalid fractionalSecondDigits, reads => THROWS RangeError
+  Instant invalid timeZone read: fractionalSecondDigits,roundingMode,smallestUnit,timeZone
+Instant with an invalid timeZone, reads => THROWS RangeError
+ZonedDateTime reads => calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName => 2020-01-01T12:00:00+00:00[UTC]
+  ZonedDateTime invalid smallestUnit read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName
+ZonedDateTime with an invalid smallestUnit, reads => THROWS RangeError
+  ZonedDateTime invalid roundingMode read: calendarName,fractionalSecondDigits,offset,roundingMode
+ZonedDateTime with an invalid roundingMode, reads => THROWS RangeError
+  ZonedDateTime invalid fractionalSecondDigits read: calendarName,fractionalSecondDigits
+ZonedDateTime with an invalid fractionalSecondDigits, reads => THROWS RangeError
+  ZonedDateTime invalid calendarName read: calendarName
+ZonedDateTime with an invalid calendarName, reads => THROWS RangeError
+  ZonedDateTime invalid offset read: calendarName,fractionalSecondDigits,offset
+ZonedDateTime with an invalid offset, reads => THROWS RangeError
+  ZonedDateTime invalid timeZoneName read: calendarName,fractionalSecondDigits,offset,roundingMode,smallestUnit,timeZoneName
+ZonedDateTime with an invalid timeZoneName, reads => THROWS RangeError
+Duration reads => fractionalSecondDigits,roundingMode,smallestUnit => PT1S
+  Duration invalid smallestUnit read: fractionalSecondDigits,roundingMode,smallestUnit
+Duration with an invalid smallestUnit, reads => THROWS RangeError
+  Duration invalid roundingMode read: fractionalSecondDigits,roundingMode
+Duration with an invalid roundingMode, reads => THROWS RangeError
+  Duration invalid fractionalSecondDigits read: fractionalSecondDigits
+Duration with an invalid fractionalSecondDigits, reads => THROWS RangeError>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/s05-option-order.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/s05-option-order.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/s05-option-order.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

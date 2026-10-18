@@ -1,0 +1,74 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/r01-revision-markers.js [raw]  uncaught Error: OUT<<Temporal.Calendar (removed b8892420, 2024-09-05) => undefined
+Temporal.TimeZone (removed b8892420, 2024-09-05) => undefined
+PlainDate.prototype.getISOFields (removed 7899d593, 2024-09-05) => undefined
+PlainDate.prototype.getCalendar (removed 92b19abd, 2024-07-19) => undefined
+ZonedDateTime.prototype.getTimeZone (removed 92b19abd, 2024-07-19) => undefined
+ZonedDateTime.prototype.getTimeZoneTransition (added 133921b2, 2024-07-19) => function
+PlainDateTime.prototype.withPlainDate (removed f7acbd2f, 2024-06-13) => undefined
+PlainTime.prototype.toPlainDateTime (removed f81d05fa, 2024-06-13) => undefined
+PlainTime.prototype.toZonedDateTime (removed f81d05fa, 2024-06-13) => undefined
+Instant.prototype.epochSeconds (removed a6cffb25, 2024-06-13) => undefined
+Instant.prototype.epochMicroseconds (removed a6cffb25, 2024-06-13) => undefined
+Instant.fromEpochSeconds (removed a6cffb25, 2024-06-13) => undefined
+PlainDateTime.prototype.toPlainYearMonth (removed efebfa2c, 2024-06-13) => undefined
+ZonedDateTime.prototype.toPlainMonthDay (removed efebfa2c, 2024-06-13) => undefined
+Temporal.Now.plainDate (removed 2ae23dde, 2024-06-13) => undefined
+Temporal.Now.plainDateISO => function
+Temporal.Now.zonedDateTime (removed 2ae23dde, 2024-06-13) => undefined
+PlainDate.prototype.toPlainYearMonth (kept) => function
+PlainDate.prototype.yearOfWeek (added 7fa4d189, 2022-11-29) => number
+Temporal[Symbol.toStringTag] => Temporal
+Object.getOwnPropertyNames(Temporal) => Duration Instant Now PlainDate PlainDateTime PlainMonthDay PlainTime PlainYearMonth ZonedDateTime
+Duration#add with a calendar unit and relativeTo (relativeTo removed 8ae0dbd7, 2024-06-13) => THROWS RangeError
+Duration.from({years: 2**32}) (limited 1104cad8, 2024-01-31) => THROWS RangeError
+ZonedDateTime offset with a nanosecond that does not match (strict 1117eaf8, 2025-06-02) => THROWS RangeError
+PlainYearMonth#add({days: 1}) (refused 41faca47, 2026-01-29) => THROWS RangeError
+PlainYearMonth#add({weeks: 1}) (refused 41faca47, 2026-01-29) => THROWS RangeError
+PlainYearMonth#add({hours: 1}) (refused 41faca47, 2026-01-29) => THROWS RangeError
+PlainYearMonth#add({months: 1, days: 0}) (41faca47, 2026-01-29) => 2020-02
+PlainYearMonth#subtract({days: 40}) => THROWS RangeError
+PlainMonthDay.from("+999999-01-01[u-ca=gregory]") (refused bd5ac121, 2025-02-21) => THROWS RangeError
+PlainMonthDay.from("+999999-01-01") (ISO, allowed bd5ac121) => 01-01
+PlainMonthDay.from("11-18[+01:00][u-ca=ISO8601]") (polyfill 385b479b, 2026-02-26) => 11-18
+PlainYearMonth.from("1976-11[u-ca=ISO8601]") (polyfill 385b479b, 2026-02-26) => 1976-11
+PlainDate.from("2020-01-01[u-ca=ISO8601]").calendarId (canonicalised ba56a48a, 2024-07-01) => iso8601
+PlainMonthDay chinese M11L 1 reference (1973-2035 allowed 10f83f39, 2025-09-23; Table 6 ad5028b, 2026-01-21) => 2033-12-22
+PlainMonthDay hebrew year 1e10 (polyfill 69a60a2a, 2026-05-11) => THROWS RangeError
+PlainDate.from("−002020-01-01") (U+2212 reverted ae9c7855, 2024-07-04) => THROWS RangeError
+new ZonedDateTime(0n, "+01:00:01") (minute offsets 70bc509f, 2023-07-18) => THROWS RangeError
+Duration#round with relativeTo "2022-08-18T17:01Z" (refused 2dc20bf6, 2022-10-11) => THROWS RangeError
+era gregory-inverse in gregory => THROWS RangeError
+era gregory in gregory => THROWS RangeError
+era minguo in roc => THROWS RangeError
+era before-roc in roc => THROWS RangeError
+era minguo-qian in roc => THROWS RangeError
+era roc-inverse in roc => THROWS RangeError
+era incar in ethiopic => THROWS RangeError
+era mundi in ethiopic => THROWS RangeError
+era ethiopic-amete-alem in ethiopic => THROWS RangeError
+era coptic in coptic => THROWS RangeError
+era coptic-inverse in coptic => THROWS RangeError
+era saka in indian => THROWS RangeError
+era persian in persian => THROWS RangeError
+era japanese in japanese => THROWS RangeError
+era japanese-inverse in japanese => THROWS RangeError
+era islamicc in islamic-civil => THROWS RangeError
+era hebrew in hebrew => THROWS RangeError>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/r01-revision-markers.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/r01-revision-markers.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/r01-revision-markers.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

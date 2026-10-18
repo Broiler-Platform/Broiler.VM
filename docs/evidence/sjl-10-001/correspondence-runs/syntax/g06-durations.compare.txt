@@ -1,0 +1,78 @@
+   Duration.from("P1Y") | VM: P1Y | BJS: P1Y
+   Duration.from("p1y") | VM: P1Y | BJS: P1Y
+   Duration.from("P1Y2M3W4DT5H6M7S") | VM: P1Y2M3W4DT5H6M7S | BJS: P1Y2M3W4DT5H6M7S
+   Duration.from("P1Y1M1W1D") | VM: P1Y1M1W1D | BJS: P1Y1M1W1D
+   Duration.from("P1M1W") | VM: P1M1W | BJS: P1M1W
+   Duration.from("P1W1D") | VM: P1W1D | BJS: P1W1D
+   Duration.from("PT0S") | VM: PT0S | BJS: PT0S
+   Duration.from("P0D") | VM: PT0S | BJS: PT0S
+   Duration.from("-P1D") | VM: -P1D | BJS: -P1D
+   Duration.from("+P1D") | VM: P1D | BJS: P1D
+   Duration.from("−P1D") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration.from("P1YT") | VM: THROWS RangeError | BJS: P1Y
+!! Duration.from("P1DT") | VM: THROWS RangeError | BJS: P1D
+!! Duration.from("P1Dt") | VM: THROWS RangeError | BJS: P1D
+   Duration.from("PT1H1.5M") | VM: PT1H1M30S | BJS: PT1H1M30S
+   Duration.from("PT1.5H") | VM: PT1H30M | BJS: PT1H30M
+   Duration.from("PT1.5H30M") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT1.5M30S") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT1,5S") | VM: PT1.5S | BJS: PT1.5S
+   Duration.from("PT0.123456789S") | VM: PT0.123456789S | BJS: PT0.123456789S
+   Duration.from("PT0.1234567890S") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT1.S") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT.5S") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1.5D") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1.5Y") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1.5W") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1D1H") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1H") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT1D") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1M1Y") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1W1M") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT1S1M") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT1M1H") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P 1D") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1D ") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from(" P1D") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT46H66M71.50040904S") | VM: PT46H66M71.50040904S | BJS: PT46H66M71.50040904S
+   Duration.from("P4294967295Y") | VM: P4294967295Y | BJS: P4294967295Y
+   Duration.from("P4294967296Y") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P4294967295M") | VM: P4294967295M | BJS: P4294967295M
+   Duration.from("P4294967295W") | VM: P4294967295W | BJS: P4294967295W
+   Duration.from("P104249991374D") | VM: P104249991374D | BJS: P104249991374D
+   Duration.from("P104249991375D") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT9007199254740991S") | VM: PT9007199254740991S | BJS: PT9007199254740991S
+   Duration.from("PT9007199254740991.999999999S") | VM: PT9007199254740991.999999999S | BJS: PT9007199254740991.999999999S
+   Duration.from("PT9007199254740992S") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT2501999792983H") | VM: PT2501999792983H | BJS: PT2501999792983H
+   Duration.from("PT2501999792984H") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT150119987579016M") | VM: PT150119987579016M | BJS: PT150119987579016M
+   Duration.from("PT2501999792983.999999999H") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1Y1Y") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT1H1H") | VM: THROWS RangeError | BJS: THROWS RangeError
+!! Duration.from("P١D") | VM: THROWS RangeError | BJS: THROWS Error
+!! Duration.from("PT١H") | VM: THROWS RangeError | BJS: THROWS Error
+   Duration.from("P1d") | VM: P1D | BJS: P1D
+   Duration.from("pt1h") | VM: PT1H | BJS: PT1H
+   Duration.from("PT1h") | VM: PT1H | BJS: PT1H
+   Duration.from("P1Dt1H") | VM: P1DT1H | BJS: P1DT1H
+   Duration.from("P1DT1H1M1.123456789S") | VM: P1DT1H1M1.123456789S | BJS: P1DT1H1M1.123456789S
+   Duration.from("PT0.000000001H") | VM: PT0.0000036S | BJS: PT0.0000036S
+   Duration.from("PT0.000000001M") | VM: PT0.00000006S | BJS: PT0.00000006S
+   Duration.from("PT1.999999999H") | VM: PT1H59M59.9999964S | BJS: PT1H59M59.9999964S
+   Duration.from("-PT1.000000001M") | VM: -PT1M0.00000006S | BJS: -PT1M0.00000006S
+   Duration.from("P0Y0M0W0DT0H0M0.000000000S") | VM: PT0S | BJS: PT0S
+   Duration.from("PT00000000000000000000001S") | VM: PT1S | BJS: PT1S
+   Duration.from("P00000000000000000000001D") | VM: P1D | BJS: P1D
+   Duration.from("PT1.5H0M") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("PT1H0.5M") | VM: PT1H30S | BJS: PT1H30S
+   Duration.from("-P1Y-1M") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P-1D") | VM: THROWS RangeError | BJS: THROWS RangeError
+   Duration.from("P1Y2M3W4DT5H6M7.008009010S") | VM: P1Y2M3W4DT5H6M7.00800901S | BJS: P1Y2M3W4DT5H6M7.00800901S
+   fields of "PT46H66M71.50040904S" | VM: 46,66,71,500,409,40 | BJS: 46,66,71,500,409,40
+   fields of "PT1.5H" | VM: 1,30,0,0,0,0 | BJS: 1,30,0,0,0,0
+   fields of "PT0.000000001H" | VM: 0,0,0,0,3,600 | BJS: 0,0,0,0,3,600
+   fields of "-PT1.000000001M" | VM: 0,-1,0,0,0,-60 | BJS: 0,-1,0,0,0,-60
+!! fields of "PT2501999792983.999999999H" | VM: THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large | BJS: THROWS RangeError: Temporal.Duration is out of range

@@ -1,0 +1,156 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/g05-goals.js [raw]  uncaught Error: OUT<<PlainDate.from("2020-01-01[]") => THROWS RangeError
+PlainYearMonth.from("2020-02-30") => THROWS RangeError
+PlainTime.from("2021-13-45T12:00") => THROWS RangeError
+PlainYearMonth.from("2020-01") => 2020-01
+PlainYearMonth.from("202001") => 2020-01
+PlainYearMonth.from("+00202001") => 2020-01
+PlainYearMonth.from("+002020-01") => 2020-01
+PlainYearMonth.from("-00202001") => -002020-01
+PlainYearMonth.from("2020-1") => THROWS RangeError
+PlainYearMonth.from("2020-001") => THROWS RangeError
+PlainYearMonth.from("2020-00") => THROWS RangeError
+PlainYearMonth.from("2020-13") => THROWS RangeError
+PlainYearMonth.from("2020-01-01") => 2020-01
+PlainYearMonth.from("2020-01[u-ca=gregory]") => THROWS RangeError
+PlainYearMonth.from("2020-01[u-ca=iso8601]") => 2020-01
+PlainYearMonth.from("2020-01[!u-ca=iso8601]") => 2020-01
+PlainYearMonth.from("2020-01[u-ca=ISO8601]") => 2020-01
+PlainYearMonth.from("1976-11[u-ca=ISO8601]") => 1976-11
+PlainYearMonth.from("2020-01-01[u-ca=gregory]") => 2020-01-01[u-ca=gregory]
+PlainYearMonth.from("2020-01-15[u-ca=hebrew]") => 2019-12-29[u-ca=hebrew]
+PlainYearMonth.from("2020-01[UTC]") => 2020-01
+PlainYearMonth.from("2020-01[foo=bar]") => 2020-01
+PlainYearMonth.from("2020-01T12:00") => THROWS RangeError
+PlainYearMonth.from("2020-01Z") => THROWS RangeError
+PlainYearMonth.from("202001[u-ca=gregory]") => THROWS RangeError
+PlainYearMonth.from("2020-02-30[u-ca=gregory]") => THROWS RangeError
+PlainYearMonth.from("+275760-09") => +275760-09
+PlainYearMonth.from("+275760-10") => THROWS RangeError
+PlainYearMonth.from("-271821-04") => -271821-04
+PlainYearMonth.from("-271821-03") => THROWS RangeError
+PlainYearMonth.from("-271821-04-01[u-ca=gregory]") => -271821-04-01[u-ca=gregory]
+PlainYearMonth.from("2020-01[u-ca=chinese]") => THROWS RangeError
+PlainMonthDay.from("01-01") => 01-01
+PlainMonthDay.from("0101") => 01-01
+PlainMonthDay.from("--01-01") => 01-01
+PlainMonthDay.from("--0101") => 01-01
+PlainMonthDay.from("-01-01") => THROWS RangeError
+PlainMonthDay.from("---01-01") => THROWS RangeError
+PlainMonthDay.from("--1-01") => THROWS RangeError
+PlainMonthDay.from("02-29") => 02-29
+PlainMonthDay.from("02-30") => THROWS RangeError
+PlainMonthDay.from("04-31") => THROWS RangeError
+PlainMonthDay.from("00-01") => THROWS RangeError
+PlainMonthDay.from("13-01") => THROWS RangeError
+PlainMonthDay.from("01-00") => THROWS RangeError
+PlainMonthDay.from("01-32") => THROWS RangeError
+PlainMonthDay.from("--01-01[u-ca=iso8601]") => 01-01
+PlainMonthDay.from("11-18[+01:00][u-ca=ISO8601]") => 11-18
+PlainMonthDay.from("01-01[u-ca=gregory]") => THROWS RangeError
+PlainMonthDay.from("01-01[!u-ca=iso8601]") => 01-01
+PlainMonthDay.from("2020-01-01[u-ca=gregory]") => 1972-01-01[u-ca=gregory]
+PlainMonthDay.from("2021-02-29") => THROWS RangeError
+PlainMonthDay.from("2020-02-29") => 02-29
+PlainMonthDay.from("01-01T12:00") => THROWS RangeError
+PlainMonthDay.from("--01-01T12:00") => THROWS RangeError
+PlainMonthDay.from("01-01[UTC]") => 01-01
+PlainMonthDay.from("01-01Z") => THROWS RangeError
+PlainMonthDay.from("2020-01-01[u-ca=hebrew]") => 1972-12-09[u-ca=hebrew]
+PlainMonthDay.from("1972-02-29[u-ca=gregory]") => 1972-02-29[u-ca=gregory]
+PlainMonthDay.from("+275760-09-13[u-ca=gregory]") => 1972-09-13[u-ca=gregory]
+PlainMonthDay.from("-271821-04-19[u-ca=gregory]") => 1972-04-19[u-ca=gregory]
+PlainMonthDay.from("-271821-04-19[u-ca=hebrew]") => 1972-07-15[u-ca=hebrew]
+PlainMonthDay.from("+275760-09-13[u-ca=hebrew]") => 1972-05-24[u-ca=hebrew]
+ZonedDateTime.from("2020-01-01[UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00Z[UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00z[UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00+00:00[UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00") => THROWS RangeError
+ZonedDateTime.from("2020-01-01Z[UTC]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00Z") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[!UTC]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00[u-ca=iso8601][UTC]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[foo=bar][UTC]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[UTC][foo=bar]") => 2020-01-01T00:00:00+00:00[UTC]
+ZonedDateTime.from("2020-01-01T00:00[UTC][!foo=bar]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[UTC][u-ca=hebrew]") => 2020-01-01T00:00:00+00:00[UTC][u-ca=hebrew]
+ZonedDateTime.from("2020-01-01T00:00[+01:00]") => 2020-01-01T00:00:00+01:00[+01:00]
+ZonedDateTime.from("2020-01-01T00:00[+0100]") => 2020-01-01T00:00:00+01:00[+01:00]
+ZonedDateTime.from("2020-01-01T00:00[+01]") => 2020-01-01T00:00:00+01:00[+01:00]
+ZonedDateTime.from("2020-01-01T00:00[-00:00]") => 2020-01-01T00:00:00+00:00[+00:00]
+ZonedDateTime.from("2020-01-01T00:00[+01:00:00]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00[europe/berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00[]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[!]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00[Mars Olympus]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01[u-ca=iso8601][UTC]") => THROWS RangeError
+ZonedDateTime.from("2020-01[UTC]") => THROWS RangeError
+ZonedDateTime.from("01-01[UTC]") => THROWS RangeError
+ZonedDateTime.from("T00:00[UTC]") => THROWS RangeError
+ZonedDateTime.from("2020-01-01T00:00+01:00[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00+0100[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00+01[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00+01:00:00[Europe/Berlin]") => 2020-01-01T00:00:00+01:00[Europe/Berlin]
+ZonedDateTime.from("2020-01-01T00:00+01:00:00.000000001[Europe/Berlin]") => THROWS RangeError
+ZonedDateTime.from("1970-01-01T00:00-00:44:30[Africa/Monrovia]") => 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+ZonedDateTime.from("1970-01-01T00:00-00:45[Africa/Monrovia]") => 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+ZonedDateTime.from("1970-01-01T00:00-00:44[Africa/Monrovia]") => THROWS RangeError
+ZonedDateTime.from("1970-01-01T00:00-00:44:30.0[Africa/Monrovia]") => 1970-01-01T00:00:00-00:45[Africa/Monrovia]
+ZonedDateTime.from("1970-01-01T00:00-0044[Africa/Monrovia]") => THROWS RangeError
+Instant.from("2020-01-01T00:00Z") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00") => THROWS RangeError
+Instant.from("2020-01-01") => THROWS RangeError
+Instant.from("2020-01-01Z") => THROWS RangeError
+Instant.from("2020-01-01T00Z") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00+01") => 2019-12-31T23:00:00Z
+Instant.from("2020-01-01T00:00Z[UTC]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[Mars/Olympus]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[u-ca=hebrew]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[!u-ca=hebrew]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[u-ca=unknowncal]") => 2020-01-01T00:00:00Z
+Instant.from("2020-01-01T00:00Z[!foo=bar]") => THROWS RangeError
+Instant.from("2020-01-01 00:00Z") => 2020-01-01T00:00:00Z
+Instant.from("20200101T0000Z") => 2020-01-01T00:00:00Z
+Instant.from("-271821-04-20T00:00Z") => -271821-04-20T00:00:00Z
+Instant.from("-271821-04-19T23:59:59.999999999Z") => THROWS RangeError
+Instant.from("-271821-04-19T00:00Z") => THROWS RangeError
+Instant.from("+275760-09-13T00:00Z") => +275760-09-13T00:00:00Z
+Instant.from("+275760-09-13T00:00:00.000000001Z") => THROWS RangeError
+Instant.from("-271821-04-19T23:00-01:00") => -271821-04-20T00:00:00Z
+Instant.from("+275760-09-13T01:00+01:00") => +275760-09-13T00:00:00Z
+Instant.from("+275760-09-14T00:00+01:00") => THROWS RangeError
+Instant.from("-271821-04-18T23:00-01:00") => THROWS RangeError
+PlainTime.from("2020-01-01T12:00") => 12:00:00
+PlainTime.from("2020-01-01") => THROWS RangeError
+PlainTime.from("2020-13-01T12:00") => THROWS RangeError
+PlainTime.from("2020-01-01T12:00[u-ca=hebrew]") => 12:00:00
+PlainTime.from("2020-01-01T12:00[u-ca=unknowncal]") => 12:00:00
+PlainTime.from("2020-01-01T12:00[!u-ca=hebrew]") => 12:00:00
+PlainTime.from("2020-01-01T12:00+01:00[Europe/Berlin]") => 12:00:00
+PlainDate.from("2020-01-01[u-ca=GREGORY]") => 2020-01-01[u-ca=gregory]
+PlainDate.from("2020-01-01[u-ca=Gregory]") => 2020-01-01[u-ca=gregory]
+PlainDate.from("2020-01-01[u-ca=ethiopic-amete-alem]") => 2020-01-01[u-ca=ethioaa]
+PlainDate.from("2020-01-01[u-ca=islamicc]") => 2020-01-01[u-ca=islamic-civil]
+PlainDate.from("2020-01-01[u-ca=gregorian]") => THROWS RangeError
+PlainDate.from("2020-01-01[u-ca=minguo]") => THROWS RangeError
+PlainDate.from("2020-01-01[u-ca=islamic]") => THROWS RangeError
+PlainDate.from("2020-01-01[u-ca=islamic-rgsa]") => THROWS RangeError>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/g05-goals.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/g05-goals.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/g05-goals.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
