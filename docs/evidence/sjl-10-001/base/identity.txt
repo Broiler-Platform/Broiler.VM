@@ -1,0 +1,13 @@
+bundle sjl-10-001, the Temporal core's base
+milestone SJL-10, the Temporal core; the base is this family after SJL-8
+collected 2026-10-18T11:42:00Z
+base-commit 99c9c9f0e32aa74e564b82aa24c0b05a58aab00b
+base-tree clean
+rule docs/evidence/sjl-10-001/decision-rule-area.md sha256=80dc072302a7824d0bf7ad7aaba7800ae493a248f6978733cf391adc59756593
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+twin-allowance ceiling=1000000000 wallClockMs=600000
+native-backend x86-64-sysv
+twin-folders src/tests/forms/wide
+dataset-folders src/tests/temporal
+since-sjl-8-merge 047dcec1efe21faf516d8acb207fe2adf180dbf7, outside the documents: none
