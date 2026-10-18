@@ -45,7 +45,25 @@
     "database; JsZoneNames, which reads the database's regions, rules and daylight flag; the calendar systems' Year, which",
     "reads CalendarYears through JsCalendarSystem.SharedYear; and JsIntlTables.TimeZones and Calendars, which build the",
     "database and the tables once per data instance. JsZone.MondayFirst, which SJL-6.4's paragraph names as an adapter",
-    "that stays, went with its type: the zone rules it fed are the shared library's."
+    "that stays, went with its type: the zone rules it fed are the shared library's.",
+    "",
+    "SJL-10.4 (JSD-0079, applying JSD-0078): the Temporal core, whose shared home is Broiler.ECMAScript.Algorithms'",
+    "Temporal namespace. The types deleted whole are registered by type: JsTemporalCore and the records it declared",
+    "(JsIsoDate, JsTimeRecord, JsIsoDateTime, JsDateDuration, JsInternalDuration and TemporalUnit), the parser's",
+    "TemporalGoal and JsTemporalParse, JsCalendarDate, JsDifferenceSettings, JsPrecision, JsFraction, JsRelativeTo and",
+    "JsNudge, and JsCalendars.cs's types. The members cut from the types that stay are registered by member: JsTemporal's",
+    "option rules, calendars, strings and duration arithmetic, JsTemporalParser's productions and parse state, and",
+    "JsCalendarFields' Has and CopyFrom. What stays as adapters is not here: JsTemporalParser's Parse, Instant,",
+    "Duration, CalendarString and TimeZoneString, which call TemporalGrammar and raise each TemporalParseError as a",
+    "RangeError; JsTemporal's option reads (Overflow, Show*Option, RoundingModeOption, RoundingIncrement,",
+    "FractionalSecondDigits, UnitOption, DifferenceSettingsOf), which read in the specification's order and hold each",
+    "value to TemporalOptionRules; the calendar adapters (CanonicalizeCalendar, CalendarIdOf, Calendars, PrepareFields,",
+    "MergeFields, DateFromFields, YearMonthFromFields, MonthDayFromFields, DateAdd, IsoToDate and DateToFields), which call",
+    "TemporalCalendars and map each CalendarStatus in CalendarError; RelativeToOption and InterpretDateTimeOffset, which",
+    "resolve relativeTo and a wall time's instant; TimeZoneOf, which hands a zone to the core as TemporalTimeZone; and",
+    "the realm files' methods, which keep their reads and map each TemporalStatus in StatusError. JsTemporalCore.AddDays,",
+    "which SJL-6.4's paragraph names as an adapter that stays, went with its type, and so did the calendar systems' Year",
+    "and JsCalendarSystem.SharedYear, which SJL-8.5's paragraph names: the shared calendars read CalendarYears themselves."
   ],
   "retired": [
     {
@@ -1187,6 +1205,741 @@
       "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore.FormatOffsetMinutes",
       "milestone": "SJL-8.5",
       "replacedBy": "Broiler.ECMAScript.Time.OffsetTimeZones.FormatOffsetIdentifier"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCalendarDate",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.CalendarDate, which TemporalCalendars.IsoToDate answers"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCalendarSystem",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars, which holds every calendar but ISO 8601's system"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCalendarYear",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars' calendar years, over Broiler.ECMAScript.Time.CalendarYears for the table calendars"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCalendars",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars, one per Intl data over the shared CalendarTables (JsIntlTables.Calendars)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCopticCalendar",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars: coptic, ethiopic and ethioaa"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateDuration",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DateDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDifferenceSettings",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DifferenceSettings, which TemporalOptionRules.TryGetDifferenceSettings answers"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsEastAsianCalendar",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars: chinese and dangi, over CalendarYears"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsFraction",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath's exact totals, each an exact ratio rounded once"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsGregorianCalendar",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars: gregory, buddhist, roc and japanese"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsHebrewCalendar",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars: hebrew"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsHijriCalendar",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars: islamic-civil, islamic-tbla and islamic-umalqura"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIndianCalendar",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars: indian"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsInternalDuration",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.InternalDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIsoDate",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoDate, which the shared Temporal core extends (JSD-0078, decision D8)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIsoDateTime",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoDateTime (decision D8)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNudge",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundRelativeDuration's nudges"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPersianCalendar",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars: persian, over CalendarYears"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPrecision",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.SecondsStringPrecision, which TemporalOptionRules.ToSecondsStringPrecisionRecord answers"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRelativeTo",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.RelativeTo, which JsTemporal.RelativeToOption resolves"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalCore",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalLimits, IsoArithmetic, DurationMath and TemporalFormat: the records' limits, balancing, rounding, the duration operations and the string forms"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParse",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.IsoParseResult, which TemporalGrammar.TryParse answers"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTimeRecord",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Time.IsoTime, its overflow days answered beside it by Broiler.ECMAScript.Temporal.IsoArithmetic (decision D8)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.TemporalGoal",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGoal, the goals of TemporalGrammar.TryParse"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.TemporalUnit",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalUnit"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCalendarFields.CopyFrom",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.MergeFields, over CalendarFields"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCalendarFields.Has",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.MergeFields, over CalendarFields"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.Add24HourDays",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.Add24HourDaysToTimeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.AddTimeDuration",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.AddTimeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.AdjustDate",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.CreateDateDurationRecord, inside the relative machinery"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.AsciiLower",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.Canonicalize, which folds ASCII case alone"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.AvailableCalendars",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.Canonicalize, behind JsTemporal.CanonicalizeCalendar"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.BalanceMonths",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars' month arithmetic"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.BubbleRelativeDuration",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundRelativeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.CalendarAnnotation",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalFormat.FormatCalendarAnnotation"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.CalendarPoint",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateUntil"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.CalendarYear",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.ComputeNudgeWindow",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundRelativeDuration and TotalRelativeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.ConstrainMonthCode",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars' month codes under the overflow"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DateDurationDays",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.DateDurationDays"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DateDurationRecord",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.CreateDateDurationRecord"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DateString",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalFormat.DateToString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DateSurpasses",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateUntil"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DateTimeString",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalFormat.DateTimeToString and TryPlainDateTimeToString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DateToIso",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateFromFields"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DateUntil",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateUntil, which the shared differences call"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DifferenceInstant",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalDifferences.DifferenceInstant"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DifferenceIsoDateTime",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalDifferences.DifferenceIsoDateTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DifferencePlainDateTimeWithRounding",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalDifferences.DifferencePlainDateTimeWithRounding"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DifferencePlainDateTimeWithTotal",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalDifferences.DifferencePlainDateTimeWithTotal"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DifferenceSettings",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalOptionRules.TryGetDifferenceSettings, behind JsTemporal.DifferenceSettingsOf, which keeps the four reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DifferenceZonedDateTime",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalDifferences.DifferenceZonedDateTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DifferenceZonedDateTimeWithRounding",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalDifferences.DifferenceZonedDateTimeWithRounding"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.DifferenceZonedDateTimeWithTotal",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalDifferences.DifferenceZonedDateTimeWithTotal"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.EpochFor",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath's relative machinery, through ITimeZoneArithmetic"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.FieldsType",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.CalendarFieldsType"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.IsValidMonthCode",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars' month codes (Table 3)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.IsoOf",
+      "milestone": "SJL-10.4",
+      "replacedBy": "the shared records, which the zone operations take directly (decision D8)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.KeysToIgnore",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.MergeFields, behind JsTemporal.MergeFields"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.MaxDay",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars' limits, through TemporalLimits"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.MaxDaysInMonth",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.MonthDayFromFields"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.MinDay",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars' limits, through TemporalLimits"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.MonthDayString",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalFormat.MonthDayToString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.Negated",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.Negate"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NonIsoDateAdd",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateAdd (NonISODateAdd)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NonIsoDateToIso",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateFromFields (NonISOCalendarDateToISO)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NonIsoDateUntil",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateUntil (NonISODateUntil)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NonIsoMonthDayToReferenceDate",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.MonthDayFromFields, with Table 6"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NonIsoResolveFields",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateFromFields (the era proposal's NonISOResolveFields)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NonIsoToDate",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.IsoToDate (NonISOCalendarISOToDate)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NudgeToCalendarUnit",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundRelativeDuration and TotalRelativeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NudgeToDayOrTime",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundRelativeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NudgeToZonedTime",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundRelativeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.NudgeWindow",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundRelativeDuration's ComputeNudgeWindow"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.OffsetHasSeconds",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.IsoParseResult.OffsetHasSeconds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.ParseCalendarString",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar.TryParseCalendarString, behind JsTemporalParser.CalendarString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.Pow10",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalOptionRules.ToSecondsStringPrecisionRecord"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.Precision",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalOptionRules.ToSecondsStringPrecisionRecord"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.ReferenceDate",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.MonthDayFromFields (the reference dates from 1900 to 2035)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.RegulateDate",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.IsoArithmetic.RegulateIsoDate, inside TemporalCalendars"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.Regulated",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars under the overflow"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.Reject",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalOptionRules.TryParseOverflow, behind JsTemporal.Overflow, which keeps the read"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.ResolveFields",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars' DateFromFields, YearMonthFromFields and MonthDayFromFields, which resolve the fields"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.RoundInstant",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.IsoArithmetic.RoundTemporalInstant"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.RoundRelativeDuration",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundRelativeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.RoundTimeDuration",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundTimeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.RoundTimeDurationToIncrement",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.RoundTimeDurationToIncrement"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.RoundingModeNames",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Numbers.ExactRounding.TryParseRoundingMode, behind JsTemporal.RoundingModeOption"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.ShowCalendar",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalOptionRules.TryParseShowCalendarName, behind JsTemporal.ShowCalendarOption, which keeps the read"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.ShowOffset",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalOptionRules.TryParseShowOffset, behind JsTemporal.ShowOffsetOption, which keeps the read"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.ShowTimeZone",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalOptionRules.TryParseShowTimeZoneName, behind JsTemporal.ShowTimeZoneOption, which keeps the read"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.SupportsEra",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.SupportsEra"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.Surpasses",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateUntil"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.SurpassesByCode",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateUntil"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.SurpassesByMonth",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars.DateUntil"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.SystemOf",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalCalendars, which JsTemporal.Calendars answers"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.TotalRelativeDuration",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.TotalRelativeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.TotalTimeDuration",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.DurationMath.TotalTimeDuration"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.UnitGroup",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalUnitGroup"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.UnitOptionValues",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalOptionRules.TryParseUnit, behind JsTemporal.UnitOption"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.YearBound",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Time.CalendarYears.MaxYearMagnitude, inside TemporalCalendars"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporal.YearMonthString",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalFormat.YearMonthToString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.AnnotatedDateTime",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.AnnotatedMonthDay",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.AnnotatedTime",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.AnnotatedYearMonth",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.Annotations",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.Bounded",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.DateDay",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.DateMonth",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.DateSpec",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.DateSpecMonthDay",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.DateSpecYearMonth",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.DateTimeOffset",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.DateYear",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.Digits",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.Eat",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.EatAny",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.Fraction",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.IsAlpha",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.IsAnnotationKey",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.IsAnnotationValue",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar.IsAnnotationValue, inside TryParseCalendarString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.IsDigit",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.IsTimeZoneIdentifier",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar.IsTimeZoneIdentifier and TryParseTimeZoneIdentifier"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.IsUtcOffset",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar.IsUtcOffset and TryParseOffsetString"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.IsWhole",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.OffsetNanoseconds",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar.TryParseOffsetString and IsoParseResult.OffsetNanoseconds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.Peek",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.PeekNotDigit",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.Reset",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.TimeSpec",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.TimeZoneIanaName",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.TimeZoneIdentifier",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.UtcOffset",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.annotations",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.at",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.day",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.fraction",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.hour",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.minute",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.month",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.offset",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.second",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.text",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.timeZone",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.year",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.z",
+      "milestone": "SJL-10.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
     }
   ]
 }

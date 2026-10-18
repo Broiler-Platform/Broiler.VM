@@ -647,8 +647,9 @@ solar terms (`src/cal/east_asian_traditional/simple.rs`), which `CalendarYears` 
 **`Broiler.ECMAScript.Algorithms`** answers beyond the table and which that package's own
 `THIRD_PARTY_NOTICES.md` and its row among the ingesting components above name; this repository
 no longer compiles a copy. The table is read by that package's `CalendarTables`, and the calendars'
-arithmetic that stays in `src/Broiler.VM.Profile.JavaScript/JsCalendars.cs` is written from
-*Calendrical Calculations*' published formulas and the calendars' own rules. *(Revised 2026-10-17,
+arithmetic, in that package's `TemporalCalendars` since programme milestone SJL-10.4, is written from
+*Calendrical Calculations*' published formulas and the calendars' own rules; this repository compiles
+none of it. *(Revised 2026-10-17,
 programme milestone SJL-8.5 (JSD-0076), when the generator moved from this repository's architecture
 tests to the Broiler.JS repository, the time data home, under decision SJL-D-6 (c); the pin, the
 crates and the generated file stay here, unchanged. The paragraph began "`CalendarTableGenerator`
@@ -661,7 +662,11 @@ Chinese or Korean year by mean new moons and mean solar terms
 **`Broiler.VM.Profile.JavaScript.dll`**; that port is a derivative of Unicode-licensed software, and
 this entry is the notice the licence's condition (b) asks associated documentation to carry. The other
 calendars' arithmetic in that file is written from", and the entry's opening sentence read "a table
-generated from them, and code ported from one of them:".)*
+generated from them, and code ported from one of them:". Revised 2026-10-18, at programme milestone
+SJL-10.4's cut-over (JSD-0079), when the calendars' arithmetic moved to the same package with the
+Temporal core and `JsCalendars.cs` was deleted. The sentence read "and the calendars' arithmetic that
+stays in `src/Broiler.VM.Profile.JavaScript/JsCalendars.cs` is written from *Calendrical
+Calculations*' published formulas and the calendars' own rules.")*
 
 **Used to test, not shipped.** `src/tests/temporal/calendars/icu4x-reference.rs` is a program this
 repository wrote; built against the archived crates and the `icu_calendar_data` 2.3.0 crate, which is
