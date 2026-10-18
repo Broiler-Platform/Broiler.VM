@@ -283,4 +283,18 @@ covers in the Broiler.JS repository (`Broiler.ECMAScript/assurance.config.json`)
 covered here. The exclusion is filed with SJL-10.6's evidence, in this bundle's exclusion section, as SJL-8.7 filed
 EX-131 for the time-zone and calendar code: rule H2 reads a definition only there.
 
+**The published packages.** *(Added 2026-10-18, later.)* Both packages were published to nuget.org later the
+same day, from Broiler.JS `fc829f8a`, a merge whose tree is `bf81d1b7`'s, and the committed feed now holds them
+as published ([JSC-315](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-315)). The
+checks above used the copies packed from `bf81d1b7`. With the published packages:
+- a locked restore with an empty package cache succeeds, and the solution builds in Release with no warning;
+- the architecture tests and the contract tests pass;
+- the conformance root's run on revision 25 gives a report identical byte for byte to
+  `cut-over-revision-25.tsv.gz`'s, and prints the lines `cut-over-revision-25.log` holds below its collector
+  header;
+- its negative control prints the lines `cut-over-negative-control-revision-25.log` holds below its collector
+  header, and its report is the one the cut-over's negative control wrote, byte for byte.
+
+Neither run is retained, since neither differs.
+
 SJL-10.6 judges parts A to C; this section judges nothing.

@@ -43,8 +43,9 @@ package rule I1 admits for shipping, for the projects that declare it and no oth
 - `Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms package, which
   `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.6` since the Temporal
   core's cut-over (SJL-10.4, on
-  [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)), packed from
-  Broiler.JS `bf81d1b` and not yet on nuget.org, as the baseline's candidate pack does; they declared it
+  [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)), published to
+  nuget.org from Broiler.JS `fc829f8`, whose library code is that of `bf81d1b`, from which the baseline's
+  candidate pack took its copy; they declared it
   at `0.1.0-preview.5` from the time-zone and calendar cut-over (SJL-8.5, on
   [JSD-0076](decisions/0076-time-zone-and-calendar-data-move-to-the-data-home.md)), published to nuget.org
   from Broiler.JS `a04cd44`, until then, at `0.1.0-preview.4` from the Date cut-over
@@ -56,7 +57,9 @@ package rule I1 admits for shipping, for the projects that declare it and no oth
   ([JSD-0069](decisions/0069-the-profile-on-the-shared-numerics.md)), and at `0.1.0-preview.1` from the
   number-conversion cut-over
   ([JSD-0066](decisions/0066-the-profile-on-the-shared-number-conversions.md))
-  *(corrected: JSC-301, JSC-303, JSC-304, JSC-306, JSC-308, JSC-312, JSC-314)*;
+  *(corrected: JSC-301, JSC-303, JSC-304, JSC-306, JSC-308, JSC-312, JSC-314, JSC-315; until JSC-315 it
+  read "packed from Broiler.JS `bf81d1b` and not yet on nuget.org, as the baseline's candidate pack does"
+  where it names the publication)*;
 - `Broiler.Unicode.Algorithms`, the Unicode area's code package, which all four declare at
   `0.1.0-preview.5`, published to nuget.org from Broiler.Unicode `b802014` on 2026-10-17; they declared
   it at `0.1.0-preview.4`, from Broiler.Unicode `6e14f93`, from the Unicode cut-over (JSD-0075, on

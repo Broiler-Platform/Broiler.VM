@@ -7,14 +7,32 @@
 # file of a project that references it records `content-hash`, and rule I1 holds that hash to this
 # pin and to the allow-list.
 #
-# HOW IT WAS TAKEN. Packed on 2026-10-18 in the Broiler.JS repository, from `upstream-commit`, in a
-# clean checkout of it, with `dotnet pack Broiler.ECMAScript/Broiler.ECMAScript.Algorithms -c Release
+# HOW IT WAS TAKEN. The package exactly as the Broiler.JS repository's publish-shared workflow pushed
+# it to nuget.org on 2026-10-18 (run 39161419185, its artifact shared-packages, whose digest GitHub
+# records as sha256:9ee7cd6154c93c5462f1e0329a2c98c1657cdeb8011331f12a805b360260316d and the zip as
+# downloaded has), packed from `upstream-commit`; the nuspec's repository element records the same
+# commit, which rule I7 reads. nuget.org serves the same package with its repository signature
+# (.signature.p7s) added: the package downloaded from nuget.org, with that entry taken out, is this
+# file byte for byte. NuGet's content hash of a signed package leaves the signature out, so a restore
+# from either source records `content-hash`, the base64 SHA-512 of this file's bytes. `sha256` is over
+# the same bytes.
+#
+# (Revised 2026-10-18, when the package was published. Until then this feed held a copy packed locally
+# from Broiler.JS bf81d1b7. The published commit is a merge of bf81d1b7 onto Broiler.JS's main whose
+# tree is bf81d1b7's: nothing under Broiler.ECMAScript/ changes, so the library code is the same; the
+# package differs in the commit its nuspec and assembly record, the identifiers derived from them, the
+# case of the repository URL, and the branch the nuspec names. The paragraph read: "Packed on
+# 2026-10-18 in the Broiler.JS repository, from `upstream-commit`, in a clean checkout of it, with
+# `dotnet pack Broiler.ECMAScript/Broiler.ECMAScript.Algorithms -c Release
 # -p:ContinuousIntegrationBuild=true`; Broiler.ECMAScript/Directory.Build.props sets the version,
-# 0.1.0-preview.6, at that commit. The nuspec's repository element records the same commit, which
-# rule I7 reads. `content-hash` is NuGet's: the base64 SHA-512 of the .nupkg's bytes, which is what a
-# lock file records. `sha256` is over the same bytes. It is not on nuget.org: a Broiler.VM package
-# release that depends on it waits for its publication (eng/verify-feed.ps1), and the pin is then
-# taken again from the published package, as 0.1.0-preview.5's was.
+# 0.1.0-preview.6, at that commit. The nuspec's repository element records the same commit, which rule I7
+# reads. `content-hash` is NuGet's: the base64 SHA-512 of the .nupkg's bytes, which is what a lock file
+# records. `sha256` is over the same bytes. It is not on nuget.org: a Broiler.VM package release that
+# depends on it waits for its publication (eng/verify-feed.ps1), and the pin is then taken again from the
+# published package, as 0.1.0-preview.5's was." The identity lines read:
+#   content-hash KNGZ/UcJQusRVUjFsm8f8wHKUCxAYDl+Am08iuXXCgphPP1ohyGjPp2CPZDS3TwRE6e6w90N9B7l0AfJngIs8A==
+#   sha256 36af64c674e51bed5cc9461d45f89dcf64bba18b03e689dd01a652a69d380aee
+#   upstream-commit bf81d1b7b468d8235b672ed7dfc0327c26a4843c)
 #
 # WHAT IT IS. The Temporal core of the shared algorithms library (milestone SJL-10.3; Broiler.VM's
 # JSD-0078), namespace Broiler.ECMAScript.Temporal - the records and limits, balancing, regulation and
@@ -27,12 +45,13 @@
 # no third-party component beyond 0.1.0-preview.5's; its Temporal code is ported from this
 # repository's JsTemporalCore, JsTemporalParser, JsTemporal and JsCalendars, which its
 # THIRD_PARTY_NOTICES.md names. It carries no table: the calendar years are read from the tables
-# each engine embeds (decision SJL-D-6 (c)).
+# each engine embeds (decision SJL-D-6 (c)). It is on nuget.org since 2026-10-18, as a Broiler.VM
+# package release that depends on it requires (eng/verify-feed.ps1).
 
 id Broiler.ECMAScript.Algorithms
 version 0.1.0-preview.6
 file Broiler.ECMAScript.Algorithms.0.1.0-preview.6.nupkg
-content-hash KNGZ/UcJQusRVUjFsm8f8wHKUCxAYDl+Am08iuXXCgphPP1ohyGjPp2CPZDS3TwRE6e6w90N9B7l0AfJngIs8A==
-sha256 36af64c674e51bed5cc9461d45f89dcf64bba18b03e689dd01a652a69d380aee
+content-hash PERCRai0B9fgQc9YeyREvInd0sdJUDdoiHmBoku6M8BZPzYLrXBaC+AKTpMNRtFFMs1rM8NO4vAEmTvRbzQfgQ==
+sha256 e83be39876b9489ab101ca018e953523a51c6f58fadee95b9e8aa5bc31581f64
 upstream Broiler-Platform/broiler.js
-upstream-commit bf81d1b7b468d8235b672ed7dfc0327c26a4843c
+upstream-commit fc829f8a507295185527e4175e70d74e15630fd1

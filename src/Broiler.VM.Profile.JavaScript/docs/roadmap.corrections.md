@@ -13483,3 +13483,31 @@ says. Each record quotes what it read before.
 **Authority and date.** The programme's work package SJL-10.4, on
 [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md), whose cut-over this
 admission begins. 2026-10-18.
+
+### JSC-315
+
+**Where:** the records that carry the two packages' identities: the committed feed `eng/packages/` with its
+README and the packages' pins, the allow-list's entries, the three lock files and `THIRD_PARTY_NOTICES.md`'s
+rows for the packages; and [`packages.md`](packages.md), the paragraph "No foreign dependency".
+[JSD-0079](decisions/0079-the-profile-on-the-shared-temporal-core.md) is not edited.
+
+**What the plan said.** JSD-0079 section 1: `Broiler.ECMAScript.Algorithms` and the test-only
+`Broiler.ECMAScript.Generation` `0.1.0-preview.6`, "packed locally from Broiler.JS
+`bf81d1b7b468d8235b672ed7dfc0327c26a4843c`" and restored from the committed feed, "not on nuget.org at this
+record". And [JSC-314](#jsc-314): "packed from Broiler.JS `bf81d1b` and not yet on nuget.org".
+
+**What replaced it.** The version does not move. Broiler.JS's publish-shared workflow published both
+packages at `0.1.0-preview.6` to nuget.org on 2026-10-18 (run 39161419185) from Broiler.JS `fc829f8a`, and
+tagged them `ecmascript-v0.1.0-preview.6`; the feed holds them exactly as that run pushed them, which is
+nuget.org's package with its repository signature taken out. `fc829f8a` is a merge of `bf81d1b7` onto
+Broiler.JS's main whose tree is `bf81d1b7`'s: nothing under `Broiler.ECMAScript/` changes between them, so
+the library code is the same. Each package differs in the commit its nuspec and assembly record, the
+identifiers derived from them, the case of the repository URL, and the branch its nuspec names. Their
+content hashes differ, so the pins, the allow-list (whose sources already name nuget.org), the lock files
+and the notices rows record the published packages; each quotes what it read before. A restore from
+nuget.org alone records the same content hashes. Rule I1's witness keeps its own hash and does not move.
+`packages.md` names the publication. Everything else JSD-0079 decided stands.
+
+**Authority and date.** The owner's instruction of 2026-10-18 to publish `0.1.0-preview.6`, on
+[JSD-0079](decisions/0079-the-profile-on-the-shared-temporal-core.md) section 1 and the programme's work
+package SJL-10.4. 2026-10-18.

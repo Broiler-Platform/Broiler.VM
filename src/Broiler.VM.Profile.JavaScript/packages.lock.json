@@ -6,7 +6,7 @@
         "type": "Direct",
         "requested": "[0.1.0-preview.6, )",
         "resolved": "0.1.0-preview.6",
-        "contentHash": "KNGZ/UcJQusRVUjFsm8f8wHKUCxAYDl+Am08iuXXCgphPP1ohyGjPp2CPZDS3TwRE6e6w90N9B7l0AfJngIs8A=="
+        "contentHash": "PERCRai0B9fgQc9YeyREvInd0sdJUDdoiHmBoku6M8BZPzYLrXBaC+AKTpMNRtFFMs1rM8NO4vAEmTvRbzQfgQ=="
       },
       "Broiler.Unicode.Algorithms": {
         "type": "Direct",
