@@ -1,0 +1,21 @@
+{
+ "bundle": "sjl-10-001",
+ "repository": "Broiler.VM",
+ "part": "the Temporal core (SJL-10.1 onwards)",
+ "baseCommit": "99c9c9f0e32aa74e564b82aa24c0b05a58aab00b",
+ "afterCommit": "(absent)",
+ "notListed": "correspondence-runs/, the correspondence's own record of its probes and both engines' answers",
+ "files": {
+  "base/build-cli.log": "c687e4818a4519e03ff769dfda165b91fb34dbb0d0cba082e4a2bdc1cbb8c2a9",
+  "base/datasets/build-slicecompiler.log": "a7ef543cc19dc1d892ca5f3edcf571eb8b7c87cbf45de7d14df3349f63f83ff1",
+  "base/datasets/checks-again.log": "13b1e6c8e4e5107af7d72c078a36eef856db7e95e31aed96859301e8c9ad8ffc",
+  "base/datasets/checks.log": "e2a7e2155745b0b6d781ee4587749ba5a0d5d686043438d74f8ac8470407999a",
+  "base/datasets/files.sha256": "106bf7452b8a6190ddbe0023c35baedab9d3aba73b843cc6d1bebf3c3968d9a5",
+  "base/datasets/named-checks.txt": "65314486f25a66d9a5ec9b58d180def0d29f68007c55b80fd5945098590c018c",
+  "base/fuel-parity.log": "40911cdad67eae02b1f845f8f4f3ff8ba03ab1284a949bf2baa16a6c87f94f56",
+  "base/identity.txt": "f5bfff106f71879d4181c969957394ce0275f54c8616b8e71a8917a79b4f5e3c",
+  "collect-area.py": "45d7b6c8aa249892b81cc04498bc30e60c769552997e1fc051cee1c92c9718d8",
+  "correspondence.md": "e04f7bceffc437c5980681e4ab2819d66d7f1b3d72447a909da343f658e1c904",
+  "decision-rule-area.md": "80dc072302a7824d0bf7ad7aaba7800ae493a248f6978733cf391adc59756593"
+ }
+}
