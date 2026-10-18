@@ -21,7 +21,7 @@ repository holds it the way it holds test262: as the archive of one named revisi
 
 ```bash
 dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.Conformance -c Release -- \
-  --vectors src/tests/vectors/pins/broiler-js-vectors-2d496a5544937e1fcf39b59d45e7eee95ecccd2b.tar.gz \
+  --vectors src/tests/vectors/pins/broiler-js-vectors-66b77088c6705032e5beea64fa48c37f5ba31c77.tar.gz \
   --expect src/tests/vectors/pins/vectors.pin --report vectors-report.tsv
 ```
 
@@ -52,5 +52,11 @@ ECMA-262 clauses by their identifiers and states which code points a set holds. 
 revision is derived from test262: eight vectors of the Date area name a test262 test in their
 provenance, as a test that confirms their expected value, and their scripts and values are the
 corpus's own. *(Revised 2026-10-15, at SJL-6.2, when the pin moved to revision 15. The sentence
-ended at "derived from test262.")* [`THIRD_PARTY_NOTICES.md`](../../../../THIRD_PARTY_NOTICES.md)
-lists it with the other material this repository ingests.
+ended at "derived from test262.")* The Temporal area, from revision 24, names clauses of the Temporal
+proposal's text and of the Intl era and month code proposal's the same way, by identifier, and quotes
+neither. Its expected values are the answers of the Temporal proposal's reference polyfill at
+`e8cc03fc`, which is under the ISC licence, except where the pinned text rules: the corpus holds those
+answers and none of the polyfill's code or text, as this repository holds its own datasets' polyfill
+answers. *(Added 2026-10-18, at SJL-10.2, when the pin moved to revision 25.)*
+[`THIRD_PARTY_NOTICES.md`](../../../../THIRD_PARTY_NOTICES.md) lists it with the other material this
+repository ingests.
