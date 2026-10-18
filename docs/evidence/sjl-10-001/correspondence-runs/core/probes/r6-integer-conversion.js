@@ -1,0 +1,22 @@
+// R6: integers too large for the engines' fields, given to constructors and property bags.
+t('new PlainDate(2**31, 1, 1)', function () { return new T.PlainDate(Math.pow(2, 31), 1, 1); });
+t('new PlainDate(2**32 + 2020, 1, 1)', function () { return new T.PlainDate(Math.pow(2, 32) + 2020, 1, 1); });
+t('new PlainDate(2**53, 1, 1)', function () { return new T.PlainDate(Math.pow(2, 53), 1, 1); });
+t('new PlainDate(2020, 2**32 + 1, 1)', function () { return new T.PlainDate(2020, Math.pow(2, 32) + 1, 1); });
+t('new PlainDate(2020, 1, 2**32 + 1)', function () { return new T.PlainDate(2020, 1, Math.pow(2, 32) + 1); });
+t('new PlainDateTime(2020, 1, 1, 2**32)', function () { return new T.PlainDateTime(2020, 1, 1, Math.pow(2, 32)); });
+t('new PlainYearMonth(1e20, 1)', function () { return new T.PlainYearMonth(1e20, 1); });
+t('new PlainMonthDay(1, 1, undefined, 2**32 + 1972)', function () { return new T.PlainMonthDay(1, 1, undefined, Math.pow(2, 32) + 1972); });
+t('new PlainTime(2**32)', function () { return new T.PlainTime(Math.pow(2, 32)); });
+t('new PlainTime(2**32 + 1)', function () { return new T.PlainTime(Math.pow(2, 32) + 1); });
+t('PlainDate.from({year: 2**32 + 2020, month: 1, day: 1})', function () { return PD({ year: Math.pow(2, 32) + 2020, month: 1, day: 1 }); });
+t('PlainDate.from({year: 1e20, month: 1, day: 1})', function () { return PD({ year: 1e20, month: 1, day: 1 }); });
+t('PlainDate.from({year: 2020, month: 2**32 + 1, day: 1})', function () { return PD({ year: 2020, month: Math.pow(2, 32) + 1, day: 1 }); });
+t('PlainDate.from({year: 2020, month: 1, day: 2**32 + 1})', function () { return PD({ year: 2020, month: 1, day: Math.pow(2, 32) + 1 }); });
+t('PlainTime.from({hour: 2**32 + 1})', function () { return PT({ hour: Math.pow(2, 32) + 1 }); });
+t('PlainTime.from({hour: -(2**32) + 1})', function () { return PT({ hour: -Math.pow(2, 32) + 1 }); });
+t('PlainTime.from({hour: 2**32 + 1}, reject)', function () { return T.PlainTime.from({ hour: Math.pow(2, 32) + 1 }, { overflow: 'reject' }); });
+t('PlainDateTime("2020-01-01T00:00").with({year: 2**32 + 2020})', function () { return PDT('2020-01-01T00:00').with({ year: Math.pow(2, 32) + 2020 }); });
+t('PlainDateTime("2020-01-01T00:00").with({hour: 2**32 + 5})', function () { return PDT('2020-01-01T00:00').with({ hour: Math.pow(2, 32) + 5 }); });
+t('PlainYearMonth.from({year: 2020, month: 2**32 + 1})', function () { return PYM({ year: 2020, month: Math.pow(2, 32) + 1 }); });
+t('PlainDate("2020-01-01").with({day: 1e20})', function () { return PD('2020-01-01').with({ day: 1e20 }); });

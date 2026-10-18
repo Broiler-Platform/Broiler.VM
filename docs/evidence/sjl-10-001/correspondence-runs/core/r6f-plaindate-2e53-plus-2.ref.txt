@@ -1,0 +1,4 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+new PlainDate(2**53 + 2, 1, 1) => THROWS RangeError: +9007199254740994-01-01 is outside of supported range
+exit=0

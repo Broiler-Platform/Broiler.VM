@@ -1,0 +1,11 @@
+   2019-05 until 2021-03 largest month | VM: Temporal.Duration P22M | BJS: Temporal.Duration P22M | REF: Temporal.Duration P22M
+   2019-05 until 2021-03 smallest year halfExpand | VM: Temporal.Duration P2Y | BJS: Temporal.Duration P2Y | REF: Temporal.Duration P2Y
+   2021-03 since 2019-05 smallest year halfExpand | VM: Temporal.Duration P2Y | BJS: Temporal.Duration P2Y | REF: Temporal.Duration P2Y
+   2019-05 since 2021-03 smallest year floor | VM: Temporal.Duration -P2Y | BJS: Temporal.Duration -P2Y | REF: Temporal.Duration -P2Y
+   2019-05 until 2021-03 smallest month increment 5 halfExpand | VM: Temporal.Duration P1Y10M | BJS: Temporal.Duration P1Y10M | REF: Temporal.Duration P1Y10M
+~~ -271821-04 until -271821-05 | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Temporal.PlainYearMonth: difference is outside the supported ISO date range | REF: THROWS RangeError: -271821-04-01 is outside of supported range
+~~ -271821-05 until -271821-04 | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Temporal.PlainYearMonth: difference is outside the supported ISO date range | REF: THROWS RangeError: -271821-04-01 is outside of supported range
+   -271821-04 until -271821-04 | VM: Temporal.Duration PT0S | BJS: Temporal.Duration PT0S | REF: Temporal.Duration PT0S
+   +275760-09 since +275760-08 | VM: Temporal.Duration P1M | BJS: Temporal.Duration P1M | REF: Temporal.Duration P1M
+~~ +275760-08 until +275760-09 smallest year ceil | VM: THROWS RangeError: Temporal: the date is outside the representable range | BJS: THROWS RangeError: Temporal.PlainDate: result is out of range | REF: THROWS RangeError: +275761-08-01 is outside of supported range
+~~ 2019-05 until 2021-03 other calendar | VM: THROWS RangeError: Temporal: the calendars iso8601 and gregory differ | BJS: THROWS RangeError: Temporal.PlainYearMonth: cannot compute the difference between year-months of different calendars | REF: THROWS RangeError: cannot compute difference between months of iso8601 and gregory calendars

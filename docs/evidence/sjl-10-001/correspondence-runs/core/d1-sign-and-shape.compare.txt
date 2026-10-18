@@ -1,0 +1,10 @@
+   new Duration(0,0,0,0,0,0,0,0,0,-1).sign | VM: -1 | BJS: -1 | REF: -1
+   new Duration().sign | VM: 0 | BJS: 0 | REF: 0
+   new Duration().blank | VM: true | BJS: true | REF: true
+   Duration("P1D").negated() | VM: Temporal.Duration -P1D | BJS: Temporal.Duration -P1D | REF: Temporal.Duration -P1D
+   Object.is(Duration("P1D").negated().hours, 0) | VM: true | BJS: true | REF: true
+   Object.is(new Duration().negated().years, 0) | VM: true | BJS: true | REF: true
+   Duration("-P1DT1H").abs() | VM: Temporal.Duration P1DT1H | BJS: Temporal.Duration P1DT1H | REF: Temporal.Duration P1DT1H
+~~ Duration("P1D").with({hours: -1}) | VM: THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large | BJS: THROWS RangeError: Temporal.Duration fields must have a consistent sign | REF: THROWS RangeError: mixed-sign values not allowed as duration fields
+   Duration("P1D").with({days: -1}).sign | VM: -1 | BJS: -1 | REF: -1
+~~ Duration("P1D").with({}) | VM: THROWS TypeError: Temporal: a duration-like object needs at least one duration property | BJS: THROWS TypeError: Temporal.Duration.prototype.with requires at least one duration property | REF: THROWS TypeError: invalid duration-like

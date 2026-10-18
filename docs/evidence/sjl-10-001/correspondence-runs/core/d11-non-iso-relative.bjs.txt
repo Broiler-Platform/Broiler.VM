@@ -1,0 +1,10 @@
+{months: 1}.round({smallestUnit: "day", relativeTo: hebrew 2020-01-01}) => THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented
+{days: 45}.round({largestUnit: "month", relativeTo: hebrew 2020-01-01}) => THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented
+{days: 45}.total({unit: "month", relativeTo: hebrew 2020-01-01}) => THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented
+{days: 45}.total({unit: "month", relativeTo: PlainDate.withCalendar("islamic-civil")}) => THROWS Error: Temporal.Duration: a relativeTo with the "islamic-civil" calendar is not yet implemented
+{months: 13}.round({largestUnit: "year", relativeTo: hebrew 5784-01-01 (a leap year)}) => THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented
+{days: 45}.round({largestUnit: "month", relativeTo: "2020-01-01T00:00[UTC][u-ca=coptic]"}) => THROWS Error: Temporal.Duration: a relativeTo with the "coptic" calendar is not yet implemented
+{days: 45}.round({largestUnit: "month", relativeTo: {year: 5780, month: 4, day: 1, calendar: "hebrew"}}) => THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented
+{days: 45}.round({largestUnit: "month", relativeTo: "2020-01-01[u-ca=gregory]"}) => Temporal.Duration P1M14D
+{days: 45}.round({largestUnit: "month", relativeTo: "2020-01-01[u-ca=japanese]"}) => Temporal.Duration P1M14D
+exit=0

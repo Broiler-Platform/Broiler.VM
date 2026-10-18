@@ -1,0 +1,14 @@
+   2020-01-31 until 2020-03-01 month | VM: Temporal.Duration P1M1D | BJS: Temporal.Duration P1M1D | REF: Temporal.Duration P1M1D
+   2020-03-01 since 2020-01-31 month | VM: Temporal.Duration P1M1D | BJS: Temporal.Duration P1M1D | REF: Temporal.Duration P1M1D
+   2020-01-31 since 2020-03-01 month | VM: Temporal.Duration -P1M1D | BJS: Temporal.Duration -P1M1D | REF: Temporal.Duration -P1M1D
+   2020-03-01 until 2020-01-31 month | VM: Temporal.Duration -P1M1D | BJS: Temporal.Duration -P1M1D | REF: Temporal.Duration -P1M1D
+   2020-01-01 until 2020-03-01 week | VM: Temporal.Duration P8W4D | BJS: Temporal.Duration P8W4D | REF: Temporal.Duration P8W4D
+   2019-02-28 until 2020-02-29 year | VM: Temporal.Duration P1Y1D | BJS: Temporal.Duration P1Y1D | REF: Temporal.Duration P1Y1D
+   2020-02-29 until 2021-02-28 year | VM: Temporal.Duration P11M30D | BJS: Temporal.Duration P11M30D | REF: Temporal.Duration P11M30D
+   2021-02-28 until 2020-02-29 year | VM: Temporal.Duration -P11M28D | BJS: Temporal.Duration -P11M28D | REF: Temporal.Duration -P11M28D
+   2020-01-29 until 2020-02-28 month | VM: Temporal.Duration P30D | BJS: Temporal.Duration P30D | REF: Temporal.Duration P30D
+   2019-01-29 until 2019-03-01 month | VM: Temporal.Duration P1M1D | BJS: Temporal.Duration P1M1D | REF: Temporal.Duration P1M1D
+   -271821-04-19 until +275760-09-13 year | VM: Temporal.Duration P547581Y4M25D | BJS: Temporal.Duration P547581Y4M25D | REF: Temporal.Duration P547581Y4M25D
+   -271821-04-19 until +275760-09-13 day | VM: Temporal.Duration P200000001D | BJS: Temporal.Duration P200000001D | REF: Temporal.Duration P200000001D
+   +275760-09-13 since -271821-04-19 week | VM: Temporal.Duration P28571428W5D | BJS: Temporal.Duration P28571428W5D | REF: Temporal.Duration P28571428W5D
+   2020-01-01 until 2020-01-01 | VM: Temporal.Duration PT0S | BJS: Temporal.Duration PT0S | REF: Temporal.Duration PT0S

@@ -1,0 +1,18 @@
+   {hours: 23} round smallest day, NY spring | VM: Temporal.Duration P1D | BJS: Temporal.Duration P1D | REF: Temporal.Duration P1D
+   {hours: 24} round largest day, NY spring | VM: Temporal.Duration P1DT1H | BJS: Temporal.Duration P1DT1H | REF: Temporal.Duration P1DT1H
+   {days: 1} round largest hour, NY spring | VM: Temporal.Duration PT23H | BJS: Temporal.Duration PT23H | REF: Temporal.Duration PT23H
+   {hours: 25} round largest day, NY fall | VM: Temporal.Duration P1D | BJS: Temporal.Duration P1D | REF: Temporal.Duration P1D
+   {hours: 12} round smallest day, NY spring | VM: Temporal.Duration P1D | BJS: Temporal.Duration P1D | REF: Temporal.Duration P1D
+   {hours: 12} round smallest day, NY fall | VM: Temporal.Duration PT0S | BJS: Temporal.Duration PT0S | REF: Temporal.Duration PT0S
+   {hours: 11, minutes: 45} round smallest day, NY 2026-03-07T12:00 | VM: Temporal.Duration P1D | BJS: Temporal.Duration P1D | REF: Temporal.Duration P1D
+   {hours: 12, minutes: 15} round smallest day, NY 2026-10-31T12:00 | VM: Temporal.Duration PT0S | BJS: Temporal.Duration PT0S | REF: Temporal.Duration PT0S
+!  {months: 10, days: 29, hours: 12} round month/year trunc, relativeTo 2019-03-31T00:00[UTC] | VM: Temporal.Duration P11M | BJS: Temporal.Duration P1Y | REF: Temporal.Duration P1Y
+!  {months: 10, days: 29, hours: 12} round month/year trunc, relativeTo ZonedDateTime 2019-03-31[UTC] | VM: Temporal.Duration P11M | BJS: Temporal.Duration P1Y | REF: Temporal.Duration P1Y
+   {days: 45} round largest month, relativeTo 2020-01-31T00:00[UTC] | VM: Temporal.Duration P1M16D | BJS: Temporal.Duration P1M16D | REF: Temporal.Duration P1M16D
+   {hours: 30} round smallest hour largest day, NY spring | VM: Temporal.Duration P1DT7H | BJS: Temporal.Duration P1DT7H | REF: Temporal.Duration P1DT7H
+   {hours: 22, minutes: 40} round smallest hour increment 2 largest day, NY spring | VM: Temporal.Duration PT22H | BJS: Temporal.Duration PT22H | REF: Temporal.Duration PT22H
+   {days: 1, hours: 1} round smallest day largest year, NY spring halfExpand | VM: Temporal.Duration P1D | BJS: Temporal.Duration P1D | REF: Temporal.Duration P1D
+~~ {days: 1} round smallest hour, relativeTo +275760-09-12T00:00[UTC] | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal: the date-time is outside the representable range | REF: THROWS RangeError: date/time value 275760-9-14 is outside the supported range
+~~ {hours: 1} round smallest hour largest day, relativeTo +275760-09-12T12:00[UTC] | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal: the date-time is outside the representable range | REF: THROWS RangeError: date/time value is outside of supported range
+   {} round largest year, relativeTo +275760-09-13T00:00[UTC] | VM: Temporal.Duration PT0S | BJS: Temporal.Duration PT0S | REF: Temporal.Duration PT0S
+~~ {hours: 1} round smallest hour largest year, relativeTo +275760-09-12T12:00[UTC] | VM: THROWS RangeError: Temporal: the date-time is outside the representable range | BJS: THROWS RangeError: Temporal: the date-time is outside the representable range | REF: THROWS RangeError: date/time value is outside of supported range

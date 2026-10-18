@@ -1,0 +1,10 @@
+   PlainTime("23:59:59.999999999").add({nanoseconds: 1}) | VM: Temporal.PlainTime 00:00:00 | BJS: Temporal.PlainTime 00:00:00 | REF: Temporal.PlainTime 00:00:00
+   PlainTime("00:00").subtract({nanoseconds: 1}) | VM: Temporal.PlainTime 23:59:59.999999999 | BJS: Temporal.PlainTime 23:59:59.999999999 | REF: Temporal.PlainTime 23:59:59.999999999
+   PlainTime("12:00").add({hours: 1e9}) | VM: Temporal.PlainTime 04:00:00 | BJS: Temporal.PlainTime 04:00:00 | REF: Temporal.PlainTime 04:00:00
+   PlainTime("12:00").subtract({hours: 2501999792983, minutes: 36}) | VM: Temporal.PlainTime 04:24:00 | BJS: Temporal.PlainTime 04:24:00 | REF: Temporal.PlainTime 04:24:00
+   PlainTime("12:00").add({nanoseconds: 9e24}) | VM: Temporal.PlainTime 04:00:00.385875968 | BJS: Temporal.PlainTime 04:00:00.385875968 | REF: Temporal.PlainTime 04:00:00.385875968
+   PlainTime("12:00").add({days: 3, hours: 1}) | VM: Temporal.PlainTime 13:00:00 | BJS: Temporal.PlainTime 13:00:00 | REF: Temporal.PlainTime 13:00:00
+   PlainTime("12:00").add({years: 1, months: 1, weeks: 1}) | VM: Temporal.PlainTime 12:00:00 | BJS: Temporal.PlainTime 12:00:00 | REF: Temporal.PlainTime 12:00:00
+   PlainTime("12:00").add({minutes: 90, seconds: 3600}) | VM: Temporal.PlainTime 14:30:00 | BJS: Temporal.PlainTime 14:30:00 | REF: Temporal.PlainTime 14:30:00
+   PlainTime("01:00").subtract({minutes: 61}) | VM: Temporal.PlainTime 23:59:00 | BJS: Temporal.PlainTime 23:59:00 | REF: Temporal.PlainTime 23:59:00
+   PlainTime("12:00").add("-PT36H") | VM: Temporal.PlainTime 00:00:00 | BJS: Temporal.PlainTime 00:00:00 | REF: Temporal.PlainTime 00:00:00

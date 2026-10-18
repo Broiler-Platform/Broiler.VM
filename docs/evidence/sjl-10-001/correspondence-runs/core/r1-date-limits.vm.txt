@@ -1,0 +1,12 @@
+new PlainDate(-271821, 4, 19) => Temporal.PlainDate -271821-04-19
+new PlainDate(-271821, 4, 18) => THROWS RangeError: Temporal: the date is outside the representable range
+new PlainDate(275760, 9, 13) => Temporal.PlainDate +275760-09-13
+new PlainDate(275760, 9, 14) => THROWS RangeError: Temporal: the date is outside the representable range
+PlainDate.from("-271821-04-19") => Temporal.PlainDate -271821-04-19
+PlainDate.from("-271821-04-18") => THROWS RangeError: Temporal: the date is outside the representable range
+PlainDate.from("+275760-09-14") => THROWS RangeError: Temporal: the date is outside the representable range
+PlainDate.from({year: -271821, month: 4, day: 18}) => THROWS RangeError: Temporal: the date is outside the representable range
+PlainDate.from({year: 275760, month: 9, day: 13}) => Temporal.PlainDate +275760-09-13
+PlainMonthDay(4, 18, undefined, -271821) => THROWS RangeError: Temporal: the month-day is outside the representable range
+PlainMonthDay(4, 19, undefined, -271821) => 04-19
+PlainMonthDay(9, 14, undefined, 275760) => THROWS RangeError: Temporal: the month-day is outside the representable range

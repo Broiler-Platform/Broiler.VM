@@ -1,0 +1,7 @@
+!! Duration round month/year trunc, relativeTo "2019-03-31" | VM: Temporal.Duration P11M | BJS: Temporal.Duration P10M29D | REF: Temporal.Duration P1Y
+!  Duration round month/year trunc, relativeTo "2019-03-31T00:00[UTC]" | VM: Temporal.Duration P11M | BJS: Temporal.Duration P1Y | REF: Temporal.Duration P1Y
+!  Duration round month/year trunc, relativeTo ZonedDateTime 2019-03-31[UTC] | VM: Temporal.Duration P11M | BJS: Temporal.Duration P1Y | REF: Temporal.Duration P1Y
+!! PlainDateTime 2019-03-31T00:00 until 2020-02-29T12:00 month/year trunc | VM: Temporal.Duration P11M | BJS: Temporal.Duration P11M | REF: Temporal.Duration P1Y
+!! ZonedDateTime 2019-03-31T00:00[UTC] until 2020-02-29T12:00[UTC] month/year trunc | VM: Temporal.Duration P11M | BJS: Temporal.Duration P11M | REF: Temporal.Duration P1Y
+   Duration total month, relativeTo "2019-03-31" | VM: 11.016129032258064 | BJS: 11.016129032258064 | REF: 11.016129032258064
+   2019-03-31 + P1Y | VM: Temporal.PlainDate 2020-03-31 | BJS: Temporal.PlainDate 2020-03-31 | REF: Temporal.PlainDate 2020-03-31

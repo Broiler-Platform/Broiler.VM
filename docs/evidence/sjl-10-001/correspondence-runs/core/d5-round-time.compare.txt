@@ -1,0 +1,57 @@
+   PT1H30M round hour ceil | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H30M round hour ceil | VM: Temporal.Duration -PT1H | BJS: Temporal.Duration -PT1H | REF: Temporal.Duration -PT1H
+   PT2H30M round hour ceil | VM: Temporal.Duration PT3H | BJS: Temporal.Duration PT3H | REF: Temporal.Duration PT3H
+   -PT1H20M round 30 minutes ceil | VM: Temporal.Duration -PT1H | BJS: Temporal.Duration -PT1H | REF: Temporal.Duration -PT1H
+   PT1H30M round hour floor | VM: Temporal.Duration PT1H | BJS: Temporal.Duration PT1H | REF: Temporal.Duration PT1H
+   -PT1H30M round hour floor | VM: Temporal.Duration -PT2H | BJS: Temporal.Duration -PT2H | REF: Temporal.Duration -PT2H
+   PT2H30M round hour floor | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H20M round 30 minutes floor | VM: Temporal.Duration -PT1H30M | BJS: Temporal.Duration -PT1H30M | REF: Temporal.Duration -PT1H30M
+   PT1H30M round hour expand | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H30M round hour expand | VM: Temporal.Duration -PT2H | BJS: Temporal.Duration -PT2H | REF: Temporal.Duration -PT2H
+   PT2H30M round hour expand | VM: Temporal.Duration PT3H | BJS: Temporal.Duration PT3H | REF: Temporal.Duration PT3H
+   -PT1H20M round 30 minutes expand | VM: Temporal.Duration -PT1H30M | BJS: Temporal.Duration -PT1H30M | REF: Temporal.Duration -PT1H30M
+   PT1H30M round hour trunc | VM: Temporal.Duration PT1H | BJS: Temporal.Duration PT1H | REF: Temporal.Duration PT1H
+   -PT1H30M round hour trunc | VM: Temporal.Duration -PT1H | BJS: Temporal.Duration -PT1H | REF: Temporal.Duration -PT1H
+   PT2H30M round hour trunc | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H20M round 30 minutes trunc | VM: Temporal.Duration -PT1H | BJS: Temporal.Duration -PT1H | REF: Temporal.Duration -PT1H
+   PT1H30M round hour halfCeil | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H30M round hour halfCeil | VM: Temporal.Duration -PT1H | BJS: Temporal.Duration -PT1H | REF: Temporal.Duration -PT1H
+   PT2H30M round hour halfCeil | VM: Temporal.Duration PT3H | BJS: Temporal.Duration PT3H | REF: Temporal.Duration PT3H
+   -PT1H20M round 30 minutes halfCeil | VM: Temporal.Duration -PT1H30M | BJS: Temporal.Duration -PT1H30M | REF: Temporal.Duration -PT1H30M
+   PT1H30M round hour halfFloor | VM: Temporal.Duration PT1H | BJS: Temporal.Duration PT1H | REF: Temporal.Duration PT1H
+   -PT1H30M round hour halfFloor | VM: Temporal.Duration -PT2H | BJS: Temporal.Duration -PT2H | REF: Temporal.Duration -PT2H
+   PT2H30M round hour halfFloor | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H20M round 30 minutes halfFloor | VM: Temporal.Duration -PT1H30M | BJS: Temporal.Duration -PT1H30M | REF: Temporal.Duration -PT1H30M
+   PT1H30M round hour halfExpand | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H30M round hour halfExpand | VM: Temporal.Duration -PT2H | BJS: Temporal.Duration -PT2H | REF: Temporal.Duration -PT2H
+   PT2H30M round hour halfExpand | VM: Temporal.Duration PT3H | BJS: Temporal.Duration PT3H | REF: Temporal.Duration PT3H
+   -PT1H20M round 30 minutes halfExpand | VM: Temporal.Duration -PT1H30M | BJS: Temporal.Duration -PT1H30M | REF: Temporal.Duration -PT1H30M
+   PT1H30M round hour halfTrunc | VM: Temporal.Duration PT1H | BJS: Temporal.Duration PT1H | REF: Temporal.Duration PT1H
+   -PT1H30M round hour halfTrunc | VM: Temporal.Duration -PT1H | BJS: Temporal.Duration -PT1H | REF: Temporal.Duration -PT1H
+   PT2H30M round hour halfTrunc | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H20M round 30 minutes halfTrunc | VM: Temporal.Duration -PT1H30M | BJS: Temporal.Duration -PT1H30M | REF: Temporal.Duration -PT1H30M
+   PT1H30M round hour halfEven | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H30M round hour halfEven | VM: Temporal.Duration -PT2H | BJS: Temporal.Duration -PT2H | REF: Temporal.Duration -PT2H
+   PT2H30M round hour halfEven | VM: Temporal.Duration PT2H | BJS: Temporal.Duration PT2H | REF: Temporal.Duration PT2H
+   -PT1H20M round 30 minutes halfEven | VM: Temporal.Duration -PT1H30M | BJS: Temporal.Duration -PT1H30M | REF: Temporal.Duration -PT1H30M
+   Duration({hours: 25, minutes: 30}).round({largestUnit: "day"}) | VM: Temporal.Duration P1DT1H30M | BJS: Temporal.Duration P1DT1H30M | REF: Temporal.Duration P1DT1H30M
+   Duration({days: 3, hours: 12}).round({smallestUnit: "day", roundingIncrement: 2, largestUnit: "day"}) | VM: Temporal.Duration P4D | BJS: Temporal.Duration P4D | REF: Temporal.Duration P4D
+   Duration({minutes: 125}).round({smallestUnit: "minute", roundingIncrement: 15}) | VM: Temporal.Duration PT120M | BJS: Temporal.Duration PT120M | REF: Temporal.Duration PT120M
+   Duration({hours: 47}).round({largestUnit: "day"}) | VM: Temporal.Duration P1DT23H | BJS: Temporal.Duration P1DT23H | REF: Temporal.Duration P1DT23H
+   Duration({days: 2}).round({largestUnit: "hour"}) | VM: Temporal.Duration PT48H | BJS: Temporal.Duration PT48H | REF: Temporal.Duration PT48H
+   Duration({days: 2}).round({largestUnit: "auto", smallestUnit: "hour"}) | VM: Temporal.Duration P2D | BJS: Temporal.Duration P2D | REF: Temporal.Duration P2D
+   Duration({hours: 1}).round("minutes") | VM: Temporal.Duration PT1H | BJS: Temporal.Duration PT1H | REF: Temporal.Duration PT1H
+~~ Duration({hours: 1}).round({}) | VM: THROWS RangeError: Temporal.Duration.prototype.round: smallestUnit or largestUnit is required | BJS: THROWS RangeError: Temporal.Duration.round requires either smallestUnit or largestUnit | REF: THROWS RangeError: at least one of smallestUnit or largestUnit is required
+~~ Duration({hours: 1}).round() | VM: THROWS TypeError: Temporal.Duration.prototype.round: an argument is required | BJS: THROWS TypeError: Temporal.Duration.prototype.round requires an options argument | REF: THROWS TypeError: options parameter is required
+~~ Duration({hours: 1}).round({largestUnit: "hour", smallestUnit: "day"}) | VM: THROWS RangeError: Temporal.Duration.prototype.round: largestUnit must be at least as large as smallestUnit | BJS: THROWS RangeError: Temporal.Duration.prototype.round: largestUnit "hour" cannot be smaller than smallestUnit "day" | REF: THROWS RangeError: largestUnit hour cannot be smaller than smallestUnit day
+~~ Duration({hours: 1}).round({smallestUnit: "hour", roundingIncrement: 5}) | VM: THROWS RangeError: Temporal: roundingIncrement 5 does not divide 24 evenly | BJS: THROWS RangeError: Temporal: roundingIncrement 5 does not divide evenly into the next unit | REF: THROWS RangeError: Rounding increment must divide evenly into 24
+~~ Duration({hours: 1}).round({smallestUnit: "hour", roundingIncrement: 24}) | VM: THROWS RangeError: Temporal: roundingIncrement 24 does not divide 24 evenly | BJS: THROWS RangeError: Temporal: roundingIncrement 24 is out of range | REF: THROWS RangeError: roundingIncrement must be at least 1 and less than 23, not 24
+~~ Duration({days: 1}).round({smallestUnit: "day", roundingIncrement: 2, largestUnit: "month"}) | VM: THROWS RangeError: Temporal.Duration.prototype.round: a date unit rounds by an increment only when it is also the largest unit | BJS: THROWS RangeError: Temporal.Duration.prototype.round: a roundingIncrement greater than 1 with a calendar smallestUnit (years, months, weeks, days) requires largestUnit to equal smallestUnit | REF: THROWS RangeError: For calendar units with roundingIncrement > 1, use largestUnit = smallestUnit
+~~ Duration({days: 1}).round({smallestUnit: "month"}) | VM: THROWS RangeError: Temporal.Duration.prototype.round: rounding years, months or weeks needs a relativeTo date | BJS: THROWS RangeError: Temporal.Duration.prototype.round with calendar units (years, months, weeks) requires a relativeTo option | REF: THROWS RangeError: a starting point is required for months balancing
+~~ Duration({years: 1}).round({smallestUnit: "hour"}) | VM: THROWS RangeError: Temporal.Duration.prototype.round: rounding years, months or weeks needs a relativeTo date | BJS: THROWS RangeError: Temporal.Duration.prototype.round with calendar units (years, months, weeks) requires a relativeTo option | REF: THROWS RangeError: a starting point is required for years balancing
+~~ Duration({weeks: 1}).round({largestUnit: "day"}) | VM: THROWS RangeError: Temporal.Duration.prototype.round: rounding years, months or weeks needs a relativeTo date | BJS: THROWS RangeError: Temporal.Duration.prototype.round with calendar units (years, months, weeks) requires a relativeTo option | REF: THROWS RangeError: a starting point is required for weeks balancing
+~~ Duration({days: 1}).round({largestUnit: "week"}) | VM: THROWS RangeError: Temporal.Duration.prototype.round: rounding years, months or weeks needs a relativeTo date | BJS: THROWS RangeError: Temporal.Duration.prototype.round with calendar units (years, months, weeks) requires a relativeTo option | REF: THROWS RangeError: a starting point is required for weeks balancing
+~~ Duration({seconds: 2**53 - 1}).round({smallestUnit: "hour", roundingMode: "ceil"}) | VM: THROWS RangeError: Temporal: the rounded time duration is too large | BJS: THROWS RangeError: Temporal.Duration is out of range | REF: THROWS RangeError: rounding of duration time units cannot exceed 9007199254740991999999999 s
+   Duration({seconds: 2**53 - 1}).round({smallestUnit: "day", largestUnit: "day", roundingMode: "floor"}) | VM: Temporal.Duration P104249991374D | BJS: Temporal.Duration P104249991374D | REF: Temporal.Duration P104249991374D
+   Duration({days: 1e8}).round({smallestUnit: "day", roundingIncrement: 1e9, roundingMode: "ceil", largestUnit: "day"}) | VM: Temporal.Duration P1000000000D | BJS: Temporal.Duration P1000000000D | REF: Temporal.Duration P1000000000D
+   Duration({days: 1e8}).round({smallestUnit: "day", roundingIncrement: 2.5, largestUnit: "day"}) | VM: Temporal.Duration P100000002D | BJS: Temporal.Duration P100000002D | REF: Temporal.Duration P100000002D

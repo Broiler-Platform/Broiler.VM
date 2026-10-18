@@ -1,0 +1,32 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+PlainDate 2020-01-01 until 2021-03-15 => Temporal.Duration P439D
+PlainDateTime 2020-01-01T00:00 until 2020-01-03T12:30 => Temporal.Duration P2DT12H30M
+PlainTime 01:00 until 23:30:15 => Temporal.Duration PT22H30M15S
+Instant until +1 day 1 h 0.5 s => Temporal.Duration PT90000.5S
+ZonedDateTime until +25 h => Temporal.Duration PT25H
+PlainYearMonth 2019-05 until 2021-03 => Temporal.Duration P1Y10M
+PlainDate until largestUnit hour => THROWS RangeError: hour not allowed as a date unit
+PlainDate until smallestUnit hour => THROWS RangeError: hour not allowed as a date unit
+PlainTime until largestUnit day => THROWS RangeError: day not allowed as a time unit
+Instant until smallestUnit day => THROWS RangeError: day not allowed as a time unit
+Instant until largestUnit day => THROWS RangeError: day not allowed as a time unit
+PlainYearMonth until smallestUnit week => THROWS RangeError: smallestUnit must be one of year, years, month, months, not week
+PlainYearMonth until largestUnit day => THROWS RangeError: largestUnit must be one of year, years, month, months, not day
+PlainDate until smallestUnit year largestUnit month => THROWS RangeError: largestUnit month cannot be smaller than smallestUnit year
+PlainTime until smallestUnit minute increment 7 => THROWS RangeError: Rounding increment must divide evenly into 60
+PlainTime until smallestUnit minute increment 60 => THROWS RangeError: roundingIncrement must be at least 1 and less than 59, not 60
+Instant until smallestUnit hour increment 24 => THROWS RangeError: roundingIncrement must be at least 1 and less than 23, not 24
+Instant until smallestUnit hour increment 12 => Temporal.Duration PT48H
+PlainDate until smallestUnit day increment 1e9 => Temporal.Duration PT0S
+PlainDate until roundingIncrement 0 => THROWS RangeError: roundingIncrement must be at least 1 and at most 1e9, not 0
+PlainDate until roundingIncrement 1e9 + 1 => THROWS RangeError: roundingIncrement must be at least 1 and at most 1e9, not 1000000001
+PlainDate until roundingMode bogus => THROWS RangeError: roundingMode must be one of ceil, floor, expand, trunc, halfCeil, halfFloor, halfExpand, halfTrunc, halfEven, not bogus
+PlainDate until largestUnit auto smallestUnit month => Temporal.Duration P14M
+ZonedDateTime until smallestUnit day (largest auto) => Temporal.Duration P2D
+Instant until smallestUnit minute (largest auto) => Temporal.Duration PT120M
+PlainDate until options 5 => THROWS TypeError: Options parameter must be an object, not a number
+PlainDate until other calendar => THROWS RangeError: cannot compute difference between dates of iso8601 and gregory calendars
+ZonedDateTime until other zone, largestUnit day => THROWS RangeError: When calculating difference between time zones, largestUnit must be 'hours' or smaller because day lengths can vary between time zones due to DST or time zone offset changes.
+ZonedDateTime until other zone, largestUnit hour => Temporal.Duration PT23H
+exit=0

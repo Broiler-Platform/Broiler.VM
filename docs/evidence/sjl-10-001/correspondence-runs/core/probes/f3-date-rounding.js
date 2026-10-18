@@ -1,0 +1,20 @@
+// F3: PlainDate until and since with rounding: modes, increments, the negated mode of since, bubbling.
+t('2020-01-01 until 2020-07-20 smallest month (trunc)', function () { return PD('2020-01-01').until('2020-07-20', { smallestUnit: 'month' }); });
+t('2020-01-01 until 2020-07-20 smallest month halfExpand', function () { return PD('2020-01-01').until('2020-07-20', { smallestUnit: 'month', roundingMode: 'halfExpand' }); });
+t('2020-01-01 until 2020-07-02 smallest year halfExpand', function () { return PD('2020-01-01').until('2020-07-02', { smallestUnit: 'year', roundingMode: 'halfExpand' }); });
+t('2020-01-01 until 2020-07-02 smallest year halfTrunc', function () { return PD('2020-01-01').until('2020-07-02', { smallestUnit: 'year', roundingMode: 'halfTrunc' }); });
+t('2020-01-17 since 2020-01-01 smallest week floor', function () { return PD('2020-01-17').since('2020-01-01', { smallestUnit: 'week', roundingMode: 'floor' }); });
+t('2020-01-01 since 2020-01-17 smallest week floor', function () { return PD('2020-01-01').since('2020-01-17', { smallestUnit: 'week', roundingMode: 'floor' }); });
+t('2020-01-01 until 2020-01-17 smallest week ceil', function () { return PD('2020-01-01').until('2020-01-17', { smallestUnit: 'week', roundingMode: 'ceil' }); });
+t('2020-01-17 until 2020-01-01 smallest week ceil', function () { return PD('2020-01-17').until('2020-01-01', { smallestUnit: 'week', roundingMode: 'ceil' }); });
+t('2020-01-01 until 2020-03-19 month/day increment 5 halfExpand', function () { return PD('2020-01-01').until('2020-03-19', { largestUnit: 'month', smallestUnit: 'day', roundingIncrement: 5, roundingMode: 'halfExpand' }); });
+t('2020-01-01 until 2020-03-30 month/day increment 5 halfExpand', function () { return PD('2020-01-01').until('2020-03-30', { largestUnit: 'month', smallestUnit: 'day', roundingIncrement: 5, roundingMode: 'halfExpand' }); });
+t('2020-01-01 until 2020-04-15 smallest month increment 2 (trunc)', function () { return PD('2020-01-01').until('2020-04-15', { smallestUnit: 'month', roundingIncrement: 2 }); });
+t('2020-01-01 until 2020-04-15 smallest month increment 2 halfExpand', function () { return PD('2020-01-01').until('2020-04-15', { smallestUnit: 'month', roundingIncrement: 2, roundingMode: 'halfExpand' }); });
+t('2020-01-01 until 2021-12-20 smallest month largest year halfExpand', function () { return PD('2020-01-01').until('2021-12-20', { smallestUnit: 'month', largestUnit: 'year', roundingMode: 'halfExpand' }); });
+t('2020-01-01 until 2020-01-29 smallest week largest month halfExpand', function () { return PD('2020-01-01').until('2020-01-29', { smallestUnit: 'week', largestUnit: 'month', roundingMode: 'halfExpand' }); });
+t('2020-01-31 until 2020-02-29 smallest month', function () { return PD('2020-01-31').until('2020-02-29', { smallestUnit: 'month' }); });
+t('2020-01-31 until 2020-02-29 smallest month halfExpand', function () { return PD('2020-01-31').until('2020-02-29', { smallestUnit: 'month', roundingMode: 'halfExpand' }); });
+t('2020-01-01 until 2020-01-02 smallest day increment 1e9 ceil', function () { return PD('2020-01-01').until('2020-01-02', { smallestUnit: 'day', roundingIncrement: 1e9, roundingMode: 'ceil' }); });
+t('+275760-09-12 until +275760-09-13 smallest month ceil', function () { return PD('+275760-09-12').until('+275760-09-13', { smallestUnit: 'month', roundingMode: 'ceil' }); });
+t('-271821-04-20 since -271821-04-19 smallest year ceil', function () { return PD('-271821-04-20').since('-271821-04-19', { smallestUnit: 'year', roundingMode: 'ceil' }); });

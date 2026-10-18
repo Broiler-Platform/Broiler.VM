@@ -1,0 +1,2 @@
+new PlainDate(2**53 + 2, 1, 1) => THROWS RangeError: Temporal.PlainDate: invalid ISO date
+exit=0

@@ -1,0 +1,36 @@
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl10/d9-round-zoned-relative.js [raw]  uncaught Error: OUT<<{hours: 23} round smallest day, NY spring => Temporal.Duration P1D
+{hours: 24} round largest day, NY spring => Temporal.Duration P1DT1H
+{days: 1} round largest hour, NY spring => Temporal.Duration PT23H
+{hours: 25} round largest day, NY fall => Temporal.Duration P1D
+{hours: 12} round smallest day, NY spring => Temporal.Duration P1D
+{hours: 12} round smallest day, NY fall => Temporal.Duration PT0S
+{hours: 11, minutes: 45} round smallest day, NY 2026-03-07T12:00 => Temporal.Duration P1D
+{hours: 12, minutes: 15} round smallest day, NY 2026-10-31T12:00 => Temporal.Duration PT0S
+{months: 10, days: 29, hours: 12} round month/year trunc, relativeTo 2019-03-31T00:00[UTC] => Temporal.Duration P11M
+{months: 10, days: 29, hours: 12} round month/year trunc, relativeTo ZonedDateTime 2019-03-31[UTC] => Temporal.Duration P11M
+{days: 45} round largest month, relativeTo 2020-01-31T00:00[UTC] => Temporal.Duration P1M16D
+{hours: 30} round smallest hour largest day, NY spring => Temporal.Duration P1DT7H
+{hours: 22, minutes: 40} round smallest hour increment 2 largest day, NY spring => Temporal.Duration PT22H
+{days: 1, hours: 1} round smallest day largest year, NY spring halfExpand => Temporal.Duration P1D
+{days: 1} round smallest hour, relativeTo +275760-09-12T00:00[UTC] => THROWS RangeError: Temporal: the date-time is outside the representable range
+{hours: 1} round smallest hour largest day, relativeTo +275760-09-12T12:00[UTC] => THROWS RangeError: Temporal: the date-time is outside the representable range
+{} round largest year, relativeTo +275760-09-13T00:00[UTC] => Temporal.Duration PT0S
+{hours: 1} round smallest hour largest year, relativeTo +275760-09-12T12:00[UTC] => THROWS RangeError: Temporal: the date-time is outside the representable range>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl10/d9-round-zoned-relative.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl10  e.g. test/sjl10/d9-round-zoned-relative.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl10/d9-round-zoned-relative.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

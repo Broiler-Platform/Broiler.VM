@@ -1,0 +1,16 @@
+   compare({hours: 24}, {days: 1}) | VM: 0 | BJS: 0 | REF: 0
+   compare({days: 1}, {hours: 25}) | VM: -1 | BJS: -1 | REF: -1
+~~ compare({months: 1}, {days: 30}) | VM: THROWS RangeError: Temporal.Duration.compare: comparing years, months or weeks needs a relativeTo date | BJS: THROWS RangeError: Temporal.Duration.compare with calendar units requires a relativeTo option | REF: THROWS RangeError: A starting point is required for years, months, or weeks comparison
+   compare({months: 1}, {days: 30}, {relativeTo: "2020-02-01"}) | VM: -1 | BJS: -1 | REF: -1
+   compare({months: 1}, {days: 30}, {relativeTo: "2020-01-01"}) | VM: 1 | BJS: 1 | REF: 1
+   compare({days: 1}, {hours: 24}, {relativeTo: NY spring day}) | VM: -1 | BJS: -1 | REF: -1
+   compare({days: 1}, {hours: 23}, {relativeTo: NY spring day}) | VM: 0 | BJS: 0 | REF: 0
+   compare({months: 1}, {months: 1}) (identical, no relativeTo) | VM: 0 | BJS: 0 | REF: 0
+~~ compare({months: 1}, {months: 1}, {relativeTo: "bad"}) | VM: THROWS RangeError: Temporal: cannot parse 'bad' | BJS: THROWS RangeError: Temporal.Duration: cannot parse relativeTo "bad" | REF: THROWS RangeError: invalid RFC 9557 string: bad
+ ! compare({years: 1, seconds: 9e15}, {years: 1}, {relativeTo: "2020-01-01"}) | VM: 1 | BJS: THROWS RangeError: Temporal.Duration: relative date/time is outside of supported range | REF: 1
+ ! compare({years: 1, seconds: 9e15}, {years: 1, seconds: 9e15 - 1}, {relativeTo: "2020-01-01"}) | VM: 1 | BJS: THROWS RangeError: Temporal.Duration: relative date/time is outside of supported range | REF: 1
+~~ compare({years: 1, seconds: 9007199254740991 - 31622399}, {years: 1}, {relativeTo: "2020-01-01"}) | VM: THROWS RangeError: Temporal: the time duration is too large | BJS: THROWS RangeError: Temporal.Duration: relative date/time is outside of supported range | REF: THROWS RangeError: sum of duration time units cannot exceed 9007199254740991999999999 s
+   compare({days: 200000000}, {days: 1}, {relativeTo: "2020-01-01"}) | VM: 1 | BJS: 1 | REF: 1
+   compare({weeks: 1}, {days: 7}, {relativeTo: "2020-01-01"}) | VM: 0 | BJS: 0 | REF: 0
+ ! compare({years: 1}, {days: 365}, {relativeTo: "2020-01-01[u-ca=hebrew]"}) | VM: -1 | BJS: THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented | REF: -1
+ ! compare({months: 1}, {days: 29}, {relativeTo: PlainDate hebrew 5780-05-01}) | VM: 1 | BJS: THROWS Error: Temporal.Duration: a relativeTo with the "hebrew" calendar is not yet implemented | REF: 1

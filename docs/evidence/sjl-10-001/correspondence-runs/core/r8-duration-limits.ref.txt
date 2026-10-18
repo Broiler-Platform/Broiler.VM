@@ -1,0 +1,25 @@
+This polyfill should only be used to run tests or to experiment in the browser devtools console.
+To polyfill Temporal in your own projects, see https://github.com/tc39/proposal-temporal#polyfills.
+new Duration(2**32 - 1) => Temporal.Duration P4294967295Y
+new Duration(2**32) => THROWS RangeError: years, months, and weeks must be < 2³²
+new Duration(0, 2**32) => THROWS RangeError: years, months, and weeks must be < 2³²
+new Duration(0, 0, -(2**32)) => THROWS RangeError: years, months, and weeks must be < 2³²
+new Duration(0, 0, 0, 104249991374) => Temporal.Duration P104249991374D
+new Duration(0, 0, 0, 104249991375) => THROWS RangeError: total of duration time units cannot exceed 9007199254740991.999999999 s
+new Duration(0, 0, 0, 0, 0, 0, 2**53 - 1) => Temporal.Duration PT9007199254740991S
+new Duration(0, 0, 0, 0, 0, 0, 2**53) => THROWS RangeError: total of duration time units cannot exceed 9007199254740991.999999999 s
+new Duration(0,0,0,0,0,0, 2**53 - 1, 999, 999, 999) => Temporal.Duration PT9007199254740991.999999999S
+new Duration(0,0,0,0,0,0, 2**53 - 1, 999, 999, 1000) => THROWS RangeError: total of duration time units cannot exceed 9007199254740991.999999999 s
+new Duration(0,0,0,0,0,0,0,0,0, 9e24) => Temporal.Duration PT9000000000000000.385875968S
+new Duration(0,0,0,0,0,0,0,0,0, 2**53 * 1e9) => THROWS RangeError: total of duration time units cannot exceed 9007199254740991.999999999 s
+new Duration(0,0,0,0, 2501999792983, 36) => Temporal.Duration PT2501999792983H36M
+new Duration(0,0,0,0, 2501999792983, 37) => THROWS RangeError: total of duration time units cannot exceed 9007199254740991.999999999 s
+new Duration(1, -1) => THROWS RangeError: mixed-sign values not allowed as duration fields
+new Duration(0, 0, 0, 0, 0, 0, 0, 0, 0, 1.5) => THROWS RangeError: unsupported fractional value 1.5
+new Duration(Infinity) => THROWS RangeError: infinity is out of range
+Object.is(new Duration(-0).years, 0) => true
+Duration.from({nanoseconds: 9007199254740993}).nanoseconds => 9007199254740992
+Duration.from({days: 104249991374, seconds: 2**53 - 1 - 104249991374 * 86400}).days => 104249991374
+Duration.from("P4294967296Y") => THROWS RangeError: years, months, and weeks must be < 2³²
+Duration.from("PT9007199254740992S") => THROWS RangeError: total of duration time units cannot exceed 9007199254740991.999999999 s
+exit=0

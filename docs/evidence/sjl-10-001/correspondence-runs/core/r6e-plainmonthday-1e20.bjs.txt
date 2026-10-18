@@ -1,0 +1,2 @@
+new PlainMonthDay(1, 1, undefined, 1e20) => THROWS RangeError: Temporal.PlainMonthDay: reference date is out of range
+exit=0

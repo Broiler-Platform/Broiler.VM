@@ -1,0 +1,10 @@
+PlainDate("2020-01-01").add({hours: 47}) => Temporal.PlainDate 2020-01-02
+PlainDate("2020-01-01").add({hours: 48}) => Temporal.PlainDate 2020-01-03
+PlainDate("2020-01-01").subtract({hours: 25}) => Temporal.PlainDate 2019-12-31
+PlainDate("2020-01-01").subtract({hours: 23}) => Temporal.PlainDate 2020-01-01
+PlainDate("2020-01-01").add({nanoseconds: 86400e9 - 1}) => Temporal.PlainDate 2020-01-01
+PlainDate("2020-01-01").add({days: 1, hours: 24}) => Temporal.PlainDate 2020-01-03
+PlainDate("2020-01-31").add({months: 1, hours: 24}) => Temporal.PlainDate 2020-03-01
+PlainDate("2020-01-01").add({seconds: 2**53 - 1}) => THROWS RangeError: Temporal.PlainDate: result is out of range
+PlainDate("2020-01-01").add({hours: 2501999792983}) => THROWS RangeError: Temporal.PlainDate: result is out of range
+exit=0
