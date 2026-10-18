@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
 using Broiler.VM.Profile.JavaScript.Format;
 
@@ -89,15 +90,15 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<TimeZoneDatabase> timeZones;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2E37CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=568AE0
     // Broiler-Human:        PENDING
-    private readonly Lazy<JsCalendars> calendars;
+    private readonly Lazy<TemporalCalendars> calendars;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F83F08
     // Broiler-Human:        PENDING
     private readonly Lazy<JsZoneNames> zoneNames;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DF9B7F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=78C665
     // Broiler-Human:        PENDING
     internal JsIntlTables(IJsIntlData data)
     {
@@ -117,7 +118,9 @@ internal sealed class JsIntlTables
             data.Table(JsIntlTable.TimeZones),
             data.Table(JsIntlTable.TimeZoneIds),
             data.Table(JsIntlTable.TimeZoneRegions)));
-        calendars = new(() => new JsCalendars(data.Table(JsIntlTable.Calendars)));
+        // THE CALENDARS ARE THE SHARED LIBRARY'S since SJL-10.4 (JSD-0078): one TemporalCalendars over the
+        // shared CalendarTables of the table the Intl data hands in, as the time zones are one database.
+        calendars = new(() => new TemporalCalendars(new CalendarTables(data.Table(JsIntlTable.Calendars))));
         zoneNames = new(() => new JsZoneNames(Lines(JsIntlTable.MetaZones), TimeZones));
     }
 
@@ -140,10 +143,13 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal ITimeZoneDatabase TimeZones => timeZones.Value;
 
-    /// <summary>The calendars other than ISO 8601, built the first time Temporal names one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F73E47
+    /// <summary>
+    /// The calendars, the shared library's <see cref="TemporalCalendars"/> over the Intl data's calendar
+    /// table, built the first time Temporal or a format names a calendar.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CF2654
     // Broiler-Human:        PENDING
-    internal JsCalendars Calendars => calendars.Value;
+    internal TemporalCalendars Calendars => calendars.Value;
 
     /// <summary>CLDR's metazones and the algorithms that name a zone by them, built the first time a zone is named (JSD-0058).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0A74FA

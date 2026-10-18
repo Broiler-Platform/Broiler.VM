@@ -17,6 +17,8 @@
 
 using BigInteger = System.Numerics.BigInteger;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Temporal;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -25,7 +27,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B9A9D0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9DE907
     // Broiler-Human:        PENDING
     private void SetupTemporalZonedDateTime(JsObject temporal)
     {
@@ -57,7 +59,7 @@ internal sealed partial class JsRealm
             return JsValue.Number(one.EpochNanoseconds.CompareTo(two.EpochNanoseconds) switch { > 0 => 1, < 0 => -1, _ => 0 });
         });
 
-        static (JsIsoDate, string) DateOf(JsEngine engine, JsValue thisValue, string member)
+        static (IsoDate, string) DateOf(JsEngine engine, JsValue thisValue, string member)
         {
             var zoned = TemporalThis<JsZonedDateTimeObject>(engine, thisValue, "ZonedDateTime", member);
             return (JsTemporal.IsoDateTimeFor(engine, zoned.TimeZone, zoned.EpochNanoseconds).Date, zoned.Calendar);
@@ -91,10 +93,10 @@ internal sealed partial class JsRealm
         {
             var zoned = TemporalThis<JsZonedDateTimeObject>(engine, thisValue, "ZonedDateTime", "hoursInDay");
             var today = JsTemporal.IsoDateTimeFor(engine, zoned.TimeZone, zoned.EpochNanoseconds).Date;
-            var tomorrow = JsTemporalCore.AddDays(today, 1);
+            var tomorrow = IsoArithmetic.AddDaysToIsoDate(today, 1);
             var todayNs = JsTemporal.StartOfDay(engine, zoned.TimeZone, today);
             var tomorrowNs = JsTemporal.StartOfDay(engine, zoned.TimeZone, tomorrow);
-            return JsValue.Number(JsTemporal.TotalTimeDuration(tomorrowNs - todayNs, TemporalUnit.Hour).ToDouble());
+            return JsValue.Number(DurationMath.TotalTimeDuration(tomorrowNs - todayNs, TemporalUnit.Hour));
         });
 
         TemporalCalendarGetters(prototype, ["daysInWeek", "daysInMonth", "daysInYear", "monthsInYear", "inLeapYear"], DateOf);
@@ -108,7 +110,7 @@ internal sealed partial class JsRealm
         TemporalGetter(prototype, "offset", static (engine, thisValue, arguments) =>
         {
             var zoned = TemporalThis<JsZonedDateTimeObject>(engine, thisValue, "ZonedDateTime", "offset");
-            return JsValue.String(JsTemporalCore.FormatOffsetNs(JsTemporal.OffsetNanosecondsFor(engine, zoned.TimeZone, zoned.EpochNanoseconds)));
+            return JsValue.String(TemporalFormat.FormatUtcOffsetNanoseconds(JsTemporal.OffsetNanosecondsFor(engine, zoned.TimeZone, zoned.EpochNanoseconds)));
         });
 
         Method(prototype, "with", 1, static (engine, thisValue, arguments) =>
@@ -119,9 +121,9 @@ internal sealed partial class JsRealm
             var calendar = zoned.Calendar;
             var offsetNs = JsTemporal.OffsetNanosecondsFor(engine, timeZone, zoned.EpochNanoseconds);
             var dateTime = JsTemporal.IsoDateTimeFor(engine, timeZone, zoned.EpochNanoseconds);
-            var fields = JsTemporal.DateToFields(engine, calendar, dateTime.Date, JsTemporal.FieldsType.Date);
+            var fields = JsTemporal.DateToFields(engine, calendar, dateTime.Date, CalendarFieldsType.Date);
             SetTimeFields(fields, dateTime.Time);
-            fields.Offset = JsTemporalCore.FormatOffsetNs(offsetNs);
+            fields.Offset = TemporalFormat.FormatUtcOffsetNanoseconds(offsetNs);
             var partialFields = JsTemporal.PrepareFields(
                 engine,
                 calendar,
@@ -134,9 +136,9 @@ internal sealed partial class JsRealm
             var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1));
             var disambiguation = JsTemporal.Disambiguation(engine, options);
             var offset = JsTemporal.OffsetOption(engine, options, "prefer");
-            var reject = JsTemporal.Reject(engine, options);
-            var result = JsTemporal.InterpretDateTimeFields(engine, calendar, fields, reject);
-            var newOffsetNs = JsTemporalParser.OffsetNanoseconds(fields.Offset!);
+            var overflow = JsTemporal.Overflow(engine, options);
+            var result = JsTemporal.InterpretDateTimeFields(engine, calendar, fields, overflow);
+            var newOffsetNs = JsTemporal.OffsetNanoseconds(fields.Offset!);
             var epochNs = JsTemporal.InterpretDateTimeOffset(engine, result.Date, result.Time, "option", newOffsetNs, timeZone, disambiguation, offset, matchMinutes: false);
             return JsValue.Object(JsTemporal.CreateZonedDateTime(engine, epochNs, timeZone, calendar));
         });
@@ -155,7 +157,7 @@ internal sealed partial class JsRealm
             else
             {
                 var time = JsTemporal.ToPlainTime(engine, plainTimeLike);
-                epochNs = JsTemporal.EpochNsFor(engine, zoned.TimeZone, new JsIsoDateTime(dateTime.Date, time), "compatible");
+                epochNs = JsTemporal.EpochNsFor(engine, zoned.TimeZone, new IsoDateTime(dateTime.Date, time), "compatible");
             }
 
             return JsValue.Object(JsTemporal.CreateZonedDateTime(engine, epochNs, zoned.TimeZone, zoned.Calendar));
@@ -204,20 +206,19 @@ internal sealed partial class JsRealm
         {
             var zoned = TemporalThis<JsZonedDateTimeObject>(engine, thisValue, "ZonedDateTime", "toString");
             var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0));
-            var showCalendar = JsTemporal.ShowCalendar(engine, options);
+            var showCalendar = JsTemporal.ShowCalendarOption(engine, options);
             var digits = JsTemporal.FractionalSecondDigits(engine, options);
-            var showOffset = JsTemporal.ShowOffset(engine, options);
-            var mode = JsTemporal.RoundingModeOption(engine, options, RoundingMode.Trunc);
+            var showOffset = JsTemporal.ShowOffsetOption(engine, options);
+            var mode = JsTemporal.RoundingModeOption(engine, options, TemporalOptionRules.DefaultToStringRoundingMode);
             var smallest = JsTemporal.UnitOption(engine, options, "smallestUnit", required: false);
-            var showTimeZone = JsTemporal.ShowTimeZone(engine, options);
-            JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
+            var showTimeZone = JsTemporal.ShowTimeZoneOption(engine, options);
 
-            if (smallest == TemporalUnit.Hour)
+            if (!TemporalOptionRules.IsValidToStringSmallestUnit(smallest, duration: false))
             {
-                throw engine.Error("RangeError", "Temporal.ZonedDateTime.prototype.toString: smallestUnit cannot be hour");
+                throw engine.Error("RangeError", "Temporal.ZonedDateTime.prototype.toString: smallestUnit must be a minute or smaller");
             }
 
-            var precision = JsTemporal.Precision(smallest, digits);
+            var precision = TemporalOptionRules.ToSecondsStringPrecisionRecord(smallest, digits);
             return JsValue.String(JsTemporal.ZonedDateTimeString(
                 engine, zoned, precision.Precision, showCalendar, showTimeZone, showOffset, precision.Increment, precision.Unit, mode));
         });
@@ -231,7 +232,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
         {
             var zoned = TemporalThis<JsZonedDateTimeObject>(engine, thisValue, "ZonedDateTime", "toJSON");
-            return JsValue.String(JsTemporal.ZonedDateTimeString(engine, zoned, JsTemporalCore.PrecisionAuto, "auto", "auto", "auto"));
+            return JsValue.String(JsTemporal.ZonedDateTimeString(engine, zoned, TemporalFormat.AutoPrecision, ShowCalendarName.Auto, ShowTimeZoneName.Auto, ShowOffset.Auto));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) => TemporalValueOf(engine, "ZonedDateTime"));
@@ -304,7 +305,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Temporal.ZonedDateTime.prototype.round (s6.3.39).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6CE210
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3B53E3
     // Broiler-Human:        PENDING
     private static JsZonedDateTimeObject ZonedDateTimeRound(JsEngine engine, JsZonedDateTimeObject zoned, JsValue argument)
     {
@@ -313,14 +314,9 @@ internal sealed partial class JsRealm
         var mode = JsTemporal.RoundingModeOption(engine, roundTo, RoundingMode.HalfExpand);
         var smallest = JsTemporal.UnitOption(engine, roundTo, "smallestUnit", required: true);
 
-        if (smallest == TemporalUnit.Day)
+        if (!TemporalOptionRules.IsValidRoundOptions(TemporalType.ZonedDateTime, smallest, increment))
         {
-            JsTemporal.ValidateIncrement(engine, increment, 1, inclusive: true);
-        }
-        else
-        {
-            JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
-            JsTemporal.ValidateIncrement(engine, increment, JsTemporalCore.MaximumIncrement(smallest), inclusive: false);
+            throw engine.Error("RangeError", "Temporal.ZonedDateTime.prototype.round: smallestUnit and roundingIncrement are not valid together");
         }
 
         if (smallest == TemporalUnit.Nanosecond && increment == 1)
@@ -336,13 +332,13 @@ internal sealed partial class JsRealm
         if (smallest == TemporalUnit.Day)
         {
             var start = JsTemporal.StartOfDay(engine, timeZone, dateTime.Date);
-            var end = JsTemporal.StartOfDay(engine, timeZone, JsTemporalCore.AddDays(dateTime.Date, 1));
-            var rounded = JsTemporal.RoundTimeDurationToIncrement(engine, thisNs - start, end - start, mode);
+            var end = JsTemporal.StartOfDay(engine, timeZone, IsoArithmetic.AddDaysToIsoDate(dateTime.Date, 1));
+            JsTemporal.Check(engine, DurationMath.RoundTimeDurationToIncrement(thisNs - start, end - start, mode, out var rounded), "the rounded time");
             epochNs = start + rounded;
         }
         else
         {
-            var roundResult = JsTemporalCore.RoundDateTime(dateTime, increment, smallest, mode);
+            var roundResult = IsoArithmetic.RoundIsoDateTime(dateTime, increment, smallest, mode);
             var offsetNs = JsTemporal.OffsetNanosecondsFor(engine, timeZone, thisNs);
             epochNs = JsTemporal.InterpretDateTimeOffset(engine, roundResult.Date, roundResult.Time, "option", offsetNs, timeZone, "compatible", "prefer", matchMinutes: false);
         }
@@ -351,57 +347,48 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The proposal's AddDurationToZonedDateTime (s6.5.10).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B9A60F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=094506
     // Broiler-Human:        PENDING
     private static JsZonedDateTimeObject AddDurationToZonedDateTime(JsEngine engine, JsZonedDateTimeObject zoned, JsValue[] arguments, bool subtract)
     {
         var fields = SignedDuration(engine, TemporalArgument(arguments, 0), subtract);
-        var reject = JsTemporal.Reject(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
-        var internalDuration = JsTemporalCore.ToInternal(fields);
-        var epochNs = JsTemporal.AddZonedDateTime(engine, zoned.EpochNanoseconds, zoned.TimeZone, zoned.Calendar, internalDuration, reject);
+        var overflow = JsTemporal.Overflow(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
+        var internalDuration = DurationMath.ToInternal(fields);
+        var epochNs = JsTemporal.AddZonedDateTime(engine, zoned.EpochNanoseconds, zoned.TimeZone, zoned.Calendar, internalDuration, overflow);
         return JsTemporal.CreateZonedDateTime(engine, epochNs, zoned.TimeZone, zoned.Calendar);
     }
 
-    /// <summary>The proposal's DifferenceTemporalZonedDateTime (s6.5.9).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CB1315
+    /// <summary>
+    /// The proposal's DifferenceTemporalZonedDateTime (s6.5.9): the reads and the zones' equality here,
+    /// the difference the shared library's over the zone and this realm's calendars.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9C3DA1
     // Broiler-Human:        PENDING
     private static JsDurationObject DifferenceTemporalZonedDateTime(JsEngine engine, JsZonedDateTimeObject zoned, JsValue[] arguments, bool since)
     {
         var other = JsTemporal.ToZonedDateTime(engine, TemporalArgument(arguments, 0));
         RequireSameCalendar(engine, zoned.Calendar, other.Calendar);
         var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1));
-        var settings = JsTemporal.DifferenceSettings(engine, since, options, JsTemporal.UnitGroup.DateTime, [], TemporalUnit.Nanosecond, TemporalUnit.Hour);
-        double[] result;
+        var operation = since ? DifferenceOperation.Since : DifferenceOperation.Until;
+        var settings = JsTemporal.DifferenceSettingsOf(engine, operation, options, TemporalType.ZonedDateTime);
 
-        if (!JsTemporalCore.IsDateUnit(settings.LargestUnit))
-        {
-            var instantDifference = JsTemporal.DifferenceInstant(
-                engine, zoned.EpochNanoseconds, other.EpochNanoseconds, settings.RoundingIncrement, settings.SmallestUnit, settings.RoundingMode);
-            result = JsTemporalCore.FromInternal(instantDifference, settings.LargestUnit);
-            return JsTemporal.CreateDuration(engine, since ? JsTemporal.Negated(result) : result);
-        }
-
-        if (!JsTemporal.TimeZoneEquals(engine, zoned.TimeZone, other.TimeZone))
+        if (TemporalOptionRules.IsDateUnit(settings.LargestUnit) && !JsTemporal.TimeZoneEquals(engine, zoned.TimeZone, other.TimeZone))
         {
             throw engine.Error("RangeError", "Temporal.ZonedDateTime: a difference in days or larger units needs both values in the same time zone");
         }
 
-        if (zoned.EpochNanoseconds == other.EpochNanoseconds)
-        {
-            return JsTemporal.CreateDuration(engine, new double[10]);
-        }
-
-        var internalDuration = JsTemporal.DifferenceZonedDateTimeWithRounding(
+        JsTemporal.Check(
             engine,
-            zoned.EpochNanoseconds,
-            other.EpochNanoseconds,
-            zoned.TimeZone,
-            zoned.Calendar,
-            settings.LargestUnit,
-            settings.RoundingIncrement,
-            settings.SmallestUnit,
-            settings.RoundingMode);
-        result = JsTemporalCore.FromInternal(internalDuration, TemporalUnit.Hour);
-        return JsTemporal.CreateDuration(engine, since ? JsTemporal.Negated(result) : result);
+            TemporalDifferences.DifferenceTemporalZonedDateTime(
+                operation,
+                zoned.EpochNanoseconds,
+                other.EpochNanoseconds,
+                JsTemporal.TimeZoneOf(engine, zoned.TimeZone),
+                JsTemporal.Calendars(engine),
+                JsTemporal.CalendarIdOf(zoned.Calendar),
+                settings,
+                out var result),
+            "the date-time");
+        return JsTemporal.CreateDuration(engine, result);
     }
 }

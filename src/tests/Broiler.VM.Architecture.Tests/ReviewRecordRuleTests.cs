@@ -1331,7 +1331,14 @@ public sealed class ReviewRecordRuleTests
         // AND THE TIME-ZONE AND CALENDAR AREA'S CUT-OVER (SJL-8.5, JSD-0076 and JSD-0077) TOOK ONE AWAY:
         // JsTimeZones.cs, whose decoder, lookup and zone rules the shared library's TimeZoneDatabase
         // implements; JsTemporal.Zones.cs, JsCalendars.cs and the formatter's files stay, and call it.
-        Assert.Equal(330, AssuranceSources.Files.Count);
+        //
+        // AND THE TEMPORAL CORE'S CUT-OVER (SJL-10.4, JSD-0078 and JSD-0079) TOOK THREE AWAY:
+        // JsTemporalCore.cs, whose records, limits, balancing, rounding, duration operations and string
+        // forms the shared library's Broiler.ECMAScript.Temporal implements; JsTemporal.CalendarNonIso.cs
+        // and JsCalendars.cs, whose calendars its TemporalCalendars implements. The realm files,
+        // JsTemporalObjects.cs, JsTemporalParser.cs (the grammar's thin wrapper) and the adapters of
+        // JsTemporal stay, and call it.
+        Assert.Equal(327, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

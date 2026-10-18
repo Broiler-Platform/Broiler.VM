@@ -16,6 +16,8 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
+using Broiler.ECMAScript.Temporal;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -163,15 +165,15 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Temporal." + type + ".prototype.valueOf: use Temporal." + type + ".compare() or equals() to compare Temporal values");
 
     /// <summary>Reads a Temporal receiver's ISO date and calendar, or throws its TypeError.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2CA518
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7C751A
     // Broiler-Human:        PENDING
-    private delegate (JsIsoDate Date, string Calendar) TemporalDateReceiver(JsEngine engine, JsValue thisValue, string member);
+    private delegate (IsoDate Date, string Calendar) TemporalDateReceiver(JsEngine engine, JsValue thisValue, string member);
 
     /// <summary>
     /// Defines the calendar getters the date-bearing types share (s3.3.3 to s3.3.18 and their
     /// counterparts), each reading CalendarISOToDate of the receiver.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=42303D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B7CBB0
     // Broiler-Human:        PENDING
     private void TemporalCalendarGetters(JsObject prototype, string[] names, TemporalDateReceiver receiver)
     {
@@ -194,7 +196,7 @@ internal sealed partial class JsRealm
                     "eraYear" => parts.EraYear is null ? JsValue.Undefined : JsValue.Number(parts.EraYear.Value),
                     "year" => JsValue.Number(parts.Year),
                     "month" => JsValue.Number(parts.Month),
-                    "monthCode" => JsValue.String(parts.MonthCode),
+                    "monthCode" => JsValue.String(parts.MonthCode.ToString()),
                     "day" => JsValue.Number(parts.Day),
                     "dayOfWeek" => JsValue.Number(parts.DayOfWeek),
                     "dayOfYear" => JsValue.Number(parts.DayOfYear),
@@ -235,13 +237,13 @@ internal sealed partial class JsRealm
         return value.AsObject();
     }
 
-    /// <summary>A duration's sign-adjusted fields for add or subtract.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E97417
+    /// <summary>A duration's sign-adjusted fields for add or subtract: CreateNegatedTemporalDuration the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=174939
     // Broiler-Human:        PENDING
-    private static double[] SignedDuration(JsEngine engine, JsValue durationLike, bool subtract)
+    private static DurationFields SignedDuration(JsEngine engine, JsValue durationLike, bool subtract)
     {
         var fields = JsTemporal.ToDuration(engine, durationLike);
-        return subtract ? JsTemporal.Negated(fields) : fields;
+        return subtract ? DurationMath.Negate(fields) : fields;
     }
 
     /// <summary>The proposal's CalendarEquals (s12.3.16), or the RangeError a difference throws.</summary>

@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -365,7 +366,7 @@ internal sealed partial class JsRealm
     /// The proposal's HandleDateTimeValue (amended ECMA-402 s15.6.22): the format a value is written
     /// in and its time in milliseconds; a plain value's format is written at UTC, so no zone moves it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=121763
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86C1F4
     // Broiler-Human:        PENDING
     private static (JsDateTimeFormatter Formatter, double Time) HandleDateTimeValue(JsEngine engine, JsDateTimeFormatObject format, JsValue x)
     {
@@ -394,7 +395,9 @@ internal sealed partial class JsRealm
             return (double)(remainder.Sign < 0 ? quotient - 1 : quotient);
         }
 
-        double Noon(JsIsoDate date) => Milliseconds(JsTemporalCore.UtcEpochNs(new JsIsoDateTime(date, JsTimeRecord.Noon)));
+        double Noon(IsoDate date) =>
+            Milliseconds(IsoArithmetic.GetUtcEpochNanoseconds(
+                new IsoDateTime(date, new IsoTime(12, 0, 0, 0, 0, 0))));
 
         switch (x.AsObject())
         {
@@ -408,10 +411,11 @@ internal sealed partial class JsRealm
                 SameCalendar(monthDay.Calendar, isoAllowed: false, "PlainMonthDay");
                 return (Required("month-day", "PlainMonthDay"), Noon(monthDay.Date));
             case JsPlainTimeObject time:
-                return (Required("time", "PlainTime"), Milliseconds(JsTemporalCore.UtcEpochNs(new JsIsoDateTime(new JsIsoDate(1970, 1, 1), time.Time))));
+                return (Required("time", "PlainTime"), Milliseconds(IsoArithmetic.GetUtcEpochNanoseconds(
+                    new IsoDateTime(new IsoDate(1970, 1, 1), time.Time))));
             case JsPlainDateTimeObject dateTime:
                 SameCalendar(dateTime.Calendar, isoAllowed: true, "PlainDateTime");
-                return (Required("date-time", "PlainDateTime"), Milliseconds(JsTemporalCore.UtcEpochNs(dateTime.DateTime)));
+                return (Required("date-time", "PlainDateTime"), Milliseconds(IsoArithmetic.GetUtcEpochNanoseconds(dateTime.DateTime)));
             case JsInstantObject instant:
                 return (Required("instant", "Instant"), Milliseconds(instant.EpochNanoseconds));
             default:
@@ -553,7 +557,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CreateDateTimeFormat (s11.1.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D98180
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3A6238
     // Broiler-Human:        PENDING
     internal static JsDateTimeFormatObject CreateDateTimeFormat(JsEngine engine, JsObject prototype, JsValue locales, JsValue optionsValue, string required, string defaults, string? toLocaleStringTimeZone = null)
     {
@@ -687,7 +691,8 @@ internal sealed partial class JsRealm
         // A CALENDAR'S DATA is the language's under its own layer: the ISO 8601 calendar's patterns
         // (JSD-0055), or CLDR's names and patterns of another calendar (JSD-0057).
         var dataLanguage = resolvedCalendar == "gregory" ? language : language + "@" + resolvedCalendar;
-        var calendarSystem = resolvedCalendar is "gregory" or "iso8601" ? null : tables.Calendars.For(resolvedCalendar);
+        (TemporalCalendars Calendars, CalendarId Id)? calendarSystem =
+            resolvedCalendar is "gregory" or "iso8601" ? null : (tables.Calendars, JsTemporal.CalendarIdOf(resolvedCalendar));
         var generator = dates.Generator(dataLanguage, resolved.Keys["hc"] is { } keyword ? CharOfHourCycle(keyword) : preferred, decimalSymbol);
         var explicitComponents = new Dictionary<string, string>(components, StringComparer.Ordinal);
         string pattern;

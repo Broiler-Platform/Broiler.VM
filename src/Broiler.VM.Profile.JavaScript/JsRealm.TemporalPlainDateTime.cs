@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -25,7 +26,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3D8C29
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D54C46
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainDateTime(JsObject temporal)
     {
@@ -44,19 +45,21 @@ internal sealed partial class JsRealm
 
             var calendar = TemporalCalendarArgument(engine, TemporalArgument(arguments, 9));
 
-            if (!IsoCalendarMath.IsValidIsoDate((long)values[0], (int)values[1], (int)values[2]))
+            if (!IsoCalendarMath.IsValidIsoDate(JsTemporal.Year(values[0]), (int)values[1], (int)values[2]))
             {
                 throw engine.Error("RangeError", "Temporal.PlainDateTime: the date is not valid");
             }
 
-            if (!JsTemporalCore.IsValidTime(values[3], values[4], values[5], values[6], values[7], values[8]))
+            var time = new IsoTime((int)values[3], (int)values[4], (int)values[5], (int)values[6], (int)values[7], (int)values[8]);
+
+            if (!TemporalLimits.IsValidTime(time))
             {
                 throw engine.Error("RangeError", "Temporal.PlainDateTime: the time is not valid");
             }
 
-            var dateTime = new JsIsoDateTime(
-                new JsIsoDate((long)values[0], (int)values[1], (int)values[2]),
-                new JsTimeRecord(0, (int)values[3], (int)values[4], (int)values[5], (int)values[6], (int)values[7], (int)values[8]));
+            // ROW R6 (decision D9): the limits are checked through the shared library, which takes any
+            // year, so a year past 2^53 is the RangeError the specification asks for.
+            var dateTime = new IsoDateTime(new IsoDate(JsTemporal.Year(values[0]), (int)values[1], (int)values[2]), time);
             return JsValue.Object(JsTemporal.CreatePlainDateTime(engine, dateTime, calendar, newTarget));
         });
 
@@ -67,7 +70,7 @@ internal sealed partial class JsRealm
         {
             var one = JsTemporal.ToPlainDateTime(engine, TemporalArgument(arguments, 0));
             var two = JsTemporal.ToPlainDateTime(engine, TemporalArgument(arguments, 1));
-            return JsValue.Number(JsTemporalCore.Compare(one.DateTime, two.DateTime));
+            return JsValue.Number(IsoArithmetic.CompareIsoDateTime(one.DateTime, two.DateTime));
         });
 
         TemporalCalendarGetters(prototype, TemporalDateGetterNames[..7], static (engine, thisValue, member) =>
@@ -90,7 +93,7 @@ internal sealed partial class JsRealm
             var dateTime = TemporalThis<JsPlainDateTimeObject>(engine, thisValue, "PlainDateTime", "with");
             var partial = PartialTemporalObject(engine, TemporalArgument(arguments, 0), "PlainDateTime");
             var calendar = dateTime.Calendar;
-            var fields = JsTemporal.DateToFields(engine, calendar, dateTime.DateTime.Date, JsTemporal.FieldsType.Date);
+            var fields = JsTemporal.DateToFields(engine, calendar, dateTime.DateTime.Date, CalendarFieldsType.Date);
             SetTimeFields(fields, dateTime.DateTime.Time);
             var partialDateTime = JsTemporal.PrepareFields(
                 engine,
@@ -101,15 +104,15 @@ internal sealed partial class JsRealm
                 null,
                 partial: true);
             fields = JsTemporal.MergeFields(calendar, fields, partialDateTime);
-            var reject = JsTemporal.Reject(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
-            return JsValue.Object(JsTemporal.CreatePlainDateTime(engine, JsTemporal.InterpretDateTimeFields(engine, calendar, fields, reject), calendar));
+            var overflow = JsTemporal.Overflow(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
+            return JsValue.Object(JsTemporal.CreatePlainDateTime(engine, JsTemporal.InterpretDateTimeFields(engine, calendar, fields, overflow), calendar));
         });
 
         Method(prototype, "withPlainTime", 0, static (engine, thisValue, arguments) =>
         {
             var dateTime = TemporalThis<JsPlainDateTimeObject>(engine, thisValue, "PlainDateTime", "withPlainTime");
             var time = JsTemporal.ToTimeOrMidnight(engine, TemporalArgument(arguments, 0));
-            return JsValue.Object(JsTemporal.CreatePlainDateTime(engine, new JsIsoDateTime(dateTime.DateTime.Date, time), dateTime.Calendar));
+            return JsValue.Object(JsTemporal.CreatePlainDateTime(engine, new IsoDateTime(dateTime.DateTime.Date, time), dateTime.Calendar));
         });
 
         Method(prototype, "withCalendar", 1, static (engine, thisValue, arguments) =>
@@ -139,18 +142,9 @@ internal sealed partial class JsRealm
             var mode = JsTemporal.RoundingModeOption(engine, roundTo, RoundingMode.HalfExpand);
             var smallest = JsTemporal.UnitOption(engine, roundTo, "smallestUnit", required: true);
 
-            if (smallest != TemporalUnit.Day)
+            if (!TemporalOptionRules.IsValidRoundOptions(TemporalType.PlainDateTime, smallest, increment))
             {
-                JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
-            }
-
-            if (smallest == TemporalUnit.Day)
-            {
-                JsTemporal.ValidateIncrement(engine, increment, 1, inclusive: true);
-            }
-            else
-            {
-                JsTemporal.ValidateIncrement(engine, increment, JsTemporalCore.MaximumIncrement(smallest), inclusive: false);
+                throw engine.Error("RangeError", "Temporal.PlainDateTime.prototype.round: smallestUnit and roundingIncrement are not valid together");
             }
 
             if (smallest == TemporalUnit.Nanosecond && increment == 1)
@@ -158,7 +152,7 @@ internal sealed partial class JsRealm
                 return JsValue.Object(JsTemporal.CreatePlainDateTime(engine, dateTime.DateTime, dateTime.Calendar));
             }
 
-            var result = JsTemporalCore.RoundDateTime(dateTime.DateTime, increment, smallest, mode);
+            var result = IsoArithmetic.RoundIsoDateTime(dateTime.DateTime, increment, smallest, mode);
             return JsValue.Object(JsTemporal.CreatePlainDateTime(engine, result, dateTime.Calendar));
         });
 
@@ -166,33 +160,27 @@ internal sealed partial class JsRealm
         {
             var dateTime = TemporalThis<JsPlainDateTimeObject>(engine, thisValue, "PlainDateTime", "equals");
             var other = JsTemporal.ToPlainDateTime(engine, TemporalArgument(arguments, 0));
-            return JsValue.Boolean(JsTemporalCore.Compare(dateTime.DateTime, other.DateTime) == 0 && dateTime.Calendar == other.Calendar);
+            return JsValue.Boolean(IsoArithmetic.CompareIsoDateTime(dateTime.DateTime, other.DateTime) == 0 && dateTime.Calendar == other.Calendar);
         });
 
         Method(prototype, "toString", 0, static (engine, thisValue, arguments) =>
         {
             var dateTime = TemporalThis<JsPlainDateTimeObject>(engine, thisValue, "PlainDateTime", "toString");
             var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 0));
-            var showCalendar = JsTemporal.ShowCalendar(engine, options);
+            var showCalendar = JsTemporal.ShowCalendarOption(engine, options);
             var digits = JsTemporal.FractionalSecondDigits(engine, options);
-            var mode = JsTemporal.RoundingModeOption(engine, options, RoundingMode.Trunc);
+            var mode = JsTemporal.RoundingModeOption(engine, options, TemporalOptionRules.DefaultToStringRoundingMode);
             var smallest = JsTemporal.UnitOption(engine, options, "smallestUnit", required: false);
-            JsTemporal.ValidateUnit(engine, smallest, JsTemporal.UnitGroup.Time);
 
-            if (smallest == TemporalUnit.Hour)
+            if (!TemporalOptionRules.IsValidToStringSmallestUnit(smallest, duration: false))
             {
-                throw engine.Error("RangeError", "Temporal.PlainDateTime.prototype.toString: smallestUnit cannot be hour");
+                throw engine.Error("RangeError", "Temporal.PlainDateTime.prototype.toString: smallestUnit must be a minute or smaller");
             }
 
-            var precision = JsTemporal.Precision(smallest, digits);
-            var result = JsTemporalCore.RoundDateTime(dateTime.DateTime, precision.Increment, precision.Unit, mode);
-
-            if (!JsTemporalCore.DateTimeWithinLimits(result))
-            {
-                throw engine.Error("RangeError", "Temporal.PlainDateTime.prototype.toString: the rounded date-time is outside the representable range");
-            }
-
-            return JsValue.String(JsTemporal.DateTimeString(result, dateTime.Calendar, precision.Precision, showCalendar));
+            var status = TemporalFormat.TryPlainDateTimeToString(
+                dateTime.DateTime, dateTime.Calendar, TemporalOptionRules.ToSecondsStringPrecisionRecord(smallest, digits), mode, showCalendar, out var text);
+            JsTemporal.Check(engine, status, "the rounded date-time");
+            return JsValue.String(text!);
         });
 
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
@@ -204,7 +192,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
         {
             var dateTime = TemporalThis<JsPlainDateTimeObject>(engine, thisValue, "PlainDateTime", "toJSON");
-            return JsValue.String(JsTemporal.DateTimeString(dateTime.DateTime, dateTime.Calendar, JsTemporalCore.PrecisionAuto, "auto"));
+            return JsValue.String(TemporalFormat.DateTimeToString(dateTime.DateTime, dateTime.Calendar, TemporalFormat.AutoPrecision, ShowCalendarName.Auto));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) => TemporalValueOf(engine, "PlainDateTime"));
@@ -232,9 +220,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Sets a fields record's six time fields from a time record.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7C7880
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BBCC2A
     // Broiler-Human:        PENDING
-    private static void SetTimeFields(JsCalendarFields fields, JsTimeRecord time)
+    private static void SetTimeFields(JsCalendarFields fields, IsoTime time)
     {
         fields.Hour = time.Hour;
         fields.Minute = time.Minute;
@@ -244,38 +232,41 @@ internal sealed partial class JsRealm
         fields.Nanosecond = time.Nanosecond;
     }
 
-    /// <summary>The proposal's AddDurationToDateTime (s5.5.16).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=34E330
+    /// <summary>
+    /// The proposal's AddDurationToDateTime (s5.5.16): AddTime with its carried days, then
+    /// CalendarDateAdd, each the shared library's.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=927971
     // Broiler-Human:        PENDING
     private static JsPlainDateTimeObject AddDurationToDateTime(JsEngine engine, JsPlainDateTimeObject dateTime, JsValue[] arguments, bool subtract)
     {
         var fields = SignedDuration(engine, TemporalArgument(arguments, 0), subtract);
-        var reject = JsTemporal.Reject(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
-        var internalDuration = JsTemporalCore.ToInternalWith24HourDays(fields);
-        var timeResult = JsTemporalCore.AddTime(dateTime.DateTime.Time, internalDuration.Time);
-        var dateDuration = JsTemporal.AdjustDate(engine, internalDuration.Date, timeResult.Days);
-        var added = JsTemporal.DateAdd(engine, dateTime.Calendar, dateTime.DateTime.Date, dateDuration, reject);
-        return JsTemporal.CreatePlainDateTime(engine, new JsIsoDateTime(added, timeResult), dateTime.Calendar);
+        var overflow = JsTemporal.Overflow(engine, JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1)));
+        var internalDuration = DurationMath.ToInternalWith24HourDays(fields);
+        var timeResult = IsoArithmetic.AddTime(dateTime.DateTime.Time, internalDuration.TimeNanoseconds, out var days);
+        JsTemporal.Check(
+            engine,
+            DurationMath.CreateDateDurationRecord(internalDuration.Date.Years, internalDuration.Date.Months, internalDuration.Date.Weeks, days, out var dateDuration),
+            "the duration");
+        var added = JsTemporal.DateAdd(engine, dateTime.Calendar, dateTime.DateTime.Date, dateDuration, overflow);
+        return JsTemporal.CreatePlainDateTime(engine, new IsoDateTime(added, timeResult), dateTime.Calendar);
     }
 
-    /// <summary>The proposal's DifferenceTemporalPlainDateTime (s5.5.15).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B33FDE
+    /// <summary>The proposal's DifferenceTemporalPlainDateTime (s5.5.15): the reads here, the difference the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=59A8A5
     // Broiler-Human:        PENDING
     private static JsDurationObject DifferenceTemporalPlainDateTime(JsEngine engine, JsPlainDateTimeObject dateTime, JsValue[] arguments, bool since)
     {
         var other = JsTemporal.ToPlainDateTime(engine, TemporalArgument(arguments, 0));
         RequireSameCalendar(engine, dateTime.Calendar, other.Calendar);
         var options = JsTemporal.OptionsObject(engine, TemporalArgument(arguments, 1));
-        var settings = JsTemporal.DifferenceSettings(engine, since, options, JsTemporal.UnitGroup.DateTime, [], TemporalUnit.Nanosecond, TemporalUnit.Day);
-
-        if (JsTemporalCore.Compare(dateTime.DateTime, other.DateTime) == 0)
-        {
-            return JsTemporal.CreateDuration(engine, new double[10]);
-        }
-
-        var internalDuration = JsTemporal.DifferencePlainDateTimeWithRounding(
-            engine, dateTime.DateTime, other.DateTime, dateTime.Calendar, settings.LargestUnit, settings.RoundingIncrement, settings.SmallestUnit, settings.RoundingMode);
-        var result = JsTemporalCore.FromInternal(internalDuration, settings.LargestUnit);
-        return JsTemporal.CreateDuration(engine, since ? JsTemporal.Negated(result) : result);
+        var operation = since ? DifferenceOperation.Since : DifferenceOperation.Until;
+        var settings = JsTemporal.DifferenceSettingsOf(engine, operation, options, TemporalType.PlainDateTime);
+        JsTemporal.Check(
+            engine,
+            TemporalDifferences.DifferenceTemporalPlainDateTime(
+                operation, JsTemporal.Calendars(engine), JsTemporal.CalendarIdOf(dateTime.Calendar), dateTime.DateTime, other.DateTime, settings, out var result),
+            "the date-time");
+        return JsTemporal.CreateDuration(engine, result);
     }
 }

@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -97,38 +98,44 @@ internal readonly record struct JsLocalTime(long Year, int Month, int Day, int W
     /// <summary>
     /// The same time's fields in a calendar other than the Gregorian one (JSD-0057): its arithmetic
     /// year, ordinal month, day and day of the year, its era as CLDR numbers it, and how its month is
-    /// named and numbered.
+    /// named and numbered. The calendar's date is the shared calendars' CalendarISOToDate since SJL-10.4
+    /// (JSD-0078); how CLDR names and numbers it stays here.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=550C70
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DE15F1
     // Broiler-Human:        PENDING
-    internal JsLocalTime InCalendar(JsCalendarSystem system)
+    internal JsLocalTime InCalendar(TemporalCalendars calendars, CalendarId calendar)
     {
-        var days = IsoCalendarMath.EpochDays(Year, Month, Day);
-        var (year, month, day) = system.FromEpochDays(days);
-        var (era, eraYear) = system.EraOf(year.Year, days);
-        var code = JsCalendarSystem.MonthCode(year, month);
-        var number = ((code[1] - '0') * 10) + (code[2] - '0');
-        var lunisolar = system.Id is "chinese" or "dangi";
-
-        string? monthKey = system.Id switch
+        // A TIME VALUE'S LOCAL DATE IS WITHIN THE CALENDARS' YEARS: its year is within ±275,760, so the
+        // shared calendars answer it; a status other than completion would be an engine defect.
+        if (calendars.IsoToDate(calendar, new IsoDate(Year, Month, Day), out var date) != CalendarStatus.Completed)
         {
-            "hebrew" => code == "M05L" ? "6" : code == "M06" && year.LeapMonth != 0 ? "7-yeartype-leap" : (number < 6 ? number : number + 1).ToString(CultureInfo.InvariantCulture),
-            "chinese" or "dangi" => number.ToString(CultureInfo.InvariantCulture),
+            throw new InvalidOperationException("A time value's local date is outside the calendars' years.");
+        }
+
+        var id = TemporalCalendars.Identifier(calendar);
+        var code = date.MonthCode;
+        var number = code.Number;
+        var lunisolar = calendar is CalendarId.Chinese or CalendarId.Dangi;
+
+        string? monthKey = calendar switch
+        {
+            CalendarId.Hebrew => code.IsLeapMonth && number == 5 ? "6" : !code.IsLeapMonth && number == 6 && date.InLeapYear ? "7-yeartype-leap" : (number < 6 ? number : number + 1).ToString(CultureInfo.InvariantCulture),
+            CalendarId.Chinese or CalendarId.Dangi => number.ToString(CultureInfo.InvariantCulture),
             _ => null,
         };
 
         return this with
         {
-            Year = year.Year,
-            Month = month,
-            Day = day,
-            DayOfYear = (int)(days - year.Start) + 1,
-            CalendarEra = lunisolar ? string.Empty : EraIndex(system.Id, era!),
-            CalendarEraYear = lunisolar ? year.Year : eraYear,
+            Year = date.Year,
+            Month = date.Month,
+            Day = date.Day,
+            DayOfYear = date.DayOfYear,
+            CalendarEra = lunisolar ? string.Empty : EraIndex(id, date.Era!),
+            CalendarEraYear = lunisolar ? date.Year : date.EraYear,
             MonthKey = monthKey,
             MonthNumber = lunisolar ? number : null,
-            LeapMonth = lunisolar && code.Length == 4,
-            CyclicYear = lunisolar ? (int)((((year.Year - 4) % 60) + 60) % 60) + 1 : null,
+            LeapMonth = lunisolar && code.IsLeapMonth,
+            CyclicYear = lunisolar ? (int)((((date.Year - 4) % 60) + 60) % 60) + 1 : null,
         };
     }
 
@@ -212,10 +219,10 @@ internal sealed class JsDateTimeFormatter
     // Broiler-Human:        PENDING
     private JsDateIntervalFormat? interval;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3A2215
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AD7732
     // Broiler-Human:        PENDING
     internal JsDateTimeFormatter(JsDateData data, string language, string[] digits, string timeZone, int offsetMinutes, JsZoneKind zoneKind,
-        string pattern, Func<JsDateIntervalFormat> intervals, ITimeZoneRules? zone = null, JsCalendarSystem? calendar = null, JsZoneNaming? naming = null)
+        string pattern, Func<JsDateIntervalFormat> intervals, ITimeZoneRules? zone = null, (TemporalCalendars Calendars, CalendarId Id)? calendar = null, JsZoneNaming? naming = null)
     {
         this.zone = zone;
         this.calendar = calendar;
@@ -236,9 +243,9 @@ internal sealed class JsDateTimeFormatter
     private readonly ITimeZoneRules? zone;
 
     /// <summary>The calendar the fields are written in, or nothing for the Gregorian and ISO 8601 ones (JSD-0057).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2174A5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2EBAB4
     // Broiler-Human:        PENDING
-    private readonly JsCalendarSystem? calendar;
+    private readonly (TemporalCalendars Calendars, CalendarId Id)? calendar;
 
     /// <summary>What an IANA zone is named with, or nothing where it is written in the GMT format alone (JSD-0058).</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6DEFB6
@@ -246,12 +253,12 @@ internal sealed class JsDateTimeFormatter
     private readonly JsZoneNaming? naming;
 
     /// <summary>A time value's local fields, in the format's calendar.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A8FC8F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=197FC3
     // Broiler-Human:        PENDING
     internal JsLocalTime LocalTime(double time)
     {
         var local = JsLocalTime.From(time, OffsetSecondsAt(time));
-        return calendar is null ? local : local.InCalendar(calendar);
+        return calendar is { } system ? local.InCalendar(system.Calendars, system.Id) : local;
     }
 
     /// <summary>The time zone's identifier: <c>UTC</c>, an offset such as <c>+05:30</c>, or an IANA primary identifier.</summary>

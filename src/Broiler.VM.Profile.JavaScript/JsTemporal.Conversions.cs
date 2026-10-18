@@ -3,20 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   28
-// Annotated:        28/28
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           0
-// Human-reviewed:   0/28
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       28
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
 using Broiler.ECMAScript.Numbers;
+using Broiler.ECMAScript.Temporal;
+using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -25,6 +27,10 @@ namespace Broiler.VM.Profile.JavaScript;
 internal static partial class JsTemporal
 {
     // ---- Creating the objects ---------------------------------------------------------------
+    //
+    // Each limit is the shared library's TemporalLimits (JSD-0078's X3), which takes any year and
+    // answers a status: the constructors' years past 2^53 are a RangeError there, where the epoch-day
+    // arithmetic's precondition ended the invocation before SJL-10.4 (row R6, decision D9).
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=64BC95
     // Broiler-Human:        PENDING
@@ -37,35 +43,27 @@ internal static partial class JsTemporal
     internal static JsInstantObject CreateInstant(JsEngine engine, BigInteger epochNs, JsValue newTarget = default) =>
         new(PrototypeFor(engine, newTarget, engine.Realm.TemporalInstantPrototype!), epochNs);
 
-    /// <summary>The proposal's CreateTemporalDate (s3.5.3).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4C581C
+    /// <summary>The proposal's CreateTemporalDate (s3.5.3): ISODateWithinLimits, the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=44BE45
     // Broiler-Human:        PENDING
-    internal static JsPlainDateObject CreatePlainDate(JsEngine engine, JsIsoDate date, string calendar, JsValue newTarget = default)
+    internal static JsPlainDateObject CreatePlainDate(JsEngine engine, IsoDate date, string calendar, JsValue newTarget = default)
     {
-        if (!JsTemporalCore.DateWithinLimits(date))
-        {
-            throw engine.Error("RangeError", "Temporal: the date is outside the representable range");
-        }
-
+        Check(engine, TemporalLimits.CheckIsoDate(date), "the date");
         return new JsPlainDateObject(PrototypeFor(engine, newTarget, engine.Realm.TemporalPlainDatePrototype!), date, calendar);
     }
 
     /// <summary>The proposal's CreateTemporalTime (s4.5.11).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E6D36
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=24C747
     // Broiler-Human:        PENDING
-    internal static JsPlainTimeObject CreatePlainTime(JsEngine engine, JsTimeRecord time, JsValue newTarget = default) =>
+    internal static JsPlainTimeObject CreatePlainTime(JsEngine engine, IsoTime time, JsValue newTarget = default) =>
         new(PrototypeFor(engine, newTarget, engine.Realm.TemporalPlainTimePrototype!), time);
 
-    /// <summary>The proposal's CreateTemporalDateTime (s5.5.8).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=294B00
+    /// <summary>The proposal's CreateTemporalDateTime (s5.5.8): ISODateTimeWithinLimits, the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=509587
     // Broiler-Human:        PENDING
-    internal static JsPlainDateTimeObject CreatePlainDateTime(JsEngine engine, JsIsoDateTime dateTime, string calendar, JsValue newTarget = default)
+    internal static JsPlainDateTimeObject CreatePlainDateTime(JsEngine engine, IsoDateTime dateTime, string calendar, JsValue newTarget = default)
     {
-        if (!JsTemporalCore.DateTimeWithinLimits(dateTime))
-        {
-            throw engine.Error("RangeError", "Temporal: the date-time is outside the representable range");
-        }
-
+        Check(engine, TemporalLimits.CheckIsoDateTime(dateTime), "the date-time");
         return new JsPlainDateTimeObject(PrototypeFor(engine, newTarget, engine.Realm.TemporalPlainDateTimePrototype!), dateTime, calendar);
     }
 
@@ -75,29 +73,21 @@ internal static partial class JsTemporal
     internal static JsZonedDateTimeObject CreateZonedDateTime(JsEngine engine, BigInteger epochNs, string timeZone, string calendar, JsValue newTarget = default) =>
         new(PrototypeFor(engine, newTarget, engine.Realm.TemporalZonedDateTimePrototype!), epochNs, timeZone, calendar);
 
-    /// <summary>The proposal's CreateTemporalYearMonth (s9.5.5).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=46B4C5
+    /// <summary>The proposal's CreateTemporalYearMonth (s9.5.5): ISOYearMonthWithinLimits, the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8464DA
     // Broiler-Human:        PENDING
-    internal static JsPlainYearMonthObject CreateYearMonth(JsEngine engine, JsIsoDate date, string calendar, JsValue newTarget = default)
+    internal static JsPlainYearMonthObject CreateYearMonth(JsEngine engine, IsoDate date, string calendar, JsValue newTarget = default)
     {
-        if (!JsTemporalCore.YearMonthWithinLimits(date))
-        {
-            throw engine.Error("RangeError", "Temporal: the year-month is outside the representable range");
-        }
-
+        Check(engine, TemporalLimits.CheckIsoYearMonth(date), "the year-month");
         return new JsPlainYearMonthObject(PrototypeFor(engine, newTarget, engine.Realm.TemporalPlainYearMonthPrototype!), date, calendar);
     }
 
-    /// <summary>The proposal's CreateTemporalMonthDay (s10.5.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=250243
+    /// <summary>The proposal's CreateTemporalMonthDay (s10.5.2): ISODateWithinLimits, the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5E1E4C
     // Broiler-Human:        PENDING
-    internal static JsPlainMonthDayObject CreateMonthDay(JsEngine engine, JsIsoDate date, string calendar, JsValue newTarget = default)
+    internal static JsPlainMonthDayObject CreateMonthDay(JsEngine engine, IsoDate date, string calendar, JsValue newTarget = default)
     {
-        if (!JsTemporalCore.DateWithinLimits(date))
-        {
-            throw engine.Error("RangeError", "Temporal: the month-day is outside the representable range");
-        }
-
+        Check(engine, TemporalLimits.CheckIsoDate(date), "the month-day");
         return new JsPlainMonthDayObject(PrototypeFor(engine, newTarget, engine.Realm.TemporalPlainMonthDayPrototype!), date, calendar);
     }
 
@@ -107,18 +97,18 @@ internal static partial class JsTemporal
     internal static BigInteger EpochNsFromMilliseconds(JsEngine engine, double milliseconds) =>
         engine.NumberToBigInt(milliseconds).Value * 1_000_000;
 
-    /// <summary>A RangeError unless the epoch nanoseconds are an instant's.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=902C4E
+    /// <summary>A RangeError unless the epoch nanoseconds are an instant's (IsValidEpochNanoseconds, the shared library's).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0CBD02
     // Broiler-Human:        PENDING
     internal static BigInteger ValidEpochNs(JsEngine engine, BigInteger epochNs) =>
-        JsTemporalCore.IsValidEpochNs(epochNs)
+        TemporalLimits.CheckEpochNanoseconds(epochNs) == TemporalStatus.Completed
             ? epochNs
             : throw engine.Error("RangeError", "Temporal: the epoch nanoseconds are outside the representable range of instants");
 
     // ---- Converting values ------------------------------------------------------------------
 
-    /// <summary>The proposal's ToTemporalInstant (s8.5.3), as epoch nanoseconds.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A1227D
+    /// <summary>The proposal's ToTemporalInstant (s8.5.3), as epoch nanoseconds: its string the shared grammar's ParseTemporalInstant.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9C404E
     // Broiler-Human:        PENDING
     internal static BigInteger ToInstant(JsEngine engine, JsValue item)
     {
@@ -140,29 +130,22 @@ internal static partial class JsTemporal
             throw engine.Error("TypeError", "Temporal: an instant must be a string or a Temporal.Instant");
         }
 
-        var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.Instant);
-        var offsetNs = parsed.Z ? 0 : JsTemporalParser.OffsetNanoseconds(parsed.Offset!);
-        var time = parsed.Time!.Value;
-        var balanced = JsTemporalCore.BalanceDateTime(
-            new JsIsoDate(parsed.Year!.Value, parsed.Month, parsed.Day),
-            JsTemporalCore.TimeNs(time) - offsetNs);
-
-        if (!JsTemporalCore.DaysWithinRange(balanced.Date))
-        {
-            throw engine.Error("RangeError", "Temporal: the instant is outside the representable range");
-        }
-
-        return ValidEpochNs(engine, JsTemporalCore.UtcEpochNs(balanced));
+        return JsTemporalParser.Instant(engine, item.AsString());
     }
 
     /// <summary>Reads the overflow option of an options argument, for the conversions that only validate it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=625430
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9EC72E
     // Broiler-Human:        PENDING
     private static void ValidateOverflow(JsEngine engine, JsValue options) =>
-        _ = Reject(engine, OptionsObject(engine, options));
+        _ = Overflow(engine, OptionsObject(engine, options));
+
+    /// <summary>The ISO date of a parse record that has one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=080D39
+    // Broiler-Human:        PENDING
+    private static IsoDate DateOf(IsoParseResult parsed) => new(parsed.Year!.Value, parsed.Month, parsed.Day);
 
     /// <summary>The proposal's ToTemporalDate (s3.5.4).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=09BEAD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=595EE6
     // Broiler-Human:        PENDING
     internal static JsPlainDateObject ToPlainDate(JsEngine engine, JsValue item, JsValue options = default)
     {
@@ -186,8 +169,8 @@ internal static partial class JsTemporal
 
             var calendar = CalendarWithIsoDefault(engine, source);
             var fields = PrepareFields(engine, calendar, source, [CalendarField.Year, CalendarField.Month, CalendarField.MonthCode, CalendarField.Day], [], []);
-            var reject = Reject(engine, OptionsObject(engine, options));
-            return CreatePlainDate(engine, DateFromFields(engine, calendar, fields, reject), calendar);
+            var overflow = Overflow(engine, OptionsObject(engine, options));
+            return CreatePlainDate(engine, DateFromFields(engine, calendar, fields, overflow), calendar);
         }
 
         if (!item.IsString)
@@ -198,7 +181,7 @@ internal static partial class JsTemporal
         var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.DateTime);
         var parsedCalendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
         ValidateOverflow(engine, options);
-        return CreatePlainDate(engine, new JsIsoDate(parsed.Year!.Value, parsed.Month, parsed.Day), parsedCalendar);
+        return CreatePlainDate(engine, DateOf(parsed), parsedCalendar);
     }
 
     /// <summary>The proposal's ToTemporalTimeRecord (s4.5.12): each field, or null where partial and absent.</summary>
@@ -237,10 +220,19 @@ internal static partial class JsTemporal
         return result;
     }
 
-    /// <summary>The proposal's ToTemporalTime (s4.5.6), as the time record.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BF5189
+    /// <summary>The proposal's RegulateTime (s4.5.8), the shared library's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7268D5
     // Broiler-Human:        PENDING
-    internal static JsTimeRecord ToPlainTime(JsEngine engine, JsValue item, JsValue options = default)
+    internal static IsoTime RegulateTime(JsEngine engine, double hour, double minute, double second, double millisecond, double microsecond, double nanosecond, TemporalOverflow overflow)
+    {
+        Check(engine, IsoArithmetic.RegulateTime(hour, minute, second, millisecond, microsecond, nanosecond, overflow, out var time), "the time");
+        return time;
+    }
+
+    /// <summary>The proposal's ToTemporalTime (s4.5.6), as the time record.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6B0C1D
+    // Broiler-Human:        PENDING
+    internal static IsoTime ToPlainTime(JsEngine engine, JsValue item, JsValue options = default)
     {
         if (item.IsObject)
         {
@@ -259,8 +251,8 @@ internal static partial class JsTemporal
             }
 
             var record = ToTimeRecord(engine, item, partial: false);
-            var reject = Reject(engine, OptionsObject(engine, options));
-            return RegulateTime(engine, record[0]!.Value, record[1]!.Value, record[2]!.Value, record[3]!.Value, record[4]!.Value, record[5]!.Value, reject);
+            var overflow = Overflow(engine, OptionsObject(engine, options));
+            return RegulateTime(engine, record[0]!.Value, record[1]!.Value, record[2]!.Value, record[3]!.Value, record[4]!.Value, record[5]!.Value, overflow);
         }
 
         if (!item.IsString)
@@ -274,13 +266,23 @@ internal static partial class JsTemporal
     }
 
     /// <summary>The proposal's ToTimeRecordOrMidnight (s4.5.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6DBE23
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=17119E
     // Broiler-Human:        PENDING
-    internal static JsTimeRecord ToTimeOrMidnight(JsEngine engine, JsValue item) =>
-        item.Type == JsType.Undefined ? JsTimeRecord.Midnight : ToPlainTime(engine, item);
+    internal static IsoTime ToTimeOrMidnight(JsEngine engine, JsValue item) =>
+        item.Type == JsType.Undefined ? default : ToPlainTime(engine, item);
+
+    /// <summary>The proposal's InterpretTemporalDateTimeFields (s5.5.5): the date the shared calendars give, then the time regulated.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=110952
+    // Broiler-Human:        PENDING
+    internal static IsoDateTime InterpretDateTimeFields(JsEngine engine, string calendar, JsCalendarFields fields, TemporalOverflow overflow)
+    {
+        var date = DateFromFields(engine, calendar, fields, overflow);
+        var time = RegulateTime(engine, fields.Hour ?? 0, fields.Minute ?? 0, fields.Second ?? 0, fields.Millisecond ?? 0, fields.Microsecond ?? 0, fields.Nanosecond ?? 0, overflow);
+        return new IsoDateTime(date, time);
+    }
 
     /// <summary>The proposal's ToTemporalDateTime (s5.5.6).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B5C39B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AD2AB8
     // Broiler-Human:        PENDING
     internal static JsPlainDateTimeObject ToPlainDateTime(JsEngine engine, JsValue item, JsValue options = default)
     {
@@ -299,7 +301,7 @@ internal static partial class JsTemporal
                     return CreatePlainDateTime(engine, dateTime, zoned.Calendar);
                 case JsPlainDateObject date:
                     ValidateOverflow(engine, options);
-                    return CreatePlainDateTime(engine, new JsIsoDateTime(date.Date, JsTimeRecord.Midnight), date.Calendar);
+                    return CreatePlainDateTime(engine, new IsoDateTime(date.Date, default), date.Calendar);
             }
 
             var calendar = CalendarWithIsoDefault(engine, source);
@@ -310,8 +312,8 @@ internal static partial class JsTemporal
                 [CalendarField.Year, CalendarField.Month, CalendarField.MonthCode, CalendarField.Day],
                 [CalendarField.Hour, CalendarField.Minute, CalendarField.Second, CalendarField.Millisecond, CalendarField.Microsecond, CalendarField.Nanosecond],
                 []);
-            var reject = Reject(engine, OptionsObject(engine, options));
-            return CreatePlainDateTime(engine, InterpretDateTimeFields(engine, calendar, fields, reject), calendar);
+            var overflow = Overflow(engine, OptionsObject(engine, options));
+            return CreatePlainDateTime(engine, InterpretDateTimeFields(engine, calendar, fields, overflow), calendar);
         }
 
         if (!item.IsString)
@@ -322,12 +324,11 @@ internal static partial class JsTemporal
         var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.DateTime);
         var parsedCalendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
         ValidateOverflow(engine, options);
-        var isoDateTime = new JsIsoDateTime(new JsIsoDate(parsed.Year!.Value, parsed.Month, parsed.Day), parsed.Time ?? JsTimeRecord.Midnight);
-        return CreatePlainDateTime(engine, isoDateTime, parsedCalendar);
+        return CreatePlainDateTime(engine, new IsoDateTime(DateOf(parsed), parsed.Time ?? default), parsedCalendar);
     }
 
     /// <summary>The proposal's ToTemporalZonedDateTime (s6.5.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CB656F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=985E9C
     // Broiler-Human:        PENDING
     internal static JsZonedDateTimeObject ToZonedDateTime(JsEngine engine, JsValue item, JsValue options = default)
     {
@@ -338,8 +339,8 @@ internal static partial class JsTemporal
         string calendar;
         string disambiguation;
         string offsetOption;
-        JsIsoDate date;
-        JsTimeRecord? time;
+        IsoDate date;
+        IsoTime? time;
 
         if (item.IsObject)
         {
@@ -350,7 +351,7 @@ internal static partial class JsTemporal
                 var resolved = OptionsObject(engine, options);
                 _ = Disambiguation(engine, resolved);
                 _ = OffsetOption(engine, resolved, "reject");
-                _ = Reject(engine, resolved);
+                _ = Overflow(engine, resolved);
                 return CreateZonedDateTime(engine, zoned.EpochNanoseconds, zoned.TimeZone, zoned.Calendar);
             }
 
@@ -367,8 +368,8 @@ internal static partial class JsTemporal
             var resolvedOptions = OptionsObject(engine, options);
             disambiguation = Disambiguation(engine, resolvedOptions);
             offsetOption = OffsetOption(engine, resolvedOptions, "reject");
-            var reject = Reject(engine, resolvedOptions);
-            var result = InterpretDateTimeFields(engine, calendar, fields, reject);
+            var overflow = Overflow(engine, resolvedOptions);
+            var result = InterpretDateTimeFields(engine, calendar, fields, overflow);
             date = result.Date;
             time = result.Time;
         }
@@ -384,23 +385,23 @@ internal static partial class JsTemporal
             offsetString = parsed.Offset;
             hasUtcDesignator = parsed.Z;
             calendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
-            matchMinutes = !(offsetString is not null && OffsetHasSeconds(offsetString));
+            matchMinutes = !(offsetString is not null && parsed.OffsetHasSeconds);
             var resolvedOptions = OptionsObject(engine, options);
             disambiguation = Disambiguation(engine, resolvedOptions);
             offsetOption = OffsetOption(engine, resolvedOptions, "reject");
-            _ = Reject(engine, resolvedOptions);
-            date = new JsIsoDate(parsed.Year!.Value, parsed.Month, parsed.Day);
+            _ = Overflow(engine, resolvedOptions);
+            date = DateOf(parsed);
             time = parsed.Time;
         }
 
         var offsetBehaviour = hasUtcDesignator ? "exact" : offsetString is null ? "wall" : "option";
-        var offsetNs = offsetBehaviour == "option" ? JsTemporalParser.OffsetNanoseconds(offsetString!) : 0;
+        var offsetNs = offsetBehaviour == "option" ? OffsetNanoseconds(offsetString!) : 0;
         var epochNs = InterpretDateTimeOffset(engine, date, time, offsetBehaviour, offsetNs, timeZone, disambiguation, offsetOption, matchMinutes);
         return CreateZonedDateTime(engine, epochNs, timeZone, calendar);
     }
 
     /// <summary>The proposal's ToTemporalYearMonth (s9.5.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=32E9CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4DAB84
     // Broiler-Human:        PENDING
     internal static JsPlainYearMonthObject ToYearMonth(JsEngine engine, JsValue item, JsValue options = default)
     {
@@ -416,8 +417,8 @@ internal static partial class JsTemporal
 
             var calendar = CalendarWithIsoDefault(engine, source);
             var fields = PrepareFields(engine, calendar, source, [CalendarField.Year, CalendarField.Month, CalendarField.MonthCode], [], []);
-            var reject = Reject(engine, OptionsObject(engine, options));
-            return CreateYearMonth(engine, YearMonthFromFields(engine, calendar, fields, reject), calendar);
+            var overflow = Overflow(engine, OptionsObject(engine, options));
+            return CreateYearMonth(engine, YearMonthFromFields(engine, calendar, fields, overflow), calendar);
         }
 
         if (!item.IsString)
@@ -428,19 +429,14 @@ internal static partial class JsTemporal
         var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.YearMonth);
         var parsedCalendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
         ValidateOverflow(engine, options);
-        var isoDate = new JsIsoDate(parsed.Year!.Value, parsed.Month, parsed.Day);
-
-        if (!JsTemporalCore.YearMonthWithinLimits(isoDate))
-        {
-            throw engine.Error("RangeError", "Temporal: the year-month is outside the representable range");
-        }
-
-        var canonical = YearMonthFromFields(engine, parsedCalendar, DateToFields(engine, parsedCalendar, isoDate, FieldsType.YearMonth), reject: false);
+        var isoDate = DateOf(parsed);
+        Check(engine, TemporalLimits.CheckIsoYearMonth(isoDate), "the year-month");
+        var canonical = YearMonthFromFields(engine, parsedCalendar, DateToFields(engine, parsedCalendar, isoDate, CalendarFieldsType.YearMonth), TemporalOverflow.Constrain);
         return CreateYearMonth(engine, canonical, parsedCalendar);
     }
 
     /// <summary>The proposal's ToTemporalMonthDay (s10.5.1).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=562D0E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2A9C75
     // Broiler-Human:        PENDING
     internal static JsPlainMonthDayObject ToMonthDay(JsEngine engine, JsValue item, JsValue options = default)
     {
@@ -456,8 +452,8 @@ internal static partial class JsTemporal
 
             var calendar = CalendarWithIsoDefault(engine, source);
             var fields = PrepareFields(engine, calendar, source, [CalendarField.Year, CalendarField.Month, CalendarField.MonthCode, CalendarField.Day], [], []);
-            var reject = Reject(engine, OptionsObject(engine, options));
-            return CreateMonthDay(engine, MonthDayFromFields(engine, calendar, fields, reject), calendar);
+            var overflow = Overflow(engine, OptionsObject(engine, options));
+            return CreateMonthDay(engine, MonthDayFromFields(engine, calendar, fields, overflow), calendar);
         }
 
         if (!item.IsString)
@@ -471,112 +467,48 @@ internal static partial class JsTemporal
 
         if (parsedCalendar == "iso8601")
         {
-            return CreateMonthDay(engine, new JsIsoDate(1972, parsed.Month, parsed.Day), parsedCalendar);
+            return CreateMonthDay(engine, new IsoDate(1972, parsed.Month, parsed.Day), parsedCalendar);
         }
 
-        var isoDate = new JsIsoDate(parsed.Year!.Value, parsed.Month, parsed.Day);
-
-        if (!JsTemporalCore.DateWithinLimits(isoDate))
-        {
-            throw engine.Error("RangeError", "Temporal: the month-day is outside the representable range");
-        }
-
-        var canonical = MonthDayFromFields(engine, parsedCalendar, DateToFields(engine, parsedCalendar, isoDate, FieldsType.MonthDay), reject: false);
+        var isoDate = DateOf(parsed);
+        Check(engine, TemporalLimits.CheckIsoDate(isoDate), "the month-day");
+        var canonical = MonthDayFromFields(engine, parsedCalendar, DateToFields(engine, parsedCalendar, isoDate, CalendarFieldsType.MonthDay), TemporalOverflow.Constrain);
         return CreateMonthDay(engine, canonical, parsedCalendar);
     }
 
     // ---- Strings ----------------------------------------------------------------------------
+    //
+    // The string forms are the shared library's TemporalFormat (JSD-0078's serialization X6): what
+    // stays here is the zone's offset, which the adapter looks up, and the instant's rounding before it.
 
-    /// <summary>The proposal's TemporalDateToString (s3.5.11).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0A811A
+    /// <summary>
+    /// The proposal's TemporalInstantToString (s8.5.8): a null time zone writes UTC as Z; another's
+    /// offset at the instant is looked up here, and the string is the shared library's.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8BAD1F
     // Broiler-Human:        PENDING
-    internal static string DateString(JsIsoDate date, string calendar, string showCalendar) =>
-        JsTemporalCore.DateToString(date) + CalendarAnnotation(calendar, showCalendar);
+    internal static string InstantString(JsEngine engine, BigInteger epochNs, string? timeZone, int precision) =>
+        TemporalFormat.InstantToString(epochNs, timeZone is null ? null : OffsetNanosecondsFor(engine, timeZone, epochNs), precision);
 
-    /// <summary>The proposal's ISODateTimeToString (s5.5.9).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=150BA6
-    // Broiler-Human:        PENDING
-    internal static string DateTimeString(JsIsoDateTime dateTime, string calendar, int precision, string showCalendar) =>
-        JsTemporalCore.DateToString(dateTime.Date) + "T" + JsTemporalCore.TimeToString(dateTime.Time, precision) +
-        CalendarAnnotation(calendar, showCalendar);
-
-    /// <summary>The proposal's TemporalYearMonthToString (s9.5.6).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=76970B
-    // Broiler-Human:        PENDING
-    internal static string YearMonthString(JsIsoDate date, string calendar, string showCalendar)
-    {
-        var result = JsTemporalCore.PadYear(date.Year) + "-" + JsTemporalCore.Padded(date.Month, 2);
-
-        if (showCalendar is "always" or "critical" || calendar != "iso8601")
-        {
-            result += "-" + JsTemporalCore.Padded(date.Day, 2);
-        }
-
-        return result + CalendarAnnotation(calendar, showCalendar);
-    }
-
-    /// <summary>The proposal's TemporalMonthDayToString (s10.5.3).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E996EA
-    // Broiler-Human:        PENDING
-    internal static string MonthDayString(JsIsoDate date, string calendar, string showCalendar)
-    {
-        var result = JsTemporalCore.Padded(date.Month, 2) + "-" + JsTemporalCore.Padded(date.Day, 2);
-
-        if (showCalendar is "always" or "critical" || calendar != "iso8601")
-        {
-            result = JsTemporalCore.PadYear(date.Year) + "-" + result;
-        }
-
-        return result + CalendarAnnotation(calendar, showCalendar);
-    }
-
-    /// <summary>The proposal's TemporalInstantToString (s8.5.8): a null time zone writes UTC as Z.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A15A1C
-    // Broiler-Human:        PENDING
-    internal static string InstantString(JsEngine engine, BigInteger epochNs, string? timeZone, int precision)
-    {
-        var outputTimeZone = timeZone ?? "UTC";
-        var offsetNs = OffsetNanosecondsFor(engine, outputTimeZone, epochNs);
-        var dateTime = IsoDateTimeFor(engine, outputTimeZone, epochNs);
-        var text = DateTimeString(dateTime, "iso8601", precision, "never");
-        return text + (timeZone is null ? "Z" : JsTemporalCore.FormatOffsetRounded(offsetNs));
-    }
-
-    /// <summary>The proposal's TemporalZonedDateTimeToString (s6.5.4).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B101B6
+    /// <summary>
+    /// The proposal's TemporalZonedDateTimeToString (s6.5.4): the instant rounded, the zone's offset at
+    /// the rounded instant looked up here, and the string the shared library's.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DDB7AC
     // Broiler-Human:        PENDING
     internal static string ZonedDateTimeString(
         JsEngine engine,
         JsZonedDateTimeObject zoned,
         int precision,
-        string showCalendar,
-        string showTimeZone,
-        string showOffset,
+        ShowCalendarName showCalendar,
+        ShowTimeZoneName showTimeZone,
+        ShowOffset showOffset,
         long increment = 1,
         TemporalUnit unit = TemporalUnit.Nanosecond,
         RoundingMode mode = RoundingMode.Trunc)
     {
-        var epochNs = RoundInstant(zoned.EpochNanoseconds, increment, unit, mode);
+        var epochNs = IsoArithmetic.RoundTemporalInstant(zoned.EpochNanoseconds, increment, unit, mode);
         var offsetNs = OffsetNanosecondsFor(engine, zoned.TimeZone, epochNs);
-        var dateTime = IsoDateTimeFor(engine, zoned.TimeZone, epochNs);
-        var text = DateTimeString(dateTime, "iso8601", precision, "never");
-
-        if (showOffset != "never")
-        {
-            text += JsTemporalCore.FormatOffsetRounded(offsetNs);
-        }
-
-        if (showTimeZone != "never")
-        {
-            text += "[" + (showTimeZone == "critical" ? "!" : string.Empty) + zoned.TimeZone + "]";
-        }
-
-        return text + CalendarAnnotation(zoned.Calendar, showCalendar);
+        return TemporalFormat.ZonedDateTimeToString(epochNs, offsetNs, zoned.TimeZone, zoned.Calendar, precision, showCalendar, showTimeZone, showOffset);
     }
-
-    /// <summary>The proposal's RoundTemporalInstant (s8.5.7).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8B1AD9
-    // Broiler-Human:        PENDING
-    internal static BigInteger RoundInstant(BigInteger epochNs, long increment, TemporalUnit unit, RoundingMode mode) =>
-        ExactRounding.RoundNumberToIncrementAsIfPositive(epochNs, BigInteger.One, JsTemporalCore.UnitLength(unit) * increment, mode);
 }
