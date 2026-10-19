@@ -187,6 +187,10 @@ Section "The design's readings" lists what does not hold, and X6 extends the del
 - **Policy decision, decision D7:** D8. Where the pinned text and its polyfill disagree, the text rules. This family
   answers as the text does. Broiler.JS's answers, which differ by path, are a correction.
 - **Code no input reaches:** D12, in both engines. The shared code asserts there, or fails with a status.
+  *(Note, 2026-10-19, at SJL-10.5. A zone's skipped day reaches two of row D12's branches: its day window, which
+  decision D11 governs, and its zoned branch, the day span whose sign NudgeToZonedTime asserts, which Broiler.JS's
+  "inconsistent Instants" branch tested and decision D12 governs. Sections "SJL-10.3's library, read against this
+  record" and "SJL-10.5's cut-over, read against this record" record them. The item above is left as written.)*
 - The units, increments and rounding modes are the library's rules (D5).
 
 **X6 - extended.**
@@ -451,7 +455,7 @@ Each row is in one class. A row is in two only where it names a part, which the 
 |---|---|---|---|---|---|
 | Records and limits | R1, R2, R3, R4, R5, R8; R6 but its five faulting cases | R7 | R6, its five faulting cases (decision D9) | | |
 | Balancing | B1, B2, B3, B4, B6, B7, B8, B9 | B5 | | | |
-| Durations and rounding | D1, D2, D5, D9, D10; D4 but its range check | D3, D4 (the range check), D6, D7, D11; and Broiler.JS's answers to D8 | | D8: the text rules (decision D7) | D12, in both engines |
+| Durations and rounding | D1, D2, D5, D9, D10; D4 but its range check | D3, D4 (the range check), D6, D7, D11; and Broiler.JS's answers to D8 | | D8: the text rules (decision D7) | D12, in both engines *(2026-10-19, at SJL-10.5: but its day window and its zoned branch, which a zone's skipped day reaches; decisions D11 and D12, in the dated sections below)* |
 | Differences | F1, F2, F3, F6, F8; F5 but D8's case | F4, F7 | | F5's case of D8 (decision D7) | |
 | The grammar | G1, G2, G5, G7, G10, G14, G15, G21, G23, G24; G8 for `PlainTime`, `ZonedDateTime` and `Instant` | G3, G4, G6, G8 (the four plain types), G9, G11, G12, G13, G16, G17, G18, G19, G20, G22 | | | G10: Broiler.JS's U+2212 handling after a match |
 | Calendars | C1, C7, C11, C14, C18; C4 but C5; C8 but C9; C10 in its answers | C2 (decision D5), C5, C6, C9 (decision D4), C12, C13, C15, C16, C17 | | | C3; C10's search bound |
@@ -484,6 +488,11 @@ Each row is in one class. A row is in two only where it names a part, which the 
   - the `islamic` entry (C3) and the reference-date search's upper year (C10);
   - the offset getter's dropped fraction (S8);
   - `RejectIncompatibleStyle`, `NotImplementedArithmetic`, `ReadLargestUnit` and the unused `AddYearsMonths`.
+
+  *(Note, 2026-10-19, at SJL-10.5. The "inconsistent Instants" branch is reached, by a zone's skipped day: it tested
+  the day span whose sign NudgeToZonedTime asserts, which decision D12 now governs, and Broiler.JS answered a
+  `RangeError` from it. Broiler.JS's records also say that much of this code was deleted from files that remain, not
+  with its file. The heading and its items above are left as written.)*
 
 **This family's correction** is R6, made at SJL-10.4 (decision D9). Its second window for week and day units, which no
 input reaches (D12), becomes the shared code's assertion or status.
@@ -623,7 +632,169 @@ assertion, the answer is a `RangeError`.** Taken by the owner on 2026-10-18, und
   - Neither engine's current answer is one the text supports.
 
 The classification table above is read with this section. Row D12's week window remains code no input reaches; its day
-window is reached.
+window is reached. *(Note, 2026-10-19, at SJL-10.5: so is its zoned branch, NudgeToZonedTime's day span, which section
+"SJL-10.5's cut-over, read against this record" records with decision D12.)*
+
+## SJL-10.5's cut-over, read against this record
+
+*(Added 2026-10-19, at SJL-10.5.)* Broiler.JS's Temporal core is the shared library's `Broiler.ECMAScript.Temporal`,
+which its built-ins take by project reference: the shared stream's `0.1.0-preview.6`, with decision D12 below. The
+change is observed in Broiler-Platform/Broiler.JS#1054, open and not yet merged, at its head `c33933f9`: the code in
+`f42eac6b` to `6dbff805`, corpus revision 26 in `feee5b7a` and `c97a9996`, and the records after them. Its records are
+its changelog, `Broiler.JS/CHANGELOG.md`; its plan's "The cut-over (SJL-10.5)", in `docs/roadmap/SharedLibraries.md`;
+and its bundle `sjl-10-001`, section 4 and `cutover/`.
+
+**Every row this record classed a correction of Broiler.JS is corrected**, and its checks show it:
+- **The rows:** R7; B5; D3, D4's range check, D6, D7 and D11, and its answers to D8 under decision D7, with F5's case
+  of D8; F4 and F7; G3, G4, G6, G8 for the four plain types, G9, G11, G12, G13, G16, G17, G18, G19, G20 and G22; C2
+  (decision D5), C5, C6, C9 (decision D4), C12, C13, C15, C16 and C17. C10's reference years are Table 6's, and no
+  answer changed.
+- **The vectors.** Each of corpus revision 25's 473 `divergence.broiler-js` fields, all under those rows, reports that
+  it no longer holds, in UTC and in `America/New_York`, and no other vector moved. Revision 26 retires them, with this
+  family's six of row R6, and Broiler.JS's runs on it match every Temporal vector in both zones.
+- **The reference datasets.** Every line of this family's `temporal.js` and `temporal-calendars.js`, run in Broiler.JS
+  by its rule's harness, equals this family's answer. The lines that moved there are rows D6, C5, C15, C16, C17, F4 and
+  D11's, and none moved the other way.
+- **The correspondence's probes.** Every line is this family's answer, by error type, but row R6's five, whose retained
+  answers are this family's from before its cut-over corrected the row. Each engine keeps its own messages.
+- **test262.** A local selection over the area gives every path its base verdict, in both zones, so no test262 path
+  pins a correction. These are Broiler.JS's own checks; its rule's hosted runs are SJL-10.6's.
+- **The deletion list is absent**, by a search for its names, and the code no input reaches is deleted: G10, C3, C10's
+  search bound, S8, and row D12's shift of years and months and fourth day correction. Much of it went from files that
+  remain, not with its file.
+
+**Changes the correspondence did not see, kept under the owner's direction.** Broiler.JS's parts, the review of its
+cut-over and its records found behaviour changes that no row lists. Under the owner's direction of 2026-10-18 they are
+kept: each follows the pinned text, and each is the library's answer, and so this family's, where undoing it would need
+engine code around the library. Broiler.JS's changelog lists each as a correction under decision SJL-D-16 (a), with
+its probe:
+- **part A's two:** a `relativeTo` property bag's `offset` is parsed at its read, so `+25:00` beside a `timeZone` of 5
+  is the offset's `RangeError`, where the zone's `TypeError` came first; and `ZonedDateTime.prototype.toString`
+  converts its `offset` option once, where it converted it twice;
+- **part B's seven:**
+  - a property bag in a calendar other than ISO 8601 and the Gregorian family is read in the specification's order,
+    and the Gregorian family's `with` and `PlainMonthDay.prototype.toPlainDate` read `era` and `eraYear` before
+    `year`;
+  - a missing field's `TypeError` follows the `overflow` option's read;
+  - a field is converted at its read: `toPlainDate({day: 0})` of a year-month is a `RangeError`, where the day was
+    clamped to 1;
+  - a month-day's `with` regulates against 1972;
+  - `PlainMonthDay.from` in `buddhist` and `roc` reads a year as the calendar's, as row C17's `toPlainDate` does;
+  - a non-ISO year-month whose month begins before -271821-04-19 is out of range, by row B5's rule;
+  - an era and a year that disagree are a `RangeError`, where the year was taken;
+- **part C's six:**
+  - a `relativeTo` property bag is read in one pass, and an unknown calendar is refused before any field is read;
+  - its `offset` is parsed at its read;
+  - its time zone is converted before `year`;
+  - its `monthCode` and `day` are checked at their reads;
+  - `add` and `subtract` read no second argument, which is row D3's;
+  - a year-month difference is zero only between equal dates, so at the limits it is a `RangeError`, where it was
+    `PT0S`;
+- **the review's U1 to U8:**
+  - a nudge or bubble window past the date limits is a `RangeError` (U1 to U3);
+  - a rounded difference's days bubble into months (U2);
+  - an `era` is converted by ToString at its read (U4);
+  - a non-ISO month-day given a `month` needs a year (U5);
+  - `PlainMonthDay.prototype.with` reads `era` and `eraYear` in a calendar with eras, and `PlainMonthDay.from` in the
+    Gregorian family reads its options before it validates the era (U6);
+  - an unknown era, or an era and a year that disagree, is a `RangeError` in a year-month's and a month-day's `with`
+    (U7);
+  - `PlainYearMonth.prototype.with` constrains a leap month the year lacks (U8);
+- **beside them:** a wall clock on -271821-04-19 with an offset is a `RangeError` under `reject` and `prefer`, by
+  InterpretISODateTimeOffset's range check; and the records found the rounding of points: a minute rounds within its
+  hour and a second within its minute, so `01:10` rounded to 20 minutes under `halfEven` is `01:00`, where Broiler.JS
+  answered `01:20`, the case its SJL-4.5 changelog entry left for SJL-10.
+
+**Two defects of Broiler.JS from before its cut-over**, which the review fixed, are corrections of the same kind:
+- **code-1:** a Temporal object read as a property bag lends its own calendar, where its getters were read as ISO
+  fields. `PlainDateTime.from` of a Hebrew `ZonedDateTime` is a Hebrew date-time, where it was `5780-04-18T10:00:00`.
+- **code-2:** `ZonedDateTime.from` of a `PlainDate` or `PlainDateTime` reads it as a property bag, and throws the
+  `TypeError` for its missing `timeZone`, where a .NET `ArgumentNullException` reached script as a plain `Error`.
+
+**All of these are findings the correspondence missed.** Its probes did not reach them, and no vector, dataset line or
+test262 path names any. Broiler.JS's bundle probes each, in `cutover/kept-changes.js`: in Broiler.JS before and after
+its cut-over, in this family at `83fef1a` on `0.1.0-preview.6`, and in the polyfill at `e8cc03fc`. On every line that
+changed, Broiler.JS's answer after the cut-over is this family's and the polyfill's (`cutover/kept-changes.compare.tsv`).
+
+**None falsifies a class, and none changes a verdict.**
+- Each is a place where Broiler.JS answered otherwise than the pinned text and this family. So each is a correction of
+  Broiler.JS, a class every sub-area it falls in already holds.
+- None is a correction of this family, a disagreement between the text and its polyfill, or code no input reaches.
+- Section "Falsified if" reads the vectors, and no vector differs. Every sub-area stays accepted, its X2 met.
+- One reads against a row this record called same: B9, the rounding of points, which held on the inputs probed but
+  not at a tie under `halfEven`. There the change above is a correction of Broiler.JS, and the row is same but for it.
+  Those inputs were never answered alike by both engines, so the third item of section "Falsified if" is not met.
+
+**One divergence from the text stays as it was**, in the reads decision 3 leaves each engine: Broiler.JS refuses a
+string whose date is outside the limits before it reads the `overflow` option, where the text, this family and the
+polyfill read it first. It is in no row of the area's.
+
+**Decision D11 in Broiler.JS.** With `a` 2011-12-31T16:15+14:00[Pacific/Apia] and `b`
+2011-12-31T00:00+14:00[Pacific/Apia], exactly these moved to a `RangeError`, "result is outside the representable
+range", each in every rounding mode:
+- `a.since(b)` and `a.until(b)` with `{largestUnit: "day", smallestUnit: "day"}`. `since` answered `PT0S` under
+  `trunc` and `floor` and `P1D` in the other seven modes; `until` answered `PT0S` under `trunc` and `ceil` and `-P1D` in
+  the other seven;
+- `a.since(b)` with `{largestUnit: "month", smallestUnit: "day"}`, which answered `PT0S` under `trunc` and `floor` and
+  `P1D` in the other seven;
+- `Temporal.Duration.from("-PT16H15M").round({smallestUnit: "day", relativeTo: a})`, and its
+  `total({unit: "day", relativeTo: a})`, which threw a plain `Error` carrying a .NET `ArgumentOutOfRangeException`.
+
+Nothing else moved. `b.until(a)` and `b.since(a)` in days, rounding to weeks, differences in hours, anything relative to
+`b`, `compare`, `a.round("day")`, `hoursInDay` and `a.subtract("P1D")` answer as before. So decision D11's "In
+Broiler.JS it is a policy change, `PT0S` to a `RangeError`" holds under `trunc`, the default, under `floor` for `since`
+and under `ceil` for `until`. In the other modes the answer was a day, and `round` and `total` threw. Broiler.JS's `cutover/d12-ext.js`
+and `cutover/d12-half-modes.js` probe all nine modes. The sentence is left as written.
+
+**Row D12's zoned branch is reached too.** This record classed all of row D12 code no input reaches, and section
+"SJL-10.3's library, read against this record" found its day window reached. Broiler.JS's "inconsistent Instants"
+branch, which the correspondence also read as unreached, tests the assertion at step 8 of NudgeToZonedTime (s7.5.35):
+"Assert: TimeDurationSign(_daySpan_) = _sign_." The same skipped day breaks it:
+- Back from `a`, the nudge's start is 2011-12-31T16:15 and its end 2011-12-30T16:15, a wall time the zone skipped,
+  which `compatible` disambiguation moves 24 hours on, onto the start. The day span is zero.
+- Every rounding to a time unit with a date largest unit back from `a` reaches it, but to a nanosecond with increment 1,
+  which returns before rounding. Examples are `a.since(b, {largestUnit: "day", smallestUnit: "hour"})` and `a.until(b)`
+  alike, with a largest unit of `month`, to 30 minutes or to 2 nanoseconds, and `-PT16H15M` rounded so relative to `a`.
+- Forward from `b` the day span is the next day's, 24 hours, and nothing changes.
+
+The answers there:
+- Broiler.JS answered a `RangeError` before its cut-over, "time zone returned inconsistent Instants", from its own zoned
+  code.
+- The polyfill at `e8cc03fc` throws the same `RangeError`.
+- This family's code at `14072b0` has no such test, and answered durations from outside the text's domain: `P1DT16H`
+  for `a.since(b)` above under `trunc` and `P1DT17H` under `ceil`, `-P1DT16H` for `a.until(b)` under `trunc`. Each
+  counts a day more than the 16 hours 15 minutes between the two instants.
+- `0.1.0-preview.6`, ported from that code, answers the same durations, line for line, and so does this family on it.
+- Broiler.JS's cut-over before the decision, at `41eaa90f`, answered those durations too. Without a decision, the
+  cut-over would have moved Broiler.JS's answers there from a `RangeError` to them.
+
+Broiler.JS's `cutover/d12-facts.md` gives every line in every engine, from its probe `cutover/d12z.js`. No test262
+path, retained dataset line or corpus vector reaches the step.
+
+**Decision D12 - decision D11's rule reaches NudgeToZonedTime's assertion on the day span's sign: where an input breaks
+it, the answer is a `RangeError`.** Taken by the owner on 2026-10-19, under the same direction as D1 to D11.
+- The library answers `OutOfRange` there, which each engine maps to a `RangeError`. Broiler.JS's `163d43aa` makes the
+  change after `0.1.0-preview.6`, and the shared changelog, `Broiler.ECMAScript/CHANGELOG.md`, records it under its
+  Unreleased heading.
+- In Broiler.JS the answer stays a `RangeError`, as before its cut-over, and only its message moves, to "result is
+  outside the representable range". Its changelog lists the decision with its policy changes.
+- In this family it is a correction pending, as R6 was until SJL-10.4. This family takes the library as
+  `0.1.0-preview.6`, which answers the durations above, as this family's code did before its cut-over. It takes
+  decision D12 with the shared stream's next version, which carries it; until then the durations stand.
+- The reasons:
+  - It is decision D11's case: a day a zone skips breaks an assertion of the pinned text's rounding, and the text gives
+    no answer there.
+  - The polyfill throws a `RangeError` there, and Broiler.JS answered one; a `RangeError` is what the text gives
+    wherever an operation's result is out of its range.
+  - A duration that counts a day more than lies between its instants is not an answer the text supports.
+
+**The classification table above is read with this section too.** Row D12's day window and its zoned branch are
+reached. Its week window, and Broiler.JS's shift of years and months and fourth day correction, which its cut-over
+deleted, remain code no input reaches.
+
+**Not this section's:** the merge of Broiler.JS's change; this family's pin, which moves to corpus revision 26 after
+it; the shared stream's next version, and this family's move to it; and SJL-10.6's evidence. The settling condition
+below is not yet met.
 
 ## Settling condition
 
