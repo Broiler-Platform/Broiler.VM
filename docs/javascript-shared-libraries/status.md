@@ -1,6 +1,12 @@
 # The shared JavaScript libraries programme — status ledger
 
-**Last updated:** 2026-10-19, at SJL-10.6 for Broiler.JS and this family's move to `0.1.0-preview.7` (SJL-10 `In progress`:
+**Last updated:** 2026-10-19, at SJL-12's start by the owner's choice and SJL-12.1's records (SJL-12 `In progress`: the
+contract, decisions SJL-D-11 and SJL-D-12 and the owner's decisions of 2026-10-19 recorded in JSD-0080, under the
+owner's direction of 2026-10-18, which changes no rule; bundle `sjl-12-001`'s rules committed in both repositories,
+Broiler.JS's observed, merged in Broiler-Platform/Broiler.JS#1059 as `4d813f2a`; Broiler.JS's clause 3 met on its
+records, every other clause unmet, this family's clauses 4 to 6 to be read on its bundle; no base taken; nothing
+accepted). Before that: 2026-10-19, at SJL-10.6 for Broiler.JS and this
+family's move to `0.1.0-preview.7` (SJL-10 `In progress`:
 Broiler.JS's after arm taken at `00b65dd0` and merged as `24510b0e`, parts A to C of its rule met as written and its
 clauses and the home's met on its bundle, so every clause is met on its bundles; this family on `0.1.0-preview.7` as
 published to nuget.org from Broiler.JS `5ddee404`, which carries the owner's decision D12, JSC-317; nothing
@@ -134,32 +140,48 @@ milestone `Not started`; every decision open).
 [the programme roadmap](roadmap.md). The roadmap and the [milestone files](milestones/) define the
 planned work and the objective exit gates. This ledger records whether those gates have evidence.
 
-**Today SJL-0 to SJL-8 and SJL-10 are `In progress` and every other milestone is `Not started`** *(2026-10-13;
-read "**Today SJL-0 to SJL-3 are `In progress` and every other milestone is `Not started`:**"; then,
+**Today SJL-0 to SJL-8, SJL-10 and SJL-12 are `In progress` and every other milestone is `Not started`**
+*(2026-10-13; read "**Today SJL-0 to SJL-3 are `In progress` and every other milestone is `Not started`:**"; then,
 until 2026-10-14, "SJL-0 to SJL-4"; then, until 2026-10-15, at SJL-6.1, "SJL-0 to SJL-5", which SJL-6.0's
 record should have moved; then, until 2026-10-16, at SJL-7's start, "SJL-0 to SJL-6"; then, until 2026-10-17,
-at SJL-8's start, "SJL-0 to SJL-7"; then, until 2026-10-18, at SJL-10's start, "SJL-0 to SJL-8")*:
+at SJL-8's start, "SJL-0 to SJL-7"; then, until 2026-10-18, at SJL-10's start, "SJL-0 to SJL-8"; then, until
+2026-10-19, at SJL-12's start, "SJL-0 to SJL-8 and SJL-10")*:
 
 - the shared folder exists in Broiler.JS, `Broiler.ECMAScript/`, with its conventions, rules SL1 to
-  SL10, its version stream and its Native AOT probe. It holds five areas, number conversion,
-  numerics, the text algorithms, the Date algorithms and the time-zone and calendar algorithms, in
-  `Broiler.ECMAScript.Algorithms`, published to nuget.org as `0.1.0-preview.5` beside the data home's
+  SL10, its version stream and its Native AOT probe. It holds the areas of number conversion, numerics,
+  the text algorithms, the Date algorithms, the time-zone and calendar algorithms and the Temporal core, in
+  `Broiler.ECMAScript.Algorithms`, published to nuget.org as `0.1.0-preview.7` beside the data home's
   generator `Broiler.ECMAScript.Generation` (`0.1.0-preview.1` held number conversion alone,
-  `0.1.0-preview.2` numerics beside it, `0.1.0-preview.3` the text algorithms and `0.1.0-preview.4` the
-  Date algorithms). **Both engines' product projects reference it**: Broiler.JS's `Parser`, `Runtime`, `BuiltIns` and `Storage`, and Broiler.VM's JavaScript
+  `0.1.0-preview.2` numerics beside it, `0.1.0-preview.3` the text algorithms, `0.1.0-preview.4` the
+  Date algorithms, `0.1.0-preview.5` the time-zone and calendar algorithms, `0.1.0-preview.6` the Temporal
+  core, and `0.1.0-preview.7` JSD-0078's decision D12 beside it). **Both engines' product projects reference it**: Broiler.JS's `Parser`, `Runtime`, `BuiltIns` and `Storage`, and Broiler.VM's JavaScript
   runtime and compiler, which rule I1 admits for shipping. Both engines'
   changes are merged into their default branches *(2026-10-13; read "Neither engine's change is
   merged into its default branch yet;")*;
 - the Unicode area is in Broiler.Unicode, whose published packages both engines reference since SJL-7;
 - the records of SJL-0 are filed in all four repositories and merged into each one's default branch;
-- twenty-one bundles exist: Broiler.VM's [`sjl-0-001`](../evidence/sjl-0-001/README.md),
+- these bundles exist: Broiler.VM's [`sjl-0-001`](../evidence/sjl-0-001/README.md),
   [`sjl-1-001`](../evidence/sjl-1-001/README.md), [`sjl-2-001`](../evidence/sjl-2-001/README.md),
   [`sjl-3-001`](../evidence/sjl-3-001/README.md), [`sjl-4-001`](../evidence/sjl-4-001/README.md),
   [`sjl-5-001`](../evidence/sjl-5-001/README.md), [`sjl-6-001`](../evidence/sjl-6-001/README.md),
-  [`sjl-7-001`](../evidence/sjl-7-001/README.md), [`sjl-8-001`](../evidence/sjl-8-001/README.md) and
-  [`sjl-10-001`](../evidence/sjl-10-001/README.md), the last holding its rules and correspondence only,
-  Broiler.JS's `docs/evidence/sjl-0-001/` to `docs/evidence/sjl-8-001/` and `docs/evidence/sjl-10-001/`, the
-  last holding its rules only, and Broiler.Unicode's `docs/evidence/sjl-7-001/`.
+  [`sjl-7-001`](../evidence/sjl-7-001/README.md), [`sjl-8-001`](../evidence/sjl-8-001/README.md),
+  [`sjl-10-001`](../evidence/sjl-10-001/README.md) and [`sjl-12-001`](../evidence/sjl-12-001/README.md);
+  Broiler.JS's `docs/evidence/sjl-0-001/` to `docs/evidence/sjl-8-001/`, `docs/evidence/sjl-10-001/` and
+  `docs/evidence/sjl-12-001/`, the last merged in Broiler-Platform/Broiler.JS#1059 as `4d813f2a`; and
+  Broiler.Unicode's `docs/evidence/sjl-7-001/`. **`sjl-10-001` holds its after arm in both repositories**, each
+  part of each rule met as written, and nothing in either is accepted. `sjl-12-001` holds its rules only, in both
+  repositories.
+
+*(Revised 2026-10-19, at SJL-12's start, by JSD-0080's decision D40. Its first item read "It holds [...] areas,
+number conversion, numerics, the text algorithms, the Date algorithms and the time-zone and calendar algorithms, in
+`Broiler.ECMAScript.Algorithms`, published to nuget.org as `0.1.0-preview.5` beside the data home's generator
+`Broiler.ECMAScript.Generation` (`0.1.0-preview.1` held number conversion alone, `0.1.0-preview.2` numerics beside
+it, `0.1.0-preview.3` the text algorithms and `0.1.0-preview.4` the Date algorithms).", and its last item read
+"[...] bundles exist", naming Broiler.VM's to `sjl-8-001` and `sjl-10-001`, "the last holding its rules and
+correspondence only", and Broiler.JS's to `docs/evidence/sjl-8-001/` and `docs/evidence/sjl-10-001/`, "the last
+holding its rules only", with the counts both gave left out here under update rule 8. The first item did not move
+with SJL-10.3's library or with the stream's moves to `0.1.0-preview.6` and `0.1.0-preview.7`, and the last did not
+move with `sjl-10-001`'s bases and after arms, as both should have.)*
 
 *(Revised 2026-10-18, at SJL-10.1. Its last item read "nineteen bundles exist", naming Broiler.VM's to
 `sjl-8-001` and Broiler.JS's to `docs/evidence/sjl-8-001/`.)*
@@ -1475,6 +1497,84 @@ JSD-0078, JSD-0079, the milestone and bundle `sjl-10-001` carry dated notes. SJL
 accepted (update rule 7), and SJL-10 may not meet its gate before SJL-6 and SJL-8 meet theirs, and so not before SJL-3
 meets SJL-3's (update rule 10).
 
+**2026-10-19, later again: SJL-12 starts by the owner's choice, and SJL-12.1 and SJL-12.2 are filed.** SJL-12 is the
+frontend contract and the in-place preparation of both front ends. Its in-place work packages need no admission, so
+it may start after SJL-0 (its milestone's "Waits on"), and it feeds SJL-13, which is on the critical path (roadmap
+section 4).
+
+**The owner's words.** A survey of both front ends for SJL-12's plan had been started at the orchestrator's
+recommendation: SJL-12 feeds SJL-13 on the critical path, and may start after SJL-0. On 2026-10-19 the owner wrote
+"Continue with SJL-12 after the plan is ready", and then "Continue with SJL-12 after the workflows finish". This
+ledger reads them together as the choice of SJL-12. They choose the milestone and lift no gate. SJL-9, SJL-11 and
+SJL-17 do not move.
+
+**The owner's direction.** On 2026-10-18 the owner wrote: "Please do all recommended decisions and skip waiting for
+review." Under it, each decision SJL-12's plan left open, D1 to D42, is taken as the plan recommends and recorded in
+[JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)
+as the owner's decision of 2026-10-19, and the programme proceeds through SJL-12's work packages without pausing for
+the owner between them. **It changes no rule of the programme.** `Accepted` still needs review (update rule 7), rules
+still come before runs, and no gate moves.
+
+**SJL-12 cannot exit before SJL-3 does.** Its milestone waits on SJL-3 to exit, because the contract cites SJL-3's
+literal-value operations, and SJL-3 is still not met: clause 7 waits on a controlled lane this programme does not yet
+have, and clause 13 on a later dated choice. Update rule 10 does not say this: it leaves SJL-12's row out only because
+SJL-12 may start from SJL-0. So SJL-12 may not meet its gate before SJL-3 meets SJL-3's, whatever its own clauses show.
+
+**SJL-12.5's base.** By JSD-0080's decision D7, Broiler.JS's test262 base for SJL-12.5 is taken afresh at the commit
+that carries Broiler.JS's rule, with negative tests, in place of "SJL-0's base": a dated revision of the work
+package's done-when, quoting the old text in the milestone, and not a gate revision, since exit clause 2 names no
+base.
+
+**What this repository files.**
+- **JSD-0080, the contract record** (SJL-12.1): the parse request, the output and its properties, the limits, the
+  providers and the inherited evaluation context, with the semantic model's design. It records decisions SJL-D-11 and
+  SJL-D-12 (SJL-12.2), and leaves SJL-D-12 (i)'s disposition of Broiler.JS's `Ast` and `Parser` packages to SJL-14.4.
+  **It is not an area verdict** (decision D1): SJL-12 writes no shared code, and the frontend's verdict is SJL-13.1's.
+- **Bundle [`sjl-12-001`](../evidence/sjl-12-001/README.md)'s rule**,
+  [`decision-rule-area.md`](../evidence/sjl-12-001/decision-rule-area.md), committed with the record, before any code
+  it judges (decision D8). Its parts:
+  - part A: test262 in both forms on hosted runners, at the rule commit and at the after commit;
+  - part B: the wide path's artifacts over the parse corpus, compared by hash, with the slice front end and its
+    construct census held to no difference;
+  - part C: determinism across runs and threads, with controls that must fail;
+  - part D: rules N5 to N9, N12 and N19;
+  - part E: the diagnostic mapping, against the early-error catalogue and the registry.
+
+  Its README says that it holds rules only, and that nothing in it is a verdict.
+- **Dated notes**, each quoting the text it supersedes:
+  - SJL-12's milestone: SJL-12.5's done-when base (decision D7), the rules committed with SJL-12.1 (D8), the readings
+    of clauses 1 and 4 (D23, D24 and D10), the parser's `Runtime` types and SJL-12.5 item 4's dispositions (D20),
+    SJL-12.6 item 4's listed corrections and the slice path (D15), and the places that file the contract (D5, D41);
+  - `areas/frontend.md`, its readings that no longer hold (D42), and `areas/static-semantics.md`, where the semantic
+    model's design is now filed;
+  - roadmap section 5, which leaves SJL-12 out of the area milestones (D1), and section 10's SJL-13 row (D16);
+  - governance row J6, on Broiler.JS's MOD-M2 items (D28);
+  - SJL-1's milestone, at SJL-1.6 (D1).
+
+**Broiler.JS's half** (observed) is recorded in its change for SJL-12.1, `ec494f66`, merged in
+Broiler-Platform/Broiler.JS#1059 as `4d813f2a` with the branch head `57d5a2f5`:
+- its plan pair: `docs/roadmap/SharedLibraries.md`, whose new section "The frontend contract (SJL-12)" summarises the
+  contract, cites JSD-0080, records SJL-D-11 and SJL-D-12 and that repository's decisions by JSD-0080's numbers, and
+  `docs/roadmap/SharedLibraries.status.md`;
+- the home's design document, `Broiler.ECMAScript/docs/frontend/design.md`, with no `Broiler.ECMAScript.Frontend/`
+  folder (decision D5);
+- its bundle `docs/evidence/sjl-12-001/`'s rule, `decision-rule.md`, committed before any code it judges: test262 per
+  path in UTC with negative tests, the parser's architecture test and its witness, the parse corpus's acceptance, and
+  the determinism of the parser and of the compiler's `for`-loop pass.
+
+**Nothing is accepted, and no base is taken.** Review is deferred (update rule 7). The hosted test262 bases are taken
+at each repository's rule commit, the merge of the change that carries its rule, before any product change of SJL-12
+lands: Broiler.JS's at `4d813f2a`, this repository's at the merge of this change. The bases of the parse-corpus and
+determinism parts follow at each repository's corpus commit (decision D9).
+
+SJL-12's row moves to `In progress` under update rule 4: it owns records and a bundle in this repository, and,
+observed, in Broiler.JS. Broiler.JS's clause 3 is met on its records (observed). Clause 6's record, JSD-0080, is
+filed, but JSD-0080's settling condition reads this family's clauses 4 to 6 on bundle `sjl-12-001`, so they are
+unmet here, with Broiler.JS's clauses 1 and 2 and both repositories' halves of shared clauses 7 and 8. Decisions SJL-D-11 and SJL-D-12 are recorded. SJL-13, which waits on SJL-12, does not move. Next:
+- the merge of this repository's SJL-12.1 change;
+- part A's bases at both rule commits;
+- SJL-12.3's catalogue and mapping, and SJL-12.4's parse corpus.
+
 ---
 
 ## 1. Reading this ledger
@@ -1533,7 +1633,7 @@ Rows are in delivery order (roadmap section 4), not numeric order.
 | SJL-1 | The shared conformance vectors | `In progress` | **Every clause is met on retained records, and none is accepted**, because review is deferred. **Broiler.JS (home):** clauses 1 to 3 and its half of clause 6, on corpus revision 3 and bundle `docs/evidence/sjl-1-001/` (`687a081`, merged in `75f2e9f`) *(2026-10-12; read "(`687a081`, not yet merged)")*, met under its rule with one judgement its README states. **Broiler.VM:** clause 4 on the pin of revision 3 and rule N13's fourth suite directory and witness; clauses 5 and 6 met under the rule revised on 2026-10-12 after the first run was seen, and **not met under the rule as committed**. A finding for SJL-3 (SJL-3.3's radix algorithm) is recorded above | Broiler.JS `docs/evidence/sjl-1-001/`; Broiler.VM [`sjl-1-001`](../evidence/sjl-1-001/README.md) | 2026-10-12 |
 | SJL-2 | The admission path | `In progress` | **Every clause is met on retained records, and none is accepted**, because review is deferred *(2026-10-12; read "Every clause is met on retained records except clause 8's CI half, and none is accepted")*. **Broiler.VM:** clauses 1 to 6 on bundle [`sjl-2-001`](../evidence/sjl-2-001/README.md) at `d3d5aff`: rule I1's allow-list and rules I2, I3, I6 and I7 minted, A2, A7, B3 (now `Active`), E4, N1 and N37 revised, each watched failing on an injection and passing on revert; the admission probe's positive run and its three negative controls; ADR 0001's and ADR 0012's revisions; ADR 0003 section 11's rows 24 to 41 `Applied`; a restore through each source and an unmapped identifier refused; and no product project referencing a shared package. Its README states two judgements: I3 and I7 are `Active` with the clause that has no subject before SJL-3 stated in each row, and the collectors' identity record is exercised by the function they call rather than by a full collection. Merged in `d8e9c0f`. **Broiler.JS (home, observed):** clauses 7 to 10 on its bundle `docs/evidence/sjl-2-001/` (`a84a0b4`, `e76d7d1`, merged in `29be101`); clause 8's CI half by the `Shared libraries` workflow's run on `29be101`, which passed every job and whose logs the bundle retains *(2026-10-12; read "clauses 7, 9 and 10 on its bundle `docs/evidence/sjl-2-001/` (`a84a0b4`, `e76d7d1`, on branch `claude/busy-lamport-m3yprr`); clause 8 met locally, **its CI half owed** until the `Shared libraries` workflow first runs.")*. No nuget.org reservation of the `Broiler.ECMAScript` prefix is owed: the owner withdrew it on 2026-10-12, revising decision SJL-D-2 *(corrected 2026-10-12; read "**Owed by a release owner:** the nuget.org reservation of the `Broiler.ECMAScript` prefix, before anything under it is published.")*. SJL-2.15 not needed. | Broiler.VM [`sjl-2-001`](../evidence/sjl-2-001/README.md); Broiler.JS `docs/evidence/sjl-2-001/` (observed) | 2026-10-12 |
 | SJL-3 | Number conversion, the pilot | `In progress` | **Clauses 7 and 13 are unmet; every other clause is met on its bundles, and none is accepted.** **Clause 7** (Broiler.JS, observed): its measurement was taken on a machine that is not a controlled lane, which its rule voids, and its smoke reading puts the literal-values workload first for a controlled lane to look at; the pristine consumer and package checks pass. **Clause 13** (Broiler.VM): part C, taken under the rule as written, is NOT MET, on its condition (the radix corrections move `to-string.js`'s answer) and on one workload's comparison with the A/A floor. Clause 8 reads six rules, because I4 is SJL-7's; clause 10 excludes the Android root (EX-126). Merged in `4899f9c` (Broiler.JS) and `a04b2e5` (Broiler.VM) *(2026-10-13, later the same day; read "Every change is on branch `claude/busy-lamport-m3yprr`, not yet merged")* *(2026-10-13; read "All. Decision `SJL-D-23` was taken before the pilot (continue), so SJL-3's exit stops nothing.")* | Broiler.VM [`sjl-3-001`](../evidence/sjl-3-001/README.md); Broiler.JS `docs/evidence/sjl-3-001/` (observed) | 2026-10-13 |
-| SJL-12 | The frontend contract and in-place preparation | `Not started` | All. Its in-place work packages may start after SJL-0. | None | 2026-10-11 (created) |
+| SJL-12 | The frontend contract and in-place preparation | `In progress` | **Broiler.JS's clause 3 is met on its records (observed); every other clause is unmet, and none is accepted.** Unmet: Broiler.JS's clauses 1 and 2, this family's clauses 4 to 6, and both repositories' halves of shared clauses 7 and 8. Clause 6's record is filed: [JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md) records SJL-D-11 and SJL-D-12; but by its settling condition this family's clauses 4 to 6 are read on bundle `sjl-12-001`, so clause 6 is not read here. Broiler.JS's clause 3 is met by its plan's section "The frontend contract (SJL-12)", merged in Broiler-Platform/Broiler.JS#1059 as `4d813f2a`. Started on 2026-10-19 by the owner's choice, recorded above; its in-place work packages need no admission, and SJL-12 may not meet its gate before SJL-3 meets SJL-3's, which update rule 10 does not say. SJL-12.1 and SJL-12.2 are filed: the contract and the semantic model's design (JSD-0080, which is not an area verdict), the owner's decisions of 2026-10-19 recorded under the owner's direction of 2026-10-18, which changes no rule of this ledger, SJL-12.5's done-when base revised to one taken at Broiler.JS's rule commit with negative tests (decision D7), the home's design document (observed), and the comparison rules committed in both repositories before any code *(2026-10-19; read "`Not started` \| All. Its in-place work packages may start after SJL-0. \| None")* | Broiler.VM [`sjl-12-001`](../evidence/sjl-12-001/README.md) (rules only); Broiler.JS `docs/evidence/sjl-12-001/` (observed: its rule, merged in Broiler-Platform/Broiler.JS#1059 as `4d813f2a`) *(2026-10-19, at SJL-12's start; read "None")* | 2026-10-19 (SJL-12's start and SJL-12.1) |
 | SJL-4 | Numerics | `In progress` | All. Started on 2026-10-13 by the owner's choice before SJL-3 is met, recorded above; SJL-4 may not meet its gate before SJL-3 meets SJL-3's. SJL-4.1 is filed: the four sub-areas accepted (JSD-0067) and the decision rules committed before any code. SJL-4.2 is done: the base taken, the vectors added at corpus revision 6 and classified at revision 7 in both engines (JSD-0068). SJL-4.3 is done: the area in the shared library, and its reference-arm comparison met in Broiler.JS's bundle `sjl-4-001`. SJL-4.4 is done: this family's cut-over (JSD-0069). SJL-4.5 is done: Broiler.JS's cut-over, recorded in its `docs/roadmap/SharedLibraries.md` and changelog, with corpus revision 9 retiring both engines' divergences of the area; it found a defect of the shared library's BigInt width limit, which this family's policy never reaches, corrected in the library after the `0.2.0-preview.1` this family pinned until 2026-10-14, and carried by the `0.1.0-preview.2` it pins since, the library as published. SJL-4.6, this repository's half, is collected at `f617962`: clauses 8, 10, 11 and 12 are met; clause 9 is not, because two native test262 rows the rule admits as (c') give a different exhaustion dimension at each commit when run again alone, which the rule reads as a regression, and a diagnostic shows both commits racing between the fuel allowance and the wall clock on them - the owner had the rule revised the same day (`decision-rule-revised-2026-10-14.md`, written after the runs and so weaker evidence), adding a class for such a race, and under it one row is admitted and the other, `decodeURI/S15.1.3.1_A2.5_T1.js` [strict], is not, so clause 9 stays unmet; the closures found a defect of the cut-over in the slice compiler's checks, corrected at `f617962`. SJL-4.6, Broiler.JS's half, is collected at `bc2d663` in its bundle `sjl-4-001`: clauses 1 to 4, 6 and 7 are met; clause 5 is met only under the revision of its part A the owner had written the same day (`decision-rule-revised-2026-10-14.md` there, written after the run and so weaker evidence), because `staging/sm/TypedArray/slice-bitwise-same.js` fails at the base and passes after, in both variants, through the engine's own `slice`, which no class of the original admits and the revision's C1 (b), a correction the cut-over had to make, does, while no row regresses; its first after run found a regression of the cut-over in the typed arrays' copies of the same element type, corrected at `bc2d663`. Both engines' changes are merged, in `132d59d` (Broiler.JS) and `3a0f575` (Broiler.VM) *(2026-10-13; read "`Not started` \| All \| None", then without its last seven sentences, then without its last six, then without its last five, then without its last four, then, until 2026-10-14, without its last three, then, later that day, without its last two, then, later again, without its last; and "admitting that is the owner's decision" stood where the revision is named, until the revision had been applied the same day; and the Broiler.JS sentence read "clause 5 is not, because `staging/sm/TypedArray/slice-bitwise-same.js` fails at the base and passes after, in both variants, through the engine's own `slice`, which no class of its rule admits, while no row regresses - admitting it is the owner's decision" where it now names Broiler.JS's revision, until that revision had been applied later again; and "corrected in the library after the `0.2.0-preview.1` this family pins" stood where the published package is named, until the package was published later still; the sentence on the merges was added after them, later again)* | Broiler.VM [`sjl-4-001`](../evidence/sjl-4-001/README.md) (rules, correspondence, base, vectors and the after arm); Broiler.JS `docs/evidence/sjl-4-001/` (observed) *(2026-10-13; read "(rules and correspondence only)", linking the rule; then, until 2026-10-14, "(rules, correspondence, base and vectors)"; then, until later that day, without Broiler.JS's bundle)* | 2026-10-14 (SJL-4.6) |
 | SJL-5 | Text algorithms | `In progress` | **Every clause is met on its bundles, and none is accepted**, because review is deferred. Started on 2026-10-14 by the owner's choice before SJL-3 is met, recorded above; SJL-5 may not meet its gate before SJL-3 meets SJL-3's. SJL-5.1 is filed: the six sub-areas accepted (JSD-0070) and the decision rules committed before any code. SJL-5.2 is done: both bases taken, and the vectors added at corpus revision 10 and classified at revision 12 in both engines. SJL-5.3's reference-arm comparison is met in Broiler.JS's bundle `sjl-5-001`, and its preview package is admitted. SJL-5.4 is done: this family's cut-over (JSD-0071). SJL-5.5 is done, and corpus revision 13 retires the area's divergences. SJL-5.6, this repository's half, is collected at `72ad941`: clauses 6 to 9 are met, and parts A, B and C of its rule are met as written. SJL-5.6, Broiler.JS's half, is collected at `1ebde70` in its bundle `sjl-5-001`: home clauses 1 and 2 and clauses 3 to 5 are met, clause 4 under part A of its rule as written; its first after run, at the merge that landed its cut-over, found a defect of that engine's Intl that the cut-over's ordinal string search uncovered and did not meet part A, and the owner had the defect fixed under a dated data decision, the run taken again at the fix and the fix commit confirmed as the after commit *(2026-10-14; read "`Not started` \| All \| None", then without its last three sentences, then without its last two, then without its last; 2026-10-15, its last sentence ended "; the preview package follows" and there was no sentence after it; later on 2026-10-15, it ended at "(JSD-0071)"; later again on 2026-10-15, it began "All." where it now says every clause is met, and ended at "retires the area's divergences")* | Broiler.VM [`sjl-5-001`](../evidence/sjl-5-001/README.md) (rules, correspondence, base, vectors and the after arm); Broiler.JS `docs/evidence/sjl-5-001/` (observed) *(2026-10-14; read "None", then "[`sjl-5-001`](../evidence/sjl-5-001/decision-rule.md) (rules and correspondence only)"; then, until later again on 2026-10-15, "(rules, correspondence, base and vectors)", without Broiler.JS's bundle)* | 2026-10-15 (SJL-5.6) |
 | SJL-6 | Date arithmetic and the Date string grammar | `In progress` | **Every clause is met on its bundles, and none is accepted**, because review is deferred. SJL-6.0's done-when is met: its workflow landed in `9c3d809` (Broiler-Platform/Broiler.VM#128), changing no product code and so before SJL-3 is met; its first run meets bundle `sjl-6-001`'s check; and SJL-6.1's rule for this repository names it for SJL-6's base and after runs. SJL-6.1 is filed: the four sub-areas accepted and SJL-D-19 recorded (JSD-0072), and the decision rules committed in both repositories before any code. SJL-6.2 is done: the Date vectors at corpus revision 14, both engines' first runs classified at revision 15 and this family's pin moved to it, and the bases of both repositories' rules taken at their rule commits. SJL-6.3 is done: the area in `Broiler.ECMAScript.Algorithms` (Broiler.JS `c69b70c`), and its reference-arm comparison met in Broiler.JS's bundle under its rule as revised before any run and, on two points, after its first run was seen, with corpus revision 16 holding its class (b) kinds. SJL-6.4 is done: this family's Date area on `0.1.0-preview.4` (JSD-0073), its corrections T4, G3 and P9 made, and its pin at corpus revision 16, where its divergences no longer hold; SJL-6.1 to SJL-6.4 went ahead before SJL-3 is met at the owner's direction, recorded late above. SJL-6.5 is done: Broiler.JS's Date area on the same version, its corrections listed in its changelog, and corpus revision 17 retiring both engines' Date divergences, with this family's pin moved to it. SJL-6.6, this repository's half, is collected at `24632b1`: clauses 6 to 9 are met, and parts A and B of its area rule are met as written; it files EX-129 for the Date code that left this component's assurance coverage. SJL-6.6, Broiler.JS's half, is collected at `4d70821e` in its bundle `sjl-6-001`: the home clauses and clauses 1 to 5 are met, clause 3 under part A of its rule and clause 4 under part B, both as written. SJL-6 may not meet its gate before SJL-3 meets SJL-3's *(2026-10-15; read "`Not started` \| All \| None", and moved later than the change that landed the workflow, recorded above; then, until SJL-6.1, "All. SJL-6.0's workflow, which changes no product code and so may start before SJL-3 is met, landed in `9c3d809` (Broiler-Platform/Broiler.VM#128), and its first run meets bundle `sjl-6-001`'s rule; SJL-6.1's rule naming the workflow is the rest of SJL-6.0. SJL-6 may not meet its gate before SJL-3 meets SJL-3's"; the SJL-6.2 sentence was added at SJL-6.2, the SJL-6.3 sentence at SJL-6.3, the SJL-6.4 sentence at SJL-6.4, the SJL-6.5 sentence at SJL-6.5, and the two SJL-6.6 sentences at SJL-6.6; until SJL-6.6 it began "All." where it now says every clause is met)* | Broiler.VM [`sjl-6-001`](../evidence/sjl-6-001/README.md) (SJL-6.0's rule and check; the area's correspondence and rule; its base, its vectors at every revision and the after arm); Broiler.JS `docs/evidence/sjl-6-001/` (observed: its rules, its bases, its engine runs, the reference-arm comparison and the after arm) *(2026-10-15; read "None"; then, until SJL-6.1, "Broiler.VM [`sjl-6-001`](../evidence/sjl-6-001/README.md) (SJL-6.0's rule and check)"; then, until SJL-6.2, "Broiler.VM [`sjl-6-001`](../evidence/sjl-6-001/README.md) (SJL-6.0's rule and check; the area's correspondence and rule); Broiler.JS `docs/evidence/sjl-6-001/` (its rules)"; then, until SJL-6.3, the same with "(its rules, its bases and its engine runs)"; then, until SJL-6.4, without the vectors after the cut-over; then, until SJL-6.5, without "and at revision 17"; then, until SJL-6.6, "Broiler.VM [`sjl-6-001`](../evidence/sjl-6-001/README.md) (SJL-6.0's rule and check; the area's correspondence and rule; its base and its first vectors); Broiler.JS `docs/evidence/sjl-6-001/` (its rules, its bases, its engine runs and the reference-arm comparison); Broiler.VM `sjl-6-001`'s vectors after the cut-over, at revision 16, and at revision 17")* | 2026-10-16 (SJL-6.6) |
@@ -1565,8 +1665,8 @@ that formalises it is not yet filed; the work packages named file it.
 | SJL-D-8: scope reading of ADR 0011 | **taken 2026-10-11**: (a) a route; **recorded** by ADR 0014 decision 1, route [MVP-16](../mvp.md#5-routes-taken-without-a-decision) and the pointer paragraphs beside ADR 0011's standing refusals and roadmap section 8's table | SJL-0.2, SJL-0.3 | Core-contract owner (R5) with the architecture owner |
 | SJL-D-9: fork policy | **taken 2026-10-11**: the four-part policy; **recorded in Broiler.VM** by ADR 0014 decision 3 and JSD-0063 section 2 (JSC-291); **recorded in Broiler.JS** by `docs/roadmap/SharedLibraries.md` (SJL-0.5) *(2026-10-12; read "not yet recorded in the Broiler.JS plan (SJL-0.5)")* | SJL-0.2, SJL-0.4, SJL-0.5 | Architecture owner, JavaScript profile owner, Broiler.JS maintainer |
 | SJL-D-10: metering contract | **taken 2026-10-11**: (a) the `WorkCharge` delegate; **recorded in Broiler.JS** by the type itself, `Broiler.ECMAScript.Algorithms`' `WorkCharge`, whose documentation cites the decision, and by the shared conventions' convention 4 (SJL-2.10, `a84a0b4`) *(2026-10-12; read "not recorded")*; its adapter half **recorded in Broiler.VM** by JSD-0065, decision 2 *(2026-10-13; read "its adapter half is SJL-3.1's")* | SJL-2.10, SJL-3.1 | JavaScript profile owner, Broiler.JS maintainer |
-| SJL-D-11: diagnostic codes and message text | **taken 2026-10-11**: codes and message identifiers; not recorded | SJL-12.2 | Same |
-| SJL-D-12: canonical tree, and Broiler.JS `Ast` and `Parser` compatibility | **taken 2026-10-11**: (a) with (i); not recorded | SJL-12.2, SJL-14.4 | Broiler.JS maintainer, JavaScript profile owner |
+| SJL-D-11: diagnostic codes and message text | **taken 2026-10-11**: codes and message identifiers, each engine rendering its own text; **recorded in Broiler.VM** by [JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md), and **in Broiler.JS** by `docs/roadmap/SharedLibraries.md`, section "The frontend contract (SJL-12)", observed, merged in Broiler-Platform/Broiler.JS#1059 as `4d813f2a` (SJL-12.2) *(2026-10-19; read "codes and message identifiers; not recorded")* | SJL-12.2 | Same |
+| SJL-D-12: canonical tree, and Broiler.JS `Ast` and `Parser` compatibility | **taken 2026-10-11**: (a) with (i); **recorded in Broiler.VM** by [JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md), and **in Broiler.JS** by `docs/roadmap/SharedLibraries.md`, section "The frontend contract (SJL-12)", observed, merged in Broiler-Platform/Broiler.JS#1059 as `4d813f2a` (SJL-12.2); (i)'s disposition of Broiler.JS's `Ast` and `Parser` packages is SJL-14.4's, in its `docs/public-api.md`, and is not yet recorded *(2026-10-19; read "(a) with (i); not recorded")* | SJL-12.2, SJL-14.4 | Broiler.JS maintainer, JavaScript profile owner |
 | SJL-D-13: Broiler.VM's slice path | **taken 2026-10-11**: (a) rebuilt on the shared tree and model; not recorded | SJL-15.4 | JavaScript profile owner |
 | SJL-D-14: regular-expression implementation base | **taken 2026-10-11**: (a) Broiler.Regex fixed, then both engines move; (i) duplicate named groups; listed in ADR 0014 decision 4; **recorded in Broiler.RegEx** by its roadmap section 6 (SJL-0.6) and in Broiler.JS by `docs/roadmap/SharedLibraries.md`; its area-verdict JSD is SJL-11.1's *(2026-10-12; read "not yet recorded in Broiler.RegEx's roadmap (SJL-0.6)")* | SJL-0.6, SJL-11.1 | Broiler.RegEx maintainer, JavaScript profile owner, Broiler.JS maintainer |
 | SJL-D-15: BigInt width policy for Broiler.JS | **taken 2026-10-11**: (a) unbounded; **recorded** by Broiler.JS's area record for SJL-4, `docs/roadmap/SharedLibraries.md`, and applied in Broiler.VM by JSD-0067 decision 2 *(2026-10-13; read "not recorded")* | SJL-4.1 | Broiler.JS maintainer |
