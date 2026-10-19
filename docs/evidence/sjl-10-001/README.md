@@ -310,6 +310,14 @@ makes the answer a `RangeError`, which this family takes with the shared stream'
 Broiler-Platform/Broiler.JS#1054 at `c33933f9`, merged as `00b65dd0` on 2026-10-19; this bundle retains none.
 *(Revised 2026-10-19, when the change merged; read "… at `c33933f9`, not yet merged; this bundle retains none.")*
 
+*(Note, 2026-10-19, later.)* This family takes decision D12 with the shared stream's next version, `0.1.0-preview.7`,
+published that day from Broiler.JS `5ddee404`
+([JSC-317](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-317)): `since` with largest
+unit `day` and smallest unit `hour` back from 2011-12-31T16:15 to 2011-12-31T00:00, `P1DT16H` on `0.1.0-preview.6`,
+throws a `RangeError`, and the slice compiler's check `temporal/t1/a-day-span-a-zone-skips-is-a-range-error` holds
+it. The paragraph above, which says this family takes the decision "with the shared stream's next version", is left
+as written; the checks run again with that version are in "The shared stream's `0.1.0-preview.7`" below.
+
 **Checked at the product tree of `f14abb7`.** `9b7eead` and the record change no product file. The files are in
 [`cutover/`](cutover/) and [`vectors/`](vectors/):
 - **Part B's reference datasets.**
@@ -371,6 +379,27 @@ checks above used the copies packed from `bf81d1b7`. With the published packages
   header, and its report is the one the cut-over's negative control wrote, byte for byte.
 
 Neither run is retained, since neither differs.
+
+**The shared stream's `0.1.0-preview.7`.** *(Added 2026-10-19, after SJL-10.6.)* Both packages moved to
+`0.1.0-preview.7`, published to nuget.org that day from Broiler.JS `5ddee404`, whose one change under
+`Broiler.ECMAScript/` is decision D12 with its tests and records, and the committed feed holds them as published
+([JSC-317](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-317)). With them, at the tree
+of that change:
+- a locked restore with an empty package cache succeeds, a restore from nuget.org alone records the pins' content
+  hashes, and the solution builds in Release with no warning;
+- the contract tests pass, and the architecture tests pass but rule N37, which holds again when the package
+  baseline moves to the candidate pack taken at that tree, in the change after it;
+- the conformance root's run on revision 26 gives a report identical byte for byte to `run-revision-26.tsv.gz`'s,
+  and so to `after-revision-26.tsv.gz`'s, and prints the lines `run-revision-26.log` holds below its collector
+  header; its negative control's report and lines are `run-negative-control-revision-26`'s;
+- part B's six named checks print the lines [`after/datasets/named-checks.txt`](after/datasets/named-checks.txt)
+  holds, the files under `src/tests/temporal/` hash as [`after/datasets/files.sha256`](after/datasets/files.sha256)
+  lists them, and every slice-compiler check that ran passes, the new
+  `temporal/t1/a-day-span-a-zone-skips-is-a-range-error` among them;
+- decision D12's case answers a `RangeError` through the conformance root, where `main` before the change, on
+  `0.1.0-preview.6`, answered `P1DT16H`; the case forward from 2011-12-31T00:00 answers `PT16H` on both.
+
+Neither run is retained, since neither differs, and nor is the probe.
 
 SJL-10.6 judges parts A to C; this section judges nothing.
 
@@ -813,6 +842,11 @@ second clause is read in three rows, one for each part of the rule that judges i
 
 *(Revised 2026-10-19, at SJL-10.6, when part A's re-runs were taken. Part A's state read "**To be judged when the
 hosted after run is imported** (39261526513)".)*
+
+*(Note, 2026-10-19, later.)* The states above are the after arm's, at `96876432`, on `0.1.0-preview.6`. This family
+has since moved to `0.1.0-preview.7`, which carries decision D12
+([JSC-317](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-317)); section 4 says what was
+run again with it. No part of the rule reads decision D12, and no state above changes.
 
 **Also in this bundle, and no clause of their own:**
 - the engine-level vectors at corpus revision 26, which match at the after commit as at `d625402` (section 10);

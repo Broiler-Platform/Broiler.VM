@@ -13560,3 +13560,56 @@ is a cancellation` judge it.
 `Broiler.VM.Composition.JavaScript.SliceCompiler --checks --verbose` on linux-x64, run before and after this
 change, every row that ran passing both times, and against the two mutations; after it, out of a Native AOT
 image published as the lane publishes it as well, where the row reports the same counts. 2026-10-19.
+
+### JSC-317
+
+**Where:** the records that carry the two packages' version and identity: `Directory.Packages.props`, the
+committed feed `eng/packages/` with its README and the packages' pins, the allow-list's entries, the three lock
+files, rule I1's witness that names the admitted version, and `THIRD_PARTY_NOTICES.md`'s rows for the packages;
+the slice compiler's checks, which gain `temporal/t1/a-day-span-a-zone-skips-is-a-range-error`; and the records
+that called decision D12 pending here: dated notes in
+[JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md) and
+[JSD-0079](decisions/0079-the-profile-on-the-shared-temporal-core.md), the decision index, bundle
+[`sjl-10-001`](../../../docs/evidence/sjl-10-001/README.md), the milestone `sjl-10-temporal.md` and the
+programme's ledger. Neither record's decision is edited.
+
+**What the plan said.** JSD-0078, decision D12: "In this family it is a policy change pending, durations to a
+`RangeError`, made when it takes the shared stream's next version, which carries the decision. This family takes
+the library as `0.1.0-preview.6`, which answers the durations above, as this family's code did before its
+cut-over; until then the durations stand." And [JSC-315](#jsc-315): both packages at `0.1.0-preview.6`,
+published to nuget.org "from Broiler.JS `fc829f8a`".
+
+**What replaced it.** The packages move to `0.1.0-preview.7`, the shared stream's next version, which carries
+decision D12. Broiler.JS's publish-shared workflow published both to nuget.org on 2026-10-19 (run 39312237448)
+from Broiler.JS `5ddee404`, on the owner's approval of that day, and tagged them `ecmascript-v0.1.0-preview.7`;
+the feed holds them exactly as that run pushed them (its artifact `shared-packages`, whose digest the run records
+and the zip as downloaded has), which is nuget.org's package with its repository signature taken out, so a
+restore from nuget.org alone records the pins' content hashes. Between `fc829f8a` and `5ddee404`, under
+`Broiler.ECMAScript/`, the library's `DurationMath.Relative.cs` gains the test at NudgeToZonedTime's step 8
+(`163d43aa`), and it and `DurationMath.cs` change comments; its tests gain the decision's cases; its assurance
+manifest moves those two fingerprints; its adapter guide and the shared changelog record the decision; and the
+version suffix moves to `preview.7`. Nothing else there changes, and no file of `Broiler.ECMAScript.Generation`,
+which moves with the stream's version, its code `0.1.0-preview.5`'s. Each package differs from its
+`0.1.0-preview.6` besides in the version and the commit its nuspec and assembly record, the documentation of
+`RoundRelativeDuration`'s statuses, and the notices file every package of the stream carries, Broiler.JS's own,
+which gained a paragraph on Broiler.JS's deleted Hebrew calendar code; no third-party component is added. Rule
+I1 admits one version of a package, so the allow-list, the feed, the three lock files, rule I1's witness and
+`Directory.Packages.props` move together, and the `0.1.0-preview.6` packages and their pins leave the feed.
+
+So decision D12 is taken here: where a zone's skipped day leaves the day span NudgeToZonedTime asserts without
+the duration's sign, the library answers `OutOfRange`, which this family's adapter maps, as every status of the
+shared Temporal core, to a `RangeError` with its message ("Temporal: the date-time is outside the
+representable range" for a `ZonedDateTime` difference). With `a` 2011-12-31T16:15+14:00[Pacific/Apia] and `b`
+2011-12-31T00:00+14:00[Pacific/Apia], `a.since(b, {largestUnit: "day", smallestUnit: "hour"})`, which answered
+`P1DT16H`, is a `RangeError`, and `b.until(a)` alike still answers `PT16H`. No product file of this family
+changes, and the slice compiler's new check holds the answer. It is a policy change, durations to a `RangeError`,
+not a correction: no host exception escaped there. No test262 case at the pin, retained dataset line or corpus
+vector reaches it, and the vectors at corpus revision 26 and part B's six checks give what they gave on
+`0.1.0-preview.6`. Rule N37 holds the package baseline's candidate to declaring the version the allow-list pins
+or a later one, and bundle [JS-10-010](evidence/js-10-010/README.md)'s declares `0.1.0-preview.6`, so the
+baseline moves in the next change, collected at this one's tree. Everything else JSD-0078 and JSD-0079 decided
+stands.
+
+**Authority and date.** The owner's approval of 2026-10-19 to publish `0.1.0-preview.7` with decision D12, on
+[JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)'s decision D12 and the
+programme's milestone SJL-10. 2026-10-19.

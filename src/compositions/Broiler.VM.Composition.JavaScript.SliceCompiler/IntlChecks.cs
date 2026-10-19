@@ -65,6 +65,7 @@ internal static class IntlChecks
         yield return ADurationDesignatorIsUpperCasedByAsciiRules();
         yield return AYearPast2To53IsARangeError();
         yield return ADayWindowAZoneSkipsIsARangeError();
+        yield return ADaySpanAZoneSkipsIsARangeError();
         yield return ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }");
         yield return ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }");
     }
@@ -575,6 +576,36 @@ internal static class IntlChecks
             }));
 
         const string Expected = "RangeError RangeError RangeError PT16H15M";
+        return (Name, answer == Expected, $"answered `{answer}` (`{Expected}` expected)");
+    }
+
+    /// <summary>
+    /// Row D12's zoned branch (JSD-0078, decision D12; taken with Broiler.ECMAScript.Algorithms
+    /// 0.1.0-preview.7, JSC-317): back from Pacific/Apia's 2011-12-31 to an earlier instant of the same day, the
+    /// nudge's end is 2011-12-30, which the zone skipped, so the day span NudgeToZonedTime asserts to have the
+    /// duration's sign (s7.5.35 step 8) is zero. Rounding there to a time unit with a date largest unit is a
+    /// RangeError, as the reference polyfill throws; on 0.1.0-preview.6 this family answered durations a day
+    /// longer than lies between the instants (<c>P1DT16H</c>, <c>-P1DT16H</c>). Forward from the earlier instant
+    /// the day span is the next day's, and the difference still answers.
+    /// </summary>
+    private static (string, bool, string) ADaySpanAZoneSkipsIsARangeError()
+    {
+        const string Name = "temporal/t1/a-day-span-a-zone-skips-is-a-range-error";
+        var answer = Evaluate(
+            "function kind(f) { try { return String(f()); } catch (e) { return e.constructor.name; } }" +
+            "var apia = Temporal.ZonedDateTime.from('2011-12-31T16:15+14:00[Pacific/Apia]');" +
+            "var start = Temporal.ZonedDateTime.from('2011-12-31T00:00+14:00[Pacific/Apia]');" +
+            "[kind(function () { return apia.since(start, { largestUnit: 'day', smallestUnit: 'hour' }); })," +
+            " kind(function () { return apia.until(start, { largestUnit: 'day', smallestUnit: 'hour' }); })," +
+            " kind(function () { return Temporal.Duration.from('-PT16H15M').round({ largestUnit: 'day', smallestUnit: 'hour', relativeTo: apia }); })," +
+            " kind(function () { return start.until(apia, { largestUnit: 'day', smallestUnit: 'hour' }); })].join(' ');",
+            JavaScriptProfile.DescriptorComposing(new JsComposition
+            {
+                Surfaces = [JavaScriptProfile.TemporalManifest, JavaScriptProfile.IntlManifest, JavaScriptProfile.BigIntManifest],
+                IntlData = JsCldrData.Instance,
+            }));
+
+        const string Expected = "RangeError RangeError RangeError PT16H";
         return (Name, answer == Expected, $"answered `{answer}` (`{Expected}` expected)");
     }
 
