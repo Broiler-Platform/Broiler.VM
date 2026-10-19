@@ -2004,3 +2004,53 @@ JavaScript family.
 
 **What is not edited.** Every revision above stands as written, and the sentences quoted here stand in
 the sections they were written in, read with this revision.
+
+### 2026-10-19 - the lane gains a job of its own for the slice compiler's checks
+
+**What the record said.** The revision of 2026-09-03 above says that `broiler-vm-lane.yml` "holds
+`checks`, `publish`, `mobile` and `android`". That list was already incomplete before this revision:
+the lane also holds `differential-tooling`, the differential runner's job on `ubuntu-latest` and
+`windows-latest`, which no revision here names.
+
+**What changes.** No project and no edge. The lane gains a job, `slice`, named `slice checks and source
+fuzz (<rid>)`, over the matrix the caller hands `publish`. It publishes the slice compiler as Native AOT
+the way `publish` does, with trim and AOT warnings as errors, reads its closure, runs `--checks
+--verbose` and the four source-fuzz seeds at the caller's iteration count, and fails unless the number
+of rows the cell could not run is the one the lane records for its runtime identifier: three on
+`linux-x64` and `osx-x64`, two on `win-x64`, twelve on each arm64 cell. `publish` keeps the slice
+compiler's publish and `--closure` and drops only those two commands. Since the same date `--verbose`
+prints the time each row took on a line of its own under it, so a run's log says which rows the time
+goes to.
+
+**Why.** On the quick lane's `linux-x64` cell the two commands took a median of 238 and 76 seconds,
+inside a job whose median was about eleven minutes and which was the critical path of every pull
+request; 245 of that cell's 651 rows run only on an x86-64 machine. Beside `publish` rather than inside
+it, the expected median critical path is about six and a half minutes. That is a projection from the
+lane's step timings and not a measurement, and on the faster of the two runner classes the hosted pool
+hands out it is two to three minutes. The quick lane pays two more jobs and about two more
+runner-minutes per run, for a second setup and a second publish of one root, and the full lane gains
+six jobs and no time worth stating. The count of rows not run is pinned because a row that cannot run
+reports itself and the process still exits zero: a row that cannot find its retained data is one of
+them, so a job checked out or started differently from `publish` could stay green while rows stopped
+running.
+
+**What it asks of whoever administers the repository.** The two quick-lane cells of the new job,
+`quick / slice checks and source fuzz (linux-x64)` and `quick / slice checks and source fuzz
+(linux-arm64)`, must be added to the required status checks of `main` when this change merges, and not
+before, because a required check that an open pull request's head has never produced blocks that pull
+request. Until they are added a red row blocks nothing, and the `x86-64-sysv` rows on `linux-x64` are
+the only check of that calling convention on the pull-request path: on 2026-09-18 they failed there
+while the `checks` job's suite passed. This is a repository setting that no file in this checkout can
+make, and this revision is where it is written down.
+
+**What is now true, and what is not.** No check leaves any cell: the same rows run on the same runtime
+identifiers out of an image published the same way. A failing row no longer stops the rest of
+`publish` on its cell, which it did, so the conformance suites, the end-user host, both workloads and
+the package consumer now run on a cell whose slice checks failed. The comment that says why the checks
+run with `--verbose` moved with the step; bundle JSB-11-001 cites the `publish and run (linux-x64)` log
+of run `34999734401`, which stays what it was. `docs/javascript-shared-libraries/native-aot.md` section
+2.1, which says job `publish` publishes the roots with Native AOT and runs them, stays true. **No RID
+claim moves.**
+
+**What is not edited.** Every revision above stands as written, including the 2026-09-03 list of jobs
+this one completes.
