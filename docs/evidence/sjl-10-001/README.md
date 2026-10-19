@@ -16,17 +16,21 @@ differences, and `syntax/` for the grammar, the calendars and serialization.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules, correspondence, the base, the vectors and the cut-over, 2026-10-18, at SJL-10.4. **Nothing here is a
-verdict.**
+**State:** rules, correspondence, the base, the vectors and the cut-over, 2026-10-19, at SJL-10.5, when this family's
+pin moved to corpus revision 26. **Nothing here is a verdict.**
 - The base of all three parts was taken at the commit that carries the rule, `99c9c9f`, before any code of SJL-10
   landed (section 2): part A's by the hosted workflow, parts B and C locally.
-- The engine-level vectors ran on this family's pin at corpus revision 25, which holds the Temporal area (section 3).
+- The engine-level vectors ran on this family's pin at corpus revision 25, which holds the Temporal area, and at
+  revision 26, which retires its divergence fields (section 3).
 - SJL-10.4's cut-over is in place, with the checks it ran (section 4).
 - The after runs are SJL-10.6's.
 
 *(Revised 2026-10-18, at SJL-10.2, when the pin moved to revision 25. The state read "rules, correspondence and the
 base", and had no item on the vectors.)* *(Revised 2026-10-18, at SJL-10.4. The state read "rules, correspondence,
-the base and the vectors, 2026-10-18, at SJL-10.2", and its last item "The after runs follow SJL-10.4's cut-over.")*
+the base and the vectors, 2026-10-18, at SJL-10.2", and its last item "The after runs follow SJL-10.4's cut-over.")* *(Revised 2026-10-19, at SJL-10.5, when the pin moved
+to revision 26. The state read "rules, correspondence, the base, the vectors and the cut-over, 2026-10-18, at SJL-10.4",
+and its item on the vectors "The engine-level vectors ran on this family's pin at corpus revision 25, which holds the
+Temporal area (section 3).")*
 
 Broiler.JS's clauses and the home's are judged in Broiler.JS's bundle of the same name. This bundle reads none of
 its runs.
@@ -44,6 +48,11 @@ its runs.
   - a Broiler.JS correction, the milestone's listed ones and those found beyond them, each by row;
   - the one place found where the pinned text and its polyfill disagree, where the text rules (row D8, decision D7);
   - code no input reaches, deleted with its file.
+    *(Note, 2026-10-19, at Broiler.JS's SJL-10.5. Row D12's day window and its zoned branch are reached, by a zone's
+    skipped day, and the owner's decisions D11 and D12 answer a `RangeError` there. And Broiler.JS's records say that
+    much of the code no input reaches was deleted from files that remain, not with its file.
+    [JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)
+    records both. The item above is left as written.)*
 - **This family has one correction**, row R6: three constructors that end the invocation on a year above 2^53. It is
   made at SJL-10.4 (decision D9).
 
@@ -210,6 +219,30 @@ The pin is at revision 25 (`src/tests/vectors/pins/vectors.pin`) since `389f3e0`
 `458c10a` (SJL-8.6). Its archive is taken twice, byte-identical, and its 57 files are hashed from an extracted copy.
 The same method, applied to revision 23's commit, gives that pin's two digests and its count exactly.
 
+*(Note, 2026-10-19, at SJL-10.5, when the pin moved to revision 26.)* **The pin is at revision 26 since `d625402`**,
+at Broiler.JS `00b65dd0`, its default branch after Broiler-Platform/Broiler.JS#1054 merged. Revision 26 retires every
+divergence field of the Temporal area: row R6's six, which SJL-10.4 corrected (section 4), and Broiler.JS's 473, which
+its SJL-10.5 corrects. Its six Temporal files are revision 24's byte for byte, and no expected value changed.
+- **The archive** was taken twice, byte-identical, and its 57 files hashed from an extracted copy. The same method,
+  applied to revision 25's commit, `66b77088`, gives that pin's two digests and its count exactly.
+- **The run.** The collector's `vectors` step built the conformance root in Release and ran it on the committed pin,
+  from the clean tree of `d625402`, whose product sources are `e42cd5d`'s, the default branch after SJL-10.4
+  (Broiler-Platform/Broiler.VM#151). Its build log is not retained:
+  [`vectors/build-conformance.log`](vectors/build-conformance.log) is revision 25's run's.
+
+| Run | Taken | Result | Files |
+|---|---|---|---|
+| Revision 26 | At `d625402`, clean, on the committed pin, from 12:33Z on 2026-10-19 | 103,312 vectors: 103,312 match, 0 classified divergences and 0 unclassified differences, and no divergence field that no longer holds | [`run-revision-26.log`](vectors/run-revision-26.log), [`run-revision-26.tsv.gz`](vectors/run-revision-26.tsv.gz) |
+| Its negative control | The same, with `--mutate text/trim/0001` | 103,311 match, 0 classified divergences, and 1 unclassified difference, the mutated vector | [`run-negative-control-revision-26.log`](vectors/run-negative-control-revision-26.log), [`run-negative-control-revision-26.tsv.gz`](vectors/run-negative-control-revision-26.tsv.gz) |
+
+**This profile matches every vector of revision 26.** The only rows of class `divergence` in the report are the number
+area's four, `numbers/literal/0082`, `0084`, `0088` and `0090`. Their `divergence.broiler-js` fields are Broiler.JS's,
+item SJL-14's, and do not concern this family, and each matches here. Every vector has the expected value and the
+rendering it had in section 4's run on revision 25 at the cut-over
+([`vectors/cut-over-revision-25.tsv.gz`](vectors/cut-over-revision-25.tsv.gz)), line for line. 479 rows differ only in
+their class, `normative` here where it was `divergence`, and, for row R6's six, in a verdict that no longer adds
+"divergence no longer holds".
+
 [`area-manifest.json`](area-manifest.json) lists the digest of every file of `vectors/` with the others.
 
 ## 4. The cut-over (SJL-10.4)
@@ -234,6 +267,18 @@ records it. The changes, each building, with the tests it touches green:
 
 [`cutover/corrections.txt`](cutover/corrections.txt) gives both checks' lines, and each construction run alone at the
 base's product sources and at the cut-over's.
+
+*(Note, 2026-10-19, at Broiler.JS's SJL-10.5.)* **Row D12's zoned branch is reached too**, by the same skipped day:
+the day span whose sign NudgeToZonedTime asserts is zero when a time unit is rounded under a date largest unit from
+Pacific/Apia's 2011-12-31T16:15 back to an earlier instant of the same day, such as 2011-12-31T00:00, where the
+difference has no date part. This family answered durations from outside the text's domain there before the
+cut-over, and answers the same on `0.1.0-preview.6`, so no answer moved and "no other answer moves" above holds. The
+owner's decision D12 of 2026-10-19
+([JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md))
+makes the answer a `RangeError`, which this family takes with the shared stream's next version. Broiler.JS's bundle
+`sjl-10-001` retains this family's answers there at `14072b0` and at `83fef1a`, in `cutover/d12-facts.md`, observed in
+Broiler-Platform/Broiler.JS#1054 at `c33933f9`, merged as `00b65dd0` on 2026-10-19; this bundle retains none.
+*(Revised 2026-10-19, when the change merged; read "… at `c33933f9`, not yet merged; this bundle retains none.")*
 
 **Checked at the product tree of `f14abb7`.** `9b7eead` and the record change no product file. The files are in
 [`cutover/`](cutover/) and [`vectors/`](vectors/):

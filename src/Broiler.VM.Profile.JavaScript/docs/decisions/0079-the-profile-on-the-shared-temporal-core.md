@@ -138,6 +138,20 @@ opens no day window and still answers `PT16H15M`. `until` from the earlier date,
 and does not reach the skipped day, answers `PT0S` before and after. Row D12's week window stays code no
 input reaches.
 
+*(Note, 2026-10-19, at Broiler.JS's SJL-10.5.)* **Row D12's zoned branch is reached too**, by the same
+skipped day: the day span whose sign NudgeToZonedTime asserts at step 8 (s7.5.35) is zero back from
+2011-12-31T16:15 there to an earlier instant of the same day, such as 2011-12-31T00:00, where the
+difference has no date part, when a time unit is rounded under a date largest unit, as in `since` with
+largest unit `day` and smallest unit `hour`. This family's code at `14072b0` has no test of that sign, and
+answered durations from outside the text's domain there, `P1DT16H` and the like. `0.1.0-preview.6`
+answers the same durations, line for line, so the cut-over moved no answer there, and "No other answer
+moves" below holds. The owner's decision D12 of 2026-10-19
+([JSD-0078](0078-the-temporal-core-moves-to-the-shared-algorithms-library.md), section "SJL-10.5's
+cut-over, read against this record") makes the answer a `RangeError`. The library answers so after
+`0.1.0-preview.6`, and this family takes it with the shared stream's next version: a policy change
+pending here, durations to a `RangeError`, not a correction, since no host exception escapes there. The
+paragraph above is left as written.
+
 **No other answer moves**, but in its message (section 7); section 6's checks find no other.
 
 ### 5. Charging and limits

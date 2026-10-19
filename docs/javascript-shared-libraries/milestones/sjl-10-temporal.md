@@ -146,7 +146,17 @@ an ISO month-day's year past 2^31 (C12). Further corrections are listed with the
 - the calendar a `PlainMonthDay` lends (C13);
 - the three conversions that lose a calendar's day, calendar or year (C15 to C17).
 
-Code no input reaches is deleted with its file (D12, G10, C3, C10, S8).
+Code no input reaches is deleted (G10, C3, C10, S8, and row D12's shift of years and months and fourth day
+correction). Row D12's day window and its zoned branch are reached, and decisions D11 and D12 answer a `RangeError`
+there.
+
+*(Revised 2026-10-19, at SJL-10.5, by
+[JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md),
+section "SJL-10.5's cut-over, read against this record". Row D12 is reached: a zone's skipped day reaches its day
+window, which the owner's decision D11 answers, and its zoned branch, the "inconsistent Instants" test of
+NudgeToZonedTime's day span, which the owner's decision D12 answers. And Broiler.JS's records say that much of the code
+no input reaches lived in files that still exist, and was deleted from them, not with its file. The sentence read
+"Code no input reaches is deleted with its file (D12, G10, C3, C10, S8).")*
 
 ### SJL-10.6 — Evidence
 
