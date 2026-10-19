@@ -1,0 +1,28 @@
+{
+  "admittedPackages": [
+    {
+      "id": "Broiler.ECMAScript.Algorithms",
+      "version": "0.1.0-preview.6",
+      "contentHash": "PERCRai0B9fgQc9YeyREvInd0sdJUDdoiHmBoku6M8BZPzYLrXBaC+AKTpMNRtFFMs1rM8NO4vAEmTvRbzQfgQ==",
+      "use": "product",
+      "feedContentHash": "PERCRai0B9fgQc9YeyREvInd0sdJUDdoiHmBoku6M8BZPzYLrXBaC+AKTpMNRtFFMs1rM8NO4vAEmTvRbzQfgQ==",
+      "commit": "fc829f8a507295185527e4175e70d74e15630fd1"
+    },
+    {
+      "id": "Broiler.Unicode.Algorithms",
+      "version": "0.1.0-preview.5",
+      "contentHash": "KMLRX1YipkukyafcoZuVxKP2qC5I05FIHTv4z1eyUgOu5aUpPq2eLYXtt4CP6CKbBJFUaWAUCZBZoEeOe04qsw==",
+      "use": "product",
+      "feedContentHash": "KMLRX1YipkukyafcoZuVxKP2qC5I05FIHTv4z1eyUgOu5aUpPq2eLYXtt4CP6CKbBJFUaWAUCZBZoEeOe04qsw==",
+      "commit": "b80201436e8f8ff0402ed75c0b9657fe3616d730"
+    },
+    {
+      "id": "Broiler.Unicode.Segmentation",
+      "version": "0.1.0-preview.5",
+      "contentHash": "WnBeQxp37cxU4h4IoZITqRyap29LljycATTTDbD3K8DNvvW0TvEgIGstp0rhfH4qKlw07nc6ZkIpaPbDbBS3HA==",
+      "use": "product",
+      "feedContentHash": "WnBeQxp37cxU4h4IoZITqRyap29LljycATTTDbD3K8DNvvW0TvEgIGstp0rhfH4qKlw07nc6ZkIpaPbDbBS3HA==",
+      "commit": "b80201436e8f8ff0402ed75c0b9657fe3616d730"
+    }
+  ]
+}

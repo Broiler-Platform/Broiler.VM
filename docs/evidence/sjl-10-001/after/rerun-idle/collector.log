@@ -1,0 +1,6 @@
+== rerun 2026-10-19T16:26:59Z
+rerun: wide-bytecode 17 rows, 1 whose re-runs disagree
+rerun: wide-native 1 rows, 0 whose re-runs disagree
+== wall-race 2026-10-19T16:31:00Z
+wall-race: wide-bytecode 1 rows
+wall-race: wide-native has no (c') row whose re-runs differ

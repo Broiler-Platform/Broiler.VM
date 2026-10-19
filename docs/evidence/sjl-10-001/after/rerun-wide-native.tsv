@@ -1,0 +1,2 @@
+path	variant	base run	after run	base re-run	after re-run	re-runs agree
+test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes
