@@ -1,3 +1,17 @@
+# CI: the Windows build, test, pack and feed check, and the validation a publish runs.
+#
+# ONE OPERATING SYSTEM ON A PULL REQUEST AND A PUSH, BOTH UNDER A PUBLISH OR A BUTTON, SINCE
+# 2026-10-19. Until then a pull request and a push ran an ubuntu leg beside the Windows one, and
+# that leg repeated what the lane's `checks` job runs on the same image at the same ref: the same
+# build, there with warnings as errors, and the same `dotnet test` of the solution. In 226 runs it
+# failed seven times and the Windows leg and `checks` failed with it every time, so it never caught
+# anything alone. The Windows leg is the only per-pull-request run of the suite under Windows paths,
+# culture, NLS and time zones, and the only one of pack.ps1 and verify-feed.ps1, so it is the one
+# that stays. A publish calls this workflow with the version it resolved, and a dispatch is somebody
+# asking for the whole answer, so both still run both legs: a release is built and tested on both
+# operating systems before it is pushed. The job keeps its name, so the check a pull request shows
+# is still `windows-latest / Release`.
+
 name: CI
 
 on:
@@ -31,7 +45,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # `inputs.package-version` is null on a pull request, a push and a dispatch, and null
+        # compares equal to '' in an expression, so only a caller that passes a version - the
+        # publish lane - and a dispatch take both legs.
+        os: ${{ fromJSON((inputs.package-version != '' || github.event_name == 'workflow_dispatch') && '["ubuntu-latest","windows-latest"]' || '["windows-latest"]') }}
     steps:
       - name: Check out
         uses: actions/checkout@v7
@@ -53,6 +70,11 @@ jobs:
       # I1), and CI restores each of them in locked mode, so a content hash that moved fails here
       # rather than being rewritten (milestone SJL-2.1). No product project references one at
       # SJL-2, and the step says so when there is nothing to lock.
+      #
+      # The lane's `checks` job runs the same loop before its build since 2026-10-19, where a moved
+      # hash blocks a merge, because that job is a required check and this one is not. The loop
+      # stays here as well: a publish validates through this workflow and never through the lane,
+      # so this is the locked restore a release is built from.
       - name: Restore lock-file projects in locked mode
         run: |
           found=0

@@ -158,6 +158,22 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      # RULE I1'S LOCKED-MODE RESTORE, COPIED FROM ci.yml ON 2026-10-19 AND NOT MOVED. Every project
+      # that references an admitted shared package restores with a lock file, and each restores here
+      # in locked mode, so a content hash that moved fails rather than being rewritten (milestone
+      # SJL-2.1). It runs here because this job is a required check and ci.yml's legs are not: a
+      # moved hash now blocks the merge. ci.yml keeps the same loop, because a publish validates
+      # through that workflow and never through this lane.
+      - name: Restore lock-file projects in locked mode
+        shell: bash
+        run: |
+          found=0
+          while IFS= read -r lock; do
+            found=1
+            dotnet restore "$(dirname "$lock")" --locked-mode --nologo
+          done < <(git ls-files '*packages.lock.json')
+          if [ "$found" = 0 ]; then echo "No project carries a lock file."; fi
+
       - name: Build with warnings as errors
         run: dotnet build Broiler.VM.slnx -c Release -warnaserror
 
