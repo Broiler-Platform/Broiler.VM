@@ -660,7 +660,9 @@ window is reached. *(Note, 2026-10-19, at SJL-10.5: so is its zoned branch, Nudg
 
 *(Added 2026-10-19, at SJL-10.5.)* Broiler.JS's Temporal core is the shared library's `Broiler.ECMAScript.Temporal`,
 which its built-ins take by project reference: the shared stream's `0.1.0-preview.6`, with decision D12 below. The
-change is observed in Broiler-Platform/Broiler.JS#1054, open and not yet merged, at its head `c33933f9`: the code in
+change is observed in Broiler-Platform/Broiler.JS#1054 at its head `c33933f9`, merged as `00b65dd0` on 2026-10-19
+*(revised that day, when it merged; read "observed in Broiler-Platform/Broiler.JS#1054, open and not yet merged, at its
+head `c33933f9`")*: the code in
 `f42eac6b` to `6dbff805`, corpus revision 26 in `feee5b7a` and `c97a9996`, and the records after them. Its records are
 its changelog, `Broiler.JS/CHANGELOG.md`; its plan's "The cut-over (SJL-10.5)", in `docs/roadmap/SharedLibraries.md`;
 and its bundle `sjl-10-001`, section 4 and `cutover/`.

@@ -1326,9 +1326,11 @@ holds the published packages, and the pins, the allow-list, the lock files and t
 ([JSC-315](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-315)). The vectors run with them
 gives the report bundle `sjl-10-001` retains for the cut-over. Nothing moves: SJL-10 stays `In progress`.
 
-**2026-10-19: SJL-10.5, Broiler.JS's cut-over, and corpus revision 26** (observed, not yet merged). The change is
-Broiler-Platform/Broiler.JS#1054, which is open; this entry records it as observed at its head `c33933f9`, and its
-merge commit is added here when it lands.
+**2026-10-19: SJL-10.5, Broiler.JS's cut-over, and corpus revision 26** (observed; merged as `00b65dd0`). The change
+is Broiler-Platform/Broiler.JS#1054, merged into Broiler.JS's default branch as `00b65dd0` (observed), whose second parent
+is `c33933f9`, the head this entry records it at. *(Revised 2026-10-19, when the change merged. The heading ended
+"(observed, not yet merged)", and the sentence read "The change is Broiler-Platform/Broiler.JS#1054, which is open; this
+entry records it as observed at its head `c33933f9`, and its merge commit is added here when it lands.")*
 - **Broiler.JS's Temporal core is the shared library's** `Broiler.ECMAScript.Temporal`, which its built-ins take by
   project reference: the shared stream's `0.1.0-preview.6`, with decision D12 below. Its code is `f42eac6b` to
   `6dbff805`. The deletion list is absent, the public `JSTemporal*` types stay as shells, and the built-ins keep their
@@ -1373,11 +1375,10 @@ SJL-10 may not meet its gate before SJL-6 and SJL-8 meet theirs, and so not befo
 **2026-10-19, later: Broiler.JS's SJL-10.5 is merged, and this family's vectors pin moves to corpus revision 26.**
 Broiler-Platform/Broiler.JS#1054 was merged into Broiler.JS's default branch as `00b65dd0` (observed), whose second
 parent is `c33933f9`, the head the entry above records, so every Broiler.JS commit that entry cites is on its default
-branch. That entry said the change was open and that its merge commit would be added when it landed; this one records
-it, and that entry is left as written. This family's pin moved to `00b65dd0` in `d625402`. The archive was taken
-twice, byte-identical, and its 57 files hashed from an extracted copy, by the method that gives revision 25's pin its
-digests at its own commit. Revision 26 retires every divergence field of the Temporal area, row R6's six with
-Broiler.JS's, and no expected value changes. On the committed pin, from a clean tree there, the conformance root
+branch; that entry now names the merge commit, with a dated note. This family's pin moved to `00b65dd0` in
+`d625402`. The archive was taken twice, byte-identical, and its files hashed from an extracted copy, by the method that
+gives revision 25's pin its digests at its own commit. Revision 26 retires every divergence field of the Temporal area,
+row R6's with Broiler.JS's, and no expected value changes. On the committed pin, from a clean tree there, the conformance root
 matches every vector: none is classified as this family's divergence, and none is unclassified. Its negative control
 reports the mutated vector alone (bundle [`sjl-10-001`](../evidence/sjl-10-001/README.md), section 3). SJL-10 stays
 `In progress`, every clause unmet until SJL-10.6's after runs. Next:

@@ -16,17 +16,21 @@ differences, and `syntax/` for the grammar, the calendars and serialization.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules, correspondence, the base, the vectors and the cut-over, 2026-10-18, at SJL-10.4. **Nothing here is a
-verdict.**
+**State:** rules, correspondence, the base, the vectors and the cut-over, 2026-10-19, at SJL-10.5, when this family's
+pin moved to corpus revision 26. **Nothing here is a verdict.**
 - The base of all three parts was taken at the commit that carries the rule, `99c9c9f`, before any code of SJL-10
   landed (section 2): part A's by the hosted workflow, parts B and C locally.
-- The engine-level vectors ran on this family's pin at corpus revision 25, which holds the Temporal area (section 3).
+- The engine-level vectors ran on this family's pin at corpus revision 25, which holds the Temporal area, and at
+  revision 26, which retires its divergence fields (section 3).
 - SJL-10.4's cut-over is in place, with the checks it ran (section 4).
 - The after runs are SJL-10.6's.
 
 *(Revised 2026-10-18, at SJL-10.2, when the pin moved to revision 25. The state read "rules, correspondence and the
 base", and had no item on the vectors.)* *(Revised 2026-10-18, at SJL-10.4. The state read "rules, correspondence,
-the base and the vectors, 2026-10-18, at SJL-10.2", and its last item "The after runs follow SJL-10.4's cut-over.")*
+the base and the vectors, 2026-10-18, at SJL-10.2", and its last item "The after runs follow SJL-10.4's cut-over.")* *(Revised 2026-10-19, at SJL-10.5, when the pin moved
+to revision 26. The state read "rules, correspondence, the base, the vectors and the cut-over, 2026-10-18, at SJL-10.4",
+and its item on the vectors "The engine-level vectors ran on this family's pin at corpus revision 25, which holds the
+Temporal area (section 3).")*
 
 Broiler.JS's clauses and the home's are judged in Broiler.JS's bundle of the same name. This bundle reads none of
 its runs.
@@ -273,7 +277,8 @@ owner's decision D12 of 2026-10-19
 ([JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md))
 makes the answer a `RangeError`, which this family takes with the shared stream's next version. Broiler.JS's bundle
 `sjl-10-001` retains this family's answers there at `14072b0` and at `83fef1a`, in `cutover/d12-facts.md`, observed in
-Broiler-Platform/Broiler.JS#1054 at `c33933f9`, not yet merged; this bundle retains none.
+Broiler-Platform/Broiler.JS#1054 at `c33933f9`, merged as `00b65dd0` on 2026-10-19; this bundle retains none.
+*(Revised 2026-10-19, when the change merged; read "… at `c33933f9`, not yet merged; this bundle retains none.")*
 
 **Checked at the product tree of `f14abb7`.** `9b7eead` and the record change no product file. The files are in
 [`cutover/`](cutover/) and [`vectors/`](vectors/):
