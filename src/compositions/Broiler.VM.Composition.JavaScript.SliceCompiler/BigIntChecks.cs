@@ -25,9 +25,11 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// </para>
 /// <para>
 /// <b>The internal operations are still reached through unsafe accessors</b> where a row judges one
-/// on its own - <c>asIntN</c> and <c>asUintN</c> at widths no guest program can name cheaply - as
-/// <see cref="CloneChecks"/> reaches the clone carrier. The accessors are bound at compile time and
-/// invoke nothing dynamically, which is what rule B5 requires of this root.
+/// on its own - <c>asIntN</c> and <c>asUintN</c> at widths no guest program can name cheaply, and the
+/// widest value's formatting through an engine over a meter the row holds, where a cancellation has
+/// to be placed by work done rather than by time - as <see cref="CloneChecks"/> reaches the clone
+/// carrier. The accessors are bound at compile time and invoke nothing dynamically, which is what
+/// rule B5 requires of this root.
 /// </para>
 /// </remarks>
 internal static class BigIntChecks
@@ -339,29 +341,108 @@ internal static class BigIntChecks
     }
 
     /// <summary>
-    /// Cancellation requested while the widest value is being formatted is honoured promptly: the
-    /// request arrives 40 ms into the run and the run must end, cancelled, within one second.
+    /// Cancellation requested while the widest value is being formatted stops the formatting: the
+    /// request arrives once the conversion has charged half of what it charges uncancelled, and the
+    /// engine's own poll must end it, without its text, within the profile's declared cancellation
+    /// poll bound of further work.
     /// </summary>
     /// <remarks>
-    /// The base class library's own conversion of this value is one call of about 3.2 s here, which
-    /// nothing can interrupt, so a conversion made that way is seen cancelled only after it - past
-    /// the second. The divide-and-conquer conversion charges between steps of at most about 52 ms.
+    /// <para>
+    /// <b>The request is placed by work done, not by elapsed time (JSC-316).</b> Until 2026-10-19 it
+    /// arrived on a 40 ms timer and the run had to end, cancelled, within one second; on the full
+    /// lane's osx-x64 cell the whole formatting finished before the timer fired, so the verdict was
+    /// the runner's speed. Fuel is charged identically on every machine, so a request made when the
+    /// meter has counted a given amount lands at the same step everywhere.
+    /// </para>
+    /// <para>
+    /// The conversion runs against an engine built over a meter this row holds, through the engine's
+    /// own charge - the one a guest's <c>String(x)</c> reaches - so the poll that observes the request
+    /// is the engine's. The meter answers every poll yes, so the stop is the engine's reading of the
+    /// token and nothing of the meter's.
+    /// </para>
+    /// <para>
+    /// The base class library's own conversion of this value is one call that nothing can interrupt.
+    /// A conversion made that way charges one step - all of it, before the call - and a request
+    /// placed by work done would land in that step's charge and stop a conversion that never
+    /// started, so the row also asks that no step charge as much as half of the whole: the request
+    /// then lands after the first step and before the last. The divide-and-conquer conversion's
+    /// largest step is its first division, about a third of the whole.
+    /// </para>
     /// </remarks>
     private static (string, bool, string) CancellationStopsALongFormatting()
     {
         const string Name = "bigint/b03/cancellation-stops-a-long-formatting";
-        var clock = System.Diagnostics.Stopwatch.StartNew();
-        var answer = RunWide(
-            "var x = 1n << 1048575n; String(x).length + '|finished';",
-            fuel: 1_000_000_000_000,
-            cancelAfter: System.TimeSpan.FromMilliseconds(40));
 
-        var elapsed = clock.ElapsedMilliseconds;
+        // The detail of the abort the engine raises when its poll finds cancellation requested.
+        const string EngineCancelled = "cancellation was requested";
+
+        var widest = NewBigInt(System.Numerics.BigInteger.One << 1048575);
+        var bound = JavaScriptProfile.Descriptor.CancellationPollBound;
+        var steps = new System.Collections.Generic.List<ulong>();
+        string text;
+        ulong total;
+
+        using (var whole = new CancellingMeter())
+        {
+            try
+            {
+                var charge = EngineCharge(NewEngine(whole, whole.Token, null, [], false, false, false, false, null));
+                var start = whole.Fuel;
+
+                text = ToDecimalString(widest, units =>
+                {
+                    steps.Add(units);
+                    charge(units);
+                });
+
+                total = whole.Fuel - start;
+            }
+            catch (System.Exception failure)
+            {
+                return (Name, false, "the uncancelled conversion ended: " + failure.Message);
+            }
+        }
+
+        var largest = steps.Count == 0 ? 0 : System.Linq.Enumerable.Max(steps);
+        var shown = $"the conversion charges {total} in {steps.Count} steps, the largest {largest}";
+
+        if (text.Length != 315653 || largest * 2 >= total)
+        {
+            return (Name, false, $"{shown} and answers {text.Length} digits");
+        }
+
+        using var cancelled = new CancellingMeter();
+        string answer;
+        ulong requestedAt, stoppedAt;
+
+        try
+        {
+            var charge = EngineCharge(NewEngine(cancelled, cancelled.Token, null, [], false, false, false, false, null));
+            var start = cancelled.Fuel;
+            cancelled.RequestCancellationAt(start + (total / 2));
+
+            try
+            {
+                answer = $"its text of {ToDecimalString(widest, charge).Length} digits";
+            }
+            catch (System.Exception stop)
+            {
+                answer = stop.Message;
+            }
+
+            requestedAt = cancelled.RequestedAt is { } requested ? requested - start : 0;
+            stoppedAt = cancelled.Fuel - start;
+        }
+        catch (System.Exception failure)
+        {
+            return (Name, false, "the engine could not be built: " + failure.Message);
+        }
 
         return (
             Name,
-            answer == "Cancellation/Cancelled" && elapsed < 1000,
-            $"the run answered {answer} after {elapsed} ms");
+            answer == EngineCancelled && requestedAt > 0 && stoppedAt - requestedAt <= bound,
+            $"{shown}; cancellation requested at {requestedAt} ended it at {stoppedAt} " +
+            $"(poll bound {bound}) with '{answer}'");
     }
 
     /// <summary>
@@ -429,10 +510,9 @@ internal static class BigIntChecks
 
     /// <summary>
     /// Compiles one program under the wide manifest and runs it under the descriptor admitting every
-    /// surface with a fuel ceiling and an optional cancellation, answering its completion or the
-    /// outcome that ended it.
+    /// surface with a fuel ceiling, answering its completion or the outcome that ended it.
     /// </summary>
-    private static string RunWide(string source, ulong? fuel, System.TimeSpan? cancelAfter = null)
+    private static string RunWide(string source, ulong? fuel)
     {
         var compiled = Compile(source, new JsCompileRequest());
 
@@ -441,7 +521,7 @@ internal static class BigIntChecks
             return "refused: " + First(compiled);
         }
 
-        TryRun(compiled.Artifact, JavaScriptProfile.Descriptor, out var answer, fuel: fuel, cancelAfter: cancelAfter);
+        TryRun(compiled.Artifact, JavaScriptProfile.Descriptor, out var answer, fuel: fuel);
         return answer;
     }
 
@@ -1005,7 +1085,6 @@ internal static class BigIntChecks
         out string answer,
         bool hostSurface = false,
         ulong? fuel = null,
-        System.TimeSpan? cancelAfter = null,
         IVmArtifactProvider? provider = null)
     {
         using var runtime = Runtime(profile, hostSurface, fuel, provider);
@@ -1040,14 +1119,7 @@ internal static class BigIntChecks
                 var request = new VmInvocationRequest(
                     new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes("main")));
 
-                using var cancellation = new System.Threading.CancellationTokenSource();
-
-                if (cancelAfter is { } delay)
-                {
-                    cancellation.CancelAfter(delay);
-                }
-
-                var invoked = instance.Invoke(in request, cancellation.Token);
+                var invoked = instance.Invoke(in request, System.Threading.CancellationToken.None);
 
                 if (invoked.Outcome is VmOutcome.ResourceExhaustion or VmOutcome.Cancellation)
                 {
@@ -1164,8 +1236,100 @@ internal static class BigIntChecks
         [UnsafeAccessorType(BigIntType)] object value,
         Broiler.ECMAScript.WorkCharge charge);
 
+    /// <summary>
+    /// <c>JsBigInt.ToDecimalString</c>, the conversion a guest's <c>String(x)</c> reaches for a BigInt,
+    /// charging every step to <paramref name="charge"/> before it runs.
+    /// </summary>
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "ToDecimalString")]
+    private static extern string ToDecimalString(
+        [UnsafeAccessorType(BigIntType)] object value,
+        Broiler.ECMAScript.WorkCharge charge);
+
+    /// <summary>
+    /// A new internal <c>JsEngine</c> over <paramref name="meter"/> and <paramref name="cancellation"/>.
+    /// An accessor names every parameter, so the defaults the constructor declares are passed here:
+    /// no invoker, no optional surface, the interpreted form and no internationalization tables.
+    /// </summary>
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    [return: UnsafeAccessorType(EngineType)]
+    private static extern object NewEngine(
+        IVmMeter meter,
+        System.Threading.CancellationToken cancellation,
+        IVmHostCapabilityInvoker? invoker,
+        ImmutableArray<string> admittedSurfaces,
+        bool nativeForm,
+        bool valueForm,
+        bool handleStress,
+        bool sweepsFinalization,
+        [UnsafeAccessorType(IntlTablesType)] object? intl);
+
+    /// <summary>
+    /// <c>JsEngine.WorkCharge</c>, the engine's own charge as the shared libraries' meter: fuel, and a
+    /// cancellation poll every window.
+    /// </summary>
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_WorkCharge")]
+    private static extern Broiler.ECMAScript.WorkCharge EngineCharge([UnsafeAccessorType(EngineType)] object engine);
+
     /// <summary>The internal BigInt value type, named for the accessors above.</summary>
     private const string BigIntType = "Broiler.VM.Profile.JavaScript.JsBigInt, Broiler.VM.Profile.JavaScript";
+
+    /// <summary>The internal engine type, named for the accessors above.</summary>
+    private const string EngineType = "Broiler.VM.Profile.JavaScript.JsEngine, Broiler.VM.Profile.JavaScript";
+
+    /// <summary>The internal internationalization tables type, named for <see cref="NewEngine"/>.</summary>
+    private const string IntlTablesType = "Broiler.VM.Profile.JavaScript.JsIntlTables, Broiler.VM.Profile.JavaScript";
+
+    /// <summary>
+    /// The meter the cancellation row builds an engine over: it admits every charge, counts the fuel
+    /// charged, and requests cancellation of the token it hands the engine once that count reaches
+    /// the amount it was told.
+    /// </summary>
+    private sealed class CancellingMeter : IVmMeter, System.IDisposable
+    {
+        private readonly System.Threading.CancellationTokenSource source = new();
+
+        private ulong requestAt = ulong.MaxValue;
+
+        /// <summary>The token the engine polls.</summary>
+        internal System.Threading.CancellationToken Token => source.Token;
+
+        /// <summary>The fuel charged so far.</summary>
+        internal ulong Fuel { get; private set; }
+
+        /// <summary>The fuel charged when cancellation was requested, or nothing before then.</summary>
+        internal ulong? RequestedAt { get; private set; }
+
+        /// <summary>Requests cancellation at the first charge that brings the count to <paramref name="fuel"/>.</summary>
+        internal void RequestCancellationAt(ulong fuel) => requestAt = fuel;
+
+        public bool TryCharge(VmBudgetDimension dimension, ulong amount)
+        {
+            if (dimension == VmBudgetDimension.Fuel)
+            {
+                Fuel += amount;
+
+                if (RequestedAt is null && Fuel >= requestAt)
+                {
+                    RequestedAt = Fuel;
+                    source.Cancel();
+                }
+            }
+
+            return true;
+        }
+
+        public bool Poll() => true;
+
+        public void ReportRetained(VmBudgetDimension dimension, ulong amount)
+        {
+        }
+
+        public void ReportReleased(VmBudgetDimension dimension, ulong amount)
+        {
+        }
+
+        public void Dispose() => source.Dispose();
+    }
 
     /// <summary>
     /// A source provider answering every script request by compiling it under the wide manifest, as
