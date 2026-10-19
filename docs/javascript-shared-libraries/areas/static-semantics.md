@@ -49,7 +49,11 @@ separated binder is what SJL-15 replaces with the shared model.
 
 ## 3. The model
 
-A sketch of the shape. The design is filed at SJL-12.1.
+A sketch of the shape. The design is filed in
+[JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+section "The semantic model's design", at SJL-12.1. The home's design document, `Broiler.ECMAScript/docs/frontend/design.md`
+in the Broiler.JS repository, restates it. Where the two differ, JSD-0080 and this design rule. *(Revised
+2026-10-19, at SJL-12.1, by JSD-0080 decisions D5 and D41. The sentence read "The design is filed at SJL-12.1.")*
 
 ```csharp
 namespace Broiler.ECMAScript.Semantics;

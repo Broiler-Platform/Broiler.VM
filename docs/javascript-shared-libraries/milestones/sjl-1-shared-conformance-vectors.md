@@ -132,8 +132,11 @@ The corpus's README documents how a vector is added, reviewed and retired. In pa
 
 - a vector that an engine fails is never deleted to make the engine pass;
 - a classification change is a dated corpus entry;
-- every area milestone (SJL-3 to SJL-15, and SJL-17) adds its vectors **before** its shared code
-  lands.
+- every area milestone (SJL-3 to SJL-11, SJL-13 to SJL-15, and SJL-17) adds its vectors **before** its
+  shared code lands. *(Revised 2026-10-19, at SJL-12.1, by
+  [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)
+  decision D1, as roadmap section 5's range is: SJL-12 is preparation, not an area milestone, and writes no
+  shared code, so it owes no vectors under this item. The parenthesis read "(SJL-3 to SJL-15, and SJL-17)".)*
 
 *Done when* the README states the process.
 

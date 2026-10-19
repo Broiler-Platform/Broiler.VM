@@ -96,12 +96,24 @@ runs, which also places every admitted package on that feed.)*
 | J3 | `docs/public-api.md` | "No Broiler.VM integration is planned for this component, and none changes that statement." | Revised. The public package list gains the shared packages, with their compatibility promise (semantic versioning, an API baseline and package validation), which none of Broiler.JS's current packages has. | SJL-0 (text), SJL-2 (tooling) |
 | J4 | `docs/roadmap/README.md` | "The bytecode/VM plan is retired from this component." | **Kept**: no Broiler.VM profile is planned here. A new plan/status pair is added for the shared libraries (`docs/roadmap/SharedLibraries.md` and `.status.md`, in Broiler.JS's own plan/status convention). | SJL-0 |
 | J5 | `docs/roadmap/Assemblies.md`, `Roadmap.md`, `ModernizationDelivery.md`, MOD-M2-7 | Residual text still plans "Separate IL and Broiler.VM JavaScript integration shells that both consume shared semantics". This contradicts J1 and J3. | Reconciled: the residual text is rewritten as the shared-library plan, or withdrawn with a pointer to it | SJL-0 |
-| J6 | `docs/roadmap/Modernization.md`, invariant 3 | "The semantic front end is shared … between IL and bytecode." | Extended to the Broiler.VM consumer. MOD-M2-3, MOD-M2-4 and MOD-M2-5 are cross-referenced as the Broiler.JS half of SJL-12. | SJL-0 |
+| J6 | `docs/roadmap/Modernization.md`, invariant 3 | "The semantic front end is shared … between IL and bytecode." | Extended to the Broiler.VM consumer. MOD-M2-4 is the Broiler.JS half of SJL-12, SJL-12.5's item 4, and closes there. MOD-M2-5 is superseded in part: its boundary specification by SJL-12.1's contract, and its extraction plan by SJL-13 to SJL-15. MOD-M2-3 stays open, outside SJL-12 *(corrected 2026-10-19, below)*. | SJL-0 |
 | J7 | `docs/roadmap/Component.md` §3, regular-expression consolidation | "retire the translator only after the pinned RegExp corpus is clean" | Aligned with SJL-11: the translator retires when Broiler.Regex meets the programme's conditions | SJL-11 |
 | J8 | `docs/architecture/builtins-vs-clr-types.md` §6 | Says BuiltIns "reaches its own vendored `Broiler.DateTime`" | Stale; corrected | SJL-0 |
 | J9 | `HUMAN_REVIEW.md`, `assurance.config.json` | Annotations are partial, the units file does not exist yet, and no CI lane enforces assurance. | The shared-library projects are covered by generated artefacts and a CI gate from their first commit (decision `SJL-D-5`) | SJL-2 |
 | J10 | `scripts/packaging/test_pristine_consumer.py` | Expects BuiltIns to depend on `Broiler.Regex`, `Broiler.DateTime` and `Broiler.Unicode.Properties`, which is stale | Repaired, then extended to the shared packages | SJL-2 |
 | J11 | `THIRD_PARTY_NOTICES.md` | Names only Yantra JS | Notices for every shared library's provenance and for the tables Broiler.JS embeds (section 9) | SJL-2 onward |
+
+*(Corrected 2026-10-19, at SJL-12.1, by
+[JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)
+decision D28.)* Row J6's need cell read: "Extended to the Broiler.VM consumer. MOD-M2-3, MOD-M2-4 and MOD-M2-5 are
+cross-referenced as the Broiler.JS half of SJL-12." The cross-references were made on 2026-10-12, and they met
+roadmap section 11's SJL-12 cell for Broiler.JS. What they say of each item:
+- **MOD-M2-3 is not part of SJL-12.** It removes Storage's `Ast` dependency and resolves the foundation cycle, and
+  no SJL-12.5 item touches either. It stays open, and its cross-reference in `Modernization.md` is corrected in the
+  same way at SJL-12.1.
+- **MOD-M2-4 is SJL-12.5's item 4**, the parser's `Runtime` reference, and it closes at SJL-12.5.
+- **MOD-M2-5 is superseded in part.** SJL-12.1's contract supersedes its boundary specification, and SJL-13 to
+  SJL-15 supersede its priced extraction plan.
 
 ### 2.4 Component repositories
 
