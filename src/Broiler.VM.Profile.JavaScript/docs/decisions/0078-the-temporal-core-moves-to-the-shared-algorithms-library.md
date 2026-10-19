@@ -823,6 +823,13 @@ it, the answer is a `RangeError`.** Taken by the owner on 2026-10-19, under the 
   next version, which carries the decision. This family takes the library as `0.1.0-preview.6`, which answers the
   durations above, as this family's code did before its cut-over; until then the durations stand. It is not a
   correction in decision D11's sense: no host exception escapes there.
+  *(Note, 2026-10-19, later. The shared stream's next version, `0.1.0-preview.7`, was published that day from
+  Broiler.JS `5ddee404`, and this family moves to it in the change that carries this note
+  ([JSC-317](../roadmap.corrections.md#jsc-317)), so the policy change is made: `a.since(b, {largestUnit: "day",
+  smallestUnit: "hour"})` above, `P1DT16H` on `0.1.0-preview.6`, is a `RangeError` here, the library's `OutOfRange`
+  mapped as every status of the core is, and the slice compiler's check
+  `temporal/t1/a-day-span-a-zone-skips-is-a-range-error` holds it. The bullet above read the durations as standing
+  "until then", and is left as written.)*
 - In Broiler.JS the answer stays a `RangeError`, as before its cut-over, and only its message moves, to "result is
   outside the representable range". Its changelog lists the decision with its policy changes.
 - The reasons:
@@ -839,7 +846,8 @@ cases listed above, each a correction of Broiler.JS; X2's lists and the table ca
 
 **Not this section's:** the merge of Broiler.JS's change; this family's pin, which moves to corpus revision 26 after
 it; the shared stream's next version, and this family's move to it; and SJL-10.6's evidence. The settling condition
-below is not yet met.
+below is not yet met. *(Note, 2026-10-19, later: the shared stream's next version is `0.1.0-preview.7`, and this
+family moves to it with decision D12 in [JSC-317](../roadmap.corrections.md#jsc-317).)*
 
 ## Settling condition
 

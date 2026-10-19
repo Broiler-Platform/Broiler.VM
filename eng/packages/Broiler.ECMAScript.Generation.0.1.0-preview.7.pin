@@ -1,0 +1,44 @@
+# broiler-shared-package pin 1
+#
+# One package of the committed, hash-pinned feed (decision SJL-D-4 (c); milestone SJL-2.7): a shared
+# JavaScript library package whose home is the Broiler.JS repository, retained here byte for byte so
+# that a restore needs no other repository's folder and no network for it. NuGet.config's package
+# source mapping sends the Broiler.ECMAScript prefix to this directory and to nuget.org; the lock
+# file of a project that references it records `content-hash`, and rule I1 holds that hash to this
+# pin and to the allow-list.
+#
+# HOW IT WAS TAKEN. The package exactly as the Broiler.JS repository's publish-shared workflow pushed
+# it to nuget.org on 2026-10-19 (run 39312237448, its artifact shared-packages, whose digest GitHub
+# records as sha256:9d5dc3befeed1a361e53d65ce6af19eff1dea3cb16f9ff0aba1640e2828eaf46 and the zip as
+# downloaded has), packed from `upstream-commit` and tagged ecmascript-v0.1.0-preview.7; the nuspec's
+# repository element records the same commit, which rule I7 reads. nuget.org serves the same package
+# with its repository signature (.signature.p7s) added: the package downloaded from nuget.org, with
+# that entry taken out, is this file byte for byte. NuGet's content hash of a signed package leaves the
+# signature out, so a restore from either source records `content-hash`, the base64 SHA-512 of this
+# file's bytes. `sha256` is over the same bytes.
+#
+# (Revised 2026-10-19, when 0.1.0-preview.7 replaced 0.1.0-preview.6 with the shared stream's version,
+# for decision D12 of Broiler.VM's JSD-0078, which changes the algorithms package alone. The preview.6
+# pin's identity lines read:
+#   content-hash biqxx/Pc1ff9wveO9QaWoOq1ORMof8VQMjFrqOdF1H1qLwofRUgDmzOKxy0JsYa8Iv18Q4tNCPJ+694xk4Vdng==
+#   sha256 ff148e00d4cc974b29a20edb5d2172ecbaca9b3d13f5026788d656eb75f52339
+#   upstream-commit fc829f8a507295185527e4175e70d74e15630fd1)
+#
+# WHAT IT IS. The time data home's generator (milestone SJL-8.2; Broiler.VM's JSD-0076), namespace
+# Broiler.ECMAScript.Generation.Time, unchanged since 0.1.0-preview.5: no file under
+# Broiler.ECMAScript/Broiler.ECMAScript.Generation changes between Broiler.JS a04cd44, which
+# published 0.1.0-preview.5, and `upstream-commit`. It moves to 0.1.0-preview.7 with the shared
+# stream, whose packages are packed and published at one version (Broiler.JS eng/pack.ps1). Admitted
+# TEST-ONLY for Broiler.VM.Architecture.Tests since SJL-8.5: rules N29 to N32 regenerate the time zone
+# and calendar tables with it from this repository's pins, and rule I4 holds the data versions it
+# declares to those pins (decision SJL-D-6 (c): "the generator reaches each engine's tests as a
+# pinned, test-only package, and never a product closure"). No release may ship it
+# (eng/verify-feed.ps1). It carries no table and no pin file. It is on nuget.org since 2026-10-19.
+
+id Broiler.ECMAScript.Generation
+version 0.1.0-preview.7
+file Broiler.ECMAScript.Generation.0.1.0-preview.7.nupkg
+content-hash 3ucWjca/GOOwHEiEUlJQ9a3i7Qz5NazSIq4IQF5x/WHWxueA07170X51nb06kVKcb72tziBPY1Nkz+EGv1w2cA==
+sha256 bfd87a1857e1ab9f43d3694cf7ac2ba38b2d7a023a0392313feab2bd2d920f46
+upstream Broiler-Platform/broiler.js
+upstream-commit 5ddee4044c0be685e07b6da326af2e22acbb912e
