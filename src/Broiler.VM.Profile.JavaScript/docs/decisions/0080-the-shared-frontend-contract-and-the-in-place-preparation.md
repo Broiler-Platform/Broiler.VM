@@ -19,7 +19,9 @@
 - **Corrections are listed before any run.** Broiler.JS has two, J1 and J2 (decision D21), and its rule also
   admits a compile crash the preparation resolves, as a correction its changelog names. This family has the template
   corrections of decision D15. No other change either engine makes at SJL-12 moves an input between accepted and
-  refused.
+  refused by the whole compile. At the parser alone, Broiler.JS's rule also admits an input that the parser's
+  `for`-loop desugaring refused and that the compile still refuses after, because the desugaring moves to the
+  compiler (its part C's class D; decision D22).
 - **The diagnostic registry stays at revision 18** (decision D13). The mapping records every code a later revision
   must split, and SJL-13 mints the new numbers.
 
@@ -168,7 +170,8 @@ and SJL-17)". **SJL-12 applies none of it.**
   contract, the catalogue and the corpus.
 
 Roadmap section 5's range is corrected in place to leave SJL-12 out, with a dated note that quotes it and records
-this reading. The note also records that section 11 names no verdict JSD for SJL-13, though SJL-13.1 files one. The
+this reading. The note also records that section 11 names no verdict JSD for SJL-13, though SJL-13.1 files one.
+SJL-1.6's range of the area milestones that add their vectors before their shared code is corrected likewise. The
 ledger's entry for SJL-12's start states that SJL-12 cannot exit before SJL-3 does.
 
 ## The contract (SJL-12.1)
@@ -446,7 +449,7 @@ change the rules judge.
   - 2206, for undeclared private names and for `arguments` in field initialisers;
   - 2402, for duplicate import-attribute keys;
   - 2207, for `return`;
-  - 2104, for `await` and `using`;
+  - 2104, for `await`, `using` and a logical assignment to a target that is neither a name nor a property;
   - 2203, for destructuring without an initialiser;
   - 2101, from the binder, for `super`, `return`, `new.target` and regular-expression patterns.
 - **SJL-13 mints the new numbers** under JSD-0009.
@@ -797,12 +800,14 @@ reads six, and SJL-12.5 item 4's dispositions follow decision D20.
    `JsCompiler.Requests` runs through `CompilationStack` (decision D16). The slice path is untouched but for the
    iterative template scan (SJL-D-13 (a); decision D15).
 5. **Broiler.JS's preparation, SJL-12.5, has six items**, in the order of decision D26:
-   - explicit options (decision D19);
-   - a counter per parse;
+   - an architecture test with a witness (decision D25);
    - a token per scanner;
+   - a counter per parse;
+   - explicit options (decision D19);
    - no `Runtime` reference (decision D20);
-   - the `for`-loop pass (decision D22);
-   - an architecture test with a witness (decision D25).
+   - the `for`-loop pass (decision D22).
+
+   The first three land in one pull request.
 
    Its corrections are J1 and J2 (decision D21).
 6. **No registry revision at SJL-12** (decision D13). The mapping records the split candidates, and SJL-13 mints
@@ -834,8 +839,12 @@ on that bundle.
 ## Correction entries
 
 None in this profile's plan documents at this record. The JSC entry SJL-12.6 files corrects `roadmap.backends.md`'s
-JSB-1 text (decision D14). The programme's milestone, its two area designs, roadmap section 5 and governance row J6
-carry dated notes beside the text they correct, each quoting it.
+JSB-1 text (decision D14). These programme documents carry dated notes beside the text they correct, each quoting
+it:
+- SJL-12's milestone file and its two area designs;
+- roadmap section 5 (decision D1) and section 10's SJL-13 row (decision D16);
+- governance row J6 (decision D28);
+- SJL-1's milestone file, at SJL-1.6 (decision D1).
 
 ## What this record does not decide
 

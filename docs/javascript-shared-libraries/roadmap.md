@@ -493,7 +493,7 @@ Broiler.VM rules are in its register. `SL` rules are in the shared libraries' ow
 | SJL-10 | (none) | (none beyond I5) | (none) |
 | SJL-11 | (none) | N18 vacuity guard re-pointed; N10 baseline (the matcher's public types leave Format) | (none) |
 | SJL-12 | (none) | (none: in-place changes keep N12, N19) | (none) |
-| SJL-13 | (none) | N5 to N9 over the registry mapping; N12, N19 remarks for code that moved | Frontend determinism (SL9) |
+| SJL-13 | (none) | N5 to N9 over the registry mapping; N12, N19 remarks for code that moved; N19's textual pattern widened to catch a public entry point that parses off `CompilationStack` *(revised 2026-10-19, at SJL-12.1, by [JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md) decision D16, which routes `JsCompiler.Requests` through `CompilationStack` at SJL-12.6 and leaves the pattern's widening to SJL-13; the cell read "N5 to N9 over the registry mapping; N12, N19 remarks for code that moved")* | Frontend determinism (SL9) |
 | SJL-14 | (none) | (none: Broiler.JS only) | (none) |
 | SJL-15 | (none) | (none: the slice path is rebuilt, not retired, so N16 stands, `SJL-D-13`) | (none) |
 | SJL-16 | (none) | Every rule whose remarks the end state made stale | (none) |
