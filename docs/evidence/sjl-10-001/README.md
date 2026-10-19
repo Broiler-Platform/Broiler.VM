@@ -428,8 +428,11 @@ retained in [`after/rerun-idle/`](after/rerun-idle/), each as written, the sampl
 [`wait-and-run.log`](after/rerun-idle/wait-and-run.log), the load average and the process table when the steps started
 and when they ended ([`start-loadavg.txt`](after/rerun-idle/start-loadavg.txt),
 [`start-ps.txt`](after/rerun-idle/start-ps.txt), [`end-loadavg.txt`](after/rerun-idle/end-loadavg.txt),
-[`end-ps.txt`](after/rerun-idle/end-ps.txt)), and the samples between
-([`samples.txt.gz`](after/rerun-idle/samples.txt.gz)).
+[`end-ps.txt`](after/rerun-idle/end-ps.txt)), the samples between
+([`samples.txt.gz`](after/rerun-idle/samples.txt.gz)), and the collector's console output
+([`collector.log`](after/rerun-idle/collector.log)). The log's last line, "collector exit 1", is the `rerun` step's
+own code: the step exits 1 when any row's two re-runs disagree, as bundle `sjl-4-001`'s step does, and here one
+bytecode row's did, which the `wall-race` step then took (section 6). It is not a failure of either step.
 
 The script waited for the machine to be otherwise idle: no process whose arguments name the other workflow's folders
 (`ci-opt`, `/home/user/js-ci` or `/home/user/vm-ci`), and a one-minute load average below 1.0, twice 30 seconds

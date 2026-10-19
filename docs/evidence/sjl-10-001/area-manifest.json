@@ -93,6 +93,7 @@
   "after/packages/manifest.txt": "5fd4e3610ee5cd1111b36487349bbe996765cb96b9c49933df4c1ba384cc6003",
   "after/packages/nuspecs.txt": "cadeb26e2ff65ff25115a56314b36906db4b2bcd0dbd12d1d6cddc0ba86f0a74",
   "after/packages/pack.log": "579fe7f818969c258d4ebdfb62139a67a14e9313021dfec5bf6dd63108995321",
+  "after/rerun-idle/collector.log": "3e3903bbc3939696ebbbf170af93bca0b5d1c16343ba22d9430e9318f54631c5",
   "after/rerun-idle/end-loadavg.txt": "41a23371e89b2be3c9e46a6b0017b783fc5b248ccddd9fa87e30166d2301b224",
   "after/rerun-idle/end-ps.txt": "ffb97adb454141ce17ae57eb4ae598cd46a04f88e1a6baa68228e6db160f7767",
   "after/rerun-idle/samples.txt.gz": "c079dcb5dd791075a73fadfdae1517ff1b95e141f08c8369fc4397354591af44",
