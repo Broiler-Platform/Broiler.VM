@@ -62,13 +62,23 @@
 # and every job of this workflow and of ci.yml succeeded on that head. eng/gate-tested-merge.py
 # holds each condition and its reason, logs the runs it relied on, and lets the run go ahead in full
 # whenever it cannot decide. On a pull request and on a button it does not run at all.
+#
+# FOR THE SAME REASON A PULL REQUEST STARTS THIS WORKFLOW AND ci.yml ONLY WHEN IT IS INTO MAIN, SINCE
+# 2026-10-19, so the first line's "every pull request" is every pull request into main; all 152 this
+# repository has had by that date were. The gate reads the check runs on the merged head, and a pull
+# request's run tests the head merged into its base. Into main, that base was an earlier main, which
+# the head descends from whenever the gate skips, so the run tested the head's own tree. Into another
+# branch, it would have tested the head merged with that branch, and once a pull request has merged
+# its check runs no longer say which pull request they came from, so the gate could not tell.
 
 name: broiler-vm
 
 on:
   push:
     branches: [main]
+  # Into main only: the paragraph above says why.
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

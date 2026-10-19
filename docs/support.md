@@ -135,7 +135,9 @@ every one. When a push to `main` is a merge that brings in nothing its pull requ
 already hold, that head descends from the `main` it was merged into, and every job of the lane and of
 `ci.yml` passed on it, a gate job says so, names the runs it relied on, and the rest of the push run
 is skipped; ADR 0001's revision of that date states the conditions. A direct push, a squash and a
-merge of an out-of-date branch still run in full. Nothing in the table above moves.
+merge of an out-of-date branch still run in full. From the same date "every pull request" is every
+pull request into `main`, which every one this repository has had so far was, because only such a
+run is known to have tested the tree that lands. Nothing in the table above moves.
 
 **That moves no row above, and the reason is the one distinction this table rests on.** A support
 claim is made on a *retained collection*: a bundle in `docs/evidence/`, collected deliberately by a

@@ -15,10 +15,15 @@ THE PUSH IS SKIPPED ONLY WHEN ALL OF THESE HOLD, and each is checked here rather
 3. HEAD's tree is HEAD^2's tree: the merge brought nothing in that the pull request's head did not
    already hold.
 4. HEAD^1 is an ancestor of HEAD^2, read from the repository's compare API. A pull request's run
-   tests the merge of its head into the base AS IT STOOD THEN, and that merge has the head's tree
-   whenever the head descends from that base; requiring the head to descend from the base it was
-   merged into makes that true whatever base the run used, so the tree the run tested is the tree
-   that landed.
+   tests the merge of its head into its base AS IT STOOD THEN, and that merge has the head's tree
+   whenever the head descends from that base. Both workflows run on a pull request only when it is
+   into main (their pull_request triggers say `branches: [main]`), so the base of every pull
+   request run on HEAD^2 was an earlier main, which is an ancestor of HEAD^1 as long as main is
+   only ever added to; requiring HEAD^1 to be an ancestor of HEAD^2 then makes the tree each such
+   run tested the tree that landed. A run on a button tested HEAD^2's own tree. THE SCRIPT CANNOT
+   CHECK THE BASE ITSELF: a check run's pull_requests list is empty once its pull request has
+   merged, so it cannot tell a run of a pull request into main from one into another branch, whose
+   merge would have had that branch's commits in it. The triggers' branch filter is what holds it.
 5. Every check run on HEAD^2 is complete and green: each job named in REQUIRED below has a run
    that succeeded, and every other check run there succeeded or was skipped. A job added to
    either workflow and not yet named below is still held by the second half; a job renamed or

@@ -52,7 +52,9 @@
 # SINCE 2026-10-19 broiler-vm.yml does not enter this file on a push to main whose tree its pull
 # request's runs already tested in full, which its own header and its job `gate` explain. That is a
 # decision about WHETHER a tree is run again, made on the tree, and not about which checks run on
-# it: a tree this lane runs at all, it runs whole.
+# it: a tree this lane runs at all, it runs whole. From the same date broiler-vm.yml enters it on a
+# pull request only when that pull request is into main, so "every push and pull request" above is
+# read with both of these.
 #
 # WHY THERE ARE TWO CALLERS AT ALL, measured rather than assumed. On 2026-09-03 the whole matrix
 # took 26m56s, and the breakdown says where it went: the six publish jobs spent 759, 882, 917,

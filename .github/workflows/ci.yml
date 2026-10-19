@@ -17,13 +17,19 @@
 # THE EVENT IS NOT DECORATION. A workflow entered through workflow_call sees its caller's event, so
 # a publish started by a tag push arrives as a push; the gate runs only on a push to main, and the
 # script checks the event and the ref again, so a publish is never skipped and always validates.
+# For the same rule a pull request starts this workflow only when it is into main, since the same
+# date, as broiler-vm.yml's header explains: the gate relies on this workflow's check on the merged
+# head, and only for a pull request into main does its ancestry test show that the run tested that
+# head's own tree.
 
 name: CI
 
 on:
   push:
     branches: [main]
+  # Into main only: the header says why.
   pull_request:
+    branches: [main]
   workflow_dispatch:
   workflow_call:
     inputs:
