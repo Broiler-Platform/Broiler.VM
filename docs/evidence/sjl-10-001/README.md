@@ -215,6 +215,30 @@ The pin is at revision 25 (`src/tests/vectors/pins/vectors.pin`) since `389f3e0`
 `458c10a` (SJL-8.6). Its archive is taken twice, byte-identical, and its 57 files are hashed from an extracted copy.
 The same method, applied to revision 23's commit, gives that pin's two digests and its count exactly.
 
+*(Note, 2026-10-19, at SJL-10.5, when the pin moved to revision 26.)* **The pin is at revision 26 since `d625402`**,
+at Broiler.JS `00b65dd0`, its default branch after Broiler-Platform/Broiler.JS#1054 merged. Revision 26 retires every
+divergence field of the Temporal area: row R6's six, which SJL-10.4 corrected (section 4), and Broiler.JS's 473, which
+its SJL-10.5 corrects. Its six Temporal files are revision 24's byte for byte, and no expected value changed.
+- **The archive** was taken twice, byte-identical, and its 57 files hashed from an extracted copy. The same method,
+  applied to revision 25's commit, `66b77088`, gives that pin's two digests and its count exactly.
+- **The run.** The collector's `vectors` step built the conformance root in Release and ran it on the committed pin,
+  from the clean tree of `d625402`, whose product sources are `e42cd5d`'s, the default branch after SJL-10.4
+  (Broiler-Platform/Broiler.VM#151). Its build log is not retained:
+  [`vectors/build-conformance.log`](vectors/build-conformance.log) is revision 25's run's.
+
+| Run | Taken | Result | Files |
+|---|---|---|---|
+| Revision 26 | At `d625402`, clean, on the committed pin, from 12:33Z on 2026-10-19 | 103,312 vectors: 103,312 match, 0 classified divergences and 0 unclassified differences, and no divergence field that no longer holds | [`run-revision-26.log`](vectors/run-revision-26.log), [`run-revision-26.tsv.gz`](vectors/run-revision-26.tsv.gz) |
+| Its negative control | The same, with `--mutate text/trim/0001` | 103,311 match, 0 classified divergences, and 1 unclassified difference, the mutated vector | [`run-negative-control-revision-26.log`](vectors/run-negative-control-revision-26.log), [`run-negative-control-revision-26.tsv.gz`](vectors/run-negative-control-revision-26.tsv.gz) |
+
+**This profile matches every vector of revision 26.** The only rows of class `divergence` in the report are the number
+area's four, `numbers/literal/0082`, `0084`, `0088` and `0090`. Their `divergence.broiler-js` fields are Broiler.JS's,
+item SJL-14's, and do not concern this family, and each matches here. Every vector has the expected value and the
+rendering it had in section 4's run on revision 25 at the cut-over
+([`vectors/cut-over-revision-25.tsv.gz`](vectors/cut-over-revision-25.tsv.gz)), line for line. 479 rows differ only in
+their class, `normative` here where it was `divergence`, and, for row R6's six, in a verdict that no longer adds
+"divergence no longer holds".
+
 [`area-manifest.json`](area-manifest.json) lists the digest of every file of `vectors/` with the others.
 
 ## 4. The cut-over (SJL-10.4)
