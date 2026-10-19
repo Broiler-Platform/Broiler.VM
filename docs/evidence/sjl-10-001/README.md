@@ -20,9 +20,10 @@ differences, and `syntax/` for the grammar, the calendars and serialization.
 [`decision-rule-area.md`](decision-rule-area.md) are MET as written, with no revision** (sections 6 to 8).
 - **Part A:** the after run, [39261526513](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39261526513),
   against the base's. Every changed test262 verdict in either form is a race between the wall clock and another
-  allowance, which class C4 (c') admits. Each row's re-runs at both commits, alone on the idle local machine, agree,
-  but one's, whose (e) runs at ten times the wall clock give the same exhaustion on fuel at both commits. No verdict
-  moved between a pass, a failure and an exhaustion, and no row is a correction, so row R6 explains none.
+  allowance, which class C4 (c') admits. Each row's re-runs at both commits, alone on the local machine with no other
+  build, test or run on it (section 5), agree, but one's, whose (e) runs at ten times the wall clock give the same
+  exhaustion on fuel at both commits. No verdict moved between a pass, a failure and an exhaustion, and no row is a
+  correction, so row R6 explains none.
 - **Part B:** each of the six named checks prints the base's line, and no file under `src/tests/temporal/` differs
   between `99c9c9f` and `96876432`.
 - **Part C:** every wide twin completes at its base figure with its answer, and is refused one below, in both forms.
@@ -30,6 +31,10 @@ differences, and `syntax/` for the grammar, the calendars and serialization.
   forms and the polyfill dataset meet the area rule, and every root is published and run in three modes. The
   engine-level vectors at corpus revision 26 all match at the after commit (section 10).
 - **Nothing is accepted.** Review is deferred, and SJL-10 may not meet its gate before SJL-6 and SJL-8 meet theirs.
+
+*(Revised 2026-10-19, at SJL-10.6, after review, when section 5 recorded that the wait's condition did not hold
+throughout the re-runs. Part A's bullet read "Each row's re-runs at both commits, alone on the idle local machine, agree,
+but one's".)*
 
 *(Revised 2026-10-19, at SJL-10.6, when part A's re-runs were taken. The state read: "**State, 2026-10-19, at
 SJL-10.6: the after arm's local steps are taken at `96876432` (sections 5 to 13), and part A's hosted after run is not
@@ -397,7 +402,7 @@ Two steps are this bundle's own:
 | Commit | `96876432`, the default branch after Broiler-Platform/Broiler.VM#153, a clean checkout ([`after/identity.txt`](after/identity.txt)). Its product sources are those of `e42cd5d`, the merge of Broiler-Platform/Broiler.VM#151, which carries SJL-10.4's cut-over (`66b0877`, `a13a41c`, `f14abb7` and `9b7eead`, which JSD-0079 records in `c0355f4`) with the committed feed pinned to `0.1.0-preview.6` as published in `8b6cc96` (JSC-315). Against `e42cd5d` the identity lists 5 files outside the documents, all of them `d625402`'s: this family's pin of the shared corpus at revision 26, its two archives (revision 26's added, revision 25's removed) and its README, and the notices row that names the pin. None is product code. It is the after commit by bundle `sjl-8-001` section 5's precedent: the default branch after the other engine's cut-over merged |
 | Rule | [`decision-rule-area.md`](decision-rule-area.md), with the same SHA-256 at the base and after (both identities) |
 | Collector | [`collect-area.py`](collect-area.py) as this change commits it, run from this repository's checkout against a clean detached checkout of `96876432` and, for the re-runs, one of `99c9c9f` |
-| Taken | Locally, on 2026-10-19: `after-identity`, `after-twins` and `after-datasets` from 13:50Z; `vectors` from 14:01Z; `simplification` at 14:15Z; `closures` from 14:17Z; `rules` from 14:53Z; `packages` from 14:55Z. Another workflow's builds and tests shared the machine throughout, and none of these steps is timed. Part A's after run by the workflow, on 2026-10-19 from 13:35Z to 13:43Z; then the three steps that read its artifact, `after-import`, `after-complete` and `compare`, locally at 15:18Z, from the zip as downloaded at 14:25Z, while the other workflow's work went on, and none of them is timed either. `rerun` and `wall-race` from 16:26:59Z to 16:31:32Z, with no other build, test or run on the machine (below) |
+| Taken | Locally, on 2026-10-19: `after-identity`, `after-twins` and `after-datasets` from 13:50Z; `vectors` from 14:01Z; `simplification` at 14:15Z; `closures` from 14:17Z; `rules` from 14:53Z; `packages` from 14:55Z. Another workflow's builds and tests shared the machine throughout, and so did Broiler.JS's SJL-10.6 local steps, from 13:45Z to its `test262` and `compare` steps at 15:18Z (the "Taken" row of its bundle's section 5); none of these steps is timed. Part A's after run by the workflow, on 2026-10-19 from 13:35Z to 13:43Z; then the three steps that read its artifact, `after-import`, `after-complete` and `compare`, locally at 15:18Z, from the zip as downloaded at 14:25Z, while the other workflow's work went on, and none of them is timed either. `rerun` and `wall-race` from 16:26:59Z to 16:31:32Z, with no other build, test or run on the machine (below) |
 | Machine | the base's: `linux-x64`, four logical processors, .NET SDK 10.0.401, the native backend `x86-64-sysv` |
 | Base side of the re-runs | a clean checkout of the base commit `99c9c9f`, its conformance root built there in Release with a package folder of its own (below); only `rerun` and `wall-race` read it |
 
@@ -407,7 +412,9 @@ A's after run, by the workflow, and the five steps that read it, `after-import`,
 The "Taken" row's last sentence read "`rerun` and `wall-race`, which run the (c') rows again with the machine otherwise
 idle, are not yet taken (section 6)"; the "Base side of the re-runs" row read "to be a clean checkout of the base commit
 `99c9c9f`, its conformance root built there in Release, when the re-runs are taken. No step taken so far reads it"; and
-the "Collector" row ended "against a clean detached checkout of `96876432`".)*
+the "Collector" row ended "against a clean detached checkout of `96876432`".)* *(Revised again 2026-10-19, at SJL-10.6,
+after review. The "Taken" row's sentence on what shared the machine read "Another workflow's builds and tests shared the
+machine throughout, and none of these steps is timed.")*
 
 **The re-runs' machine.** Both conformance roots were built in Release before the re-runs, from their clean checkouts:
 `96876432`'s at 15:25Z, and `99c9c9f`'s at 15:27Z. The base checkout's locked restore refused the machine's shared
@@ -415,13 +422,41 @@ package folder, which holds a `Broiler.ECMAScript.Algorithms` `0.1.0-preview.5` 
 base's lock files pin (NU1403), so it was built with an empty package folder of its own: the restore took the committed
 feed's package, at the content hash the lock files pin, and the build gave no warning.
 
-`rerun` and `wall-race` then waited for the machine to be otherwise idle: no process of the other workflow, and a
-one-minute load average below 1.0, twice 30 seconds apart. That held at 16:26:29Z; `dotnet build-server shutdown`
+`rerun` and `wall-race` were started by a wait script, not by the collector. The script and every file it wrote are
+retained in [`after/rerun-idle/`](after/rerun-idle/), each as written, the samples gzip-compressed:
+[`wait-and-run.sh`](after/rerun-idle/wait-and-run.sh), its log
+[`wait-and-run.log`](after/rerun-idle/wait-and-run.log), the load average and the process table when the steps started
+and when they ended ([`start-loadavg.txt`](after/rerun-idle/start-loadavg.txt),
+[`start-ps.txt`](after/rerun-idle/start-ps.txt), [`end-loadavg.txt`](after/rerun-idle/end-loadavg.txt),
+[`end-ps.txt`](after/rerun-idle/end-ps.txt)), and the samples between
+([`samples.txt.gz`](after/rerun-idle/samples.txt.gz)).
+
+The script waited for the machine to be otherwise idle: no process whose arguments name the other workflow's folders
+(`ci-opt`, `/home/user/js-ci` or `/home/user/vm-ci`), and a one-minute load average below 1.0, twice 30 seconds
+apart. That held at 16:26:29Z; `dotnet build-server shutdown` was run, the same wait held again, and the steps started
+at 16:26:59Z with a load average of 0.25. The script then sampled the process table every five seconds until the steps
+ended at 16:31:32Z, each sample holding the fourteen processes with the highest `%CPU` and, marked `OTHER`, every
+process the wait's test matches.
+
+**The wait's condition held when the steps started, but not throughout them.** The other workflow is the CI
+optimisation, whose agents run under the same Claude Code process as this bundle's steps: its commands source the same
+shell snapshot as the shells that process, `claude` (process 98 in `start-ps.txt`), started for these steps, among them
+process 12124, which ran the wait script. Two samples show its commands, both during the bytecode pair's re-run at
+`99c9c9f`, from 16:26:59Z to 16:28:46Z: at 16:27:35Z, a `git commit` of a merge and a `git push` to Broiler.JS; at
+16:28:35Z, a `python3` edit of a merge's commit message, a `git commit` and a `git push` to Broiler.VM. **No other
+build, test or run was on the machine.** Besides the steps and those commands, the samples show a short script under
+the same Claude Code process reading a log of the agent that ran these steps, at the first sample; two MSBuild nodes,
+idle throughout; and a compiler server an earlier build had left, idle, until it exited at 16:30Z.
+
+*(Revised 2026-10-19, at SJL-10.6, after review, when the wait script and its files were retained. The paragraphs
+above read: "`rerun` and `wall-race` then waited for the machine to be otherwise idle: no process of the other workflow,
+and a one-minute load average below 1.0, twice 30 seconds apart. That held at 16:26:29Z; `dotnet build-server shutdown`
 was run, the same wait held again, and the steps started at 16:26:59Z with a load average of 0.25. The process table
 was sampled every five seconds until they ended at 16:31:32Z. **No other build, test or run was on the machine.**
 Besides the steps themselves, the samples show only another session's `git` commands in its own checkouts, among them
 commits and pushes at 16:27Z and 16:28Z, and a short script of that session reading a file at the first sample; two
-MSBuild nodes, idle throughout; and a compiler server an earlier build had left, idle, until it exited at 16:30Z.
+MSBuild nodes, idle throughout; and a compiler server an earlier build had left, idle, until it exited at 16:30Z." The
+commands were the CI optimisation's, under the same process as these steps, not another session's.)*
 
 ## 6. Test262, both forms (rule part A)
 
@@ -517,8 +552,11 @@ its `wall-race` step. Both were taken on 2026-10-19, with no other build, test o
 [`after/rerun-wide-native.tsv`](after/rerun-wide-native.tsv), with their logs and every report). For each pair, one
 process of the conformance root ran the rows' paths at `99c9c9f`, then one at `96876432`, each running its tests one
 after another, under the wide manifest, the pair's form and the part's fuel and wall-clock allowances: the bytecode pair
-from 16:26:59Z to 16:30:35Z, the native pair from 16:30:35Z to 16:31:00Z. **Seventeen rows' re-runs agree**, so C4 (c')
-admits them. The two re-runs of each pair, compared with `--same-form`, differ in row 13 alone in the bytecode pair and
+from 16:26:59Z to 16:30:35Z, the native pair from 16:30:35Z to 16:31:00Z. The rule asks for each run to be "one process
+of the conformance root over the row's path"; these re-runs read that, as bundles `sjl-5-001` to `sjl-8-001` did, as one
+process at each commit over all of the pair's (c') rows' paths, which runs their tests one at a time, and (e)'s runs
+below are one process over row 13's path, as written. *(This sentence was added 2026-10-19, at SJL-10.6, after
+review.)* **Seventeen rows' re-runs agree**, so C4 (c') admits them. The two re-runs of each pair, compared with `--same-form`, differ in row 13 alone in the bytecode pair and
 in no variant in the native pair.
 
 **Class (e)** ([`after/wall-race-wide-bytecode.tsv`](after/wall-race-wide-bytecode.tsv), with its log and both
@@ -533,10 +571,12 @@ same; (e) does not read it, because row 14's re-runs agree. The native pair has 
 **What the re-runs show, and what they do not.** On this machine the wall clock decided most rows at both commits:
 sixteen rows' re-runs agree on `Exhausted/WallClock`, and row 1's on `Exhausted/NestedLoadFanOut`. The rule admits a
 (c') row whose re-runs agree, whatever they agree on, and takes (e) only for a row whose re-runs differ, so no other row
-was run again. Those re-runs show that each of those rows, alone under the part's allowances, runs out of the wall clock
-at both commits, neither commit reaching another allowance first. They do not show which allowance either commit would
-reach first with more time. Row 13's (e) runs show it for one row: with ten times the wall clock, it runs out of fuel
-at both commits.
+was run again. Those re-runs show that each of those rows, run one at a time under the part's allowances, runs out of the
+wall clock at both commits, neither commit reaching another allowance first. They do not show which allowance either
+commit would reach first with more time. Row 13's (e) runs show it for one row: with ten times the wall clock, it runs
+out of fuel at both commits. *(Revised 2026-10-19, at SJL-10.6, after review. The third sentence read "Those re-runs
+show that each of those rows, alone under the part's allowances, runs out of the wall clock at both commits, neither
+commit reaching another allowance first.")*
 
 **What the rows say.** Every row is one of the long-running tests this family's earlier bundles saw race between the
 wall clock and another allowance: the after comparisons of bundles `sjl-6-001` to `sjl-8-001` list each path, as a (c')
