@@ -2054,3 +2054,46 @@ claim moves.**
 
 **What is not edited.** Every revision above stands as written, including the 2026-09-03 list of jobs
 this one completes.
+
+### 2026-10-19 - a push to main runs again only what its pull request did not
+
+**What the record said.** Three passages say the component lane runs on every push. The
+`.github/workflows/` row of the file table says `broiler-vm.yml` "calls it on every push and pull
+request"; the revision of 2026-09-03 above says `broiler-vm.yml` "runs on every push and pull request
+over `linux-x64` and `linux-arm64`"; and the revision of 2026-09-05 weighs the Octane workload against
+"two cells of that on every push". Exclusion EX-06's revision of 2026-08-29 states the limit that came
+with the lanes: "a commit pushed to a branch nobody opens a pull request for is examined by nothing
+until the next one".
+
+**What changes.** `broiler-vm.yml` and `ci.yml` keep their push trigger and each gains a first job,
+`gate`, which runs only on a push to `main` and runs `eng/gate-tested-merge.py`. The rest of the run is
+skipped only when all of these hold: the event is a push and the ref is `main`, which inside `ci.yml`
+is what keeps a publish from being skipped, because a workflow entered through `workflow_call` sees
+its caller's event; the commit has two parents; its tree is its second parent's; its first parent is
+an ancestor of its second, so the tree a pull request's run tested, whatever base that run merged
+into, is the tree that landed; and every check run on the second parent succeeded or was skipped, with
+every job of both workflows among the successes. A commit with one parent is never skipped. The gate
+names the runs it relied on in its log, and a gate that cannot decide lets the run go ahead in full.
+It reads check runs, so its job asks for `checks: read`, and `publish.yml`'s `validate` job grants the
+same, because a called workflow may not ask for more than its caller does.
+
+**Why.** No step of either workflow reads the event or the ref, so for a merge that changes nothing
+the push run replayed its pull request's runs: about thirty runner-minutes for every merged pull
+request, and nothing learnt. Every merge into `main` from 2026-10-12 to 2026-10-18 brought in nothing
+its pull request's head did not already hold. The trigger stays because it is the only check of a
+commit that reaches `main` any other way: from 2026-09-18 to 2026-10-11 it went red thirteen times on
+commits that no green pull request run stood behind - direct pushes, and merges of a branch that was
+out of date or red, the merge of pull request 113 among them.
+
+**What is now true, and what is not.** Every push to `main` still starts both workflows, and every tree
+that lands on `main` has been run whole by one of them: by its pull request's runs when the gate skips,
+and by the push run otherwise. When the gate skips, what `main`'s own commit carries is the gate's
+check and a log naming the runs it relied on, not the jobs' checks. A commit pushed to a branch nobody
+opens a pull request for is still examined by nothing until the next one, as EX-06's revision says.
+The required status checks of `main` are a repository setting, recorded in bundle VM-6-001's EX-102
+by a note of this date; no job of `ci.yml` is among them, so a pull request can merge with
+`windows-latest / Release` red or still running, and the gate then does not skip, because it requires
+that job's success. **No RID claim moves.**
+
+**What is not edited.** Every revision above stands as written, and so does the file table's row,
+read with this revision.

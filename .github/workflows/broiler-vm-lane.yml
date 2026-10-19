@@ -49,6 +49,11 @@
 # four is a DEPTH - the sessions run at whatever the count is, the workload runs on every cell
 # whatever the selection is, and the false branch of the emulator switch still builds the head.
 #
+# SINCE 2026-10-19 broiler-vm.yml does not enter this file on a push to main whose tree its pull
+# request's runs already tested in full, which its own header and its job `gate` explain. That is a
+# decision about WHETHER a tree is run again, made on the tree, and not about which checks run on
+# it: a tree this lane runs at all, it runs whole.
+#
 # WHY THERE ARE TWO CALLERS AT ALL, measured rather than assumed. On 2026-09-03 the whole matrix
 # took 26m56s, and the breakdown says where it went: the six publish jobs spent 759, 882, 917,
 # 1041, 1051 and 1405 seconds, of which the FUZZ AND MUTATE STEP was 88 to 91 per cent in every

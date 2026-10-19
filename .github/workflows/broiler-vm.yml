@@ -48,6 +48,21 @@
 # selection and one emulator switch whose false branch still BUILDS the head, so there is no input
 # by which one caller can skip a check the other runs.
 
+# A PUSH TO MAIN WHOSE TREE ITS PULL REQUEST ALREADY TESTED RUNS ONLY THE GATE, SINCE 2026-10-19.
+#
+# A pull request's run and the push run that follows its merge were the same computation twice
+# whenever the merge changed nothing: no step of this lane or of ci.yml reads the event or the ref,
+# so the push replayed the pull request at a cost of about thirty runner-minutes and told nobody
+# anything new. The push trigger stays, because it is the only check of a commit that reaches main
+# without a pull request - a direct push, a squash, or a merge whose branch was out of date - and
+# from 2026-09-18 to 2026-10-11 it went red thirteen times on commits no green pull request run
+# stood behind.
+# So the job `gate` below runs first on a push to main and skips the rest only when the commit is a
+# merge, its tree is its pull request head's, that head descends from the main it was merged into,
+# and every job of this workflow and of ci.yml succeeded on that head. eng/gate-tested-merge.py
+# holds each condition and its reason, logs the runs it relied on, and lets the run go ahead in full
+# whenever it cannot decide. On a pull request and on a button it does not run at all.
+
 name: broiler-vm
 
 on:
@@ -66,8 +81,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate:
+    name: gate (quick lane)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The check runs on the pull request's head are what the decision reads.
+      checks: read
+    outputs:
+      skip: ${{ steps.decide.outputs.skip }}
+    steps:
+      # Two levels of history are the commit and both its parents, and the script is the one file
+      # the decision needs from the tree.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          sparse-checkout: eng/gate-tested-merge.py
+          sparse-checkout-cone-mode: false
+
+      - name: Decide whether a pull request's runs already tested this tree
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 eng/gate-tested-merge.py
+
   quick:
     name: quick
+    needs: gate
+    # The gate is skipped on a pull request and on a button, and a gate that fails decides nothing,
+    # so the lane runs unless the gate said in so many words that this tree was tested.
+    if: ${{ !cancelled() && needs.gate.outputs.skip != 'true' }}
     uses: ./.github/workflows/broiler-vm-lane.yml
     with:
       # One cell per architecture. Both Linux, so the only variable between them is the

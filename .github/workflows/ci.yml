@@ -11,6 +11,12 @@
 # asking for the whole answer, so both still run both legs: a release is built and tested on both
 # operating systems before it is pushed. The job keeps its name, so the check a pull request shows
 # is still `windows-latest / Release`.
+#
+# A PUSH TO MAIN WHOSE TREE ITS PULL REQUEST ALREADY TESTED RUNS ONLY THE GATE, SINCE 2026-10-19,
+# by the rule broiler-vm.yml's header states and eng/gate-tested-merge.py holds. HERE THE TEST OF
+# THE EVENT IS NOT DECORATION. A workflow entered through workflow_call sees its caller's event, so
+# a publish started by a tag push arrives as a push; the gate runs only on a push to main, and the
+# script checks the event and the ref again, so a publish is never skipped and always validates.
 
 name: CI
 
@@ -36,8 +42,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate:
+    name: gate (CI)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The check runs on the pull request's head are what the decision reads. A caller must grant
+      # this too, which is why publish.yml's `validate` job does, though the gate never runs there.
+      checks: read
+    outputs:
+      skip: ${{ steps.decide.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          sparse-checkout: eng/gate-tested-merge.py
+          sparse-checkout-cone-mode: false
+
+      - name: Decide whether a pull request's runs already tested this tree
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 eng/gate-tested-merge.py
+
   build:
     name: ${{ matrix.os }} / Release
+    needs: gate
+    # Skipped on a pull request, a button and a publish, the gate decides nothing there, and a gate
+    # that fails decides nothing either: the build runs unless the gate said this tree was tested.
+    if: ${{ !cancelled() && needs.gate.outputs.skip != 'true' }}
     runs-on: ${{ matrix.os }}
     defaults:
       run:
