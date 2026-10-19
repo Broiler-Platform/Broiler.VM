@@ -44,6 +44,11 @@ its runs.
   - a Broiler.JS correction, the milestone's listed ones and those found beyond them, each by row;
   - the one place found where the pinned text and its polyfill disagree, where the text rules (row D8, decision D7);
   - code no input reaches, deleted with its file.
+    *(Note, 2026-10-19, at Broiler.JS's SJL-10.5. Row D12's day window and its zoned branch are reached, by a zone's
+    skipped day, and the owner's decisions D11 and D12 answer a `RangeError` there. And Broiler.JS's records say that
+    much of the code no input reaches was deleted from files that remain, not with its file.
+    [JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)
+    records both. The item above is left as written.)*
 - **This family has one correction**, row R6: three constructors that end the invocation on a year above 2^53. It is
   made at SJL-10.4 (decision D9).
 
@@ -236,14 +241,15 @@ records it. The changes, each building, with the tests it touches green:
 base's product sources and at the cut-over's.
 
 *(Note, 2026-10-19, at Broiler.JS's SJL-10.5.)* **Row D12's zoned branch is reached too**, by the same skipped day:
-the day span whose sign NudgeToZonedTime asserts is zero whenever a time unit is rounded under a date largest unit back
-from Pacific/Apia's 2011-12-31T16:15. This family answered durations from outside the text's domain there before the
+the day span whose sign NudgeToZonedTime asserts is zero when a time unit is rounded under a date largest unit from
+Pacific/Apia's 2011-12-31T16:15 back to an earlier instant of the same day, such as 2011-12-31T00:00, where the
+difference has no date part. This family answered durations from outside the text's domain there before the
 cut-over, and answers the same on `0.1.0-preview.6`, so no answer moved and "no other answer moves" above holds. The
 owner's decision D12 of 2026-10-19
 ([JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md))
 makes the answer a `RangeError`, which this family takes with the shared stream's next version. Broiler.JS's bundle
-`sjl-10-001` retains this family's answers there at `14072b0` and at `83fef1a`, in `cutover/d12-facts.md`; this bundle
-retains none.
+`sjl-10-001` retains this family's answers there at `14072b0` and at `83fef1a`, in `cutover/d12-facts.md`, observed in
+Broiler-Platform/Broiler.JS#1054 at `c33933f9`, not yet merged; this bundle retains none.
 
 **Checked at the product tree of `f14abb7`.** `9b7eead` and the record change no product file. The files are in
 [`cutover/`](cutover/) and [`vectors/`](vectors/):
