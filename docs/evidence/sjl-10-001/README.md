@@ -235,6 +235,16 @@ records it. The changes, each building, with the tests it touches green:
 [`cutover/corrections.txt`](cutover/corrections.txt) gives both checks' lines, and each construction run alone at the
 base's product sources and at the cut-over's.
 
+*(Note, 2026-10-19, at Broiler.JS's SJL-10.5.)* **Row D12's zoned branch is reached too**, by the same skipped day:
+the day span whose sign NudgeToZonedTime asserts is zero whenever a time unit is rounded under a date largest unit back
+from Pacific/Apia's 2011-12-31T16:15. This family answered durations from outside the text's domain there before the
+cut-over, and answers the same on `0.1.0-preview.6`, so no answer moved and "no other answer moves" above holds. The
+owner's decision D12 of 2026-10-19
+([JSD-0078](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md))
+makes the answer a `RangeError`, which this family takes with the shared stream's next version. Broiler.JS's bundle
+`sjl-10-001` retains this family's answers there at `14072b0` and at `83fef1a`, in `cutover/d12-facts.md`; this bundle
+retains none.
+
 **Checked at the product tree of `f14abb7`.** `9b7eead` and the record change no product file. The files are in
 [`cutover/`](cutover/) and [`vectors/`](vectors/):
 - **Part B's reference datasets.**
