@@ -13590,9 +13590,10 @@ restore from nuget.org alone records the pins' content hashes. Between `fc829f8a
 manifest moves those two fingerprints; its adapter guide and the shared changelog record the decision; and the
 version suffix moves to `preview.7`. Nothing else there changes, and no file of `Broiler.ECMAScript.Generation`,
 which moves with the stream's version, its code `0.1.0-preview.5`'s. Each package differs from its
-`0.1.0-preview.6` besides in the version and the commit its nuspec and assembly record, the documentation of
-`RoundRelativeDuration`'s statuses, and the notices file every package of the stream carries, Broiler.JS's own,
-which gained a paragraph on Broiler.JS's deleted Hebrew calendar code; no third-party component is added. Rule
+`0.1.0-preview.6` besides in the version and the commit its nuspec and assembly record, and in the notices file
+every package of the stream carries, Broiler.JS's own, which gained a paragraph on Broiler.JS's deleted Hebrew
+calendar code; the algorithms package differs also in the documentation of `RoundRelativeDuration`'s statuses, and
+the generator's documentation does not change. No third-party component is added. Rule
 I1 admits one version of a package, so the allow-list, the feed, the three lock files, rule I1's witness and
 `Directory.Packages.props` move together, and the `0.1.0-preview.6` packages and their pins leave the feed.
 

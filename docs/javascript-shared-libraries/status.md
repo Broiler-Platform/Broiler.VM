@@ -1454,7 +1454,8 @@ theirs, and so not before SJL-3 meets SJL-3's (update rule 10), so SJL-10 stays 
 **2026-10-19, later again: this family moves to `0.1.0-preview.7`, and takes decision D12.** On the owner's approval of
 that day, Broiler.JS's publish-shared workflow published `Broiler.ECMAScript.Algorithms` and
 `Broiler.ECMAScript.Generation` `0.1.0-preview.7` to nuget.org from Broiler.JS `5ddee404` (run 39312237448), the head of
-Broiler-Platform/Broiler.JS#1057, open at this record (observed), and tagged them `ecmascript-v0.1.0-preview.7`. Under
+Broiler-Platform/Broiler.JS#1057, merged into Broiler.JS's default branch as `1f91b8f1` (observed), whose second parent
+is `5ddee404` and whose tree is `5ddee404`'s, and tagged them `ecmascript-v0.1.0-preview.7`. Under
 `Broiler.ECMAScript/`, its change from `0.1.0-preview.6` is decision D12 (`163d43aa`) with its tests and records, and
 the version suffix; the generator's code does not change. The committed feed holds both packages as published, in
 place of `0.1.0-preview.6`'s, and the pins, the allow-list, the lock files, rule I1's witness and the notices rows
