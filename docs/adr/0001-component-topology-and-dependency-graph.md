@@ -2026,8 +2026,9 @@ goes to.
 inside a job whose median was about eleven minutes and which was the critical path of every pull
 request; 245 of that cell's 651 rows run only on an x86-64 machine. Beside `publish` rather than inside
 it, the expected median critical path is about six and a half minutes. That is a projection from the
-lane's step timings and not a measurement, and on the faster of the two runner classes the hosted pool
-hands out it is two to three minutes. The quick lane pays two more jobs and about two more
+lane's step timings and not a measurement. On the faster of the two runner classes the hosted pool
+hands out, the saving is only two to three minutes, because there the `linux-arm64` cell's `publish`
+job becomes the longest, at about five minutes. The quick lane pays two more jobs and about two more
 runner-minutes per run, for a second setup and a second publish of one root, and the full lane gains
 six jobs and no time worth stating. The count of rows not run is pinned because a row that cannot run
 reports itself and the process still exits zero: a row that cannot find its retained data is one of
