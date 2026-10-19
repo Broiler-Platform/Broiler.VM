@@ -15,14 +15,14 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// </remarks>
 internal static class CrossProfileChecks
 {
-    internal static (string Name, bool Passed, string Detail)[] Run() =>
-    [
-        ANeighboursMaximumDoesNotReach(),
-        ANeighboursAdoptedDefaultDoes(),
-        AForeignPayloadIsNotProjected(),
-        RegistrationOrderDoesNotChangeTheCatalogIdentity(),
-        TheDescriptorIsAdmittedAndItsRefusalsAreNamed(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return ANeighboursMaximumDoesNotReach();
+        yield return ANeighboursAdoptedDefaultDoes();
+        yield return AForeignPayloadIsNotProjected();
+        yield return RegistrationOrderDoesNotChangeTheCatalogIdentity();
+        yield return TheDescriptorIsAdmittedAndItsRefusalsAreNamed();
+    }
 
     /// <summary>
     /// A neighbour's hard maximum does not reach this profile's artifacts.

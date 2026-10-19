@@ -33,31 +33,31 @@ internal static class FinallyMatrixChecks
     private const string Caller = "js-slice-compiler://finally";
 
     /// <summary>Runs every row of the matrix.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run() =>
-    [
-        Language("a return runs the finally it leaves through", ReturnRow, "enter,finally,1"),
-        Language("a break runs the finally it leaves through", BreakRow, "enter,finally,after"),
-        Language("a continue runs the finally it leaves through", ContinueRow, "0,f0,1,f1,done"),
-        Language("a throw runs the finally it leaves through", ThrowRow, "enter,finally,caught"),
-        Language("a finally that returns replaces the return", ReplacesReturnRow, "outer"),
-        Language("a finally that returns replaces the throw", ReplacesThrowRow, "replaced"),
-        Language("nested handlers unwind innermost first", NestedRow, "inner,outer,caught"),
-        Language("a finally that throws on the way out runs once", ThrowingFinallyRow, "fin,caught t"),
-        Language(
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return Language("a return runs the finally it leaves through", ReturnRow, "enter,finally,1");
+        yield return Language("a break runs the finally it leaves through", BreakRow, "enter,finally,after");
+        yield return Language("a continue runs the finally it leaves through", ContinueRow, "0,f0,1,f1,done");
+        yield return Language("a throw runs the finally it leaves through", ThrowRow, "enter,finally,caught");
+        yield return Language("a finally that returns replaces the return", ReplacesReturnRow, "outer");
+        yield return Language("a finally that returns replaces the throw", ReplacesThrowRow, "replaced");
+        yield return Language("nested handlers unwind innermost first", NestedRow, "inner,outer,caught");
+        yield return Language("a finally that throws on the way out runs once", ThrowingFinallyRow, "fin,caught t");
+        yield return Language(
             "a throw on the way out runs each finally it passes once",
             ThrowingInnerFinallyRow,
-            "in,out,caught t"),
-        Language(
+            "in,out,caught t");
+        yield return Language(
             "a disposer that throws after a passed finally runs it once",
             ThrowingDisposerRow,
-            "fin,a,caught a"),
-        Language(
+            "fin,a,caught a");
+        yield return Language(
             "a catch does not see the iterator close of the jump that left it",
             ThrowingCloseRow,
-            "ret,caught c"),
-        AnUncaughtThrowIsATypedPayload(),
-        AHostFailureCrossesTheProfilesFrames(),
-    ];
+            "ret,caught c");
+        yield return AnUncaughtThrowIsATypedPayload();
+        yield return AHostFailureCrossesTheProfilesFrames();
+    }
 
     private const string ReturnRow =
         "var log = [];" +

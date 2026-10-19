@@ -65,47 +65,88 @@ internal static class ValueFormChecks
     private const int Window = JsValueLayout.DebtThreshold + JsValueLayout.StraightLineRun + 64;
 
     /// <summary>Runs every value-form row.</summary>
-    internal static List<(string Name, bool Passed, string Detail)> Run()
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
     {
         Program.InitializeNativeMapping();
-        var rows = new List<(string, bool, string)>();
 
-        rows.AddRange(TheHeaderFormByte());
-        rows.AddRange(TheValueFormIsTheWideManifestsAlone());
+        foreach (var produced in TheHeaderFormByte())
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in TheValueFormIsTheWideManifestsAlone())
+        {
+            yield return produced;
+        }
 
         foreach (var abi in JsX64Abi.Rows)
         {
-            rows.Add(EveryUnitIsEmittedAndReEmitted(abi, JsOutputForm.Value));
-            rows.Add(EveryUnitIsEmittedAndReEmitted(abi, JsOutputForm.ValueFlat));
-            rows.AddRange(TheScanHoldsEachFormToItsOwnPartition(abi));
-            rows.AddRange(TheScanNamesTheClauseAPayloadBreaks(abi));
+            yield return EveryUnitIsEmittedAndReEmitted(abi, JsOutputForm.Value);
+            yield return EveryUnitIsEmittedAndReEmitted(abi, JsOutputForm.ValueFlat);
+
+            foreach (var produced in TheScanHoldsEachFormToItsOwnPartition(abi))
+            {
+                yield return produced;
+            }
+
+            foreach (var produced in TheScanNamesTheClauseAPayloadBreaks(abi))
+            {
+                yield return produced;
+            }
         }
 
-        rows.Add(TheDifferentialProgramsPlaceEveryInlineKind(JsX64Abi.Host));
-        rows.Add(EveryReachedCallIsADirectCallSite(JsX64Abi.Host));
-        rows.Add(SuspendingUnitsKeepBindingsResident(JsX64Abi.Host));
+        yield return TheDifferentialProgramsPlaceEveryInlineKind(JsX64Abi.Host);
+        yield return EveryReachedCallIsADirectCallSite(JsX64Abi.Host);
+        yield return SuspendingUnitsKeepBindingsResident(JsX64Abi.Host);
 
         if (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture !=
             System.Runtime.InteropServices.Architecture.X64)
         {
-            rows.Add((
+            yield return (
                 "not-run/value/execution",
                 false,
                 "this machine is not x86-64, so no value-form emitted code was entered and nothing the " +
-                "agreement, stress, differential and parity rows assert is claimed"));
+                "agreement, stress, differential and parity rows assert is claimed");
 
-            return rows;
+            yield break;
         }
 
-        rows.Add(AFlippedResidencyBitIsRefused(JsX64Abi.Host));
-        rows.AddRange(TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.Value, handleStress: false));
-        rows.AddRange(TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.Value, handleStress: true));
-        rows.AddRange(TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.ValueFlat, handleStress: false));
-        rows.AddRange(TheDirectCallsAnswerAsBytecode(JsX64Abi.Host));
-        rows.AddRange(TheFrameCodecAnswersAsBytecode(JsX64Abi.Host));
-        rows.AddRange(EveryInlineTemplateAnswersAsItsArm(JsX64Abi.Host));
-        rows.AddRange(TheTwinsGiveOneVerdictAtEveryCeiling(JsX64Abi.Host));
-        return rows;
+        yield return AFlippedResidencyBitIsRefused(JsX64Abi.Host);
+
+        foreach (var produced in TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.Value, handleStress: false))
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.Value, handleStress: true))
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.ValueFlat, handleStress: false))
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in TheDirectCallsAnswerAsBytecode(JsX64Abi.Host))
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in TheFrameCodecAnswersAsBytecode(JsX64Abi.Host))
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in EveryInlineTemplateAnswersAsItsArm(JsX64Abi.Host))
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in TheTwinsGiveOneVerdictAtEveryCeiling(JsX64Abi.Host))
+        {
+            yield return produced;
+        }
     }
 
     /// <summary>The form byte: written for the value form alone, and read back only when it is one this build names.</summary>
@@ -1105,19 +1146,18 @@ internal static class ValueFormChecks
     /// Each fuel-parity twin completes under the same total in all three forms, and gives the same verdict
     /// in all three at every ceiling within a settlement window of that total and at a sweep below it.
     /// </summary>
-    private static List<(string, bool, string)> TheTwinsGiveOneVerdictAtEveryCeiling(JsX64Abi abi)
+    private static IEnumerable<(string, bool, string)> TheTwinsGiveOneVerdictAtEveryCeiling(JsX64Abi abi)
     {
-        var rows = new List<(string, bool, string)>();
         var directory = TwinDirectory();
 
         if (directory is null)
         {
-            rows.Add((
+            yield return (
                 "value/fuel-parity/the-twins-are-found",
                 false,
-                "no src/tests/forms/wide above this process's directory or the current one holds the twins"));
+                "no src/tests/forms/wide above this process's directory or the current one holds the twins");
 
-            return rows;
+            yield break;
         }
 
         foreach (var path in Directory.GetFiles(directory, "*.small.js").Order(StringComparer.Ordinal))
@@ -1136,7 +1176,7 @@ internal static class ValueFormChecks
 
             if (artifacts.Any(static artifact => artifact.Length == 0))
             {
-                rows.Add(("value/fuel-parity/" + twin, false, "the twin did not compile in all three forms"));
+                yield return ("value/fuel-parity/" + twin, false, "the twin did not compile in all three forms");
                 continue;
             }
 
@@ -1148,10 +1188,10 @@ internal static class ValueFormChecks
 
             if (!totals.All(answer => answer.Completed && answer.Fuel == total && SameAnswer(totals[0], answer)))
             {
-                rows.Add((
+                yield return (
                     "value/fuel-parity/" + twin,
                     false,
-                    "the totals differ: " + string.Join("; ", totals.Select(static answer => answer.Render(withFuel: true)))));
+                    "the totals differ: " + string.Join("; ", totals.Select(static answer => answer.Render(withFuel: true))));
 
                 continue;
             }
@@ -1194,16 +1234,14 @@ internal static class ValueFormChecks
                 }
             }
 
-            rows.Add((
+            yield return (
                 "value/fuel-parity/" + twin,
                 disagreement is null && completing == 5,
                 disagreement ??
                     "total " + total + " in all three forms; one verdict at each of " + ceilings.Count +
                     " ceilings, every one from " + (total > Window ? total - Window : 1) + " to " + (total + 4) +
-                    " and " + (Sweep - 1) + " below"));
+                    " and " + (Sweep - 1) + " below");
         }
-
-        return rows;
     }
 
     /// <summary>The folder the fuel-parity twins are in, found above this process or the current directory.</summary>

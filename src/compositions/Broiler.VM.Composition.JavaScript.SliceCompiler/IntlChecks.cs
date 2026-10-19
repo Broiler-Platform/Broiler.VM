@@ -32,42 +32,42 @@ internal static class IntlChecks
     private const int Chunk = 12_000;
 
     /// <summary>Every internationalization check.</summary>
-    internal static (string Name, bool Passed, string Detail)[] Run() =>
-    [
-        ADoorHandedNoDataBuildsNoIntl(),
-        ADoorNamingIntlWithoutDataIsRefused(),
-        GermanPhonebookAndSearchOrder(),
-        GermanAndEnglishOrderingsMatchIcu(),
-        GermanAndEnglishNumbersMatchIcu(),
-        GermanAndEnglishDatesMatchIcu(),
-        LocalesMatchIcu(),
-        PluralsMatchIcu(),
-        BreakTestFile("grapheme", "GraphemeBreakTest.txt", 700),
-        BreakTestFile("word", "WordBreakTest.txt", 1800),
-        BreakTestFile("sentence", "SentenceBreakTest.txt", 500),
-        ListsMatchIcu(),
-        RelativeTimesMatchIcu(),
-        SegmentsMatchIcu(),
-        DurationsMatchIcu(),
-        DisplayNamesMatchIcu(),
-        TimeZonesMatchIcu(),
-        ADoorHandedNoDataBuildsNoTemporal(),
-        TemporalWithoutIntlAndBigIntIsRefused(),
-        DataWithoutTheTzReleaseReadsItsZones(),
-        TemporalMatchesTheReferencePolyfill(),
-        IntlOverTemporalMatchesTheReferencePolyfill(),
-        CalendarsMatchTheReferencePolyfill(),
-        CalendarConversionsMatchIcu4x(),
-        CalendarFormatsMatchTheReferencePolyfill(),
-        ZoneNamesMatchTheReferencePolyfill(),
-        CanonicalizationReplacesAliases(),
-        AVariantsOptionIsLoweredByAsciiRules(),
-        ADurationDesignatorIsUpperCasedByAsciiRules(),
-        AYearPast2To53IsARangeError(),
-        ADayWindowAZoneSkipsIsARangeError(),
-        ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
-        ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return ADoorHandedNoDataBuildsNoIntl();
+        yield return ADoorNamingIntlWithoutDataIsRefused();
+        yield return GermanPhonebookAndSearchOrder();
+        yield return GermanAndEnglishOrderingsMatchIcu();
+        yield return GermanAndEnglishNumbersMatchIcu();
+        yield return GermanAndEnglishDatesMatchIcu();
+        yield return LocalesMatchIcu();
+        yield return PluralsMatchIcu();
+        yield return BreakTestFile("grapheme", "GraphemeBreakTest.txt", 700);
+        yield return BreakTestFile("word", "WordBreakTest.txt", 1800);
+        yield return BreakTestFile("sentence", "SentenceBreakTest.txt", 500);
+        yield return ListsMatchIcu();
+        yield return RelativeTimesMatchIcu();
+        yield return SegmentsMatchIcu();
+        yield return DurationsMatchIcu();
+        yield return DisplayNamesMatchIcu();
+        yield return TimeZonesMatchIcu();
+        yield return ADoorHandedNoDataBuildsNoTemporal();
+        yield return TemporalWithoutIntlAndBigIntIsRefused();
+        yield return DataWithoutTheTzReleaseReadsItsZones();
+        yield return TemporalMatchesTheReferencePolyfill();
+        yield return IntlOverTemporalMatchesTheReferencePolyfill();
+        yield return CalendarsMatchTheReferencePolyfill();
+        yield return CalendarConversionsMatchIcu4x();
+        yield return CalendarFormatsMatchTheReferencePolyfill();
+        yield return ZoneNamesMatchTheReferencePolyfill();
+        yield return CanonicalizationReplacesAliases();
+        yield return AVariantsOptionIsLoweredByAsciiRules();
+        yield return ADurationDesignatorIsUpperCasedByAsciiRules();
+        yield return AYearPast2To53IsARangeError();
+        yield return ADayWindowAZoneSkipsIsARangeError();
+        yield return ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }");
+        yield return ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }");
+    }
 
     /// <summary>A composition handed no data builds no <c>Intl</c>, whatever it admits.</summary>
     private static (string, bool, string) ADoorHandedNoDataBuildsNoIntl()

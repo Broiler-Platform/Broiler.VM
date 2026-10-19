@@ -58,15 +58,15 @@ internal static class IsolationChecks
     private const int ConcurrentReads = 64;
 
     /// <summary>Runs every isolation check.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run() =>
-    [
-        TwoRuntimesMintOneNameAndObserveNothingOfEachOther(),
-        OneShareableHandleIsInstantiatedByTwoRuntimes(),
-        TwoRuntimesReadOneHandleConcurrently(),
-        AHandleCarriesNothingTheRunsThatUsedItChanged(),
-        ThreeRealmsOfOneProcessDrawThreeSequences(),
-        TwoProcessesDrawTwoSequences(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return TwoRuntimesMintOneNameAndObserveNothingOfEachOther();
+        yield return OneShareableHandleIsInstantiatedByTwoRuntimes();
+        yield return TwoRuntimesReadOneHandleConcurrently();
+        yield return AHandleCarriesNothingTheRunsThatUsedItChanged();
+        yield return ThreeRealmsOfOneProcessDrawThreeSequences();
+        yield return TwoProcessesDrawTwoSequences();
+    }
 
     /// <summary>
     /// Two runtimes in one process mint the same property names and read back only their own.

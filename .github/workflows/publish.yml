@@ -59,6 +59,12 @@ jobs:
   validate:
     name: Validate and pack
     needs: version
+    # ci.yml's gate job asks for `checks: read`, and a called workflow may not ask for more than its
+    # caller grants, so the grant is made here. The gate runs only on a push to main and never under
+    # a publish; what this job runs is ci.yml's build on both operating systems.
+    permissions:
+      contents: read
+      checks: read
     uses: ./.github/workflows/ci.yml
     with:
       package-version: ${{ needs.version.outputs.version }}

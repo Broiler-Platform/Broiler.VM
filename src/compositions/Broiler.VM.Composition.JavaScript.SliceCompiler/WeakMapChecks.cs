@@ -30,12 +30,12 @@ internal static class WeakMapChecks
     private const string Caller = "js-slice-compiler://weak-map";
 
     /// <summary>Every weak-map check.</summary>
-    internal static (string Name, bool Passed, string Detail)[] Run() =>
-    [
-        ADeepChainIsCollectedInOneWalk(),
-        AValueDiesWithItsKey(),
-        AValueOfACollectedMapIsDroppedFromItsKey(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return ADeepChainIsCollectedInOneWalk();
+        yield return AValueDiesWithItsKey();
+        yield return AValueOfACollectedMapIsDroppedFromItsKey();
+    }
 
     /// <summary>
     /// The chain test262's <c>regress-1507322-deep-weakmap</c> builds: 99,999 keys, each the value

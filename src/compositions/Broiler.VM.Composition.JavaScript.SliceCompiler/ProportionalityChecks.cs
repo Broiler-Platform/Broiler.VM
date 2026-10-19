@@ -142,16 +142,12 @@ internal static class ProportionalityChecks
     ];
 
     /// <summary>Runs one check per shipped family.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run()
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
     {
-        var checks = new System.Collections.Generic.List<(string, bool, string)>(Families.Length);
-
         foreach (var family in Families)
         {
-            checks.Add(Measure(family));
+            yield return Measure(family);
         }
-
-        return checks;
     }
 
     /// <summary>Measures one family at every magnitude and judges the series.</summary>

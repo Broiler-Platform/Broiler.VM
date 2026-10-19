@@ -41,17 +41,44 @@
 # Everything else this lane runs is unabridged: the whole suite, the graph and drift rules, the
 # pack and feed-consumer checks, every composition root published as Native AOT and run, the
 # conformance suite scored in shards against its floor, the corpus-integrity mutation, the mobile
-# head compiled, and both third-party workloads run out of the published image on both cells. No
+# head compiled, both third-party workloads run out of the published image on both cells, and -
+# in a job of their own on both cells since 2026-10-19 - every row of the slice compiler's checks,
+# with the number of rows a cell cannot run pinned per runtime identifier. No
 # check is disabled anywhere - the lane definition takes a matrix, an iteration count, a benchmark
 # selection and one emulator switch whose false branch still BUILDS the head, so there is no input
 # by which one caller can skip a check the other runs.
+
+# A PUSH TO MAIN WHOSE TREE ITS PULL REQUEST ALREADY TESTED RUNS ONLY THE GATE, SINCE 2026-10-19.
+#
+# A pull request's run and the push run that follows its merge were the same computation twice
+# whenever the merge changed nothing: no step of this lane or of ci.yml reads the event or the ref,
+# so the push replayed the pull request at a cost of about thirty runner-minutes and told nobody
+# anything new. The push trigger stays, because it is the only check of a commit that reaches main
+# without a pull request - a direct push, a squash, or a merge whose branch was out of date - and
+# from 2026-09-18 to 2026-10-11 it went red fourteen times on commits no green pull request run
+# stood behind: twelve direct pushes and the merges of pull requests 113 and 114.
+# So the job `gate` below runs first on a push to main and skips the rest only when the commit is a
+# merge, its tree is its pull request head's, that head descends from the main it was merged into,
+# and every job of this workflow and of ci.yml succeeded on that head. eng/gate-tested-merge.py
+# holds each condition and its reason, logs the runs it relied on, and lets the run go ahead in full
+# whenever it cannot decide. On a pull request and on a button it does not run at all.
+#
+# FOR THE SAME REASON A PULL REQUEST STARTS THIS WORKFLOW AND ci.yml ONLY WHEN IT IS INTO MAIN, SINCE
+# 2026-10-19, so the first line's "every pull request" is every pull request into main; all 152 this
+# repository has had by that date were. The gate reads the check runs on the merged head, and a pull
+# request's run tests the head merged into its base. Into main, that base was an earlier main, which
+# the head descends from whenever the gate skips, so the run tested the head's own tree. Into another
+# branch, it would have tested the head merged with that branch, and once a pull request has merged
+# its check runs no longer say which pull request they came from, so the gate could not tell.
 
 name: broiler-vm
 
 on:
   push:
     branches: [main]
+  # Into main only: the paragraph above says why.
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -64,8 +91,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate:
+    name: gate (quick lane)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The check runs on the pull request's head are what the decision reads.
+      checks: read
+    outputs:
+      skip: ${{ steps.decide.outputs.skip }}
+    steps:
+      # Two levels of history are the commit and both its parents, and the script is the one file
+      # the decision needs from the tree.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          sparse-checkout: eng/gate-tested-merge.py
+          sparse-checkout-cone-mode: false
+
+      - name: Decide whether a pull request's runs already tested this tree
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 eng/gate-tested-merge.py
+
   quick:
     name: quick
+    needs: gate
+    # The gate is skipped on a pull request and on a button, and a gate that fails decides nothing,
+    # so the lane runs unless the gate said in so many words that this tree was tested.
+    if: ${{ !cancelled() && needs.gate.outputs.skip != 'true' }}
     uses: ./.github/workflows/broiler-vm-lane.yml
     with:
       # One cell per architecture. Both Linux, so the only variable between them is the

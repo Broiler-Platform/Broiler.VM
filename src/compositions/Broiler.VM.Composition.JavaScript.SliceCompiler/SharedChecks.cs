@@ -25,19 +25,19 @@ internal static class SharedChecks
     private const string Prelude = "var i32 = new Int32Array(new SharedArrayBuffer(16));\n";
 
     /// <summary>Every shared-memory check.</summary>
-    internal static (string Name, bool Passed, string Detail)[] Run() =>
-    [
-        AnAgentThatMayNotBlockRefusesWait(),
-        AnAgentThatMayBlockWaitsAndTimesOut(),
-        AWaitWithNoTimeoutEndsWithItsAllowance(),
-        AnAsynchronousWaiterSettlesOnlyAtAHostDrain(),
-        ANotifyWakesAnAsynchronousWaiterAtTheNextDrain(),
-        TheSharedSurfaceAloneIsRefused(),
-        ADeclinedSharedSurfaceBuildsNeitherGlobal(),
-        TwoInstancesShareOneBlock(),
-        OnlyAFixedLengthSharedBufferIsHandedOut(),
-        ARealmThatDeclinedTheSharedSurfaceAdoptsNoBlock(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return AnAgentThatMayNotBlockRefusesWait();
+        yield return AnAgentThatMayBlockWaitsAndTimesOut();
+        yield return AWaitWithNoTimeoutEndsWithItsAllowance();
+        yield return AnAsynchronousWaiterSettlesOnlyAtAHostDrain();
+        yield return ANotifyWakesAnAsynchronousWaiterAtTheNextDrain();
+        yield return TheSharedSurfaceAloneIsRefused();
+        yield return ADeclinedSharedSurfaceBuildsNeitherGlobal();
+        yield return TwoInstancesShareOneBlock();
+        yield return OnlyAFixedLengthSharedBufferIsHandedOut();
+        yield return ARealmThatDeclinedTheSharedSurfaceAdoptsNoBlock();
+    }
 
     /// <summary>A host that does not say its agent may block is an event loop: <c>wait</c> refuses.</summary>
     private static (string, bool, string) AnAgentThatMayNotBlockRefusesWait() =>

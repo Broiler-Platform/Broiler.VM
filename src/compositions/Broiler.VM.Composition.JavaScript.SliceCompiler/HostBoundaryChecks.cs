@@ -50,16 +50,16 @@ internal static class HostBoundaryChecks
     private const string PrintsOnce = "print('reached'); 'done';";
 
     /// <summary>Runs every host-boundary check.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run() =>
-    [
-        ASignatureMismatchIsRefusedAtCreation(),
-        AKindMismatchIsRefusedAtCreation(),
-        AVersionMismatchLeavesAnOptionalImportUnbound(),
-        AnUnboundOptionalImportIsExercised(),
-        ACancellationCarryingTheOperationsTokenIsACancellation(),
-        AnExhaustedMeterAtTheCatchIsAResourceExhaustion(),
-        AnyOtherFailureIsAHostFailureNamingTheCapability(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return ASignatureMismatchIsRefusedAtCreation();
+        yield return AKindMismatchIsRefusedAtCreation();
+        yield return AVersionMismatchLeavesAnOptionalImportUnbound();
+        yield return AnUnboundOptionalImportIsExercised();
+        yield return ACancellationCarryingTheOperationsTokenIsACancellation();
+        yield return AnExhaustedMeterAtTheCatchIsAResourceExhaustion();
+        yield return AnyOtherFailureIsAHostFailureNamingTheCapability();
+    }
 
     /// <summary>
     /// A registration whose signature differs is refused when the runtime is created.

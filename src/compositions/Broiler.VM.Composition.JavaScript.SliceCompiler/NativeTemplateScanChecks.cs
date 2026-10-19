@@ -56,45 +56,59 @@ internal static class NativeTemplateScanChecks
     internal const string FourZeroBytes = "a-native-payload-of-four-zero-bytes";
 
     /// <summary>Runs both directions.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run()
+    internal static System.Collections.Generic.IEnumerable<(string Name, bool Passed, string Detail)> Run()
     {
         var windows = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
         var systemV = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
         var arm64 = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
 
-        var rows = new System.Collections.Generic.List<(string, bool, string)>
-        {
-            Closure(JsNativeBackends.X64Windows, JsNativeArchitecture.X64Windows, 16, windows),
-            Closure(JsNativeBackends.X64SystemV, JsNativeArchitecture.X64SystemV, 16, systemV),
-            Closure(JsNativeBackends.Arm64, JsNativeArchitecture.Arm64, 4, arm64),
-            // ONE TEMPLATE IS OUT OF REACH OF EVERY PROGRAM THE MANIFEST ADMITS, and it is named
-            // here rather than quietly tolerated. `movq xmm0, rax` is emitted for one bytecode
-            // instruction - a return of `undefined` - and no admitted source reaches it: the
-            // numeric manifest refuses a function body that can fall off its end, and a program
-            // body returns its completion slot with an ordinary return whatever that slot holds.
-            // The template stays in the table because the backend has one and would emit it for an
-            // artifact carrying that instruction, which a producer other than this front end can
-            // write; what it does not have is a program in this lane that reaches it.
-            Coverage(
-                JsNativeBackends.X64Windows,
-                JsNativeArchitecture.X64Windows,
-                windows,
-                "movq xmm0, rax"),
-            Coverage(
-                JsNativeBackends.X64SystemV,
-                JsNativeArchitecture.X64SystemV,
-                systemV,
-                "movq xmm0, rax"),
-            Coverage(JsNativeBackends.Arm64, JsNativeArchitecture.Arm64, arm64),
-            TheTableAgreesWithTheConventionTable(),
-        };
+        // The three closures fill the sets the three coverage rows read, so they are yielded first.
+        yield return Closure(JsNativeBackends.X64Windows, JsNativeArchitecture.X64Windows, 16, windows);
+        yield return Closure(JsNativeBackends.X64SystemV, JsNativeArchitecture.X64SystemV, 16, systemV);
+        yield return Closure(JsNativeBackends.Arm64, JsNativeArchitecture.Arm64, 4, arm64);
 
-        rows.AddRange(Refusals());
-        rows.Add(APayloadDeclaredForTheOtherConvention());
-        rows.AddRange(Mutations());
-        rows.AddRange(Verification());
-        rows.AddRange(Baseline());
-        return rows;
+        // ONE TEMPLATE IS OUT OF REACH OF EVERY PROGRAM THE MANIFEST ADMITS, and it is named
+        // here rather than quietly tolerated. `movq xmm0, rax` is emitted for one bytecode
+        // instruction - a return of `undefined` - and no admitted source reaches it: the
+        // numeric manifest refuses a function body that can fall off its end, and a program
+        // body returns its completion slot with an ordinary return whatever that slot holds.
+        // The template stays in the table because the backend has one and would emit it for an
+        // artifact carrying that instruction, which a producer other than this front end can
+        // write; what it does not have is a program in this lane that reaches it.
+        yield return Coverage(
+            JsNativeBackends.X64Windows,
+            JsNativeArchitecture.X64Windows,
+            windows,
+            "movq xmm0, rax");
+        yield return Coverage(
+            JsNativeBackends.X64SystemV,
+            JsNativeArchitecture.X64SystemV,
+            systemV,
+            "movq xmm0, rax");
+        yield return Coverage(JsNativeBackends.Arm64, JsNativeArchitecture.Arm64, arm64);
+        yield return TheTableAgreesWithTheConventionTable();
+
+        foreach (var produced in Refusals())
+        {
+            yield return produced;
+        }
+
+        yield return APayloadDeclaredForTheOtherConvention();
+
+        foreach (var produced in Mutations())
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in Verification())
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in Baseline())
+        {
+            yield return produced;
+        }
     }
 
     // ---- the baseline block partition's drift guards -------------------------------------------------
