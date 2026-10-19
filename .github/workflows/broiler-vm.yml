@@ -55,8 +55,8 @@
 # so the push replayed the pull request at a cost of about thirty runner-minutes and told nobody
 # anything new. The push trigger stays, because it is the only check of a commit that reaches main
 # without a pull request - a direct push, a squash, or a merge whose branch was out of date - and
-# from 2026-09-18 to 2026-10-11 it went red thirteen times on commits no green pull request run
-# stood behind.
+# from 2026-09-18 to 2026-10-11 it went red fourteen times on commits no green pull request run
+# stood behind: twelve direct pushes and the merges of pull requests 113 and 114.
 # So the job `gate` below runs first on a push to main and skips the rest only when the commit is a
 # merge, its tree is its pull request head's, that head descends from the main it was merged into,
 # and every job of this workflow and of ci.yml succeeded on that head. eng/gate-tested-merge.py

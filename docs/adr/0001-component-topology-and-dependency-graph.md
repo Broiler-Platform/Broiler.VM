@@ -2082,15 +2082,19 @@ same, because a called workflow may not ask for more than its caller does.
 the push run replayed its pull request's runs: about thirty runner-minutes for every merged pull
 request, and nothing learnt. Every merge into `main` from 2026-10-12 to 2026-10-18 brought in nothing
 its pull request's head did not already hold. The trigger stays because it is the only check of a
-commit that reaches `main` any other way: from 2026-09-18 to 2026-10-11 it went red thirteen times on
-commits that no green pull request run stood behind - direct pushes, and merges of a branch that was
-out of date or red, the merge of pull request 113 among them.
+commit that reaches `main` any other way: from 2026-09-18 to 2026-10-11 it went red fourteen times on
+commits that no green pull request run stood behind - twelve direct pushes, the merge of pull request
+113, whose branch was out of date, and the merge of pull request 114, whose own run was red.
 
-**What is now true, and what is not.** Every push to `main` still starts both workflows, and every tree
-that lands on `main` has been run whole by one of them: by its pull request's runs when the gate skips,
-and by the push run otherwise. When the gate skips, what `main`'s own commit carries is the gate's
-check and a log naming the runs it relied on, not the jobs' checks. A commit pushed to a branch nobody
-opens a pull request for is still examined by nothing until the next one, as EX-06's revision says.
+**What is now true, and what is not.** Every push to `main` still starts both workflows. A tree that
+lands on `main` is run whole by its pull request's runs when the gate skips, and otherwise by the push
+run, unless a later push to `main` cancels that run, as it could before this revision: both workflows
+cancel a run still going when the same ref is pushed again, so run 37614035130, the quick lane's run
+for the direct push f3b8fd5 on 2026-10-07, was cancelled when the merge of pull request 113 was pushed
+six minutes later, and that tree was never run whole. When the gate skips, what `main`'s own commit
+carries is the gate's check and a log naming the runs it relied on, not the jobs' checks. A commit
+pushed to a branch nobody opens a pull request for is still examined by nothing until the next one, as
+EX-06's revision says.
 The required status checks of `main` are a repository setting, recorded in bundle VM-6-001's EX-102
 by a note of this date; no job of `ci.yml` is among them, so a pull request can merge with
 `windows-latest / Release` red or still running, and the gate then does not skip, because it requires
