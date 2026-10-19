@@ -61,11 +61,13 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
 
 ## 2. What this bundle will hold
 
-- **`base/`**: part A's base dispatch, imported unchanged with the digest of its zip; and part D's rule run at the
-  rule commit, read and not judged.
-- **`corpus/`**: the parse corpus's base report at the corpus commit, in every sub-population, variant and form, with
-  the census; part C's three runs there, read and not judged; and the copy of the early-error catalogue part E
-  checks.
+- **`base/`**: every base run.
+  - Part A's base dispatch, imported unchanged with the digest of its zip.
+  - Part B's base report at the corpus commit, in every sub-population, variant and form, with the census.
+  - Part C's three runs at the corpus commit, read and not judged.
+  - Part D's rule run at the rule commit, read and not judged.
+- **`corpus/`**: the corpus commit's identity, its manifest's digest, and the path list and ancestry the rule's
+  three conditions read; and the copy of the early-error catalogue part E checks.
 - **`after/`**: the reports at the ordering commit and at the after commit, the after dispatch, part C's runs, part
   D's rule run, part E's checker output, and the artifact bytes of every input whose hash differs between two runs.
 - **`controls/`**: part B's control report, part C's patches K1 and K2 with their output and their reverts, and part
@@ -78,7 +80,7 @@ totals decide nothing.
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
-reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-10-001`.
+reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-8-001` and `sjl-10-001`.
 
 | ID | Status | Exclusion |
 |---|---|---|
