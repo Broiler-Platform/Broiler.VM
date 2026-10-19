@@ -293,8 +293,8 @@ pilot** (decision `SJL-D-23`). **A refusal of any later area** ends that area on
 Broiler.VM's own extraction gate (ADR 0011, G1 to G4) governs sharing between Broiler.VM profiles.
 It cannot be invoked here, because the second implementation is in another engine, not another
 profile (decision `SJL-D-8`). The programme applies **its own gate, of the same shape**, at the
-start of every area milestone (SJL-3 to SJL-15, and SJL-17). The area's first work package files the
-verdict.
+start of every area milestone (SJL-3 to SJL-11, SJL-13 to SJL-15, and SJL-17). The area's first work
+package files the verdict.
 
 | Condition | Statement |
 |---|---|
@@ -310,6 +310,18 @@ verdict.
 implementation gains a source-level pointer to the record, so the duplication stays visible.
 Broiler.VM's roadmap section 8: "A duplication with no record is the failure mode this rule exists
 to prevent."
+
+*(Revised 2026-10-19, at SJL-12.1, by
+[JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)
+decision D1. The parenthesis in this section's first paragraph read "(SJL-3 to SJL-15, and SJL-17)".)*
+- **SJL-12 is preparation, not an area milestone owing a verdict.** It writes no shared code, so X3 to X6 have no
+  subject. Its milestone file has no verdict work package, and its exit gate no X clause.
+- **The frontend area's verdict is SJL-13.1's**, which applies this gate to the library SJL-13 writes. Section 11's
+  row for SJL-13 names no verdict JSD, though SJL-13.1 files one.
+- **The ledger's update rule 10 leaves SJL-12's row out only because SJL-12 may start from SJL-0.** SJL-12 still
+  cannot exit before SJL-3 does (its milestone's "Waits on"), and the ledger's entry for SJL-12's start says so.
+- **This corrects the summary to the milestone file, and is not a gate revision**: SJL-12's milestone file never
+  named a verdict.
 
 ---
 
@@ -481,7 +493,7 @@ Broiler.VM rules are in its register. `SL` rules are in the shared libraries' ow
 | SJL-10 | (none) | (none beyond I5) | (none) |
 | SJL-11 | (none) | N18 vacuity guard re-pointed; N10 baseline (the matcher's public types leave Format) | (none) |
 | SJL-12 | (none) | (none: in-place changes keep N12, N19) | (none) |
-| SJL-13 | (none) | N5 to N9 over the registry mapping; N12, N19 remarks for code that moved | Frontend determinism (SL9) |
+| SJL-13 | (none) | N5 to N9 over the registry mapping; N12, N19 remarks for code that moved; N19's textual pattern widened to catch a public entry point that parses off `CompilationStack` *(revised 2026-10-19, at SJL-12.1, by [JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md) decision D16, which routes `JsCompiler.Requests` through `CompilationStack` at SJL-12.6 and leaves the pattern's widening to SJL-13; the cell read "N5 to N9 over the registry mapping; N12, N19 remarks for code that moved")* | Frontend determinism (SL9) |
 | SJL-14 | (none) | (none: Broiler.JS only) | (none) |
 | SJL-15 | (none) | (none: the slice path is rebuilt, not retired, so N16 stands, `SJL-D-13`) | (none) |
 | SJL-16 | (none) | Every rule whose remarks the end state made stale | (none) |
