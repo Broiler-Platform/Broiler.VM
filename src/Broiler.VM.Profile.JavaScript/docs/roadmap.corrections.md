@@ -13511,3 +13511,52 @@ nuget.org alone records the same content hashes. Rule I1's witness keeps its own
 **Authority and date.** The owner's instruction of 2026-10-18 to publish `0.1.0-preview.6`, on
 [JSD-0079](decisions/0079-the-profile-on-the-shared-temporal-core.md) section 1 and the programme's work
 package SJL-10.4. 2026-10-18.
+
+### JSC-316
+
+**Where:** the slice compiler's row `bigint/b03/cancellation-stops-a-long-formatting`,
+`BigIntChecks.CancellationStopsALongFormatting`, and the timer `BigIntChecks.RunWide` and `TryRun` carried
+for it alone. [JSD-0033](decisions/0033-the-internal-bigint-value-and-the-gated-literal.md) and bundle
+[jseal-b03-b04](../../../docs/evidence/jseal-b03-b04/README.md) are not edited.
+
+**What the plan said.** Bundle jseal-b03-b04: the row requests cancellation 40 ms into a run formatting the
+widest value, `String(1n << 1048575n)`, and passes when the run answers `Cancellation`/`Cancelled` within one
+second. The second bound is the bundle's answer to its mutation M1, a conversion through one
+base-class-library call, which the row's first form did not detect: "the row now also bounds the latency at
+one second, and then detected it (4,020 ms)".
+
+**What was true.** Both bounds are wall-clock, so the row's verdict was the runner's speed. The full lane's
+osx-x64 cell failed it on 2026-10-05 (run 37307549722) and 2026-10-12 (run 38252241298), the only failing
+row of either run: `the run answered 315653|finished after 152 ms`, then `after 143 ms`, times that include
+compiling, verifying and instantiating the program. The core answers `Cancellation` for an invocation whose
+token is cancelled when it returns, whatever the profile did, so a run answering its completion is one whose
+timer had not fired when the whole formatting finished. Widening the one-second bound changes nothing: the
+run was never cancelled.
+
+**What replaced it.** The request is placed by work done. The row builds an engine, through unsafe
+accessors, over a meter it holds that admits every charge and counts the fuel, and converts the widest value
+through the engine's own charge, the one a guest's `String(x)` reaches, so the poll that observes the request
+is the engine's. Uncancelled, the conversion answers its 315,653 digits, and no step of it may charge as much
+as half of the whole. Cancelled, on a second engine, the meter requests cancellation at the first charge that
+brings its count to half the uncancelled total, and the engine must end the conversion, without its text,
+within the profile's declared cancellation poll bound of the request. Fuel is charged identically on every
+machine, so the request lands at the same step everywhere and the verdict does not depend on the runner. The
+step rule keeps what the latency bound caught: a conversion made in one call charges its whole cost in one
+step, where a request placed by work done would otherwise land and stop a conversion that had not started.
+Measured on linux-x64 at this change: the conversion charges 25,835,222 units in 535 steps, the largest
+9,057,305 (its first division), and the request at 12,923,386 ended it at 12,923,386. Against M1, the whole
+charge in one step before one `BigInteger.ToString` call, the row fails (`25835222 in 1 steps`); with the
+engine's poll no longer reading the token, it fails (`ended it at 25835222 ... with 'its text of 315653
+digits'`).
+
+**What it does not change.** What the row asks: that a long formatting stops when cancelled. It times no
+step: what a step costs on a machine is JSD-0033 section 6's measurement, and a step's work following its
+charge is section 4's charging discipline, which the row does not test. And the row no longer runs through a
+runtime, so the core's answer `Cancellation` for a cancelled invocation is not its to judge; the contract
+tests' cancellation cases and the host-boundary row `a capability cancelling with the operation's own token
+is a cancellation` judge it.
+
+**Authority and date.** The full lane's runs 37307549722 and 38252241298, their osx-x64 jobs' logs; and
+`Broiler.VM.Composition.JavaScript.SliceCompiler --checks --verbose` on linux-x64, run before and after this
+change, every row that ran passing both times, and against the two mutations; after it, out of a Native AOT
+image published as the lane publishes it as well, where the row reports the same counts. 2026-10-19.
