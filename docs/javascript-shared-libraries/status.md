@@ -1394,9 +1394,12 @@ rule are met as written, with no revision, and this family's clauses of SJL-10 a
 - **Part A**, test262 in both forms: run [39261526513](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39261526513)
   at `96876432` against the base's at `99c9c9f`. Both forms are complete, with the base's totals figure for figure.
   Every changed verdict is a race between the wall clock and another allowance, which class C4 (c') admits. Each row's
-  re-runs at both commits, alone on the idle local machine, agree, but one's, and that row's runs with the wall clock
-  raised give the same exhaustion on fuel at both commits, which class C4 (e) admits. None is in the area, and none is
-  a correction, so row R6, this family's correction in the area, explains none: no test262 case at the pin reaches it.
+  re-runs at both commits, alone on the local machine with no other build, test or run on it, agree, or, where a row's
+  re-runs differ, that row's runs with the wall clock raised give the same exhaustion on fuel at both commits, which
+  class C4 (e) admits *(revised 2026-10-19, at SJL-10.6, after review: the sentence gave a count, which update rule 8
+  keeps out of this file, so it is not quoted, and called the machine idle, which the bundle's section 5 now qualifies)*.
+  None is in the area, and none is a correction, so row R6, this family's correction in the area, explains none: no
+  test262 case at the pin reaches it.
 - **Part B**: the checks the rule names over this family's Temporal reference datasets print the base's lines, and no
   file under `src/tests/temporal/` changed.
 - **Part C**: every wide twin keeps its base figure and answer, in both forms.
