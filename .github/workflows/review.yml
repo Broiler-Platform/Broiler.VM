@@ -11,6 +11,17 @@
 # is byte-identical to what the generator would write. A generation that is not a
 # fixed point fails here rather than on the next pull request.
 #
+# WHICH TESTS, SINCE 2026-10-19. Both runs are the architecture suite's assurance
+# tests and nothing else: the classes whose names begin `Assurance`, which hold
+# the assurance generator's writers and rules J1 to J11, and two more that read
+# the artefacts those writers produce - `RegisterFigureTests` (rule J12) and
+# `ReviewRecordRuleTests` (rules H1 to H5). Until then each run was the whole
+# solution, twice, and every test this lane no longer runs is in `dotnet test`
+# of the lane's required `checks` job on the same image. The filter is held to
+# finding something: a rename that left it matching nothing would otherwise turn
+# this required check into a green run of no tests. Neither run builds; the step
+# before them does.
+#
 # What this lane does NOT do, so that nobody reads more into it: it does not
 # decide anything. The generator may fill a fingerprint and may never turn
 # PENDING into a name - AssuranceGenerator.RefuseInventedApproval throws rather
@@ -35,6 +46,11 @@ jobs:
     name: Produce the review record
     runs-on: ubuntu-latest
 
+    env:
+      ASSURANCE_TESTS: src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj
+      ASSURANCE_FILTER: >-
+        FullyQualifiedName~Broiler.VM.Architecture.Tests.Assurance|FullyQualifiedName~Broiler.VM.Architecture.Tests.RegisterFigureTests|FullyQualifiedName~Broiler.VM.Architecture.Tests.ReviewRecordRuleTests
+
     steps:
       - name: Check out the pull request head
         uses: actions/checkout@v7
@@ -57,17 +73,15 @@ jobs:
       - name: Regenerate every assurance artefact
         env:
           BROILER_ASSURANCE_WRITE: '1'
-        run: dotnet test Broiler.VM.slnx -c Release
+        run: >-
+          dotnet test "$ASSURANCE_TESTS" -c Release --no-build
+          --filter "$ASSURANCE_FILTER"
+          -- RunConfiguration.TreatNoTestsAsError=true
 
-      - name: Restore the retained evidence
-        # Rule D1 writes which branch it took to docs/evidence/vm-0/d1-outcome.txt
-        # on every run, and on a hosted runner there is no aggregate checkout above
-        # the component, so it writes INCONCLUSIVE. That file is a record of a
-        # collection performed on the owner's machine; a CI run is not that
-        # collection, and this lane must not rewrite the evidence bundles. The
-        # restore is narrow and named rather than a blanket `git checkout docs/`,
-        # so a real change to a bundle in the pull request survives it.
-        run: git checkout -- docs/evidence/vm-0/d1-outcome.txt || true
+      # A step that restored docs/evidence/vm-0/d1-outcome.txt stood here until
+      # 2026-10-19. Rule D1 used to write that file on every run; it writes it only
+      # when BROILER_EVIDENCE_WRITE=1 now, which nothing here sets, and the filter
+      # above does not run rule D1 at all, so the restore had nothing to undo.
 
       - name: Report what the generator changed
         id: generated
@@ -116,4 +130,7 @@ jobs:
             CODE-ASSURANCE.md
 
       - name: Gate - what is on disk is what the generator would write
-        run: dotnet test Broiler.VM.slnx -c Release
+        run: >-
+          dotnet test "$ASSURANCE_TESTS" -c Release --no-build
+          --filter "$ASSURANCE_FILTER"
+          -- RunConfiguration.TreatNoTestsAsError=true

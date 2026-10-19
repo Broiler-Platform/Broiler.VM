@@ -2004,3 +2004,108 @@ JavaScript family.
 
 **What is not edited.** Every revision above stands as written, and the sentences quoted here stand in
 the sections they were written in, read with this revision.
+
+### 2026-10-19 - the lane gains a job of its own for the slice compiler's checks
+
+**What the record said.** The revision of 2026-09-03 above says that `broiler-vm-lane.yml` "holds
+`checks`, `publish`, `mobile` and `android`". That list was already incomplete before this revision:
+the lane also holds `differential-tooling`, the differential runner's job on `ubuntu-latest` and
+`windows-latest`, which no revision here names.
+
+**What changes.** No project and no edge. The lane gains a job, `slice`, named `slice checks and source
+fuzz (<rid>)`, over the matrix the caller hands `publish`. It publishes the slice compiler as Native AOT
+the way `publish` does, with trim and AOT warnings as errors, reads its closure, runs `--checks
+--verbose` and the four source-fuzz seeds at the caller's iteration count, and fails unless the number
+of rows the cell could not run is the one the lane records for its runtime identifier: three on
+`linux-x64` and `osx-x64`, two on `win-x64`, twelve on each arm64 cell. `publish` keeps the slice
+compiler's publish and `--closure` and drops only those two commands. Since the same date `--verbose`
+prints the time each row took on a line of its own under it, so a run's log says which rows the time
+goes to.
+
+**Why.** On the quick lane's `linux-x64` cell the two commands took a median of 238 and 76 seconds,
+inside a job whose median was about eleven minutes and which was the critical path of every pull
+request; 245 of that cell's 651 rows run only on an x86-64 machine. Beside `publish` rather than inside
+it, the expected median critical path is about six and a half minutes. That is a projection from the
+lane's step timings and not a measurement. On the faster of the two runner classes the hosted pool
+hands out, the saving is only two to three minutes, because there the `linux-arm64` cell's `publish`
+job becomes the longest, at about five minutes. The quick lane pays two more jobs and about two more
+runner-minutes per run, for a second setup and a second publish of one root, and the full lane gains
+six jobs and no time worth stating. The count of rows not run is pinned because a row that cannot run
+reports itself and the process still exits zero: a row that cannot find its retained data is one of
+them, so a job checked out or started differently from `publish` could stay green while rows stopped
+running.
+
+**What it asks of whoever administers the repository.** The two quick-lane cells of the new job,
+`quick / slice checks and source fuzz (linux-x64)` and `quick / slice checks and source fuzz
+(linux-arm64)`, must be added to the required status checks of `main` when this change merges, and not
+before, because a required check that an open pull request's head has never produced blocks that pull
+request. Until they are added a red row blocks nothing, and the `x86-64-sysv` rows on `linux-x64` are
+the only check of that calling convention on the pull-request path: on 2026-09-18 they failed there
+while the `checks` job's suite passed. This is a repository setting that no file in this checkout can
+make, and this revision is where it is written down.
+
+**What is now true, and what is not.** No check leaves any cell: the same rows run on the same runtime
+identifiers out of an image published the same way. A failing row no longer stops the rest of
+`publish` on its cell, which it did, so the conformance suites, the end-user host, both workloads and
+the package consumer now run on a cell whose slice checks failed. The comment that says why the checks
+run with `--verbose` moved with the step; bundle JSB-11-001 cites the `publish and run (linux-x64)` log
+of run `34999734401`, which stays what it was. `docs/javascript-shared-libraries/native-aot.md` section
+2.1, which says job `publish` publishes the roots with Native AOT and runs them, stays true. **No RID
+claim moves.**
+
+**What is not edited.** Every revision above stands as written, including the 2026-09-03 list of jobs
+this one completes.
+
+### 2026-10-19 - a push to main runs again only what its pull request did not
+
+**What the record said.** Three passages say the component lane runs on every push, and the first two
+say it runs on every pull request. The `.github/workflows/` row of the file table says `broiler-vm.yml`
+"calls it on every push and pull request"; the revision of 2026-09-03 above says `broiler-vm.yml`
+"runs on every push and pull request over `linux-x64` and `linux-arm64`"; and the revision of
+2026-09-05 weighs the Octane workload against "two cells of that on every push". Exclusion EX-06's
+revision of 2026-08-29 states the limit that came with the lanes: "a commit pushed to a branch nobody
+opens a pull request for is examined by nothing until the next one".
+
+**What changes.** `broiler-vm.yml` and `ci.yml` keep their push trigger and each gains a first job,
+`gate`, which runs only on a push to `main` and runs `eng/gate-tested-merge.py`. The rest of the run is
+skipped only when all of these hold: the event is a push and the ref is `main`, which inside `ci.yml`
+is what keeps a publish from being skipped, because a workflow entered through `workflow_call` sees
+its caller's event; the commit has two parents; its tree is its second parent's; its first parent is
+an ancestor of its second, so the tree a pull request's run into `main` tested is the tree that
+landed; and every check run on the second parent succeeded or was skipped, with every job of both
+workflows among the successes. A commit with one parent is never skipped. The gate names the runs it
+relied on in its log, and a gate that cannot decide lets the run go ahead in full. It reads check
+runs, so its job asks for `checks: read`, and `publish.yml`'s `validate` job grants the same, because
+a called workflow may not ask for more than its caller does. Both workflows' `pull_request` triggers
+now take only pull requests into `main`. A pull request's run tests its head merged into its base as
+the base stood then; into `main`, that base was an earlier `main` and so an ancestor of the first
+parent as long as `main` is only ever added to, and the ancestry condition makes the merge the run
+tested have the head's own tree. Into another branch, the run would have tested the head merged with
+that branch, and a check run's list of pull requests is empty once its pull request has merged, so the
+gate could not tell the two apart.
+
+**Why.** No step of either workflow reads the event or the ref, so for a merge that changes nothing
+the push run replayed its pull request's runs: about thirty runner-minutes for every merged pull
+request, and nothing learnt. Every merge into `main` from 2026-10-12 to 2026-10-18 brought in nothing
+its pull request's head did not already hold. The trigger stays because it is the only check of a
+commit that reaches `main` any other way: from 2026-09-18 to 2026-10-11 it went red fourteen times on
+commits that no green pull request run stood behind - twelve direct pushes, the merge of pull request
+113, whose branch was out of date, and the merge of pull request 114, whose own run was red.
+
+**What is now true, and what is not.** Every push to `main` still starts both workflows. A tree that
+lands on `main` is run whole by its pull request's runs when the gate skips, and otherwise by the push
+run, unless a later push to `main` cancels that run, as it could before this revision: both workflows
+cancel a run still going when the same ref is pushed again, so run 37614035130, the quick lane's run
+for the direct push f3b8fd5 on 2026-10-07, was cancelled when the merge of pull request 113 was pushed
+six minutes later, and that tree was never run whole. When the gate skips, what `main`'s own commit
+carries is the gate's check and a log naming the runs it relied on, not the jobs' checks. A commit
+pushed to a branch nobody opens a pull request for is still examined by nothing until the next one, as
+EX-06's revision says. A pull request into a branch other than `main` now runs neither workflow; none
+of the 152 pull requests this repository has had by this date was one.
+The required status checks of `main` are a repository setting, recorded in bundle VM-6-001's EX-102
+by a note of this date; no job of `ci.yml` is among them, so a pull request can merge with
+`windows-latest / Release` red or still running, and the gate then does not skip, because it requires
+that job's success. **No RID claim moves.**
+
+**What is not edited.** Every revision above stands as written, and so does the file table's row,
+read with this revision.

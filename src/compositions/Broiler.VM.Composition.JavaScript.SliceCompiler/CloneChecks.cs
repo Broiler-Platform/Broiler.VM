@@ -417,26 +417,23 @@ internal static class CloneChecks
     ];
 
     /// <summary>Runs every clone check.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run()
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
     {
-        var results = new System.Collections.Generic.List<(string Name, bool Passed, string Detail)>();
-
         foreach (var (name, source, expected) in Programs)
         {
-            results.Add(Judge(name, Prelude + source, expected));
+            yield return Judge(name, Prelude + source, expected);
         }
 
         foreach (var (name, source, expected) in BigIntPrograms)
         {
-            results.Add(Judge(name, Prelude + source, expected));
+            yield return Judge(name, Prelude + source, expected);
         }
 
-        results.Add(TheBoundRefusesAGraphPastIt());
-        results.Add(AClonedGraphIsAdoptedByASecondRealmAfterTheFirstIsDisposed());
-        results.Add(TransferredBytesCountAgainstTheBoundBeforeAnythingIsDetached());
-        results.Add(ACarrierHoldingMovedBytesIsAdoptedOnceAfterItsSourceIsDisposed());
-        results.Add(TheCloneIsChargedInProportionToTheGraph());
-        return results;
+        yield return TheBoundRefusesAGraphPastIt();
+        yield return AClonedGraphIsAdoptedByASecondRealmAfterTheFirstIsDisposed();
+        yield return TransferredBytesCountAgainstTheBoundBeforeAnythingIsDetached();
+        yield return ACarrierHoldingMovedBytesIsAdoptedOnceAfterItsSourceIsDisposed();
+        yield return TheCloneIsChargedInProportionToTheGraph();
     }
 
     /// <summary>Runs one same-realm program and compares its answer.</summary>

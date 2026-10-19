@@ -23,16 +23,16 @@ internal static class RealmChecks
     private const string Caller = "js-slice-compiler://realms";
 
     /// <summary>Every realm check.</summary>
-    internal static (string Name, bool Passed, string Detail)[] Run() =>
-    [
-        TwoRealmsShareTheAgentSymbols(),
-        ABuiltInRunsInItsOwnRealm(),
-        AFunctionCalledFromAnotherRealmRunsInItsOwn(),
-        TheHostIsToldOfACreatedRealm(),
-        ACreatedRealmIsCharged(),
-        ADeclinedDynamicSurfaceHasNoShadowRealm(),
-        TheShadowRealmSurfaceAloneIsRefused(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return TwoRealmsShareTheAgentSymbols();
+        yield return ABuiltInRunsInItsOwnRealm();
+        yield return AFunctionCalledFromAnotherRealmRunsInItsOwn();
+        yield return TheHostIsToldOfACreatedRealm();
+        yield return ACreatedRealmIsCharged();
+        yield return ADeclinedDynamicSurfaceHasNoShadowRealm();
+        yield return TheShadowRealmSurfaceAloneIsRefused();
+    }
 
     /// <summary>
     /// JSD-0030 section 6, case 5: a composition that declined the dynamic surface has no

@@ -34,15 +34,15 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 internal static class SurfaceChecks
 {
     /// <summary>Runs every configuration check.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run() =>
-    [
-        ADecliningCompositionRefusesAtVerification(),
-        AnAdmittingCompositionWithNoProviderRefusesAtRunTime(),
-        ATypeofDeclaresNothingAndIsAnsweredEitherWay(),
-        ADeclaredSurfaceReachesTheRealm(),
-        TheSuspendingConstructorsGiveADecliningRealmsReason(),
-        TheSuspendingConstructorsGoWhereFunctionGoes(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return ADecliningCompositionRefusesAtVerification();
+        yield return AnAdmittingCompositionWithNoProviderRefusesAtRunTime();
+        yield return ATypeofDeclaresNothingAndIsAnsweredEitherWay();
+        yield return ADeclaredSurfaceReachesTheRealm();
+        yield return TheSuspendingConstructorsGiveADecliningRealmsReason();
+        yield return TheSuspendingConstructorsGoWhereFunctionGoes();
+    }
 
     /// <summary>
     /// A composition admitting no optional surface refuses a program that constructs a typed array,

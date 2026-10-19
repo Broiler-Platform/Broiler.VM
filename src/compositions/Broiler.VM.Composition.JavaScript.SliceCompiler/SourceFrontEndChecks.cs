@@ -22,21 +22,21 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// </remarks>
 internal static class SourceFrontEndChecks
 {
-    internal static (string Name, bool Passed, string Detail)[] Run() =>
-    [
-        EverySourceTheManifestAdmitsCompiles(),
-        EverySourceTheManifestExcludesIsRefusedByName(),
-        EveryModuleEarlyErrorIsRefusedByName(),
-        TheLoweringIsDeterministic(),
-        TwoGoalsInOneProcessDoNotReachEachOther(),
-        DeepNestingIsRefusedRatherThanSurvived(),
-        AnEarlyErrorNeverProducesBytes(),
-        TheSourceFuzzGuidanceLoopIsWired(),
-        EveryLineTerminatorInsideALiteralIsCountedOnce(),
-        ASourceNameReachesTheDiagnosticsAndNothingElse(),
-        AModuleCompiledWithoutTopLevelAwaitRefusesIt(),
-        TheConstantPoolCeilingIsRefusedWhereItIsMet(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return EverySourceTheManifestAdmitsCompiles();
+        yield return EverySourceTheManifestExcludesIsRefusedByName();
+        yield return EveryModuleEarlyErrorIsRefusedByName();
+        yield return TheLoweringIsDeterministic();
+        yield return TwoGoalsInOneProcessDoNotReachEachOther();
+        yield return DeepNestingIsRefusedRatherThanSurvived();
+        yield return AnEarlyErrorNeverProducesBytes();
+        yield return TheSourceFuzzGuidanceLoopIsWired();
+        yield return EveryLineTerminatorInsideALiteralIsCountedOnce();
+        yield return ASourceNameReachesTheDiagnosticsAndNothingElse();
+        yield return AModuleCompiledWithoutTopLevelAwaitRefusesIt();
+        yield return TheConstantPoolCeilingIsRefusedWhereItIsMet();
+    }
 
     /// <summary>
     /// A program needing more distinct constants than the format holds is refused once, naming the

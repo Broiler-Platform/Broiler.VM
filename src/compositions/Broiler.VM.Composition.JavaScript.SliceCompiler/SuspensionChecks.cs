@@ -59,14 +59,14 @@ internal static class SuspensionChecks
     private const string ReadsWhatRan = "globalThis.ran.join(',');";
 
     /// <summary>Runs every suspension check.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run() =>
-    [
-        AStepParksAndResumesAcrossTwoSuspensions(),
-        AHostAskingToPauseIsToldItIsNotDeclared(),
-        ASecondResumeIsRefused(),
-        AParkedOperationIsDisposedWithoutBeingResumed(),
-        TheLiveSuspensionBoundIsNamed(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return AStepParksAndResumesAcrossTwoSuspensions();
+        yield return AHostAskingToPauseIsToldItIsNotDeclared();
+        yield return ASecondResumeIsRefused();
+        yield return AParkedOperationIsDisposedWithoutBeingResumed();
+        yield return TheLiveSuspensionBoundIsNamed();
+    }
 
     /// <summary>
     /// A stepping host meets two pauses, resumes each, and every job runs exactly once.

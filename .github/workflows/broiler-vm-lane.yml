@@ -49,6 +49,13 @@
 # four is a DEPTH - the sessions run at whatever the count is, the workload runs on every cell
 # whatever the selection is, and the false branch of the emulator switch still builds the head.
 #
+# SINCE 2026-10-19 broiler-vm.yml does not enter this file on a push to main whose tree its pull
+# request's runs already tested in full, which its own header and its job `gate` explain. That is a
+# decision about WHETHER a tree is run again, made on the tree, and not about which checks run on
+# it: a tree this lane runs at all, it runs whole. From the same date broiler-vm.yml enters it on a
+# pull request only when that pull request is into main, so "every push and pull request" above is
+# read with both of these.
+#
 # WHY THERE ARE TWO CALLERS AT ALL, measured rather than assumed. On 2026-09-03 the whole matrix
 # took 26m56s, and the breakdown says where it went: the six publish jobs spent 759, 882, 917,
 # 1041, 1051 and 1405 seconds, of which the FUZZ AND MUTATE STEP was 88 to 91 per cent in every
@@ -157,6 +164,22 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
+
+      # RULE I1'S LOCKED-MODE RESTORE, COPIED FROM ci.yml ON 2026-10-19 AND NOT MOVED. Every project
+      # that references an admitted shared package restores with a lock file, and each restores here
+      # in locked mode, so a content hash that moved fails rather than being rewritten (milestone
+      # SJL-2.1). It runs here because this job is a required check and ci.yml's legs are not: a
+      # moved hash now blocks the merge. ci.yml keeps the same loop, because a publish validates
+      # through that workflow and never through this lane.
+      - name: Restore lock-file projects in locked mode
+        shell: bash
+        run: |
+          found=0
+          while IFS= read -r lock; do
+            found=1
+            dotnet restore "$(dirname "$lock")" --locked-mode --nologo
+          done < <(git ls-files '*packages.lock.json')
+          if [ "$found" = 0 ]; then echo "No project carries a lock file."; fi
 
       - name: Build with warnings as errors
         run: dotnet build Broiler.VM.slnx -c Release -warnaserror
@@ -372,10 +395,6 @@ jobs:
       # rather than merely hosting a check that cannot.
       - name: Publish and run the JavaScript composition roots as Native AOT
         shell: bash
-        env:
-          # The source sessions below take the same count the artifact sessions take, so the two
-          # answer the same question about the same corpus at the same scale.
-          ITERATIONS: ${{ inputs.fuzz-iterations }}
         run: |
           set -euo pipefail
           corpus="src/tests/corpus/js-1"
@@ -397,26 +416,12 @@ jobs:
 
             case "$composition" in
               *ExecutionOnly) "$binary" --corpus "$corpus" ;;
-              *SliceCompiler)
-                # EVERY ROW BY NAME, NOT ONLY A COUNT. Without `--verbose` the image prints the rows
-                # that failed or could not run on this machine, and then a total. A green cell
-                # therefore said how many rows passed and never which. That matters most for the
-                # `x86-64-sysv` rows. A Windows machine cannot enter a unit emitted for System V,
-                # so those rows run only on a cell whose machine uses that convention, and linux-x64
-                # is the one such cell both callers take. Bundle JSB-11-001 records that no retained
-                # transcript names them as passed: they were only absent from the rows named as not
-                # run. With `--verbose` every row prints its verdict, its name and its detail, so
-                # this job's log is a transcript that names them.
-                "$binary" --checks --verbose
-                # THE SOURCE SURFACE'S SESSIONS, here rather than beside the artifact ones because
-                # they need a lowering and the execution-only image carries none. Four seeds, the
-                # same count the artifact sessions use, so the two answer the same question about
-                # the same corpus. A session is a total function of its seed, so these decide the
-                # same on a runner as on a workstation.
-                for seed in 1 2 3 4; do
-                  "$binary" --fuzz src/tests/corpus/js-1/source --seed "$seed" --iterations "$ITERATIONS"
-                done
-                ;;
+              # PUBLISHED HERE, WARNINGS AS ERRORS, AND ITS CLOSURE READ - AND NOTHING ELSE SINCE
+              # 2026-10-19. Its `--checks` and its source sessions are the job `slice` below, on
+              # the same cell, out of an image published the same way; they took about five of
+              # this job's eleven minutes on linux-x64, and a failing row stopped every later step
+              # here on the cell it failed on.
+              *SliceCompiler) ;;
               # Negatives included, because a lane that scored only the positive half would
               # publish totals nobody could compare with a release run's. The harness runs its
               # own regression suite and its self-check before it scores anything, so this one
@@ -836,6 +841,141 @@ jobs:
           binary="../../artifacts/ci-sample-aot/Broiler.VM.Sample.FeedConsumer"
           [ -f "$binary.exe" ] && binary="$binary.exe"
           "$binary"
+
+  # THE SLICE COMPILER'S CHECKS AND THE SOURCE SURFACE'S FUZZ SESSIONS, IN A JOB OF THEIR OWN SINCE
+  # 2026-10-19, ON EVERY CELL THE CALLER NAMES.
+  #
+  # Until then they were two commands inside `publish`'s JavaScript step, and on linux-x64 they were
+  # the longest part of it: a median of 238 seconds of checks - 245 of that cell's 651 rows run only
+  # on an x86-64 machine - and 76 of fuzzing, inside a job of about eleven minutes that was the
+  # critical path of every pull request. Here they run beside `publish` rather than inside it, and
+  # nothing about them moves: the same image, published the same way with trim and AOT warnings as
+  # errors, on the same runner image and runtime identifier, with the same arguments and the same
+  # iteration count. Neither reads anything an earlier step of `publish` produced.
+  #
+  # WHAT THE SPLIT ADDS BESIDES TIME. A failing row used to stop that step, so the conformance
+  # suites, the end-user host, both workloads, the native-form comparison, the shards, the artifact
+  # sessions and the package consumer never ran on the cell it failed on. Now they do.
+  #
+  # WHAT IT ASKS OF WHOEVER ADMINISTERS THE REPOSITORY. The quick lane's two cells of this job must
+  # be REQUIRED status checks on `main`, beside the five that are, from the moment this file lands
+  # there. Until they are, a red row here does not block a merge - and these rows are the only
+  # check of the x86-64-sysv calling convention on the pull-request path: on 2026-09-18 they failed
+  # on linux-x64 while every required job passed. ADR 0001's revision of 2026-10-19 says the same.
+  slice:
+    name: slice checks and source fuzz (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # A red linux-x64 row must not cancel the arm64 cell, which is answering a different question.
+      fail-fast: false
+      # The caller's matrix, under the rule `publish` states for it.
+      matrix: ${{ fromJSON(inputs.matrix) }}
+    # Bash on every cell, the Windows ones included, where a step would otherwise run under pwsh and
+    # the `[ -f "$binary.exe" ]` probe below would not parse.
+    defaults:
+      run:
+        shell: bash
+    env:
+      RID: ${{ matrix.rid }}
+      # The source sessions take the count the artifact sessions in `publish` take, so the two
+      # answer the same question about the same corpus at the same scale.
+      ITERATIONS: ${{ inputs.fuzz-iterations }}
+    steps:
+      # A FULL CHECKOUT, AND EVERY STEP RUNS FROM ITS ROOT. The internationalization rows find the
+      # retained CLDR, Unicode and Temporal data by walking up from the working directory, and a row
+      # that cannot find its data reports itself not run rather than failing - so a sparse checkout
+      # or another working directory would keep this job green while rows stopped running. The
+      # count the checks step pins is what would notice.
+      - uses: actions/checkout@v7
+
+      # No global.json exists, so no SDK is pinned; exclusion EX-03, as in the jobs above.
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish the slice compiler as Native AOT
+        run: |
+          set -euo pipefail
+          dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler \
+            -c Release -r "$RID" -p:PublishAot=true \
+            -p:TreatWarningsAsErrors=true -o artifacts/ci-aot-JavaScript.SliceCompiler
+
+      # EVERY ROW BY NAME, NOT ONLY A COUNT. Without `--verbose` the image prints the rows
+      # that failed or could not run on this machine, and then a total. A green cell
+      # therefore said how many rows passed and never which. That matters most for the
+      # `x86-64-sysv` rows. A Windows machine cannot enter a unit emitted for System V,
+      # so those rows run only on a cell whose machine uses that convention, and linux-x64
+      # is the one such cell both callers take. Bundle JSB-11-001 records that no retained
+      # transcript names them as passed: they were only absent from the rows named as not
+      # run. With `--verbose` every row prints its verdict, its name and its detail, so
+      # this job's log is a transcript that names them.
+      #
+      # *Moved here from `publish` on 2026-10-19, with the step it explains.* Since that date each
+      # row is also followed by a line giving the seconds it took, so this log says which rows the
+      # time goes to as well as which rows passed.
+      #
+      # AND THE NUMBER OF ROWS NOT RUN IS PINNED PER RUNTIME IDENTIFIER, because a row that cannot
+      # run here is reported and the process still exits zero. The numbers are what the code says
+      # each machine cannot do, and what the lane's runs have printed: on an x86-64 machine the rows
+      # that enter a unit emitted for the OTHER calling convention - three for Win64 on a System V
+      # machine, because only Win64 has a shadow space to lose, and two for System V on a Windows
+      # one - and on an arm64 machine twelve: one row for the whole x86-64 obligation table, one for
+      # each of ten baseline execution rows and one for the value form's execution. A row that
+      # newly cannot run, or newly can, moves the number, and the number is moved here in front of a
+      # reader rather than absorbed.
+      - name: Run the slice compiler's checks, every row by name
+        run: |
+          set -euo pipefail
+          binary="artifacts/ci-aot-JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler"
+          [ -f "$binary.exe" ] && binary="$binary.exe"
+
+          # --closure first, as in `publish`: a run that passes out of an image whose closure is
+          # wrong is a pass nobody should accept.
+          "$binary" --closure
+
+          "$binary" --checks --verbose | tee artifacts/slice-checks.log
+
+          case "$RID" in
+            linux-x64|osx-x64) expected=3 ;;
+            win-x64) expected=2 ;;
+            linux-arm64|win-arm64|osx-arm64) expected=12 ;;
+            *)
+              echo "no count of rows not run is recorded for $RID; take it from a run of this job and add it here" >&2
+              exit 1
+              ;;
+          esac
+
+          summary=$(tr -d '\r' < artifacts/slice-checks.log | grep '^broiler-js-slice-compiler: ' | tail -n 1 || true)
+          notrun=$(printf '%s\n' "$summary" | sed -n 's/^broiler-js-slice-compiler: [0-9][0-9]* checks passed, \([0-9][0-9]*\) not run on this machine and claimed by nothing$/\1/p')
+          if [ -z "$notrun" ] && printf '%s\n' "$summary" | grep -Eq '^broiler-js-slice-compiler: [0-9]+ checks passed$'; then
+            notrun=0
+          fi
+
+          if [ "$notrun" != "$expected" ]; then
+            echo "$RID: ${notrun:-an unreadable number of} rows not run, where $expected are expected" >&2
+            echo "the summary line: ${summary:-(none)}" >&2
+            grep '^SKIP ' artifacts/slice-checks.log >&2 || true
+            exit 1
+          fi
+          echo "$RID: $notrun rows not run, as expected"
+
+      # THE SOURCE SURFACE'S SESSIONS, here rather than beside the artifact ones because they need a
+      # lowering and the execution-only image carries none. Four seeds, the same count the artifact
+      # sessions use, so the two answer the same question about the same corpus. A session is a
+      # total function of its seed, so these decide the same on a runner as on a workstation.
+      - name: Fuzz the JavaScript source surface (${{ inputs.fuzz-iterations }} iterations)
+        run: |
+          set -euo pipefail
+          binary="artifacts/ci-aot-JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler"
+          [ -f "$binary.exe" ] && binary="$binary.exe"
+
+          for seed in 1 2 3 4; do
+            "$binary" --fuzz src/tests/corpus/js-1/source --seed "$seed" --iterations "$ITERATIONS"
+          done
+
+          # A finding is retained outside the corpus; the corpus itself must be as it was checked
+          # out, as `publish` asserts after its own sessions.
+          git diff --exit-code -- src/tests/corpus/js-1
 
   # THE ANDROID HEAD, ON AN EMULATOR.
   #

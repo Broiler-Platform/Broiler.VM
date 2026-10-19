@@ -1,9 +1,35 @@
+# CI: the Windows build, test, pack and feed check, and the validation a publish runs.
+#
+# ONE OPERATING SYSTEM ON A PULL REQUEST AND A PUSH, BOTH UNDER A PUBLISH OR A BUTTON, SINCE
+# 2026-10-19. Until then a pull request and a push ran an ubuntu leg beside the Windows one, and
+# that leg repeated what the lane's `checks` job runs on the same image at the same ref: the same
+# build, there with warnings as errors, and the same `dotnet test` of the solution. In 226 runs it
+# failed seven times and the Windows leg and `checks` failed with it every time, so it never caught
+# anything alone. The Windows leg is the only per-pull-request run of the suite under Windows paths,
+# culture, NLS and time zones, and the only one of pack.ps1 and verify-feed.ps1, so it is the one
+# that stays. A publish calls this workflow with the version it resolved, and a dispatch is somebody
+# asking for the whole answer, so both still run both legs: a release is built and tested on both
+# operating systems before it is pushed. The job keeps its name, so the check a pull request shows
+# is still `windows-latest / Release`.
+#
+# A PUSH TO MAIN WHOSE TREE ITS PULL REQUEST ALREADY TESTED RUNS ONLY THE GATE, SINCE 2026-10-19,
+# by the rule broiler-vm.yml's header states and eng/gate-tested-merge.py holds. HERE THE TEST OF
+# THE EVENT IS NOT DECORATION. A workflow entered through workflow_call sees its caller's event, so
+# a publish started by a tag push arrives as a push; the gate runs only on a push to main, and the
+# script checks the event and the ref again, so a publish is never skipped and always validates.
+# For the same rule a pull request starts this workflow only when it is into main, since the same
+# date, as broiler-vm.yml's header explains: the gate relies on this workflow's check on the merged
+# head, and only for a pull request into main does its ancestry test show that the run tested that
+# head's own tree.
+
 name: CI
 
 on:
   push:
     branches: [main]
+  # Into main only: the header says why.
   pull_request:
+    branches: [main]
   workflow_dispatch:
   workflow_call:
     inputs:
@@ -22,8 +48,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate:
+    name: gate (CI)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The check runs on the pull request's head are what the decision reads. A caller must grant
+      # this too, which is why publish.yml's `validate` job does, though the gate never runs there.
+      checks: read
+    outputs:
+      skip: ${{ steps.decide.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          sparse-checkout: eng/gate-tested-merge.py
+          sparse-checkout-cone-mode: false
+
+      - name: Decide whether a pull request's runs already tested this tree
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 eng/gate-tested-merge.py
+
   build:
     name: ${{ matrix.os }} / Release
+    needs: gate
+    # Skipped on a pull request, a button and a publish, the gate decides nothing there, and a gate
+    # that fails decides nothing either: the build runs unless the gate said this tree was tested.
+    if: ${{ !cancelled() && needs.gate.outputs.skip != 'true' }}
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -31,7 +85,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # `inputs.package-version` is null on a pull request, a push and a dispatch, and null
+        # compares equal to '' in an expression, so only a caller that passes a version - the
+        # publish lane - and a dispatch take both legs.
+        os: ${{ fromJSON((inputs.package-version != '' || github.event_name == 'workflow_dispatch') && '["ubuntu-latest","windows-latest"]' || '["windows-latest"]') }}
     steps:
       - name: Check out
         uses: actions/checkout@v7
@@ -53,6 +110,11 @@ jobs:
       # I1), and CI restores each of them in locked mode, so a content hash that moved fails here
       # rather than being rewritten (milestone SJL-2.1). No product project references one at
       # SJL-2, and the step says so when there is nothing to lock.
+      #
+      # The lane's `checks` job runs the same loop before its build since 2026-10-19, where a moved
+      # hash blocks a merge, because that job is a required check and this one is not. The loop
+      # stays here as well: a publish validates through this workflow and never through the lane,
+      # so this is the locked restore a release is built from.
       - name: Restore lock-file projects in locked mode
         run: |
           found=0
