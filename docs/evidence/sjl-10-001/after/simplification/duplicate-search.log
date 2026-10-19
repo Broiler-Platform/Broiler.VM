@@ -1,0 +1,118 @@
+# SJL-10.6 search for a surviving duplicate of the Temporal core, Broiler.VM at 96876432aa27fce3d6b9005af061ff12195badeb, in the
+# component's C# product sources (src/, every tests/ excluded), in four parts, each with its
+# pattern and its hits; every hit is reviewed in the bundle's README. The names part is built
+# from rule I5's register: the 25 types it registers for SJL-10.4.
+
+## host: the platform's dates, times and calendar classes
+# pattern: \bDateOnly\b|\bTimeOnly\b|\bISOWeek\b|\bDateTime\.(DaysInMonth|IsLeapYear)\(|\.Add(Months|Years)\(|\b(ChineseLunisolar|KoreanLunisolar|JapaneseLunisolar|TaiwanLunisolar|EastAsianLunisolar|UmAlQura|Persian|Hijri|Hebrew|Japanese|Taiwan|ThaiBuddhist|Korean|Gregorian|Julian)Calendar\b|\bCultureInfo\b[^;]*\.(Calendar|OptionalCalendars)\b
+# hits: 0
+
+## algorithm: the area's algorithms by the pinned text's names and by their constants
+# pattern: \b(BalanceISODate(Time)?|BalanceTime|RegulateISODate|RegulateTime|IsValidISODate|ISODate(Time)?WithinLimits|ISOYearMonthWithinLimits|IsValidEpochNanoseconds|AddDaysToISODate|CompareISODate|ISODateSurpasses|DifferenceISODate(Time)?|DifferenceInstant|DifferencePlainDateTimeWith(Rounding|Total)|DifferenceZonedDateTime(With(Rounding|Total))?|GetDifferenceSettings|ComputeNudgeWindow|NudgeToCalendarUnit|NudgeToZonedTime|NudgeToDayOrTime|BubbleRelativeDuration|RoundRelativeDuration|TotalRelativeDuration|RoundTimeDuration(ToIncrement)?|TotalTimeDuration|DateDurationDays|Add24HourDaysToTimeDuration|TimeDurationFromComponents|CombineDateAndTimeDuration|ToInternalDurationRecord\w*|TemporalDurationFromInternal|DefaultTemporalLargestUnit|LargerOfTwoTemporalUnits|MaximumTemporalDurationRoundingIncrement|RoundISODateTime|RoundTemporalInstant|CalendarDateAdd|CalendarDateUntil|Calendar(Date|YearMonth|MonthDay)FromFields|CalendarResolveFields|CalendarMonthDayToISOReferenceDate|NonISO\w+|CalendarISOToDate|CanonicalizeEraInCalendar|ConstrainMonthCode|ParseMonthCode|CreateMonthCode|ParseISODateTime|ParseTemporal\w*String|Temporal(Date|DateTime|Time|Instant|ZonedDateTime|YearMonth|MonthDay|Duration)ToString|FormatFractionalSeconds|FormatTimeString|FormatCalendarAnnotation|FormatDateTimeUTCOffsetRounded|FormatUTCOffsetNanoseconds|PadISOYear)\b|\b27(5760|1821)\b|8\.64e21|8_?640_?000_?000_?000_?000_?000_?000|86_?400_?000_?000_?000\b|\b(719163|103605|2796|227015|226896|1373427|25920|765433|13753|98496|35975351|10631)\b|29\.53|365\.24[0-9]|\bRataDie\b|[Mm]olad|\bMetonic\b|33-year|[Ss]ynodic
+# hits: 40
+src/Broiler.VM.Profile.JavaScript.Format/JsIntlData.cs:177:    /// calendar's corrections to its 33-year rule, binary, in the layout the shared library's
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:101:    /// named and numbered. The calendar's date is the shared calendars' CalendarISOToDate since SJL-10.4
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:29:/// language's time value ranges over ±8.64e15 milliseconds, which is roughly the years -271821 to
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:30:/// 275760, and <c>System.DateTime</c> covers 0001 to 9999. Every operation outside that window -
+src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs:31:/// <c>new Date(-8.64e15)</c>, <c>new Date(275760, 8, 13)</c>, and every conformance test built on
+src/Broiler.VM.Profile.JavaScript/JsRealm.Temporal.cs:174:    /// counterparts), each reading CalendarISOToDate of the receiver.
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalInstant.cs:100:            return JsValue.Object(JsTemporal.CreateInstant(engine, IsoArithmetic.RoundTemporalInstant(instant.EpochNanoseconds, increment, smallest, mode))
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalInstant.cs:125:            var rounded = IsoArithmetic.RoundTemporalInstant(instant.EpochNanoseconds, precision.Increment, precision.Unit, mode);
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainDate.cs:236:    /// <summary>The proposal's AddDurationToDate (s3.5.15): CalendarDateAdd the shared calendars'.</summary>
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainDateTime.cs:237:    /// CalendarDateAdd, each the shared library's.
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainTime.cs:85:            var result = JsTemporal.RegulateTime(
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalZonedDateTime.cs:99:            return JsValue.Number(DurationMath.TotalTimeDuration(tomorrowNs - todayNs, TemporalUnit.Hour));
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalZonedDateTime.cs:336:            JsTemporal.Check(engine, DurationMath.RoundTimeDurationToIncrement(thisNs - start, end - start, mode, out var rounded), "the rounded time
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:324:    /// ParseMonthCode (s12.2.1), the shared library's <see cref="MonthCode.Parse"/>.
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:370:    /// <summary>The proposal's CalendarDateFromFields (s12.3.12), the shared calendars'.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:379:    /// <summary>The proposal's CalendarYearMonthFromFields (s12.3.13), the shared calendars'.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:388:    /// <summary>The proposal's CalendarMonthDayFromFields (s12.3.14) with its reference date, the shared calendars'.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:398:    /// The proposal's CalendarDateAdd (s12.3.7), the shared calendars': a valid duration's date part,
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:410:    /// <summary>The proposal's CalendarISOToDate (s12.3.26), the shared calendars'.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:46:    /// <summary>The proposal's CreateTemporalDate (s3.5.3): ISODateWithinLimits, the shared library's.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:61:    /// <summary>The proposal's CreateTemporalDateTime (s5.5.8): ISODateTimeWithinLimits, the shared library's.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:76:    /// <summary>The proposal's CreateTemporalYearMonth (s9.5.5): ISOYearMonthWithinLimits, the shared library's.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:85:    /// <summary>The proposal's CreateTemporalMonthDay (s10.5.2): ISODateWithinLimits, the shared library's.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:100:    /// <summary>A RangeError unless the epoch nanoseconds are an instant's (IsValidEpochNanoseconds, the shared library's).</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:223:    /// <summary>The proposal's RegulateTime (s4.5.8), the shared library's.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:226:    internal static IsoTime RegulateTime(JsEngine engine, double hour, double minute, double second, double millisecond, double microsecond, double nanoseco
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:228:        Check(engine, IsoArithmetic.RegulateTime(hour, minute, second, millisecond, microsecond, nanosecond, overflow, out var time), "the time");
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:255:            return RegulateTime(engine, record[0]!.Value, record[1]!.Value, record[2]!.Value, record[3]!.Value, record[4]!.Value, record[5]!.Value, overflow
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:280:        var time = RegulateTime(engine, fields.Hour ?? 0, fields.Minute ?? 0, fields.Second ?? 0, fields.Millisecond ?? 0, fields.Microsecond ?? 0, fields.N
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:485:    /// The proposal's TemporalInstantToString (s8.5.8): a null time zone writes UTC as Z; another's
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:494:    /// The proposal's TemporalZonedDateTimeToString (s6.5.4): the instant rounded, the zone's offset at
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:510:        var epochNs = IsoArithmetic.RoundTemporalInstant(zoned.EpochNanoseconds, increment, unit, mode);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs:146:    /// <summary>The proposal's TemporalDurationFromInternal (s7.5.8), the shared library's, then CreateTemporalDuration.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:286:    /// The proposal's GetDifferenceSettings (s13.43): the four reads in its order - largestUnit,
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:39:    /// The proposal's ParseISODateTime (s13.35): the first of <paramref name="goals"/> the string
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:57:    /// <summary>The proposal's ParseTemporalDurationString (s13.37): the ten fields, exact, or the RangeError.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:65:    /// <summary>The proposal's ParseTemporalCalendarString (s13.36): the identifier as written, not yet canonicalized, or the RangeError.</summary>
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:74:    /// The proposal's ParseTemporalTimeZoneString (s13.38): the zone's name, not yet looked up, or its
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs:543:            " kind(function () { return new Temporal.PlainDate(275760, 9, 13); })].join(' ');",
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs:550:        const string Expected = "RangeError RangeError RangeError RangeError RangeError RangeError +275760-09-13";
+
+## names: the names of the types rule I5 registers for SJL-10.4, as words anywhere
+# pattern: \b(JsCalendarDate|JsCalendarSystem|JsCalendarYear|JsCalendars|JsCopticCalendar|JsDateDuration|JsDifferenceSettings|JsEastAsianCalendar|JsFraction|JsGregorianCalendar|JsHebrewCalendar|JsHijriCalendar|JsIndianCalendar|JsInternalDuration|JsIsoDate|JsIsoDateTime|JsNudge|JsPersianCalendar|JsPrecision|JsRelativeTo|JsTemporalCore|JsTemporalParse|JsTimeRecord|TemporalGoal|TemporalUnit)\b
+# hits: 19
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainDateTime.cs:150:            if (smallest == TemporalUnit.Nanosecond && increment == 1)
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalZonedDateTime.cs:99:            return JsValue.Number(DurationMath.TotalTimeDuration(tomorrowNs - todayNs, TemporalUnit.Hour));
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalZonedDateTime.cs:322:        if (smallest == TemporalUnit.Nanosecond && increment == 1)
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalZonedDateTime.cs:332:        if (smallest == TemporalUnit.Day)
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:181:        var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.DateTime);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:263:        var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.Time);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:324:        var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.DateTime);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:383:            var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.ZonedDateTime);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:429:        var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.YearMonth);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:464:        var parsed = JsTemporalParser.Parse(engine, item.AsString(), TemporalGoal.MonthDay);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:507:        TemporalUnit unit = TemporalUnit.Nanosecond,
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs:149:    internal static JsDurationObject FromInternal(JsEngine engine, InternalDuration duration, TemporalUnit largestUnit)
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs:221:            var parsed = JsTemporalParser.Parse(engine, value.AsString(), TemporalGoal.ZonedDateTime, TemporalGoal.DateTime);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:256:    internal static TemporalUnit UnitOption(JsEngine engine, JsObject options, string key, bool required)
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:262:            return required ? throw engine.Error("RangeError", "Temporal: the " + key + " option is required") : TemporalUnit.Unset;
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:271:    internal static void ValidateUnit(JsEngine engine, TemporalUnit unit, TemporalUnitGroup group, bool allowAuto = false)
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:282:    private static string UnitName(TemporalUnit unit) =>
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs:283:        unit == TemporalUnit.Auto ? "auto" : System.Enum.GetName(unit)!.ToLowerInvariant();
+src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs:44:    internal static IsoParseResult Parse(JsEngine engine, string text, params TemporalGoal[] goals) =>
+
+## identifiers: calendar identifiers and era names spelled as string literals
+# pattern: "(buddhist|chinese|coptic|dangi|ethioaa|ethiopic|gregory|hebrew|indian|islamic(-civil|-tbla|-umalqura|-rgsa)?|iso8601|japanese|persian|roc)"|"(meiji|taisho|showa|heisei|reiwa|bce|broc|shaka|saka)"
+# hits: 37
+src/Broiler.VM.Profile.JavaScript/JsDateData.cs:79:        ("buddhist", null), ("chinese", null), ("coptic", null), ("dangi", "chinese"), ("ethiopic", null), ("ethioaa", "ethiopic"),
+src/Broiler.VM.Profile.JavaScript/JsDateData.cs:80:        ("hebrew", null), ("indian", null), ("islamic", null), ("islamic-civil", "islamic"), ("islamic-tbla", "islamic"),
+src/Broiler.VM.Profile.JavaScript/JsDateData.cs:81:        ("islamic-umalqura", "islamic"), ("japanese", null), ("persian", null), ("roc", null),
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:147:        ("japanese", "meiji") => "232",
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:148:        ("japanese", "taisho") => "233",
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:149:        ("japanese", "showa") => "234",
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:150:        ("japanese", "heisei") => "235",
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:151:        ("japanese", "reiwa") => "236",
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:152:        (_, "bce" or "broc") => "0",
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:153:        (_, "ce" or "roc") => "1",
+src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs:155:        ("coptic" or "ethiopic", "am") => "1",
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:216:        "buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "gregory", "hebrew", "indian",
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:217:        "islamic-civil", "islamic-tbla", "islamic-umalqura", "iso8601", "japanese", "persian", "roc",
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:228:        "gregory", "buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "hebrew", "indian", "islamic",
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:229:        "islamic-civil", "islamic-rgsa", "islamic-tbla", "islamic-umalqura", "iso8601", "japanese", "persian", "roc",
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:386:            if (calendar != format.Calendar && !(isoAllowed && calendar == "iso8601"))
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:439:            if (zoned.Calendar != "iso8601" && zoned.Calendar != format.Calendar)
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:682:        var resolvedCalendar = resolved.Keys["ca"] ?? "gregory";
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:686:        if (resolvedCalendar is "islamic" or "islamic-rgsa")
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:688:            resolvedCalendar = "islamic-tbla";
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:693:        var dataLanguage = resolvedCalendar == "gregory" ? language : language + "@" + resolvedCalendar;
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:695:            resolvedCalendar is "gregory" or "iso8601" ? null : (tables.Calendars, JsTemporal.CalendarIdOf(resolvedCalendar));
+src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs:1252:    internal string Calendar { get; init; } = "gregory";
+src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:123:            return StringArray(engine, [locale.Calendar ?? "gregory"]);
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalInstant.cs:149:            return JsValue.Object(JsTemporal.CreateZonedDateTime(engine, instant.EpochNanoseconds, timeZone, "iso8601"));
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalInstant.cs:240:            JsValue.Object(JsTemporal.CreatePlainDateTime(engine, SystemDateTime(engine, TemporalArgument(arguments, 0)), "iso8601")));
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalInstant.cs:246:            return JsValue.Object(JsTemporal.CreateZonedDateTime(engine, SystemEpochNs(), timeZone, "iso8601"));
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalInstant.cs:250:            JsValue.Object(JsTemporal.CreatePlainDate(engine, SystemDateTime(engine, TemporalArgument(arguments, 0)).Date, "iso8601")));
+src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainDate.cs:207:            return "iso8601";
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs:215:        return calendarLike.Type == JsType.Undefined ? "iso8601" : ToCalendarIdentifier(engine, calendarLike);
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:182:        var parsedCalendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:325:        var parsedCalendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:387:            calendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:430:        var parsedCalendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:465:        var parsedCalendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs:468:        if (parsedCalendar == "iso8601")
+src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs:236:            calendar = CanonicalizeCalendar(engine, parsed.Calendar ?? "iso8601");
+
+# hits in all four parts: 96

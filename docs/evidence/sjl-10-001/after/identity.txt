@@ -1,0 +1,37 @@
+bundle sjl-10-001, the Temporal core's after arm
+milestone SJL-10, work package SJL-10.6, Broiler.VM's half
+collected 2026-10-19T13:50:21Z
+after-commit 96876432aa27fce3d6b9005af061ff12195badeb
+after-tree clean
+cut-over-commit e42cd5d931177658e5beb40e13b9aa000d4d0ee6 (SJL-10.4's cut-over, JSD-0079: its code in 66b0877, a13a41c, f14abb7 and 9b7eead, its record in c0355f4, and the committed feed pinned to Broiler.ECMAScript 0.1.0-preview.6 as published in 8b6cc96, merged in e42cd5d)
+cut-over-is-ancestor yes
+base-commit 99c9c9f0e32aa74e564b82aa24c0b05a58aab00b (base/identity.txt)
+rule docs/evidence/sjl-10-001/decision-rule-area.md sha256=80dc072302a7824d0bf7ad7aaba7800ae493a248f6978733cf391adc59756593
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+suite-pin src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+allowance fuel=100000000 wallClockMs=5000
+twin-allowance ceiling=1000000000 wallClockMs=600000
+jobs 4
+native-backend x86-64-sysv
+twin-folders src/tests/forms/wide
+dataset-folders src/tests/temporal
+since-cut-over e42cd5d931177658e5beb40e13b9aa000d4d0ee6, outside the documents: 5 files
+  THIRD_PARTY_NOTICES.md
+  src/tests/vectors/pins/README.md
+  src/tests/vectors/pins/broiler-js-vectors-00b65dd055a277859d5325ead6338a040bcf2f30.tar.gz
+  src/tests/vectors/pins/broiler-js-vectors-66b77088c6705032e5beea64fa48c37f5ba31c77.tar.gz
+  src/tests/vectors/pins/vectors.pin
+commits since the cut-over, each with its files outside the documents:
+  95f1e0d9cd95ae519fb5203f217d7691304da9ab SJL-10.5: JSD-0078 reads Broiler.JS's cut-over and records the owner's decision D12: none
+  6520e71ee84ee69e10f652e250fbce77c0c2142d SJL-10.5: the milestone, bundle sjl-10-001 and the ledger record Broiler.JS's cut-over as observed: none
+  96acdb4197e451160659a719f2787ff13a7094aa SJL-10.5: the cut-over's records corrected after review: none
+  d6254020a2d5021614f12d15aa1d26d9def8b2a5 SJL-10.5: this family's pin moves to corpus revision 26, the Temporal divergences retired: 5 files
+    THIRD_PARTY_NOTICES.md
+    src/tests/vectors/pins/README.md
+    src/tests/vectors/pins/broiler-js-vectors-00b65dd055a277859d5325ead6338a040bcf2f30.tar.gz
+    src/tests/vectors/pins/broiler-js-vectors-66b77088c6705032e5beea64fa48c37f5ba31c77.tar.gz
+    src/tests/vectors/pins/vectors.pin
+  67305ce5f5deb2f3d8e35e9e49fc374bb94161ea SJL-10.5: this family's run on corpus revision 26, bundle sjl-10-001 section 3, and the ledger records Broiler.JS's merge and the pin's move: none
+  ba2dbcd63286015439dc34a96cccb4a4e2cde480 SJL-10.5: the records name Broiler.JS#1054's merge, and the ledger keeps its rule on counts: none
+  96876432aa27fce3d6b9005af061ff12195badeb Merge pull request #153 from Broiler-Platform/claude/busy-lamport-m3yprr: none
