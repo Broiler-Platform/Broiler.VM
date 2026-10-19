@@ -655,11 +655,12 @@ row D6.
 **Decision D34 - this family's baseline content.**
 - **Per input:** the outcome, the ordered (code, line, column) list, and for an accepted input the artifact's
   SHA-256 and length. Never the bytes.
-- **Fixed names.** Source names and module keys are fixed by the corpus manifest.
+- **Fixed names.** Source names, module keys and script referrers are fixed by the corpus manifest.
 - **The populations** are the sub-populations B1 to B4 and the request-flag sets E0 to E7, as the bundle's rule
   states them. The native form runs on linux-x64 with `x86-64-sysv` only.
 - The reason:
-  - a module's bytes depend on its key;
+  - a module's bytes depend on its key, and a script's on its referrer, which the conformance root takes from where
+    the suite was extracted;
   - the accepted inputs' artifacts are too large to retain, and any commit regenerates them;
   - eval code was otherwise outside every identity population.
 
