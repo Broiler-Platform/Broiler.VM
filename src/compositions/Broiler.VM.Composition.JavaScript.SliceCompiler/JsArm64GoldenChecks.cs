@@ -45,16 +45,26 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 internal static class JsArm64GoldenChecks
 {
     /// <summary>Runs every golden row and every refusal row.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run()
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
     {
-        var rows = new System.Collections.Generic.List<(string, bool, string)>();
-        rows.AddRange(Encodings());
-        rows.AddRange(Programs());
-        rows.AddRange(Refusals());
-        rows.Add(ABranchTooFarIsRefusedRatherThanTruncated());
-        rows.Add(ABranchAtTheLimitIsStillEncoded());
-        rows.Add(TheDeclaredFrameOffsetsTileASequentialLayout());
-        return rows;
+        foreach (var produced in Encodings())
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in Programs())
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in Refusals())
+        {
+            yield return produced;
+        }
+
+        yield return ABranchTooFarIsRefusedRatherThanTruncated();
+        yield return ABranchAtTheLimitIsStillEncoded();
+        yield return TheDeclaredFrameOffsetsTileASequentialLayout();
     }
 
     // ---- one instruction at a time --------------------------------------------------------

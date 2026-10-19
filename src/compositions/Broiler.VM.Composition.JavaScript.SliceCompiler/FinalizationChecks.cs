@@ -37,16 +37,16 @@ internal static class FinalizationChecks
         "var log = []; var registry = new FinalizationRegistry(function (held) { log.push(held); });\n";
 
     /// <summary>Every finalization check.</summary>
-    internal static (string Name, bool Passed, string Detail)[] Run() =>
-    [
-        ADrainDeliversOnceAndAScriptNever(),
-        AStepDeliversInItsTurn(),
-        TheDelegatedDrainNeverSweeps(),
-        AnUnregisterBeforeTheJobPreventsTheCall(),
-        AThrowingCallbackFaultsAndTheRestArriveLater(),
-        AnInertCompositionNeverDelivers(),
-        AReachableTargetIsNeverReported(),
-    ];
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+    {
+        yield return ADrainDeliversOnceAndAScriptNever();
+        yield return AStepDeliversInItsTurn();
+        yield return TheDelegatedDrainNeverSweeps();
+        yield return AnUnregisterBeforeTheJobPreventsTheCall();
+        yield return AThrowingCallbackFaultsAndTheRestArriveLater();
+        yield return AnInertCompositionNeverDelivers();
+        yield return AReachableTargetIsNeverReported();
+    }
 
     /// <summary>
     /// A marked registration's callback runs once, with its held value, in a <c>#drain-jobs</c> -

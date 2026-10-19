@@ -469,34 +469,69 @@ internal static class Program
     /// </remarks>
     private static int RunChecks(bool verbose, bool valueOnly = false)
     {
-        var checks = valueOnly
-            ? JsWordChecks.Run().Concat(ValueFormChecks.Run()).ToArray()
-            : CrossProfileChecks.Run()
-            .Concat(SourceFrontEndChecks.Run())
-            .Concat(SurfaceChecks.Run())
-            .Concat(IsolationChecks.Run())
-            .Concat(HostBoundaryChecks.Run())
-            .Concat(ProportionalityChecks.Run())
-            .Concat(SuspensionChecks.Run())
-            .Concat(FinallyMatrixChecks.Run())
-            .Concat(NativeAbiChecks.Run())
-            .Concat(JsArm64GoldenChecks.Run())
-            .Concat(NativeTemplateScanChecks.Run())
-            .Concat(CloneChecks.Run())
-            .Concat(WeakMapChecks.Run())
-            .Concat(FinalizationChecks.Run())
-            .Concat(RealmChecks.Run())
-            .Concat(SharedChecks.Run())
-            .Concat(IntlChecks.Run())
-            .Concat(BigIntChecks.Run())
-            .Concat(JsWordChecks.Run())
-            .Concat(ValueFormChecks.Run())
-            .ToArray();
+        // THE ROWS ARE PRODUCED ONE AT A TIME, AND EACH IS TIMED *(added 2026-10-19)*. Every group
+        // below yields its rows as it computes them, and a group is not started until the one before
+        // it has yielded its last, so the order is the order it always was and the time between two
+        // rows is the time the second one took. Before this the whole set was computed first and then
+        // printed, which made a log say how long `--checks` took and never which rows took it - and
+        // whether one or two rows dominate is the question a lane split has to answer first.
+        //
+        // `--verbose` prints that time on a line of its own under the row, as `elapsed <seconds> s`.
+        // A LINE OF ITS OWN, BECAUSE THE ROW LINES ARE READ BY OTHER TOOLS. The area collectors of
+        // bundles sjl-8-001 and sjl-10-001 compare a named row's whole verbose line between a base and
+        // an after run, and older collectors keep the lines that contain a given phrase; a time on the
+        // row line would make every comparison differ, and a time line that repeated the row's name
+        // would be kept as if it were the row. So the row lines are byte for byte what they were, and
+        // the time line names nothing. A helper that computes several rows before returning any of them
+        // charges their shared time to the first of them, and the rest read close to zero; the word
+        // checks, which live in the profile and are computed whole, are one such helper. The two
+        // helpers that took most of a run when this was written - the fuel-parity twins and the
+        // smallest completing allowance - yield their rows one at a time.
+        Func<IEnumerable<(string Name, bool Passed, string Detail)>>[] groups = valueOnly
+            ? [JsWordChecks.Run, ValueFormChecks.Run]
+            :
+            [
+                CrossProfileChecks.Run,
+                SourceFrontEndChecks.Run,
+                SurfaceChecks.Run,
+                IsolationChecks.Run,
+                HostBoundaryChecks.Run,
+                ProportionalityChecks.Run,
+                SuspensionChecks.Run,
+                FinallyMatrixChecks.Run,
+                NativeAbiChecks.Run,
+                JsArm64GoldenChecks.Run,
+                NativeTemplateScanChecks.Run,
+                CloneChecks.Run,
+                WeakMapChecks.Run,
+                FinalizationChecks.Run,
+                RealmChecks.Run,
+                SharedChecks.Run,
+                IntlChecks.Run,
+                BigIntChecks.Run,
+                JsWordChecks.Run,
+                ValueFormChecks.Run,
+            ];
+
         var failed = 0;
         var notRun = 0;
+        var count = 0;
 
-        foreach (var (name, passed, detail) in checks)
+        using var rows = groups.SelectMany(static run => run()).GetEnumerator();
+
+        while (true)
         {
+            var started = System.Diagnostics.Stopwatch.GetTimestamp();
+
+            if (!rows.MoveNext())
+            {
+                break;
+            }
+
+            var elapsed = System.Diagnostics.Stopwatch.GetElapsedTime(started);
+            var (name, passed, detail) = rows.Current;
+            count++;
+
             // A THIRD VERDICT, BECAUSE TWO CANNOT SAY THIS *(added 2026-09-08)*. A row whose name
             // begins `not-run/` reports work this machine could not do: the x86-64 obligation table
             // on a machine that is not x86-64, for instance. Folding that into either of the other
@@ -527,9 +562,15 @@ internal static class Program
                 Console.WriteLine(
                     $"{(skipped ? "SKIP" : passed ? "ok  " : "FAIL")} {name}: {detail}");
             }
+
+            if (verbose)
+            {
+                Console.WriteLine(
+                    "     elapsed " + elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture) + " s");
+            }
         }
 
-        var ran = checks.Length - notRun;
+        var ran = count - notRun;
         var tail = notRun == 0
             ? string.Empty
             : $", {notRun} not run on this machine and claimed by nothing";

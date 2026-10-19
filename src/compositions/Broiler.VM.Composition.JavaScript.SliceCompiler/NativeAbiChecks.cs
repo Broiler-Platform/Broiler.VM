@@ -97,10 +97,9 @@ internal static class NativeAbiChecks
     }
 
     /// <summary>Runs the obligation table.</summary>
-    internal static List<(string Name, bool Passed, string Detail)> Run()
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
     {
         Program.InitializeNativeMapping();
-        var checks = new List<(string, bool, string)>();
         var abi = JsX64Abi.Host;
 
         if (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture !=
@@ -119,56 +118,68 @@ internal static class NativeAbiChecks
             // obligation table was not run, and NOTHING in it is held. The boolean stays `false`
             // so that a reader who removed the prefix convention would get a red lane rather than
             // a silent green one.
-            checks.Add((
+            yield return (
                 "not-run/native/abi/x86-64-obligation-table",
                 false,
                 "this machine is not x86-64, so no row of the x86-64 obligation table was run and " +
                 "none of them is claimed - the arm64 encoder's golden rows below are unaffected, " +
-                "because an encoding is checked by comparing bytes rather than by running them"));
+                "because an encoding is checked by comparing bytes rather than by running them");
 
             // THE BASELINE FORM'S EXECUTION ROWS ARE NOT RUN HERE EITHER, and each is named so that
             // its absence is counted row by row: the compile-and-scan rows of the baseline form run on
             // every machine beside the template tables, and these are the ones that enter the code.
             foreach (var row in BaselineExecutionRows)
             {
-                checks.Add((
+                yield return (
                     "not-run/native/baseline/" + row,
                     false,
                     "this machine is not x86-64, so no baseline emitted code was entered and nothing " +
-                    "this row asserts is claimed"));
+                    "this row asserts is claimed");
             }
 
-            return checks;
+            yield break;
         }
 
-        checks.Add(StackPointerIsUnchanged(abi));
-        checks.Add(CallerPopsIsDetectable(abi));
-        checks.Add(CalleeSavedAreUnchanged(abi));
-        checks.Add(ClobberIsDetectable(abi));
-        checks.Add(FramePointerArrivesInTheRightRegister(abi));
-        checks.Add(WrongFramePointerRegisterIsDetectable(abi));
-        checks.Add(StackIsAlignedAtTheCall(abi));
-        checks.Add(MisalignmentIsDetectable(abi));
-        checks.Add(ShadowSpaceIsReserved(abi));
-        checks.Add(TheTwoConventionsDisagreeAboutRdiAndRsi());
-        checks.Add(FrameOffsetsMatchTheRuntime());
-        checks.Add(EmittedEntryPointsSurviveAMillionCalls(abi));
-        checks.Add(TheTwoFormsAgree(abi));
-        checks.Add(ReEmissionIsByteIdentical(abi));
+        yield return StackPointerIsUnchanged(abi);
+        yield return CallerPopsIsDetectable(abi);
+        yield return CalleeSavedAreUnchanged(abi);
+        yield return ClobberIsDetectable(abi);
+        yield return FramePointerArrivesInTheRightRegister(abi);
+        yield return WrongFramePointerRegisterIsDetectable(abi);
+        yield return StackIsAlignedAtTheCall(abi);
+        yield return MisalignmentIsDetectable(abi);
+        yield return ShadowSpaceIsReserved(abi);
+        yield return TheTwoConventionsDisagreeAboutRdiAndRsi();
+        yield return FrameOffsetsMatchTheRuntime();
+        yield return EmittedEntryPointsSurviveAMillionCalls(abi);
+        yield return TheTwoFormsAgree(abi);
+        yield return ReEmissionIsByteIdentical(abi);
 
-        checks.AddRange(TheTwoFormsAgreeOverTheWideManifest(abi));
-        checks.AddRange(TheSmallestCompletingAllowanceIsOneFigure(abi));
+        foreach (var produced in TheTwoFormsAgreeOverTheWideManifest(abi))
+        {
+            yield return produced;
+        }
+
+        foreach (var produced in TheSmallestCompletingAllowanceIsOneFigure(abi))
+        {
+            yield return produced;
+        }
 
         foreach (var row in JsX64Abi.Rows)
         {
-            checks.AddRange(BaselineEntryPointsSurvive(abi, row));
+            foreach (var produced in BaselineEntryPointsSurvive(abi, row))
+            {
+                yield return produced;
+            }
         }
 
-        checks.Add(ASwappedHandlerNeverRuns(abi));
-        checks.Add(AHandlerAtTheThrowersSuccessorContinuesTheStep(abi));
-        checks.AddRange(FrequentCollections(abi));
+        yield return ASwappedHandlerNeverRuns(abi);
+        yield return AHandlerAtTheThrowersSuccessorContinuesTheStep(abi);
 
-        return checks;
+        foreach (var produced in FrequentCollections(abi))
+        {
+            yield return produced;
+        }
     }
 
     // ---- the rows -----------------------------------------------------------------------------
@@ -724,9 +735,8 @@ internal static class NativeAbiChecks
     /// block charges each of its instructions where the interpreter does, so an allowance one short runs
     /// out inside a block on the instruction it runs out on in the interpreter.
     /// </remarks>
-    private static List<(string, bool, string)> TheSmallestCompletingAllowanceIsOneFigure(JsX64Abi abi)
+    private static IEnumerable<(string, bool, string)> TheSmallestCompletingAllowanceIsOneFigure(JsX64Abi abi)
     {
-        var rows = new List<(string, bool, string)>();
         var bisected = new List<(string Name, string Source, string? Library)>();
 
         foreach (var index in Bisected)
@@ -745,13 +755,11 @@ internal static class NativeAbiChecks
             var interpreted = SmallestCompletingAllowance(source, library, JsOutputForm.Bytecode, string.Empty);
             var emitted = SmallestCompletingAllowance(source, library, JsOutputForm.Native, abi.Name);
 
-            rows.Add((
+            yield return (
                 label,
                 interpreted.Figure != 0 && interpreted.Figure == emitted.Figure,
-                "bytecode " + interpreted.Why + "; native " + emitted.Why));
+                "bytecode " + interpreted.Why + "; native " + emitted.Why);
         }
-
-        return rows;
     }
 
     /// <summary>Bisects the smallest fuel ceiling at which one program completes in one form.</summary>

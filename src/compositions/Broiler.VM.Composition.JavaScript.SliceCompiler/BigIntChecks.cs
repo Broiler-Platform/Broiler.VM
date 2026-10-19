@@ -266,40 +266,37 @@ internal static class BigIntChecks
     ];
 
     /// <summary>Runs every BigInt check.</summary>
-    internal static System.Collections.Generic.List<(string Name, bool Passed, string Detail)> Run()
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
     {
-        var results = new System.Collections.Generic.List<(string Name, bool Passed, string Detail)>();
-
         foreach (var (name, source, expected) in Programs)
         {
-            results.Add(Judge(name, source, expected));
+            yield return Judge(name, source, expected);
         }
 
         foreach (var (literal, why) in Malformed)
         {
-            results.Add(MalformedLiteralIsRefusedAtItsPosition(literal, why, JsFeatureManifest.Wide));
-            results.Add(MalformedLiteralIsRefusedAtItsPosition(literal, why, JsFeatureManifest.Numeric));
+            yield return MalformedLiteralIsRefusedAtItsPosition(literal, why, JsFeatureManifest.Wide);
+            yield return MalformedLiteralIsRefusedAtItsPosition(literal, why, JsFeatureManifest.Numeric);
         }
 
-        results.Add(TheNumericManifestKeepsTheNamedRefusal());
-        results.Add(AnOversizedLiteralIsRefusedAtItsPosition("1" + new string('0', 19729), "a decimal"));
-        results.Add(AnOversizedLiteralIsRefusedAtItsPosition("0x1" + new string('0', 16384), "a hexadecimal"));
-        results.Add(ACompositionDecliningTheSurfaceRefusesEveryWayIn());
-        results.Add(ADecliningCompositionRefusesBigIntThroughEval());
-        results.Add(EveryPublicDescriptorDoorAdmitsTheSurfaceWhenNamed());
-        results.Add(AnUpdateExpressionDeclaresNothingAndStepsANumber());
-        results.Add(AThrownBigIntReachesTheHostAsAHostThrow());
-        results.Add(ADecliningRealmRefusesAHostBigInt());
-        results.Add(AHostCrossingIsChargedPerWord());
-        results.Add(ABigIntPropertyKeyDeclaresNothing());
-        results.Add(ALongDecimalTextIsChargedForItsSquare());
-        results.Add(AWideMultiplicationIsChargedForItsSize());
-        results.Add(FormattingTheWidestValueIsChargedForItsSquare());
-        results.Add(CancellationStopsALongFormatting());
-        results.Add(AsIntNAndAsUintNWrapAtTheirWidth());
-        results.Add(TheBigIntTypedArraysNeedBothSurfaces());
-        results.Add(AWideElementWriteIsChargedForItsNarrowing());
-        return results;
+        yield return TheNumericManifestKeepsTheNamedRefusal();
+        yield return AnOversizedLiteralIsRefusedAtItsPosition("1" + new string('0', 19729), "a decimal");
+        yield return AnOversizedLiteralIsRefusedAtItsPosition("0x1" + new string('0', 16384), "a hexadecimal");
+        yield return ACompositionDecliningTheSurfaceRefusesEveryWayIn();
+        yield return ADecliningCompositionRefusesBigIntThroughEval();
+        yield return EveryPublicDescriptorDoorAdmitsTheSurfaceWhenNamed();
+        yield return AnUpdateExpressionDeclaresNothingAndStepsANumber();
+        yield return AThrownBigIntReachesTheHostAsAHostThrow();
+        yield return ADecliningRealmRefusesAHostBigInt();
+        yield return AHostCrossingIsChargedPerWord();
+        yield return ABigIntPropertyKeyDeclaresNothing();
+        yield return ALongDecimalTextIsChargedForItsSquare();
+        yield return AWideMultiplicationIsChargedForItsSize();
+        yield return FormattingTheWidestValueIsChargedForItsSquare();
+        yield return CancellationStopsALongFormatting();
+        yield return AsIntNAndAsUintNWrapAtTheirWidth();
+        yield return TheBigIntTypedArraysNeedBothSurfaces();
+        yield return AWideElementWriteIsChargedForItsNarrowing();
     }
 
     /// <summary>
