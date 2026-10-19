@@ -28,7 +28,13 @@ Broiler.JS parser would be premature." Its reasons are confirmed by the review, 
 - It names desugaring temporaries from a process-wide counter, so its output depends on what was
   parsed earlier in the process.
 - It writes to a shared static end-of-file token on every parse.
-- It references `Broiler.JavaScript.Runtime` for exactly three types.
+- It references `Broiler.JavaScript.Runtime` for six types: `CoreScript`, `CancellableDisposableAction`,
+  `JSUnicode`, `JSUnicodePropertyNames`, `RegExpGroupNames` and `RegExpUnicodeValidator`. *(Corrected
+  2026-10-19, at SJL-12.1, by
+  [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+  from the Parser assembly's metadata at Broiler.JS `24510b0e`. The last four came with the regular-expression
+  literal's early checks, Broiler.JS #1041 of 2026-10-17. The bullet read "It references
+  `Broiler.JavaScript.Runtime` for exactly three types.")*
 - It desugars `for` loops while parsing.
 - Its early errors are spread across the parser, a separate validation pass and the compiler.
 
@@ -82,6 +88,14 @@ library's design document in the home. The full design is in
 
 *Done when* the contract is filed in all three places.
 
+*(Added 2026-10-19, at SJL-12.1, by
+[JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+decisions D5 and D41.)* The three places are JSD-0080, Broiler.JS's plan section "The frontend contract (SJL-12)",
+and the home's design document, `Broiler.ECMAScript/docs/frontend/design.md` in the Broiler.JS repository. No
+`Broiler.ECMAScript.Frontend/` project folder is created at SJL-12, because SJL-12 writes no library code. The design
+document is owed by this done-when, not by an exit clause: clause 3 names Broiler.JS's plan, and clause 6 the JSD.
+JSD-0080 also files the semantic model's design.
+
 ### SJL-12.2 — Decisions SJL-D-11 and SJL-D-12
 
 These decisions, taken on 2026-10-11, are recorded in the contract JSD and in Broiler.JS's plan:
@@ -133,14 +147,32 @@ A corpus retained for every later comparison, built from:
 4. **The `Parser` → `Runtime` reference goes.** This is Broiler.JS's own MOD-M2-4.
    - `CoreScript`'s goal state becomes an option.
    - `CancellableDisposableAction` moves to a lower assembly or is replaced.
-   - `RegExpUnicodeValidator` is replaced by the provider seam.
+   - `RegExpUnicodeValidator`, `JSUnicode`, `JSUnicodePropertyNames`, `RegExpGroupNames` and the Unicode tables move
+     to `Broiler.JavaScript.Ast`, the public validator keeping a forwarder in `Runtime`. The provider seam the
+     options carry is typed by Broiler.Unicode's `IUnicodeTables`, and its default is the table `Ast` holds.
+
+   *(Revised 2026-10-19, at SJL-12.1, before any evidence of SJL-12 existed, by
+   [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+   decision D20. The reference is to six types, not three. A seam with no default, or one that throws, would break
+   the portable compiler, which has no `Runtime` reference, and the parser's Unicode and regular-expression tests.
+   `CancellableDisposableAction` moves to `Ast` with a forwarder, and `UndoMark` is marked obsolete (SJL-D-25 (b)).
+   The third bullet read "`RegExpUnicodeValidator` is replaced by the provider seam.")*
 5. **`for`-loop desugaring moves** out of the parser into a preparation pass of the compiler, so the
    parser produces an undesugared tree.
 6. **An architecture test** in Broiler.JS: the parser assembly declares no mutable static and no
    `AsyncLocal`. This is the shape of Broiler.VM's rule N12.
 
-*Done when* every item has landed and Broiler.JS's test262, per path, shows no regression against
-SJL-0's base under the predeclared rule.
+*Done when* every item has landed and Broiler.JS's test262, per path and with negative tests, shows no
+regression against a base taken at the commit that carries Broiler.JS's rule (bundle `sjl-12-001`), under the
+predeclared rule.
+
+*(Revised 2026-10-19, at SJL-12.1, before any evidence of SJL-12 existed, by
+[JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+decision D7. This is a work package's done-when, corrected in place under roadmap section 13, and not a gate
+revision: exit clause 2, "test262 per path meets the predeclared rule", names no base. SJL-0's base predates every
+cut-over of SJL-3 to SJL-10 and excludes negative tests, and Broiler.JS's comparison script refuses two runs whose
+`includeNegative` differs. The sentence read "*Done when* every item has landed and Broiler.JS's test262, per path,
+shows no regression against SJL-0's base under the predeclared rule.")*
 
 ### SJL-12.6 — Broiler.VM: in-place preparation
 
@@ -157,6 +189,16 @@ SJL-0's base under the predeclared rule.
 3. **Deterministic ordering.** Every output order that comes from dictionary enumeration is
    replaced by source order. This is the relationship to stage JSB-1, which is recorded.
 4. **Structured template tokens**, so the wide parser stops re-tokenising substitutions.
+
+   *(Added 2026-10-19, at SJL-12.1, by
+   [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+   decision D15.)* Its listed corrections:
+   - `${yield}` and `${await …}` in formal parameters are refused with 2101;
+   - template nesting counts toward the nesting bound, and past it is refused with 2103;
+   - the shared tokenizer's template scan becomes iterative, so a deeply nested template is refused rather than
+     ending the process.
+
+   Positions inside substitutions may only become correct. No public member changes.
 
 *Done when* every item has landed and the following hold:
 
@@ -177,6 +219,17 @@ SJL-0's base under the predeclared rule.
 2. test262 per path meets the predeclared rule.
 3. The contract record is in Broiler.JS's plan.
 
+*(Added 2026-10-19, at SJL-12.1, by
+[JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+decisions D23 and D24. The clause's text is unchanged.)* Clause 1 is read this way:
+- **"Does not desugar"** is SJL-12.5 item 5's `for`-loop desugaring. The `using`-in-`for` block wrap moves with it.
+- **The parser's two other rewrites stay**, listed for SJL-14, whose shared tree keeps raw facts: the Annex B.3.4
+  block it synthesizes for a function declaration that shadows a parameter, and the regular-expression literal's
+  `\u{…}` decoding. Neither introduces a temporary or restructures control flow.
+- **"Reads no ambient state"** is read over the Parser assembly's own declarations and references. The stack
+  segmentation's flag and environment variable, the compile thread's statics, `Ast`'s empty instances and the
+  compiler's read of the current engine for direct `eval` are outside it.
+
 **Broiler.VM clauses**
 
 4. The binder pass is separate from emission. The wide path's early errors run in one stage.
@@ -184,6 +237,19 @@ SJL-0's base under the predeclared rule.
 5. test262 in both forms meets the predeclared rule. The parse corpus's artifacts are byte-identical,
    or every difference is classified. Rules N5 to N9, N12 and N19 hold.
 6. The contract JSD is filed. Decisions `SJL-D-11` and `SJL-D-12` are recorded.
+
+*(Added 2026-10-19, at SJL-12.1, by
+[JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+decision D10. The clause's text is unchanged.)* Clause 4's "The wide path's early errors run in one stage" is read as
+SJL-12.6 item 2 states it:
+- **After parsing, the wide path has one early-error stage, the binder pass.** Every early error the lowering raises
+  today moves there, with its code.
+- **The wide parser keeps its own static-semantic checks** until SJL-13 deletes `JsParser` and SJL-15's model takes
+  every early error that is not purely grammatical.
+- **JSD-0014's decision 1 is a requirement on the shared front end**, which SJL-13 and SJL-15 meet.
+
+Moving the parser's checks now would be work SJL-13 deletes, and would change the first code of refused inputs with
+no class to admit it.
 
 **Shared clauses**
 
@@ -199,6 +265,17 @@ SJL-0's base under the predeclared rule.
 - **Broiler.VM** `docs/evidence/sjl-12-001/`: the test262 comparison, the artifact comparison, the
   determinism runs, the rule runs and the parse-corpus baseline.
 
+*(Added 2026-10-19, at SJL-12.1, by
+[JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+decisions D8, D37 and D38.)* **The rules are committed with SJL-12.1**, before any code they judge. No work package
+above names that step, and SJL-12.5 and SJL-12.6 are judged "against the predeclared rule" (validation principle 3;
+roadmap section 6 item 10).
+- **Broiler.VM's rule** is
+  [`docs/evidence/sjl-12-001/decision-rule-area.md`](../../evidence/sjl-12-001/decision-rule-area.md). Its part E also
+  checks the diagnostic mapping, validation section 7's control for this milestone.
+- **Broiler.JS's rule** is `docs/evidence/sjl-12-001/decision-rule.md`. It adds the determinism of its parser and of
+  its compiler's `for`-loop pass.
+
 ---
 
 ## Does not do
@@ -207,3 +284,10 @@ SJL-0's base under the predeclared rule.
 - **It changes no language surface** either engine accepts, beyond listed corrections.
 - **It does not change Broiler.VM's slice path.** SJL-15 rebuilds it on the shared tree and model,
   under decision [SJL-D-13](../decisions.md#sjl-d-13) (a).
+
+  *(Added 2026-10-19, at SJL-12.1, by
+  [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
+  decision D15.)* SJL-12.6 item 4 changes one thing both paths share: `SliceTokenizer`'s template scan becomes
+  iterative. It is a listed slice correction in which only a crash becomes a refusal. **No slice outcome changes for
+  any input that completes today**, and bundle `sjl-12-001`'s rule holds the slice front end and its construct census
+  to no difference at all.

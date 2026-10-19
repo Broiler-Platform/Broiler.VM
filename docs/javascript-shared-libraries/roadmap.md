@@ -293,8 +293,8 @@ pilot** (decision `SJL-D-23`). **A refusal of any later area** ends that area on
 Broiler.VM's own extraction gate (ADR 0011, G1 to G4) governs sharing between Broiler.VM profiles.
 It cannot be invoked here, because the second implementation is in another engine, not another
 profile (decision `SJL-D-8`). The programme applies **its own gate, of the same shape**, at the
-start of every area milestone (SJL-3 to SJL-15, and SJL-17). The area's first work package files the
-verdict.
+start of every area milestone (SJL-3 to SJL-11, SJL-13 to SJL-15, and SJL-17). The area's first work
+package files the verdict.
 
 | Condition | Statement |
 |---|---|
@@ -310,6 +310,18 @@ verdict.
 implementation gains a source-level pointer to the record, so the duplication stays visible.
 Broiler.VM's roadmap section 8: "A duplication with no record is the failure mode this rule exists
 to prevent."
+
+*(Revised 2026-10-19, at SJL-12.1, by
+[JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)
+decision D1. The parenthesis in this section's first paragraph read "(SJL-3 to SJL-15, and SJL-17)".)*
+- **SJL-12 is preparation, not an area milestone owing a verdict.** It writes no shared code, so X3 to X6 have no
+  subject. Its milestone file has no verdict work package, and its exit gate no X clause.
+- **The frontend area's verdict is SJL-13.1's**, which applies this gate to the library SJL-13 writes. Section 11's
+  row for SJL-13 names no verdict JSD, though SJL-13.1 files one.
+- **The ledger's update rule 10 leaves SJL-12's row out only because SJL-12 may start from SJL-0.** SJL-12 still
+  cannot exit before SJL-3 does (its milestone's "Waits on"), and the ledger's entry for SJL-12's start says so.
+- **This corrects the summary to the milestone file, and is not a gate revision**: SJL-12's milestone file never
+  named a verdict.
 
 ---
 

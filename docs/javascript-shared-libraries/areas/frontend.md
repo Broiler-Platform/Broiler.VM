@@ -11,6 +11,11 @@
 **Library:** `Broiler.ECMAScript.Frontend`. **Status:** design. Feature statements come from reading
 both front ends at Broiler.VM `88d8b51d` and Broiler.JS `44a214dc`.
 
+*(Added 2026-10-19, at SJL-12.1.)* [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)
+re-derived these statements from code at Broiler.VM `046357b` and Broiler.JS `24510b0e`, and records the contract of
+section 4 with the specifics its decisions D27 and D41 fix. Each reading that no longer held is corrected beside it,
+dated, with the superseded text quoted (its decision D42).
+
 ---
 
 ## 1. Why this area is the largest opportunity and the largest risk
@@ -49,8 +54,10 @@ rules on:
 
 Three things it does not do, and one thing it does:
 
-- **identifiers and whitespace** come from the pinned Unicode tables, through the Format assembly's
-  `JsUnicodeLexical`;
+- **identifiers and whitespace** come from the pinned Unicode tables, through the compiler's
+  `JsCompilerUnicode`, which reads Broiler.Unicode's lexical classes over the tables Format embeds *(revised
+  2026-10-19, at SJL-12.1, by JSD-0080 decision D42: so since SJL-7.4. The item read "come from the pinned Unicode
+  tables, through the Format assembly's `JsUnicodeLexical`;")*;
 - **regular-expression literals** are one opaque token, delimited but not validated;
 - **template literals** are one opaque token;
 - **decorators** (`@`) are refused in the tokenizer itself.
@@ -143,9 +150,14 @@ supply the provider; ADR 0010 requires the compiler to stay a byte producer.
 - Tokens are a mutable linked list, and line terminators are tokens.
 - Templates are split into begin, part and end tokens with cooked text.
 - Numbers include BigInt and a non-standard `m` (`Decimal`) suffix.
-- Identifiers are classified with the runtime's Unicode categories plus hand-written patches.
-- **Regular-expression literals are validated by compiling them with .NET; an invalid pattern
-  becomes division.**
+- Identifiers are classified with Broiler.Unicode's lexical classes, through `Runtime`'s `JSUnicode`
+  *(revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: so since SJL-7.5. The item read "Identifiers are
+  classified with the runtime's Unicode categories plus hand-written patches.")*.
+- **Regular-expression literals are validated by the literal's early checks** (group names, property names and,
+  under `u` or `v`, the Unicode pattern), **then by compiling them with .NET; an invalid pattern still becomes
+  division.** *(Revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: the early checks came with Broiler.JS
+  #1041 of 2026-10-17. The item read "**Regular-expression literals are validated by compiling them with .NET; an
+  invalid pattern becomes division.**")*
 
 **The tree.**
 
@@ -162,11 +174,20 @@ supply the provider; ADR 0010 requires the compiler to stay a byte producer.
 - Desugaring temporaries are named from a **process-wide static counter**, so the tree depends on
   what was parsed earlier in the process.
 
-**Runtime reference.** The parser uses exactly three `Runtime` types:
+**Runtime reference.** The parser uses six `Runtime` types:
 
 - `CoreScript`;
 - `CancellableDisposableAction`;
-- `RegExpUnicodeValidator`.
+- `RegExpUnicodeValidator`;
+- `JSUnicode`;
+- `JSUnicodePropertyNames`;
+- `RegExpGroupNames`.
+
+*(Revised 2026-10-19, at SJL-12.1, by
+[JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)
+decision D42, from the Parser assembly's metadata at Broiler.JS `24510b0e`. The last three came with the
+regular-expression literal's early checks of Broiler.JS #1041. The sentence read "The parser uses exactly three
+`Runtime` types:", and the list ended at `RegExpUnicodeValidator`. Decision D20 disposes of all six at SJL-12.5.)*
 
 **Desugaring.** `for (let/const …)` is lowered in the parser into blocks with temporaries, copy-back
 and an injected `if (!test) break;`.
@@ -268,7 +289,7 @@ decorator parsing) and its cooked-template tokens inform the new tree.
 | Async functions, generators, async generators | refused | yes | yes |
 | Destructuring, spread, rest, optional chaining, `??=`/`&&=`/`\|\|=`, `**` | refused | yes | yes |
 | Templates (cooked and raw; invalid escapes in tagged templates) | opaque, refused | yes (re-tokenises substitutions) | yes (template tokens) |
-| Regular-expression literals | opaque, refused | validated in the lowering by Broiler.VM's matcher | validated by .NET; an invalid pattern becomes division |
+| Regular-expression literals | opaque, refused | validated in the lowering by Broiler.VM's matcher | early checks of group names, property names and the Unicode pattern, then validated by .NET; an invalid pattern still becomes division *(revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: the early checks came with Broiler.JS #1041. The cell read "validated by .NET; an invalid pattern becomes division")* |
 | BigInt, separators | separators validated | exact BigInt value; width ceiling | yes |
 | `08`/`09` in strict code | refused | refused | accepted (no check found) |
 | `1m` | refused (2003) | refused (2003) | `Decimal` token (non-standard) |
@@ -279,7 +300,7 @@ decorator parsing) and its cooked-template tokens inform the new tree.
 | `using`, `await using` | not recognised | yes, with placement rules | yes, with placement rules |
 | HTML-like comments | off | script goal only | script goal only (ambient) |
 | Annex B.3.3 block functions, labelled functions | refused | yes | yes |
-| Unicode escapes in identifiers | pinned Unicode 17 | pinned Unicode 17, escaped keywords refused | runtime Unicode, escaped keywords flagged |
+| Unicode escapes in identifiers | pinned Unicode 17 | pinned Unicode 17, escaped keywords refused | Broiler.Unicode's lexical classes through `JSUnicode`, escaped keywords flagged *(revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: so since SJL-7.5. The cell read "runtime Unicode, escaped keywords flagged")* |
 
 The shared frontend supports the **union** of what both engines parse today, behind the proposal
 flags where the feature is a proposal. Each engine admits what its own manifest admits.
@@ -307,6 +328,6 @@ flags where the feature is a proposal. Each engine admits what its own manifest 
 | A diagnostic code shifts in Broiler.VM and regrades its conformance results | The mapping of SJL-12.3. A registry revision for every meaning change. Test262 compared per variant, including early-error verdicts. |
 | Broiler.JS's parse speed or allocation worsens: Broiler.VM's tokenizer allocates a string per token | Broiler.JS's own measurement under a rule. The shared tokenizer may keep spans instead of strings, which the contract allows. |
 | Behaviour that depended on Broiler.JS's parse-time desugaring | The desugaring moves to a compiler pass at SJL-12, with test262 per path compared before the parser changes |
-| Deep-nesting policy: Broiler.VM refuses at a bound, Broiler.JS survives through stack segmentation | A library constant, with the large thread supplied by the caller. Broiler.JS's inputs deeper than the bound become a listed refusal, decided at SJL-12. |
+| Deep-nesting policy: Broiler.VM refuses at a bound, Broiler.JS survives through stack segmentation | **Decided at SJL-12.1** (JSD-0080 decision D27). The tree depth is a library constant, derived as JSD-0022 derives Broiler.VM's, against the large thread the caller supplies; the nesting depth is a bounded parameter. In both engines, every input deeper than the bound is refused with the contract's nesting diagnostic. Broiler.JS's inputs it accepts today past the bound become listed refusals at SJL-14, as an implementation limit (class C3), enumerated from the parse corpus's baseline. SJL-13 derives the bound's value, and SJL-12 changes no Broiler.JS acceptance. *(Revised 2026-10-19. The cell read "A library constant, with the large thread supplied by the caller. Broiler.JS's inputs deeper than the bound become a listed refusal, decided at SJL-12.")* |
 | The universal bytecode programme changes Broiler.VM's lowering in the same period | Neither programme waits on the other. The frontend's output is the "validated tree" JSD-0036 names. Each cut-over lands on whichever lowering exists then. |
 | Public API break for Broiler.JS's `Ast` and `Parser` consumers | Decision `SJL-D-12` (i): adapter packages, obsolete, and then removed in a major version |
