@@ -16,18 +16,28 @@ differences, and `syntax/` for the grammar, the calendars and serialization.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State, 2026-10-19, at SJL-10.6: the after arm's local steps are taken at `96876432` (sections 5 to 13), and part
-A's hosted after run is not yet imported. Parts B and C of [`decision-rule-area.md`](decision-rule-area.md) are MET as
-written, with no revision (sections 7 and 8). Part A is not yet judged (section 6).**
+**State, 2026-10-19, at SJL-10.6: the after arm is taken at `96876432` (sections 5 to 13). Parts A, B and C of
+[`decision-rule-area.md`](decision-rule-area.md) are MET as written, with no revision** (sections 6 to 8).
 - **Part A:** the after run, [39261526513](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39261526513),
-  was dispatched at 13:35Z with both forms and the tested commit `96876432`. It is imported, compared and judged when it
-  is complete.
+  against the base's. Every changed test262 verdict in either form is a race between the wall clock and another
+  allowance, which class C4 (c') admits. Each row's re-runs at both commits, alone on the idle local machine, agree,
+  but one's, whose (e) runs at ten times the wall clock give the same exhaustion on fuel at both commits. No verdict
+  moved between a pass, a failure and an exhaustion, and no row is a correction, so row R6 explains none.
 - **Part B:** each of the six named checks prints the base's line, and no file under `src/tests/temporal/` differs
   between `99c9c9f` and `96876432`.
 - **Part C:** every wide twin completes at its base figure with its answer, and is refused one below, in both forms.
-- **The other clauses are met** on this bundle (section 13): rules I1 to I7 hold, and every root is published and run
-  in three modes. The engine-level vectors at corpus revision 26 all match at the after commit (section 10).
+- **Every Broiler.VM clause of the milestone is met** on this bundle (section 13): rules I1 to I7 hold, test262 in both
+  forms and the polyfill dataset meet the area rule, and every root is published and run in three modes. The
+  engine-level vectors at corpus revision 26 all match at the after commit (section 10).
 - **Nothing is accepted.** Review is deferred, and SJL-10 may not meet its gate before SJL-6 and SJL-8 meet theirs.
+
+*(Revised 2026-10-19, at SJL-10.6, when part A's re-runs were taken. The state read: "**State, 2026-10-19, at
+SJL-10.6: the after arm's local steps are taken at `96876432` (sections 5 to 13), and part A's hosted after run is not
+yet imported. Parts B and C of `decision-rule-area.md` are MET as written, with no revision (sections 7 and 8). Part A
+is not yet judged (section 6).**", with the bullets "**Part A:** the after run, 39261526513, was dispatched at 13:35Z
+with both forms and the tested commit `96876432`. It is imported, compared and judged when it is complete." and "**The
+other clauses are met** on this bundle (section 13): rules I1 to I7 hold, and every root is published and run in three
+modes. The engine-level vectors at corpus revision 26 all match at the after commit (section 10).")*
 
 *(Revised 2026-10-19, at SJL-10.6. The state read: "**State:** rules, correspondence, the base, the vectors and the
 cut-over, 2026-10-19, at SJL-10.5, when this family's pin moved to corpus revision 26. **Nothing here is a verdict.**",
@@ -386,25 +396,49 @@ Two steps are this bundle's own:
 |---|---|
 | Commit | `96876432`, the default branch after Broiler-Platform/Broiler.VM#153, a clean checkout ([`after/identity.txt`](after/identity.txt)). Its product sources are those of `e42cd5d`, the merge of Broiler-Platform/Broiler.VM#151, which carries SJL-10.4's cut-over (`66b0877`, `a13a41c`, `f14abb7` and `9b7eead`, which JSD-0079 records in `c0355f4`) with the committed feed pinned to `0.1.0-preview.6` as published in `8b6cc96` (JSC-315). Against `e42cd5d` the identity lists 5 files outside the documents, all of them `d625402`'s: this family's pin of the shared corpus at revision 26, its two archives (revision 26's added, revision 25's removed) and its README, and the notices row that names the pin. None is product code. It is the after commit by bundle `sjl-8-001` section 5's precedent: the default branch after the other engine's cut-over merged |
 | Rule | [`decision-rule-area.md`](decision-rule-area.md), with the same SHA-256 at the base and after (both identities) |
-| Collector | [`collect-area.py`](collect-area.py) as this change commits it, run from this repository's checkout against a clean detached checkout of `96876432` |
-| Taken | Locally, on 2026-10-19: `after-identity`, `after-twins` and `after-datasets` from 13:50Z; `vectors` from 14:01Z; `simplification` at 14:15Z; `closures` from 14:17Z; `rules` from 14:53Z; `packages` from 14:55Z. Another workflow's builds and tests shared the machine throughout, and none of these steps is timed. Part A's after run by the workflow, on 2026-10-19 from 13:35Z to 13:43Z; then the three steps that read its artifact, `after-import`, `after-complete` and `compare`, locally at 15:18Z, from the zip as downloaded at 14:25Z, while the other workflow's work went on, and none of them is timed either. `rerun` and `wall-race`, which run the (c') rows again with the machine otherwise idle, are not yet taken (section 6) |
+| Collector | [`collect-area.py`](collect-area.py) as this change commits it, run from this repository's checkout against a clean detached checkout of `96876432` and, for the re-runs, one of `99c9c9f` |
+| Taken | Locally, on 2026-10-19: `after-identity`, `after-twins` and `after-datasets` from 13:50Z; `vectors` from 14:01Z; `simplification` at 14:15Z; `closures` from 14:17Z; `rules` from 14:53Z; `packages` from 14:55Z. Another workflow's builds and tests shared the machine throughout, and none of these steps is timed. Part A's after run by the workflow, on 2026-10-19 from 13:35Z to 13:43Z; then the three steps that read its artifact, `after-import`, `after-complete` and `compare`, locally at 15:18Z, from the zip as downloaded at 14:25Z, while the other workflow's work went on, and none of them is timed either. `rerun` and `wall-race` from 16:26:59Z to 16:31:32Z, with no other build, test or run on the machine (below) |
 | Machine | the base's: `linux-x64`, four logical processors, .NET SDK 10.0.401, the native backend `x86-64-sysv` |
-| Base side of the re-runs | to be a clean checkout of the base commit `99c9c9f`, its conformance root built there in Release, when the re-runs are taken. No step taken so far reads it |
+| Base side of the re-runs | a clean checkout of the base commit `99c9c9f`, its conformance root built there in Release with a package folder of its own (below); only `rerun` and `wall-race` read it |
 
 *(Revised 2026-10-19, at SJL-10.6, when part A's after run was imported. The "Taken" row's last sentence read: "Part
 A's after run, by the workflow, and the five steps that read it, `after-import`, `after-complete`, `compare`, `rerun` and
-`wall-race`, are not yet taken (section 6)".)*
+`wall-race`, are not yet taken (section 6)".)* *(Revised again 2026-10-19, at SJL-10.6, when the re-runs were taken.
+The "Taken" row's last sentence read "`rerun` and `wall-race`, which run the (c') rows again with the machine otherwise
+idle, are not yet taken (section 6)"; the "Base side of the re-runs" row read "to be a clean checkout of the base commit
+`99c9c9f`, its conformance root built there in Release, when the re-runs are taken. No step taken so far reads it"; and
+the "Collector" row ended "against a clean detached checkout of `96876432`".)*
+
+**The re-runs' machine.** Both conformance roots were built in Release before the re-runs, from their clean checkouts:
+`96876432`'s at 15:25Z, and `99c9c9f`'s at 15:27Z. The base checkout's locked restore refused the machine's shared
+package folder, which holds a `Broiler.ECMAScript.Algorithms` `0.1.0-preview.5` whose content hash is not the one the
+base's lock files pin (NU1403), so it was built with an empty package folder of its own: the restore took the committed
+feed's package, at the content hash the lock files pin, and the build gave no warning.
+
+`rerun` and `wall-race` then waited for the machine to be otherwise idle: no process of the other workflow, and a
+one-minute load average below 1.0, twice 30 seconds apart. That held at 16:26:29Z; `dotnet build-server shutdown`
+was run, the same wait held again, and the steps started at 16:26:59Z with a load average of 0.25. The process table
+was sampled every five seconds until they ended at 16:31:32Z. **No other build, test or run was on the machine.**
+Besides the steps themselves, the samples show only another session's `git` commands in its own checkouts, among them
+commits and pushes at 16:27Z and 16:28Z, and a short script of that session reading a file at the first sample; two
+MSBuild nodes, idle throughout; and a compiler server an earlier build had left, idle, until it exited at 16:30Z.
 
 ## 6. Test262, both forms (rule part A)
 
 *(Written 2026-10-19, at SJL-10.6, when part A's after run was imported and compared. The section read "(To be written
 when the hosted after run is imported.)")*
 
-**Not yet judged.** All four runs are complete as the rule states it. Every changed verdict is in class C4 (c'):
-seventeen rows in the bytecode pair and one in the native pair, listed below. No row is in C1, and the comparison
-classified every row it lists. The rule admits a (c') row only when its re-runs at both commits, alone on the idle
-local machine, agree, or under (e) when they differ, so part A's verdict is the re-runs'. *(The re-runs follow; see
-below.)*
+**MET.** All four runs are complete as the rule states it. Every changed verdict is in class C4 (c'): seventeen rows
+in the bytecode pair and one in the native pair, listed below with their re-runs. Every row's re-runs agree but one's,
+`staging/sm/Date/dst-offset-caching-8-of-8.js` [sloppy] in the bytecode pair, and its (e) runs give the same verdict
+at both commits, an exhaustion on fuel, so (e) admits it. No row is in C1, and the comparison classified every row it
+lists.
+
+*(Revised 2026-10-19, at SJL-10.6, when the re-runs were taken. The verdict read: "**Not yet judged.** All four runs
+are complete as the rule states it. Every changed verdict is in class C4 (c'): seventeen rows in the bytecode pair and
+one in the native pair, listed below. No row is in C1, and the comparison classified every row it lists. The rule admits
+a (c') row only when its re-runs at both commits, alone on the idle local machine, agree, or under (e) when they differ,
+so part A's verdict is the re-runs'. *(The re-runs follow; see below.)*")*
 
 **The after run.** [39261526513](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39261526513), attempt 1,
 was dispatched from `main` at `96876432` on 2026-10-19 at 13:35:57Z. It ran with both forms and the commit `96876432`,
@@ -450,31 +484,59 @@ exhaustion moved on fuel alone, and no verdict moved because a revision, a polic
 **Class (c').** The comparisons list these eighteen rows, every one exhausted at both commits. Paths are under
 `test/`.
 
-| # | Path | Variant | Pair | At the base, `99c9c9f` | After, `96876432` |
-|---|---|---|---|---|---|
-| 1 | `annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js` | strict | bytecode | Exhausted/WallClock | Exhausted/NestedLoadFanOut |
-| 2 | `built-ins/decodeURI/S15.1.3.1_A2.5_T1.js` | sloppy | bytecode | Exhausted/Fuel | Exhausted/WallClock |
-| 3 | `built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js` | sloppy | bytecode | Exhausted/Fuel | Exhausted/WallClock |
-| 4 | `built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js` | strict | bytecode | Exhausted/Fuel | Exhausted/WallClock |
-| 5 | `staging/sm/Date/dst-offset-caching-2-of-8.js` | sloppy | bytecode | Exhausted/Fuel | Exhausted/WallClock |
-| 6 | `staging/sm/Date/dst-offset-caching-2-of-8.js` | strict | bytecode | Exhausted/Fuel | Exhausted/WallClock |
-| 7 | `staging/sm/Date/dst-offset-caching-3-of-8.js` | sloppy | bytecode | Exhausted/WallClock | Exhausted/Fuel |
-| 8 | `staging/sm/Date/dst-offset-caching-3-of-8.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel |
-| 9 | `staging/sm/Date/dst-offset-caching-4-of-8.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel |
-| 10 | `staging/sm/Date/dst-offset-caching-5-of-8.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel |
-| 11 | `staging/sm/Date/dst-offset-caching-7-of-8.js` | sloppy | bytecode | Exhausted/WallClock | Exhausted/Fuel |
-| 12 | `staging/sm/Date/dst-offset-caching-7-of-8.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel |
-| 13 | `staging/sm/Date/dst-offset-caching-8-of-8.js` | sloppy | bytecode | Exhausted/Fuel | Exhausted/WallClock |
-| 14 | `staging/sm/Date/dst-offset-caching-8-of-8.js` | strict | bytecode | Exhausted/Fuel | Exhausted/WallClock |
-| 15 | `staging/sm/TypedArray/sort_large_countingsort.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel |
-| 16 | `staging/sm/regress/regress-610026.js` | sloppy | bytecode | Exhausted/WallClock | Exhausted/NestedLoadBytes |
-| 17 | `staging/sm/regress/regress-610026.js` | strict | bytecode | Exhausted/WallClock | Exhausted/NestedLoadBytes |
-| 18 | `staging/sm/Date/dst-offset-caching-1-of-8.js` | sloppy | native | Exhausted/WallClock | Exhausted/Fuel |
+| # | Path | Variant | Pair | At the base, `99c9c9f` | After, `96876432` | Re-run at `99c9c9f`, at `96876432` | Class |
+|---|---|---|---|---|---|---|---|
+| 1 | `annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js` | strict | bytecode | Exhausted/WallClock | Exhausted/NestedLoadFanOut | Exhausted/NestedLoadFanOut, the same | **C4 (c')**, the re-runs agree |
+| 2 | `built-ins/decodeURI/S15.1.3.1_A2.5_T1.js` | sloppy | bytecode | Exhausted/Fuel | Exhausted/WallClock | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 3 | `built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js` | sloppy | bytecode | Exhausted/Fuel | Exhausted/WallClock | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 4 | `built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js` | strict | bytecode | Exhausted/Fuel | Exhausted/WallClock | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 5 | `staging/sm/Date/dst-offset-caching-2-of-8.js` | sloppy | bytecode | Exhausted/Fuel | Exhausted/WallClock | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 6 | `staging/sm/Date/dst-offset-caching-2-of-8.js` | strict | bytecode | Exhausted/Fuel | Exhausted/WallClock | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 7 | `staging/sm/Date/dst-offset-caching-3-of-8.js` | sloppy | bytecode | Exhausted/WallClock | Exhausted/Fuel | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 8 | `staging/sm/Date/dst-offset-caching-3-of-8.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 9 | `staging/sm/Date/dst-offset-caching-4-of-8.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 10 | `staging/sm/Date/dst-offset-caching-5-of-8.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 11 | `staging/sm/Date/dst-offset-caching-7-of-8.js` | sloppy | bytecode | Exhausted/WallClock | Exhausted/Fuel | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 12 | `staging/sm/Date/dst-offset-caching-7-of-8.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 13 | `staging/sm/Date/dst-offset-caching-8-of-8.js` | sloppy | bytecode | Exhausted/Fuel | Exhausted/WallClock | Exhausted/Fuel, Exhausted/WallClock | **C4 (e)**, below: the re-runs differ |
+| 14 | `staging/sm/Date/dst-offset-caching-8-of-8.js` | strict | bytecode | Exhausted/Fuel | Exhausted/WallClock | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 15 | `staging/sm/TypedArray/sort_large_countingsort.js` | strict | bytecode | Exhausted/WallClock | Exhausted/Fuel | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 16 | `staging/sm/regress/regress-610026.js` | sloppy | bytecode | Exhausted/WallClock | Exhausted/NestedLoadBytes | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 17 | `staging/sm/regress/regress-610026.js` | strict | bytecode | Exhausted/WallClock | Exhausted/NestedLoadBytes | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+| 18 | `staging/sm/Date/dst-offset-caching-1-of-8.js` | sloppy | native | Exhausted/WallClock | Exhausted/Fuel | Exhausted/WallClock, the same | **C4 (c')**, the re-runs agree |
+
+*(The table gained its last two columns on 2026-10-19, at SJL-10.6, when the re-runs were taken.)*
 
 The wall clock ran out at the base in eleven rows (1, 7 to 12 and 15 to 18) and after in seven (2 to 6, 13 and 14). The
 rows' re-runs at `99c9c9f` and `96876432`, each one process of the conformance root over the rows' paths, alone, under
 the part's manifest, form and allowances, are the collector's `rerun` step, and (e) for any row whose re-runs differ is
-its `wall-race` step. Neither is taken yet.
+its `wall-race` step. Both were taken on 2026-10-19, with no other build, test or run on the machine (section 5).
+*(Revised 2026-10-19, at SJL-10.6, when the re-runs were taken. The last sentence read "Neither is taken yet.")*
+
+**Class (c') and its re-runs** ([`after/rerun-wide-bytecode.tsv`](after/rerun-wide-bytecode.tsv),
+[`after/rerun-wide-native.tsv`](after/rerun-wide-native.tsv), with their logs and every report). For each pair, one
+process of the conformance root ran the rows' paths at `99c9c9f`, then one at `96876432`, each running its tests one
+after another, under the wide manifest, the pair's form and the part's fuel and wall-clock allowances: the bytecode pair
+from 16:26:59Z to 16:30:35Z, the native pair from 16:30:35Z to 16:31:00Z. **Seventeen rows' re-runs agree**, so C4 (c')
+admits them. The two re-runs of each pair, compared with `--same-form`, differ in row 13 alone in the bytecode pair and
+in no variant in the native pair.
+
+**Class (e)** ([`after/wall-race-wide-bytecode.tsv`](after/wall-race-wide-bytecode.tsv), with its log and both
+reports). Row 13, `staging/sm/Date/dst-offset-caching-8-of-8.js` [sloppy], whose re-runs gave `Exhausted/Fuel` at
+`99c9c9f` and `Exhausted/WallClock` at `96876432`, ran alone once more at each commit on the same machine, with the
+part's fuel allowance and ten times its wall-clock allowance, 50,000 ms, the machine otherwise idle, from 16:31:00Z to
+16:31:32Z. **It gives `Exhausted/Fuel` at both commits**: the same verdict, neither a wall-clock exhaustion nor an
+internal defect, so (e) admits it. Each process ran the row's path, so its strict variant, row 14, ran too and gave the
+same; (e) does not read it, because row 14's re-runs agree. The native pair has no row whose re-runs differ, and the
+`wall-race` step says so and writes no file for it.
+
+**What the re-runs show, and what they do not.** On this machine the wall clock decided most rows at both commits:
+sixteen rows' re-runs agree on `Exhausted/WallClock`, and row 1's on `Exhausted/NestedLoadFanOut`. The rule admits a
+(c') row whose re-runs agree, whatever they agree on, and takes (e) only for a row whose re-runs differ, so no other row
+was run again. Those re-runs show that each of those rows, alone under the part's allowances, runs out of the wall clock
+at both commits, neither commit reaching another allowance first. They do not show which allowance either commit would
+reach first with more time. Row 13's (e) runs show it for one row: with ten times the wall clock, it runs out of fuel
+at both commits.
 
 **What the rows say.** Every row is one of the long-running tests this family's earlier bundles saw race between the
 wall clock and another allowance: the after comparisons of bundles `sjl-6-001` to `sjl-8-001` list each path, as a (c')
@@ -701,10 +763,13 @@ second clause is read in three rows, one for each part of the rule that judges i
 | Clause | What it asks | Where | State |
 |---|---|---|---|
 | Rules | "Rules `I1` to `I7` hold." | section 11, [`after/rules.log`](after/rules.log) | **Met** at `96876432`: the whole suite passes, I1 to I7 among them. I1 admits both shared packages at `0.1.0-preview.6`; I3 reads the five image records; I5's register holds SJL-10.4's 147 |
-| The area rule, part A | "test262 in both forms ... meet[s] the area rule" | section 6 | **To be judged when the hosted after run is imported** ([39261526513](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39261526513)) |
+| The area rule, part A | "test262 in both forms ... meet[s] the area rule" | section 6 | **Met** on run [39261526513](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39261526513) at `96876432` against the base's at `99c9c9f`: all four runs complete, and every changed verdict a (c') row, seventeen in the bytecode pair and one in the native; every row's re-runs agree but one's, which (e) admits with an exhaustion on fuel at both commits; no row in C1, so row R6 explains none |
 | The area rule, part B | "... and the polyfill dataset meet the area rule. For Broiler.VM that is unchanged." | section 7 | **Met**: the six named checks print the base's lines, and no file under `src/tests/temporal/` differs between `99c9c9f` and `96876432` |
 | The area rule, part C | the twins the rule judges under the same clause | section 8 | **Met**: every wide twin at its base figure with its answer, in both forms |
 | Roots | "Every root is published and run in three modes." | section 11 | **Met** for every root this machine can publish, at `96876432`, with the packages as published; Android is EX-126 |
+
+*(Revised 2026-10-19, at SJL-10.6, when part A's re-runs were taken. Part A's state read "**To be judged when the
+hosted after run is imported** (39261526513)".)*
 
 **Also in this bundle, and no clause of their own:**
 - the engine-level vectors at corpus revision 26, which match at the after commit as at `d625402` (section 10);
