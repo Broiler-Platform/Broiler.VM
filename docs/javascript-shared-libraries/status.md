@@ -1466,6 +1466,9 @@ record them ([JSC-317](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corr
 - **Nothing else moves.** The vectors at corpus revision 26 give the report bundle
   [`sjl-10-001`](../evidence/sjl-10-001/README.md) retains, and part B's named checks print the lines its after arm
   printed. No test262 case at the pin, retained dataset line or corpus vector reaches decision D12.
+- **The package baseline** is bundle JS-10-011's candidate pack, taken at the change that moves the version, as
+  rule N37 asks of a candidate that declares the shared package
+  ([JSC-318](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-318)).
 
 JSD-0078, JSD-0079, the milestone and bundle `sjl-10-001` carry dated notes. SJL-10 stays `In progress`: nothing is
 accepted (update rule 7), and SJL-10 may not meet its gate before SJL-6 and SJL-8 meet theirs, and so not before SJL-3

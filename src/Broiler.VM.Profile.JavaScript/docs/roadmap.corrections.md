@@ -13613,3 +13613,30 @@ stands.
 **Authority and date.** The owner's approval of 2026-10-19 to publish `0.1.0-preview.7` with decision D12, on
 [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)'s decision D12 and the
 programme's milestone SJL-10. 2026-10-19.
+
+### JSC-318
+
+**Where:** [`packages.md`](packages.md): its opening paragraph, the paragraph "No foreign dependency" and
+the section "The consumer"; and [`support.md`](support.md), section 9, the paragraph on the frozen
+packages.
+
+**What the plan said.** The baseline was "the candidate pack of **bundle
+[JS-10-010](evidence/js-10-010/README.md)**", and the runtime and the compiler declared
+`Broiler.ECMAScript.Algorithms` "at `0.1.0-preview.6` since the Temporal core's cut-over (SJL-10.4, on
+[JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)), published to
+nuget.org from Broiler.JS `fc829f8`, whose library code is that of `bf81d1b`, from which the baseline's
+candidate pack took its copy"; the consumer section and support section 9 named bundle JS-10-010.
+
+**What replaced it.** The two packages declare `0.1.0-preview.7` since this family took decision D12 with
+it, published to nuget.org from Broiler.JS `5ddee40` ([JSC-317](#jsc-317)). Rule I1 admits one version of a
+package, so the allow-list, the committed feed, the three lock files and rule I1's witness moved to it
+together, with the test-only `Broiler.ECMAScript.Generation`, whose code is unchanged, in `37d5fdf`; and
+rule N37 holds the baseline's candidate to declaring the version the allow-list pins or a later one, which
+JS-10-010's candidate, declaring `0.1.0-preview.6`, did not. The baseline is bundle
+[JS-10-011](evidence/js-10-011/README.md)'s candidate pack, taken at `37d5fdf`; every condition holds as
+JS-10-010's did, and the Native AOT consumer is 8,065,168 bytes. The candidate's packages carry the same
+files as JS-10-010's. Each record quotes what it read before.
+
+**Authority and date.** The owner's approval of 2026-10-19 to publish `0.1.0-preview.7` with decision D12,
+on [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)'s decision D12
+and the programme's milestone SJL-10. 2026-10-19.
