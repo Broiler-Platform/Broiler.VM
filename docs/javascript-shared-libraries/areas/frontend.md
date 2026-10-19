@@ -155,9 +155,10 @@ supply the provider; ADR 0010 requires the compiler to stay a byte producer.
   classified with the runtime's Unicode categories plus hand-written patches.")*.
 - **Regular-expression literals are validated by the literal's early checks** (group names, property names and,
   under `u` or `v`, the Unicode pattern), **then by compiling them with .NET; an invalid pattern still becomes
-  division.** *(Revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: the early checks came with Broiler.JS
-  #1041 of 2026-10-17. The item read "**Regular-expression literals are validated by compiling them with .NET; an
-  invalid pattern becomes division.**")*
+  division.** *(Revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42. The Unicode-pattern check,
+  `RegExpUnicodeValidator`'s, was already made at `44a214dc`; the property-name check came with SJL-7.5, Broiler.JS
+  #1040, and the group-name check with Broiler.JS #1041, both of 2026-10-17. The item read "**Regular-expression
+  literals are validated by compiling them with .NET; an invalid pattern becomes division.**")*
 
 **The tree.**
 
@@ -185,9 +186,11 @@ supply the provider; ADR 0010 requires the compiler to stay a byte producer.
 
 *(Revised 2026-10-19, at SJL-12.1, by
 [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)
-decision D42, from the Parser assembly's metadata at Broiler.JS `24510b0e`. The last three came with the
-regular-expression literal's early checks of Broiler.JS #1041. The sentence read "The parser uses exactly three
-`Runtime` types:", and the list ended at `RegExpUnicodeValidator`. Decision D20 disposes of all six at SJL-12.5.)*
+decision D42, from the Parser assembly's metadata at Broiler.JS `24510b0e`. The first three are the three this
+section named. `JSUnicode` and `JSUnicodePropertyNames` came with SJL-7.5, Broiler.JS #1040, and `RegExpGroupNames`
+with the regular-expression literal's group-name check, Broiler.JS #1041. The sentence read "The parser uses
+exactly three `Runtime` types:", and the list ended at `RegExpUnicodeValidator`. Decision D20 disposes of all six at
+SJL-12.5.)*
 
 **Desugaring.** `for (let/const …)` is lowered in the parser into blocks with temporaries, copy-back
 and an injected `if (!test) break;`.
@@ -289,7 +292,7 @@ decorator parsing) and its cooked-template tokens inform the new tree.
 | Async functions, generators, async generators | refused | yes | yes |
 | Destructuring, spread, rest, optional chaining, `??=`/`&&=`/`\|\|=`, `**` | refused | yes | yes |
 | Templates (cooked and raw; invalid escapes in tagged templates) | opaque, refused | yes (re-tokenises substitutions) | yes (template tokens) |
-| Regular-expression literals | opaque, refused | validated in the lowering by Broiler.VM's matcher | early checks of group names, property names and the Unicode pattern, then validated by .NET; an invalid pattern still becomes division *(revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: the early checks came with Broiler.JS #1041. The cell read "validated by .NET; an invalid pattern becomes division")* |
+| Regular-expression literals | opaque, refused | validated in the lowering by Broiler.VM's matcher | early checks of group names, property names and the Unicode pattern, then validated by .NET; an invalid pattern still becomes division *(revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: the Unicode-pattern check was already made at `44a214dc`, the property-name check came with SJL-7.5, Broiler.JS #1040, and the group-name check with Broiler.JS #1041. The cell read "validated by .NET; an invalid pattern becomes division")* |
 | BigInt, separators | separators validated | exact BigInt value; width ceiling | yes |
 | `08`/`09` in strict code | refused | refused | accepted (no check found) |
 | `1m` | refused (2003) | refused (2003) | `Decimal` token (non-standard) |

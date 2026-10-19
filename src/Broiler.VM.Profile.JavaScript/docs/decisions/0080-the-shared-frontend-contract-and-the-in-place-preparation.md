@@ -137,9 +137,13 @@ both front ends as read at Broiler.VM `88d8b51d` and Broiler.JS `44a214dc`.
 - **Every parse writes a shared token.** `FastScanner.EOF` and `FastScanner.EmptyToken` are static read-only fields
   of the mutable type `FastToken`, and every parse writes the end token's `Previous`.
 - **The parser references six `Runtime` types, not three.** The Parser assembly's metadata names `CoreScript`,
-  `CancellableDisposableAction`, `JSUnicode`, `JSUnicodePropertyNames`, `RegExpGroupNames` and
-  `RegExpUnicodeValidator`. The last four came with the regular-expression literal's early checks, merged as
-  Broiler.JS #1041 on 2026-10-17.
+  `CancellableDisposableAction`, `RegExpUnicodeValidator`, `JSUnicode`, `JSUnicodePropertyNames` and
+  `RegExpGroupNames`.
+  - The first three are the design's "exactly three", read at `44a214dc`. `RegExpUnicodeValidator` already made the
+    literal's Unicode-pattern check there.
+  - `JSUnicode` and `JSUnicodePropertyNames` came with SJL-7.5, merged as Broiler.JS #1040 on 2026-10-17: the
+    identifier and white-space classes, and the literal's property-name check.
+  - `RegExpGroupNames` came with the literal's group-name check, merged as Broiler.JS #1041 on 2026-10-17.
 - **The parser rewrites three constructs.** It desugars `for (let …)` and `for (const …)` loops, with temporaries,
   copy-back and an injected `break`. It also synthesizes a block for an Annex B.3.4 function declaration that
   shadows a parameter, and decodes a regular-expression literal's braced `\u{…}` escapes under `u` and `v`.
@@ -384,8 +388,8 @@ status rows. The reason: that section's preamble says every entry applies X1 to 
 - The milestone's SJL-12.5 done-when read "against SJL-0's base". It is revised as a work package's done-when
   (roadmap section 13), quoting the old text, and the ledger says so in one sentence.
 - It is not a gate revision: exit clause 2, "test262 per path meets the predeclared rule", names no base.
-- The reason: SJL-0's base predates SJL-3 to SJL-10 and excludes negative tests, and Broiler.JS's comparison script
-  refuses two runs whose `includeNegative` differs.
+- The reason: SJL-0's base predates every cut-over since SJL-3, those of SJL-3 to SJL-8 and SJL-10, and excludes
+  negative tests, and Broiler.JS's comparison script refuses two runs whose `includeNegative` differs.
 
 **Decision D8 - the rules are committed with SJL-12.1**, before any code they judge. No work package of the milestone
 named them. A dated milestone note says so.
@@ -513,7 +517,8 @@ JSB-1" states it.
 - **`CoreScript`'s goal state becomes options** (decision D19).
 - **These move to `Broiler.JavaScript.Ast`**: the Unicode tables and their `IUnicodeTables` implementation,
   `JSUnicode`, `JSUnicodePropertyNames`, `RegExpGroupNames` and `RegExpUnicodeValidator`.
-  - `Ast` is already below `Runtime` and `Parser`, and already references `Broiler.Unicode.Algorithms`.
+  - `Ast` is already below `Runtime` and `Parser`. It takes with the moved types the package reference to
+    `Broiler.Unicode.Algorithms` that `Runtime` holds today.
   - The public validator keeps a `[TypeForwardedTo]` in `Runtime`.
 - **The options' providers are typed by Broiler.Unicode's `IUnicodeTables`.** The `Ast`-held table is the default,
   and there is **no default that throws**.
@@ -767,8 +772,9 @@ Each is corrected in the design beside the reading, which is quoted there (decis
   `JSUnicode` since SJL-7.5, not the runtime's categories with hand-written patches.
 - **Section 3, the `Runtime` reference:** six types, not "exactly three".
 - **Sections 3 and 7, regular-expression literals:**
-  - since Broiler.JS #1041, the literal's check also runs the group-name, property-name and Unicode-pattern checks,
-    then compiles the pattern with .NET;
+  - the literal's check runs the Unicode-pattern check, already there at `44a214dc`, the property-name check, since
+    SJL-7.5 (Broiler.JS #1040), and the group-name check, since Broiler.JS #1041, then compiles the pattern with
+    .NET;
   - an invalid literal still falls back to division.
 - **Section 9, the deep-nesting row:** decided (decision D27).
 - **`areas/static-semantics.md` section 3:** the model's design is filed here and in the home's design document.

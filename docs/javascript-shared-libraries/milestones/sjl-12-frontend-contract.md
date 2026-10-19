@@ -29,12 +29,13 @@ Broiler.JS parser would be premature." Its reasons are confirmed by the review, 
   parsed earlier in the process.
 - It writes to a shared static end-of-file token on every parse.
 - It references `Broiler.JavaScript.Runtime` for six types: `CoreScript`, `CancellableDisposableAction`,
-  `JSUnicode`, `JSUnicodePropertyNames`, `RegExpGroupNames` and `RegExpUnicodeValidator`. *(Corrected
+  `RegExpUnicodeValidator`, `JSUnicode`, `JSUnicodePropertyNames` and `RegExpGroupNames`. *(Corrected
   2026-10-19, at SJL-12.1, by
   [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
-  from the Parser assembly's metadata at Broiler.JS `24510b0e`. The last four came with the regular-expression
-  literal's early checks, Broiler.JS #1041 of 2026-10-17. The bullet read "It references
-  `Broiler.JavaScript.Runtime` for exactly three types.")*
+  from the Parser assembly's metadata at Broiler.JS `24510b0e`. The first three are the three the area design
+  named, read at `44a214dc`. `JSUnicode` and `JSUnicodePropertyNames` came with SJL-7.5, Broiler.JS #1040 of
+  2026-10-17, and `RegExpGroupNames` with the regular-expression literal's group-name check, Broiler.JS #1041 of
+  the same day. The bullet read "It references `Broiler.JavaScript.Runtime` for exactly three types.")*
 - It desugars `for` loops while parsing.
 - Its early errors are spread across the parser, a separate validation pass and the compiler.
 
@@ -170,9 +171,9 @@ predeclared rule.
 [JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md),
 decision D7. This is a work package's done-when, corrected in place under roadmap section 13, and not a gate
 revision: exit clause 2, "test262 per path meets the predeclared rule", names no base. SJL-0's base predates every
-cut-over of SJL-3 to SJL-10 and excludes negative tests, and Broiler.JS's comparison script refuses two runs whose
-`includeNegative` differs. The sentence read "*Done when* every item has landed and Broiler.JS's test262, per path,
-shows no regression against SJL-0's base under the predeclared rule.")*
+cut-over since SJL-3, those of SJL-3 to SJL-8 and SJL-10, and excludes negative tests, and Broiler.JS's comparison
+script refuses two runs whose `includeNegative` differs. The sentence read "*Done when* every item has landed and
+Broiler.JS's test262, per path, shows no regression against SJL-0's base under the predeclared rule.")*
 
 ### SJL-12.6 — Broiler.VM: in-place preparation
 
