@@ -1,0 +1,20 @@
+Determining projects to restore...
+  Restored <tree>/src/Broiler.VM.Profile.JavaScript.Intl/Broiler.VM.Profile.JavaScript.Intl.csproj (in 415 ms).
+  Restored <tree>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 413 ms).
+  7 of 9 projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> <tree>/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> <tree>/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Profile.JavaScript.Format -> <tree>/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Profile.JavaScript.Intl -> <tree>/src/Broiler.VM.Profile.JavaScript.Intl/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Intl.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> <tree>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.MachineCode -> <tree>/src/Broiler.VM.Profile.MachineCode/bin/Release/net10.0/Broiler.VM.Profile.MachineCode.dll
+  Broiler.VM.Runtime -> <tree>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> <tree>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> <tree>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:12.87
+exit code: 0

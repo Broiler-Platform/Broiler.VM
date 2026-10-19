@@ -1,0 +1,35 @@
+# SJL-10.6 lines added and removed in every C# file between the base 99c9c9f0e32aa74e564b82aa24c0b05a58aab00b and the after commit 96876432aa27fce3d6b9005af061ff12195badeb,
+# by `git diff --numstat --no-renames <base> <after> -- '*.cs'` (exit 0), each file in one group: the
+# JavaScript family's product sources (src/Broiler.VM.Profile.JavaScript*), the other product sources,
+# and the tests (src/tests/ and every tests/ folder). Generated files count as written.
+
+group	added	removed	file
+family	0	942	src/Broiler.VM.Profile.JavaScript/JsCalendars.cs
+family	34	27	src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs
+family	13	7	src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs
+family	11	6	src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs
+family	2	2	src/Broiler.VM.Profile.JavaScript/JsRealm.DurationFormat.cs
+family	10	8	src/Broiler.VM.Profile.JavaScript/JsRealm.Temporal.cs
+family	57	202	src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalDuration.cs
+family	30	26	src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalInstant.cs
+family	51	60	src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainDate.cs
+family	53	62	src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainDateTime.cs
+family	35	32	src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainTime.cs
+family	53	76	src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalYearMonthDay.cs
+family	51	64	src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalZonedDateTime.cs
+family	114	559	src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs
+family	0	541	src/Broiler.VM.Profile.JavaScript/JsTemporal.CalendarNonIso.cs
+family	121	189	src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs
+family	100	750	src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs
+family	239	216	src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs
+family	42	88	src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs
+family	0	723	src/Broiler.VM.Profile.JavaScript/JsTemporalCore.cs
+family	30	28	src/Broiler.VM.Profile.JavaScript/JsTemporalObjects.cs
+family	73	1129	src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs
+other product	57	0	src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs
+tests	8	3	src/tests/Broiler.VM.Architecture.Tests/I5RetiredDuplicatesRuleTests.cs
+tests	8	1	src/tests/Broiler.VM.Architecture.Tests/ReviewRecordRuleTests.cs
+
+# family: 22 files, 1119 lines added, 5737 removed, net -4618
+# other product: 1 files, 57 lines added, 0 removed, net +57
+# tests: 2 files, 16 lines added, 4 removed, net +12

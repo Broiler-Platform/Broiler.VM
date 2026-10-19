@@ -1,0 +1,11 @@
+# part B's comparison: base 99c9c9f0e32aa74e564b82aa24c0b05a58aab00b (base/datasets/), after 96876432aa27fce3d6b9005af061ff12195badeb (after/datasets/)
+same    ok   temporal/t1/temporal-matches-the-reference-polyfill: all 1629 lines answer as the reference polyfill did, 0 of them as the divergences name
+same    ok   temporal/t2/intl-over-temporal-matches-the-reference-polyfill: all 1233 lines answer as the reference polyfill did, 82 of them as the divergences name
+same    ok   temporal/t3/calendars-match-the-reference-polyfill: all 3999 lines answer as the reference polyfill did, 70 of them as the divergences name
+same    ok   temporal/t3/calendar-conversions-match-icu4x: all 2055 conversions answer as ICU4X 2.3.0 did
+same    ok   temporal/t4/calendar-formats-match-the-reference-polyfill: all 5951 lines answer as the reference polyfill did, 1395 of them as the divergences name
+same    ok   temporal/t5/zone-names-match-the-reference-polyfill: all 2713 lines answer as the reference polyfill did, 275 of them as the divergences name
+DIFFERS slice-compiler exit code 1
+        after: slice-compiler exit code 0
+files.sha256: identical, 22 files
+git diff --name-only 99c9c9f0e32aa74e564b82aa24c0b05a58aab00b 96876432aa27fce3d6b9005af061ff12195badeb -- src/tests/temporal: no file
