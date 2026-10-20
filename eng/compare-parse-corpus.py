@@ -29,8 +29,11 @@
 #   determinism RUN1 RUN2 RUN3 --population AFTER --manifest M [--out F]
 #       Part C. RUN1 and RUN2 must each say one worker in their header and RUN3 must be a
 #       `--twice-concurrent` report of two. The population is every compilation of B1 and B3 that
-#       AFTER (part B's after run, itself complete) accepted; for each, the four results - run 1,
+#       AFTER (part B's after run) accepted, and nothing else; for each, the four results - run 1,
 #       run 2 and the two compilations of run 3 - must all be accepted, with one hash and one length.
+#       AFTER is held to the manifest like any report, but whether it is complete is part B's
+#       question, not part C's: each part decides alone, so a compilation it refused, did not
+#       compile or crashed is outside the population, and is counted in the header, not refused.
 #
 #   control BASE OUT
 #       Part B's control: a copy of BASE with one artifact hash changed and one outcome flipped. It
@@ -43,9 +46,10 @@
 # cases its reading 2 names (every report's header repeats the readings): B2's test262 `_FIXTURE`
 # rows, note `fixture`, and B4's json rows, note `no-json-goal`. A `crashed` row (an exception left
 # the compiler), or a `not-compiled` row outside those two cases, has no outcome the rule knows, so
-# its run is not complete: `identity` lists each such row as `incomplete` and exits 2, and
-# `determinism` refuses a population report that holds one and counts a crashed population row as
-# one whose four results are not one.
+# its run is not complete: `identity` lists each such row as `incomplete` and exits 2. `determinism`
+# leaves such a row of the population report outside the population, as it leaves a refusal, and
+# counts a population compilation that any of runs 1 to 3 did not accept, crashed ones included, as
+# one whose four results are not one accepted hash.
 #
 # THE SCRIPT DECIDES NO CLASS. Every difference it reports is UNCLASSIFIED: the rule's classes O, S, T
 # and P each need a reading this script cannot do - O and P the two byte files, T the source text,
@@ -398,11 +402,13 @@ def determinism(args):
     population_report.whole()
     digest, every = owed(args.manifest)
     held_to(population_report, args.manifest, digest, every)
+    # PART C'S POPULATION IS WHAT PART B'S AFTER RUN ACCEPTED in B1 and B3, and nothing else (the
+    # rule's part C). A compilation that run refused, did not compile or crashed is outside it, and
+    # whether that run is complete is part B's completeness, which part C does not read: each part
+    # decides alone. So such rows are counted in the header, and the comparison goes on.
+    candidates = [key for key in population_report.order if key[1] in ("B1", "B3")]
+    population = [key for key in candidates if population_report.rows[key].outcome == "accepted"]
     unfinished = [key for key in population_report.order if incomplete(population_report.rows[key], every[key])]
-    if unfinished:
-        refuse(f"{population_report.path}: part B's after run is not complete: {len(unfinished)} "
-               f"compilation(s) crashed or were not compiled outside reading 2, the first "
-               f"{' '.join(unfinished[0])}")
     for number, report in enumerate(runs[:2], start=1):
         if report.twice or report.workers != "1":
             refuse(f"{report.path}: run {number} is not a run with one worker (its header says workers "
@@ -415,8 +421,6 @@ def determinism(args):
         if report.header.get("selection") != "all":
             refuse(f"{report.path}: a selected run (--select) is not a whole run")
 
-    population = [key for key in population_report.order
-                  if key[1] in ("B1", "B3") and population_report.rows[key].outcome == "accepted"]
     missing = [key for key in population if any(key not in report.rows for report in runs)]
     if missing:
         refuse(f"{len(missing)} accepted compilation(s) of the population are missing from a run, the "
@@ -437,6 +441,10 @@ def determinism(args):
         f"# run 2 {runs[1].path} (one worker)",
         f"# run 3 {runs[2].path} (two workers, every compilation twice concurrently)",
         f"# population {population_report.path}: the B1 and B3 compilations it accepted",
+        f"# B1 and B3 compilations of the population report outside the population (refused, not "
+        f"compiled or crashed) {len(candidates) - len(population)}",
+        f"# compilations of the population report crashed or not compiled outside reading 2, in any "
+        f"sub-population {len(unfinished)} (part B's completeness, which part C does not read)",
         f"# manifest-sha256 {digest} (every report checked against {args.manifest})",
         f"# run 1 outcomes {runs[0].outcomes()}",
         f"# run 2 outcomes {runs[1].outcomes()}",
