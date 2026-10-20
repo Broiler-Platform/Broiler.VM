@@ -1,0 +1,28 @@
+# Control 11: an ignored file a build reads in arm A's tree
+# what changed: src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj.user written, setting Optimize to false; .gitignore's *.user ignores it, and MSBuild imports it
+# expected: refused: arm A's tree holds an ignored file other than a build output or a Python cache
+# arm A tree (<tree>) at b6f0dd81fb7a2d4c510fcdf161f53df66e31810a; arm B tree (<base-tree>) at 0087e8d73ae3833200fa263b68f71db15b059a9c
+# taken against the branch at 24062d26195bfb775298ea057bfec49e03cdeaa7, merged with --no-ff into the default branch at 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 as the scratch merge b6f0dd81fb7a2d4c510fcdf161f53df66e31810a
+$ (cd <tree> && python3 docs/evidence/sjl-3-001/collect.py --tree <tree> --default-branch b6f0dd81fb7a2d4c510fcdf161f53df66e31810a --base-tree <base-tree> --numref <scratch>/numref-966140ad.py --out <out> --only measure-revised --check-only)
+
+measure-revised: part C of docs/evidence/sjl-3-001/decision-rule-revised-2026-10-20.md (check only: refusals and builds)
+  arm B        <base-tree> at 0087e8d73ae3833200fa263b68f71db15b059a9c (bundle sjl-0-001's base commit 0087e8d73ae3833200fa263b68f71db15b059a9c)
+  arm A        <tree> at b6f0dd81fb7a2d4c510fcdf161f53df66e31810a (the commit on the default branch's first-parent history that adds the revised rule; product sources aaa39fbc2030e1a2554317bea75bcbb56041c696's but for the paths the root does not build)
+  default      --default-branch b6f0dd81fb7a2d4c510fcdf161f53df66e31810a at b6f0dd81fb7a2d4c510fcdf161f53df66e31810a
+  arm A-again  arm A's binaries, measured a second time under another lane name
+  exempted     differing from aaa39fbc2030e1a2554317bea75bcbb56041c696 outside the documents, under the rule's four paths: 2276 file(s) (eng/check-frontend-mapping.py, eng/compare-parse-corpus.py, src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/, src/tests/corpus/parse-1/)
+  root         src/compositions/Broiler.VM.Composition.JavaScript.Cli, built in Release under the JIT in each arm's tree; closure at arm A: src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj, src/Broiler.VM.Binary/Broiler.VM.Binary.csproj, src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj, src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj, src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj, src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj, src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj, src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj
+  build files  Directory.Build.props, Directory.Packages.props, NuGet.config, eng/Broiler.Packaging.props
+  forms        bytecode, native; native under x86-64-sysv
+  workloads    to-string.js, to-string.control.js, to-number.js, to-number.control.js, literals.js, literals.control.js
+  transcript   docs/evidence/sjl-3-001/transcript/to-string.transcript.js, once per arm and form, held to docs/evidence/sjl-3-001/transcript/check.py with numref.py at 966140ad694570467ad21975f23047d0d6f0c1ce
+  files        as arm A holds them: decision-rule-revised-2026-10-20.md blob=531380f4f5045f8fdd3cf959dfe8be73ffd74ba3, collect.py blob=d52165dbe009212ea277cfe57b2e15806841be9f, check.py blob=cf2fe29fac0c0c82f1021c95d61f0e5d29e2b276, to-string.transcript.js blob=9a926b538541c7d51c089902507dc10ebd79c4b8
+  repetitions  3 warm-up (excluded from Q) and 7 retained per lane; the arms' order rotates by repetition, and each arm runs the workload, then its control
+  checks       every arm's first check of every file and form before any lane, and again after its lanes
+  allowance    fuel=100000000000 wallClockMs=600000, the same for every lane
+  children     432 timed or checked, four transcripts and two builds
+  load average 0.69 0.42 0.99 at the step's start
+  into         nothing under --out: the builds go to the step's scratch directory
+measure-revised: REFUSED: arm A: the tree holds ignored files a build may read (only bin/ and obj/ directories, which are removed before its build, and Python's caches may be there): src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj.user
+exit code: 2
+# result: refused before any build, as expected, and by no other refusal
