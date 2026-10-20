@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           3
+// Exempt:           2
 // Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
@@ -507,12 +507,16 @@ public sealed partial class JsCompiler
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>It is what decides the order of three outputs, and nothing else decides it</b> (SJL-12.6
+    /// <b>It is what decides the order of these outputs, and nothing else decides it</b> (SJL-12.6
     /// item 3, JSD-0080 decision D14): a script's global lexical declarations, its script-declarations
-    /// row, and an evaluated program's lexical slots and the lexical names of its declaration row.
-    /// Each is written by walking this list. Until 2026-10-20 the set was a dictionary, and each came
-    /// out in the dictionary's enumeration order - which a dictionary nothing is removed from happens
-    /// to keep as insertion order, and which nothing promises.
+    /// row, and an evaluated program's lexical slots - and so the slot every instruction and scope-map
+    /// row that names one of them carries - and the lexical names of its declaration row. It also
+    /// decides where in the constant pool each of these names stands, wherever nothing interned it
+    /// first: the declaring instructions intern a script's names in this order, and the assembly
+    /// interns an evaluated program's in the order of its declaration row. Each is written by walking
+    /// this list. Until 2026-10-20 the set was a dictionary, and each came out in the dictionary's
+    /// enumeration order - which a dictionary nothing is removed from happens to keep as insertion
+    /// order, and which nothing promises.
     /// </para>
     /// <para>
     /// <b>A name declared twice keeps its first place and takes its last kind</b>, which is what the
@@ -540,11 +544,6 @@ public sealed partial class JsCompiler
         // Broiler-Human:        PENDING
         private readonly System.Collections.Generic.Dictionary<string, int> places =
             new(System.StringComparer.Ordinal);
-
-        /// <summary>How many distinct names have been declared.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E20B2B
-        // Broiler-Human:        PENDING
-        internal int Count => declared.Count;
 
         /// <summary>Whether <paramref name="name"/> has been declared.</summary>
         // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=008368

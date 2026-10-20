@@ -79,9 +79,9 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 327 |
-| Code units | 11605 |
+| Code units | 11604 |
 | Relevant | 6644 |
-| Exempt | 4961 |
+| Exempt | 4960 |
 | Assessed | 6644 of 6644 (100%) |
 | Human reviewed | 0 of 6644 (0%) |
 | Unverified | 6644 |
@@ -100,7 +100,7 @@ annotations and the current fingerprints; nothing stores them.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4961 |
+| EXEMPT | 4960 |
 
 ## 5. Aliases In The Tree
 
@@ -157,7 +157,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs` | 11 | 11 | 0 | 11 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Expressions.cs` | 3 | 3 | 0 | 3 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Functions.cs` | 10 | 10 | 0 | 10 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs` | 26 | 23 | 3 | 23 | None | Medium | 1/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs` | 25 | 23 | 2 | 23 | None | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` | 17 | 17 | 0 | 17 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs` | 13 | 13 | 0 | 13 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Names.cs` | 19 | 19 | 0 | 19 | Low | High | 2/2 |
