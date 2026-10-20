@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           0
-// Human-reviewed:   0/14
+// Human-reviewed:   0/9
 // IP risk:          None
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         1/1
 // Resource impact:  3/10 max
-// Unverified:       14
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -37,7 +37,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BD27A1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4700BC
     // Broiler-Human:        PENDING
     private void CompileStatement(JsStatement statement, int completion)
     {
@@ -73,7 +73,7 @@ public sealed partial class JsCompiler
             // makes `if (x) { function f() { } }` leave `f` undefined when `x` is false, and what
             // makes the aliased value the block binding's CURRENT one rather than its first.
             case JsFunctionDeclaration declared:
-                if (annexB.Contains(declared))
+                if (binder.AdmitsAnnexB(declared))
                 {
                     EmitAnnexBAlias(declared.Function.Name);
                 }
@@ -343,250 +343,6 @@ public sealed partial class JsCompiler
         }
     }
 
-    /// <summary>
-    /// Finds the block-level function declarations Annex B additionally binds in the var scope.
-    /// </summary>
-    /// <param name="body">The top level of one hoisting scope: a script, a module or a body.</param>
-    /// <param name="blocked">
-    /// The names a <c>var</c> of the same spelling could not be added to this scope for: its
-    /// parameters, <c>arguments</c>, and every lexical name declared at its top level.
-    /// </param>
-    /// <param name="aliases">The names collected, in the order the declarations are written.</param>
-    /// <remarks>
-    /// <para>
-    /// <b>Annex B's condition is a question about an EARLY ERROR and this is the whole of the
-    /// question.</b> The clause admits a declaration when replacing it with <c>var F</c> would not
-    /// have been a syntax error — so the walk carries the set of names that would have collided
-    /// with such a <c>var</c>, adds each enclosing block's own lexical names to it on the way down,
-    /// and admits a declaration exactly when its name is not in the set its ENCLOSING blocks give.
-    /// A block's own lexical names are not in that set, because the declaration is one of them.
-    /// </para>
-    /// <para>
-    /// <b>A simple catch parameter is the one binding that does not block, and a destructuring one
-    /// does.</b> That asymmetry is not this walk's invention: B.3.4 exempts
-    /// <c>CatchParameter : BindingIdentifier</c> from the rule that forbids a <c>var</c> of the
-    /// parameter's name in the catch block, and exempts nothing else. So
-    /// <c>catch (f) { { function f() { } } }</c> writes the alias and
-    /// <c>catch ({ f }) { { function f() { } } }</c> does not.
-    /// </para>
-    /// <para>
-    /// <b>It stops where a hoisting scope stops.</b> A nested function, a class body and a method
-    /// are scopes of their own and their declarations are their own <see cref="HoistFunction"/>'s
-    /// to find; nothing here descends into one.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=8DEF5C
-    // Broiler-Falsified-If: a declaration is admitted whose name a `var` of the same spelling could not be added under
-    // Broiler-Human:        PENDING
-    private void ScanAnnexB(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body,
-        System.Collections.Generic.HashSet<string> blocked,
-        System.Collections.Generic.List<string> aliases)
-    {
-        foreach (var statement in body)
-        {
-            ScanAnnexBStatement(statement, blocked, aliases);
-        }
-    }
-
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=643157
-    // Broiler-Falsified-If: a statement that opens a lexical record forwards the enclosing blocking set unchanged
-    // Broiler-Human:        PENDING
-    private void ScanAnnexBStatement(
-        JsStatement statement,
-        System.Collections.Generic.HashSet<string> blocked,
-        System.Collections.Generic.List<string> aliases)
-    {
-        switch (statement)
-        {
-            case JsBlockStatement block:
-                ScanAnnexBBlock(block.Body, blocked, aliases);
-                break;
-
-            // THE CLAUSES OF A `switch` ARE ONE BLOCK, exactly as they are one record when the
-            // lowering compiles them, so a declaration in one clause is blocked by a `let` in
-            // another.
-            case JsSwitchStatement switched:
-            {
-                var clauses = new System.Collections.Generic.List<JsStatement>();
-
-                foreach (var clause in switched.Clauses)
-                {
-                    clauses.AddRange(clause.Body);
-                }
-
-                ScanAnnexBBlock(clauses, blocked, aliases);
-                break;
-            }
-
-            case JsIfStatement conditional:
-                ScanAnnexBStatement(conditional.Consequent, blocked, aliases);
-
-                if (conditional.Alternate is not null)
-                {
-                    ScanAnnexBStatement(conditional.Alternate, blocked, aliases);
-                }
-
-                break;
-
-            case JsWhileStatement loop:
-                ScanAnnexBStatement(loop.Body, blocked, aliases);
-                break;
-
-            case JsDoWhileStatement loop:
-                ScanAnnexBStatement(loop.Body, blocked, aliases);
-                break;
-
-            case JsForStatement loop:
-            {
-                var inner = blocked;
-
-                if (loop.Initialiser is JsVariableStatement head &&
-                    head.Kind != SliceDeclarationKind.Var)
-                {
-                    var names = new System.Collections.Generic.List<string>();
-
-                    foreach (var declarator in head.Declarators)
-                    {
-                        CollectDeclaratorNames(declarator, names);
-                    }
-
-                    inner = Blocking(blocked, names);
-                }
-
-                ScanAnnexBStatement(loop.Body, inner, aliases);
-                break;
-            }
-
-            case JsForInStatement loop:
-                ScanAnnexBStatement(loop.Body, HeadBlocking(loop.Declaration, loop.Name, loop.Pattern, blocked), aliases);
-                break;
-
-            case JsForOfStatement loop:
-                ScanAnnexBStatement(loop.Body, HeadBlocking(loop.Declaration, loop.Name, loop.Pattern, blocked), aliases);
-                break;
-
-            case JsTryStatement guarded:
-            {
-                ScanAnnexBBlock(guarded.Block.Body, blocked, aliases);
-
-                if (guarded.Handler is not null)
-                {
-                    var inner = blocked;
-
-                    if (guarded.CatchPattern is not null)
-                    {
-                        var names = new System.Collections.Generic.List<string>();
-                        CollectPatternNames(guarded.CatchPattern, names);
-                        inner = Blocking(blocked, names);
-                    }
-
-                    ScanAnnexBBlock(guarded.Handler.Body, inner, aliases);
-                }
-
-                if (guarded.Finaliser is not null)
-                {
-                    ScanAnnexBBlock(guarded.Finaliser.Body, blocked, aliases);
-                }
-
-                break;
-            }
-
-            case JsWithStatement scoped:
-                ScanAnnexBStatement(scoped.Body, blocked, aliases);
-                break;
-
-            case JsLabelledStatement labelled:
-                ScanAnnexBStatement(labelled.Body, blocked, aliases);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=CEAD6A
-    // Broiler-Falsified-If: a block's own lexical names reach the test its own declarations are judged by
-    // Broiler-Human:        PENDING
-    private void ScanAnnexBBlock(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body,
-        System.Collections.Generic.HashSet<string> blocked,
-        System.Collections.Generic.List<string> aliases)
-    {
-        foreach (var statement in body)
-        {
-            // ANNEX B EXTENDS `FunctionDeclaration` AND NOT THE THREE PRODUCTIONS THAT LOOK LIKE
-            // IT. A generator, an async function and an async generator are separate productions of
-            // the grammar, and the clause names only the first - so
-            // `switch (0) { default: async function x() { } } x;` is the ReferenceError the
-            // language says it is, in sloppy code as much as in strict. Admitting them here was a
-            // web-compatibility extension nothing asked for, and it turned three conforming
-            // refusals into programs that ran.
-            if (Declared(statement) is { } declaration &&
-                declaration.Function.Name.Length != 0 &&
-                !declaration.Function.IsGenerator &&
-                !declaration.Function.IsAsync &&
-                !blocked.Contains(declaration.Function.Name))
-            {
-                annexB.Add(declaration);
-                aliases.Add(declaration.Function.Name);
-            }
-        }
-
-        var lexical = new System.Collections.Generic.List<(string Name, bool Constant)>();
-        CollectLexical(body, lexical);
-        var names = new System.Collections.Generic.List<string>(lexical.Count);
-
-        foreach (var (name, _) in lexical)
-        {
-            names.Add(name);
-        }
-
-        ScanAnnexB(body, Blocking(blocked, names), aliases);
-    }
-
-    /// <summary>The blocking set one more record's names give, leaving the caller's alone.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=414085
-    // Broiler-Human:        PENDING
-    private static System.Collections.Generic.HashSet<string> Blocking(
-        System.Collections.Generic.HashSet<string> blocked,
-        System.Collections.Generic.IReadOnlyList<string> names)
-    {
-        if (names.Count == 0)
-        {
-            return blocked;
-        }
-
-        var inner = new System.Collections.Generic.HashSet<string>(
-            blocked, System.StringComparer.Ordinal);
-
-        foreach (var name in names)
-        {
-            inner.Add(name);
-        }
-
-        return inner;
-    }
-
-    /// <summary>The blocking set a <c>for-in</c> or <c>for-of</c> head's own binding gives.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=13A949
-    // Broiler-Human:        PENDING
-    private static System.Collections.Generic.HashSet<string> HeadBlocking(
-        SliceDeclarationKind? declaration,
-        string name,
-        JsPattern? pattern,
-        System.Collections.Generic.HashSet<string> blocked)
-    {
-        if (declaration is null or SliceDeclarationKind.Var)
-        {
-            return blocked;
-        }
-
-        var names = new System.Collections.Generic.List<string>();
-        CollectHeadNames(name, pattern, names);
-        return Blocking(blocked, names);
-    }
-
     /// <summary>Copies a block's function binding into the <c>var</c>-scoped alias Annex B made.</summary>
     /// <remarks>
     /// <para>
@@ -644,16 +400,15 @@ public sealed partial class JsCompiler
     /// <c>#switch</c> temporary a <c>switch</c> declares first or a duplicate the parser has
     /// already refused, and neither wants a second binding.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=907B3B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D2B45A
     // Broiler-Human:        PENDING
-    private void DeclareLexical(
-        System.Collections.Generic.IReadOnlyList<(string Name, bool Constant)> lexical)
+    private void DeclareLexical(System.Collections.Generic.IReadOnlyList<JsBinder.Declaration> lexical)
     {
-        foreach (var (name, constant) in lexical)
+        foreach (var declaration in lexical)
         {
-            if (!scope.Has(name))
+            if (!scope.Has(declaration.Name))
             {
-                scope.Declare(name, constant);
+                scope.Declare(declaration.Name, declaration.Constant);
             }
         }
     }
@@ -666,7 +421,7 @@ public sealed partial class JsCompiler
     /// <b>The block is a declaration instantiation of its own, and this is the whole of it.</b>
     /// Every function declared directly in the list gets its slot before any closure is built, so
     /// two functions in one block can call each other, and every closure is then built with the
-    /// BLOCK's record current — which is the fact <see cref="CollectVarScope"/> used to destroy by
+    /// BLOCK's record current — which is the fact the <c>var</c> collection used to destroy by
     /// hoisting the declaration out to the enclosing body <i>(JSC-138)</i>. A body that names a
     /// <c>let</c> of the same block now resolves it to a slot rather than to a global.
     /// </para>
@@ -677,21 +432,13 @@ public sealed partial class JsCompiler
     /// alias — where there is one — is written later, by the declaration itself.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=15318F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=62B9A3
     // Broiler-Human:        PENDING
-    private void HoistBlockFunctions(System.Collections.Generic.IReadOnlyList<JsStatement> body)
+    private void HoistBlockFunctions(JsBinder.Declarations declarations)
     {
-        System.Collections.Generic.List<JsFunctionDeclaration>? declared = null;
+        var declared = declarations.Functions;
 
-        foreach (var statement in body)
-        {
-            if (Declared(statement) is { } declaration && declaration.Function.Name.Length != 0)
-            {
-                (declared ??= []).Add(declaration);
-            }
-        }
-
-        if (declared is null)
+        if (declared.Count == 0)
         {
             return;
         }
@@ -711,13 +458,12 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D5AB9D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=825F2F
     // Broiler-Human:        PENDING
     private void CompileBlock(JsBlockStatement block, int completion)
     {
-        var lexical = new System.Collections.Generic.List<(string Name, bool Constant)>();
-        CollectLexical(block.Body, lexical);
-        var pushed = lexical.Count != 0;
+        var declarations = binder.Block(block);
+        var pushed = declarations.Lexical.Count != 0;
         var outer = scope;
 
         if (pushed)
@@ -727,8 +473,8 @@ public sealed partial class JsCompiler
             var at = buffer.Code.Count;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((at + 1, scope));
-            DeclareLexical(lexical);
-            HoistBlockFunctions(block.Body);
+            DeclareLexical(declarations.Lexical);
+            HoistBlockFunctions(declarations);
         }
 
         CompileDisposing(block.Body, completion);

@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F0F1A5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=106924
     // Broiler-Human:        PENDING
     private void CompileTry(JsTryStatement guarded, int completion)
     {
@@ -105,10 +105,9 @@ public sealed partial class JsCompiler
             // are: a closure created above a `let` resolves to that `let`, in its dead zone, and
             // not to a name outside. Until 2026-10-03 a catch body declared each name only when
             // its declaration was reached (JSC-254).
-            var catchLexical = new System.Collections.Generic.List<(string Name, bool Constant)>();
-            CollectLexical(guarded.Handler.Body, catchLexical);
-            DeclareLexical(catchLexical);
-            HoistBlockFunctions(guarded.Handler.Body);
+            var catchDeclarations = binder.Block(guarded.Handler);
+            DeclareLexical(catchDeclarations.Lexical);
+            HoistBlockFunctions(catchDeclarations);
 
             // A catch body is a Block and disposes its own resources, inside the parameter's scope
             // and before control leaves the handler - not in whatever list encloses the `try`.

@@ -696,7 +696,13 @@ public sealed class DiagnosticRegistryRuleTests
         // THE FIFTY-FIRST IS THE COMPILER'S UNICODE ADAPTER (SJL-7.4, JSD-0074): the owner's lexical
         // classes and property lookups over Format's tables, held in static read-only references to
         // immutable objects, which this rule reads and correctly does not report.
-        Assert.Equal(51, lowering.Length);
+        //
+        // THE FIFTY-SECOND AND FIFTY-THIRD ARE THE WIDE LOWERING'S BINDER PASS, added 2026-10-20 by
+        // SJL-12.6 item 1 (JSD-0080 decision D11): JsBinder.cs, its facts, and JsBinder.Walks.cs, the
+        // walks that compute them. A binder is the other thing an author is tempted to cache in a
+        // static - a table of facts per node, kept for the next unit - and this one is made per unit
+        // and holds its tables in the instance, which is what this rule is here to keep true.
+        Assert.Equal(53, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

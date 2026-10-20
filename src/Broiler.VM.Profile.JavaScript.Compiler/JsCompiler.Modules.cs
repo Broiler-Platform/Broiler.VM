@@ -47,7 +47,7 @@ public sealed partial class JsCompiler
     /// for the lifetime of the instance, and <c>globalThis.x</c> must not see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=344580
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6130F2
     // Broiler-Human:        PENDING
     private void CompileModule(JsProgramNode program, JsModuleUnit unit)
     {
@@ -75,13 +75,14 @@ public sealed partial class JsCompiler
         var outerDepth = blockDepth;
         var outerModule = module;
 
-        strict = true;
+        // A MODULE IS STRICT WHATEVER IT SAYS, and the binder bound it so.
+        strict = binder.Program.Strict;
         module = build;
         scope = build.Scope;
         blockDepth = 0;
 
         DeclareImports(program.Body, build);
-        var variables = DeclareModuleBindings(program.Body, build);
+        var variables = DeclareModuleBindings(binder.Program, program.Body, build);
         DeclareExports(program.Body, build);
 
         build.InitialiserUnit = EmitModuleInitialiser(program, build, variables);
@@ -296,20 +297,26 @@ public sealed partial class JsCompiler
     /// <summary>
     /// Declares every slot the module's own environment holds, before any code is emitted.
     /// </summary>
+    /// <param name="unit">What the binder found the module's top level declares.</param>
+    /// <param name="body">The module's statements, which the collision checks read for their places.</param>
+    /// <param name="build">The module being built.</param>
     /// <remarks>
     /// The <c>var</c> names are answered so the initialiser can set them to <c>undefined</c>; the
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=50A13A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=514BA5
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<string> DeclareModuleBindings(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
+    private System.Collections.Generic.IReadOnlyList<string> DeclareModuleBindings(
+        JsBinder.HoistingScope unit,
+        System.Collections.Generic.IReadOnlyList<JsStatement> body,
+        ModuleBuild build)
     {
-        var names = new System.Collections.Generic.List<string>();
-        var functions = new System.Collections.Generic.List<JsFunctionNode>();
-        var lexical = new System.Collections.Generic.List<string>();
-        CollectVarScope(Unwrapped(body), names, functions, lexical);
+        // THE MODULE'S `var` NAMES AND FUNCTION DECLARATIONS ARE THE BINDER'S (SJL-12.6 item 1), read
+        // from its top level with each exported declaration in the export's place.
+        var names = unit.VarNames;
+        var functions = unit.Functions;
+        var varNames = new System.Collections.Generic.HashSet<string>(names, System.StringComparer.Ordinal);
 
         foreach (var name in names)
         {
@@ -338,7 +345,7 @@ public sealed partial class JsCompiler
             // AND IT COLLIDES WITH A `var` OF THE SAME NAME, for the same reason: a module's
             // function is lexical (16.2.1.1). Until 2026-10-03 `var f; function f() {}` compiled in
             // a module (JSC-253).
-            if (names.Contains(function.Name))
+            if (varNames.Contains(function.Name))
             {
                 Refuse(
                     function.Span,
@@ -387,7 +394,7 @@ public sealed partial class JsCompiler
                 // top-level `const {a} = o; const {b} = o;` were refused as the same undeclared name
                 // twice (VM-FIX-D), and a pattern's real names were never checked at all.
                 var declared = new System.Collections.Generic.List<string>();
-                CollectDeclaratorNames(declarator, declared);
+                JsBinder.DeclaratorNames(declarator, declared);
 
                 foreach (var name in declared)
                 {
@@ -399,7 +406,7 @@ public sealed partial class JsCompiler
                             "`" + name + "` is declared twice at this module's top level");
                     }
 
-                    if (names.Contains(name))
+                    if (varNames.Contains(name))
                     {
                         Refuse(
                             declarator.Span,
@@ -411,8 +418,6 @@ public sealed partial class JsCompiler
                 }
             }
         }
-
-        _ = lexical;
 
         // `export default <expression>` binds a slot with a name no source can write, so nothing
         // it collides with can be declared and no collision check is owed for it.
@@ -535,12 +540,12 @@ public sealed partial class JsCompiler
     /// <summary>
     /// Emits the unit that initialises the module's environment before anything is evaluated.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EF8BCE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=78CBAF
     // Broiler-Human:        PENDING
     private int EmitModuleInitialiser(
         JsProgramNode program,
         ModuleBuild build,
-        System.Collections.Generic.List<string> variables)
+        System.Collections.Generic.IReadOnlyList<string> variables)
     {
         var index = units.Count;
         buffer = new UnitBuffer(0, JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.Strict);
@@ -665,13 +670,16 @@ public sealed partial class JsCompiler
     /// A statement list with each exported declaration replaced by the declaration itself.
     /// </summary>
     /// <remarks>
-    /// The collectors that find <c>var</c> names, function declarations and lexical names are the
-    /// script lowering's and know nothing about <c>export</c>. Unwrapping here rather than teaching
-    /// each of them the module goal keeps one answer to what a declaration is.
+    /// <b>The one reading of what a module's top-level declaration is</b>: an exported declaration is
+    /// a declaration of the module, in the export's place. The binder reads a unit's top level through
+    /// it for the <c>var</c> names, functions and lexical declarations it records, and the module's own
+    /// checks of its lexical declarations read the module's statements through it, so the two cannot
+    /// disagree about which statements those are. A script holds no <c>export</c>, so its list comes
+    /// back as it was.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=67CC95
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2FC402
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<JsStatement> Unwrapped(
+    internal static System.Collections.Generic.List<JsStatement> Unwrapped(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
     {
         var flattened = new System.Collections.Generic.List<JsStatement>(body.Count);

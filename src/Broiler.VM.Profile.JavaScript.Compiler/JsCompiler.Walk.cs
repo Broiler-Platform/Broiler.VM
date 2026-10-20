@@ -24,9 +24,16 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4D0D1E
+    /// <summary>The searches a function's own code is read with for one name or for a closure.</summary>
+    /// <remarks>
+    /// <b>Internal and not private since SJL-12.6 item 1</b>: the binder pass computes the facts
+    /// these searches answer - whether a function needs an <c>arguments</c> object, whether its body
+    /// may evaluate, whether its parameter list may make a closure - and reads them with exactly these
+    /// walks, so that each answer is the one the lowering always gave.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=27A886
     // Broiler-Human:        PENDING
-    private static class Walk
+    internal static class Walk
     {
         /// <summary>
         /// Whether <paramref name="root"/> makes a closure where it stands - a function or arrow

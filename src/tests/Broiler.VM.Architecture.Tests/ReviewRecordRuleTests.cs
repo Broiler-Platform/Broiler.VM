@@ -1338,7 +1338,12 @@ public sealed class ReviewRecordRuleTests
         // and JsCalendars.cs, whose calendars its TemporalCalendars implements. The realm files,
         // JsTemporalObjects.cs, JsTemporalParser.cs (the grammar's thin wrapper) and the adapters of
         // JsTemporal stay, and call it.
-        Assert.Equal(327, AssuranceSources.Files.Count);
+        //
+        // AND THE WIDE LOWERING'S BINDER PASS (SJL-12.6 item 1, 2026-10-20, JSD-0080 decision D11) ADDED
+        // TWO: the compiler's JsBinder.cs, the facts, and JsBinder.Walks.cs, the walks that compute them.
+        // Both are covered on the same terms as every other product file, and nothing in them has been
+        // read by a human.
+        Assert.Equal(329, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
