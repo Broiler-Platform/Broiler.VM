@@ -108,7 +108,10 @@ file of the folder (for `base/`, with `base/logs/` and without `base/hosted/`).
 The run's own records are in [`after/ordering/`](after/ordering/): `machine.txt`, `commands.txt`, the slice
 compiler's `binaries.sha256`, and `logs/`, which holds the checkout's `git rev-parse HEAD` and
 `git status --porcelain` before and after its build, as section 4 asks. [`after/hashes.txt`](after/hashes.txt) is
-the SHA-256 of every other file of `after/`, with `after/ordering/`.
+the SHA-256 of every other file of `after/`, with `after/ordering/`. *(Added 2026-10-20, after that run was first
+committed.)* [`after/ordering/ordering-commit.txt`](after/ordering/ordering-commit.txt) records the ordering commit
+from git, as `corpus/corpus-commit.txt` records the corpus commit: its identity, and the paths and blobs section 5
+reads of it.
 
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
@@ -286,8 +289,8 @@ follows.
 **Written 2026-10-20.** This section reads the base runs this bundle retains. It judges nothing: the rule compares
 each base with a run at the ordering commit or the after commit, and neither commit exists yet.
 
-*(Added 2026-10-20.)* "Neither commit exists yet" was true when this section was written. The ordering commit now
-exists, and section 5 reads part B's run there. The after commit does not exist yet.
+*(Added 2026-10-20.)* The words "neither commit exists yet" were true when this section was written. The ordering
+commit now exists, and section 5 reads part B's run there. The after commit does not exist yet.
 
 | Part | Commit | Taken | Retained in |
 |---|---|---|---|
@@ -476,12 +479,12 @@ difference is in O, S, T or P and is listed, and B4 and the census show none".
 
 | | |
 |---|---|
-| Commit | The ordering commit, `066abefea4351fb49bd8bf8e823fbdc7aac560de`, the default-branch merge of Broiler.VM#163. Its first parent is `01444a590147b4bcdc033ea82c60d477924c752d`, the default branch before it, and its second is `3ff6b35cea220228ea98877cf95c9b4bc49f439c`, the change's head |
-| What it lands | SJL-12.6 item 3, deterministic ordering, alone and before items 1, 2 and 4, as the rule names the ordering commit (JSD-0080 decision D14): `SourceOrderedLexicals` in the compiler, and the slice compiler's two `--checks` rows that part C names, "the wide lowering is deterministic" and "the wide lowering declares lexical names in source order". From the corpus commit to the first parent, `git diff --name-only` names paths under `docs/` alone. Against its first parent the merge changes the compiler's `JsCompiler.cs`, `JsCompiler.Eval.cs` and `JsCompiler.Hoisting.cs`, the slice compiler's `SourceFrontEndChecks.cs` and `WideLoweringChecks.cs`, and the three generated assurance records |
-| Rule | [`decision-rule-area.md`](decision-rule-area.md), unchanged since the rule commit: `git rev-parse` gives the same blob at the rule commit and the ordering commit |
-| Machine | The programme's local machine, as for the bases: four processors, .NET SDK 10.0.401, Ubuntu 24.04.5 LTS ([`after/ordering/machine.txt`](after/ordering/machine.txt)) |
+| Commit | The ordering commit, `066abefea4351fb49bd8bf8e823fbdc7aac560de`, the default-branch merge of Broiler.VM#163. Its first parent is `01444a590147b4bcdc033ea82c60d477924c752d`, the default branch before it, and its second is `3ff6b35cea220228ea98877cf95c9b4bc49f439c`, the change's head ([`after/ordering/ordering-commit.txt`](after/ordering/ordering-commit.txt)) |
+| What it lands | SJL-12.6 item 3, deterministic ordering, alone and before items 1, 2 and 4, as the rule names the ordering commit (JSD-0080 decision D14): `SourceOrderedLexicals` in the compiler, and the slice compiler's two `--checks` rows that part C names, "the wide lowering is deterministic" and "the wide lowering declares lexical names in source order". From the corpus commit to the first parent, `git diff --name-only` names paths under `docs/` alone. Against its first parent the merge changes the compiler's `JsCompiler.cs`, `JsCompiler.Eval.cs` and `JsCompiler.Hoisting.cs`, the slice compiler's `SourceFrontEndChecks.cs` and `WideLoweringChecks.cs`, and the three generated assurance records, `CODE-ASSURANCE.md`, `HUMAN_REVIEW.md` and `assurance.manifest.json` ([`ordering-commit.txt`](after/ordering/ordering-commit.txt)) |
+| Rule | [`decision-rule-area.md`](decision-rule-area.md), unchanged since the rule commit: `git rev-parse` gives the same blob at the rule commit and the ordering commit ([`ordering-commit.txt`](after/ordering/ordering-commit.txt)) |
+| Machine | The programme's local machine, as for the bases: four processors, .NET SDK 10.0.401, Ubuntu 24.04.5 LTS. The run recorded the processor count; the SDK and the operating system were read on the machine after the run ([`after/ordering/machine.txt`](after/ordering/machine.txt)) |
 | Taken | 2026-10-20: the build from 18:23:40Z, the run from 18:24:36Z to 18:34:10Z, and the comparison with the base to 18:34:17Z ([`after/ordering/logs/driver.log`](after/ordering/logs/driver.log)) |
-| Tool | The slice compiler's `--parse-corpus` mode, built in Release from a clean detached checkout of the ordering commit, with no warning ([`build.log`](after/ordering/logs/build.log)). The mode's source file, `ParseCorpus.cs`, and `eng/compare-parse-corpus.py` are the corpus commit's: `git rev-parse` gives the same blob for each at both commits, as the rule requires. Every command, in order, is in [`after/ordering/commands.txt`](after/ordering/commands.txt) |
+| Tool | The slice compiler's `--parse-corpus` mode, built in Release from a clean detached checkout of the ordering commit, with no warning ([`build.log`](after/ordering/logs/build.log)). The mode's source file, `ParseCorpus.cs`, and `eng/compare-parse-corpus.py` are the corpus commit's: `git rev-parse` gives the same blob for each at both commits, as the rule requires ([`ordering-commit.txt`](after/ordering/ordering-commit.txt)). Every command, in order, is in [`after/ordering/commands.txt`](after/ordering/commands.txt) |
 
 **The idle machine** ([`machine.txt`](after/ordering/machine.txt), [`driver.log`](after/ordering/logs/driver.log)).
 - The script's gate listed no `dotnet` or `python` process before the build. The script recorded the load average
@@ -490,9 +493,11 @@ difference is in O, S, T or P and is listed, and B4 and the census show none".
 - No other build, test or run was taken on the machine while the run was taken.
 - During the run the orchestrating session acted in other checkouts, never in this run's. From 18:32:44Z to
   18:32:47Z it fetched, fast-forwarded and pushed the Broiler.JS checkout `/home/user/broiler.js` (its reflogs). At
-  about 18:32Z to 18:33Z it removed a merged Broiler.JS worktree. And it merged pull requests on GitHub, which ran
-  there, not on this machine. These were git and GitHub operations, not builds, tests or runs. `machine.txt` names
-  each.
+  about 18:32Z to 18:33Z it removed a merged Broiler.JS worktree. And it merged Broiler.JS#1064 on GitHub at
+  18:32:37Z, which ran there, not on this machine; the fetch at 18:32:44Z brought that merge. No other pull request
+  of Broiler.VM, Broiler.JS, Broiler.Unicode or Broiler.Regex was merged during the run, and Broiler.VM#163, which
+  made the ordering commit, was merged at 18:22:58Z, before the gate (their GitHub records). These were git and
+  GitHub operations, not builds, tests or runs. `machine.txt` names each.
 
 **How the run is bound to the ordering commit.** Section 4 asks the ordering and after runs to retain, in their own
 `logs/`, `git rev-parse HEAD` and `git status --porcelain` of their checkout before and after its build. This run's
@@ -507,7 +512,13 @@ are in [`after/ordering/logs/`](after/ordering/logs/).
 - [`binaries.sha256`](after/ordering/binaries.sha256) holds the SHA-256 of the twelve assemblies the build wrote.
   Against [`base/binaries.sha256`](base/binaries.sha256), the nine Broiler.VM assemblies differ, among them the
   compiler's, `Broiler.VM.Profile.JavaScript.Compiler.dll`, which holds the change. The three of Broiler.ECMAScript
-  and Broiler.Unicode are the same. So the run's compiler is not the base's, as the change requires.
+  and Broiler.Unicode are the same: they come from packages, which the build copies and does not compile.
+  *(Added 2026-10-20, after this section was first committed.)* The difference does not show the change by itself.
+  Seven of the nine Broiler.VM assemblies are compiled from sources that are the same at the corpus commit and the
+  ordering commit, which differ outside `docs/` only in the compiler's and the slice compiler's sources and the
+  three assurance records ([`ordering-commit.txt`](after/ordering/ordering-commit.txt)). So the two builds also
+  wrote something else into what they compiled, likely the checkout's path or the commit, and the run is bound to
+  the ordering commit by the checkout records above, not by these hashes (`machine.txt`, its dated note).
 
 **Complete**, as part B's completeness states it for each of its three commits: "every manifest input reported in
 every sub-population, variant and form at each of the three commits, the manifest's digest at each run equal to the

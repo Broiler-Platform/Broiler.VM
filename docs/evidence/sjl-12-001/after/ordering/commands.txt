@@ -96,9 +96,14 @@ stamp "end"
 #   $OUT/logs/*                         -> after/ordering/logs/
 # logs/driver.log alone was trimmed, as the bundle keeps its logs free of terminal progress output: the line git
 # worktree add wrote for its checkout, 97 progress segments "Updating files:  NN% (n/10057)" and a last one, each
-# ended by a carriage return but the last, now holds that last segment alone, "Updating files: 100% (10057/10057), done.", as a terminal shows it.
-# Nothing else in it, and nothing in any other file, was changed. The untrimmed driver.log's SHA-256 was
+# ended by a carriage return but the last, now holds that last segment alone,
+# "Updating files: 100% (10057/10057), done.", as a terminal shows it. Nothing else in it, and nothing in any other
+# file, was changed. The untrimmed driver.log's SHA-256 was
 # ae1a4716876dd78933326148c4556bb455e6818ded7becd2ff391879105d0a7c.
 
 # ---- the retained files
 # after/hashes.txt: sha256sum of every other file of after/ and after/ordering/, from after/.
+# (Added 2026-10-20, after these files were first committed.) after/ordering/ordering-commit.txt: the ordering
+# commit's identity, and the paths and blobs README section 5 and machine.txt quote, from git reads alone in the
+# committing worktree after the run; it shows every command with its output and exit code. The paragraph on
+# driver.log above was wrapped at the same time, its words unchanged.

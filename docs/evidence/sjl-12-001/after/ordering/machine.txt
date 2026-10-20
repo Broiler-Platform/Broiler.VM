@@ -36,10 +36,18 @@ No other build, test or run was taken on the machine while this run was taken. D
     "update by push" at 18:32:47Z);
   - the removal of a merged Broiler.JS worktree, at about 18:32Z to 18:33Z (git keeps no reflog of a worktree's
     removal; this is the session's account);
-  - merges of pull requests on GitHub, which ran on GitHub, not on this machine.
+  - the merge of Broiler-Platform/Broiler.JS#1064 on GitHub, at 18:32:37Z (the pull request's GitHub record), which
+    ran on GitHub, not on this machine; the fetch at 18:32:44Z brought its merge commit,
+    48fee2d3d46d9cf8d355f9c4bbfae59cb0ac815b (/home/user/broiler.js's reflog of origin/main). No other pull request
+    of Broiler.VM, Broiler.JS, Broiler.Unicode or Broiler.Regex was merged during the run (their GitHub records):
+    Broiler.VM#163, which made the ordering commit, was merged at 18:22:58Z, before the gate.
 None of them was a build, test or run. Before the run, at 18:23:07Z to 18:23:11Z, before the gate, the session also
 fetched, fast-forwarded and pushed in the main checkout /home/user/Broiler.VM (its reflogs). That too was a git
 operation, and it did not touch this run's checkout, which was made after it.
+
+CORRECTED 2026-10-20, after these files were first committed (a verifier's review of that commit). The list's last
+entry read: "merges of pull requests on GitHub, which ran on GitHub, not on this machine." It did not name the
+merge, and there was one.
 
 THE RUN
   parse-corpus, one worker   exit 0, wall 573 s by the script's clock (logs/parse-corpus-ordering.exit.txt), 572.5 s by
@@ -58,9 +66,23 @@ THE CHECKOUT
   built in Release from clean, 0 warnings, 0 errors (logs/build.log);
   the slice compiler's assemblies as built: binaries.sha256. Against base/binaries.sha256, the nine Broiler.VM
   assemblies differ, among them Broiler.VM.Profile.JavaScript.Compiler.dll, which holds the change, and the three of
-  Broiler.ECMAScript and Broiler.Unicode are the same;
+  Broiler.ECMAScript and Broiler.Unicode are the same. The difference does not show the change by itself. Seven of
+  the nine (Abstractions, Binary, Profile.JavaScript, Profile.JavaScript.Format, Profile.JavaScript.Intl,
+  Profile.MachineCode and Runtime) are compiled from sources that are the same at the corpus commit and the
+  ordering commit, which differ outside docs/ only in the compiler's and the slice compiler's sources and the three
+  generated assurance records (ordering-commit.txt). So each build also writes into the assemblies it compiles
+  something that differs between the two builds, likely the checkout's path (base/commands.txt's vm-corpus, this
+  run's vm-ordering) or the commit the SDK writes into the informational version; neither build's assemblies were
+  kept, so which cannot be read now. The three that are the same come from packages, which the build copies and
+  does not compile. The run is bound to the ordering commit by the checkout records above, not by these hashes;
   src/tests/corpus/parse-1/corpus.manifest SHA-256 1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc,
   the corpus commit's (identity-base-ordering.tsv checks it);
   the mode's source file, ParseCorpus.cs, and eng/compare-parse-corpus.py are the corpus commit's: git rev-parse gives
   the same blob at both commits, 0f4ce7022a26ed972393b70db584b76188f241f0 and
-  c1d3b53d957c1a23f409b466f667b0733772863d.
+  c1d3b53d957c1a23f409b466f667b0733772863d (ordering-commit.txt).
+
+CORRECTED 2026-10-20, after these files were first committed (a verifier's review of that commit). The binaries
+entry above ended at "the three of Broiler.ECMAScript and Broiler.Unicode are the same;". It read the difference as
+the change's, and seven of the nine assemblies that differ are compiled from unchanged sources. The sentences after
+those words are new, and so is the reference to ordering-commit.txt, which git wrote after the run (its header gives
+the time) and which records the paths and blobs these entries quote.
