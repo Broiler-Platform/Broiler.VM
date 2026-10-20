@@ -144,22 +144,17 @@ internal sealed partial class JsBinder
     /// <summary>The unit's own top level: what it declares, and what Annex B aliases there.</summary>
     /// <remarks>
     /// <b>A module's exported declarations are declarations of its top level</b>, so the walk reads
-    /// each <c>export</c> that carries one as the declaration itself; a script holds none.
+    /// each <c>export</c> that carries one as the declaration itself, through the lowering's one
+    /// reading of that (<see cref="JsCompiler.Unwrapped"/>); a script holds none.
     /// <b>Only a script or a sloppy evaluated program owes an alias</b>, and the names that block one
     /// there are the top level's own lexical names - not its functions, which are <c>var</c>-scoped.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=447422
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3244EA
     // Broiler-Falsified-If: a script's or an evaluated program's var names, functions or Annex B aliases differ from what its hoisting declared before SJL-12.6 item 1, or a module's exported declarations are left out of its top level
     // Broiler-Human:        PENDING
     private HoistingScope BindProgram(JsProgramNode program, bool strict)
     {
-        var body = new System.Collections.Generic.List<JsStatement>(program.Body.Count);
-
-        foreach (var statement in program.Body)
-        {
-            body.Add(statement is JsExportDeclaration { Declaration: { } declared } ? declared : statement);
-        }
-
+        var body = JsCompiler.Unwrapped(program.Body);
         var topLevel = DeclarationsOf(body);
         var blocked = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
 
@@ -1009,6 +1004,12 @@ internal sealed partial class JsBinder
     /// <b>A block's own declarations are judged before anything inside it</b>, and the statements of
     /// each list in source order, depth first: the order the recursive scan this replaced collected
     /// the names in, which is the order the lowering declares the aliases in.
+    /// </para>
+    /// <para>
+    /// <b>It collects each list's declarations itself</b>, though the walk over the unit records the
+    /// same declarations for every block and <c>switch</c>: a scope is scanned when that walk meets the
+    /// function or the unit, before it has reached any list inside, so its table holds none of them
+    /// yet. A list is read twice and no answer differs.
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=746203

@@ -47,7 +47,7 @@ public sealed partial class JsCompiler
     /// for the lifetime of the instance, and <c>globalThis.x</c> must not see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AFFF3F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6130F2
     // Broiler-Human:        PENDING
     private void CompileModule(JsProgramNode program, JsModuleUnit unit)
     {
@@ -82,7 +82,7 @@ public sealed partial class JsCompiler
         blockDepth = 0;
 
         DeclareImports(program.Body, build);
-        var variables = DeclareModuleBindings(program.Body, build);
+        var variables = DeclareModuleBindings(binder.Program, program.Body, build);
         DeclareExports(program.Body, build);
 
         build.InitialiserUnit = EmitModuleInitialiser(program, build, variables);
@@ -297,20 +297,26 @@ public sealed partial class JsCompiler
     /// <summary>
     /// Declares every slot the module's own environment holds, before any code is emitted.
     /// </summary>
+    /// <param name="unit">What the binder found the module's top level declares.</param>
+    /// <param name="body">The module's statements, which the collision checks read for their places.</param>
+    /// <param name="build">The module being built.</param>
     /// <remarks>
     /// The <c>var</c> names are answered so the initialiser can set them to <c>undefined</c>; the
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DEB8C0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=514BA5
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<string> DeclareModuleBindings(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
+    private System.Collections.Generic.IReadOnlyList<string> DeclareModuleBindings(
+        JsBinder.HoistingScope unit,
+        System.Collections.Generic.IReadOnlyList<JsStatement> body,
+        ModuleBuild build)
     {
         // THE MODULE'S `var` NAMES AND FUNCTION DECLARATIONS ARE THE BINDER'S (SJL-12.6 item 1), read
         // from its top level with each exported declaration in the export's place.
-        var names = new System.Collections.Generic.List<string>(binder.Program.VarNames);
-        var functions = binder.Program.Functions;
+        var names = unit.VarNames;
+        var functions = unit.Functions;
+        var varNames = new System.Collections.Generic.HashSet<string>(names, System.StringComparer.Ordinal);
 
         foreach (var name in names)
         {
@@ -339,7 +345,7 @@ public sealed partial class JsCompiler
             // AND IT COLLIDES WITH A `var` OF THE SAME NAME, for the same reason: a module's
             // function is lexical (16.2.1.1). Until 2026-10-03 `var f; function f() {}` compiled in
             // a module (JSC-253).
-            if (names.Contains(function.Name))
+            if (varNames.Contains(function.Name))
             {
                 Refuse(
                     function.Span,
@@ -400,7 +406,7 @@ public sealed partial class JsCompiler
                             "`" + name + "` is declared twice at this module's top level");
                     }
 
-                    if (names.Contains(name))
+                    if (varNames.Contains(name))
                     {
                         Refuse(
                             declarator.Span,
@@ -534,12 +540,12 @@ public sealed partial class JsCompiler
     /// <summary>
     /// Emits the unit that initialises the module's environment before anything is evaluated.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EF8BCE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=78CBAF
     // Broiler-Human:        PENDING
     private int EmitModuleInitialiser(
         JsProgramNode program,
         ModuleBuild build,
-        System.Collections.Generic.List<string> variables)
+        System.Collections.Generic.IReadOnlyList<string> variables)
     {
         var index = units.Count;
         buffer = new UnitBuffer(0, JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.Strict);
@@ -664,13 +670,16 @@ public sealed partial class JsCompiler
     /// A statement list with each exported declaration replaced by the declaration itself.
     /// </summary>
     /// <remarks>
-    /// The module's own checks of its lexical declarations read the list the way the binder reads a
-    /// module's top level for its <c>var</c> names and functions: an exported declaration is a
-    /// declaration of the module, in the export's place.
+    /// <b>The one reading of what a module's top-level declaration is</b>: an exported declaration is
+    /// a declaration of the module, in the export's place. The binder reads a unit's top level through
+    /// it for the <c>var</c> names, functions and lexical declarations it records, and the module's own
+    /// checks of its lexical declarations read the module's statements through it, so the two cannot
+    /// disagree about which statements those are. A script holds no <c>export</c>, so its list comes
+    /// back as it was.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=67CC95
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2FC402
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<JsStatement> Unwrapped(
+    internal static System.Collections.Generic.List<JsStatement> Unwrapped(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
     {
         var flattened = new System.Collections.Generic.List<JsStatement>(body.Count);
