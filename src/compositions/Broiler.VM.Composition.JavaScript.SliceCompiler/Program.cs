@@ -79,6 +79,15 @@ internal static class Program
                 return Census(args[1..]);
             }
 
+            // THE PARSE CORPUS'S IDENTITY RUN (SJL-12.4, bundle sjl-12-001 parts B and C): every
+            // input of a parse-corpus manifest in the four sub-populations the rule names, reported by
+            // outcome, ordered diagnostics and artifact hash. Its own file holds all of it, because the
+            // rule holds that file unchanged between the runs it compares.
+            if (args.Length >= 1 && string.Equals(args[0], "--parse-corpus", StringComparison.Ordinal))
+            {
+                return ParseCorpus.Run(args[1..]);
+            }
+
             // THE SOURCE SURFACE'S OWN SESSION, and it lives here rather than beside the
             // artifact one because it needs a compiler. The execution-only root carries no
             // lowering by construction, so a session over source could not run there at all -
@@ -116,6 +125,9 @@ internal static class Program
                 "usage: --write <directory> | --checks [--verbose] | --closure | --globals " +
                 "[--write <file>] | --random-draws | " +
                 "--census <directory> [<directory> ...] | " +
+                "--parse-corpus <manifest> <report> [--workers <n>] [--twice-concurrent] " +
+                "[--write-bytes <directory>] [--populations <list>] [--select <keys>] " +
+                "[--archive <archive>] [--journal <file>] | " +
                 "--fuzz <source directory> [--seed <n>] [--iterations <n>] | " +
                 "--fuzz-words [--seed <n>] [--iterations <n>] [--stress]");
 
@@ -371,7 +383,12 @@ internal static class Program
         {
             Console.WriteLine("# the sources that did not parse, by the first refusal each got");
 
-            foreach (var failure in census.ParseFailures.OrderByDescending(entry => entry.Value))
+            // TIES ARE BROKEN BY NAME, as the constructs' are above. Without it, codes tied on count
+            // kept the order each was first met in, which follows the sorted file paths, so the same
+            // sources extracted under another parent directory could print another census (SJL-12.4:
+            // bundle sjl-12-001's part B compares this output byte for byte).
+            foreach (var failure in census.ParseFailures.OrderByDescending(entry => entry.Value)
+                .ThenBy(entry => entry.Key.ToString(), StringComparer.Ordinal))
             {
                 Console.WriteLine($"{failure.Key}|{failure.Value}");
             }
