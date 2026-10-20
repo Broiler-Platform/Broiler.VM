@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 327 |
-| Files carrying an annotation | 327 |
-| Code units | 11604 |
-| Relevant | 6644 |
-| Exempt by predicate | 4960 |
-| Annotated | 6644 of 6644 (100%) |
-| Human reviewed | 0 of 6644 (0%) |
-| Unverified | 6644 |
+| Files scanned | 329 |
+| Files carrying an annotation | 329 |
+| Code units | 11689 |
+| Relevant | 6693 |
+| Exempt by predicate | 4996 |
+| Annotated | 6693 of 6693 (100%) |
+| Human reviewed | 0 of 6693 (0%) |
+| Unverified | 6693 |
 
 ## Review states
 
@@ -28,17 +28,17 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6644 |
+| HUMAN_PENDING | 6693 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4960 |
+| EXEMPT | 4996 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1650 |
+| None | 1732 |
 | Low | 6471 |
 | Medium | 90 |
 | High | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1849 |
-| Medium | 4472 |
-| High | 1628 |
+| Low | 1885 |
+| Medium | 4510 |
+| High | 1636 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6644 |
+| Units scored | 6693 |
 
 ## High-security review areas
 
@@ -159,6 +159,14 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Walk.LocalSlots` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Walk.TryTrace(out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Walk.Step(int, int[], bool[], int, System.Collections.Generic.Queue<(int At, int[] Scopes, bool[] Slots, int Height)>, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindProgram(JsProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindFunction(JsFunctionNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindTree(JsProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.Visit(System.Collections.Generic.Stack<Pending>, JsNode, Context, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ScanAnnexB(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.AdmitsAnnexB(JsFunctionDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.SweepAgainstTheNumericManifest(JsAssembledProgram)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileChain(JsChainExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ProtectSomething(int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs` - Security=High, human line PENDING
@@ -1952,8 +1960,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2039 |
-| Units required to carry one | 1881 |
+| Units carrying a criterion | 2051 |
+| Units required to carry one | 1889 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1980,14 +1988,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1649 |
-| ParameterAssigningConstructor | 149 |
+| TrivialPropertyOrAccessor | 1672 |
+| ParameterAssigningConstructor | 153 |
 | TrivialExpressionBodiedMember | 65 |
 | CompilerSuppliedRecordOrEnumMember | 30 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 916 |
-| EnumMemberOfADeclaredVocabulary | 1967 |
+| FieldDeclaringStorage | 922 |
+| EnumMemberOfADeclaredVocabulary | 1970 |
 | DeclaredInSource | 63 |
 
 ## Per-unit exemptions
@@ -2069,7 +2077,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11604 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11689 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2077,7 +2085,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 327 of them - with a
+Beside the units it lists **every covered file** - 329 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.
