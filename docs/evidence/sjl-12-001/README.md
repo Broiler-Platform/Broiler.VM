@@ -23,6 +23,12 @@ the contract record, which also records decisions SJL-D-11 and SJL-D-12 and the 
 - The after runs follow the last of SJL-12.6's four items.
 - A collector joins this bundle when there is a run to take.
 
+*(Added 2026-10-20.)* The bundle now holds part A's base dispatch, and parts B and C's base runs at the corpus
+commit (section 4). "This bundle holds no run yet" was true when it was written. Nothing here is a verdict still.
+No collector took the bases: part A's was imported by hand, as
+[`base/hosted/imported.txt`](base/hosted/imported.txt) records, and parts B and C's runs were taken by the commands
+[`base/commands.txt`](base/commands.txt) lists.
+
 **SJL-12 is not an area verdict.** It applies no extraction gate and files no X1 to X7 verdict. The frontend area's
 verdict is SJL-13.1's (JSD-0080 decision D1).
 
@@ -33,8 +39,13 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
 **The commits the rule names.**
 - **The rule commit** carries [`decision-rule-area.md`](decision-rule-area.md). It is named in this section, by all
   forty digits, when the change that carries it has merged.
+  *(Added 2026-10-20, when part A's base was imported, section 4.)* It is
+  `889ea1568f59bf37aa21c0035b423d0d030eb87f`, the default-branch merge of Broiler.VM#157.
 - **The corpus commit**, **the ordering commit** and **the after commit** do not exist yet. The rule states the
   conditions each must meet, and this README names each when it lands.
+  *(Added 2026-10-20, when parts B and C's base runs were committed, section 4.)* The corpus commit is
+  `865b69b9ede430d5a548e5b97b85e5a7b5e1aed4`, the default-branch merge of Broiler.VM#159. The ordering commit and
+  the after commit do not exist yet.
 
 **The rule has five parts**, each deciding alone.
 - **Part A** takes test262 in both forms with the hosted workflow, at the rule commit and at the after commit
@@ -74,6 +85,16 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
 - **`controls/`**: part B's control report, part C's patches K1 and K2 with their output and their reverts, and part
   E's two control copies of the mapping with the checker's refusals.
 
+*(Added 2026-10-20, when the bases were committed, section 4.)* Part A's base dispatch is in `base/hosted/`, as
+bundle `sjl-10-001` placed its own: the artifact holds a `binaries.sha256` of the conformance root's assemblies, and
+`base/` holds the slice compiler's under the same name. `base/logs/` holds the local base runs' logs. Part B's
+control and its output are in `controls/`, beside part E's. `corpus/corpus-commit.txt` records the corpus commit as
+the `corpus/` bullet above says. *(Added 2026-10-20, after the bases were first committed.)* `corpus-commit.txt`
+holds the path list as counts per listed path, every path outside `src/tests/corpus/parse-1/`, and the check that
+the paths under it are that folder's every file; `corpus/corpus-commit-paths.txt` holds the list whole, from git
+alone. Each of `base/`, `base/hosted/`, `controls/` and `corpus/` has a `hashes.txt`, the SHA-256 of every other
+file of the folder (for `base/`, with `base/logs/` and without `base/hosted/`).
+
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
 totals decide nothing.
@@ -106,6 +127,10 @@ say.
 
 The corpus commit is the default-branch merge of the change that adds the copy and the mode. This section names it
 by all forty digits when it lands. The change meets the three conditions as follows.
+
+*(Added 2026-10-20, section 4.)* It is `865b69b9ede430d5a548e5b97b85e5a7b5e1aed4`, the default-branch merge of
+Broiler.VM#159. The three conditions were read again at it, from git alone, in
+[`corpus/corpus-commit.txt`](corpus/corpus-commit.txt), which section 4 reads.
 - **It descends from the rule commit.** The change's branch starts at the rule commit,
   `889ea1568f59bf37aa21c0035b423d0d030eb87f`. It took the default branch at
   `95a0b816a9c8030873c6a71e3ac320a7c90d6f8c`, which also descends from the rule commit.
@@ -240,6 +265,189 @@ follows.
   - A run that loses its process gives no hash for the compilations it did not finish, and is read the same way.
   - `eng/compare-parse-corpus.py determinism` counts each such compilation as one whose four results are not one
     accepted hash.
+
+## 4. The bases (2026-10-20)
+
+**Written 2026-10-20.** This section reads the base runs this bundle retains. It judges nothing: the rule compares
+each base with a run at the ordering commit or the after commit, and neither commit exists yet.
+
+| Part | Commit | Taken | Retained in |
+|---|---|---|---|
+| A | The rule commit, `889ea1568f59bf37aa21c0035b423d0d030eb87f` | 2026-10-19, 22:43Z to 22:50Z, by the hosted workflow | [`base/hosted/`](base/hosted/) |
+| B, with its census, and C, read and not judged | The corpus commit, `865b69b9ede430d5a548e5b97b85e5a7b5e1aed4` | 2026-10-20, 12:41Z to 13:40Z, on the programme's local machine | [`base/`](base/) |
+| B's control | Made from part B's base report alone | 2026-10-20 | [`controls/`](controls/) |
+
+Part D's rule run at the rule commit, which section 2 also places in `base/`, is not in this bundle yet.
+
+### Part A's base, at the rule commit
+
+**The dispatch.** [39336895555](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39336895555), attempt 1,
+was dispatched from `main` on 2026-10-19 at 22:43:09Z, with both forms and the rule commit named by all forty
+digits. It completed at 22:50:42Z ([`base/hosted/run.txt`](base/hosted/run.txt),
+[`base/hosted/imported.txt`](base/hosted/imported.txt)).
+- **The dispatched ref is the rule commit itself.** `run.txt` reads `dispatched ref: refs/heads/main at
+  889ea1568f59bf37aa21c0035b423d0d030eb87f`, the same tested commit, and `tested tree: clean`. So the workflow and
+  its driver at the dispatched ref are the rule commit's, byte for byte, as part A's configuration requires, and no
+  product change had merged when the base was taken.
+- **The artifact** `test262-evidence` is retained unchanged in [`base/hosted/`](base/hosted/), its own folder, as
+  bundle `sjl-10-001` placed its own. [`imported.txt`](base/hosted/imported.txt) records the run, the artifact's id
+  and the digest of the zip as downloaded, `a843a089d009ecd20552c7cd8234c0e4bff3b30a8b60eef47d57bb3a1508aa10`, which
+  is the digest GitHub records for the artifact. Each of its 54 files was compared with its entry in the zip, and
+  none differs. [`hashes.txt`](base/hosted/hashes.txt) holds the SHA-256 of every other file of the folder, and
+  `sha256sum -c hashes.txt`, run in the folder, passes.
+- **The partition and the allowance** are the workflow's: four runners of four shards per form, fuel 100,000,000
+  and a wall clock of 5,000 ms, at the suite pin `test262.pin` with `sha256=794eea96...` (`run.txt`).
+
+**Complete and retainable in both forms**, as the rule's completeness states it: every shard of the partition
+reported, the run log's exit code 0, 1 or 4, the merged report's retention object retainable, and one distinct
+assembly list in the form's binaries log.
+
+| Run | Exit code (`<run>.run.log`) | Coverage, retention and shard findings (`<run>.test262.json`) | Assembly lists (`<run>.binaries.log`) |
+|---|---|---|---|
+| `wide-bytecode` | 1, the floor holds ([run log](base/hosted/wide-bytecode.run.log)) | whole; retainable, no reason given; no finding ([report](base/hosted/wide-bytecode.test262.json)) | 4 runners and the merging job, 1 distinct ([log](base/hosted/wide-bytecode.binaries.log)) |
+| `wide-native` | 4, a re-base: the floor was set in the `x86-64-win64` native form and this run is `x86-64-sysv` ([run log](base/hosted/wide-native.run.log)) | whole; retainable, no reason given; no finding ([report](base/hosted/wide-native.test262.json)) | 4 runners and the merging job, 1 distinct ([log](base/hosted/wide-native.binaries.log)) |
+
+- The native run's exit 4 is the one the rule admits ("Each native run exits 4, which completeness admits").
+- Both forms' runners and the merging job built one list, `77b67996...`, which is the SHA-256 of the artifact's
+  [`binaries.sha256`](base/hosted/binaries.sha256), the conformance root's twelve assemblies.
+
+**The runners' images, recorded and not judged.** The merging job ran image `ubuntu24` 20261018.339.1. Of the eight
+runners, six ran 20261012.334.1, and two ran 20261018.339.1: `slice-bytecode-1` and `slice-native-3`
+([`wide-bytecode.runners.txt`](base/hosted/wide-bytecode.runners.txt),
+[`wide-native.runners.txt`](base/hosted/wide-native.runners.txt)). Every runner reports the SDK 10.0.402 and the
+native backend `x86-64-sysv`. Part A's completeness reads the assembly lists, which agree; the rule names no image.
+
+**No row is judged.** The rule compares this base with the after dispatch at the after commit, per variant, through
+`eng/compare-test262-forms.py --same-form`. The floor verdicts each run log prints are retained and do not decide
+part A, and this section quotes no total (section 2).
+
+### Parts B and C's bases, at the corpus commit
+
+| | |
+|---|---|
+| Commit | The corpus commit, `865b69b9ede430d5a548e5b97b85e5a7b5e1aed4`, the default-branch merge of Broiler.VM#159 ([`corpus/corpus-commit.txt`](corpus/corpus-commit.txt)) |
+| Rule | [`decision-rule-area.md`](decision-rule-area.md), unchanged since the rule commit: it is not among the paths `git diff --name-only` names between the two commits |
+| Machine | The programme's local machine: four processors, .NET SDK 10.0.401, Ubuntu 24.04.5 LTS, `linux-x64` ([`base/machine.txt`](base/machine.txt)) |
+| Taken | 2026-10-20: the build from 12:41Z, the census from 12:57Z, and runs 1 to 3 from 13:02Z to 13:40Z ([`base/logs/runs.tsv`](base/logs/runs.tsv)). Broiler.JS's build and runs for its own bundle were taken on the same machine from 12:38Z to 12:57Z, none of them while one of these ran |
+| Tool | The slice compiler's `--parse-corpus` and `--census` modes, built in Release from a clean detached checkout of the corpus commit, with no warning ([`base/logs/build.log`](base/logs/build.log)); the SHA-256 of the assemblies that build wrote is in [`base/binaries.sha256`](base/binaries.sha256). Every command, in order, is in [`base/commands.txt`](base/commands.txt) |
+
+**The idle machine** ([`base/machine.txt`](base/machine.txt), [`base/logs/gate.log`](base/logs/gate.log)).
+- Before the build and before each run, a gate required a 1-minute load average of at most 1.0 and no `dotnet` or
+  `python` process, and recorded the load, the processor count, the operating system and the SDK
+  ([`base/logs/pre-run.txt`](base/logs/pre-run.txt)). Every gate of these runs went ahead at its first look. No
+  other build, test or run was taken on the machine while they were taken.
+- The gate read the 1-minute figure only. `machine.txt` says what the 5- and 15-minute figures carry.
+- At 12:43:13Z another session fetched and fast-forwarded the main checkout `/home/user/Broiler.VM`, after the
+  build had ended and before the next gate, so during no run. It was a git operation, not a build, test or run.
+- Both points were corrected in `machine.txt` before it was committed, and its dated note quotes the words it
+  replaced.
+
+**How the base is bound to the corpus commit.**
+- **The reports name no commit.** Each report's header names the manifest's SHA-256 and the pinned archive's, which
+  bind it to the corpus and to the suite, not to the compiler's code.
+- **Three records, written when the runs were taken, bind it.**
+  - [`commands.txt`](base/commands.txt) makes the checkout with `git worktree add --detach` at the corpus commit,
+    named by all forty digits, and builds and runs from it.
+  - [`machine.txt`](base/machine.txt) records that the checkout's `git status` was empty before and after the
+    build.
+  - [`binaries.sha256`](base/binaries.sha256) holds the SHA-256 of the twelve assemblies that build wrote.
+- **No machine-written record of the checkout's `git rev-parse HEAD` or `git status --porcelain` was retained**, and
+  the checkout was removed after the runs, so none can be made now. The first two records are accounts written at
+  the time. `binaries.sha256` is the one a reader can check: it is what a Release build of the corpus commit, at the
+  checkout path `commands.txt` records and with the SDK `machine.txt` names, is compared with. No such build has
+  been made again.
+- **The corpus commit itself** is recorded from git in [`corpus/corpus-commit.txt`](corpus/corpus-commit.txt), as
+  section 2 says `corpus/` holds it: its identity, its manifest's SHA-256, which is the one each report's header
+  names, and the three conditions below.
+- **The ordering and after runs are to retain**, in their own `logs/`, `git rev-parse HEAD` and
+  `git status --porcelain` of their checkout before and after its build.
+
+**The corpus commit's three conditions, read again when it is named**, as section 3 says they are, from git alone
+([`corpus/corpus-commit.txt`](corpus/corpus-commit.txt)).
+- **It descends from the rule commit.** `git merge-base --is-ancestor` exits 0.
+- **It names only the listed paths.** `git diff --name-only` between the two names 2,282 paths
+  ([`corpus/corpus-commit-paths.txt`](corpus/corpus-commit-paths.txt) holds every one), and each is under a path the
+  condition lists:
+  - 2,272 under `src/tests/corpus/parse-1/`, which are every file of that folder at the corpus commit, none of which
+    existed at the rule commit;
+  - `ParseCorpus.cs` and `Program.cs` of the slice compiler;
+  - `eng/compare-parse-corpus.py` and `eng/check-frontend-mapping.py`;
+  - the mapping, under `src/Broiler.VM.Profile.JavaScript/docs/`;
+  - five files of this bundle, under `docs/`.
+- **It comes before every product change.** Read at the default branch at
+  `ebf93cd3e8fba11002f3da563b13b32ca54afe32`, `git log` from the rule commit over the paths the condition lists names
+  no commit. With `--full-history` it names `48461e0` alone, which section 3 reads, and which is itself an ancestor of
+  the corpus commit. Since the corpus commit, the default branch has changed files under `docs/evidence/sjl-3-001/`
+  alone. The condition is read again at the after commit.
+
+**The runs** ([`base/logs/runs.tsv`](base/logs/runs.tsv), each run's standard output and error in
+[`base/logs/`](base/logs/)).
+
+| Run | What it ran | Exit | Retained |
+|---|---|---|---|
+| Census 1 | `--census` over `src/tests/corpus/parse-1/inputs/`, and over the `test/` directory of the suite extracted from the pinned archive | 0, 0 | [`census-inputs-1.txt.gz`](base/census-inputs-1.txt.gz), [`census-test-1.txt.gz`](base/census-test-1.txt.gz) |
+| Census 2 | The same over two other locations of the same files: Broiler.JS's `conformance/parse/inputs/` at its corpus commit, which the copy is byte for byte, and a second extraction of the archive at a deeper path | 0, 0 | [`census-inputs-2.txt.gz`](base/census-inputs-2.txt.gz), [`census-test-2.txt.gz`](base/census-test-2.txt.gz) |
+| Run 1 | `--parse-corpus` over the whole manifest, one worker | 0 | [`parse-corpus-run1.tsv.gz`](base/parse-corpus-run1.tsv.gz) |
+| Run 2 | The same | 0 | [`parse-corpus-run2.tsv.gz`](base/parse-corpus-run2.tsv.gz) |
+| Run 3 | `--parse-corpus --twice-concurrent`: two workers, each compilation twice, concurrently | 0 | [`parse-corpus-run3.tsv.gz`](base/parse-corpus-run3.tsv.gz) |
+
+- Run 1 is part B's base report, and part C's run 1. Runs 2 and 3 are part C's runs 2 and 3.
+- **No run lost its process.** Each run kept a journal of every compilation it began and ended. In each of runs 1
+  and 2, 560,963 compilations began and ended, and in run 3 1,121,926 did, none begun and not ended
+  ([`base/logs/journal-check.txt`](base/logs/journal-check.txt)). The journals were then deleted.
+- **No artifact bytes were written.** The rule retains the bytes of an input whose hash differs between two runs, and
+  no hash differs between these.
+- Wall-clock and peak memory are in `runs.tsv` as records. SJL-12 measures nothing.
+
+**Part B's base.**
+- **Complete.** The identity comparison holds each report to the manifest: its SHA-256, the corpus commit's, and
+  every compilation the four sub-populations owe it, no more and no fewer. Each of runs 1 and 2 holds 560,963
+  compilations of the manifest's 55,751 inputs (each report's header, `manifest-rows`, and each run's standard
+  output, [run 1](base/logs/parse-corpus-run1.stdout.txt) and [run 2](base/logs/parse-corpus-run2.stdout.txt)), and
+  none is incomplete ([`base/identity-run1-run2.tsv`](base/identity-run1-run2.tsv), which also gives the
+  compilations). Nothing crashed in any run (each run's standard output). Every `not-compiled` row is in one of
+  the two cases reading 2 names: 287 in B2, note `fixture`, and 13 in B4, note `no-json-goal`. The
+  per-sub-population outcomes are in the comparison's header.
+- **Run 1 against run 2.** `eng/compare-parse-corpus.py identity`, with both census pairs, finds 0 differences, in
+  every sub-population and of every kind (outcome, artifact, diagnostics, note), and both census pairs identical
+  byte for byte. It exits 0. The two reports are one file byte for byte, `05bc9801...`
+  ([`base/hashes.txt`](base/hashes.txt)).
+- **The census.** `census-inputs-1.txt.gz` and `census-test-1.txt.gz` are part B's base census, over the two places
+  the rule names. Each second census, over another location of the same files, is byte for byte the first. This
+  section quotes no census figure: the census over `test/` counts the pinned suite's files.
+- **The diagnostics distribution.** Run 1 holds every refused compilation's ordered diagnostics, which are the
+  base's refused-input lists that classes S and T are read through. This section draws no tally from them.
+
+**Part C's base, read and not judged.** The rule takes part C's three runs at the corpus commit too, and reads them
+without judging them (part C, "How it is read").
+- `eng/compare-parse-corpus.py determinism` over runs 1, 2 and 3, with run 1 as the population report, puts
+  363,555 compilations in the population: the B1 and B3 compilations run 1 accepted. It leaves 39,203 B1 and B3
+  rows outside, refused in run 1.
+- It finds 0 compilations whose four results are not one accepted hash, and exits 0
+  ([`base/determinism-runs-1-2-3.tsv`](base/determinism-runs-1-2-3.tsv)).
+- Run 3's own summary reports 0 compilations where its two concurrent compilations differ
+  ([`base/logs/parse-corpus-run3.stdout.txt`](base/logs/parse-corpus-run3.stdout.txt)).
+- At the after commit, part C's population is part B's after run's, not run 1's.
+
+**Part B's control** ([`controls/`](controls/)). The rule's control is "a copy of the base report with one artifact
+hash changed and one outcome flipped, which the comparison must report as two unclassified differences".
+- `eng/compare-parse-corpus.py control` copied run 1, changed the last digit of the hash of `T000001 B1 strict
+  bytecode`, and flipped `T000001 B1 sloppy bytecode` from accepted to refused
+  ([`controls/part-b-control.out`](controls/part-b-control.out)).
+- `identity` of run 1 against the copy reports 2 differences, both in B1, one artifact and one outcome, both
+  unclassified, with none incomplete, and exits 1
+  ([`controls/part-b-control-identity.tsv`](controls/part-b-control-identity.tsv)). That is the report the rule
+  states.
+- **Made twice.** The control was first made into the staged `base/` when the runs were taken. It was made again
+  into `controls/` on 2026-10-20, from the retained run 1 alone, so that its output names the paths the bundle
+  commits ([`base/commands.txt`](base/commands.txt)). The copy is byte for byte the first one, `c1c2807a...`, and
+  the comparison's output differs from the first only in the path it names for the copy.
+
+**What this section does not read.** SJL-12.4's integration runs, which section 3 names, are not this bundle's runs,
+and nothing here is compared with them.
+
+**Retained and checked.** In each of `base/`, `base/hosted/`, `controls/` and `corpus/`, `sha256sum -c hashes.txt`,
+run in the folder, passes.
 
 ## 9. Exclusions
 
