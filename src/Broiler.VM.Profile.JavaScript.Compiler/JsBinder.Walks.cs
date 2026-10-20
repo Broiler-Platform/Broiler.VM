@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   36
-// Annotated:        36/36
+// Relevant units:   37
+// Annotated:        37/37
 // Exempt:           9
-// Human-reviewed:   0/36
+// Human-reviewed:   0/37
 // IP risk:          None
 // Security risk:    High
 // Criteria:         8/6
 // Resource impact:  3/10 max
-// Unverified:       36
+// Unverified:       37
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -20,13 +20,15 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// <summary>The binder's walks, every one of them over an explicit stack.</summary>
 /// <remarks>
 /// <para>
-/// <b>Two kinds of walk, and the difference is what decides an order.</b> The walk over the whole
-/// unit meets every node once, with the strictness and the jump targets in force where the node
-/// stands, and records each fact against the node it is about; no fact it records depends on the
-/// order it meets nodes in, so it takes them in whatever order its stack gives. The walks that make
-/// an ORDERED fact - the <c>var</c> names of a scope, the declarations of a list, the declarations
-/// Annex B aliases - each visit their statements in source order, depth first, exactly as the
-/// recursive collectors they replace did, so every list comes out as it always has.
+/// <b>Two kinds of walk, and every one of them in source order.</b> The walk over the whole unit
+/// meets every node once, with the strictness and the jump targets in force where the node stands,
+/// and records each fact against the node it is about. No fact it records depends on the order it
+/// meets nodes in, and it meets them in source order, depth first, all the same: SJL-12.6 item 2
+/// moves the lowering's early errors into this pass, and they are to be reported in source order
+/// (JSD-0080 decision D12). The walks that make an ORDERED fact - the <c>var</c> names of a scope,
+/// the declarations of a list, the declarations Annex B aliases - each visit their statements in
+/// source order, depth first, exactly as the recursive collectors they replace did, so every list
+/// comes out as it always has.
 /// </para>
 /// <para>
 /// <b>None of them recurses.</b> Each keeps its own stack of what is still to visit, so a source as
@@ -34,7 +36,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BE330C
-// Broiler-Falsified-If: a walk of the binder recurses once per node, or an ordered fact comes out in an order other than the recursive collector it replaced gave
+// Broiler-Falsified-If: a walk of the binder recurses once per node, meets a node before one the source writes ahead of it, or an ordered fact comes out in an order other than the recursive collector it replaced gave
 // Broiler-Human:        PENDING
 internal sealed partial class JsBinder
 {
@@ -271,37 +273,57 @@ internal sealed partial class JsBinder
     /// function's, each block's and <c>switch</c>'s declarations, each class body's private names, and
     /// each jump's target.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=340829
-    // Broiler-Falsified-If: a function, block, switch, class body or jump the lowering can reach is not given its facts, or a node is walked under a strictness other than its definer's
+    /// <remarks>
+    /// <b>In source order, depth first.</b> <see cref="Visit"/> lists the nodes inside the one it
+    /// visits in the order the source writes them, and the list goes onto the stack last first, so
+    /// the first of them is the next node taken.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E2BDD7
+    // Broiler-Falsified-If: a function, block, switch, class body or jump the lowering can reach is not given its facts, a node is walked under a strictness other than its definer's, or a node is met before one the source writes ahead of it
     // Broiler-Human:        PENDING
     private void BindTree(JsProgramNode program, bool strict)
     {
         var pending = new System.Collections.Generic.Stack<Pending>();
-        var top = new Context(strict, null);
-
-        foreach (var statement in program.Body)
-        {
-            Push(pending, statement, top);
-        }
+        var inside = new System.Collections.Generic.List<Pending>();
+        Push(inside, program.Body, new Context(strict, null));
+        Queue(pending, inside);
 
         while (pending.Count != 0)
         {
             var (node, context, label) = pending.Pop();
-            Visit(pending, node, context, label);
+            Visit(inside, node, context, label);
+            Queue(pending, inside);
         }
     }
 
-    /// <summary>Records one node's facts and queues the nodes inside it.</summary>
+    /// <summary>
+    /// Moves the nodes one visit listed onto the stack, last first, so that the first is the next one
+    /// taken, and empties the list for the next visit.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=81F396
+    // Broiler-Human:        PENDING
+    private static void Queue(
+        System.Collections.Generic.Stack<Pending> pending, System.Collections.Generic.List<Pending> inside)
+    {
+        for (var at = inside.Count - 1; at >= 0; at--)
+        {
+            pending.Push(inside[at]);
+        }
+
+        inside.Clear();
+    }
+
+    /// <summary>Records one node's facts and lists the nodes inside it, in source order.</summary>
     /// <remarks>
     /// <b>It names every kind of node the tree has</b>, the leaves too, and fails on any other: a kind
     /// it does not know may hold a function, a class, a block or a <c>switch</c>, and passing over it
     /// would leave the lowering to ask about one the binder never saw.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=22B9E0
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3EF8C5
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, or a node of a kind the walk does not name passes it without failing
     // Broiler-Human:        PENDING
     private void Visit(
-        System.Collections.Generic.Stack<Pending> pending, JsNode node, Context context, string label)
+        System.Collections.Generic.List<Pending> pending, JsNode node, Context context, string label)
     {
         switch (node)
         {
@@ -398,7 +420,7 @@ internal sealed partial class JsBinder
                 if (labelled.Body is JsWhileStatement or JsDoWhileStatement or JsForStatement or
                     JsForInStatement or JsForOfStatement or JsSwitchStatement)
                 {
-                    pending.Push(new Pending(labelled.Body, context, labelled.Label));
+                    pending.Add(new Pending(labelled.Body, context, labelled.Label));
                 }
                 else
                 {
@@ -662,26 +684,26 @@ internal sealed partial class JsBinder
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=402AA2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=085910
     // Broiler-Human:        PENDING
-    private static void Push(System.Collections.Generic.Stack<Pending> pending, JsNode? node, Context context)
+    private static void Push(System.Collections.Generic.List<Pending> pending, JsNode? node, Context context)
     {
         if (node is not null)
         {
-            pending.Push(new Pending(node, context, string.Empty));
+            pending.Add(new Pending(node, context, string.Empty));
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=19E8D9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=9B6598
     // Broiler-Human:        PENDING
     private static void Push(
-        System.Collections.Generic.Stack<Pending> pending,
+        System.Collections.Generic.List<Pending> pending,
         System.Collections.Generic.IReadOnlyList<JsStatement> statements,
         Context context)
     {
         foreach (var statement in statements)
         {
-            pending.Push(new Pending(statement, context, string.Empty));
+            pending.Add(new Pending(statement, context, string.Empty));
         }
     }
 
