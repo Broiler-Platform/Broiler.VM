@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           0
-// Human-reviewed:   0/10
+// Human-reviewed:   0/9
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       10
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -110,7 +110,12 @@ public sealed partial class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4C96B3
+    /// <param name="written">
+    /// The node the source wrote, when <paramref name="function"/> is a copy of it renamed by the
+    /// lowering - a class constructor named after its class, an anonymous function named after what it
+    /// is assigned to. The binder knows a function by the node it bound.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=013333
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -118,8 +123,13 @@ public sealed partial class JsCompiler
         bool isMethod = false,
         bool isDerived = false,
         bool isStaticBlock = false,
-        bool isFieldInitialiser = false)
+        bool isFieldInitialiser = false,
+        JsFunctionNode? written = null)
     {
+        // WHAT THE FUNCTION IS WAS DECIDED ONCE, BY THE BINDER (SJL-12.6 item 1): its strictness, its
+        // parameter list's shape, its `arguments` object and its records. Each emission reads the
+        // same answers - a function written in a `finally` block is compiled once per path out of it.
+        var facts = binder.Function(written ?? function);
         var outerBuffer = buffer;
         var outerScope = scope;
         var outerDepth = blockDepth;
@@ -157,7 +167,9 @@ public sealed partial class JsCompiler
             insideFunction = true;
         }
 
-        strict = strict || function.IsStrict;
+        // A FUNCTION IS STRICT WHEN ITS DEFINER IS OR ITS OWN PROLOGUE SAYS SO, which is the binder's
+        // reading too: it walked the function under its definer's strictness.
+        strict = facts.Body.Strict;
 
         var flags = Strictness() | JsFormat.FunctionFlags.Constructible;
 
@@ -187,7 +199,7 @@ public sealed partial class JsCompiler
         // right, the name resolves to the LAST occurrence as the language says it does, and the
         // runtime can map position `i` to slot `i` without being told which names repeat
         // *(corrected: JSeal V05)*.
-        var simple = IsSimpleParameterList(function.Parameters);
+        var simple = facts.SimpleParameters;
 
         if (!simple)
         {
@@ -274,26 +286,10 @@ public sealed partial class JsCompiler
         // `function f({ arguments }) {}` shadows the object exactly as `function f(arguments) {}`
         // does. A `var arguments` or a function declaration of that name is NOT this case: each is
         // initialised after the object is, which is the order the specification asks for and the
-        // order the code below already produces *(corrected: JSC-82)*.
-        var parameterNames = new System.Collections.Generic.List<string>();
-
-        foreach (var parameter in function.Parameters)
-        {
-            CollectPatternNames(parameter.Target, parameterNames);
-        }
-
-        var shadowedByParameter = false;
-
-        foreach (var parameterName in parameterNames)
-        {
-            if (string.Equals(parameterName, "arguments", System.StringComparison.Ordinal))
-            {
-                shadowedByParameter = true;
-                break;
-            }
-        }
-
-        var usesArguments = !function.IsArrow && !shadowedByParameter && UsesArguments(function);
+        // order the code below already produces *(corrected: JSC-82)*. The binder's answer says all of
+        // it: not an arrow, no parameter binding the name, and a mention of `arguments` - or of
+        // `eval`, which may read it - in the function's own code.
+        var usesArguments = facts.UsesArguments;
 
         if (usesArguments)
         {
@@ -303,7 +299,7 @@ public sealed partial class JsCompiler
             EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
         }
 
-        var bodyEval = !strict && MentionsEval(function.Body);
+        var bodyEval = facts.BodyMayEvaluate;
 
         // THE BODY GETS A VARIABLE ENVIRONMENT OF ITS OWN WHEN ANYTHING COULD TELL (JSeal V15-finish,
         // FunctionDeclarationInstantiation step 28). The specification gives one to every body whose
@@ -311,9 +307,9 @@ public sealed partial class JsCompiler
         // difference is observable - a parameter list that makes a closure, in its own syntax or through a source
         // it evaluates, and a sloppy body whose direct eval may declare a parameter's name, which
         // the specification makes a new binding of the body's environment. Everywhere else the one
-        // record keeps the parameters and the body, and a call pays for no second record.
-        scope.SeparateBody = !simple && ParametersHaveExpressions(function.Parameters) &&
-            (ParametersMakeClosures(function.Parameters) || bodyEval);
+        // record keeps the parameters and the body, and a call pays for no second record. The binder
+        // decides it, behind the same `!simple` and `!strict` gates.
+        scope.SeparateBody = facts.SeparateBody;
 
         if (!simple)
         {
@@ -322,7 +318,7 @@ public sealed partial class JsCompiler
             // (JSeal V15, JSD-0026 step 9). What the parameters' record binds so far - the
             // parameters, and the `arguments` object beside them - is the part of the function its
             // evaluations see, and collide with.
-            if (!strict && ParametersMention(function.Parameters, "eval"))
+            if (facts.ParametersMayEvaluate)
             {
                 scope.EvalVariables = true;
             }
@@ -449,24 +445,6 @@ public sealed partial class JsCompiler
         strict ? JsFormat.FunctionFlags.Strict : JsFormat.FunctionFlags.None;
 
     // ---- parameters ----------------------------------------------------------------------------
-
-    /// <summary>Whether every parameter is one name with no initialiser and no <c>...</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8D6266
-    // Broiler-Human:        PENDING
-    private static bool IsSimpleParameterList(
-        System.Collections.Generic.IReadOnlyList<JsParameter> parameters)
-    {
-        foreach (var parameter in parameters)
-        {
-            if (parameter.IsRest || parameter.Default is not null ||
-                parameter.Target is not JsTargetPattern { Target: JsIdentifier })
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     /// <summary>Whether a later parameter of a simple list binds the same name as this one.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CAAB07

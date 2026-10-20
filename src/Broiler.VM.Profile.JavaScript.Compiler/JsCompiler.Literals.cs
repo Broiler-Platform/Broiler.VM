@@ -50,7 +50,7 @@ public sealed partial class JsCompiler
     /// about.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D0EF9A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F076DB
     // Broiler-Human:        PENDING
     private void CompileNamedValue(JsExpression value, string inferred)
     {
@@ -70,7 +70,9 @@ public sealed partial class JsCompiler
         if (value is JsFunctionExpression function && function.Function.Name.Length == 0)
         {
             Position(value.Span);
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(function.Function with { Name = inferred }));
+            Emit(
+                JsOpcode.Closure,
+                (ushort)CompileFunction(function.Function with { Name = inferred }, written: function.Function));
             return;
         }
 

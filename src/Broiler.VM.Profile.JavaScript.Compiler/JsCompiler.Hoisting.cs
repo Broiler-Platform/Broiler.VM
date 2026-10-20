@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
+// Relevant units:   17
+// Annotated:        17/17
 // Exempt:           2
-// Human-reviewed:   0/23
+// Human-reviewed:   0/17
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         1/0
 // Resource impact:  3/10 max
-// Unverified:       23
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -740,172 +740,5 @@ public sealed partial class JsCompiler
             default:
                 return;
         }
-    }
-
-    /// <summary>
-    /// Whether a function's own code mentions <c>arguments</c>, parameter defaults included.
-    /// </summary>
-    /// <remarks>
-    /// The defaults are part of the scan because <c>function f(a = arguments[0]) {}</c> is a
-    /// function whose only mention of <c>arguments</c> is in a place a body-only walk never looks,
-    /// and the object has to exist before the prologue that reads it runs.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A650F9
-    // Broiler-Human:        PENDING
-    private static bool UsesArguments(JsFunctionNode function)
-    {
-        foreach (var parameter in function.Parameters)
-        {
-            // A PARAMETER LIST'S DIRECT `eval` READS `arguments` THROUGH THE SCOPE MAP as the body's
-            // does, and a `var arguments` it declares collides with the object (JSeal V15).
-            if (parameter.Default is not null &&
-                (Walk.Mentions(parameter.Default, "arguments") || Walk.Mentions(parameter.Default, "eval")))
-            {
-                return true;
-            }
-
-            if (Walk.Mentions(parameter.Target, "arguments") || Walk.Mentions(parameter.Target, "eval"))
-            {
-                return true;
-            }
-        }
-
-        foreach (var statement in function.Body)
-        {
-            // A MENTION OF `eval` IS A POSSIBLE MENTION OF `arguments`, because a direct evaluation
-            // in this function's own code - or in an arrow nested in it through arrows only - reads
-            // the name through the scope map, and the map can only name a slot that exists
-            // (JSD-0026 step 4). An arrow's mention counts for the same reason an arrow's mention of
-            // `arguments` does: it has none of its own. A mention that turns out not to be a direct
-            // call costs an object nobody reads.
-            if (Walk.Mentions(statement, "arguments") || Walk.Mentions(statement, "eval"))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>Whether a parameter list - defaults and patterns - mentions <paramref name="name"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0900D2
-    // Broiler-Human:        PENDING
-    private static bool ParametersMention(
-        System.Collections.Generic.IReadOnlyList<JsParameter> parameters, string name)
-    {
-        foreach (var parameter in parameters)
-        {
-            if ((parameter.Default is not null && Walk.Mentions(parameter.Default, name)) ||
-                Walk.Mentions(parameter.Target, name))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Whether a parameter list has expressions - a default, a pattern element's default or a
-    /// computed key - which is the specification's <c>hasParameterExpressions</c> (JSeal V15-finish).
-    /// </summary>
-    /// <remarks>
-    /// A list without one - a rest parameter, a pattern of names - gives the body no variable
-    /// environment of its own in the specification either, so a body evaluation's <c>var</c> of a
-    /// parameter's name is the parameter.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3B4CDC
-    // Broiler-Human:        PENDING
-    private static bool ParametersHaveExpressions(
-        System.Collections.Generic.IReadOnlyList<JsParameter> parameters)
-    {
-        foreach (var parameter in parameters)
-        {
-            if (parameter.Default is not null || PatternHasExpression(parameter.Target))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>Whether a binding pattern holds a default or a computed key anywhere in it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC3790
-    // Broiler-Human:        PENDING
-    private static bool PatternHasExpression(JsPattern? pattern)
-    {
-        switch (pattern)
-        {
-            case JsArrayPattern array:
-                foreach (var element in array.Elements)
-                {
-                    if (element is not null &&
-                        (element.Default is not null || PatternHasExpression(element.Target)))
-                    {
-                        return true;
-                    }
-                }
-
-                return PatternHasExpression(array.Rest);
-
-            case JsObjectPattern shape:
-                foreach (var property in shape.Properties)
-                {
-                    if (property.Computed is not null || property.Value.Default is not null ||
-                        PatternHasExpression(property.Value.Target))
-                    {
-                        return true;
-                    }
-                }
-
-                return PatternHasExpression(shape.Rest);
-
-            default:
-                return false;
-        }
-    }
-
-    /// <summary>
-    /// Whether a parameter list - defaults and patterns - may make a closure: a function, an arrow,
-    /// a class or an object literal's method in its own syntax, or a mention of <c>eval</c>, whose
-    /// source may make one (JSeal V15-finish).
-    /// </summary>
-    /// <remarks>
-    /// Such a closure sees the parameters' record, and the specification keeps the body's
-    /// declarations from it; a list that makes none cannot tell a body's variable environment from
-    /// its own record, so this is the question that decides whether the body gets one.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=33F920
-    // Broiler-Human:        PENDING
-    private static bool ParametersMakeClosures(
-        System.Collections.Generic.IReadOnlyList<JsParameter> parameters)
-    {
-        foreach (var parameter in parameters)
-        {
-            if ((parameter.Default is not null && Walk.MakesClosure(parameter.Default)) ||
-                Walk.MakesClosure(parameter.Target))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>Whether a body's own code - its arrows included - mentions the name <c>eval</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=57EF7D
-    // Broiler-Human:        PENDING
-    private static bool MentionsEval(System.Collections.Generic.IReadOnlyList<JsStatement> body)
-    {
-        foreach (var statement in body)
-        {
-            if (Walk.Mentions(statement, "eval"))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

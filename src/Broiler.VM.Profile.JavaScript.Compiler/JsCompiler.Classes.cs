@@ -91,7 +91,7 @@ public sealed partial class JsCompiler
     /// was written would have collapsed the middle two and been wrong about both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=82D7CD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1974A6
     // Broiler-Human:        PENDING
     private void CompileClass(JsClassNode node, string inferredName)
     {
@@ -148,7 +148,11 @@ public sealed partial class JsCompiler
         var unit = constructor is null
             ? CompileImplicitConstructor(node.Span, name, node.HasHeritage, flags)
             : CompileFunction(
-                constructor with { Name = name }, flags, isMethod: true, isDerived: node.HasHeritage);
+                constructor with { Name = name },
+                flags,
+                isMethod: true,
+                isDerived: node.HasHeritage,
+                written: constructor);
 
         // A CLASS'S CONSTRUCTOR RENDERS AS THE WHOLE CLASS, whether it was written or implied.
         RecordSource(unit, node.SourceStart, node.SourceEnd);
