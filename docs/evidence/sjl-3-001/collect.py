@@ -51,26 +51,33 @@ THE REVISED MEASUREMENT WAS ADDED ON 2026-10-20, after measure's run was seen, w
 decision-rule-revised-2026-10-20.md, which moves part C's arm A and gives to-string.js a condition of its own,
 held by a transcript. measure and every other step are unchanged.
 
-    python3 docs/evidence/sjl-3-001/collect.py --tree <a clean checkout of the commit that adds the revised rule> \
+    python3 docs/evidence/sjl-3-001/collect.py --tree <a clean checkout of arm A> --default-branch origin/main \
         --base-tree <a clean checkout of 0087e8d73ae3833200fa263b68f71db15b059a9c> \
         --numref <Broiler.JS scripts/conformance/numref.py at 966140ad> --out docs/evidence/sjl-3-001 \
         --only measure-revised [--check-only]
 
+  Arm A is the commit on the default branch's first-parent history that adds the revised rule: the merge that
+  lands it, whose first parent does not carry it. --default-branch names the default branch's ref.
+
   measure-revised
              part C under the revised rule, into measurement-revised/, a sub-bundle of its own, in this order:
-             1. the refusals, before anything is built (exit 2, every one printed): arm A's tree is clean (but
-                for this step's own sub-bundle, when --out is in it), its HEAD adds the revised rule (its first
-                parent does not carry it) and descends from aaa39fb, and
-                outside the documents it differs from aaa39fb only under the four paths the rule's header names;
-                no project of the command-line root's closure lies under those paths, no project file of it and
-                no build file names them, and no differing path under a docs/ directory is one a build compiles;
+             1. the refusals, before anything is built (exit 2, every one printed): each arm's tree is clean
+                and holds no ignored file but bin/ and obj/ directories and Python's caches (arm A's may also
+                hold this step's own sub-bundle, when --out is in it); arm A's HEAD is on --default-branch's
+                first-parent history, adds the revised rule there (its first parent does not carry it) and
+                descends from aaa39fb, and outside the documents it differs from aaa39fb only under the four
+                paths the rule's header names, every path added, changed or removed counted (a moved file is
+                both: the comparison takes no rename); no project of the command-line root's closure lies under
+                those paths, no project file of it and no build file names them, and no differing path under a
+                docs/ directory is one a build compiles;
                 the six workloads have the blobs manifest.json names, and their loop and the transcript
                 program's are the checker's; arm B's tree is clean at sjl-0-001's base commit; the reference has
                 the rule's SHA-256; no .NET build server or build is running; the counts the rule cites read as
                 the collector's; and measurement-revised/ holds no completed run (one without a summary, a
                 stopped run, is moved aside to measurement-revised-stopped-<n>/ and retained);
-             2. the builds: the command-line root in Release in each tree, with node reuse, the MSBuild server
-                and the shared compiler off, every file of each output listed by hash in binaries-<arm>.sha256;
+             2. the builds: in each tree, every ignored bin/ and obj/ directory removed, then the command-line
+                root built in Release, with node reuse, the MSBuild server and the shared compiler off, every
+                file of each output listed by hash in binaries-<arm>.sha256;
              3. manifest.txt, written and made read-only: the rules, the collector, the checker, the program and
                 the reference, each arm's commit and binaries, the root's closure, every commit since the first
                 run's after commit 49ea00e with its files outside the documents, the workloads by digest and
@@ -162,8 +169,34 @@ transcript = load_module("sjl_3_001_transcript_check", os.path.join(HERE, "trans
 
 
 def outside_documents(names):
-    """The paths of a `git diff --name-only` listing outside docs/ and outside any docs/ directory."""
-    return [name for name in names.splitlines() if name and not name.startswith("docs/") and "/docs/" not in name]
+    """The paths of a list outside docs/ and outside any docs/ directory."""
+    return [name for name in names if name and not name.startswith("docs/") and "/docs/" not in name]
+
+
+# Ignored entries of `git status --porcelain --ignored=traditional --untracked-files=normal` a tree may hold: build
+# outputs, which the step removes before each build, and Python's caches, which running this collector from arm A's
+# tree writes. Any other ignored file - a <project>.csproj.user, say, which MSBuild imports - can change a build, and
+# refuses the run.
+BUILD_OUTPUTS = ("bin", "obj")
+PYTHON_CACHES = ("__pycache__",)
+
+
+def ignored_entries(status):
+    """The ignored entries of that status, split into the build-output directories, the Python caches and every
+    other one."""
+    outputs, caches, others = [], [], []
+    for line in status.splitlines():
+        if not line.startswith("!! "):
+            continue
+        path = line[3:]
+        last = path.rstrip("/").rsplit("/", 1)[-1]
+        if path.endswith("/") and last in BUILD_OUTPUTS:
+            outputs.append(path)
+        elif (path.endswith("/") and last in PYTHON_CACHES) or path.endswith(".pyc"):
+            caches.append(path)
+        else:
+            others.append(path)
+    return outputs, caches, others
 
 
 def not_built(path):
@@ -542,6 +575,15 @@ class Collector(base.Collector):
     def git(self, tree, *arguments):
         return self.run(["git"] + list(arguments), cwd=tree)
 
+    def changed_paths(self, tree, older, newer):
+        """Every path added, changed or removed between two commits, read with no rename detection, so a moved file
+        is listed at the path it left as well as the path it took. Its standard output only, NUL-separated, so no
+        warning and no quoting is read as a path."""
+        done = subprocess.run(["git", "diff", "--no-renames", "--no-ext-diff", "--name-only", "-z", older, newer],
+                              cwd=tree, capture_output=True, env=dict(os.environ, LC_ALL="C"))
+        names = [name.decode("utf-8", "surrogateescape") for name in done.stdout.split(b"\0") if name]
+        return done.returncode, names, done.stderr.decode("utf-8", "replace")
+
     def build_files(self, closure):
         """The repository's build files a build of the closure reads: each Directory.Build.props or .targets from a
         project's directory up to the root, the root's Directory.Packages.props, NuGet.config and global.json, and
@@ -593,6 +635,7 @@ class Collector(base.Collector):
                            if line.startswith("base-commit ")).strip()
         trees = {"A": self.tree, "B": self.base_tree}
         commits = {}
+        outputs = {}
         if not self.base_tree:
             problems.append("arm B needs --base-tree, a clean checkout of %s" % base_commit)
         if not numref_path:
@@ -603,36 +646,59 @@ class Collector(base.Collector):
                 continue
             code, head = self.git(trees[arm], "rev-parse", "HEAD")
             commits[arm] = head.strip() if code == 0 else "(not a checkout)"
-            # The step's own sub-bundle, or a stopped run of it, may be in arm A's tree when --out is there.
-            dirty = [line for line in self.git(trees[arm], "status", "--porcelain")[1].splitlines() if line.strip()
-                     and not (arm == "A" and line.startswith("?? docs/evidence/sjl-3-001/" + MEASUREMENT_REVISED))]
             if code != 0:
                 problems.append("arm %s: %s is not a checkout" % (arm, trees[arm]))
-            elif dirty:
+                continue
+            status = self.git(trees[arm], "status", "--porcelain", "--ignored=traditional", "--untracked-files=normal")[1]
+            # The step's own sub-bundle, or a stopped run of it, may be in arm A's tree when --out is there.
+            dirty = [line for line in status.splitlines() if line.strip() and not line.startswith("!! ")
+                     and not (arm == "A" and line.startswith("?? docs/evidence/sjl-3-001/" + MEASUREMENT_REVISED))]
+            outputs[arm], _, ignored = ignored_entries(status)
+            if dirty:
                 problems.append("arm %s: the tree is not clean: %s" % (arm, "; ".join(dirty[:10])))
+            if ignored:
+                problems.append("arm %s: the tree holds ignored files a build may read (only bin/ and obj/ directories,"
+                                " which are removed before its build, and Python's caches may be there): %s"
+                                % (arm, "; ".join(ignored[:10]) + (" ..." if len(ignored) > 10 else "")))
         if commits.get("B") and commits["B"] != base_commit:
             problems.append("arm B: the tree is at %s, not bundle sjl-0-001's base commit %s" % (commits["B"], base_commit))
 
-        # Arm A: the commit that adds the revised rule, on aaa39fb's product sources but for the paths the root
-        # does not build.
+        # Arm A: the commit on the default branch's first-parent history that adds the revised rule, on aaa39fb's
+        # product sources but for the paths the root does not build.
         if self.git(self.tree, "cat-file", "-e", "HEAD:" + REVISED_RULE)[0] != 0:
             problems.append("arm A: HEAD does not carry %s" % REVISED_RULE)
         elif self.git(self.tree, "cat-file", "-e", "HEAD^1:" + REVISED_RULE)[0] == 0:
             problems.append("arm A: HEAD's first parent already carries %s; arm A is the commit that adds it to the"
                             " default branch's history, not a later one" % REVISED_RULE)
+        default_ref = getattr(self.arguments, "default_branch", None)
+        default_commit = None
+        if not default_ref:
+            problems.append("arm A needs --default-branch, the default branch's ref (origin/main, say): arm A is the"
+                            " commit on its first-parent history that adds %s" % REVISED_RULE)
+        else:
+            code, resolved = self.git(self.tree, "rev-parse", "--verify", "--quiet", default_ref + "^{commit}")
+            if code != 0:
+                problems.append("arm A: --default-branch %s does not name a commit in arm A's repository" % default_ref)
+            else:
+                default_commit = resolved.strip()
+                chain = self.git(self.tree, "rev-list", "--first-parent", default_commit)[1].split()
+                if commits.get("A") not in chain:
+                    problems.append("arm A: HEAD is not on the first-parent history of --default-branch %s (%s); arm A"
+                                    " is the commit there that adds %s, the merge that lands it"
+                                    % (default_ref, default_commit, REVISED_RULE))
         if self.git(self.tree, "merge-base", "--is-ancestor", PREVIEW_7, "HEAD")[0] != 0:
             problems.append("arm A: HEAD does not descend from %s" % PREVIEW_7)
-        code, names = self.git(self.tree, "diff", "--name-only", PREVIEW_7, "HEAD")
+        code, names, error = self.changed_paths(self.tree, PREVIEW_7, "HEAD")
         if code != 0:
-            problems.append("arm A: git diff --name-only %s HEAD failed: %s" % (PREVIEW_7, names.strip()[-300:]))
-            names = ""
+            problems.append("arm A: git diff --no-renames --name-only %s HEAD failed: %s" % (PREVIEW_7, error.strip()[-300:]))
+            names = []
         product = outside_documents(names)
         differing = [name for name in product if not not_built(name)]
         exempted = [name for name in product if not_built(name)]
         if differing:
             problems.append("arm A: outside the documents it differs from %s in %d path(s) the rule does not exempt: %s"
                             % (PREVIEW_7, len(differing), ", ".join(differing[:25]) + (" ..." if len(differing) > 25 else "")))
-        compiled = [name for name in names.splitlines() if (name.startswith("docs/") or "/docs/" in name)
+        compiled = [name for name in names if (name.startswith("docs/") or "/docs/" in name)
                     and name.endswith(BUILD_INPUT_SUFFIXES)]
         if compiled:
             problems.append("arm A: a path under a docs/ directory that a build compiles or reads differs from %s: %s"
@@ -714,8 +780,10 @@ class Collector(base.Collector):
         plan = [
             "%s: part C of %s%s" % (step, REVISED_RULE, " (check only: refusals and builds)" if check_only else ""),
             "  arm B        %s at %s (bundle sjl-0-001's base commit %s)" % (self.base_tree, commits.get("B"), base_commit),
-            "  arm A        %s at %s (the commit that adds the revised rule; product sources %s's but for the paths"
-            " the root does not build)" % (self.tree, commits.get("A"), PREVIEW_7),
+            "  arm A        %s at %s (the commit on the default branch's first-parent history that adds the revised"
+            " rule; product sources %s's but for the paths the root does not build)"
+            % (self.tree, commits.get("A"), PREVIEW_7),
+            "  default      --default-branch %s at %s" % (default_ref, default_commit),
             "  arm A-again  arm A's binaries, measured a second time under another lane name",
             "  exempted     differing from %s outside the documents, under the rule's four paths: %d file(s)%s"
             % (PREVIEW_7, len(exempted), "" if not exempted else " (" + ", ".join(sorted({
@@ -761,6 +829,11 @@ class Collector(base.Collector):
         binaries, listings = {}, {}
         for arm in ("B", "A"):
             tree = trees[arm]
+            # No output or restore file but this build's own: every ignored bin/ and obj/ directory goes first.
+            for relative in outputs[arm]:
+                shutil.rmtree(os.path.join(tree, relative.rstrip("/")))
+            print("%s: arm %s: %d ignored bin/ and obj/ director%s removed before its build"
+                  % (step, arm, len(outputs[arm]), "y" if len(outputs[arm]) == 1 else "ies"), flush=True)
             project = os.path.join(tree, base.CLI, os.path.basename(base.CLI) + ".csproj")
             done = subprocess.run(["dotnet", "build", project, "-c", "Release", "--no-incremental", "-nodeReuse:false",
                                    "-p:UseSharedCompilation=false"], cwd=tree, capture_output=True, encoding="utf-8",
@@ -797,10 +870,10 @@ class Collector(base.Collector):
                   " run, and nothing was written under --out" % step, flush=True)
             return 0
         return self.revised_runs(step, out, binaries, listings, commits, exempted, closure, build_files, workloads,
-                                 numref, numref_path, started_load, hide)
+                                 numref, numref_path, started_load, hide, (default_ref, default_commit))
 
     def revised_runs(self, step, out, binaries, listings, commits, exempted, closure, build_files, workloads, numref,
-                     numref_path, started_load, hide):
+                     numref_path, started_load, hide, default_branch):
         """measure-revised after its refusals and builds: the manifest, the first checks, the transcripts and their
         check, the lanes and the results, into out."""
         # 3. The manifest, read-only before anything runs.
@@ -816,7 +889,7 @@ class Collector(base.Collector):
             if not entry.strip():
                 continue
             sha, parents, subject = entry.split("\t", 2)
-            touched = outside_documents(self.git(self.tree, "diff", "--name-only", sha + "^1", sha)[1])
+            touched = outside_documents(self.changed_paths(self.tree, sha + "^1", sha)[1])
             if " " in parents:
                 # A merge's files are those of the commits it brings in, each listed here with its own.
                 since.append("  %s %s: a merge, %s against its first parent" % (
@@ -844,11 +917,15 @@ class Collector(base.Collector):
             "collected " + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "load-average %s at the step's start, %s when this manifest was written after both builds"
             % (started_load, load_average()),
-            "arm-B-commit %s (bundle sjl-0-001's base commit; clean tree)" % commits["B"],
-            "arm-A-commit %s (it adds the revised rule to the default branch's history: its first parent does not carry"
-            " it; descends from %s; clean tree)" % (commits["A"], PREVIEW_7),
+            "arm-B-commit %s (bundle sjl-0-001's base commit; clean tree, no ignored file but bin/ and obj/ directories,"
+            " removed before its build, and Python's caches)" % commits["B"],
+            "arm-A-commit %s (on the first-parent history of --default-branch %s at %s, the commit there that adds the"
+            " revised rule: its first parent does not carry it; descends from %s; clean tree, no ignored file but bin/"
+            " and obj/ directories, removed before its build, and Python's caches)"
+            % (commits["A"], default_branch[0], default_branch[1], PREVIEW_7),
             "arm-A-differs-from %s outside the documents only under the rule's four paths, none of which the root's"
-            " closure or build files name: %s" % (PREVIEW_7, ("%d files" % len(exempted)) if exempted else "none"),
+            " closure or build files name, every path added, changed or removed counted, with no rename detection: %s"
+            % (PREVIEW_7, ("%d files" % len(exempted)) if exempted else "none"),
         ]
         manifest.extend("  " + name for name in exempted)
         manifest += [
@@ -1211,6 +1288,9 @@ def main():
     parser.add_argument("--against-root", help="the Broiler.JS checkout it was built from")
     parser.add_argument("--images", help="the closures step's mstat records, for rule I3 (rules)")
     parser.add_argument("--numref", help="measure-revised: Broiler.JS's scripts/conformance/numref.py at 966140ad")
+    parser.add_argument("--default-branch",
+                        help="measure-revised: the default branch's ref (origin/main, say); arm A is the commit on its"
+                             " first-parent history that adds the revised rule")
     parser.add_argument("--check-only", action="store_true",
                         help="measure-revised: the refusals and the builds only; no transcript, answer or lane")
     parser.add_argument("--only", action="append", required=True,
