@@ -292,8 +292,13 @@ internal sealed partial class JsBinder
     }
 
     /// <summary>Records one node's facts and queues the nodes inside it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=06D9DD
-    // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited
+    /// <remarks>
+    /// <b>It names every kind of node the tree has</b>, the leaves too, and fails on any other: a kind
+    /// it does not know may hold a function, a class, a block or a <c>switch</c>, and passing over it
+    /// would leave the lowering to ask about one the binder never saw.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=22B9E0
+    // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, or a node of a kind the walk does not name passes it without failing
     // Broiler-Human:        PENDING
     private void Visit(
         System.Collections.Generic.Stack<Pending> pending, JsNode node, Context context, string label)
@@ -641,8 +646,19 @@ internal sealed partial class JsBinder
 
             // A LEAF: a literal, a name, `this`, `new.target`, `import.meta`, an empty or `debugger`
             // statement, an `import` declaration. None holds a node with a fact of its own.
-            default:
+            case JsNumberLiteral or JsBigIntLiteral or JsStringLiteral or JsBooleanLiteral or
+                JsNullLiteral or JsRegExpLiteral or JsIdentifier or JsThisExpression or
+                JsNewTargetExpression or JsImportMeta or JsEmptyStatement or JsDebuggerStatement or
+                JsImportDeclaration:
                 return;
+
+            // EVERY KIND OF NODE IS NAMED ABOVE, AS ONE THAT HOLDS OTHERS OR AS A LEAF, so that a kind
+            // added to the tree and not to this walk stops the compilation of the first unit that
+            // holds one, naming it - rather than leaving whatever it holds without facts, which the
+            // lowering would meet later as a function, block or `switch` nobody bound.
+            default:
+                throw new System.InvalidOperationException(
+                    "the binder has no reading of " + node.GetType().Name + ", at " + Where(node));
         }
     }
 

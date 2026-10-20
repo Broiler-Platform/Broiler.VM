@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           26
-// Human-reviewed:   0/13
+// Human-reviewed:   0/15
 // IP risk:          None
 // Security risk:    High
-// Criteria:         4/2
+// Criteria:         5/2
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -134,19 +134,25 @@ internal sealed partial class JsBinder
     /// constructor takes its class's name, an anonymous function the name it is assigned to - asks
     /// for the node it renamed, which is the one that was bound.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E41D5D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=722DDD
     // Broiler-Human:        PENDING
-    internal FunctionFacts Function(JsFunctionNode function) => functions[function];
+    internal FunctionFacts Function(JsFunctionNode function) =>
+        functions.TryGetValue(function, out var facts) ? facts : throw Unbound("function", function);
 
-    /// <summary>What one block's statement list declares: a block, a <c>try</c> or <c>finally</c> block, or a catch block.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=954FFA
+    /// <summary>
+    /// What one block's statement list declares: a block, a <c>try</c> or <c>finally</c> block, or a
+    /// catch block.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E474E8
     // Broiler-Human:        PENDING
-    internal Declarations Block(JsBlockStatement block) => lists[block];
+    internal Declarations Block(JsBlockStatement block) =>
+        lists.TryGetValue(block, out var declarations) ? declarations : throw Unbound("block", block);
 
     /// <summary>What a <c>switch</c>'s clauses declare, which are one statement list and one record.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=183687
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6F7499
     // Broiler-Human:        PENDING
-    internal Declarations Switch(JsSwitchStatement switched) => lists[switched];
+    internal Declarations Switch(JsSwitchStatement switched) =>
+        lists.TryGetValue(switched, out var declarations) ? declarations : throw Unbound("switch", switched);
 
     /// <summary>
     /// Whether Annex B gives <paramref name="declaration"/>, a function declared in a block, a
@@ -167,10 +173,10 @@ internal sealed partial class JsBinder
     /// Every private name one class body declares, in source order and once each: <c>get #a</c> and
     /// <c>set #a</c> declare one name and not two.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=63143F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=142D2C
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.IReadOnlyList<string> PrivateNames(JsClassNode definition) =>
-        privateNames[definition];
+        privateNames.TryGetValue(definition, out var names) ? names : throw Unbound("class", definition);
 
     /// <summary>
     /// The loop, <c>switch</c> or labelled statement a <c>break</c> or <c>continue</c> leaves, or
@@ -185,10 +191,33 @@ internal sealed partial class JsBinder
     /// stack, because a <c>finally</c> body it emits at a jump is emitted inside the statements the
     /// jump leaves, which no fact about the tree can describe.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=1A3DF5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C740E1
     // Broiler-Falsified-If: a jump's recorded target differs from the exit the lowering's stack finds for it where no finally body is being emitted at another jump
     // Broiler-Human:        PENDING
-    internal JsStatement? JumpTarget(JsStatement jump) => jumps[jump];
+    internal JsStatement? JumpTarget(JsStatement jump) =>
+        jumps.TryGetValue(jump, out var target) ? target : throw Unbound("jump", jump);
+
+    /// <summary>The failure a question about a node this binder never bound raises.</summary>
+    /// <remarks>
+    /// <b>It names the node, because the defect is never the source's.</b> Every node of the unit's
+    /// tree was bound before the lowering began, so a question about another is the lowering's: a node
+    /// it built itself, or a copy it renamed and asked about in place of the one the source wrote -
+    /// <see cref="JsCompiler"/> passes the written node for those. Answering with a bare key lookup
+    /// left that to be read from a stack trace.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4D309A
+    // Broiler-Falsified-If: a question about a node the binder did not bind is answered, or fails without naming the node
+    // Broiler-Human:        PENDING
+    private static System.InvalidOperationException Unbound(string kind, JsNode node) =>
+        new("the binder bound no " + kind + " at " + Where(node) +
+            "; the lowering asked about a node the unit's tree does not hold");
+
+    /// <summary>Where a node stands, as a diagnostic names a place.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=477B8E
+    // Broiler-Human:        PENDING
+    private static string Where(JsNode node) =>
+        node.Span.Line.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" +
+        node.Span.Column.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>One name a statement list declares lexically.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5735E7
