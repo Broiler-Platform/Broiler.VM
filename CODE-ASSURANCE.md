@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 327 |
 | Files carrying an annotation | 327 |
-| Code units | 11596 |
-| Relevant | 6638 |
-| Exempt by predicate | 4958 |
-| Annotated | 6638 of 6638 (100%) |
-| Human reviewed | 0 of 6638 (0%) |
-| Unverified | 6638 |
+| Code units | 11604 |
+| Relevant | 6644 |
+| Exempt by predicate | 4960 |
+| Annotated | 6644 of 6644 (100%) |
+| Human reviewed | 0 of 6644 (0%) |
+| Unverified | 6644 |
 
 ## Review states
 
@@ -28,17 +28,17 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6638 |
+| HUMAN_PENDING | 6644 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4958 |
+| EXEMPT | 4960 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1642 |
+| None | 1650 |
 | Low | 6471 |
 | Medium | 90 |
 | High | 0 |
@@ -51,7 +51,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 9 |
 | Low | 1849 |
-| Medium | 4464 |
+| Medium | 4472 |
 | High | 1628 |
 | Critical | 253 |
 | *not annotated* | 0 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6638 |
+| Units scored | 6644 |
 
 ## High-security review areas
 
@@ -1952,7 +1952,7 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2038 |
+| Units carrying a criterion | 2039 |
 | Units required to carry one | 1881 |
 | Required and missing | 0 |
 
@@ -1986,7 +1986,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | CompilerSuppliedRecordOrEnumMember | 30 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 914 |
+| FieldDeclaringStorage | 916 |
 | EnumMemberOfADeclaredVocabulary | 1967 |
 | DeclaredInSource | 63 |
 
@@ -2069,7 +2069,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11596 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11604 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

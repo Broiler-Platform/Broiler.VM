@@ -28,6 +28,14 @@ internal static class SourceFrontEndChecks
         yield return EverySourceTheManifestExcludesIsRefusedByName();
         yield return EveryModuleEarlyErrorIsRefusedByName();
         yield return TheLoweringIsDeterministic();
+
+        // THE WIDE FRONT END'S HALF OF THE SAME CLAIM, beside the slice one's (stage JSB-1, SJL-12.6
+        // item 3): its own file, because it reads the artifacts it compares.
+        foreach (var row in WideLoweringChecks.Run())
+        {
+            yield return row;
+        }
+
         yield return TwoGoalsInOneProcessDoNotReachEachOther();
         yield return DeepNestingIsRefusedRatherThanSurvived();
         yield return AnEarlyErrorNeverProducesBytes();

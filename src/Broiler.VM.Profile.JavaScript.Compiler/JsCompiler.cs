@@ -351,10 +351,13 @@ public sealed partial class JsCompiler
     /// before the first statement runs, and the statement that writes its value is compiled much
     /// later, in a method that knows only a name and a value; without this it could not tell that
     /// name apart from a <c>var</c>'s, which is a write to the global OBJECT and not to a binding.
+    /// <b>It is held in source order</b> (SJL-12.6 item 3, JSD-0080 decision D14): the global lexical
+    /// declarations and the script-declarations row are written by walking it, so their order is the
+    /// source's and not a hash table's.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1F02DD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=81C96A
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<string, bool> programLexicals = [];
+    private readonly SourceOrderedLexicals programLexicals = new();
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8CF226
     // Broiler-Human:        PENDING
