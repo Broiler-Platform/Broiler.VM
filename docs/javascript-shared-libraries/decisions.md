@@ -556,6 +556,26 @@ advance, it changes the pilot's role:
 **Recorded by** ADR 0014 (SJL-0.2), which carries it from the start, so no revision is needed, and
 the profile JSD (SJL-0.4).
 
+*(Noted 2026-10-20, which reopens nothing. SJL-3's clause 7, Broiler.JS's measurement, waits on a
+controlled lane, which neither the programme's machine nor any GitHub-hosted runner is
+(Broiler.JS `docs/roadmap/Measurement.md`, "Controlled lanes and effective configuration").
+Clause 13, Broiler.VM's measurement, stays open after the second and last measurement that the dated
+revision of its rule
+([`decision-rule-revised-2026-10-20.md`](../evidence/sjl-3-001/decision-rule-revised-2026-10-20.md))
+allows ([bundle `sjl-3-001`](../evidence/sjl-3-001/README.md), section 10). SJL-4's clause 9 stays
+unmet by the owner's decision of the same date
+([bundle `sjl-4-001`](../evidence/sjl-4-001/README.md), section 4). The next dated choice here is
+taken when either (a) a controlled lane exists, recorded as `Measurement.md` requires; or (b)
+SJL-3's clause 7, its clause 13 if still open, and SJL-4's clause 9 are the only unmet clauses of
+SJL-3 to SJL-15 and SJL-17, every other clause being met on its bundles. At (b) the choice is
+between waiting for a lane and a gate revision under alternative (b), which would be the first
+exit-gate revision made after the evidence it concerns. Such a revision would take dated edits
+here, in the milestone file with the superseded text quoted, in [the ledger](status.md) under its
+update rule 5, and in Broiler.JS's plan pair. That choice is the owner's own when it comes, not one
+taken under the owner's direction of 2026-10-18. This note records the owner's decision of
+2026-10-20, taken under that direction, "Please do all recommended decisions and skip waiting for
+review.", which changes no programme rule.)*
+
 <a id="sjl-d-16"></a>
 ### SJL-D-16 — Observable corrections at cut-over
 
