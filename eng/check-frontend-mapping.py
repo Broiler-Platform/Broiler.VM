@@ -38,9 +38,18 @@
 #   E9  the mapping names a registry code registry.txt lacks, or a registry row's name or the
 #       header's registry revision differs from registry.txt's.
 #
-# With --broiler-js <checkout>, it also refuses a copy that differs from the catalogue at the
-# commit the header names in that checkout (git show). Part E does not need it: the digest is the
-# binding, and the header names the commit for a reader.
+# With --broiler-js <checkout>, it also reads two files from that checkout at the commit the
+# header names (git show), and refuses:
+#
+#   E1  a copy that differs from the catalogue there;
+#   E8  a code the mapping row lists in wide_codes or slice_codes that neither the catalogue row's
+#       VM cells nor a site the catalogue's VM site inventory (SITES_PATH below) assigns to the row
+#       give, and a code such a site refuses with that the row does not list (`manifest` lists
+#       2104). This is E8's other direction: without it, a stale code left in wide_codes with its
+#       item in other_codes passes.
+#
+# Part E's population is the three files above, and it does not need this mode: the digest is the
+# binding, and the header names the commit for a reader. The inventory is read only here.
 #
 # Exit status: 0 when nothing is refused, 1 when anything is, 2 when an input cannot be read.
 
@@ -54,6 +63,10 @@ import sys
 TOOL = "check-frontend-mapping"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_MAPPING = "src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv"
+# The catalogue's VM site inventory in Broiler.JS, which its completeness report reads: one line
+# per site, with the registry code it refuses with and the catalogue rows it is assigned to.
+SITES_PATH = "docs/evidence/sjl-12-001/catalogue/vm-sites.tsv"
+SITES_COLUMNS = ("site", "code", "rows")
 
 MAPPING_COLUMNS = [
     "kind", "shared_code", "row", "conditions", "wide_codes", "slice_codes", "registry_code",
@@ -164,6 +177,40 @@ def read_registry(path):
     return revision, codes
 
 
+def git_show(checkout, commit, path):
+    try:
+        return subprocess.run(["git", "-C", checkout, "show", f"{commit}:{path}"],
+                              check=True, capture_output=True).stdout
+    except (OSError, subprocess.CalledProcessError) as error:
+        raise Unreadable(f"{path} at {commit} cannot be read from {checkout}: {error}")
+
+
+def read_sites(data, where):
+    # The inventory's sites, as {catalogue row: {registry code: [site, ...]}}.
+    try:
+        text = data.decode("utf-8")
+    except UnicodeDecodeError:
+        raise Unreadable(f"{where} is not UTF-8")
+    lines = [line for line in text.split("\n") if line]
+    if not lines:
+        raise Unreadable(f"{where}: empty")
+    columns = lines[0].split("\t")
+    for column in SITES_COLUMNS:
+        if column not in columns:
+            raise Unreadable(f"{where}: the inventory has no {column} column")
+    assigned = {}
+    for number, line in enumerate(lines[1:], start=2):
+        cells = line.split("\t")
+        if len(cells) != len(columns):
+            raise Unreadable(f"{where}:{number}: {len(cells)} cells where there are {len(columns)} columns")
+        site = dict(zip(columns, cells))
+        if not CODE.match(site["code"]):
+            raise Unreadable(f"{where}:{number}: the code {site['code']!r} is no registry code")
+        for row in split_codes(site["rows"]):
+            assigned.setdefault(row, {}).setdefault(site["code"], []).append(site["site"])
+    return hashlib.sha256(data).hexdigest(), len(lines) - 1, assigned
+
+
 def shown(path):
     full = os.path.abspath(path)
     relative = os.path.relpath(full, ROOT)
@@ -191,19 +238,17 @@ def check(mapping_path, catalogue_override, registry_path, broiler_js):
     if digest != header["catalogue-sha256"]:
         refuse("E1", f"the catalogue copy {shown(copy_path)} has SHA-256 {digest}, "
                      f"and the mapping's header names {header['catalogue-sha256']}")
+    inventory, assigned = None, None
     if broiler_js:
-        try:
-            committed = subprocess.run(
-                ["git", "-C", broiler_js, "show",
-                 f"{header['catalogue-commit']}:{header['catalogue-path']}"],
-                check=True, capture_output=True).stdout
-        except (OSError, subprocess.CalledProcessError) as error:
-            raise Unreadable(f"{header['catalogue-path']} at {header['catalogue-commit']} cannot be "
-                             f"read from {broiler_js}: {error}")
+        committed = git_show(broiler_js, header["catalogue-commit"], header["catalogue-path"])
         committed_digest = hashlib.sha256(committed).hexdigest()
         if committed_digest != digest:
             refuse("E1", f"{header['catalogue-path']} at {header['catalogue-commit']} has SHA-256 "
                          f"{committed_digest}, and the copy has {digest}")
+        sites_digest, site_count, assigned = read_sites(
+            git_show(broiler_js, header["catalogue-commit"], SITES_PATH),
+            f"{SITES_PATH} at {header['catalogue-commit']}")
+        inventory = (sites_digest, site_count)
 
     # E9 - the registry the header names is the one read.
     if header["registry-revision"] != revision:
@@ -284,7 +329,7 @@ def check(mapping_path, catalogue_override, registry_path, broiler_js):
         # E8 - the catalogue's codes are listed, and every other listed code is accounted for.
         # `manifest` in slice_codes is 2104 by the manifest's own row (EX0017), reached before the
         # rule applies; it is listed, and it is no code of this rule's to account for.
-        listed, by_manifest = set(), False
+        listed, by_manifest, columns_of = set(), False, {}
         for column in ("wide_codes", "slice_codes"):
             for code in split_codes(row[column]):
                 if code == "manifest" and column == "slice_codes":
@@ -292,6 +337,7 @@ def check(mapping_path, catalogue_override, registry_path, broiler_js):
                 elif CODE.match(code):
                     if known(code, f"{where} {column}"):
                         listed.add(code)
+                        columns_of.setdefault(code, []).append(column)
                 else:
                     refuse("E8", f"{where}: {column} holds {code!r}, which is no registry code")
         named = set(split_codes(source["vm_code"]))
@@ -303,6 +349,19 @@ def check(mapping_path, catalogue_override, registry_path, broiler_js):
             elif code not in listed and not (code == "2104" and by_manifest):
                 refuse("E8", f"{where}: the catalogue row's VM sites refuse it with {code}, which the "
                              f"mapping row does not list")
+        if assigned is not None:
+            # With --broiler-js: the row lists what the catalogue row's cells and the inventory's
+            # sites give it, both ways.
+            sites = assigned.get(source["id"], {})
+            for code in sorted(listed - named - set(sites)):
+                verb = "list" if len(columns_of[code]) > 1 else "lists"
+                refuse("E8", f"{where}: {' and '.join(columns_of[code])} {verb} {code}, which neither "
+                             f"the catalogue row's vm_code nor a site {SITES_PATH} assigns to "
+                             f"{source['id']} gives")
+            for code, at in sorted(sites.items()):
+                if code not in listed and not (code == "2104" and by_manifest):
+                    refuse("E8", f"{where}: {SITES_PATH} assigns {', '.join(at)} to {source['id']}, "
+                                 f"which refuses with {code}, and the mapping row does not list it")
         others = {}
         if row["other_codes"] != "-":
             for item in row["other_codes"].split(" | "):
@@ -447,7 +506,7 @@ def check(mapping_path, catalogue_override, registry_path, broiler_js):
             refuse("E7", f"registry {code} names {explanation}, which is not an engine-only row of the "
                          f"catalogue")
 
-    return header, digest, len(code_rows), len(registry_rows), problems
+    return header, digest, inventory, len(code_rows), len(registry_rows), problems
 
 
 def main():
@@ -462,11 +521,12 @@ def main():
                         help="the registry (default: the one the mapping's header names)")
     parser.add_argument("--broiler-js", default=None,
                         help="a Broiler.JS checkout: also compare the copy with the catalogue at the "
-                             "commit the header names")
+                             "commit the header names, and hold each row's codes to the catalogue's "
+                             "VM site inventory there")
     arguments = parser.parse_args()
 
     try:
-        header, digest, codes, registry_rows, problems = check(
+        header, digest, inventory, codes, registry_rows, problems = check(
             arguments.mapping, arguments.catalogue, arguments.registry, arguments.broiler_js)
     except Unreadable as error:
         print(f"{TOOL}: cannot check: {error}")
@@ -475,6 +535,9 @@ def main():
     print(f"{TOOL}: mapping {shown(arguments.mapping)}")
     print(f"{TOOL}: catalogue {header['catalogue-repository']} {header['catalogue-path']} at "
           f"{header['catalogue-commit']}, copy SHA-256 {digest}")
+    if inventory is not None:
+        print(f"{TOOL}: inventory {header['catalogue-repository']} {SITES_PATH} at "
+              f"{header['catalogue-commit']}, SHA-256 {inventory[0]}, {inventory[1]} sites")
     print(f"{TOOL}: registry revision {header['registry-revision']}")
     for problem in problems:
         print(f"{TOOL}: refused: {problem}")

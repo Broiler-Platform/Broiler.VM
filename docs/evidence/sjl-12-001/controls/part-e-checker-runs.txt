@@ -1,17 +1,19 @@
 Bundle sjl-12-001, part E: the checker on the mapping and on its two control copies
 
 Taken 2026-10-20, at SJL-12.3, on the tree of the change that brings the mapping to the catalogue at
-Broiler.JS commit a6b29eafba255dc0b43046ba8d0c217dad5e9d91 (its parent is the branch's merge of main,
-48461e07ef68db65a47607e2fec94346faff0932). Part E's judged run is taken at the after commit, with the
-checker as the corpus commit holds it; this run replaces the controls' first, which read the catalogue
-at 0ec5bde1, and is read and not judged, with Python 3.13.16. Each control is the mapping with the one
-change its diff shows.
+Broiler.JS commit b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, the catalogue branch's merge of main, and gives
+the checker's --broiler-js mode E8's other direction. The catalogue and its VM site inventory are byte-identical
+there to a6b29eafba255dc0b43046ba8d0c217dad5e9d91's, so the copy is unchanged. The change's parent is
+5856e3e50e863266d97cf6d390a65fc441eea36b. Part E's judged run is taken at the after commit, with the checker
+as the corpus commit holds it; this run replaces the earlier ones, which read the catalogue at 0ec5bde1 and
+at a6b29eaf, and is read and not judged, with Python 3.13.16. Each control is the mapping with the one change
+its diff shows. $BROILER_JS is a Broiler.JS checkout that holds b1ac1b8a.
 
 == The mapping
 
 $ python3 -I eng/check-frontend-mapping.py
 check-frontend-mapping: mapping src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv
-check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at a6b29eafba255dc0b43046ba8d0c217dad5e9d91, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
 check-frontend-mapping: registry revision 18
 check-frontend-mapping: passed: 284 shared codes, each mapped to one registry code; 30 registry rows; checks E1 to E9 hold
 exit status 0
@@ -19,16 +21,16 @@ exit status 0
 == Control 1: a shared code given a second registry code (JSE1401, EE0040, mapped to 2201 and 2202)
 
 $ diff src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv docs/evidence/sjl-12-001/controls/part-e-control-1-second-registry-code.tsv
-147c147
+152c152
 < code	JSE1401	EE0040	scope.lexical.duplicate	2201	2201	2201	within-meaning	2201 DuplicateLexicalDeclaration: One scope declares a lexical name twice.	-	-
 ---
 > code	JSE1401	EE0040	scope.lexical.duplicate	2201	2201	2201;2202	within-meaning	2201 DuplicateLexicalDeclaration: One scope declares a lexical name twice.	-	-
 
 $ python3 -I eng/check-frontend-mapping.py --mapping docs/evidence/sjl-12-001/controls/part-e-control-1-second-registry-code.tsv
 check-frontend-mapping: mapping docs/evidence/sjl-12-001/controls/part-e-control-1-second-registry-code.tsv
-check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at a6b29eafba255dc0b43046ba8d0c217dad5e9d91, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
 check-frontend-mapping: registry revision 18
-check-frontend-mapping: refused: E3 line 147 (JSE1401, EE0040): registry_code is '2201;2202': a shared code maps to exactly one registry code, and this one is mapped to two registry meanings
+check-frontend-mapping: refused: E3 line 152 (JSE1401, EE0040): registry_code is '2201;2202': a shared code maps to exactly one registry code, and this one is mapped to two registry meanings
 check-frontend-mapping: REFUSED: 1 problem(s)
 exit status 1
 
@@ -36,15 +38,108 @@ exit status 1
    (JSE1621, EE0180, a duplicate import-attribute key, marked within-meaning of 2402 DuplicateExportName)
 
 $ diff src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv docs/evidence/sjl-12-001/controls/part-e-control-2-merge-not-split.tsv
-287c287
+292c292
 < code	JSE1621	EE0180	module.import-attribute.duplicate-key	2402	manifest	2402	split	leaves 2402 DuplicateExportName: an import attribute key given twice, which is not an export name (D13); the new number is minted at SJL-13 under JSD-0009	-	-
 ---
 > code	JSE1621	EE0180	module.import-attribute.duplicate-key	2402	manifest	2402	within-meaning	2402 DuplicateExportName: One module publishes the same export name twice.	-	-
 
 $ python3 -I eng/check-frontend-mapping.py --mapping docs/evidence/sjl-12-001/controls/part-e-control-2-merge-not-split.tsv
 check-frontend-mapping: mapping docs/evidence/sjl-12-001/controls/part-e-control-2-merge-not-split.tsv
-check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at a6b29eafba255dc0b43046ba8d0c217dad5e9d91, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
 check-frontend-mapping: registry revision 18
-check-frontend-mapping: refused: E6 line 287 (JSE1621, EE0180): reaches 2402 DuplicateExportName under a second meaning, module.import-attribute.duplicate-key, which 2402's published meaning does not cover, and is marked within-meaning, not split: a rule merged onto a registry row whose meaning does not cover it
+check-frontend-mapping: refused: E6 line 292 (JSE1621, EE0180): reaches 2402 DuplicateExportName under a second meaning, module.import-attribute.duplicate-key, which 2402's published meaning does not cover, and is marked within-meaning, not split: a rule merged onto a registry row whose meaning does not cover it
+check-frontend-mapping: REFUSED: 1 problem(s)
+exit status 1
+
+== Read, not part E's: the --broiler-js mode on the mapping
+
+It also compares the copy with the catalogue at catalogue-commit, and holds each row's wide_codes and
+slice_codes to the catalogue row's vm_code and to the sites the catalogue's VM site inventory assigns to the
+row, both ways.
+
+$ python3 -I eng/check-frontend-mapping.py --broiler-js "$BROILER_JS"
+check-frontend-mapping: mapping src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: inventory Broiler.JS docs/evidence/sjl-12-001/catalogue/vm-sites.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, SHA-256 d429fd5cd2a7ccde439cb92dec94577c83431d9a039286500f656654857a5e82, 217 sites
+check-frontend-mapping: registry revision 18
+check-frontend-mapping: passed: 284 shared codes, each mapped to one registry code; 30 registry rows; checks E1 to E9 hold
+exit status 0
+
+== Read, not part E's: E8's other direction, on three copies made for this run and not retained
+
+Each copy is the mapping with the one change its diff shows. Part E's checks pass each one; the --broiler-js
+mode refuses each.
+
+-- Copy 1: EX0008 (JSE9108) given back the 2207 split for `return` in a class static block, in wide_codes and in other_codes,
+   as the mapping had it before EX0033 took that site
+
+$ diff src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv e8-other-direction-1-stale-split.tsv
+371c371
+< code	JSE9108	EX0008	syntax.token.unexpected	2101;2102;2104;2205;2209	2101	2101	within-meaning	2101 UnexpectedToken: A token that continues no production the parser was in.	2102 split: a setter without exactly one parameter (JsParser.cs:4207) | 2104 split: `await` outside an async body reaching the lowering's defensive check (JsCompiler.Expressions.cs:314) (D13) | 2205 split: a declaration pattern's leaf that is not a name, coded as an invalid assignment target (JsCompiler.Patterns.cs:173, defensive) | 2209 split: a private name as a function or binding name (JsParser.cs:2323, :6548), and a reserved word where no production admits it as an operand, a shorthand or a binding (JsParser.cs:5828, :6175, :6604)	-
+---
+> code	JSE9108	EX0008	syntax.token.unexpected	2101;2102;2104;2205;2207;2209	2101	2101	within-meaning	2101 UnexpectedToken: A token that continues no production the parser was in.	2102 split: a setter without exactly one parameter (JsParser.cs:4207) | 2104 split: `await` outside an async body reaching the lowering's defensive check (JsCompiler.Expressions.cs:314) (D13) | 2205 split: a declaration pattern's leaf that is not a name, coded as an invalid assignment target (JsCompiler.Patterns.cs:173, defensive) | 2207 split: `return` in a class static block (JsCompiler.Exceptions.cs:275) (D13) | 2209 split: a private name as a function or binding name (JsParser.cs:2323, :6548), and a reserved word where no production admits it as an operand, a shorthand or a binding (JsParser.cs:5828, :6175, :6604)	-
+
+$ python3 -I eng/check-frontend-mapping.py --mapping e8-other-direction-1-stale-split.tsv
+check-frontend-mapping: mapping e8-other-direction-1-stale-split.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: registry revision 18
+check-frontend-mapping: passed: 284 shared codes, each mapped to one registry code; 30 registry rows; checks E1 to E9 hold
+exit status 0
+
+$ python3 -I eng/check-frontend-mapping.py --mapping e8-other-direction-1-stale-split.tsv --broiler-js "$BROILER_JS"
+check-frontend-mapping: mapping e8-other-direction-1-stale-split.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: inventory Broiler.JS docs/evidence/sjl-12-001/catalogue/vm-sites.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, SHA-256 d429fd5cd2a7ccde439cb92dec94577c83431d9a039286500f656654857a5e82, 217 sites
+check-frontend-mapping: registry revision 18
+check-frontend-mapping: refused: E8 line 371 (JSE9108, EX0008): wide_codes lists 2207, which neither the catalogue row's vm_code nor a site docs/evidence/sjl-12-001/catalogue/vm-sites.tsv assigns to EX0008 gives
+check-frontend-mapping: REFUSED: 1 problem(s)
+exit status 1
+
+-- Copy 2: EP0015 (JSE7401) listing 2101 in wide_codes, where its vm_code is `-` and no site is assigned to it
+
+$ diff src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv e8-other-direction-2-code-no-site-gives.tsv
+360c360
+< code	JSE7401	EP0015	eval.source.invalid	-	manifest	2101	within-meaning	2101 UnexpectedToken: A token that continues no production the parser was in.	-	The umbrella for ShadowRealm.prototype.evaluate, as JSE1901 is for eval: the text is compiled as an indirect eval is (src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs:77), and VM's refusal carries the source's own code (wide `-`); the SyntaxError for a private name no class declares (JsEngine.ShadowRealm.cs:81) carries no registry code.
+---
+> code	JSE7401	EP0015	eval.source.invalid	2101	manifest	2101	within-meaning	2101 UnexpectedToken: A token that continues no production the parser was in.	-	The umbrella for ShadowRealm.prototype.evaluate, as JSE1901 is for eval: the text is compiled as an indirect eval is (src/Broiler.VM.Profile.JavaScript/JsEngine.ShadowRealm.cs:77), and VM's refusal carries the source's own code (wide `-`); the SyntaxError for a private name no class declares (JsEngine.ShadowRealm.cs:81) carries no registry code.
+
+$ python3 -I eng/check-frontend-mapping.py --mapping e8-other-direction-2-code-no-site-gives.tsv
+check-frontend-mapping: mapping e8-other-direction-2-code-no-site-gives.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: registry revision 18
+check-frontend-mapping: passed: 284 shared codes, each mapped to one registry code; 30 registry rows; checks E1 to E9 hold
+exit status 0
+
+$ python3 -I eng/check-frontend-mapping.py --mapping e8-other-direction-2-code-no-site-gives.tsv --broiler-js "$BROILER_JS"
+check-frontend-mapping: mapping e8-other-direction-2-code-no-site-gives.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: inventory Broiler.JS docs/evidence/sjl-12-001/catalogue/vm-sites.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, SHA-256 d429fd5cd2a7ccde439cb92dec94577c83431d9a039286500f656654857a5e82, 217 sites
+check-frontend-mapping: registry revision 18
+check-frontend-mapping: refused: E8 line 360 (JSE7401, EP0015): wide_codes lists 2101, which neither the catalogue row's vm_code nor a site docs/evidence/sjl-12-001/catalogue/vm-sites.tsv assigns to EP0015 gives
+check-frontend-mapping: REFUSED: 1 problem(s)
+exit status 1
+
+-- Copy 3: EX0008 (JSE9108) dropping 2205, which only the site JsCompiler.Patterns.cs:173 gives it, from wide_codes and
+   other_codes
+
+$ diff src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv e8-other-direction-3-site-code-dropped.tsv
+371c371
+< code	JSE9108	EX0008	syntax.token.unexpected	2101;2102;2104;2205;2209	2101	2101	within-meaning	2101 UnexpectedToken: A token that continues no production the parser was in.	2102 split: a setter without exactly one parameter (JsParser.cs:4207) | 2104 split: `await` outside an async body reaching the lowering's defensive check (JsCompiler.Expressions.cs:314) (D13) | 2205 split: a declaration pattern's leaf that is not a name, coded as an invalid assignment target (JsCompiler.Patterns.cs:173, defensive) | 2209 split: a private name as a function or binding name (JsParser.cs:2323, :6548), and a reserved word where no production admits it as an operand, a shorthand or a binding (JsParser.cs:5828, :6175, :6604)	-
+---
+> code	JSE9108	EX0008	syntax.token.unexpected	2101;2102;2104;2209	2101	2101	within-meaning	2101 UnexpectedToken: A token that continues no production the parser was in.	2102 split: a setter without exactly one parameter (JsParser.cs:4207) | 2104 split: `await` outside an async body reaching the lowering's defensive check (JsCompiler.Expressions.cs:314) (D13) | 2209 split: a private name as a function or binding name (JsParser.cs:2323, :6548), and a reserved word where no production admits it as an operand, a shorthand or a binding (JsParser.cs:5828, :6175, :6604)	-
+
+$ python3 -I eng/check-frontend-mapping.py --mapping e8-other-direction-3-site-code-dropped.tsv
+check-frontend-mapping: mapping e8-other-direction-3-site-code-dropped.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: registry revision 18
+check-frontend-mapping: passed: 284 shared codes, each mapped to one registry code; 30 registry rows; checks E1 to E9 hold
+exit status 0
+
+$ python3 -I eng/check-frontend-mapping.py --mapping e8-other-direction-3-site-code-dropped.tsv --broiler-js "$BROILER_JS"
+check-frontend-mapping: mapping e8-other-direction-3-site-code-dropped.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: inventory Broiler.JS docs/evidence/sjl-12-001/catalogue/vm-sites.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, SHA-256 d429fd5cd2a7ccde439cb92dec94577c83431d9a039286500f656654857a5e82, 217 sites
+check-frontend-mapping: registry revision 18
+check-frontend-mapping: refused: E8 line 371 (JSE9108, EX0008): docs/evidence/sjl-12-001/catalogue/vm-sites.tsv assigns JsCompiler.Patterns.cs:173 to EX0008, which refuses with 2205, and the mapping row does not list it
 check-frontend-mapping: REFUSED: 1 problem(s)
 exit status 1

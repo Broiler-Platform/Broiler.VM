@@ -8,7 +8,7 @@
 #
 # catalogue-repository: Broiler.JS
 # catalogue-path: Broiler.ECMAScript/docs/frontend/early-errors.tsv
-# catalogue-commit: a6b29eafba255dc0b43046ba8d0c217dad5e9d91
+# catalogue-commit: b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd
 # catalogue-sha256: 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
 # catalogue-copy: docs/evidence/sjl-12-001/corpus/early-errors.tsv
 # registry: src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt
@@ -72,7 +72,12 @@
 #
 # The catalogue copy part E checks is the file catalogue-copy names, byte-identical to
 # catalogue-path at catalogue-commit; eng/check-frontend-mapping.py refuses a copy whose SHA-256 is
-# not catalogue-sha256.
+# not catalogue-sha256. Part E's checks hold wide_codes and slice_codes to the catalogue row's
+# vm_code in one direction only: a code the cell names must be listed. The other direction needs the
+# site inventory (vm-sites.tsv, above), which part E does not read, so the checker's --broiler-js
+# mode holds it: it reads the inventory at catalogue-commit and refuses a listed code that neither
+# vm_code nor a site assigned to the row gives, and a code such a site refuses with that the row
+# does not list.
 #
 kind	shared_code	row	conditions	wide_codes	slice_codes	registry_code	relation	meaning	other_codes	notes
 registry	-	EX0001	identifier.escape.invalid-part;identifier.escape.invalid-start;syntax.character.unexpected	-	-	2001	published	2001 UnexpectedCharacter: A character that begins no token this grammar defines.	-	An escape naming a code point that cannot start or continue an identifier is a character that begins no token.
