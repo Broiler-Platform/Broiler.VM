@@ -826,13 +826,22 @@ internal sealed partial class JsBinder
     /// <para>
     /// It descends through blocks, loops, <c>try</c>, <c>with</c> and <c>switch</c> - a <c>var</c>
     /// anywhere inside a function belongs to that function - and stops at a nested function, which is
-    /// a hoisting scope of its own.
+    /// a hoisting scope of its own. A collector that stopped at a block would answer that
+    /// <c>if (x) { var y; }</c> declares nothing.
     /// </para>
     /// <para>
     /// <b>A FUNCTION DECLARATION IS COLLECTED AT THE TOP LEVEL OF THE SCOPE AND NOWHERE BELOW IT</b>,
     /// which is the one respect in which it is unlike a <c>var</c>: written inside a block, it binds in
-    /// that block. <b>A label is transparent to that rule and a block is not</b>, because the
-    /// language's <c>TopLevelVarScopedDeclarations</c> looks through a labelled statement.
+    /// that block. Collecting it here anyway is what made
+    /// <c>{ let n = 0; function fn() { n += 1; } fn(); }</c> a <c>ReferenceError</c>, because the
+    /// closure was then built against a scope chain the block's record was not yet on
+    /// <i>(JSC-138)</i>; below the top level the block owns the declaration.
+    /// </para>
+    /// <para>
+    /// <b>A label is transparent to that rule and a block is not</b>, because the language's
+    /// <c>TopLevelVarScopedDeclarations</c> looks through a labelled statement:
+    /// <c>l: function f() { }</c> at the top level of a body declares <c>f</c> in the body, and
+    /// <c>{ l: function f() { } }</c> declares it in the block.
     /// </para>
     /// <para>
     /// <b>The statements are visited in source order, depth first</b>, as the recursive collector this
@@ -841,7 +850,7 @@ internal sealed partial class JsBinder
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C37E1D
-    // Broiler-Falsified-If: the var names or function declarations of a scope come out in an order, or with a multiplicity, other than the source's
+    // Broiler-Falsified-If: the var names or function declarations of a scope come out in an order, or with a multiplicity, other than the source's, or a function declared below the scope's top level, labels aside, is collected as the scope's
     // Broiler-Human:        PENDING
     private static void CollectVarScope(
         System.Collections.Generic.IReadOnlyList<JsStatement> body,
@@ -991,14 +1000,37 @@ internal sealed partial class JsBinder
     /// question.</b> The clause admits a declaration when replacing it with <c>var F</c> would not
     /// have been a syntax error - so the walk carries the set of names that would have collided with
     /// such a <c>var</c>, adds each enclosing block's own lexical names to it on the way down, and
-    /// admits a declaration exactly when its name is not in the set its ENCLOSING blocks give.
+    /// admits a declaration exactly when its name is not in the set its ENCLOSING blocks give. A
+    /// block's own lexical names are not in that set, because the declaration is one of them: judged
+    /// against them, <c>{ function f() { } }</c> would block itself.
+    /// </para>
+    /// <para>
+    /// <b>Every statement that opens a lexical record adds that record's names for what is inside
+    /// it</b>: a block, a <c>switch</c>'s clauses, which are one block, so a declaration in one clause
+    /// is blocked by a <c>let</c> in another; a <c>let</c> or <c>const</c> head of a <c>for</c>,
+    /// <c>for-in</c> or <c>for-of</c>; and a catch parameter that destructures.
     /// </para>
     /// <para>
     /// <b>A simple catch parameter is the one binding that does not block, and a destructuring one
-    /// does</b>: B.3.4 exempts <c>CatchParameter : BindingIdentifier</c> and nothing else. <b>Annex B
-    /// extends <c>FunctionDeclaration</c> only</b>, so a generator or an async function is never
-    /// admitted. <b>It stops where a hoisting scope stops</b>: a nested function, a class body and a
-    /// method are scopes of their own.
+    /// does.</b> That asymmetry is not this walk's invention: B.3.4 exempts
+    /// <c>CatchParameter : BindingIdentifier</c> from the rule that forbids a <c>var</c> of the
+    /// parameter's name in the catch block, and exempts nothing else. So
+    /// <c>catch (f) { { function f() { } } }</c> writes the alias and
+    /// <c>catch ({ f }) { { function f() { } } }</c> does not.
+    /// </para>
+    /// <para>
+    /// <b>Annex B extends <c>FunctionDeclaration</c> and not the three productions that look like
+    /// it.</b> A generator, an async function and an async generator are separate productions of the
+    /// grammar, and the clause names only the first - so
+    /// <c>switch (0) { default: async function x() { } } x;</c> is the <c>ReferenceError</c> the
+    /// language says it is, in sloppy code as much as in strict. Admitting them was a
+    /// web-compatibility extension nothing asked for, and it turned three conforming refusals into
+    /// programs that ran.
+    /// </para>
+    /// <para>
+    /// <b>It stops where a hoisting scope stops.</b> A nested function, a class body and a method are
+    /// scopes of their own, and their declarations are their own scan's to find; nothing here
+    /// descends into one.
     /// </para>
     /// <para>
     /// <b>A block's own declarations are judged before anything inside it</b>, and the statements of
@@ -1013,7 +1045,7 @@ internal sealed partial class JsBinder
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=746203
-    // Broiler-Falsified-If: a declaration is admitted whose name a `var` of the same spelling could not be added under, or the aliases come out in another order
+    // Broiler-Falsified-If: a declaration is admitted whose name a `var` of the same spelling could not be added under; a list's own lexical names reach the set its own declarations are judged by; a block, a switch, a lexical loop head or a destructuring catch parameter leaves its names out of the set what is inside it is judged by; or the aliases come out in another order
     // Broiler-Human:        PENDING
     private void ScanAnnexB(
         System.Collections.Generic.IReadOnlyList<JsStatement> body,
