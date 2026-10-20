@@ -32,7 +32,7 @@ public sealed partial class JsCompiler
     /// and the Annex B aliases one per name. The instructions below still create every binding; the
     /// row lets the executor run the specification's checks before the first of them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4CE9AE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2BCD58
     // Broiler-Human:        PENDING
     private (string[] LexicalNames, string[] VarNames, string[] FunctionNames, string[] AnnexBNames) HoistProgram(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
@@ -89,7 +89,7 @@ public sealed partial class JsCompiler
         // order, which a dictionary nothing is removed from happens to keep as insertion order and
         // promises nothing about.
         programLexicals.Clear();
-        CollectLexicalKinds(body, programLexicals);
+        CollectLexicalKinds(binder.Program.TopLevel, programLexicals);
 
         foreach (var (name, constant) in programLexicals)
         {
@@ -179,9 +179,12 @@ public sealed partial class JsCompiler
     /// The parameters' record when the body has a variable environment of its own - the current
     /// scope, one record inside it - or <see langword="null"/> when one record holds both.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=41EA52
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D844A2
     // Broiler-Human:        PENDING
-    private void HoistFunction(System.Collections.Generic.IReadOnlyList<JsStatement> body, Scope? parameters = null)
+    private void HoistFunction(
+        JsBinder.FunctionFacts facts,
+        System.Collections.Generic.IReadOnlyList<JsStatement> body,
+        Scope? parameters = null)
     {
         // THE PARAMETER NAMES ARE READ OFF THE SCOPE BEFORE ANYTHING ELSE IS PUT IN IT. Annex B
         // refuses to alias a name the parameter list already bound - and `arguments` where the
@@ -226,18 +229,17 @@ public sealed partial class JsCompiler
         // declaration: `function t() { const a = 1; function f() { return a; } return f(); }`
         // threw "a is not defined" (VM-FIX-D). A block already declared its whole set up front for
         // the same reason (JSC-138); the top level of a body is that rule's other half.
-        var bodyLexical = new System.Collections.Generic.List<(string Name, bool Constant)>();
-        CollectLexical(body, bodyLexical);
+        var bodyLexical = facts.Body.TopLevel.Lexical;
         DeclareLexical(bodyLexical);
 
         // THOSE SLOTS ARE THE BODY'S LEXICAL HALF even though they precede the function names and
         // the Annex B aliases declared below, so they are named to the scope explicitly: a direct
         // eval's conflict walk must see `let a` as lexical wherever its slot fell (JSeal V15).
-        foreach (var (name, _) in bodyLexical)
+        foreach (var declaration in bodyLexical)
         {
-            if (scope.Has(name))
+            if (scope.Has(declaration.Name))
             {
-                (scope.LexicalSlots ??= []).Add(scope.SlotOf(name));
+                (scope.LexicalSlots ??= []).Add(scope.SlotOf(declaration.Name));
             }
         }
 
@@ -281,12 +283,12 @@ public sealed partial class JsCompiler
         // declining it changes nothing about a program that has no such declaration in it.
         blocked.Add("arguments");
 
-        var lexical = new SourceOrderedLexicals();
-        CollectLexicalKinds(body, lexical);
-
-        foreach (var (name, _) in lexical)
+        foreach (var declaration in bodyLexical)
         {
-            blocked.Add(name);
+            if (!declaration.IsFunction)
+            {
+                blocked.Add(declaration.Name);
+            }
         }
 
         var aliases = new System.Collections.Generic.List<string>();
@@ -460,43 +462,22 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>
-    /// Every name a script's top level declares lexically, and whether the declaration is immutable.
+    /// Every name a script's or an evaluated program's top level declares lexically, and whether the
+    /// declaration is immutable, from the binder's declarations of that list.
     /// </summary>
     /// <remarks>
-    /// The same walk <see cref="CollectLexical"/> makes, keeping the one fact that walk discards:
-    /// a <c>const</c> and a <c>let</c> are the same KIND of binding and only one of them admits an
-    /// assignment, and at script level nothing downstream can recover which it was from a name.
-    /// The names are kept in the order the walk meets them, which is source order.
+    /// A function declared at that level is not one of them: there it is <c>var</c>-scoped. The names
+    /// are taken in the binder's order, which is source order (SJL-12.6 items 1 and 3).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FFFE74
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B50B97
     // Broiler-Human:        PENDING
-    private static void CollectLexicalKinds(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body,
-        SourceOrderedLexicals kinds)
+    private static void CollectLexicalKinds(JsBinder.Declarations declarations, SourceOrderedLexicals kinds)
     {
-        foreach (var statement in body)
+        foreach (var declaration in declarations.Lexical)
         {
-            if (statement is JsVariableStatement variable && variable.Kind != SliceDeclarationKind.Var)
+            if (!declaration.IsFunction)
             {
-                var names = new System.Collections.Generic.List<string>();
-
-                foreach (var declarator in variable.Declarators)
-                {
-                    CollectDeclaratorNames(declarator, names);
-                }
-
-                foreach (var name in names)
-                {
-                    kinds.Declare(name, variable.Kind == SliceDeclarationKind.Const);
-                }
-            }
-
-            // A CLASS BINDING IS MUTABLE, which reads like a detail and is the reason `class C {}`
-            // followed by `C = 1` is a program: the binding a class declaration makes is a `let`
-            // and not a `const`, and only the binding inside the class's own body is immutable.
-            if (statement is JsClassDeclaration declaration && declaration.Class.Name.Length != 0)
-            {
-                kinds.Declare(declaration.Class.Name, false);
+                kinds.Declare(declaration.Name, declaration.Constant);
             }
         }
     }

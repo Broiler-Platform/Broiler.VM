@@ -433,7 +433,7 @@ public sealed partial class JsCompiler
     /// into the variable environment with <see cref="JsOpcode.StoreEvalVariable"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=51394A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A6FD08
     // Broiler-Human:        PENDING
     private (string[] VarNames, string[] LexicalNames, string[] FunctionNames, string[] AnnexBNames) HoistEval(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
@@ -441,7 +441,7 @@ public sealed partial class JsCompiler
         // IN SOURCE ORDER *(SJL-12.6 item 3)*: the slots and the declaration row's lexical names are
         // both written by walking the list, which until 2026-10-20 was a dictionary.
         var lexical = new SourceOrderedLexicals();
-        CollectLexicalKinds(body, lexical);
+        CollectLexicalKinds(binder.Program.TopLevel, lexical);
 
         foreach (var (name, constant) in lexical)
         {

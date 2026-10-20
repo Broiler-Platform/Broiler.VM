@@ -644,16 +644,15 @@ public sealed partial class JsCompiler
     /// <c>#switch</c> temporary a <c>switch</c> declares first or a duplicate the parser has
     /// already refused, and neither wants a second binding.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=907B3B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D2B45A
     // Broiler-Human:        PENDING
-    private void DeclareLexical(
-        System.Collections.Generic.IReadOnlyList<(string Name, bool Constant)> lexical)
+    private void DeclareLexical(System.Collections.Generic.IReadOnlyList<JsBinder.Declaration> lexical)
     {
-        foreach (var (name, constant) in lexical)
+        foreach (var declaration in lexical)
         {
-            if (!scope.Has(name))
+            if (!scope.Has(declaration.Name))
             {
-                scope.Declare(name, constant);
+                scope.Declare(declaration.Name, declaration.Constant);
             }
         }
     }
@@ -677,21 +676,13 @@ public sealed partial class JsCompiler
     /// alias — where there is one — is written later, by the declaration itself.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=15318F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=62B9A3
     // Broiler-Human:        PENDING
-    private void HoistBlockFunctions(System.Collections.Generic.IReadOnlyList<JsStatement> body)
+    private void HoistBlockFunctions(JsBinder.Declarations declarations)
     {
-        System.Collections.Generic.List<JsFunctionDeclaration>? declared = null;
+        var declared = declarations.Functions;
 
-        foreach (var statement in body)
-        {
-            if (Declared(statement) is { } declaration && declaration.Function.Name.Length != 0)
-            {
-                (declared ??= []).Add(declaration);
-            }
-        }
-
-        if (declared is null)
+        if (declared.Count == 0)
         {
             return;
         }
@@ -711,13 +702,12 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D5AB9D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=825F2F
     // Broiler-Human:        PENDING
     private void CompileBlock(JsBlockStatement block, int completion)
     {
-        var lexical = new System.Collections.Generic.List<(string Name, bool Constant)>();
-        CollectLexical(block.Body, lexical);
-        var pushed = lexical.Count != 0;
+        var declarations = binder.Block(block);
+        var pushed = declarations.Lexical.Count != 0;
         var outer = scope;
 
         if (pushed)
@@ -727,8 +717,8 @@ public sealed partial class JsCompiler
             var at = buffer.Code.Count;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((at + 1, scope));
-            DeclareLexical(lexical);
-            HoistBlockFunctions(block.Body);
+            DeclareLexical(declarations.Lexical);
+            HoistBlockFunctions(declarations);
         }
 
         CompileDisposing(block.Body, completion);

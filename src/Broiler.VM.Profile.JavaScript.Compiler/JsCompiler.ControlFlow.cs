@@ -782,7 +782,7 @@ public sealed partial class JsCompiler
         DeclarePatternNames(pattern, constant);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E214E8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B84431
     // Broiler-Human:        PENDING
     private void CompileSwitch(JsSwitchStatement switched, int completion, string label)
     {
@@ -804,18 +804,11 @@ public sealed partial class JsCompiler
         // `switch (0) { case f(): break; default: function f() { } }` reach the declaration rather
         // than a global. So the clauses are ONE list here and not one hoisting each: hoisting them
         // separately would build the first clause's closure before the second clause's slot
-        // existed, and a call across the two would resolve to a global again.
-        var clauses = new System.Collections.Generic.List<JsStatement>();
-
-        foreach (var clause in switched.Clauses)
-        {
-            clauses.AddRange(clause.Body);
-        }
-
-        var lexical = new System.Collections.Generic.List<(string Name, bool Constant)>();
-        CollectLexical(clauses, lexical);
-        DeclareLexical(lexical);
-        HoistBlockFunctions(clauses);
+        // existed, and a call across the two would resolve to a global again. The binder read the
+        // clauses as the one list they are.
+        var declarations = binder.Switch(switched);
+        DeclareLexical(declarations.Lexical);
+        HoistBlockFunctions(declarations);
 
         var exit = new Exit(ExitKind.Switch, label, blockDepth)
         {

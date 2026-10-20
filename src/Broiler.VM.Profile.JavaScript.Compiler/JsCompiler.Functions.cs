@@ -115,7 +115,7 @@ public sealed partial class JsCompiler
     /// lowering - a class constructor named after its class, an anonymous function named after what it
     /// is assigned to. The binder knows a function by the node it bound.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=013333
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=19C5E4
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -370,7 +370,7 @@ public sealed partial class JsCompiler
             scope.EvalVariables = true;
         }
 
-        HoistFunction(function.Body, parameters);
+        HoistFunction(facts, function.Body, parameters);
 
         // EVERYTHING DECLARED FROM HERE ON AT THE FUNCTION'S TOP LEVEL IS LEXICAL - a `let`, a
         // `const`, a `class` - or a temporary nobody can name. The specification gives a sloppy
