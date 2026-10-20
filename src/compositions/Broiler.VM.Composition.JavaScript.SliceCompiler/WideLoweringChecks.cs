@@ -99,8 +99,10 @@ internal static class WideLoweringChecks
     /// <b>The population is three sets, each named in the row's detail.</b>
     /// - <b>The retained corpus's wide and module rows</b>: every entry of
     ///   <c>src/tests/corpus/js-1/corpus.manifest</c> whose mode is <c>wide</c>, <c>wide-declining</c>,
-    ///   <c>modules</c> or <c>modules-no-resolver</c>, rebuilt by the producer that writes them, which
-    ///   compiles each one written from source through <see cref="JsCompiler"/>.
+    ///   <c>modules</c> or <c>modules-no-resolver</c>, REBUILT by the producer that writes them. Most of
+    ///   them are malformed artifacts the producer assembles byte by byte, which pass through no
+    ///   lowering, so comparing them says nothing about it; only the few it compiles from source go
+    ///   through <see cref="JsCompiler"/>, and none of those declares two global lexical names.
     /// - <b>The stored inputs of the retained parse corpus</b>, <c>src/tests/corpus/parse-1/inputs/</c>:
     ///   each <c>.js</c> file under the script goal and each <c>.mjs</c> file under the module goal,
     ///   alone. They give the row its breadth: programs written for two engines' own tests, not for it.
@@ -112,34 +114,56 @@ internal static class WideLoweringChecks
     /// declarations moves no byte of a script that declares one name or none, which is every row of the
     /// retained corpus and nearly every stored input of the parse corpus; the few stored inputs that
     /// declare two or three can shuffle back into one order. The first probe declares fourteen, so four
-    /// compilations of it in one order are no accident.
+    /// compilations of it in one order are no accident: it is the probe, not the corpora, that makes a
+    /// per-compilation shuffle - bundle <c>sjl-12-001</c>'s control K2 - fail this row.
     /// </para>
     /// <para>
     /// <b>Fresh compilations, four of each, and two of them at the same time.</b> Two in turn catch a
-    /// lowering that carries state between compilations or draws on a hash seed; two at once on two
-    /// threads catch one that shares state between compilations that overlap. A refused source must be
-    /// refused all four times, and an accepted one must give one SHA-256 all four times.
+    /// lowering that carries state from one compilation into the next, or that draws on randomness of
+    /// its own for each compilation, as an unseeded <see cref="System.Random"/> does - which is what K2
+    /// patches in. Two at once on two threads catch one that shares state between compilations that
+    /// overlap. A refused source must be refused all four times, and an accepted one must give one
+    /// SHA-256 all four times.
     /// </para>
     /// <para>
-    /// <b>The parse corpus is read from the checkout</b>, from the first directory above the process's
-    /// own or above the current one that holds it, as the fuel-parity twins are. A run that cannot find
-    /// it fails rather than skipping the set.
+    /// <b>What this row cannot catch is an order that varies only from one process to the next</b>, and
+    /// it does not claim to. All four compilations run in this one process, so they share everything a
+    /// process draws once - the seed of string hash codes above all, which decides the order of
+    /// anything ordered by a hash code: a <c>Hashtable</c>, a <c>ConcurrentDictionary</c>, an
+    /// <c>ImmutableHashSet</c>, a value from <see cref="HashCode"/>. (A <c>Dictionary</c> or a
+    /// <c>HashSet</c> nothing is removed from enumerates in insertion order whatever the seed, which is
+    /// why the two collections SJL-12.6 item 3 replaced never moved a byte.) That half of the claim
+    /// belongs to the separate processes of bundle <c>sjl-12-001</c>'s part C - its runs 1 and 2 - and
+    /// not to this row.
+    /// </para>
+    /// <para>
+    /// <b>It fails on a population that is not there</b>, because agreement over nothing proves nothing:
+    /// where the producer throws, where a wide or module row the retained manifest lists was not
+    /// rebuilt, where a stored script or module the parse corpus's manifest lists was not compiled,
+    /// where either manifest lists none, and where a probe is refused. Each such shortfall is named in
+    /// the detail.
+    /// </para>
+    /// <para>
+    /// <b>The corpora are read from the checkout</b>, from the first directory above the process's
+    /// own or above the current one that holds them, as the fuel-parity twins are. A run that cannot
+    /// find them fails rather than skipping a set.
     /// </para>
     /// </remarks>
     private static (string, bool, string) TheWideLoweringIsDeterministic()
     {
         const string Name = "the wide lowering is deterministic";
 
-        var inputs = ParseCorpusInputs();
+        var corpora = ReadCorpora();
 
-        if (inputs is null)
+        if (corpora is null)
         {
             return (
                 Name,
                 false,
-                "no src/tests/corpus/parse-1/inputs above this process's directory or the current one holds the parse corpus's stored inputs");
+                "no directory above this process's or the current one holds src/tests/corpus/js-1/corpus.manifest beside src/tests/corpus/parse-1's manifest and stored inputs");
         }
 
+        var inputs = corpora.Inputs;
         var first = Answers(inputs);
         var second = Answers(inputs);
 
@@ -189,18 +213,97 @@ internal static class WideLoweringChecks
             differed.Add("the four passes did not answer for the same number of sources");
         }
 
+        // THE POPULATION, BEFORE ITS AGREEMENT IS BELIEVED. Four passes that compiled nothing agree, and
+        // so do four in which the producer threw the same way, so each set is held to what its manifest
+        // lists and each probe must have been compiled.
+        var shortfalls = new List<string>();
+
+        foreach (var pass in new[] { first, second, third, fourth })
+        {
+            if (pass is not null && pass.TryGetValue(ProducerKey, out var threw))
+            {
+                shortfalls.Add("the retained corpus's producer " + threw);
+                break;
+            }
+        }
+
+        Hold(shortfalls, first, "js-1/", corpora.CorpusRows, "wide and module rows the retained corpus's manifest lists", "rebuilt");
+        Hold(shortfalls, first, "parse-1/", corpora.StoredInputs, "stored scripts and modules the parse corpus's manifest lists", "compiled");
+
+        foreach (var probe in ProbeKeys)
+        {
+            if (!first.TryGetValue(probe, out var answer) || !answer.StartsWith("bytes ", StringComparison.Ordinal))
+            {
+                shortfalls.Add($"the probe `{probe}` gave no artifact: {answer ?? "no answer"}");
+            }
+        }
+
         var corpusRows = first.Keys.Count(static key => key.StartsWith("js-1/", StringComparison.Ordinal));
         var stored = first.Keys.Count(static key => key.StartsWith("parse-1/", StringComparison.Ordinal));
-        var probes = first.Count - corpusRows - stored;
+        var probes = first.Keys.Count(static key => key.StartsWith("probe/", StringComparison.Ordinal));
 
-        return (
-            Name,
-            differed.Count == 0,
-            differed.Count == 0
-                ? $"{first.Count} sources - the retained corpus's {corpusRows} wide and module rows, the parse corpus's {stored} stored inputs and {probes} lexical-order probes - each compiled twice in turn and twice at once on two threads: {accepted} artifacts identical in all four, every refusal refused all four times"
-                : $"{differed.Count} of {first.Count} differed between the four compilations: " +
-                  string.Join(", ", differed.Take(8)) + (differed.Count > 8 ? ", ..." : string.Empty));
+        if (shortfalls.Count == 0 && differed.Count == 0)
+        {
+            return (
+                Name,
+                true,
+                $"{first.Count} sources, each four times - twice in turn and twice at once on two threads: the retained corpus's {corpusRows} wide and module rows rebuilt by their producer, every one its manifest lists; the parse corpus's {stored} stored inputs compiled, every one its manifest lists; and {probes} lexical-order probes compiled, each accepted. {accepted} artifacts identical in all four, every refusal refused all four times");
+        }
+
+        var failures = new List<string>();
+
+        if (shortfalls.Count != 0)
+        {
+            failures.Add("the population is short, so agreement over it proves nothing: " + string.Join("; ", shortfalls));
+        }
+
+        if (differed.Count != 0)
+        {
+            failures.Add(
+                $"{differed.Count} of {first.Count} differed between the four compilations: " +
+                string.Join(", ", differed.Take(8)) + (differed.Count > 8 ? ", ..." : string.Empty));
+        }
+
+        return (Name, false, string.Join(". ", failures));
     }
+
+    /// <summary>The key a pass answers under where the retained corpus's producer threw.</summary>
+    private const string ProducerKey = "js-1 producer";
+
+    /// <summary>The keys the order row's probes answer under.</summary>
+    private static readonly string[] ProbeKeys = ["probe/two scripts", "probe/eval, sloppy", "probe/eval, strict"];
+
+    /// <summary>
+    /// Adds a shortfall where a manifest lists nothing for a set, or where a source it lists has no
+    /// answer in the pass.
+    /// </summary>
+    private static void Hold(
+        List<string> shortfalls,
+        Dictionary<string, string> pass,
+        string prefix,
+        IReadOnlyList<string> listed,
+        string what,
+        string done)
+    {
+        if (listed.Count == 0)
+        {
+            shortfalls.Add($"there are no {what}");
+            return;
+        }
+
+        var missing = listed.Where(name => !pass.ContainsKey(prefix + name)).ToArray();
+
+        if (missing.Length != 0)
+        {
+            shortfalls.Add(
+                $"{missing.Length} of the {listed.Count} {what} were not {done}: " +
+                string.Join(", ", missing.Take(4)) + (missing.Length > 4 ? ", ..." : string.Empty));
+        }
+    }
+
+    /// <summary>Whether a retained corpus row's mode is one the wide front end's rows carry.</summary>
+    private static bool IsWideMode(string mode) =>
+        mode is "wide" or "wide-declining" or "modules" or "modules-no-resolver";
 
     /// <summary>
     /// One pass over the population: for each source, <c>bytes</c> and the artifact's SHA-256, or
@@ -211,13 +314,13 @@ internal static class WideLoweringChecks
         var answers = new Dictionary<string, string>(StringComparer.Ordinal);
 
         // THE RETAINED CORPUS'S WIDE AND MODULE ROWS, REBUILT. The producer throws where a source it
-        // retains does not compile, and that is an answer here like any other: four passes that all
-        // throw the same way agree, and the row's job is agreement, not the corpus's integrity.
+        // retains does not compile. That is recorded under a key of its own, which the row reads as a
+        // population that is not there: four passes that all threw the same way agree about nothing.
         try
         {
             foreach (var entry in CorpusBuilder.Build())
             {
-                if (entry.Mode is "wide" or "wide-declining" or "modules" or "modules-no-resolver")
+                if (IsWideMode(entry.Mode))
                 {
                     answers["js-1/" + entry.Name] = "bytes " + Sha256(entry.Bytes);
                 }
@@ -225,7 +328,7 @@ internal static class WideLoweringChecks
         }
         catch (Exception failure)
         {
-            answers["js-1/the producer"] = "threw " + failure.GetType().Name + ": " + failure.Message;
+            answers[ProducerKey] = "threw " + failure.GetType().Name + ": " + failure.Message;
         }
 
         foreach (var (key, text) in inputs)
@@ -236,9 +339,9 @@ internal static class WideLoweringChecks
                     : JsCompiler.Compile([new JsScriptUnit("main", text, SliceParseOptions.Script)]));
         }
 
-        answers["probe/two scripts"] = Answer(CompileScriptProbes);
-        answers["probe/eval, sloppy"] = Answer(() => CompileEvalProbe(JsFormat.EvalRequestFlags.None));
-        answers["probe/eval, strict"] = Answer(() => CompileEvalProbe(JsFormat.EvalRequestFlags.Strict));
+        answers[ProbeKeys[0]] = Answer(CompileScriptProbes);
+        answers[ProbeKeys[1]] = Answer(() => CompileEvalProbe(JsFormat.EvalRequestFlags.None));
+        answers[ProbeKeys[2]] = Answer(() => CompileEvalProbe(JsFormat.EvalRequestFlags.Strict));
 
         return answers;
     }
@@ -260,39 +363,115 @@ internal static class WideLoweringChecks
         }
     }
 
+    /// <summary>What the determinism row reads from the checkout, and what the two manifests list.</summary>
+    /// <param name="Inputs">
+    /// The parse corpus's stored inputs, script and module, keyed by their path under <c>inputs/</c>
+    /// with <c>/</c> separators, in ordinal order.
+    /// </param>
+    /// <param name="CorpusRows">The names of the retained corpus's wide and module rows, as its manifest lists them.</param>
+    /// <param name="StoredInputs">
+    /// The stored scripts and modules the parse corpus's manifest lists, keyed as <paramref name="Inputs"/> is.
+    /// </param>
+    private sealed record Corpora(
+        IReadOnlyList<(string Key, string Text)> Inputs,
+        IReadOnlyList<string> CorpusRows,
+        IReadOnlyList<string> StoredInputs);
+
     /// <summary>
-    /// The parse corpus's stored inputs, script and module, keyed by their path under
-    /// <c>inputs/</c> with <c>/</c> separators, in ordinal order.
+    /// The two retained corpora, from the first directory above the process's own or above the current
+    /// one that holds both, or <see langword="null"/> where none does.
     /// </summary>
-    private static IReadOnlyList<(string Key, string Text)>? ParseCorpusInputs()
+    private static Corpora? ReadCorpora()
     {
         foreach (var start in new[] { AppContext.BaseDirectory, Environment.CurrentDirectory })
         {
             for (var directory = new DirectoryInfo(start); directory is not null; directory = directory.Parent)
             {
-                var candidate = Path.Combine(directory.FullName, "src", "tests", "corpus", "parse-1");
+                var corpus = Path.Combine(directory.FullName, "src", "tests", "corpus");
+                var retained = Path.Combine(corpus, "js-1", "corpus.manifest");
+                var parse = Path.Combine(corpus, "parse-1");
 
-                if (!File.Exists(Path.Combine(candidate, "corpus.manifest")) ||
-                    !Directory.Exists(Path.Combine(candidate, "inputs")))
+                if (!File.Exists(retained) ||
+                    !File.Exists(Path.Combine(parse, "corpus.manifest")) ||
+                    !Directory.Exists(Path.Combine(parse, "inputs")))
                 {
                     continue;
                 }
 
-                var root = Path.Combine(candidate, "inputs");
+                var root = Path.Combine(parse, "inputs");
 
-                return Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)
-                    .Where(static path =>
-                        path.EndsWith(".js", StringComparison.Ordinal) || path.EndsWith(".mjs", StringComparison.Ordinal))
+                var inputs = Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)
+                    .Where(static path => IsScriptOrModule(path))
                     .Select(path => (
                         Key: Path.GetRelativePath(root, path).Replace(Path.DirectorySeparatorChar, '/'),
                         Text: File.ReadAllText(path)))
                     .OrderBy(static input => input.Key, StringComparer.Ordinal)
                     .ToArray();
+
+                // THE RETAINED CORPUS'S MANIFEST: a row per line, `|`-separated, its name first and its
+                // mode third; every line that begins with `#` is a comment, its column header among them.
+                var corpusRows = File.ReadLines(retained)
+                    .Where(static line => line.Length != 0 && !line.StartsWith('#'))
+                    .Select(static line => line.Split('|'))
+                    .Where(static cells => cells.Length > 2 && IsWideMode(cells[2]))
+                    .Select(static cells => cells[0])
+                    .ToArray();
+
+                return new Corpora(inputs, corpusRows, StoredInputs(Path.Combine(parse, "corpus.manifest")));
             }
         }
 
         return null;
     }
+
+    /// <summary>
+    /// The stored scripts and modules the parse corpus's manifest lists: each row whose path lies under
+    /// <c>inputs/</c> and names a <c>.js</c> or <c>.mjs</c> file, keyed by its path under <c>inputs/</c>.
+    /// </summary>
+    /// <remarks>
+    /// The manifest is tab-separated; its lines that begin with <c>#</c> are its header and comments,
+    /// and its first other line names the columns, which is where <c>path</c> is found.
+    /// </remarks>
+    private static string[] StoredInputs(string manifest)
+    {
+        const string Under = "inputs/";
+        var listed = new List<string>();
+        var column = -1;
+
+        foreach (var line in File.ReadLines(manifest))
+        {
+            if (line.Length == 0 || line.StartsWith('#'))
+            {
+                continue;
+            }
+
+            var cells = line.Split('\t');
+
+            if (column < 0)
+            {
+                column = Array.IndexOf(cells, "path");
+
+                if (column < 0)
+                {
+                    return [];
+                }
+
+                continue;
+            }
+
+            if (cells.Length > column &&
+                cells[column].StartsWith(Under, StringComparison.Ordinal) &&
+                IsScriptOrModule(cells[column]))
+            {
+                listed.Add(cells[column][Under.Length..]);
+            }
+        }
+
+        return [.. listed];
+    }
+
+    private static bool IsScriptOrModule(string path) =>
+        path.EndsWith(".js", StringComparison.Ordinal) || path.EndsWith(".mjs", StringComparison.Ordinal);
 
     // ---- the order row -------------------------------------------------------------------------------
 
@@ -487,15 +666,15 @@ internal static class WideLoweringChecks
                 }
 
                 _ = reader.VarUInt();
-                _ = reader.Bytes((int)reader.VarUInt());
+                _ = reader.Bytes(reader.Count());
 
                 var sections = new Dictionary<uint, byte[]>();
-                var count = reader.VarUInt();
+                var count = reader.Count();
 
-                for (var index = 0ul; index < count; index++)
+                for (var index = 0; index < count; index++)
                 {
-                    var kind = (uint)reader.VarUInt();
-                    var body = reader.Bytes((int)reader.VarUInt());
+                    var kind = (uint)reader.Index();
+                    var body = reader.Bytes(reader.Count());
 
                     if (!sections.TryAdd(kind, body))
                     {
@@ -511,7 +690,7 @@ internal static class WideLoweringChecks
                 }
 
                 var pool = new Reader(constants);
-                var names = new string?[(int)pool.VarUInt()];
+                var names = new string?[pool.Count()];
 
                 for (var index = 0; index < names.Length; index++)
                 {
@@ -526,14 +705,14 @@ internal static class WideLoweringChecks
                             _ = pool.Bytes(8);
                             break;
                         case JsFormat.ConstantTag.InternedName:
-                            names[index] = JsFormat.DecodeText(pool.Bytes((int)pool.VarUInt()));
+                            names[index] = JsFormat.DecodeText(pool.Bytes(pool.Count()));
                             break;
                         case JsFormat.ConstantTag.String:
-                            _ = pool.Bytes((int)pool.VarUInt());
+                            _ = pool.Bytes(pool.Count());
                             break;
                         case JsFormat.ConstantTag.BigInt:
                             _ = pool.Byte();
-                            _ = pool.Bytes((int)pool.VarUInt());
+                            _ = pool.Bytes(pool.Count());
                             break;
                         default:
                             why = $"constant {index} carries a tag this reader does not know";
@@ -597,9 +776,9 @@ internal static class WideLoweringChecks
             }
 
             var reader = new Reader(body);
-            var count = reader.VarUInt();
+            var count = reader.Count();
 
-            for (var row = 0ul; row < count; row++)
+            for (var row = 0; row < count; row++)
             {
                 _ = reader.VarUInt();
                 rows.Add(Names(reader));
@@ -624,9 +803,9 @@ internal static class WideLoweringChecks
                 return rows;
             }
 
-            var count = reader.VarUInt();
+            var count = reader.Count();
 
-            for (var row = 0ul; row < count; row++)
+            for (var row = 0; row < count; row++)
             {
                 _ = reader.VarUInt();
                 _ = reader.Byte();
@@ -664,17 +843,17 @@ internal static class WideLoweringChecks
             }
 
             var reader = new Reader(body);
-            var shapes = reader.VarUInt();
+            var shapes = reader.Count();
 
-            for (var shape = 0ul; shape < shapes; shape++)
+            for (var shape = 0; shape < shapes; shape++)
             {
                 var kind = (JsFormat.EvalScopeKind)reader.Byte();
                 _ = reader.VarUInt();
-                var count = reader.VarUInt();
+                var count = reader.Count();
 
-                for (var name = 0ul; name < count; name++)
+                for (var name = 0; name < count; name++)
                 {
-                    var constant = (int)reader.VarUInt();
+                    var constant = reader.Index();
                     var slot = reader.VarUInt();
                     _ = reader.Byte();
 
@@ -685,9 +864,9 @@ internal static class WideLoweringChecks
                 }
             }
 
-            var sites = reader.VarUInt();
+            var sites = reader.Count();
 
-            for (var site = 0ul; site < sites; site++)
+            for (var site = 0; site < sites; site++)
             {
                 _ = reader.VarUInt();
                 _ = reader.VarUInt();
@@ -701,12 +880,11 @@ internal static class WideLoweringChecks
 
         private string[] Names(Reader reader)
         {
-            var count = reader.VarUInt();
-            var read = new string[count];
+            var read = new string[reader.Count()];
 
-            for (var index = 0ul; index < count; index++)
+            for (var index = 0; index < read.Length; index++)
             {
-                read[index] = Name((int)reader.VarUInt());
+                read[index] = Name(reader.Index());
             }
 
             return read;
@@ -719,12 +897,39 @@ internal static class WideLoweringChecks
     }
 
     /// <summary>A cursor over one byte run, refusing to read past its end.</summary>
+    /// <remarks>
+    /// <b>Every failure is a <see cref="FormatException"/></b>, which is all the order row catches, so
+    /// a malformed artifact fails that row by name and never stops the run. A count or a length is
+    /// therefore bounded by the bytes left before anything is allocated for it - each item a count
+    /// announces takes at least one byte - and an index by what an <see cref="int"/> holds, rather
+    /// than cast and left to overflow.
+    /// </remarks>
     private sealed class Reader(byte[] bytes)
     {
         private int at;
 
         internal byte Byte() =>
             at < bytes.Length ? bytes[at++] : throw new FormatException("a run ended early");
+
+        /// <summary>A count of items, or a length in bytes, that the rest of the run can hold.</summary>
+        internal int Count()
+        {
+            var count = VarUInt();
+
+            return count <= (ulong)(bytes.Length - at)
+                ? (int)count
+                : throw new FormatException($"a count of {count} runs past the {bytes.Length - at} bytes left");
+        }
+
+        /// <summary>An index, which the reader looks up and range-checks where it is used.</summary>
+        internal int Index()
+        {
+            var index = VarUInt();
+
+            return index <= int.MaxValue
+                ? (int)index
+                : throw new FormatException($"an index of {index} is past any this reader holds");
+        }
 
         internal byte[] Bytes(int count)
         {
