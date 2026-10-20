@@ -1,0 +1,109 @@
+# Bundle sjl-12-001, part B's run at the ordering commit 066abefea4351fb49bd8bf8e823fbdc7aac560de (the default-branch
+# merge of Broiler-Platform/Broiler.VM#163), 2026-10-20. Every command as it was run, in order: they are the commands
+# of one driver script, run once with the ordering commit as its argument, on the programme's local machine
+# (machine.txt). The variables expand to the exact paths. The script ran under `set -euo pipefail`, so it stops at
+# the first command that fails, except where `set +e` is shown.
+
+OC=066abefea4351fb49bd8bf8e823fbdc7aac560de                                               # the ordering commit
+W=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl12/ordering   # scratch folder
+VMW=$W/vm-ordering                                                                        # the clean checkout
+OUT=$W/out                                                                                # the outputs, copied here
+mkdir -p $OUT/logs
+export PATH=/root/.dotnet:$PATH DOTNET_ROOT=/root/.dotnet
+exec > >(tee -a $OUT/logs/driver.log) 2>&1      # everything not redirected below goes to logs/driver.log
+
+stamp() { echo "== $(date -u +%FT%TZ) $*"; cat /proc/loadavg; }   # a stage line and the load average
+
+# ---- the gate (logs/driver.log): the date, nproc and the load average, and every dotnet or python process. It
+#      listed no process. It recorded and did not wait.
+stamp "gate: nproc $(nproc)"
+ps aux | grep -E '[d]otnet|[p]ython3? ' | grep -v run-ordering || true
+
+# ---- the ordering commit is on the default branch, and the clean checkout of it, named by all forty digits
+git -C /home/user/Broiler.VM fetch -q origin main
+git -C /home/user/Broiler.VM merge-base --is-ancestor "$OC" origin/main                   # exit 0 (set -e)
+git -C /home/user/Broiler.VM worktree add --detach $VMW "$OC"
+{ echo "# before the build"; git -C $VMW rev-parse HEAD; git -C $VMW status --porcelain --ignored; } > $OUT/logs/checkout-before-build.txt
+
+# ---- the build, in Release, from clean (logs/build.log)
+stamp "build"
+cd $VMW && env -u LANG TZ=UTC dotnet build -c Release -nologo --disable-build-servers \
+  $VMW/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj \
+  > $OUT/logs/build.log 2>&1
+{ echo "# after the build"; git -C $VMW rev-parse HEAD; git -C $VMW status --porcelain; } > $OUT/logs/checkout-after-build.txt
+
+V=$VMW/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+M=$VMW/src/tests/corpus/parse-1/corpus.manifest
+(cd $VMW/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0 && sha256sum *.dll | sort -k2) > $OUT/binaries.sha256
+
+# ---- the parse corpus, over the whole manifest, one worker (B1-B4, both forms as the mode does them), with a journal
+#      of every compilation begun and ended
+stamp "parse-corpus (one worker)"
+start=$(date +%s)
+set +e
+cd $VMW && env -u LANG TZ=UTC dotnet $V --parse-corpus $M $W/parse-corpus-ordering.tsv.gz --workers 1 \
+  --journal $W/ordering.journal > $OUT/logs/parse-corpus-ordering.stdout.txt 2> $OUT/logs/parse-corpus-ordering.stderr.txt
+rc=$?
+set -e
+echo "exit $rc wall $(( $(date +%s) - start ))s" | tee $OUT/logs/parse-corpus-ordering.exit.txt     # exit 0 wall 573s
+# the journal read (logs/journal-check.txt): every key begun and not ended is counted
+python3 -I - "$W/ordering.journal" > $OUT/logs/journal-check.txt <<'PY'
+import sys
+from collections import Counter
+open_keys=Counter(); began=ended=lines=0
+for line in open(sys.argv[1], encoding='utf-8'):
+    lines+=1
+    f=line.rstrip('\n').split('\t')
+    if f[0]=='begin': began+=1; open_keys[f[2]]+=1
+    elif f[0]=='end': ended+=1; open_keys[f[2]]-=1
+print(f"=== ordering journal: {lines} lines")
+print(f"begin {began}, end {ended}")
+print(f"keys begun and not ended: {sum(1 for k,v in open_keys.items() if v>0)}")
+PY
+rm -f $W/ordering.journal
+cp $W/parse-corpus-ordering.tsv.gz $OUT/parse-corpus-ordering.tsv.gz
+stamp "done runs"
+# No --write-bytes: no artifact bytes. No census: the rule takes the census at the corpus commit and the after commit
+# only.
+
+# ---- identity against the base's run 1, eng/compare-parse-corpus.py as the ordering commit holds it, which is the
+#      corpus commit's (the same blob, c1d3b53d957c1a23f409b466f667b0733772863d, at both), run from the checkout's root
+#      with the report copied to the path this bundle commits it at, so that every path in the output is the
+#      bundle's. base/parse-corpus-run1.tsv.gz is the one the ordering commit holds.
+B=docs/evidence/sjl-12-001
+mkdir -p $VMW/$B/after
+cp $OUT/parse-corpus-ordering.tsv.gz $VMW/$B/after/parse-corpus-ordering.tsv.gz
+set +e
+cd $VMW && python3 -I eng/compare-parse-corpus.py identity $B/base/parse-corpus-run1.tsv.gz $B/after/parse-corpus-ordering.tsv.gz \
+  --manifest src/tests/corpus/parse-1/corpus.manifest --no-census --out $B/after/identity-base-ordering.tsv \
+  > $OUT/logs/identity.stdout.txt 2> $OUT/logs/identity.stderr.txt
+rc=$?
+set -e
+echo "identity exit $rc" | tee $OUT/logs/identity.exit.txt                                 # identity exit 0
+cp $VMW/$B/after/identity-base-ordering.tsv $OUT/identity-base-ordering.tsv
+rm -rf $VMW/$B/after
+{ echo "# after the runs"; git -C $VMW rev-parse HEAD; git -C $VMW status --porcelain; } > $OUT/logs/checkout-after-runs.txt
+stamp "end"
+
+# ---- afterwards, outside the script
+# The checkout $VMW and $W/parse-corpus-ordering.tsv.gz were no longer on the machine when these records were made
+# (git worktree list does not name the checkout); the script does not remove them. $OUT was copied into the bundle,
+# in the committing worktree /home/user/vm-s12ord (branch sjl-12-ordering-records, from the default branch at the
+# ordering commit itself), by cp -p. No run was taken again and no tool was run over the corpus or the reports.
+#   $OUT/parse-corpus-ordering.tsv.gz   -> after/parse-corpus-ordering.tsv.gz   (the path the identity output names)
+#   $OUT/identity-base-ordering.tsv     -> after/identity-base-ordering.tsv
+#   $OUT/binaries.sha256                -> after/ordering/binaries.sha256
+#   $OUT/logs/*                         -> after/ordering/logs/
+# logs/driver.log alone was trimmed, as the bundle keeps its logs free of terminal progress output: the line git
+# worktree add wrote for its checkout, 97 progress segments "Updating files:  NN% (n/10057)" and a last one, each
+# ended by a carriage return but the last, now holds that last segment alone,
+# "Updating files: 100% (10057/10057), done.", as a terminal shows it. Nothing else in it, and nothing in any other
+# file, was changed. The untrimmed driver.log's SHA-256 was
+# ae1a4716876dd78933326148c4556bb455e6818ded7becd2ff391879105d0a7c.
+
+# ---- the retained files
+# after/hashes.txt: sha256sum of every other file of after/ and after/ordering/, from after/.
+# (Added 2026-10-20, after these files were first committed.) after/ordering/ordering-commit.txt: the ordering
+# commit's identity, and the paths and blobs README section 5 and machine.txt quote, from git reads alone in the
+# committing worktree after the run; it shows every command with its output and exit code. The paragraph on
+# driver.log above was wrapped at the same time, its words unchanged.

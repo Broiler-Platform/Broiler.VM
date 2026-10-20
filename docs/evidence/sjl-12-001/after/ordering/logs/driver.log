@@ -1,0 +1,15 @@
+== 2026-10-20T18:23:25Z gate: nproc 4
+0.52 0.22 0.08 2/109 307
+Preparing worktree (detached HEAD 066abef)
+Updating files: 100% (10057/10057), done.
+HEAD is now at 066abef Merge pull request #163 from Broiler-Platform/claude/busy-lamport-m3yprr
+== 2026-10-20T18:23:40Z build
+0.62 0.26 0.10 1/109 423
+== 2026-10-20T18:24:36Z parse-corpus (one worker)
+4.41 1.47 0.53 1/110 816
+exit 0 wall 573s
+== 2026-10-20T18:34:10Z done runs
+1.27 1.14 0.78 1/108 10052
+identity exit 0
+== 2026-10-20T18:34:17Z end
+1.22 1.14 0.78 1/106 10084
