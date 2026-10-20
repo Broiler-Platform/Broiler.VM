@@ -11,26 +11,41 @@
 # docs/evidence/sjl-12-001/decision-rule-area.md; this script is the comparison its part B names, and
 # the four-hash comparison its part C names.
 #
-#   identity BASE AFTER [--manifest M] [--census BASE AFTER] [--out F] [--differing-keys F]
+#   identity BASE AFTER --manifest M (--census BASE AFTER [--census BASE AFTER ...] | --no-census)
+#            [--out F] [--differing-keys F]
 #       Part B. Joined on the key, it compares the outcome; for a compilation accepted on both sides,
 #       the artifact's hash and length; for one refused on both sides, the ordered diagnostic list;
-#       for one not compiled or crashed on both sides, the note. With --census it also compares the
-#       two `--census` outputs byte for byte. With --manifest it holds both reports to the manifest:
-#       its digest, and every compilation the four sub-populations owe it, no more and no fewer.
+#       for one not compiled on both sides, the note. It holds both reports to the manifest, which
+#       is required: its digest, and every compilation the four sub-populations owe it, no more and
+#       no fewer. Each --census pair is two `--census` outputs, compared byte for byte (a .gz file is
+#       read decompressed, as a report is); one pair per `--census` call the run procedure makes.
+#       The census is required too, because part B compares it between the corpus commit and the
+#       after commit; --no-census says, explicitly, that this comparison is not that one (the base
+#       against the ordering commit, where the rule takes no census, or part C's control K1).
 #       --differing-keys writes the key of every compilation whose bytes differ (an artifact on
 #       either side and the two hashes unequal), one per line, for `--parse-corpus --select` with
 #       `--write-bytes` at each commit, because the rule retains those bytes.
 #
-#   determinism RUN1 RUN2 RUN3 --population AFTER [--out F]
-#       Part C. RUN3 is a `--twice-concurrent` report. The population is every compilation of B1 and
-#       B3 that AFTER (part B's after run) accepted; for each, the four hashes - run 1, run 2 and the
-#       two compilations of run 3 - must be one.
+#   determinism RUN1 RUN2 RUN3 --population AFTER --manifest M [--out F]
+#       Part C. RUN1 and RUN2 must each say one worker in their header and RUN3 must be a
+#       `--twice-concurrent` report of two. The population is every compilation of B1 and B3 that
+#       AFTER (part B's after run, itself complete) accepted; for each, the four results - run 1,
+#       run 2 and the two compilations of run 3 - must all be accepted, with one hash and one length.
 #
 #   control BASE OUT
 #       Part B's control: a copy of BASE with one artifact hash changed and one outcome flipped. It
 #       changes the first accepted B1 bytecode compilation's hash (its last hex digit) and turns the
 #       second accepted B1 bytecode compilation into a refusal with no diagnostic, and says which in
-#       a comment line. `identity BASE OUT` must then report exactly those two, both unclassified.
+#       a comment line. `identity BASE OUT --manifest M --no-census` must then report exactly those
+#       two, both unclassified.
+#
+# THE OUTCOMES. The rule's are accepted and refused. The mode also writes `not-compiled`, in the two
+# cases its reading 2 names (every report's header repeats the readings): B2's test262 `_FIXTURE`
+# rows, note `fixture`, and B4's json rows, note `no-json-goal`. A `crashed` row (an exception left
+# the compiler), or a `not-compiled` row outside those two cases, has no outcome the rule knows, so
+# its run is not complete: `identity` lists each such row as `incomplete` and exits 2, and
+# `determinism` refuses a population report that holds one and counts a crashed population row as
+# one whose four results are not one.
 #
 # THE SCRIPT DECIDES NO CLASS. Every difference it reports is UNCLASSIFIED: the rule's classes O, S, T
 # and P each need a reading this script cannot do - O and P the two byte files, T the source text,
@@ -43,13 +58,13 @@
 # difference, which the byte files decide), `B4` and `census` (where no class is admitted at all). A
 # shape is a pointer for the reader, never a verdict.
 #
-# A REPORT IS REFUSED, NOT COMPARED, when it is not format 1, when a key repeats, when the two do not
-# name the same manifest digest, when either was a selected run, or - with --manifest - when either
-# lacks a compilation the manifest owes or holds one it does not. A comparison over less than the
-# whole corpus would read as a clean one.
+# A REPORT IS REFUSED, NOT COMPARED, when it is not format 1, when a key repeats, when an outcome is
+# not one of the four, when the two do not name the manifest's digest, when either was a selected
+# run, or when either lacks a compilation the manifest owes or holds one it does not. A comparison
+# over less than the whole corpus would read as a clean one.
 #
 # EXIT CODES: 0 when nothing differs, 1 when anything does, 2 when the input could not be read or was
-# refused (argparse's own code for a bad command line).
+# refused, or a run is not complete (argparse's own code for a bad command line).
 
 import argparse
 import collections
@@ -63,6 +78,7 @@ MANIFEST_FORMAT = "broiler-parse-corpus\t1"
 POPULATIONS = ("B1", "B2", "B3", "B4")
 COLUMNS = ("id", "population", "variant", "form", "outcome", "diagnostics", "sha256", "length", "note")
 SECOND = ("outcome-2", "diagnostics-2", "sha256-2", "length-2", "note-2")
+OUTCOMES = ("accepted", "refused", "not-compiled", "crashed")
 
 # The diagnostics JSD-0080 decision D12 keeps in the lowering, which class S3 lets the after list lose.
 S3_CODES = {"2104", "2301", "2302", "2303", "2405", "2406", "2201"}
@@ -122,6 +138,10 @@ class Report:
             self.rows[key] = Result(*cells[4:9])
             if self.twice:
                 self.second[key] = Result(*cells[9:14])
+            for result in (self.rows[key],) + ((self.second[key],) if self.twice else ()):
+                if result.outcome not in OUTCOMES:
+                    refuse(f"{path}: line {number} has the outcome {result.outcome!r}, not one of "
+                           f"{', '.join(OUTCOMES)}")
             self.order.append(key)
         declared = self.header.get("compilations")
         if declared != str(len(self.rows)):
@@ -130,6 +150,22 @@ class Report:
     @property
     def manifest_sha256(self):
         return self.header.get("manifest-sha256", "")
+
+    @property
+    def workers(self):
+        return self.header.get("workers", "")
+
+    def outcomes(self):
+        """Per sub-population, how many compilations had each outcome (both answers of a twice run)."""
+        counts = {population: collections.Counter() for population in POPULATIONS}
+        for key, result in self.rows.items():
+            counts[key[1]][result.outcome] += 1
+            if self.twice:
+                counts[key[1]][self.second[key].outcome] += 1
+        return "; ".join(
+            population + " " + (", ".join(f"{outcome} {counts[population][outcome]}" for outcome in OUTCOMES
+                                          if counts[population][outcome]) or "none")
+            for population in POPULATIONS)
 
     def whole(self):
         """Refuses a report that is not a complete, unselected run of all four sub-populations."""
@@ -140,7 +176,10 @@ class Report:
 
 
 def owed(manifest_path):
-    """The manifest's digest and every compilation the four sub-populations owe it."""
+    """
+    The manifest's digest, and every compilation the four sub-populations owe it, each mapped to the
+    note under which reading 2 admits it not compiled, or None where it must have an outcome.
+    """
     data = pathlib.Path(manifest_path).read_bytes()
     lines = data.decode("utf-8").rstrip("\n").split("\n")
     header = collections.defaultdict(list)
@@ -153,25 +192,42 @@ def owed(manifest_path):
     if header.get("format") != [MANIFEST_FORMAT]:
         refuse(f"{manifest_path}: not a parse-corpus manifest of format 1")
     eval_sets = [value.split("\t")[0] for value in header.get("eval-flags", [])]
-    keys = {population: [] for population in POPULATIONS}
+    every = {}
     for line in lines[at + 1:]:
         cells = line.split("\t")
         if len(cells) != 9:
             refuse(f"{manifest_path}: a row is not nine fields")
-        row_id, origin, variants, eval_family = cells[0], cells[1], cells[5].split(","), cells[7]
+        row_id, origin, path, goal = cells[0], cells[1], cells[2], cells[4]
+        variants, eval_family = cells[5].split(","), cells[7]
+        fixture = origin == "test262" and "_FIXTURE" in path
         for variant in variants:
-            keys["B1"].append((row_id, "B1", variant, "bytecode"))
-            keys["B1"].append((row_id, "B1", variant, "native"))
+            every[(row_id, "B1", variant, "bytecode")] = None
+            every[(row_id, "B1", variant, "native")] = None
             if origin == "test262":
-                keys["B2"].append((row_id, "B2", variant, "bytecode"))
-            keys["B4"].append((row_id, "B4", variant, "slice"))
+                every[(row_id, "B2", variant, "bytecode")] = "fixture" if fixture else None
         if eval_family == "yes":
             for name in eval_sets:
-                keys["B3"].append((row_id, "B3", name, "bytecode"))
-    every = set()
-    for population in POPULATIONS:
-        every.update(keys[population])
+                every[(row_id, "B3", name, "bytecode")] = None
+        # B4 IS ONE COMPILATION PER INPUT, UNDER ITS GOAL: the rule's B4 names no variant.
+        every[(row_id, "B4", goal, "slice")] = "no-json-goal" if goal == "json" else None
     return hashlib.sha256(data).hexdigest(), every
+
+
+def held_to(report, manifest_path, digest, every):
+    """Refuses a report that does not name the manifest or does not hold exactly what it owes."""
+    if report.manifest_sha256 != digest:
+        refuse(f"{report.path}: names the manifest {report.manifest_sha256}, and {manifest_path} is {digest}")
+    missing = every.keys() - report.rows.keys()
+    extra = report.rows.keys() - every.keys()
+    if missing or extra:
+        sample = sorted(missing or extra)[0]
+        refuse(f"{report.path}: {len(missing)} compilation(s) the manifest owes are missing and "
+               f"{len(extra)} it does not owe are present, the first {' '.join(sample)}")
+
+
+def incomplete(result, admitted):
+    """Whether a result has no outcome the rule knows: crashed, or not compiled outside reading 2."""
+    return result.outcome == "crashed" or (result.outcome == "not-compiled" and result.note != admitted)
 
 
 def entries(diagnostics):
@@ -252,46 +308,47 @@ def emit(out, lines):
     sys.stdout.write(text if not out else "".join(line + "\n" for line in lines if line.startswith("#")))
 
 
+def read_census(path):
+    try:
+        return read_bytes(path)
+    except (OSError, EOFError, gzip.BadGzipFile) as failure:
+        refuse(f"{path}: {failure}")
+
+
 def identity(args):
     base, after = Report(args.base), Report(args.after)
     base.whole()
     after.whole()
     if base.manifest_sha256 != after.manifest_sha256:
         refuse(f"the two reports name two manifests ({base.manifest_sha256} and {after.manifest_sha256})")
-    if args.manifest:
-        digest, every = owed(args.manifest)
-        for report in (base, after):
-            if report.manifest_sha256 != digest:
-                refuse(f"{report.path}: names the manifest {report.manifest_sha256}, and {args.manifest} "
-                       f"is {digest}")
-            missing = every - report.rows.keys()
-            extra = report.rows.keys() - every
-            if missing or extra:
-                sample = sorted(missing or extra)[0]
-                refuse(f"{report.path}: {len(missing)} compilation(s) the manifest owes are missing and "
-                       f"{len(extra)} it does not owe are present, the first {' '.join(sample)}")
-    elif base.rows.keys() != after.rows.keys():
-        only = sorted(base.rows.keys() ^ after.rows.keys())
-        refuse(f"the two reports hold different compilations ({len(only)} in one only, the first "
-               f"{' '.join(only[0])})")
+    digest, every = owed(args.manifest)
+    for report in (base, after):
+        held_to(report, args.manifest, digest, every)
 
     differences = []
+    unfinished = []
     for key in base.order:
         found = compare(key, base.rows[key], after.rows[key])
         if found is not None:
             differences.append((key, found))
+        if incomplete(base.rows[key], every[key]) or incomplete(after.rows[key], every[key]):
+            unfinished.append(key)
 
-    census = "not compared"
+    censuses = []
     census_differs = False
-    if args.census:
-        left, right = (pathlib.Path(path).read_bytes() for path in args.census)
+    for number, (left_path, right_path) in enumerate(args.census or [], start=1):
+        left, right = read_census(left_path), read_census(right_path)
         if left == right:
-            census = "identical, byte for byte"
+            censuses.append(f"# census {number} identical, byte for byte ({left_path}, {right_path})")
         else:
             census_differs = True
             a, b = left.decode("utf-8", "replace").split("\n"), right.decode("utf-8", "replace").split("\n")
             line = next((n for n, (x, y) in enumerate(zip(a, b), start=1) if x != y), min(len(a), len(b)) + 1)
-            census = f"DIFFERS from line {line} (no class admits a census difference)"
+            censuses.append(f"# census {number} DIFFERS from line {line} ({left_path}, {right_path}); "
+                            f"no class admits a census difference")
+    if args.no_census:
+        censuses.append("# census not compared (--no-census): part B compares it only between the corpus "
+                        "commit and the after commit, and this comparison was named as another")
 
     by_population = collections.Counter(key[1] for key, _ in differences)
     by_what = collections.Counter(found[0] for _, found in differences)
@@ -299,19 +356,26 @@ def identity(args):
         "# compare-parse-corpus identity (bundle sjl-12-001 part B); the script decides no class",
         f"# base {base.path}",
         f"# after {after.path}",
-        f"# manifest-sha256 {base.manifest_sha256}" + (" (checked against the manifest, every owed "
-                                                        "compilation present)" if args.manifest else ""),
+        f"# manifest-sha256 {base.manifest_sha256} (both reports checked against {args.manifest}: its "
+        f"digest, and every owed compilation present and no other)",
         f"# compilations {len(base.rows)}",
+        f"# base outcomes {base.outcomes()}",
+        f"# after outcomes {after.outcomes()}",
+        f"# incomplete {len(unfinished)} (crashed, or not compiled outside reading 2, on either side)"
+        + ("; THE RUNS ARE NOT COMPLETE, and each such row is listed below as incomplete" if unfinished else ""),
         f"# differences {len(differences)}, every one unclassified until the bundle lists it with a class",
         "# by sub-population " + (", ".join(f"{p} {by_population[p]}" for p in POPULATIONS)),
         "# by what differs " + (", ".join(f"{w} {by_what[w]}" for w in
-                                           ("outcome", "artifact", "diagnostics", "note")) ),
+                                           ("outcome", "artifact", "diagnostics", "note"))),
         f"# B4 differences {by_population['B4']} (no class admits one)",
-        f"# census {census}",
+        *censuses,
         "id\tpopulation\tvariant\tform\twhat\tbase\tafter\tstatus\tshape",
     ]
     for key, (what, left, right, shape) in differences:
         lines.append("\t".join(key + (what, left, right, "unclassified", shape)))
+    for key in unfinished:
+        lines.append("\t".join(key + ("incomplete", first_entry(base.rows[key]), first_entry(after.rows[key]),
+                                       "incomplete", "-")))
     emit(args.out, lines)
 
     if args.differing_keys:
@@ -321,6 +385,10 @@ def identity(args):
         pathlib.Path(args.differing_keys).write_text(
             "".join("\t".join(key) + "\n" for key in keys), encoding="utf-8", newline="\n")
 
+    if unfinished:
+        print(f"compare-parse-corpus: {len(unfinished)} compilation(s) crashed or were not compiled "
+              f"outside reading 2: the runs are not complete", file=sys.stderr)
+        return 2
     return 1 if differences or census_differs else 0
 
 
@@ -328,12 +396,22 @@ def determinism(args):
     runs = [Report(path) for path in (args.run1, args.run2, args.run3)]
     population_report = Report(args.population)
     population_report.whole()
-    if not runs[2].twice:
-        refuse(f"{runs[2].path}: run 3 is not a --twice-concurrent report")
-    digests = {report.manifest_sha256 for report in runs + [population_report]}
-    if len(digests) != 1:
-        refuse("the four reports do not all name one manifest")
+    digest, every = owed(args.manifest)
+    held_to(population_report, args.manifest, digest, every)
+    unfinished = [key for key in population_report.order if incomplete(population_report.rows[key], every[key])]
+    if unfinished:
+        refuse(f"{population_report.path}: part B's after run is not complete: {len(unfinished)} "
+               f"compilation(s) crashed or were not compiled outside reading 2, the first "
+               f"{' '.join(unfinished[0])}")
+    for number, report in enumerate(runs[:2], start=1):
+        if report.twice or report.workers != "1":
+            refuse(f"{report.path}: run {number} is not a run with one worker (its header says workers "
+                   f"{report.workers or 'nothing'}, twice-concurrent {'yes' if report.twice else 'no'})")
+    if not runs[2].twice or runs[2].workers != "2":
+        refuse(f"{runs[2].path}: run 3 is not a --twice-concurrent report of two workers")
     for report in runs:
+        if report.manifest_sha256 != digest:
+            refuse(f"{report.path}: names the manifest {report.manifest_sha256}, and {args.manifest} is {digest}")
         if report.header.get("selection") != "all":
             refuse(f"{report.path}: a selected run (--select) is not a whole run")
 
@@ -344,22 +422,27 @@ def determinism(args):
         refuse(f"{len(missing)} accepted compilation(s) of the population are missing from a run, the "
                f"first {' '.join(missing[0])}")
 
+    # ONE HASH IN ALL FOUR COMPILATIONS, AND EACH OF THEM ACCEPTED: four equal refusals, crashes or
+    # non-compilations give no hash at all, which part C's MET condition does not admit.
     differing = []
     for key in population:
         four = [runs[0].rows[key], runs[1].rows[key], runs[2].rows[key], runs[2].second[key]]
         values = [(result.outcome, result.sha256, result.length) for result in four]
-        if len(set(values)) != 1:
+        if len(set(values)) != 1 or any(value[0] != "accepted" for value in values):
             differing.append((key, values))
 
     lines = [
         "# compare-parse-corpus determinism (bundle sjl-12-001 part C); no class is admitted",
-        f"# run 1 {runs[0].path}",
-        f"# run 2 {runs[1].path}",
+        f"# run 1 {runs[0].path} (one worker)",
+        f"# run 2 {runs[1].path} (one worker)",
         f"# run 3 {runs[2].path} (two workers, every compilation twice concurrently)",
         f"# population {population_report.path}: the B1 and B3 compilations it accepted",
-        f"# manifest-sha256 {population_report.manifest_sha256}",
+        f"# manifest-sha256 {digest} (every report checked against {args.manifest})",
+        f"# run 1 outcomes {runs[0].outcomes()}",
+        f"# run 2 outcomes {runs[1].outcomes()}",
+        f"# run 3 outcomes, both compilations {runs[2].outcomes()}",
         f"# compilations in the population {len(population)}",
-        f"# compilations whose four hashes are not one {len(differing)}",
+        f"# compilations whose four results are not one accepted hash {len(differing)}",
         "id\tpopulation\tvariant\tform\trun-1\trun-2\trun-3a\trun-3b",
     ]
     for key, values in differing:
@@ -406,8 +489,13 @@ def main():
     one = commands.add_parser("identity", help="part B: join a base report and an after report")
     one.add_argument("base")
     one.add_argument("after")
-    one.add_argument("--manifest", help="hold both reports to this manifest's digest and population")
-    one.add_argument("--census", nargs=2, metavar=("BASE", "AFTER"), help="two --census outputs")
+    one.add_argument("--manifest", required=True,
+                     help="hold both reports to this manifest's digest and population")
+    census = one.add_mutually_exclusive_group(required=True)
+    census.add_argument("--census", nargs=2, action="append", metavar=("BASE", "AFTER"),
+                        help="two --census outputs (.gz read decompressed); once per --census call made")
+    census.add_argument("--no-census", action="store_true",
+                        help="say that this is not a corpus-commit-to-after-commit comparison")
     one.add_argument("--out", help="write the comparison here; the summary still goes to stdout")
     one.add_argument("--differing-keys", help="write the keys whose bytes differ here")
     one.set_defaults(run=identity)
@@ -417,6 +505,7 @@ def main():
     two.add_argument("run2")
     two.add_argument("run3")
     two.add_argument("--population", required=True, help="part B's after report")
+    two.add_argument("--manifest", required=True, help="the corpus commit's manifest")
     two.add_argument("--out")
     two.set_defaults(run=determinism)
 

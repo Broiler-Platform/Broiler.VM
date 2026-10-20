@@ -127,7 +127,7 @@ internal static class Program
                 "--census <directory> [<directory> ...] | " +
                 "--parse-corpus <manifest> <report> [--workers <n>] [--twice-concurrent] " +
                 "[--write-bytes <directory>] [--populations <list>] [--select <keys>] " +
-                "[--archive <archive>] | " +
+                "[--archive <archive>] [--journal <file>] | " +
                 "--fuzz <source directory> [--seed <n>] [--iterations <n>] | " +
                 "--fuzz-words [--seed <n>] [--iterations <n>] [--stress]");
 

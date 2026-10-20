@@ -38,8 +38,20 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// the variant is raw, and then the test - in the bytecode form.
 /// B3, each eval-family input compiled as eval code under each of the eight request-flag sets the
 /// manifest's header lists, in the bytecode form.
-/// B4, each input compiled by the slice front end, strict by the strict prologue in front of the
-/// text, because the slice front end has no other way to be told.
+/// B4, each input compiled by the slice front end once, under its goal (script or module), with
+/// its text unchanged: the rule's B4 names the goal and no variant, so it is keyed by the goal.
+/// </para>
+/// <para>
+/// <b>Three readings of the rule, fixed here before any run and repeated in every report's header.</b>
+/// (1) "Alone" in B1 is the input with nothing composed around it: a module is compiled with the
+/// graph the conformance root's resolution reaches from it (its <c>_FIXTURE</c> neighbours), as the
+/// root compiles it, so such an artifact's hash also covers the modules it reaches. (2) The rule's
+/// outcomes are accepted and refused, and two cases have nothing to compile: B2's test262
+/// <c>_FIXTURE</c> rows, which the root never composes alone (<c>not-compiled</c>, note
+/// <c>fixture</c>), and B4's JSON rows, for which the slice front end has no goal
+/// (<c>not-compiled</c>, note <c>no-json-goal</c>). Each is reported, never left out. (3) Any other
+/// <c>not-compiled</c> row, and every <c>crashed</c> one (an exception left the compiler), is an
+/// incomplete run, which the comparison refuses.
 /// </para>
 /// <para>
 /// <b>The names are fixed, and that is why they are virtual.</b> A module's key and a script's
@@ -64,8 +76,10 @@ internal static class ParseCorpus
     private const string ReportFormat = "broiler-vm-parse-corpus-report\t1";
 
     /// <summary>
-    /// The conformance root's strict prologue (<c>Test262Adapter.StrictPrologue</c>), restated: B4
-    /// composes its strict variant with it, and a manifest naming another one is refused.
+    /// The conformance root's strict prologue (<c>Test262Adapter.StrictPrologue</c>), restated. No
+    /// compilation of this mode composes with it - B1's strict variant is <c>ForceStrict</c> with the
+    /// text unchanged, and B4 compiles under the goal - but format 1 fixes it in the header, and a
+    /// manifest naming another one is refused.
     /// </summary>
     private const string StrictPrologue = "\"use strict\";\n";
 
@@ -205,7 +219,7 @@ internal static class ParseCorpus
             Console.WriteLine(
                 "usage: --parse-corpus <manifest> <report> [--workers <n>] [--twice-concurrent] " +
                 "[--write-bytes <directory>] [--populations B1,B2,B3,B4] [--select <keys file>] " +
-                "[--archive <test262 archive>]");
+                "[--archive <test262 archive>] [--journal <file>]");
             return 2;
         }
 
@@ -285,7 +299,8 @@ internal static class ParseCorpus
         string? WriteBytes,
         IReadOnlySet<string> Populations,
         string? Select,
-        string? Archive);
+        string? Archive,
+        string? Journal);
 
     private static bool TryParseArguments(string[] args, out Options options, out string failure)
     {
@@ -296,6 +311,7 @@ internal static class ParseCorpus
         string? writeBytes = null;
         string? select = null;
         string? archive = null;
+        string? journal = null;
         var populations = new HashSet<string>(Populations, StringComparer.Ordinal);
 
         for (var index = 0; index < args.Length; index++)
@@ -326,6 +342,9 @@ internal static class ParseCorpus
                     break;
                 case "--archive" when hasValue:
                     archive = args[++index];
+                    break;
+                case "--journal" when hasValue:
+                    journal = args[++index];
                     break;
                 case "--populations" when hasValue:
                     populations = new HashSet<string>(
@@ -374,7 +393,8 @@ internal static class ParseCorpus
             writeBytes,
             populations,
             select,
-            archive);
+            archive,
+            journal);
 
         failure = string.Empty;
         return true;
@@ -838,11 +858,8 @@ internal static class ParseCorpus
 
                         break;
                     case "B4":
-                        foreach (var variant in row.Variants)
-                        {
-                            items.Add(new Item(row.Index, population, variant, "slice"));
-                        }
-
+                        // ONE COMPILATION PER INPUT, UNDER ITS GOAL: the rule's B4 names no variant.
+                        items.Add(new Item(row.Index, population, row.Goal, "slice"));
                         break;
                 }
             }
@@ -896,11 +913,47 @@ internal static class ParseCorpus
     /// Runs every compilation: on <c>n</c> workers taking the next item each, or, twice
     /// concurrently, on two workers that start each item together.
     /// </summary>
+    /// <remarks>
+    /// <b>A LOST PROCESS SHOULD NAME ITS INPUT.</b> The report is written only once every compilation
+    /// has finished, and a compilation that overflows the stack ends the process where no handler can
+    /// run, so without help nothing names the input that ended it. With <c>--journal</c>, each worker
+    /// writes <c>begin</c> before and <c>end</c> after every compilation, flushed to the file at once;
+    /// after a lost process, the keys that began and did not end are the ones in flight. The journal
+    /// is diagnosis only: it holds worker numbers and finishing order, and the report holds neither.
+    /// </remarks>
     private static void Execute(Inputs inputs, List<Item> items, Options options, Result[] first, Result[]? second)
     {
         var workers = new List<Thread>();
         var done = 0;
         var step = Math.Max(items.Count / 20, 1);
+        using var journal = options.Journal is null
+            ? null
+            : new StreamWriter(options.Journal, append: false, new UTF8Encoding(false)) { AutoFlush = true };
+        var gate = new object();
+
+        void Note(string what, int worker, Item item, Result? result)
+        {
+            if (journal is null)
+            {
+                return;
+            }
+
+            var line = what + "\t" + worker.ToString(CultureInfo.InvariantCulture) + "\t" +
+                item.Key(inputs.Rows) + (result is null ? string.Empty : "\t" + result.Outcome) + "\n";
+
+            lock (gate)
+            {
+                journal.Write(line);
+            }
+        }
+
+        Result Run(int worker, int index, string suffix)
+        {
+            Note("begin", worker, items[index], null);
+            var result = Compile(inputs, items[index], options.WriteBytes, suffix);
+            Note("end", worker, items[index], result);
+            return result;
+        }
 
         void Progress()
         {
@@ -925,13 +978,15 @@ internal static class ParseCorpus
         {
             for (var worker = 0; worker < options.Workers; worker++)
             {
+                var number = worker + 1;
+
                 workers.Add(new Thread(
                     () =>
                     {
                         for (var index = Interlocked.Increment(ref next); index < items.Count;
                             index = Interlocked.Increment(ref next))
                         {
-                            first[index] = Compile(inputs, items[index], options.WriteBytes, ".bin");
+                            first[index] = Run(number, index, ".bin");
                             Progress();
                         }
                     },
@@ -940,7 +995,7 @@ internal static class ParseCorpus
         }
         else
         {
-            foreach (var (results, suffix) in new[] { (first, ".bin"), (second, ".2.bin") })
+            foreach (var (results, suffix, number) in new[] { (first, ".bin", 1), (second, ".2.bin", 2) })
             {
                 workers.Add(new Thread(
                     () =>
@@ -948,7 +1003,7 @@ internal static class ParseCorpus
                         for (var index = 0; index < items.Count; index++)
                         {
                             barrier.SignalAndWait();
-                            results[index] = Compile(inputs, items[index], options.WriteBytes, suffix);
+                            results[index] = Run(number, index, suffix);
                             Progress();
                         }
                     },
@@ -996,7 +1051,7 @@ internal static class ParseCorpus
                         inputs, row, item, writeBytes, suffix, new Units(evaluated, [], string.Empty),
                         new JsCompileRequest(JsFeatureManifest.Wide, JsOutputForm.Bytecode));
                 default:
-                    return Slice(inputs, row, item, writeBytes, suffix, text);
+                    return Slice(row, item, writeBytes, suffix, text);
             }
         }
         catch (Exception failure)
@@ -1110,19 +1165,21 @@ internal static class ParseCorpus
         return Answer(row, item, writeBytes, suffix, artifact, compiled.Diagnostics);
     }
 
-    /// <summary>B4: the slice front end, strict by the prologue, under the input's goal.</summary>
-    private static Result Slice(Inputs inputs, Row row, Item item, string? writeBytes, string suffix, string text)
+    /// <summary>B4: the slice front end, once, under the input's goal, the text unchanged.</summary>
+    private static Result Slice(Row row, Item item, string? writeBytes, string suffix, string text)
     {
         // THE SLICE FRONT END HAS NO READING OF A JSON DOCUMENT, so a JSON input is reported as not
         // compiled in B4 rather than left out: every row is reported in every sub-population it is in.
-        if (string.Equals(item.Variant, "json", StringComparison.Ordinal))
+        if (string.Equals(row.Goal, "json", StringComparison.Ordinal))
         {
             return new Result("not-compiled", "-", "-", "-", "no-json-goal");
         }
 
         var compiled = SliceSourceCompiler.Compile(
-            item.Variant == "strict" ? inputs.Header.StrictPrologue + text : text,
-            item.Variant == "module" ? SliceParseOptions.Module : SliceParseOptions.Script);
+            text,
+            string.Equals(row.Goal, "module", StringComparison.Ordinal)
+                ? SliceParseOptions.Module
+                : SliceParseOptions.Script);
 
         return Answer(row, item, writeBytes, suffix, compiled.Artifact, compiled.Diagnostics);
     }
@@ -1290,9 +1347,11 @@ internal static class ParseCorpus
 
     /// <summary>Writes the report: a header, the column line, then one line per compilation.</summary>
     /// <remarks>
-    /// <b>Nothing in it depends on the machine, the clock or the worker count</b>, so two runs with the
-    /// same arguments over the same build write the same bytes; a path ending <c>.gz</c> is written
-    /// compressed, and the comparison reads either.
+    /// <b>Nothing in it depends on the machine or the clock</b>, so two runs with the same arguments
+    /// over the same build write the same bytes; a path ending <c>.gz</c> is written compressed, and
+    /// the comparison reads either. <b>The worker count is in its header</b> and nowhere else, because
+    /// part C names one worker for runs 1 and 2 and two for run 3, and its comparison holds each run
+    /// to that; no line below the header depends on it.
     /// </remarks>
     private static void WriteReport(
         string path,
@@ -1335,12 +1394,24 @@ internal static class ParseCorpus
         Line("#% selection\t" + selection);
         Line("#% compilations\t" + items.Count.ToString(CultureInfo.InvariantCulture));
         Line("#% twice-concurrent\t" + (second is null ? "no" : "yes"));
+        Line("#% workers\t" + options.Workers.ToString(CultureInfo.InvariantCulture));
         Line("#% native-backend\t" + NativeBackend);
         Line(
-            "# B1 each input alone (strict: ForceStrict, text unchanged; a module with the graph the " +
-            "conformance root's resolution reaches from it), bytecode and native; " +
-            "B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; " +
-            "B4 the slice front end (strict: the prologue before the text).");
+            "# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode " +
+            "and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, " +
+            "bytecode; B4 the slice front end, once per input, under its goal, text unchanged.");
+        Line(
+            "# reading 1: alone in B1 is nothing composed around the input; a module is compiled with " +
+            "the graph the conformance root's resolution reaches from it, so its hash covers the " +
+            "modules it reaches.");
+        Line(
+            "# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left " +
+            "out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance " +
+            "root never composes alone, and B4's json rows (note no-json-goal), for which the slice " +
+            "front end has no goal.");
+        Line(
+            "# reading 3: any other not-compiled row, and every crashed row (an exception left the " +
+            "compiler), is an incomplete run.");
         Line(
             "# diagnostics are code:line:column in the order the compiler reported them; " +
             "sha256 and length are the artifact's, for an accepted compilation.");
