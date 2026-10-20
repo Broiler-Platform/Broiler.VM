@@ -383,7 +383,12 @@ internal static class Program
         {
             Console.WriteLine("# the sources that did not parse, by the first refusal each got");
 
-            foreach (var failure in census.ParseFailures.OrderByDescending(entry => entry.Value))
+            // TIES ARE BROKEN BY NAME, as the constructs' are above. Without it, codes tied on count
+            // kept the order each was first met in, which follows the sorted file paths, so the same
+            // sources extracted under another parent directory could print another census (SJL-12.4:
+            // bundle sjl-12-001's part B compares this output byte for byte).
+            foreach (var failure in census.ParseFailures.OrderByDescending(entry => entry.Value)
+                .ThenBy(entry => entry.Key.ToString(), StringComparer.Ordinal))
             {
                 Console.WriteLine($"{failure.Key}|{failure.Value}");
             }
