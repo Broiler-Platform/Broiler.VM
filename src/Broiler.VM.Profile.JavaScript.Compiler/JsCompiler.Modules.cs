@@ -301,15 +301,15 @@ public sealed partial class JsCompiler
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=50A13A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DEB8C0
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<string> DeclareModuleBindings(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
     {
-        var names = new System.Collections.Generic.List<string>();
-        var functions = new System.Collections.Generic.List<JsFunctionNode>();
-        var lexical = new System.Collections.Generic.List<string>();
-        CollectVarScope(Unwrapped(body), names, functions, lexical);
+        // THE MODULE'S `var` NAMES AND FUNCTION DECLARATIONS ARE THE BINDER'S (SJL-12.6 item 1), read
+        // from its top level with each exported declaration in the export's place.
+        var names = new System.Collections.Generic.List<string>(binder.Program.VarNames);
+        var functions = binder.Program.Functions;
 
         foreach (var name in names)
         {
@@ -387,7 +387,7 @@ public sealed partial class JsCompiler
                 // top-level `const {a} = o; const {b} = o;` were refused as the same undeclared name
                 // twice (VM-FIX-D), and a pattern's real names were never checked at all.
                 var declared = new System.Collections.Generic.List<string>();
-                CollectDeclaratorNames(declarator, declared);
+                JsBinder.DeclaratorNames(declarator, declared);
 
                 foreach (var name in declared)
                 {
@@ -411,8 +411,6 @@ public sealed partial class JsCompiler
                 }
             }
         }
-
-        _ = lexical;
 
         // `export default <expression>` binds a slot with a name no source can write, so nothing
         // it collides with can be declared and no collision check is owed for it.
@@ -665,9 +663,9 @@ public sealed partial class JsCompiler
     /// A statement list with each exported declaration replaced by the declaration itself.
     /// </summary>
     /// <remarks>
-    /// The collectors that find <c>var</c> names, function declarations and lexical names are the
-    /// script lowering's and know nothing about <c>export</c>. Unwrapping here rather than teaching
-    /// each of them the module goal keeps one answer to what a declaration is.
+    /// The module's own checks of its lexical declarations read the list the way the binder reads a
+    /// module's top level for its <c>var</c> names and functions: an exported declaration is a
+    /// declaration of the module, in the export's place.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=67CC95
     // Broiler-Human:        PENDING

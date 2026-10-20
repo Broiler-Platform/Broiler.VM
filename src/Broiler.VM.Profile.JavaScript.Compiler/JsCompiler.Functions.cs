@@ -26,7 +26,7 @@ public sealed partial class JsCompiler
 
     // ---- units ---------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0514C5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ABC443
     // Broiler-Human:        PENDING
     private int CompileProgram(JsProgramNode program, bool forceStrict)
     {
@@ -60,7 +60,7 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.LoadUndefined);
         EmitScoped(JsOpcode.InitialiseScoped, 0, completion);
 
-        var declared = HoistProgram(program.Body);
+        var declared = HoistProgram(binder.Program);
 
         // THE ROW IS WRITTEN ONLY FOR A BODY THAT DECLARES SOMETHING: one that declares nothing has
         // no check to run, and the `Function` constructor's assembled source is one of those.
@@ -115,7 +115,7 @@ public sealed partial class JsCompiler
     /// lowering - a class constructor named after its class, an anonymous function named after what it
     /// is assigned to. The binder knows a function by the node it bound.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=19C5E4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B46D2A
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -370,7 +370,7 @@ public sealed partial class JsCompiler
             scope.EvalVariables = true;
         }
 
-        HoistFunction(facts, function.Body, parameters);
+        HoistFunction(facts, parameters);
 
         // EVERYTHING DECLARED FROM HERE ON AT THE FUNCTION'S TOP LEVEL IS LEXICAL - a `let`, a
         // `const`, a `class` - or a temporary nobody can name. The specification gives a sloppy

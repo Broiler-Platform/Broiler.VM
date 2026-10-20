@@ -167,7 +167,7 @@ public sealed partial class JsCompiler
         Mark(exit.Break!);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5B4B2C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8FFA25
     // Broiler-Human:        PENDING
     private void CompileFor(JsForStatement loop, int completion, string label)
     {
@@ -178,7 +178,7 @@ public sealed partial class JsCompiler
         {
             foreach (var declarator in head.Declarators)
             {
-                CollectDeclaratorNames(declarator, lexical);
+                JsBinder.DeclaratorNames(declarator, lexical);
             }
         }
 

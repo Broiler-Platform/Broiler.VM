@@ -421,7 +421,7 @@ public sealed partial class JsCompiler
     /// <b>The block is a declaration instantiation of its own, and this is the whole of it.</b>
     /// Every function declared directly in the list gets its slot before any closure is built, so
     /// two functions in one block can call each other, and every closure is then built with the
-    /// BLOCK's record current — which is the fact <see cref="CollectVarScope"/> used to destroy by
+    /// BLOCK's record current — which is the fact the <c>var</c> collection used to destroy by
     /// hoisting the declaration out to the enclosing body <i>(JSC-138)</i>. A body that names a
     /// <c>let</c> of the same block now resolves it to a slot rather than to a global.
     /// </para>

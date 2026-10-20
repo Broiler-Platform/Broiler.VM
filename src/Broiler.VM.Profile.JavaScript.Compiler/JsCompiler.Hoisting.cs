@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           2
-// Human-reviewed:   0/14
+// Human-reviewed:   0/10
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         1/0
 // Resource impact:  3/10 max
-// Unverified:       14
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,14 +32,13 @@ public sealed partial class JsCompiler
     /// and the Annex B aliases one per name. The instructions below still create every binding; the
     /// row lets the executor run the specification's checks before the first of them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D27021
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0492AF
     // Broiler-Human:        PENDING
     private (string[] LexicalNames, string[] VarNames, string[] FunctionNames, string[] AnnexBNames) HoistProgram(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body)
+        JsBinder.HoistingScope unit)
     {
-        var names = new System.Collections.Generic.List<string>();
-        var functions = new System.Collections.Generic.List<JsFunctionNode>();
-        CollectVarScope(body, names, functions, lexical: null);
+        var names = unit.VarNames;
+        var functions = unit.Functions;
 
         // A FUNCTION DECLARATION CREATES ITS GLOBAL BINDING BEFORE IT IS WRITTEN, and until
         // 2026-09-04 the write was the only step. It worked because a store to a name the global
@@ -89,7 +88,7 @@ public sealed partial class JsCompiler
         // order, which a dictionary nothing is removed from happens to keep as insertion order and
         // promises nothing about.
         programLexicals.Clear();
-        CollectLexicalKinds(binder.Program.TopLevel, programLexicals);
+        CollectLexicalKinds(unit.TopLevel, programLexicals);
 
         foreach (var (name, constant) in programLexicals)
         {
@@ -103,7 +102,7 @@ public sealed partial class JsCompiler
         // to exist by now for the same reason a declared function's does: `StoreGlobal` refuses to
         // create one *(JSC-93)*, and the write this binding exists for is written where the
         // declaration stands.
-        var aliases = binder.Program.AnnexBAliases;
+        var aliases = unit.AnnexBAliases;
 
         foreach (var alias in aliases)
         {
@@ -149,21 +148,17 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Declares and initialises a function body's hoisted bindings.</summary>
-    /// <param name="body">The body's statements.</param>
+    /// <param name="facts">The function's facts, which say what its body declares.</param>
     /// <param name="parameters">
     /// The parameters' record when the body has a variable environment of its own - the current
     /// scope, one record inside it - or <see langword="null"/> when one record holds both.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7CF7E6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=36EEBD
     // Broiler-Human:        PENDING
-    private void HoistFunction(
-        JsBinder.FunctionFacts facts,
-        System.Collections.Generic.IReadOnlyList<JsStatement> body,
-        Scope? parameters = null)
+    private void HoistFunction(JsBinder.FunctionFacts facts, Scope? parameters = null)
     {
-        var names = new System.Collections.Generic.List<string>();
-        var functions = new System.Collections.Generic.List<JsFunctionNode>();
-        CollectVarScope(body, names, functions, lexical: null);
+        var names = facts.Body.VarNames;
+        var functions = facts.Body.Functions;
 
         foreach (var name in names)
         {
@@ -247,160 +242,6 @@ public sealed partial class JsCompiler
             var slot = scope.Declare(alias, constant: false);
             Emit(JsOpcode.LoadUndefined);
             EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
-        }
-    }
-
-    /// <summary>
-    /// Collects the <c>var</c> names and function declarations of one hoisting scope.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// It descends through blocks, loops and <c>try</c> - a <c>var</c> anywhere inside a function
-    /// belongs to that function - and stops at a nested function, which is a hoisting scope of its
-    /// own. A collector that stopped at a block would answer that <c>if (x) { var y; }</c> declares
-    /// nothing.
-    /// </para>
-    /// <para>
-    /// <b>A FUNCTION DECLARATION IS COLLECTED AT THE TOP LEVEL OF THE SCOPE AND NOWHERE BELOW IT,
-    /// which is the one respect in which it is unlike a <c>var</c>.</b> The two look alike from
-    /// here — both are hoisted, both are initialised before the first statement runs — and the
-    /// language separates them at exactly this point: a <c>var</c> anywhere in the body binds in
-    /// the body's own scope, while a function declaration written inside a block binds in THAT
-    /// BLOCK. Collecting it here anyway is what made
-    /// <c>{ let n = 0; function fn() { n += 1; } fn(); }</c> a <c>ReferenceError</c>, because the
-    /// closure was then built against a scope chain the block's record was not yet on
-    /// <i>(JSC-138)</i>. Below the top level <paramref name="functions"/> is passed as
-    /// <see langword="null"/> and <see cref="CompileBlock"/> owns the declaration instead.
-    /// </para>
-    /// <para>
-    /// <b>A LABEL IS TRANSPARENT TO THAT RULE AND A BLOCK IS NOT.</b> <c>l: function f() { }</c> at
-    /// the top level of a body declares <c>f</c> in the body, because the language's own
-    /// <c>TopLevelVarScopedDeclarations</c> looks through a labelled statement to the declaration
-    /// under it; <c>{ l: function f() { } }</c> declares it in the block. So the labelled case
-    /// forwards <paramref name="functions"/> unchanged - which at the top level is the list and
-    /// below it is already <see langword="null"/> - and every other descent drops it.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8575D9
-    // Broiler-Human:        PENDING
-    private static void CollectVarScope(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body,
-        System.Collections.Generic.List<string> names,
-        System.Collections.Generic.List<JsFunctionNode>? functions,
-        System.Collections.Generic.List<string>? lexical)
-    {
-        foreach (var statement in body)
-        {
-            switch (statement)
-            {
-                case JsVariableStatement variable when variable.Kind == SliceDeclarationKind.Var:
-                    foreach (var declarator in variable.Declarators)
-                    {
-                        CollectDeclaratorNames(declarator, names);
-                    }
-
-                    break;
-
-                case JsVariableStatement variable when lexical is not null:
-                    foreach (var declarator in variable.Declarators)
-                    {
-                        CollectDeclaratorNames(declarator, lexical);
-                    }
-
-                    break;
-
-                case JsFunctionDeclaration declaration:
-                    functions?.Add(declaration.Function);
-                    break;
-
-                case JsBlockStatement block:
-                    CollectVarScope(block.Body, names, null, null);
-                    break;
-
-                // A `with` IS NOT A HOISTING SCOPE. `with (o) { var x; function f() { } }` declares
-                // both in the enclosing function, which is what makes `x` survive the body and what
-                // makes `f` callable after it - and it is also why an assignment to `x` INSIDE the
-                // body still asks the object first: the binding is the function's and the write is
-                // resolved dynamically.
-                case JsWithStatement scoped:
-                    CollectVarScope([scoped.Body], names, null, null);
-                    break;
-
-                case JsIfStatement conditional:
-                    CollectVarScope([conditional.Consequent], names, null, null);
-
-                    if (conditional.Alternate is not null)
-                    {
-                        CollectVarScope([conditional.Alternate], names, null, null);
-                    }
-
-                    break;
-
-                case JsWhileStatement loop:
-                    CollectVarScope([loop.Body], names, null, null);
-                    break;
-
-                case JsDoWhileStatement loop:
-                    CollectVarScope([loop.Body], names, null, null);
-                    break;
-
-                case JsForStatement loop:
-                    if (loop.Initialiser is not null)
-                    {
-                        CollectVarScope([loop.Initialiser], names, null, null);
-                    }
-
-                    CollectVarScope([loop.Body], names, null, null);
-                    break;
-
-                case JsForInStatement loop:
-                    if (loop.Declaration == SliceDeclarationKind.Var)
-                    {
-                        CollectHeadNames(loop.Name, loop.Pattern, names);
-                    }
-
-                    CollectVarScope([loop.Body], names, null, null);
-                    break;
-
-                case JsForOfStatement loop:
-                    if (loop.Declaration == SliceDeclarationKind.Var)
-                    {
-                        CollectHeadNames(loop.Name, loop.Pattern, names);
-                    }
-
-                    CollectVarScope([loop.Body], names, null, null);
-                    break;
-
-                case JsTryStatement guarded:
-                    CollectVarScope(guarded.Block.Body, names, null, null);
-
-                    if (guarded.Handler is not null)
-                    {
-                        CollectVarScope(guarded.Handler.Body, names, null, null);
-                    }
-
-                    if (guarded.Finaliser is not null)
-                    {
-                        CollectVarScope(guarded.Finaliser.Body, names, null, null);
-                    }
-
-                    break;
-
-                case JsSwitchStatement switched:
-                    foreach (var clause in switched.Clauses)
-                    {
-                        CollectVarScope(clause.Body, names, null, null);
-                    }
-
-                    break;
-
-                case JsLabelledStatement labelled:
-                    CollectVarScope([labelled.Body], names, functions, null);
-                    break;
-
-                default:
-                    break;
-            }
         }
     }
 
@@ -522,71 +363,5 @@ public sealed partial class JsCompiler
         // Broiler-Human:        PENDING
         public System.Collections.Generic.List<(string Name, bool Constant)>.Enumerator GetEnumerator() =>
             declared.GetEnumerator();
-    }
-
-    /// <summary>Every name one declarator introduces, whether it names one or destructures.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3DAD89
-    // Broiler-Human:        PENDING
-    private static void CollectDeclaratorNames(
-        JsDeclarator declarator, System.Collections.Generic.List<string> names) =>
-        CollectHeadNames(declarator.Name, declarator.Pattern, names);
-
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7A9717
-    // Broiler-Human:        PENDING
-    private static void CollectHeadNames(
-        string name, JsPattern? pattern, System.Collections.Generic.List<string> names)
-    {
-        if (pattern is null)
-        {
-            names.Add(name);
-            return;
-        }
-
-        CollectPatternNames(pattern, names);
-    }
-
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DB0D8E
-    // Broiler-Human:        PENDING
-    private static void CollectPatternNames(
-        JsPattern pattern, System.Collections.Generic.List<string> names)
-    {
-        switch (pattern)
-        {
-            case JsTargetPattern { Target: JsIdentifier identifier }:
-                names.Add(identifier.Name);
-                return;
-
-            case JsArrayPattern array:
-                foreach (var element in array.Elements)
-                {
-                    if (element is not null)
-                    {
-                        CollectPatternNames(element.Target, names);
-                    }
-                }
-
-                if (array.Rest is not null)
-                {
-                    CollectPatternNames(array.Rest, names);
-                }
-
-                return;
-
-            case JsObjectPattern literal:
-                foreach (var property in literal.Properties)
-                {
-                    CollectPatternNames(property.Value.Target, names);
-                }
-
-                if (literal.Rest is not null)
-                {
-                    CollectPatternNames(literal.Rest, names);
-                }
-
-                return;
-
-            default:
-                return;
-        }
     }
 }
