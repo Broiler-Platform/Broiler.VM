@@ -559,10 +559,10 @@ the profile JSD (SJL-0.4).
 *(Noted 2026-10-20, which reopens nothing. SJL-3's clause 7, Broiler.JS's measurement, waits on a
 controlled lane, which neither the programme's machine nor any GitHub-hosted runner is
 (Broiler.JS `docs/roadmap/Measurement.md`, "Controlled lanes and effective configuration").
-Clause 13, Broiler.VM's measurement, is read under a dated revision of its rule of the same date,
-as weaker evidence, in the second and last measurement that revision allows
-([bundle `sjl-3-001`](../evidence/sjl-3-001/README.md)); if that measurement does not meet it,
-clause 13 stays open. SJL-4's clause 9 stays unmet by the owner's decision of the same date
+Clause 13, Broiler.VM's measurement, is to be taken once more, under a dated revision of its rule
+that the owner chose on the same date, as weaker evidence and the second and last measurement that
+revision allows ([bundle `sjl-3-001`](../evidence/sjl-3-001/README.md)); its reading is to be
+recorded in this note. SJL-4's clause 9 stays unmet by the owner's decision of the same date
 ([bundle `sjl-4-001`](../evidence/sjl-4-001/README.md), section 4). The next dated choice here is
 taken when either (a) a controlled lane exists, recorded as `Measurement.md` requires; or (b)
 SJL-3's clause 7, its clause 13 if still open, and SJL-4's clause 9 are the only unmet clauses of
