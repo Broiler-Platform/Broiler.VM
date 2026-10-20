@@ -29,6 +29,9 @@ No collector took the bases: part A's was imported by hand, as
 [`base/hosted/imported.txt`](base/hosted/imported.txt) records, and parts B and C's runs were taken by the commands
 [`base/commands.txt`](base/commands.txt) lists.
 
+*(Added 2026-10-20.)* The bundle now also holds part B's run at the ordering commit, in `after/` (section 5).
+Nothing here is a verdict still: part B is decided when its run at the after commit has been taken.
+
 **SJL-12 is not an area verdict.** It applies no extraction gate and files no X1 to X7 verdict. The frontend area's
 verdict is SJL-13.1's (JSD-0080 decision D1).
 
@@ -46,6 +49,10 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
   *(Added 2026-10-20, when parts B and C's base runs were committed, section 4.)* The corpus commit is
   `865b69b9ede430d5a548e5b97b85e5a7b5e1aed4`, the default-branch merge of Broiler.VM#159. The ordering commit and
   the after commit do not exist yet.
+  *(Added 2026-10-20, when part B's run at the ordering commit was committed, section 5.)* "The ordering commit and
+  the after commit do not exist yet" was true when it was written. The ordering commit is
+  `066abefea4351fb49bd8bf8e823fbdc7aac560de`, the default-branch merge of Broiler.VM#163, which lands SJL-12.6 item
+  3, deterministic ordering, alone. The after commit does not exist yet.
 
 **The rule has five parts**, each deciding alone.
 - **Part A** takes test262 in both forms with the hosted workflow, at the rule commit and at the after commit
@@ -94,6 +101,14 @@ holds the path list as counts per listed path, every path outside `src/tests/cor
 the paths under it are that folder's every file; `corpus/corpus-commit-paths.txt` holds the list whole, from git
 alone. Each of `base/`, `base/hosted/`, `controls/` and `corpus/` has a `hashes.txt`, the SHA-256 of every other
 file of the folder (for `base/`, with `base/logs/` and without `base/hosted/`).
+
+*(Added 2026-10-20, when part B's run at the ordering commit was committed, section 5.)* That run's report is
+[`after/parse-corpus-ordering.tsv.gz`](after/parse-corpus-ordering.tsv.gz), and its comparison with the base's run
+1 is [`after/identity-base-ordering.tsv`](after/identity-base-ordering.tsv): the paths the comparison's output names.
+The run's own records are in [`after/ordering/`](after/ordering/): `machine.txt`, `commands.txt`, the slice
+compiler's `binaries.sha256`, and `logs/`, which holds the checkout's `git rev-parse HEAD` and
+`git status --porcelain` before and after its build, as section 4 asks. [`after/hashes.txt`](after/hashes.txt) is
+the SHA-256 of every other file of `after/`, with `after/ordering/`.
 
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
@@ -270,6 +285,9 @@ follows.
 
 **Written 2026-10-20.** This section reads the base runs this bundle retains. It judges nothing: the rule compares
 each base with a run at the ordering commit or the after commit, and neither commit exists yet.
+
+*(Added 2026-10-20.)* "Neither commit exists yet" was true when this section was written. The ordering commit now
+exists, and section 5 reads part B's run there. The after commit does not exist yet.
 
 | Part | Commit | Taken | Retained in |
 |---|---|---|---|
@@ -448,6 +466,86 @@ and nothing here is compared with them.
 
 **Retained and checked.** In each of `base/`, `base/hosted/`, `controls/` and `corpus/`, `sha256sum -c hashes.txt`,
 run in the folder, passes.
+
+## 5. Part B at the ordering commit (2026-10-20)
+
+**Written 2026-10-20.** This section reads part B's run at the ordering commit, which this bundle retains in
+[`after/`](after/). It judges nothing. Part B is decided over its three runs, and the run at the after commit has
+not been taken: part B is MET "if and only if all three runs are complete, the control is reported as stated, every
+difference is in O, S, T or P and is listed, and B4 and the census show none".
+
+| | |
+|---|---|
+| Commit | The ordering commit, `066abefea4351fb49bd8bf8e823fbdc7aac560de`, the default-branch merge of Broiler.VM#163. Its first parent is `01444a590147b4bcdc033ea82c60d477924c752d`, the default branch before it, and its second is `3ff6b35cea220228ea98877cf95c9b4bc49f439c`, the change's head |
+| What it lands | SJL-12.6 item 3, deterministic ordering, alone and before items 1, 2 and 4, as the rule names the ordering commit (JSD-0080 decision D14): `SourceOrderedLexicals` in the compiler, and the slice compiler's two `--checks` rows that part C names, "the wide lowering is deterministic" and "the wide lowering declares lexical names in source order". From the corpus commit to the first parent, `git diff --name-only` names paths under `docs/` alone. Against its first parent the merge changes the compiler's `JsCompiler.cs`, `JsCompiler.Eval.cs` and `JsCompiler.Hoisting.cs`, the slice compiler's `SourceFrontEndChecks.cs` and `WideLoweringChecks.cs`, and the three generated assurance records |
+| Rule | [`decision-rule-area.md`](decision-rule-area.md), unchanged since the rule commit: `git rev-parse` gives the same blob at the rule commit and the ordering commit |
+| Machine | The programme's local machine, as for the bases: four processors, .NET SDK 10.0.401, Ubuntu 24.04.5 LTS ([`after/ordering/machine.txt`](after/ordering/machine.txt)) |
+| Taken | 2026-10-20: the build from 18:23:40Z, the run from 18:24:36Z to 18:34:10Z, and the comparison with the base to 18:34:17Z ([`after/ordering/logs/driver.log`](after/ordering/logs/driver.log)) |
+| Tool | The slice compiler's `--parse-corpus` mode, built in Release from a clean detached checkout of the ordering commit, with no warning ([`build.log`](after/ordering/logs/build.log)). The mode's source file, `ParseCorpus.cs`, and `eng/compare-parse-corpus.py` are the corpus commit's: `git rev-parse` gives the same blob for each at both commits, as the rule requires. Every command, in order, is in [`after/ordering/commands.txt`](after/ordering/commands.txt) |
+
+**The idle machine** ([`machine.txt`](after/ordering/machine.txt), [`driver.log`](after/ordering/logs/driver.log)).
+- The script's gate listed no `dotnet` or `python` process before the build. The script recorded the load average
+  at the gate, before the build, before and after the run, and at its end. Unlike the bases' gate, it applied no
+  load threshold and did not wait: it recorded.
+- No other build, test or run was taken on the machine while the run was taken.
+- During the run the orchestrating session acted in other checkouts, never in this run's. From 18:32:44Z to
+  18:32:47Z it fetched, fast-forwarded and pushed the Broiler.JS checkout `/home/user/broiler.js` (its reflogs). At
+  about 18:32Z to 18:33Z it removed a merged Broiler.JS worktree. And it merged pull requests on GitHub, which ran
+  there, not on this machine. These were git and GitHub operations, not builds, tests or runs. `machine.txt` names
+  each.
+
+**How the run is bound to the ordering commit.** Section 4 asks the ordering and after runs to retain, in their own
+`logs/`, `git rev-parse HEAD` and `git status --porcelain` of their checkout before and after its build. This run's
+are in [`after/ordering/logs/`](after/ordering/logs/).
+- [`checkout-before-build.txt`](after/ordering/logs/checkout-before-build.txt) reads the ordering commit and an
+  empty `git status --porcelain --ignored`, so nothing ignored, no `bin/` or `obj/`, was in the checkout.
+- [`checkout-after-build.txt`](after/ordering/logs/checkout-after-build.txt) and
+  [`checkout-after-runs.txt`](after/ordering/logs/checkout-after-runs.txt) read the ordering commit and an empty
+  `git status --porcelain`.
+- The checkout was made with `git worktree add --detach` at the ordering commit, named by all forty digits, after
+  `git merge-base --is-ancestor` had found it on the default branch ([`commands.txt`](after/ordering/commands.txt)).
+- [`binaries.sha256`](after/ordering/binaries.sha256) holds the SHA-256 of the twelve assemblies the build wrote.
+  Against [`base/binaries.sha256`](base/binaries.sha256), the nine Broiler.VM assemblies differ, among them the
+  compiler's, `Broiler.VM.Profile.JavaScript.Compiler.dll`, which holds the change. The three of Broiler.ECMAScript
+  and Broiler.Unicode are the same. So the run's compiler is not the base's, as the change requires.
+
+**Complete**, as part B's completeness states it for each of its three commits: "every manifest input reported in
+every sub-population, variant and form at each of the three commits, the manifest's digest at each run equal to the
+corpus commit's, and no run lost its process".
+- The run exited 0, and its standard output reports nothing crashed
+  ([exit](after/ordering/logs/parse-corpus-ordering.exit.txt),
+  [standard output](after/ordering/logs/parse-corpus-ordering.stdout.txt)).
+- **It did not lose its process.** Its journal records 560,963 compilations begun and 560,963 ended, none begun and
+  not ended ([`journal-check.txt`](after/ordering/logs/journal-check.txt)). The journal was then deleted.
+- The identity comparison holds the report to the manifest: its SHA-256, the corpus commit's, and every compilation
+  the four sub-populations owe it, no more and no fewer. It finds none incomplete, so every `not-compiled` row is in
+  one of the two cases reading 2 names ([`after/identity-base-ordering.tsv`](after/identity-base-ordering.tsv)).
+
+**Against the base.** `eng/compare-parse-corpus.py identity`, base run 1 against the ordering run's report, finds 0
+differences, in every sub-population, B1 to B4, and of every kind (outcome, artifact, diagnostics, note). It exits 0
+([`identity.exit.txt`](after/ordering/logs/identity.exit.txt),
+[`after/identity-base-ordering.tsv`](after/identity-base-ordering.tsv)).
+- **The report is byte for byte the base's run 1.** Both files' SHA-256 is `05bc9801...655f`
+  ([`after/hashes.txt`](after/hashes.txt), [`base/hashes.txt`](base/hashes.txt)).
+- **The census is not compared.** The rule takes it at the corpus commit and the after commit only. No census was
+  taken at the ordering commit, and the comparison was run with `--no-census`.
+- **No artifact bytes were written.** The rule retains the bytes of an input whose hash differs between two runs, and
+  no hash differs between these.
+
+**What it means for part B's classes**, read and not judged.
+- **Class O is empty.** O admits "an accepted input whose bytes differ, the difference already present at the
+  ordering commit and unchanged after it". At the ordering commit no input's bytes differ from the base's, so no
+  input can be in O, whatever the after run shows. The rule expected it: "Class O is expected to be empty."
+- So a byte difference the after run shows is in class P, or it is a regression.
+- B4, which admits no class, shows no difference at the ordering commit either.
+
+**What this section does not read.** The two `--checks` rows the ordering commit adds are part C's, and part C reads
+them at the after commit. No other part runs at the ordering commit.
+
+**Retained and checked.** [`after/hashes.txt`](after/hashes.txt) holds the SHA-256 of every other file of `after/`,
+with `after/ordering/`, and `sha256sum -c hashes.txt`, run in the folder, passes. Of the logs, `driver.log` alone was
+trimmed, of the progress segments `git worktree add` wrote, as [`commands.txt`](after/ordering/commands.txt) records
+with the untrimmed file's SHA-256.
 
 ## 9. Exclusions
 

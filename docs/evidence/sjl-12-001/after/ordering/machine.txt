@@ -1,0 +1,66 @@
+Bundle sjl-12-001, part B's run at the ordering commit 066abefea4351fb49bd8bf8e823fbdc7aac560de (the default-branch
+merge of Broiler-Platform/Broiler.VM#163, SJL-12.6 item 3 alone), taken 2026-10-20 from 18:23:25Z to 18:34:17Z
+(logs/driver.log). Every command is in commands.txt.
+
+THE MACHINE (the rule names it by its processor count, its SDK and its operating system)
+The programme's local machine, the one base/machine.txt names.
+  processors   4 (nproc 4, recorded by the run: logs/driver.log, its first line; lscpu: Intel(R) Xeon(R) Processor
+               @ 2.10GHz, 1 socket, 4 cores, 1 thread per core)
+  SDK          .NET SDK 10.0.401, runtime Microsoft.NETCore.App 10.0.12, RID linux-x64
+  OS           Ubuntu 24.04.5 LTS, Linux 6.18.44-fc-v139 x86_64
+  memory       16093 MB (free -m)
+  Python       3.13.16 (python3, which ran the journal check and eng/compare-parse-corpus.py)
+The run recorded the processor count and nothing else of these. The rest were read on the same machine on
+2026-10-20, after the run, for these records: dotnet --list-sdks lists one SDK, 10.0.401, under /root/.dotnet, the
+DOTNET_ROOT the run set, and the repository has no global.json; dotnet --list-runtimes, /etc/os-release, uname,
+lscpu, free -m and python3 --version gave the rest. They are what base/machine.txt names.
+
+THE IDLE MACHINE
+The script's gate, at 2026-10-20T18:23:25Z, recorded the processor count and the load average and listed every
+process whose command line holds dotnet, or python or python3 followed by a space. It listed none. The gate applied
+no load threshold and did not wait: it recorded. The script recorded the load average again at each stage
+(logs/driver.log, /proc/loadavg):
+  stage                         time (UTC)             load average
+  gate                          2026-10-20T18:23:25Z   0.52 0.22 0.08 2/109 307
+  build                         2026-10-20T18:23:40Z   0.62 0.26 0.10 1/109 423
+  parse-corpus (one worker)     2026-10-20T18:24:36Z   4.41 1.47 0.53 1/110 816
+  done runs                     2026-10-20T18:34:10Z   1.27 1.14 0.78 1/108 10052
+  end                           2026-10-20T18:34:17Z   1.22 1.14 0.78 1/106 10084
+The figures at the start of the parse-corpus run carry this run's own build, which had just ended (logs/build.log
+gives its elapsed time, 00:00:53.86).
+
+No other build, test or run was taken on the machine while this run was taken. During the run, from 18:24:36Z to
+18:34:10Z, the orchestrating session acted on the machine in other checkouts, never in this run's checkout:
+  - a fetch, fast-forward and push of the Broiler.JS checkout /home/user/broiler.js, at 18:32:44Z to 18:32:47Z (its
+    reflogs: "fetch -q origin main: fast-forward" at 18:32:44Z, "merge origin/main: Fast-forward" at 18:32:45Z, and
+    "update by push" at 18:32:47Z);
+  - the removal of a merged Broiler.JS worktree, at about 18:32Z to 18:33Z (git keeps no reflog of a worktree's
+    removal; this is the session's account);
+  - merges of pull requests on GitHub, which ran on GitHub, not on this machine.
+None of them was a build, test or run. Before the run, at 18:23:07Z to 18:23:11Z, before the gate, the session also
+fetched, fast-forwarded and pushed in the main checkout /home/user/Broiler.VM (its reflogs). That too was a git
+operation, and it did not touch this run's checkout, which was made after it.
+
+THE RUN
+  parse-corpus, one worker   exit 0, wall 573 s by the script's clock (logs/parse-corpus-ordering.exit.txt), 572.5 s by
+                             the mode's (logs/parse-corpus-ordering.stdout.txt); recorded, not measured: SJL-12
+                             measures nothing
+  journal                    every compilation that began also ended (logs/journal-check.txt); the journal was then
+                             deleted
+  identity against base run 1   exit 0 (logs/identity.exit.txt; identity-base-ordering.tsv, beside this folder)
+
+THE CHECKOUT
+  a clean detached worktree of 066abefea4351fb49bd8bf8e823fbdc7aac560de, made after git merge-base --is-ancestor of
+  it and the default branch exited 0 (commands.txt);
+  logs/checkout-before-build.txt: HEAD 066abefea4351fb49bd8bf8e823fbdc7aac560de, and git status --porcelain --ignored
+  empty, so no bin/ or obj/ was in it before the build;
+  logs/checkout-after-build.txt and logs/checkout-after-runs.txt: the same HEAD, and git status --porcelain empty;
+  built in Release from clean, 0 warnings, 0 errors (logs/build.log);
+  the slice compiler's assemblies as built: binaries.sha256. Against base/binaries.sha256, the nine Broiler.VM
+  assemblies differ, among them Broiler.VM.Profile.JavaScript.Compiler.dll, which holds the change, and the three of
+  Broiler.ECMAScript and Broiler.Unicode are the same;
+  src/tests/corpus/parse-1/corpus.manifest SHA-256 1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc,
+  the corpus commit's (identity-base-ordering.tsv checks it);
+  the mode's source file, ParseCorpus.cs, and eng/compare-parse-corpus.py are the corpus commit's: git rev-parse gives
+  the same blob at both commits, 0f4ce7022a26ed972393b70db584b76188f241f0 and
+  c1d3b53d957c1a23f409b466f667b0733772863d.
