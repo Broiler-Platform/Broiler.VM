@@ -81,6 +81,52 @@ PGO unset, dynamic code on, native arming installed.
 **Not retained:** the build logs, the binaries, the four transcripts and the per-line listing of the arms'
 differences. The command writes each again. The revised rule's run retains its own transcripts and listing.
 
+## The controls of the revised rule's step
+
+Taken after the gate held and the revised rule, the collector's `measure-revised` step and its `--check-only` option
+were written, against the commit that adds them as first made, `adc32f44f447286f01e19a85c22d92278fd3d476`. The
+commit that carries this directory differs from it only by `controls/` and this section; the rule, the collector,
+the checker and the program are the same blobs, which each run's output names under "files". Every control ran
+from a scratch worktree with `--check-only`, so none could reach a transcript, an answer or a lane. Each file in
+[`controls/`](controls/) names what was changed, what was expected, the command, the step's output and its exit
+code.
+
+**Every refusal fails before anything is built** (exit 2, every problem printed):
+
+| File | What was changed | What the step said |
+|---|---|---|
+| [`refuse-1-product-file.txt`](controls/refuse-1-product-file.txt) | one product file, a comment line in `src/Broiler.VM.Runtime/`, committed with the rule | arm A differs from `aaa39fb` outside the documents in a path the rule does not exempt |
+| [`refuse-2-workload-byte.txt`](controls/refuse-2-workload-byte.txt) | one byte of `to-number.js`, committed with the rule | the workload's blob is not the one `manifest.json` names; the path is also a product path |
+| [`refuse-3-numref-digest.txt`](controls/refuse-3-numref-digest.txt) | one byte of the reference | its SHA-256 is not the rule's |
+| [`refuse-4-dirty-tree.txt`](controls/refuse-4-dirty-tree.txt) | an uncommitted line in a document of arm A's tree | arm A's tree is not clean |
+| [`refuse-5-base-commit.txt`](controls/refuse-5-base-commit.txt) | arm B's tree at the base commit's parent | arm B is not at bundle `sjl-0-001`'s base commit |
+| [`refuse-6-later-commit.txt`](controls/refuse-6-later-commit.txt) | a documents-only commit on top of the rule's | arm A is the commit that adds the rule, not a later one |
+| [`refuse-7-closure-reference.txt`](controls/refuse-7-closure-reference.txt) | the command-line root made to reference the slice compiler's root | the root's closure holds a project under an exempted path and names it, and the project file is a product path |
+| [`refuse-8-build-server.txt`](controls/refuse-8-build-server.txt) | a process named `VBCSCompiler` running | a .NET build server or build is running |
+
+**The transcript checker refuses a wrong transcript** (exit 1), on the bytecode transcripts of the check above:
+
+| File | What was changed | What the check said |
+|---|---|---|
+| [`checker-1-inadmissible-line.txt`](controls/checker-1-inadmissible-line.txt) | arm A's first line, `String(0)`, made `1`: the same length | (i) and (ii) hold, (iii) fails on that line alone; the check does not hold |
+| [`checker-2-line-removed.txt`](controls/checker-2-line-removed.txt) | one line of arm A removed | (i), (ii) and (iii) fail; the check does not hold |
+
+**The step passes where it should** (exit 0; both arms built, then it stopped):
+
+| File | Arm A | What it showed |
+|---|---|---|
+| [`pass-1-corpus-branch-merged-first.txt`](controls/pass-1-corpus-branch-merged-first.txt) | a scratch commit adding this bundle's files on top of a scratch merge of SJL-12's VM corpus branch (`2c0b110`) into the default branch (`95a0b81`) | **SJL-12's VM corpus commit, merged before the rule's, does not void the run**: outside the documents, every file it changes is under the four exempted paths, the root's closure and build files do not reach them, and every other check passes |
+| [`pass-2-check-only.txt`](controls/pass-2-check-only.txt) | the commit that adds the rule | `--only measure-revised --check-only`: every refusal check passes, both arms build, and no transcript, answer or lane is run |
+
+The arm A main assembly's hash differs from run to run here, and from the check's above, because each build embeds
+its commit in the assembly's informational version (`0.1.0-preview.1+<commit>`) and the path of its checkout. Arm
+B's, built from one checkout at one commit, is the same in every run.
+
+**The default branch has since done what pass control 1 simulated.** On 2026-10-20 it merged SJL-12's VM corpus
+branch at `2c0b110` as `865b69b` (#159). That merge's tree is `2857e292c08c6ef987a9eaf2e358ad3cab7454ae`, the same as
+the scratch merge pass control 1 was taken on top of. So arm A, should this commit merge after `865b69b`, has the
+product sources that control's arm A had.
+
 ## Files
 
 | File | What it holds |
@@ -91,3 +137,4 @@ differences. The command writes each again. The revised rule's run retains its o
 | [`configuration.txt`](configuration.txt) | each arm's effective-configuration lines |
 | [`transcript-check.txt`](transcript-check.txt) | each transcript's digest, and the check's items (i) to (iii) per form, with counts per conversion |
 | [`gate.txt`](gate.txt) | the gate's three items and its result |
+| [`controls/`](controls/) | the revised rule's step and checker, each watched refusing and passing, as the section above lists |

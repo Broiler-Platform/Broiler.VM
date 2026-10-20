@@ -46,11 +46,53 @@ Steps, each with `--only`:
              SJL-3.7: every member rule I5 registers, searched as a whole word in the JavaScript family's
              product sources, and the search for a surviving duplicate of the area in the whole
              component's, into simplification/.
+
+THE REVISED MEASUREMENT WAS ADDED ON 2026-10-20, after measure's run was seen, with
+decision-rule-revised-2026-10-20.md, which moves part C's arm A and gives to-string.js a condition of its own,
+held by a transcript. measure and every other step are unchanged.
+
+    python3 docs/evidence/sjl-3-001/collect.py --tree <a clean checkout of the commit that adds the revised rule> \
+        --base-tree <a clean checkout of 0087e8d73ae3833200fa263b68f71db15b059a9c> \
+        --numref <Broiler.JS scripts/conformance/numref.py at 966140ad> --out docs/evidence/sjl-3-001 \
+        --only measure-revised [--check-only]
+
+  measure-revised
+             part C under the revised rule, into measurement-revised/, a sub-bundle of its own, in this order:
+             1. the refusals, before anything is built (exit 2, every one printed): arm A's tree is clean (but
+                for this step's own sub-bundle, when --out is in it), its HEAD adds the revised rule (its first
+                parent does not carry it) and descends from aaa39fb, and
+                outside the documents it differs from aaa39fb only under the four paths the rule's header names;
+                no project of the command-line root's closure lies under those paths, no project file of it and
+                no build file names them, and no differing path under a docs/ directory is one a build compiles;
+                the six workloads have the blobs manifest.json names, and their loop and the transcript
+                program's are the checker's; arm B's tree is clean at sjl-0-001's base commit; the reference has
+                the rule's SHA-256; no .NET build server or build is running; the counts the rule cites read as
+                the collector's; and measurement-revised/ holds no completed run (one without a summary, a
+                stopped run, is moved aside to measurement-revised-stopped-<n>/ and retained);
+             2. the builds: the command-line root in Release in each tree, with node reuse, the MSBuild server
+                and the shared compiler off, every file of each output listed by hash in binaries-<arm>.sha256;
+             3. manifest.txt, written and made read-only: the rules, the collector, the checker, the program and
+                the reference, each arm's commit and binaries, the root's closure, every commit since the first
+                run's after commit 49ea00e with its files outside the documents, the workloads by digest and
+                blob, the protocol, the machine and the load average at the start;
+             4. every arm's first check of every file, in each form, before any lane; then
+                transcript/to-string.transcript.js once per arm and form, kept as transcript-<arm>-<form>.txt.gz,
+                and the transcript check of transcript/check.py, into transcript-check.tsv (every line the arms
+                differ on, and every line of arm A the specification does not admit) and transcript-check.txt;
+             5. the lanes, as measure takes them: per form and workload, three warm-up repetitions and seven
+                retained, the arms' order rotating by repetition, each arm running the workload and then its
+                control, every child run with --runtime; then every answer checked again. The expected answer is
+                arm B's first for every file but to-string.js, and for to-string.js the lane's own arm's first,
+                arm A's for A-again;
+             6. runs.tsv, conditions.tsv, summary.txt (with the load average at the end) and hashes.txt.
+             With --check-only it takes 1 and 2 only, builds into its scratch directory, writes nothing under
+             --out, and runs no transcript, no answer and no lane.
 """
 
 import argparse
 import datetime
 import gzip
+import hashlib
 import importlib.util
 import json
 import os
@@ -86,6 +128,92 @@ POLYGLOT_RUNS = [
     ["run", INPUTS + "/adder.wasm", "--invoke", "add", "--arg", "i32:7", "--arg", "i32:35"],
     ["run", INPUTS + "/hello.js", INPUTS + "/adder.wasm"], ["run", INPUTS + "/nottext.wasm"],
     ["run", INPUTS + "/hello.js"]]
+
+# The revised rule of 2026-10-20 (measure-revised). Arm A is the commit that adds it to the default branch's
+# history, whose product sources are aaa39fb's - the default branch after the move to 0.1.0-preview.7 - but for the
+# four paths below: the ones bundle sjl-12-001's rule lets change before its corpus commit beyond the documents,
+# none of which a build of the command-line root reads. The step checks that last claim at arm A before any build.
+REVISED_RULE = "docs/evidence/sjl-3-001/decision-rule-revised-2026-10-20.md"
+ORIGINAL_RULE = "docs/evidence/sjl-3-001/decision-rule.md"
+PROGRAM = "docs/evidence/sjl-3-001/transcript/to-string.transcript.js"
+CHECKER = "docs/evidence/sjl-3-001/transcript/check.py"
+COLLECTOR = "docs/evidence/sjl-3-001/collect.py"
+PREVIEW_7 = "aaa39fbc2030e1a2554317bea75bcbb56041c696"
+FIRST_AFTER = "49ea00effa457ac8d5b05f34cbae718b862007b2"
+NOT_BUILT = ("src/tests/corpus/parse-1/", "src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/",
+             "eng/compare-parse-corpus.py", "eng/check-frontend-mapping.py")
+# What a build reads under a docs/ directory if it is there: C# sources and resources (the SDK's default items) and
+# MSBuild files.
+BUILD_INPUT_SUFFIXES = (".cs", ".resx", ".csproj", ".props", ".targets")
+MEASUREMENT_REVISED = "measurement-revised"
+ARMS = ("B", "A", "A-again")
+FORMS = ("bytecode", "native")
+
+
+def load_module(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+transcript = load_module("sjl_3_001_transcript_check", os.path.join(HERE, "transcript", "check.py"))
+
+
+def outside_documents(names):
+    """The paths of a `git diff --name-only` listing outside docs/ and outside any docs/ directory."""
+    return [name for name in names.splitlines() if name and not name.startswith("docs/") and "/docs/" not in name]
+
+
+def not_built(path):
+    return any(path == prefix or (prefix.endswith("/") and path.startswith(prefix)) for prefix in NOT_BUILT)
+
+
+def project_closure(tree, project):
+    """Every project the given one references, followed transitively, as paths relative to the tree."""
+    seen, pending = [], [os.path.normpath(os.path.join(tree, project))]
+    while pending:
+        path = pending.pop()
+        if path in seen:
+            continue
+        seen.append(path)
+        with open(path, encoding="utf-8") as stream:
+            text = stream.read()
+        for reference in re.findall(r'<ProjectReference\s+Include="([^"]+)"', text):
+            pending.append(os.path.normpath(os.path.join(os.path.dirname(path), reference.replace("\\", "/"))))
+    return sorted(os.path.relpath(path, tree).replace(os.sep, "/") for path in seen)
+
+
+def build_processes():
+    """Every running .NET build server or build: the compiler server, an MSBuild node or MSBuild itself, or a
+    dotnet command that builds. None when the platform cannot be read."""
+    if not os.path.isdir("/proc"):
+        return None
+    found = []
+    for entry in os.listdir("/proc"):
+        if not entry.isdigit() or int(entry) == os.getpid():
+            continue
+        try:
+            with open(os.path.join("/proc", entry, "cmdline"), "rb") as stream:
+                words = [word.decode("utf-8", "replace") for word in stream.read().split(b"\0") if word]
+        except OSError:
+            continue
+        if not words:
+            continue
+        names = [os.path.basename(word) for word in words]
+        if (any(name.startswith("VBCSCompiler") or name == "MSBuild.dll" or name == "rzc.dll" for name in names)
+                or (names[0] == "dotnet" and len(names) > 1
+                    and names[1] in ("build", "test", "run", "publish", "pack", "restore", "msbuild", "build-server"))):
+            found.append("pid %s: %s" % (entry, " ".join(words)[:160]))
+    return found
+
+
+def load_average():
+    try:
+        return "%.2f %.2f %.2f" % os.getloadavg()
+    except OSError:
+        return "(unavailable)"
 
 
 class Collector(base.Collector):
@@ -410,6 +538,523 @@ class Collector(base.Collector):
             stream.write("\n".join(lines) + "\n")
         return verdict
 
+    # ---- part C under the revised rule of 2026-10-20 ----------------------------------------------
+    def git(self, tree, *arguments):
+        return self.run(["git"] + list(arguments), cwd=tree)
+
+    def build_files(self, closure):
+        """The repository's build files a build of the closure reads: each Directory.Build.props or .targets from a
+        project's directory up to the root, the root's Directory.Packages.props, NuGet.config and global.json, and
+        every file one of them imports."""
+        found = []
+        for project in closure:
+            folder = os.path.dirname(project)
+            while True:
+                for name in ("Directory.Build.props", "Directory.Build.targets"):
+                    path = os.path.join(folder, name).replace(os.sep, "/")
+                    if os.path.isfile(os.path.join(self.tree, path)) and path not in found:
+                        found.append(path)
+                if not folder:
+                    break
+                folder = os.path.dirname(folder)
+        for name in ("Directory.Packages.props", "NuGet.config", "global.json"):
+            if os.path.isfile(os.path.join(self.tree, name)) and name not in found:
+                found.append(name)
+        index = 0
+        while index < len(found):
+            path = found[index]
+            index += 1
+            with open(os.path.join(self.tree, path), encoding="utf-8", errors="replace") as stream:
+                text = stream.read()
+            for imported in re.findall(r'<Import\s+Project="([^"]+)"', text):
+                imported = imported.replace("$(MSBuildThisFileDirectory)", "").replace("\\", "/")
+                if "$(" in imported:
+                    continue
+                relative = os.path.normpath(os.path.join(os.path.dirname(path), imported)).replace(os.sep, "/")
+                if os.path.isfile(os.path.join(self.tree, relative)) and relative not in found:
+                    found.append(relative)
+        return found
+
+    def measure_revised(self):
+        """Part C of decision-rule-revised-2026-10-20.md. Every check that can refuse runs before anything is built;
+        with --check-only the step builds both arms into its scratch directory and stops."""
+        step = "measure-revised"
+        check_only = bool(getattr(self.arguments, "check_only", False))
+        numref_path = os.path.abspath(self.arguments.numref) if getattr(self.arguments, "numref", None) else None
+        started_load = load_average()
+
+        def hide(text):
+            text = self.hide(text)
+            return text.replace(numref_path, "<numref>") if numref_path else text
+
+        problems = []
+        base_commit = next(line.split(" ", 1)[1] for line in open(os.path.join(BASE_BUNDLE, "identity.txt"),
+                                                                     encoding="utf-8")
+                           if line.startswith("base-commit ")).strip()
+        trees = {"A": self.tree, "B": self.base_tree}
+        commits = {}
+        if not self.base_tree:
+            problems.append("arm B needs --base-tree, a clean checkout of %s" % base_commit)
+        if not numref_path:
+            problems.append("the transcript check needs --numref, Broiler.JS's scripts/conformance/numref.py at %s"
+                            % transcript.NUMREF_COMMIT)
+        for arm in ("A", "B"):
+            if not trees[arm]:
+                continue
+            code, head = self.git(trees[arm], "rev-parse", "HEAD")
+            commits[arm] = head.strip() if code == 0 else "(not a checkout)"
+            # The step's own sub-bundle, or a stopped run of it, may be in arm A's tree when --out is there.
+            dirty = [line for line in self.git(trees[arm], "status", "--porcelain")[1].splitlines() if line.strip()
+                     and not (arm == "A" and line.startswith("?? docs/evidence/sjl-3-001/" + MEASUREMENT_REVISED))]
+            if code != 0:
+                problems.append("arm %s: %s is not a checkout" % (arm, trees[arm]))
+            elif dirty:
+                problems.append("arm %s: the tree is not clean: %s" % (arm, "; ".join(dirty[:10])))
+        if commits.get("B") and commits["B"] != base_commit:
+            problems.append("arm B: the tree is at %s, not bundle sjl-0-001's base commit %s" % (commits["B"], base_commit))
+
+        # Arm A: the commit that adds the revised rule, on aaa39fb's product sources but for the paths the root
+        # does not build.
+        if self.git(self.tree, "cat-file", "-e", "HEAD:" + REVISED_RULE)[0] != 0:
+            problems.append("arm A: HEAD does not carry %s" % REVISED_RULE)
+        elif self.git(self.tree, "cat-file", "-e", "HEAD^1:" + REVISED_RULE)[0] == 0:
+            problems.append("arm A: HEAD's first parent already carries %s; arm A is the commit that adds it to the"
+                            " default branch's history, not a later one" % REVISED_RULE)
+        if self.git(self.tree, "merge-base", "--is-ancestor", PREVIEW_7, "HEAD")[0] != 0:
+            problems.append("arm A: HEAD does not descend from %s" % PREVIEW_7)
+        code, names = self.git(self.tree, "diff", "--name-only", PREVIEW_7, "HEAD")
+        if code != 0:
+            problems.append("arm A: git diff --name-only %s HEAD failed: %s" % (PREVIEW_7, names.strip()[-300:]))
+            names = ""
+        product = outside_documents(names)
+        differing = [name for name in product if not not_built(name)]
+        exempted = [name for name in product if not_built(name)]
+        if differing:
+            problems.append("arm A: outside the documents it differs from %s in %d path(s) the rule does not exempt: %s"
+                            % (PREVIEW_7, len(differing), ", ".join(differing[:25]) + (" ..." if len(differing) > 25 else "")))
+        compiled = [name for name in names.splitlines() if (name.startswith("docs/") or "/docs/" in name)
+                    and name.endswith(BUILD_INPUT_SUFFIXES)]
+        if compiled:
+            problems.append("arm A: a path under a docs/ directory that a build compiles or reads differs from %s: %s"
+                            % (PREVIEW_7, ", ".join(compiled[:25])))
+        cli_project = (base.CLI + "/" + os.path.basename(base.CLI) + ".csproj").replace(os.sep, "/")
+        try:
+            closure = project_closure(self.tree, cli_project)
+            build_files = self.build_files(closure)
+        except OSError as error:
+            closure, build_files = [], []
+            problems.append("arm A: the command-line root's closure could not be read: %s" % error)
+        under = [project for project in closure if not_built(project)]
+        if under:
+            problems.append("arm A: the command-line root's closure holds a project under a path the rule exempts: %s"
+                            % ", ".join(under))
+        # Each path's last component, so a relative reference is caught as well as a rooted one.
+        markers = [prefix.rstrip("/").rsplit("/", 1)[-1] for prefix in NOT_BUILT]
+        naming = []
+        for path in closure + build_files:
+            with open(os.path.join(self.tree, path), encoding="utf-8", errors="replace") as stream:
+                text = stream.read().replace("\\", "/")
+            naming += ["%s names %s" % (path, marker) for marker in markers if marker in text]
+        if naming:
+            problems.append("arm A: a project or build file of the command-line root names a path the rule exempts: %s"
+                            % "; ".join(naming))
+
+        # The workloads, byte for byte the rule's, and the transcript program's loop the workload's.
+        sources = json.load(open(os.path.join(HERE, "manifest.json"), encoding="utf-8"))["sources"]
+        workloads = []
+        for stem in base.WORKLOAD_STEMS:
+            for name in (stem + ".js", stem + ".control.js"):
+                relative = (base.WORKLOADS + "/" + name).replace(os.sep, "/")
+                path = os.path.join(self.tree, relative)
+                if not os.path.isfile(path):
+                    problems.append("workload %s is missing from arm A's tree" % relative)
+                    continue
+                blob = self.git(self.tree, "hash-object", path)[1].strip()
+                if blob != sources.get(relative):
+                    problems.append("workload %s has blob %s; the bundle's manifest.json names %s"
+                                    % (relative, blob, sources.get(relative)))
+                workloads.append((relative, self.sha256_lf(path), blob))
+        for what, relative in (("the workload to-string.js", base.WORKLOADS + "/to-string.js"),
+                               ("the transcript program", PROGRAM)):
+            path = os.path.join(self.tree, relative)
+            if not os.path.isfile(path) or transcript.loop_of(open(path, encoding="utf-8").read()) != transcript.expected_loop():
+                problems.append("%s's loop is not the transcript checker's (values, bound, scale and conversions)" % what)
+
+        # The reference, the counts the rule cites, the machine and the sub-bundle.
+        numref = None
+        if numref_path:
+            try:
+                numref = transcript.load_numref(numref_path)
+            except (transcript.Refused, OSError) as refusal:
+                problems.append(str(refusal))
+        compare_forms = open(os.path.join(self.tree, "eng", "compare-forms.py"), encoding="utf-8").read()
+        warmup = re.search(r'"--warmup", type=int, default=(\d+)', compare_forms)
+        baselines = open(os.path.join(self.tree, "docs", "baselines.md"), encoding="utf-8").read()
+        if not warmup or int(warmup.group(1)) != base.WARMUP:
+            problems.append("eng/compare-forms.py's warm-up default is not %d" % base.WARMUP)
+        if not re.search(r"\| 4 \| \*\*Every repetition retained\.\*\* Seven per lane", baselines) or base.REPETITIONS != 7:
+            problems.append("docs/baselines.md rule 4 does not read seven per lane")
+        servers = build_processes()
+        if servers is None:
+            problems.append("this platform's processes cannot be listed, so no .NET build server can be ruled out")
+        elif servers:
+            problems.append("a .NET build server or build is running: %s" % "; ".join(servers))
+        out = os.path.join(self.out, MEASUREMENT_REVISED)
+        stopped = None
+        if os.path.isdir(out) and os.listdir(out):
+            if os.path.isfile(os.path.join(out, "summary.txt")):
+                problems.append("%s/ holds a completed measurement; a measurement is not run again" % MEASUREMENT_REVISED)
+            else:
+                number = 1
+                while os.path.exists(os.path.join(self.out, "%s-stopped-%d" % (MEASUREMENT_REVISED, number))):
+                    number += 1
+                stopped = os.path.join(self.out, "%s-stopped-%d" % (MEASUREMENT_REVISED, number))
+
+        children = len(FORMS) * len(base.WORKLOAD_STEMS) * len(ARMS) * 2 * (2 + base.WARMUP + base.REPETITIONS)
+        plan = [
+            "%s: part C of %s%s" % (step, REVISED_RULE, " (check only: refusals and builds)" if check_only else ""),
+            "  arm B        %s at %s (bundle sjl-0-001's base commit %s)" % (self.base_tree, commits.get("B"), base_commit),
+            "  arm A        %s at %s (the commit that adds the revised rule; product sources %s's but for the paths"
+            " the root does not build)" % (self.tree, commits.get("A"), PREVIEW_7),
+            "  arm A-again  arm A's binaries, measured a second time under another lane name",
+            "  exempted     differing from %s outside the documents, under the rule's four paths: %d file(s)%s"
+            % (PREVIEW_7, len(exempted), "" if not exempted else " (" + ", ".join(sorted({
+                next(prefix for prefix in NOT_BUILT if not_built(name) and (name == prefix or name.startswith(prefix)))
+                for name in exempted})) + ")"),
+            "  root         %s, built in Release under the JIT in each arm's tree; closure at arm A: %s"
+            % (base.CLI.replace(os.sep, "/"), ", ".join(closure)),
+            "  build files  %s" % ", ".join(build_files),
+            "  forms        %s; native under %s" % (", ".join(FORMS), base.NATIVE_BACKEND),
+            "  workloads    %s" % ", ".join(relative.rsplit("/", 1)[1] for relative, _, _ in workloads),
+            "  transcript   %s, once per arm and form, held to %s with numref.py at %s"
+            % (PROGRAM, CHECKER, transcript.NUMREF_COMMIT),
+            "  files        as arm A holds them: %s" % ", ".join("%s blob=%s" % (
+                relative.rsplit("/", 1)[1], self.git(self.tree, "rev-parse", "HEAD:" + relative)[1].strip() or "(absent)")
+                for relative in (REVISED_RULE, COLLECTOR, CHECKER, PROGRAM)),
+            "  repetitions  %d warm-up (excluded from Q) and %d retained per lane; the arms' order rotates by"
+            " repetition, and each arm runs the workload, then its control" % (base.WARMUP, base.REPETITIONS),
+            "  checks       every arm's first check of every file and form before any lane, and again after its lanes",
+            "  allowance    fuel=%d wallClockMs=%d, the same for every lane" % (base.MEASURE_FUEL, base.MEASURE_WALL),
+            "  children     %d timed or checked, four transcripts and two builds" % children,
+            "  load average %s at the step's start" % started_load,
+            "  into         %s" % ("nothing under --out: the builds go to the step's scratch directory" if check_only
+                                   else os.path.join(self.out, MEASUREMENT_REVISED)
+                                   + ("; the stopped run there moves to %s" % os.path.basename(stopped) if stopped else "")),
+        ]
+        print(hide("\n".join(plan)), flush=True)
+        for problem in problems:
+            print("%s: REFUSED: %s" % (step, hide(problem)), flush=True)
+        if problems:
+            return 2
+
+        # 2. The builds.
+        if check_only:
+            target = os.path.join(self.scratch, MEASUREMENT_REVISED)
+        else:
+            target = out
+            if stopped:
+                os.rename(out, stopped)
+                print("%s: the stopped run is retained as %s" % (step, os.path.basename(stopped)), flush=True)
+        os.makedirs(target, exist_ok=True)
+        environment = dict(os.environ, DOTNET_CLI_UI_LANGUAGE="en", DOTNET_CLI_TELEMETRY_OPTOUT="1",
+                           DOTNET_CLI_USE_MSBUILD_SERVER="0", MSBUILDDISABLENODEREUSE="1", UseSharedCompilation="false")
+        binaries, listings = {}, {}
+        for arm in ("B", "A"):
+            tree = trees[arm]
+            project = os.path.join(tree, base.CLI, os.path.basename(base.CLI) + ".csproj")
+            done = subprocess.run(["dotnet", "build", project, "-c", "Release", "--no-incremental", "-nodeReuse:false",
+                                   "-p:UseSharedCompilation=false"], cwd=tree, capture_output=True, encoding="utf-8",
+                                  errors="replace", env=environment)
+            output = ((done.stdout or "") + (done.stderr or "")).strip()
+            with open(os.path.join(target, "build-cli-%s.log" % arm.lower()), "w", encoding="utf-8", newline="\n") as stream:
+                stream.write(hide(output + "\nexit code: %d\n" % done.returncode))
+            print("%s: arm %s build exit %d" % (step, arm, done.returncode), flush=True)
+            if done.returncode != 0:
+                print(hide(output[-3000:]), flush=True)
+                print("%s: the command-line root did not build for arm %s; a build failure before any lane is not a"
+                      " run, and its log is retained in %s" % (step, arm, hide(target)), flush=True)
+                return 1
+            copy = os.path.join(self.scratch, "cli-revised-" + arm)
+            shutil.rmtree(copy, ignore_errors=True)
+            shutil.copytree(os.path.join(tree, base.CLI, "bin", "Release", "net10.0"), copy)
+            binaries[arm] = os.path.join(copy, base.CLI_BINARY)
+            entries = []
+            for root, _, files in os.walk(copy):
+                for name in files:
+                    path = os.path.join(root, name)
+                    entries.append("%s  %s" % (self.sha256(path), os.path.relpath(path, copy).replace(os.sep, "/")))
+            listing = "\n".join(sorted(entries, key=lambda line: line.split("  ", 1)[1])) + "\n"
+            path = os.path.join(target, "binaries-%s.sha256" % arm.lower())
+            with open(path, "w", encoding="utf-8", newline="\n") as stream:
+                stream.write(listing)
+            os.chmod(path, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)
+            listings[arm] = hashlib.sha256(listing.encode("utf-8")).hexdigest()
+            print("%s: arm %s %s.dll sha256=%s; binaries-%s.sha256 sha256=%s" % (
+                step, arm, base.CLI_BINARY, self.sha256(binaries[arm] + ".dll"), arm.lower(), listings[arm]), flush=True)
+        binaries["A-again"] = binaries["A"]
+        if check_only:
+            print("%s: check only: every refusal check passed and both arms built; no transcript, answer or lane was"
+                  " run, and nothing was written under --out" % step, flush=True)
+            return 0
+        return self.revised_runs(step, out, binaries, listings, commits, exempted, closure, build_files, workloads,
+                                 numref, numref_path, started_load, hide)
+
+    def revised_runs(self, step, out, binaries, listings, commits, exempted, closure, build_files, workloads, numref,
+                     numref_path, started_load, hide):
+        """measure-revised after its refusals and builds: the manifest, the first checks, the transcripts and their
+        check, the lanes and the results, into out."""
+        # 3. The manifest, read-only before anything runs.
+        def blob(path):
+            return self.git(self.tree, "hash-object", path)[1].strip()
+
+        def held(relative):
+            return self.git(self.tree, "rev-parse", "HEAD:" + relative)[1].strip()
+
+        since = []
+        listing = self.git(self.tree, "log", "--reverse", "--format=%H%x09%P%x09%s", "%s..HEAD" % FIRST_AFTER)[1]
+        for entry in listing.splitlines():
+            if not entry.strip():
+                continue
+            sha, parents, subject = entry.split("\t", 2)
+            touched = outside_documents(self.git(self.tree, "diff", "--name-only", sha + "^1", sha)[1])
+            if " " in parents:
+                # A merge's files are those of the commits it brings in, each listed here with its own.
+                since.append("  %s %s: a merge, %s against its first parent" % (
+                    sha, subject, (str(len(touched)) + " files") if touched else "no files"))
+                continue
+            since.append("  %s %s: %s" % (sha, subject, (str(len(touched)) + " files") if touched else "none"))
+            since.extend("    " + name for name in touched)
+        manifest = [
+            "sub-bundle sjl-3-001/%s" % MEASUREMENT_REVISED,
+            "evidence-class measurement",
+            "decision %s part C, as revised: MET if and only if every lane's condition passes, before and after, for"
+            " every workload and form (for to-string.js, each arm's own first answer, A-again held to arm A's, and the"
+            " transcript check holds); every effective-configuration line is identical across arms, lanes and"
+            " repetitions; and for every workload and form D <= N. Weaker evidence: written after measurement/ was"
+            " seen." % REVISED_RULE,
+            "rule %s blob=%s sha256=%s" % (REVISED_RULE, held(REVISED_RULE), self.sha256_lf(os.path.join(self.tree, REVISED_RULE))),
+            "rule-it-revises %s blob=%s sha256=%s" % (ORIGINAL_RULE, held(ORIGINAL_RULE),
+                                                      self.sha256_lf(os.path.join(self.tree, ORIGINAL_RULE))),
+            "collector %s blob=%s as run, blob=%s as arm A holds it" % (COLLECTOR, blob(os.path.abspath(__file__)),
+                                                                        held(COLLECTOR)),
+            "checker %s blob=%s as run, blob=%s as arm A holds it" % (CHECKER, blob(transcript.__file__), held(CHECKER)),
+            "program %s blob=%s sha256=%s" % (PROGRAM, held(PROGRAM), self.sha256_lf(os.path.join(self.tree, PROGRAM))),
+            "reference scripts/conformance/numref.py at Broiler.JS %s sha256=%s" % (transcript.NUMREF_COMMIT,
+                                                                                    self.sha256(numref_path)),
+            "collected " + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "load-average %s at the step's start, %s when this manifest was written after both builds"
+            % (started_load, load_average()),
+            "arm-B-commit %s (bundle sjl-0-001's base commit; clean tree)" % commits["B"],
+            "arm-A-commit %s (it adds the revised rule to the default branch's history: its first parent does not carry"
+            " it; descends from %s; clean tree)" % (commits["A"], PREVIEW_7),
+            "arm-A-differs-from %s outside the documents only under the rule's four paths, none of which the root's"
+            " closure or build files name: %s" % (PREVIEW_7, ("%d files" % len(exempted)) if exempted else "none"),
+        ]
+        manifest.extend("  " + name for name in exempted)
+        manifest += [
+            "arm-A-again the arm A binaries, measured a second time under another lane name",
+        ]
+        for arm in ("B", "A"):
+            manifest.append("binary arm %s %s.dll sha256=%s; every file of its output, binaries-%s.sha256 sha256=%s" % (
+                arm, base.CLI_BINARY, self.sha256(binaries[arm] + ".dll"), arm.lower(), listings[arm]))
+        manifest += [
+            "root %s, Release, under the JIT, built with --no-incremental, node reuse, the MSBuild server and the"
+            " shared compiler off" % base.CLI.replace(os.sep, "/"),
+            "root-closure %s" % ", ".join(closure),
+            "build-files %s" % ", ".join(build_files),
+            "rid " + ("win-x64" if platform.system() == "Windows" else "linux-x64"),
+            "sdk " + self.run(["dotnet", "--version"])[1].strip(),
+            "machine " + platform.platform() + " " + platform.machine() + " cpus=" + str(os.cpu_count()),
+            "protocol first, every arm's first check of every file in each form, before any lane; then the transcript"
+            " program once per arm and form, and its check; then, per form and workload, the repetitions; then every"
+            " arm's answer for the workload and its control checked again",
+            "repetitions %d retained per lane (docs/baselines.md rule 4), %d warm-up excluded from Q"
+            " (eng/compare-forms.py's default)" % (base.REPETITIONS, base.WARMUP),
+            "order in each repetition r (from 0): the arms rotated by r from B, A, A-again; each arm runs the"
+            " workload, then its control",
+            "condition to-number.js, literals.js and every control: arm B's first answer; to-string.js: the lane's own"
+            " arm's first answer, arm A's for A-again",
+            "allowance fuel=%d wallClockMs=%d" % (base.MEASURE_FUEL, base.MEASURE_WALL),
+            "forms " + " ".join(FORMS),
+            "native-backend " + base.NATIVE_BACKEND,
+            "configuration-check every child is run with --runtime; its line starting %s is kept" % base.RUNTIME_PREFIX,
+        ]
+        for relative, digest, workload_blob in workloads:
+            manifest.append("workload %s sha256=%s blob=%s (the blob the bundle's manifest.json names)"
+                            % (relative, digest, workload_blob))
+        manifest.append("since-first-after-commit %s (measurement/'s arm A), every commit to arm A with its files"
+                        " outside the documents:" % FIRST_AFTER)
+        manifest.extend(since)
+        path = os.path.join(out, "manifest.txt")
+        with open(path, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(hide("\n".join(manifest) + "\n"))
+        os.chmod(path, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)
+        print("%s: manifest written and made read-only" % step, flush=True)
+
+        folder = os.path.join(self.tree, base.WORKLOADS)
+        child_environment = dict(os.environ, DOTNET_CLI_UI_LANGUAGE="en")
+        configurations = []
+
+        def child(arm, form, path):
+            command = [binaries[arm], "--runtime"]
+            if form == "native":
+                command += ["--native", base.NATIVE_BACKEND]
+            command += ["--fuel", str(base.MEASURE_FUEL), "--wall", str(base.MEASURE_WALL), path]
+            started = time.perf_counter()
+            done = subprocess.run(command, capture_output=True, encoding="utf-8", errors="replace",
+                                  env=child_environment)
+            elapsed = (time.perf_counter() - started) * 1000.0
+            runtime = next((line.strip() for line in (done.stderr or "").splitlines()
+                            if line.startswith(base.RUNTIME_PREFIX)), "(none)")
+            lines = (done.stdout or "").strip().splitlines()
+            return done.returncode, lines[-1] if lines else "", runtime, elapsed, done.stdout or ""
+
+        def numbered(runtime):
+            if runtime not in configurations:
+                configurations.append(runtime)
+            return configurations.index(runtime) + 1
+
+        first = {}
+
+        def expected_for(form, arm, name):
+            source = "A" if name == "to-string.js" and arm != "B" else "B"
+            code, answer = first.get((form, source, name), (None, None))
+            return (answer if code == 0 else None), "arm %s's first check" % source
+
+        conditions = open(os.path.join(out, "conditions.tsv"), "w", encoding="utf-8", newline="\n")
+        runs = open(os.path.join(out, "runs.tsv"), "w", encoding="utf-8", newline="\n")
+        conditions.write("form\tworkload\tarm\tfile\twhen\texit\tanswer\tconfiguration\theld to\tequal\n")
+        runs.write("form\tworkload\trepetition\tretained\tposition\tarm\tfile\texit\tanswer-ok\tconfiguration\twall-ms\n")
+        failed_conditions = failed_runs = within = 0
+        summary = ["# part C of %s, measured %s to %%s" % (REVISED_RULE, datetime.datetime.now(
+                       datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")),
+                   "# Q is the median of the retained repetitions, in ms; N = |Q(A) - Q(A-again)|; D = Q(A) - Q(B);",
+                   "# E(arm) = Q(workload, arm) - Q(control, arm), retained beside D and deciding nothing",
+                   "# form | workload | Q(B) | Q(A) | Q(A-again) | N | D | D <= N | Q(control, B) | Q(control, A) |"
+                   " Q(control, A-again) | E(B) | E(A) | E(A-again)"]
+        transcript_holds = False
+        try:
+            def check(form, stem, when):
+                failures = 0
+                for arm in ARMS:
+                    for name in (stem + ".js", stem + ".control.js"):
+                        code, answer, runtime, _, _ = child(arm, form, os.path.join(folder, name))
+                        if when == "before":
+                            first[(form, arm, name)] = (code, answer)
+                        expected, source = expected_for(form, arm, name)
+                        equal = code == 0 and expected is not None and answer == expected
+                        failures += 0 if equal else 1
+                        conditions.write("%s\t%s\t%s\t%s\t%s\t%d\t%s\t%d\t%s\t%s\n" % (
+                            form, stem, arm, name, when, code, answer, numbered(runtime), source,
+                            "yes" if equal else "NO"))
+                        conditions.flush()
+                return failures
+
+            # 4. The first checks, then the transcripts and their check, all before any lane.
+            for form in FORMS:
+                for stem in base.WORKLOAD_STEMS:
+                    failed_conditions += check(form, stem, "before")
+            print("%s: first checks taken" % step, flush=True)
+            transcripts, taken = {}, []
+            for arm in ("B", "A"):
+                for form in FORMS:
+                    code, _, runtime, elapsed, output = child(arm, form, os.path.join(self.tree, PROGRAM))
+                    data = output.encode("utf-8")
+                    with gzip.GzipFile(os.path.join(out, "transcript-%s-%s.txt.gz" % (arm.lower(), form)), "wb",
+                                       compresslevel=9, mtime=0) as stream:
+                        stream.write(data)
+                    transcripts[(arm, form)] = output if code == 0 else None
+                    taken.append("transcript arm %s %s: exit %d, %d bytes, sha256=%s, %.0f ms, configuration: %s" % (
+                        arm, form, code, len(data), hashlib.sha256(data).hexdigest(), elapsed, runtime))
+                    print("%s: transcript arm %s %s exit %d" % (step, arm, form, code), flush=True)
+            reference = transcript.Reference(numref)
+            lines = ["# The transcript check of %s, taken before any lane: %s run once per arm and form;" % (
+                         REVISED_RULE, PROGRAM),
+                     "# (i) and (ii) tie each transcript to the first checks in conditions.tsv; (iii) holds arm A's texts"
+                     " to Broiler.JS's numref.py at %s." % transcript.NUMREF_COMMIT, ""] + taken + [""]
+            rows = [transcript.TSV_HEADER]
+            transcript_holds = True
+            for form in FORMS:
+                holds, summary_lines, form_rows = transcript.check(
+                    reference, form, {"A": transcripts[("A", form)], "B": transcripts[("B", form)]},
+                    expected_for(form, "B", "to-string.control.js")[0],
+                    {"A": expected_for(form, "A", "to-string.js")[0], "B": expected_for(form, "B", "to-string.js")[0]})
+                transcript_holds = transcript_holds and holds
+                lines += summary_lines + [""]
+                rows += form_rows
+            lines.append("transcript check: %s" % ("HOLDS in both forms" if transcript_holds else "DOES NOT HOLD"))
+            with open(os.path.join(out, "transcript-check.txt"), "w", encoding="utf-8", newline="\n") as stream:
+                stream.write(hide("\n".join(lines) + "\n"))
+            with open(os.path.join(out, "transcript-check.tsv"), "w", encoding="utf-8", newline="\n") as stream:
+                stream.write("\n".join(rows) + "\n")
+            print("%s: transcript check %s; the lanes start" % (step, "holds" if transcript_holds else "DOES NOT HOLD"),
+                  flush=True)
+
+            # 5. The lanes, as measure takes them, each workload's answers checked again after its lanes.
+            for form in FORMS:
+                for stem in base.WORKLOAD_STEMS:
+                    files = (stem + ".js", stem + ".control.js")
+                    times = {(arm, name): [] for arm in ARMS for name in files}
+                    for repetition in range(base.WARMUP + base.REPETITIONS):
+                        kept = repetition >= base.WARMUP
+                        order = ARMS[repetition % len(ARMS):] + ARMS[:repetition % len(ARMS)]
+                        position = 0
+                        for arm in order:
+                            for name in files:
+                                position += 1
+                                code, answer, runtime, elapsed, _ = child(arm, form, os.path.join(folder, name))
+                                expected, _ = expected_for(form, arm, name)
+                                ok = code == 0 and expected is not None and answer == expected
+                                failed_runs += 0 if ok else 1
+                                runs.write("%s\t%s\t%d\t%s\t%d\t%s\t%s\t%d\t%s\t%d\t%.3f\n" % (
+                                    form, stem, repetition, "yes" if kept else "warm-up", position, arm, name, code,
+                                    "yes" if ok else "NO", numbered(runtime), elapsed))
+                                runs.flush()
+                                if kept:
+                                    times[(arm, name)].append(elapsed)
+                    failed_conditions += check(form, stem, "after")
+                    q = {key: statistics.median(values) for key, values in times.items()}
+                    workload, control = files
+                    floor = abs(q[("A", workload)] - q[("A-again", workload)])
+                    difference = q[("A", workload)] - q[("B", workload)]
+                    within += difference <= floor
+                    summary.append(" | ".join([form, stem] + ["%.3f" % value for value in (
+                        q[("B", workload)], q[("A", workload)], q[("A-again", workload)], floor, difference)]
+                        + ["yes" if difference <= floor else "NO"] + ["%.3f" % value for value in (
+                            q[("B", control)], q[("A", control)], q[("A-again", control)],
+                            q[("B", workload)] - q[("B", control)], q[("A", workload)] - q[("A", control)],
+                            q[("A-again", workload)] - q[("A-again", control)])]))
+                    print("%s: %s %s D=%.3f N=%.3f" % (step, form, stem, difference, floor), flush=True)
+        finally:
+            runs.close()
+            conditions.close()
+
+        # 6. The results.
+        summary[0] = summary[0] % datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        pairs = len(FORMS) * len(base.WORKLOAD_STEMS)
+        summary += [
+            "# answer checks (conditions.tsv) that differ from the answer they are held to: %d; timed children that"
+            " do: %d" % (failed_conditions, failed_runs),
+            "# transcript check (transcript-check.txt): %s" % ("holds in both forms" if transcript_holds else "DOES NOT HOLD"),
+            "# workloads and forms with D <= N: %d of %d" % (within, pairs),
+            "# effective-configuration lines seen: %d (runs.tsv and conditions.tsv name each by its number)"
+            % len(configurations),
+        ]
+        summary.extend("#   %d: %s" % (number, line) for number, line in enumerate(configurations, 1))
+        summary.append("# load average %s at the step's start, %s at its end" % (started_load, load_average()))
+        with open(os.path.join(out, "summary.txt"), "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(hide("\n".join(summary) + "\n"))
+        lines = ["%s  %s" % (self.sha256(os.path.join(out, entry)) if entry.endswith(".gz")
+                             else self.sha256_lf(os.path.join(out, entry)), entry)
+                 for entry in sorted(os.listdir(out)) if entry not in ("hashes.txt", "README.md")]
+        with open(os.path.join(out, "hashes.txt"), "w", encoding="utf-8", newline="\n") as stream:
+            stream.write("\n".join(lines) + "\n")
+        print("%s: %d answer checks differ, %d timed children differ, transcript check %s, %d configuration lines,"
+              " D <= N in %d of %d" % (step, failed_conditions, failed_runs, "holds" if transcript_holds else "FAILS",
+                                       len(configurations), within, pairs), flush=True)
+        return 0 if (failed_conditions == 0 and failed_runs == 0 and transcript_holds
+                     and len(configurations) == 1) else 1
+
     def rerun(self):
         if not self.base_tree or not self.suite:
             print("rerun: needs --base-tree and --suite")
@@ -565,15 +1210,19 @@ def main():
     parser.add_argument("--against-broiler-js", help="the BroilerJS apphost built at the named commit")
     parser.add_argument("--against-root", help="the Broiler.JS checkout it was built from")
     parser.add_argument("--images", help="the closures step's mstat records, for rule I3 (rules)")
+    parser.add_argument("--numref", help="measure-revised: Broiler.JS's scripts/conformance/numref.py at 966140ad")
+    parser.add_argument("--check-only", action="store_true",
+                        help="measure-revised: the refusals and the builds only; no transcript, answer or lane")
     parser.add_argument("--only", action="append", required=True,
                         choices=("identity", "closures", "test262", "compare", "rerun", "twins", "differential", "measure",
-                                 "rules", "simplification"))
+                                 "measure-revised", "rules", "simplification"))
     arguments = parser.parse_args()
 
     collector = Collector(arguments)
+    collector.arguments = arguments
     verdict = 0
     for step in arguments.only:
-        verdict |= getattr(collector, step)()
+        verdict |= getattr(collector, step.replace("-", "_"))()
     shutil.rmtree(collector.scratch, ignore_errors=True)
     return verdict
 

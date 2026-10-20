@@ -1,0 +1,31 @@
+# Pass control 1: SJL-12's VM corpus branch merged before the commit that adds the rule
+# what changed: a scratch merge 2da6b239b22a0c6eb73eba26950e36b7561ebb08 of the VM corpus branch's head 2c0b11000eb51f698114a965ac6cc2cb6c241c56 into the default branch's 95a0b816a9c8030873c6a71e3ac320a7c90d6f8c, then a commit adding this bundle's files as the rule commit holds them
+# expected: every refusal check passes, both arms build, and the step stops (check only)
+# arm A tree (<tree>) at 3687beab3850f3d420103dc50b15eb02c9ec3b95; arm B tree (<base-tree>) at 0087e8d73ae3833200fa263b68f71db15b059a9c
+# the rule commit these controls were taken against: adc32f44f447286f01e19a85c22d92278fd3d476 (its parent 89d5d51fa7984bbf0604c67157fbeaa76e5964b9)
+$ (cd <tree> && python3 docs/evidence/sjl-3-001/collect.py --tree <tree> --base-tree <base-tree> --numref <scratch>/numref-966140ad.py --out <out> --only measure-revised --check-only)
+
+measure-revised: part C of docs/evidence/sjl-3-001/decision-rule-revised-2026-10-20.md (check only: refusals and builds)
+  arm B        <base-tree> at 0087e8d73ae3833200fa263b68f71db15b059a9c (bundle sjl-0-001's base commit 0087e8d73ae3833200fa263b68f71db15b059a9c)
+  arm A        <tree> at 3687beab3850f3d420103dc50b15eb02c9ec3b95 (the commit that adds the revised rule; product sources aaa39fbc2030e1a2554317bea75bcbb56041c696's but for the paths the root does not build)
+  arm A-again  arm A's binaries, measured a second time under another lane name
+  exempted     differing from aaa39fbc2030e1a2554317bea75bcbb56041c696 outside the documents, under the rule's four paths: 2276 file(s) (eng/check-frontend-mapping.py, eng/compare-parse-corpus.py, src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/, src/tests/corpus/parse-1/)
+  root         src/compositions/Broiler.VM.Composition.JavaScript.Cli, built in Release under the JIT in each arm's tree; closure at arm A: src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj, src/Broiler.VM.Binary/Broiler.VM.Binary.csproj, src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj, src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj, src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj, src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj, src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj, src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj
+  build files  Directory.Build.props, Directory.Packages.props, NuGet.config, eng/Broiler.Packaging.props
+  forms        bytecode, native; native under x86-64-sysv
+  workloads    to-string.js, to-string.control.js, to-number.js, to-number.control.js, literals.js, literals.control.js
+  transcript   docs/evidence/sjl-3-001/transcript/to-string.transcript.js, once per arm and form, held to docs/evidence/sjl-3-001/transcript/check.py with numref.py at 966140ad694570467ad21975f23047d0d6f0c1ce
+  files        as arm A holds them: decision-rule-revised-2026-10-20.md blob=b74d968738ff76dbfbbef0fb5ada1116923d9e96, collect.py blob=ed0931c78bd0be811e2c963e296b51a38da11ba0, check.py blob=cf2fe29fac0c0c82f1021c95d61f0e5d29e2b276, to-string.transcript.js blob=9a926b538541c7d51c089902507dc10ebd79c4b8
+  repetitions  3 warm-up (excluded from Q) and 7 retained per lane; the arms' order rotates by repetition, and each arm runs the workload, then its control
+  checks       every arm's first check of every file and form before any lane, and again after its lanes
+  allowance    fuel=100000000000 wallClockMs=600000, the same for every lane
+  children     432 timed or checked, four transcripts and two builds
+  load average 1.14 1.93 1.43 at the step's start
+  into         nothing under --out: the builds go to the step's scratch directory
+measure-revised: arm B build exit 0
+measure-revised: arm B Broiler.VM.Composition.JavaScript.Cli.dll sha256=38245be8eb808fec7ffedd48d4f3aa4a850fd4b91d01ba741b1d997632648a35; binaries-b.sha256 sha256=5fbd2045f557e30bcec8c9a2fdfdd8e332fbb31e5bed773ed2e0d70f9b3fc98e
+measure-revised: arm A build exit 0
+measure-revised: arm A Broiler.VM.Composition.JavaScript.Cli.dll sha256=eb1a8852e82466fc7ca8f0eedb279a5dc3f503cde6c6edb35844de4d925f728b; binaries-a.sha256 sha256=6ec7248b30c0e338a120dd5738f6bbc494d5400a357e95842050674129029157
+measure-revised: check only: every refusal check passed and both arms built; no transcript, answer or lane was run, and nothing was written under --out
+exit code: 0
+# result: passed and built, as expected
