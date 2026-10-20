@@ -89,8 +89,11 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
 bundle `sjl-10-001` placed its own: the artifact holds a `binaries.sha256` of the conformance root's assemblies, and
 `base/` holds the slice compiler's under the same name. `base/logs/` holds the local base runs' logs. Part B's
 control and its output are in `controls/`, beside part E's. `corpus/corpus-commit.txt` records the corpus commit as
-the `corpus/` bullet above says. Each of `base/`, `base/hosted/`, `controls/` and `corpus/` has a `hashes.txt`, the
-SHA-256 of every other file of the folder (for `base/`, with `base/logs/` and without `base/hosted/`).
+the `corpus/` bullet above says. *(Added 2026-10-20, after the bases were first committed.)* `corpus-commit.txt`
+holds the path list as counts per listed path, every path outside `src/tests/corpus/parse-1/`, and the check that
+the paths under it are that folder's every file; `corpus/corpus-commit-paths.txt` holds the list whole, from git
+alone. Each of `base/`, `base/hosted/`, `controls/` and `corpus/` has a `hashes.txt`, the SHA-256 of every other
+file of the folder (for `base/`, with `base/logs/` and without `base/hosted/`).
 
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
@@ -362,8 +365,9 @@ part A, and this section quotes no total (section 2).
 **The corpus commit's three conditions, read again when it is named**, as section 3 says they are, from git alone
 ([`corpus/corpus-commit.txt`](corpus/corpus-commit.txt)).
 - **It descends from the rule commit.** `git merge-base --is-ancestor` exits 0.
-- **It names only the listed paths.** `git diff --name-only` between the two names 2,282 paths, and each is under a
-  path the condition lists:
+- **It names only the listed paths.** `git diff --name-only` between the two names 2,282 paths
+  ([`corpus/corpus-commit-paths.txt`](corpus/corpus-commit-paths.txt) holds every one), and each is under a path the
+  condition lists:
   - 2,272 under `src/tests/corpus/parse-1/`, which are every file of that folder at the corpus commit, none of which
     existed at the rule commit;
   - `ParseCorpus.cs` and `Program.cs` of the slice compiler;
@@ -398,10 +402,12 @@ part A, and this section quotes no total (section 2).
 **Part B's base.**
 - **Complete.** The identity comparison holds each report to the manifest: its SHA-256, the corpus commit's, and
   every compilation the four sub-populations owe it, no more and no fewer. Each of runs 1 and 2 holds 560,963
-  compilations of the manifest's 55,751 inputs, and none is incomplete
-  ([`base/identity-run1-run2.tsv`](base/identity-run1-run2.tsv)). Nothing crashed in any run (each run's standard
-  output). Every `not-compiled` row is in one of the two cases reading 2 names: 287 in B2, note `fixture`, and 13
-  in B4, note `no-json-goal`. The per-sub-population outcomes are in the comparison's header.
+  compilations of the manifest's 55,751 inputs (each report's header, `manifest-rows`, and each run's standard
+  output, [run 1](base/logs/parse-corpus-run1.stdout.txt) and [run 2](base/logs/parse-corpus-run2.stdout.txt)), and
+  none is incomplete ([`base/identity-run1-run2.tsv`](base/identity-run1-run2.tsv), which also gives the
+  compilations). Nothing crashed in any run (each run's standard output). Every `not-compiled` row is in one of
+  the two cases reading 2 names: 287 in B2, note `fixture`, and 13 in B4, note `no-json-goal`. The
+  per-sub-population outcomes are in the comparison's header.
 - **Run 1 against run 2.** `eng/compare-parse-corpus.py identity`, with both census pairs, finds 0 differences, in
   every sub-population and of every kind (outcome, artifact, diagnostics, note), and both census pairs identical
   byte for byte. It exits 0. The two reports are one file byte for byte, `05bc9801...`
