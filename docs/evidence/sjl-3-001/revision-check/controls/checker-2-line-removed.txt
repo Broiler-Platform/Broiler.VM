@@ -1,0 +1,22 @@
+# Checker control 2: one line of arm A removed
+# what changed: line 40001 of arm A's transcript removed
+# expected: (i), (ii) and (iii) fail; the check does not hold
+# inputs: the revision check's bytecode transcripts (revision-check/transcript-check.txt names their digests); answers as in revision-check/answers.tsv
+$ python3 docs/evidence/sjl-3-001/transcript/check.py --numref <numref> --form bytecode --control-answer 80000 --a <mutated arm A transcript> --answer-a 2516095 --b <the revision check's scratch>/transcript-b-bytecode.txt.gz --answer-b 2515784
+
+## form bytecode
+(i)   lines: arm A 79999, arm B 80000; to-string.control.js at arm B's first check: 80000; FAILS
+(ii)  sum of the lines' lengths: arm A 2516094 against to-string.js at arm A's first check 2516095; arm B 2515784 against to-string.js at arm B's first check 2515784; FAILS
+(iii) every line of arm A is one the specification admits: FAILS (43012 of the program's 80000 lines)
+conversion | lines | arm A admitted | arm A not admitted | lines the arms differ on | of those, arm B admitted | of those, arm B not admitted
+String | 10000 | 5600 | 4400 | 4400 | 4400 | 0
+toString(2) | 10000 | 5600 | 4400 | 4400 | 4400 | 0
+toString(7) | 10000 | 5600 | 4400 | 5867 | 3166 | 2701
+toString(16) | 10000 | 5600 | 4400 | 4400 | 4400 | 0
+toString(36) | 10000 | 5200 | 4800 | 6295 | 4120 | 2175
+toFixed(4) | 10000 | 5212 | 4788 | 4788 | 4788 | 0
+toExponential(6) | 10000 | 5200 | 4800 | 4800 | 4800 | 0
+toPrecision(10) | 10000 | 5000 | 5000 | 5000 | 5000 | 0
+transcript check, bytecode form: DOES NOT HOLD
+exit code: 1
+# result: the check does not hold, as expected
