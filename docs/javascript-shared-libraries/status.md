@@ -1600,10 +1600,11 @@ again. The owner had part C revised:
 [`decision-rule-revised-2026-10-20.md`](../evidence/sjl-3-001/decision-rule-revised-2026-10-20.md), written after
 that run was seen, so its decision is weaker evidence.
 - **Arm A** is the commit that adds the revised rule to the default branch. Its product sources are `aaa39fb`'s, this
-  family on `0.1.0-preview.7`. So the revision judges this family at its later sources, with the changes of SJL-4 to
-  SJL-8 and SJL-10 and the shared stream's re-pins since `49ea00e`, against SJL-0's base; it does not judge SJL-3's
-  cut-over alone, and a NOT MET cannot be laid on that cut-over alone either. Arm B, the workloads, the repetitions,
-  the allowances, the A/A floor as the only tolerance, and the MET line are the original's.
+  family on `0.1.0-preview.7`, but for paths the command-line root does not build. So the revision judges this family
+  at its later sources, with the changes of SJL-4 to SJL-8 and SJL-10 and the shared stream's re-pins since
+  `49ea00e`, against SJL-0's base; it does not judge SJL-3's cut-over alone, and a NOT MET cannot be laid on that
+  cut-over alone either. Arm B, the workloads, the repetitions, the allowances, the A/A floor as the only tolerance,
+  and the MET line are the original's.
 - **`to-string.js`'s condition** is its own arm's answer, held to the specification by a transcript check against the
   shared corpus's own reference, Broiler.JS's `scripts/conformance/numref.py`, because the cut-over's radix
   corrections move its answer. The other workloads and every control keep the base arm's answer, and each was
@@ -1611,7 +1612,7 @@ that run was seen, so its decision is weaker evidence.
 - **It is the second and last measurement of part C.** A NOT MET is not followed by a third under a further
   revision, and the tolerance is not changed.
 - **The reading:** **NOT MET**, on its clause 3 alone: every condition, the transcript check and every configuration
-  line hold, but the after arm is not within the A/A floor of the base on every workload and form
+  line hold, but on some workloads and forms the after arm is not within the A/A floor of the base
   ([`measurement-revised/`](../evidence/sjl-3-001/measurement-revised/README.md), and the bundle's section 10). Clause
   13 stays open after the second and last measurement its revision allows.
 - **What a reading says.** The A/A floor is part C's only tolerance, and under it a change that makes no difference

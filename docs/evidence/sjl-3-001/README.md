@@ -296,17 +296,20 @@ one under [`decision-rule.md`](decision-rule.md).
   its run once. Before it was written, the workloads' answers and `to-string.js`'s texts were checked at both arms,
   which is not evidence ([`revision-check/`](revision-check/README.md)).
 - **What it changes.** Two departures, each stated in the rule on its own. Arm A is the commit on the default
-  branch's first-parent history that adds the rule, whose product sources are `aaa39fb`'s, this family on
-  `0.1.0-preview.7`: the run judges this family at its later sources, with the changes of SJL-4 to SJL-8 and SJL-10
-  and the shared stream's re-pins since `49ea00e`, and not SJL-3's cut-over alone. And `to-string.js`'s condition is
+  branch's first-parent history that adds the rule, whose product sources are `aaa39fb`'s but for four paths the
+  command-line root does not build, this family on `0.1.0-preview.7`: the run judges this family at its later
+  sources, with the changes of SJL-4 to SJL-8 and SJL-10 and the shared stream's re-pins since `49ea00e`, and not
+  SJL-3's cut-over alone. And `to-string.js`'s condition is
   its own arm's answer, held to the specification by a transcript check against Broiler.JS's
   `scripts/conformance/numref.py`. Two readings are added: this is part C's second and last measurement, and a build
   or restore failure before any lane is not a run.
 - **What it keeps.** Arm B, the workloads, the repetitions and warm-ups, the allowances, the quantity, the A/A floor
   as the only tolerance, and the MET line.
 
-**The step.** `collect.py --only measure-revised` ran once, on 2026-10-20 from 14:19:22Z to 14:28:55Z, and exited 0,
-from clean detached checkouts of both arms, with no other build, test or run on the machine:
+**The step.** `collect.py --only measure-revised` ran once, on 2026-10-20, and exited 0, from clean detached checkouts
+of both arms, with no other build, test or run on the machine. By its console output, which is not retained, it ran
+from 14:19:22Z to 14:28:55Z; its manifest records 14:20:38Z, when it was written after both builds, and its
+[`summary.txt`](measurement-revised/summary.txt) dates the measurement from then to 14:28:55Z. The command:
 
 ```
 python3 docs/evidence/sjl-3-001/collect.py --tree <a clean checkout of arm A> --default-branch origin/main \
@@ -315,16 +318,17 @@ python3 docs/evidence/sjl-3-001/collect.py --tree <a clean checkout of arm A> --
     --out docs/evidence/sjl-3-001 --only measure-revised
 ```
 
-[`measurement-revised/`](measurement-revised/README.md) holds its output, a sub-bundle of its own evidence class like
-`measurement/`, with its own README, manifest and hashes, which [`manifest.json`](manifest.json) does not hash. Its
-README gives every figure and reads the two failures without deciding anything.
+[`measurement-revised/`](measurement-revised/README.md) holds its output: a sub-bundle of its own evidence class, as
+[`measurement/`](measurement/) is, with its own manifest and hashes, which [`manifest.json`](manifest.json) does not
+hash, and with a README, which `measurement/` does not have. That README gives every figure and reads the two
+failures without deciding anything.
 
 | | |
 |---|---|
 | Arm B | `0087e8d73ae3833200fa263b68f71db15b059a9c`, bundle `sjl-0-001`'s base commit, rebuilt in Release from a clean checkout, as in section 7 |
 | Arm A | `ebf93cd3e8fba11002f3da563b13b32ca54afe32`, the merge of Broiler-Platform/Broiler.VM#160, which lands the revised rule on the default branch: its first parent, `865b69b`, does not carry the rule, and its second is `7e887a1`. Outside the documents it differs from `aaa39fb` only under the four paths the rule's header names, which the command-line root does not build |
 | A-again | arm A's binaries, measured a second time under another lane name, the A/A lane |
-| Machine | the programme's local machine, as for section 7's run: `linux-x64`, four logical processors, .NET SDK 10.0.401 ([`measurement-revised/manifest.txt`](measurement-revised/manifest.txt)) |
+| Machine | the programme's local machine, of section 7's run's kind: `linux-x64`, four logical processors, here with .NET SDK 10.0.401 ([`measurement-revised/manifest.txt`](measurement-revised/manifest.txt)). It is not section 7's container: it was restarted since that run, and its kernel build is `fc-v139` where [`measurement/manifest.txt`](measurement/manifest.txt) names `fc-v114`, so absolute figures are not comparable across the two runs |
 | Load average | 0.07 0.10 0.20 at the step's start, 4.67 1.49 0.67 when its manifest was written after both builds, and 0.85 1.07 0.82 at its end ([`manifest.txt`](measurement-revised/manifest.txt), [`summary.txt`](measurement-revised/summary.txt)) |
 | Protocol | section 7's: seven repetitions per lane and three warm-ups excluded from Q, the arms' order rotating by repetition, each arm running the workload and then its control, fuel 100,000,000,000 and a 600,000 ms wall allowance for every lane; but every arm's first check of every file, in each form, was taken before any lane, so that the transcript check is read before any lane runs |
 
@@ -363,7 +367,8 @@ every line they differ on.
   is only the distance between two medians of the same binaries. **A NOT MET is therefore not a finding of a slowdown,
   and a MET is not a speed claim.**" And, of its arm A, "A NOT MET cannot be laid on SJL-3's cut-over alone either."
   This bundle makes no speed claim in either direction and compares nothing with Broiler.JS.
-- **What follows.** The owner's decision C13-3 of 2026-10-20, for a NOT MET here, is to stop: no third measurement
+- **What follows.** The owner's decision of 2026-10-20 for a NOT MET here, recorded in
+  [the ledger](../../javascript-shared-libraries/status.md)'s entry of that date, is to stop: no third measurement
   under a further revision and no change of tolerance, as the revised rule's last reading has it, "a NOT MET here is
   not followed by a third under a further revision, and leaves clause 13 open until the owner's next dated choice
   under decision SJL-D-23". **Clause 13 stays open, and SJL-3 with it.** The next dated choice is the one the dated

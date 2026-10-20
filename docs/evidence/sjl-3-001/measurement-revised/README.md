@@ -5,11 +5,12 @@
 
 **One evidence class: a measurement.** It is part C of
 [`decision-rule-revised-2026-10-20.md`](../decision-rule-revised-2026-10-20.md). That rule was written after part
-C's first run, [`../measurement/`](../measurement/summary.txt), had been seen and read NOT MET, so its decision is
+C's first run, [`../measurement/`](../measurement/), had been seen and read NOT MET, so its decision is
 **weaker evidence** than one under the rule as written, [`decision-rule.md`](../decision-rule.md). It moves arm A to
 this family at `aaa39fb`'s product sources, gives `to-string.js` a condition of its own, held to the specification by
 a transcript, and makes this the second and last measurement of part C. `collect.py --only measure-revised` took it,
-once, on the local machine part C's first run was taken on. The bundle's `manifest.json` does not hash this
+once, on the programme's local machine, of the kind part C's first run was taken on but in a container restarted
+since that run (see "When, and beside what" below). The bundle's `manifest.json` does not hash this
 directory; [`manifest.txt`](manifest.txt) and [`hashes.txt`](hashes.txt) are its own. This README is in neither: it
 was written after the step, as bundle `sjl-7-001`'s
 [`measurement-revised/README.md`](../../sjl-7-001/measurement-revised/README.md) is not in its `hashes.txt`. The first
@@ -62,17 +63,21 @@ stands as the reading of arm A at `49ea00e`.
   - three warm-up repetitions, retained in [`runs.tsv`](runs.tsv) and named, are excluded from Q, and seven are
     retained per lane;
   - every timed child ran with `--runtime`, fuel 100,000,000,000 and a wall allowance of 600,000 ms.
-- **When, and beside what.** On 2026-10-20 the step ran once, from 14:19:22Z to 14:28:55Z, and exited 0. Its manifest
-  was written at 14:20:38Z, after both builds, and [`summary.txt`](summary.txt) dates the measurement from then to the
-  step's end.
+- **When, and beside what.** On 2026-10-20 the step ran once and exited 0, from 14:19:22Z to 14:28:55Z by its console
+  output, which is not retained. Its manifest records 14:20:38Z, when it was written after both builds, and
+  [`summary.txt`](summary.txt) dates the measurement from then to 14:28:55Z.
   - Nothing else ran on the machine beside it: no other build, test or run. The programme's previous local runs,
-    SJL-12's parse-corpus baselines, had ended at 14:04Z. The step's builds ran with node reuse, the MSBuild server
-    and the shared compiler off, so no build process outlived them.
+    SJL-12's local base runs for bundles `sjl-12-001` in this repository and in Broiler.JS, had ended by 14:04Z, as
+    the programme recorded them; this bundle retains no record of that time. The step's builds ran with node reuse,
+    the MSBuild server and the shared compiler off, so no build process outlived them.
   - The load average was 0.07 0.10 0.20 at the step's start, 4.67 1.49 0.67 when the manifest was written after both
     builds, and 0.85 1.07 0.82 at the end.
-  - The machine is `linux-x64` with four logical processors and .NET SDK 10.0.401 ([`manifest.txt`](manifest.txt)).
-    The rule compares arms within one run only, and this README compares no figure with the first run's but where it
-    says so below.
+  - The machine is the first run's kind, `linux-x64` with four logical processors, here with .NET SDK 10.0.401
+    ([`manifest.txt`](manifest.txt)). It is not the first run's container: it was restarted since that run, and its
+    kernel build is `fc-v139` where the first run's [`../measurement/manifest.txt`](../measurement/manifest.txt)
+    names `fc-v114`. So absolute figures here are not comparable with the first run's. The rule compares arms within
+    one run only, and this README compares no figure with the first run's but where it says so below, with this
+    caveat.
 
 ## The reading
 
@@ -123,11 +128,13 @@ control's, per arm.
   the same binaries, which here lay close together; the lanes' retained runs spread widely and overlap: A 790 to 946
   ms, A-again 839 to 1022, B 721 to 910 ([`runs.tsv`](runs.tsv)). Its control's median is lower at A than at B, and E
   is higher at A and A-again than at B. The first run, at `49ea00e`, failed clause 3 on the same workload and form,
-  with a D of about the same size against a floor of 3.411 ms (the bundle's README, section 7). Neither rule reads
+  with a D of about the same size against a floor of 3.411 ms (the bundle's README, section 7). The two runs were
+  taken in different containers, so the likeness is of two readings, not a measurement repeated. Neither rule reads
   either run as a finding of a slowdown, and nothing here decides whether there is one.
 - **Native `literals`**: D is 66.553 ms against a floor of 38.373. Its control moved further than the workload did:
   the control's median is 77.689 ms higher at A than at B, and E(A) is below E(B). The spreads overlap widely: A 1633
-  to 1912 ms, A-again 1717 to 1837, B 1688 to 1949. In the first run this workload and form had D well below zero.
+  to 1912 ms, A-again 1717 to 1837, B 1688 to 1949. In the first run, taken in a different container, this workload
+  and form had D well below zero.
 - **The other four** are below resolution: |D| <= N for each, and none is beyond the floor in either direction.
 - **Each figure is a whole process**: start, the JIT, and the workload. Each workload is at most a few hundred
   milliseconds above its control, so the differences here are a few per cent of each process.
