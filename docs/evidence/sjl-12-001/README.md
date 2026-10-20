@@ -163,6 +163,13 @@ This reading fixes every B1 module row's hash at the base. It is named here so t
 runs, and it cannot change between the corpus commit and the after commit, because the rule holds the mode's source
 file unchanged between them.
 
+**The owner's decision of 2026-10-20.** Of the two readings the words admit, this one is taken, as recommended,
+under the owner's direction of 2026-10-18: "Please do all recommended decisions and skip waiting for review." The
+direction changes no rule of the programme, and this decision changes no word of the rule: it chooses between two
+readings the rule's own words allow, before any base run of part B. It is taken because it is the only one under
+which a B1 module row is what the conformance root itself compiles, so that B1 and B2 judge the same compilations
+of a module test.
+
 ### Part B: B2's composition
 
 B2 compiles each test262 input "as the conformance root composes it ... in the order
