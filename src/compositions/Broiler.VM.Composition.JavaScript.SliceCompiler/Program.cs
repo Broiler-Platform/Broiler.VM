@@ -516,6 +516,7 @@ internal static class Program
                 ProportionalityChecks.Run,
                 SuspensionChecks.Run,
                 FinallyMatrixChecks.Run,
+                BinderChecks.Run,
                 NativeAbiChecks.Run,
                 JsArm64GoldenChecks.Run,
                 NativeTemplateScanChecks.Run,
