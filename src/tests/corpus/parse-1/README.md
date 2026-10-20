@@ -37,9 +37,13 @@ The manifest has 2,270 stored rows, one for each file under `inputs/`.
   manifest's header names with its SHA-256.
 - **The home's `README.md`.** It defines the manifest, the population and how the builder made them. It is read in
   Broiler.JS at the same commit.
-- **The home's `provenance/`.** It records where each stored input was taken from. JSD-0080 decision D32 and the
-  home's README name the copy as `corpus.manifest` and `inputs/`. The rule's population is read from those two and
-  the archive, and neither the mode nor the comparison reads provenance.
+- **The home's `provenance/`.** It records where each stored input was taken from.
+  - JSD-0080 decision D32 names "a byte-identical copy" of the home. It also gives the copy a README of its own,
+    one that names the Broiler.JS commit, so the copy cannot be the whole folder byte for byte. D32 does not say
+    which other files the copy holds.
+  - The home's README does: "a byte-identical copy of `corpus.manifest` and `inputs/`".
+  - The rule's population is read from those two and the archive, and neither the mode nor the comparison reads
+    provenance.
 
 ## How it is read
 

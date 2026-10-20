@@ -15,7 +15,7 @@ the contract record, which also records decisions SJL-D-11 and SJL-D-12 and the 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
 **State:** rules only, 2026-10-19, at SJL-12.1, and the readings SJL-12.4 names before parts B and C's base runs,
-2026-10-20 (section 3). **Nothing here is a verdict, and nothing has been taken.**
+2026-10-20 (section 3). **Nothing here is a verdict, and this bundle holds no run yet.**
 - Part A's base runs are taken by the hosted workflow at the rule commit, before any product change of SJL-12.6
   lands.
 - Parts B and C's base runs are taken at the corpus commit, which adds SJL-12.4's parse corpus and the slice
@@ -81,10 +81,26 @@ totals decide nothing.
 ## 3. Readings named before the base runs (SJL-12.4, 2026-10-20)
 
 **Written 2026-10-20, at SJL-12.4**, with the parse corpus's copy and the slice compiler's `--parse-corpus` mode.
-No run of part B or part C had been taken for this bundle. Nothing here revises the rule. Each reading says how a
-record the mode writes is read under the rule's own words. The mode
-(`src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs`) states the same readings in
-every report's header, and `eng/compare-parse-corpus.py` applies them.
+Nothing here revises the rule. Each reading says how the rule's own words are read where the mode had to choose,
+or how a record the mode writes is read.
+
+**What had been run when this section was written.**
+- No base run of part B or part C had been taken for this bundle. Those are taken at the corpus commit.
+- Part A's base dispatch had been taken at the rule commit on 2026-10-19.
+- SJL-12.4's integration check had run the mode over the whole corpus on 2026-10-20, in part B's shape and in part
+  C's three. The mode was built at this change's commit `b89885f`, with the corpus copied in. Those runs were read
+  before this section was written. They are not this bundle's runs, and it does not retain them.
+- The mode's readings 1 to 3 were in its code at `b89885f`, before those runs.
+
+**The mode's readings and this section's.** The mode
+(`src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs`) writes three readings in every
+report's header. This section names all three:
+- reading 1 is under "Part B: what B1 compiles";
+- readings 2 and 3 are under "Part B: the records other than accepted and refused".
+
+The reading of B2's composition, and those for the diagnostics distribution and for part C, are this section's
+own. `eng/compare-parse-corpus.py` applies the readings for part B's records and for part C, as the bullets below
+say.
 
 ### The corpus commit's three conditions
 
@@ -108,8 +124,17 @@ by all forty digits when it lands. The change meets the three conditions as foll
   `95a0b816a9c8030873c6a71e3ac320a7c90d6f8c`, limited to two sets of paths: `src/Broiler.VM.Profile.JavaScript*/`
   outside `src/Broiler.VM.Profile.JavaScript/docs/`, and `src/compositions/Broiler.VM.Composition.JavaScript.Conformance/`.
   It names no commit.
-  - With `--full-history` it names `48461e0`, SJL-12.3's merge of the rule commit into its own branch. That merge
-    differs from the rule commit at none of those paths.
+  - With `--full-history` it names `48461e0`, SJL-12.3's merge of the rule commit into its own branch. Its first
+    parent, `3fa24e3`, does not descend from the rule commit. Against that parent the merge changes two lock files,
+    `src/Broiler.VM.Profile.JavaScript/packages.lock.json` and
+    `src/Broiler.VM.Profile.JavaScript.Compiler/packages.lock.json`. It brings into SJL-12.3's branch the move to
+    Broiler.ECMAScript 0.1.0-preview.7 that the rule commit already holds. At every listed path it equals its
+    second parent, the rule commit.
+  - **How "changes a path" is read.** The rule does not say what a merge changes. This section reads it as git
+    does: a commit changes a path when it differs there from every one of its parents (git's TREESAME rule, which
+    `git log -- <paths>` applies without `--full-history`). A merge that equals one of its parents at a path takes
+    that parent's content there and changes nothing. Under this reading `48461e0` changes none of the listed
+    paths. Read against the rule commit instead, it changes none of them either.
   - The condition therefore holds if SJL-12.6's changes, and every other change to those paths, merge after the
     corpus commit. It is read again when the corpus commit is named, and at the after commit.
 - **The copy.** `src/tests/corpus/parse-1/` holds `corpus.manifest` and `inputs/` from Broiler.JS's
@@ -117,16 +142,57 @@ by all forty digits when it lands. The change meets the three conditions as foll
   `1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc`. The copy's README names that commit and says
   how the copy is checked.
 
+### Part B: what B1 compiles (the mode's reading 1)
+
+B1 is "each input alone, under its goal and each of its variants". The rule sets "alone" against B2, "each test262
+input as the conformance root composes it - the harness files and the test as one compilation". It does not say
+whether a module's own imports are part of a module input alone. The mode reads "alone" as nothing composed around
+the input.
+- A script variant is one unit, the input's text, with no harness file.
+- A JSON input is one JSON module.
+- A module is compiled with the graph the conformance root's resolution reaches from it through its static
+  `import` and `export ... from` declarations, as the root compiles a module test. The wide path compiles a module
+  graph into one artifact whose entry is the root module, and every other module is reached through a request.
+  - So a module's hash covers every module it reaches. A change in a reached module shows in each module that
+    reaches it, as well as in the reached module's own B1 row.
+  - The words also admit a second reading: the module compiled with its requests left unresolved. The mode does
+    not take it, because the conformance root never compiles a module test that way.
+
+This reading fixes every B1 module row's hash at the base. It is named here so that it is fixed before the base
+runs, and it cannot change between the corpus commit and the after commit, because the rule holds the mode's source
+file unchanged between them.
+
+### Part B: B2's composition
+
+B2 compiles each test262 input "as the conformance root composes it ... in the order
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Run.cs builds its units at the corpus
+commit". The composition is read as the units `Test262Run.RunVariant` builds: the harness files unless the variant
+is raw, then the test, or the module graph it roots.
+- **It is applied to every test262 input whose front matter the root's reader reads, except a `_FIXTURE` file.**
+- **What decides whether the root runs a composed test is not composition, and is not applied.** The root skips a
+  test that claims a proposed feature, and one tagged `host-gc-required`, before it builds its units. Each such
+  test still has the composition `RunVariant` would build, and B2 compiles and compares it.
+- **A `_FIXTURE` file is never composed.** test262's `INTERPRETING.md` says such files "MUST NOT be interpreted as
+  standalone tests; they are intended to be referenced by test files". The root never builds units with one as the
+  test. That is a property of the file, not a run policy like the skips above.
+- **A test whose front matter the reader cannot read has no composition the root could build**, because the
+  includes and flags come from the front matter. Unlike a fixture, it is a test. The mode reports it `not-compiled`,
+  note `frontmatter`, which is not one of the two cases its reading 2 names. It is read under "any other
+  `not-compiled` row" below.
+
 ### Part B: the records other than accepted and refused
 
 The rule's configuration says that the mode writes "the outcome (accepted or refused)" for each input,
 sub-population, variant and form. The mode writes two more records, `not-compiled` and `crashed`. Each is read as
 follows.
-- **`not-compiled`, note `fixture`, in B2.** B2 is "each test262 input as the conformance root composes it". The
-  conformance root never composes a `_FIXTURE` file alone: `Test262Run` skips it as loaded by another test and never
-  run on its own. So the row names no compilation of B2, and it is outside the population B2 compares: it has no
-  outcome, no diagnostic list and no artifact hash.
-  - The fixture is compiled in B1, and in B2 inside the module graph of each test that imports it.
+- **`not-compiled`, note `fixture`, in B2.** A `_FIXTURE` file is never composed, as above. So its B2 row names no
+  compilation, and it is outside the population B2 compares: it has no outcome, no diagnostic list and no artifact
+  hash.
+  - The fixture is compiled in B1 on its own row. Under reading 1 it is also compiled inside the B1 graph of each
+    module input that imports it statically.
+  - In B2 it is compiled inside the graph of each module test that imports it statically, through `import` or
+    `export ... from`. A fixture reached only by `import()` or by `ShadowRealm.prototype.importValue` is in no B2
+    compilation, and it is compiled in B1 alone.
   - The row is reported, not left out, so that completeness ("every manifest input reported in every
     sub-population, variant and form") is read over every row.
   - It must read `not-compiled`, note `fixture`, at every commit part B runs at. Any other answer at any of them is
@@ -139,6 +205,8 @@ follows.
 - **Any other `not-compiled` row, and every `crashed` row.** A `crashed` row says an exception left the compiler.
   Neither record is an outcome the rule names. So the input is not reported in that sub-population, variant and
   form, and the run that holds the row is not complete.
+  - The mode's other notes are `frontmatter` and `no-harness-file`, in B2, and `graph-too-large` and
+    `graph-unreadable`, for a module graph in B1 or B2.
   - Part B is MET only when all three runs are complete, so such a row leaves part B NOT MET, whatever the
     comparison shows. The same holds for a run that lost its process.
   - This holds at the corpus commit, the ordering commit and the after commit alike.
@@ -152,6 +220,12 @@ follows.
 
 - **Part C's population is what part B's after run accepted** in B1 and B3. A row of that run that is refused,
   `not-compiled` or `crashed` is outside it. The readings above admit no `not-compiled` row in B1 or B3.
+  - Whether part B's after run is complete is part B's question. The rule says "each part decides alone", so an
+    incomplete after run leaves part B NOT MET and does not stop part C from being judged.
+  - `eng/compare-parse-corpus.py determinism` builds the population from the accepted B1 and B3 rows of part B's
+    after report, and nothing else. It holds that report to the manifest, as it does every report, but does not
+    refuse it for a `crashed` row or a `not-compiled` row outside reading 2. Its header counts the B1 and B3 rows
+    left outside the population, and the rows that leave part B's run incomplete.
 - **Every compilation in the population must be accepted in all four compilations.** If one is refused,
   `not-compiled` or `crashed` in run 1, run 2 or either compilation of run 3, it gives no hash there. Its input then
   does not give "one hash in all four compilations", and part C is NOT MET.
@@ -161,9 +235,9 @@ follows.
 
 ## 9. Exclusions
 
-Section 3 names readings before any run. Sections 4 to 8 are added as the bundle's runs are taken. The exclusions
-keep this section's number, where rule H2 reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-8-001`
-and `sjl-10-001`.
+Section 3 names readings before parts B and C's base runs. Sections 4 to 8 are added as the bundle's runs are
+taken. The exclusions keep this section's number, where rule H2 reads an exclusion's definition, as in bundles
+`sjl-3-001` to `sjl-8-001` and `sjl-10-001`.
 
 | ID | Status | Exclusion |
 |---|---|---|
