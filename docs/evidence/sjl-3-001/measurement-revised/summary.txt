@@ -1,0 +1,16 @@
+# part C of docs/evidence/sjl-3-001/decision-rule-revised-2026-10-20.md, measured 2026-10-20T14:20:38Z to 2026-10-20T14:28:55Z
+# Q is the median of the retained repetitions, in ms; N = |Q(A) - Q(A-again)|; D = Q(A) - Q(B);
+# E(arm) = Q(workload, arm) - Q(control, arm), retained beside D and deciding nothing
+# form | workload | Q(B) | Q(A) | Q(A-again) | N | D | D <= N | Q(control, B) | Q(control, A) | Q(control, A-again) | E(B) | E(A) | E(A-again)
+bytecode | to-string | 866.366 | 867.648 | 934.782 | 67.134 | 1.282 | yes | 507.421 | 569.027 | 546.618 | 358.945 | 298.621 | 388.164
+bytecode | to-number | 856.157 | 885.219 | 891.709 | 6.490 | 29.061 | NO | 657.405 | 633.354 | 645.913 | 198.752 | 251.864 | 245.795
+bytecode | literals | 1467.179 | 1461.548 | 1476.509 | 14.961 | -5.631 | yes | 1176.252 | 1242.049 | 1205.707 | 290.926 | 219.499 | 270.802
+native | to-string | 1022.370 | 1024.105 | 994.129 | 29.976 | 1.736 | yes | 653.271 | 654.699 | 669.997 | 369.098 | 369.406 | 324.132
+native | to-number | 987.439 | 972.604 | 956.562 | 16.042 | -14.834 | yes | 726.024 | 761.435 | 735.033 | 261.415 | 211.169 | 221.529
+native | literals | 1749.586 | 1816.139 | 1777.766 | 38.373 | 66.553 | NO | 1443.541 | 1521.230 | 1442.632 | 306.045 | 294.909 | 335.134
+# answer checks (conditions.tsv) that differ from the answer they are held to: 0; timed children that do: 0
+# transcript check (transcript-check.txt): holds in both forms
+# workloads and forms with D <= N: 4 of 6
+# effective-configuration lines seen: 1 (runs.tsv and conditions.tsv name each by its number)
+#   1: runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+# load average 0.07 0.10 0.20 at the step's start, 0.85 1.07 0.82 at its end
