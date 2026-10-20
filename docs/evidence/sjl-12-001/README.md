@@ -14,7 +14,8 @@ the contract record, which also records decisions SJL-D-11 and SJL-D-12 and the 
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules only, 2026-10-19, at SJL-12.1. **Nothing here is a verdict, and nothing has been taken.**
+**State:** rules only, 2026-10-19, at SJL-12.1, and the readings SJL-12.4 names before parts B and C's base runs,
+2026-10-20 (section 3). **Nothing here is a verdict, and nothing has been taken.**
 - Part A's base runs are taken by the hosted workflow at the rule commit, before any product change of SJL-12.6
   lands.
 - Parts B and C's base runs are taken at the corpus commit, which adds SJL-12.4's parse corpus and the slice
@@ -77,10 +78,92 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
 totals decide nothing.
 
+## 3. Readings named before the base runs (SJL-12.4, 2026-10-20)
+
+**Written 2026-10-20, at SJL-12.4**, with the parse corpus's copy and the slice compiler's `--parse-corpus` mode.
+No run of part B or part C had been taken for this bundle. Nothing here revises the rule. Each reading says how a
+record the mode writes is read under the rule's own words. The mode
+(`src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs`) states the same readings in
+every report's header, and `eng/compare-parse-corpus.py` applies them.
+
+### The corpus commit's three conditions
+
+The corpus commit is the default-branch merge of the change that adds the copy and the mode. This section names it
+by all forty digits when it lands. The change meets the three conditions as follows.
+- **It descends from the rule commit.** The change's branch starts at the rule commit,
+  `889ea1568f59bf37aa21c0035b423d0d030eb87f`. It took the default branch at
+  `95a0b816a9c8030873c6a71e3ac320a7c90d6f8c`, which also descends from the rule commit.
+- **It names only the listed paths.** Against the rule commit, the change adds or changes:
+  - `src/tests/corpus/parse-1/`: the copy and its README;
+  - `ParseCorpus.cs` and `Program.cs` under `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/`;
+  - `eng/compare-parse-corpus.py`;
+  - this README.
+
+  The merge of SJL-12.3, which the default branch held when the change took it, adds three things:
+  `eng/check-frontend-mapping.py`, `src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv`, and
+  files under `docs/evidence/sjl-12-001/`. Every one of these paths is under a path the condition lists. The
+  condition reads the corpus commit's whole difference from the rule commit, so any other change merged onto the
+  default branch before this one is held to the same list.
+- **It comes before every product change.** Take `git log` from the rule commit to
+  `95a0b816a9c8030873c6a71e3ac320a7c90d6f8c`, limited to two sets of paths: `src/Broiler.VM.Profile.JavaScript*/`
+  outside `src/Broiler.VM.Profile.JavaScript/docs/`, and `src/compositions/Broiler.VM.Composition.JavaScript.Conformance/`.
+  It names no commit.
+  - With `--full-history` it names `48461e0`, SJL-12.3's merge of the rule commit into its own branch. That merge
+    differs from the rule commit at none of those paths.
+  - The condition therefore holds if SJL-12.6's changes, and every other change to those paths, merge after the
+    corpus commit. It is read again when the corpus commit is named, and at the after commit.
+- **The copy.** `src/tests/corpus/parse-1/` holds `corpus.manifest` and `inputs/` from Broiler.JS's
+  `conformance/parse/`, byte for byte, at Broiler.JS's corpus commit. The manifest's SHA-256 is
+  `1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc`. The copy's README names that commit and says
+  how the copy is checked.
+
+### Part B: the records other than accepted and refused
+
+The rule's configuration says that the mode writes "the outcome (accepted or refused)" for each input,
+sub-population, variant and form. The mode writes two more records, `not-compiled` and `crashed`. Each is read as
+follows.
+- **`not-compiled`, note `fixture`, in B2.** B2 is "each test262 input as the conformance root composes it". The
+  conformance root never composes a `_FIXTURE` file alone: `Test262Run` skips it as loaded by another test and never
+  run on its own. So the row names no compilation of B2, and it is outside the population B2 compares: it has no
+  outcome, no diagnostic list and no artifact hash.
+  - The fixture is compiled in B1, and in B2 inside the module graph of each test that imports it.
+  - The row is reported, not left out, so that completeness ("every manifest input reported in every
+    sub-population, variant and form") is read over every row.
+  - It must read `not-compiled`, note `fixture`, at every commit part B runs at. Any other answer at any of them is
+    "an outcome that moves outside T", which is a regression.
+- **`not-compiled`, note `no-json-goal`, in B4.** B4 is "each input compiled by the slice front end under its
+  goal", one compilation per input, keyed by its goal. The slice front end has two goals, script and module, and
+  none under which to compile a `json` input. So the row is outside the population B4 compares, on the same terms.
+  - It must read the same at every commit. B4 admits no class, so any other answer at any of them is a regression.
+  - A `json` input is compiled in B1, as a JSON module.
+- **Any other `not-compiled` row, and every `crashed` row.** A `crashed` row says an exception left the compiler.
+  Neither record is an outcome the rule names. So the input is not reported in that sub-population, variant and
+  form, and the run that holds the row is not complete.
+  - Part B is MET only when all three runs are complete, so such a row leaves part B NOT MET, whatever the
+    comparison shows. The same holds for a run that lost its process.
+  - This holds at the corpus commit, the ordering commit and the after commit alike.
+  - No class of part B could admit such a row in any case. O, S, T and P each name an input accepted or refused at
+    both commits, or accepted at the base and refused after.
+  - `eng/compare-parse-corpus.py identity` lists each such row as `incomplete` and exits 2.
+- **The diagnostics distribution.** A `not-compiled` or `crashed` row is not a refused input. It is in none of the
+  refused-input lists or per-code tallies.
+
+### Part C
+
+- **Part C's population is what part B's after run accepted** in B1 and B3. A row of that run that is refused,
+  `not-compiled` or `crashed` is outside it. The readings above admit no `not-compiled` row in B1 or B3.
+- **Every compilation in the population must be accepted in all four compilations.** If one is refused,
+  `not-compiled` or `crashed` in run 1, run 2 or either compilation of run 3, it gives no hash there. Its input then
+  does not give "one hash in all four compilations", and part C is NOT MET.
+  - A run that loses its process gives no hash for the compilations it did not finish, and is read the same way.
+  - `eng/compare-parse-corpus.py determinism` counts each such compilation as one whose four results are not one
+    accepted hash.
+
 ## 9. Exclusions
 
-Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
-reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-8-001` and `sjl-10-001`.
+Section 3 names readings before any run. Sections 4 to 8 are added as the bundle's runs are taken. The exclusions
+keep this section's number, where rule H2 reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-8-001`
+and `sjl-10-001`.
 
 | ID | Status | Exclusion |
 |---|---|---|
