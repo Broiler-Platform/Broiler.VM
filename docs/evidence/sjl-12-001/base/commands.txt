@@ -1,0 +1,83 @@
+# Bundle sjl-12-001, base runs of parts B and C at the corpus commit 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4
+# (SJL-12.4 task 4.7, 2026-10-20). Every command as it was run, in order. The variables expand to the exact paths.
+# Each tool run was launched through a wrapper (timed.py, below) that records the exit code, wall-clock and peak RSS
+# and strips LANG and every LC_* variable from the child's environment; each was preceded by the idle-machine gate
+# that machine.txt describes.
+
+W=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl12/wp47   # scratch folder
+VMW=$W/vm-corpus                                                                          # the clean checkout
+export PATH=/root/.dotnet:$PATH DOTNET_ROOT=/root/.dotnet
+
+# ---- the clean checkout (removed afterwards)
+git -C /home/user/Broiler.VM worktree add --detach $VMW 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4
+
+# ---- the build, in Release, from clean (logs/build.log)
+cd $VMW && env -u LANG TZ=UTC dotnet build -c Release -nologo --disable-build-servers \
+  $VMW/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj
+
+V=$VMW/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+M=$VMW/src/tests/corpus/parse-1/corpus.manifest
+
+# ---- the pinned suite extracted twice, at two depths, for the census over test/ (part B: "the test/ directory of
+#      the suite extracted from that archive"; the second location shows the census does not depend on it)
+A=$VMW/src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz
+mkdir -p $W/suite-a $W/deep/x/y/suite-b
+tar xzf $A -C $W/suite-a
+tar xzf $A -C $W/deep/x/y/suite-b
+
+# ---- the census (stdout is the census; retained as census-*.txt.gz with gzip -n; stderr was empty)
+cd $VMW && env -u LANG TZ=UTC dotnet $V --census $VMW/src/tests/corpus/parse-1/inputs                                     # census-inputs-1.txt.gz
+cd $VMW && env -u LANG TZ=UTC dotnet $V --census $W/suite-a/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e/test           # census-test-1.txt.gz
+cd $VMW && env -u LANG TZ=UTC dotnet $V --census $W/js-corpus/conformance/parse/inputs                                      # census-inputs-2.txt.gz
+cd $VMW && env -u LANG TZ=UTC dotnet $V --census $W/deep/x/y/suite-b/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e/test  # census-test-2.txt.gz
+# census-inputs-2 reads Broiler.JS's conformance/parse/inputs at its corpus commit 1fe542ff459935586cdf495e4a0e3d798248948a
+# (a clean worktree), which is byte for byte this checkout's src/tests/corpus/parse-1/inputs (diff -rq: no difference).
+
+# ---- the parse corpus, over the whole manifest (B1-B4, both forms as the mode does them)
+# runs 1 and 2: one worker (part B's base; part C's runs 1 and 2). run 3: --twice-concurrent (part C's run 3).
+# The journals were read (every compilation that began also ended: logs/journal-check.txt) and deleted.
+cd $VMW && env -u LANG TZ=UTC dotnet $V --parse-corpus $M $W/runs/vm-r1.tsv.gz --workers 1 --journal $W/runs/vm-r1.journal    # parse-corpus-run1.tsv.gz
+cd $VMW && env -u LANG TZ=UTC dotnet $V --parse-corpus $M $W/runs/vm-r2.tsv.gz --workers 1 --journal $W/runs/vm-r2.journal    # parse-corpus-run2.tsv.gz
+cd $VMW && env -u LANG TZ=UTC dotnet $V --parse-corpus $M $W/runs/vm-r3.tsv.gz --twice-concurrent --journal $W/runs/vm-r3.journal  # parse-corpus-run3.tsv.gz
+# stdout and stderr of each: logs/parse-corpus-run<n>.stdout.txt and .stderr.txt. No --write-bytes: no artifact bytes.
+
+# ---- the comparisons and the control, eng/compare-parse-corpus.py as the corpus commit holds it, run from the
+#      checkout's root with docs/evidence/sjl-12-001/base a symbolic link to the staged base/ (removed afterwards),
+#      so every path in their output is the one the bundle commits.
+B=docs/evidence/sjl-12-001/base
+M=src/tests/corpus/parse-1/corpus.manifest
+# part B: run 1 against run 2, with both census pairs (exit 0: no difference)
+cd $VMW && python3 -I eng/compare-parse-corpus.py identity $B/parse-corpus-run1.tsv.gz $B/parse-corpus-run2.tsv.gz \
+  --manifest $M --census $B/census-inputs-1.txt.gz $B/census-inputs-2.txt.gz --census $B/census-test-1.txt.gz $B/census-test-2.txt.gz \
+  --out $B/identity-run1-run2.tsv
+# part C, read and not judged: runs 1, 2 and 3, the population the B1 and B3 compilations run 1 accepted (exit 0)
+cd $VMW && python3 -I eng/compare-parse-corpus.py determinism $B/parse-corpus-run1.tsv.gz $B/parse-corpus-run2.tsv.gz \
+  $B/parse-corpus-run3.tsv.gz --population $B/parse-corpus-run1.tsv.gz --manifest $M --out $B/determinism-runs-1-2-3.tsv
+# part B's control: the copy, then the comparison that must report its two planted differences, unclassified (exit 1)
+cd $VMW && python3 -I eng/compare-parse-corpus.py control $B/parse-corpus-run1.tsv.gz $B/part-b-control.tsv.gz > $B/part-b-control.out
+cd $VMW && python3 -I eng/compare-parse-corpus.py identity $B/parse-corpus-run1.tsv.gz $B/part-b-control.tsv.gz \
+  --manifest $M --no-census --out $B/part-b-control-identity.tsv
+# Each comparison's standard output repeated the header of its --out file and was not kept; standard error was empty.
+# (The three control files these wrote into base/ are not retained: the bundle keeps its controls under controls/,
+#  README section 2. They were made again there, below.)
+
+# ---- added 2026-10-20, when the base was committed (verifier finding 1): part B's control made again under
+#      controls/, from the retained run 1 alone, by eng/compare-parse-corpus.py as the corpus commit holds it, unchanged
+#      in the committing worktree /home/user/vm-s12base (branch sjl-12-bases-vm, from the default branch at
+#      ebf93cd3e8fba11002f3da563b13b32ca54afe32), run from that worktree's root so that every path in the output is the
+#      one the bundle commits. No run was taken again. python3 is Python 3.13.16.
+B=docs/evidence/sjl-12-001/base
+C=docs/evidence/sjl-12-001/controls
+M=src/tests/corpus/parse-1/corpus.manifest
+python3 -I eng/compare-parse-corpus.py control $B/parse-corpus-run1.tsv.gz $C/part-b-control.tsv.gz > $C/part-b-control.out  # exit 0
+python3 -I eng/compare-parse-corpus.py identity $B/parse-corpus-run1.tsv.gz $C/part-b-control.tsv.gz \
+  --manifest $M --no-census --out $C/part-b-control-identity.tsv                                                      # exit 1
+# controls/part-b-control.tsv.gz is byte for byte the copy first written into base/ (cmp: no difference; SHA-256
+# c1c2807aa35ba59436cfa31976a25f1352123ba91d87d93e9cdcaff8b6ea73e3), and controls/part-b-control.out is byte for byte
+# the first one too. controls/part-b-control-identity.tsv differs from the first one in one line only, which now reads
+# "# after docs/evidence/sjl-12-001/controls/part-b-control.tsv.gz". The identity's standard output repeated the header
+# of its --out file and was not kept; standard error was empty.
+
+# ---- the retained files
+# base/hashes.txt: sha256sum of every other file of base/ and base/logs/, from base/. base/hosted/ (part A's base) has
+# its own hashes.txt. controls/hashes.txt and corpus/hashes.txt: sha256sum of every other file of that folder, from it.

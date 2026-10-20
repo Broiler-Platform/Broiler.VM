@@ -1,0 +1,18 @@
+2026-10-20T12:41:39Z gate build-vm: idle (load 0.97 1.24 1.23 1/106 29963; no dotnet/python process) after 0s of waiting
+2026-10-20T12:42:24Z build-vm: done: build-vm	rc=0	wall=45.0s	maxrss=757MB	started=2026-10-20T12:41:39Z	ended=2026-10-20T12:42:24Z
+2026-10-20T12:57:52Z gate vm-census-inputs-1: idle (load 0.35 0.61 0.88 1/108 31210; no dotnet/python process) after 0s of waiting
+2026-10-20T12:57:54Z vm-census-inputs-1: done: vm-census-inputs-1	rc=0	wall=1.6s	maxrss=174MB	started=2026-10-20T12:57:52Z	ended=2026-10-20T12:57:54Z
+2026-10-20T12:58:54Z gate vm-census-test-1: idle (load 0.13 0.50 0.83 1/107 31281; no dotnet/python process) after 0s of waiting
+2026-10-20T12:59:06Z vm-census-test-1: done: vm-census-test-1	rc=0	wall=11.6s	maxrss=294MB	started=2026-10-20T12:58:54Z	ended=2026-10-20T12:59:05Z
+2026-10-20T13:00:06Z gate vm-census-inputs-2: idle (load 0.17 0.44 0.78 1/104 31352; no dotnet/python process) after 0s of waiting
+2026-10-20T13:00:08Z vm-census-inputs-2: done: vm-census-inputs-2	rc=0	wall=1.9s	maxrss=280MB	started=2026-10-20T13:00:06Z	ended=2026-10-20T13:00:08Z
+2026-10-20T13:01:08Z gate vm-census-test-2: idle (load 0.13 0.38 0.73 1/105 31422; no dotnet/python process) after 0s of waiting
+2026-10-20T13:01:20Z vm-census-test-2: done: vm-census-test-2	rc=0	wall=12.4s	maxrss=297MB	started=2026-10-20T13:01:08Z	ended=2026-10-20T13:01:20Z
+2026-10-20T13:01:33Z stage-b start
+2026-10-20T13:02:33Z gate vm-r1: idle (load 0.10 0.32 0.68 1/107 31557; no dotnet/python process) after 0s of waiting
+2026-10-20T13:13:10Z vm-r1: done: vm-r1	rc=0	wall=636.3s	maxrss=1232MB	started=2026-10-20T13:02:34Z	ended=2026-10-20T13:13:10Z
+2026-10-20T13:14:12Z gate vm-r2: idle (load 0.43 0.84 0.85 2/106 8510; no dotnet/python process) after 0s of waiting
+2026-10-20T13:24:50Z vm-r2: done: vm-r2	rc=0	wall=638.0s	maxrss=1212MB	started=2026-10-20T13:14:12Z	ended=2026-10-20T13:24:50Z
+2026-10-20T13:25:52Z gate vm-r3: idle (load 0.49 0.88 0.92 1/108 17931; no dotnet/python process) after 0s of waiting
+2026-10-20T13:40:08Z vm-r3: done: vm-r3	rc=0	wall=855.9s	maxrss=1624MB	started=2026-10-20T13:25:52Z	ended=2026-10-20T13:40:08Z
+2026-10-20T13:40:11Z stage-b done

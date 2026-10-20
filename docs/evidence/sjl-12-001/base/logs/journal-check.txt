@@ -1,0 +1,9 @@
+=== vm-r1 journal: 1121926 lines, 40817887 bytes
+begin 560963, end 560963
+keys begun and not ended: 0
+=== vm-r2 journal: 1121926 lines, 40817887 bytes
+begin 560963, end 560963
+keys begun and not ended: 0
+=== vm-r3 journal: 2243852 lines, 81635774 bytes
+begin 1121926, end 1121926
+keys begun and not ended: 0

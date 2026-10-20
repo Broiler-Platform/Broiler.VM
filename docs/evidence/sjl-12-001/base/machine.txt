@@ -1,0 +1,69 @@
+Bundle sjl-12-001, base runs of parts B and C (SJL-12.4 task 4.7), taken 2026-10-20 at the corpus commit
+865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 (merge of Broiler-Platform/Broiler.VM#159).
+
+THE MACHINE (the rule names it by its processor count, its SDK and its operating system)
+  processors   4 (nproc 4; lscpu: Intel(R) Xeon(R) Processor @ 2.10GHz, 1 socket, 4 cores, 1 thread per core)
+  SDK          .NET SDK 10.0.401 (commit e34a38d2ae, MSBuild 18.9.11+e34a38d2a), runtime Microsoft.NETCore.App 10.0.12, RID linux-x64
+  OS           Ubuntu 24.04.5 LTS, Linux 6.18.44-fc-v139 x86_64
+  memory       16093 MB (free -m)
+
+THE IDLE MACHINE
+No other build, test or run was taken on the machine while these runs were taken: the orchestrator had told
+every other agent not to build, test or run anything, and this work was the only process building or running.
+Before each run (and before the build) a gate looked at the machine:
+  - it let the previous run's load decay for 60 s, then read /proc/loadavg and listed every process whose
+    command is dotnet or python (ps -eo pid=,comm=,args=);
+  - it went ahead only when the 1-minute load average was at most 1.0 and no such process was running;
+    otherwise it would have polled every 2 minutes, for up to 30 minutes, recording each poll, and never
+    killed anything;
+  - just before the run it recorded the load average, nproc, the OS and the head of `dotnet --info`
+    (logs/pre-run.txt), and just after the run the load average again.
+Every Broiler.VM run passed the gate at its first look: no dotnet or python process was running and the
+1-minute load average was at most 1.0 (logs/gate.log). The gate read the 1-minute figure only. The 5- and
+15-minute averages carry this work's own previous runs (the JS runs and the VM runs before each one), and what
+they carried from before this work began: the 15-minute figure already read 1.00 before this work's first build,
+at the gate of the Broiler.JS tool's build (2026-10-20T12:38:06Z, load 0.12 0.53 1.00; Broiler.JS's bundle
+sjl-12-001, base/logs/gate.log, its second line). What made that load cannot be told from the record: this work's
+own setup came before it, and so did a merge in the main checkout /home/user/Broiler.VM at 12:31:36Z (its reflog).
+The build passed its gate at a 1-minute load of 0.97, just after the Broiler.JS tool's build.
+One other session acted on the machine while this work was under way. At 2026-10-20T12:43:13Z it fetched and
+fast-forwarded the main checkout /home/user/Broiler.VM to ebf93cd (its reflog: "merge origin/main: Fast-forward").
+That was after the slice compiler's build had ended (12:42:24Z) and before the gate of Broiler.JS's part C run 1
+(12:43:24Z), so during no run. It was a git operation, not a build, test or run, and it did not touch this work's
+checkout.
+
+CORRECTED 2026-10-20, before these files were committed (verifier finding 3). The paragraph above read: "The 5- and
+15-minute averages carry this work's own previous runs (the JS runs and the VM runs before each one); no other
+process contributed to them." The record does not support the last clause, and the paragraph did not name the
+other session's fetch.
+
+CORRECTED 2026-10-20, after these files were first committed (a verifier's review of that commit). The idle-machine
+paragraph gave the 15-minute figure as "(2026-10-20T12:38:06Z, load 0.12 0.53 1.00)" and did not name its record,
+which is not one this bundle retains. It now names it.
+
+EACH RUN (logs/runs.tsv; wall-clock and peak memory are recorded, not measured: SJL-12 measures nothing)
+run                 exit  wall     peak RSS  started (UTC)         ended (UTC)           loadavg before                loadavg after
+build (Release)     0     45.0 s   757 MB    2026-10-20T12:41:39Z  2026-10-20T12:42:24Z  0.97 1.24 1.23 1/106 29992    3.27 1.86 1.44 1/109 30354
+census inputs 1     0     1.6 s    174 MB    2026-10-20T12:57:52Z  2026-10-20T12:57:54Z  0.35 0.61 0.88 1/108 31239    0.35 0.61 0.88 1/108 31251
+census test 1       0     11.6 s   294 MB    2026-10-20T12:58:54Z  2026-10-20T12:59:05Z  0.13 0.50 0.83 1/108 31309    0.26 0.52 0.83 1/104 31323
+census inputs 2     0     1.9 s    280 MB    2026-10-20T13:00:06Z  2026-10-20T13:00:08Z  0.17 0.44 0.78 1/104 31379    0.23 0.45 0.78 1/104 31391
+census test 2       0     12.4 s   297 MB    2026-10-20T13:01:08Z  2026-10-20T13:01:20Z  0.13 0.38 0.73 1/104 31449    0.26 0.40 0.74 1/108 31467
+parse-corpus run 1  0     636.3 s  1232 MB   2026-10-20T13:02:34Z  2026-10-20T13:13:10Z  0.10 0.32 0.68 1/106 31584    1.18 1.03 0.91 1/107 8471
+parse-corpus run 2  0     638.0 s  1212 MB   2026-10-20T13:14:12Z  2026-10-20T13:24:50Z  0.43 0.84 0.85 1/106 8537     1.11 1.05 0.97 1/108 17893
+parse-corpus run 3  0     855.9 s  1624 MB   2026-10-20T13:25:52Z  2026-10-20T13:40:08Z  0.49 0.88 0.92 1/108 17958    1.78 1.75 1.46 1/105 4121
+(Broiler.JS's work for its own bundle was taken on the same machine: its tool's build from 12:38:07Z to 12:40:39Z,
+before this build, and its runs of parts C and D from 12:45:24Z to 12:56:47Z, after this build and before the first
+census. None of them overlapped a run of this bundle. Broiler.JS's bundle sjl-12-001, base/logs/runs.tsv.)
+
+CORRECTED 2026-10-20, after these files were first committed (a verifier's review of that commit). The line after the
+table read: "(The Broiler.JS runs of parts C and D were taken on the same machine from 12:38 to 12:57 UTC, before
+these.)" 12:38 is when the Broiler.JS tool's build began, not its runs of parts C and D, and those runs came after
+this bundle's build, the table's first row, not before it.
+
+THE CHECKOUT
+  a clean detached worktree of 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 (git status empty before and after the build),
+  built in Release from clean (no bin/ or obj/ before the build), 0 warnings, 0 errors (logs/build.log);
+  src/tests/corpus/parse-1/corpus.manifest SHA-256 1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc;
+  the pinned suite src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz SHA-256
+  f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040, as the manifest pins it;
+  the slice compiler's assemblies as built: binaries.sha256.

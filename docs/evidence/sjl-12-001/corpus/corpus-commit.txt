@@ -1,0 +1,91 @@
+# bundle sjl-12-001: the corpus commit's identity, its manifest's digest, and the path list and ancestry the
+# rule's three conditions read (README section 2, corpus/). Written 2026-10-20T15:00:42Z from git reads
+# alone, in a worktree whose origin/main, the default branch as fetched, is ebf93cd3e8fba11002f3da563b13b32ca54afe32, when parts B and C's base
+# runs at the corpus commit were committed. Every command as it was run, with its output and exit code.
+rule-commit   889ea1568f59bf37aa21c0035b423d0d030eb87f
+corpus-commit 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4
+
+## the corpus commit
+$ git log -1 --format='commit %H%nparents %P%ncommitted %cI%nsubject %s' 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4
+commit 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4
+parents 95a0b816a9c8030873c6a71e3ac320a7c90d6f8c 2c0b11000eb51f698114a965ac6cc2cb6c241c56
+committed 2026-10-20T13:26:13+02:00
+subject Merge pull request #159 from Broiler-Platform/claude/busy-lamport-m3yprr
+(exit 0)
+
+## its manifest's digest
+$ git show 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4:src/tests/corpus/parse-1/corpus.manifest | sha256sum
+1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc  -
+(exit 0)
+$ git show 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4:src/tests/conformance/pins/test262.pin | sha256sum
+794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6  -
+(exit 0)
+
+## condition 1: it descends from the rule commit
+$ git merge-base --is-ancestor 889ea1568f59bf37aa21c0035b423d0d030eb87f 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4
+(exit 0)
+
+## condition 2: the paths git diff --name-only names between the two
+$ git diff --name-only 889ea1568f59bf37aa21c0035b423d0d030eb87f 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 | wc -l
+2282
+(exit 0)
+$ git diff --name-status 889ea1568f59bf37aa21c0035b423d0d030eb87f 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 | cut -f1 | sort | uniq -c
+   2280 A
+      2 M
+(exit 0)
+# by the rule's listed paths, each path counted under the first that holds it:
+$ git diff --name-only 889ea1568f59bf37aa21c0035b423d0d030eb87f 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 | awk '{ if (index($0, "src/tests/corpus/parse-1/") == 1) k = "src/tests/corpus/parse-1/"; else if (index($0, "src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/") == 1) k = "src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/"; else if ($0 == "eng/compare-parse-corpus.py" || $0 == "eng/check-frontend-mapping.py") k = $0; else if (index($0, "src/Broiler.VM.Profile.JavaScript/docs/") == 1) k = "src/Broiler.VM.Profile.JavaScript/docs/"; else if (index($0, "docs/") == 1) k = "docs/"; else k = "OUTSIDE THE LISTED PATHS"; n[k]++ } END { for (k in n) printf "%6d %s\n", n[k], k }' | sort -k2
+     5 docs/
+     1 eng/check-frontend-mapping.py
+     1 eng/compare-parse-corpus.py
+     1 src/Broiler.VM.Profile.JavaScript/docs/
+     2 src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/
+  2272 src/tests/corpus/parse-1/
+(exit 0)
+# every path outside src/tests/corpus/parse-1/:
+$ git diff --name-only 889ea1568f59bf37aa21c0035b423d0d030eb87f 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 | grep -v '^src/tests/corpus/parse-1/'
+docs/evidence/sjl-12-001/README.md
+docs/evidence/sjl-12-001/controls/part-e-checker-runs.txt
+docs/evidence/sjl-12-001/controls/part-e-control-1-second-registry-code.tsv
+docs/evidence/sjl-12-001/controls/part-e-control-2-merge-not-split.tsv
+docs/evidence/sjl-12-001/corpus/early-errors.tsv
+eng/check-frontend-mapping.py
+eng/compare-parse-corpus.py
+src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs
+(exit 0)
+# the paths under src/tests/corpus/parse-1/ are that folder's every file at the corpus commit, and none existed
+# at the rule commit:
+$ git ls-tree -r --name-only 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 src/tests/corpus/parse-1 | wc -l
+2272
+(exit 0)
+$ git ls-tree -r --name-only 889ea1568f59bf37aa21c0035b423d0d030eb87f src/tests/corpus/parse-1 | wc -l
+0
+(exit 0)
+$ diff <(git ls-tree -r --name-only 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 src/tests/corpus/parse-1) <(git diff --name-only 889ea1568f59bf37aa21c0035b423d0d030eb87f 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 -- src/tests/corpus/parse-1)
+(exit 0)
+
+## condition 3: it is an ancestor of every commit after the rule commit that changes a product path the rule lists,
+## read at the default branch (ebf93cd3e8fba11002f3da563b13b32ca54afe32). Without --full-history, git's TREESAME rule, as README section 3 reads
+## "changes a path"; with it, every commit that touches the paths against any parent.
+$ git log --format='%H %s' 889ea1568f59bf37aa21c0035b423d0d030eb87f..ebf93cd3e8fba11002f3da563b13b32ca54afe32 -- 'src/Broiler.VM.Profile.JavaScript*' ':(exclude)src/Broiler.VM.Profile.JavaScript/docs' src/compositions/Broiler.VM.Composition.JavaScript.Conformance
+(exit 0)
+$ git log --full-history --format='%H parents %P' 889ea1568f59bf37aa21c0035b423d0d030eb87f..ebf93cd3e8fba11002f3da563b13b32ca54afe32 -- 'src/Broiler.VM.Profile.JavaScript*' ':(exclude)src/Broiler.VM.Profile.JavaScript/docs' src/compositions/Broiler.VM.Composition.JavaScript.Conformance
+48461e07ef68db65a47607e2fec94346faff0932 parents 3fa24e3b8414742ab177a519e981ea715af5f59f 889ea1568f59bf37aa21c0035b423d0d030eb87f
+(exit 0)
+$ git merge-base --is-ancestor 48461e0 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4
+(exit 0)
+# every commit on the default branch after the corpus commit, and the paths they change:
+$ git log --format='%H %s' 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4..ebf93cd3e8fba11002f3da563b13b32ca54afe32
+ebf93cd3e8fba11002f3da563b13b32ca54afe32 Merge pull request #160 from Broiler-Platform/claude/busy-lamport-m3yprr
+7e887a1b4b25615b55b3b41322184075f7603d99 SJL-3: merge part C's dated revised rule (clause 13) into the working branch
+f1c0801cfd9e5ec32ff8b2bc96c18ece96e23d33 SJL-3: measure-revised's controls taken again on a scratch merge into the default branch, with the moves and the ignored file the review found
+24062d26195bfb775298ea057bfec49e03cdeaa7 SJL-3: measure-revised compares arm A with no rename detection, refuses ignored build inputs, and checks arm A is on the default branch
+e049297d47baa9e9dab10d42856c30b915429c2e SJL-3: the revised rule names arm A as the default branch's merge that lands it, and counts every change it makes
+790db6f3ac9907d194f4d0534d95a39a7c10cad0 SJL-3: part C's rule revised after its run was seen, with the transcript check and the collector's measure-revised step
+89d5d51fa7984bbf0604c67157fbeaa76e5964b9 SJL-3: the revision check of part C at both arms, before a revised rule is written
+(exit 0)
+$ git diff --name-only 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 ebf93cd3e8fba11002f3da563b13b32ca54afe32 | cut -d/ -f1-3 | sort | uniq -c
+     28 docs/evidence/sjl-3-001
+(exit 0)
