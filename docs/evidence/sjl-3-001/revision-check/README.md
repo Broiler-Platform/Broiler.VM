@@ -83,28 +83,52 @@ differences. The command writes each again. The revised rule's run retains its o
 
 ## The controls of the revised rule's step
 
-Taken after the gate held and the revised rule, the collector's `measure-revised` step and its `--check-only` option
-were written, against the commit that adds them as first made, `adc32f44f447286f01e19a85c22d92278fd3d476`. The
-commit that carries this directory differs from it only by `controls/` and this section; the rule, the collector,
-the checker and the program are the same blobs, which each run's output names under "files". Every control ran
-from a scratch worktree with `--check-only`, so none could reach a transcript, an answer or a lane. Each file in
-[`controls/`](controls/) names what was changed, what was expected, the command, the step's output and its exit
-code.
+**When they were taken.** First after the gate held and the revised rule, the collector's `measure-revised` step and
+its `--check-only` option were written. Then again, on 2026-10-20, after a review of the rule commit changed the rule
+and the step, and those are the controls kept here. The review's changes to the step:
+- the comparison with `aaa39fb` now takes no rename, so a moved file differs at the path it left;
+- an ignored file a build may read now refuses the run, and every ignored `bin/` and `obj/` directory is removed
+  before each build;
+- arm A must now be on the default branch's first-parent history, named by `--default-branch`.
 
-**Every refusal fails before anything is built** (exit 2, every problem printed):
+The first taking's pass controls ran at the rule's own branch commit, which the step now refuses (control 12).
+
+**What arm A was.** Arm A is the merge that lands the rule on the default branch. So every control starts from a
+scratch merge, with `--no-ff`, of this branch at `24062d26195bfb775298ea057bfec49e03cdeaa7` into the default branch
+at `865b69b9ede430d5a548e5b97b85e5a7b5e1aed4`, as the pull request's merge commit will be:
+`b6f0dd81fb7a2d4c510fcdf161f53df66e31810a`. A control that changes a file amends that merge, keeping both its
+parents. Each control names its own arm A as `--default-branch`, but for control 12. The commit that carries this
+directory differs from `24062d2` only by `controls/` and this section. The rule, the collector, the checker and the
+program are the same blobs, which each run's output names under "files".
+
+**How they ran.** Every control ran from a scratch worktree with `--check-only`, so none could reach a transcript,
+an answer or a lane. Each file in [`controls/`](controls/) names what was changed, what was expected, the command,
+the step's output and its exit code. The run itself (task 1.4) is taken from a clean checkout of the merge, with
+`--default-branch origin/main`.
+
+**Every refusal fails before anything is built** (exit 2, every problem printed, and no refusal but the ones
+expected):
 
 | File | What was changed | What the step said |
 |---|---|---|
-| [`refuse-1-product-file.txt`](controls/refuse-1-product-file.txt) | one product file, a comment line in `src/Broiler.VM.Runtime/`, committed with the rule | arm A differs from `aaa39fb` outside the documents in a path the rule does not exempt |
-| [`refuse-2-workload-byte.txt`](controls/refuse-2-workload-byte.txt) | one byte of `to-number.js`, committed with the rule | the workload's blob is not the one `manifest.json` names; the path is also a product path |
+| [`refuse-1-product-file.txt`](controls/refuse-1-product-file.txt) | one product file, a comment line in `src/Broiler.VM.Runtime/` | arm A differs from `aaa39fb` outside the documents in a path the rule does not exempt |
+| [`refuse-2-workload-byte.txt`](controls/refuse-2-workload-byte.txt) | one byte of `to-number.js` | the workload's blob is not the one `manifest.json` names; the path is also a product path |
 | [`refuse-3-numref-digest.txt`](controls/refuse-3-numref-digest.txt) | one byte of the reference | its SHA-256 is not the rule's |
 | [`refuse-4-dirty-tree.txt`](controls/refuse-4-dirty-tree.txt) | an uncommitted line in a document of arm A's tree | arm A's tree is not clean |
 | [`refuse-5-base-commit.txt`](controls/refuse-5-base-commit.txt) | arm B's tree at the base commit's parent | arm B is not at bundle `sjl-0-001`'s base commit |
-| [`refuse-6-later-commit.txt`](controls/refuse-6-later-commit.txt) | a documents-only commit on top of the rule's | arm A is the commit that adds the rule, not a later one |
+| [`refuse-6-later-commit.txt`](controls/refuse-6-later-commit.txt) | a documents-only commit on top of the merge | arm A is the commit that adds the rule, not a later one |
 | [`refuse-7-closure-reference.txt`](controls/refuse-7-closure-reference.txt) | the command-line root made to reference the slice compiler's root | the root's closure holds a project under an exempted path and names it, and the project file is a product path |
 | [`refuse-8-build-server.txt`](controls/refuse-8-build-server.txt) | a process named `VBCSCompiler` running | a .NET build server or build is running |
+| [`refuse-9-moved-under-exempt-path.txt`](controls/refuse-9-moved-under-exempt-path.txt) | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` moved into the slice compiler's root, an exempted path | the path it left differs from `aaa39fb` and is not exempted |
+| [`refuse-10-moved-into-docs.txt`](controls/refuse-10-moved-into-docs.txt) | `src/Broiler.VM.Runtime/VmNativePipeline.cs` moved into a `docs/` directory as a `.txt` file | the path it left differs from `aaa39fb` and is not exempted |
+| [`refuse-11-ignored-build-input.txt`](controls/refuse-11-ignored-build-input.txt) | the command-line root's `.csproj.user` written, setting `Optimize` to false: ignored by `.gitignore`, imported by MSBuild | arm A's tree holds an ignored file a build may read |
+| [`refuse-12-not-on-default-branch.txt`](controls/refuse-12-not-on-default-branch.txt) | `--default-branch` naming `865b69b`, the default branch before the merge | arm A is not on the default branch's first-parent history |
 
-**The transcript checker refuses a wrong transcript** (exit 1), on the bytecode transcripts of the check above:
+Controls 9 and 10 are the two moves the review found passing the first taking's step, which read git's rename
+detection and so listed only the path a file took.
+
+**The transcript checker refuses a wrong transcript** (exit 1), on the bytecode transcripts of the check above. The
+checker has not changed since these were taken, and they were not taken again:
 
 | File | What was changed | What the check said |
 |---|---|---|
@@ -115,17 +139,18 @@ code.
 
 | File | Arm A | What it showed |
 |---|---|---|
-| [`pass-1-corpus-branch-merged-first.txt`](controls/pass-1-corpus-branch-merged-first.txt) | a scratch commit adding this bundle's files on top of a scratch merge of SJL-12's VM corpus branch (`2c0b110`) into the default branch (`95a0b81`) | **SJL-12's VM corpus commit, merged before the rule's, does not void the run**: outside the documents, every file it changes is under the four exempted paths, the root's closure and build files do not reach them, and every other check passes |
-| [`pass-2-check-only.txt`](controls/pass-2-check-only.txt) | the commit that adds the rule | `--only measure-revised --check-only`: every refusal check passes, both arms build, and no transcript, answer or lane is run |
+| [`pass-1-merge-into-default-branch.txt`](controls/pass-1-merge-into-default-branch.txt) | the scratch merge itself | `--only measure-revised --check-only`: every refusal check passes, both arms build, and no transcript, answer or lane is run |
+| [`pass-2-again-after-builds.txt`](controls/pass-2-again-after-builds.txt) | the same, on the same two trees again, holding pass control 1's `bin/` and `obj/` directories and Python's caches | those are allowed; each ignored `bin/` and `obj/` directory is removed before its arm's build, and both arms build again |
 
-The arm A main assembly's hash differs from run to run here, and from the check's above, because each build embeds
-its commit in the assembly's informational version (`0.1.0-preview.1+<commit>`) and the path of its checkout. Arm
-B's, built from one checkout at one commit, is the same in every run.
+**SJL-12's VM corpus commit merged before the rule's, and does not void the run.** On 2026-10-20 the default branch
+merged SJL-12's VM corpus branch at `2c0b110` as `865b69b` (#159), so every control's arm A carries it. Outside the
+documents, every file it changes is under the four exempted paths. The root's closure and build files do not reach
+them, and pass control 1 passes and builds.
 
-**The default branch has since done what pass control 1 simulated.** On 2026-10-20 it merged SJL-12's VM corpus
-branch at `2c0b110` as `865b69b` (#159). That merge's tree is `2857e292c08c6ef987a9eaf2e358ad3cab7454ae`, the same as
-the scratch merge pass control 1 was taken on top of. So arm A, should this commit merge after `865b69b`, has the
-product sources that control's arm A had.
+**The arm A main assembly's hash** is the same in both pass controls, which built one commit in one checkout. It
+differs from the check's above because each build embeds its commit in the assembly's informational version
+(`0.1.0-preview.1+<commit>`) and the path of its checkout. Arm B's, built from one checkout at one commit, is the
+same in every run.
 
 ## Files
 
