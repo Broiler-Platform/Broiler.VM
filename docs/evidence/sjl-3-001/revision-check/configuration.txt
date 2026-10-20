@@ -1,0 +1,6 @@
+# Each arm's effective-configuration lines (--runtime), over its twelve answers and its two transcripts
+arm B: 1 distinct
+  runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+arm A: 1 distinct
+  runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+identical across both arms: yes

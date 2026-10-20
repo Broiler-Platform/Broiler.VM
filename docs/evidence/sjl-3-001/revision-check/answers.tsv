@@ -1,0 +1,25 @@
+arm	form	file	exit	answer	base reading (sjl-0-001)	equals the base reading
+B	bytecode	to-string.js	0	2515784	2515784	yes
+B	bytecode	to-string.control.js	0	80000	80000	yes
+B	bytecode	to-number.js	0	85000	85000	yes
+B	bytecode	to-number.control.js	0	100000	100000	yes
+B	bytecode	literals.js	0	68000	68000	yes
+B	bytecode	literals.control.js	0	68000	68000	yes
+B	native	to-string.js	0	2515784	2515784	yes
+B	native	to-string.control.js	0	80000	80000	yes
+B	native	to-number.js	0	85000	85000	yes
+B	native	to-number.control.js	0	100000	100000	yes
+B	native	literals.js	0	68000	68000	yes
+B	native	literals.control.js	0	68000	68000	yes
+A	bytecode	to-string.js	0	2516095	2515784	no
+A	bytecode	to-string.control.js	0	80000	80000	yes
+A	bytecode	to-number.js	0	85000	85000	yes
+A	bytecode	to-number.control.js	0	100000	100000	yes
+A	bytecode	literals.js	0	68000	68000	yes
+A	bytecode	literals.control.js	0	68000	68000	yes
+A	native	to-string.js	0	2516095	2515784	no
+A	native	to-string.control.js	0	80000	80000	yes
+A	native	to-number.js	0	85000	85000	yes
+A	native	to-number.control.js	0	100000	100000	yes
+A	native	literals.js	0	68000	68000	yes
+A	native	literals.control.js	0	68000	68000	yes

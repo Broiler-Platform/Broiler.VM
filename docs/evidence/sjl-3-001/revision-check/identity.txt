@@ -1,0 +1,23 @@
+revision check of bundle sjl-3-001's part C, taken before decision-rule-revised-2026-10-20.md was written
+taken 2026-10-20T11:27:40Z
+arm-B-commit 0087e8d73ae3833200fa263b68f71db15b059a9c (bundle sjl-0-001's base commit; clean tree)
+arm-A-commit 95a0b816a9c8030873c6a71e3ac320a7c90d6f8c (clean tree; the default branch, whose product sources are aaa39fbc2030e1a2554317bea75bcbb56041c696's but for: eng/check-frontend-mapping.py)
+build arm B: exit 0, 0 warning lines
+build arm A: exit 0, 0 warning lines
+binary arm B Broiler.VM.Composition.JavaScript.Cli.dll sha256=38245be8eb808fec7ffedd48d4f3aa4a850fd4b91d01ba741b1d997632648a35
+binary arm A Broiler.VM.Composition.JavaScript.Cli.dll sha256=306bf2f3a3bb01d56dd75038101eb7242b26282bf7f69d05e0575db876da4d0c
+build dotnet build <root> -c Release -nodeReuse:false -p:UseSharedCompilation=false, root src/compositions/Broiler.VM.Composition.JavaScript.Cli
+child <arm>/Broiler.VM.Composition.JavaScript.Cli --runtime [--native x86-64-sysv] --fuel 100000000000 --wall 600000 <file>
+workloads src/tests/forms/numbers, read from arm A's tree
+workload to-string.js sha256=4033dc82a396b3eb1b085d4ede7898466f9024b220c58d4a3fe3ac73071bbfa1 blob=0dcb7bd442aab56ac4effc8b942336254d195e19
+workload to-string.control.js sha256=7332c6bd58a379a5d8da3a0de65af3ce4917cfda7609fb946116197b369def39 blob=0b4528e04fc6ea851d44fdb4449dae200ecce65a
+workload to-number.js sha256=54cbfb0d5fd1e1a8c54dfcac7d082dd79c94d5feb5fa3221068bcbea9f7cc391 blob=8adba71e2fc69f68bdaf809ef7c002c2b8e11ff3
+workload to-number.control.js sha256=f2ecc0fb38cce55dd6c6660e3f59ece61748871c75639e466346a5b8a77047e0 blob=5cb75ea8eab31aff0e600bce70d964eefb682248
+workload literals.js sha256=3bbfd1faed09437b14fd8091fd3554d1d56bc60861c804612eedb4e19e56a38f blob=a38f62802f402495b7a970d32aab3b9bb67ca514
+workload literals.control.js sha256=7498d4acb3bc73268c3bb0ee26a5f0a60a912441cc41e50ed32bc600c76cbd9a blob=14fd83e57dd9a7e7b99818c9ae161a03122ad10a
+program transcript/to-string.transcript.js sha256=d7e63230ca425454b808e68f5e32767b0cb16005ac9fea5b7b2399830fb3cac4
+checker transcript/check.py sha256=15ea70fe4bee39a1bea0b57f3bd4fe3fb95c7f1a9ab854aca764eb6fccc34c96
+numref scripts/conformance/numref.py at Broiler.JS 966140ad694570467ad21975f23047d0d6f0c1ce sha256=424d557fd6ec5292b80104178f26256a7f98d629ba8f454467b0c901275f56e7
+sdk 10.0.401
+machine Linux-6.18.44-fc-v139-x86_64-with-glibc2.39 x86_64 cpus=4
+not retained: the build logs, the binaries, the four transcripts and the per-line listing of the check, which the command above writes again

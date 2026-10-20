@@ -1,0 +1,19 @@
+# The gate of task 1.1: the revised rule is written only if every item holds.
+
+arm A bytecode to-number.js: exit 0, answer 85000, base reading 85000: as at the base reading
+arm A bytecode literals.js: exit 0, answer 68000, base reading 68000: as at the base reading
+arm A bytecode to-string.control.js: exit 0, answer 80000, base reading 80000: as at the base reading
+arm A bytecode to-number.control.js: exit 0, answer 100000, base reading 100000: as at the base reading
+arm A bytecode literals.control.js: exit 0, answer 68000, base reading 68000: as at the base reading
+arm A native to-number.js: exit 0, answer 85000, base reading 85000: as at the base reading
+arm A native literals.js: exit 0, answer 68000, base reading 68000: as at the base reading
+arm A native to-string.control.js: exit 0, answer 80000, base reading 80000: as at the base reading
+arm A native to-number.control.js: exit 0, answer 100000, base reading 100000: as at the base reading
+arm A native literals.control.js: exit 0, answer 68000, base reading 68000: as at the base reading
+(a) at arm A, to-number.js, literals.js and every control answer as at the base reading: holds
+(b) one effective-configuration line across both arms: holds (1 distinct)
+(c) the transcript check holds in both forms: holds (bytecode holds, native holds)
+not gated: arm A bytecode to-string.js answers 2516095, against 2515784 at the base reading; the revised condition takes arm A's own answer
+not gated: arm A native to-string.js answers 2516095, against 2515784 at the base reading; the revised condition takes arm A's own answer
+
+gate: HOLDS
