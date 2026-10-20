@@ -21,7 +21,7 @@ direction of 2026-10-18 ("Please do all recommended decisions and skip waiting f
 programme rule, to take that rule now, once. This file is it. It does not run part C's arm A at `49ea00e` again,
 which the rule forbids: "a failed condition is a NOT MET, not a re-run".
 
-**The owner's decisions of 2026-10-20 that this file records.** Both were taken as recommended, under the same
+**The owner's decisions of 2026-10-20 that this file records.** Each was taken as recommended, under the same
 direction.
 - **Write this revision now, and take its run once,** on the local machine part C's first run was taken on, with no
   other build, test or run on it while the run is taken. The record says plainly what that run can show. Under this
@@ -32,8 +32,14 @@ direction.
   the workloads, the repetitions, the allowances and the MET line are kept. The tolerance is not touched: the core's
   rule 3 makes the A/A lane "the one judgement the harness makes" ([`docs/baselines.md`](../../baselines.md)
   section 1), and a tolerance chosen after a run had been seen would be chosen to pass it.
+- **A build or restore failure before any lane is not a run.** Its cause is fixed outside the sources and the step
+  is started again, with the failed log retained. A base that cannot be rebuilt from its commit at all voids the
+  part, as the original rule's paragraph "The base" says. The next section lists this as its item 4.
 
 **Which sources arm A's binaries are built from, and what may land before the run.**
+- **Arm A.** It is the commit on the default branch's first-parent history that adds this file: the merge that lands
+  it, whose first parent does not carry it. The collector refuses any other commit, this file's own commits on its
+  branch among them, since they are not on that history.
 - **The root.** Part C builds one root, the command-line composition root,
   `src/compositions/Broiler.VM.Composition.JavaScript.Cli/`. Its project references, followed transitively, are
   `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Runtime`, `Broiler.VM.Profile.JavaScript`,
@@ -41,7 +47,9 @@ direction.
   `Broiler.VM.Profile.MachineCode`. It does not reference the slice compiler's composition root,
   `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/`.
 - **The comparison.** The collector holds arm A to `aaa39fb` on every path outside `docs/` and outside any `docs/`
-  directory, but four, and refuses the run before any build if any other such path differs. The four are the paths
+  directory, but four, and refuses the run before any build if any other such path differs. It counts every path
+  added, changed or removed, and takes no rename: a file moved to one of the four paths, or into a `docs/` directory,
+  still differs at the path it left. The four are the paths
   beyond the documents that bundle [`sjl-12-001`](../sjl-12-001/decision-rule-area.md)'s rule lets change before its
   corpus commit: `src/tests/corpus/parse-1/`, `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/`,
   `eng/compare-parse-corpus.py` and `eng/check-frontend-mapping.py`. None of them is read by a build of the root:
@@ -49,16 +57,19 @@ direction.
   - the corpus is inputs, not code;
   - the two scripts are Python that no build runs.
 
-  So the comparison covers every path the root's build reads. Before any build, the collector also checks this at
-  arm A:
-  - no project of the root's closure lies under the four paths;
-  - neither a project file of the closure nor a build file of the repository names one of them;
+  So the comparison covers every path in the repository that the root's build reads. Before any build, the
+  collector also checks this:
+  - no project of the root's closure, at arm A, lies under the four paths;
+  - neither a project file of the closure nor a build file of the repository, at arm A, names one of them;
   - no differing path under a `docs/` directory is one a build compiles or embeds (C# source, a resource, a project
-    or an MSBuild file).
+    or an MSBuild file);
+  - neither arm's tree holds an untracked or ignored file but `bin/` and `obj/` directories and Python's caches,
+    and those `bin/` and `obj/` directories are removed before each build. So a file the comparison cannot see,
+    such as a `<project>.csproj.user` that MSBuild imports, cannot reach a build.
 - **So SJL-12's VM corpus commit does not void this run, whenever it merges.** That commit changes only those four
   paths and the documents (bundle `sjl-12-001`'s rule, "The commits, named before they exist").
-  - If it merges before this file's commit, arm A carries it, and the sources arm A's binaries are built from are
-    still `aaa39fb`'s.
+  - If it merges before this file does, arm A, the merge that lands this file, carries it, and the sources arm A's
+    binaries are built from are still `aaa39fb`'s. It did merge first, on 2026-10-20, as `865b69b` (#159).
   - If it merges after, arm A does not carry it. The run is taken at arm A itself: the collector refuses a tree
     whose first parent already carries this file.
 - **Any other change** to a path outside the documents before this file's commit merges makes the collector refuse.
@@ -66,11 +77,12 @@ direction.
 
 ## What changed, and why
 
-Two departures, each stated on its own, and one added reading.
+Two departures, each stated on its own, and two added readings.
 
 1. **Arm A is a later commit.**
    - **What it is.** Under the original rule arm A is "the commit that lands SJL-3's Broiler.VM cut-over", `49ea00e`.
-     Here **arm A is the commit that adds this file** to the default branch's history. Its product sources (every path
+     Here **arm A is the commit on the default branch's first-parent history that adds this file**, the merge that
+     lands it. Its product sources (every path
      outside `docs/` and outside any `docs/` directory) are those of `aaa39fb`, the default branch after the move to
      the shared stream's `0.1.0-preview.7` ([#156](https://github.com/Broiler-Platform/Broiler.VM/pull/156)), with
      the one exception the header states: the four paths that the command-line root does not build and that bundle
@@ -114,15 +126,23 @@ Two departures, each stated on its own, and one added reading.
 3. **One reading is added: this is the second and last measurement of part C.** A NOT MET here is not followed by a
    third measurement under a further revision. Clause 13 then stays open, and its next step is the owner's next dated
    choice under the programme's decision SJL-D-23.
+4. **One reading is added from the owner's decision C13-5: a build or restore failure before any lane is not a
+   run.** Its cause is fixed outside the sources (a package cache, a feed, say), and the step is started again with
+   the failed log retained.
+   - **Why it is stated.** The original rule does not say this in so many words. Its paragraph "The base" voids a
+     part "whose base cannot be rebuilt from that commit", and a failure whose cause lies outside the sources does
+     not show that. Its last reading lets "an interrupted collection" be "run again from the start, with the stopped
+     run retained beside it", and a collection stopped before any lane is one.
+   - **What it does not change.** A base that cannot be rebuilt from its commit at all still voids the part. The
+     reading is in the block below beside that sentence.
 
 **Nothing else changed.**
-- **Part C:** its population, configuration, configuration check, quantity, noise floor, comparison, attribution,
-  admitted classes and MET line are the original's.
+- **Part C:** its population, configuration (but for when the first checks are taken, item 2), configuration
+  check, quantity, noise floor, comparison, attribution, admitted classes and MET line are the original's.
 - **The arms and their inputs:** arm B, the workloads as committed with the original rule (checked byte for byte
   against the blobs the bundle's `manifest.json` names), the repetitions and warm-ups, and the allowances.
 - **The base:** the original's paragraph "The base" still applies. A base that cannot be rebuilt from bundle
-  `sjl-0-001`'s commit voids the part. A build or restore failure before any lane is not a run: its cause is fixed
-  outside the sources, and the step is started again with the failed log retained.
+  `sjl-0-001`'s commit voids the part; item 4 reads a build or restore failure whose cause lies outside the sources.
 - **The tolerance.** No tolerance is widened: the A/A lane stays the only one, as the core's rule 3 makes it.
 - **Parts A and B** are not revised, and this file does not read their runs.
 - **The runs** are a sub-bundle of their own, `sjl-3-001/measurement-revised/`, taken by the collector's
@@ -137,7 +157,7 @@ Part C's block, restated with arm A, the transcript check, the condition and the
 ```rule
 evidence class: measurement
 population: the three workloads of src/tests/forms/numbers as committed with decision-rule.md - to-string.js (number to string), to-number.js (string to number) and literals.js (the compiler's literal values) - each with its control, the *.control.js file beside it; each in the bytecode form and in the native form under the backend the host arms; the command-line composition root built in Release under JIT; one machine and one RID, both named in the sub-bundle's manifest
-arms: B the base, rebuilt from bundle sjl-0-001's base commit 0087e8d73ae3833200fa263b68f71db15b059a9c; A the commit that adds this file to the default branch's history, whose product sources are those of aaa39fbc2030e1a2554317bea75bcbb56041c696 but for the four paths this file's header names, none of which a build of the command-line root reads; A-again the A arm measured a second time under another lane name, the A/A lane; each arm's binaries named by hash in the manifest, which is written and made read-only before any lane runs
+arms: B the base, rebuilt from bundle sjl-0-001's base commit 0087e8d73ae3833200fa263b68f71db15b059a9c; A the commit on the default branch's first-parent history that adds this file, the merge that lands it (its first parent does not carry this file), whose product sources are those of aaa39fbc2030e1a2554317bea75bcbb56041c696 but for the four paths this file's header names, none of which a build of the command-line root reads; A-again the A arm measured a second time under another lane name, the A/A lane; each arm's binaries named by hash in the manifest, which is written and made read-only before any lane runs
 configuration: the core's measurement rules (docs/baselines.md section 1, restated by roadmap.gates.md section 17): for each workload and form, in every repetition, B, A and A-again each run the workload and its control, interleaved inside the repetition; repetitions the count docs/baselines.md rule 4 fixes per lane, every one retained, and warm-up repetitions as eng/compare-forms.py fixes them, retained and named as excluded from Q; fuel and wall allowances ample and the same for every lane; every arm's first check of every file, in each form, taken before any lane runs
 transcript check, for to-string.js only, taken before any lane and retained with its inputs and its output: each arm's binary runs docs/evidence/sjl-3-001/transcript/to-string.transcript.js, as the commit that adds this file holds it, once in each form; the check holds if and only if, in each form, (i) each arm's transcript has as many lines as to-string.control.js answers at arm B's first check in that form; (ii) the lengths of each arm's lines sum to that arm's to-string.js answer at its first check in that form; and (iii) every line of arm A's transcript is one of the texts the specification admits for the value and the conversion that line converts, as Broiler.JS's scripts/conformance/numref.py computes them - number_to_string at the conversion's radix for String and toString, to_fixed, to_exponential and to_precision - the file as Broiler.JS's commit 966140ad694570467ad21975f23047d0d6f0c1ce carries it, with SHA-256 424d557fd6ec5292b80104178f26256a7f98d629ba8f454467b0c901275f56e7, each line's value computed as the program computes it, in IEEE 754 double arithmetic; every line on which the two arms' transcripts differ is listed with its form, its value, its conversion, both texts, and whether arm B's text is one the specification admits
 condition: for to-number.js, literals.js and every control, each lane's answer, checked before and after every lane, equals the workload's answer at the base arm; for to-string.js, each lane's answer, checked before and after every lane, equals its own arm's answer at that arm's first check, A-again's compared with arm A's, and the transcript check holds; a lane whose answer differs fails the condition
