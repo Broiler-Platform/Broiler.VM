@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
-// Exempt:           0
-// Human-reviewed:   0/17
+// Relevant units:   23
+// Annotated:        23/23
+// Exempt:           3
+// Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         1/0
 // Resource impact:  3/10 max
-// Unverified:       17
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,7 +32,7 @@ public sealed partial class JsCompiler
     /// and the Annex B aliases one per name. The instructions below still create every binding; the
     /// row lets the executor run the specification's checks before the first of them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=56C5E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4CE9AE
     // Broiler-Human:        PENDING
     private (string[] LexicalNames, string[] VarNames, string[] FunctionNames, string[] AnnexBNames) HoistProgram(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
@@ -83,14 +83,19 @@ public sealed partial class JsCompiler
         // THE WHOLE SET IS DECLARED BEFORE THE FIRST STATEMENT RUNS, which is what puts every one
         // of them in its dead zone for exactly the span the language says: from the top of the
         // script to its own initialiser.
+        //
+        // IN SOURCE ORDER, AND BY CONSTRUCTION RATHER THAN BY ACCIDENT *(SJL-12.6 item 3)*. Until
+        // 2026-10-20 the set was a dictionary and these instructions came out in its enumeration
+        // order, which a dictionary nothing is removed from happens to keep as insertion order and
+        // promises nothing about.
         programLexicals.Clear();
         CollectLexicalKinds(body, programLexicals);
 
-        foreach (var pair in programLexicals)
+        foreach (var (name, constant) in programLexicals)
         {
             Emit(
-                pair.Value ? JsOpcode.DeclareGlobalConst : JsOpcode.DeclareGlobalLet,
-                InternedName(pair.Key));
+                constant ? JsOpcode.DeclareGlobalConst : JsOpcode.DeclareGlobalLet,
+                InternedName(name));
         }
 
         // ANNEX B GIVES A BLOCK-LEVEL FUNCTION A GLOBAL BINDING TOO, and it is created here with
@@ -127,8 +132,7 @@ public sealed partial class JsCompiler
             }
         }
 
-        var lexicalNames = new string[programLexicals.Count];
-        programLexicals.Keys.CopyTo(lexicalNames, 0);
+        var lexicalNames = programLexicals.Names();
 
         var annexBNames = new System.Collections.Generic.List<string>();
         var aliasSeen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
@@ -145,7 +149,7 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>The Annex B aliases one script's top level owes, or nothing where it is strict.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=726B68
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D994B8
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<string> ScriptAliases(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
@@ -160,9 +164,9 @@ public sealed partial class JsCompiler
         var blocked = new System.Collections.Generic.HashSet<string>(
             System.StringComparer.Ordinal);
 
-        foreach (var pair in programLexicals)
+        foreach (var (name, _) in programLexicals)
         {
-            blocked.Add(pair.Key);
+            blocked.Add(name);
         }
 
         ScanAnnexB(body, blocked, aliases);
@@ -175,7 +179,7 @@ public sealed partial class JsCompiler
     /// The parameters' record when the body has a variable environment of its own - the current
     /// scope, one record inside it - or <see langword="null"/> when one record holds both.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=56D9CA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=41EA52
     // Broiler-Human:        PENDING
     private void HoistFunction(System.Collections.Generic.IReadOnlyList<JsStatement> body, Scope? parameters = null)
     {
@@ -277,14 +281,12 @@ public sealed partial class JsCompiler
         // declining it changes nothing about a program that has no such declaration in it.
         blocked.Add("arguments");
 
-        var lexical = new System.Collections.Generic.Dictionary<string, bool>(
-            System.StringComparer.Ordinal);
-
+        var lexical = new SourceOrderedLexicals();
         CollectLexicalKinds(body, lexical);
 
-        foreach (var pair in lexical)
+        foreach (var (name, _) in lexical)
         {
-            blocked.Add(pair.Key);
+            blocked.Add(name);
         }
 
         var aliases = new System.Collections.Generic.List<string>();
@@ -464,12 +466,13 @@ public sealed partial class JsCompiler
     /// The same walk <see cref="CollectLexical"/> makes, keeping the one fact that walk discards:
     /// a <c>const</c> and a <c>let</c> are the same KIND of binding and only one of them admits an
     /// assignment, and at script level nothing downstream can recover which it was from a name.
+    /// The names are kept in the order the walk meets them, which is source order.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B2A71D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FFFE74
     // Broiler-Human:        PENDING
     private static void CollectLexicalKinds(
         System.Collections.Generic.IReadOnlyList<JsStatement> body,
-        System.Collections.Generic.Dictionary<string, bool> kinds)
+        SourceOrderedLexicals kinds)
     {
         foreach (var statement in body)
         {
@@ -484,7 +487,7 @@ public sealed partial class JsCompiler
 
                 foreach (var name in names)
                 {
-                    kinds[name] = variable.Kind == SliceDeclarationKind.Const;
+                    kinds.Declare(name, variable.Kind == SliceDeclarationKind.Const);
                 }
             }
 
@@ -493,9 +496,109 @@ public sealed partial class JsCompiler
             // and not a `const`, and only the binding inside the class's own body is immutable.
             if (statement is JsClassDeclaration declaration && declaration.Class.Name.Length != 0)
             {
-                kinds[declaration.Class.Name] = false;
+                kinds.Declare(declaration.Class.Name, false);
             }
         }
+    }
+
+    /// <summary>
+    /// The names one statement list declares lexically, in the order its source declares them, and
+    /// whether each is immutable.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is what decides the order of three outputs, and nothing else decides it</b> (SJL-12.6
+    /// item 3, JSD-0080 decision D14): a script's global lexical declarations, its script-declarations
+    /// row, and an evaluated program's lexical slots and the lexical names of its declaration row.
+    /// Each is written by walking this list. Until 2026-10-20 the set was a dictionary, and each came
+    /// out in the dictionary's enumeration order - which a dictionary nothing is removed from happens
+    /// to keep as insertion order, and which nothing promises.
+    /// </para>
+    /// <para>
+    /// <b>A name declared twice keeps its first place and takes its last kind</b>, which is what the
+    /// dictionary's indexer did. The parser refuses a list that declares one lexical name twice, so
+    /// no source the lowering is given reaches that branch; it is kept as it was rather than changed,
+    /// so that this change moves no byte of any artifact.
+    /// </para>
+    /// <para>
+    /// The membership set beside the list answers <see cref="ContainsKey"/> and holds each name's
+    /// place in the list. <b>It is never enumerated</b>, so no hash decides any order here.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=24BA5C
+    // Broiler-Falsified-If: two compilations of one source declare its global lexical names, or an evaluated program's, in an order other than the order the source declares them
+    // Broiler-Human:        PENDING
+    private sealed class SourceOrderedLexicals
+    {
+        /// <summary>Each name with whether it is immutable, in the order the source declares them.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D9068B
+        // Broiler-Human:        PENDING
+        private readonly System.Collections.Generic.List<(string Name, bool Constant)> declared = [];
+
+        /// <summary>The membership set: each name declared so far, with its place in the list.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=74AA8E
+        // Broiler-Human:        PENDING
+        private readonly System.Collections.Generic.Dictionary<string, int> places =
+            new(System.StringComparer.Ordinal);
+
+        /// <summary>How many distinct names have been declared.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E20B2B
+        // Broiler-Human:        PENDING
+        internal int Count => declared.Count;
+
+        /// <summary>Whether <paramref name="name"/> has been declared.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=008368
+        // Broiler-Human:        PENDING
+        internal bool ContainsKey(string name) => places.ContainsKey(name);
+
+        /// <summary>Forgets every name, for the next script body.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A3E979
+        // Broiler-Human:        PENDING
+        internal void Clear()
+        {
+            declared.Clear();
+            places.Clear();
+        }
+
+        /// <summary>
+        /// Declares <paramref name="name"/> at the end of the list, or, where it is already declared,
+        /// gives it <paramref name="constant"/> in the place it already has.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A8FFFB
+        // Broiler-Human:        PENDING
+        internal void Declare(string name, bool constant)
+        {
+            if (places.TryGetValue(name, out var place))
+            {
+                declared[place] = (name, constant);
+                return;
+            }
+
+            places.Add(name, declared.Count);
+            declared.Add((name, constant));
+        }
+
+        /// <summary>The names alone, in source order.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E5445B
+        // Broiler-Human:        PENDING
+        internal string[] Names()
+        {
+            var names = new string[declared.Count];
+
+            for (var index = 0; index < declared.Count; index++)
+            {
+                names[index] = declared[index].Name;
+            }
+
+            return names;
+        }
+
+        /// <summary>Walks the names in source order.</summary>
+        /// <remarks>Public only because <c>foreach</c> asks for it; the type itself is private.</remarks>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B5F07D
+        // Broiler-Human:        PENDING
+        public System.Collections.Generic.List<(string Name, bool Constant)>.Enumerator GetEnumerator() =>
+            declared.GetEnumerator();
     }
 
     /// <summary>Every name one statement list declares lexically, and whether it is immutable.</summary>

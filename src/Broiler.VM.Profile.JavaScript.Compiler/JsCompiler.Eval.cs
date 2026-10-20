@@ -433,23 +433,22 @@ public sealed partial class JsCompiler
     /// into the variable environment with <see cref="JsOpcode.StoreEvalVariable"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=392CDE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=51394A
     // Broiler-Human:        PENDING
     private (string[] VarNames, string[] LexicalNames, string[] FunctionNames, string[] AnnexBNames) HoistEval(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
     {
-        var lexical = new System.Collections.Generic.Dictionary<string, bool>(
-            System.StringComparer.Ordinal);
-
+        // IN SOURCE ORDER *(SJL-12.6 item 3)*: the slots and the declaration row's lexical names are
+        // both written by walking the list, which until 2026-10-20 was a dictionary.
+        var lexical = new SourceOrderedLexicals();
         CollectLexicalKinds(body, lexical);
 
-        foreach (var pair in lexical)
+        foreach (var (name, constant) in lexical)
         {
-            scope.Declare(pair.Key, pair.Value);
+            scope.Declare(name, constant);
         }
 
-        var lexicalNames = new string[lexical.Count];
-        lexical.Keys.CopyTo(lexicalNames, 0);
+        var lexicalNames = lexical.Names();
 
         var names = new System.Collections.Generic.List<string>();
         var functions = new System.Collections.Generic.List<JsFunctionNode>();
@@ -491,7 +490,7 @@ public sealed partial class JsCompiler
 
         ScanAnnexB(
             body,
-            new System.Collections.Generic.HashSet<string>(lexical.Keys, System.StringComparer.Ordinal),
+            new System.Collections.Generic.HashSet<string>(lexicalNames, System.StringComparer.Ordinal),
             aliases);
 
         var annexBNames = new System.Collections.Generic.List<string>();
