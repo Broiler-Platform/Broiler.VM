@@ -20,6 +20,21 @@ judged. The milestone files hold the gates, and this document holds the methods 
    reported as weaker evidence, which is the discipline of Broiler.VM's bundle `ubc-4-006`.
 4. **Base before change.** Every comparison has a base taken at a named commit before the engine
    changes: SJL-0 for the pilot, and each area's first work package for later areas.
+   *(Read 2026-10-20, which revises nothing: a reading of this principle, by the owner's decision of
+   that date, taken under the owner's direction of 2026-10-18, "Please do all recommended decisions
+   and skip waiting for review.", which changes no programme rule. The principle reads "Every
+   comparison has a base taken at a named commit before the engine changes: SJL-0 for the pilot, and
+   each area's first work package for later areas." A later area's rule, committed at its first work
+   package, may name its base **by condition**, for example "the first parent of the merge that
+   lands the area's cut-over, descending from the rule commit and from the previous product window's
+   after commit", a product window being the span, in one repository, from a milestone's base commit
+   to its after commit. The base is taken at the commit the condition names, and so still precedes
+   every change it judges. The rule names that commit before it exists, as bundle
+   [`sjl-12-001`](../evidence/sjl-12-001/decision-rule-area.md)'s rule names its corpus commit ("The
+   commits, named before they exist"), and the plans for SJL-9 and SJL-11 name their bases the same
+   way. The reading is needed because an area whose rule is committed while another milestone's
+   product changes are still to land would otherwise take its base at its rule commit, before those
+   changes, and judge them as its own.)*
 5. **Figures live only in bundles.** No plan, ledger, decision or support document quotes a count,
    timing, ratio or score.
 6. **No cross-engine performance comparison.** Broiler.VM's JavaScript profile forbids "comparison
