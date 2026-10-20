@@ -1,0 +1,39 @@
+# The transcript check of docs/evidence/sjl-3-001/decision-rule-revised-2026-10-20.md, taken before any lane: docs/evidence/sjl-3-001/transcript/to-string.transcript.js run once per arm and form;
+# (i) and (ii) tie each transcript to the first checks in conditions.tsv; (iii) holds arm A's texts to Broiler.JS's numref.py at 966140ad694570467ad21975f23047d0d6f0c1ce.
+
+transcript arm B bytecode: exit 0, 2595784 bytes, sha256=801a97b4d4123e40e82ba10658199d78e17ba6269bf92253a1ceccccfb78ea76, 1182 ms, configuration: runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+transcript arm B native: exit 0, 2595784 bytes, sha256=801a97b4d4123e40e82ba10658199d78e17ba6269bf92253a1ceccccfb78ea76, 1402 ms, configuration: runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+transcript arm A bytecode: exit 0, 2596095 bytes, sha256=07ea4f0e999b2e685c55d56db29417f053f78cde28f8b60d052075162f988435, 1075 ms, configuration: runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+transcript arm A native: exit 0, 2596095 bytes, sha256=07ea4f0e999b2e685c55d56db29417f053f78cde28f8b60d052075162f988435, 1154 ms, configuration: runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+
+## form bytecode
+(i)   lines: arm A 80000, arm B 80000; to-string.control.js at arm B's first check: 80000; holds
+(ii)  sum of the lines' lengths: arm A 2516095 against to-string.js at arm A's first check 2516095; arm B 2515784 against to-string.js at arm B's first check 2515784; holds
+(iii) every line of arm A is one the specification admits: holds (80000 of the program's 80000 lines)
+conversion | lines | arm A admitted | arm A not admitted | lines the arms differ on | of those, arm B admitted | of those, arm B not admitted
+String | 10000 | 10000 | 0 | 0 | 0 | 0
+toString(2) | 10000 | 10000 | 0 | 0 | 0 | 0
+toString(7) | 10000 | 10000 | 0 | 2922 | 221 | 2701
+toString(16) | 10000 | 10000 | 0 | 0 | 0 | 0
+toString(36) | 10000 | 10000 | 0 | 3003 | 828 | 2175
+toFixed(4) | 10000 | 10000 | 0 | 0 | 0 | 0
+toExponential(6) | 10000 | 10000 | 0 | 0 | 0 | 0
+toPrecision(10) | 10000 | 10000 | 0 | 0 | 0 | 0
+transcript check, bytecode form: HOLDS
+
+## form native
+(i)   lines: arm A 80000, arm B 80000; to-string.control.js at arm B's first check: 80000; holds
+(ii)  sum of the lines' lengths: arm A 2516095 against to-string.js at arm A's first check 2516095; arm B 2515784 against to-string.js at arm B's first check 2515784; holds
+(iii) every line of arm A is one the specification admits: holds (80000 of the program's 80000 lines)
+conversion | lines | arm A admitted | arm A not admitted | lines the arms differ on | of those, arm B admitted | of those, arm B not admitted
+String | 10000 | 10000 | 0 | 0 | 0 | 0
+toString(2) | 10000 | 10000 | 0 | 0 | 0 | 0
+toString(7) | 10000 | 10000 | 0 | 2922 | 221 | 2701
+toString(16) | 10000 | 10000 | 0 | 0 | 0 | 0
+toString(36) | 10000 | 10000 | 0 | 3003 | 828 | 2175
+toFixed(4) | 10000 | 10000 | 0 | 0 | 0 | 0
+toExponential(6) | 10000 | 10000 | 0 | 0 | 0 | 0
+toPrecision(10) | 10000 | 10000 | 0 | 0 | 0 | 0
+transcript check, native form: HOLDS
+
+transcript check: HOLDS in both forms

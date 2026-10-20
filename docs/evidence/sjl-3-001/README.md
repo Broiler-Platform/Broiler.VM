@@ -20,6 +20,14 @@ identity, the closures, the packages (bundle JS-10-005), test262 in both forms w
 and its (c') re-runs, the fuel-parity twins, the differential cross-check, the rules, the engine-level
 vectors, the simplification check, and the measurement.
 
+*(Noted 2026-10-20. "The measurement" this paragraph names as taken is part C's first run, under the rule as written,
+[`measurement/`](measurement/), NOT MET at `49ea00e` (section 7). Part C was taken a second and last time on
+2026-10-20, under [`decision-rule-revised-2026-10-20.md`](decision-rule-revised-2026-10-20.md), which was written
+after the first run was seen and so gives weaker evidence, into [`measurement-revised/`](measurement-revised/README.md),
+at arm A `ebf93cd`: NOT MET again, on its clause 3 alone (section 10). Clause 13 stays open, and neither rule
+allows a further measurement of part C. The paragraph's "collection in progress" and its other runs stand
+as written.)*
+
 ## 1. Identity
 
 | | |
@@ -218,6 +226,13 @@ under a revised rule. Part C will therefore read NOT MET on clause 1 for `to-str
 whatever its timings show, and D against N is retained beside it for every workload. Clause 13 stays
 open, and SJL-3 with it, until a dated rule judges a condition that a correcting cut-over can meet.
 
+*(Pointer added 2026-10-20. The "dated rule" the last sentence waits on is
+[`decision-rule-revised-2026-10-20.md`](decision-rule-revised-2026-10-20.md), written after this run was seen and so
+weaker evidence. It holds `to-string.js` to its own arm's answer and to a transcript check against the
+specification, a condition a correcting cut-over can meet, and moves arm A to this family's later sources. Its run,
+the second and last of part C, is NOT MET on its clause 3 (section 10), so clause 13 stays open, and SJL-3 with it.
+This section's reading of the run above is unchanged.)*
+
 ## 8. The simplification check (SJL-3.7)
 
 **The deletion check.** Rule I5 holds the 34 members its register names
@@ -265,3 +280,98 @@ with .NET's other double conversions added.
 |---|---|---|
 | EX-125 | Open | **The number-conversion code that left this component's assurance coverage.** The 34 members rule I5 registers (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`) left the JavaScript family's sources at SJL-3.4. What computes them now is `Broiler.ECMAScript.Algorithms`, namespace `Broiler.ECMAScript.Numbers`, which the home's own assurance component covers in the Broiler.JS repository (`Broiler.ECMAScript/assurance.config.json`: an annotation on every relevant declaration, its manifest generated and checked in CI, rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count them. The adapters that call the library stay in this family and stay covered |
 | EX-126 | Open | **The Android root's closure is not re-collected after the cut-over.** Collecting it means publishing for `android-x64` and running on an Android emulator, which the machine that took this bundle does not have. The root reaches `Broiler.ECMAScript.Algorithms` through the runtime's package reference, so its register row declares it, and says in its cell that its retained closure, bundle JS-ANDROID-001's, predates it; rule K4 holds that closure to the row without the shared assembly, and refuses it once a re-collected closure carries one |
+
+## 10. Part C again, under the rule revised after its first run
+
+*Added 2026-10-20.*
+
+**NOT MET under [`decision-rule-revised-2026-10-20.md`](decision-rule-revised-2026-10-20.md), on its clause 3
+alone, as weaker evidence; NOT MET under the rule as written, as section 7 reads it. Clause 13 stays open.** The
+revised rule was written after section 7's run had been seen and read NOT MET, so its decision is weaker evidence than
+one under [`decision-rule.md`](decision-rule.md).
+- **Why it was written.** Section 7's run could not meet clause 1: the cut-over's radix corrections move
+  `to-string.js`'s answer, and section 7 left clause 13 open "until a dated rule judges a condition that a correcting
+  cut-over can meet". On 2026-10-20 the owner decided, under the owner's direction of 2026-10-18 ("Please do all
+  recommended decisions and skip waiting for review."), which changes no programme rule, to write that rule and take
+  its run once. Before it was written, the workloads' answers and `to-string.js`'s texts were checked at both arms,
+  which is not evidence ([`revision-check/`](revision-check/README.md)).
+- **What it changes.** Two departures, each stated in the rule on its own. Arm A is the commit on the default
+  branch's first-parent history that adds the rule, whose product sources are `aaa39fb`'s but for four paths the
+  command-line root does not build, this family on `0.1.0-preview.7`: the run judges this family at its later
+  sources, with the changes of SJL-4 to SJL-8 and SJL-10 and the shared stream's re-pins since `49ea00e`, and not
+  SJL-3's cut-over alone. And `to-string.js`'s condition is
+  its own arm's answer, held to the specification by a transcript check against Broiler.JS's
+  `scripts/conformance/numref.py`. Two readings are added: this is part C's second and last measurement, and a build
+  or restore failure before any lane is not a run.
+- **What it keeps.** Arm B, the workloads, the repetitions and warm-ups, the allowances, the quantity, the A/A floor
+  as the only tolerance, and the MET line.
+
+**The step.** `collect.py --only measure-revised` ran once, on 2026-10-20, and exited 0, from clean detached checkouts
+of both arms, with no other build, test or run on the machine. By its console output, which is not retained, it ran
+from 14:19:22Z to 14:28:55Z; its manifest records 14:20:38Z, when it was written after both builds, and its
+[`summary.txt`](measurement-revised/summary.txt) dates the measurement from then to 14:28:55Z. The command:
+
+```
+python3 docs/evidence/sjl-3-001/collect.py --tree <a clean checkout of arm A> --default-branch origin/main \
+    --base-tree <a clean checkout of arm B> \
+    --numref <Broiler.JS scripts/conformance/numref.py at 966140ad694570467ad21975f23047d0d6f0c1ce> \
+    --out docs/evidence/sjl-3-001 --only measure-revised
+```
+
+[`measurement-revised/`](measurement-revised/README.md) holds its output: a sub-bundle of its own evidence class, as
+[`measurement/`](measurement/) is, with its own manifest and hashes, which [`manifest.json`](manifest.json) does not
+hash, and with a README, which `measurement/` does not have. That README gives every figure and reads the two
+failures without deciding anything.
+
+| | |
+|---|---|
+| Arm B | `0087e8d73ae3833200fa263b68f71db15b059a9c`, bundle `sjl-0-001`'s base commit, rebuilt in Release from a clean checkout, as in section 7 |
+| Arm A | `ebf93cd3e8fba11002f3da563b13b32ca54afe32`, the merge of Broiler-Platform/Broiler.VM#160, which lands the revised rule on the default branch: its first parent, `865b69b`, does not carry the rule, and its second is `7e887a1`. Outside the documents it differs from `aaa39fb` only under the four paths the rule's header names, which the command-line root does not build |
+| A-again | arm A's binaries, measured a second time under another lane name, the A/A lane |
+| Machine | the programme's local machine, of section 7's run's kind: `linux-x64`, four logical processors, here with .NET SDK 10.0.401 ([`measurement-revised/manifest.txt`](measurement-revised/manifest.txt)). It is not section 7's container: it was restarted since that run, and its kernel build is `fc-v139` where [`measurement/manifest.txt`](measurement/manifest.txt) names `fc-v114`, so absolute figures are not comparable across the two runs |
+| Load average | 0.07 0.10 0.20 at the step's start, 4.67 1.49 0.67 when its manifest was written after both builds, and 0.85 1.07 0.82 at its end ([`manifest.txt`](measurement-revised/manifest.txt), [`summary.txt`](measurement-revised/summary.txt)) |
+| Protocol | section 7's: seven repetitions per lane and three warm-ups excluded from Q, the arms' order rotating by repetition, each arm running the workload and then its control, fuel 100,000,000,000 and a 600,000 ms wall allowance for every lane; but every arm's first check of every file, in each form, was taken before any lane, so that the transcript check is read before any lane runs |
+
+| Clause | On this run |
+|---|---|
+| 1. Every lane's condition passes, before and after | **holds**: 72 answer checks, before and after each workload's lanes, and 360 timed children, and no answer differs from the one it is held to ([`conditions.tsv`](measurement-revised/conditions.tsv)). `to-string.js` answers 2516095 at A and A-again and 2515784 at B, in both forms, each arm's own first answer; every other workload and every control answers as at B. The transcript check holds in both forms |
+| 2. Every effective-configuration line identical | **holds**: one line across arms, lanes, repetitions, checks and transcripts |
+| 3. D <= N for every workload and form | **fails** for `to-number.js` in the bytecode form and for `literals.js` in the native form, and holds for the other four |
+
+**The transcript check** ([`transcript-check.txt`](measurement-revised/transcript-check.txt)) **holds in both forms.**
+In each form each arm's transcript has as many lines as `to-string.control.js` answers at arm B, its lines' lengths
+sum to its own arm's `to-string.js` answer, and every one of arm A's texts is one the specification admits for its
+value and conversion. The arms differ only at `toString(7)` and `toString(36)`, the radix conversions JSD-0066
+section 4 says the cut-over corrects, and [`transcript-check.tsv`](measurement-revised/transcript-check.tsv) lists
+every line they differ on.
+
+[`summary.txt`](measurement-revised/summary.txt), in milliseconds:
+
+| Form | Workload | Q(B) ms | Q(A) ms | Q(A-again) ms | N | D | D <= N |
+|---|---|---|---|---|---|---|---|
+| bytecode | to-string | 866.366 | 867.648 | 934.782 | 67.134 | 1.282 | yes |
+| bytecode | to-number | 856.157 | 885.219 | 891.709 | 6.490 | **29.061** | **no** |
+| bytecode | literals | 1467.179 | 1461.548 | 1476.509 | 14.961 | -5.631 | yes |
+| native | to-string | 1022.370 | 1024.105 | 994.129 | 29.976 | 1.736 | yes |
+| native | to-number | 987.439 | 972.604 | 956.562 | 16.042 | -14.834 | yes |
+| native | literals | 1749.586 | 1816.139 | 1777.766 | 38.373 | **66.553** | **no** |
+
+**Part C's decision under both rules.**
+- **Under the rule as written, [`decision-rule.md`](decision-rule.md): NOT MET**, on clauses 1 and 3, as section 7
+  reads it at `49ea00e`. That reading is unchanged. This run is not read under that rule, whose arm A is `49ea00e`
+  and which allows no re-run; its condition would fail here too, `to-string.js` answering 2516095 at arm A against
+  2515784 at arm B.
+- **Under the revised rule: NOT MET**, on its clause 3 alone. Clauses 1 and 2 hold.
+- **What a NOT MET does and does not show**, in the revised rule's own words: under this tolerance, "a change that
+  makes no difference at all reads NOT MET more often than MET: each workload and form must have D at most N, and N
+  is only the distance between two medians of the same binaries. **A NOT MET is therefore not a finding of a slowdown,
+  and a MET is not a speed claim.**" And, of its arm A, "A NOT MET cannot be laid on SJL-3's cut-over alone either."
+  This bundle makes no speed claim in either direction and compares nothing with Broiler.JS.
+- **What follows.** The owner's decision of 2026-10-20 for a NOT MET here, recorded in
+  [the ledger](../../javascript-shared-libraries/status.md)'s entry of that date, is to stop: no third measurement
+  under a further revision and no change of tolerance, as the revised rule's last reading has it, "a NOT MET here is
+  not followed by a third under a further revision, and leaves clause 13 open until the owner's next dated choice
+  under decision SJL-D-23". **Clause 13 stays open, and SJL-3 with it.** The next dated choice is the one the dated
+  note of 2026-10-20 under [SJL-D-23](../../javascript-shared-libraries/decisions.md#sjl-d-23) names: it is taken when
+  a controlled lane exists, or when SJL-3's clause 7, its clause 13 and SJL-4's clause 9 are the only unmet clauses of
+  SJL-3 to SJL-15 and SJL-17.
