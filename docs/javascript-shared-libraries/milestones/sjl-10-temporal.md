@@ -158,6 +158,12 @@ NudgeToZonedTime's day span, which the owner's decision D12 answers. And Broiler
 no input reaches lived in files that still exist, and was deleted from them, not with its file. The sentence read
 "Code no input reaches is deleted with its file (D12, G10, C3, C10, S8).")*
 
+*(Note, 2026-10-19, later.)* Decision D12's `RangeError` holds in Broiler.VM from its move to the shared stream's
+`0.1.0-preview.7`, published that day from Broiler.JS `5ddee404`
+([JSC-317](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-317)). On `0.1.0-preview.6`,
+which it took at SJL-10.4, Broiler.VM answered a duration at row D12's zoned branch, a policy change pending there
+until this move. The paragraph above is left as written, and no gate changes.
+
 ### SJL-10.6 — Evidence
 
 The same as SJL-3.6, plus two items:

@@ -152,6 +152,13 @@ cut-over, read against this record") makes the answer a `RangeError`. The librar
 pending here, durations to a `RangeError`, not a correction, since no host exception escapes there. The
 paragraph above is left as written.
 
+*(Note, 2026-10-19, later.)* The shared stream's next version, `0.1.0-preview.7`, published that day from
+Broiler.JS `5ddee404`, carries decision D12, and this family moves to it
+([JSC-317](../roadmap.corrections.md#jsc-317)): `since` with largest unit `day` and smallest unit `hour` from
+2011-12-31T16:15 back to 2011-12-31T00:00 in Pacific/Apia, `P1DT16H` on `0.1.0-preview.6`, is a `RangeError`,
+the library's `OutOfRange` mapped as section 3's table maps it, and a slice-compiler check holds it. The policy
+change is made; no other answer moves, and the paragraph above is left as written.
+
 **No other answer moves**, but in its message (section 7); section 6's checks find no other.
 
 ### 5. Charging and limits
