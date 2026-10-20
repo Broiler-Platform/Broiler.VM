@@ -804,7 +804,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=119180
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D507B6
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -871,19 +871,17 @@ public sealed partial class JsCompiler
 
             // THE UNIT IS BOUND ONCE, AFTER IT PARSED AND WAS ADMITTED, AND BEFORE ANY OF IT IS
             // LOWERED (SJL-12.6 item 1, JSD-0080 decision D11). Its strictness is its own prologue's,
-            // or what the caller imposes: the conformance harness's strict variant for a script, the
-            // request's strict flag for eval code.
-            binder = JsBinder.Bind(
-                program,
-                evaluated
-                    ? (script.Options.EvalFlags & JsFormat.EvalRequestFlags.Strict) != 0
-                    : script.ForceStrict);
+            // or what the caller imposes - the conformance harness's strict variant for a script, the
+            // request's strict flag for eval code - which is the imposition the parser was given. The
+            // unit's lowering reads it from the binder, so the facts and the emission cannot be told
+            // two different strictnesses.
+            binder = JsBinder.Bind(program, forceStrict);
 
             scriptReferrer = script.Referrer;
             currentSource = AddSource(script.Text);
             var unit = evaluated
                 ? CompileEvalProgram(program, script.Options.EvalFlags)
-                : CompileProgram(program, script.ForceStrict);
+                : CompileProgram(program);
             scriptReferrer = string.Empty;
 
             // A SCRIPT A HOST PLACED SAYS WHERE AT RUN TIME TOO (JSD-0024 section 20): its own

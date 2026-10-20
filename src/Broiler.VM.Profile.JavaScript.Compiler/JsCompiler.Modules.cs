@@ -47,7 +47,7 @@ public sealed partial class JsCompiler
     /// for the lifetime of the instance, and <c>globalThis.x</c> must not see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=344580
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AFFF3F
     // Broiler-Human:        PENDING
     private void CompileModule(JsProgramNode program, JsModuleUnit unit)
     {
@@ -75,7 +75,8 @@ public sealed partial class JsCompiler
         var outerDepth = blockDepth;
         var outerModule = module;
 
-        strict = true;
+        // A MODULE IS STRICT WHATEVER IT SAYS, and the binder bound it so.
+        strict = binder.Program.Strict;
         module = build;
         scope = build.Scope;
         blockDepth = 0;

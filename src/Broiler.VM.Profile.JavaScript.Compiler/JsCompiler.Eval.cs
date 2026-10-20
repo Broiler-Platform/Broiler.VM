@@ -336,7 +336,7 @@ public sealed partial class JsCompiler
     /// <c>arguments</c> in a field initialiser - is refused as one.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=32D524
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2A8629
     // Broiler-Human:        PENDING
     private int CompileEvalProgram(JsProgramNode program, JsFormat.EvalRequestFlags flags)
     {
@@ -356,7 +356,10 @@ public sealed partial class JsCompiler
         insideFieldInitialiser = (flags & JsFormat.EvalRequestFlags.InClassFieldInitializer) != 0;
         exits = [];
 
-        strict = program.IsStrict || (flags & JsFormat.EvalRequestFlags.Strict) != 0;
+        // ITS STRICTNESS IS THE BINDER'S, which bound it under its prologue and the request's strict
+        // flag: the choice between a strict evaluation's own slots and the caller's variable
+        // environment below follows the same answer the unit's facts do.
+        strict = binder.Program.Strict;
         var index = units.Count;
         buffer = new UnitBuffer(0, JsFormat.FunctionFlags.EvalCode | Strictness());
         units.Add(buffer);

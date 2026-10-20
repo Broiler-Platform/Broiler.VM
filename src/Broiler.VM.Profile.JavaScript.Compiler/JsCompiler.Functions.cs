@@ -26,9 +26,9 @@ public sealed partial class JsCompiler
 
     // ---- units ---------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ABC443
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=630B84
     // Broiler-Human:        PENDING
-    private int CompileProgram(JsProgramNode program, bool forceStrict)
+    private int CompileProgram(JsProgramNode program)
     {
         var outerBuffer = buffer;
         var outerScope = scope;
@@ -44,7 +44,9 @@ public sealed partial class JsCompiler
         insideFunction = false;
         exits = [];
 
-        strict = program.IsStrict || forceStrict;
+        // THE SCRIPT'S STRICTNESS IS THE BINDER'S, which bound it under its prologue and what the
+        // caller imposed; every fact about its functions and its Annex B aliases followed the same.
+        strict = binder.Program.Strict;
         var index = units.Count;
         buffer = new UnitBuffer(0, JsFormat.FunctionFlags.ProgramBody | Strictness());
         units.Add(buffer);
