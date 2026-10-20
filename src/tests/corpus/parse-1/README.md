@@ -16,9 +16,14 @@ commit. It holds inputs only. No outcome, artifact or verdict is here: the basel
 
 | | |
 |---|---|
-| Broiler.JS's corpus commit | `BROILERJS_CORPUS_COMMIT` |
+| Broiler.JS's corpus commit | `1fe542ff459935586cdf495e4a0e3d798248948a` |
 | SHA-256 of `corpus.manifest` | `1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc` |
 | Manifest format | `broiler-parse-corpus 1` |
+
+Broiler.JS's corpus commit is the default-branch merge of Broiler.JS pull request 1062. It is the first
+default-branch commit that holds `conformance/parse/`. The copy was taken from that change's branch head,
+`cbbcfe16c75669aafd8958a08485741a7c1cbe78`, which the merge brings in, and `conformance/parse/` is the same tree at
+both commits.
 
 ## What is here
 
@@ -82,8 +87,8 @@ Each check below is exact.
    bytes, name and mode, so equal names mean an identical copy:
 
    ```sh
-   git -C <Broiler.JS> rev-parse BROILERJS_CORPUS_COMMIT:conformance/parse/corpus.manifest \
-     BROILERJS_CORPUS_COMMIT:conformance/parse/inputs
+   git -C <Broiler.JS> rev-parse 1fe542ff459935586cdf495e4a0e3d798248948a:conformance/parse/corpus.manifest \
+     1fe542ff459935586cdf495e4a0e3d798248948a:conformance/parse/inputs
    git rev-parse <this repository's commit>:src/tests/corpus/parse-1/corpus.manifest \
      <this repository's commit>:src/tests/corpus/parse-1/inputs
    ```

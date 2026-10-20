@@ -138,7 +138,8 @@ by all forty digits when it lands. The change meets the three conditions as foll
   - The condition therefore holds if SJL-12.6's changes, and every other change to those paths, merge after the
     corpus commit. It is read again when the corpus commit is named, and at the after commit.
 - **The copy.** `src/tests/corpus/parse-1/` holds `corpus.manifest` and `inputs/` from Broiler.JS's
-  `conformance/parse/`, byte for byte, at Broiler.JS's corpus commit. The manifest's SHA-256 is
+  `conformance/parse/`, byte for byte, at Broiler.JS's corpus commit,
+  `1fe542ff459935586cdf495e4a0e3d798248948a`. The manifest's SHA-256 is
   `1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc`. The copy's README names that commit and says
   how the copy is checked.
 
