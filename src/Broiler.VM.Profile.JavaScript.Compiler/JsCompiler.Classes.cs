@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   11
-// Annotated:        11/11
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           0
-// Human-reviewed:   0/11
+// Human-reviewed:   0/10
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       11
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -91,13 +91,13 @@ public sealed partial class JsCompiler
     /// was written would have collapsed the middle two and been wrong about both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1974A6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2F13A3
     // Broiler-Human:        PENDING
     private void CompileClass(JsClassNode node, string inferredName)
     {
         var outer = scope;
         var named = node.Name.Length != 0;
-        var privates = PrivateNamesOf(node);
+        var privates = binder.PrivateNames(node);
 
         // THE SCOPE EXISTS FOR THE PRIVATE NAMES TOO AND NOT ONLY FOR THE CLASS'S OWN BINDING. An
         // anonymous class with a `#x` in it has nowhere else to keep the name, and the name has to
@@ -354,32 +354,6 @@ public sealed partial class JsCompiler
 
             return;
         }
-    }
-
-    /// <summary>
-    /// Every private name one class body declares, in source order and once each.
-    /// </summary>
-    /// <remarks>
-    /// <b><c>get #a</c> and <c>set #a</c> declare ONE name and not two</b>, which is why this
-    /// de-duplicates rather than counting members. Two slots would have made the setter write an
-    /// element the getter could not see, and the brand check would then answer differently
-    /// depending on which half a program happened to ask through.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=14A539
-    // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<string> PrivateNamesOf(JsClassNode node)
-    {
-        var found = new System.Collections.Generic.List<string>();
-
-        foreach (var member in node.Members)
-        {
-            if (member.IsPrivate && !found.Contains(member.Key))
-            {
-                found.Add(member.Key);
-            }
-        }
-
-        return found;
     }
 
     /// <summary>Pushes the private name a class body in scope declared under this spelling.</summary>
