@@ -23,6 +23,10 @@ the contract record, which also records decisions SJL-D-11 and SJL-D-12 and the 
 - The after runs follow the last of SJL-12.6's four items.
 - A collector joins this bundle when there is a run to take.
 
+*(Added 2026-10-20.)* The bundle now holds part A's base dispatch (section 4). "This bundle holds no run yet" was
+true when it was written. Nothing here is a verdict still. No collector took the base: it was imported by hand, as
+[`base/hosted/imported.txt`](base/hosted/imported.txt) records.
+
 **SJL-12 is not an area verdict.** It applies no extraction gate and files no X1 to X7 verdict. The frontend area's
 verdict is SJL-13.1's (JSD-0080 decision D1).
 
@@ -33,6 +37,8 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
 **The commits the rule names.**
 - **The rule commit** carries [`decision-rule-area.md`](decision-rule-area.md). It is named in this section, by all
   forty digits, when the change that carries it has merged.
+  *(Added 2026-10-20, when part A's base was imported, section 4.)* It is
+  `889ea1568f59bf37aa21c0035b423d0d030eb87f`, the default-branch merge of Broiler.VM#157.
 - **The corpus commit**, **the ordering commit** and **the after commit** do not exist yet. The rule states the
   conditions each must meet, and this README names each when it lands.
 
@@ -240,6 +246,57 @@ follows.
   - A run that loses its process gives no hash for the compilations it did not finish, and is read the same way.
   - `eng/compare-parse-corpus.py determinism` counts each such compilation as one whose four results are not one
     accepted hash.
+
+## 4. The bases (2026-10-20)
+
+**Written 2026-10-20.** This section reads the base runs this bundle retains. It judges nothing: the rule compares
+each base with a run at the ordering commit or the after commit, and neither commit exists yet.
+
+| Part | Commit | Taken | Retained in |
+|---|---|---|---|
+| A | The rule commit, `889ea1568f59bf37aa21c0035b423d0d030eb87f` | 2026-10-19, 22:43Z to 22:50Z, by the hosted workflow | [`base/hosted/`](base/hosted/) |
+
+### Part A's base, at the rule commit
+
+**The dispatch.** [39336895555](https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39336895555), attempt 1,
+was dispatched from `main` on 2026-10-19 at 22:43:09Z, with both forms and the rule commit named by all forty
+digits. It completed at 22:50:42Z ([`base/hosted/run.txt`](base/hosted/run.txt),
+[`base/hosted/imported.txt`](base/hosted/imported.txt)).
+- **The dispatched ref is the rule commit itself.** `run.txt` reads `dispatched ref: refs/heads/main at
+  889ea1568f59bf37aa21c0035b423d0d030eb87f`, the same tested commit, and `tested tree: clean`. So the workflow and
+  its driver at the dispatched ref are the rule commit's, byte for byte, as part A's configuration requires, and no
+  product change had merged when the base was taken.
+- **The artifact** `test262-evidence` is retained unchanged in [`base/hosted/`](base/hosted/), its own folder, as
+  bundle `sjl-10-001` placed its own. [`imported.txt`](base/hosted/imported.txt) records the run, the artifact's id
+  and the digest of the zip as downloaded, `a843a089d009ecd20552c7cd8234c0e4bff3b30a8b60eef47d57bb3a1508aa10`, which
+  is the digest GitHub records for the artifact. Each of its 54 files was compared with its entry in the zip, and
+  none differs. [`hashes.txt`](base/hosted/hashes.txt) holds the SHA-256 of every other file of the folder, and
+  `sha256sum -c hashes.txt`, run in the folder, passes.
+- **The partition and the allowance** are the workflow's: four runners of four shards per form, fuel 100,000,000
+  and a wall clock of 5,000 ms, at the suite pin `test262.pin` with `sha256=794eea96...` (`run.txt`).
+
+**Complete and retainable in both forms**, as the rule's completeness states it: every shard of the partition
+reported, the run log's exit code 0, 1 or 4, the merged report's retention object retainable, and one distinct
+assembly list in the form's binaries log.
+
+| Run | Exit code (`<run>.run.log`) | Coverage, retention and shard findings (`<run>.test262.json`) | Assembly lists (`<run>.binaries.log`) |
+|---|---|---|---|
+| `wide-bytecode` | 1, the floor holds ([run log](base/hosted/wide-bytecode.run.log)) | whole; retainable, no reason given; no finding ([report](base/hosted/wide-bytecode.test262.json)) | 4 runners and the merging job, 1 distinct ([log](base/hosted/wide-bytecode.binaries.log)) |
+| `wide-native` | 4, a re-base: the floor was set in the `x86-64-win64` native form and this run is `x86-64-sysv` ([run log](base/hosted/wide-native.run.log)) | whole; retainable, no reason given; no finding ([report](base/hosted/wide-native.test262.json)) | 4 runners and the merging job, 1 distinct ([log](base/hosted/wide-native.binaries.log)) |
+
+- The native run's exit 4 is the one the rule admits ("Each native run exits 4, which completeness admits").
+- Both forms' runners and the merging job built one list, `77b67996...`, which is the SHA-256 of the artifact's
+  [`binaries.sha256`](base/hosted/binaries.sha256), the conformance root's twelve assemblies.
+
+**The runners' images, recorded and not judged.** The merging job ran image `ubuntu24` 20261018.339.1. Of the eight
+runners, six ran 20261012.334.1, and two ran 20261018.339.1: `slice-bytecode-1` and `slice-native-3`
+([`wide-bytecode.runners.txt`](base/hosted/wide-bytecode.runners.txt),
+[`wide-native.runners.txt`](base/hosted/wide-native.runners.txt)). Every runner reports the SDK 10.0.402 and the
+native backend `x86-64-sysv`. Part A's completeness reads the assembly lists, which agree; the rule names no image.
+
+**No row is judged.** The rule compares this base with the after dispatch at the after commit, per variant, through
+`eng/compare-test262-forms.py --same-form`. The floor verdicts each run log prints are retained and do not decide
+part A, and this section quotes no total (section 2).
 
 ## 9. Exclusions
 
