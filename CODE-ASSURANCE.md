@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 329 |
 | Files carrying an annotation | 329 |
-| Code units | 11681 |
-| Relevant | 6685 |
-| Exempt by predicate | 4996 |
-| Annotated | 6685 of 6685 (100%) |
-| Human reviewed | 0 of 6685 (0%) |
-| Unverified | 6685 |
+| Code units | 11672 |
+| Relevant | 6677 |
+| Exempt by predicate | 4995 |
+| Annotated | 6677 of 6677 (100%) |
+| Human reviewed | 0 of 6677 (0%) |
+| Unverified | 6677 |
 
 ## Review states
 
@@ -28,17 +28,17 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6685 |
+| HUMAN_PENDING | 6677 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4996 |
+| EXEMPT | 4995 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1724 |
+| None | 1715 |
 | Low | 6471 |
 | Medium | 90 |
 | High | 0 |
@@ -51,8 +51,8 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 9 |
 | Low | 1885 |
-| Medium | 4502 |
-| High | 1636 |
+| Medium | 4496 |
+| High | 1633 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6685 |
+| Units scored | 6677 |
 
 ## High-security review areas
 
@@ -179,9 +179,6 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.BeginDisposal(SliceSourceSpan, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ResourceScopes.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EndDisposal(Exit)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ResourceScopes.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitDisposal(Exit, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ResourceScopes.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ScanAnnexB(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ScanAnnexBStatement(JsStatement, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ScanAnnexBBlock(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitAnnexBAlias(string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.UnitBuffer.Leave(int, int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.SupportingTypes.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.TryReadProgramRequest(System.ReadOnlySpan<byte>, out JsScriptUnit)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, human line PENDING
@@ -1960,8 +1957,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2051 |
-| Units required to carry one | 1889 |
+| Units carrying a criterion | 2048 |
+| Units required to carry one | 1886 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1994,7 +1991,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | CompilerSuppliedRecordOrEnumMember | 30 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 922 |
+| FieldDeclaringStorage | 921 |
 | EnumMemberOfADeclaredVocabulary | 1970 |
 | DeclaredInSource | 63 |
 
@@ -2077,7 +2074,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11681 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11672 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

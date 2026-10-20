@@ -433,7 +433,7 @@ public sealed partial class JsCompiler
     /// into the variable environment with <see cref="JsOpcode.StoreEvalVariable"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A6FD08
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=211647
     // Broiler-Human:        PENDING
     private (string[] VarNames, string[] LexicalNames, string[] FunctionNames, string[] AnnexBNames) HoistEval(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
@@ -486,13 +486,7 @@ public sealed partial class JsCompiler
             }
         }
 
-        var aliases = new System.Collections.Generic.List<string>();
-
-        ScanAnnexB(
-            body,
-            new System.Collections.Generic.HashSet<string>(lexicalNames, System.StringComparer.Ordinal),
-            aliases);
-
+        var aliases = binder.Program.AnnexBAliases;
         var annexBNames = new System.Collections.Generic.List<string>();
         var aliasSeen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
 

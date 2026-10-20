@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   14
+// Annotated:        14/14
 // Exempt:           2
-// Human-reviewed:   0/17
+// Human-reviewed:   0/14
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         1/0
 // Resource impact:  3/10 max
-// Unverified:       17
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,7 +32,7 @@ public sealed partial class JsCompiler
     /// and the Annex B aliases one per name. The instructions below still create every binding; the
     /// row lets the executor run the specification's checks before the first of them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2BCD58
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D27021
     // Broiler-Human:        PENDING
     private (string[] LexicalNames, string[] VarNames, string[] FunctionNames, string[] AnnexBNames) HoistProgram(
         System.Collections.Generic.IReadOnlyList<JsStatement> body)
@@ -103,7 +103,7 @@ public sealed partial class JsCompiler
         // to exist by now for the same reason a declared function's does: `StoreGlobal` refuses to
         // create one *(JSC-93)*, and the write this binding exists for is written where the
         // declaration stands.
-        var aliases = ScriptAliases(body);
+        var aliases = binder.Program.AnnexBAliases;
 
         foreach (var alias in aliases)
         {
@@ -148,51 +148,19 @@ public sealed partial class JsCompiler
         return (lexicalNames, [.. varNames], [.. functionNames], [.. annexBNames]);
     }
 
-    /// <summary>The Annex B aliases one script's top level owes, or nothing where it is strict.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D994B8
-    // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<string> ScriptAliases(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body)
-    {
-        var aliases = new System.Collections.Generic.List<string>();
-
-        if (strict)
-        {
-            return aliases;
-        }
-
-        var blocked = new System.Collections.Generic.HashSet<string>(
-            System.StringComparer.Ordinal);
-
-        foreach (var (name, _) in programLexicals)
-        {
-            blocked.Add(name);
-        }
-
-        ScanAnnexB(body, blocked, aliases);
-        return aliases;
-    }
-
     /// <summary>Declares and initialises a function body's hoisted bindings.</summary>
     /// <param name="body">The body's statements.</param>
     /// <param name="parameters">
     /// The parameters' record when the body has a variable environment of its own - the current
     /// scope, one record inside it - or <see langword="null"/> when one record holds both.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D844A2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7CF7E6
     // Broiler-Human:        PENDING
     private void HoistFunction(
         JsBinder.FunctionFacts facts,
         System.Collections.Generic.IReadOnlyList<JsStatement> body,
         Scope? parameters = null)
     {
-        // THE PARAMETER NAMES ARE READ OFF THE SCOPE BEFORE ANYTHING ELSE IS PUT IN IT. Annex B
-        // refuses to alias a name the parameter list already bound - and `arguments` where the
-        // object was created is one of those names - so the set has to be taken while the scope
-        // holds the parameters and nothing else.
-        var bound = new System.Collections.Generic.HashSet<string>(
-            (parameters ?? scope).Names, System.StringComparer.Ordinal);
-
         var names = new System.Collections.Generic.List<string>();
         var functions = new System.Collections.Generic.List<JsFunctionNode>();
         CollectVarScope(body, names, functions, lexical: null);
@@ -264,37 +232,12 @@ public sealed partial class JsCompiler
             EmitScoped(JsOpcode.InitialiseScoped, 0, slots[index]);
         }
 
-        if (strict)
-        {
-            return;
-        }
-
         // ANNEX B'S OWN BINDINGS COME LAST AND HOLD `undefined`. A name the body already declared
         // - as a `var`, as a parameter or as a top-level function - keeps the binding it has and
         // gains nothing here, which is what makes `function f() { } { function f() { } }` ONE
-        // binding that the block's declaration then updates rather than two that disagree.
-        var blocked = new System.Collections.Generic.HashSet<string>(
-            bound, System.StringComparer.Ordinal);
-
-        // `arguments` IS A PARAMETER NAME WHENEVER THE OBJECT EXISTS, and the language says so in
-        // those words: function declaration instantiation appends it to `parameterNames` before
-        // Annex B's clause reads them. Naming it here rather than asking whether the object was
-        // created keeps the answer on the safe side of the rule - the extension is declined, and
-        // declining it changes nothing about a program that has no such declaration in it.
-        blocked.Add("arguments");
-
-        foreach (var declaration in bodyLexical)
-        {
-            if (!declaration.IsFunction)
-            {
-                blocked.Add(declaration.Name);
-            }
-        }
-
-        var aliases = new System.Collections.Generic.List<string>();
-        ScanAnnexB(body, blocked, aliases);
-
-        foreach (var alias in aliases)
+        // binding that the block's declaration then updates rather than two that disagree. The
+        // binder found the aliases, and finds none in strict code.
+        foreach (var alias in facts.Body.AnnexBAliases)
         {
             if (scope.Has(alias))
             {
@@ -579,82 +522,6 @@ public sealed partial class JsCompiler
         // Broiler-Human:        PENDING
         public System.Collections.Generic.List<(string Name, bool Constant)>.Enumerator GetEnumerator() =>
             declared.GetEnumerator();
-    }
-
-    /// <summary>Every name one statement list declares lexically, and whether it is immutable.</summary>
-    /// <remarks>
-    /// <b>The whole set is collected so the whole set can be DECLARED before the list runs.</b>
-    /// A block's record holds every lexical name the block declares from the moment the record
-    /// exists — that is what the temporal dead zone is — and a lowering that created each slot when
-    /// it reached the declaration had two consequences it did not want: a mention above the
-    /// declaration resolved to whatever the enclosing scopes had rather than throwing, and a
-    /// closure built at block entry, which is where a function declaration's closure has to be
-    /// built, resolved the block's own <c>let</c> to a global because the slot did not exist yet.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E1ED8F
-    // Broiler-Human:        PENDING
-    private static void CollectLexical(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body,
-        System.Collections.Generic.List<(string Name, bool Constant)> names)
-    {
-        foreach (var statement in body)
-        {
-            if (statement is JsVariableStatement variable && variable.Kind != SliceDeclarationKind.Var)
-            {
-                var declared = new System.Collections.Generic.List<string>();
-
-                foreach (var declarator in variable.Declarators)
-                {
-                    CollectDeclaratorNames(declarator, declared);
-                }
-
-                foreach (var name in declared)
-                {
-                    names.Add((name, variable.Kind == SliceDeclarationKind.Const));
-                }
-            }
-
-            // A CLASS DECLARATION IS A LEXICAL DECLARATION AND NOT A HOISTED ONE. Leaving it out
-            // of this collection would mean the block enclosing it pushes no scope, and the class
-            // binding would land in whatever scope happened to be current - which for a class in a
-            // loop body is a slot the next turn overwrites.
-            if (statement is JsClassDeclaration declaration && declaration.Class.Name.Length != 0)
-            {
-                names.Add((declaration.Class.Name, false));
-            }
-
-            // AND SO IS A FUNCTION DECLARATION, once it is written in a block rather than at the
-            // top level of a body. The name belongs to the block's record, so the block has to
-            // push one even where the declaration is the only thing in it: without this a
-            // `{ function f() { } }` pushed nothing, and the slot the declaration then wanted was
-            // the enclosing function's.
-            if (Declared(statement) is { } function && function.Function.Name.Length != 0)
-            {
-                names.Add((function.Function.Name, false));
-            }
-        }
-    }
-
-    /// <summary>
-    /// The function declaration one statement of a block is, looking through any labels on it.
-    /// </summary>
-    /// <remarks>
-    /// <b>A LABEL DOES NOT MOVE THE BINDING IT LABELS.</b> <c>{ l: function f() { } }</c> declares
-    /// <c>f</c> in the block exactly as <c>{ function f() { } }</c> does, because the language's
-    /// <c>LexicallyDeclaredNames</c> of a statement list looks through a <c>LabelledStatement</c>
-    /// to the declaration under it. A collector that matched only the bare declaration would leave
-    /// the labelled one to be resolved as a global, which is the same defect one syntax away.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B8CA09
-    // Broiler-Human:        PENDING
-    private static JsFunctionDeclaration? Declared(JsStatement statement)
-    {
-        while (statement is JsLabelledStatement labelled)
-        {
-            statement = labelled.Body;
-        }
-
-        return statement as JsFunctionDeclaration;
     }
 
     /// <summary>Every name one declarator introduces, whether it names one or destructures.</summary>

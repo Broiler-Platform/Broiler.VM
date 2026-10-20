@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 6685 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6677 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 329 |
-| Code units | 11681 |
-| Relevant | 6685 |
-| Exempt | 4996 |
-| Assessed | 6685 of 6685 (100%) |
-| Human reviewed | 0 of 6685 (0%) |
-| Unverified | 6685 |
+| Code units | 11672 |
+| Relevant | 6677 |
+| Exempt | 4995 |
+| Assessed | 6677 of 6677 (100%) |
+| Human reviewed | 0 of 6677 (0%) |
+| Unverified | 6677 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6685 |
+| HUMAN_PENDING | 6677 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4996 |
+| EXEMPT | 4995 |
 
 ## 5. Aliases In The Tree
 
@@ -159,17 +159,17 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs` | 11 | 11 | 0 | 11 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Expressions.cs` | 3 | 3 | 0 | 3 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Functions.cs` | 9 | 9 | 0 | 9 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs` | 19 | 17 | 2 | 17 | None | Medium | 1/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs` | 16 | 14 | 2 | 14 | None | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` | 17 | 17 | 0 | 17 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs` | 13 | 13 | 0 | 13 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Names.cs` | 19 | 19 | 0 | 19 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Operators.cs` | 14 | 14 | 0 | 14 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Patterns.cs` | 16 | 13 | 3 | 13 | None | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ResourceScopes.cs` | 7 | 7 | 0 | 7 | Low | High | 3/3 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` | 14 | 14 | 0 | 14 | None | High | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` | 9 | 9 | 0 | 9 | None | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.SupportingTypes.cs` | 101 | 23 | 78 | 23 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Walk.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 71 | 23 | 48 | 23 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 70 | 23 | 47 | 23 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompilerUnicode.cs` | 7 | 6 | 1 | 6 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsJsonModule.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 23 | 12 | 11 | 12 | None | Medium | 4/0 |
@@ -685,12 +685,6 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the handler of a resource scope runs a disposer the normal path already ran, or re-raises anything other than the folded completion or the forced return it was entered with
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitDisposal(Exit, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ResourceScopes.cs` - Security=High, Spec=none cited, `5B2B12`, PENDING
   - Falsified if: an asynchronous disposal is emitted into a unit that may not await, or a rejected disposer's reason escapes without being folded into the completion
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ScanAnnexB(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` - Security=High, Spec=none cited, `8DEF5C`, PENDING
-  - Falsified if: a declaration is admitted whose name a `var` of the same spelling could not be added under
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ScanAnnexBStatement(JsStatement, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` - Security=High, Spec=none cited, `643157`, PENDING
-  - Falsified if: a statement that opens a lexical record forwards the enclosing blocking set unchanged
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ScanAnnexBBlock(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` - Security=High, Spec=none cited, `CEAD6A`, PENDING
-  - Falsified if: a block's own lexical names reach the test its own declarations are judged by
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitAnnexBAlias(string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` - Security=High, Spec=none cited, `84DFE0`, PENDING
   - Falsified if: the write lands on the block's own binding rather than the hoisting scope's
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.UnitBuffer.Leave(int, int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.SupportingTypes.cs` - Security=High, Spec=none cited, `9DE8CE`, PENDING
@@ -4259,7 +4253,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6546 of the 6685 assessed units declare
+That is not a figure of speech. 6538 of the 6677 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

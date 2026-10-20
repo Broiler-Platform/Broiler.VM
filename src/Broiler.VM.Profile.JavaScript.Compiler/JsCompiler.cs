@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           48
+// Exempt:           47
 // Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    High
@@ -449,28 +449,6 @@ public sealed partial class JsCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3F1F66
     // Broiler-Human:        PENDING
     private JsBinder binder = null!;
-
-    /// <summary>
-    /// The block-level function declarations Annex B also gives a <c>var</c>-scoped binding.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>Membership is a property of the DECLARATION and not of the name</b>, which is why this
-    /// holds nodes rather than strings. <c>{ function f() { } { function f() { } } }</c> has two
-    /// declarations of one name and the language admits only the outer one to the extension — the
-    /// inner one is refused because <c>var f</c> written in its place would collide with the outer
-    /// block's lexical <c>f</c> — so a set of names could not tell the two apart.
-    /// </para>
-    /// <para>
-    /// <b>The comparer is reference identity because the nodes are records</b>, whose equality is
-    /// their content: two textually identical declarations in two compiled sources would be one
-    /// entry under the default comparer, and admitting one would admit the other.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E9C427
-    // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.HashSet<object> annexB =
-        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
 
     /// <summary>
     /// Whether the code being lowered is inside a method, so <c>super.x</c> resolves.

@@ -211,11 +211,15 @@ internal sealed partial class JsBinder
 
         var parametersMayEvaluate = !simple && !strict && ParametersMention(function.Parameters, "eval");
 
-        // ANNEX B DECLINES A NAME THE PARAMETER LIST BINDS, `arguments` WHENEVER THE OBJECT COULD
-        // EXIST, AND EVERY LEXICAL NAME THE BODY'S TOP LEVEL DECLARES - each is a name a `var` of the
-        // same spelling could not be added under. `arguments` is named whether or not the object is
-        // created, which keeps the answer on the safe side of the rule: the extension is declined, and
-        // declining it changes nothing about a program with no such declaration in it.
+        // ANNEX B DECLINES A NAME THE PARAMETER LIST BINDS, `arguments`, AND EVERY LEXICAL NAME THE
+        // BODY'S TOP LEVEL DECLARES - each is a name a `var` of the same spelling could not be added
+        // under. `arguments` IS A PARAMETER NAME WHENEVER THE OBJECT EXISTS, and the language says so
+        // in those words: function declaration instantiation appends it to `parameterNames` before
+        // Annex B's clause reads them. Naming it whether or not the object is created keeps the answer
+        // on the safe side of the rule - the extension is declined, and declining it changes nothing
+        // about a program that has no such declaration in it. The lowering took the parameter names
+        // off the function's record before anything else was declared in it, which held exactly these
+        // names and the temporaries no source can spell.
         var topLevel = DeclarationsOf(function.Body);
         var blocked = new System.Collections.Generic.HashSet<string>(parameterNames, System.StringComparer.Ordinal)
         {
