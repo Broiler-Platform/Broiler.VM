@@ -226,9 +226,9 @@ internal sealed partial class JsBinder
     /// one report rather than two (class S2 of the bundle's rule).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=40AAB1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8DE4DF
     // Broiler-Human:        PENDING
-    private void Writes(Context context, string name)
+    private void Referenced(Context context, string name)
     {
         if (!EvaluatedInField || context.Is(Frame.ArgumentsBound) || context.Is(Frame.Silent) ||
             !IsArguments(name))
@@ -248,16 +248,16 @@ internal sealed partial class JsBinder
     private static bool IsArguments(string name) =>
         string.Equals(name, "arguments", System.StringComparison.Ordinal);
 
-    /// <summary>This context where a record that may declare <c>arguments</c> is entered.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=461AAB
+    /// <summary>This context inside a record that binds <c>arguments</c> when <paramref name="bindsArguments"/> says so.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=5CB3EB
     // Broiler-Human:        PENDING
-    private Context Declaring(Context context, bool declares) =>
-        EvaluatedInField && declares ? context.And(Frame.ArgumentsBound) : context;
+    private Context InsideRecord(Context context, bool bindsArguments) =>
+        EvaluatedInField && bindsArguments ? context.And(Frame.ArgumentsBound) : context;
 
     /// <summary>This context where a record holding <paramref name="names"/> is entered.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=06CFDD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=8DDEF7
     // Broiler-Human:        PENDING
-    private Context Declaring(Context context, System.Collections.Generic.IReadOnlyList<string> names)
+    private Context InsideRecord(Context context, System.Collections.Generic.IReadOnlyList<string> names)
     {
         if (!EvaluatedInField)
         {
@@ -276,9 +276,9 @@ internal sealed partial class JsBinder
     }
 
     /// <summary>This context where a statement list's record, holding <paramref name="lexical"/>, is entered.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=11EFCE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D10DA4
     // Broiler-Human:        PENDING
-    private Context Declaring(Context context, System.Collections.Generic.IReadOnlyList<Declaration> lexical)
+    private Context InsideRecord(Context context, System.Collections.Generic.IReadOnlyList<Declaration> lexical)
     {
         if (!EvaluatedInField)
         {
@@ -338,7 +338,7 @@ internal sealed partial class JsBinder
     }
 
     /// <summary>Whether a parameter list binds the name <c>arguments</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=A5311C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=323AFD
     // Broiler-Human:        PENDING
     private static bool ParametersBindArguments(JsFunctionNode function)
     {
@@ -349,7 +349,15 @@ internal sealed partial class JsBinder
             PatternNames(parameter.Target, names);
         }
 
-        return names.Contains("arguments");
+        foreach (var name in names)
+        {
+            if (IsArguments(name))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>Whether a function's body declares <c>arguments</c> in its own record.</summary>
