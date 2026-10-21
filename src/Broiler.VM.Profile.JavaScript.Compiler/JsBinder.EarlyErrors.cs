@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
+// Relevant units:   7
+// Annotated:        7/7
 // Exempt:           1
-// Human-reviewed:   0/6
+// Human-reviewed:   0/7
 // IP risk:          None
 // Security risk:    High
-// Criteria:         2/1
+// Criteria:         3/1
 // Resource impact:  3/10 max
-// Unverified:       6
+// Unverified:       7
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -154,6 +154,73 @@ internal sealed partial class JsBinder
             {
                 overridden.Add(Program.Functions[at]);
             }
+        }
+    }
+
+    /// <summary>Refuses a regular-expression literal whose flags or pattern the language refuses.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The flags first</b> (ES2026 IsValidRegularExpressionLiteral): drawn from <c>dgimsuyv</c>,
+    /// none twice, and not <c>u</c> with <c>v</c>. <b>Then the pattern, by the matcher's own
+    /// grammar</b>, which the format assembly holds so that this front end and the executor cannot
+    /// disagree about what a pattern is; its message is the refusal's.
+    /// </para>
+    /// <para>
+    /// A literal the lowering never lowers is not compiled at all, here either.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7B69FD
+    // Broiler-Falsified-If: a literal the matcher compiles is refused, or one it refuses, or whose flags the language refuses, is admitted
+    // Broiler-Human:        PENDING
+    private void CheckRegExp(Context context, JsRegExpLiteral pattern)
+    {
+        if (context.Is(Frame.Silent))
+        {
+            return;
+        }
+
+        var flags = pattern.Flags;
+
+        for (var at = 0; at < flags.Length; at++)
+        {
+            if ("dgimsuyv".IndexOf(flags[at], System.StringComparison.Ordinal) < 0 ||
+                flags.IndexOf(flags[at], at + 1) >= 0)
+            {
+                Report(
+                    context,
+                    pattern.Span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "Invalid regular expression flags: " + flags);
+
+                return;
+            }
+        }
+
+        if (flags.Contains('v', System.StringComparison.Ordinal) &&
+            flags.Contains('u', System.StringComparison.Ordinal))
+        {
+            Report(
+                context,
+                pattern.Span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "Invalid regular expression flags: " + flags + " (u and v may not be combined)");
+
+            return;
+        }
+
+        try
+        {
+            _ = Format.JsRegExpMatcher.Compile(
+                pattern.Pattern,
+                flags.Contains('i', System.StringComparison.Ordinal),
+                flags.Contains('m', System.StringComparison.Ordinal),
+                flags.Contains('s', System.StringComparison.Ordinal),
+                flags.Contains('u', System.StringComparison.Ordinal),
+                flags.Contains('v', System.StringComparison.Ordinal));
+        }
+        catch (Format.JsRegExpSyntaxError failure)
+        {
+            Report(context, pattern.Span, SliceSourceDiagnosticCode.UnexpectedToken, failure.Message);
         }
     }
 

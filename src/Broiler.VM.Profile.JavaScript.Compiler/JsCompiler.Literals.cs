@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   16
+// Annotated:        16/16
 // Exempt:           0
-// Human-reviewed:   0/17
+// Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         3/3
 // Resource impact:  3/10 max
-// Unverified:       17
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -272,7 +272,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C1C2C5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9D1499
     // Broiler-Human:        PENDING
     private void CompileObject(JsObjectLiteral literal)
     {
@@ -288,12 +288,7 @@ public sealed partial class JsCompiler
             // here is the half that no `=` followed, and it is a syntax error.
             if (entry.Cover)
             {
-                Refuse(
-                    entry.Span,
-                    SliceSourceDiagnosticCode.UnexpectedToken,
-                    "`=` is not an object literal entry outside a destructuring assignment");
-
-                continue;
+                throw BinderAdmitted(entry.Span, "a `{ a = 1 }` entry in an object literal");
             }
 
             if (entry.Kind == JsPropertyKind.Spread)
@@ -369,12 +364,7 @@ public sealed partial class JsCompiler
             {
                 if (prototyped)
                 {
-                    Refuse(
-                        entry.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
-                        "an object literal may set `__proto__` once");
-
-                    continue;
+                    throw BinderAdmitted(entry.Span, "a second `__proto__` entry in an object literal");
                 }
 
                 prototyped = true;
@@ -402,109 +392,32 @@ public sealed partial class JsCompiler
         CompileExpression(value);
     }
 
-    /// <summary>Lowers a regular-expression literal, refusing a pattern that is not one.</summary>
+    /// <summary>Lowers a regular-expression literal.</summary>
     /// <remarks>
     /// <para>
-    /// <b>A LITERAL'S PATTERN IS CHECKED HERE AND NOT WHERE IT RUNS, because the language makes it
-    /// an EARLY error.</b> <c>/(/ </c> is a program that does not parse, in the same way that
-    /// <c>var = 1</c> is; a front end that emitted it and let the constructor refuse it at run time
-    /// answered the right kind of error at the wrong time, and a program that never reached the
-    /// literal - one behind a `false` branch, which is how the pinned suite writes these - was
-    /// accepted outright.
+    /// <b>A LITERAL'S PATTERN AND FLAGS ARE CHECKED BEFORE THE LOWERING, and not where it runs, because
+    /// the language makes both EARLY errors.</b> <c>/(/ </c> is a program that does not parse, in the
+    /// same way that <c>var = 1</c> is; a front end that emitted it and let the constructor refuse it
+    /// at run time answered the right kind of error at the wrong time, and a program that never
+    /// reached the literal - one behind a `false` branch, which is how the pinned suite writes these -
+    /// was accepted outright. The binder pass checks every literal once, by the matcher's own grammar
+    /// (SJL-12.6 item 2), and a unit with a literal it refuses is never lowered; this lowering checked
+    /// each literal again every time it emitted one until then.
     /// </para>
     /// <para>
     /// <b>The check is the matcher's own and not a second opinion.</b> The pattern grammar lives in
     /// the format assembly, which both this front end and the executor read, precisely so that the
-    /// two cannot disagree about what a pattern is: a front end with its own idea of the grammar
-    /// would either refuse a pattern the executor runs or emit one it cannot.
-    /// </para>
-    /// <para>
-    /// <b>The flags are an early error too</b>, and they were not: <c>/a/x</c> and <c>/a/gg</c>
-    /// behind a <c>false</c> branch were accepted, and <c>/a/v</c> - a flag the language has and
-    /// this matcher does not - passed the front end and was refused only when the literal ran, as a
-    /// SyntaxError from the constructor. Now a flag outside <c>dgimsuyv</c>, a repeated flag, or
-    /// <c>u</c> with <c>v</c> is the language's SyntaxError here, and a well-formed <c>v</c> is an
-    /// early SyntaxError whose message names the flag as unsupported (JSeal slice JSD-0031-later).
+    /// two cannot disagree about what a pattern is.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=92D102
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4C1B57
     // Broiler-Human:        PENDING
     private void CompileRegExpLiteral(JsRegExpLiteral pattern)
     {
-        // A refused literal is still lowered, so the stack shape does not depend on the refusal.
-        if (!RefuseRegExpLiteralFlags(pattern))
-        {
-            try
-            {
-                _ = JsRegExpMatcher.Compile(
-                    pattern.Pattern,
-                    pattern.Flags.Contains('i', System.StringComparison.Ordinal),
-                    pattern.Flags.Contains('m', System.StringComparison.Ordinal),
-                    pattern.Flags.Contains('s', System.StringComparison.Ordinal),
-                    pattern.Flags.Contains('u', System.StringComparison.Ordinal),
-                    pattern.Flags.Contains('v', System.StringComparison.Ordinal));
-            }
-            catch (JsRegExpSyntaxError failure)
-            {
-                Refuse(pattern.Span, SliceSourceDiagnosticCode.UnexpectedToken, failure.Message);
-            }
-        }
-
         Emit(JsOpcode.LoadGlobal, InternedName("RegExp"));
         Emit(JsOpcode.LoadConstant, StringConstant(pattern.Pattern));
         Emit(JsOpcode.LoadConstant, StringConstant(pattern.Flags));
         Emit(JsOpcode.Construct, (byte)2);
-    }
-
-    /// <summary>
-    /// Refuses a regular-expression literal whose flags the language refuses, and answers whether it
-    /// did.
-    /// </summary>
-    /// <remarks>
-    /// ES2026 IsValidRegularExpressionLiteral: the flags are drawn from <c>dgimsuyv</c>, none twice,
-    /// and not <c>u</c> and <c>v</c> together. Those are SyntaxErrors of the language, and they are
-    /// all this refuses. <b>A well-formed <c>v</c> is admitted</b> since phase F2 gave the matcher
-    /// the flag's class syntax, set operations and properties of strings; until then it was refused
-    /// here as unsupported, under the reading of decision JSD-0031 section 12 (JSC-262).
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=51285E
-    // Broiler-Human:        PENDING
-    private bool RefuseRegExpLiteralFlags(JsRegExpLiteral pattern)
-    {
-        var flags = pattern.Flags;
-
-        for (var at = 0; at < flags.Length; at++)
-        {
-            if ("dgimsuyv".IndexOf(flags[at], System.StringComparison.Ordinal) < 0 ||
-                flags.IndexOf(flags[at], at + 1) >= 0)
-            {
-                Refuse(
-                    pattern.Span,
-                    SliceSourceDiagnosticCode.UnexpectedToken,
-                    "Invalid regular expression flags: " + flags);
-
-                return true;
-            }
-        }
-
-        if (!flags.Contains('v', System.StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        if (flags.Contains('u', System.StringComparison.Ordinal))
-        {
-            Refuse(
-                pattern.Span,
-                SliceSourceDiagnosticCode.UnexpectedToken,
-                "Invalid regular expression flags: " + flags + " (u and v may not be combined)");
-
-            return true;
-        }
-
-        // A WELL-FORMED `v` IS ADMITTED since phase F2 gave the matcher its class syntax; until then
-        // it was refused here as unsupported (JSC-262).
-        return false;
     }
 
     // ---- templates -----------------------------------------------------------------------------

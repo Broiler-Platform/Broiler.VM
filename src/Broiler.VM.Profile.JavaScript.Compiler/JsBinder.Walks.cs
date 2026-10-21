@@ -436,7 +436,7 @@ internal sealed partial class JsBinder
     /// no further after a refusal it keeps, is walked <see cref="Frame.Silent"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=362A8C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=36179F
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
     private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
@@ -865,11 +865,15 @@ internal sealed partial class JsBinder
 
                 return;
 
+            case JsRegExpLiteral expression:
+                CheckRegExp(context, expression);
+                return;
+
             // A LEAF: a literal, a name, `this`, an empty or `debugger` statement, an `import`
             // declaration. None holds a node with a fact or an early error of its own.
             case JsNumberLiteral or JsBigIntLiteral or JsStringLiteral or JsBooleanLiteral or
-                JsNullLiteral or JsRegExpLiteral or JsIdentifier or JsThisExpression or
-                JsEmptyStatement or JsDebuggerStatement or JsImportDeclaration:
+                JsNullLiteral or JsIdentifier or JsThisExpression or JsEmptyStatement or
+                JsDebuggerStatement or JsImportDeclaration:
                 return;
 
             // EVERY KIND OF NODE IS NAMED ABOVE, AS ONE THAT HOLDS OTHERS OR AS A LEAF, so that a kind
@@ -943,21 +947,52 @@ internal sealed partial class JsBinder
 
     /// <summary>One object literal's entries, each as the lowering reads it.</summary>
     /// <remarks>
-    /// An entry in method form is a method, whose <c>super</c> resolves.
+    /// A <c>{ a = 1 }</c> entry that reached the lowering was never a pattern; a <c>__proto__: v</c>
+    /// written a second time sets the prototype twice; an entry in method form is a method, whose
+    /// <c>super</c> resolves.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CEB456
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=84B66F
     // Broiler-Human:        PENDING
     private void VisitObject(
         System.Collections.Generic.List<Pending> pending, JsObjectLiteral literal, Context context)
     {
+        var prototyped = false;
+
         foreach (var entry in literal.Entries)
         {
             Push(pending, entry.Computed, context);
+
+            if (entry.Cover)
+            {
+                Report(
+                    context,
+                    entry.Span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "`=` is not an object literal entry outside a destructuring assignment");
+
+                Push(pending, entry.Value, context);
+                continue;
+            }
 
             if (entry.Kind != JsPropertyKind.Spread && entry.IsMethod && entry.Value is JsFunctionExpression method)
             {
                 pending.Add(new Pending(method.Function, context, string.Empty, Use.Method));
                 continue;
+            }
+
+            if (entry.Kind != JsPropertyKind.Spread && !entry.IsMethod && entry.Computed is null &&
+                !entry.Shorthand && string.Equals(entry.Key, "__proto__", System.StringComparison.Ordinal))
+            {
+                if (prototyped)
+                {
+                    Report(
+                        context,
+                        entry.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "an object literal may set `__proto__` once");
+                }
+
+                prototyped = true;
             }
 
             Push(pending, entry.Value, context);
