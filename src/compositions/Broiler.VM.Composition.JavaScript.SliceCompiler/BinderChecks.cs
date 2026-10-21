@@ -54,7 +54,7 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// first. <i>(2026-10-21, SJL-12.6 item 4, JSD-0080 decision D15: the only sources that reached that
 /// rule held the <c>await</c> in a template substitution in an arrow's parameters, and the parser
 /// now reads the substitution in the parameter list and refuses it itself, so their rows hold the
-/// parser's 2101.)</i> The two other 2104-coded rules, a
+/// parser's 2101 and a tree at the tree-depth bound has rows of its own.)</i> The two other 2104-coded rules, a
 /// logical assignment to a target that is neither a name nor a property and a <c>using</c> declaration
 /// outside a statement list that can dispose it, have no row: the parser refuses every source that
 /// would reach them first.
@@ -186,6 +186,17 @@ internal static class BinderChecks
             "early error: await in a template substitution in a parameter pattern, before a value the binder refuses",
             "async function g() { ({x = `${await 1}`} = /a/gg) => x; }",
             "2101@1:31");
+
+        // the tree-depth bound, through the binder (JSD-0080 decision D17): a source whose tree is exactly as deep
+        // as SliceParseOptions.MaximumTreeDepth compiles, so the binder's walks and the lowering's take it on the
+        // compiler's stack, and one level deeper is refused before either runs
+        yield return Accepted(
+            "the binder walks a tree at the tree-depth bound",
+            "var x = 1" + string.Concat(Enumerable.Repeat("+1", SliceParseOptions.MaximumTreeDepth)) + ";");
+        yield return Refused(
+            "a tree one level past the tree-depth bound is refused before the binder",
+            "var x = 1" + string.Concat(Enumerable.Repeat("+1", SliceParseOptions.MaximumTreeDepth + 1)) + ";",
+            "2103@1:9");
 
         // assignment targets
         yield return Refused("early error: update of a call in strict code", "'use strict'; f()++;", "2205@1:15");
