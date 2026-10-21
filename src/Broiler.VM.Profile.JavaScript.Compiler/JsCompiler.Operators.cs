@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7EC7C8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=52F182
     // Broiler-Human:        PENDING
     private void CompileUnary(JsUnaryExpression unary)
     {
@@ -147,13 +147,7 @@ public sealed partial class JsCompiler
             // below would have evaluated the access - throwing on a foreign object - and then
             // answered `true` for a deletion that never happened.
             case SliceTokenKind.Delete when unary.Operand is JsPrivateMemberExpression:
-                Refuse(
-                    unary.Span,
-                    SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                    "a private element cannot be deleted");
-
-                Emit(JsOpcode.LoadTrue);
-                return;
+                throw BinderAdmitted(unary.Span, "the deletion of a private element");
 
             // `delete x` FOR A BARE NAME NEVER EVALUATES `x`. The operator takes a reference and
             // asks whether it can be removed, so a lowering that read the name and threw the value
@@ -272,7 +266,7 @@ public sealed partial class JsCompiler
         Emit(add);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=34BD50
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ACB5BB
     // Broiler-Human:        PENDING
     private void CompileUpdate(JsUpdateExpression update)
     {
@@ -396,13 +390,7 @@ public sealed partial class JsCompiler
 
         if (update.Operand is not JsMemberExpression member)
         {
-            Refuse(
-                update.Span,
-                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                "the operand of an update operator is not a reference");
-
-            Emit(JsOpcode.LoadUndefined);
-            return;
+            throw BinderAdmitted(update.Span, "an update of an operand that is not a reference");
         }
 
         var function = FunctionScope();
@@ -555,7 +543,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AF68A1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=05F408
     // Broiler-Human:        PENDING
     private void CompileAssignment(JsAssignmentExpression assignment)
     {
@@ -616,13 +604,7 @@ public sealed partial class JsCompiler
                 return;
             }
 
-            Refuse(
-                assignment.Span,
-                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                "the left-hand side of an assignment is not a reference");
-
-            Emit(JsOpcode.LoadUndefined);
-            return;
+            throw BinderAdmitted(assignment.Span, "an assignment to a target that is not a reference");
         }
 
         if (assignment.Operator is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
@@ -711,12 +693,7 @@ public sealed partial class JsCompiler
             return;
         }
 
-        Refuse(
-            assignment.Span,
-            SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-            "the left-hand side of an assignment is not a reference");
-
-        Emit(JsOpcode.LoadUndefined);
+        throw BinderAdmitted(assignment.Span, "an assignment to a target that is not a reference");
     }
 
     /// <summary>

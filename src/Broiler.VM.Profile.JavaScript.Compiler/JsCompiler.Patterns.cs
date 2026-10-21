@@ -155,7 +155,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EF721D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E6956E
     // Broiler-Human:        PENDING
     private void BindLeaf(JsExpression target, BindMode mode)
     {
@@ -168,13 +168,7 @@ public sealed partial class JsCompiler
 
         if (target is not JsIdentifier name)
         {
-            Refuse(
-                target.Span,
-                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                "a declaration's pattern binds names, and this is not one");
-
-            Emit(JsOpcode.Pop);
-            return;
+            throw BinderAdmitted(target.Span, "a declaration's pattern leaf that is not a name");
         }
 
         if (mode == BindMode.Var)

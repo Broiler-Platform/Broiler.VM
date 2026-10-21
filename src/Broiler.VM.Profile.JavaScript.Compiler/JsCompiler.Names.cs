@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=909A84
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=40B4E2
     // Broiler-Human:        PENDING
     private void CompileStoreTo(JsExpression target)
     {
@@ -92,12 +92,7 @@ public sealed partial class JsCompiler
                 break;
 
             default:
-                Refuse(
-                    target.Span,
-                    SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                    "the left-hand side of an assignment is not a reference");
-
-                break;
+                throw BinderAdmitted(target.Span, "an assignment target that is not a reference");
         }
     }
 

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
+// Relevant units:   8
+// Annotated:        8/8
 // Exempt:           1
-// Human-reviewed:   0/7
+// Human-reviewed:   0/8
 // IP risk:          None
 // Security risk:    High
 // Criteria:         3/1
 // Resource impact:  3/10 max
-// Unverified:       7
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -156,6 +156,17 @@ internal sealed partial class JsBinder
             }
         }
     }
+
+    /// <summary>Whether the lowering can write through <paramref name="target"/>.</summary>
+    /// <remarks>
+    /// A name, a property - dotted, computed, private or <c>super</c>'s - and, in sloppy code only, a
+    /// call, which Annex B lets stand as a target whose write throws when it runs.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=ACD45C
+    // Broiler-Human:        PENDING
+    private static bool IsReference(JsExpression target, bool strict) =>
+        target is JsIdentifier or JsMemberExpression or JsPrivateMemberExpression or JsSuperMemberExpression ||
+        (target is JsCallExpression && !strict);
 
     /// <summary>Refuses a regular-expression literal whose flags or pattern the language refuses.</summary>
     /// <remarks>

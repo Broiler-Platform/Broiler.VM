@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   47
-// Annotated:        47/47
-// Exempt:           21
-// Human-reviewed:   0/47
+// Relevant units:   51
+// Annotated:        51/51
+// Exempt:           24
+// Human-reviewed:   0/51
 // IP risk:          None
 // Security risk:    High
-// Criteria:         9/7
+// Criteria:         10/7
 // Resource impact:  3/10 max
-// Unverified:       47
+// Unverified:       51
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -169,9 +169,10 @@ internal sealed partial class JsBinder
     /// <summary>What a parent asks of a child node beside its context.</summary>
     /// <remarks>
     /// <b>The same node means different things to the lowering in different places</b>: a function
-    /// is a method or not by where it is written.
+    /// is a method or not by where it is written, and a pattern's leaf is a binding, a <c>var</c>'s
+    /// write or an assignment's by the statement it is in.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=858FAB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=BD87FF
     // Broiler-Human:        PENDING
     private enum Use
     {
@@ -186,6 +187,15 @@ internal sealed partial class JsBinder
 
         /// <summary>A class static block's body.</summary>
         StaticBlock,
+
+        /// <summary>A pattern that initialises the bindings it names: <c>let</c>, <c>const</c>, a parameter, a catch.</summary>
+        Initialise,
+
+        /// <summary>A pattern that writes the <c>var</c> bindings hoisting made.</summary>
+        Var,
+
+        /// <summary>A pattern that assigns through whatever references its leaves are.</summary>
+        Assign,
     }
 
     /// <summary>One node still to visit, with what is in force where it stands.</summary>
@@ -436,7 +446,7 @@ internal sealed partial class JsBinder
     /// no further after a refusal it keeps, is walked <see cref="Frame.Silent"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=36179F
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B8C543
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
     private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
@@ -516,8 +526,7 @@ internal sealed partial class JsBinder
 
             case JsForInStatement loop:
                 heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
-                Push(pending, loop.Target, context);
-                Push(pending, loop.Pattern, context);
+                Head(pending, loop.Declaration, loop.Pattern, loop.Target, JsUsing.None, context);
                 Push(pending, loop.Initialiser, context);
                 Push(pending, loop.Right, context);
                 Push(pending, loop.Body, context.Inside(ExitKind.Loop, label, loop));
@@ -525,8 +534,7 @@ internal sealed partial class JsBinder
 
             case JsForOfStatement loop:
                 heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
-                Push(pending, loop.Target, context);
-                Push(pending, loop.Pattern, context);
+                Head(pending, loop.Declaration, loop.Pattern, loop.Target, loop.Using, context);
                 Push(pending, loop.Right, context);
                 Push(pending, loop.Body, context.Inside(ExitKind.Loop, label, loop));
                 return;
@@ -591,12 +599,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsVariableStatement statement:
-                foreach (var declarator in statement.Declarators)
-                {
-                    Push(pending, declarator.Pattern, context);
-                    Push(pending, declarator.Initialiser, context);
-                }
-
+                VisitDeclarators(pending, statement, context);
                 return;
 
             case JsIfStatement statement:
@@ -636,7 +639,12 @@ internal sealed partial class JsBinder
             case JsTryStatement statement:
                 catches[statement] = CatchNamesOf(statement);
                 Push(pending, statement.Block, context);
-                Push(pending, statement.CatchPattern, context);
+
+                if (statement.CatchPattern is not null)
+                {
+                    pending.Add(new Pending(statement.CatchPattern, context, string.Empty, Use.Initialise));
+                }
+
                 Push(pending, statement.Handler, context);
                 Push(pending, statement.Finaliser, context);
                 return;
@@ -683,10 +691,28 @@ internal sealed partial class JsBinder
                 return;
 
             case JsUnaryExpression expression:
+                if (expression.Operator == SliceTokenKind.Delete && expression.Operand is JsPrivateMemberExpression)
+                {
+                    Report(
+                        context,
+                        expression.Span,
+                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                        "a private element cannot be deleted");
+                }
+
                 Push(pending, expression.Operand, context);
                 return;
 
             case JsUpdateExpression expression:
+                if (!IsReference(expression.Operand, context.Strict))
+                {
+                    Report(
+                        context,
+                        expression.Span,
+                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                        "the operand of an update operator is not a reference");
+                }
+
                 Push(pending, expression.Operand, context);
                 return;
 
@@ -701,8 +727,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsAssignmentExpression expression:
-                Push(pending, expression.Target, context);
-                Push(pending, expression.Value, context);
+                VisitAssignment(pending, expression, context);
                 return;
 
             case JsConditionalExpression expression:
@@ -762,7 +787,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsDestructuringAssignment expression:
-                Push(pending, expression.Target, context);
+                pending.Add(new Pending(expression.Target, context, string.Empty, Use.Assign));
                 Push(pending, expression.Value, context);
                 return;
 
@@ -814,7 +839,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsTargetPattern pattern:
-                Push(pending, pattern.Target, context);
+                VisitLeaf(pending, pattern, context, use);
                 return;
 
             case JsArrayPattern pattern:
@@ -822,23 +847,31 @@ internal sealed partial class JsBinder
                 {
                     if (element is not null)
                     {
-                        Push(pending, element.Target, context);
+                        pending.Add(new Pending(element.Target, context, string.Empty, use));
                         Push(pending, element.Default, context);
                     }
                 }
 
-                Push(pending, pattern.Rest, context);
+                if (pattern.Rest is not null)
+                {
+                    pending.Add(new Pending(pattern.Rest, context, string.Empty, use));
+                }
+
                 return;
 
             case JsObjectPattern pattern:
                 foreach (var property in pattern.Properties)
                 {
                     Push(pending, property.Computed, context);
-                    Push(pending, property.Value.Target, context);
+                    pending.Add(new Pending(property.Value.Target, context, string.Empty, use));
                     Push(pending, property.Value.Default, context);
                 }
 
-                Push(pending, pattern.Rest, context);
+                if (pattern.Rest is not null)
+                {
+                    pending.Add(new Pending(pattern.Rest, context, string.Empty, use));
+                }
+
                 return;
 
             case JsNewTargetExpression expression:
@@ -892,7 +925,7 @@ internal sealed partial class JsBinder
     /// whole of what <c>super</c>, <c>super()</c> and <c>new.target</c> mean inside an arrow - the
     /// lowering's own rule. A static block's frame is its own body's alone.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=347763
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=7D01F8
     // Broiler-Falsified-If: a function's code is walked as a method's, a derived constructor's or a function's where the lowering compiles it otherwise, or a function the lowering never compiles is walked as one it does
     // Broiler-Human:        PENDING
     private void VisitFunction(
@@ -938,11 +971,30 @@ internal sealed partial class JsBinder
 
         foreach (var parameter in function.Parameters)
         {
-            Push(pending, parameter.Target, inner);
+            pending.Add(new Pending(parameter.Target, inner, string.Empty, Use.Initialise));
             Push(pending, parameter.Default, inner);
         }
 
         Push(pending, function.Body, inner);
+    }
+
+    /// <summary>One declaration statement's declarators, each pattern as the statement binds it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DAD630
+    // Broiler-Human:        PENDING
+    private void VisitDeclarators(
+        System.Collections.Generic.List<Pending> pending, JsVariableStatement statement, Context context)
+    {
+        var mode = statement.Kind == SliceDeclarationKind.Var ? Use.Var : Use.Initialise;
+
+        foreach (var declarator in statement.Declarators)
+        {
+            if (declarator.Pattern is not null)
+            {
+                pending.Add(new Pending(declarator.Pattern, context, string.Empty, mode));
+            }
+
+            Push(pending, declarator.Initialiser, context);
+        }
     }
 
     /// <summary>One object literal's entries, each as the lowering reads it.</summary>
@@ -996,6 +1048,141 @@ internal sealed partial class JsBinder
             }
 
             Push(pending, entry.Value, context);
+        }
+    }
+
+    /// <summary>One assignment, with the target the lowering can write through or the refusal.</summary>
+    /// <remarks>
+    /// <b>A logical assignment to any other target is the lowering's to refuse</b>, under the code the
+    /// catalogue records for it (JSD-0080 decisions D12 and D13), and it lowers neither half.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=BC5267
+    // Broiler-Human:        PENDING
+    private void VisitAssignment(
+        System.Collections.Generic.List<Pending> pending, JsAssignmentExpression assignment, Context context)
+    {
+        var target = assignment.Target;
+
+        if (assignment.Operator is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
+            SliceTokenKind.QuestionQuestion)
+        {
+            var inner = target is JsMemberExpression or JsPrivateMemberExpression or
+                JsSuperMemberExpression or JsIdentifier
+                ? context
+                : context.And(Frame.Silent);
+
+            Push(pending, target, inner);
+            Push(pending, assignment.Value, inner);
+            return;
+        }
+
+        if (!IsReference(target, context.Strict))
+        {
+            Report(
+                context,
+                assignment.Span,
+                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                "the left-hand side of an assignment is not a reference");
+        }
+
+        Push(pending, target, context);
+        Push(pending, assignment.Value, context);
+    }
+
+    /// <summary>
+    /// One leaf of a pattern: a binding a declaration initialises, a <c>var</c> it writes, or a
+    /// reference an assignment writes through.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=16EE09
+    // Broiler-Falsified-If: a leaf is read as a binding where the lowering writes through it, or as a reference where it initialises one
+    // Broiler-Human:        PENDING
+    private void VisitLeaf(
+        System.Collections.Generic.List<Pending> pending, JsTargetPattern leaf, Context context, Use use)
+    {
+        switch (use)
+        {
+            case Use.Initialise or Use.Var:
+                if (leaf.Target is not JsIdentifier)
+                {
+                    Report(
+                        context,
+                        leaf.Target.Span,
+                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                        "a declaration's pattern binds names, and this is not one");
+
+                    Push(pending, leaf.Target, context);
+                    return;
+                }
+
+                // A `var`'s leaf is written through its name; a binding initialised is no reference.
+                if (use == Use.Var)
+                {
+                    Push(pending, leaf.Target, context);
+                }
+
+                return;
+
+            case Use.Assign:
+                if (!IsReference(leaf.Target, context.Strict))
+                {
+                    Report(
+                        context,
+                        leaf.Target.Span,
+                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                        "the left-hand side of an assignment is not a reference");
+                }
+
+                Push(pending, leaf.Target, context);
+                return;
+
+            default:
+                throw new System.InvalidOperationException(
+                    "the binder met a pattern no declaration or assignment holds, at " + Where(leaf));
+        }
+    }
+
+    /// <summary>
+    /// A <c>for-in</c> or <c>for-of</c> head: what it binds, writes or assigns through each turn.
+    /// </summary>
+    /// <remarks>
+    /// A lexical head initialises its names in the turn's record; a <c>var</c> head writes through its
+    /// name; any other head is an assignment target, lowered as an assignment's is. A resource head
+    /// registers its value instead and writes nothing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=FB5378
+    // Broiler-Human:        PENDING
+    private void Head(
+        System.Collections.Generic.List<Pending> pending,
+        SliceDeclarationKind? declaration,
+        JsPattern? pattern,
+        JsExpression? target,
+        JsUsing resource,
+        Context context)
+    {
+        var lexical = declaration is SliceDeclarationKind.Let or SliceDeclarationKind.Const;
+
+        if (target is not null)
+        {
+            if (resource == JsUsing.None && pattern is null && !lexical &&
+                declaration != SliceDeclarationKind.Var && !IsReference(target, context.Strict))
+            {
+                Report(
+                    context,
+                    target.Span,
+                    SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                    "the left-hand side of an assignment is not a reference");
+            }
+
+            Push(pending, target, context);
+        }
+
+        if (pattern is not null)
+        {
+            pending.Add(new Pending(
+                pattern,
+                context,
+                string.Empty,
+                lexical ? Use.Initialise : declaration == SliceDeclarationKind.Var ? Use.Var : Use.Assign));
         }
     }
 
