@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 6715 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6716 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 330 |
-| Code units | 11736 |
-| Relevant | 6715 |
+| Code units | 11737 |
+| Relevant | 6716 |
 | Exempt | 5021 |
-| Assessed | 6715 of 6715 (100%) |
-| Human reviewed | 0 of 6715 (0%) |
-| Unverified | 6715 |
+| Assessed | 6716 of 6716 (100%) |
+| Human reviewed | 0 of 6716 (0%) |
+| Unverified | 6716 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6715 |
+| HUMAN_PENDING | 6716 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -148,9 +148,9 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` | 54 | 45 | 9 | 45 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Backend.cs` | 42 | 37 | 5 | 37 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` | 31 | 18 | 13 | 18 | Low | High | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` | 22 | 21 | 1 | 21 | None | High | 5/3 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` | 21 | 20 | 1 | 20 | None | High | 5/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` | 81 | 53 | 28 | 53 | None | High | 10/7 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` | 50 | 18 | 32 | 18 | None | High | 6/3 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` | 51 | 19 | 32 | 19 | None | High | 6/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs` | 6 | 6 | 0 | 6 | None | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs` | 14 | 14 | 0 | 14 | None | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Classes.cs` | 9 | 9 | 0 | 9 | None | Medium | 0/0 |
@@ -192,7 +192,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` | 70 | 63 | 7 | 63 | None | High | 21/21 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceProgramBuilder.cs` | 35 | 24 | 11 | 24 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` | 35 | 26 | 9 | 26 | None | High | 19/19 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs` | 35 | 4 | 31 | 4 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs` | 36 | 5 | 31 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` | 12 | 10 | 2 | 10 | None | High | 6/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs` | 40 | 24 | 16 | 24 | None | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSyntax.cs` | 29 | 26 | 3 | 26 | None | Medium | 1/0 |
@@ -676,7 +676,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an artifact naming the numeric manifest is produced carrying an instruction that manifest does not admit
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileChain(JsChainExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs` - Security=High, Spec=none cited, `E0C92D`, PENDING
   - Falsified if: a link after a short-circuited one is evaluated, or the two paths meet at different heights
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.BinderAdmitted(SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs` - Security=High, Spec=none cited, `7484E1`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.BinderAdmitted(SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs` - Security=High, Spec=none cited, `A9BE31`, PENDING
   - Falsified if: the lowering refuses a source with a language early error rather than failing, or lowers past one
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ProtectSomething(int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs` - Security=High, Spec=none cited, `EAD16F`, PENDING
   - Falsified if: a region is emitted whose start offset equals its end offset
@@ -4266,7 +4266,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6576 of the 6715 assessed units declare
+That is not a figure of speech. 6577 of the 6716 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

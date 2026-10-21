@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 330 |
 | Files carrying an annotation | 330 |
-| Code units | 11736 |
-| Relevant | 6715 |
+| Code units | 11737 |
+| Relevant | 6716 |
 | Exempt by predicate | 5021 |
-| Annotated | 6715 of 6715 (100%) |
-| Human reviewed | 0 of 6715 (0%) |
-| Unverified | 6715 |
+| Annotated | 6716 of 6716 (100%) |
+| Human reviewed | 0 of 6716 (0%) |
+| Unverified | 6716 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6715 |
+| HUMAN_PENDING | 6716 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -38,7 +38,7 @@ figures below are the measurement of how far from that claim the component is.
 
 | Value | Units |
 |---|---:|
-| None | 1764 |
+| None | 1765 |
 | Low | 6471 |
 | Medium | 90 |
 | High | 0 |
@@ -50,7 +50,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1907 |
+| Low | 1908 |
 | Medium | 4517 |
 | High | 1639 |
 | Critical | 253 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6715 |
+| Units scored | 6716 |
 
 ## High-security review areas
 
@@ -2080,7 +2080,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11736 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11737 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

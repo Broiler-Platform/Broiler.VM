@@ -7411,11 +7411,11 @@ internal sealed class JsParser
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3032B3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1B7878
     // Broiler-Human:        PENDING
     private void Refuse(SliceSourceSpan span, SliceSourceDiagnosticCode code, string message)
     {
-        if (diagnostics.Count >= 64)
+        if (diagnostics.Count >= SliceSourceDiagnostic.MaximumPerStage)
         {
             return;
         }

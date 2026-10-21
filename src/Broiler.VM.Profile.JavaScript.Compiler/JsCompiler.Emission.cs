@@ -250,20 +250,18 @@ public sealed partial class JsCompiler
     /// place, rather than refusing the source a second time in a second stage or emitting bytes for
     /// a program the language rejects.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=7484E1
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=A9BE31
     // Broiler-Falsified-If: the lowering refuses a source with a language early error rather than failing, or lowers past one
     // Broiler-Human:        PENDING
     private static System.InvalidOperationException BinderAdmitted(SliceSourceSpan span, string what) =>
-        new("the binder admitted " + what + " at " +
-            span.Line.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" +
-            span.Column.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+        new("the binder admitted " + what + " at " + JsBinder.Where(span) +
             ", which its early errors refuse, and the lowering cannot lower it");
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3032B3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1B7878
     // Broiler-Human:        PENDING
     private void Refuse(SliceSourceSpan span, SliceSourceDiagnosticCode code, string message)
     {
-        if (diagnostics.Count >= 64)
+        if (diagnostics.Count >= SliceSourceDiagnostic.MaximumPerStage)
         {
             return;
         }

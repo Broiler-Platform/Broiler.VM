@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           32
-// Human-reviewed:   0/18
+// Human-reviewed:   0/19
 // IP risk:          None
 // Security risk:    High
 // Criteria:         6/3
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -308,11 +308,19 @@ internal sealed partial class JsBinder
             "; the lowering asked about a node the unit's tree does not hold");
 
     /// <summary>Where a node stands, as a diagnostic names a place.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=477B8E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=71D8FA
     // Broiler-Human:        PENDING
-    private static string Where(JsNode node) =>
-        node.Span.Line.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" +
-        node.Span.Column.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    private static string Where(JsNode node) => Where(node.Span);
+
+    /// <summary>
+    /// A place, as a diagnostic names one - <c>line:column</c> - for the binder's failures and the
+    /// lowering's alike.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=00A7C1
+    // Broiler-Human:        PENDING
+    internal static string Where(SliceSourceSpan span) =>
+        span.Line.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" +
+        span.Column.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>One name a module's top level declares lexically, and where.</summary>
     /// <param name="Name">The name.</param>

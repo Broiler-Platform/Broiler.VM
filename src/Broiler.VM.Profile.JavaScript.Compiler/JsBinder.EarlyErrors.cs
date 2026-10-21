@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
+// Relevant units:   20
+// Annotated:        20/20
 // Exempt:           1
-// Human-reviewed:   0/21
+// Human-reviewed:   0/20
 // IP risk:          None
 // Security risk:    High
 // Criteria:         5/3
 // Resource impact:  3/10 max
-// Unverified:       21
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -48,11 +48,6 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 // Broiler-Human:        PENDING
 internal sealed partial class JsBinder
 {
-    /// <summary>How many early errors a unit is answered with at most, as the parser's diagnostics are.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=BBF362
-    // Broiler-Human:        PENDING
-    private const int MaximumDiagnostics = 64;
-
     /// <summary>
     /// The top-level function declarations of a sloppy evaluated program that a later one of the same
     /// name overrides, which the lowering never compiles.
@@ -79,7 +74,7 @@ internal sealed partial class JsBinder
         }
     }
 
-    /// <summary>The early errors found, in source order, at most <see cref="MaximumDiagnostics"/> of them.</summary>
+    /// <summary>The early errors found, in source order, at most <see cref="SliceSourceDiagnostic.MaximumPerStage"/> of them.</summary>
     /// <remarks>
     /// <b>Source order is the order of the places reported</b>, line and then column, and two at one
     /// place keep the order the walk met them in. The walk meets nodes in source order, but a few
@@ -87,7 +82,7 @@ internal sealed partial class JsBinder
     /// field, a module's import collision at no place at all, which is line 0 - so the order is made
     /// rather than assumed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E19B87
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1D5458
     // Broiler-Falsified-If: two early errors are answered in an order other than their places', or more than the cap is answered
     // Broiler-Human:        PENDING
     private static SliceSourceDiagnostic[] InSourceOrder(System.Collections.Generic.List<SliceSourceDiagnostic> errors)
@@ -116,7 +111,7 @@ internal sealed partial class JsBinder
             return compared != 0 ? compared : left.CompareTo(right);
         });
 
-        var kept = new SliceSourceDiagnostic[System.Math.Min(order.Length, MaximumDiagnostics)];
+        var kept = new SliceSourceDiagnostic[System.Math.Min(order.Length, SliceSourceDiagnostic.MaximumPerStage)];
 
         for (var at = 0; at < kept.Length; at++)
         {
