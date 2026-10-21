@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   21
 // Annotated:        21/21
-// Exempt:           2
+// Exempt:           1
 // Human-reviewed:   0/21
 // IP risk:          None
 // Security risk:    High
@@ -61,11 +61,6 @@ internal sealed partial class JsBinder
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.HashSet<JsFunctionNode> overridden =
         new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
-
-    /// <summary>Whether this evaluated program's caller's <c>arguments</c> has been reported.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=4F96E1
-    // Broiler-Human:        PENDING
-    private bool callersArguments;
 
     /// <summary>Whether this unit is eval code whose caller is a class field initialiser.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D950F0
@@ -221,21 +216,26 @@ internal sealed partial class JsBinder
     /// an early error when it is <c>arguments</c> and nothing in the program binds it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>The language makes it one error of the whole evaluation</b> (<c>PerformEval</c>'s
-    /// <c>ContainsArguments</c>), and the lowering reported it where it emitted each such name, at no
-    /// place; it is reported once here, at the same place.
+    /// <c>ContainsArguments</c>), and the lowering reported it at no place, once for each eval name
+    /// instruction it emitted for such a name. <b>It is reported here once for each reference</b>, at
+    /// the same place: distinct references are distinct reports, as they were, and a reference the
+    /// lowering emitted twice - one it read and wrote, as <c>arguments += 1</c> and
+    /// <c>arguments++</c> do, or one in a <c>finally</c> block it lowered on more than one path - is
+    /// one report rather than two (class S2 of the bundle's rule).
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D3EF46
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=40AAB1
     // Broiler-Human:        PENDING
     private void Writes(Context context, string name)
     {
         if (!EvaluatedInField || context.Is(Frame.ArgumentsBound) || context.Is(Frame.Silent) ||
-            !IsArguments(name) || callersArguments)
+            !IsArguments(name))
         {
             return;
         }
 
-        callersArguments = true;
         Report(
             context,
             default,

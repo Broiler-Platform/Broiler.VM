@@ -38,8 +38,9 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// decision D12). Each family's row is a source the parser admits, so the refusal is the binder's: its
 /// code and its place are the lowering's, written <c>code@line:column</c>, and the refused unit has no
 /// bytes. Then the list itself: in source order where the lowering reported a hoisted function first,
-/// at most 64, once for a <c>finally</c> block the lowering compiled twice and for an evaluated
-/// program's <c>arguments</c> it reported at each mention, and alone - a unit the binder refuses is not
+/// at most 64, once for a <c>finally</c> block the lowering compiled twice, once for each reference to
+/// an evaluated program's caller's <c>arguments</c> - a reference the lowering read and wrote, and so
+/// reported twice, included - and alone - a unit the binder refuses is not
 /// lowered, so the lowering's ceiling on parameters is not met beside it. <c>a: b: while (1) { continue
 /// a; }</c> stays refused as the lowering refused it.
 /// </para>
@@ -151,8 +152,13 @@ internal static class BinderChecks
             "class A { static { arguments; } }",
             "2206@1:11");
         yield return Refused(
-            "early error: arguments in eval code in a field initialiser, once",
+            "early error: arguments in eval code in a field initialiser, once for each reference",
             "arguments; arguments;",
+            "2206@0:0 2206@0:0",
+            inField);
+        yield return Refused(
+            "early error: arguments in eval code in a field initialiser, read and written, once",
+            "arguments += 1;",
             "2206@0:0",
             inField);
 

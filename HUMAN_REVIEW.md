@@ -79,9 +79,9 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 330 |
-| Code units | 11737 |
+| Code units | 11736 |
 | Relevant | 6715 |
-| Exempt | 5022 |
+| Exempt | 5021 |
 | Assessed | 6715 of 6715 (100%) |
 | Human reviewed | 0 of 6715 (0%) |
 | Unverified | 6715 |
@@ -100,7 +100,7 @@ annotations and the current fingerprints; nothing stores them.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5022 |
+| EXEMPT | 5021 |
 
 ## 5. Aliases In The Tree
 
@@ -148,7 +148,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` | 54 | 45 | 9 | 45 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Backend.cs` | 42 | 37 | 5 | 37 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` | 31 | 18 | 13 | 18 | Low | High | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` | 23 | 21 | 2 | 21 | None | High | 5/3 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` | 22 | 21 | 1 | 21 | None | High | 5/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` | 81 | 53 | 28 | 53 | None | High | 10/7 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` | 50 | 18 | 32 | 18 | None | High | 6/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs` | 6 | 6 | 0 | 6 | None | High | 1/1 |
