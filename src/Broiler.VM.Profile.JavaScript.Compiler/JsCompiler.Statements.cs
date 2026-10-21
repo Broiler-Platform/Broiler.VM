@@ -201,7 +201,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=792901
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1D95A6
     // Broiler-Human:        PENDING
     private void CompileVariable(JsVariableStatement variable)
     {
@@ -214,12 +214,7 @@ public sealed partial class JsCompiler
                 // to take apart - and the grammar says so for `var` as loudly as for `const`.
                 if (declarator.Initialiser is null)
                 {
-                    Refuse(
-                        declarator.Span,
-                        SliceSourceDiagnosticCode.ConstWithoutInitialiser,
-                        "a destructuring declaration needs an initialiser");
-
-                    continue;
+                    throw BinderAdmitted(declarator.Span, "a destructuring declaration with no initialiser");
                 }
 
                 if (variable.Kind != SliceDeclarationKind.Var)
@@ -239,12 +234,7 @@ public sealed partial class JsCompiler
 
             if (variable.Kind == SliceDeclarationKind.Const && declarator.Initialiser is null)
             {
-                Refuse(
-                    declarator.Span,
-                    SliceSourceDiagnosticCode.ConstWithoutInitialiser,
-                    "`const " + declarator.Name + "` needs an initialiser");
-
-                continue;
+                throw BinderAdmitted(declarator.Span, "a `const` with no initialiser");
             }
 
             // A RESOURCE IS REGISTERED BEFORE ITS BINDING LEAVES THE DEAD ZONE, which is the order

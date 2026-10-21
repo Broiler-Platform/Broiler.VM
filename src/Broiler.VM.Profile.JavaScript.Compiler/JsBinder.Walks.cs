@@ -978,8 +978,8 @@ internal sealed partial class JsBinder
         Push(pending, function.Body, inner);
     }
 
-    /// <summary>One declaration statement's declarators, each pattern as the statement binds it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DAD630
+    /// <summary>One declaration statement's declarators, each with the early errors of its own.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A545D0
     // Broiler-Human:        PENDING
     private void VisitDeclarators(
         System.Collections.Generic.List<Pending> pending, JsVariableStatement statement, Context context)
@@ -988,6 +988,27 @@ internal sealed partial class JsBinder
 
         foreach (var declarator in statement.Declarators)
         {
+            // A DESTRUCTURING DECLARATION ALWAYS HAS AN INITIALISER, whatever its keyword, and a
+            // `const` that names one does too.
+            if (declarator.Pattern is not null && declarator.Initialiser is null)
+            {
+                Report(
+                    context,
+                    declarator.Span,
+                    SliceSourceDiagnosticCode.ConstWithoutInitialiser,
+                    "a destructuring declaration needs an initialiser");
+            }
+            else if (declarator.Pattern is null &&
+                statement.Kind == SliceDeclarationKind.Const &&
+                declarator.Initialiser is null)
+            {
+                Report(
+                    context,
+                    declarator.Span,
+                    SliceSourceDiagnosticCode.ConstWithoutInitialiser,
+                    "`const " + declarator.Name + "` needs an initialiser");
+            }
+
             if (declarator.Pattern is not null)
             {
                 pending.Add(new Pending(declarator.Pattern, context, string.Empty, mode));
