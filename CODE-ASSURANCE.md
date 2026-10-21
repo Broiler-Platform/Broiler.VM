@@ -15,9 +15,9 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 330 |
 | Files carrying an annotation | 330 |
-| Code units | 11740 |
+| Code units | 11743 |
 | Relevant | 6717 |
-| Exempt by predicate | 5023 |
+| Exempt by predicate | 5026 |
 | Annotated | 6717 of 6717 (100%) |
 | Human reviewed | 0 of 6717 (0%) |
 | Unverified | 6717 |
@@ -32,13 +32,13 @@ figures below are the measurement of how far from that claim the component is.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5023 |
+| EXEMPT | 5026 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1766 |
+| None | 1769 |
 | Low | 6471 |
 | Medium | 90 |
 | High | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1909 |
-| Medium | 4517 |
-| High | 1639 |
+| Low | 1912 |
+| Medium | 4518 |
+| High | 1638 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -336,7 +336,6 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadRegularExpressionLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadTemplateLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanTemplateBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanSubstitution()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanStringBody(char)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanRegularExpressionBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.StartsRegularExpression(char)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, human line PENDING
@@ -1963,8 +1962,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2058 |
-| Units required to carry one | 1892 |
+| Units carrying a criterion | 2057 |
+| Units required to carry one | 1891 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1991,7 +1990,7 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1678 |
+| TrivialPropertyOrAccessor | 1681 |
 | ParameterAssigningConstructor | 153 |
 | TrivialExpressionBodiedMember | 65 |
 | CompilerSuppliedRecordOrEnumMember | 30 |
@@ -2080,7 +2079,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11740 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11743 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

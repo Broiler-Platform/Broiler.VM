@@ -79,9 +79,9 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 330 |
-| Code units | 11740 |
+| Code units | 11743 |
 | Relevant | 6717 |
-| Exempt | 5023 |
+| Exempt | 5026 |
 | Assessed | 6717 of 6717 (100%) |
 | Human reviewed | 0 of 6717 (0%) |
 | Unverified | 6717 |
@@ -100,7 +100,7 @@ annotations and the current fingerprints; nothing stores them.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5023 |
+| EXEMPT | 5026 |
 
 ## 5. Aliases In The Tree
 
@@ -196,7 +196,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` | 12 | 10 | 2 | 10 | None | High | 6/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs` | 40 | 24 | 16 | 24 | None | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSyntax.cs` | 29 | 26 | 3 | 26 | None | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 167 | 49 | 118 | 49 | Low | High | 24/19 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 170 | 49 | 121 | 49 | Low | High | 23/18 |
 | `src/Broiler.VM.Profile.JavaScript.Format/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptArtifactWriter.cs` | 20 | 17 | 3 | 17 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs` | 26 | 14 | 12 | 14 | None | Medium | 0/0 |
@@ -998,10 +998,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a `/` inside a character class ends the literal
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadTemplateLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `9ABBF8`, PENDING
   - Falsified if: a template, string, comment or object literal inside a substitution ends the outer literal
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanTemplateBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `0FABF8`, PENDING
-  - Falsified if: a substitution consumes the backtick that closes the template it belongs to
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanSubstitution()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `00BA21`, PENDING
-  - Falsified if: a brace inside a string, comment, nested template or object literal closes the substitution
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanTemplateBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `9F3D3D`, PENDING
+  - Falsified if: a substitution consumes the backtick that closes the template it belongs to, or a nesting costs a stack frame
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanStringBody(char)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `6DD49B`, PENDING
   - Falsified if: an escaped quote ends the string, or an unterminated one swallows the rest of the source
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanRegularExpressionBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `685B24`, PENDING

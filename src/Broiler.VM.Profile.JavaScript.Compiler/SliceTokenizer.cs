@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   49
 // Annotated:        49/49
-// Exempt:           118
+// Exempt:           121
 // Human-reviewed:   0/49
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         24/19
+// Criteria:         23/18
 // Resource impact:  2/10 max
 // Unverified:       49
 //
@@ -1964,9 +1964,9 @@ public sealed class SliceTokenizer
     /// which scores a negative parse test as a PASS for the wrong reason.
     /// </para>
     /// <para>
-    /// <b>So a substitution is scanned as the lexical structure it is</b>, recursing through nested
-    /// templates and skipping strings and comments whole. Telling <c>/</c> as a regular expression
-    /// from <c>/</c> as division needs the parse this scan deliberately does not do, so the last
+    /// <b>So a substitution is scanned as the lexical structure it is</b>, through nested templates
+    /// and skipping strings and comments whole. Telling <c>/</c> as a regular expression from
+    /// <c>/</c> as division needs the parse this scan deliberately does not do, so the last
     /// significant character decides it - the heuristic every scanner that does not parse uses.
     /// What it can get wrong is where a template ends, never what an admitted program means.
     /// </para>
@@ -2001,64 +2001,82 @@ public sealed class SliceTokenizer
     /// Scans from just past a backtick to just past the backtick that closes it, answering whether
     /// one was found.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0FABF8
-    // Broiler-Falsified-If: a substitution consumes the backtick that closes the template it belongs to
+    /// <remarks>
+    /// <para>
+    /// <b>One loop and an explicit stack, not two methods calling each other</b> (SJL-12.6 item 4,
+    /// JSD-0080 decision D15). The template body and the substitution called each other once per
+    /// level of nesting, so a template nested a few tens of thousands deep ended the process - in
+    /// the slice front end and the wide compiler alike, since both read this tokenizer. The stack
+    /// holds one <see cref="TemplateScan"/> per template the cursor is inside, the outermost at the
+    /// bottom; each is either in its body or in its open substitution. The rules applied to a
+    /// character are the two methods' rules, in their order, so every source that completed before
+    /// ends its template where it did; the only thing that changed is that a deeper nesting is
+    /// scanned rather than the end of the process. A listed slice correction: only a crash becomes
+    /// a refusal.
+    /// </para>
+    /// <para>
+    /// <b>In a body</b>, a backslash escapes the next character, a backtick closes the template and
+    /// <c>${</c> opens a substitution. <b>In a substitution</b>, braces are counted, but only the
+    /// ones this scan can SEE are braces: a brace inside a string, a comment, a regular expression or
+    /// a nested template is skipped with the construct holding it rather than counted, and the
+    /// brace that closes the substitution is the first unmatched one. Reaching the end of the text
+    /// without the closing backtick is not reported here - the caller reports the template as
+    /// unterminated, which is the construct a reader is looking at.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9F3D3D
+    // Broiler-Falsified-If: a substitution consumes the backtick that closes the template it belongs to, or a nesting costs a stack frame
     // Broiler-Human:        PENDING
     private bool ScanTemplateBody()
     {
+        var open = new System.Collections.Generic.List<TemplateScan> { new() };
+
         while (index < source.Length)
         {
             var c = source[index];
+            var scan = open[^1];
 
-            if (c == '\\')
+            if (!scan.InSubstitution)
             {
-                SkipEscape();
-                continue;
-            }
+                if (c == '\\')
+                {
+                    SkipEscape();
+                    continue;
+                }
 
-            if (IsLineTerminator(c))
-            {
-                AdvanceLine(c);
-                continue;
-            }
+                if (IsLineTerminator(c))
+                {
+                    AdvanceLine(c);
+                    continue;
+                }
 
-            if (c == '`')
-            {
+                if (c == '`')
+                {
+                    index++;
+                    open.RemoveAt(open.Count - 1);
+
+                    if (open.Count == 0)
+                    {
+                        return true;
+                    }
+
+                    // A NESTED TEMPLATE IS ONE SIGNIFICANT CHARACTER of the substitution holding it.
+                    open[^1].Previous = '`';
+                    continue;
+                }
+
+                if (c == '$' && index + 1 < source.Length && source[index + 1] == '{')
+                {
+                    index += 2;
+                    scan.InSubstitution = true;
+                    scan.Braces = 0;
+                    scan.Previous = '\0';
+                    continue;
+                }
+
                 index++;
-                return true;
-            }
-
-            if (c == '$' && index + 1 < source.Length && source[index + 1] == '{')
-            {
-                index += 2;
-                ScanSubstitution();
                 continue;
             }
-
-            index++;
-        }
-
-        return false;
-    }
-
-    /// <summary>Scans a substitution up to and including the brace that closes it.</summary>
-    /// <remarks>
-    /// Braces are counted, but only the ones this scan can SEE are braces: a brace inside a string,
-    /// a comment or a nested template is skipped with the construct holding it rather than counted.
-    /// Reaching the end of the source without the closing brace is not reported here - the caller
-    /// reports the template as unterminated, which is the construct a reader is looking at.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=00BA21
-    // Broiler-Falsified-If: a brace inside a string, comment, nested template or object literal closes the substitution
-    // Broiler-Human:        PENDING
-    private void ScanSubstitution()
-    {
-        var braces = 0;
-        var previous = '\0';
-
-        while (index < source.Length)
-        {
-            var c = source[index];
 
             if (IsLineTerminator(c))
             {
@@ -2096,35 +2114,34 @@ public sealed class SliceTokenizer
                 continue;
             }
 
-            if (c == '/' && StartsRegularExpression(previous))
+            if (c == '/' && StartsRegularExpression(scan.Previous))
             {
                 // An unterminated literal in here is not reported: the template holding it is
                 // reported as unterminated instead, which is the construct a reader is looking at.
                 _ = ScanRegularExpressionBody();
-                previous = '/';
+                scan.Previous = '/';
                 continue;
             }
 
             if (c is '"' or '\'')
             {
                 ScanStringBody(c);
-                previous = c;
+                scan.Previous = c;
                 continue;
             }
 
             if (c == '`')
             {
                 index++;
-                ScanTemplateBody();
-                previous = '`';
+                open.Add(new TemplateScan());
                 continue;
             }
 
             if (c == '{')
             {
-                braces++;
+                scan.Braces++;
                 index++;
-                previous = '{';
+                scan.Previous = '{';
                 continue;
             }
 
@@ -2132,23 +2149,50 @@ public sealed class SliceTokenizer
             {
                 index++;
 
-                if (braces == 0)
+                if (scan.Braces == 0)
                 {
-                    return;
+                    scan.InSubstitution = false;
+                    continue;
                 }
 
-                braces--;
-                previous = '}';
+                scan.Braces--;
+                scan.Previous = '}';
                 continue;
             }
 
             if (!IsWhiteSpace(c))
             {
-                previous = c;
+                scan.Previous = c;
             }
 
             index++;
         }
+
+        return false;
+    }
+
+    /// <summary>
+    /// One template the scan is inside: whether the cursor is in its body or in its open
+    /// substitution, and that substitution's state.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=8CF45A
+    // Broiler-Human:        PENDING
+    private sealed class TemplateScan
+    {
+        /// <summary>Whether the cursor is in the template's open substitution rather than its body.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9585C7
+        // Broiler-Human:        PENDING
+        internal bool InSubstitution { get; set; }
+
+        /// <summary>How many braces the open substitution has opened and not closed.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=0FEACF
+        // Broiler-Human:        PENDING
+        internal int Braces { get; set; }
+
+        /// <summary>The open substitution's last significant character, for the slash heuristic.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=D1ED42
+        // Broiler-Human:        PENDING
+        internal char Previous { get; set; }
     }
 
     /// <summary>Skips a string literal from its opening quote to just past its closing one.</summary>
