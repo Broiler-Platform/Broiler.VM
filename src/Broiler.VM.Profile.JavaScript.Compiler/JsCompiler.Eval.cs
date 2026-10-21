@@ -291,23 +291,24 @@ public sealed partial class JsCompiler
 
     /// <summary>Emits one eval name instruction for a free name of the caller's.</summary>
     /// <remarks>
-    /// <b>An <c>arguments</c> in a class field initialiser is refused here</b>, because this is the
-    /// one place such a name is recognised as the caller's: a function the evaluated program
-    /// declares has an <c>arguments</c> of its own and resolves the name to its own slot, so only a
-    /// mention at the program's top level or in its arrows reaches this far - which is exactly the
-    /// <c>ContainsArguments</c> the specification's <c>PerformEval</c> tests.
+    /// <b>An <c>arguments</c> read through the caller of eval code in a class field initialiser is
+    /// an early error the binder refuses</b>, before any of the unit is lowered (SJL-12.6 item 2), so
+    /// meeting one here is a defect this asserts (<see cref="BinderAdmitted"/>). This is the one place
+    /// the lowering recognises such a name as the caller's: a function the evaluated program declares
+    /// has an <c>arguments</c> of its own and resolves the name to its own slot, so only a mention at
+    /// the program's top level or in its arrows reaches this far - which is exactly the
+    /// <c>ContainsArguments</c> the specification's <c>PerformEval</c> tests, and what the binder's
+    /// reading of where <c>arguments</c> is bound follows.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3456DB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AD8E12
     // Broiler-Human:        PENDING
     private void EmitEvalName(JsOpcode opcode, byte hops, string name)
     {
         if ((evalFlags & JsFormat.EvalRequestFlags.InClassFieldInitializer) != 0 &&
             string.Equals(name, "arguments", System.StringComparison.Ordinal))
         {
-            Refuse(
-                default,
-                SliceSourceDiagnosticCode.UnresolvableIdentifier,
-                "`arguments` names nothing inside a class field initialiser");
+            throw BinderAdmitted(
+                default, "`arguments` read through the caller of eval code in a class field initialiser");
         }
 
         DeclareSurfaceOf(name);
@@ -333,7 +334,8 @@ public sealed partial class JsCompiler
     /// which the executor checks against the classes around the call before anything is
     /// instantiated (JSeal V15-finish). What the language makes a syntax error in the
     /// caller's context - <c>new.target</c> outside a function, <c>super</c> outside a method,
-    /// <c>arguments</c> in a field initialiser - is refused as one.
+    /// <c>arguments</c> in a field initialiser - is an early error the binder refuses from the
+    /// request's flags before any of the program is lowered (SJL-12.6 item 2).
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2A8629

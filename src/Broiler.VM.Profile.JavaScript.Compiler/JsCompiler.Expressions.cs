@@ -26,7 +26,7 @@ public sealed partial class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2ED2A1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E2A5C9
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -99,16 +99,11 @@ public sealed partial class JsCompiler
                 // `new.target` OUTSIDE A FUNCTION IS A SYNTAX ERROR AND NOT A MANIFEST REFUSAL.
                 // The manifest admits it perfectly well; the program wrote it where the language
                 // has nothing for it to mean, and the diagnostic code is what tells a conformance
-                // runner which of the two happened.
+                // runner which of the two happened. The binder refuses it under that code before
+                // any of the unit is lowered (SJL-12.6 item 2); here the lowering only asserts it.
                 if (!insideFunction)
                 {
-                    Refuse(
-                        target.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
-                        "`new.target` is only admitted inside a function");
-
-                    Emit(JsOpcode.LoadUndefined);
-                    break;
+                    throw BinderAdmitted(target.Span, "`new.target` outside a function");
                 }
 
                 Emit(JsOpcode.LoadNewTarget);
@@ -199,12 +194,7 @@ public sealed partial class JsCompiler
             case JsImportMeta meta:
                 if (module is null)
                 {
-                    Refuse(
-                        meta.Span,
-                        SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
-                        "`import.meta` is only admitted inside a module");
-
-                    break;
+                    throw BinderAdmitted(meta.Span, "`import.meta` outside a module");
                 }
 
                 Emit(JsOpcode.ImportMeta, (ushort)built.IndexOf(module));
@@ -305,16 +295,13 @@ public sealed partial class JsCompiler
                 // this component has: an `Await` in a unit carrying no async flag is refused by
                 // THIS HOST'S OWN VERIFIER, on bytes THIS HOST'S OWN lowering produced, which is
                 // the internal-consistency failure roadmap section 3.4 names. The parser's
-                // `[Await]` contexts are what make this unreachable; this is what makes it a
-                // diagnostic naming the construct rather than a refused artifact if they ever stop.
+                // `[Await]` contexts keep it out of every unit but one a template substitution's own
+                // parse reaches, and the binder refuses what reaches it, under 2104, before any of
+                // the unit is lowered (SJL-12.6 item 2, JSD-0080 decision D12); here the lowering
+                // only asserts it.
                 if ((buffer.Flags & JsFormat.FunctionFlags.Async) == 0)
                 {
-                    Refuse(
-                        awaited.Span,
-                        SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                        "`await` is only admitted inside an async function");
-
-                    break;
+                    throw BinderAdmitted(awaited.Span, "an `await` outside an async function");
                 }
 
                 Emit(JsOpcode.Await);

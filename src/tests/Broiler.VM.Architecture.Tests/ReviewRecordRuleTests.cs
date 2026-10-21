@@ -1343,7 +1343,12 @@ public sealed class ReviewRecordRuleTests
         // TWO: the compiler's JsBinder.cs, the facts, and JsBinder.Walks.cs, the walks that compute them.
         // Both are covered on the same terms as every other product file, and nothing in them has been
         // read by a human.
-        Assert.Equal(329, AssuranceSources.Files.Count);
+        //
+        // AND ITS EARLY ERRORS (SJL-12.6 item 2, 2026-10-21, JSD-0080 decision D12) ADDED ONE: the
+        // compiler's JsBinder.EarlyErrors.cs, the language early errors the binder reports before the
+        // lowering runs. It is covered on the same terms as every other product file, and nothing in it
+        // has been read by a human.
+        Assert.Equal(330, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

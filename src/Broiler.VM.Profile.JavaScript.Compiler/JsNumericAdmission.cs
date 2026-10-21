@@ -92,11 +92,11 @@ internal sealed class JsNumericAdmission
         return pass.diagnostics;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3B90C8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5A4AB9
     // Broiler-Human:        PENDING
     private void Refuse(SliceSourceSpan span, string what)
     {
-        if (diagnostics.Count >= 64)
+        if (diagnostics.Count >= SliceSourceDiagnostic.MaximumPerStage)
         {
             return;
         }

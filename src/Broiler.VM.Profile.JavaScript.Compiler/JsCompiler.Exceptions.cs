@@ -236,7 +236,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7E3B21
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0EBBF4
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -250,31 +250,24 @@ public sealed partial class JsCompiler
         // surface nobody had built and taken out of both the pass and the fail column, when what
         // the language says is that the source is not a program. `2101` is what a source wrong
         // about the LANGUAGE gets, exactly as `with` in strict code and a `super` property outside
-        // a method do.
+        // a method do. The binder refuses it under that code before any of the unit is lowered
+        // (SJL-12.6 item 2); here the lowering only asserts it.
         // A module body is no more a function than a script is (16.2.1.1: ModuleItemList may not
         // contain a ReturnStatement); until 2026-10-03 a module's `return` ran (JSC-253).
         if (FunctionScope().Kind is ScopeKind.Program or ScopeKind.Eval or ScopeKind.Module)
         {
-            Refuse(
-                returned.Span,
-                SliceSourceDiagnosticCode.UnexpectedToken,
-                "`return` has nothing to return from outside a function");
-
-            return;
+            throw BinderAdmitted(returned.Span, "a `return` outside a function");
         }
 
         // A STATIC BLOCK COMPILES TO A FUNCTION AND IS NOT ONE, which is why the scope test above
         // does not catch this. The block's body is a code unit so that it can close over the class
         // scope and be called with the constructor as its `this`; nothing about it is a function a
-        // program can return FROM, and the specification makes the word an early error there.
+        // program can return FROM, and the specification makes the word an early error there. The
+        // binder refuses it under 2207, the code the catalogue records for it, before any of the
+        // unit is lowered (SJL-12.6 item 2, JSD-0080 decision D12); here the lowering only asserts it.
         if (insideStaticBlock)
         {
-            Refuse(
-                returned.Span,
-                SliceSourceDiagnosticCode.IllegalBreak,
-                "`return` has nothing to return from inside a class static block");
-
-            return;
+            throw BinderAdmitted(returned.Span, "a `return` in a class static block");
         }
 
         var unwinds = false;
@@ -451,7 +444,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=145379
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=21C28E
     // Broiler-Human:        PENDING
     private void CompileJumpOut(SliceSourceSpan span, string label, bool wantsContinue)
     {
@@ -502,16 +495,8 @@ public sealed partial class JsCompiler
 
         if (targetAt < 0)
         {
-            Refuse(
-                span,
-                wantsContinue
-                    ? SliceSourceDiagnosticCode.IllegalContinue
-                    : SliceSourceDiagnosticCode.IllegalBreak,
-                wantsContinue
-                    ? "`continue` names no enclosing loop"
-                    : "`break` names no enclosing loop or switch");
-
-            return;
+            throw BinderAdmitted(
+                span, wantsContinue ? "a `continue` with no loop to continue" : "a `break` with nothing to leave");
         }
 
         var target = exits[targetAt];
