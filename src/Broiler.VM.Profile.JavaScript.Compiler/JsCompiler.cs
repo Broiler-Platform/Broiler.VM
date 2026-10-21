@@ -498,8 +498,8 @@ public sealed partial class JsCompiler
     /// <remarks>
     /// <b>It is <see cref="insideMethod"/>'s pattern</b>: an arrow inherits it and any other function
     /// resets it. It is read by one thing, the request flags of a direct-<c>eval</c> site, because
-    /// the early error an initialiser's own text gets is <see cref="RefuseArguments"/>'s and a
-    /// String evaluated there has to be told (JSeal V14).
+    /// the early error an initialiser's own text gets is the binder's (SJL-12.6 item 2) and a String
+    /// evaluated there has to be told (JSeal V14).
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4E6FAE
     // Broiler-Human:        PENDING
@@ -804,7 +804,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D507B6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=46581D
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -875,7 +875,17 @@ public sealed partial class JsCompiler
             // request's strict flag for eval code - which is the imposition the parser was given. The
             // unit's lowering reads it from the binder, so the facts and the emission cannot be told
             // two different strictnesses.
-            binder = JsBinder.Bind(program, forceStrict);
+            binder = JsBinder.Bind(program, forceStrict, script.Options, topLevelAwait: false);
+
+            // A UNIT ITS BINDER REFUSES IS NOT LOWERED (SJL-12.6 item 2, JSD-0080 decisions D10 and
+            // D12). An early error the binder reports is found once, in source order, before any of
+            // the unit is lowered, so it never produces bytes and a `finally` block lowered three
+            // times does not report it three times.
+            if (binder.Diagnostics.Count != 0)
+            {
+                diagnostics.AddRange(binder.Diagnostics);
+                return Refused(first, script.SourceName);
+            }
 
             scriptReferrer = script.Referrer;
             currentSource = AddSource(script.Text);
@@ -968,8 +978,18 @@ public sealed partial class JsCompiler
                 return new JsCompilation(false, null, diagnostics);
             }
 
-            // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says.
-            binder = JsBinder.Bind(program, imposed: true);
+            // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says. Whether its body is
+            // an async unit is the parser's answer, which the binder reads as the lowering does.
+            binder = JsBinder.Bind(program, imposed: true, module.Options, topLevelAwait: awaited);
+
+            // AND A MODULE ITS BINDER REFUSES IS NOT LOWERED EITHER: its declaration, collision and
+            // export checks are the binder's with the rest.
+            if (binder.Diagnostics.Count != 0)
+            {
+                diagnostics.AddRange(binder.Diagnostics);
+                return new JsCompilation(false, null, diagnostics);
+            }
+
             currentSource = AddSource(text);
             CompileModule(program, module);
 

@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CADE59
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=52F182
     // Broiler-Human:        PENDING
     private void CompileUnary(JsUnaryExpression unary)
     {
@@ -147,13 +147,7 @@ public sealed partial class JsCompiler
             // below would have evaluated the access - throwing on a foreign object - and then
             // answered `true` for a deletion that never happened.
             case SliceTokenKind.Delete when unary.Operand is JsPrivateMemberExpression:
-                Refuse(
-                    unary.Span,
-                    SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                    "a private element cannot be deleted");
-
-                Emit(JsOpcode.LoadTrue);
-                return;
+                throw BinderAdmitted(unary.Span, "the deletion of a private element");
 
             // `delete x` FOR A BARE NAME NEVER EVALUATES `x`. The operator takes a reference and
             // asks whether it can be removed, so a lowering that read the name and threw the value
@@ -186,10 +180,7 @@ public sealed partial class JsCompiler
             case SliceTokenKind.Delete when unary.Operand is JsSuperMemberExpression inherited:
                 if (!insideMethod)
                 {
-                    Refuse(
-                        inherited.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
-                        "`super` is only admitted inside a method");
+                    throw BinderAdmitted(inherited.Span, "a `super` property outside a method");
                 }
 
                 Emit(JsOpcode.LoadThis);
@@ -275,7 +266,7 @@ public sealed partial class JsCompiler
         Emit(add);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=34BD50
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ACB5BB
     // Broiler-Human:        PENDING
     private void CompileUpdate(JsUpdateExpression update)
     {
@@ -399,13 +390,7 @@ public sealed partial class JsCompiler
 
         if (update.Operand is not JsMemberExpression member)
         {
-            Refuse(
-                update.Span,
-                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                "the operand of an update operator is not a reference");
-
-            Emit(JsOpcode.LoadUndefined);
-            return;
+            throw BinderAdmitted(update.Span, "an update of an operand that is not a reference");
         }
 
         var function = FunctionScope();
@@ -558,7 +543,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AF68A1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=05F408
     // Broiler-Human:        PENDING
     private void CompileAssignment(JsAssignmentExpression assignment)
     {
@@ -619,13 +604,7 @@ public sealed partial class JsCompiler
                 return;
             }
 
-            Refuse(
-                assignment.Span,
-                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                "the left-hand side of an assignment is not a reference");
-
-            Emit(JsOpcode.LoadUndefined);
-            return;
+            throw BinderAdmitted(assignment.Span, "an assignment to a target that is not a reference");
         }
 
         if (assignment.Operator is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
@@ -714,12 +693,7 @@ public sealed partial class JsCompiler
             return;
         }
 
-        Refuse(
-            assignment.Span,
-            SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-            "the left-hand side of an assignment is not a reference");
-
-        Emit(JsOpcode.LoadUndefined);
+        throw BinderAdmitted(assignment.Span, "an assignment to a target that is not a reference");
     }
 
     /// <summary>
@@ -741,7 +715,7 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.ThrowReferenceError);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FF0905
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6A4879
     // Broiler-Human:        PENDING
     private void CompileLogicalAssignment(JsAssignmentExpression assignment)
     {
@@ -763,15 +737,12 @@ public sealed partial class JsCompiler
             return;
         }
 
+        // ANY OTHER TARGET IS REFUSED BY THE BINDER, under 2104, before any of the unit is lowered
+        // (SJL-12.6 item 2, JSD-0080 decision D12), and the parser refuses every one first today.
         if (assignment.Target is not JsIdentifier name)
         {
-            Refuse(
-                assignment.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a logical assignment to a target that is neither a name nor a property is not admitted");
-
-            Emit(JsOpcode.LoadUndefined);
-            return;
+            throw BinderAdmitted(
+                assignment.Span, "a logical assignment to a target that is neither a name nor a property");
         }
 
         LoadName(assignment.Span, name.Name);

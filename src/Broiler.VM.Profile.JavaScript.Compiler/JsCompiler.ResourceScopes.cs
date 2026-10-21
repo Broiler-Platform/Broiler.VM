@@ -32,11 +32,12 @@ public sealed partial class JsCompiler
     /// <remarks>
     /// Only the list's own declarations count: a block inside it is a scope of its own and disposes
     /// its own resources, and the parser refuses a resource declaration wherever a label or a
-    /// single-statement position would have hidden one from this walk.
+    /// single-statement position would have hidden one from this walk. The binder asks it too, to know
+    /// which lists a resource has a scope in (SJL-12.6 item 2).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=549314
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=948DE2
     // Broiler-Human:        PENDING
-    private static JsUsing UsingIn(
+    internal static JsUsing UsingIn(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, out SliceSourceSpan first)
     {
         var found = JsUsing.None;
@@ -250,7 +251,7 @@ public sealed partial class JsCompiler
     /// <summary>
     /// Registers the value on the stack with the innermost resource scope, leaving the value.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D9903B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8B22BC
     // Broiler-Human:        PENDING
     private void EmitRegistration(SliceSourceSpan span, JsUsing hint)
     {
@@ -271,11 +272,10 @@ public sealed partial class JsCompiler
             return;
         }
 
-        // THE PARSER ADMITS A RESOURCE ONLY IN A LIST THAT OPENS A SCOPE, so reaching here is a
-        // front-end defect; it is refused rather than lowered as the `const` it resembles.
-        Refuse(
-            span,
-            SliceSourceDiagnosticCode.ConstructOutsideManifest,
-            "a `using` declaration outside a statement list that can dispose it");
+        // THE PARSER ADMITS A RESOURCE ONLY IN A LIST THAT OPENS A SCOPE, and the binder refuses one
+        // anywhere else, under 2104, before any of the unit is lowered (SJL-12.6 item 2, JSD-0080
+        // decision D12); reaching here is a front-end defect, asserted rather than lowered as the
+        // `const` it resembles.
+        throw BinderAdmitted(span, "a `using` declaration outside a statement list that can dispose it");
     }
 }

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
+// Relevant units:   5
+// Annotated:        5/5
 // Exempt:           31
-// Human-reviewed:   0/4
+// Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       4
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -296,6 +296,18 @@ public sealed record SliceSourceDiagnostic(
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CCA0B1
     // Broiler-Human:        PENDING
     private readonly string sourceName = string.Empty;
+
+    /// <summary>
+    /// The most diagnostics one stage of the front end records for a unit: the parser, the numeric
+    /// admission, the binder's early errors and the lowering each stop adding at this many.
+    /// </summary>
+    /// <remarks>
+    /// One number, so the stages cannot disagree about it; the four kept a literal 64 each until
+    /// SJL-12.6 item 2 added the binder's.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=A554D4
+    // Broiler-Human:        PENDING
+    internal const int MaximumPerStage = 64;
 
     /// <summary>The one-line form a check or a log prints.</summary>
     /// <remarks>

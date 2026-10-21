@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           0
-// Human-reviewed:   0/18
+// Human-reviewed:   0/19
 // IP risk:          None
-// Security risk:    Medium
-// Criteria:         0/0
+// Security risk:    High
+// Criteria:         1/1
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -239,11 +239,29 @@ public sealed partial class JsCompiler
         _ => JsOpcode.Add,
     };
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3032B3
+    /// <summary>
+    /// The failure the lowering raises where it meets a language early error, which the binder pass
+    /// refuses before any of a unit is lowered.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is never the source's</b> (SJL-12.6 item 2, JSD-0080 decision D10). A unit with an early
+    /// error is refused by its binder and never reaches the lowering, so meeting one here means the
+    /// binder admitted what it refuses - a defect of this assembly. The lowering says so, naming the
+    /// place, rather than refusing the source a second time in a second stage or emitting bytes for
+    /// a program the language rejects.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=A9BE31
+    // Broiler-Falsified-If: the lowering refuses a source with a language early error rather than failing, or lowers past one
+    // Broiler-Human:        PENDING
+    private static System.InvalidOperationException BinderAdmitted(SliceSourceSpan span, string what) =>
+        new("the binder admitted " + what + " at " + JsBinder.Where(span) +
+            ", which its early errors refuse, and the lowering cannot lower it");
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1B7878
     // Broiler-Human:        PENDING
     private void Refuse(SliceSourceSpan span, SliceSourceDiagnosticCode code, string message)
     {
-        if (diagnostics.Count >= 64)
+        if (diagnostics.Count >= SliceSourceDiagnostic.MaximumPerStage)
         {
             return;
         }

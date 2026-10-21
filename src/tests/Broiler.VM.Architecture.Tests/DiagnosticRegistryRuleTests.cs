@@ -702,7 +702,13 @@ public sealed class DiagnosticRegistryRuleTests
         // walks that compute them. A binder is the other thing an author is tempted to cache in a
         // static - a table of facts per node, kept for the next unit - and this one is made per unit
         // and holds its tables in the instance, which is what this rule is here to keep true.
-        Assert.Equal(53, lowering.Length);
+        //
+        // THE FIFTY-FOURTH IS THE BINDER'S EARLY ERRORS, added 2026-10-21 by SJL-12.6 item 2 (JSD-0080
+        // decision D12): JsBinder.EarlyErrors.cs, the language early errors the lowering used to raise,
+        // reported by the binder before any unit is lowered. Its list of what it found, and the names it
+        // tracks while it walks, are fields of the binder made for one unit, not statics a second unit
+        // would read.
+        Assert.Equal(54, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           0
-// Human-reviewed:   0/10
+// Human-reviewed:   0/9
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       10
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -249,7 +249,7 @@ public sealed partial class JsCompiler
     /// the initialiser are pushed and consumed by the one instruction, and the pair beneath them is
     /// read rather than popped.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E036F1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=903C29
     // Broiler-Human:        PENDING
     private void CompileClassElement(JsClassMember member)
     {
@@ -259,7 +259,6 @@ public sealed partial class JsCompiler
 
         if (member.Kind == JsMethodKind.StaticBlock)
         {
-            RefuseArguments(member.Function!);
             Emit(JsOpcode.LoadUndefined);
 
             Emit(
@@ -306,8 +305,6 @@ public sealed partial class JsCompiler
         }
         else
         {
-            RefuseArguments(member.Function);
-
             if (member.Computed is not null && !member.IsPrivate &&
                 member.Function.Body is [JsReturnStatement { Value: { } value }] &&
                 NamedAtRunTime(value))
@@ -323,48 +320,16 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.DefineClassElement, flags);
     }
 
-    /// <summary>
-    /// Refuses an <c>arguments</c> anywhere inside a field initialiser or a static block.
-    /// </summary>
-    /// <remarks>
-    /// <b>Neither has an <c>arguments</c> of its own and neither may borrow one</b>, which is what
-    /// makes this an early error rather than a read of the enclosing function's object. Both run
-    /// with a <c>this</c> the class body does not have and with no argument list at all, so the
-    /// specification makes the WORD a Syntax Error there rather than leaving a program to discover
-    /// at run time that the object it named is somebody else's. An arrow inside one is included,
-    /// because an arrow has no <c>arguments</c> either and reaches outward for it; an ordinary
-    /// nested function is not, because it has one of its own - which is exactly the boundary the
-    /// walk this calls already draws for the enclosing function's own materialisation question.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=21BAC5
-    // Broiler-Human:        PENDING
-    private void RefuseArguments(JsFunctionNode body)
-    {
-        foreach (var statement in body.Body)
-        {
-            if (!Walk.Mentions(statement, "arguments"))
-            {
-                continue;
-            }
-
-            Refuse(
-                body.Span,
-                SliceSourceDiagnosticCode.UnresolvableIdentifier,
-                "`arguments` names nothing inside a class field initialiser or a static block");
-
-            return;
-        }
-    }
-
     /// <summary>Pushes the private name a class body in scope declared under this spelling.</summary>
     /// <remarks>
     /// <b>It resolves through the ordinary scope chain, so the INNERMOST class that declares the
     /// spelling wins</b> - which is what the specification's PrivateEnvironment says, and what makes
     /// a nested class able to declare its own <c>#x</c> without disturbing the outer one's. A
-    /// spelling no enclosing class declared is a refusal here and not a run-time absence, because
-    /// there is no object a name nobody minted could be found on.
+    /// spelling no enclosing class declared is an early error and not a run-time absence, because
+    /// there is no object a name nobody minted could be found on - the binder's to refuse, before
+    /// anything is lowered (SJL-12.6 item 2).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9133B7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=50718E
     // Broiler-Human:        PENDING
     private void EmitPrivateName(SliceSourceSpan span, string name)
     {
@@ -379,26 +344,36 @@ public sealed partial class JsCompiler
         // like any other of the caller's names, and the declaration row lists it: the executor
         // makes the evaluation the SyntaxError the language gives when no class around the call
         // declares it, before anything is instantiated.
-        if (evalRoot is not null && (evalFlags & JsFormat.EvalRequestFlags.InClassBody) != 0 &&
-            TryEvalHops(out var evalHops))
+        if (evalRoot is not null && (evalFlags & JsFormat.EvalRequestFlags.InClassBody) != 0)
         {
-            var spelled = PrivateSlot(name);
-
-            if (!evalPrivateNames.Contains(spelled))
+            if (TryEvalHops(out var evalHops))
             {
-                evalPrivateNames.Add(spelled);
+                var spelled = PrivateSlot(name);
+
+                if (!evalPrivateNames.Contains(spelled))
+                {
+                    evalPrivateNames.Add(spelled);
+                }
+
+                EmitEvalName(JsOpcode.LoadEvalName, evalHops, spelled);
+                return;
             }
 
-            EmitEvalName(JsOpcode.LoadEvalName, evalHops, spelled);
+            // PAST THE SCOPE-DEPTH CEILING THE READ HAS NO HOP COUNT, and the ceiling's refusal,
+            // which stays the lowering's, has already refused the unit. The name then cannot be
+            // read through the caller at all, and the lowering refuses it as it always did, after
+            // the ceiling's 2103: a consequence of the ceiling, not a language early error, so it
+            // is not the binder's to report and the refused unit's list stays the one it was.
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.UnresolvableIdentifier,
+                "`" + name + "` is not declared by any class this expression is inside of");
+
+            Emit(JsOpcode.LoadUndefined);
             return;
         }
 
-        Refuse(
-            span,
-            SliceSourceDiagnosticCode.UnresolvableIdentifier,
-            "`" + name + "` is not declared by any class this expression is inside of");
-
-        Emit(JsOpcode.LoadUndefined);
+        throw BinderAdmitted(span, "the private name `" + name + "`, which no class around it declares");
     }
 
     /// <summary>The slot name a private name is kept under.</summary>
@@ -422,9 +397,9 @@ public sealed partial class JsCompiler
     /// syntactically, on a non-static, non-computed method whose property name is
     /// <c>constructor</c>, and so does this.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6BC9DC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=898148
     // Broiler-Human:        PENDING
-    private static JsFunctionNode? FindConstructor(JsClassNode node)
+    internal static JsFunctionNode? FindConstructor(JsClassNode node)
     {
         foreach (var member in node.Members)
         {

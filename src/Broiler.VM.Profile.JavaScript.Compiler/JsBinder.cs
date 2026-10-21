@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
-// Exempt:           26
-// Human-reviewed:   0/15
+// Relevant units:   19
+// Annotated:        19/19
+// Exempt:           32
+// Human-reviewed:   0/19
 // IP risk:          None
 // Security risk:    High
-// Criteria:         5/2
+// Criteria:         6/3
 // Resource impact:  3/10 max
-// Unverified:       15
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -96,13 +96,46 @@ internal sealed partial class JsBinder
     private readonly System.Collections.Generic.Dictionary<JsStatement, JsStatement?> jumps =
         new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
 
-    /// <summary>Binds one unit.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4CBCDE
+    /// <summary>The names each <c>catch</c> clause's parameter binds, by <c>try</c> statement.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5B9794
     // Broiler-Human:        PENDING
-    private JsBinder(JsProgramNode program, bool strict)
+    private readonly System.Collections.Generic.Dictionary<JsTryStatement, string[]> catches =
+        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+    /// <summary>
+    /// The names each <c>for</c>, <c>for-in</c> and <c>for-of</c> head declares lexically, by loop.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=EAB6B2
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.Dictionary<JsStatement, string[]> heads =
+        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+    /// <summary>The early errors the walk found, in the order it met them.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E02314
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<SliceSourceDiagnostic> found = [];
+
+    /// <summary>What kind of unit this is, and what its caller permits it when it is eval code.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4F0742
+    // Broiler-Human:        PENDING
+    private readonly SliceParseOptions unit;
+
+    /// <summary>Binds one unit.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C19A05
+    // Broiler-Human:        PENDING
+    private JsBinder(JsProgramNode program, bool strict, SliceParseOptions options, bool topLevelAwait)
     {
+        unit = options;
         Program = BindProgram(program, strict);
-        BindTree(program, Program.Strict);
+        ModuleDeclarations = options.Goal == SliceGoal.Module ? ModuleDeclarationsOf(program.Body) : [];
+        BindTree(program, Program.Strict, topLevelAwait);
+
+        if (options.Goal == SliceGoal.Module)
+        {
+            CheckModule(program.Body);
+        }
+
+        Diagnostics = InSourceOrder(found);
     }
 
     /// <summary>
@@ -114,19 +147,52 @@ internal sealed partial class JsBinder
     internal HoistingScope Program { get; }
 
     /// <summary>
+    /// What a module's own top level declares lexically - each class, <c>let</c> and <c>const</c>
+    /// name, an exported one in the export's place - in source order and as often as it is declared;
+    /// none for a script or eval code.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=31DBB9
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.IReadOnlyList<ModuleDeclaration> ModuleDeclarations { get; }
+
+    /// <summary>
+    /// The unit's early errors - the language early errors the lowering used to raise while it
+    /// emitted - each once, in source order, at most as many as the parser's diagnostics hold.
+    /// </summary>
+    /// <remarks>
+    /// <b>A unit with any is not lowered</b> (SJL-12.6 item 2, JSD-0080 decisions D10 and D12): the
+    /// compilation is refused with these and nothing else, so an early error never produces bytes,
+    /// and none is reported twice because a <c>finally</c> block is lowered twice.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E0BF86
+    // Broiler-Falsified-If: a unit the lowering would have refused with a language early error is answered with none, or a unit it would have lowered without one is answered with one
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics { get; }
+
+    /// <summary>
     /// Binds one compilation unit: a script, an evaluated program or a module, after it parsed and
-    /// after the manifest admitted it.
+    /// after the manifest admitted it, and finds its early errors.
     /// </summary>
     /// <param name="program">The unit's tree.</param>
     /// <param name="imposed">
     /// Whether the caller makes the unit strict whatever its own prologue says: a script's
     /// <see cref="JsScriptUnit.ForceStrict"/>, an evaluation request's strict flag, and every module.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3F5139
+    /// <param name="options">
+    /// The options the unit was parsed under: its goal, and, for eval code, what its caller permits
+    /// it - which decides whether <c>super</c>, <c>new.target</c> and <c>arguments</c> name anything
+    /// at its own top level.
+    /// </param>
+    /// <param name="topLevelAwait">
+    /// Whether the unit's parser saw a module await at its own top level, which makes the module's body
+    /// an async unit to the lowering as well; never for a script or eval code, whose top level is not.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F3CEE2
     // Broiler-Falsified-If: a unit is lowered under a strictness other than its prologue's or its caller's, or two binds of one tree answer differently
     // Broiler-Human:        PENDING
-    internal static JsBinder Bind(JsProgramNode program, bool imposed) =>
-        new(program, program.IsStrict || imposed);
+    internal static JsBinder Bind(
+        JsProgramNode program, bool imposed, SliceParseOptions options, bool topLevelAwait) =>
+        new(program, program.IsStrict || imposed, options, topLevelAwait);
 
     /// <summary>What a function is, and what its body declares.</summary>
     /// <param name="function">
@@ -186,16 +252,50 @@ internal sealed partial class JsBinder
     /// <b>It is the target the lowering's own exit stack finds, with the lowering's reading of a
     /// label</b>: a loop or a <c>switch</c> carries the label written directly on it, a labelled
     /// statement of any other kind is a target only for <c>break</c>, and a <c>continue</c> naming a
-    /// label that is not a loop's looks further out for one that is. Nothing reads it before SJL-12.6
-    /// item 2 moves the jump checks into this pass; the lowering still finds its targets on its own
-    /// stack, because a <c>finally</c> body it emits at a jump is emitted inside the statements the
-    /// jump leaves, which no fact about the tree can describe.
+    /// label that is not a loop's looks further out for one that is. <b>Its one reader is the
+    /// binder's own refusal of a jump with nowhere to go</b> (SJL-12.6 item 2), which reads it back
+    /// as soon as the walk records it; the lowering still finds its targets on its own stack, because
+    /// a <c>finally</c> body it emits at a jump is emitted inside the statements the jump leaves,
+    /// which no fact about the tree can describe.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C740E1
     // Broiler-Falsified-If: a jump's recorded target differs from the exit the lowering's stack finds for it where no finally body is being emitted at another jump
     // Broiler-Human:        PENDING
     internal JsStatement? JumpTarget(JsStatement jump) =>
         jumps.TryGetValue(jump, out var target) ? target : throw Unbound("jump", jump);
+
+    /// <summary>
+    /// Every name a <c>try</c> statement's <c>catch</c> parameter binds, in the order its pattern writes
+    /// them; none when the clause has no parameter or there is no clause.
+    /// </summary>
+    /// <remarks>
+    /// The names live in the record the clause's block is inside of, so the block and the parameter's
+    /// own defaults resolve them before anything outside. <b>Its reader is the binder's own walk</b>
+    /// (SJL-12.6 item 2), which reads it back as soon as it records it, to decide whether
+    /// <c>arguments</c> names a binding of the unit there; the lowering still reads a catch
+    /// parameter from the tree.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=909824
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.IReadOnlyList<string> CatchParameters(JsTryStatement guarded) =>
+        catches.TryGetValue(guarded, out var names) ? names : throw Unbound("try", guarded);
+
+    /// <summary>
+    /// Every name a <c>for</c>, <c>for-in</c> or <c>for-of</c> head declares with <c>let</c> or
+    /// <c>const</c>, in the order the head writes them; none for a <c>var</c> head or an expression.
+    /// </summary>
+    /// <remarks>
+    /// <b>They are the head's record's names and not the body's</b>: a <c>for</c> head's names are
+    /// declared before its initialiser runs and seen by its test, its update and its body; a
+    /// <c>for-in</c> or <c>for-of</c> head's are in their dead zone while the object is evaluated and
+    /// bound afresh for each turn of the body. <b>Its reader is the binder's own walk</b> (SJL-12.6
+    /// item 2), which reads it back as soon as it records it, to decide whether <c>arguments</c>
+    /// names a binding of the unit there; the lowering still reads a loop head from the tree.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3EBA32
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.IReadOnlyList<string> LoopHead(JsStatement loop) =>
+        heads.TryGetValue(loop, out var names) ? names : throw Unbound("loop", loop);
 
     /// <summary>The failure a question about a node this binder never bound raises.</summary>
     /// <remarks>
@@ -213,11 +313,32 @@ internal sealed partial class JsBinder
             "; the lowering asked about a node the unit's tree does not hold");
 
     /// <summary>Where a node stands, as a diagnostic names a place.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=477B8E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=71D8FA
     // Broiler-Human:        PENDING
-    private static string Where(JsNode node) =>
-        node.Span.Line.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" +
-        node.Span.Column.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    private static string Where(JsNode node) => Where(node.Span);
+
+    /// <summary>
+    /// A place, as a diagnostic names one - <c>line:column</c> - for the binder's failures and the
+    /// lowering's alike.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=00A7C1
+    // Broiler-Human:        PENDING
+    internal static string Where(SliceSourceSpan span) =>
+        span.Line.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" +
+        span.Column.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    /// <summary>One name a module's top level declares lexically, and where.</summary>
+    /// <param name="Name">The name.</param>
+    /// <param name="Constant">Whether a <c>const</c> declares it; a class's binding and a <c>let</c>'s are mutable.</param>
+    /// <param name="Span">
+    /// Where the declaration stands: a class declaration's start, or the declarator's for a
+    /// <c>let</c> or <c>const</c>, every name of a destructuring declarator sharing its declarator's.
+    /// </param>
+    /// <param name="IsClass">Whether a class declaration declares it.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F696F0
+    // Broiler-Human:        PENDING
+    internal readonly record struct ModuleDeclaration(
+        string Name, bool Constant, SliceSourceSpan Span, bool IsClass);
 
     /// <summary>One name a statement list declares lexically.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5735E7
