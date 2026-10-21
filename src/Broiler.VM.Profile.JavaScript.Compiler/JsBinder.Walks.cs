@@ -481,7 +481,7 @@ internal sealed partial class JsBinder
     /// no further after a refusal it keeps, is walked <see cref="Frame.Silent"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=15FC78
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E0B234
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
     private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
@@ -564,12 +564,13 @@ internal sealed partial class JsBinder
                 return;
 
             // A LEXICAL HEAD'S NAMES ARE DECLARED BEFORE ITS INITIALISER RUNS, and its test, its
-            // update and its body see them.
+            // update and its body see them. The head's fact is recorded and then read back, so
+            // the early errors decided under it - which `arguments` the unit binds - are decided
+            // from the fact itself (SJL-12.6 item 2), as they are for a catch parameter's.
             case JsForStatement loop:
             {
-                var head = ForHeadOf(loop);
-                heads[loop] = head;
-                var inner = Declaring(context, head);
+                heads[loop] = ForHeadOf(loop);
+                var inner = Declaring(context, LoopHead(loop));
                 Push(pending, loop.Initialiser, inner);
                 Push(pending, loop.Test, inner);
                 Push(pending, loop.Update, inner);
@@ -579,9 +580,8 @@ internal sealed partial class JsBinder
 
             case JsForInStatement loop:
             {
-                var head = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
-                heads[loop] = head;
-                var inner = Declaring(context, head);
+                heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
+                var inner = Declaring(context, LoopHead(loop));
                 Head(pending, loop.Declaration, loop.Name, loop.Pattern, loop.Target, JsUsing.None, context, inner);
                 Push(pending, loop.Initialiser, context);
 
@@ -598,9 +598,8 @@ internal sealed partial class JsBinder
 
             case JsForOfStatement loop:
             {
-                var head = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
-                heads[loop] = head;
-                var inner = Declaring(context, head);
+                heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
+                var inner = Declaring(context, LoopHead(loop));
                 Head(pending, loop.Declaration, loop.Name, loop.Pattern, loop.Target, loop.Using, context, inner);
                 Push(pending, loop.Right, inner);
                 Push(pending, loop.Body, inner.Inside(ExitKind.Loop, label, loop));
@@ -625,15 +624,15 @@ internal sealed partial class JsBinder
 
                 return;
 
-            // A JUMP WITH NOWHERE TO GO IS THE ONE PLACE THE JUMP TARGET IS READ: the lowering keeps
-            // finding its targets on its own exit stack, because a `finally` body it emits at a jump
-            // holds statements the jump is leaving.
+            // A JUMP WITH NOWHERE TO GO IS THE ONE PLACE THE JUMP TARGET IS READ, through the fact
+            // the walk has just recorded: the lowering keeps finding its targets on its own exit
+            // stack, because a `finally` body it emits at a jump holds statements the jump is
+            // leaving.
             case JsBreakStatement jump:
             {
-                var target = Target(context.Exits, jump.Label, continues: false);
-                jumps[jump] = target;
+                jumps[jump] = Target(context.Exits, jump.Label, continues: false);
 
-                if (target is null)
+                if (JumpTarget(jump) is null)
                 {
                     Report(
                         context,
@@ -647,10 +646,9 @@ internal sealed partial class JsBinder
 
             case JsContinueStatement jump:
             {
-                var target = Target(context.Exits, jump.Label, continues: true);
-                jumps[jump] = target;
+                jumps[jump] = Target(context.Exits, jump.Label, continues: true);
 
-                if (target is null)
+                if (JumpTarget(jump) is null)
                 {
                     Report(
                         context,
@@ -707,9 +705,8 @@ internal sealed partial class JsBinder
             // A CATCH PARAMETER'S NAMES ARE THE BLOCK'S AND ITS OWN DEFAULTS', and nothing outside.
             case JsTryStatement statement:
             {
-                var parameters = CatchNamesOf(statement);
-                catches[statement] = parameters;
-                var caught = Declaring(context, parameters);
+                catches[statement] = CatchNamesOf(statement);
+                var caught = Declaring(context, CatchParameters(statement));
                 Push(pending, statement.Block, context);
 
                 if (statement.CatchPattern is not null)

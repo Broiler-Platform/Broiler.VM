@@ -247,10 +247,11 @@ internal sealed partial class JsBinder
     /// <b>It is the target the lowering's own exit stack finds, with the lowering's reading of a
     /// label</b>: a loop or a <c>switch</c> carries the label written directly on it, a labelled
     /// statement of any other kind is a target only for <c>break</c>, and a <c>continue</c> naming a
-    /// label that is not a loop's looks further out for one that is. Nothing reads it before SJL-12.6
-    /// item 2 moves the jump checks into this pass; the lowering still finds its targets on its own
-    /// stack, because a <c>finally</c> body it emits at a jump is emitted inside the statements the
-    /// jump leaves, which no fact about the tree can describe.
+    /// label that is not a loop's looks further out for one that is. <b>Its one reader is the
+    /// binder's own refusal of a jump with nowhere to go</b> (SJL-12.6 item 2), which reads it back
+    /// as soon as the walk records it; the lowering still finds its targets on its own stack, because
+    /// a <c>finally</c> body it emits at a jump is emitted inside the statements the jump leaves,
+    /// which no fact about the tree can describe.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C740E1
     // Broiler-Falsified-If: a jump's recorded target differs from the exit the lowering's stack finds for it where no finally body is being emitted at another jump
@@ -264,7 +265,10 @@ internal sealed partial class JsBinder
     /// </summary>
     /// <remarks>
     /// The names live in the record the clause's block is inside of, so the block and the parameter's
-    /// own defaults resolve them before anything outside.
+    /// own defaults resolve them before anything outside. <b>Its reader is the binder's own walk</b>
+    /// (SJL-12.6 item 2), which reads it back as soon as it records it, to decide whether
+    /// <c>arguments</c> names a binding of the unit there; the lowering still reads a catch
+    /// parameter from the tree.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=909824
     // Broiler-Human:        PENDING
@@ -279,7 +283,9 @@ internal sealed partial class JsBinder
     /// <b>They are the head's record's names and not the body's</b>: a <c>for</c> head's names are
     /// declared before its initialiser runs and seen by its test, its update and its body; a
     /// <c>for-in</c> or <c>for-of</c> head's are in their dead zone while the object is evaluated and
-    /// bound afresh for each turn of the body.
+    /// bound afresh for each turn of the body. <b>Its reader is the binder's own walk</b> (SJL-12.6
+    /// item 2), which reads it back as soon as it records it, to decide whether <c>arguments</c>
+    /// names a binding of the unit there; the lowering still reads a loop head from the tree.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3EBA32
     // Broiler-Human:        PENDING
