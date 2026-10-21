@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   41
-// Annotated:        41/41
-// Exempt:           9
-// Human-reviewed:   0/41
+// Relevant units:   47
+// Annotated:        47/47
+// Exempt:           21
+// Human-reviewed:   0/47
 // IP risk:          None
 // Security risk:    High
-// Criteria:         8/6
+// Criteria:         9/7
 // Resource impact:  3/10 max
-// Unverified:       41
+// Unverified:       47
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -84,14 +84,57 @@ internal sealed partial class JsBinder
         internal Exit? Outer { get; } = outer;
     }
 
-    /// <summary>What is in force where a node stands: the strictness, and the exits a jump may take.</summary>
+    /// <summary>What the code where a node stands is inside of, as the lowering's own flags say it.</summary>
+    /// <remarks>
+    /// <b>Each is the reading the lowering takes of the same position</b>, because each decides an
+    /// early error the lowering used to raise from its own flags while it emitted (SJL-12.6 item 2):
+    /// an arrow takes its definer's <see cref="Method"/>, <see cref="Derived"/> and
+    /// <see cref="Function"/> and every other function sets its own, while
+    /// <see cref="StaticBlock"/> belongs to a static block's own body and nothing nested in it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=058AEF
+    // Broiler-Human:        PENDING
+    [System.Flags]
+    private enum Frame
+    {
+        /// <summary>None of what follows.</summary>
+        None = 0,
+
+        /// <summary>
+        /// Code the lowering never lowers - a declaration it drops, or what follows a refusal it keeps
+        /// - so nothing here is reported: the lowering would not have reported it either.
+        /// </summary>
+        Silent = 1,
+
+        /// <summary>A method's code, or an arrow's in one, where <c>super.x</c> resolves.</summary>
+        Method = 2,
+
+        /// <summary>A derived constructor's code, or an arrow's in one, where <c>super()</c> resolves.</summary>
+        Derived = 4,
+
+        /// <summary>A function's code, or an arrow's in one, where <c>new.target</c> resolves.</summary>
+        Function = 8,
+
+        /// <summary>
+        /// Any function's code, an arrow's included, where <c>return</c> has something to return from.
+        /// </summary>
+        Body = 16,
+
+        /// <summary>A class static block's own body, where a <c>return</c> is the lowering's to refuse.</summary>
+        StaticBlock = 32,
+    }
+
+    /// <summary>
+    /// What is in force where a node stands: the strictness, the exits a jump may take, and what the
+    /// code is inside of.
+    /// </summary>
     /// <remarks>
     /// <b>A function starts a context of its own</b>: its strictness is its definer's or its own
     /// prologue's, and no exit outside it is one a jump inside it may take.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=94DADB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=9B13F6
     // Broiler-Human:        PENDING
-    private sealed class Context(bool strict, Exit? exits)
+    private sealed class Context(bool strict, Exit? exits, Frame frame)
     {
         // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=57AC08
         // Broiler-Human:        PENDING
@@ -101,22 +144,60 @@ internal sealed partial class JsBinder
         // Broiler-Human:        PENDING
         internal Exit? Exits { get; } = exits;
 
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=B928EB
+        // Broiler-Human:        PENDING
+        internal Frame Frame { get; } = frame;
+
+        /// <summary>Whether the code here is inside of <paramref name="frame"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=48A071
+        // Broiler-Human:        PENDING
+        internal bool Is(Frame frame) => (Frame & frame) != 0;
+
         /// <summary>This context inside <paramref name="statement"/>, which a jump may leave.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=29B39C
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=B43414
         // Broiler-Human:        PENDING
         internal Context Inside(ExitKind kind, string label, JsStatement statement) =>
-            new(Strict, new Exit(kind, label, statement, Exits));
+            new(Strict, new Exit(kind, label, statement, Exits), Frame);
+
+        /// <summary>This context, inside of <paramref name="frame"/> too.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9C6690
+        // Broiler-Human:        PENDING
+        internal Context And(Frame frame) =>
+            (Frame & frame) == frame ? this : new(Strict, Exits, Frame | frame);
+    }
+
+    /// <summary>What a parent asks of a child node beside its context.</summary>
+    /// <remarks>
+    /// <b>The same node means different things to the lowering in different places</b>: a function
+    /// is a method or not by where it is written.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=858FAB
+    // Broiler-Human:        PENDING
+    private enum Use
+    {
+        /// <summary>Evaluated where it stands: an expression or a statement, or an ordinary function.</summary>
+        Value,
+
+        /// <summary>A method: a class member's, a constructor of a base class, an object literal's.</summary>
+        Method,
+
+        /// <summary>The constructor of a class with a heritage.</summary>
+        Derived,
+
+        /// <summary>A class static block's body.</summary>
+        StaticBlock,
     }
 
     /// <summary>One node still to visit, with what is in force where it stands.</summary>
     /// <param name="Node">The node.</param>
-    /// <param name="Context">The strictness and exits in force there.</param>
+    /// <param name="Context">The strictness, exits and frames in force there.</param>
     /// <param name="Label">
     /// The label written directly on it, when it is a loop or a <c>switch</c>; empty otherwise.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=BB960D
+    /// <param name="Use">What its parent asks of it.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=51F3C3
     // Broiler-Human:        PENDING
-    private readonly record struct Pending(JsNode Node, Context Context, string Label);
+    private readonly record struct Pending(JsNode Node, Context Context, string Label, Use Use = Use.Value);
 
     /// <summary>What a hoisting scope's walk is still to visit, for the <c>var</c> collection.</summary>
     /// <param name="Statement">The statement.</param>
@@ -264,29 +345,58 @@ internal sealed partial class JsBinder
     }
 
     /// <summary>
-    /// Walks the whole unit and records, against each node, the facts that are about it: each
+    /// Walks the whole unit and records, against each node, the facts that are about it - each
     /// function's, each block's and <c>switch</c>'s declarations, each class body's private names, each
-    /// <c>catch</c> parameter's and lexical loop head's names, and each jump's target.
+    /// <c>catch</c> parameter's and lexical loop head's names, and each jump's target - and finds, where
+    /// it meets them, the early errors the lowering used to raise while it emitted.
     /// </summary>
     /// <remarks>
     /// <b>In source order, depth first.</b> <see cref="Visit"/> lists the nodes inside the one it
     /// visits in the order the source writes them, and the list goes onto the stack last first, so
     /// the first of them is the next node taken.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E2BDD7
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=FB2C58
     // Broiler-Falsified-If: a function, block, switch, class body or jump the lowering can reach is not given its facts, a node is walked under a strictness other than its definer's, or a node is met before one the source writes ahead of it
     // Broiler-Human:        PENDING
     private void BindTree(JsProgramNode program, bool strict)
     {
+        var frame = Frame.None;
+
+        // EVAL CODE'S OWN TOP LEVEL IS WHERE ITS CALLER STANDS, as far as the caller's request says:
+        // the lowering takes `super`, `super()` and `new.target` there from the request's flags.
+        if (unit.IsEval)
+        {
+            var flags = unit.EvalFlags;
+
+            if ((flags & Format.JsFormat.EvalRequestFlags.InMethod) != 0)
+            {
+                frame |= Frame.Method;
+            }
+
+            if ((flags & Format.JsFormat.EvalRequestFlags.InDerivedConstructor) != 0)
+            {
+                frame |= Frame.Derived;
+            }
+
+            if ((flags & Format.JsFormat.EvalRequestFlags.InFunction) != 0)
+            {
+                frame |= Frame.Function;
+            }
+
+            if (!strict)
+            {
+                FindOverriddenFunctions();
+            }
+        }
+
         var pending = new System.Collections.Generic.Stack<Pending>();
         var inside = new System.Collections.Generic.List<Pending>();
-        Push(inside, program.Body, new Context(strict, null));
+        Push(inside, program.Body, new Context(strict, null, frame));
         Queue(pending, inside);
 
         while (pending.Count != 0)
         {
-            var (node, context, label) = pending.Pop();
-            Visit(inside, node, context, label);
+            Visit(inside, pending.Pop());
             Queue(pending, inside);
         }
     }
@@ -308,52 +418,61 @@ internal sealed partial class JsBinder
         inside.Clear();
     }
 
-    /// <summary>Records one node's facts and lists the nodes inside it, in source order.</summary>
+    /// <summary>
+    /// Records one node's facts, finds the early errors that are about it, and lists the nodes inside
+    /// it, in source order.
+    /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>It names every kind of node the tree has</b>, the leaves too, and fails on any other: a kind
     /// it does not know may hold a function, a class, a block or a <c>switch</c>, and passing over it
     /// would leave the lowering to ask about one the binder never saw.
+    /// </para>
+    /// <para>
+    /// <b>Each early error is the lowering's, with its code, its message and its place</b> (SJL-12.6
+    /// item 2, JSD-0080 decisions D10 and D12), found from the same reading of the position the
+    /// lowering's own flags gave it. A construct the lowering refused and lowered no further is still
+    /// walked into, so what it held is reported too; code the lowering never lowers at all, or lowers
+    /// no further after a refusal it keeps, is walked <see cref="Frame.Silent"/>.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=6E1E8C
-    // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, or a node of a kind the walk does not name passes it without failing
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=17850B
+    // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
-    private void Visit(
-        System.Collections.Generic.List<Pending> pending, JsNode node, Context context, string label)
+    private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
     {
+        var (node, context, label, use) = visiting;
+
         switch (node)
         {
             // A FUNCTION IS COMPILED UNDER ITS DEFINER'S STRICTNESS OR ITS OWN, and nothing a jump
             // inside it names lies outside it. Its parameter list is lowered inside the function, so
             // what the list holds is walked in the function's context too.
             case JsFunctionNode function:
-            {
-                var facts = BindFunction(function, context.Strict);
-                functions[function] = facts;
-                var inner = new Context(facts.Body.Strict, null);
-
-                foreach (var parameter in function.Parameters)
-                {
-                    Push(pending, parameter.Target, inner);
-                    Push(pending, parameter.Default, inner);
-                }
-
-                Push(pending, function.Body, inner);
+                VisitFunction(pending, function, context, use);
                 return;
-            }
 
             // A CLASS BODY CHANGES NO STRICTNESS HERE, because the lowering's does not: its members
             // are compiled under their definer's strictness or their own, as any function is.
             case JsClassNode definition:
+            {
                 privateNames[definition] = PrivateNamesOf(definition);
                 Push(pending, definition.Heritage, context);
+                var constructor = JsCompiler.FindConstructor(definition);
 
                 foreach (var member in definition.Members)
                 {
                     Push(pending, member.Computed, context);
-                    Push(pending, member.Function, context);
+
+                    if (member.Function is { } body)
+                    {
+                        pending.Add(new Pending(
+                            body, context, string.Empty, MemberUse(member, body, constructor, definition.HasHeritage)));
+                    }
                 }
 
                 return;
+            }
 
             case JsBlockStatement block:
                 lists[block] = DeclarationsOf(block.Body);
@@ -462,8 +581,23 @@ internal sealed partial class JsBinder
                 Push(pending, statement.Body, context);
                 return;
 
+            // A `return` IN A STATIC BLOCK IS THE LOWERING'S TO REFUSE, under the code the catalogue
+            // records for it (JSD-0080 decisions D12 and D13), and it lowers nothing of the value.
             case JsReturnStatement statement:
-                Push(pending, statement.Value, context);
+                if (!context.Is(Frame.Body))
+                {
+                    Report(
+                        context,
+                        statement.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`return` has nothing to return from outside a function");
+                }
+
+                Push(
+                    pending,
+                    statement.Value,
+                    context.Is(Frame.StaticBlock) ? context.And(Frame.Silent) : context);
+
                 return;
 
             case JsThrowStatement statement:
@@ -504,12 +638,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsObjectLiteral expression:
-                foreach (var entry in expression.Entries)
-                {
-                    Push(pending, entry.Computed, context);
-                    Push(pending, entry.Value, context);
-                }
-
+                VisitObject(pending, expression, context);
                 return;
 
             case JsFunctionExpression expression:
@@ -613,6 +742,15 @@ internal sealed partial class JsBinder
                 return;
 
             case JsSuperMemberExpression expression:
+                if (!context.Is(Frame.Method))
+                {
+                    Report(
+                        context,
+                        expression.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`super` is only admitted inside a method");
+                }
+
                 Push(pending, expression.Computed, context);
                 return;
 
@@ -625,6 +763,15 @@ internal sealed partial class JsBinder
                 return;
 
             case JsSuperCallExpression expression:
+                if (!context.Is(Frame.Derived))
+                {
+                    Report(
+                        context,
+                        expression.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "a `super` call is only admitted in the constructor of a class with a heritage");
+                }
+
                 foreach (var argument in expression.Arguments)
                 {
                     Push(pending, argument, context);
@@ -665,12 +812,35 @@ internal sealed partial class JsBinder
                 Push(pending, pattern.Rest, context);
                 return;
 
-            // A LEAF: a literal, a name, `this`, `new.target`, `import.meta`, an empty or `debugger`
-            // statement, an `import` declaration. None holds a node with a fact of its own.
+            case JsNewTargetExpression expression:
+                if (!context.Is(Frame.Function))
+                {
+                    Report(
+                        context,
+                        expression.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`new.target` is only admitted inside a function");
+                }
+
+                return;
+
+            case JsImportMeta expression:
+                if (unit.Goal != SliceGoal.Module)
+                {
+                    Report(
+                        context,
+                        expression.Span,
+                        SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
+                        "`import.meta` is only admitted inside a module");
+                }
+
+                return;
+
+            // A LEAF: a literal, a name, `this`, an empty or `debugger` statement, an `import`
+            // declaration. None holds a node with a fact or an early error of its own.
             case JsNumberLiteral or JsBigIntLiteral or JsStringLiteral or JsBooleanLiteral or
                 JsNullLiteral or JsRegExpLiteral or JsIdentifier or JsThisExpression or
-                JsNewTargetExpression or JsImportMeta or JsEmptyStatement or JsDebuggerStatement or
-                JsImportDeclaration:
+                JsEmptyStatement or JsDebuggerStatement or JsImportDeclaration:
                 return;
 
             // EVERY KIND OF NODE IS NAMED ABOVE, AS ONE THAT HOLDS OTHERS OR AS A LEAF, so that a kind
@@ -680,6 +850,88 @@ internal sealed partial class JsBinder
             default:
                 throw new System.InvalidOperationException(
                     "the binder has no reading of " + node.GetType().Name + ", at " + Where(node));
+        }
+    }
+
+    /// <summary>One function: its facts, and its parameters and body under what it is inside of.</summary>
+    /// <remarks>
+    /// <b>An arrow takes its definer's frames and every other function sets its own</b>, which is the
+    /// whole of what <c>super</c>, <c>super()</c> and <c>new.target</c> mean inside an arrow - the
+    /// lowering's own rule. A static block's frame is its own body's alone.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=347763
+    // Broiler-Falsified-If: a function's code is walked as a method's, a derived constructor's or a function's where the lowering compiles it otherwise, or a function the lowering never compiles is walked as one it does
+    // Broiler-Human:        PENDING
+    private void VisitFunction(
+        System.Collections.Generic.List<Pending> pending, JsFunctionNode function, Context context, Use use)
+    {
+        var facts = BindFunction(function, context.Strict);
+        functions[function] = facts;
+
+        var frame = (context.Frame & Frame.Silent) | Frame.Body;
+
+        if (function.IsArrow)
+        {
+            frame |= context.Frame & (Frame.Method | Frame.Derived | Frame.Function);
+        }
+        else
+        {
+            frame |= Frame.Function;
+
+            if (use is Use.Method or Use.Derived or Use.StaticBlock)
+            {
+                frame |= Frame.Method;
+            }
+
+            if (use == Use.Derived)
+            {
+                frame |= Frame.Derived;
+            }
+        }
+
+        if (use == Use.StaticBlock)
+        {
+            frame |= Frame.StaticBlock;
+        }
+
+        // A DECLARATION A SLOPPY EVALUATED PROGRAM DECLARES AGAIN LATER IS NEVER COMPILED: the
+        // lowering instantiates the last declaration of each name and no other.
+        if (overridden.Contains(function))
+        {
+            frame |= Frame.Silent;
+        }
+
+        var inner = new Context(facts.Body.Strict, null, frame);
+
+        foreach (var parameter in function.Parameters)
+        {
+            Push(pending, parameter.Target, inner);
+            Push(pending, parameter.Default, inner);
+        }
+
+        Push(pending, function.Body, inner);
+    }
+
+    /// <summary>One object literal's entries, each as the lowering reads it.</summary>
+    /// <remarks>
+    /// An entry in method form is a method, whose <c>super</c> resolves.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CEB456
+    // Broiler-Human:        PENDING
+    private void VisitObject(
+        System.Collections.Generic.List<Pending> pending, JsObjectLiteral literal, Context context)
+    {
+        foreach (var entry in literal.Entries)
+        {
+            Push(pending, entry.Computed, context);
+
+            if (entry.Kind != JsPropertyKind.Spread && entry.IsMethod && entry.Value is JsFunctionExpression method)
+            {
+                pending.Add(new Pending(method.Function, context, string.Empty, Use.Method));
+                continue;
+            }
+
+            Push(pending, entry.Value, context);
         }
     }
 

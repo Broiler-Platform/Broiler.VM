@@ -26,7 +26,7 @@ public sealed partial class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2ED2A1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BE9A32
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -102,13 +102,7 @@ public sealed partial class JsCompiler
                 // runner which of the two happened.
                 if (!insideFunction)
                 {
-                    Refuse(
-                        target.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
-                        "`new.target` is only admitted inside a function");
-
-                    Emit(JsOpcode.LoadUndefined);
-                    break;
+                    throw BinderAdmitted(target.Span, "`new.target` outside a function");
                 }
 
                 Emit(JsOpcode.LoadNewTarget);
@@ -199,12 +193,7 @@ public sealed partial class JsCompiler
             case JsImportMeta meta:
                 if (module is null)
                 {
-                    Refuse(
-                        meta.Span,
-                        SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
-                        "`import.meta` is only admitted inside a module");
-
-                    break;
+                    throw BinderAdmitted(meta.Span, "`import.meta` outside a module");
                 }
 
                 Emit(JsOpcode.ImportMeta, (ushort)built.IndexOf(module));

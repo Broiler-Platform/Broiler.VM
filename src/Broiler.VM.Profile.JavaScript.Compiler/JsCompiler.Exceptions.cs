@@ -236,7 +236,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7E3B21
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FADF81
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -255,12 +255,7 @@ public sealed partial class JsCompiler
         // contain a ReturnStatement); until 2026-10-03 a module's `return` ran (JSC-253).
         if (FunctionScope().Kind is ScopeKind.Program or ScopeKind.Eval or ScopeKind.Module)
         {
-            Refuse(
-                returned.Span,
-                SliceSourceDiagnosticCode.UnexpectedToken,
-                "`return` has nothing to return from outside a function");
-
-            return;
+            throw BinderAdmitted(returned.Span, "a `return` outside a function");
         }
 
         // A STATIC BLOCK COMPILES TO A FUNCTION AND IS NOT ONE, which is why the scope test above

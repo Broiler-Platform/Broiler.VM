@@ -422,9 +422,9 @@ public sealed partial class JsCompiler
     /// syntactically, on a non-static, non-computed method whose property name is
     /// <c>constructor</c>, and so does this.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6BC9DC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=898148
     // Broiler-Human:        PENDING
-    private static JsFunctionNode? FindConstructor(JsClassNode node)
+    internal static JsFunctionNode? FindConstructor(JsClassNode node)
     {
         foreach (var member in node.Members)
         {

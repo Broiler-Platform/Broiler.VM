@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
-// Exempt:           0
-// Human-reviewed:   0/4
+// Relevant units:   6
+// Annotated:        6/6
+// Exempt:           1
+// Human-reviewed:   0/6
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/1
 // Resource impact:  3/10 max
-// Unverified:       4
+// Unverified:       6
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -53,11 +53,25 @@ internal sealed partial class JsBinder
     // Broiler-Human:        PENDING
     private const int MaximumDiagnostics = 64;
 
-    /// <summary>Records one early error.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=8CCA25
+    /// <summary>
+    /// The top-level function declarations of a sloppy evaluated program that a later one of the same
+    /// name overrides, which the lowering never compiles.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DDC92E
     // Broiler-Human:        PENDING
-    private void Report(SliceSourceSpan span, SliceSourceDiagnosticCode code, string message) =>
-        found.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));
+    private readonly System.Collections.Generic.HashSet<JsFunctionNode> overridden =
+        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+    /// <summary>Records one early error, unless the code it is in is code the lowering never lowers.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5FDBF9
+    // Broiler-Human:        PENDING
+    private void Report(Context context, SliceSourceSpan span, SliceSourceDiagnosticCode code, string message)
+    {
+        if (!context.Is(Frame.Silent))
+        {
+            found.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));
+        }
+    }
 
     /// <summary>The early errors found, in source order, at most <see cref="MaximumDiagnostics"/> of them.</summary>
     /// <remarks>
@@ -104,6 +118,43 @@ internal sealed partial class JsBinder
         }
 
         return kept;
+    }
+
+    /// <summary>What a class member's body is to the lowering: a method, a constructor or a static block.</summary>
+    /// <remarks>
+    /// Every member is compiled as a method - a field's initialiser and a static block's body included
+    /// - and the constructor the class body wrote is a derived one when the class has a heritage.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=53F3D4
+    // Broiler-Human:        PENDING
+    private static Use MemberUse(
+        JsClassMember member, JsFunctionNode body, JsFunctionNode? constructor, bool derived)
+    {
+        if (ReferenceEquals(body, constructor))
+        {
+            return derived ? Use.Derived : Use.Method;
+        }
+
+        return member.Kind == JsMethodKind.StaticBlock ? Use.StaticBlock : Use.Method;
+    }
+
+    /// <summary>
+    /// Finds the top-level function declarations of a sloppy evaluated program that a later declaration
+    /// of the same name overrides: the lowering instantiates the last of each name and no other.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=239FAA
+    // Broiler-Human:        PENDING
+    private void FindOverriddenFunctions()
+    {
+        var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
+        for (var at = Program.Functions.Count - 1; at >= 0; at--)
+        {
+            if (!seen.Add(Program.Functions[at].Name))
+            {
+                overridden.Add(Program.Functions[at]);
+            }
+        }
     }
 
 }

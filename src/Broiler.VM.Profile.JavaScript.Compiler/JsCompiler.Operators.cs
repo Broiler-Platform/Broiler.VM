@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CADE59
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7EC7C8
     // Broiler-Human:        PENDING
     private void CompileUnary(JsUnaryExpression unary)
     {
@@ -186,10 +186,7 @@ public sealed partial class JsCompiler
             case SliceTokenKind.Delete when unary.Operand is JsSuperMemberExpression inherited:
                 if (!insideMethod)
                 {
-                    Refuse(
-                        inherited.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
-                        "`super` is only admitted inside a method");
+                    throw BinderAdmitted(inherited.Span, "a `super` property outside a method");
                 }
 
                 Emit(JsOpcode.LoadThis);

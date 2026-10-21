@@ -524,16 +524,13 @@ public sealed partial class JsCompiler
     /// <c>super.x</c> and <c>super[e]</c> are one instruction with one stack effect. A pair of
     /// instructions would have bought nothing: the named form is a constant load either way.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=882E88
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9BF5E2
     // Broiler-Human:        PENDING
     private void CompileSuperKey(JsSuperMemberExpression member)
     {
         if (!insideMethod)
         {
-            Refuse(
-                member.Span,
-                SliceSourceDiagnosticCode.UnexpectedToken,
-                "`super` is only admitted inside a method");
+            throw BinderAdmitted(member.Span, "a `super` property outside a method");
         }
 
         if (member.Computed is null)
@@ -598,16 +595,13 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.LoadSuperPropertyKeepKey);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1646CE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=73FA1B
     // Broiler-Human:        PENDING
     private void CompileSuperCall(JsSuperCallExpression call)
     {
         if (!insideDerivedConstructor)
         {
-            Refuse(
-                call.Span,
-                SliceSourceDiagnosticCode.UnexpectedToken,
-                "a `super` call is only admitted in the constructor of a class with a heritage");
+            throw BinderAdmitted(call.Span, "a `super` call outside a derived constructor");
         }
 
         // `super(...args)` IS NOT `f.apply`-SHAPED AND MUST NOT BORROW CallSpread. That

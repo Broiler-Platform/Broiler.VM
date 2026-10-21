@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           31
+// Exempt:           32
 // Human-reviewed:   0/18
 // IP risk:          None
 // Security risk:    High
@@ -115,11 +115,17 @@ internal sealed partial class JsBinder
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<SliceSourceDiagnostic> found = [];
 
+    /// <summary>What kind of unit this is, and what its caller permits it when it is eval code.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4F0742
+    // Broiler-Human:        PENDING
+    private readonly SliceParseOptions unit;
+
     /// <summary>Binds one unit.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6BAA14
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A9ECE3
     // Broiler-Human:        PENDING
     private JsBinder(JsProgramNode program, bool strict, SliceParseOptions options)
     {
+        unit = options;
         Program = BindProgram(program, strict);
         ModuleDeclarations = options.Goal == SliceGoal.Module ? ModuleDeclarationsOf(program.Body) : [];
         BindTree(program, Program.Strict);
@@ -167,7 +173,9 @@ internal sealed partial class JsBinder
     /// <see cref="JsScriptUnit.ForceStrict"/>, an evaluation request's strict flag, and every module.
     /// </param>
     /// <param name="options">
-    /// The options the unit was parsed under, whose goal says whether its top level is a module's.
+    /// The options the unit was parsed under: its goal, and, for eval code, what its caller permits
+    /// it - which decides whether <c>super</c>, <c>new.target</c> and <c>arguments</c> name anything
+    /// at its own top level.
     /// </param>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9EDD90
     // Broiler-Falsified-If: a unit is lowered under a strictness other than its prologue's or its caller's, or two binds of one tree answer differently
