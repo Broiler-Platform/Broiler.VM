@@ -297,17 +297,15 @@ public sealed partial class JsCompiler
     /// mention at the program's top level or in its arrows reaches this far - which is exactly the
     /// <c>ContainsArguments</c> the specification's <c>PerformEval</c> tests.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3456DB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AD8E12
     // Broiler-Human:        PENDING
     private void EmitEvalName(JsOpcode opcode, byte hops, string name)
     {
         if ((evalFlags & JsFormat.EvalRequestFlags.InClassFieldInitializer) != 0 &&
             string.Equals(name, "arguments", System.StringComparison.Ordinal))
         {
-            Refuse(
-                default,
-                SliceSourceDiagnosticCode.UnresolvableIdentifier,
-                "`arguments` names nothing inside a class field initialiser");
+            throw BinderAdmitted(
+                default, "`arguments` read through the caller of eval code in a class field initialiser");
         }
 
         DeclareSurfaceOf(name);

@@ -498,8 +498,8 @@ public sealed partial class JsCompiler
     /// <remarks>
     /// <b>It is <see cref="insideMethod"/>'s pattern</b>: an arrow inherits it and any other function
     /// resets it. It is read by one thing, the request flags of a direct-<c>eval</c> site, because
-    /// the early error an initialiser's own text gets is <see cref="RefuseArguments"/>'s and a
-    /// String evaluated there has to be told (JSeal V14).
+    /// the early error an initialiser's own text gets is the binder's (SJL-12.6 item 2) and a String
+    /// evaluated there has to be told (JSeal V14).
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4E6FAE
     // Broiler-Human:        PENDING

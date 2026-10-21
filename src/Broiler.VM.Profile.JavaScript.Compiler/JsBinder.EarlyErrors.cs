@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
-// Exempt:           1
-// Human-reviewed:   0/8
+// Relevant units:   19
+// Annotated:        19/19
+// Exempt:           2
+// Human-reviewed:   0/19
 // IP risk:          None
 // Security risk:    High
-// Criteria:         3/1
+// Criteria:         4/2
 // Resource impact:  3/10 max
-// Unverified:       8
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -61,6 +61,17 @@ internal sealed partial class JsBinder
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.HashSet<JsFunctionNode> overridden =
         new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+    /// <summary>Whether this evaluated program's caller's <c>arguments</c> has been reported.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=4F96E1
+    // Broiler-Human:        PENDING
+    private bool callersArguments;
+
+    /// <summary>Whether this unit is eval code whose caller is a class field initialiser.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D950F0
+    // Broiler-Human:        PENDING
+    private bool EvaluatedInField =>
+        unit.IsEval && (unit.EvalFlags & Format.JsFormat.EvalRequestFlags.InClassFieldInitializer) != 0;
 
     /// <summary>Records one early error, unless the code it is in is code the lowering never lowers.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5FDBF9
@@ -136,6 +147,249 @@ internal sealed partial class JsBinder
         }
 
         return member.Kind == JsMethodKind.StaticBlock ? Use.StaticBlock : Use.Method;
+    }
+
+    /// <summary>
+    /// Refuses an <c>arguments</c> anywhere in a field initialiser's or a static block's own code.
+    /// </summary>
+    /// <remarks>
+    /// <b>The search is the lowering's own</b> (<see cref="JsCompiler.Walk.Mentions"/>): an arrow's body
+    /// is the field's code and an ordinary function's is not, and an arrow's parameter list is not
+    /// searched, which is what the lowering asked. One refusal per member, at its body.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7C49CF
+    // Broiler-Human:        PENDING
+    private void RefuseArgumentsIn(JsClassMember member, Context context)
+    {
+        if (member.Function is not { } body ||
+            member.Kind is not (JsMethodKind.StaticBlock or JsMethodKind.Field))
+        {
+            return;
+        }
+
+        foreach (var statement in body.Body)
+        {
+            if (JsCompiler.Walk.Mentions(statement, "arguments"))
+            {
+                Report(
+                    context,
+                    body.Span,
+                    SliceSourceDiagnosticCode.UnresolvableIdentifier,
+                    "`arguments` names nothing inside a class field initialiser or a static block");
+
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Refuses a private name no class around the reference declares, unless eval code's caller may.
+    /// </summary>
+    /// <remarks>
+    /// <b>The innermost class that declares the spelling is the one it names</b>, so the search goes
+    /// outward through the class bodies the walk is inside of. Eval code whose caller is inside a class
+    /// reads a name it does not declare through its caller, and the executor refuses one no class there
+    /// declares before anything runs (JSeal V15-finish).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=60075F
+    // Broiler-Falsified-If: a private name a class around the reference declares is refused, or one none declares is admitted outside eval code whose caller is in a class
+    // Broiler-Human:        PENDING
+    private void ResolvePrivate(Context context, SliceSourceSpan span, string name)
+    {
+        for (var scope = context.Privates; scope is not null; scope = scope.Outer)
+        {
+            if (System.Array.IndexOf(scope.Names, name) >= 0)
+            {
+                return;
+            }
+        }
+
+        if (unit.IsEval && (unit.EvalFlags & Format.JsFormat.EvalRequestFlags.InClassBody) != 0)
+        {
+            return;
+        }
+
+        Report(
+            context,
+            span,
+            SliceSourceDiagnosticCode.UnresolvableIdentifier,
+            "`" + name + "` is not declared by any class this expression is inside of");
+    }
+
+    /// <summary>
+    /// Records a reference to <paramref name="name"/>, which in eval code inside a field initialiser is
+    /// an early error when it is <c>arguments</c> and nothing in the program binds it.
+    /// </summary>
+    /// <remarks>
+    /// <b>The language makes it one error of the whole evaluation</b> (<c>PerformEval</c>'s
+    /// <c>ContainsArguments</c>), and the lowering reported it where it emitted each such name, at no
+    /// place; it is reported once here, at the same place.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D3EF46
+    // Broiler-Human:        PENDING
+    private void Writes(Context context, string name)
+    {
+        if (!EvaluatedInField || context.Is(Frame.ArgumentsBound) || context.Is(Frame.Silent) ||
+            !IsArguments(name) || callersArguments)
+        {
+            return;
+        }
+
+        callersArguments = true;
+        Report(
+            context,
+            default,
+            SliceSourceDiagnosticCode.UnresolvableIdentifier,
+            "`arguments` names nothing inside a class field initialiser");
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=6476B5
+    // Broiler-Human:        PENDING
+    private static bool IsArguments(string name) =>
+        string.Equals(name, "arguments", System.StringComparison.Ordinal);
+
+    /// <summary>This context where a record that may declare <c>arguments</c> is entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=461AAB
+    // Broiler-Human:        PENDING
+    private Context Declaring(Context context, bool declares) =>
+        EvaluatedInField && declares ? context.And(Frame.ArgumentsBound) : context;
+
+    /// <summary>This context where a record holding <paramref name="names"/> is entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=06CFDD
+    // Broiler-Human:        PENDING
+    private Context Declaring(Context context, System.Collections.Generic.IReadOnlyList<string> names)
+    {
+        if (!EvaluatedInField)
+        {
+            return context;
+        }
+
+        foreach (var name in names)
+        {
+            if (IsArguments(name))
+            {
+                return context.And(Frame.ArgumentsBound);
+            }
+        }
+
+        return context;
+    }
+
+    /// <summary>This context where a statement list's record, holding <paramref name="lexical"/>, is entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=11EFCE
+    // Broiler-Human:        PENDING
+    private Context Declaring(Context context, System.Collections.Generic.IReadOnlyList<Declaration> lexical)
+    {
+        if (!EvaluatedInField)
+        {
+            return context;
+        }
+
+        foreach (var declaration in lexical)
+        {
+            if (IsArguments(declaration.Name))
+            {
+                return context.And(Frame.ArgumentsBound);
+            }
+        }
+
+        return context;
+    }
+
+    /// <summary>Whether an evaluated program's own record declares <c>arguments</c>.</summary>
+    /// <remarks>
+    /// Its <c>let</c>, <c>const</c> and <c>class</c> names always, and in strict code its <c>var</c>s
+    /// and functions; a sloppy program's are its caller's.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=C6A309
+    // Broiler-Human:        PENDING
+    private bool EvalRootDeclaresArguments(bool strict)
+    {
+        foreach (var declaration in Program.TopLevel.Lexical)
+        {
+            if (!declaration.IsFunction && IsArguments(declaration.Name))
+            {
+                return true;
+            }
+        }
+
+        if (!strict)
+        {
+            return false;
+        }
+
+        foreach (var name in Program.VarNames)
+        {
+            if (IsArguments(name))
+            {
+                return true;
+            }
+        }
+
+        foreach (var function in Program.Functions)
+        {
+            if (IsArguments(function.Name))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Whether a parameter list binds the name <c>arguments</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=A5311C
+    // Broiler-Human:        PENDING
+    private static bool ParametersBindArguments(JsFunctionNode function)
+    {
+        var names = new System.Collections.Generic.List<string>();
+
+        foreach (var parameter in function.Parameters)
+        {
+            PatternNames(parameter.Target, names);
+        }
+
+        return names.Contains("arguments");
+    }
+
+    /// <summary>Whether a function's body declares <c>arguments</c> in its own record.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=B19B66
+    // Broiler-Human:        PENDING
+    private static bool BodyDeclaresArguments(FunctionFacts facts)
+    {
+        foreach (var name in facts.Body.VarNames)
+        {
+            if (IsArguments(name))
+            {
+                return true;
+            }
+        }
+
+        foreach (var declaration in facts.Body.TopLevel.Lexical)
+        {
+            if (IsArguments(declaration.Name))
+            {
+                return true;
+            }
+        }
+
+        foreach (var function in facts.Body.Functions)
+        {
+            if (IsArguments(function.Name))
+            {
+                return true;
+            }
+        }
+
+        foreach (var alias in facts.Body.AnnexBAliases)
+        {
+            if (IsArguments(alias))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

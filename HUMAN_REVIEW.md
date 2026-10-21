@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 6701 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6713 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 330 |
-| Code units | 11718 |
-| Relevant | 6701 |
-| Exempt | 5017 |
-| Assessed | 6701 of 6701 (100%) |
-| Human reviewed | 0 of 6701 (0%) |
-| Unverified | 6701 |
+| Code units | 11735 |
+| Relevant | 6713 |
+| Exempt | 5022 |
+| Assessed | 6713 of 6713 (100%) |
+| Human reviewed | 0 of 6713 (0%) |
+| Unverified | 6713 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6701 |
+| HUMAN_PENDING | 6713 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 5017 |
+| EXEMPT | 5022 |
 
 ## 5. Aliases In The Tree
 
@@ -148,12 +148,12 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` | 54 | 45 | 9 | 45 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Backend.cs` | 42 | 37 | 5 | 37 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` | 31 | 18 | 13 | 18 | Low | High | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` | 9 | 8 | 1 | 8 | None | High | 3/1 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` | 75 | 51 | 24 | 51 | None | High | 10/7 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` | 21 | 19 | 2 | 19 | None | High | 4/2 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` | 81 | 53 | 28 | 53 | None | High | 10/7 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` | 50 | 18 | 32 | 18 | None | High | 6/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs` | 6 | 6 | 0 | 6 | None | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs` | 14 | 14 | 0 | 14 | None | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Classes.cs` | 10 | 10 | 0 | 10 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Classes.cs` | 9 | 9 | 0 | 9 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ControlFlow.cs` | 14 | 14 | 0 | 14 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs` | 19 | 19 | 0 | 19 | None | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Eval.cs` | 9 | 9 | 0 | 9 | Low | Medium | 0/0 |
@@ -648,17 +648,19 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this method reports a frame effect for an instruction that differs from what this profile's interpreter does to its operand stack and scopes
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` - Security=High, Spec=none cited, `BE330C`, PENDING
   - Falsified if: the binder refuses a unit the lowering lowered without a language early error, or admits one the lowering refused with one, or reports a code, a message or a place other than the lowering's
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ResolvePrivate(Context, SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` - Security=High, Spec=none cited, `60075F`, PENDING
+  - Falsified if: a private name a class around the reference declares is refused, or one none declares is admitted outside eval code whose caller is in a class
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `BE330C`, PENDING
   - Falsified if: a walk of the binder recurses once per node, meets a node before one the source writes ahead of it, or an ordered fact comes out in an order other than the recursive collector it replaced gave
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindProgram(JsProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `3244EA`, PENDING
   - Falsified if: a script's or an evaluated program's var names, functions or Annex B aliases differ from what its hoisting declared before SJL-12.6 item 1, or a module's exported declarations are left out of its top level
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindFunction(JsFunctionNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `FE2C59`, PENDING
   - Falsified if: a function's strictness, arguments object, variable environment or evaluation marks differ from the lowering's own reading of the same node
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindTree(JsProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `FB2C58`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindTree(JsProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `96EEFF`, PENDING
   - Falsified if: a function, block, switch, class body or jump the lowering can reach is not given its facts, a node is walked under a strictness other than its definer's, or a node is met before one the source writes ahead of it
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.Visit(System.Collections.Generic.List<Pending>, Pending)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `B8C543`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.Visit(System.Collections.Generic.List<Pending>, Pending)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `15FC78`, PENDING
   - Falsified if: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.VisitFunction(System.Collections.Generic.List<Pending>, JsFunctionNode, Context, Use)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `7D01F8`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.VisitFunction(System.Collections.Generic.List<Pending>, JsFunctionNode, Context, Use)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `1FB199`, PENDING
   - Falsified if: a function's code is walked as a method's, a derived constructor's or a function's where the lowering compiles it otherwise, or a function the lowering never compiles is walked as one it does
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ScanAnnexB(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, Spec=none cited, `746203`, PENDING
   - Falsified if: a declaration is admitted whose name a `var` of the same spelling could not be added under; a list's own lexical names reach the set its own declarations are judged by; a block, a switch, a lexical loop head or a destructuring catch parameter leaves its names out of the set what is inside it is judged by; or the aliases come out in another order
@@ -4262,7 +4264,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6562 of the 6701 assessed units declare
+That is not a figure of speech. 6574 of the 6713 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

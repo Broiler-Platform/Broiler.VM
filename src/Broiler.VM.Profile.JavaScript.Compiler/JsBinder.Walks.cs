@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   51
-// Annotated:        51/51
-// Exempt:           24
-// Human-reviewed:   0/51
+// Relevant units:   53
+// Annotated:        53/53
+// Exempt:           28
+// Human-reviewed:   0/53
 // IP risk:          None
 // Security risk:    High
 // Criteria:         10/7
 // Resource impact:  3/10 max
-// Unverified:       51
+// Unverified:       53
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -92,7 +92,7 @@ internal sealed partial class JsBinder
     /// <see cref="Function"/> and every other function sets its own, while
     /// <see cref="StaticBlock"/> belongs to a static block's own body and nothing nested in it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=058AEF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=BD8AB3
     // Broiler-Human:        PENDING
     [System.Flags]
     private enum Frame
@@ -122,19 +122,39 @@ internal sealed partial class JsBinder
 
         /// <summary>A class static block's own body, where a <c>return</c> is the lowering's to refuse.</summary>
         StaticBlock = 32,
+
+        /// <summary>
+        /// Code where <c>arguments</c> names a binding the unit itself makes, which only an evaluated
+        /// program inside a class field initialiser asks about.
+        /// </summary>
+        ArgumentsBound = 64,
+    }
+
+    /// <summary>The private names one class body declares, and the bodies around it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=EE9740
+    // Broiler-Human:        PENDING
+    private sealed class PrivateScope(string[] names, PrivateScope? outer)
+    {
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=F02656
+        // Broiler-Human:        PENDING
+        internal string[] Names { get; } = names;
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=5B981A
+        // Broiler-Human:        PENDING
+        internal PrivateScope? Outer { get; } = outer;
     }
 
     /// <summary>
-    /// What is in force where a node stands: the strictness, the exits a jump may take, and what the
-    /// code is inside of.
+    /// What is in force where a node stands: the strictness, the exits a jump may take, what the code
+    /// is inside of, and the private names in scope.
     /// </summary>
     /// <remarks>
     /// <b>A function starts a context of its own</b>: its strictness is its definer's or its own
     /// prologue's, and no exit outside it is one a jump inside it may take.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=9B13F6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7494C0
     // Broiler-Human:        PENDING
-    private sealed class Context(bool strict, Exit? exits, Frame frame)
+    private sealed class Context(bool strict, Exit? exits, Frame frame, PrivateScope? privates)
     {
         // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=57AC08
         // Broiler-Human:        PENDING
@@ -148,22 +168,32 @@ internal sealed partial class JsBinder
         // Broiler-Human:        PENDING
         internal Frame Frame { get; } = frame;
 
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=DA2340
+        // Broiler-Human:        PENDING
+        internal PrivateScope? Privates { get; } = privates;
+
         /// <summary>Whether the code here is inside of <paramref name="frame"/>.</summary>
         // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=48A071
         // Broiler-Human:        PENDING
         internal bool Is(Frame frame) => (Frame & frame) != 0;
 
         /// <summary>This context inside <paramref name="statement"/>, which a jump may leave.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=B43414
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9197DB
         // Broiler-Human:        PENDING
         internal Context Inside(ExitKind kind, string label, JsStatement statement) =>
-            new(Strict, new Exit(kind, label, statement, Exits), Frame);
+            new(Strict, new Exit(kind, label, statement, Exits), Frame, Privates);
 
         /// <summary>This context, inside of <paramref name="frame"/> too.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9C6690
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=1A0664
         // Broiler-Human:        PENDING
         internal Context And(Frame frame) =>
-            (Frame & frame) == frame ? this : new(Strict, Exits, Frame | frame);
+            (Frame & frame) == frame ? this : new(Strict, Exits, Frame | frame, Privates);
+
+        /// <summary>This context inside a class body that declares <paramref name="names"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=1E4994
+        // Broiler-Human:        PENDING
+        internal Context Declaring(string[] names) =>
+            names.Length == 0 ? this : new(Strict, Exits, Frame, new PrivateScope(names, Privates));
     }
 
     /// <summary>What a parent asks of a child node beside its context.</summary>
@@ -365,7 +395,7 @@ internal sealed partial class JsBinder
     /// visits in the order the source writes them, and the list goes onto the stack last first, so
     /// the first of them is the next node taken.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=FB2C58
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=96EEFF
     // Broiler-Falsified-If: a function, block, switch, class body or jump the lowering can reach is not given its facts, a node is walked under a strictness other than its definer's, or a node is met before one the source writes ahead of it
     // Broiler-Human:        PENDING
     private void BindTree(JsProgramNode program, bool strict)
@@ -393,6 +423,11 @@ internal sealed partial class JsBinder
                 frame |= Frame.Function;
             }
 
+            if (EvaluatedInField && EvalRootDeclaresArguments(strict))
+            {
+                frame |= Frame.ArgumentsBound;
+            }
+
             if (!strict)
             {
                 FindOverriddenFunctions();
@@ -401,7 +436,7 @@ internal sealed partial class JsBinder
 
         var pending = new System.Collections.Generic.Stack<Pending>();
         var inside = new System.Collections.Generic.List<Pending>();
-        Push(inside, program.Body, new Context(strict, null, frame));
+        Push(inside, program.Body, new Context(strict, null, frame, null));
         Queue(pending, inside);
 
         while (pending.Count != 0)
@@ -446,7 +481,7 @@ internal sealed partial class JsBinder
     /// no further after a refusal it keeps, is walked <see cref="Frame.Silent"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B8C543
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=15FC78
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
     private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
@@ -463,21 +498,27 @@ internal sealed partial class JsBinder
                 return;
 
             // A CLASS BODY CHANGES NO STRICTNESS HERE, because the lowering's does not: its members
-            // are compiled under their definer's strictness or their own, as any function is.
+            // are compiled under their definer's strictness or their own, as any function is. ITS
+            // HERITAGE IS EVALUATED IN THE PRIVATE ENVIRONMENT AROUND IT, and its keys and members in
+            // its own, which the lowering declares after compiling the heritage.
             case JsClassNode definition:
             {
-                privateNames[definition] = PrivateNamesOf(definition);
+                var names = PrivateNamesOf(definition);
+                privateNames[definition] = names;
                 Push(pending, definition.Heritage, context);
+
+                var inner = context.Declaring(names);
                 var constructor = JsCompiler.FindConstructor(definition);
 
                 foreach (var member in definition.Members)
                 {
-                    Push(pending, member.Computed, context);
+                    RefuseArgumentsIn(member, context);
+                    Push(pending, member.Computed, inner);
 
                     if (member.Function is { } body)
                     {
                         pending.Add(new Pending(
-                            body, context, string.Empty, MemberUse(member, body, constructor, definition.HasHeritage)));
+                            body, inner, string.Empty, MemberUse(member, body, constructor, definition.HasHeritage)));
                     }
                 }
 
@@ -485,21 +526,27 @@ internal sealed partial class JsBinder
             }
 
             case JsBlockStatement block:
-                lists[block] = DeclarationsOf(block.Body);
-                Push(pending, block.Body, context);
+            {
+                var declarations = DeclarationsOf(block.Body);
+                lists[block] = declarations;
+                Push(pending, block.Body, Declaring(context, declarations.Lexical));
                 return;
+            }
 
             // THE CLAUSES OF A `switch` ARE ONE STATEMENT LIST AND ONE RECORD, and its tests are
-            // evaluated before the `switch` is a statement a `break` may leave.
+            // evaluated before the `switch` is a statement a `break` may leave. The record's names
+            // are declared after the discriminant is lowered and before the first test is.
             case JsSwitchStatement switched:
             {
-                lists[switched] = DeclarationsOf(Clauses(switched));
-                var inner = context.Inside(ExitKind.Switch, label, switched);
+                var declarations = DeclarationsOf(Clauses(switched));
+                lists[switched] = declarations;
+                var declared = Declaring(context, declarations.Lexical);
+                var inner = declared.Inside(ExitKind.Switch, label, switched);
                 Push(pending, switched.Discriminant, context);
 
                 foreach (var clause in switched.Clauses)
                 {
-                    Push(pending, clause.Test, context);
+                    Push(pending, clause.Test, declared);
                     Push(pending, clause.Body, inner);
                 }
 
@@ -516,28 +563,49 @@ internal sealed partial class JsBinder
                 Push(pending, loop.Test, context);
                 return;
 
+            // A LEXICAL HEAD'S NAMES ARE DECLARED BEFORE ITS INITIALISER RUNS, and its test, its
+            // update and its body see them.
             case JsForStatement loop:
-                heads[loop] = ForHeadOf(loop);
-                Push(pending, loop.Initialiser, context);
-                Push(pending, loop.Test, context);
-                Push(pending, loop.Update, context);
-                Push(pending, loop.Body, context.Inside(ExitKind.Loop, label, loop));
+            {
+                var head = ForHeadOf(loop);
+                heads[loop] = head;
+                var inner = Declaring(context, head);
+                Push(pending, loop.Initialiser, inner);
+                Push(pending, loop.Test, inner);
+                Push(pending, loop.Update, inner);
+                Push(pending, loop.Body, inner.Inside(ExitKind.Loop, label, loop));
                 return;
+            }
 
             case JsForInStatement loop:
-                heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
-                Head(pending, loop.Declaration, loop.Pattern, loop.Target, JsUsing.None, context);
+            {
+                var head = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
+                heads[loop] = head;
+                var inner = Declaring(context, head);
+                Head(pending, loop.Declaration, loop.Name, loop.Pattern, loop.Target, JsUsing.None, context, inner);
                 Push(pending, loop.Initialiser, context);
-                Push(pending, loop.Right, context);
-                Push(pending, loop.Body, context.Inside(ExitKind.Loop, label, loop));
+
+                // ANNEX B'S INITIALISER IS WRITTEN THROUGH THE NAME before the object is evaluated.
+                if (loop.Initialiser is not null)
+                {
+                    Writes(context, loop.Name);
+                }
+
+                Push(pending, loop.Right, inner);
+                Push(pending, loop.Body, inner.Inside(ExitKind.Loop, label, loop));
                 return;
+            }
 
             case JsForOfStatement loop:
-                heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
-                Head(pending, loop.Declaration, loop.Pattern, loop.Target, loop.Using, context);
-                Push(pending, loop.Right, context);
-                Push(pending, loop.Body, context.Inside(ExitKind.Loop, label, loop));
+            {
+                var head = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
+                heads[loop] = head;
+                var inner = Declaring(context, head);
+                Head(pending, loop.Declaration, loop.Name, loop.Pattern, loop.Target, loop.Using, context, inner);
+                Push(pending, loop.Right, inner);
+                Push(pending, loop.Body, inner.Inside(ExitKind.Loop, label, loop));
                 return;
+            }
 
             // A LABEL ON A LOOP OR A `switch` IS THAT STATEMENT'S OWN, and on anything else it makes a
             // statement a `break` naming it may leave - which is how the lowering reads one.
@@ -636,18 +704,23 @@ internal sealed partial class JsBinder
                 Push(pending, statement.Value, context);
                 return;
 
+            // A CATCH PARAMETER'S NAMES ARE THE BLOCK'S AND ITS OWN DEFAULTS', and nothing outside.
             case JsTryStatement statement:
-                catches[statement] = CatchNamesOf(statement);
+            {
+                var parameters = CatchNamesOf(statement);
+                catches[statement] = parameters;
+                var caught = Declaring(context, parameters);
                 Push(pending, statement.Block, context);
 
                 if (statement.CatchPattern is not null)
                 {
-                    pending.Add(new Pending(statement.CatchPattern, context, string.Empty, Use.Initialise));
+                    pending.Add(new Pending(statement.CatchPattern, caught, string.Empty, Use.Initialise));
                 }
 
-                Push(pending, statement.Handler, context);
+                Push(pending, statement.Handler, caught);
                 Push(pending, statement.Finaliser, context);
                 return;
+            }
 
             case JsFunctionDeclaration statement:
                 Push(pending, statement.Function, context);
@@ -678,8 +751,15 @@ internal sealed partial class JsBinder
                 VisitObject(pending, expression, context);
                 return;
 
+            // A NAMED FUNCTION EXPRESSION'S OWN NAME IS A BINDING OF A RECORD AROUND THE FUNCTION.
             case JsFunctionExpression expression:
-                Push(pending, expression.Function, context);
+                Push(
+                    pending,
+                    expression.Function,
+                    !expression.Function.IsArrow && IsArguments(expression.Function.Name)
+                        ? Declaring(context, declares: true)
+                        : context);
+
                 return;
 
             case JsYieldExpression expression:
@@ -809,10 +889,12 @@ internal sealed partial class JsBinder
                 return;
 
             case JsPrivateMemberExpression expression:
+                ResolvePrivate(context, expression.Span, expression.Name);
                 Push(pending, expression.Target, context);
                 return;
 
             case JsPrivateInExpression expression:
+                ResolvePrivate(context, expression.Span, expression.Name);
                 Push(pending, expression.Target, context);
                 return;
 
@@ -902,11 +984,17 @@ internal sealed partial class JsBinder
                 CheckRegExp(context, expression);
                 return;
 
-            // A LEAF: a literal, a name, `this`, an empty or `debugger` statement, an `import`
-            // declaration. None holds a node with a fact or an early error of its own.
+            // A NAME IN AN EXPRESSION IS A REFERENCE THE LOWERING RESOLVES, and in eval code inside a
+            // field initialiser one that reaches the caller as `arguments` is an early error.
+            case JsIdentifier expression:
+                Writes(context, expression.Name);
+                return;
+
+            // A LEAF: a literal, `this`, an empty or `debugger` statement, an `import` declaration.
+            // None holds a node with a fact or an early error of its own.
             case JsNumberLiteral or JsBigIntLiteral or JsStringLiteral or JsBooleanLiteral or
-                JsNullLiteral or JsIdentifier or JsThisExpression or JsEmptyStatement or
-                JsDebuggerStatement or JsImportDeclaration:
+                JsNullLiteral or JsThisExpression or JsEmptyStatement or JsDebuggerStatement or
+                JsImportDeclaration:
                 return;
 
             // EVERY KIND OF NODE IS NAMED ABOVE, AS ONE THAT HOLDS OTHERS OR AS A LEAF, so that a kind
@@ -925,7 +1013,7 @@ internal sealed partial class JsBinder
     /// whole of what <c>super</c>, <c>super()</c> and <c>new.target</c> mean inside an arrow - the
     /// lowering's own rule. A static block's frame is its own body's alone.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=7D01F8
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=1FB199
     // Broiler-Falsified-If: a function's code is walked as a method's, a derived constructor's or a function's where the lowering compiles it otherwise, or a function the lowering never compiles is walked as one it does
     // Broiler-Human:        PENDING
     private void VisitFunction(
@@ -934,7 +1022,7 @@ internal sealed partial class JsBinder
         var facts = BindFunction(function, context.Strict);
         functions[function] = facts;
 
-        var frame = (context.Frame & Frame.Silent) | Frame.Body;
+        var frame = (context.Frame & (Frame.Silent | Frame.ArgumentsBound)) | Frame.Body;
 
         if (function.IsArrow)
         {
@@ -967,19 +1055,29 @@ internal sealed partial class JsBinder
             frame |= Frame.Silent;
         }
 
-        var inner = new Context(facts.Body.Strict, null, frame);
+        var parameters = new Context(facts.Body.Strict, null, frame, context.Privates);
+        var body = parameters;
+
+        // WHERE `arguments` RESOLVES INSIDE THE FUNCTION, only an evaluated program in a field
+        // initialiser asks: the parameters see the parameters and the arguments object, and the body
+        // sees those and everything the body declares.
+        if (EvaluatedInField)
+        {
+            parameters = Declaring(parameters, facts.UsesArguments || ParametersBindArguments(function));
+            body = Declaring(parameters, BodyDeclaresArguments(facts));
+        }
 
         foreach (var parameter in function.Parameters)
         {
-            pending.Add(new Pending(parameter.Target, inner, string.Empty, Use.Initialise));
-            Push(pending, parameter.Default, inner);
+            pending.Add(new Pending(parameter.Target, parameters, string.Empty, Use.Initialise));
+            Push(pending, parameter.Default, parameters);
         }
 
-        Push(pending, function.Body, inner);
+        Push(pending, function.Body, body);
     }
 
     /// <summary>One declaration statement's declarators, each with the early errors of its own.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A545D0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=30FAF9
     // Broiler-Human:        PENDING
     private void VisitDeclarators(
         System.Collections.Generic.List<Pending> pending, JsVariableStatement statement, Context context)
@@ -1007,6 +1105,10 @@ internal sealed partial class JsBinder
                     declarator.Span,
                     SliceSourceDiagnosticCode.ConstWithoutInitialiser,
                     "`const " + declarator.Name + "` needs an initialiser");
+            }
+            else if (declarator.Pattern is null && mode == Use.Var && declarator.Initialiser is not null)
+            {
+                Writes(context, declarator.Name);
             }
 
             if (declarator.Pattern is not null)
@@ -1170,15 +1272,17 @@ internal sealed partial class JsBinder
     /// name; any other head is an assignment target, lowered as an assignment's is. A resource head
     /// registers its value instead and writes nothing.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=FB5378
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A61733
     // Broiler-Human:        PENDING
     private void Head(
         System.Collections.Generic.List<Pending> pending,
         SliceDeclarationKind? declaration,
+        string name,
         JsPattern? pattern,
         JsExpression? target,
         JsUsing resource,
-        Context context)
+        Context context,
+        Context inner)
     {
         var lexical = declaration is SliceDeclarationKind.Let or SliceDeclarationKind.Const;
 
@@ -1201,9 +1305,13 @@ internal sealed partial class JsBinder
         {
             pending.Add(new Pending(
                 pattern,
-                context,
+                lexical ? inner : context,
                 string.Empty,
                 lexical ? Use.Initialise : declaration == SliceDeclarationKind.Var ? Use.Var : Use.Assign));
+        }
+        else if (resource == JsUsing.None && declaration == SliceDeclarationKind.Var)
+        {
+            Writes(context, name);
         }
     }
 
