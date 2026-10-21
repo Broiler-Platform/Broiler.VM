@@ -37,12 +37,14 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// <b>The binder also reports the language's early errors the lowering used to raise</b> (item 2,
 /// decision D12). Each family's row is a source the parser admits, so the refusal is the binder's: its
 /// code and its place are the lowering's, written <c>code@line:column</c>, and the refused unit has no
-/// bytes. Then the list itself: in source order where the lowering reported a hoisted function first,
-/// at most 64, once for a <c>finally</c> block the lowering compiled twice, once for each reference to
-/// an evaluated program's caller's <c>arguments</c> - a reference the lowering read and wrote, and so
-/// reported twice, included - and alone - a unit the binder refuses is not
-/// lowered, so the lowering's ceiling on parameters is not met beside it. <c>a: b: while (1) { continue
-/// a; }</c> stays refused as the lowering refused it.
+/// bytes. Then the list itself: in source order where the lowering reported a hoisted function first;
+/// at most 64; once for a <c>finally</c> block the lowering compiled twice; once for each reference to
+/// an evaluated program's caller's <c>arguments</c>, a reference the lowering read and wrote (and so
+/// reported twice) included; and alone, because a unit the binder refuses is not lowered, so the
+/// lowering's ceiling on parameters is not met beside it. <c>a: b: while (1) { continue a; }</c> stays
+/// refused as the lowering refused it. And code the lowering never lowers is walked silently: an
+/// overridden function of sloppy eval code keeps the program accepted, and a static block's
+/// <c>return</c> value adds nothing to the lowering's 2207.
 /// </para>
 /// </remarks>
 internal static class BinderChecks
@@ -203,6 +205,41 @@ internal static class BinderChecks
         // a unit the binder refuses is not lowered: the lowering's ceiling on parameters (2301) is not met
         var wide = "function f(" + string.Join(", ", Enumerable.Range(0, 256).Select(i => "p" + i)) + ") {} ";
         yield return Refused("early error skips the lowering", wide + "break;", "2207@1:" + (wide.Length + 1));
+
+        // code the lowering never lowers is walked silently: a sloppy evaluated program's function
+        // that a later one of the same name overrides is never compiled, so its early error is none
+        // and the program stays accepted; and the value of a `return` in a static block, which the
+        // lowering refuses with 2207 and lowers nothing of, adds nothing to that refusal
+        yield return Accepted(
+            "early error in an overridden function of sloppy eval code is not reported",
+            "function f() { return super.x; } function f() {}",
+            EvalFlags.None);
+        yield return Refused(
+            "early error in a static block's return value is not reported beside the 2207",
+            "class A { static { return /(/; } }",
+            "2207@1:20");
+    }
+
+    /// <summary>
+    /// One row: the script - eval code when <paramref name="evaluated"/> names its caller - compiles
+    /// to bytes with no diagnostic at all.
+    /// </summary>
+    private static (string, bool, string) Accepted(string name, string source, EvalFlags? evaluated = null)
+    {
+        var compiled = JsCompiler.Compile([
+            new JsScriptUnit(
+                "main",
+                source,
+                evaluated is { } flags ? SliceParseOptions.Eval(flags) : SliceParseOptions.Script),
+        ]);
+
+        var answer = string.Join(" ", compiled.Diagnostics.Select(d => (int)d.Code + "@" + d.Line + ":" + d.Column));
+
+        return (
+            name,
+            compiled.Succeeded && compiled.Artifact is not null && compiled.Diagnostics.Count == 0,
+            $"expected the compilation to produce bytes with no diagnostic, and it reported `{answer}`" +
+                (compiled.Artifact is null ? " with no bytes" : string.Empty));
     }
 
     /// <summary>
