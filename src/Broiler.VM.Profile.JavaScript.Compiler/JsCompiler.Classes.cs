@@ -329,7 +329,7 @@ public sealed partial class JsCompiler
     /// there is no object a name nobody minted could be found on - the binder's to refuse, before
     /// anything is lowered (SJL-12.6 item 2).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4B4F80
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=50718E
     // Broiler-Human:        PENDING
     private void EmitPrivateName(SliceSourceSpan span, string name)
     {
@@ -360,7 +360,15 @@ public sealed partial class JsCompiler
             }
 
             // PAST THE SCOPE-DEPTH CEILING THE READ HAS NO HOP COUNT, and the ceiling's refusal,
-            // which stays the lowering's, has already refused the unit; the stack keeps its shape.
+            // which stays the lowering's, has already refused the unit. The name then cannot be
+            // read through the caller at all, and the lowering refuses it as it always did, after
+            // the ceiling's 2103: a consequence of the ceiling, not a language early error, so it
+            // is not the binder's to report and the refused unit's list stays the one it was.
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.UnresolvableIdentifier,
+                "`" + name + "` is not declared by any class this expression is inside of");
+
             Emit(JsOpcode.LoadUndefined);
             return;
         }
