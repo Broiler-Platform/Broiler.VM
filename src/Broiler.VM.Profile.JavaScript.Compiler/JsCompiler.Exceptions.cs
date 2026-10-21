@@ -446,7 +446,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=145379
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=21C28E
     // Broiler-Human:        PENDING
     private void CompileJumpOut(SliceSourceSpan span, string label, bool wantsContinue)
     {
@@ -497,16 +497,8 @@ public sealed partial class JsCompiler
 
         if (targetAt < 0)
         {
-            Refuse(
-                span,
-                wantsContinue
-                    ? SliceSourceDiagnosticCode.IllegalContinue
-                    : SliceSourceDiagnosticCode.IllegalBreak,
-                wantsContinue
-                    ? "`continue` names no enclosing loop"
-                    : "`break` names no enclosing loop or switch");
-
-            return;
+            throw BinderAdmitted(
+                span, wantsContinue ? "a `continue` with no loop to continue" : "a `break` with nothing to leave");
         }
 
         var target = exits[targetAt];

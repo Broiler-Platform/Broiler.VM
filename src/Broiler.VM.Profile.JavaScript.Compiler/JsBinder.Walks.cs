@@ -436,7 +436,7 @@ internal sealed partial class JsBinder
     /// no further after a refusal it keeps, is walked <see cref="Frame.Silent"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=17850B
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=362A8C
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
     private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
@@ -549,13 +549,42 @@ internal sealed partial class JsBinder
 
                 return;
 
+            // A JUMP WITH NOWHERE TO GO IS THE ONE PLACE THE JUMP TARGET IS READ: the lowering keeps
+            // finding its targets on its own exit stack, because a `finally` body it emits at a jump
+            // holds statements the jump is leaving.
             case JsBreakStatement jump:
-                jumps[jump] = Target(context.Exits, jump.Label, continues: false);
+            {
+                var target = Target(context.Exits, jump.Label, continues: false);
+                jumps[jump] = target;
+
+                if (target is null)
+                {
+                    Report(
+                        context,
+                        jump.Span,
+                        SliceSourceDiagnosticCode.IllegalBreak,
+                        "`break` names no enclosing loop or switch");
+                }
+
                 return;
+            }
 
             case JsContinueStatement jump:
-                jumps[jump] = Target(context.Exits, jump.Label, continues: true);
+            {
+                var target = Target(context.Exits, jump.Label, continues: true);
+                jumps[jump] = target;
+
+                if (target is null)
+                {
+                    Report(
+                        context,
+                        jump.Span,
+                        SliceSourceDiagnosticCode.IllegalContinue,
+                        "`continue` names no enclosing loop");
+                }
+
                 return;
+            }
 
             case JsExpressionStatement statement:
                 Push(pending, statement.Expression, context);
