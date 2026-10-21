@@ -5,6 +5,7 @@ using Broiler.VM.Abstractions;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
 using System.Collections.Immutable;
+using EvalFlags = Broiler.VM.Profile.JavaScript.Format.JsFormat.EvalRequestFlags;
 
 namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 
@@ -32,6 +33,16 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// function's record - or declaring any other name there before the hoisting - fails the second row,
 /// whichever way the binder then answers.
 /// </para>
+/// <para>
+/// <b>The binder also reports the language's early errors the lowering used to raise</b> (item 2,
+/// decision D12). Each family's row is a source the parser admits, so the refusal is the binder's: its
+/// code and its place are the lowering's, written <c>code@line:column</c>, and the refused unit has no
+/// bytes. Then the list itself: in source order where the lowering reported a hoisted function first,
+/// at most 64, once for a <c>finally</c> block the lowering compiled twice and for an evaluated
+/// program's <c>arguments</c> it reported at each mention, and alone - a unit the binder refuses is not
+/// lowered, so the lowering's ceiling on parameters is not met beside it. <c>a: b: while (1) { continue
+/// a; }</c> stays refused as the lowering refused it.
+/// </para>
 /// </remarks>
 internal static class BinderChecks
 {
@@ -56,6 +67,183 @@ internal static class BinderChecks
             "annex b admits a block function named after the function expression around it",
             "(function g() { var before = typeof g; { function g() {} } return before + ':' + typeof g; })();",
             "undefined:function");
+
+        foreach (var row in EarlyErrors())
+        {
+            yield return row;
+        }
+    }
+
+    /// <summary>The binder's early errors: a row for each family, then the list's order, cap and effect.</summary>
+    private static IEnumerable<(string Name, bool Passed, string Detail)> EarlyErrors()
+    {
+        const EvalFlags inFunction = EvalFlags.InFunction;
+        const EvalFlags inField =
+            inFunction | EvalFlags.InMethod | EvalFlags.InClassFieldInitializer | EvalFlags.InClassBody;
+
+        // super and return outside what admits them, in a script and in eval code
+        yield return Refused(
+            "early error: super member outside a method",
+            "function f() { return super.x; }",
+            "2101@1:23");
+        yield return Refused(
+            "early error: super call outside a derived constructor",
+            "class A { constructor() { super(); } }",
+            "2101@1:27");
+        yield return Refused("early error: return outside a function", "return 1;", "2101@1:1");
+        yield return Refused(
+            "early error: super member in eval code outside a method",
+            "super.x;",
+            "2101@1:1",
+            inFunction);
+
+        // the cover grammar, __proto__ and regular-expression literals
+        yield return Refused("early error: a cover initialiser in an object literal", "({ a = 1 });", "2101@1:4");
+        yield return Refused("early error: __proto__ set twice", "({ __proto__: 1, __proto__: 2 });", "2101@1:18");
+        yield return Refused("early error: a regular-expression pattern", "/(/;", "2101@1:1");
+        yield return Refused("early error: regular-expression flags repeated", "/a/gg;", "2101@1:1");
+        yield return Refused("early error: regular-expression flags u and v", "/a/uv;", "2101@1:1");
+
+        // break and continue targets
+        yield return Refused("early error: break outside a loop or switch", "break;", "2207@1:1");
+        yield return Refused("early error: break to no such label", "a: { while (1) { break b; } }", "2207@1:18");
+        yield return Refused("early error: continue outside a loop", "continue;", "2208@1:1");
+        yield return Refused(
+            "early error: continue to the outer label of a label set stays refused",
+            "a: b: while (1) { continue a; }",
+            "2208@1:19");
+
+        // assignment targets
+        yield return Refused("early error: update of a call in strict code", "'use strict'; f()++;", "2205@1:15");
+        yield return Refused(
+            "early error: a call as a for-of target in strict code",
+            "'use strict'; for (f() of []) ;",
+            "2205@1:20");
+        yield return Refused(
+            "early error: delete of a private member",
+            "class A { #x; m() { delete this.#x; } }",
+            "2205@1:21");
+
+        // initialisers a declaration needs
+        yield return Refused("early error: const without an initialiser", "const a;", "2203@1:7");
+        yield return Refused("early error: a destructuring declaration without an initialiser", "var [a];", "2203@1:5");
+        yield return Refused(
+            "early error: const without an initialiser in a for head",
+            "for (const a; ;) {}",
+            "2203@1:12");
+
+        // private names and arguments in class bodies
+        yield return Refused(
+            "early error: an undeclared private name",
+            "class A { m() { return this.#y; } }",
+            "2206@1:24");
+        yield return Refused(
+            "early error: an undeclared private name in eval code outside a class",
+            "this.#x;",
+            "2206@1:1",
+            inFunction);
+        yield return Refused(
+            "early error: arguments in a field initialiser",
+            "class A { x = () => arguments; }",
+            "2206@1:11");
+        yield return Refused(
+            "early error: arguments in a static block",
+            "class A { static { arguments; } }",
+            "2206@1:11");
+        yield return Refused(
+            "early error: arguments in eval code in a field initialiser, once",
+            "arguments; arguments;",
+            "2206@0:0",
+            inField);
+
+        // a module's declaration, collision and export checks
+        yield return RefusedModule(
+            "early error: a name imported twice",
+            "import { a } from 'lib'; import { a } from 'lib';",
+            "2201@1:35");
+        yield return RefusedModule(
+            "early error: a name imported and declared",
+            "import { a } from 'lib'; var a;",
+            "2201@0:0");
+        yield return RefusedModule(
+            "early error: a function declared twice in a module",
+            "function f() {} function f() {}",
+            "2201@1:17");
+        yield return RefusedModule(
+            "early error: a var and a function of one name in a module",
+            "var f; function f() {}",
+            "2202@1:8");
+        yield return RefusedModule(
+            "early error: a name exported twice",
+            "var a; export { a }; export { a };",
+            "2402@1:31");
+        yield return RefusedModule("early error: an export of no declared binding", "export { b };", "2403@1:10");
+
+        // the list: source order where the lowering reported the hoisted function first, the cap, and
+        // one report for a finally block the lowering compiled twice
+        yield return Refused(
+            "early errors are in source order",
+            "break; function f() { return super.x; }",
+            "2207@1:1 2101@1:30");
+        yield return Refused(
+            "early errors stop at 64",
+            string.Concat(Enumerable.Repeat("break; ", 70)),
+            string.Join(" ", Enumerable.Range(0, 64).Select(i => "2207@1:" + (1 + (7 * i)))));
+        yield return Refused(
+            "early error in a finally block is reported once",
+            "try {} finally { break; }",
+            "2207@1:18");
+
+        // a unit the binder refuses is not lowered: the lowering's ceiling on parameters (2301) is not met
+        var wide = "function f(" + string.Join(", ", Enumerable.Range(0, 256).Select(i => "p" + i)) + ") {} ";
+        yield return Refused("early error skips the lowering", wide + "break;", "2207@1:" + (wide.Length + 1));
+    }
+
+    /// <summary>
+    /// One row: the script - eval code when <paramref name="evaluated"/> names its caller - is refused
+    /// with exactly these diagnostics, each <c>code@line:column</c> in the order reported, and no bytes.
+    /// </summary>
+    private static (string, bool, string) Refused(
+        string name,
+        string source,
+        string expected,
+        EvalFlags? evaluated = null) =>
+        Refused(
+            name,
+            JsCompiler.Compile([
+                new JsScriptUnit(
+                    "main",
+                    source,
+                    evaluated is { } flags ? SliceParseOptions.Eval(flags) : SliceParseOptions.Script),
+            ]),
+            expected);
+
+    /// <summary>One row as a script's is, for a module importing a library.</summary>
+    private static (string, bool, string) RefusedModule(string name, string source, string expected) =>
+        Refused(
+            name,
+            JsCompiler.Compile(
+                [],
+                [
+                    new JsModuleUnit("lib", "export var a = 1;", SliceParseOptions.Module),
+                    new JsModuleUnit("main", source, SliceParseOptions.Module, [new JsResolvedRequest("lib", "lib")]),
+                ]),
+            expected);
+
+    /// <summary>Compares a compilation's refusal with what the row expects.</summary>
+    private static (string, bool, string) Refused(string name, JsCompilation compiled, string expected)
+    {
+        var answer = string.Join(" ", compiled.Diagnostics.Select(d => (int)d.Code + "@" + d.Line + ":" + d.Column));
+
+        if (compiled.Succeeded || compiled.Artifact is not null)
+        {
+            return (name, false, $"expected `{expected}` and the compilation produced bytes (`{answer}`)");
+        }
+
+        return (
+            name,
+            string.Equals(answer, expected, System.StringComparison.Ordinal),
+            $"expected `{expected}` and the compilation reported `{answer}`");
     }
 
     /// <summary>One row: compile and run the program, and compare its completion value.</summary>
