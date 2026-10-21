@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   37
-// Annotated:        37/37
+// Relevant units:   41
+// Annotated:        41/41
 // Exempt:           9
-// Human-reviewed:   0/37
+// Human-reviewed:   0/41
 // IP risk:          None
 // Security risk:    High
 // Criteria:         8/6
 // Resource impact:  3/10 max
-// Unverified:       37
+// Unverified:       41
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -265,8 +265,8 @@ internal sealed partial class JsBinder
 
     /// <summary>
     /// Walks the whole unit and records, against each node, the facts that are about it: each
-    /// function's, each block's and <c>switch</c>'s declarations, each class body's private names, and
-    /// each jump's target.
+    /// function's, each block's and <c>switch</c>'s declarations, each class body's private names, each
+    /// <c>catch</c> parameter's and lexical loop head's names, and each jump's target.
     /// </summary>
     /// <remarks>
     /// <b>In source order, depth first.</b> <see cref="Visit"/> lists the nodes inside the one it
@@ -314,7 +314,7 @@ internal sealed partial class JsBinder
     /// it does not know may hold a function, a class, a block or a <c>switch</c>, and passing over it
     /// would leave the lowering to ask about one the binder never saw.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3EF8C5
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=6E1E8C
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, or a node of a kind the walk does not name passes it without failing
     // Broiler-Human:        PENDING
     private void Visit(
@@ -388,6 +388,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsForStatement loop:
+                heads[loop] = ForHeadOf(loop);
                 Push(pending, loop.Initialiser, context);
                 Push(pending, loop.Test, context);
                 Push(pending, loop.Update, context);
@@ -395,6 +396,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsForInStatement loop:
+                heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
                 Push(pending, loop.Target, context);
                 Push(pending, loop.Pattern, context);
                 Push(pending, loop.Initialiser, context);
@@ -403,6 +405,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsForOfStatement loop:
+                heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
                 Push(pending, loop.Target, context);
                 Push(pending, loop.Pattern, context);
                 Push(pending, loop.Right, context);
@@ -468,6 +471,7 @@ internal sealed partial class JsBinder
                 return;
 
             case JsTryStatement statement:
+                catches[statement] = CatchNamesOf(statement);
                 Push(pending, statement.Block, context);
                 Push(pending, statement.CatchPattern, context);
                 Push(pending, statement.Handler, context);
@@ -1256,6 +1260,94 @@ internal sealed partial class JsBinder
         }
 
         return [.. found];
+    }
+
+    /// <summary>The names a <c>for</c> head declares with <c>let</c> or <c>const</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=3EA16A
+    // Broiler-Human:        PENDING
+    private static string[] ForHeadOf(JsForStatement loop)
+    {
+        if (loop.Initialiser is not JsVariableStatement head || head.Kind == SliceDeclarationKind.Var)
+        {
+            return [];
+        }
+
+        var names = new System.Collections.Generic.List<string>();
+
+        foreach (var declarator in head.Declarators)
+        {
+            DeclaratorNames(declarator, names);
+        }
+
+        return [.. names];
+    }
+
+    /// <summary>The names a <c>for-in</c> or <c>for-of</c> head declares with <c>let</c> or <c>const</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=1FEBAE
+    // Broiler-Human:        PENDING
+    private static string[] EachHeadOf(SliceDeclarationKind? declaration, string name, JsPattern? pattern)
+    {
+        if (declaration is not (SliceDeclarationKind.Let or SliceDeclarationKind.Const))
+        {
+            return [];
+        }
+
+        var names = new System.Collections.Generic.List<string>();
+        HeadNames(name, pattern, names);
+        return [.. names];
+    }
+
+    /// <summary>The names a <c>catch</c> parameter binds.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=AB66D5
+    // Broiler-Human:        PENDING
+    private static string[] CatchNamesOf(JsTryStatement guarded)
+    {
+        if (guarded.CatchPattern is not null)
+        {
+            var names = new System.Collections.Generic.List<string>();
+            PatternNames(guarded.CatchPattern, names);
+            return [.. names];
+        }
+
+        return guarded.Handler is not null && guarded.CatchParameter.Length != 0
+            ? [guarded.CatchParameter]
+            : [];
+    }
+
+    /// <summary>A module's top-level lexical declarations, an exported one in the export's place.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6EFF9A
+    // Broiler-Human:        PENDING
+    private static ModuleDeclaration[] ModuleDeclarationsOf(System.Collections.Generic.IReadOnlyList<JsStatement> body)
+    {
+        var declared = new System.Collections.Generic.List<ModuleDeclaration>();
+
+        foreach (var statement in JsCompiler.Unwrapped(body))
+        {
+            if (statement is JsClassDeclaration definition && definition.Class.Name.Length != 0)
+            {
+                declared.Add(new ModuleDeclaration(definition.Class.Name, false, definition.Span, true));
+                continue;
+            }
+
+            if (statement is not JsVariableStatement variable || variable.Kind == SliceDeclarationKind.Var)
+            {
+                continue;
+            }
+
+            foreach (var declarator in variable.Declarators)
+            {
+                var names = new System.Collections.Generic.List<string>();
+                DeclaratorNames(declarator, names);
+
+                foreach (var name in names)
+                {
+                    declared.Add(new ModuleDeclaration(
+                        name, variable.Kind == SliceDeclarationKind.Const, declarator.Span, false));
+                }
+            }
+        }
+
+        return [.. declared];
     }
 
     /// <summary>Every name one declarator introduces, whether it names one or destructures.</summary>

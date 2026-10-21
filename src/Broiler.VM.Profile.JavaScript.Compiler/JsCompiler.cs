@@ -804,7 +804,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D507B6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5644B7
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -875,7 +875,7 @@ public sealed partial class JsCompiler
             // request's strict flag for eval code - which is the imposition the parser was given. The
             // unit's lowering reads it from the binder, so the facts and the emission cannot be told
             // two different strictnesses.
-            binder = JsBinder.Bind(program, forceStrict);
+            binder = JsBinder.Bind(program, forceStrict, script.Options);
 
             scriptReferrer = script.Referrer;
             currentSource = AddSource(script.Text);
@@ -969,7 +969,7 @@ public sealed partial class JsCompiler
             }
 
             // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says.
-            binder = JsBinder.Bind(program, imposed: true);
+            binder = JsBinder.Bind(program, imposed: true, module.Options);
             currentSource = AddSource(text);
             CompileModule(program, module);
 

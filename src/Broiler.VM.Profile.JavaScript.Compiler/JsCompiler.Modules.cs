@@ -298,14 +298,14 @@ public sealed partial class JsCompiler
     /// Declares every slot the module's own environment holds, before any code is emitted.
     /// </summary>
     /// <param name="unit">What the binder found the module's top level declares.</param>
-    /// <param name="body">The module's statements, which the collision checks read for their places.</param>
+    /// <param name="body">The module's statements, whose default export binds a slot of its own.</param>
     /// <param name="build">The module being built.</param>
     /// <remarks>
     /// The <c>var</c> names are answered so the initialiser can set them to <c>undefined</c>; the
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=514BA5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=378D27
     // Broiler-Human:        PENDING
     private System.Collections.Generic.IReadOnlyList<string> DeclareModuleBindings(
         JsBinder.HoistingScope unit,
@@ -359,64 +359,30 @@ public sealed partial class JsCompiler
         var declaredLexically = new System.Collections.Generic.HashSet<string>(
             declaredFunctions, System.StringComparer.Ordinal);
 
-        foreach (var statement in Unwrapped(body))
+        // A CLASS DECLARATION IS A LEXICAL DECLARATION OF THIS MODULE, and it needs its slot before
+        // the body runs for the same reason a `let` does: an importer may hold a live binding to
+        // it, and the slot it reads through has to exist and be uninitialised until the class is
+        // evaluated. A DESTRUCTURING DECLARATOR DECLARES EVERY NAME IN ITS PATTERN, each where the
+        // binder's reading of the module's declarations lists it, at its declarator.
+        foreach (var declaration in binder.ModuleDeclarations)
         {
-            // A CLASS DECLARATION IS A LEXICAL DECLARATION OF THIS MODULE, and it needs its slot
-            // before the body runs for the same reason a `let` does: an importer may hold a live
-            // binding to it, and the slot it reads through has to exist and be uninitialised until
-            // the class is evaluated.
-            if (statement is JsClassDeclaration declaredClass &&
-                declaredClass.Class.Name.Length != 0)
+            if (!declaredLexically.Add(declaration.Name))
             {
-                if (!declaredLexically.Add(declaredClass.Class.Name))
-                {
-                    Refuse(
-                        declaredClass.Span,
-                        SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                        "`" + declaredClass.Class.Name +
-                            "` is declared twice at this module's top level");
-                }
-
-                Declared(build, declaredClass.Class.Name, constant: false);
-                continue;
+                Refuse(
+                    declaration.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "`" + declaration.Name + "` is declared twice at this module's top level");
             }
 
-            if (statement is not JsVariableStatement variable ||
-                variable.Kind == SliceDeclarationKind.Var)
+            if (!declaration.IsClass && varNames.Contains(declaration.Name))
             {
-                continue;
+                Refuse(
+                    declaration.Span,
+                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                    "`" + declaration.Name + "` is declared both as a `var` and lexically");
             }
 
-            foreach (var declarator in variable.Declarators)
-            {
-                // A DESTRUCTURING DECLARATOR HAS NO NAME OF ITS OWN AND DECLARES EVERY NAME IN ITS
-                // PATTERN. Reading `declarator.Name` gave the empty string for each one, so two
-                // top-level `const {a} = o; const {b} = o;` were refused as the same undeclared name
-                // twice (VM-FIX-D), and a pattern's real names were never checked at all.
-                var declared = new System.Collections.Generic.List<string>();
-                JsBinder.DeclaratorNames(declarator, declared);
-
-                foreach (var name in declared)
-                {
-                    if (!declaredLexically.Add(name))
-                    {
-                        Refuse(
-                            declarator.Span,
-                            SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                            "`" + name + "` is declared twice at this module's top level");
-                    }
-
-                    if (varNames.Contains(name))
-                    {
-                        Refuse(
-                            declarator.Span,
-                            SliceSourceDiagnosticCode.VarAndLexicalCollision,
-                            "`" + name + "` is declared both as a `var` and lexically");
-                    }
-
-                    Declared(build, name, variable.Kind == SliceDeclarationKind.Const);
-                }
-            }
+            Declared(build, declaration.Name, declaration.Constant);
         }
 
         // `export default <expression>` binds a slot with a name no source can write, so nothing
