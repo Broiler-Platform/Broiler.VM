@@ -47,9 +47,13 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// is walked into, so a static block's <c>return</c> value is reported after its 2207.
 /// </para>
 /// <para>
-/// <b><c>return</c> in a class static block is the binder's too</b>, under 2207 (JSD-0080 decision
-/// D12), so beside another early error it keeps its place: the lowering reported it where it compiled
-/// the class, and a binder refusal of the other, with the 2207 left to the lowering, lost it.
+/// <b>The language rules the lowering coded 2207 and 2104 are the binder's too</b> (JSD-0080 decision
+/// D12): <c>return</c> in a class static block keeps its place beside another early error, where a
+/// binder refusal of the other, with the 2207 left to the lowering, lost it; and <c>await</c> outside
+/// an async function is refused in source order with the rest. The two other 2104-coded rules, a
+/// logical assignment to a target that is neither a name nor a property and a <c>using</c> declaration
+/// outside a statement list that can dispose it, have no row: the parser refuses every source that
+/// would reach them first.
 /// </para>
 /// </remarks>
 internal static class BinderChecks
@@ -141,6 +145,26 @@ internal static class BinderChecks
             "early error: return in a class static block's finally block is reported once",
             "class C { static { try {} finally { return; } } }",
             "2207@1:37");
+
+        // await outside an async function, under the lowering's 2104 (JSD-0080 decision D12): a template
+        // substitution's own parse admits one into the parameters of an arrow that is not async, a unit
+        // of its own, in a script and in a module that awaits at its top level; in source order, where
+        // the lowering met it first in a hoisted function. A logical assignment to a target that is
+        // neither a name nor a property, and a `using` declaration outside a statement list that can
+        // dispose it, are the binder's under 2104 too, and no source reaches either: the parser refuses
+        // every such target (2205) and every such declaration (2101) first
+        yield return Refused(
+            "early error: await outside an async function, in an arrow's parameters",
+            "async function g() { (a = `${await 1}`) => a; }",
+            "2104@1:30");
+        yield return RefusedModule(
+            "early error: await outside an async function, in a module that awaits",
+            "(a = `${await 1}`) => a;",
+            "2104@1:9");
+        yield return Refused(
+            "early errors are in source order where the lowering met a hoisted function's 2104 first",
+            "break; async function g() { (a = `${await 1}`) => a; }",
+            "2207@1:1 2104@1:37");
 
         // assignment targets
         yield return Refused("early error: update of a call in strict code", "'use strict'; f()++;", "2205@1:15");

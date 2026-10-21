@@ -37,11 +37,12 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </para>
 /// <para>
 /// <b>WHAT STAYS WITH THE LOWERING</b> is what is not a language early error: the format's ceilings,
-/// the manifest's refusals, the module-load policy and the evaluated program's scope-depth ceiling -
-/// and, under the code the catalogue records for them, the three language rules the lowering refuses
-/// as constructs outside the manifest. Code the lowering lowers no further after one of those is walked
-/// silently here, so that refusal stays the unit's answer. <c>return</c> in a static block is the
-/// binder's, under 2207 (JSD-0080 decision D12).
+/// the manifest's and the form's refusals, the module-load policy and the evaluated program's
+/// scope-depth ceiling. <b>The three language rules the lowering refused under the manifest's code are
+/// the binder's</b> - <c>await</c> outside an async function, a logical assignment to a target that is
+/// neither a name nor a property, a <c>using</c> declaration outside a statement list that can dispose
+/// it - and so is <c>return</c> in a static block, each under the code the catalogue records for it,
+/// 2104 and 2207 (JSD-0080 decisions D12 and D13).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BE330C

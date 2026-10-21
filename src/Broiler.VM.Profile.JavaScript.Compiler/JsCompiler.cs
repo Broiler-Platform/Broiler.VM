@@ -804,7 +804,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3FCEA4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=46581D
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -875,7 +875,7 @@ public sealed partial class JsCompiler
             // request's strict flag for eval code - which is the imposition the parser was given. The
             // unit's lowering reads it from the binder, so the facts and the emission cannot be told
             // two different strictnesses.
-            binder = JsBinder.Bind(program, forceStrict, script.Options);
+            binder = JsBinder.Bind(program, forceStrict, script.Options, topLevelAwait: false);
 
             // A UNIT ITS BINDER REFUSES IS NOT LOWERED (SJL-12.6 item 2, JSD-0080 decisions D10 and
             // D12). An early error the binder reports is found once, in source order, before any of
@@ -978,8 +978,9 @@ public sealed partial class JsCompiler
                 return new JsCompilation(false, null, diagnostics);
             }
 
-            // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says.
-            binder = JsBinder.Bind(program, imposed: true, module.Options);
+            // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says. Whether its body is
+            // an async unit is the parser's answer, which the binder reads as the lowering does.
+            binder = JsBinder.Bind(program, imposed: true, module.Options, topLevelAwait: awaited);
 
             // AND A MODULE ITS BINDER REFUSES IS NOT LOWERED EITHER: its declaration, collision and
             // export checks are the binder's with the rest.

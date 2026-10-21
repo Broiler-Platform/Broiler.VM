@@ -121,14 +121,14 @@ internal sealed partial class JsBinder
     private readonly SliceParseOptions unit;
 
     /// <summary>Binds one unit.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4C7C4B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C19A05
     // Broiler-Human:        PENDING
-    private JsBinder(JsProgramNode program, bool strict, SliceParseOptions options)
+    private JsBinder(JsProgramNode program, bool strict, SliceParseOptions options, bool topLevelAwait)
     {
         unit = options;
         Program = BindProgram(program, strict);
         ModuleDeclarations = options.Goal == SliceGoal.Module ? ModuleDeclarationsOf(program.Body) : [];
-        BindTree(program, Program.Strict);
+        BindTree(program, Program.Strict, topLevelAwait);
 
         if (options.Goal == SliceGoal.Module)
         {
@@ -183,11 +183,16 @@ internal sealed partial class JsBinder
     /// it - which decides whether <c>super</c>, <c>new.target</c> and <c>arguments</c> name anything
     /// at its own top level.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9EDD90
+    /// <param name="topLevelAwait">
+    /// Whether the unit's parser saw a module await at its own top level, which makes the module's body
+    /// an async unit to the lowering as well; never for a script or eval code, whose top level is not.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F3CEE2
     // Broiler-Falsified-If: a unit is lowered under a strictness other than its prologue's or its caller's, or two binds of one tree answer differently
     // Broiler-Human:        PENDING
-    internal static JsBinder Bind(JsProgramNode program, bool imposed, SliceParseOptions options) =>
-        new(program, program.IsStrict || imposed, options);
+    internal static JsBinder Bind(
+        JsProgramNode program, bool imposed, SliceParseOptions options, bool topLevelAwait) =>
+        new(program, program.IsStrict || imposed, options, topLevelAwait);
 
     /// <summary>What a function is, and what its body declares.</summary>
     /// <param name="function">

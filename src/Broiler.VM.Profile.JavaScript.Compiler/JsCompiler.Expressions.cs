@@ -26,7 +26,7 @@ public sealed partial class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BE9A32
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E2A5C9
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -295,16 +295,13 @@ public sealed partial class JsCompiler
                 // this component has: an `Await` in a unit carrying no async flag is refused by
                 // THIS HOST'S OWN VERIFIER, on bytes THIS HOST'S OWN lowering produced, which is
                 // the internal-consistency failure roadmap section 3.4 names. The parser's
-                // `[Await]` contexts are what make this unreachable; this is what makes it a
-                // diagnostic naming the construct rather than a refused artifact if they ever stop.
+                // `[Await]` contexts keep it out of every unit but one a template substitution's own
+                // parse reaches, and the binder refuses what reaches it, under 2104, before any of
+                // the unit is lowered (SJL-12.6 item 2, JSD-0080 decision D12); here the lowering
+                // only asserts it.
                 if ((buffer.Flags & JsFormat.FunctionFlags.Async) == 0)
                 {
-                    Refuse(
-                        awaited.Span,
-                        SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                        "`await` is only admitted inside an async function");
-
-                    break;
+                    throw BinderAdmitted(awaited.Span, "an `await` outside an async function");
                 }
 
                 Emit(JsOpcode.Await);

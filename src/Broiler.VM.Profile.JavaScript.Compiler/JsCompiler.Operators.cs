@@ -715,7 +715,7 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.ThrowReferenceError);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FF0905
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6A4879
     // Broiler-Human:        PENDING
     private void CompileLogicalAssignment(JsAssignmentExpression assignment)
     {
@@ -737,15 +737,12 @@ public sealed partial class JsCompiler
             return;
         }
 
+        // ANY OTHER TARGET IS REFUSED BY THE BINDER, under 2104, before any of the unit is lowered
+        // (SJL-12.6 item 2, JSD-0080 decision D12), and the parser refuses every one first today.
         if (assignment.Target is not JsIdentifier name)
         {
-            Refuse(
-                assignment.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a logical assignment to a target that is neither a name nor a property is not admitted");
-
-            Emit(JsOpcode.LoadUndefined);
-            return;
+            throw BinderAdmitted(
+                assignment.Span, "a logical assignment to a target that is neither a name nor a property");
         }
 
         LoadName(assignment.Span, name.Name);
