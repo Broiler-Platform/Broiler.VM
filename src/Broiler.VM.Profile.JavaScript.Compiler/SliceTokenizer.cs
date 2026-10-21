@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   49
-// Annotated:        49/49
-// Exempt:           121
-// Human-reviewed:   0/49
+// Relevant units:   56
+// Annotated:        56/56
+// Exempt:           137
+// Human-reviewed:   0/56
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         23/18
-// Resource impact:  2/10 max
-// Unverified:       49
+// Criteria:         30/24
+// Resource impact:  3/10 max
+// Unverified:       56
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -427,11 +427,159 @@ public sealed class SliceTokenizer
     // Broiler-Human:        PENDING
     private SliceToken previous;
 
-    /// <summary>Creates a tokenizer over <paramref name="source"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=C8A05D
+    /// <summary>
+    /// The offset of the first character this tokenizer reads: zero, or the first character of a
+    /// template substitution the structured mode tokenizes.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2B8AB1
     // Broiler-Human:        PENDING
-    public SliceTokenizer(string source) =>
+    private readonly int textStart;
+
+    /// <summary>
+    /// The offset just past the last character it reads: the source's length, or the brace that
+    /// closes the substitution it tokenizes. Nothing at or past it is read, so a substitution is
+    /// tokenized exactly as the same characters would be on their own.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1EFA14
+    // Broiler-Falsified-If: a character at or past this offset decides a token, a comment or a refusal
+    // Broiler-Human:        PENDING
+    private readonly int textEnd;
+
+    /// <summary>
+    /// Every template the structured mode has scanned, by the offset of its opening backtick, shared
+    /// by the tokenizers of one <see cref="Tokenize"/>; null when the mode is off.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=443C01
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.Dictionary<int, TemplateScan>? scanned;
+
+    /// <summary>The templates of the stream this tokenizer read, by the index of their token in it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=1C95F5
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<(int Token, TemplateScan Scan)> streamTemplates = [];
+
+    /// <summary>
+    /// What the structured mode found for every template, by the index of its token; null when the
+    /// mode is off, and in a substitution's tokenizer, whose templates its creator records.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=C2C8F7
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.Dictionary<int, SliceTemplate>? templates;
+
+    /// <summary>Creates a tokenizer over <paramref name="source"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=E373F1
+    // Broiler-Human:        PENDING
+    public SliceTokenizer(string source)
+    {
         this.source = source ?? throw new System.ArgumentNullException(nameof(source));
+        textEnd = source.Length;
+    }
+
+    /// <summary>
+    /// Creates the tokenizer of one template substitution: the characters from
+    /// <paramref name="start"/> to <paramref name="end"/>, read with nothing before them read, at
+    /// the line they stand on.
+    /// </summary>
+    /// <remarks>
+    /// <b>It starts as a tokenizer of those characters alone would</b> - no previous token, the
+    /// source's own bracket at the bottom, at the start of a line for <c>--&gt;</c> and of a text
+    /// for a hashbang - because that is what the substitution's own tokenizer was until SJL-12.6
+    /// item 4, when the parser tokenized each substitution's text again (JSD-0080 decision D15). Its
+    /// tokens are where they are in the source, so nothing moves them afterwards.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E677A4
+    // Broiler-Falsified-If: a substitution's tokens or refusals differ from those of a tokenizer over its text alone, but for where they are
+    // Broiler-Human:        PENDING
+    private SliceTokenizer(
+        string source,
+        int start,
+        int end,
+        int line,
+        int lineStart,
+        System.Collections.Generic.Dictionary<int, TemplateScan> scanned)
+    {
+        this.source = source;
+        textStart = start;
+        textEnd = end;
+        index = start;
+        this.line = line;
+        this.lineStart = lineStart;
+        this.scanned = scanned;
+    }
+
+    /// <summary>
+    /// Whether template substitutions are tokenized too: the wide compiler's mode, and set by
+    /// nothing else (SJL-12.6 item 4, JSD-0080 decision D15).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The stream the parser reads is the same either way</b>: a template is one
+    /// <see cref="SliceTokenKind.TemplateLiteral"/> token, backtick to backtick, where the scan
+    /// below ends it. What the mode adds is behind that stream. Each substitution's characters are
+    /// tokenized by this lexer into a run of their own, ending with its own
+    /// <see cref="SliceTokenKind.EndOfSource"/> at the brace that closes the substitution; the runs
+    /// follow the stream in the array <see cref="Tokenize"/> returns; and <see cref="Templates"/>
+    /// says, by the index of each template's token, where its chunks are and where each of its
+    /// substitutions' runs begins. A nested template is a token of its substitution's run, so it is
+    /// in that table too.
+    /// </para>
+    /// <para>
+    /// <b>It is what lets one parser read a template.</b> The wide parser re-tokenized each
+    /// substitution's text and parsed it with a parser of its own, which started at depth zero and
+    /// outside any parameter list: nesting templates was not counted toward the nesting bound, and
+    /// <c>${yield}</c> and <c>${await 1}</c> were admitted in formal parameters. With the runs
+    /// here, the parser that reads the template reads its substitutions.
+    /// </para>
+    /// <para>
+    /// <b>The slice front end never sets it</b>: it admits no template, so it reads the token and
+    /// nothing behind it, and its outcomes do not depend on this mode.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=4EE9DE
+    // Broiler-Falsified-If: the stream the parser reads, up to its first EndOfSource, differs with the mode on from the stream with it off
+    // Broiler-Human:        PENDING
+    internal bool StructuredTemplates
+    {
+        get => scanned is not null;
+        init
+        {
+            scanned = value ? new System.Collections.Generic.Dictionary<int, TemplateScan>() : null;
+            templates = value ? new System.Collections.Generic.Dictionary<int, SliceTemplate>() : null;
+        }
+    }
+
+    /// <summary>
+    /// How many templates deep the structured mode tokenizes substitutions: the parse's nesting
+    /// bound, which the wide compiler passes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A template nested deeper than the bound is never read, so its substitutions are not
+    /// tokenized.</b> A template's substitution is an expression the parser enters a level of
+    /// nesting for, so the template inside N others is read at a depth of at least N, and past the
+    /// bound the parse refuses before it gets there. Tokenizing those runs anyway cost every level a
+    /// copy of the text below it - a template's token carries its text - which for a nesting of tens
+    /// of thousands is more memory than the process has.
+    /// </para>
+    /// <para>
+    /// <b>Such a template is still in <see cref="Templates"/></b>, marked as past the bound, so a
+    /// parser that did reach one refuses it as nested too deep rather than reading nothing.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=22B583
+    // Broiler-Falsified-If: a template the parse reads within its nesting bound has a substitution with no run and no refusal
+    // Broiler-Human:        PENDING
+    internal int TemplateNestingLimit { get; init; } = int.MaxValue;
+
+    /// <summary>
+    /// Where every template of the array <see cref="Tokenize"/> returned has its chunks and its
+    /// substitutions, by the index of its token; empty unless <see cref="StructuredTemplates"/> is set.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=401E96
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.IReadOnlyDictionary<int, SliceTemplate> Templates =>
+        (System.Collections.Generic.IReadOnlyDictionary<int, SliceTemplate>?)templates ??
+            System.Collections.Immutable.ImmutableDictionary<int, SliceTemplate>.Empty;
 
     /// <summary>
     /// Whether Annex B's HTML-like comments are comments: <c>&lt;!--</c> anywhere, and <c>--&gt;</c>
@@ -461,13 +609,39 @@ public sealed class SliceTokenizer
     public System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics => diagnostics;
 
     /// <summary>Reads every token, ending with one <see cref="SliceTokenKind.EndOfSource"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9D1496
+    /// <remarks>
+    /// Under <see cref="StructuredTemplates"/> the array goes on past that token with each template
+    /// substitution's run, each ending with an <see cref="SliceTokenKind.EndOfSource"/> of its own;
+    /// the stream before the first one is the same as without the mode.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=820D6C
     // Broiler-Falsified-If: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
     // Broiler-Human:        PENDING
     public SliceToken[] Tokenize()
     {
         var tokens = new System.Collections.Generic.List<SliceToken>();
 
+        ReadStream(tokens);
+
+        // A REFUSAL STILL ENDS EVERYTHING: the parser is not run over a stream the tokenizer refused,
+        // so nothing behind it would be read.
+        if (scanned is not null && diagnostics.Count == 0)
+        {
+            TokenizeSubstitutions(tokens);
+        }
+
+        return tokens.ToArray();
+    }
+
+    /// <summary>
+    /// Reads the tokens from <see cref="textStart"/> to <see cref="textEnd"/> into
+    /// <paramref name="tokens"/>, ending with one <see cref="SliceTokenKind.EndOfSource"/>.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=60AD78
+    // Broiler-Falsified-If: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
+    // Broiler-Human:        PENDING
+    private void ReadStream(System.Collections.Generic.List<SliceToken> tokens)
+    {
         SkipHashbangComment();
 
         while (true)
@@ -482,13 +656,13 @@ public sealed class SliceTokenizer
             var startLine = line;
             var startColumn = index - lineStart + 1;
 
-            if (index >= source.Length)
+            if (index >= textEnd)
             {
                 tokens.Add(new SliceToken(
                     SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
-                    startLine, startColumn, sawNewline, false, false, source.Length, source.Length));
+                    startLine, startColumn, sawNewline, false, false, textEnd, textEnd));
 
-                return tokens.ToArray();
+                return;
             }
 
             var start = index;
@@ -503,6 +677,13 @@ public sealed class SliceTokenizer
             tokens.Add(token);
             lineHasOnlyTrivia = false;
 
+            // THE STRUCTURED MODE NOTES EACH TEMPLATE AS IT JOINS THE STREAM. The scan that ended its
+            // token recorded where its parts are, under the offset of its backtick.
+            if (scanned is not null && token.Kind == SliceTokenKind.TemplateLiteral)
+            {
+                streamTemplates.Add((tokens.Count - 1, scanned[start]));
+            }
+
             // The regular-expression heuristic reads this, and it is set HERE rather than inside
             // each reader so that exactly one assignment can be wrong.
             Follow(token);
@@ -514,8 +695,90 @@ public sealed class SliceTokenizer
         tokens.Add(new SliceToken(
             SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
             line, index - lineStart + 1, false, false, false, index, index));
+    }
 
-        return tokens.ToArray();
+    /// <summary>
+    /// Tokenizes every substitution of every template of <paramref name="tokens"/>, appending each
+    /// run, and records each template in <see cref="Templates"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A queue, not a recursion.</b> A substitution's run holds its nested templates as tokens,
+    /// so their substitutions join the queue rather than a call stack, and nesting costs the queue a
+    /// slot per substitution and never a frame. A run's own templates are taken from the scan that
+    /// already found them, so no character is scanned twice for where a template ends.
+    /// </para>
+    /// <para>
+    /// <b>A substitution its lexer refuses has no run</b>, and the refusals are kept for the parser
+    /// to report when it reaches that substitution, at the place it reports them in the parse. A
+    /// refused run's templates are not followed: nothing would read them.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=0B3D31
+    // Broiler-Falsified-If: a template of the returned array has no entry in Templates, or a run is reached through recursion
+    // Broiler-Human:        PENDING
+    private void TokenizeSubstitutions(System.Collections.Generic.List<SliceToken> tokens)
+    {
+        // EACH ENTRY IS A TEMPLATE AND HOW MANY TEMPLATES IT IS INSIDE, ITSELF INCLUDED: the
+        // stream's own templates are one deep.
+        var pending = new System.Collections.Generic.Queue<(int Token, TemplateScan Scan, int Nesting)>();
+
+        foreach (var (token, scan) in streamTemplates)
+        {
+            pending.Enqueue((token, scan, 1));
+        }
+
+        while (pending.Count != 0)
+        {
+            var (at, scan, nesting) = pending.Dequeue();
+            var offset = tokens[at].Offset;
+            var chunks = new (int Start, int End)[scan.Chunks!.Count];
+            var substitutions = new SliceSubstitution[scan.Substitutions!.Count];
+            var pastBound = nesting > TemplateNestingLimit;
+
+            for (var chunk = 0; chunk < chunks.Length; chunk++)
+            {
+                var (start, end) = scan.Chunks[chunk];
+                chunks[chunk] = (start - offset, end - offset);
+            }
+
+            for (var which = 0; which < substitutions.Length; which++)
+            {
+                var (start, end, startLine, startLineStart) = scan.Substitutions[which];
+                var column = start - startLineStart + 1;
+
+                if (pastBound)
+                {
+                    substitutions[which] = new SliceSubstitution(-1, -1, startLine, column, []);
+                    continue;
+                }
+
+                var inner = new SliceTokenizer(source, start, end, startLine, startLineStart, scanned!)
+                {
+                    HtmlLikeComments = HtmlLikeComments,
+                };
+
+                var run = new System.Collections.Generic.List<SliceToken>();
+                inner.ReadStream(run);
+
+                if (inner.diagnostics.Count != 0)
+                {
+                    substitutions[which] = new SliceSubstitution(-1, -1, startLine, column, [.. inner.diagnostics]);
+                    continue;
+                }
+
+                var first = tokens.Count;
+                tokens.AddRange(run);
+                substitutions[which] = new SliceSubstitution(first, tokens.Count - 1, startLine, column, []);
+
+                foreach (var (token, nested) in inner.streamTemplates)
+                {
+                    pending.Enqueue((first + token, nested, nesting + 1));
+                }
+            }
+
+            templates!.Add(at, new SliceTemplate(chunks, substitutions, pastBound));
+        }
     }
 
     /// <summary>
@@ -541,33 +804,39 @@ public sealed class SliceTokenizer
     /// see. Six files of a real conformance suite are about this comment; none of them would have
     /// been fixed by a version that ate the terminator.
     /// </para>
+    /// <para>
+    /// <b>Offset zero is the start of the text this tokenizer reads</b>, which for a template
+    /// substitution's run is the character after its <c>${</c>. That is where the substitution's own
+    /// tokenizer, over its text alone, found one until SJL-12.6 item 4, and the run keeps that
+    /// answer rather than change what a program means as a side effect of where it is tokenized.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=EB8749
-    // Broiler-Falsified-If: a `#!` anywhere but offset zero is treated as a comment, or the line terminator ending one is consumed
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=96C85A
+    // Broiler-Falsified-If: a `#!` anywhere but the start of the text this tokenizer reads is treated as a comment, or the line terminator ending one is consumed
     // Broiler-Human:        PENDING
     private void SkipHashbangComment()
     {
-        if (index != 0 || source.Length < 2 || source[0] != '#' || source[1] != '!')
+        if (index != textStart || textEnd - textStart < 2 || source[textStart] != '#' || source[textStart + 1] != '!')
         {
             return;
         }
 
-        index = 2;
+        index = textStart + 2;
 
-        while (index < source.Length && !IsLineTerminator(source[index]))
+        while (index < textEnd && !IsLineTerminator(source[index]))
         {
             index++;
         }
     }
 
     /// <summary>Skips whitespace and comments; answers whether a line terminator was among them.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=370D8B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A20E1B
     // Broiler-Human:        PENDING
     private bool SkipTrivia()
     {
         var sawNewline = false;
 
-        while (index < source.Length)
+        while (index < textEnd)
         {
             var c = source[index];
 
@@ -590,12 +859,13 @@ public sealed class SliceTokenizer
             // whitespace and comments - the start of the source counts, and so does the end of a
             // block comment that crossed a line.
             if (HtmlLikeComments &&
-                ((c == '<' && string.CompareOrdinal(source, index, "<!--", 0, 4) == 0) ||
-                    (lineHasOnlyTrivia && c == '-' && string.CompareOrdinal(source, index, "-->", 0, 3) == 0)))
+                ((c == '<' && textEnd - index >= 4 && string.CompareOrdinal(source, index, "<!--", 0, 4) == 0) ||
+                    (lineHasOnlyTrivia && c == '-' && textEnd - index >= 3 &&
+                        string.CompareOrdinal(source, index, "-->", 0, 3) == 0)))
             {
                 index += c == '<' ? 4 : 3;
 
-                while (index < source.Length && !IsLineTerminator(source[index]))
+                while (index < textEnd && !IsLineTerminator(source[index]))
                 {
                     index++;
                 }
@@ -603,11 +873,11 @@ public sealed class SliceTokenizer
                 continue;
             }
 
-            if (c == '/' && index + 1 < source.Length && source[index + 1] == '/')
+            if (c == '/' && index + 1 < textEnd && source[index + 1] == '/')
             {
                 index += 2;
 
-                while (index < source.Length && !IsLineTerminator(source[index]))
+                while (index < textEnd && !IsLineTerminator(source[index]))
                 {
                     index++;
                 }
@@ -615,16 +885,16 @@ public sealed class SliceTokenizer
                 continue;
             }
 
-            if (c == '/' && index + 1 < source.Length && source[index + 1] == '*')
+            if (c == '/' && index + 1 < textEnd && source[index + 1] == '*')
             {
                 var commentLine = line;
                 var commentColumn = index - lineStart + 1;
                 index += 2;
                 var closed = false;
 
-                while (index < source.Length)
+                while (index < textEnd)
                 {
-                    if (source[index] == '*' && index + 1 < source.Length && source[index + 1] == '/')
+                    if (source[index] == '*' && index + 1 < textEnd && source[index + 1] == '/')
                     {
                         index += 2;
                         closed = true;
@@ -664,7 +934,7 @@ public sealed class SliceTokenizer
         return sawNewline;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=415EF1
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=348BA9
     // Broiler-Falsified-If: a character that starts an identifier is read as a punctuator, or a numeric literal is read as an identifier
     // Broiler-Human:        PENDING
     private SliceToken ReadToken(int startLine, int startColumn, bool sawNewline)
@@ -679,7 +949,7 @@ public sealed class SliceTokenizer
             return ReadIdentifierOrKeyword(startLine, startColumn, sawNewline);
         }
 
-        if (char.IsAsciiDigit(c) || (c == '.' && index + 1 < source.Length && char.IsAsciiDigit(source[index + 1])))
+        if (char.IsAsciiDigit(c) || (c == '.' && index + 1 < textEnd && char.IsAsciiDigit(source[index + 1])))
         {
             return ReadNumericLiteral(startLine, startColumn, sawNewline);
         }
@@ -702,7 +972,7 @@ public sealed class SliceTokenizer
         return ReadPunctuator(startLine, startColumn, sawNewline);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=09869F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CF8E06
     // Broiler-Human:        PENDING
     private SliceToken ReadIdentifierOrKeyword(int startLine, int startColumn, bool sawNewline)
     {
@@ -716,7 +986,7 @@ public sealed class SliceTokenizer
             index++;
         }
 
-        while (index < source.Length)
+        while (index < textEnd)
         {
             // THE FIRST CHARACTER OF THE NAME IS HELD TO ID_Start AND THE REST TO ID_Continue, and a
             // private name's first character is the one after its `#`. A literal or escaped first
@@ -790,12 +1060,12 @@ public sealed class SliceTokenizer
     /// the position (<see cref="SliceToken.IsEscaped"/>).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B61766
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3CDDE6
     // Broiler-Falsified-If: an escaped identifier and its unescaped spelling are different names, or an escape naming a code point the literal spelling would refuse is admitted
     // Broiler-Human:        PENDING
     private bool ReadIdentifierEscape(System.Text.StringBuilder name, bool first, int startLine, int startColumn)
     {
-        if (index + 1 >= source.Length || source[index + 1] != 'u')
+        if (index + 1 >= textEnd || source[index + 1] != 'u')
         {
             Refuse(
                 SliceSourceDiagnosticCode.UnexpectedCharacter,
@@ -868,24 +1138,24 @@ public sealed class SliceTokenizer
     /// <c>\uXXXX</c> names one code unit and <c>\u{…}</c> names one code point, and the second
     /// spelling is the one that refused 174 of test262's files before it was here.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6142E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=357B14
     // Broiler-Falsified-If: either spelling produces a value the language does not give it
     // Broiler-Human:        PENDING
     private bool ReadUnicodeEscapeValue(out int scalar)
     {
         scalar = 0;
 
-        if (index < source.Length && source[index] == '{')
+        if (index < textEnd && source[index] == '{')
         {
             index++;
             var digits = index;
 
-            while (index < source.Length && char.IsAsciiHexDigit(source[index]))
+            while (index < textEnd && char.IsAsciiHexDigit(source[index]))
             {
                 index++;
             }
 
-            if (index == digits || index >= source.Length || source[index] != '}' ||
+            if (index == digits || index >= textEnd || source[index] != '}' ||
                 !int.TryParse(
                     System.MemoryExtensions.AsSpan(source, digits, index - digits),
                     System.Globalization.NumberStyles.HexNumber,
@@ -901,7 +1171,7 @@ public sealed class SliceTokenizer
             return true;
         }
 
-        if (index + 3 >= source.Length ||
+        if (index + 3 >= textEnd ||
             !ushort.TryParse(
                 System.MemoryExtensions.AsSpan(source, index, 4),
                 System.Globalization.NumberStyles.HexNumber,
@@ -1000,7 +1270,7 @@ public sealed class SliceTokenizer
     /// on strictness, strictness is the validator's, and a tokenizer that knew about strictness
     /// would be the ambient parse state this component removed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B8236F
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=48A98D
     // Broiler-Falsified-If: the value this produces differs from the language's MV for the same literal text
     // Broiler-Human:        PENDING
     private SliceToken ReadNumericLiteral(int startLine, int startColumn, bool sawNewline)
@@ -1009,14 +1279,14 @@ public sealed class SliceTokenizer
         var legacyOctal = false;
         double value;
 
-        if (source[index] == '0' && index + 1 < source.Length &&
+        if (source[index] == '0' && index + 1 < textEnd &&
             (source[index + 1] is 'x' or 'X' or 'o' or 'O' or 'b' or 'B'))
         {
             var radix = source[index + 1] switch { 'x' or 'X' => 16, 'o' or 'O' => 8, _ => 2 };
             index += 2;
             var digitsStart = index;
 
-            while (index < source.Length && IsRadixDigit(source[index], radix))
+            while (index < textEnd && IsRadixDigit(source[index], radix))
             {
                 index++;
             }
@@ -1043,12 +1313,12 @@ public sealed class SliceTokenizer
             // A leading zero followed only by decimal digits is a legacy octal when every digit is
             // an octal one, and a decimal literal otherwise - 08 is 8, and 010 is 8. The shape is
             // recorded either way; the value follows the shape.
-            if (source[index] == '0' && index + 1 < source.Length && char.IsAsciiDigit(source[index + 1]))
+            if (source[index] == '0' && index + 1 < textEnd && char.IsAsciiDigit(source[index + 1]))
             {
                 var scan = index + 1;
                 var octal = true;
 
-                while (scan < source.Length && char.IsAsciiDigit(source[scan]))
+                while (scan < textEnd && char.IsAsciiDigit(source[scan]))
                 {
                     if (source[scan] is '8' or '9')
                     {
@@ -1058,13 +1328,13 @@ public sealed class SliceTokenizer
                     scan++;
                 }
 
-                if (octal && (scan >= source.Length || (source[scan] != '.' && source[scan] is not ('e' or 'E'))))
+                if (octal && (scan >= textEnd || (source[scan] != '.' && source[scan] is not ('e' or 'E'))))
                 {
                     legacyOctal = true;
                     index++;
                     var digitsStart = index;
 
-                    while (index < source.Length && char.IsAsciiDigit(source[index]))
+                    while (index < textEnd && char.IsAsciiDigit(source[index]))
                     {
                         index++;
                     }
@@ -1073,7 +1343,7 @@ public sealed class SliceTokenizer
                     // rule is about the literal's KIND rather than about where the underscore sits:
                     // `0_1` is not a legacy octal with a separator in it, it is a syntax error, and
                     // the language says so in order not to grow the shape it is trying to retire.
-                    if (index < source.Length && source[index] == '_')
+                    if (index < textEnd && source[index] == '_')
                     {
                         return RefuseNumeric(
                             start, startLine, startColumn,
@@ -1098,33 +1368,33 @@ public sealed class SliceTokenizer
                 }
             }
 
-            while (index < source.Length && IsDecimalPart(source[index]))
+            while (index < textEnd && IsDecimalPart(source[index]))
             {
                 index++;
             }
 
-            if (index < source.Length && source[index] == '.')
+            if (index < textEnd && source[index] == '.')
             {
                 index++;
 
-                while (index < source.Length && IsDecimalPart(source[index]))
+                while (index < textEnd && IsDecimalPart(source[index]))
                 {
                     index++;
                 }
             }
 
-            if (index < source.Length && source[index] is 'e' or 'E')
+            if (index < textEnd && source[index] is 'e' or 'E')
             {
                 index++;
 
-                if (index < source.Length && source[index] is '+' or '-')
+                if (index < textEnd && source[index] is '+' or '-')
                 {
                     index++;
                 }
 
                 var exponentStart = index;
 
-                while (index < source.Length && IsDecimalPart(source[index]))
+                while (index < textEnd && IsDecimalPart(source[index]))
                 {
                     index++;
                 }
@@ -1194,7 +1464,7 @@ public sealed class SliceTokenizer
         return status == Broiler.ECMAScript.ResultStatus.Completed && literal.Kind == NumericLiteralKind.Number;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A1592E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CFBFDE
     // Broiler-Human:        PENDING
     private SliceToken FinishNumeric(
         int start, double value, bool legacyOctal, int startLine, int startColumn, bool sawNewline)
@@ -1202,7 +1472,7 @@ public sealed class SliceTokenizer
         // A trailing `n` makes this a BigInt, which is a value kind this manifest has no
         // representation for rather than a malformed number. The suffix is consumed and left on
         // the token's raw text; the parser turns it into a construct and the census counts it.
-        if (index < source.Length && source[index] == 'n')
+        if (index < textEnd && source[index] == 'n')
         {
             // ONLY AN INTEGER SPELLING TAKES THE SUFFIX, and the rest are syntax errors of the
             // language rather than BigInts nobody implemented (JSeal B02): `1.5n` and `1e3n` are
@@ -1219,7 +1489,7 @@ public sealed class SliceTokenizer
 
             index++;
 
-            if (index < source.Length && (IsIdentifierStartAt(index) || char.IsAsciiDigit(source[index])))
+            if (index < textEnd && (IsIdentifierStartAt(index) || char.IsAsciiDigit(source[index])))
             {
                 return RefuseNumeric(start, startLine, startColumn, "a numeric literal touching an identifier");
             }
@@ -1232,7 +1502,7 @@ public sealed class SliceTokenizer
         // A numeric literal may not be followed immediately by an identifier start: `3in` is not
         // `3 in`, it is an error, and a tokenizer that split it would hand the parser a program
         // the language does not have.
-        if (index < source.Length && (IsIdentifierStartAt(index) || char.IsAsciiDigit(source[index])))
+        if (index < textEnd && (IsIdentifierStartAt(index) || char.IsAsciiDigit(source[index])))
         {
             return RefuseNumeric(start, startLine, startColumn, "a numeric literal touching an identifier");
         }
@@ -1300,7 +1570,7 @@ public sealed class SliceTokenizer
     /// this by re-tokenizing the source at validation time; carrying the raw text on the token is
     /// what deletes that scan.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=07DC3C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=C326A0
     // Broiler-Falsified-If: a directive is recognised from the string's value rather than from its raw text
     // Broiler-Human:        PENDING
     private SliceToken ReadStringLiteral(int startLine, int startColumn, bool sawNewline)
@@ -1316,7 +1586,7 @@ public sealed class SliceTokenizer
 
         while (true)
         {
-            if (index >= source.Length || source[index] is '\n' or '\r')
+            if (index >= textEnd || source[index] is '\n' or '\r')
             {
                 Refuse(
                     SliceSourceDiagnosticCode.UnterminatedStringLiteral,
@@ -1357,7 +1627,7 @@ public sealed class SliceTokenizer
 
             index++;
 
-            if (index >= source.Length)
+            if (index >= textEnd)
             {
                 continue;
             }
@@ -1381,7 +1651,7 @@ public sealed class SliceTokenizer
                 // records that it held one. Until 2026-09-30 `\101` read as `101`: the `1` was taken
                 // as a character a backslash stood before, and `\0` swallowed no digits after it.
                 case >= '0' and <= '7':
-                    if (escape == '0' && (index >= source.Length || source[index] is < '0' or > '9'))
+                    if (escape == '0' && (index >= textEnd || source[index] is < '0' or > '9'))
                     {
                         value.Append('\0');
                         break;
@@ -1391,7 +1661,7 @@ public sealed class SliceTokenizer
                     var octal = escape - '0';
 
                     for (var more = escape <= '3' ? 2 : 1;
-                        more > 0 && index < source.Length && source[index] is >= '0' and <= '7';
+                        more > 0 && index < textEnd && source[index] is >= '0' and <= '7';
                         more--)
                     {
                         octal = (octal * 8) + (source[index] - '0');
@@ -1428,7 +1698,7 @@ public sealed class SliceTokenizer
                     break;
 
                 case 'x':
-                    if (index + 1 >= source.Length ||
+                    if (index + 1 >= textEnd ||
                         !byte.TryParse(
                             System.MemoryExtensions.AsSpan(source, index, 2),
                             System.Globalization.NumberStyles.HexNumber,
@@ -1948,11 +2218,13 @@ public sealed class SliceTokenizer
     /// <summary>Reads a template literal whole, substitutions included.</summary>
     /// <remarks>
     /// <para>
-    /// Nothing inside is tokenized: this manifest admits no template, so the parser needs the
-    /// construct and not its parts, and building the parts would be building a tree nothing can
-    /// lower. What the scan owes is therefore exactly one thing - the position the literal ENDS at
-    /// - and it owes it absolutely, because a scan that ends early hands the parser a stream that
-    /// resumes in the middle of a string, and every diagnostic after it names the wrong thing.
+    /// Nothing inside is tokenized into the stream: this manifest admits no template, so the parser
+    /// needs the construct and not its parts, and building the parts would be building a tree
+    /// nothing can lower. What the scan owes is therefore exactly one thing - the position the
+    /// literal ENDS at - and it owes it absolutely, because a scan that ends early hands the parser a
+    /// stream that resumes in the middle of a string, and every diagnostic after it names the wrong
+    /// thing. The wide compiler's <see cref="StructuredTemplates"/> mode tokenizes the parts behind
+    /// the stream, from where this scan found them.
     /// </para>
     /// <para>
     /// <b>Counting <c>${</c> against <c>}</c> is not enough, and that is what this used to do.</b> A
@@ -1970,13 +2242,32 @@ public sealed class SliceTokenizer
     /// significant character decides it - the heuristic every scanner that does not parse uses.
     /// What it can get wrong is where a template ends, never what an admitted program means.
     /// </para>
+    /// <para>
+    /// <b>A template the structured mode has already scanned is not scanned again.</b> The scan of
+    /// an outer template found where each template nested in it ends, and a substitution's run
+    /// meets those templates as tokens; it takes the end the scan recorded, which is the end a scan
+    /// from that backtick finds, as long as it lies inside the text the run reads. Otherwise it
+    /// scans, within that text.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9ABBF8
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B5039C
     // Broiler-Falsified-If: a template, string, comment or object literal inside a substitution ends the outer literal
     // Broiler-Human:        PENDING
     private SliceToken ReadTemplateLiteral(int startLine, int startColumn, bool sawNewline)
     {
         var start = index;
+
+        if (scanned is not null && scanned.TryGetValue(start, out var known) && known.End <= textEnd)
+        {
+            index = known.End;
+            line = known.EndLine;
+            lineStart = known.EndLineStart;
+
+            return new SliceToken(
+                SliceTokenKind.TemplateLiteral, source[start..index], 0, string.Empty,
+                startLine, startColumn, sawNewline, false);
+        }
+
         index++;
 
         if (!ScanTemplateBody())
@@ -2023,15 +2314,21 @@ public sealed class SliceTokenizer
     /// without the closing backtick is not reported here - the caller reports the template as
     /// unterminated, which is the construct a reader is looking at.
     /// </para>
+    /// <para>
+    /// <b>Under <see cref="StructuredTemplates"/> it records where the parts are</b>: each chunk,
+    /// each substitution with the line it begins on, and the end, for every template it closes,
+    /// nested ones included, under the offset of its backtick.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9F3D3D
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=4207C6
     // Broiler-Falsified-If: a substitution consumes the backtick that closes the template it belongs to, or a nesting costs a stack frame
     // Broiler-Human:        PENDING
     private bool ScanTemplateBody()
     {
-        var open = new System.Collections.Generic.List<TemplateScan> { new() };
+        var recording = scanned is not null;
+        var open = new System.Collections.Generic.List<TemplateScan> { new(index - 1, index, recording) };
 
-        while (index < source.Length)
+        while (index < textEnd)
         {
             var c = source[index];
             var scan = open[^1];
@@ -2052,7 +2349,17 @@ public sealed class SliceTokenizer
 
                 if (c == '`')
                 {
+                    scan.Chunks?.Add((scan.ChunkStart, index));
                     index++;
+
+                    if (recording)
+                    {
+                        scan.End = index;
+                        scan.EndLine = line;
+                        scan.EndLineStart = lineStart;
+                        scanned![scan.Start] = scan;
+                    }
+
                     open.RemoveAt(open.Count - 1);
 
                     if (open.Count == 0)
@@ -2065,12 +2372,16 @@ public sealed class SliceTokenizer
                     continue;
                 }
 
-                if (c == '$' && index + 1 < source.Length && source[index + 1] == '{')
+                if (c == '$' && index + 1 < textEnd && source[index + 1] == '{')
                 {
+                    scan.Chunks?.Add((scan.ChunkStart, index));
                     index += 2;
                     scan.InSubstitution = true;
                     scan.Braces = 0;
                     scan.Previous = '\0';
+                    scan.SubstitutionStart = index;
+                    scan.SubstitutionLine = line;
+                    scan.SubstitutionLineStart = lineStart;
                     continue;
                 }
 
@@ -2084,9 +2395,9 @@ public sealed class SliceTokenizer
                 continue;
             }
 
-            if (c == '/' && index + 1 < source.Length && source[index + 1] == '/')
+            if (c == '/' && index + 1 < textEnd && source[index + 1] == '/')
             {
-                while (index < source.Length && !IsLineTerminator(source[index]))
+                while (index < textEnd && !IsLineTerminator(source[index]))
                 {
                     index++;
                 }
@@ -2094,12 +2405,12 @@ public sealed class SliceTokenizer
                 continue;
             }
 
-            if (c == '/' && index + 1 < source.Length && source[index + 1] == '*')
+            if (c == '/' && index + 1 < textEnd && source[index + 1] == '*')
             {
                 index += 2;
 
-                while (index < source.Length &&
-                    !(source[index] == '*' && index + 1 < source.Length && source[index + 1] == '/'))
+                while (index < textEnd &&
+                    !(source[index] == '*' && index + 1 < textEnd && source[index + 1] == '/'))
                 {
                     if (IsLineTerminator(source[index]))
                     {
@@ -2110,7 +2421,7 @@ public sealed class SliceTokenizer
                     index++;
                 }
 
-                index = System.Math.Min(index + 2, source.Length);
+                index = System.Math.Min(index + 2, textEnd);
                 continue;
             }
 
@@ -2133,7 +2444,7 @@ public sealed class SliceTokenizer
             if (c == '`')
             {
                 index++;
-                open.Add(new TemplateScan());
+                open.Add(new TemplateScan(index - 1, index, recording));
                 continue;
             }
 
@@ -2151,7 +2462,10 @@ public sealed class SliceTokenizer
 
                 if (scan.Braces == 0)
                 {
+                    scan.Substitutions?.Add(
+                        (scan.SubstitutionStart, index - 1, scan.SubstitutionLine, scan.SubstitutionLineStart));
                     scan.InSubstitution = false;
+                    scan.ChunkStart = index;
                     continue;
                 }
 
@@ -2173,12 +2487,28 @@ public sealed class SliceTokenizer
 
     /// <summary>
     /// One template the scan is inside: whether the cursor is in its body or in its open
-    /// substitution, and that substitution's state.
+    /// substitution, that substitution's state, and - under <see cref="StructuredTemplates"/> -
+    /// where its parts are.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=8CF45A
+    /// <remarks>
+    /// <b>A closed one is the structured mode's record of the template</b>, kept under the offset of
+    /// its backtick: the chunks and substitutions as offsets into the source, each substitution with
+    /// the line it begins on and where that line starts, and where the template ends.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AB7A90
     // Broiler-Human:        PENDING
-    private sealed class TemplateScan
+    private sealed class TemplateScan(int start, int chunkStart, bool recording)
     {
+        /// <summary>The offset of the template's opening backtick.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=8679FE
+        // Broiler-Human:        PENDING
+        internal int Start { get; } = start;
+
+        /// <summary>Where the chunk being read began: just past the backtick or the closing brace.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=2895B5
+        // Broiler-Human:        PENDING
+        internal int ChunkStart { get; set; } = chunkStart;
+
         /// <summary>Whether the cursor is in the template's open substitution rather than its body.</summary>
         // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9585C7
         // Broiler-Human:        PENDING
@@ -2193,17 +2523,63 @@ public sealed class SliceTokenizer
         // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=D1ED42
         // Broiler-Human:        PENDING
         internal char Previous { get; set; }
+
+        /// <summary>The offset of the open substitution's first character.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=29D0DC
+        // Broiler-Human:        PENDING
+        internal int SubstitutionStart { get; set; }
+
+        /// <summary>The line the open substitution begins on.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=D1CE0A
+        // Broiler-Human:        PENDING
+        internal int SubstitutionLine { get; set; }
+
+        /// <summary>The offset that line starts at.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=81E926
+        // Broiler-Human:        PENDING
+        internal int SubstitutionLineStart { get; set; }
+
+        /// <summary>Each chunk, as offsets of the source; null unless recording.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=966E34
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<(int Start, int End)>? Chunks { get; } = recording ? [] : null;
+
+        /// <summary>
+        /// Each substitution: its first offset, the offset of the brace closing it, its line and
+        /// where that line starts; null unless recording.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=96CAE1
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<(int Start, int End, int Line, int LineStart)>? Substitutions
+        {
+            get;
+        } = recording ? [] : null;
+
+        /// <summary>The offset just past the closing backtick, once the template is closed.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=2F0DCF
+        // Broiler-Human:        PENDING
+        internal int End { get; set; }
+
+        /// <summary>The line the cursor was on just past the closing backtick.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=54A486
+        // Broiler-Human:        PENDING
+        internal int EndLine { get; set; }
+
+        /// <summary>The offset that line starts at.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=E586F2
+        // Broiler-Human:        PENDING
+        internal int EndLineStart { get; set; }
     }
 
     /// <summary>Skips a string literal from its opening quote to just past its closing one.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6DD49B
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=880EEF
     // Broiler-Falsified-If: an escaped quote ends the string, or an unterminated one swallows the rest of the source
     // Broiler-Human:        PENDING
     private void ScanStringBody(char quote)
     {
         index++;
 
-        while (index < source.Length)
+        while (index < textEnd)
         {
             var c = source[index];
 
@@ -2240,7 +2616,7 @@ public sealed class SliceTokenizer
     /// Scans a regular-expression literal from its opening slash past its flags, answering whether
     /// it closed on the same line.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=685B24
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F501F8
     // Broiler-Falsified-If: a slash inside a character class ends the literal
     // Broiler-Human:        PENDING
     private bool ScanRegularExpressionBody()
@@ -2248,7 +2624,7 @@ public sealed class SliceTokenizer
         index++;
         var inClass = false;
 
-        while (index < source.Length)
+        while (index < textEnd)
         {
             var c = source[index];
 
@@ -2262,7 +2638,7 @@ public sealed class SliceTokenizer
                 // A backslash before a line terminator does not continue a regular expression:
                 // the literal ends unterminated here, and the terminator is left for the caller
                 // to count.
-                if (index + 1 < source.Length && IsLineTerminator(source[index + 1]))
+                if (index + 1 < textEnd && IsLineTerminator(source[index + 1]))
                 {
                     index++;
                     return false;
@@ -2284,7 +2660,7 @@ public sealed class SliceTokenizer
             {
                 index++;
 
-                while (index < source.Length && IdentifierPartWidth(index) is var width && width > 0)
+                while (index < textEnd && IdentifierPartWidth(index) is var width && width > 0)
                 {
                     index += width;
                 }
@@ -2305,9 +2681,11 @@ public sealed class SliceTokenizer
     /// <remarks>
     /// A HEURISTIC, and named as one. <c>a</c> before <c>/</c> is division and <c>(</c> before it is
     /// a regular expression, but a keyword that ends in a letter - <c>return /x/</c> - reads as
-    /// division here. It is consulted only inside a template substitution, whose contents are
-    /// discarded, so what it can get wrong is where a refused construct ends and never what an
-    /// admitted program means.
+    /// division here. It is consulted only inside a template substitution, to find the brace that
+    /// closes it, so what it can get wrong is where a template ends. The slice front end discards
+    /// what is inside; the wide compiler's <see cref="StructuredTemplates"/> mode has the lexer
+    /// itself read the characters this scan says are the substitution, as the parser's own copy of
+    /// this scan had them read until SJL-12.6 item 4.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=17FBC0
     // Broiler-Falsified-If: a division after an identifier or a literal is taken for a regular expression
@@ -2322,20 +2700,20 @@ public sealed class SliceTokenizer
     /// silently turn an unsigned right shift into two comparisons, which is a program that parses
     /// and means something else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=14CEA5
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2E928C
     // Broiler-Falsified-If: a shorter punctuator is matched where a longer one starting at the same character exists
     // Broiler-Human:        PENDING
     private SliceToken ReadPunctuator(int startLine, int startColumn, bool sawNewline)
     {
         foreach (var (text, kind) in Punctuators)
         {
-            if (index + text.Length <= source.Length &&
+            if (index + text.Length <= textEnd &&
                 string.CompareOrdinal(source, index, text, 0, text.Length) == 0)
             {
                 // `?.` IS NOT THE PUNCTUATOR BEFORE A DIGIT: `a ?.5 : b` is a conditional over the
                 // number `.5` (12.8, OptionalChainingPunctuator :: ?. [lookahead ∉ DecimalDigit]).
                 // Until 2026-10-03 it was read as a chain (JSC-253).
-                if (kind == SliceTokenKind.QuestionDot && index + 2 < source.Length &&
+                if (kind == SliceTokenKind.QuestionDot && index + 2 < textEnd &&
                     char.IsAsciiDigit(source[index + 2]))
                 {
                     continue;
@@ -2447,13 +2825,13 @@ public sealed class SliceTokenizer
         ("~", SliceTokenKind.Tilde),
     ];
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=5365F8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=7268D1
     // Broiler-Human:        PENDING
     private void AdvanceLine(char c)
     {
         // CRLF is one line terminator, not two, or every line number after the first Windows
         // newline is wrong by the count of them.
-        if (c == '\r' && index + 1 < source.Length && source[index + 1] == '\n')
+        if (c == '\r' && index + 1 < textEnd && source[index + 1] == '\n')
         {
             index++;
         }
@@ -2473,13 +2851,13 @@ public sealed class SliceTokenizer
     /// every diagnostic after one named the line above the one it was on. CRLF after the
     /// backslash is one terminator, as it is anywhere else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7D37DA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=507F04
     // Broiler-Human:        PENDING
     private void SkipEscape()
     {
         index++;
 
-        if (index >= source.Length)
+        if (index >= textEnd)
         {
             return;
         }
@@ -2580,13 +2958,13 @@ public sealed class SliceTokenizer
     /// The code point at <paramref name="at"/>, which must be inside the source: a surrogate pair
     /// is read whole and anything else, a lone surrogate included, is the code unit it is.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=F6671D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4170DC
     // Broiler-Human:        PENDING
     private int CodePointAt(int at, out int width)
     {
         var unit = source[at];
 
-        if (char.IsHighSurrogate(unit) && at + 1 < source.Length && char.IsLowSurrogate(source[at + 1]))
+        if (char.IsHighSurrogate(unit) && at + 1 < textEnd && char.IsLowSurrogate(source[at + 1]))
         {
             width = 2;
             return char.ConvertToUtf32(unit, source[at + 1]);
@@ -2661,3 +3039,54 @@ public sealed class SliceTokenizer
     private static bool IsDecimalPart(char c) => char.IsAsciiDigit(c) || c == '_';
 
 }
+
+/// <summary>
+/// One template literal of a structured token stream (<see cref="SliceTokenizer.StructuredTemplates"/>):
+/// where its chunks are and where each substitution's tokens are.
+/// </summary>
+/// <remarks>
+/// <b>It is a side table and not a token</b>, so the stream the parser reads is the one the slice
+/// front end reads too, a template one token in it, and nothing about a token changes for a consumer
+/// that does not ask (SJL-12.6 item 4, JSD-0080 decision D15). There is one more chunk than there are
+/// substitutions: the text before the first <c>${</c>, between each <c>}</c> and the next <c>${</c>,
+/// and after the last.
+/// </remarks>
+/// <param name="Chunks">
+/// Each chunk's raw text, as offsets into the template token's <see cref="SliceToken.RawText"/>.
+/// </param>
+/// <param name="Substitutions">Each substitution, in source order.</param>
+/// <param name="PastNestingBound">
+/// Whether the template is nested deeper than <see cref="SliceTokenizer.TemplateNestingLimit"/>, so
+/// that its substitutions have no runs.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5026FF
+// Broiler-Falsified-If: a chunk's offsets take in a `${`, a substitution or the closing backtick
+// Broiler-Human:        PENDING
+internal sealed record SliceTemplate(
+    System.Collections.Generic.IReadOnlyList<(int Start, int End)> Chunks,
+    System.Collections.Generic.IReadOnlyList<SliceSubstitution> Substitutions,
+    bool PastNestingBound);
+
+/// <summary>Where one template substitution's tokens are, or why it has none.</summary>
+/// <param name="First">
+/// The index of the substitution's first token in the array the tokenizer returned, or -1 when its
+/// lexer refused it or its template is past the nesting bound.
+/// </param>
+/// <param name="Last">
+/// The index of the <see cref="SliceTokenKind.EndOfSource"/> that ends its run, at the brace that
+/// closes the substitution, or -1.
+/// </param>
+/// <param name="Line">The line its first character stands on.</param>
+/// <param name="Column">The column of its first character.</param>
+/// <param name="Refusals">
+/// What its lexer refused, at the places it refused them; empty when it has a run. The parser reports
+/// them when it reaches the substitution.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=82E20A
+// Broiler-Human:        PENDING
+internal sealed record SliceSubstitution(
+    int First,
+    int Last,
+    int Line,
+    int Column,
+    System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Refusals);

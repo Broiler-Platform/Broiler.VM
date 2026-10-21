@@ -804,7 +804,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=46581D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=22B428
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -813,9 +813,17 @@ public sealed partial class JsCompiler
         foreach (var script in scripts)
         {
             var first = diagnostics.Count;
+
+            // THE WIDE COMPILER IS THE ONE CALLER OF THE TOKENIZER'S STRUCTURED MODE (SJL-12.6 item
+            // 4, JSD-0080 decision D15): each template substitution is tokenized into a run of its
+            // own, so the parser reads it in place, at the template's depth and in its context,
+            // rather than tokenizing its text again and parsing it with a parser of its own. Runs
+            // stop at the nesting bound, which no parse within the bound gets past.
             var tokenizer = new SliceTokenizer(script.Text)
             {
                 HtmlLikeComments = script.Options.Goal != SliceGoal.Module,
+                StructuredTemplates = true,
+                TemplateNestingLimit = script.Options.MaximumNestingDepth,
             };
 
             var tokens = tokenizer.Tokenize();
@@ -836,6 +844,7 @@ public sealed partial class JsCompiler
 
             var parser = new JsParser(
                 tokens,
+                tokenizer.Templates,
                 script.Options,
                 forceStrict,
                 enclosingFunctionDepth:
@@ -1039,14 +1048,20 @@ public sealed partial class JsCompiler
         return new JsCompilation(false, null, diagnostics);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=63730F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DC0FE2
     // Broiler-Human:        PENDING
     private bool TryParse(
         string text, SliceParseOptions options, bool forceStrict, out JsProgramNode program)
     {
         program = null!;
         awaited = false;
-        var tokenizer = new SliceTokenizer(text) { HtmlLikeComments = options.Goal != SliceGoal.Module };
+        var tokenizer = new SliceTokenizer(text)
+        {
+            HtmlLikeComments = options.Goal != SliceGoal.Module,
+            StructuredTemplates = true,
+            TemplateNestingLimit = options.MaximumNestingDepth,
+        };
+
         var tokens = tokenizer.Tokenize();
 
         if (tokenizer.Diagnostics.Count != 0)
@@ -1055,7 +1070,10 @@ public sealed partial class JsCompiler
             return false;
         }
 
-        var parser = new JsParser(tokens, options, forceStrict) { AdmitsBigInt = request.AdmitsBigIntLiterals };
+        var parser = new JsParser(tokens, tokenizer.Templates, options, forceStrict)
+        {
+            AdmitsBigInt = request.AdmitsBigIntLiterals,
+        };
         program = parser.Parse();
         awaited = parser.SawTopLevelAwait;
 

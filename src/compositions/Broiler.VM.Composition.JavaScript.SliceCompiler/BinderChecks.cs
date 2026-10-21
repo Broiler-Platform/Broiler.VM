@@ -51,7 +51,10 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// D12): <c>return</c> in a class static block keeps its place beside another early error, where a
 /// binder refusal of the other, with the 2207 left to the lowering, lost it; and <c>await</c> outside
 /// an async function is refused in source order with the rest, whichever of them the lowering compiled
-/// first. The two other 2104-coded rules, a
+/// first. <i>(2026-10-21, SJL-12.6 item 4, JSD-0080 decision D15: the only sources that reached that
+/// rule held the <c>await</c> in a template substitution in an arrow's parameters, and the parser
+/// now reads the substitution in the parameter list and refuses it itself, so their rows hold the
+/// parser's 2101.)</i> The two other 2104-coded rules, a
 /// logical assignment to a target that is neither a name nor a property and a <c>using</c> declaration
 /// outside a statement list that can dispose it, have no row: the parser refuses every source that
 /// would reach them first.
@@ -147,45 +150,42 @@ internal static class BinderChecks
             "class C { static { try {} finally { return; } } }",
             "2207@1:37");
 
-        // await outside an async function, under the lowering's 2104 (JSD-0080 decision D12): a template
-        // substitution's own parse admits one into the parameters of an arrow that is not async, a unit
-        // of its own, in a script and in a module that awaits at its top level; in source order, where
-        // the lowering met it first in a hoisted function. A logical assignment to a target that is
-        // neither a name nor a property, and a `using` declaration outside a statement list that can
-        // dispose it, are the binder's under 2104 too, and no source reaches either: the parser refuses
-        // every such target (2205) and every such declaration (2101) first
+        // await outside an async function, under the lowering's 2104 (JSD-0080 decision D12), and the six sources
+        // that reached it. A template substitution's own parse admitted an `await` into the parameters of an arrow
+        // that is not async, a unit of its own, in a script and in a module that awaits at its top level, and the
+        // binder refused it there, in source order with the rest. Since SJL-12.6 item 4 (JSD-0080 decision D15) the
+        // parse that reads the template reads the substitution, inside the parameter list, so the parser refuses
+        // the `await` (2101, at the same place) and the binder does not run. The lists were [2104@1:30],
+        // [2104@1:9], [2207@1:1 2104@1:37], [2104@1:30 2101@1:36], [2104@1:30 2207@1:62] and [2104@1:31 2101@1:44];
+        // the fifth keeps a refusal after the 2101, the parser's own for the body it stops reading. No other way
+        // to the binder's 2104 for `await` is known, so no source reaches it any more. A logical assignment to a
+        // target that is neither a name nor a property, and a `using` declaration outside a statement list that
+        // can dispose it, are the binder's under 2104 too, and no source reaches either: the parser refuses every
+        // such target (2205) and every such declaration (2101) first
         yield return Refused(
-            "early error: await outside an async function, in an arrow's parameters",
+            "early error: await in an arrow's parameters in a template substitution is the parser's",
             "async function g() { (a = `${await 1}`) => a; }",
-            "2104@1:30");
+            "2101@1:30");
         yield return RefusedModule(
-            "early error: await outside an async function, in a module that awaits",
+            "early error: await in an arrow's parameters in a template substitution, in a module that awaits",
             "(a = `${await 1}`) => a;",
-            "2104@1:9");
+            "2101@1:9");
         yield return Refused(
-            "early errors are in source order where the lowering met a hoisted function's 2104 first",
+            "early error: await in a template substitution in parameters, after a break the binder refuses",
             "break; async function g() { (a = `${await 1}`) => a; }",
-            "2207@1:1 2104@1:37");
-
-        // and the other way round, the 2104 now first where the lowering met a later early error before it: in
-        // the await's own operand, which it compiled before refusing the await; in a function hoisted in the
-        // same unit and written after the arrow; in the value a pattern holding the await destructures, which
-        // it compiled before the pattern. The base's lists were [2101@1:36, 2104@1:30], [2207@1:62, 2104@1:30]
-        // and [2101@1:44, 2104@1:31]. Every such source has `${await` in the parameters of an arrow that is not
-        // async, which SJL-12.6 item 4 (JSD-0080 decision D15) refuses in the parser; until then these rows
-        // record the order
+            "2101@1:37");
         yield return Refused(
-            "early errors are in source order where the lowering met the await's operand first",
+            "early error: await in a template substitution in parameters, with an operand the binder refuses",
             "async function g() { (a = `${await /a/gg}`) => a; }",
-            "2104@1:30 2101@1:36");
+            "2101@1:30");
         yield return Refused(
-            "early errors are in source order where the lowering met a later hoisted function first",
+            "early error: await in a template substitution in parameters, before a function the binder refuses",
             "async function g() { (a = `${await 1}`) => a; function h() { break; } }",
-            "2104@1:30 2207@1:62");
+            "2101@1:30 2102@1:47");
         yield return Refused(
-            "early errors are in source order where the lowering met a pattern's value first",
+            "early error: await in a template substitution in a parameter pattern, before a value the binder refuses",
             "async function g() { ({x = `${await 1}`} = /a/gg) => x; }",
-            "2104@1:31 2101@1:44");
+            "2101@1:31");
 
         // assignment targets
         yield return Refused("early error: update of a call in strict code", "'use strict'; f()++;", "2205@1:15");

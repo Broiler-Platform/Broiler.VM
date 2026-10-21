@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   171
-// Annotated:        171/171
+// Relevant units:   158
+// Annotated:        158/158
 // Exempt:           25
-// Human-reviewed:   0/171
+// Human-reviewed:   0/158
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         5/5
+// Criteria:         7/4
 // Resource impact:  3/10 max
-// Unverified:       171
+// Unverified:       158
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -132,6 +132,62 @@ internal sealed class JsParser
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=98C321
     // Broiler-Human:        PENDING
     private int at;
+
+    /// <summary>
+    /// Where each template of <see cref="tokens"/> has its chunks and its substitutions' runs, by the
+    /// index of its token: the tokenizer's structured mode (SJL-12.6 item 4, JSD-0080 decision D15).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=568694
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.IReadOnlyDictionary<int, SliceTemplate> templates;
+
+    /// <summary>The index of the first token of the stream being read: zero, or a substitution's run.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=8BF5D5
+    // Broiler-Human:        PENDING
+    private int begin;
+
+    /// <summary>
+    /// The index of the <see cref="SliceTokenKind.EndOfSource"/> that ends the stream being read,
+    /// which the cursor and every lookahead stop at.
+    /// </summary>
+    /// <remarks>
+    /// <b>The token array holds more than one stream</b>: the source's, then each template
+    /// substitution's run, each ending with an end of its own. A substitution is parsed by moving
+    /// the cursor into its run and back, so this is where the run being read ends - the one place
+    /// that makes the end of a substitution look, to everything that reads a token, like the end of
+    /// a source, which is what its own parser saw until SJL-12.6 item 4.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1F415A
+    // Broiler-Falsified-If: the cursor or a lookahead reads a token past the end of the stream being read
+    // Broiler-Human:        PENDING
+    private int end;
+
+    /// <summary>How many refusals this parse has reported, the ones past the cap included.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=74486A
+    // Broiler-Human:        PENDING
+    private int refusals;
+
+    /// <summary>How many it had reported when the stream being read was entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=119711
+    // Broiler-Human:        PENDING
+    private int refusalFloor;
+
+    /// <summary>
+    /// Whether reading the stream being read has drawn a refusal: the source's, or a substitution's
+    /// alone.
+    /// </summary>
+    /// <remarks>
+    /// <b>The parse stops early on it, and a substitution stops on its own.</b> Every place that
+    /// stops a list, skips a check or holds back a cascade once something is refused asks this. A
+    /// substitution's parser had a list of refusals of its own until SJL-12.6 item 4, so a refusal
+    /// before the template did not stop the substitution's parse, and one inside it stopped the
+    /// enclosing parse only once it was handed back. Counting from where the substitution was
+    /// entered keeps both answers, so a refused source is told what it was told before.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=93E5EC
+    // Broiler-Falsified-If: a refusal reported before a substitution was entered stops or changes the substitution's parse
+    // Broiler-Human:        PENDING
+    private bool StreamRefused => refusals != refusalFloor;
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=329437
     // Broiler-Human:        PENDING
@@ -294,7 +350,15 @@ internal sealed class JsParser
     private bool usingAllowed;
 
     /// <summary>Creates a parser over an already-tokenized source.</summary>
-    /// <param name="stream">The tokens to read.</param>
+    /// <param name="stream">
+    /// The tokens to read: the source's stream up to its first
+    /// <see cref="SliceTokenKind.EndOfSource"/>, then the runs of its template substitutions, as the
+    /// tokenizer's structured mode returns them.
+    /// </param>
+    /// <param name="templateParts">
+    /// Where each template of <paramref name="stream"/> has its chunks and its substitutions' runs, by
+    /// the index of its token (<see cref="SliceTokenizer.Templates"/>).
+    /// </param>
     /// <param name="parseOptions">The goal and the ceilings this parse is held to.</param>
     /// <param name="forceStrict">
     /// <b>Strictness the caller imposes rather than the source declaring it</b>, which is what a
@@ -306,36 +370,35 @@ internal sealed class JsParser
     /// variant that exists to test it.
     /// </param>
     /// <param name="enclosingFunctionDepth">
-    /// How many ordinary function bodies enclose the tokens this parser is given. It is non-zero
-    /// only for the sub-parse of a template substitution, whose tokens are a slice of a source
-    /// this parser never sees the rest of - so the nesting it sits inside has to be handed to it.
+    /// How many ordinary function bodies enclose the tokens this parser is given: one for eval code
+    /// evaluated inside a function, so that <c>new.target</c> is admitted there, and zero otherwise.
+    /// <i>(Revised 2026-10-21, SJL-12.6 item 4, JSD-0080 decision D15: it read "non-zero only for
+    /// the sub-parse of a template substitution", and there is no such sub-parse any more. The two
+    /// parameters beside it that only that sub-parse set, whether the enclosing parse was inside a
+    /// generator's or an async function's own body, are gone with it: a substitution is read by
+    /// the parser reading its template, in the context it is in.)</i>
     /// </param>
-    /// <param name="enclosingYieldIsOperator">
-    /// Whether the enclosing parse was inside a generator's own body.
-    /// </param>
-    /// <param name="enclosingAwaitIsOperator">
-    /// <b>Whether the enclosing parse was inside an async function's own body</b>, which a
-    /// substitution's sub-parse has to be told for the same reason it has to be told the nesting
-    /// depth: <c>`x${await p}`</c> inside an async function is an await expression, and a
-    /// sub-parser that started in a fresh context read it as the identifier <c>await</c> followed
-    /// by a surprise. The <c>[Yield]</c> half beside it had the same hole and is closed with it.
-    /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F34641
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=868895
     // Broiler-Human:        PENDING
     internal JsParser(
         SliceToken[] stream,
+        System.Collections.Generic.IReadOnlyDictionary<int, SliceTemplate> templateParts,
         SliceParseOptions parseOptions,
         bool forceStrict = false,
-        int enclosingFunctionDepth = 0,
-        bool enclosingYieldIsOperator = false,
-        bool enclosingAwaitIsOperator = false)
+        int enclosingFunctionDepth = 0)
     {
         tokens = stream;
+        templates = templateParts;
         options = parseOptions;
         strict = forceStrict;
         functionDepth = enclosingFunctionDepth;
-        yieldIsOperator = enclosingYieldIsOperator;
-        awaitIsOperator = enclosingAwaitIsOperator;
+
+        // THE SOURCE'S OWN STREAM ENDS AT THE FIRST END OF SOURCE; the runs of its substitutions
+        // follow it.
+        while (tokens[end].Kind != SliceTokenKind.EndOfSource)
+        {
+            end++;
+        }
     }
 
     /// <summary>Every refusal this pass produced, in source order.</summary>
@@ -379,7 +442,7 @@ internal sealed class JsParser
         new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
 
     /// <summary>Parses a whole program.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E18D66
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=AD687D
     // Broiler-Human:        PENDING
     internal JsProgramNode Parse()
     {
@@ -412,7 +475,7 @@ internal sealed class JsParser
 
         var body = new System.Collections.Generic.List<JsStatement>();
 
-        while (Current.Kind != SliceTokenKind.EndOfSource && diagnostics.Count == 0)
+        while (Current.Kind != SliceTokenKind.EndOfSource && !StreamRefused)
         {
             body.Add(ParseStatement());
         }
@@ -828,7 +891,7 @@ internal sealed class JsParser
     /// semicolon, which is the ordinary syntax error and not a refusal of a surface.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E6EEA0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=61FAAA
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsImportAttribute> Attributes()
     {
@@ -844,7 +907,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             var at = Span();
 
@@ -909,7 +972,7 @@ internal sealed class JsParser
         return attributes;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=48B6E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=700833
     // Broiler-Human:        PENDING
     private void ParseImportClause(
         System.Collections.Generic.List<JsImportSpecifier> specifiers)
@@ -927,7 +990,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             var at = Span();
             var imported = ModuleExportName();
@@ -996,7 +1059,7 @@ internal sealed class JsParser
             span, JsExportKind.All, from, specifiers, null, null, attributes);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=269559
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=83155C
     // Broiler-Human:        PENDING
     private JsStatement ParseExportClause(SliceSourceSpan span)
     {
@@ -1007,7 +1070,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             var at = Span();
             var localIsString = Current.Kind == SliceTokenKind.StringLiteral;
@@ -1473,7 +1536,7 @@ internal sealed class JsParser
         return new JsExpressionStatement(span, expression);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=56BEB5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1E58E5
     // Broiler-Human:        PENDING
     private JsBlockStatement ParseBlock()
     {
@@ -1485,7 +1548,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             body.Add(ParseStatement());
         }
@@ -1630,12 +1693,12 @@ internal sealed class JsParser
     /// initialiser is required for the same reason a <c>const</c>'s is, and an enumerating head
     /// is the exception because the iteration supplies each value.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C860EB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D1524D
     // Broiler-Human:        PENDING
     private bool ValidateResources(
         System.Collections.Generic.IReadOnlyList<JsDeclarator> declarators, bool requireInitialiser)
     {
-        if (diagnostics.Count != 0)
+        if (StreamRefused)
         {
             return false;
         }
@@ -2198,7 +2261,7 @@ internal sealed class JsParser
         return new JsTryStatement(span, block, parameter, catchPattern, handler, finaliser);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=97D57F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9E6045
     // Broiler-Human:        PENDING
     private JsStatement ParseSwitch()
     {
@@ -2211,7 +2274,7 @@ internal sealed class JsParser
         var clauses = new System.Collections.Generic.List<JsSwitchClause>();
         var sawDefault = false;
 
-        while (Current.Kind is SliceTokenKind.Case or SliceTokenKind.Default && diagnostics.Count == 0)
+        while (Current.Kind is SliceTokenKind.Case or SliceTokenKind.Default && !StreamRefused)
         {
             var clauseSpan = Span();
             JsExpression? test = null;
@@ -2247,7 +2310,7 @@ internal sealed class JsParser
 
             while (Current.Kind is not SliceTokenKind.Case and not SliceTokenKind.Default and
                 not SliceTokenKind.CloseBrace and not SliceTokenKind.EndOfSource &&
-                diagnostics.Count == 0)
+                !StreamRefused)
             {
                 body.Add(ParseStatement());
             }
@@ -2276,7 +2339,7 @@ internal sealed class JsParser
 
     // ---- functions -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2CF54B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=935033
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionRest(
         SliceSourceSpan span, bool declaration, bool isAsync = false)
@@ -2356,7 +2419,7 @@ internal sealed class JsParser
         // THE NAME IS JUDGED BY THE STRICTNESS OF THE FUNCTION'S OWN CODE, which a directive in
         // its body can raise after the name was read: `function static() { "use strict"; }` is as
         // much an early error as `"use strict"; function static() { }`.
-        if (body.IsStrict && diagnostics.Count == 0 && IsStrictOnlyName(name))
+        if (body.IsStrict && !StreamRefused && IsStrictOnlyName(name))
         {
             Refuse(
                 span,
@@ -2457,7 +2520,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E8EA60
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B5D571
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsParameter> ParseParameterList()
     {
@@ -2466,7 +2529,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseParen &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             var span = Span();
 
@@ -2541,7 +2604,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BC9FF0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DB1C5B
     // Broiler-Human:        PENDING
     private JsPattern ParseArrayBindingPattern(SliceSourceSpan span)
     {
@@ -2551,7 +2614,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBracket &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             if (Current.Kind == SliceTokenKind.Comma)
             {
@@ -2588,7 +2651,7 @@ internal sealed class JsParser
         return new JsArrayPattern(span, elements, rest);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=88E588
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=985AA9
     // Broiler-Human:        PENDING
     private JsPattern ParseObjectBindingPattern(SliceSourceSpan span)
     {
@@ -2598,7 +2661,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             if (Current.Kind == SliceTokenKind.DotDotDot)
             {
@@ -2721,7 +2784,7 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BB468C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=36B574
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
@@ -2782,7 +2845,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             body.Add(ParseStatement());
         }
@@ -2849,9 +2912,9 @@ internal sealed class JsParser
     }
 
     /// <summary>The source offset just past the last token this parser consumed.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=BD0A12
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9E22C8
     // Broiler-Human:        PENDING
-    private int PreviousEnd => at > 0 ? tokens[at - 1].End : 0;
+    private int PreviousEnd => at > begin ? tokens[at - 1].End : 0;
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=879453
     // Broiler-Human:        PENDING
@@ -2874,7 +2937,7 @@ internal sealed class JsParser
     /// why <c>class D extends a.b() { }</c> parses and <c>class D extends a = b { }</c> does not.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=159C3D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F51366
     // Broiler-Human:        PENDING
     private JsClassNode ParseClass(SliceSourceSpan span, bool declaration)
     {
@@ -2935,7 +2998,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             // A LONE SEMICOLON IS A CLASS ELEMENT AND DEFINES NOTHING, which is why it is skipped
             // here rather than refused as an empty field.
@@ -3763,14 +3826,14 @@ internal sealed class JsParser
     }
 
     /// <summary>Rules on a BLOCK's statement list: a block, a <c>catch</c> body or a case block.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2C6C4E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BD1B43
     // Broiler-Human:        PENDING
     private void ValidateBlockScope(System.Collections.Generic.IReadOnlyList<JsStatement> body)
     {
         // NOTHING IS CHECKED ONCE THE PARSE HAS REFUSED. A statement that failed to parse leaves a
         // placeholder in the list and a binding name that failed leaves a synthetic name, so a
         // second rule applied to that list would report a collision the source does not contain.
-        if (diagnostics.Count != 0 || body.Count == 0)
+        if (StreamRefused || body.Count == 0)
         {
             return;
         }
@@ -3799,13 +3862,13 @@ internal sealed class JsParser
     /// outer at its own top level; <c>function f(a) { { let a; } }</c> is a program, because a block
     /// inside the body is a third environment and shadowing is what it is for.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DA4BD9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=905552
     // Broiler-Human:        PENDING
     private void ValidateVarScope(
         System.Collections.Generic.IReadOnlyList<JsStatement> body,
         System.Collections.Generic.IReadOnlyList<JsParameter>? parameters)
     {
-        if (diagnostics.Count != 0)
+        if (StreamRefused)
         {
             return;
         }
@@ -3825,7 +3888,7 @@ internal sealed class JsParser
         // never see two of them and the Annex B relaxation has nothing to relax here.
         ValidateDeclaredNames(lexical, vars, functionsMayRepeat: false);
 
-        if (parameters is null || parameters.Count == 0 || diagnostics.Count != 0)
+        if (parameters is null || parameters.Count == 0 || StreamRefused)
         {
             return;
         }
@@ -3866,12 +3929,12 @@ internal sealed class JsParser
     /// declaration of the name is refused either way, and so is a function declaration of it,
     /// because a function declaration in a block is a lexical name.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6994B4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=86A11F
     // Broiler-Human:        PENDING
     private void ValidateCatchParameter(
         string parameter, JsPattern? pattern, JsBlockStatement handler)
     {
-        if (diagnostics.Count != 0 || (parameter.Length == 0 && pattern is null))
+        if (StreamRefused || (parameter.Length == 0 && pattern is null))
         {
             return;
         }
@@ -3956,13 +4019,13 @@ internal sealed class JsParser
     /// production along.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=85ED13
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5932CE
     // Broiler-Human:        PENDING
     private void ValidateBindingList(
         SliceDeclarationKind kind,
         System.Collections.Generic.IReadOnlyList<JsDeclarator> declarators)
     {
-        if (kind == SliceDeclarationKind.Var || diagnostics.Count != 0)
+        if (kind == SliceDeclarationKind.Var || StreamRefused)
         {
             return;
         }
@@ -4012,14 +4075,14 @@ internal sealed class JsParser
     /// belongs to the enclosing function and would be the same binding the head just declared
     /// lexically.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9B0E82
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F616BB
     // Broiler-Human:        PENDING
     private void ValidateLoopHead(
         SliceDeclarationKind? kind,
         System.Collections.Generic.IReadOnlyList<JsDeclarator> declarators,
         JsStatement body)
     {
-        if (kind is null or SliceDeclarationKind.Var || diagnostics.Count != 0)
+        if (kind is null or SliceDeclarationKind.Var || StreamRefused)
         {
             return;
         }
@@ -4088,7 +4151,7 @@ internal sealed class JsParser
     /// <param name="unique">Whether the production takes <c>UniqueFormalParameters</c>.</param>
     /// <param name="strictHere">Whether the parameter list is strict-mode code.</param>
     /// <param name="declaredUseStrict">Whether the body's own prologue declared strictness.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BAD3E2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=63E2DF
     // Broiler-Human:        PENDING
     private void ValidateParameters(
         System.Collections.Generic.IReadOnlyList<JsParameter> parameters,
@@ -4096,7 +4159,7 @@ internal sealed class JsParser
         bool strictHere,
         bool declaredUseStrict)
     {
-        if (diagnostics.Count != 0 || parameters.Count == 0)
+        if (StreamRefused || parameters.Count == 0)
         {
             return;
         }
@@ -4175,14 +4238,14 @@ internal sealed class JsParser
     /// setter is called with exactly one argument and a rest parameter would be asking for a count
     /// the caller never varies.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4BB581
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=804D03
     // Broiler-Human:        PENDING
     private void ValidateAccessorParameters(
         bool isGetter,
         System.Collections.Generic.IReadOnlyList<JsParameter> parameters,
         SliceSourceSpan span)
     {
-        if (diagnostics.Count != 0)
+        if (StreamRefused)
         {
             return;
         }
@@ -5682,7 +5745,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=FD5C14
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5E9541
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsExpression> ParseArguments()
     {
@@ -5691,7 +5754,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseParen &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             if (Current.Kind == SliceTokenKind.DotDotDot)
             {
@@ -5935,7 +5998,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC4C54
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C80837
     // Broiler-Human:        PENDING
     private JsExpression ParseArrayLiteral()
     {
@@ -5946,7 +6009,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBracket &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             if (Current.Kind == SliceTokenKind.Comma)
             {
@@ -5980,7 +6043,7 @@ internal sealed class JsParser
         return new JsArrayLiteral(span, elements, trailing);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=8CB8B4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DB0C4B
     // Broiler-Human:        PENDING
     private JsExpression ParseObjectLiteral()
     {
@@ -5991,7 +6054,7 @@ internal sealed class JsParser
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
-            diagnostics.Count == 0)
+            !StreamRefused)
         {
             entries.Add(ParseObjectEntry());
 
@@ -6611,15 +6674,25 @@ internal sealed class JsParser
 
     // ---- templates -----------------------------------------------------------------------------
 
-    /// <summary>Splits the template at the cursor into its chunks and its substitutions.</summary>
+    /// <summary>Reads the template at the cursor: its chunks, and its substitutions in this parse.</summary>
     /// <remarks>
     /// <para>
-    /// <b>The tokenizer hands a template over WHOLE - one token, backtick to backtick - so this is
-    /// where it is taken apart.</b> That is a deliberate division and not an oversight: the slice
-    /// front end, which shares the tokenizer, admits no template of any shape and only needs to
-    /// count one, so a tokenizer that split templates into parts would have to invent a part token
-    /// that one of its two consumers has no use for. The cost is that the substitutions are scanned
-    /// a second time here, bounded by the length of the template itself.
+    /// <b>The tokenizer hands a template over WHOLE - one token, backtick to backtick - and its parts
+    /// behind the stream.</b> That is a deliberate division and not an oversight: the slice front
+    /// end, which shares the tokenizer, admits no template of any shape and only needs to count one,
+    /// so a template stays one token of the stream. The wide compiler asks the tokenizer for its
+    /// structured mode, which tokenizes each substitution into a run of its own and says where the
+    /// chunks are (SJL-12.6 item 4, JSD-0080 decision D15).
+    /// </para>
+    /// <para>
+    /// <b>This parser reads the substitutions, where it reads the template.</b> Until SJL-12.6 item
+    /// 4 this method took the template's text apart again with a reader of its own and parsed each
+    /// substitution with a fresh tokenizer and a parser of its own, which started at depth zero and
+    /// outside any parameter list. So nesting templates did not count toward the nesting bound - a
+    /// few thousand levels ended the process - and <c>${yield}</c> and <c>${await 1}</c> were
+    /// admitted in formal parameters, where the same expressions outside a template are refused. The
+    /// nesting depth, the tree depth, the parameter list, the labels and the offsets now carry into
+    /// a substitution because it is read by the same parse.
     /// </para>
     /// <para>
     /// <b>Both spellings of every chunk are kept, because a tagged template needs both.</b> The
@@ -6629,95 +6702,103 @@ internal sealed class JsParser
     /// break is regardless of how the file was saved.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FC3985
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=901464
+    // Broiler-Falsified-If: a substitution is parsed by another parser, or from a depth, a parameter context or labels other than the template's
     // Broiler-Human:        PENDING
     private JsTemplateLiteral ParseTemplate(bool tagged)
     {
         var token = Current;
         var span = new SliceSourceSpan(token.Line, token.Column);
+
+        if (!templates.TryGetValue(at, out var parts))
+        {
+            throw new System.InvalidOperationException(
+                "the template at " + token.Line + ":" + token.Column +
+                " has no parts: the tokenizer was not asked for its structured mode");
+        }
+
         Advance();
+
+        // A TEMPLATE PAST THE NESTING BOUND HAS NO RUNS, because the tokenizer does not tokenize
+        // what no parse within the bound reaches: a substitution costs a level of nesting, so the
+        // template inside N others is read at a depth of at least N. Were one reached, it is
+        // refused as what it is.
+        if (parts.PastNestingBound)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.NestingTooDeep,
+                "the source nests deeper than the " + options.MaximumNestingDepth +
+                    " levels these parse options allow");
+
+            return new JsTemplateLiteral(span, [string.Empty], [string.Empty], []);
+        }
 
         // A TAGGED TEMPLATE KEEPS A CHUNK AN UNDEFINED ESCAPE SPOILS, as `undefined` beside its raw
         // text (ES2018's template literal revision); an untagged one is refused for it. Until
         // 2026-09-30 both were refused for a bad `\x` or `\u`, and `\1` or `\0` before a digit was
         // cooked as a character in both.
-        var spoiled = false;
         var cooked = new System.Collections.Generic.List<string?>();
         var raw = new System.Collections.Generic.List<string>();
         var substitutions = new System.Collections.Generic.List<JsExpression>();
-        var reader = new TemplateReader(token.RawText, token.Line, token.Column);
         var chunk = new System.Text.StringBuilder();
 
-        reader.Step();
-        var chunkStart = reader.At;
-
-        while (!reader.AtEnd)
+        // ONE CHUNK, THEN ONE SUBSTITUTION, IN SOURCE ORDER: a chunk's escape is judged after the
+        // substitutions before it are parsed, as it was when this method walked the text itself.
+        for (var which = 0; which < parts.Chunks.Count; which++)
         {
-            var c = reader.Current;
+            var (start, end) = parts.Chunks[which];
+            var text = token.RawText[start..end];
+            var spoiled = false;
+            var cursor = 0;
+            chunk.Clear();
 
-            if (c == '\\')
+            while (cursor < text.Length)
             {
-                if (CookEscape(reader, chunk) is { } undefinedEscape)
+                var c = text[cursor];
+
+                if (c == '\\')
                 {
-                    if (!tagged)
+                    if (CookEscape(text, ref cursor, chunk) is { } undefinedEscape)
                     {
-                        Refuse(span, SliceSourceDiagnosticCode.UnknownEscapeSequence, undefinedEscape);
-                        return new JsTemplateLiteral(span, [string.Empty], [string.Empty], []);
+                        if (!tagged)
+                        {
+                            Refuse(span, SliceSourceDiagnosticCode.UnknownEscapeSequence, undefinedEscape);
+                            return new JsTemplateLiteral(span, [string.Empty], [string.Empty], []);
+                        }
+
+                        spoiled = true;
                     }
 
-                    spoiled = true;
+                    continue;
                 }
 
-                continue;
+                if (c == '\r')
+                {
+                    chunk.Append('\n');
+                    cursor += cursor + 1 < text.Length && text[cursor + 1] == '\n' ? 2 : 1;
+                    continue;
+                }
+
+                chunk.Append(c);
+                cursor++;
             }
 
-            if (c == '`')
+            raw.Add(Normalise(text));
+            cooked.Add(spoiled ? null : chunk.ToString());
+
+            if (which < parts.Substitutions.Count)
             {
-                break;
+                substitutions.Add(ParseSubstitution(parts.Substitutions[which]));
             }
-
-            if (c == '$' && reader.Peek(1) == '{')
-            {
-                raw.Add(Normalise(reader.Slice(chunkStart, reader.At)));
-                cooked.Add(spoiled ? null : chunk.ToString());
-                spoiled = false;
-                chunk.Clear();
-                reader.Step();
-                reader.Step();
-
-                var innerLine = reader.Line;
-                var innerColumn = reader.Column;
-                var innerStart = reader.At;
-                reader.ScanSubstitution();
-                var innerEnd = System.Math.Max(innerStart, reader.At - 1);
-
-                substitutions.Add(
-                    ParseInterpolation(
-                        reader.Slice(innerStart, innerEnd), innerLine, innerColumn, token.Offset + innerStart));
-
-                chunkStart = reader.At;
-                continue;
-            }
-
-            if (c == '\r')
-            {
-                chunk.Append('\n');
-                reader.Step();
-                continue;
-            }
-
-            chunk.Append(c);
-            reader.Step();
         }
 
-        raw.Add(Normalise(reader.Slice(chunkStart, reader.At)));
-        cooked.Add(spoiled ? null : chunk.ToString());
         return new JsTemplateLiteral(span, cooked, raw, substitutions);
     }
 
     /// <summary>
-    /// Reads one escape of a template chunk, appending what it means, or answers why the language
-    /// defines no escape here.
+    /// Reads one escape of a template chunk, from its backslash at <paramref name="cursor"/>,
+    /// appending what it means, or answers why the language defines no escape here.
     /// </summary>
     /// <remarks>
     /// The same rule a string literal follows for the rest, and for the same reason: every escape
@@ -6726,53 +6807,55 @@ internal sealed class JsParser
     /// template does NOT share with a string is Annex B's octal escapes: <c>\1</c> to <c>\9</c>,
     /// and <c>\0</c> before a digit, are NotEscapeSequences, as a short <c>\x</c> and a bad
     /// <c>\u</c> are. The caller refuses one in an untagged template and spoils the chunk in a
-    /// tagged one; either way nothing is appended for it.
+    /// tagged one; either way nothing is appended for it. A chunk ends where a <c>${</c> or the
+    /// closing backtick begins, and no escape reads either of those, so reading within the chunk
+    /// is reading what the template holds.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C1BA2B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DBE1BA
     // Broiler-Human:        PENDING
-    private static string? CookEscape(TemplateReader reader, System.Text.StringBuilder cooked)
+    private static string? CookEscape(string text, ref int cursor, System.Text.StringBuilder cooked)
     {
-        reader.Step();
+        cursor++;
 
-        if (reader.AtEnd)
+        if (cursor >= text.Length)
         {
             return null;
         }
 
-        var escape = reader.Current;
+        var escape = text[cursor];
 
         switch (escape)
         {
-            case 'n': cooked.Append('\n'); reader.Step(); return null;
-            case 't': cooked.Append('\t'); reader.Step(); return null;
-            case 'r': cooked.Append('\r'); reader.Step(); return null;
-            case 'b': cooked.Append('\b'); reader.Step(); return null;
-            case 'f': cooked.Append('\f'); reader.Step(); return null;
-            case 'v': cooked.Append('\v'); reader.Step(); return null;
+            case 'n': cooked.Append('\n'); cursor++; return null;
+            case 't': cooked.Append('\t'); cursor++; return null;
+            case 'r': cooked.Append('\r'); cursor++; return null;
+            case 'b': cooked.Append('\b'); cursor++; return null;
+            case 'f': cooked.Append('\f'); cursor++; return null;
+            case 'v': cooked.Append('\v'); cursor++; return null;
 
-            case '0' when reader.Peek(1) is < '0' or > '9':
+            case '0' when cursor + 1 >= text.Length || text[cursor + 1] is < '0' or > '9':
                 cooked.Append('\0');
-                reader.Step();
+                cursor++;
                 return null;
 
             case >= '0' and <= '9':
-                reader.Step();
+                cursor++;
                 return "a template admits no octal escape: `\\1` to `\\9`, and `\\0` before a digit, are escapes only a string literal outside strict code has";
 
             case 'x':
             {
-                reader.Step();
+                cursor++;
                 var value = 0;
 
                 for (var digit = 0; digit < 2; digit++)
                 {
-                    if (reader.AtEnd || !System.Uri.IsHexDigit(reader.Current))
+                    if (cursor >= text.Length || !System.Uri.IsHexDigit(text[cursor]))
                     {
                         return "a hexadecimal escape with fewer than two digits";
                     }
 
-                    value = (value * 16) + System.Uri.FromHex(reader.Current);
-                    reader.Step();
+                    value = (value * 16) + System.Uri.FromHex(text[cursor]);
+                    cursor++;
                 }
 
                 cooked.Append((char)value);
@@ -6781,9 +6864,9 @@ internal sealed class JsParser
 
             case 'u':
             {
-                reader.Step();
+                cursor++;
 
-                if (!ReadUnicodeEscape(reader, out var scalar))
+                if (!ReadUnicodeEscape(text, ref cursor, out var scalar))
                 {
                     return "a unicode escape that names no code point";
                 }
@@ -6793,38 +6876,40 @@ internal sealed class JsParser
             }
 
             default:
+                // A LINE CONTINUATION: the terminator after the backslash contributes nothing, and a
+                // carriage return before a line feed is one terminator with it.
                 if (escape is '\n' or '\r' or '\u2028' or '\u2029')
                 {
-                    reader.Step();
+                    cursor += escape == '\r' && cursor + 1 < text.Length && text[cursor + 1] == '\n' ? 2 : 1;
                     return null;
                 }
 
                 cooked.Append(escape);
-                reader.Step();
+                cursor++;
                 return null;
         }
     }
 
-    /// <summary>Reads the body of a <c>\u</c> escape, braced or not.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1FE911
+    /// <summary>Reads the body of a <c>\u</c> escape of a template chunk, braced or not.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=25F502
     // Broiler-Human:        PENDING
-    private static bool ReadUnicodeEscape(TemplateReader reader, out int scalar)
+    private static bool ReadUnicodeEscape(string text, ref int cursor, out int scalar)
     {
         scalar = 0;
 
-        if (!reader.AtEnd && reader.Current == '{')
+        if (cursor < text.Length && text[cursor] == '{')
         {
-            reader.Step();
+            cursor++;
             var digits = 0;
 
-            while (!reader.AtEnd && reader.Current != '}')
+            while (cursor < text.Length && text[cursor] != '}')
             {
-                if (!System.Uri.IsHexDigit(reader.Current))
+                if (!System.Uri.IsHexDigit(text[cursor]))
                 {
                     return false;
                 }
 
-                scalar = (scalar * 16) + System.Uri.FromHex(reader.Current);
+                scalar = (scalar * 16) + System.Uri.FromHex(text[cursor]);
                 digits++;
 
                 if (scalar > 0x10FFFF)
@@ -6832,27 +6917,27 @@ internal sealed class JsParser
                     return false;
                 }
 
-                reader.Step();
+                cursor++;
             }
 
-            if (digits == 0 || reader.AtEnd)
+            if (digits == 0 || cursor >= text.Length)
             {
                 return false;
             }
 
-            reader.Step();
+            cursor++;
             return true;
         }
 
         for (var digit = 0; digit < 4; digit++)
         {
-            if (reader.AtEnd || !System.Uri.IsHexDigit(reader.Current))
+            if (cursor >= text.Length || !System.Uri.IsHexDigit(text[cursor]))
             {
                 return false;
             }
 
-            scalar = (scalar * 16) + System.Uri.FromHex(reader.Current);
-            reader.Step();
+            scalar = (scalar * 16) + System.Uri.FromHex(text[cursor]);
+            cursor++;
         }
 
         return true;
@@ -6888,94 +6973,52 @@ internal sealed class JsParser
                 .Replace("\r\n", "\n", System.StringComparison.Ordinal)
                 .Replace("\r", "\n", System.StringComparison.Ordinal);
 
-    /// <summary>Parses one substitution, whose text is a slice of the source this parser was given.</summary>
+    /// <summary>Parses one substitution, from its run of tokens, in this parse.</summary>
     /// <remarks>
     /// <para>
-    /// <b>Every token it produces is moved back to where it really is.</b> The substitution is
-    /// tokenized on its own, so its first line begins at column one - and a diagnostic reported at
-    /// that column would name a position in a file the reader is looking at and point at the wrong
-    /// character. The first line is shifted by the column the substitution starts at and every
-    /// later line by the line count alone, which is exactly the arithmetic of pasting a slice back
-    /// into the text it came out of.
+    /// <b>The cursor moves into the substitution's run and back</b>, and nothing else about the parse
+    /// changes: the strictness, the function nesting, the generator and async contexts, a static
+    /// block's reservation of <c>await</c>, the parameter list, the nesting depth, the tree depth and
+    /// the labels are all the template's, because they are this parser's. The run ends with an end
+    /// of source at the substitution's closing brace, which is where the cursor and every lookahead
+    /// stop while it is read.
     /// </para>
     /// <para>
-    /// <b>The strictness and the function nesting cross the boundary with it</b>, because both
-    /// change the GRAMMAR and neither is recoverable from the slice: <c>`${yield}`</c> in strict
-    /// code is a reserved word and <c>`${new.target}`</c> is admitted only where a function
-    /// encloses it.
+    /// <b>A refusal counts from here, for what this parse stops on</b> (<see cref="StreamRefused"/>),
+    /// as it did when a substitution had a parser of its own: a refusal before the template does not
+    /// stop the substitution's parse, and one inside it stops the template's only once the
+    /// substitution is read. A substitution its lexer refused has no run; its refusals are reported
+    /// here, where the parse reaches it, and it reads as <c>null</c> at its first character.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A69224
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6DBB15
+    // Broiler-Falsified-If: the cursor, the stream's bounds or the refusal floor are not what they were once a substitution is read
     // Broiler-Human:        PENDING
-    private JsExpression ParseInterpolation(string text, int line, int column, int offset)
+    private JsExpression ParseSubstitution(SliceSubstitution substitution)
     {
-        var tokenizer = new SliceTokenizer(text) { HtmlLikeComments = options.Goal != SliceGoal.Module };
-        var stream = tokenizer.Tokenize();
-
-        if (tokenizer.Diagnostics.Count != 0)
+        if (substitution.Refusals.Count != 0)
         {
-            foreach (var diagnostic in tokenizer.Diagnostics)
+            foreach (var refusal in substitution.Refusals)
             {
-                Refuse(
-                    Move(new SliceSourceSpan(diagnostic.Line, diagnostic.Column), line, column),
-                    diagnostic.Code,
-                    diagnostic.Message);
+                Refuse(new SliceSourceSpan(refusal.Line, refusal.Column), refusal.Code, refusal.Message);
             }
 
-            return new JsNullLiteral(new SliceSourceSpan(line, column));
+            return new JsNullLiteral(new SliceSourceSpan(substitution.Line, substitution.Column));
         }
 
-        for (var index = 0; index < stream.Length; index++)
-        {
-            var token = stream[index];
-            var moved = Move(new SliceSourceSpan(token.Line, token.Column), line, column);
-            stream[index] = token with
-            {
-                Line = moved.Line,
-                Column = moved.Column,
-                Offset = token.Offset + offset,
-                End = token.End + offset,
-            };
-        }
+        var (outerAt, outerBegin, outerEnd, outerFloor) = (at, begin, end, refusalFloor);
+        at = begin = substitution.First;
+        end = substitution.Last;
+        refusalFloor = refusals;
 
-        var inner = new JsParser(
-            stream, options, strict, functionDepth, yieldIsOperator, awaitIsOperator)
-        {
-            AdmitsBigInt = AdmitsBigInt,
-        };
+        var value = ParseInterpolationBody();
 
-        // A SUBSTITUTION IS PART OF THE LIST IT IS WRITTEN IN, so `${await}` in a static block is
-        // refused by the inner parse exactly as the word is outside the template.
-        inner.awaitIsReserved = awaitIsReserved;
-        var value = inner.ParseInterpolationBody();
-
-        // AND AN `await` IN IT AT A MODULE'S TOP LEVEL IS THE MODULE'S TOP-LEVEL AWAIT. The inner
-        // parse records it in its own flag; until 2026-09-29 nothing carried that flag out, so a
-        // module whose only suspension stood in a substitution was lowered as a unit that may not
-        // await, and the lowering refused the `await` as if it stood outside an async function.
-        sawTopLevelAwait |= inner.SawTopLevelAwait;
-
-        foreach (var diagnostic in inner.Diagnostics)
-        {
-            Refuse(
-                new SliceSourceSpan(diagnostic.Line, diagnostic.Column),
-                diagnostic.Code,
-                diagnostic.Message);
-        }
-
+        (at, begin, end, refusalFloor) = (outerAt, outerBegin, outerEnd, outerFloor);
         return value;
     }
 
-    /// <summary>Where a position inside a substitution's own text is in the whole source.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=105752
-    // Broiler-Human:        PENDING
-    private static SliceSourceSpan Move(SliceSourceSpan inner, int line, int column) =>
-        inner.Line <= 1
-            ? new SliceSourceSpan(line, column + inner.Column - 1)
-            : new SliceSourceSpan(line + inner.Line - 1, inner.Column);
-
     /// <summary>Parses the one expression a substitution is, and nothing after it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D4EC22
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4B2B07
     // Broiler-Human:        PENDING
     private JsExpression ParseInterpolationBody()
     {
@@ -6993,7 +7036,7 @@ internal sealed class JsParser
 
         var value = ParseExpression();
 
-        if (Current.Kind != SliceTokenKind.EndOfSource && diagnostics.Count == 0)
+        if (Current.Kind != SliceTokenKind.EndOfSource && !StreamRefused)
         {
             Refuse(
                 Span(),
@@ -7183,12 +7226,12 @@ internal sealed class JsParser
     // Broiler-Human:        PENDING
     private SliceToken Current => tokens[at];
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DE9B1C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=145873
     // Broiler-Human:        PENDING
     private SliceToken Peek(int ahead) =>
-        at + ahead < tokens.Length ? tokens[at + ahead] : tokens[^1];
+        at + ahead < end ? tokens[at + ahead] : tokens[end];
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CD32DA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=AED199
     // Broiler-Human:        PENDING
     private void Advance()
     {
@@ -7202,7 +7245,7 @@ internal sealed class JsParser
             RefuseLegacyEscape(Current);
         }
 
-        if (at < tokens.Length - 1)
+        if (at < end)
         {
             at++;
         }
@@ -7412,10 +7455,12 @@ internal sealed class JsParser
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1B7878
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D14985
     // Broiler-Human:        PENDING
     private void Refuse(SliceSourceSpan span, SliceSourceDiagnosticCode code, string message)
     {
+        refusals++;
+
         if (diagnostics.Count >= SliceSourceDiagnostic.MaximumPerStage)
         {
             return;
@@ -7450,346 +7495,4 @@ internal sealed class JsParser
     // Broiler-Human:        PENDING
     private static string Describe(SliceToken token) =>
         token.Kind == SliceTokenKind.EndOfSource ? "end of source" : token.RawText;
-
-    /// <summary>
-    /// A cursor over one template's raw text that knows where in the whole source it is.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>It repeats the tokenizer's substitution scan on purpose, and the repetition is the
-    /// contract.</b> The tokenizer already found where this template ends, using brace counting
-    /// that skips a string, a comment, a regular expression and a nested template whole; if this
-    /// cursor disagreed with it about where a substitution ends, the two would carve the same text
-    /// differently and the parse would be of something the tokenizer never saw. So the rules here
-    /// are the tokenizer's rules, including its <c>/</c> heuristic - and where that heuristic is
-    /// wrong, both are wrong together, which is a defect a reader can find rather than a
-    /// disagreement they cannot.
-    /// </para>
-    /// <para>
-    /// <b>It counts lines while it goes because the substitutions need it.</b> A diagnostic inside
-    /// <c>`${x +</c> … <c>}`</c> that spans lines has to name the line it is really on, and the only
-    /// place that is known is here, one character at a time, with CRLF counted once.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=09F45E
-    // Broiler-Falsified-If: this cursor ends a substitution at a different character than the tokenizer did
-    // Broiler-Human:        PENDING
-    private sealed class TemplateReader(string text, int line, int column)
-    {
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BDDF6F
-        // Broiler-Human:        PENDING
-        private readonly string source = text;
-
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=98C321
-        // Broiler-Human:        PENDING
-        private int at;
-
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F54545
-        // Broiler-Human:        PENDING
-        private int currentLine = line;
-
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=53EEF2
-        // Broiler-Human:        PENDING
-        private int currentColumn = column;
-
-        /// <summary>How far into the template's text the cursor is.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=992608
-        // Broiler-Human:        PENDING
-        internal int At => at;
-
-        /// <summary>The line of the whole source the cursor is on.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C5FF9A
-        // Broiler-Human:        PENDING
-        internal int Line => currentLine;
-
-        /// <summary>The column of the whole source the cursor is at.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=02AF1F
-        // Broiler-Human:        PENDING
-        internal int Column => currentColumn;
-
-        /// <summary>Whether the cursor has run out of template.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=680D30
-        // Broiler-Human:        PENDING
-        internal bool AtEnd => at >= source.Length;
-
-        /// <summary>The character under the cursor.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4020AA
-        // Broiler-Human:        PENDING
-        internal char Current => source[at];
-
-        /// <summary>The character <paramref name="ahead"/> past the cursor, or NUL past the end.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3B5C11
-        // Broiler-Human:        PENDING
-        internal char Peek(int ahead) => at + ahead < source.Length ? source[at + ahead] : '\0';
-
-        /// <summary>The template's text between two cursor positions.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6A62E5
-        // Broiler-Human:        PENDING
-        internal string Slice(int start, int end) =>
-            source[System.Math.Min(start, source.Length)..System.Math.Min(end, source.Length)];
-
-        /// <summary>Advances one character, counting CRLF as the one line break it is.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=79BAEA
-        // Broiler-Human:        PENDING
-        internal void Step()
-        {
-            if (at >= source.Length)
-            {
-                return;
-            }
-
-            var c = source[at];
-
-            if (c is '\n' or '\r' or '\u2028' or '\u2029')
-            {
-                if (c == '\r' && at + 1 < source.Length && source[at + 1] == '\n')
-                {
-                    at++;
-                }
-
-                at++;
-                currentLine++;
-                currentColumn = 1;
-                return;
-            }
-
-            at++;
-            currentColumn++;
-        }
-
-        /// <summary>Advances past the brace that closes the substitution the cursor is inside.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=CF4993
-        // Broiler-Falsified-If: a brace inside a string, a comment, a nested template or an object literal closes the substitution
-        // Broiler-Human:        PENDING
-        internal void ScanSubstitution()
-        {
-            var braces = 0;
-            var previous = '\0';
-
-            while (!AtEnd)
-            {
-                var c = Current;
-
-                if (c == '/' && Peek(1) == '/')
-                {
-                    while (!AtEnd && Current is not '\n' and not '\r' and not '\u2028' and not '\u2029')
-                    {
-                        Step();
-                    }
-
-                    continue;
-                }
-
-                if (c == '/' && Peek(1) == '*')
-                {
-                    Step();
-                    Step();
-
-                    while (!AtEnd && !(Current == '*' && Peek(1) == '/'))
-                    {
-                        Step();
-                    }
-
-                    Step();
-                    Step();
-                    continue;
-                }
-
-                if (c == '/' && StartsRegularExpression(previous))
-                {
-                    ScanRegularExpression();
-                    previous = '/';
-                    continue;
-                }
-
-                if (c is '"' or '\'')
-                {
-                    ScanString(c);
-                    previous = c;
-                    continue;
-                }
-
-                if (c == '`')
-                {
-                    Step();
-                    ScanTemplateBody();
-                    previous = '`';
-                    continue;
-                }
-
-                if (c == '{')
-                {
-                    braces++;
-                    Step();
-                    previous = '{';
-                    continue;
-                }
-
-                if (c == '}')
-                {
-                    Step();
-
-                    if (braces == 0)
-                    {
-                        return;
-                    }
-
-                    braces--;
-                    previous = '}';
-                    continue;
-                }
-
-                // White space and line terminators leave the last significant character as it was:
-                // the language's sets since SJL-7.4 (JSD-0074), where the platform's char.IsWhiteSpace
-                // also skipped U+0085 and U+001C to U+001F, which the tokenizer refuses anyway.
-                if (!(JsCompilerUnicode.Lexical.IsWhiteSpace(c) || Broiler.Unicode.Algorithms.EcmaScriptLexical.IsLineTerminator(c)))
-                {
-                    previous = c;
-                }
-
-                Step();
-            }
-        }
-
-        /// <summary>Advances past the backtick that closes a nested template.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B8B0F5
-        // Broiler-Human:        PENDING
-        private void ScanTemplateBody()
-        {
-            while (!AtEnd)
-            {
-                var c = Current;
-
-                if (c == '\\')
-                {
-                    Step();
-                    Step();
-                    continue;
-                }
-
-                if (c == '`')
-                {
-                    Step();
-                    return;
-                }
-
-                if (c == '$' && Peek(1) == '{')
-                {
-                    Step();
-                    Step();
-                    ScanSubstitution();
-                    continue;
-                }
-
-                Step();
-            }
-        }
-
-        /// <summary>Advances past the quote that closes a string literal.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=287666
-        // Broiler-Human:        PENDING
-        private void ScanString(char quote)
-        {
-            Step();
-
-            while (!AtEnd)
-            {
-                var c = Current;
-
-                if (c == '\\')
-                {
-                    Step();
-                    Step();
-                    continue;
-                }
-
-                if (c == quote)
-                {
-                    Step();
-                    return;
-                }
-
-                // U+2028 and U+2029 are string characters, as the tokenizer reads them; only LF
-                // and CR end a string that has not closed.
-                if (c is '\n' or '\r')
-                {
-                    return;
-                }
-
-                Step();
-            }
-        }
-
-        /// <summary>Advances past a regular-expression literal and its flags.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=88377D
-        // Broiler-Human:        PENDING
-        private void ScanRegularExpression()
-        {
-            Step();
-            var inClass = false;
-
-            while (!AtEnd)
-            {
-                var c = Current;
-
-                if (c is '\n' or '\r' or '\u2028' or '\u2029')
-                {
-                    return;
-                }
-
-                if (c == '\\')
-                {
-                    Step();
-
-                    // A backslash before a line terminator ends the literal unterminated, where
-                    // the tokenizer's scan ends it, so the two carve the substitution alike.
-                    if (!AtEnd && Current is '\n' or '\r' or '\u2028' or '\u2029')
-                    {
-                        return;
-                    }
-
-                    Step();
-                    continue;
-                }
-
-                if (c == '[')
-                {
-                    inClass = true;
-                }
-                else if (c == ']')
-                {
-                    inClass = false;
-                }
-                else if (c == '/' && !inClass)
-                {
-                    Step();
-
-                    // The flags are what the tokenizer reads after the closing slash: identifier parts
-                    // (since SJL-7.4, JSD-0074; it was the platform's char.IsLetterOrDigit).
-                    while (!AtEnd && (JsCompilerUnicode.Lexical.IsIdentifierPart(Current) || Current is '$' or '_'))
-                    {
-                        Step();
-                    }
-
-                    return;
-                }
-
-                Step();
-            }
-        }
-
-        /// <summary>
-        /// Whether a <c>/</c> after this character opens a regular expression rather than dividing.
-        /// </summary>
-        /// <remarks>
-        /// The tokenizer's own heuristic, character for character. It is consulted only to find
-        /// where a substitution ends, and both scans have to reach the same answer or they carve
-        /// the source differently.
-        /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=17FBC0
-        // Broiler-Human:        PENDING
-        private static bool StartsRegularExpression(char previous) =>
-            previous is '\0' or '(' or ',' or '=' or ':' or '[' or '!' or '&' or '|' or '?' or
-                '{' or '}' or ';' or '+' or '-' or '*' or '%' or '<' or '>' or '~' or '^';
-    }
 }
