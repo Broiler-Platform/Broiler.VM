@@ -42,9 +42,14 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// an evaluated program's caller's <c>arguments</c>, a reference the lowering read and wrote (and so
 /// reported twice) included; and alone, because a unit the binder refuses is not lowered, so the
 /// lowering's ceiling on parameters is not met beside it. <c>a: b: while (1) { continue a; }</c> stays
-/// refused as the lowering refused it. And code the lowering never lowers is walked silently: an
-/// overridden function of sloppy eval code keeps the program accepted, and a static block's
-/// <c>return</c> value adds nothing to the lowering's 2207.
+/// refused as the lowering refused it. Code the lowering never lowers is walked silently, so an
+/// overridden function of sloppy eval code keeps the program accepted; a construct the binder refuses
+/// is walked into, so a static block's <c>return</c> value is reported after its 2207.
+/// </para>
+/// <para>
+/// <b><c>return</c> in a class static block is the binder's too</b>, under 2207 (JSD-0080 decision
+/// D12), so beside another early error it keeps its place: the lowering reported it where it compiled
+/// the class, and a binder refusal of the other, with the 2207 left to the lowering, lost it.
 /// </para>
 /// </remarks>
 internal static class BinderChecks
@@ -115,6 +120,27 @@ internal static class BinderChecks
             "early error: continue to the outer label of a label set stays refused",
             "a: b: while (1) { continue a; }",
             "2208@1:19");
+
+        // return in a class static block, under the lowering's 2207 (JSD-0080 decision D12): beside another
+        // early error it is reported in its place, as the base's lowering reported both - while the 2207
+        // was left to the lowering, a binder refusal of the other answered that alone - and once for a
+        // finally block the lowering compiled twice
+        yield return Refused(
+            "early error: return in a class static block",
+            "class C { static { return; } }",
+            "2207@1:20");
+        yield return Refused(
+            "early error: return in a class static block, and a break after it",
+            "class C { static { return; } } break;",
+            "2207@1:20 2207@1:32");
+        yield return Refused(
+            "early error: return in a class static block, and a cover initialiser after it",
+            "class C { static { return; } } ({a=1});",
+            "2207@1:20 2101@1:34");
+        yield return Refused(
+            "early error: return in a class static block's finally block is reported once",
+            "class C { static { try {} finally { return; } } }",
+            "2207@1:37");
 
         // assignment targets
         yield return Refused("early error: update of a call in strict code", "'use strict'; f()++;", "2205@1:15");
@@ -208,16 +234,19 @@ internal static class BinderChecks
 
         // code the lowering never lowers is walked silently: a sloppy evaluated program's function
         // that a later one of the same name overrides is never compiled, so its early error is none
-        // and the program stays accepted; and the value of a `return` in a static block, which the
-        // lowering refuses with 2207 and lowers nothing of, adds nothing to that refusal
+        // and the program stays accepted
         yield return Accepted(
             "early error in an overridden function of sloppy eval code is not reported",
             "function f() { return super.x; } function f() {}",
             EvalFlags.None);
+
+        // and what a construct the binder refuses holds is walked, as every refused construct is: the
+        // value of a `return` in a static block, which the lowering lowered nothing of after its 2207,
+        // is reported after it now that the 2207 is the binder's
         yield return Refused(
-            "early error in a static block's return value is not reported beside the 2207",
+            "early error in a static block's return value is reported after the 2207",
             "class A { static { return /(/; } }",
-            "2207@1:20");
+            "2207@1:20 2101@1:27");
     }
 
     /// <summary>

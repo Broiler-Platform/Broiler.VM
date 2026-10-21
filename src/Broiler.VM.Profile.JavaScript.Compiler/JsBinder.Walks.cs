@@ -120,7 +120,7 @@ internal sealed partial class JsBinder
         /// </summary>
         Body = 16,
 
-        /// <summary>A class static block's own body, where a <c>return</c> is the lowering's to refuse.</summary>
+        /// <summary>A class static block's own body, where a <c>return</c> is an early error.</summary>
         StaticBlock = 32,
 
         /// <summary>
@@ -481,7 +481,7 @@ internal sealed partial class JsBinder
     /// no further after a refusal it keeps, is walked <see cref="Frame.Silent"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=98021E
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=0F5A2C
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
     private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
@@ -679,8 +679,11 @@ internal sealed partial class JsBinder
                 Push(pending, statement.Body, context);
                 return;
 
-            // A `return` IN A STATIC BLOCK IS THE LOWERING'S TO REFUSE, under the code the catalogue
-            // records for it (JSD-0080 decisions D12 and D13), and it lowers nothing of the value.
+            // A `return` HAS SOMETHING TO RETURN FROM ONLY IN A FUNCTION'S OWN CODE, and a class
+            // static block compiles to a function and is not one: the word is an early error there
+            // too, under the code the catalogue records for it (2207; JSD-0080 decisions D12 and
+            // D13). The lowering lowered nothing of the value after refusing either; the value is
+            // walked all the same, so what it holds is reported too.
             case JsReturnStatement statement:
                 if (!context.Is(Frame.Body))
                 {
@@ -690,12 +693,16 @@ internal sealed partial class JsBinder
                         SliceSourceDiagnosticCode.UnexpectedToken,
                         "`return` has nothing to return from outside a function");
                 }
+                else if (context.Is(Frame.StaticBlock))
+                {
+                    Report(
+                        context,
+                        statement.Span,
+                        SliceSourceDiagnosticCode.IllegalBreak,
+                        "`return` has nothing to return from inside a class static block");
+                }
 
-                Push(
-                    pending,
-                    statement.Value,
-                    context.Is(Frame.StaticBlock) ? context.And(Frame.Silent) : context);
-
+                Push(pending, statement.Value, context);
                 return;
 
             case JsThrowStatement statement:

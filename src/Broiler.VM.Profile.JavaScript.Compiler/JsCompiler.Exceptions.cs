@@ -236,7 +236,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FADF81
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0EBBF4
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -262,15 +262,12 @@ public sealed partial class JsCompiler
         // A STATIC BLOCK COMPILES TO A FUNCTION AND IS NOT ONE, which is why the scope test above
         // does not catch this. The block's body is a code unit so that it can close over the class
         // scope and be called with the constructor as its `this`; nothing about it is a function a
-        // program can return FROM, and the specification makes the word an early error there.
+        // program can return FROM, and the specification makes the word an early error there. The
+        // binder refuses it under 2207, the code the catalogue records for it, before any of the
+        // unit is lowered (SJL-12.6 item 2, JSD-0080 decision D12); here the lowering only asserts it.
         if (insideStaticBlock)
         {
-            Refuse(
-                returned.Span,
-                SliceSourceDiagnosticCode.IllegalBreak,
-                "`return` has nothing to return from inside a class static block");
-
-            return;
+            throw BinderAdmitted(returned.Span, "a `return` in a class static block");
         }
 
         var unwinds = false;
