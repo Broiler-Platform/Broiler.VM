@@ -804,7 +804,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5644B7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3FCEA4
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -876,6 +876,16 @@ public sealed partial class JsCompiler
             // unit's lowering reads it from the binder, so the facts and the emission cannot be told
             // two different strictnesses.
             binder = JsBinder.Bind(program, forceStrict, script.Options);
+
+            // A UNIT ITS BINDER REFUSES IS NOT LOWERED (SJL-12.6 item 2, JSD-0080 decisions D10 and
+            // D12). An early error the binder reports is found once, in source order, before any of
+            // the unit is lowered, so it never produces bytes and a `finally` block lowered three
+            // times does not report it three times.
+            if (binder.Diagnostics.Count != 0)
+            {
+                diagnostics.AddRange(binder.Diagnostics);
+                return Refused(first, script.SourceName);
+            }
 
             scriptReferrer = script.Referrer;
             currentSource = AddSource(script.Text);
@@ -970,6 +980,14 @@ public sealed partial class JsCompiler
 
             // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says.
             binder = JsBinder.Bind(program, imposed: true, module.Options);
+
+            // AND A MODULE ITS BINDER REFUSES IS NOT LOWERED EITHER.
+            if (binder.Diagnostics.Count != 0)
+            {
+                diagnostics.AddRange(binder.Diagnostics);
+                return new JsCompilation(false, null, diagnostics);
+            }
+
             currentSource = AddSource(text);
             CompileModule(program, module);
 

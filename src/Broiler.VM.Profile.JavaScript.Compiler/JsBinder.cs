@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           29
+// Exempt:           31
 // Human-reviewed:   0/18
 // IP risk:          None
 // Security risk:    High
-// Criteria:         5/2
+// Criteria:         6/3
 // Resource impact:  3/10 max
 // Unverified:       18
 //
@@ -110,14 +110,20 @@ internal sealed partial class JsBinder
     private readonly System.Collections.Generic.Dictionary<JsStatement, string[]> heads =
         new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
 
+    /// <summary>The early errors the walk found, in the order it met them.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E02314
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<SliceSourceDiagnostic> found = [];
+
     /// <summary>Binds one unit.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B81D84
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6BAA14
     // Broiler-Human:        PENDING
     private JsBinder(JsProgramNode program, bool strict, SliceParseOptions options)
     {
         Program = BindProgram(program, strict);
         ModuleDeclarations = options.Goal == SliceGoal.Module ? ModuleDeclarationsOf(program.Body) : [];
         BindTree(program, Program.Strict);
+        Diagnostics = InSourceOrder(found);
     }
 
     /// <summary>
@@ -138,8 +144,22 @@ internal sealed partial class JsBinder
     internal System.Collections.Generic.IReadOnlyList<ModuleDeclaration> ModuleDeclarations { get; }
 
     /// <summary>
+    /// The unit's early errors - the language early errors the lowering used to raise while it
+    /// emitted - each once, in source order, at most as many as the parser's diagnostics hold.
+    /// </summary>
+    /// <remarks>
+    /// <b>A unit with any is not lowered</b> (SJL-12.6 item 2, JSD-0080 decisions D10 and D12): the
+    /// compilation is refused with these and nothing else, so an early error never produces bytes,
+    /// and none is reported twice because a <c>finally</c> block is lowered twice.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E0BF86
+    // Broiler-Falsified-If: a unit the lowering would have refused with a language early error is answered with none, or a unit it would have lowered without one is answered with one
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics { get; }
+
+    /// <summary>
     /// Binds one compilation unit: a script, an evaluated program or a module, after it parsed and
-    /// after the manifest admitted it.
+    /// after the manifest admitted it, and finds its early errors.
     /// </summary>
     /// <param name="program">The unit's tree.</param>
     /// <param name="imposed">
