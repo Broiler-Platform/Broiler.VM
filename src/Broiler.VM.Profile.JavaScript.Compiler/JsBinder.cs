@@ -121,7 +121,7 @@ internal sealed partial class JsBinder
     private readonly SliceParseOptions unit;
 
     /// <summary>Binds one unit.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A9ECE3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4C7C4B
     // Broiler-Human:        PENDING
     private JsBinder(JsProgramNode program, bool strict, SliceParseOptions options)
     {
@@ -129,6 +129,12 @@ internal sealed partial class JsBinder
         Program = BindProgram(program, strict);
         ModuleDeclarations = options.Goal == SliceGoal.Module ? ModuleDeclarationsOf(program.Body) : [];
         BindTree(program, Program.Strict);
+
+        if (options.Goal == SliceGoal.Module)
+        {
+            CheckModule(program.Body);
+        }
+
         Diagnostics = InSourceOrder(found);
     }
 

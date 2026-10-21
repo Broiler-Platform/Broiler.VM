@@ -981,7 +981,8 @@ public sealed partial class JsCompiler
             // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says.
             binder = JsBinder.Bind(program, imposed: true, module.Options);
 
-            // AND A MODULE ITS BINDER REFUSES IS NOT LOWERED EITHER.
+            // AND A MODULE ITS BINDER REFUSES IS NOT LOWERED EITHER: its declaration, collision and
+            // export checks are the binder's with the rest.
             if (binder.Diagnostics.Count != 0)
             {
                 diagnostics.AddRange(binder.Diagnostics);

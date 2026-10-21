@@ -114,7 +114,7 @@ public sealed partial class JsCompiler
     /// exporting module's slot, so giving it one here would create the copy that makes a live
     /// binding stale - see <see cref="JsOpcode.LoadImport"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=11D9F4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BE769C
     // Broiler-Human:        PENDING
     private void DeclareImports(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -133,25 +133,12 @@ public sealed partial class JsCompiler
                     foreach (var specifier in import.Specifiers)
                     {
                         // An import binds a name in strict code, where `arguments` and `eval` are
-                        // not binding names (13.1.1). Until 2026-10-03 both imported (JSC-253).
-                        if (specifier.Local is "arguments" or "eval")
+                        // not binding names (13.1.1), and binds it once; the binder refused a module
+                        // that does either before any of it was lowered (SJL-12.6 item 2).
+                        if (specifier.Local is "arguments" or "eval" ||
+                            build.Imports.ContainsKey(specifier.Local))
                         {
-                            Refuse(
-                                specifier.Span,
-                                SliceSourceDiagnosticCode.ReservedWordAsBinding,
-                                "`" + specifier.Local + "` is not a binding name in a module");
-
-                            continue;
-                        }
-
-                        if (build.Imports.ContainsKey(specifier.Local))
-                        {
-                            Refuse(
-                                specifier.Span,
-                                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                                "`" + specifier.Local + "` is imported twice");
-
-                            continue;
+                            throw BinderAdmitted(specifier.Span, "the import binding `" + specifier.Local + "`");
                         }
 
                         var row = new JsImportEntryRow(
@@ -305,7 +292,7 @@ public sealed partial class JsCompiler
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=378D27
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=200188
     // Broiler-Human:        PENDING
     private System.Collections.Generic.IReadOnlyList<string> DeclareModuleBindings(
         JsBinder.HoistingScope unit,
@@ -316,72 +303,30 @@ public sealed partial class JsCompiler
         // from its top level with each exported declaration in the export's place.
         var names = unit.VarNames;
         var functions = unit.Functions;
-        var varNames = new System.Collections.Generic.HashSet<string>(names, System.StringComparer.Ordinal);
 
         foreach (var name in names)
         {
             Declared(build, name, constant: false);
         }
 
-        // A SECOND FUNCTION DECLARATION OF ONE NAME IS AN ERROR IN A MODULE AND NOT IN A SCRIPT.
-        // A script's top level lets the later declaration win, because a script's declarations are
-        // properties of the global object; a module's are lexical, and lexical names may be
-        // declared once. The two goals genuinely differ, so this check is here and not shared.
-        var declaredFunctions = new System.Collections.Generic.HashSet<string>(
-            System.StringComparer.Ordinal);
-
+        // A FUNCTION, A CLASS, A `let` AND A `const` OF THIS MODULE ARE ITS LEXICAL DECLARATIONS
+        // (16.2.1.1): each name is declared once, and none is also a `var` - which a script's top
+        // level would let the later declaration win. The binder checked both, with the import
+        // collisions below, before any of the module was lowered (SJL-12.6 item 2); what is left
+        // here declares the slots, in the order they always had.
         foreach (var function in functions)
         {
             build.Functions.Add(function);
-
-            if (!declaredFunctions.Add(function.Name))
-            {
-                Refuse(
-                    function.Span,
-                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                    "`" + function.Name + "` is declared twice at this module's top level");
-            }
-
-            // AND IT COLLIDES WITH A `var` OF THE SAME NAME, for the same reason: a module's
-            // function is lexical (16.2.1.1). Until 2026-10-03 `var f; function f() {}` compiled in
-            // a module (JSC-253).
-            if (varNames.Contains(function.Name))
-            {
-                Refuse(
-                    function.Span,
-                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
-                    "`" + function.Name + "` is declared both as a `var` and as a function");
-            }
-
             Declared(build, function.Name, constant: false);
         }
-
-        var declaredLexically = new System.Collections.Generic.HashSet<string>(
-            declaredFunctions, System.StringComparer.Ordinal);
 
         // A CLASS DECLARATION IS A LEXICAL DECLARATION OF THIS MODULE, and it needs its slot before
         // the body runs for the same reason a `let` does: an importer may hold a live binding to
         // it, and the slot it reads through has to exist and be uninitialised until the class is
         // evaluated. A DESTRUCTURING DECLARATOR DECLARES EVERY NAME IN ITS PATTERN, each where the
-        // binder's reading of the module's declarations lists it, at its declarator.
+        // binder's reading of the module's declarations lists it.
         foreach (var declaration in binder.ModuleDeclarations)
         {
-            if (!declaredLexically.Add(declaration.Name))
-            {
-                Refuse(
-                    declaration.Span,
-                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                    "`" + declaration.Name + "` is declared twice at this module's top level");
-            }
-
-            if (!declaration.IsClass && varNames.Contains(declaration.Name))
-            {
-                Refuse(
-                    declaration.Span,
-                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
-                    "`" + declaration.Name + "` is declared both as a `var` and lexically");
-            }
-
             Declared(build, declaration.Name, declaration.Constant);
         }
 
@@ -398,7 +343,7 @@ public sealed partial class JsCompiler
         return names;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CDC140
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CC526A
     // Broiler-Human:        PENDING
     private void Declared(ModuleBuild build, string name, bool constant)
     {
@@ -409,19 +354,14 @@ public sealed partial class JsCompiler
 
         if (build.Imports.ContainsKey(name))
         {
-            Refuse(
-                default,
-                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                "`" + name + "` is both imported and declared in this module");
-
-            return;
+            throw BinderAdmitted(default, "`" + name + "`, both imported and declared");
         }
 
         build.Scope.Declare(name, constant);
     }
 
     /// <summary>Records what the module publishes, and refuses a name it publishes twice.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=112B2E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DA409B
     // Broiler-Human:        PENDING
     private void DeclareExports(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -443,12 +383,8 @@ public sealed partial class JsCompiler
             {
                 if (!build.ExportNames.Add(specifier.Exported))
                 {
-                    Refuse(
-                        specifier.Span,
-                        SliceSourceDiagnosticCode.DuplicateExportName,
-                        "`" + specifier.Exported + "` is exported twice");
-
-                    continue;
+                    throw BinderAdmitted(
+                        specifier.Span, "the export name `" + specifier.Exported + "`, published twice");
                 }
 
                 if (exported.From.Length != 0)
@@ -489,12 +425,8 @@ public sealed partial class JsCompiler
 
                 if (!build.Scope.TryGet(specifier.Local, out var slot, out _))
                 {
-                    Refuse(
-                        specifier.Span,
-                        SliceSourceDiagnosticCode.ExportNameNotDeclared,
-                        "`" + specifier.Local + "` is exported and this module declares no such binding");
-
-                    continue;
+                    throw BinderAdmitted(
+                        specifier.Span, "the export of `" + specifier.Local + "`, which nothing declares");
                 }
 
                 build.LocalExports.Add(

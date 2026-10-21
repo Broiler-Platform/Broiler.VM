@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
+// Relevant units:   21
+// Annotated:        21/21
 // Exempt:           2
-// Human-reviewed:   0/19
+// Human-reviewed:   0/21
 // IP risk:          None
 // Security risk:    High
-// Criteria:         4/2
+// Criteria:         5/3
 // Resource impact:  3/10 max
-// Unverified:       19
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -489,4 +489,191 @@ internal sealed partial class JsBinder
         }
     }
 
+    /// <summary>
+    /// A module's declaration checks: its imports, its top-level declarations against each other and
+    /// against its imports, and its exports.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The lowering's three passes, in its order and with its answers</b>: an import binding
+    /// <c>arguments</c> or <c>eval</c>, or a name imported twice; a function declared twice, a function or
+    /// a lexical name that is also a <c>var</c>, a lexical name declared twice, and a name both declared
+    /// and imported, which the lowering reported at no place, once for each declaration of it; an export
+    /// name published twice, and a local export no declaration and no import binds.
+    /// </para>
+    /// <para>
+    /// <b>The import attribute is not one of them</b>: an attribute no composition can honour is the
+    /// module-load policy, which stays with the lowering (decision D12).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B0189E
+    // Broiler-Falsified-If: a module the lowering's declaration checks admitted is refused here, or one they refused is admitted, or a refusal's code, message or place differs from theirs
+    // Broiler-Human:        PENDING
+    private void CheckModule(System.Collections.Generic.IReadOnlyList<JsStatement> body)
+    {
+        var context = new Context(true, null, Frame.None, null);
+        var imports = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
+        foreach (var statement in body)
+        {
+            if (statement is not JsImportDeclaration import)
+            {
+                continue;
+            }
+
+            foreach (var specifier in import.Specifiers)
+            {
+                if (specifier.Local is "arguments" or "eval")
+                {
+                    Report(
+                        context,
+                        specifier.Span,
+                        SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                        "`" + specifier.Local + "` is not a binding name in a module");
+
+                    continue;
+                }
+
+                if (!imports.Add(specifier.Local))
+                {
+                    Report(
+                        context,
+                        specifier.Span,
+                        SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                        "`" + specifier.Local + "` is imported twice");
+                }
+            }
+        }
+
+        var declared = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+        var varNames = new System.Collections.Generic.HashSet<string>(Program.VarNames, System.StringComparer.Ordinal);
+
+        foreach (var name in Program.VarNames)
+        {
+            Declares(context, imports, declared, name);
+        }
+
+        var declaredLexically = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
+        foreach (var function in Program.Functions)
+        {
+            if (!declaredLexically.Add(function.Name))
+            {
+                Report(
+                    context,
+                    function.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "`" + function.Name + "` is declared twice at this module's top level");
+            }
+
+            if (varNames.Contains(function.Name))
+            {
+                Report(
+                    context,
+                    function.Span,
+                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                    "`" + function.Name + "` is declared both as a `var` and as a function");
+            }
+
+            Declares(context, imports, declared, function.Name);
+        }
+
+        foreach (var declaration in ModuleDeclarations)
+        {
+            if (!declaredLexically.Add(declaration.Name))
+            {
+                Report(
+                    context,
+                    declaration.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "`" + declaration.Name + "` is declared twice at this module's top level");
+            }
+
+            if (!declaration.IsClass && varNames.Contains(declaration.Name))
+            {
+                Report(
+                    context,
+                    declaration.Span,
+                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                    "`" + declaration.Name + "` is declared both as a `var` and lexically");
+            }
+
+            Declares(context, imports, declared, declaration.Name);
+        }
+
+        foreach (var statement in body)
+        {
+            if (statement is JsExportDeclaration { Kind: JsExportKind.Default, Default: not null })
+            {
+                declared.Add(JsParser.DefaultBindingName);
+            }
+        }
+
+        var exported = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
+        foreach (var statement in body)
+        {
+            if (statement is not JsExportDeclaration export ||
+                (export.Kind == JsExportKind.All && export.Specifiers.Count == 0))
+            {
+                continue;
+            }
+
+            foreach (var specifier in export.Specifiers)
+            {
+                if (!exported.Add(specifier.Exported))
+                {
+                    Report(
+                        context,
+                        specifier.Span,
+                        SliceSourceDiagnosticCode.DuplicateExportName,
+                        "`" + specifier.Exported + "` is exported twice");
+
+                    continue;
+                }
+
+                if (export.From.Length != 0 || imports.Contains(specifier.Local) ||
+                    declared.Contains(specifier.Local))
+                {
+                    continue;
+                }
+
+                Report(
+                    context,
+                    specifier.Span,
+                    SliceSourceDiagnosticCode.ExportNameNotDeclared,
+                    "`" + specifier.Local + "` is exported and this module declares no such binding");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Declares one of a module's own names, unless an import already binds it, which is refused.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B1C0AA
+    // Broiler-Human:        PENDING
+    private void Declares(
+        Context context,
+        System.Collections.Generic.HashSet<string> imports,
+        System.Collections.Generic.HashSet<string> declared,
+        string name)
+    {
+        if (name.Length == 0)
+        {
+            return;
+        }
+
+        if (imports.Contains(name))
+        {
+            Report(
+                context,
+                default,
+                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                "`" + name + "` is both imported and declared in this module");
+
+            return;
+        }
+
+        declared.Add(name);
+    }
 }
