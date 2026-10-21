@@ -152,8 +152,8 @@ internal enum JsPropertyKind
 /// Whether this entry is a <c>{ a = 1 }</c> shorthand, which is <b>not</b> an object literal entry
 /// at all - it is only ever legal as the cover grammar of an assignment pattern. The parser cannot
 /// tell the two apart until it has seen whether an <c>=</c> follows the closing brace, so it records
-/// the shape here and the LOWERING refuses one that reached it, which is exactly the set that was
-/// never reinterpreted.
+/// the shape here and the BINDER refuses one that reaches it (SJL-12.6 item 2), which is exactly the
+/// set that was never reinterpreted; the lowering only asserts that none did.
 /// </param>
 /// <param name="Shorthand">
 /// Whether the entry was written as <c>{ x }</c> rather than as <c>{ x: x }</c>. <b>The two mean the

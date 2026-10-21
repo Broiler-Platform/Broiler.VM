@@ -6185,8 +6185,9 @@ internal sealed class JsParser
         // `{ a = 1 }` IS NOT AN OBJECT LITERAL AND MAY STILL BE A LEGAL PROGRAM. It is the cover
         // grammar of `({ a = 1 } = o)`, and whether this brace is a literal or a pattern is not
         // settled until the token after the closing one. Refusing it here would refuse the
-        // assignment too; the entry is marked instead and the LOWERING refuses whichever of these
-        // reached it, which is exactly the set that was never reinterpreted.
+        // assignment too; the entry is marked instead and the BINDER refuses whichever of these
+        // reaches it (SJL-12.6 item 2), which is exactly the set that was never reinterpreted; the
+        // lowering only asserts that none did.
         if (Current.Kind == SliceTokenKind.Equals && computed is null && IsIdentifierName(keyToken.Kind))
         {
             _ = RefuseEscapedReservedWord(keyToken);
