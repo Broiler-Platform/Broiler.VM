@@ -440,27 +440,15 @@ public sealed partial class JsCompiler
     // Broiler-Human:        PENDING
     private bool strict;
 
-    /// <summary>
-    /// The block-level function declarations Annex B also gives a <c>var</c>-scoped binding.
-    /// </summary>
+    /// <summary>The facts of the unit being lowered, which its binder pass computed before it was.</summary>
     /// <remarks>
-    /// <para>
-    /// <b>Membership is a property of the DECLARATION and not of the name</b>, which is why this
-    /// holds nodes rather than strings. <c>{ function f() { } { function f() { } } }</c> has two
-    /// declarations of one name and the language admits only the outer one to the extension — the
-    /// inner one is refused because <c>var f</c> written in its place would collide with the outer
-    /// block's lexical <c>f</c> — so a set of names could not tell the two apart.
-    /// </para>
-    /// <para>
-    /// <b>The comparer is reference identity because the nodes are records</b>, whose equality is
-    /// their content: two textually identical declarations in two compiled sources would be one
-    /// entry under the default comparer, and admitting one would admit the other.
-    /// </para>
+    /// <b>One per unit, made when the unit is and read by every emission of it</b> (SJL-12.6 item 1,
+    /// JSD-0080 decision D11): a <c>finally</c> block lowered at three jumps reads the same facts three
+    /// times rather than walking its statements three times.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E9C427
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3F1F66
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.HashSet<object> annexB =
-        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+    private JsBinder binder = null!;
 
     /// <summary>
     /// Whether the code being lowered is inside a method, so <c>super.x</c> resolves.
@@ -816,7 +804,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=80F932
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D507B6
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -881,11 +869,19 @@ public sealed partial class JsCompiler
                 }
             }
 
+            // THE UNIT IS BOUND ONCE, AFTER IT PARSED AND WAS ADMITTED, AND BEFORE ANY OF IT IS
+            // LOWERED (SJL-12.6 item 1, JSD-0080 decision D11). Its strictness is its own prologue's,
+            // or what the caller imposes - the conformance harness's strict variant for a script, the
+            // request's strict flag for eval code - which is the imposition the parser was given. The
+            // unit's lowering reads it from the binder, so the facts and the emission cannot be told
+            // two different strictnesses.
+            binder = JsBinder.Bind(program, forceStrict);
+
             scriptReferrer = script.Referrer;
             currentSource = AddSource(script.Text);
             var unit = evaluated
                 ? CompileEvalProgram(program, script.Options.EvalFlags)
-                : CompileProgram(program, script.ForceStrict);
+                : CompileProgram(program);
             scriptReferrer = string.Empty;
 
             // A SCRIPT A HOST PLACED SAYS WHERE AT RUN TIME TOO (JSD-0024 section 20): its own
@@ -972,6 +968,8 @@ public sealed partial class JsCompiler
                 return new JsCompilation(false, null, diagnostics);
             }
 
+            // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says.
+            binder = JsBinder.Bind(program, imposed: true);
             currentSource = AddSource(text);
             CompileModule(program, module);
 

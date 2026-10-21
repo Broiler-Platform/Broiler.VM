@@ -336,7 +336,7 @@ public sealed partial class JsCompiler
     /// <c>arguments</c> in a field initialiser - is refused as one.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0DC852
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2A8629
     // Broiler-Human:        PENDING
     private int CompileEvalProgram(JsProgramNode program, JsFormat.EvalRequestFlags flags)
     {
@@ -356,7 +356,10 @@ public sealed partial class JsCompiler
         insideFieldInitialiser = (flags & JsFormat.EvalRequestFlags.InClassFieldInitializer) != 0;
         exits = [];
 
-        strict = program.IsStrict || (flags & JsFormat.EvalRequestFlags.Strict) != 0;
+        // ITS STRICTNESS IS THE BINDER'S, which bound it under its prologue and the request's strict
+        // flag: the choice between a strict evaluation's own slots and the caller's variable
+        // environment below follows the same answer the unit's facts do.
+        strict = binder.Program.Strict;
         var index = units.Count;
         buffer = new UnitBuffer(0, JsFormat.FunctionFlags.EvalCode | Strictness());
         units.Add(buffer);
@@ -371,7 +374,7 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.LoadUndefined);
         EmitScoped(JsOpcode.InitialiseScoped, 0, completion);
 
-        var (varNames, lexicalNames, functionNames, annexBNames) = HoistEval(program.Body);
+        var (varNames, lexicalNames, functionNames, annexBNames) = HoistEval(binder.Program);
 
         // A DIRECTIVE'S STRING IS A COMPLETION VALUE IN EVAL CODE AS IN A SCRIPT: `eval("'1'")` is
         // `"1"`. The script lowering has always said so; this one did not until the global
@@ -433,15 +436,15 @@ public sealed partial class JsCompiler
     /// into the variable environment with <see cref="JsOpcode.StoreEvalVariable"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=51394A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E6AA39
     // Broiler-Human:        PENDING
     private (string[] VarNames, string[] LexicalNames, string[] FunctionNames, string[] AnnexBNames) HoistEval(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body)
+        JsBinder.HoistingScope unit)
     {
         // IN SOURCE ORDER *(SJL-12.6 item 3)*: the slots and the declaration row's lexical names are
         // both written by walking the list, which until 2026-10-20 was a dictionary.
         var lexical = new SourceOrderedLexicals();
-        CollectLexicalKinds(body, lexical);
+        CollectLexicalKinds(unit.TopLevel, lexical);
 
         foreach (var (name, constant) in lexical)
         {
@@ -450,9 +453,8 @@ public sealed partial class JsCompiler
 
         var lexicalNames = lexical.Names();
 
-        var names = new System.Collections.Generic.List<string>();
-        var functions = new System.Collections.Generic.List<JsFunctionNode>();
-        CollectVarScope(body, names, functions, lexical: null);
+        var names = unit.VarNames;
+        var functions = unit.Functions;
 
         if (strict)
         {
@@ -486,13 +488,7 @@ public sealed partial class JsCompiler
             }
         }
 
-        var aliases = new System.Collections.Generic.List<string>();
-
-        ScanAnnexB(
-            body,
-            new System.Collections.Generic.HashSet<string>(lexicalNames, System.StringComparer.Ordinal),
-            aliases);
-
+        var aliases = unit.AnnexBAliases;
         var annexBNames = new System.Collections.Generic.List<string>();
         var aliasSeen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
 
@@ -517,11 +513,11 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Declares a strict evaluated program's <c>var</c>s and functions as its own slots.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7539EC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C5C6BB
     // Broiler-Human:        PENDING
     private void HoistStrictEval(
-        System.Collections.Generic.List<string> names,
-        System.Collections.Generic.List<JsFunctionNode> functions)
+        System.Collections.Generic.IReadOnlyList<string> names,
+        System.Collections.Generic.IReadOnlyList<JsFunctionNode> functions)
     {
         foreach (var name in names)
         {
