@@ -515,14 +515,18 @@ public sealed partial class JsCompiler
         buffer.Rejoin(live);
     }
 
-    /// <summary>
-    /// Pushes the key half of a <c>super</c> property access, refusing the access where the
-    /// language has no <c>super</c> to start it from.
-    /// </summary>
+    /// <summary>Pushes the key half of a <c>super</c> property access.</summary>
     /// <remarks>
+    /// <para>
+    /// An access where the language has no <c>super</c> to start it from is an early error the
+    /// binder refuses before any of the unit is lowered (SJL-12.6 item 2); the lowering only asserts
+    /// it (<see cref="BinderAdmitted"/>).
+    /// </para>
+    /// <para>
     /// The key is pushed as a VALUE rather than encoded as a name operand, so that
     /// <c>super.x</c> and <c>super[e]</c> are one instruction with one stack effect. A pair of
     /// instructions would have bought nothing: the named form is a constant load either way.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9BF5E2
     // Broiler-Human:        PENDING

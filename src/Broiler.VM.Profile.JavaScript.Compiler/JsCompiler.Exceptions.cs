@@ -250,7 +250,8 @@ public sealed partial class JsCompiler
         // surface nobody had built and taken out of both the pass and the fail column, when what
         // the language says is that the source is not a program. `2101` is what a source wrong
         // about the LANGUAGE gets, exactly as `with` in strict code and a `super` property outside
-        // a method do.
+        // a method do. The binder refuses it under that code before any of the unit is lowered
+        // (SJL-12.6 item 2); here the lowering only asserts it.
         // A module body is no more a function than a script is (16.2.1.1: ModuleItemList may not
         // contain a ReturnStatement); until 2026-10-03 a module's `return` ran (JSC-253).
         if (FunctionScope().Kind is ScopeKind.Program or ScopeKind.Eval or ScopeKind.Module)

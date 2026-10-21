@@ -310,10 +310,12 @@ public sealed partial class JsCompiler
         }
 
         // A FUNCTION, A CLASS, A `let` AND A `const` OF THIS MODULE ARE ITS LEXICAL DECLARATIONS
-        // (16.2.1.1): each name is declared once, and none is also a `var` - which a script's top
-        // level would let the later declaration win. The binder checked both, with the import
-        // collisions below, before any of the module was lowered (SJL-12.6 item 2); what is left
-        // here declares the slots, in the order they always had.
+        // (16.2.1.1), where a script's top level would let the later declaration win. The binder
+        // checked, with the import collisions below, before any of the module was lowered (SJL-12.6
+        // item 2), what the lowering checked here before: a function or lexical name declared twice,
+        // and a function, `let` or `const` that is also a `var` - a class of a `var`'s name is not
+        // checked, as it never was. What is left here declares the slots, in the order they always
+        // had.
         foreach (var function in functions)
         {
             build.Functions.Add(function);
@@ -360,7 +362,12 @@ public sealed partial class JsCompiler
         build.Scope.Declare(name, constant);
     }
 
-    /// <summary>Records what the module publishes, and refuses a name it publishes twice.</summary>
+    /// <summary>Records what the module publishes.</summary>
+    /// <remarks>
+    /// A name published twice, and a local export no declaration or import binds, are early errors
+    /// the binder refuses before any of the module is lowered (SJL-12.6 item 2); the lowering only
+    /// asserts them (<see cref="BinderAdmitted"/>).
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DA409B
     // Broiler-Human:        PENDING
     private void DeclareExports(

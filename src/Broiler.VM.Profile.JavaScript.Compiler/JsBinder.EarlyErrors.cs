@@ -76,11 +76,22 @@ internal sealed partial class JsBinder
 
     /// <summary>The early errors found, in source order, at most <see cref="SliceSourceDiagnostic.MaximumPerStage"/> of them.</summary>
     /// <remarks>
+    /// <para>
     /// <b>Source order is the order of the places reported</b>, line and then column, and two at one
     /// place keep the order the walk met them in. The walk meets nodes in source order, but a few
     /// errors are reported at a place other than the node's own - a field initialiser's at the
     /// field, a module's import collision at no place at all, which is line 0 - so the order is made
     /// rather than assumed.
+    /// </para>
+    /// <para>
+    /// <b>The cap is applied after the sort, and that is a known limit</b> of reporting in source
+    /// order within it. The lowering kept the first 64 it met, in its own order - a hoisted function
+    /// first - so a unit with more than 64 early errors can keep a different set of codes here than
+    /// it did there: 64 <c>break;</c> followed by <c>function f() { return super.x; }</c> was
+    /// [2101, 2207 x 63] and is [2207 x 64]. Class S1 of the bundle's rule admits a reorder of the
+    /// same codes only. No input of the parse corpus reaches it: no unit the lowering refused had 64
+    /// diagnostics of the lowering's at the base.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1D5458
     // Broiler-Falsified-If: two early errors are answered in an order other than their places', or more than the cap is answered
@@ -436,6 +447,19 @@ internal sealed partial class JsBinder
     /// <para>
     /// A literal the lowering never lowers is not compiled at all, here either.
     /// </para>
+    /// <para>
+    /// <b>The flags were not always an early error</b>: <c>/a/x</c> and <c>/a/gg</c> behind a
+    /// <c>false</c> branch were accepted, and <c>/a/v</c> - a flag the language has and the matcher
+    /// then did not - passed the front end and was refused only when the literal ran, as a
+    /// SyntaxError from the constructor. A flag outside <c>dgimsuyv</c>, a repeated flag, and
+    /// <c>u</c> with <c>v</c> became the language's SyntaxError in the lowering, and a well-formed
+    /// <c>v</c> an early SyntaxError naming the flag as unsupported (JSeal slice JSD-0031-later).
+    /// <b>A well-formed <c>v</c> is admitted</b> since phase F2 gave the matcher the flag's class
+    /// syntax, set operations and properties of strings; until then it was refused as unsupported,
+    /// under the reading of decision JSD-0031 section 12 (JSC-262). The checks moved here from the
+    /// lowering's <c>RefuseRegExpLiteralFlags</c> and <c>CompileRegExpLiteral</c> with SJL-12.6
+    /// item 2, unchanged.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7B69FD
     // Broiler-Falsified-If: a literal the matcher compiles is refused, or one it refuses, or whose flags the language refuses, is admitted
@@ -507,6 +531,20 @@ internal sealed partial class JsBinder
     /// <para>
     /// <b>The import attribute is not one of them</b>: an attribute no composition can honour is the
     /// module-load policy, which stays with the lowering (decision D12).
+    /// </para>
+    /// <para>
+    /// <b>Their history moved with them</b> from the lowering's <c>DeclareImports</c>,
+    /// <c>DeclareModuleBindings</c>, <c>Declared</c> and <c>DeclareExports</c> (SJL-12.6 item 2).
+    /// An import binds a name in strict code, where <c>arguments</c> and <c>eval</c> are not binding
+    /// names (13.1.1); until 2026-10-03 both imported (JSC-253). A second function declaration of one
+    /// name is an error in a module and not in a script, because a script's top-level declarations
+    /// are properties of the global object and a module's are lexical (16.2.1.1); for the same
+    /// reason a module's function collides with a <c>var</c> of its name, and until 2026-10-03
+    /// <c>var f; function f() {}</c> compiled in a module (JSC-253). A destructuring declarator has no
+    /// name of its own and declares every name in its pattern: reading the declarator's name gave the
+    /// empty string for each one, so two top-level <c>const {a} = o; const {b} = o;</c> were refused
+    /// as the same undeclared name twice, and a pattern's real names were never checked (VM-FIX-D) -
+    /// which is why <see cref="ModuleDeclarations"/> lists every name a pattern binds.
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B0189E

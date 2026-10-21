@@ -99,7 +99,8 @@ public sealed partial class JsCompiler
                 // `new.target` OUTSIDE A FUNCTION IS A SYNTAX ERROR AND NOT A MANIFEST REFUSAL.
                 // The manifest admits it perfectly well; the program wrote it where the language
                 // has nothing for it to mean, and the diagnostic code is what tells a conformance
-                // runner which of the two happened.
+                // runner which of the two happened. The binder refuses it under that code before
+                // any of the unit is lowered (SJL-12.6 item 2); here the lowering only asserts it.
                 if (!insideFunction)
                 {
                     throw BinderAdmitted(target.Span, "`new.target` outside a function");
