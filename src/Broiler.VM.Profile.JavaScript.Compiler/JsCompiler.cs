@@ -9,7 +9,7 @@
 // Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         1/1
+// Criteria:         2/1
 // Resource impact:  3/10 max
 // Unverified:       23
 //
@@ -689,43 +689,55 @@ public sealed partial class JsCompiler
     /// Answers what one module requests, without lowering it and without loading anything.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>This is the seam a composition walks a module graph through.</b> Following a specifier is
     /// the host's act - it is the thing that touches a filesystem, a URL scheme or a table - and
     /// this component neither performs it nor knows how it is performed. What the front end can
     /// answer, and the host cannot without a parser, is which specifiers a source names; so it
     /// answers that and stops.
+    /// </para>
+    /// <para>
+    /// <b>It parses on the stack this component declares, as a compilation does</b> (SJL-12.6,
+    /// JSD-0080 decision D16). Until then it parsed on whatever stack its caller had, the one
+    /// public entry point that did, so the depth the parse options admit meant a different thing
+    /// on every host: a module nested within the bound ended the process from a thread with a small
+    /// stack, and a 25 KB module nesting templates ended it from a main thread. Whatever the parse
+    /// raises reaches the caller as it would have on the caller's own thread.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=846E05
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CA5A3D
+    // Broiler-Falsified-If: the parse of a module's requests runs on the calling thread
     // Broiler-Human:        PENDING
-    public static JsModuleRequests Requests(string text, SliceParseOptions options)
-    {
-        var compiler = new JsCompiler();
-
-        if (!compiler.TryParse(text, options, forceStrict: true, out var program))
+    public static JsModuleRequests Requests(string text, SliceParseOptions options) =>
+        CompilationStack.Run(() =>
         {
-            return new JsModuleRequests(false, [], compiler.diagnostics);
-        }
+            var compiler = new JsCompiler();
 
-        var specifiers = new System.Collections.Generic.List<string>();
-
-        foreach (var statement in program.Body)
-        {
-            var specifier = statement switch
+            if (!compiler.TryParse(text, options, forceStrict: true, out var program))
             {
-                JsImportDeclaration import => JsFormat.TypedSpecifier(
-                    import.Specifier, compiler.AttributeType(import.Span, import.Attributes, refuse: false)),
-                JsExportDeclaration { From.Length: not 0 } exported => compiler.TypedFrom(exported),
-                _ => string.Empty,
-            };
-
-            if (specifier.Length != 0 && !specifiers.Contains(specifier))
-            {
-                specifiers.Add(specifier);
+                return new JsModuleRequests(false, [], compiler.diagnostics);
             }
-        }
 
-        return new JsModuleRequests(true, specifiers, compiler.diagnostics);
-    }
+            var specifiers = new System.Collections.Generic.List<string>();
+
+            foreach (var statement in program.Body)
+            {
+                var specifier = statement switch
+                {
+                    JsImportDeclaration import => JsFormat.TypedSpecifier(
+                        import.Specifier, compiler.AttributeType(import.Span, import.Attributes, refuse: false)),
+                    JsExportDeclaration { From.Length: not 0 } exported => compiler.TypedFrom(exported),
+                    _ => string.Empty,
+                };
+
+                if (specifier.Length != 0 && !specifiers.Contains(specifier))
+                {
+                    specifiers.Add(specifier);
+                }
+            }
+
+            return new JsModuleRequests(true, specifiers, compiler.diagnostics);
+        });
 
     /// <summary>The entry point a module artifact's root module is invoked by.</summary>
     /// <remarks>

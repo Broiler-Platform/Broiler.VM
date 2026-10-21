@@ -6,8 +6,9 @@ using Broiler.VM.Profile.JavaScript.Compiler;
 namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 
 /// <summary>
-/// Structured templates (SJL-12.6 item 4, JSD-0080 decisions D15 and D17): a template's substitutions
-/// are read by the parse that reads the template, and the tokenizer's scan of a template is one loop.
+/// Structured templates (SJL-12.6 item 4, JSD-0080 decisions D15 to D17): a template's substitutions
+/// are read by the parse that reads the template, the tokenizer's scan of a template is one loop, and
+/// the module-request seam parses on the compiler's own stack.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -17,7 +18,9 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// compiled in formal parameters, nesting templates did not count toward the nesting bound, and a
 /// substitution's tree did not count toward the tree-depth bound. Templates nested a few thousand deep
 /// ended the process in that parser, and a hundred thousand deep in the tokenizer's scan, which both
-/// front ends read.
+/// front ends read; <c>JsCompiler.Requests</c> parsed on its caller's stack, so a module nested within
+/// the bound ended the process from a thread with a small one, and a 25 KB module nesting templates
+/// from a main thread.
 /// </para>
 /// <para>
 /// <b>Where the base ended the process, a run that reaches the row's assertion at all is a run in
@@ -68,6 +71,9 @@ internal static class TemplateChecks
             "template: a lexer refusal in a substitution is reported where the parse reaches it",
             "var x = `${ 08_1 }` +; var y = ;",
             "2003@1:13 2101@1:22 2102@1:24");
+
+        yield return RequestsParsesOnItsOwnStack();
+        yield return RequestsAnswersADeepTemplate();
     }
 
     /// <summary>
@@ -137,6 +143,56 @@ internal static class TemplateChecks
             !compiled.Succeeded && answer == "2104@1:9" && census.FilesRead == 1 && census.FilesThatFaulted == 0,
             $"refused `{answer}` (expected 2104@1:9, a template outside the manifest); census read " +
                 $"{census.FilesRead} file, {census.FilesThatFaulted} faulted");
+    }
+
+    /// <summary>
+    /// <c>JsCompiler.Requests</c> answers from a thread with a 256 KB stack for a module nested 500 deep
+    /// under a bound of 512, because it parses on the stack the compiler declares (JSD-0080 decision D16).
+    /// </summary>
+    /// <remarks>
+    /// On the caller's stack the same call ended the process at 250 levels. The bound is the largest the
+    /// parse options accept, so the row asks the depth they admit rather than one the stack happens to.
+    /// </remarks>
+    private static (string, bool, string) RequestsParsesOnItsOwnStack()
+    {
+        var options = new SliceParseOptions(
+            SliceGoal.Module, allowTopLevelAwait: true, SliceParseOptions.MaximumSupportedNestingDepth);
+        var source = "export var x = " + new string('(', 500) + "1" + new string(')', 500) + ";";
+        JsCompiler.JsModuleRequests? answer = null;
+
+        var caller = new System.Threading.Thread(() => answer = JsCompiler.Requests(source, options), 256 * 1024);
+        caller.Start();
+        caller.Join();
+
+        if (answer is null)
+        {
+            return ("template: the module-request seam parses on the compiler's stack, not its caller's", false,
+                "no answer");
+        }
+
+        var diagnostics = string.Join(" ", answer.Diagnostics.Select(d => (int)d.Code + "@" + d.Line + ":" + d.Column));
+
+        return (
+            "template: the module-request seam parses on the compiler's stack, not its caller's",
+            answer is { Succeeded: true, Specifiers.Count: 0 },
+            $"from a 256 KB thread, 500 levels under a bound of 512: succeeded {answer.Succeeded}, " +
+                $"{answer.Specifiers.Count} specifiers, `{diagnostics}`");
+    }
+
+    /// <summary>
+    /// <c>JsCompiler.Requests</c> refuses a 25 KB module nesting templates 5,000 deep with 2103, where it
+    /// ended the process.
+    /// </summary>
+    private static (string, bool, string) RequestsAnswersADeepTemplate()
+    {
+        var source = "export var x = " + Nest(5_000) + ";";
+        var answer = JsCompiler.Requests(source, SliceParseOptions.Module);
+        var diagnostics = string.Join(" ", answer.Diagnostics.Select(d => (int)d.Code + "@" + d.Line + ":" + d.Column));
+
+        return (
+            "template: the module-request seam refuses a 25 KB module nesting templates 5,000 deep",
+            !answer.Succeeded && diagnostics == "2103@1:205",
+            $"{source.Length} characters: succeeded {answer.Succeeded}, `{diagnostics}` (expected 2103@1:205)");
     }
 
     /// <summary><paramref name="depth"/> templates, each the whole substitution of the one around it.</summary>

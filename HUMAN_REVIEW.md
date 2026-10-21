@@ -170,7 +170,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs` | 9 | 9 | 0 | 9 | None | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.SupportingTypes.cs` | 101 | 23 | 78 | 23 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Walk.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 70 | 23 | 47 | 23 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 70 | 23 | 47 | 23 | Low | High | 2/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompilerUnicode.cs` | 7 | 6 | 1 | 6 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsJsonModule.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 23 | 12 | 11 | 12 | None | Medium | 4/0 |
