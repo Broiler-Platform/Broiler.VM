@@ -1,0 +1,8 @@
+# b2a-wrong-index-small: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     /(?:(a+)+b|a*c)/u on a^16c
+    VM: @0 length 17
+    JS: @0 length 17
+     /(?:(a+)+b|a*c)/ on a^16c
+    VM: @0 length 17
+    JS: @0 length 17
+# JS: exit=0

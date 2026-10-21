@@ -1,0 +1,6 @@
+# b4b-alternation-charged: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+# VM ended before printing: NO OUTPUT; the verdict line: exhausted   test/sjl11/b4b-alternation-charged.js [raw]  Fuel: the allowance was spent running the test
+?    (?:a|a)x24b /u on a^24
+    VM: (no line)
+    JS: null elapsedMs 1698
+# JS: exit=0

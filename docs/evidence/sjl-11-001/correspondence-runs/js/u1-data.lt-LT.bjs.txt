@@ -1,0 +1,49 @@
+# command (from correspondence-runs/js/, JS_ROOT=/home/user/js-s11corr): env -u LANGUAGE LANG=lt_LT.UTF-8 LC_ALL=lt_LT.UTF-8 TZ=UTC timeout 900 dotnet /home/user/js-s11corr/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/u1-data.js
+# revision: Broiler.JS 1f91b8f1b1ef392c6392cf7e43af8e80eb3fb1a7; Broiler.Regex 0.1.0-preview.4
+host default locale (Intl) => "lt-LT"
+"\u005cs" / test "\ufeff" => true
+"\u005cs" / test "\u0085" => false
+"\u005cs" / test "\u180e" => false
+"\u005cs" / test "\u00a0" => true
+"\u005cs" / test "\u3000" => true
+"\u005cs" /u test "\ufeff" => true
+"\u005cs" /u test "\u0085" => false
+"\u005cS" / test "\u0085" => true
+"[\u005cs]" / test "\u2029" => true
+"\u005cs" /v test "\u1680" => true
+"\u005cd" /u test "\u0661" => false
+"\u005cd" / test "\u0661" => false
+"\u005cw" / test "\u00e9" => false
+"\u005cw" /u test "\u0130" => false
+"\u005cw" /i test "\u0130" => false
+"\u005cp{L}" /u test "\ua7ce" => true
+"\u005cp{Lu}" /u test "\ua7ce" => true
+"\u005cp{L}" /u test "\ud803\udd70" => true
+"\u005cp{Cn}" /u test "\ua7ce" => false
+"\u005cp{sc=Garay}" /u test "\ud803\udd70" => true
+"\u005cp{Script=Sidetic}" /u test "\ud802\udd40" => true
+"\u005cp{sc=Sidt}" /u test "\ud802\udd40" => true
+"\u005cp{Script=Beria_Erfe}" /u accepted => ok
+"\u005cp{Script=Tolong_Siki}" /u accepted => ok
+"\u005cp{Script=Tai_Yo}" /u accepted => ok
+"\u005cp{Script=Chisoi}" /u accepted => THROWS SyntaxError: Invalid regular expression: invalid property name in \p{Script=Chisoi}
+"\u005cp{ID_Start}" /u test "\ua7ce" => true
+"\u005cp{Emoji}" /u test "\u2615" => true
+"\u005cp{Extended_Pictographic}" /u test "\ud83e\udee9" => true
+"\u005cp{Assigned}" /u test "\ua7ce" => true
+"\u005cp{Any}" /u test "\udfff" => true
+"\ua7ce" /i test "\ua7cf" => false
+"\ua7ce" /iu test "\ua7cf" => true
+"[\ua7ce]" /i test "\ua7cf" => false
+"[\ua7ce]" /iu test "\ua7cf" => true
+"\u1c89" /iu test "\u1c8a" => true
+"\u005cu{10D50}" /iu test "\ud803\udd70" => true
+"\u005cu{16EA0}" /iu test "\ud81b\udebb" => true
+"^\u005cp{RGI_Emoji}$" /v test "\ud83e\udee9" => true
+"^\u005cp{Basic_Emoji}$" /v test "\u231a" => true
+"^\u005cp{RGI_Emoji_Flag_Sequence}$" /v test "\ud83c\uddfa\ud83c\uddf3" => true
+"^\u005cp{Emoji_Keycap_Sequence}$" /v test "#\ufe0f\u20e3" => true
+"^\u005cp{RGI_Emoji_ZWJ_Sequence}$" /v test "\ud83d\udc68\u200d\ud83d\udcbb" => true
+"(?<\ua7ce>x)" / test "x" => true
+"(?<\ua7ce>x)" /u test "x" => true
+exit=0

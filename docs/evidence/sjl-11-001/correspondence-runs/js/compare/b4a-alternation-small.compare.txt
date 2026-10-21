@@ -1,0 +1,26 @@
+# b4a-alternation-small: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+!    (?:a|a)x12b /u on a^12
+    VM: null elapsedMs 14
+    JS: null elapsedMs 11
+!    (?:a|a)x12b / on a^12
+    VM: null elapsedMs 1
+    JS: null elapsedMs 5
+!    (?:a|a)x16b /u on a^16
+    VM: null elapsedMs 9
+    JS: null elapsedMs 52
+!    (?:a|a)x16b / on a^16
+    VM: null elapsedMs 6
+    JS: null elapsedMs 0
+!    (?:a|a)x20b /u on a^20
+    VM: null elapsedMs 103
+    JS: null elapsedMs 193
+!    (?:a|a)x20b / on a^20
+    VM: null elapsedMs 96
+    JS: null elapsedMs 0
+!    (?:a|a)x22b /u on a^22
+    VM: null elapsedMs 435
+    JS: null elapsedMs 297
+!    (?:a|a)x22b / on a^22
+    VM: null elapsedMs 302
+    JS: null elapsedMs 0
+# JS: exit=0

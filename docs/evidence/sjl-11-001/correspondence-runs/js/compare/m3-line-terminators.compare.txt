@@ -1,0 +1,209 @@
+# m3-line-terminators: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     /^b/m on "a\u000ab"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /^b/gm on "a\u000ab"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /a$/m on "a\u000ab"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /a$/gm on "a\u000ab"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /^b/mu on "a\u000ab"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /a$/mu on "a\u000ab"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /a.b/ on "a\u000ab"
+    VM: null
+    JS: null
+     /a.b/u on "a\u000ab"
+    VM: null
+    JS: null
+     /a.b/s on "a\u000ab"
+    VM: @0 ["a\u000ab"]
+    JS: @0 ["a\u000ab"]
+     /(?m:^b)/ on "a\u000ab"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /^b/m on "a\u000db"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /^b/gm on "a\u000db"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /a$/m on "a\u000db"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /a$/gm on "a\u000db"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /^b/mu on "a\u000db"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /a$/mu on "a\u000db"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /a.b/ on "a\u000db"
+    VM: null
+    JS: null
+     /a.b/u on "a\u000db"
+    VM: null
+    JS: null
+     /a.b/s on "a\u000db"
+    VM: @0 ["a\u000db"]
+    JS: @0 ["a\u000db"]
+     /(?m:^b)/ on "a\u000db"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+!    /^b/m on "a\u2028b"
+    VM: @2 ["b"]
+    JS: null
+!    /^b/gm on "a\u2028b"
+    VM: @2 ["b"]
+    JS: null
+!    /a$/m on "a\u2028b"
+    VM: @0 ["a"]
+    JS: null
+!    /a$/gm on "a\u2028b"
+    VM: @0 ["a"]
+    JS: null
+     /^b/mu on "a\u2028b"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /a$/mu on "a\u2028b"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /a.b/ on "a\u2028b"
+    VM: null
+    JS: null
+     /a.b/u on "a\u2028b"
+    VM: null
+    JS: null
+     /a.b/s on "a\u2028b"
+    VM: @0 ["a\u2028b"]
+    JS: @0 ["a\u2028b"]
+     /(?m:^b)/ on "a\u2028b"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+!    /^b/m on "a\u2029b"
+    VM: @2 ["b"]
+    JS: null
+!    /^b/gm on "a\u2029b"
+    VM: @2 ["b"]
+    JS: null
+!    /a$/m on "a\u2029b"
+    VM: @0 ["a"]
+    JS: null
+!    /a$/gm on "a\u2029b"
+    VM: @0 ["a"]
+    JS: null
+     /^b/mu on "a\u2029b"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /a$/mu on "a\u2029b"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /a.b/ on "a\u2029b"
+    VM: null
+    JS: null
+     /a.b/u on "a\u2029b"
+    VM: null
+    JS: null
+     /a.b/s on "a\u2029b"
+    VM: @0 ["a\u2029b"]
+    JS: @0 ["a\u2029b"]
+     /(?m:^b)/ on "a\u2029b"
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+     /^b/m on "a\u000d\u000ab"
+    VM: @3 ["b"]
+    JS: @3 ["b"]
+     /^b/gm on "a\u000d\u000ab"
+    VM: @3 ["b"]
+    JS: @3 ["b"]
+     /a$/m on "a\u000d\u000ab"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /a$/gm on "a\u000d\u000ab"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /^b/mu on "a\u000d\u000ab"
+    VM: @3 ["b"]
+    JS: @3 ["b"]
+     /a$/mu on "a\u000d\u000ab"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+     /a.b/ on "a\u000d\u000ab"
+    VM: null
+    JS: null
+     /a.b/u on "a\u000d\u000ab"
+    VM: null
+    JS: null
+     /a.b/s on "a\u000d\u000ab"
+    VM: null
+    JS: null
+     /(?m:^b)/ on "a\u000d\u000ab"
+    VM: @3 ["b"]
+    JS: @3 ["b"]
+     /^b/m on "a\u0085b"
+    VM: null
+    JS: null
+     /^b/gm on "a\u0085b"
+    VM: null
+    JS: null
+     /a$/m on "a\u0085b"
+    VM: null
+    JS: null
+     /a$/gm on "a\u0085b"
+    VM: null
+    JS: null
+     /^b/mu on "a\u0085b"
+    VM: null
+    JS: null
+     /a$/mu on "a\u0085b"
+    VM: null
+    JS: null
+     /a.b/ on "a\u0085b"
+    VM: @0 ["a\u0085b"]
+    JS: @0 ["a\u0085b"]
+     /a.b/u on "a\u0085b"
+    VM: @0 ["a\u0085b"]
+    JS: @0 ["a\u0085b"]
+     /a.b/s on "a\u0085b"
+    VM: @0 ["a\u0085b"]
+    JS: @0 ["a\u0085b"]
+     /(?m:^b)/ on "a\u0085b"
+    VM: null
+    JS: null
+!    /a$/ on "a\n"
+    VM: null
+    JS: @0 ["a"]
+     /a$/ on "a\r"
+    VM: null
+    JS: null
+     /a$/u on "a\n"
+    VM: null
+    JS: null
+!    /a$/g on "a\n"
+    VM: null
+    JS: @0 ["a"]
+     /^b/ on "a\nb"
+    VM: null
+    JS: null
+     /a$/m on "a\n"
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+!    /[^]$/ on "a\n"
+    VM: @1 ["\u000a"]
+    JS: @0 ["a"]
+!    "a\nb\u2028c".split(/$/m)
+    VM: ["a", "\u000ab", "\u2028c"]
+    JS: ["a", "\u000ab\u2028c"]
+!    "a\nb\u2028c".replace(/^/gm, ">")
+    VM: ">a\u000a>b\u2028>c"
+    JS: ">a\u000a>b\u2028c"
+# JS: exit=0

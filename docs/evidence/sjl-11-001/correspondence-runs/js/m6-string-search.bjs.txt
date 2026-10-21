@@ -1,0 +1,13 @@
+# command (from correspondence-runs/js/, JS_ROOT=/home/user/js-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/js-s11corr/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/m6-string-search.js
+# revision: Broiler.JS 1f91b8f1b1ef392c6392cf7e43af8e80eb3fb1a7; Broiler.Regex 0.1.0-preview.4
+control: "abc".search(/b/) => 1
+delete RegExp.prototype[Symbol.search] => true
+"abc".search(/b/) => 1
+"a/b/c".search(/b/) => 2
+"abc".search(/b/y) (sticky) => 1
+"a b".search(/[\s--\d]/v) => THROWS ReferenceError: Object reference not set to an instance of an object.
+"abc".search("b") => THROWS TypeError: undefined is not a function
+restored: "abc".search(/b/) => 1
+own @@search = undefined on the instance: "abc".search(re) => 1
+own @@search = null on the instance: "abc".search(re) => 1
+exit=0

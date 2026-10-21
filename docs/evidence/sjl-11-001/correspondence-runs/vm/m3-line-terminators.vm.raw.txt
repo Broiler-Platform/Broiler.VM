@@ -1,0 +1,90 @@
+# command (from correspondence-runs/vm/, VM_ROOT=/home/user/vm-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/vm-s11corr/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl11/m3-line-terminators.js --fuel 200000000000 --wall 600000
+# revision: Broiler.VM aaa39fbc2030e1a2554317bea75bcbb56041c696
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl11/m3-line-terminators.js [raw]  uncaught Error: OUT<</^b/m on "a\u000ab" => @2 ["b"]
+/^b/gm on "a\u000ab" => @2 ["b"]
+/a$/m on "a\u000ab" => @0 ["a"]
+/a$/gm on "a\u000ab" => @0 ["a"]
+/^b/mu on "a\u000ab" => @2 ["b"]
+/a$/mu on "a\u000ab" => @0 ["a"]
+/a.b/ on "a\u000ab" => null
+/a.b/u on "a\u000ab" => null
+/a.b/s on "a\u000ab" => @0 ["a\u000ab"]
+/(?m:^b)/ on "a\u000ab" => @2 ["b"]
+/^b/m on "a\u000db" => @2 ["b"]
+/^b/gm on "a\u000db" => @2 ["b"]
+/a$/m on "a\u000db" => @0 ["a"]
+/a$/gm on "a\u000db" => @0 ["a"]
+/^b/mu on "a\u000db" => @2 ["b"]
+/a$/mu on "a\u000db" => @0 ["a"]
+/a.b/ on "a\u000db" => null
+/a.b/u on "a\u000db" => null
+/a.b/s on "a\u000db" => @0 ["a\u000db"]
+/(?m:^b)/ on "a\u000db" => @2 ["b"]
+/^b/m on "a\u2028b" => @2 ["b"]
+/^b/gm on "a\u2028b" => @2 ["b"]
+/a$/m on "a\u2028b" => @0 ["a"]
+/a$/gm on "a\u2028b" => @0 ["a"]
+/^b/mu on "a\u2028b" => @2 ["b"]
+/a$/mu on "a\u2028b" => @0 ["a"]
+/a.b/ on "a\u2028b" => null
+/a.b/u on "a\u2028b" => null
+/a.b/s on "a\u2028b" => @0 ["a\u2028b"]
+/(?m:^b)/ on "a\u2028b" => @2 ["b"]
+/^b/m on "a\u2029b" => @2 ["b"]
+/^b/gm on "a\u2029b" => @2 ["b"]
+/a$/m on "a\u2029b" => @0 ["a"]
+/a$/gm on "a\u2029b" => @0 ["a"]
+/^b/mu on "a\u2029b" => @2 ["b"]
+/a$/mu on "a\u2029b" => @0 ["a"]
+/a.b/ on "a\u2029b" => null
+/a.b/u on "a\u2029b" => null
+/a.b/s on "a\u2029b" => @0 ["a\u2029b"]
+/(?m:^b)/ on "a\u2029b" => @2 ["b"]
+/^b/m on "a\u000d\u000ab" => @3 ["b"]
+/^b/gm on "a\u000d\u000ab" => @3 ["b"]
+/a$/m on "a\u000d\u000ab" => @0 ["a"]
+/a$/gm on "a\u000d\u000ab" => @0 ["a"]
+/^b/mu on "a\u000d\u000ab" => @3 ["b"]
+/a$/mu on "a\u000d\u000ab" => @0 ["a"]
+/a.b/ on "a\u000d\u000ab" => null
+/a.b/u on "a\u000d\u000ab" => null
+/a.b/s on "a\u000d\u000ab" => null
+/(?m:^b)/ on "a\u000d\u000ab" => @3 ["b"]
+/^b/m on "a\u0085b" => null
+/^b/gm on "a\u0085b" => null
+/a$/m on "a\u0085b" => null
+/a$/gm on "a\u0085b" => null
+/^b/mu on "a\u0085b" => null
+/a$/mu on "a\u0085b" => null
+/a.b/ on "a\u0085b" => @0 ["a\u0085b"]
+/a.b/u on "a\u0085b" => @0 ["a\u0085b"]
+/a.b/s on "a\u0085b" => @0 ["a\u0085b"]
+/(?m:^b)/ on "a\u0085b" => null
+/a$/ on "a\n" => null
+/a$/ on "a\r" => null
+/a$/u on "a\n" => null
+/a$/g on "a\n" => null
+/^b/ on "a\nb" => null
+/a$/m on "a\n" => @0 ["a"]
+/[^]$/ on "a\n" => @1 ["\u000a"]
+"a\nb\u2028c".split(/$/m) => ["a", "\u000ab", "\u2028c"]
+"a\nb\u2028c".replace(/^/gm, ">") => ">a\u000a>b\u2028>c">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl11/m3-line-terminators.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl11  e.g. test/sjl11/m3-line-terminators.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl11/m3-line-terminators.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

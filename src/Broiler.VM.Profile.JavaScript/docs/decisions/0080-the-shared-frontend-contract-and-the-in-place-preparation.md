@@ -570,6 +570,13 @@ JSB-1" states it.
 - The reason: neither introduces temporaries or restructures control flow. Moving the Annex B block touches
   `SyntaxValidation` for no gain at SJL-12.
 
+*(Noted 2026-10-21, at SJL-11.1, by
+[JSD-0081](0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md)'s decision D22. The
+second item reads "the regular-expression literal's `\u{…}` decoding, in `FastScanner.cs`", listed for SJL-14. It
+stays at SJL-12, as decided; SJL-11.5 deletes it, with the scanner's parenthesis-balance patch, when it re-points
+the literal's check at Broiler.Regex's validate entry, or SJL-14 does if SJL-11 has not. Nothing else in this
+decision moves.)*
+
 **Decision D24 - the scope of "reads no ambient state"** is the Parser assembly's own declarations and references.
 Section "What each engine keeps" lists what stays outside it. The reason: it keeps clause 1 from claiming more than
 the parser.

@@ -1,0 +1,92 @@
+# f1-flags: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     new RegExp("a", "").flags
+    VM: ""
+    JS: ""
+     new RegExp("a", "g").flags
+    VM: "g"
+    JS: "g"
+~    new RegExp("a", "gg").flags
+    VM: THROWS SyntaxError: Invalid regular expression flags: gg
+    JS: THROWS SyntaxError: The 'g' flag cannot be specified twice
+~    new RegExp("a", "x").flags
+    VM: THROWS SyntaxError: Invalid regular expression flags: x
+    JS: THROWS SyntaxError: Unknown flag x
+~    new RegExp("a", "G").flags
+    VM: THROWS SyntaxError: Invalid regular expression flags: G
+    JS: THROWS SyntaxError: Unknown flag G
+~    new RegExp("a", "uv").flags
+    VM: THROWS SyntaxError: Invalid regular expression flags: uv
+    JS: THROWS SyntaxError: The 'u' and 'v' flags cannot be used together
+~    new RegExp("a", "vu").flags
+    VM: THROWS SyntaxError: Invalid regular expression flags: vu
+    JS: THROWS SyntaxError: The 'u' and 'v' flags cannot be used together
+     new RegExp("a", "yvsmigd").flags
+    VM: "dgimsvy"
+    JS: "dgimsvy"
+     new RegExp("a", "dgimsuy").flags
+    VM: "dgimsuy"
+    JS: "dgimsuy"
+     new RegExp("a", "ygmisd").flags
+    VM: "dgimsy"
+    JS: "dgimsy"
+~    new RegExp("a", " g").flags
+    VM: THROWS SyntaxError: Invalid regular expression flags:  g
+    JS: THROWS SyntaxError: Unknown flag  
+~    new RegExp("a", "g ").flags
+    VM: THROWS SyntaxError: Invalid regular expression flags: g 
+    JS: THROWS SyntaxError: Unknown flag  
+~    new RegExp("a", "gi\u0000").flags
+    VM: THROWS SyntaxError: Invalid regular expression flags: gi\u0000
+    JS: THROWS SyntaxError: Unknown flag \u0000
+~    literal /a/gg .flags
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Empty:  at 1, 5
+~    literal /a/gg, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token LineTerminator: \u000a at 2, 5
+~    literal /a/uv .flags
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Empty:  at 1, 5
+~    literal /a/uv, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token LineTerminator: \u000a at 2, 5
+~    literal /a/x .flags
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Identifier: x at 1, 4
+~    literal /a/x, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Identifier: x at 2, 4
+     literal /a/dgimsvy .flags
+    VM: "dgimsvy"
+    JS: "dgimsvy"
+     literal /a/dgimsvy, not evaluated
+    VM: not early
+    JS: not early
+     literal /a/yvsmigd .flags
+    VM: "dgimsvy"
+    JS: "dgimsvy"
+     literal /a/yvsmigd, not evaluated
+    VM: not early
+    JS: not early
+     flags getter over a plain object
+    VM: "dgsvy"
+    JS: "dgsvy"
+     flags getter read order
+    VM: "hasIndices,global,ignoreCase,multiline,dotAll,unicode,unicodeSets,sticky"
+    JS: "hasIndices,global,ignoreCase,multiline,dotAll,unicode,unicodeSets,sticky"
+     /a/dgimsy accessors
+    VM: [true, true, true, true, true, false, false, true]
+    JS: [true, true, true, true, true, false, false, true]
+     /a/v accessors unicode, unicodeSets
+    VM: [false, true]
+    JS: [false, true]
+     RegExp.prototype.global
+    VM: undefined
+    JS: undefined
+     RegExp.prototype.flags
+    VM: ""
+    JS: ""
+     String(new RegExp("a", "yg"))
+    VM: "/a/gy"
+    JS: "/a/gy"
+# JS: exit=0

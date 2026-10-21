@@ -1,0 +1,6 @@
+# b1e-anchored: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+# VM ended before printing: NO OUTPUT; the verdict line: FAIL        test/sjl11/b1e-anchored.js [raw]  the invocation answered ProfileFault/AllowanceExhausted and carried no payload
+?    /^a*$/ test on a^10000001
+    VM: (no line)
+    JS: true
+# JS: exit=0

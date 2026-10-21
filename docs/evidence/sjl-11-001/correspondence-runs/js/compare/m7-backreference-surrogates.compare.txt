@@ -1,0 +1,38 @@
+# m7-backreference-surrogates: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+!    "foo(.+)bar\u005c1" /u on "foo\ud834bar\ud834\udc00"
+    VM: @0 ["foo\ud834bar\ud834", "\ud834"]
+    JS: null
+     "foo(.+)bar\u005c1" /u on "foo\ud834bar\ud834\ud834"
+    VM: @0 ["foo\ud834bar\ud834", "\ud834"]
+    JS: @0 ["foo\ud834bar\ud834", "\ud834"]
+     "foo(.+)bar\u005c1" /u on "foo\ud834bar\ud834A"
+    VM: @0 ["foo\ud834bar\ud834", "\ud834"]
+    JS: @0 ["foo\ud834bar\ud834", "\ud834"]
+     "foo(.+)bar\u005c1" /u on "fooAbarA\udc00"
+    VM: @0 ["fooAbarA", "A"]
+    JS: @0 ["fooAbarA", "A"]
+     "foo(.+)bar\u005c1" /u on "foo\udc00bar\udc00\ud834"
+    VM: @0 ["foo\udc00bar\udc00", "\udc00"]
+    JS: @0 ["foo\udc00bar\udc00", "\udc00"]
+     "^(.+)\u005c1$" /u on "\udc00foobar\ud834\udc00foobar\ud834"
+    VM: null
+    JS: null
+     "foo(.+)bar\u005c1" /iu on "foo\ud834bar\ud834\udc00"
+    VM: null
+    JS: null
+!    "foo(?<x>.+)bar\u005ck<x>" /u on "foo\ud834bar\ud834\udc00"
+    VM: @0 ["foo\ud834bar\ud834", "\ud834"] groups{x: "\ud834"}
+    JS: null
+     "(?<=\u005c1(.))b" /u on "\ud834\udc00\udc00b"
+    VM: @3 ["b", "\udc00"]
+    JS: @3 ["b", "\udc00"]
+     "(?<=\u005c1(.))b" / on "\ud834\udc00\udc00b"
+    VM: @3 ["b", "\udc00"]
+    JS: @3 ["b", "\udc00"]
+!    "foo(.+)bar\u005c1" /v on "foo\ud834bar\ud834\udc00"
+    VM: @0 ["foo\ud834bar\ud834", "\ud834"]
+    JS: null
+     "foo(.+)bar\u005c1" / on "foo\ud834bar\ud834\udc00"
+    VM: @0 ["foo\ud834bar\ud834", "\ud834"]
+    JS: @0 ["foo\ud834bar\ud834", "\ud834"]
+# JS: exit=0

@@ -1,0 +1,16 @@
+# command (from correspondence-runs/vm/, VM_ROOT=/home/user/vm-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/vm-s11corr/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl11/b7b-compile-props-control.js --fuel N --wall 600000
+# revision: Broiler.VM aaa39fbc2030e1a2554317bea75bcbb56041c696
+# bisection between 1 and 1000; each line: the allowance and the verdict
+fuel 1000: completed
+fuel 1: exhausted
+fuel 500: exhausted
+fuel 750: exhausted
+fuel 875: exhausted
+fuel 937: exhausted
+fuel 968: completed
+fuel 952: completed
+fuel 944: completed
+fuel 940: completed
+fuel 938: exhausted
+fuel 939: completed
+result: the smallest completing allowance is 939 (938 exhausts)

@@ -1,0 +1,5 @@
+(?:ab)* x10 (?<=(\d+)(\d+))$ /u on "1053" => @4 ["", "1", "053"]
+(?:ab)* x50000 (?<=(\d+)(\d+))$ /u on "1053" => @4 ["", "1", "053"]
+(?:ab)* x10 (a?b??)* /u on "ab" => @0 ["ab", undefined]
+(?:ab)* x50000 (a?b??)* /u on "ab" => @0 ["ab", undefined]
+control, no prefix: (a?b??)* / on "ab" => @0 ["ab", "b"]

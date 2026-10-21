@@ -1,0 +1,6 @@
+(?:(?:a|a)x12b|a+) /u on a^12 => @0 length 12
+(?:(?:a|a)x12b|a+) / on a^12 => @0 length 12
+(?:(?:a|a)x20b|a+) /u on a^20 => @0 length 20
+(?:(?:a|a)x20b|a+) / on a^20 => @0 length 20
+(?:(?:a|a)x24b|a+) /u on a^24 => @0 length 24
+(?:(?:a|a)x24b|a+) / on a^24 => @0 length 24

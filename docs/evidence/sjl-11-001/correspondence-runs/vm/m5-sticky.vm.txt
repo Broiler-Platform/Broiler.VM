@@ -1,0 +1,14 @@
+/a/y lastIndex 0 on "ba" => null lastIndex 0
+/a/y lastIndex 1 on "ba" => @1 ["a"] lastIndex 2
+/a/uy lastIndex 0 on "ba" => null lastIndex 0
+/b|ab/y lastIndex 0 on "ab" => @0 ["ab"] lastIndex 2
+/^b/y lastIndex 1 on "ab" => null lastIndex 0
+/^b/my lastIndex 2 on "a\nb" => @2 ["b"] lastIndex 3
+/(?<=a)b/y lastIndex 1 on "ab" => @1 ["b"] lastIndex 2
+/\bb/y lastIndex 1 on "ab" => null lastIndex 0
+"aab".search(/b/y) => -1
+"aab".match(/a/gy) => ["a", "a"]
+"aaba".replace(/a/gy, "-") => "--ba"
+"a,b".split(/,/y) => ["a", "b"]
+/x|(a+)+b/y lastIndex 0 on "y"+a^22 (answer) => null lastIndex 0 elapsedMs 0
+/x|(a+)+b/uy lastIndex 0 on "y"+a^22 (answer) => null lastIndex 0 elapsedMs 0
