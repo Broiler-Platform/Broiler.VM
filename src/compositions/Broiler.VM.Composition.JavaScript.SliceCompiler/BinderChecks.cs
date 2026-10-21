@@ -50,7 +50,8 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// <b>The language rules the lowering coded 2207 and 2104 are the binder's too</b> (JSD-0080 decision
 /// D12): <c>return</c> in a class static block keeps its place beside another early error, where a
 /// binder refusal of the other, with the 2207 left to the lowering, lost it; and <c>await</c> outside
-/// an async function is refused in source order with the rest. The two other 2104-coded rules, a
+/// an async function is refused in source order with the rest, whichever of them the lowering compiled
+/// first. The two other 2104-coded rules, a
 /// logical assignment to a target that is neither a name nor a property and a <c>using</c> declaration
 /// outside a statement list that can dispose it, have no row: the parser refuses every source that
 /// would reach them first.
@@ -165,6 +166,26 @@ internal static class BinderChecks
             "early errors are in source order where the lowering met a hoisted function's 2104 first",
             "break; async function g() { (a = `${await 1}`) => a; }",
             "2207@1:1 2104@1:37");
+
+        // and the other way round, the 2104 now first where the lowering met a later early error before it: in
+        // the await's own operand, which it compiled before refusing the await; in a function hoisted in the
+        // same unit and written after the arrow; in the value a pattern holding the await destructures, which
+        // it compiled before the pattern. The base's lists were [2101@1:36, 2104@1:30], [2207@1:62, 2104@1:30]
+        // and [2101@1:44, 2104@1:31]. Every such source has `${await` in the parameters of an arrow that is not
+        // async, which SJL-12.6 item 4 (JSD-0080 decision D15) refuses in the parser; until then these rows
+        // record the order
+        yield return Refused(
+            "early errors are in source order where the lowering met the await's operand first",
+            "async function g() { (a = `${await /a/gg}`) => a; }",
+            "2104@1:30 2101@1:36");
+        yield return Refused(
+            "early errors are in source order where the lowering met a later hoisted function first",
+            "async function g() { (a = `${await 1}`) => a; function h() { break; } }",
+            "2104@1:30 2207@1:62");
+        yield return Refused(
+            "early errors are in source order where the lowering met a pattern's value first",
+            "async function g() { ({x = `${await 1}`} = /a/gg) => x; }",
+            "2104@1:31 2101@1:44");
 
         // assignment targets
         yield return Refused("early error: update of a call in strict code", "'use strict'; f()++;", "2205@1:15");
