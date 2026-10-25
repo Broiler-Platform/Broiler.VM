@@ -51,7 +51,8 @@ This bundle reads none of their runs.
   defect of the specification's text, implementation-defined by the owner's decision D41 until the text is corrected.
 - **A stop at one of this family's matcher ceilings names no dimension.** The conformance root reports it as a
   failure whose detail is `ProfileFault/AllowanceExhausted` with no payload, and the command-line root exits with its
-  "host defect" code (rows B1 and B6). The rule reads that report, and only it, as a ceiling stop.
+  "host defect" code and writes the same detail to standard error, behind its prefix `broiler-js: <path>: ` (rows B1
+  and B6). The rule reads that detail, and only it, as a ceiling stop.
 
 **The owner's direction.** On 2026-10-18 the owner wrote: "Please do all recommended decisions and skip waiting for
 review." JSD-0081 records decisions D1 to D41 under it. It changes no programme rule: nothing is accepted without
@@ -74,7 +75,8 @@ SJL-3 meets SJL-3's.
     a finding that the correspondence missed.
   - A moved exhaustion verdict, a ceiling stop among them, is admitted under C2 only on a variant that reaches a
     regular expression, and only if the variant passes after, at ten times the allowance where it does not pass at
-    the part's.
+    the part's. A variant failing at both commits is read by its detail too, so a ceiling stop that becomes a wrong
+    answer, or the reverse, is a changed verdict.
   - Class C3 holds row M4's empty match alone, by decision D41.
   - A wall-clock race is admitted under C4's (c') and (e). There is no class C5.
 - **Part B** holds the compiler's literal refusals over bundle `sjl-12-001`'s parse corpus, admitting only row S1's
@@ -82,11 +84,12 @@ SJL-3 meets SJL-3's.
 - **Part C** holds the wide twins to their base figures, with no class: no twin reaches a regular expression
   (template T7).
 - **Part D** runs the adversarial programs of [`inputs/adversarial/`](inputs/adversarial/) in both forms through the
-  command-line root, each against its declared outcome and against the base. It reads each process from its exit code
-  and its line, the ceiling stop among them, and admits only the duplicate-name cases and a move between fuel and a
-  ceiling. Its control patches the adapter's mapping of `LimitExceeded` and runs over the M cases, the only cases that
-  mapping reaches; a copy of the report with the other classes' cases changed shows the comparison reporting them.
-  This is validation section 7's control for SJL-11.
+  command-line root, each against its declared outcome and against the base. It retains each process's standard
+  output and standard error, reads its verdict from its exit code and its standard-error line, the ceiling stop among
+  them, and admits only the duplicate-name cases and a move between fuel and a ceiling. Its control patches the
+  adapter's mapping of `LimitExceeded` and runs over the M cases, the only cases that mapping reaches; a copy of the
+  report with the other classes' cases changed shows the comparison reporting them. This is validation section 7's
+  control for SJL-11.
 - **Part E** is this family's measurement over the workloads of [`inputs/workloads/`](inputs/workloads/README.md)
   (template T5), retained in its own sub-bundle. It is not a gate clause (decision D19).
 
@@ -95,10 +98,12 @@ nesting limit 512 (decision D7), and its frame and trail ceilings `1 << 20` and 
 
 ## 2. What this bundle will hold
 
+- **Before any base run**: part A's table script, which reads both reports' details, and part D's comparison script,
+  each committed to the bundle before the base run its part reads is taken.
 - **`base/`**: part A's base dispatch, imported unchanged with the digest of its zip; part B's base report and its
   refused-input lists; part C's `fuel-parity.log`; part D's base runs in both forms; all at the admission commit.
 - **`after/`**: the same at the after commit, with part A's comparisons, its table of C1, C2 and C3 rows, its C2
-  re-runs and its (c') and (e) re-runs, part B's comparison, and part D's comparison script and output.
+  re-runs and its (c') and (e) re-runs, part B's comparison, and part D's comparison output.
 - **`controls/`**: part B's control report, part D's patch K1 with its output and its revert, and its report copy K2
   with the comparison's output.
 - **`measurement/`**: part E's sub-bundle, with its own README and manifest.

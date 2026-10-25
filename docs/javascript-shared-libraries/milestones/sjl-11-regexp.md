@@ -228,12 +228,14 @@ decisions D20 to D22.)* The list is extended:
   onto Broiler.Regex's flag parser and text helpers;
 - the regular-expression prechecks of `RegExpGroupNames` and `JSUnicodePropertyNames`, wherever SJL-12.5 moved them;
 - both `CreateRegex` overloads, removed with `RegexTiering` and its diagnostics under SJL-D-25 (c), after a recorded
-  consumer check (decision D21);
+  consumer check (decisions D12 and D21);
 - the scanner's parenthesis-balance patch, beside the rewriting of braced escapes the list names; the scanner's
   `RegExpValidator` call is re-pointed to Broiler.Regex's validate entry, and the division fallback stays, SJL-14's
   (decision D22);
 - `String.prototype.search`'s direct `value.Match` call;
-- the tests and the benchmark that test the deleted members (plan task 6.4).
+- the tests and the benchmarks that test only the deleted members: `RegExpTranslatorFallbackTests`,
+  `RegexTieringTests`, the clamp parts of `Issue810RegExpLargeQuantifierTests`, `RegexTieringMetrics`, and
+  `RegexProfileMetrics`' .NET rows or the whole file (decision D20).
 
 `RegExpUnicodeValidator` is not deleted: it becomes an (a) forwarder to the validate entry under SJL-D-25, wherever
 SJL-12.5 moved it (decision D21). The list read as above, and its sixth item, "`Runtime`'s `RegExpUnicodeValidator`",
@@ -313,6 +315,14 @@ decisions D8, D10, D16, D17 and D19.)*
 5. test262 `RegExp` per path meets the area rule.
 6. Duplicate named groups still work.
 7. Every correction is listed.
+
+*(Added 2026-10-25, at SJL-11.1, by
+[JSD-0081](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md),
+decisions D21 and D34. The clause's text is unchanged.)* Clause 4 is read this way:
+- **A validator left as an SJL-D-25 (a) forwarder, whose body is a call of Broiler.Regex's validate entry, is gone
+  in this sense.** `RegExpUnicodeValidator` stays so (decision D21); `Parser`'s `RegExpValidator` and the
+  regular-expression prechecks of `RegExpGroupNames` and `JSUnicodePropertyNames` are deleted.
+- Broiler.JS's rule judges the clause by its part E: a search, a scoped metadata check and a control (decision D34).
 
 **Broiler.VM clauses.**
 

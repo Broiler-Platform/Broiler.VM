@@ -227,6 +227,12 @@ decisions D23 and D24. The clause's text is unchanged.)* Clause 1 is read this w
 - **The parser's two other rewrites stay**, listed for SJL-14, whose shared tree keeps raw facts: the Annex B.3.4
   block it synthesizes for a function declaration that shadows a parameter, and the regular-expression literal's
   `\u{…}` decoding. Neither introduces a temporary or restructures control flow.
+  *(Noted 2026-10-25, at SJL-11.1, by
+  [JSD-0081](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md)'s
+  decision D22. The item reads "The parser's two other rewrites stay, listed for SJL-14", the second of them being
+  "the regular-expression literal's `\u{…}` decoding". SJL-11.5 deletes that one, with the scanner's
+  parenthesis-balance patch, or SJL-14 does if SJL-11 has not; it stays at SJL-12, as decided, and this clause's
+  reading does not change.)*
 - **"Reads no ambient state"** is read over the Parser assembly's own declarations and references. The stack
   segmentation's flag and environment variable, the compile thread's statics, `Ast`'s empty instances and the
   compiler's read of the current engine for direct `eval` are outside it.

@@ -12,8 +12,8 @@
   - **T**, the text helpers, `RegExp.escape` and `source`;
   - **U**, the use of Unicode data.
 - **The placement is under owner conditions**: the area design's requirements 1 to 11, which Broiler.RegEx's
-  roadmap numbers R1 to R11, adopted by its dated record of 2026-10-20. **A condition not met by the end of
-  SJL-11.2 refuses the area** (decision D1).
+  roadmap numbers R1 to R11, adopted by its dated record of 2026-10-20 (observed on its branch, not yet merged;
+  "Milestone" below). **A condition not met by the end of SJL-11.2 refuses the area** (decision D1).
 - **Decision SJL-D-14 is recorded**, as this area applies it: under (a), a new backend is written in Broiler.Regex
   with this family's matcher as its specification and no code ported, and this family's matcher is deleted at
   SJL-11.4 (decision D5); under (i), duplicate named groups are implemented there before Broiler.JS retires its
@@ -21,8 +21,8 @@
 - **The owner's decisions D1 to D41 are recorded**: D1 to D40 taken on 2026-10-20 and D41 on 2026-10-21, under
   the owner's direction of 2026-10-18. Where the correspondence showed a recommendation's text to be wrong, the
   decision is recorded as corrected, and the text it replaces is quoted.
-- **This family's corrections are listed before any run**: row S1 (kind D), and rows S5, S10, M4, M7 and T3
-  (kind R). **Broiler.JS's are listed by row** (decision D23), revised before evidence.
+- **This family's corrections are listed before any run**: row S1 (kind D), and rows S5, S10, M4 (a non-empty
+  match), M7 and T3 (kind R). **Broiler.JS's are listed by row** (decision D23), revised before evidence.
 - Nothing in this profile changes with this record. The cut-overs are SJL-11.4's and SJL-11.5's own changes, and
   this record is what they apply.
 
@@ -40,8 +40,12 @@ read it.
 
 **Milestone:** the programme's SJL-11, work package SJL-11.1.
 - The same verdict is recorded in Broiler.JS's shared-libraries plan, `docs/roadmap/SharedLibraries.md`, section
-  "Area verdicts", "Regular expressions (SJL-11.1)".
-- Broiler.RegEx's `docs/roadmap.md` section 6 records the owner conditions it adopts, by its record of 2026-10-20.
+  "Area verdicts", "Regular expressions (SJL-11.1)" (observed on Broiler.JS's branch `sjl-11-1-js`, filed at
+  `0f21a84c`, not yet merged).
+- Broiler.RegEx's `docs/roadmap.md` section 6 records the owner conditions it adopts, by its record of 2026-10-20
+  (observed on Broiler.RegEx's branch `sjl-11-1-regex`, filed at `fca7a6d`, not yet merged).
+- Each of the two is observed state until its change reaches its repository's default branch; the ledger names
+  each merge commit when it lands.
 - **SJL-11 started before SJL-7, which it waits on, and SJL-3 met their gates**, at the owner's words of
   2026-10-19, "Also continue with the other remaining SJL milestones". SJL-11 may not meet its gate before SJL-7
   meets SJL-7's, and so not before SJL-3 meets SJL-3's. This record moves no gate.
@@ -50,8 +54,11 @@ read it.
 for review." This record reads it in two parts, as JSD-0078 and JSD-0080 did:
 - each decision SJL-11's plan leaves open is taken as the plan recommends, and recorded below as the owner's
   decision under that direction. Decisions D1 to D40 were taken on 2026-10-20, the date Broiler.RegEx's record
-  carries. Decision D41 was taken on 2026-10-21, when the correspondence's review found the one row no other class
-  could hold;
+  carries. The corrections the correspondence forced on their text were recorded at filing, on 2026-10-21: decision
+  D5's reason, D7's count, D10's attribution of the ceilings, D18's check, D23's rows, D30's reason, D36's rows
+  S10 and M7, and D37's presumptions. Decision D41 was taken on 2026-10-21 under the same direction, as the
+  correspondence's review recommended it that day: a dated owner decision that records the one row no other
+  class could hold as a defect of the specification's text;
 - the programme proceeds through SJL-11's work packages without pausing for the owner between them.
 
 **The direction changes no rule of the programme.**
@@ -67,8 +74,9 @@ for review." This record reads it in two parts, as JSD-0078 and JSD-0080 did:
   S9b), M1 to M7 (with M2a to M2c), B1 to B8, F1 to F3, T1 to T5, U1 to U3. A correction of this family is of kind
   D (duplicate named groups) or kind R (any other row), as bundle `sjl-11-001`'s rule names them.
 - **Requirements.** R1 to R11 are Broiler.RegEx's roadmap's numbers for the area design's requirements 1 to 11.
-- **Tasks.** "Task n.m" is a task of SJL-11's work plan: 1.x are SJL-11.1's, 2.x SJL-11.2's, 3.x SJL-11.3's,
-  5.x SJL-11.4's, 6.x SJL-11.5's and 7.x SJL-11.6's. Broiler.RegEx's corpus README numbers them the same way.
+- **Steps.** A step of SJL-11 is named by its work package, SJL-11.1 to SJL-11.6, and by the file or member it
+  changes. SJL-11's plan is held in no repository, so its task numbers appear here only where a decision quotes
+  its text.
 
 ---
 
@@ -86,8 +94,9 @@ after it.
   nuspec names, `c1422f4d`.
 
 Each cell was run in this family through the conformance root, and some also through the command-line root, to
-show how it reports a stop. In Broiler.JS each was run through its shell, and the case-insensitive rows again under `tr-TR` and `lt-LT`.
-Where the shell's fallback to .NET hides the package's own answer, the package was called directly.
+show how it reports a stop. In Broiler.JS each was run through its shell, and the case-insensitive rows again under
+`tr-TR` and `lt-LT`. Where the shell's fallback to .NET hides the package's own answer, the package was called
+directly.
 [`correspondence.md`](../../../../docs/evidence/sjl-11-001/correspondence.md), which this record's change retains
 in bundle `sjl-11-001` with every probe and each engine's answers in `correspondence-runs/`, names every member by
 file and line and every row with its class.
@@ -143,8 +152,9 @@ record does not classify falsifies it.
 
 SJL-D-14 (a) places the area with Broiler.Regex **if it meets every requirement the area design lists**, which
 are this family's. Broiler.RegEx adopts them as owner conditions by the dated record of 2026-10-20 in its
-`docs/roadmap.md` section 6, which numbers them R1 to R11. It meets them at SJL-11.2, and its bundle `sjl-11-001`'s
-rule judges them at the candidate reading, the commit `0.2.0-preview.1` is packed from:
+`docs/roadmap.md` section 6, which numbers them R1 to R11 (observed on its branch `sjl-11-1-regex`, filed at
+`fca7a6d`, not yet merged). It meets them at SJL-11.2, and its bundle `sjl-11-001`'s rule judges them at the
+candidate reading, the commit `0.2.0-preview.1` is packed from:
 
 | | Requirement | Where Broiler.Regex stands at `c1422f4d` (correspondence) |
 |---|---|---|
@@ -162,9 +172,11 @@ rule judges them at the candidate reading, the commit `0.2.0-preview.1` is packe
 
 **The refusal path.** If any condition is not met by the end of SJL-11.2, the area is refused. Neither engine moves
 onto the package, and each keeps its own engine with a source-level pointer to this record, so the duplication
-stays visible (the programme's roadmap section 5, "On refusal"). SJL-D-14 (a) has no fallback home, so SJL-11 then
-stays `In progress`, or a new dated choice reopens SJL-D-14 (risk D8). **An engine cut over before every condition
-holds is risk D10's stop.** Nothing here weakens either.
+stays visible (the programme's roadmap section 5, "On refusal"). SJL-D-14 (a) has no fallback home, so SJL-11's
+row then moves to `Refused` under the ledger's update rule 9, in the change that files the refusal, naming the
+failed condition, what would reopen it and where the source pointers are. A new dated choice may then reopen
+SJL-D-14 (risk D8), which moves the row back to `In progress`. **An engine cut over before every condition holds is
+risk D10's stop.** Nothing here weakens either.
 
 ## The gate, sub-area by sub-area
 
@@ -192,8 +204,8 @@ holds is risk D10's stop.** Nothing here weakens either.
 **X6 - extended.**
 - **This family:** the parser in `JsRegExpMatcher.cs` and the public `JsRegExpSyntaxError`, deleted with the file.
   The binder's `CheckRegExp` is re-pointed onto Broiler.Regex's validate entry and the shared flag parser, keeping
-  its diagnostic code and the literal's span (decision D18). `CompileRegExpLiteral`'s remark, which says the grammar lives in the format
-  assembly, is corrected in the same change.
+  its diagnostic code and the literal's span (decision D18). `CompileRegExpLiteral`'s remark, which says the
+  grammar lives in the format assembly, is corrected in the same change.
 - **Broiler.JS:** `Parser/RegExpValidator` (the scanner's `IsValid` call re-pointed to the validate entry);
   `RegExpUnicodeValidator`, an (a) forwarder to the validate entry wherever SJL-12.5 moved it; the regular-expression
   prechecks of `RegExpGroupNames` and `JSUnicodePropertyNames`; the scanner's `DecodeBracedUnicodeEscapes` and its
@@ -311,7 +323,7 @@ are:
 - convention 12, Native AOT and trimming: neither `IsAotCompatible` nor `IsTrimmable` declared.
 
 R1 to R11 close each of them (decisions D9, D11 and D31). Broiler.RegEx's architecture tests assert the list of
-today's violations and shrink it to none (task 2.1).
+today's violations from SJL-11.2's first change, and shrink it to none by its end.
 
 ### X4 - no edge between the engines, none into Broiler.VM
 
@@ -348,7 +360,7 @@ The programme took SJL-D-14 on 2026-10-11: (a), chosen by the owner, and (i), as
 ## The design's readings
 
 Each is corrected in `areas/regexp.md`, or in the milestone where it repeats one, beside the reading, which is
-quoted there (task 1.5; decision D40).
+quoted there, in this record's change (decision D40).
 - **Requirement 4, "without CLR recursion"**, is read as no CLR recursion in the matcher, the parser and the
   compiler bounded by a nesting limit checked before each descent (decision D6).
 - **Section 4's Work and What survives**: the fix is a new backend, not a repair of the closure-based design, and
@@ -367,9 +379,10 @@ quoted there (task 1.5; decision D40).
 ## Decision
 
 Each decision was taken by the owner under the direction quoted above, as SJL-11's plan recommends it, on
-2026-10-20 (D1 to D40) or 2026-10-21 (D41), and states its reason. Broiler.RegEx's roadmap record carries decisions
-D5, D6, D9, D11, D12, D14 and D30 to D32, and Broiler.JS's area entry decisions D7, D10, D20 to D23, D33 and D34, by
-these numbers.
+2026-10-20 (D1 to D40), or as the correspondence's review recommended it, on 2026-10-21 (D41), and states its
+reason. The corrections the correspondence forced on decisions D1 to D40 were recorded at filing, on 2026-10-21,
+each beside the plan's text it replaces. Broiler.RegEx's roadmap record carries decisions D5, D6, D9, D11, D12, D14
+and D30 to D32, and Broiler.JS's area entry decisions D7, D10, D20 to D23, D33 and D34, by these numbers.
 
 ### The verdict and its records
 
@@ -382,13 +395,14 @@ already names the refusal.
 **Decision D2 - the start record.** One dated ledger entry, SJL-11.0, quoting the owner's words of 2026-10-19 and
 the standing direction; the row to `In progress`; SJL-11 may not meet its gate before SJL-7 and SJL-3. **One start
 entry per milestone**, so SJL-9 and SJL-17 file their own. The plan left the alternative open: "One entry for SJL-9,
-SJL-11 and SJL-17 if they start together (task 0.2)"; task 0.2 chose one each. The reason: the precedent of SJL-8.0
-and SJL-10.0, and one entry per milestone keeps each row's history in one place.
+SJL-11 and SJL-17 if they start together (task 0.2)", and the plan's preparatory step chose one each. The reason:
+the precedent of SJL-8.0 and SJL-10.0, and one entry per milestone keeps each row's history in one place.
 
 **Decision D3 - numbers.** This record is JSD-0081; JSD-0080 is SJL-12's. The cut-over JSD takes the next free
 number at SJL-11.4. Bundle `sjl-11-001` in all three repositories. No JSC entry and no exclusion at SJL-11.1: a JSC
-at SJL-11.4 and an EX at SJL-11.6, each the next free at filing. The reason: nothing reserves numbers; the
-precedent of SJL-6 to SJL-10.
+at SJL-11.4 and an EX at SJL-11.6, each the next free at filing. The plan's text named the numbers free when it
+was written, "JSC-319 today" and "EX-133 today"; this record names none, because SJL-12 may take either first and
+a number is taken at filing. The reason: nothing reserves numbers; the precedent of SJL-6 to SJL-10.
 
 **Decision D4 - this record's people.** The owner, the co-signers, the EX-30 sentence and "Decided" with the filing
 date, as the header states. The reason: as JSD-0074.
@@ -401,16 +415,21 @@ are its specification, and **no code is ported**. The parser, the public tree, t
 flag parser stay; the fast paths are re-expressed as instructions under the meter. It is within SJL-D-14 (a). The
 reason: the continuation chain recurses once per term, so a flat sequence of terms ends the process (row B8);
 SJL-D-14 (b) and `areas/regexp.md`'s "Nothing in code" forbid the port; Broiler.RegEx's own roadmap section 4 names
-this step. The plan's reason read "(a flat 100,000-term pattern kills the process; parse-only does not)": the
-second half holds for a flat sequence only, since deep nesting ends the process in the parser (row S3b), which
-decision D6 bounds.
+this step. The plan's reason read "(a flat [n]-term pattern kills the process; parse-only does not)", its size
+left out here (validation principle 5), the input being row B8's run in bundle `sjl-11-001`: the second half holds
+for a flat sequence only, since deep nesting ends the process in the parser (row S3b), which decision D6 bounds.
 
 **Decision D6 - requirement 4's reading.** No CLR recursion in the matcher. The parser and the compiler may recurse,
 bounded by the caller's nesting limit, checked before each descent and answered with the nesting status, under a
 library maximum shown to complete on the smallest stack the adversarial corpus declares, under the JIT and in the
 Native AOT probe. The reason: R4's exit criterion ("a nesting limit checked before the stack is, an explicit stack
-where recursion remains") and contract convention 5 admit depth limits checked before the stack; this family's own
-parser recurses within its limit; rewriting a parser that is not the defect would add risk without a gain.
+where recursion remains"), the programme's governance obligation 2 ("depth limits that are checked before the stack
+is") and contract convention 5 admit depth limits checked before the stack; this family's own parser recurses
+within its limit; rewriting a parser that is not the defect would add risk without a gain. The plan's text read
+"under a library maximum proven on a 1 MiB thread under JIT and Native AOT", and its reason named governance
+obligation 2 alone and said this family's parser "recurses within 512". Broiler.RegEx's adversarial corpus declares
+that stack in its header, and this record names the declaration rather than the size, so that the two cannot drift
+apart; convention 5 is added because it states the same bound for the contract; and the limit is decision D7's.
 
 **Decision D7 - the nesting limit.** A caller parameter with its own status. **Both engines pass 512, counted as
 this family's matcher counts it**: the pattern's own disjunction is depth 1, each group of any kind adds 1, and under
@@ -440,7 +459,8 @@ throws propagates, and leaves no shared state changed. The reason: contract conv
   This family maps a limit exceeded to `JsAbort(Exhausted)`, as `RegExpRun` maps its matcher's ceilings today, so
   its stops at those ceilings stay (rows B1 and B6). Its roots report such a stop as they do today: the conformance
   root as `ProfileFault/AllowanceExhausted` with no dimension, the command-line root with its "host defect" exit
-  code. How the rules read that report is task 1.4's.
+  code. How this family's rule reads that report is stated in its header and its parts A and D (bundle
+  `sjl-11-001`'s `decision-rule-area.md`).
 - **Broiler.JS passes no meter**, as in every shared area, and maps a limit exceeded to a catchable `RangeError` and
   the nesting status to its `SyntaxError`. The spent-allowance no-match becomes a correction: a catastrophic `u` or
   `v` pattern runs to the specification's answer, as its non-`u` patterns already do through .NET, listed as a
@@ -449,10 +469,10 @@ throws propagates, and leaves no shared state changed. The reason: contract conv
   complete; the unbounded classes K and A are judged at library level, where risk S1's stop is read. Broiler.JS's
   test262 template T2 gains class C3 for a limit row (decision D39).
 
-The plan attributed this family's ceilings to the nesting decision: task 5.2 read "frame `1<<20`, trail `1<<21`,
-nesting 512 (decision D7)". The ceilings are this decision's, and the nesting limit decision D7's. The reason:
-consistent with Broiler.JS's shared-libraries plan and contract convention 4; it removes the silent wrong answers
-clause 3 forbids; a per-match allowance would be a metering policy no other area has.
+The plan attributed this family's ceilings to the nesting decision: its step for SJL-11.4's adapter (task 5.2) read
+"frame `1<<20`, trail `1<<21`, nesting 512 (decision D7)". The ceilings are this decision's, and the nesting limit
+decision D7's. The reason: consistent with Broiler.JS's shared-libraries plan and contract convention 4; it removes
+the silent wrong answers clause 3 forbids; a per-match allowance would be a metering policy no other area has.
 
 **Decision D11 - data (R11).** `Broiler.Unicode.Algorithms` `0.1.0-preview.5` only; compilation takes an
 `IUnicodeTables`; `CaseFolding`, its data and its generator are deleted; the tests and the probe read
@@ -466,9 +486,20 @@ Tables, and the provider already has exact names, lexical classes, both foldings
 `0.1.0-preview.4` with every break suppressed and listed with its R item; the string-bearing `RegexMatch` stays, as
 R8 allows; no shim survives for a member R11 makes impossible. SJL-D-3's "inside a major version" is read, for a
 `0.x` preview, as inside a `0.y` minor version. **No release of either engine depends on `0.2` before both cut-overs
-merge**, and Broiler.JS moves its pin only at SJL-11.5. The consumer check of SJL-D-25 (c), an organisation-wide
-code search of 2026-10-19, is recorded by Broiler.JS at SJL-11.5. The reason: a table-less constructor cannot survive
-R11, and minimum version ranges cannot protect a process that hosts both engines, so the release train does.
+merge**, and Broiler.JS moves its pin only at SJL-11.5. The reason: a table-less constructor cannot survive R11, and
+minimum version ranges cannot protect a process that hosts both engines, so the release train does.
+
+**The consumer check of SJL-D-25 (c)**, on which decision D21's removals rest, is recorded here. A GitHub code
+search over the default branches of the `Broiler-Platform` organisation, run on 2026-10-19, found:
+- no use of `CreateRegex`, `RegexTiering`, `RegexTieringDiagnostics`, `RegExpUnicodeValidator`, `JSRegExp`,
+  `CaptureGroupMap` or `LegacyRegExpState` outside Broiler.JS, except Broiler.Unicode's test-only reference-arm
+  copies;
+- no call into Broiler.Regex's API from Broiler or Broiler.Browser, whose only references are `using` aliases of
+  .NET's `System.Text.RegularExpressions.Regex` that work around the namespace.
+
+Broiler.JS's area record states the same search for the members decision D21 removes (observed on its branch, as
+"Milestone" above says). SJL-11.5 runs it again and records its queries and results in Broiler.JS's
+`docs/public-api.md`.
 
 **Decision D13 - publication.** `0.2.0-preview.1` is published to nuget.org only with the owner's approval, as
 the earlier previews were. This family may admit a locally packed candidate on a branch for development, and re-pins
@@ -489,9 +520,10 @@ cut-over branch exercises every pattern; Broiler.JS needs no committed feed to t
 files whose front matter lists the feature are in both of part A's populations. This departs from the condition its
 remark states, that a proposal is admitted when "the profile implements the whole of it", and the departure is
 recorded here with its reason. It also revisits JSD-0019's finding that these files are about the pinned edition,
-which JSD-0018's exclusion kept out: they are admitted, as that finding says they should be. The reason:
-`eng/compare-test262-forms.py` ignores a row present in one report only, so an admission at the cut-over would drop
-the files from part A silently.
+which JSD-0018's exclusion kept out: they are admitted, as that finding says they should be. The plan's text read
+"so the [n] files are in both populations", its count left out here (validation principle 5): the files are named by
+their front matter, which decides the population. The reason: `eng/compare-test262-forms.py` ignores a row present
+in one report only, so an admission at the cut-over would drop the files from part A silently.
 
 **Decision D16 - where the bases are taken.** This family's at the admission commit, the after merge's first parent
 being its parent; Broiler.JS's at the after merge's first parent, under a hold. A base whose commit is not the after
@@ -500,16 +532,19 @@ commit would attribute SJL-12's, SJL-9's and SJL-17's changes to SJL-11 (validat
 
 **Decision D17 - where the inputs live.** Each engine's adversarial programs and workloads under its bundle's
 `inputs/`, committed with its rule; Broiler.JS's benchmark class in a later inputs commit, after SJL-12's corpus
-commit there. The reason: SJL-12's corpus-commit conditions admit only `docs/` between its rule and corpus commits.
+commit there. The reason: SJL-12's corpus-commit conditions admit only `docs/` (and in Broiler.JS `scripts/` and
+`conformance/parse/`) between its rule and corpus commits, so a benchmark class under `Broiler.JS/benchmarks/` waits.
 
 **Decision D18 - this family's literal validation.** Broiler.Regex's **validate entry**: parse and early errors, the
 nesting limit, no expansion, no meter. This family keeps its diagnostic code and the literal's span. **The check
 SJL-11.4 re-points is the binder's `CheckRegExp`** (`JsBinder.EarlyErrors.cs`), where SJL-12.6 item 2 moved it on
-2026-10-21. The plan's task 5.3 read "`JsCompiler.CompileRegExpLiteral` onto the validate entry with no meter, keeping
-this family's diagnostic code and the literal token's span; `RefuseRegExpLiteralFlags` onto the shared flag parser;
-the stale remark `:419-425`", which is where the check was when the plan was written; the remark that is stale at
-`daa92eb` is `CompileRegExpLiteral`'s, which says the grammar lives in the format assembly. The Compiler references
-Broiler.Regex from SJL-11.4 **until SJL-13**, by a dated note on `architecture.md` section 3.1. The entry is the
+2026-10-21. The plan's step for SJL-11.4's compiler change (task 5.3) read "`JsCompiler.CompileRegExpLiteral` onto
+the validate entry with no meter, keeping this family's diagnostic code and the literal token's span;
+`RefuseRegExpLiteralFlags` onto the shared flag parser; the stale remark `:419-425`", which is where the check was
+when the plan was written. The remark SJL-11.4 must correct, at `daa92eb`, is `CompileRegExpLiteral`'s, which says
+the grammar lives in the format assembly: true while this family's matcher is there, and stale once SJL-11.4 moves
+the grammar to Broiler.Regex. The Compiler references Broiler.Regex from SJL-11.4 **until SJL-13**, by a dated note
+on `architecture.md` section 3.1. The entry is the
 seam JSD-0080's decision D41 names for SJL-13. The reason: the compiler has no fuel; expansions are compilation's; one
 parser keeps "the two cannot disagree".
 
@@ -529,7 +564,10 @@ clause 7 is.
   I5. The binder's `CheckRegExp` is re-pointed, not deleted (decision D18).
 - **Broiler.JS adds**: `ParseFlags`, `BuildFlagsString` and the escape helpers onto R9's; the regular-expression
   prechecks of `RegExpGroupNames` and `JSUnicodePropertyNames`, wherever SJL-12.5 moved them; the tests and the
-  benchmark of task 6.4; `String.prototype.search`'s direct call.
+  benchmarks that test only the deleted members (`RegExpTranslatorFallbackTests`, `RegexTieringTests`, the clamp
+  parts of `Issue810RegExpLargeQuantifierTests`, `RegexTieringMetrics`, and `RegexProfileMetrics`' .NET rows or the
+  whole file), whose behaviour tests that stay are rewritten onto the adapter; `String.prototype.search`'s direct
+  call.
 - **Broiler.Regex**: `Budget`, `StepLimit`, the per-start reset, the fast path's early exit, `CaseFolding` and its
   data, the generator, the loose lookup, the static cache and `RegexOverflowException`.
 
@@ -540,17 +578,20 @@ dead path.
 ### Broiler.JS's cut-over
 
 **Decision D21 - SJL-D-25's dispositions.** `RegexTiering`, `RegexTieringDiagnostics` and both `CreateRegex`
-overloads: **(c) removal**, with the recorded consumer check, re-run at SJL-11.5; their own tests deleted with them;
+overloads: **(c) removal**, with the consumer check decision D12 records, re-run at SJL-11.5; their own tests
+deleted with them;
 `SharedUnicodeTests.cs:204-235` rewritten. `RegExpUnicodeValidator`: **(a)**, a forwarder to the validate entry.
 `JSRegExp.Match`, `Split` and `Replace`: kept, their bodies re-pointed. `CaptureGroupMap`: kept if used, else (b).
 The reason: (a) and (b) would keep a .NET `Regex` return type and the translator.
 
 **Decision D22 - the scanner.** SJL-11.5 deletes `DecodeBracedUnicodeEscapes` and the parenthesis-balance patch,
 which corrects `source` (row T1), and re-points the scanner's `RegExpValidator.IsValid` call to the validate entry,
-which corrects the literal path's rows S2b, S7, S8 and S11. **The division fallback stays SJL-14's**, listed (row S9). JSD-0080's decision D23 merged on
-2026-10-19 as written, keeping the literal's `\u{…}` decoding for SJL-14, so the plan's amendment before its merge
-did not happen; this change files a dated note beside JSD-0080's decision D23 instead. The reason: the scan is
-speculative, and the goal symbol is the shared front end's.
+which corrects the literal path's rows S2b, S7, S8 and S11. **The division fallback stays SJL-14's**, listed (row
+S9). JSD-0080's decision D23 merged on 2026-10-19 as written, keeping the literal's `\u{…}` decoding for SJL-14, so
+the plan's amendment before its merge did not happen; this change files a dated note beside JSD-0080's decision D23
+instead, and beside the two other records that state the same placement: the SJL-12 milestone's reading of its
+clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS's own change files (observed on its
+branch). The reason: the scan is speculative, and the goal symbol is the shared front end's.
 
 **Decision D23 - the corrections lists, revised before evidence.**
 - **Broiler.JS's (SJL-11.5).** The milestone's list is revised, quoting the old text: loose property names and
@@ -559,11 +600,13 @@ speculative, and the goal symbol is the shared front end's.
   - the culture-dependent and .NET case-insensitive matching: M2 (F2), M2a in `tr-TR` and in `lt-LT`, M2b, and U3
     by data (class C5);
   - the translator's line terminators: M3 (W5), with `$` without `m`;
-  - `lastIndex` inside a surrogate pair: M4's half-pair matches. **Task 6.1's step back out of a pair may move only
-    the matcher's start, never the reported `"index"` or substring**;
+  - `lastIndex` inside a surrogate pair: M4's half-pair matches. **SJL-11.5's adapter, stepping back out of a pair,
+    may move only the matcher's start, never the reported `"index"` or substring**;
   - `source` rewriting: T1;
   - the literal check: S2b, S7, S8 (test262's breaking-change patterns and two more `v`-mode classes) and S11 (the
-    invalid modifiers and `v`-mode classes reported only at evaluation), all closed by decision D22's re-pointing;
+    invalid modifiers and `v`-mode classes reported only at evaluation), their literal path closed by decision
+    D22's re-pointing, and S7's and S8's constructor path, where the library's refusal is caught and .NET admits
+    the translation, by the translator's retirement at SJL-11.5;
   - an escaped duplicate name in one alternative: S2a;
   - a class that joins a lead escape to a braced trail escape: S10's class case;
   - with Broiler.Regex's preview.4: the budget no-match, the shortened match, the wrong index and the look-around
@@ -620,9 +663,10 @@ SJL-11). The reason: SJL-11.4 moves literal validation to the shared engine.
 blocked until the revision it depends on carries a completed review (SJL-D-5 (a)). Broiler.RegEx's `HUMAN_REVIEW.md`
 keeps its record, with a dated note. **The reason, corrected:** the reviewed commit, `d5b07a00`, is an ancestor of
 Broiler.RegEx's default branch; the source under `Broiler.Regex/` changed after it, before `c1422f4d`; so, by the
-record's own rule, no review covers the current code. The plan's reason read "the recorded commit is absent", and its
-section 3 "the reviewed commit `d5b07a00` is absent after the history was rewritten": that was a reading of a shallow
-clone grafted at `c1422f4`, and is false. The conclusion stands on the corrected ground.
+record's own rule, no review covers the current code. The plan's reason read "[a count of the units reviewed]; the
+recorded commit is absent", its count left out here (validation principle 5), and its section 3 "the reviewed commit
+`d5b07a00` is absent after the history was rewritten": that was a reading of a shallow clone grafted at `c1422f4`,
+and is false. The conclusion stands on the corrected ground.
 
 **Decision D31 - thread safety.** `CodePointSet` is immutable after construction, no static field is mutable, and
 concurrent compile and match answer as single-threaded calls do (part A's check A-11 of Broiler.RegEx's rule). The
@@ -634,7 +678,9 @@ R10, and risks S1 and S2.
 
 **Decision D33 - Broiler.JS's culture part.** Its rule's part D: the regular-expression vectors identical under the
 invariant culture, `tr-TR` and `lt-LT` at the after commit. The reason: case-insensitive matching on the .NET path
-reads the host culture, and both `tr-TR` and `lt-LT` move its answers (row M2a), which no test262 run shows.
+reads the host culture, and both `tr-TR` and `lt-LT` move its answers (row M2a), which no test262 run shows. The
+plan's reason read "F2 reads the host culture; no test262 run shows it". That is false: row M2, which is bundle
+`sjl-7-001`'s F2, answers alike in every culture the correspondence ran, and the row the culture moves is M2a.
 
 **Decision D34 - Broiler.JS's deletion part.** Its rule's part E: a search and a scoped metadata check, with a
 control; `JSIntl`'s, `DateParser`'s and the compiler's .NET `Regex` listed for their owners. The reason: it makes
@@ -653,16 +699,18 @@ M7 are added to the plan's list by the correspondence.
 
 **Decision D37 - the adversarial corpus's home and its presumptions.** One library corpus in Broiler.RegEx; each
 engine's programs generated from it with engine-specific declared outcomes, the corpus's SHA-256 and the commit in
-each manifest. **The corpus's declared statuses presume four things of SJL-11.2's backend**, which tasks 2.3 to 2.4c
-keep:
+each manifest. **The corpus's declared statuses presume four things of SJL-11.2's backend**, which every change of
+SJL-11.2 that builds it keeps, from the parser's nesting check to the fast paths:
 1. **no memoisation**: the backend searches in the specification's order and does not remember a failure at a
    position;
-2. **no required-literal analysis** beyond task 2.4c's literal-prefix prefilter, which charges its skips;
+2. **no required-literal analysis** beyond the literal-prefix prefilter of SJL-11.2's fast paths, which charges its
+   skips;
 3. **a greedy run**: a greedy quantifier over one character class runs as one instruction with one backtrack point,
    adding no frame and writing no trail cell per character, as this family's `Run` does. **This holds for classes
    only**: this family runs a greedy quantifier over a single character or a group as a loop with a frame per
    iteration (row B1), so the corpus writes its greedy runs as the class `[a]`, and a backend that runs `a*` as a run
-   moves B1's stop in this family into an answer, which its rule must read (task 1.4);
+   moves B1's stop in this family into an answer, which its rule reads (bundle `sjl-11-001`'s
+   `decision-rule-area.md`, part A's class C2);
 4. **nesting depth counted as this family counts it** (decision D7), so that this family keeps its verdicts.
 
 A backend that breaks one can answer as the specification does and still fail the corpus. The plan's decision read
@@ -697,9 +745,11 @@ correspondence records the text's reading and both engines' answers: this family
 - **It lapses when the specification is corrected**: the corrected text's answer then decides, and a later
   revision of this record classes the case by it.
 
-The reason: `regexpref`, written from the text, has no answer to give for an ill-formed record, so without this
-decision the row would be class (c), a defect of Broiler.Regex no change can fix; the non-empty matches beside it
-are determinate and stay corrections (row M4).
+The decision is the owner's under the direction of 2026-10-18, taken as the correspondence's review recommended it on
+2026-10-21: "a dated owner decision recorded as a defect in the specification". The reason: `regexpref`, written
+from the text, has no answer to give for an ill-formed record, so without this decision the row would be class (c),
+a defect of Broiler.Regex no change can fix; the non-empty matches beside it are determinate and stay corrections
+(row M4).
 
 ## What this rejects, and why
 
@@ -720,9 +770,9 @@ every part of the three repositories' `sjl-11-001` rules has been judged, whatev
 ## Correction entries
 
 None in this profile's plan documents at this record. The JSC entries are SJL-11.4's (decision D28). These carry
-dated notes beside the text they correct, each quoting it (task 1.5): the milestone file, `areas/regexp.md`,
-`architecture.md` section 3.1, and SJL-D-14's "Recorded by" in `decisions.md`. JSD-0080's decision D23 carries a
-dated note in this change (decision D22).
+dated notes beside the text they correct, each quoting it, in this record's change: the milestone file,
+`areas/regexp.md`, `architecture.md` section 3.1, and SJL-D-14's "Recorded by" in `decisions.md`. JSD-0080's
+decision D23 and the SJL-12 milestone's reading of its clause 1 carry dated notes in this change (decision D22).
 
 ## What this record does not decide
 
@@ -730,7 +780,8 @@ dated note in this change (decision D22).
 - **The vectors.** SJL-11.3 adds them, and they may falsify this record.
 - **The frontend's literal validation**, which is SJL-13's; the validate entry is its seam until then.
 - **The division fallback**, which is SJL-14's.
-- **Which rule part reads a ceiling stop how**: each repository's rule (task 1.4 for this family).
+- **Which rule part reads a ceiling stop how**: each repository's rule (for this family, bundle `sjl-11-001`'s
+  `decision-rule-area.md`).
 - **A speed claim of any kind.** Each engine's measurement answers its own rule's part, and nothing else.
 
 ## Falsified if

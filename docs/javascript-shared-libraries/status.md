@@ -1673,8 +1673,8 @@ met: clauses 7 and 13 are unmet, as its row says.
 
 On 2026-10-19 the owner wrote "Also continue with the other remaining SJL milestones". This ledger reads it as the
 choice to start SJL-11, with SJL-9 and SJL-17, before the milestones they wait on meet their gates. **Each milestone
-files its own start entry** (JSD-0081 decision D2): this one is SJL-11's, and SJL-9 and SJL-17 file theirs. It is SJL-11's
-first record in this repository, filed with SJL-11.1's records in the change that lands them (update rule 1).
+files its own start entry** (JSD-0081 decision D2): this one is SJL-11's, and SJL-9 and SJL-17 file theirs. It is
+SJL-11's first record in this repository, filed with SJL-11.1's records in the change that lands them (update rule 1).
 
 The choice moves no gate:
 - **SJL-11 may not meet its gate before SJL-7 meets SJL-7's**, and so not before SJL-3 meets SJL-3's. Update rule 10
@@ -1694,11 +1694,12 @@ decided on 2026-10-21, and all six sub-areas are accepted:
 - **U**, the use of Unicode data.
 
 Each is placed with Broiler.RegEx, in its package `Broiler.Regex`, under the area design's requirements 1 to 11, which
-Broiler.RegEx's roadmap numbers R1 to R11 and adopts as owner conditions by its dated record of 2026-10-20. **A condition
-not met by the end of SJL-11.2 refuses the area**: neither engine then moves, and each keeps its own engine with a
-source pointer to JSD-0081. **Decision SJL-D-14 is recorded** as the area applies it: under (a), a new backend written
-in Broiler.Regex with this family's matcher as its specification and no code ported, and this family's matcher deleted
-at SJL-11.4; under (i), duplicate named groups in Broiler.Regex before Broiler.JS retires its translator.
+Broiler.RegEx's roadmap numbers R1 to R11 and adopts as owner conditions by its dated record of 2026-10-20 (observed on
+Broiler.RegEx's branch `sjl-11-1-regex`, filed at `fca7a6d`, not yet merged). **A condition not met by the end of
+SJL-11.2 refuses the area**: neither engine then moves, and each keeps its own engine with a source pointer to
+JSD-0081. **Decision SJL-D-14 is recorded** as the area applies it: under (a), a new backend written in Broiler.Regex
+with this family's matcher as its specification and no code ported, and this family's matcher deleted at SJL-11.4;
+under (i), duplicate named groups in Broiler.Regex before Broiler.JS retires its translator.
 
 **The owner's direction.** On 2026-10-18 the owner wrote: "Please do all recommended decisions and skip waiting for
 review." Under it each decision SJL-11's plan left open was taken as the plan recommends, D1 to D40 on 2026-10-20 and
@@ -1751,22 +1752,27 @@ Its README says that it holds rules and the correspondence only, and that nothin
 - SJL-11's milestone: SJL-11.1's verdict and rules; SJL-11.2's readings of requirement 4 and of the component's
   test262, and its removals; SJL-11.4's deletion list, the binder's check, the adapter's policy, the admission and
   this family's corrections; SJL-11.5's deletion and corrections lists; SJL-11.6's "in both engines" for Broiler.JS,
-  the bases, the inputs and the measurements; and the second record;
+  the bases, the inputs and the measurements; the second record; and a reading of exit clause 4, unchanged, for a
+  validator left as an SJL-D-25 (a) forwarder;
 - `areas/regexp.md`: its status, section 2's stale cells, section 3's readings, section 4's work and what survives,
   section 5's lists and section 6's second risk;
-- `architecture.md` section 3.1's Compiler row; `decisions.md`, SJL-D-14's "Recorded by"; and JSD-0080's decision
-  D23.
+- `architecture.md` section 3.1's Compiler row; `decisions.md`, SJL-D-14's "Recorded by"; JSD-0080's decision D23;
+  and the SJL-12 milestone's reading of its clause 1, which lists the same decoding for SJL-14.
 
 **Broiler.JS's and Broiler.RegEx's halves are filed in their own changes**: Broiler.JS's area record, its status rows
-and its bundle `sjl-11-001`'s rule; and Broiler.RegEx's roadmap record, its bundle's rules, the adversarial corpus with
-its generator, and a dated note in its `HUMAN_REVIEW.md`. This ledger observes each when it merges. Broiler.RegEx's
-merges first, because its corpus is both engines' input.
+and its bundle `sjl-11-001`'s rule (observed on Broiler.JS's branch `sjl-11-1-js`, from `0f21a84c`, not yet merged);
+and Broiler.RegEx's roadmap record, its bundle's rules, the adversarial corpus with its generator, and a dated note in
+its `HUMAN_REVIEW.md` (observed on Broiler.RegEx's branch `sjl-11-1-regex`, from `fca7a6d`, not yet merged). This
+ledger observes each when it merges, and names its merge commit in place of the branch. Broiler.RegEx's merges first,
+because its corpus is both engines' input.
 
 **Nothing is accepted, and no base is taken.** Review is deferred (update rule 7). Every base of this family's rule is
 taken at the admission commit, after SJL-12's after runs, until which no SJL-11 change merges into the profile's
 paths. SJL-11 stays `In progress`, every clause unmet, and may not meet its gate before SJL-7 meets SJL-7's, and so not
 before SJL-3 meets SJL-3's. Decision SJL-D-14 is recorded. Next:
-- the merges of the three repositories' SJL-11.1 changes, Broiler.RegEx's first;
+- the merges of the three repositories' SJL-11.1 changes, Broiler.RegEx's first, by a merge commit, so that
+  `c2aa771`, the commit both engines' adversarial manifests name, stays reachable from its default branch; each merge
+  commit then replaces the branch it was observed on, here, in JSD-0081 and in SJL-D-14's "Recorded by";
 - SJL-11.2 in Broiler.RegEx, and SJL-11.3's vectors.
 
 ---
