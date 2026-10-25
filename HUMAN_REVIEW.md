@@ -983,7 +983,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateNestingLimit` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `22B583`, PENDING
   - Falsified if: a template the parse reads within its nesting bound has a substitution with no run and no refusal
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `820D6C`, PENDING
-  - Falsified if: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
+  - Falsified if: the stream up to its first EndOfSource goes on past a refusal, or without the structured mode the array holds a token after that EndOfSource
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadStream(System.Collections.Generic.List<SliceToken>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `60AD78`, PENDING
   - Falsified if: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TokenizeSubstitutions(System.Collections.Generic.List<SliceToken>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `0B3D31`, PENDING

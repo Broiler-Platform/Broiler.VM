@@ -400,7 +400,14 @@ public readonly record struct SliceToken(
 /// <para>
 /// <b>It refuses rather than throws.</b> Every malformed input answers with a diagnostic in the
 /// returned list and a token stream truncated at the refusal; nothing here throws for input, which
-/// is what lets the front end have one refusal path rather than two.
+/// is what lets the front end have one refusal path rather than two. <i>(2026-10-25, SJL-12.6 item
+/// 4, JSD-0080 decision D15: under the wide compiler's <see cref="StructuredTemplates"/> mode the
+/// returned array holds the source's stream and then one run per template substitution, each
+/// ending with an <see cref="SliceTokenKind.EndOfSource"/> of its own. A substitution whose own text
+/// the lexer refuses has no run, and its refusals are not in the returned list: they are kept with
+/// that substitution in <see cref="Templates"/>, for the parser to report when it reaches it. What
+/// this paragraph says of the list and the stream is said of the source's stream, up to its first
+/// <see cref="SliceTokenKind.EndOfSource"/>.)</i>
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=5006C2
@@ -565,6 +572,16 @@ public sealed class SliceTokenizer
     /// <b>Such a template is still in <see cref="Templates"/></b>, marked as past the bound, so a
     /// parser that did reach one refuses it as nested too deep rather than reading nothing.
     /// </para>
+    /// <para>
+    /// <b>Within the bound, the memory is up to the bound times the template's length, and it is
+    /// spent before the parse starts.</b> A run that holds a nested template holds its token, and the
+    /// token's text is a copy of everything inside it, so what a template's innermost levels hold is
+    /// copied once per level: at most this many times - 64 at the default bound, 512 at the largest
+    /// the parse options accept. The runs are tokenized for every template of the source, whether or
+    /// not the parse goes on to read it. The sub-parse this mode replaced copied each level twice,
+    /// with no bound, but only as the parse reached it, so a source refused before a large template
+    /// paid for that template's token alone; that is the one case that now costs more.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=22B583
     // Broiler-Falsified-If: a template the parse reads within its nesting bound has a substitution with no run and no refusal
@@ -608,14 +625,18 @@ public sealed class SliceTokenizer
     // Broiler-Human:        PENDING
     public System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics => diagnostics;
 
-    /// <summary>Reads every token, ending with one <see cref="SliceTokenKind.EndOfSource"/>.</summary>
+    /// <summary>
+    /// Reads every token: the source's stream, ending with one
+    /// <see cref="SliceTokenKind.EndOfSource"/>, and under <see cref="StructuredTemplates"/> each
+    /// template substitution's run after it.
+    /// </summary>
     /// <remarks>
     /// Under <see cref="StructuredTemplates"/> the array goes on past that token with each template
     /// substitution's run, each ending with an <see cref="SliceTokenKind.EndOfSource"/> of its own;
     /// the stream before the first one is the same as without the mode.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=820D6C
-    // Broiler-Falsified-If: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
+    // Broiler-Falsified-If: the stream up to its first EndOfSource goes on past a refusal, or without the structured mode the array holds a token after that EndOfSource
     // Broiler-Human:        PENDING
     public SliceToken[] Tokenize()
     {

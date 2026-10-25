@@ -6702,7 +6702,7 @@ internal sealed class JsParser
     /// break is regardless of how the file was saved.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=901464
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D2B9C5
     // Broiler-Falsified-If: a substitution is parsed by another parser, or from a depth, a parameter context or labels other than the template's
     // Broiler-Human:        PENDING
     private JsTemplateLiteral ParseTemplate(bool tagged)
@@ -6747,8 +6747,8 @@ internal sealed class JsParser
         // substitutions before it are parsed, as it was when this method walked the text itself.
         for (var which = 0; which < parts.Chunks.Count; which++)
         {
-            var (start, end) = parts.Chunks[which];
-            var text = token.RawText[start..end];
+            var (chunkStart, chunkEnd) = parts.Chunks[which];
+            var text = token.RawText[chunkStart..chunkEnd];
             var spoiled = false;
             var cursor = 0;
             chunk.Clear();
