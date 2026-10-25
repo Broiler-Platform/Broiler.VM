@@ -240,11 +240,12 @@ in a default-branch merge of its own:
 - **Item 2**, `daa92eb` (Broiler.VM#166): every language early error the lowering reported is the binder pass's,
   with its code, and a unit the binder refuses is not lowered. What decision D12 keeps in the lowering stays there
   (decisions D10 to D13).
-- **Item 4**, `1de3af6` (Broiler.VM#167), bundle `sjl-12-001`'s after commit: structured templates, with decision
-  D15's listed corrections, and `JsCompiler.Requests` on `CompilationStack`'s thread (decision D16). The same
-  carry has two consequences D15 does not list: an input already refused whose diagnostic list changes
-  (`964b460`), and an input accepted before that the tree-depth bound refuses (`964b460`, `3902f6f`). The bundle
-  names both as findings against JSD-0080, before the after runs, in its
+- **Item 4**, `1de3af6` (Broiler.VM#167), bundle `sjl-12-001`'s after commit: structured templates, whose
+  substitutions the parser reads in place, carrying the nesting depth, the tree depth and the parameter context
+  into them, with decision D15's listed corrections; and `JsCompiler.Requests` on `CompilationStack`'s thread
+  (decision D16). That carry has two consequences D15 does not list: an input already refused whose diagnostic
+  list changes (`964b460`), and an input accepted before that the tree-depth bound refuses (`964b460`,
+  `3902f6f`). The bundle names both as findings against JSD-0080, before the after runs, in its
   [readings named before the after runs](../../evidence/sjl-12-001/README.md#readings-named-before-the-after-runs-sjl-126-2026-10-25).
   Item 4's pre-checks found neither in the parse corpus or in the pinned suite's negative tests.
 

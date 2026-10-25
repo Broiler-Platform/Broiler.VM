@@ -13727,9 +13727,11 @@ named with the change's own commits:
   - **Two consequences of the same carry that decision D15 does not list.** Bundle `sjl-12-001` names both as
     findings against JSD-0080, before its after runs, in its section 3,
     ["Readings named before the after runs"](../../../docs/evidence/sjl-12-001/README.md#readings-named-before-the-after-runs-sjl-126-2026-10-25):
-    - **An input already refused can change its diagnostic list** (`964b460`). A `yield` or `await` in a
-      substitution in formal parameters is the parser's 2101 now, so where a later stage refused the input, the
-      list it gave changes. `BinderChecks`' rows for the `await` the binder refused before show it.
+    - **An input already refused can change its diagnostic list** (`964b460`), in two shapes. A `yield` or
+      `await` in a substitution in formal parameters is the parser's 2101 now, so where a later stage refused the
+      input, the list it gave changes; `BinderChecks`' rows for the `await` the binder refused before show it. And
+      in an input refused for another reason, a substitution whose carried nesting depth or tree depth passes its
+      bound brings in the parser's 2103, and the list changes too; no checks row holds that shape.
     - **An input accepted before can be refused by the tree-depth bound** (`964b460`, and `TemplateChecks`' row
       as `3902f6f` narrowed it). A substitution's chain is charged from the depth the chain around the template
       has reached. JSD-0080's status says that no other change either engine makes at SJL-12 "moves an input
@@ -13776,7 +13778,7 @@ Clause by clause:
     covered either, nor is machine code, whose determinism the re-emission and golden rows read and these rows do
     not.
 
-**Judged by the profile's ledger, not here.** Decision D14 leaves whether those rows meet JSB-1's gate to the
+**Left to the profile's ledger, and not judged here.** Decision D14 leaves whether those rows meet JSB-1's gate to the
 profile's [ledger](roadmap.status.md), on its own legend. This entry records what exists, judges nothing, and moves
 no row; the programme's evidence completes no plan of this profile (the programme ledger's update rule 6, "Separate
 ledgers"). JSD-0080 cites that ledger's update rule 3, "No transitive completion", for the same point. Rule 6 is
