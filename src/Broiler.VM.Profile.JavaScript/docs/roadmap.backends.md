@@ -1316,14 +1316,15 @@ end that lowers every artifact a backend has consumed. **An ordering with no gat
 preference**, and this is what that costs.
 
 *(Noted 2026-10-25, at the shared JavaScript libraries programme's SJL-12.6, and this paragraph and this
-section's first kept as written; corrected: [JSC-319](roadmap.corrections.md#jsc-319).)* They were true
-when they were written. The first paragraph's "they are the two that were not done", and this one's "the
-determinism this programme puts first is asserted for the slice front end and not for the front end that
-lowers every artifact a backend has consumed", no longer hold for JSB-1. Since `066abef` (Broiler.VM#163,
-merged on 2026-10-20) the wide hoisting order is the source's, and two standing rows assert the wide
-lowering's determinism in one process. JSB-1's State bullet of 2026-10-25, in
+section's first kept as written; corrected: [JSC-319](roadmap.corrections.md#jsc-319).)* The first
+paragraph's "they are the two that were not done", and this one's "the determinism this programme puts first
+is asserted for the slice front end and not for the front end that lowers every artifact a backend has
+consumed", were true when they were written. Since then, what JSB-1's gate names has been built: since
+`066abef` (Broiler.VM#163, merged on 2026-10-20) the wide hoisting order is the source's, and two standing
+rows assert the wide lowering's determinism in one process. JSB-1's State bullet of 2026-10-25, in
 [section 6](#jsb-1--determinism-over-bytecode-before-determinism-over-machine-code), says what exists and
-what it does not cover. Nothing here judges the stage, and the order this section argues does not change.
+what it does not cover. Whether that meets the gate is not said here, and no record has judged the stage;
+the order this section argues does not change.
 
 **The rest are ordered by what they unblock rather than by size.** JSB-3 needs JSB-1's determinism;
 JSB-4 needs JSB-3's exit to have something to write; JSB-5 needs JSB-4's sections to have something to
