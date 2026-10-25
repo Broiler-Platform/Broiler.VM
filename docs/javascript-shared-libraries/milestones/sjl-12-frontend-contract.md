@@ -47,6 +47,19 @@ Broiler.JS parser would be premature." Its reasons are confirmed by the review, 
 - Its hoisting order relies on dictionary insertion order. Backend stage JSB-1, not started, is
   meant to fix that.
 
+*(Noted 2026-10-25, at SJL-12.6's records, and the three bullets kept as written.)* They describe the wide path
+before SJL-12.6. At bundle `sjl-12-001`'s after commit, `1de3af6`:
+- "Its declaration analysis and its instruction emission share methods": the binder pass, `JsBinder`, collects
+  the declarations, and `HoistProgram`, `HoistFunction` and `HoistEval` read its facts and emit (item 1, `3fa4b39`).
+- "Its early errors are split between the parser and the lowering": the lowering's early errors are the binder
+  pass's, after the parse, and the parser keeps its own checks (item 2, `daa92eb`; JSD-0080 decision D10).
+- "Its hoisting order relies on dictionary insertion order. Backend stage JSB-1, not started, is meant to fix
+  that": the order is the source's, and the two checks rows JSB-1's gate names exist (item 3, `066abef`). The
+  profile's ledger judges JSB-1
+  ([JSC-319](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319)).
+
+None of this is judged here. Section "SJL-12.6" below says where it is.
+
 **Broiler.VM's decision JSD-0014 already rejects** "the seed's four-place early-error split and its
 ambient parse state". This milestone adopts that decision as a requirement on the shared front end.
 
@@ -208,6 +221,31 @@ Broiler.JS's test262, per path, shows no regression against SJL-0's base under t
   difference;
 - two compilations of the same source give identical bytes in two runs and on two threads;
 - rules N5 to N9, N12 and N19 hold.
+
+*(Added 2026-10-25, at SJL-12.6's records, by
+[JSD-0080](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md);
+the work package's text is unchanged.)* **The four items have landed**, item 3 first and alone (decision D14), each
+in a default-branch merge of its own:
+- **Item 3**, `066abef` (Broiler.VM#163), bundle `sjl-12-001`'s ordering commit: the global lexical declarations
+  and an evaluated program's lexical names in source order, and the checks rows "the wide lowering is
+  deterministic" and "the wide lowering declares lexical names in source order". The item read "This is the
+  relationship to stage JSB-1, which is recorded": it is recorded in
+  [JSC-319](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319), which corrects the
+  backend roadmap's JSB-1 text, and the profile's ledger judges the stage.
+- **Item 1**, `3fa4b39` (Broiler.VM#165): `JsBinder`'s facts, read by `HoistProgram`, `HoistFunction` and
+  `HoistEval`, which keep allocation, interning and emission order (decision D11). Item 1 reads that the binder
+  collects "private-name, label, `super`, `return` and `new.target` validity" and "the `const`-initialiser check":
+  the facts landed with item 1, and the checks with item 2, as decisions D11 and D12 divide them.
+- **Item 2**, `daa92eb` (Broiler.VM#166): every language early error the lowering reported is the binder pass's,
+  with its code, and a unit the binder refuses is not lowered. What decision D12 keeps in the lowering stays there
+  (decisions D10 to D13).
+- **Item 4**, `1de3af6` (Broiler.VM#167), bundle `sjl-12-001`'s after commit: structured templates, with decision
+  D15's listed corrections, and `JsCompiler.Requests` on `CompilationStack`'s thread (decision D16).
+
+**Nothing here says the done-when holds.** Its four conditions are read on bundle `sjl-12-001`'s parts A to D,
+whose after runs had not been taken when this note was written. The bundle's section 3 names, before those runs,
+how the rule's classes read the edges item 4's review found. SJL-12 cannot meet its gate before SJL-3 meets
+SJL-3's.
 
 ---
 

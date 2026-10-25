@@ -16,6 +16,11 @@ re-derived these statements from code at Broiler.VM `046357b` and Broiler.JS `24
 section 4 with the specifics its decisions D27 and D41 fix. Each reading that no longer held is corrected beside it,
 dated, with the superseded text quoted (its decision D42).
 
+*(Added 2026-10-25, at SJL-12.6's records.)* SJL-12.6 changed Broiler.VM's wide path in four merges, `066abef`,
+`3fa4b39`, `daa92eb` and `1de3af6`, the last of them bundle `sjl-12-001`'s after commit. The statements of section 2
+and the wide column of section 7 that they changed are corrected beside the reading, dated, with the superseded text
+quoted, as read at `1de3af6`. None of it is a verdict: bundle `sjl-12-001` judges SJL-12.6.
+
 ---
 
 ## 1. Why this area is the largest opportunity and the largest risk
@@ -59,7 +64,10 @@ Three things it does not do, and one thing it does:
   2026-10-19, at SJL-12.1, by JSD-0080 decision D42: so since SJL-7.4. The item read "come from the pinned Unicode
   tables, through the Format assembly's `JsUnicodeLexical`;")*;
 - **regular-expression literals** are one opaque token, delimited but not validated;
-- **template literals** are one opaque token;
+- **template literals** are one opaque token *(noted 2026-10-25, at SJL-12.6 item 4, `8ff3a58` and `964b460`: still
+  so in the stream both paths read, and the tokenizer now scans a template in one loop with a stack of its own,
+  where its scan called itself once per level; under an internal mode only the wide compiler sets, it also
+  tokenizes each substitution with the lexer, into a run of its own behind the stream)*;
 - **decorators** (`@`) are refused in the tokenizer itself.
 
 **The slice path** runs `SliceParser`, `SliceStaticSemantics` and the slice lowering.
@@ -83,8 +91,11 @@ Three things it does not do, and one thing it does:
 - **What it supports.** The whole modern language **except** decorators, the `accessor` keyword and
   import phases. Some doc comments in `JsParser` and `JsSyntax` that say otherwise are stale.
 - **How it parses.** The parser never rewinds; arrow functions are found by bracket scanning; cover
-  grammars are resolved by conversion. **Template substitutions are re-tokenised** by a fresh
-  tokenizer and sub-parser.
+  grammars are resolved by conversion. **Template substitutions are read in place** by the same
+  parser, from the runs the tokenizer's structured mode writes, so the nesting depth, the tree depth,
+  the parameter context, the labels and the offsets carry into them *(revised 2026-10-25, at SJL-12.6
+  item 4, `964b460`, JSD-0080 decision D15: the sentence read "**Template substitutions are
+  re-tokenised** by a fresh tokenizer and sub-parser.")*.
 
 **Options and context.**
 
@@ -93,13 +104,16 @@ Three things it does not do, and one thing it does:
 - The wide parser's constructor takes forced strictness, the enclosing function depth, and whether
   `yield` and `await` are operators.
 - `JsFormat.EvalRequestFlags` carries six evaluation flags. **Only two reach the parser**; the
-  lowering consumes the rest.
+  binder pass reads the rest for its early errors, and the lowering for emission *(revised
+  2026-10-25, at SJL-12.6 item 2, `daa92eb`: the item ended "the lowering consumes the rest")*.
 
 **Limits.**
 
 - A nesting depth: settable within a bound.
 - A tree-depth bound: a constant, which **rule N19 forbids the host to raise**.
-- Every compilation runs on its own large thread (`CompilationStack`).
+- Every compilation runs on its own large thread (`CompilationStack`) *(noted 2026-10-25, at
+  SJL-12.6 item 4, `2c590e4`, JSD-0080 decision D16: so does the parse `JsCompiler.Requests` makes,
+  which ran on its caller's stack before)*.
 - Format ceilings: locals, constants, the operand stack, call arguments, BigInt width.
 - A slot ceiling in the wide path.
 - A depth limit for JSON modules.
@@ -113,20 +127,35 @@ Three things it does not do, and one thing it does:
 - Some lowering refusals carry a zero position.
 - **Guests see only a generic `SyntaxError`**, because the artifact provider drops the diagnostics.
 
-**Where early errors are checked.** In the slice path, one stage. In the wide path, **both the
-parser and the lowering**:
+**Where early errors are checked.** In the slice path, one stage. In the wide path, **the parser,
+and then the binder pass**, which runs after the parse and before the lowering:
 
-- the lowering checks `super` validity, private-name resolution, `arguments` in field initialisers,
-  `return` placement, `break`/`continue` targets, regular-expression literal syntax (through the
-  matcher), duplicate `__proto__`, cover-grammar leftovers, `const` initialisers and module
-  import/export rules;
-- the parser checks the rest.
+- the binder pass checks `super` validity, private-name resolution, `arguments` in field
+  initialisers, `return` placement, `break`/`continue` targets, regular-expression literal syntax
+  (through the matcher), duplicate `__proto__`, cover-grammar leftovers, `const` initialisers and
+  module import/export rules, each with the code the lowering gave it, and a unit it refuses is not
+  lowered;
+- the parser checks the rest;
+- the lowering keeps the refusals that are not language early errors: format ceilings, manifest and
+  form refusals, module-load policy and the eval scope-depth ceiling (JSD-0080 decision D12).
 
-**Coupling.** `HoistProgram`, `HoistFunction` and `HoistEval` collect declarations **and** emit
-instructions in the same methods. Evaluation scope-map rows are recorded during emission.
+*(Revised 2026-10-25, at SJL-12.6 item 2, `daa92eb`, JSD-0080 decisions D10 to D12. The paragraph read "In
+the wide path, **both the parser and the lowering**:", and its first item began "the lowering checks"; the third
+item is new.)*
 
-**Determinism.** Required: the same source gives the same bytes. But the wide hoisting order relies
-on dictionary insertion order. Backend stage JSB-1, not started, records this.
+**Coupling.** The binder pass, `JsBinder`, collects the declarations and the per-function facts,
+and `HoistProgram`, `HoistFunction` and `HoistEval` read them and emit. Evaluation scope-map rows are
+recorded during emission. *(Revised 2026-10-25, at SJL-12.6 item 1, `3fa4b39`, JSD-0080 decision D11:
+the first sentence read "`HoistProgram`, `HoistFunction` and `HoistEval` collect declarations **and**
+emit instructions in the same methods.")*
+
+**Determinism.** Required: the same source gives the same bytes. The wide hoisting order is the
+source's, and two checks rows compile the wide and module corpora twice and on two threads, and read
+the order back from the artifact; they are stage JSB-1's standing check. *(Revised 2026-10-25, at
+SJL-12.6 item 3, `066abef`, JSD-0080 decision D14, and
+[JSC-319](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319): the item read "But
+the wide hoisting order relies on dictionary insertion order. Backend stage JSB-1, not started, records
+this.")*
 
 **Ambient state.** None: rule N12 forbids mutable statics, `[ThreadStatic]`, `AsyncLocal` and
 `ThreadLocal` in the compiler assembly.
@@ -291,8 +320,8 @@ decorator parsing) and its cooked-template tokens inform the new tree.
 | Decorators | refused in the tokenizer | refused in the tokenizer | parsed and discarded |
 | Async functions, generators, async generators | refused | yes | yes |
 | Destructuring, spread, rest, optional chaining, `??=`/`&&=`/`\|\|=`, `**` | refused | yes | yes |
-| Templates (cooked and raw; invalid escapes in tagged templates) | opaque, refused | yes (re-tokenises substitutions) | yes (template tokens) |
-| Regular-expression literals | opaque, refused | validated in the lowering by Broiler.VM's matcher | early checks of group names, property names and the Unicode pattern, then validated by .NET; an invalid pattern still becomes division *(revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: the Unicode-pattern check was already made at `44a214dc`, the property-name check came with SJL-7.5, Broiler.JS #1040, and the group-name check with Broiler.JS #1041. The cell read "validated by .NET; an invalid pattern becomes division")* |
+| Templates (cooked and raw; invalid escapes in tagged templates) | opaque, refused | yes (substitutions read in place by the same parser) *(revised 2026-10-25, at SJL-12.6 item 4, `964b460`: the cell read "yes (re-tokenises substitutions)")* | yes (template tokens) |
+| Regular-expression literals | opaque, refused | validated in the binder pass by Broiler.VM's matcher *(revised 2026-10-25, at SJL-12.6 item 2, `daa92eb`: the cell read "validated in the lowering by Broiler.VM's matcher")* | early checks of group names, property names and the Unicode pattern, then validated by .NET; an invalid pattern still becomes division *(revised 2026-10-19, at SJL-12.1, by JSD-0080 decision D42: the Unicode-pattern check was already made at `44a214dc`, the property-name check came with SJL-7.5, Broiler.JS #1040, and the group-name check with Broiler.JS #1041. The cell read "validated by .NET; an invalid pattern becomes division")* |
 | BigInt, separators | separators validated | exact BigInt value; width ceiling | yes |
 | `08`/`09` in strict code | refused | refused | accepted (no check found) |
 | `1m` | refused (2003) | refused (2003) | `Decimal` token (non-standard) |
@@ -313,7 +342,9 @@ flags where the feature is a proposal. Each engine admits what its own manifest 
 1. **SJL-12.** The contract, the catalogue and the corpus. Broiler.JS's ambient state, counter,
    end-of-file race and runtime reference removed; its desugaring moved out of the parser.
    Broiler.VM's binder pass separated; its wide early errors moved into the binder; its ordering made
-   deterministic; its templates structured.
+   deterministic; its templates structured. *(Noted 2026-10-25: Broiler.VM's four items landed in
+   `066abef`, `3fa4b39`, `daa92eb` and `1de3af6`, and bundle `sjl-12-001` judges them; the item is kept
+   as written.)*
 2. **SJL-13.** The library, developed against the corpus and test262's syntax tests. Broiler.VM's
    wide path moves in two steps: first an adapter into `JsSyntax`, which isolates the parser in the
    artifact comparison, then direct consumption. `JsParser` is deleted.
