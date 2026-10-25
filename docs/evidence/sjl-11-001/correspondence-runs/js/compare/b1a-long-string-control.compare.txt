@@ -1,0 +1,5 @@
+# b1a-long-string-control: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     a^10000001 length
+    VM: 10000001
+    JS: 10000001
+# JS: exit=0

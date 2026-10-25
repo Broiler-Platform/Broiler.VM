@@ -1,0 +1,85 @@
+# command (from correspondence-runs/vm/, VM_ROOT=/home/user/vm-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/vm-s11corr/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl11/m2-case-folding.js --fuel 200000000000 --wall 600000
+# revision: Broiler.VM aaa39fbc2030e1a2554317bea75bcbb56041c696
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl11/m2-case-folding.js [raw]  uncaught Error: OUT<<host default locale (Intl) => "en-US"
+host toLocaleUpperCase of "i" => "I"
+"[a-z]" /i test "\u212a" => false
+"[a-z]" /iu test "\u212a" => true
+"\u212a" /i test "k" => false
+"\u212a" /iu test "k" => true
+"k" /i test "\u212a" => false
+"[a-z]" /i test "\u017f" => false
+"[a-z]" /iu test "\u017f" => true
+"\u017f" /i test "s" => false
+"\u017f" /iu test "S" => true
+"s" /i test "\u017f" => false
+"\u005cw" /iu test "\u017f" => true
+"\u005cW" /iu test "\u017f" => false
+"\u005cw" /i test "\u017f" => false
+"[\u005cw]" /iu test "\u212a" => true
+"\u005cb" /iu test "\u017f" => true
+"i" /i test "\u0130" => false
+"I" /i test "\u0131" => false
+"i" /i test "\u0131" => false
+"I" /i test "\u0130" => false
+"\u0130" /i test "i" => false
+"\u0130" /i test "I" => false
+"\u0131" /i test "i" => false
+"\u0131" /i test "I" => false
+"[a-z]" /i test "\u0130" => false
+"[a-z]" /i test "\u0131" => false
+"[\u0130]" /i test "i" => false
+"[\u0131]" /i test "I" => false
+"i" /iu test "\u0130" => false
+"I" /iu test "\u0131" => false
+"\u0130" /iu test "i" => false
+"\u0131" /iu test "I" => false
+"[a-z]" /iu test "\u0130" => false
+"[a-z]" /iu test "\u0131" => false
+"i" /iv test "\u0130" => false
+"[a-z]" /iv test "\u0131" => false
+"(?i:i)" / test "\u0130" => false
+"(?i:[a-z])" / test "\u0131" => false
+"i\u0307" /i test "\u0130" => false
+"\u00cc" /i test "\u00ec" => true
+"\u00cc" /i test "i\u0307\u0300" => false
+"\u0128" /i test "\u0129" => true
+"\u03c3" /i test "\u03c2" => true
+"\u03c3" /iu test "\u03c2" => true
+"\u00df" /i test "\u1e9e" => false
+"\u00df" /iu test "\u1e9e" => true
+"\u1f80" /i test "\u1f88" => false
+"\u0390" /iu test "\u1fd3" => true
+"\u0390" /i test "\u1fd3" => false
+"\u005cu{10400}" /iu test "\ud801\udc28" => true
+"\u00b5" /i test "\u039c" => true
+"\u00b5" /iu test "\u03bc" => true
+"\ua7ce" /i test "\ua7cf" => true
+"\ua7ce" /iu test "\ua7cf" => true
+"\u1c89" /i test "\u1c8a" => true
+"\u1c89" /iu test "\u1c8a" => true
+"\u005cp{Lu}" /iu test "a" => true
+"\u005cP{Lu}" /iu test "A" => true
+"[^\u005cp{Lu}]" /iu test "A" => false
+"\u005cp{Lowercase_Letter}" /iv test "A" => true
+"(a)\u005c1" /i test "aA" => true
+"(\u0131)\u005c1" /i test "\u0131I" => false
+"(i)\u005c1" /i test "i\u0130" => false>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl11/m2-case-folding.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl11  e.g. test/sjl11/m2-case-folding.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl11/m2-case-folding.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

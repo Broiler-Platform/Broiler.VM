@@ -1,0 +1,4 @@
+# command (from correspondence-runs/js/, JS_ROOT=/home/user/js-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/js-s11corr/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/b5c-stack-guard-fallback-1m.js
+# revision: Broiler.JS 1f91b8f1b1ef392c6392cf7e43af8e80eb3fb1a7; Broiler.Regex 0.1.0-preview.4
+/(?:ab)*/u exec on (ab)^1000000 => @0 length 2000000
+exit=0

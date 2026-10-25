@@ -1,0 +1,44 @@
+# m5-sticky: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     /a/y lastIndex 0 on "ba"
+    VM: null lastIndex 0
+    JS: null lastIndex 0
+     /a/y lastIndex 1 on "ba"
+    VM: @1 ["a"] lastIndex 2
+    JS: @1 ["a"] lastIndex 2
+     /a/uy lastIndex 0 on "ba"
+    VM: null lastIndex 0
+    JS: null lastIndex 0
+     /b|ab/y lastIndex 0 on "ab"
+    VM: @0 ["ab"] lastIndex 2
+    JS: @0 ["ab"] lastIndex 2
+     /^b/y lastIndex 1 on "ab"
+    VM: null lastIndex 0
+    JS: null lastIndex 0
+     /^b/my lastIndex 2 on "a\nb"
+    VM: @2 ["b"] lastIndex 3
+    JS: @2 ["b"] lastIndex 3
+     /(?<=a)b/y lastIndex 1 on "ab"
+    VM: @1 ["b"] lastIndex 2
+    JS: @1 ["b"] lastIndex 2
+     /\bb/y lastIndex 1 on "ab"
+    VM: null lastIndex 0
+    JS: null lastIndex 0
+     "aab".search(/b/y)
+    VM: -1
+    JS: -1
+     "aab".match(/a/gy)
+    VM: ["a", "a"]
+    JS: ["a", "a"]
+     "aaba".replace(/a/gy, "-")
+    VM: "--ba"
+    JS: "--ba"
+     "a,b".split(/,/y)
+    VM: ["a", "b"]
+    JS: ["a", "b"]
+!    /x|(a+)+b/y lastIndex 0 on "y"+a^22 (answer)
+    VM: null lastIndex 0 elapsedMs 0
+    JS: null lastIndex 0 elapsedMs 965
+!    /x|(a+)+b/uy lastIndex 0 on "y"+a^22 (answer)
+    VM: null lastIndex 0 elapsedMs 0
+    JS: null lastIndex 0 elapsedMs 9
+# JS: exit=0

@@ -1,0 +1,20 @@
+# b4c-alternation-answer: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     (?:(?:a|a)x12b|a+) /u on a^12
+    VM: @0 length 12
+    JS: @0 length 12
+     (?:(?:a|a)x12b|a+) / on a^12
+    VM: @0 length 12
+    JS: @0 length 12
+     (?:(?:a|a)x20b|a+) /u on a^20
+    VM: @0 length 20
+    JS: @0 length 20
+     (?:(?:a|a)x20b|a+) / on a^20
+    VM: @0 length 20
+    JS: @0 length 20
+     (?:(?:a|a)x24b|a+) /u on a^24
+    VM: @0 length 24
+    JS: @0 length 24
+     (?:(?:a|a)x24b|a+) / on a^24
+    VM: @0 length 24
+    JS: @0 length 24
+# JS: exit=0

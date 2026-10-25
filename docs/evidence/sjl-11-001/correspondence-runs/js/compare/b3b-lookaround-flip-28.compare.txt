@@ -1,0 +1,6 @@
+# b3b-lookaround-flip-28: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+# VM ended before printing: NO OUTPUT; the verdict line: exhausted   test/sjl11/b3b-lookaround-flip-28.js [raw]  Fuel: the allowance was spent running the test
+?    /^(?!(?:(a+)+b|a*c))/u on a^28c
+    VM: (no line)
+    JS: @0 length 0 elapsedMs 1187
+# JS: exit=0

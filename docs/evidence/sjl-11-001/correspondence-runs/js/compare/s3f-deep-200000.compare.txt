@@ -1,0 +1,31 @@
+# s3f-deep-200000: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+# JS: Stack overflow.
+# JS: Repeated 23808 times:
+# JS: --------------------------------
+# JS:    at Broiler.Regex.Parsing.RegexParser.ParseDisjunction()
+# JS:    at Broiler.Regex.Parsing.RegexParser.ParseGroup()
+# JS:    at Broiler.Regex.Parsing.RegexParser.ParseAtom()
+# JS:    at Broiler.Regex.Parsing.RegexParser.ParseTerm()
+# JS:    at Broiler.Regex.Parsing.RegexParser.ParseAlternative()
+# JS: --------------------------------
+# JS:    at Broiler.Regex.Parsing.RegexParser.ParseDisjunction()
+# JS:    at Broiler.Regex.Parsing.RegexParser.ParsePattern()
+# JS:    at Broiler.Regex.Parsing.RegexParser.Parse(System.String, Broiler.Regex.RegexFlags, Int32 ByRef, System.Collections.Generic.IReadOnlyDictionary`2<System.String,Int32> ByRef)
+# JS:    at Broiler.JavaScript.BuiltIns.RegExp.JSRegExp.TryRouteToBroiler(System.String, System.String, Boolean)
+# JS:    at Broiler.JavaScript.BuiltIns.RegExp.JSRegExp.CreateRegex(System.String, System.String, CaptureGroupMap ByRef, Broiler.Regex.BroilerRegex ByRef)
+# JS:    at Broiler.JavaScript.BuiltIns.RegExp.JSRegExp..ctor(Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at Broiler.JavaScript.BuiltIns.RegExp.JSRegExp+<>c.<CreateClass>b__196_0(Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at Broiler.JavaScript.BuiltIns.Function.JSFunction.CreateInstance(Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at Broiler.JavaScript.BuiltIns.BuiltInsAssemblyInitializer+<>c__DisplayClass31_1.<PatchRegExpPrototype>b__22(Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at Broiler.JavaScript.BuiltIns.Function.JSFunction.CreateInstance(Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at DynamicClass.inline-<runs>/built/s3f-deep-200000.js:101,29(Broiler.JavaScript.ExpressionCompiler.Closures, Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at DynamicClass.t-<runs>/built/s3f-deep-200000.js:48,1(Broiler.JavaScript.ExpressionCompiler.Closures, Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at DynamicClass.body-:0,0(Broiler.JavaScript.ExpressionCompiler.Closures, Broiler.JavaScript.Runtime.Arguments ByRef)
+# JS:    at Broiler.JavaScript.Engine.JSContext.Eval(System.String, System.String, Broiler.JavaScript.Runtime.JSValue)
+# JS:    at BroilerJS.Program.RunScriptHost(System.IO.FileInfo)
+# JS:    at BroilerJS.Program+<>c__DisplayClass4_0.<RunScriptHostOnOwnThread>b__0()
+# JS:    at BroilerJS.Program+<>c__DisplayClass5_0.<RunHostOnOwnThread>b__0()
+# JS:    at System.Threading.Thread.StartCallback()
+# JS: exit=134

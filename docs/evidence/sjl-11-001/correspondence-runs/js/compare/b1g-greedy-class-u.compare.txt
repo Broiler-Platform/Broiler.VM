@@ -1,0 +1,5 @@
+# b1g-greedy-class-u: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+!    /[a]*/u exec on a^10000001: index, length
+    VM: @0 length 10000001
+    JS: @0 length 10000000
+# JS: exit=0

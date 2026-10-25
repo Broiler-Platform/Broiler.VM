@@ -1,0 +1,2 @@
+new RegExp([\p{L} x50], "vi").test("\u00e9") => true
+new RegExp([\p{RGI_Emoji} x20], "v").test("\u231a") => true

@@ -1,0 +1,1 @@
+NO OUTPUT; the verdict line: FAIL        test/sjl11/b6b-trail-ceiling.js [raw]  the invocation answered ProfileFault/AllowanceExhausted and carried no payload

@@ -1,0 +1,8 @@
+# b5b-stack-guard-nomatch: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     /(?:[\s--\d]a)*/v exec on (" a")^100000
+    VM: @0 length 200000
+    JS: @0 length 200000
+     /^(?:[\s--\d]a)*$/v test on (" a")^100000
+    VM: true
+    JS: true
+# JS: exit=0

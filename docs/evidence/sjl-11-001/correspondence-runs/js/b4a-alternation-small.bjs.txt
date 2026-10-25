@@ -1,0 +1,11 @@
+# command (from correspondence-runs/js/, JS_ROOT=/home/user/js-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/js-s11corr/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/b4a-alternation-small.js
+# revision: Broiler.JS 1f91b8f1b1ef392c6392cf7e43af8e80eb3fb1a7; Broiler.Regex 0.1.0-preview.4
+(?:a|a)x12b /u on a^12 => null elapsedMs 11
+(?:a|a)x12b / on a^12 => null elapsedMs 5
+(?:a|a)x16b /u on a^16 => null elapsedMs 52
+(?:a|a)x16b / on a^16 => null elapsedMs 0
+(?:a|a)x20b /u on a^20 => null elapsedMs 193
+(?:a|a)x20b / on a^20 => null elapsedMs 0
+(?:a|a)x22b /u on a^22 => null elapsedMs 297
+(?:a|a)x22b / on a^22 => null elapsedMs 0
+exit=0

@@ -1,0 +1,5 @@
+# b5c-stack-guard-fallback-1m: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     /(?:ab)*/u exec on (ab)^1000000
+    VM: @0 length 2000000
+    JS: @0 length 2000000
+# JS: exit=0

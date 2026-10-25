@@ -1,0 +1,62 @@
+# m4-lastindex-surrogates: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+!    /./gu lastIndex 1 on pair
+    VM: @0 ["\ud834\udf06"] lastIndex 2
+    JS: @1 ["\udf06"] lastIndex 2
+!    /./gv lastIndex 1 on pair
+    VM: @0 ["\ud834\udf06"] lastIndex 2
+    JS: @1 ["\udf06"] lastIndex 2
+     /./g lastIndex 1 on pair
+    VM: @1 ["\udf06"] lastIndex 2
+    JS: @1 ["\udf06"] lastIndex 2
+!    /\udf06/gu lastIndex 1 on pair
+    VM: null lastIndex 0
+    JS: @1 ["\udf06"] lastIndex 2
+     /\udf06/g lastIndex 1 on pair
+    VM: @1 ["\udf06"] lastIndex 2
+    JS: @1 ["\udf06"] lastIndex 2
+     /\udf06/u lastIndex 0 on pair
+    VM: null lastIndex 0
+    JS: null lastIndex 0
+!    /(?:)/gu lastIndex 1 on pair
+    VM: @0 [""] lastIndex 0
+    JS: @1 [""] lastIndex 1
+!    /./yu lastIndex 1 on pair
+    VM: @0 ["\ud834\udf06"] lastIndex 2
+    JS: @1 ["\udf06"] lastIndex 2
+!    /\udf06/yu lastIndex 1 on pair
+    VM: null lastIndex 0
+    JS: @1 ["\udf06"] lastIndex 2
+     /./gu lastIndex 1 on "a"+pair
+    VM: @1 ["\ud834\udf06"] lastIndex 3
+    JS: @1 ["\ud834\udf06"] lastIndex 3
+!    /./gu lastIndex 2 on "a"+pair
+    VM: @1 ["\ud834\udf06"] lastIndex 3
+    JS: @2 ["\udf06"] lastIndex 3
+!    /(?<=\ud834)./gu lastIndex 1 on pair
+    VM: null lastIndex 0
+    JS: @1 ["\udf06"] lastIndex 2
+     pair.match(/(?:)/gu).length
+    VM: 2
+    JS: 2
+     pair.match(/(?:)/g).length
+    VM: 3
+    JS: 3
+     pair.replace(/(?:)/gu, "-")
+    VM: "-\ud834\udf06-"
+    JS: "-\ud834\udf06-"
+     pair.replace(/(?:)/gv, "-")
+    VM: "-\ud834\udf06-"
+    JS: "-\ud834\udf06-"
+     pair.split(/(?:)/u)
+    VM: ["\ud834\udf06"]
+    JS: ["\ud834\udf06"]
+     [...pair.matchAll(/(?:)/gu)].map(r=>r.index)
+    VM: [0, 2]
+    JS: [0, 2]
+     pair.search(/\udf06/u)
+    VM: -1
+    JS: -1
+     pair.search(/\udf06/)
+    VM: 1
+    JS: 1
+# JS: exit=0

@@ -1,0 +1,23 @@
+# command (from correspondence-runs/js/, JS_ROOT=/home/user/js-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/js-s11corr/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/m4-lastindex-surrogates.js
+# revision: Broiler.JS 1f91b8f1b1ef392c6392cf7e43af8e80eb3fb1a7; Broiler.Regex 0.1.0-preview.4
+/./gu lastIndex 1 on pair => @1 ["\udf06"] lastIndex 2
+/./gv lastIndex 1 on pair => @1 ["\udf06"] lastIndex 2
+/./g lastIndex 1 on pair => @1 ["\udf06"] lastIndex 2
+/\udf06/gu lastIndex 1 on pair => @1 ["\udf06"] lastIndex 2
+/\udf06/g lastIndex 1 on pair => @1 ["\udf06"] lastIndex 2
+/\udf06/u lastIndex 0 on pair => null lastIndex 0
+/(?:)/gu lastIndex 1 on pair => @1 [""] lastIndex 1
+/./yu lastIndex 1 on pair => @1 ["\udf06"] lastIndex 2
+/\udf06/yu lastIndex 1 on pair => @1 ["\udf06"] lastIndex 2
+/./gu lastIndex 1 on "a"+pair => @1 ["\ud834\udf06"] lastIndex 3
+/./gu lastIndex 2 on "a"+pair => @2 ["\udf06"] lastIndex 3
+/(?<=\ud834)./gu lastIndex 1 on pair => @1 ["\udf06"] lastIndex 2
+pair.match(/(?:)/gu).length => 2
+pair.match(/(?:)/g).length => 3
+pair.replace(/(?:)/gu, "-") => "-\ud834\udf06-"
+pair.replace(/(?:)/gv, "-") => "-\ud834\udf06-"
+pair.split(/(?:)/u) => ["\ud834\udf06"]
+[...pair.matchAll(/(?:)/gu)].map(r=>r.index) => [0, 2]
+pair.search(/\udf06/u) => -1
+pair.search(/\udf06/) => 1
+exit=0

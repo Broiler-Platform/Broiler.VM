@@ -1,0 +1,6 @@
+# b6g-frames-1049000: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+# VM ended before printing: NO OUTPUT; the verdict line: FAIL        test/sjl11/b6g-frames-1049000.js [raw]  the invocation answered ProfileFault/AllowanceExhausted and carried no payload
+?    /(?:ab)*/ exec on (ab)^1049000
+    VM: (no line)
+    JS: @0 length 2098000
+# JS: exit=0

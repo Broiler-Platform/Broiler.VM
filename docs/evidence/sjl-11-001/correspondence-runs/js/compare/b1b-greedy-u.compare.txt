@@ -1,0 +1,6 @@
+# b1b-greedy-u: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+# VM ended before printing: NO OUTPUT; the verdict line: FAIL        test/sjl11/b1b-greedy-u.js [raw]  the invocation answered ProfileFault/AllowanceExhausted and carried no payload
+?    /a*/u exec on a^10000001: index, length
+    VM: (no line)
+    JS: @0 length 10000000
+# JS: exit=0

@@ -1,0 +1,10 @@
+control: "abc".search(/b/) => 1
+delete RegExp.prototype[Symbol.search] => true
+"abc".search(/b/) => THROWS TypeError: undefined is not a function
+"a/b/c".search(/b/) => THROWS TypeError: undefined is not a function
+"abc".search(/b/y) (sticky) => THROWS TypeError: undefined is not a function
+"a b".search(/[\s--\d]/v) => THROWS TypeError: undefined is not a function
+"abc".search("b") => THROWS TypeError: undefined is not a function
+restored: "abc".search(/b/) => 1
+own @@search = undefined on the instance: "abc".search(re) => -1
+own @@search = null on the instance: "abc".search(re) => -1

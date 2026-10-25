@@ -1,0 +1,4 @@
+# command (from correspondence-runs/vm/, VM_ROOT=/home/user/vm-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/vm-s11corr/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll --fuel 10000000 --wall 600000 built/b4b-alternation-charged.js
+# revision: Broiler.VM aaa39fbc2030e1a2554317bea75bcbb56041c696
+broiler-js: built/b4b-alternation-charged.js: the program did not settle within its allowance: AllowanceExhausted on Fuel
+exit=5

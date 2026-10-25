@@ -1,0 +1,17 @@
+# b5g-stack-guard-dotnet-answer: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     (?:ab)* x10 (?<=(\d+)(\d+))$ /u on "1053"
+    VM: @4 ["", "1", "053"]
+    JS: @4 ["", "1", "053"]
+     (?:ab)* x50000 (?<=(\d+)(\d+))$ /u on "1053"
+    VM: @4 ["", "1", "053"]
+    JS: @4 ["", "1", "053"]
+     (?:ab)* x10 (a?b??)* /u on "ab"
+    VM: @0 ["ab", undefined]
+    JS: @0 ["ab", undefined]
+!    (?:ab)* x50000 (a?b??)* /u on "ab"
+    VM: @0 ["ab", undefined]
+    JS: @0 ["ab", ""]
+     control, no prefix: (a?b??)* / on "ab"
+    VM: @0 ["ab", "b"]
+    JS: @0 ["ab", "b"]
+# JS: exit=0
