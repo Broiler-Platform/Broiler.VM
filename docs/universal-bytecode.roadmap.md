@@ -809,6 +809,21 @@ says so. No figure is stated: the fixture programs are not a workload and the bu
   passing after revert; a `JSC-nn` entry recording which half of the determinism claim was covered.
   This is JSB-1's gate, met here and recorded in JSB-1's State bullet. *Done when* the lane row is green
   and the control is watched.
+  *(Noted 2026-10-25, at the shared JavaScript libraries programme's SJL-12.6, by
+  [JSD-0080](../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)'s
+  decision D14, and the package above is kept as written.)* The package reads "the global lexical hoisting sites'
+  emission order derived from source order rather than a dictionary's; a negative control that perturbs the order,
+  watched failing and passing after revert; a `JSC-nn` entry recording which half of the determinism claim was
+  covered. This is JSB-1's gate, met here". What it names was built before this milestone, by the programme's
+  SJL-12.6 item 3, merged alone on 2026-10-20 as `066abef` (Broiler.VM#163): the declarations in source order, the
+  slice-compiler root's checks rows "the wide lowering is deterministic" and "the wide lowering declares lexical
+  names in source order", the controls K1 and K2, and
+  [JSC-319](../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319) as the `JSC-nn` entry. So
+  UBC-3 re-runs the rows, over the lowering it moves onto the universal bytecode, rather than building them.
+  JSD-0080 leaves whether they meet JSB-1's gate to the profile's ledger, which holds no JSB-1 row at this date, so
+  no record has judged it; JSC-319 names that as a finding against JSD-0080's decision D14. The package's "met here
+  and recorded in JSB-1's State bullet" is kept as written: JSB-1's State bullet of 2026-10-25 records what exists
+  and judges nothing. No row of this programme's ledger moves for this note.
 - **UBC-3.2 — The base run, retained.** Before any other work package of this milestone changes the
   engine: the whole pinned suite under the wide manifest, driven by `eng/run-test262.py` at the base
   commit, its per-variant verdict file retained in `docs/evidence/ubc-3-001/` beside the decision rule
