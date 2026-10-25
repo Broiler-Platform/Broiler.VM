@@ -140,8 +140,10 @@ and then the binder pass**, which runs after the parse and before the lowering:
   form refusals, module-load policy and the eval scope-depth ceiling (JSD-0080 decision D12).
 
 *(Revised 2026-10-25, at SJL-12.6 item 2, `daa92eb`, JSD-0080 decisions D10 to D12. The paragraph read "In
-the wide path, **both the parser and the lowering**:", and its first item began "the lowering checks"; the third
-item is new.)*
+the wide path, **both the parser and the lowering**:", and its first item read "the lowering checks `super`
+validity, private-name resolution, `arguments` in field initialisers, `return` placement, `break`/`continue`
+targets, regular-expression literal syntax (through the matcher), duplicate `__proto__`, cover-grammar leftovers,
+`const` initialisers and module import/export rules;"; the third item is new.)*
 
 **Coupling.** The binder pass, `JsBinder`, collects the declarations and the per-function facts,
 and `HoistProgram`, `HoistFunction` and `HoistEval` read them and emit. Evaluation scope-map rows are

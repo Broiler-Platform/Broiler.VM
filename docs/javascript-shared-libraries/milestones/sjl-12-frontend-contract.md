@@ -54,9 +54,9 @@ before SJL-12.6. At bundle `sjl-12-001`'s after commit, `1de3af6`:
 - "Its early errors are split between the parser and the lowering": the lowering's early errors are the binder
   pass's, after the parse, and the parser keeps its own checks (item 2, `daa92eb`; JSD-0080 decision D10).
 - "Its hoisting order relies on dictionary insertion order. Backend stage JSB-1, not started, is meant to fix
-  that": the order is the source's, and the two checks rows JSB-1's gate names exist (item 3, `066abef`). The
-  profile's ledger judges JSB-1
-  ([JSC-319](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319)).
+  that": the order is the source's, and the two checks rows JSB-1's gate names exist (item 3, `066abef`).
+  JSD-0080 leaves JSB-1's judgement to the profile's ledger, which holds no JSB-1 row at this date, so no record
+  has judged it ([JSC-319](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319)).
 
 None of this is judged here. Section "SJL-12.6" below says where it is.
 
@@ -231,7 +231,8 @@ in a default-branch merge of its own:
   deterministic" and "the wide lowering declares lexical names in source order". The item read "This is the
   relationship to stage JSB-1, which is recorded": it is recorded in
   [JSC-319](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319), which corrects the
-  backend roadmap's JSB-1 text, and the profile's ledger judges the stage.
+  backend roadmap's JSB-1 text. JSD-0080 leaves the stage's judgement to the profile's ledger, which holds no
+  JSB-1 row at this date, so no record has judged it.
 - **Item 1**, `3fa4b39` (Broiler.VM#165): `JsBinder`'s facts, read by `HoistProgram`, `HoistFunction` and
   `HoistEval`, which keep allocation, interning and emission order (decision D11). Item 1 reads that the binder
   collects "private-name, label, `super`, `return` and `new.target` validity" and "the `const`-initialiser check":
@@ -240,7 +241,12 @@ in a default-branch merge of its own:
   with its code, and a unit the binder refuses is not lowered. What decision D12 keeps in the lowering stays there
   (decisions D10 to D13).
 - **Item 4**, `1de3af6` (Broiler.VM#167), bundle `sjl-12-001`'s after commit: structured templates, with decision
-  D15's listed corrections, and `JsCompiler.Requests` on `CompilationStack`'s thread (decision D16).
+  D15's listed corrections, and `JsCompiler.Requests` on `CompilationStack`'s thread (decision D16). The same
+  carry has two consequences D15 does not list: an input already refused whose diagnostic list changes
+  (`964b460`), and an input accepted before that the tree-depth bound refuses (`964b460`, `3902f6f`). The bundle
+  names both as findings against JSD-0080, before the after runs, in its
+  [readings named before the after runs](../../evidence/sjl-12-001/README.md#readings-named-before-the-after-runs-sjl-126-2026-10-25).
+  Item 4's pre-checks found neither in the parse corpus or in the pinned suite's negative tests.
 
 **Nothing here says the done-when holds.** Its four conditions are read on bundle `sjl-12-001`'s parts A to D,
 whose after runs had not been taken when this note was written. The bundle's section 3 names, before those runs,
