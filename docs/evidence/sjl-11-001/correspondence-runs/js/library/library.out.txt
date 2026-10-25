@@ -1,0 +1,55 @@
+# command (from correspondence-runs/js/library/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC dotnet bin/Release/net10.0/Probe.dll
+# package: Broiler.Regex 0.1.0-preview.4 (nuspec commit c1422f4d824aa28ff6edd4766d56be25ba7c8a15), sha512 ZyckDi7Qf26LOOleGxn0ttHPUd4Y8CUF/M1gUYLuEzw98vKF60LYhWbUbgcob8J/2d2XMILt8ECXlKrYQB7k9Q==
+k-parse-only | pattern "\u005ck<b>(?<a>x)" /u on "x" | parse-only accepts | construct refuses: RegexSyntaxException: Reference to non-existent group 'b'
+k-parse-only | pattern "\u005ck<b>(?<a>x)" / on "x" | parse-only accepts | construct refuses: RegexSyntaxException: Reference to non-existent group 'b'
+nul-nd | pattern "\u005c0\u0661" /u on "\u0000\u0661" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Invalid escape \0 in Unicode mode
+nul-nd | pattern "[\u005c0\u0661]" /u on "\u0661" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Invalid escape \0 in Unicode mode
+nul-nd | pattern "\u005c0\u0661" / on "\u0000\u0661" | parse-only accepts | construct ok, no match
+escaped-name | pattern "(?<\u005cuD835\u005cuDC00>x)" / on "x" | parse-only refuses: ArgumentOutOfRangeException | construct refuses: ArgumentOutOfRangeException: A valid UTF32 value is between 0x000000 and 0x10ffff, inclusive, and should not include surrogate codepoint values (0x00d800 ~ 0x00dfff). (Parameter 'utf32')
+escaped-name | pattern "(?<\u005cuD835\u005cuDC00>x)" /u on "x" | parse-only accepts | construct ok, match @0 length 1
+escaped-name | pattern "(?<\ud835\udc00>x)" / on "x" | parse-only accepts | construct ok, match @0 length 1
+escaped-name | pattern "(?<\u005cu{1D400}>x)" / on "x" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Invalid hexadecimal escape
+escaped-name | pattern "(?<\u005cuD800>x)" /u on "x" | parse-only refuses: ArgumentOutOfRangeException | construct refuses: ArgumentOutOfRangeException: A valid UTF32 value is between 0x000000 and 0x10ffff, inclusive, and should not include surrogate codepoint values (0x00d800 ~ 0x00dfff). (Parameter 'utf32')
+escaped-duplicate | pattern "(?<\u005cu0061>x)(?<a>y)" / on "xy" | parse-only accepts | construct ok, match @0 length 2
+escaped-duplicate | pattern "(?<\u005cu0061>x)(?<a>y)" /u on "xy" | parse-only accepts | construct ok, match @0 length 2
+duplicate-alternatives | pattern "(?<a>x)|(?<a>y)" /u on "y" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Duplicate capture group name 'a'
+v-syntax | pattern "[a|]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '|' must be escaped inside a 'v'-mode class
+v-syntax | pattern "[a!!b]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '!!' is reserved inside a 'v'-mode class
+v-syntax breaking-change-01 | pattern "[(]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '(' must be escaped inside a 'v'-mode class
+v-syntax breaking-change-02 | pattern "[)]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: ')' must be escaped inside a 'v'-mode class
+v-syntax breaking-change-03 | pattern "[[]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Unterminated character class
+v-syntax breaking-change-04 | pattern "[{]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '{' must be escaped inside a 'v'-mode class
+v-syntax breaking-change-05 | pattern "[}]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '}' must be escaped inside a 'v'-mode class
+v-syntax breaking-change-06 | pattern "[/]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '/' must be escaped inside a 'v'-mode class
+v-syntax breaking-change-07 | pattern "[-]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '-' must be escaped inside a 'v'-mode class
+v-syntax breaking-change-08 | pattern "[|]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '|' must be escaped inside a 'v'-mode class
+v-syntax breaking-change-09 | pattern "[&&]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '&&' is reserved inside a 'v'-mode class
+v-syntax breaking-change-10 | pattern "[!!]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '!!' is reserved inside a 'v'-mode class
+v-syntax breaking-change-11 | pattern "[##]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '##' is reserved inside a 'v'-mode class
+v-syntax breaking-change-12 | pattern "[$$]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '$$' is reserved inside a 'v'-mode class
+v-syntax breaking-change-13 | pattern "[%%]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '%%' is reserved inside a 'v'-mode class
+v-syntax breaking-change-14 | pattern "[**]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '**' is reserved inside a 'v'-mode class
+v-syntax breaking-change-15 | pattern "[++]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '++' is reserved inside a 'v'-mode class
+v-syntax breaking-change-16 | pattern "[,,]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: ',,' is reserved inside a 'v'-mode class
+v-syntax breaking-change-17 | pattern "[..]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '..' is reserved inside a 'v'-mode class
+v-syntax breaking-change-18 | pattern "[::]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '::' is reserved inside a 'v'-mode class
+v-syntax breaking-change-19 | pattern "[;;]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: ';;' is reserved inside a 'v'-mode class
+v-syntax breaking-change-20 | pattern "[<<]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '<<' is reserved inside a 'v'-mode class
+v-syntax breaking-change-21 | pattern "[==]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '==' is reserved inside a 'v'-mode class
+v-syntax breaking-change-22 | pattern "[>>]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '>>' is reserved inside a 'v'-mode class
+v-syntax breaking-change-23 | pattern "[??]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '??' is reserved inside a 'v'-mode class
+v-syntax breaking-change-24 | pattern "[@@]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '@@' is reserved inside a 'v'-mode class
+v-syntax breaking-change-25 | pattern "[``]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '``' is reserved inside a 'v'-mode class
+v-syntax breaking-change-26 | pattern "[~~]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '~~' is reserved inside a 'v'-mode class
+v-syntax breaking-change-27 | pattern "[^^^]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '^^' is reserved inside a 'v'-mode class
+v-syntax breaking-change-28 | pattern "[_^^]" /v on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: '^^' is reserved inside a 'v'-mode class
+lead-then-braced | pattern "\u005cuD83D\u005cu{DC38}+" /u on "\ud83d\udc38\udc38" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Invalid hexadecimal escape
+lead-then-braced | pattern "\u005cuD83D\u005cu{3042}*" /u on "\ud83d" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Invalid hexadecimal escape
+lead-then-braced | pattern "[\u005cuD83D\u005cu{3042}]*" /u on "\ud83d" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Invalid hexadecimal escape
+backreference-pair | pattern "foo(.+)bar\u005c1" /u on "foo\ud834bar\ud834\udc00" | parse-only accepts | construct ok, no match
+backreference-pair | pattern "foo(.+)bar\u005c1" / on "foo\ud834bar\ud834\udc00" | parse-only accepts | construct ok, match @0 length 8
+lookbehind-quantified | pattern "(?<=a)*" / on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Nothing to repeat before quantifier
+loose-name | pattern "\u005cp{letter}" /u on "a" | parse-only accepts | construct ok, match @0 length 1
+loose-name | pattern "\u005cp{Script=greek}" /u on "a" | parse-only accepts | construct ok, no match
+hrkt | pattern "\u005cp{sc=Hrkt}" /u on "a" | parse-only refuses: RegexSyntaxException | construct refuses: RegexSyntaxException: Unknown Unicode property escape \p{sc=Hrkt}
+exit=0

@@ -1,0 +1,8 @@
+# b7-compile-charge: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     new RegExp([\p{L} x50], "vi").test("\u00e9")
+    VM: true
+    JS: true
+     new RegExp([\p{RGI_Emoji} x20], "v").test("\u231a")
+    VM: true
+    JS: true
+# JS: exit=0

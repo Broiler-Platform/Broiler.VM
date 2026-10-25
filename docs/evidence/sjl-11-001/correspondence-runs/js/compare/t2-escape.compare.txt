@@ -1,0 +1,98 @@
+# t2-escape: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     RegExp.escape("abc")
+    VM: "\u005cx61bc"
+    JS: "\u005cx61bc"
+     RegExp.escape("1a")
+    VM: "\u005cx31a"
+    JS: "\u005cx31a"
+     RegExp.escape("a1")
+    VM: "\u005cx611"
+    JS: "\u005cx611"
+     RegExp.escape("_")
+    VM: "_"
+    JS: "_"
+     RegExp.escape("a b")
+    VM: "\u005cx61\u005cx20b"
+    JS: "\u005cx61\u005cx20b"
+     RegExp.escape("\u00e9")
+    VM: "\u00e9"
+    JS: "\u00e9"
+     RegExp.escape("\u0085")
+    VM: "\u0085"
+    JS: "\u0085"
+     RegExp.escape("\u00a0")
+    VM: "\u005cxa0"
+    JS: "\u005cxa0"
+     RegExp.escape("\ufeff")
+    VM: "\u005cufeff"
+    JS: "\u005cufeff"
+     RegExp.escape("\u2028")
+    VM: "\u005cu2028"
+    JS: "\u005cu2028"
+     RegExp.escape("\u2029")
+    VM: "\u005cu2029"
+    JS: "\u005cu2029"
+     RegExp.escape("\u3000")
+    VM: "\u005cu3000"
+    JS: "\u005cu3000"
+     RegExp.escape("\u180e")
+    VM: "\u180e"
+    JS: "\u180e"
+     RegExp.escape("\u1680")
+    VM: "\u005cu1680"
+    JS: "\u005cu1680"
+     RegExp.escape("\u202f")
+    VM: "\u005cu202f"
+    JS: "\u005cu202f"
+     RegExp.escape("\ud800")
+    VM: "\u005cud800"
+    JS: "\u005cud800"
+     RegExp.escape("\udfff")
+    VM: "\u005cudfff"
+    JS: "\u005cudfff"
+     RegExp.escape("\ud83d\ude00")
+    VM: "\ud83d\ude00"
+    JS: "\ud83d\ude00"
+     RegExp.escape("x\ud83d")
+    VM: "\u005cx78\u005cud83d"
+    JS: "\u005cx78\u005cud83d"
+     RegExp.escape(",-=<>#&!%:;@~'`\u0022")
+    VM: "\u005cx2c\u005cx2d\u005cx3d\u005cx3c\u005cx3e\u005cx23\u005cx26\u005cx21\u005cx25\u005cx3a\u005cx3b\u005cx40\u005cx7e\u005cx27\u005cx60\u005cx22"
+    JS: "\u005cx2c\u005cx2d\u005cx3d\u005cx3c\u005cx3e\u005cx23\u005cx26\u005cx21\u005cx25\u005cx3a\u005cx3b\u005cx40\u005cx7e\u005cx27\u005cx60\u005cx22"
+     RegExp.escape("^$\u005c.*+?()[]{}|/")
+    VM: "\u005c^\u005c$\u005c\u005c\u005c.\u005c*\u005c+\u005c?\u005c(\u005c)\u005c[\u005c]\u005c{\u005c}\u005c|\u005c/"
+    JS: "\u005c^\u005c$\u005c\u005c\u005c.\u005c*\u005c+\u005c?\u005c(\u005c)\u005c[\u005c]\u005c{\u005c}\u005c|\u005c/"
+     RegExp.escape("\u0009\u000a\u000b\u000c\u000d")
+    VM: "\u005ct\u005cn\u005cv\u005cf\u005cr"
+    JS: "\u005ct\u005cn\u005cv\u005cf\u005cr"
+     RegExp.escape(" ")
+    VM: "\u005cx20"
+    JS: "\u005cx20"
+     RegExp.escape("")
+    VM: ""
+    JS: ""
+     RegExp.escape("Z\u0000")
+    VM: "\u005cx5a\u0000"
+    JS: "\u005cx5a\u0000"
+     RegExp.escape("\u0080")
+    VM: "\u0080"
+    JS: "\u0080"
+     RegExp.escape("\u00ff")
+    VM: "\u00ff"
+    JS: "\u00ff"
+     RegExp.escape("\u0100")
+    VM: "\u0100"
+    JS: "\u0100"
+~    RegExp.escape(1)
+    VM: THROWS TypeError: RegExp.escape requires a String argument
+    JS: THROWS TypeError: RegExp.escape requires a string argument
+     RegExp.escape.length
+    VM: 1
+    JS: 1
+     new RegExp(RegExp.escape("a.b*c")).test("a.b*c")
+    VM: true
+    JS: true
+     new RegExp(RegExp.escape(",-"), "u").test(",-")
+    VM: true
+    JS: true
+# JS: exit=0

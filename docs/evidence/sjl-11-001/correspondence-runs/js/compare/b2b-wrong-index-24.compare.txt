@@ -1,0 +1,5 @@
+# b2b-wrong-index-24: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+!    /(?:(a+)+b|a*c)/u on a^24c
+    VM: @0 length 25 elapsedMs 3155
+    JS: @4 length 21 elapsedMs 4902
+# JS: exit=0

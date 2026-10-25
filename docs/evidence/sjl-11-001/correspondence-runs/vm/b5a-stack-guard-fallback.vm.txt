@@ -1,0 +1,2 @@
+/(?:ab)*/u exec on (ab)^100000 => @0 length 200000
+/(?:ab)*$/u test on (ab)^100000 => true

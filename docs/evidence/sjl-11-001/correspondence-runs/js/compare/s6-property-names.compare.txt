@@ -1,0 +1,911 @@
+# s6-property-names: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     "\u005cp{L}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{L}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{L}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{L}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{L}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Letter}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Letter}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Letter}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Letter}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Letter}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Lu}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Lu}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Lu}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Lu}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Lu}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Uppercase_Letter}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Uppercase_Letter}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Uppercase_Letter}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Uppercase_Letter}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Uppercase_Letter}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{gc=Lu}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{gc=Lu}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{gc=Lu}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{gc=Lu}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{gc=Lu}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{General_Category=Lu}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{General_Category=Lu}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{General_Category=Lu}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{General_Category=Lu}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{General_Category=Lu}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{General_Category=Uppercase_Letter}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{General_Category=Uppercase_Letter}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{General_Category=Uppercase_Letter}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{General_Category=Uppercase_Letter}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{General_Category=Uppercase_Letter}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Greek}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Greek}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Greek}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Script=Greek}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Script=Greek}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Grek}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Grek}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Grek}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Script=Grek}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Script=Grek}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{sc=Grek}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{sc=Grek}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{sc=Grek}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{sc=Grek}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{sc=Grek}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{scx=Grek}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{scx=Grek}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{scx=Grek}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{scx=Grek}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{scx=Grek}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Script_Extensions=Greek}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Script_Extensions=Greek}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Script_Extensions=Greek}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Script_Extensions=Greek}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Script_Extensions=Greek}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Katakana_Or_Hiragana}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Katakana_Or_Hiragana}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Script=Katakana_Or_Hiragana}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Script=Katakana_Or_Hiragana}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Script=Katakana_Or_Hiragana}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{sc=Hrkt}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{sc=Hrkt}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{sc=Hrkt}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{sc=Hrkt}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{sc=Hrkt}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{scx=Hrkt}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{scx=Hrkt}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{scx=Hrkt}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{scx=Hrkt}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{scx=Hrkt}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{ASCII}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{ASCII}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{ASCII}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{ASCII}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{ASCII}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Any}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Any}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Any}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Any}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Any}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Assigned}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Assigned}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Assigned}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Assigned}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Assigned}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{ASCII_Hex_Digit}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{ASCII_Hex_Digit}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{ASCII_Hex_Digit}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{ASCII_Hex_Digit}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{ASCII_Hex_Digit}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{AHex}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{AHex}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{AHex}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{AHex}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{AHex}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Lowercase}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Lowercase}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Lowercase}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Lowercase}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Lowercase}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Lower}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Lower}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Lower}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Lower}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Lower}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Emoji}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Emoji}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Emoji}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Emoji}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Emoji}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{letter}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{letter}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{letter}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{letter}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{letter}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{ascii}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{ascii}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{ascii}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{ascii}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{ascii}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Ascii}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Ascii}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Ascii}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Ascii}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Ascii}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{A S C I I}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{A S C I I}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{A S C I I}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{A S C I I}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{A S C I I}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{lu}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{lu}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{lu}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{lu}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{lu}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{uppercaseletter}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{uppercaseletter}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{uppercaseletter}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{uppercaseletter}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{uppercaseletter}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{uppercase-letter}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{uppercase-letter}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{uppercase-letter}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{uppercase-letter}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{uppercase-letter}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Uppercase-Letter}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Uppercase-Letter}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Uppercase-Letter}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Uppercase-Letter}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Uppercase-Letter}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{general_category=Lu}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{general_category=Lu}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{general_category=Lu}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{general_category=Lu}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{general_category=Lu}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{GC=Lu}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{GC=Lu}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{GC=Lu}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{GC=Lu}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{GC=Lu}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{gc=lu}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{gc=lu}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{gc=lu}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{gc=lu}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{gc=lu}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Script=greek}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Script=greek}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Script=greek}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Script=greek}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Script=greek}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{script=Greek}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{script=Greek}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{script=Greek}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{script=Greek}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{script=Greek}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Script = Greek}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Script = Greek}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Script = Greek}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Script = Greek}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Script = Greek}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{ScriptExtensions=Greek}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{ScriptExtensions=Greek}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{ScriptExtensions=Greek}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{ScriptExtensions=Greek}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{ScriptExtensions=Greek}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{scx:Greek}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{scx:Greek}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{scx:Greek}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{scx:Greek}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{scx:Greek}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Block=Basic_Latin}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Block=Basic_Latin}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Block=Basic_Latin}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Block=Basic_Latin}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Block=Basic_Latin}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{InBasicLatin}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{InBasicLatin}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{InBasicLatin}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{InBasicLatin}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{InBasicLatin}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Is_Lowercase}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Is_Lowercase}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Is_Lowercase}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Is_Lowercase}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Is_Lowercase}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{IsLowercase}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{IsLowercase}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{IsLowercase}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{IsLowercase}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{IsLowercase}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{General_Category}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{General_Category}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{General_Category}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{General_Category}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{General_Category}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Script}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Script}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Script}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Script}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Script}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Lu=Lu}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Lu=Lu}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Lu=Lu}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Lu=Lu}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Lu=Lu}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Alphabetic=Yes}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Alphabetic=Yes}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Alphabetic=Yes}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Alphabetic=Yes}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Alphabetic=Yes}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{ASCII=Y}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{ASCII=Y}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{ASCII=Y}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{ASCII=Y}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{ASCII=Y}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{L&}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{L&}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{L&}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{L&}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{L&}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{LC}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{LC}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{LC}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{LC}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{LC}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Cased_Letter}" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Cased_Letter}" /u literal
+    VM: ok
+    JS: ok
+     "\u005cp{Cased_Letter}" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "\u005cp{Cased_Letter}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Cased_Letter}]" /u new RegExp
+    VM: ok
+    JS: ok
+     "\u005cp{Lowercase_Letter=Ll}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Lowercase_Letter=Ll}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Lowercase_Letter=Ll}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Lowercase_Letter=Ll}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{Lowercase_Letter=Ll}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{RGI_Emoji}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{RGI_Emoji}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{RGI_Emoji}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{RGI_Emoji}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{RGI_Emoji}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{rgi_emoji}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{rgi_emoji}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{rgi_emoji}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{rgi_emoji}" /v new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "[\u005cp{rgi_emoji}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Basic_Emoji}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Basic_Emoji}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Basic_Emoji}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Basic_Emoji}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Basic_Emoji}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Emoji_Keycap_Sequence}" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+     "\u005cp{Emoji_Keycap_Sequence}" /u literal
+    VM: SyntaxError
+    JS: SyntaxError
+~    "\u005cp{Emoji_Keycap_Sequence}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "\u005cp{Emoji_Keycap_Sequence}" /v new RegExp
+    VM: ok
+    JS: ok
+     "[\u005cp{Emoji_Keycap_Sequence}]" /u new RegExp
+    VM: SyntaxError
+    JS: SyntaxError
+~    \P{RGI_Emoji} /v new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\P{RGI_Emoji}/: Invalid property name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid property name in \P{RGI_Emoji}
+~    \P{RGI_Emoji} /v literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    \P{RGI_Emoji} /v literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+~    [^\p{RGI_Emoji}] /v new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /[^\p{RGI_Emoji}]/: Negated character class may contain strings
+    JS: THROWS SyntaxError: Unicode v-mode class set expression is not supported yet (requires Unicode set/sequence data)
+~    [^\p{RGI_Emoji}] /v literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    [^\p{RGI_Emoji}] /v literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     \p{L} / (no u: identity escapes) on "p{L}" new RegExp
+    VM: @0 ["p{L}"]
+    JS: @0 ["p{L}"]
+     \p{L} / (no u: identity escapes) on "p{L}" literal
+    VM: @0 ["p{L}"]
+    JS: @0 ["p{L}"]
+     \p{L} / (no u: identity escapes) on "p{L}" literal, not evaluated
+    VM: not early
+    JS: not early
+     \p{sc=Hrkt} /u on U+30A2 new RegExp
+    VM: null
+    JS: null
+     \p{sc=Hrkt} /u on U+30A2 literal
+    VM: null
+    JS: null
+     \p{sc=Hrkt} /u on U+30A2 literal, not evaluated
+    VM: not early
+    JS: not early
+     \p{scx=Hrkt} /u on U+30A2 new RegExp
+    VM: null
+    JS: null
+     \p{scx=Hrkt} /u on U+30A2 literal
+    VM: null
+    JS: null
+     \p{scx=Hrkt} /u on U+30A2 literal, not evaluated
+    VM: not early
+    JS: not early
+     \p{Script=Hiragana} /u on U+3042 new RegExp
+    VM: @0 ["\u3042"]
+    JS: @0 ["\u3042"]
+     \p{Script=Hiragana} /u on U+3042 literal
+    VM: @0 ["\u3042"]
+    JS: @0 ["\u3042"]
+     \p{Script=Hiragana} /u on U+3042 literal, not evaluated
+    VM: not early
+    JS: not early
+# JS: exit=0

@@ -1,0 +1,33 @@
+# command (from correspondence-runs/js/, JS_ROOT=/home/user/js-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/js-s11corr/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/f1-flags.js
+# revision: Broiler.JS 1f91b8f1b1ef392c6392cf7e43af8e80eb3fb1a7; Broiler.Regex 0.1.0-preview.4
+new RegExp("a", "").flags => ""
+new RegExp("a", "g").flags => "g"
+new RegExp("a", "gg").flags => THROWS SyntaxError: The 'g' flag cannot be specified twice
+new RegExp("a", "x").flags => THROWS SyntaxError: Unknown flag x
+new RegExp("a", "G").flags => THROWS SyntaxError: Unknown flag G
+new RegExp("a", "uv").flags => THROWS SyntaxError: The 'u' and 'v' flags cannot be used together
+new RegExp("a", "vu").flags => THROWS SyntaxError: The 'u' and 'v' flags cannot be used together
+new RegExp("a", "yvsmigd").flags => "dgimsvy"
+new RegExp("a", "dgimsuy").flags => "dgimsuy"
+new RegExp("a", "ygmisd").flags => "dgimsy"
+new RegExp("a", " g").flags => THROWS SyntaxError: Unknown flag  
+new RegExp("a", "g ").flags => THROWS SyntaxError: Unknown flag  
+new RegExp("a", "gi\u0000").flags => THROWS SyntaxError: Unknown flag \u0000
+literal /a/gg .flags => THROWS SyntaxError: Unexpected token Empty:  at 1, 5
+literal /a/gg, not evaluated => THROWS SyntaxError: Unexpected token LineTerminator: \u000a at 2, 5
+literal /a/uv .flags => THROWS SyntaxError: Unexpected token Empty:  at 1, 5
+literal /a/uv, not evaluated => THROWS SyntaxError: Unexpected token LineTerminator: \u000a at 2, 5
+literal /a/x .flags => THROWS SyntaxError: Unexpected token Identifier: x at 1, 4
+literal /a/x, not evaluated => THROWS SyntaxError: Unexpected token Identifier: x at 2, 4
+literal /a/dgimsvy .flags => "dgimsvy"
+literal /a/dgimsvy, not evaluated => not early
+literal /a/yvsmigd .flags => "dgimsvy"
+literal /a/yvsmigd, not evaluated => not early
+flags getter over a plain object => "dgsvy"
+flags getter read order => "hasIndices,global,ignoreCase,multiline,dotAll,unicode,unicodeSets,sticky"
+/a/dgimsy accessors => [true, true, true, true, true, false, false, true]
+/a/v accessors unicode, unicodeSets => [false, true]
+RegExp.prototype.global => undefined
+RegExp.prototype.flags => ""
+String(new RegExp("a", "yg")) => "/a/gy"
+exit=0

@@ -1,0 +1,254 @@
+# s4-escapes: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     \0١ /u on NUL+U+0661 new RegExp
+    VM: @0 ["\u0000\u0661"]
+    JS: @0 ["\u0000\u0661"]
+     \0١ /u on NUL+U+0661 literal
+    VM: @0 ["\u0000\u0661"]
+    JS: @0 ["\u0000\u0661"]
+     \0١ /u on NUL+U+0661 literal, not evaluated
+    VM: not early
+    JS: not early
+     \0١ / on NUL+U+0661 new RegExp
+    VM: @0 ["\u0000\u0661"]
+    JS: @0 ["\u0000\u0661"]
+     \0١ / on NUL+U+0661 literal
+    VM: @0 ["\u0000\u0661"]
+    JS: @0 ["\u0000\u0661"]
+     \0١ / on NUL+U+0661 literal, not evaluated
+    VM: not early
+    JS: not early
+     [\0١] /u on U+0661 new RegExp
+    VM: @0 ["\u0661"]
+    JS: @0 ["\u0661"]
+     [\0١] /u on U+0661 literal
+    VM: @0 ["\u0661"]
+    JS: @0 ["\u0661"]
+     [\0١] /u on U+0661 literal, not evaluated
+    VM: not early
+    JS: not early
+     \0１ /u (FULLWIDTH DIGIT ONE) on NUL+U+FF11 new RegExp
+    VM: @0 ["\u0000\uff11"]
+    JS: @0 ["\u0000\uff11"]
+     \0１ /u (FULLWIDTH DIGIT ONE) on NUL+U+FF11 literal
+    VM: @0 ["\u0000\uff11"]
+    JS: @0 ["\u0000\uff11"]
+     \0１ /u (FULLWIDTH DIGIT ONE) on NUL+U+FF11 literal, not evaluated
+    VM: not early
+    JS: not early
+~    \01 /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\01/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    \01 /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    \01 /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     \01 / (legacy octal) on U+0001 new RegExp
+    VM: @0 ["\u0001"]
+    JS: @0 ["\u0001"]
+     \01 / (legacy octal) on U+0001 literal
+    VM: @0 ["\u0001"]
+    JS: @0 ["\u0001"]
+     \01 / (legacy octal) on U+0001 literal, not evaluated
+    VM: not early
+    JS: not early
+~    \00 /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\00/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    \00 /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    \00 /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+~    [\00] /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /[\00]/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    [\00] /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    [\00] /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     \0 /u on NUL new RegExp
+    VM: @0 ["\u0000"]
+    JS: @0 ["\u0000"]
+     \0 /u on NUL literal
+    VM: @0 ["\u0000"]
+    JS: @0 ["\u0000"]
+     \0 /u on NUL literal, not evaluated
+    VM: not early
+    JS: not early
+     \8 / on "8" new RegExp
+    VM: @0 ["8"]
+    JS: @0 ["8"]
+     \8 / on "8" literal
+    VM: @0 ["8"]
+    JS: @0 ["8"]
+     \8 / on "8" literal, not evaluated
+    VM: not early
+    JS: not early
+~    \8 /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\8/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    \8 /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    \8 /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     \1(a) / on "a" new RegExp
+    VM: @0 ["a", "a"]
+    JS: @0 ["a", "a"]
+     \1(a) / on "a" literal
+    VM: @0 ["a", "a"]
+    JS: @0 ["a", "a"]
+     \1(a) / on "a" literal, not evaluated
+    VM: not early
+    JS: not early
+     \2(a) / on U+0002a new RegExp
+    VM: @0 ["\u0002a", "a"]
+    JS: @0 ["\u0002a", "a"]
+     \2(a) / on U+0002a literal
+    VM: @0 ["\u0002a", "a"]
+    JS: @0 ["\u0002a", "a"]
+     \2(a) / on U+0002a literal, not evaluated
+    VM: not early
+    JS: not early
+~    \2(a) /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\2(a)/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    \2(a) /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    \2(a) /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     \x4 / on "x4" new RegExp
+    VM: @0 ["x4"]
+    JS: @0 ["x4"]
+     \x4 / on "x4" literal
+    VM: @0 ["x4"]
+    JS: @0 ["x4"]
+     \x4 / on "x4" literal, not evaluated
+    VM: not early
+    JS: not early
+~    \x4 /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\x4/: Invalid escape
+    JS: THROWS SyntaxError: Invalid pattern '\x4' at offset 2. Insufficient or invalid hexadecimal digits.
+~    \x4 /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    \x4 /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     \u12 / on "u12" new RegExp
+    VM: @0 ["u12"]
+    JS: @0 ["u12"]
+     \u12 / on "u12" literal
+    VM: @0 ["u12"]
+    JS: @0 ["u12"]
+     \u12 / on "u12" literal, not evaluated
+    VM: not early
+    JS: not early
+~    \u12 /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\u12/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    \u12 /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 6
+~    \u12 /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 6
+~    \u{110000} /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\u{110000}/: Invalid Unicode escape
+    JS: THROWS SyntaxError: Invalid pattern '\u{110000}' at offset 3. Insufficient or invalid hexadecimal digits.
+~    \u{110000} /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Empty:  at 1, 14
+~    \u{110000} /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token LineTerminator: \u000a at 2, 14
+     \u{3} / (u then quantifier) on "uuu" new RegExp
+    VM: @0 ["uuu"]
+    JS: @0 ["uuu"]
+     \u{3} / (u then quantifier) on "uuu" literal
+    VM: @0 ["uuu"]
+    JS: @0 ["uuu"]
+     \u{3} / (u then quantifier) on "uuu" literal, not evaluated
+    VM: not early
+    JS: not early
+     \c / on "\\c" new RegExp
+    VM: @0 ["\u005cc"]
+    JS: @0 ["\u005cc"]
+     \c / on "\\c" literal
+    VM: @0 ["\u005cc"]
+    JS: @0 ["\u005cc"]
+     \c / on "\\c" literal, not evaluated
+    VM: not early
+    JS: not early
+~    \c /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\c/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    \c /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    \c /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     [\c_] / on U+001F new RegExp
+    VM: @0 ["\u001f"]
+    JS: @0 ["\u001f"]
+     [\c_] / on U+001F literal
+    VM: @0 ["\u001f"]
+    JS: @0 ["\u001f"]
+     [\c_] / on U+001F literal, not evaluated
+    VM: not early
+    JS: not early
+~    [\c_] /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /[\c_]/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    [\c_] /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    [\c_] /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     \cJ /u on LF new RegExp
+    VM: @0 ["\u000a"]
+    JS: @0 ["\u000a"]
+     \cJ /u on LF literal
+    VM: @0 ["\u000a"]
+    JS: @0 ["\u000a"]
+     \cJ /u on LF literal, not evaluated
+    VM: not early
+    JS: not early
+~    \- /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\-/: Invalid escape
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    \- /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    \- /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     [\-] /u on "-" new RegExp
+    VM: @0 ["-"]
+    JS: @0 ["-"]
+     [\-] /u on "-" literal
+    VM: @0 ["-"]
+    JS: @0 ["-"]
+     [\-] /u on "-" literal, not evaluated
+    VM: not early
+    JS: not early
+     \/ /u on "/" new RegExp
+    VM: @0 ["/"]
+    JS: @0 ["/"]
+     \/ /u on "/" literal
+    VM: @0 ["/"]
+    JS: @0 ["/"]
+     \/ /u on "/" literal, not evaluated
+    VM: not early
+    JS: not early
+# JS: exit=0

@@ -1,0 +1,6 @@
+# b6a-frames-ceiling: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+# VM ended before printing: NO OUTPUT; the verdict line: FAIL        test/sjl11/b6a-frames-ceiling.js [raw]  the invocation answered ProfileFault/AllowanceExhausted and carried no payload
+?    /(?:ab)*/ exec on (ab)^1100000
+    VM: (no line)
+    JS: @0 length 2200000
+# JS: exit=0

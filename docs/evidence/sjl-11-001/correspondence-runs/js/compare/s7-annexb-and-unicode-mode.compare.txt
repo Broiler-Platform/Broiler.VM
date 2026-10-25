@@ -1,0 +1,1027 @@
+# s7-annexb-and-unicode-mode: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+  TL host default locale (Intl)
+    VM: "en-US"
+    JS: "en-US"
+    JS tr-TR: "tr-TR"
+    JS lt-LT: "lt-LT"
+     "(?=a){2}" / on "a" new RegExp
+    VM: @0 [""]
+    JS: @0 [""]
+    JS tr-TR: @0 [""]
+    JS lt-LT: @0 [""]
+     "(?=a){2}" / on "a" literal
+    VM: @0 [""]
+    JS: @0 [""]
+    JS tr-TR: @0 [""]
+    JS lt-LT: @0 [""]
+     "(?=a){2}" / on "a" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?=a){2}" /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?=a){2}/: Nothing to repeat
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    "(?=a){2}" /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?=a){2}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+!    "(?<=a)*" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<=a)*/: Nothing to repeat
+    JS: ok
+    JS tr-TR: ok
+    JS lt-LT: ok
+!    "(?<=a)*" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: ok
+    JS tr-TR: ok
+    JS lt-LT: ok
+!    "(?<=a)*" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "(?!a)+" / on "b" new RegExp
+    VM: @0 [""]
+    JS: @0 [""]
+    JS tr-TR: @0 [""]
+    JS lt-LT: @0 [""]
+     "(?!a)+" / on "b" literal
+    VM: @0 [""]
+    JS: @0 [""]
+    JS tr-TR: @0 [""]
+    JS lt-LT: @0 [""]
+     "(?!a)+" / on "b" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "{" / on "{" new RegExp
+    VM: @0 ["{"]
+    JS: @0 ["{"]
+    JS tr-TR: @0 ["{"]
+    JS lt-LT: @0 ["{"]
+     "{" / on "{" literal
+    VM: @0 ["{"]
+    JS: @0 ["{"]
+    JS tr-TR: @0 ["{"]
+    JS lt-LT: @0 ["{"]
+     "{" / on "{" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "{" /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /{/: Lone quantifier brackets
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    "{" /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "{" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "a{" / on "a{" new RegExp
+    VM: @0 ["a{"]
+    JS: @0 ["a{"]
+    JS tr-TR: @0 ["a{"]
+    JS lt-LT: @0 ["a{"]
+     "a{" / on "a{" literal
+    VM: @0 ["a{"]
+    JS: @0 ["a{"]
+    JS tr-TR: @0 ["a{"]
+    JS lt-LT: @0 ["a{"]
+     "a{" / on "a{" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "a{1" / on "a{1" new RegExp
+    VM: @0 ["a{1"]
+    JS: @0 ["a{1"]
+    JS tr-TR: @0 ["a{1"]
+    JS lt-LT: @0 ["a{1"]
+     "a{1" / on "a{1" literal
+    VM: @0 ["a{1"]
+    JS: @0 ["a{1"]
+    JS tr-TR: @0 ["a{1"]
+    JS lt-LT: @0 ["a{1"]
+     "a{1" / on "a{1" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "a{1," / on "a{1," new RegExp
+    VM: @0 ["a{1,"]
+    JS: @0 ["a{1,"]
+    JS tr-TR: @0 ["a{1,"]
+    JS lt-LT: @0 ["a{1,"]
+     "a{1," / on "a{1," literal
+    VM: @0 ["a{1,"]
+    JS: @0 ["a{1,"]
+    JS tr-TR: @0 ["a{1,"]
+    JS lt-LT: @0 ["a{1,"]
+     "a{1," / on "a{1," literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "x{2,1}" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /x{2,1}/: numbers out of order in {} quantifier
+    JS: THROWS SyntaxError: Invalid pattern 'x{2,1}' at offset 6. Illegal {x,y} with x > y.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern 'x{2,1}' at offset 6. Illegal {x,y} with x > y.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern 'x{2,1}' at offset 6. Illegal {x,y} with x > y.
+~    "x{2,1}" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "x{2,1}" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "]" / on "]" new RegExp
+    VM: @0 ["]"]
+    JS: @0 ["]"]
+    JS tr-TR: @0 ["]"]
+    JS lt-LT: @0 ["]"]
+     "]" / on "]" literal
+    VM: @0 ["]"]
+    JS: @0 ["]"]
+    JS tr-TR: @0 ["]"]
+    JS lt-LT: @0 ["]"]
+     "]" / on "]" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "]" /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /]/: Lone quantifier brackets
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    "]" /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "]" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "}" / on "}" new RegExp
+    VM: @0 ["}"]
+    JS: @0 ["}"]
+    JS tr-TR: @0 ["}"]
+    JS lt-LT: @0 ["}"]
+     "}" / on "}" literal
+    VM: @0 ["}"]
+    JS: @0 ["}"]
+    JS tr-TR: @0 ["}"]
+    JS lt-LT: @0 ["}"]
+     "}" / on "}" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "}" /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /}/: Lone quantifier brackets
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    "}" /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "}" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "[\u005cd-a]" / on "-" new RegExp
+    VM: @0 ["-"]
+    JS: @0 ["-"]
+    JS tr-TR: @0 ["-"]
+    JS lt-LT: @0 ["-"]
+     "[\u005cd-a]" / on "-" literal
+    VM: @0 ["-"]
+    JS: @0 ["-"]
+    JS tr-TR: @0 ["-"]
+    JS lt-LT: @0 ["-"]
+     "[\u005cd-a]" / on "-" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "[\u005cd-a]" /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /[\d-a]/: Invalid character class
+    JS: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid pattern in Unicode mode
+~    "[\u005cd-a]" /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "[\u005cd-a]" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "[a-\u005cd]" / on "-" new RegExp
+    VM: @0 ["-"]
+    JS: @0 ["-"]
+    JS tr-TR: @0 ["-"]
+    JS lt-LT: @0 ["-"]
+     "[a-\u005cd]" / on "-" literal
+    VM: @0 ["-"]
+    JS: @0 ["-"]
+    JS tr-TR: @0 ["-"]
+    JS lt-LT: @0 ["-"]
+     "[a-\u005cd]" / on "-" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "[--\u005cd]" / on "-" new RegExp
+    VM: @0 ["-"]
+    JS: @0 ["-"]
+    JS tr-TR: @0 ["-"]
+    JS lt-LT: @0 ["-"]
+     "[--\u005cd]" / on "-" literal
+    VM: @0 ["-"]
+    JS: @0 ["-"]
+    JS tr-TR: @0 ["-"]
+    JS lt-LT: @0 ["-"]
+     "[--\u005cd]" / on "-" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "a**" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /a**/: Nothing to repeat
+    JS: THROWS SyntaxError: Invalid pattern 'a**' at offset 3. Nested quantifier '*'.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern 'a**' at offset 3. Nested quantifier '*'.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern 'a**' at offset 3. Nested quantifier '*'.
+~    "a**" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "a**" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "a{2147483648}" / on "a" new RegExp
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "a{2147483648}" / on "a" literal
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "a{2147483648}" / on "a" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "a{2147483648,}" / on "a" new RegExp
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "a{2147483648,}" / on "a" literal
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "a{2147483648,}" / on "a" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "a{9007199254740993}" / on "a" new RegExp
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "a{9007199254740993}" / on "a" literal
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "a{9007199254740993}" / on "a" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "[b-a]" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /[b-a]/: Range out of order in character class
+    JS: THROWS SyntaxError: Invalid pattern '[b-a]' at offset 4. [x-y] range in reverse order.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern '[b-a]' at offset 4. [x-y] range in reverse order.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern '[b-a]' at offset 4. [x-y] range in reverse order.
+~    "[b-a]" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "[b-a]" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "(?:)" / on "" new RegExp
+    VM: @0 [""]
+    JS: @0 [""]
+    JS tr-TR: @0 [""]
+    JS lt-LT: @0 [""]
+     "(?:)" / on "" literal
+    VM: @0 [""]
+    JS: @0 [""]
+    JS tr-TR: @0 [""]
+    JS lt-LT: @0 [""]
+     "(?:)" / on "" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "()" / on "" new RegExp
+    VM: @0 ["", ""]
+    JS: @0 ["", ""]
+    JS tr-TR: @0 ["", ""]
+    JS lt-LT: @0 ["", ""]
+     "()" / on "" literal
+    VM: @0 ["", ""]
+    JS: @0 ["", ""]
+    JS tr-TR: @0 ["", ""]
+    JS lt-LT: @0 ["", ""]
+     "()" / on "" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "[]" / on "a" new RegExp
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "[]" / on "a" literal
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "[]" / on "a" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "[^]" / on "a" new RegExp
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+    JS tr-TR: @0 ["a"]
+    JS lt-LT: @0 ["a"]
+     "[^]" / on "a" literal
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+    JS tr-TR: @0 ["a"]
+    JS lt-LT: @0 ["a"]
+     "[^]" / on "a" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(/: Unterminated group
+    JS: THROWS SyntaxError: Invalid pattern '(' at offset 1. Not enough )'s.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern '(' at offset 1. Not enough )'s.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern '(' at offset 1. Not enough )'s.
+~    "(" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    ")" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /)/: Unmatched ')'
+    JS: THROWS SyntaxError: Invalid pattern ')' at offset 1. Too many )'s.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern ')' at offset 1. Too many )'s.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern ')' at offset 1. Too many )'s.
+~    ")" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    ")" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /a)/: Unmatched ')'
+    JS: THROWS SyntaxError: Invalid pattern 'a)' at offset 2. Too many )'s.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern 'a)' at offset 2. Too many )'s.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern 'a)' at offset 2. Too many )'s.
+~    "a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?/: Invalid group
+    JS: THROWS SyntaxError: Invalid pattern '(?' at offset 2. Unrecognized grouping construct.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern '(?' at offset 2. Unrecognized grouping construct.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern '(?' at offset 2. Unrecognized grouping construct.
+~    "(?" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "[" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /[/: Unterminated character class
+    JS: THROWS SyntaxError: Invalid pattern '[' at offset 1. Unterminated [] set.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern '[' at offset 1. Unterminated [] set.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern '[' at offset 1. Unterminated [] set.
+~    "[" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "[" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "\u005c" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /\/: \ at end of pattern
+    JS: THROWS SyntaxError: Invalid pattern '\' at offset 1. Illegal \ at end of pattern.
+    JS tr-TR: THROWS SyntaxError: Invalid pattern '\' at offset 1. Illegal \ at end of pattern.
+    JS lt-LT: THROWS SyntaxError: Invalid pattern '\' at offset 1. Illegal \ at end of pattern.
+~    "\u005c" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 3
+~    "\u005c" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 3
+     "(?i:a)b" / on "Ab" new RegExp
+    VM: @0 ["Ab"]
+    JS: @0 ["Ab"]
+    JS tr-TR: @0 ["Ab"]
+    JS lt-LT: @0 ["Ab"]
+     "(?i:a)b" / on "Ab" literal
+    VM: @0 ["Ab"]
+    JS: @0 ["Ab"]
+    JS tr-TR: @0 ["Ab"]
+    JS lt-LT: @0 ["Ab"]
+     "(?i:a)b" / on "Ab" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "(?i:a)b" / on "AB" new RegExp
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "(?i:a)b" / on "AB" literal
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "(?i:a)b" / on "AB" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "(?-i:a)b" /i on "aB" new RegExp
+    VM: @0 ["aB"]
+    JS: @0 ["aB"]
+    JS tr-TR: @0 ["aB"]
+    JS lt-LT: @0 ["aB"]
+     "(?-i:a)b" /i on "aB" literal
+    VM: @0 ["aB"]
+    JS: @0 ["aB"]
+    JS tr-TR: @0 ["aB"]
+    JS lt-LT: @0 ["aB"]
+     "(?-i:a)b" /i on "aB" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "(?-i:a)b" /i on "AB" new RegExp
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "(?-i:a)b" /i on "AB" literal
+    VM: null
+    JS: null
+    JS tr-TR: null
+    JS lt-LT: null
+     "(?-i:a)b" /i on "AB" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?ii:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?ii:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+~    "(?ii:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+!    "(?ii:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?i-i:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?i-i:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+~    "(?i-i:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+!    "(?i-i:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?-:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?-:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier group must add or remove at least one flag
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier group must add or remove at least one flag
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier group must add or remove at least one flag
+~    "(?-:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier group must add or remove at least one flag
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier group must add or remove at least one flag
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier group must add or remove at least one flag
+!    "(?-:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?i)a" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?i)a/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?i)a" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?i)a" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?u:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?u:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?u:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?u:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS tr-TR: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+    JS lt-LT: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "(?m-s:a)" / on "a" new RegExp
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+    JS tr-TR: @0 ["a"]
+    JS lt-LT: @0 ["a"]
+     "(?m-s:a)" / on "a" literal
+    VM: @0 ["a"]
+    JS: @0 ["a"]
+    JS tr-TR: @0 ["a"]
+    JS lt-LT: @0 ["a"]
+     "(?m-s:a)" / on "a" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "(?s:.)" / on "\u000a" new RegExp
+    VM: @0 ["\u000a"]
+    JS: @0 ["\u000a"]
+    JS tr-TR: @0 ["\u000a"]
+    JS lt-LT: @0 ["\u000a"]
+     "(?s:.)" / on "\u000a" literal
+    VM: @0 ["\u000a"]
+    JS: @0 ["\u000a"]
+    JS tr-TR: @0 ["\u000a"]
+    JS lt-LT: @0 ["\u000a"]
+     "(?s:.)" / on "\u000a" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "(?m:^b)" / on "a\u000ab" new RegExp
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+    JS tr-TR: @2 ["b"]
+    JS lt-LT: @2 ["b"]
+     "(?m:^b)" / on "a\u000ab" literal
+    VM: @2 ["b"]
+    JS: @2 ["b"]
+    JS tr-TR: @2 ["b"]
+    JS lt-LT: @2 ["b"]
+     "(?m:^b)" / on "a\u000ab" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+     "(?i:\u005cu212a)" /u on "k" new RegExp
+    VM: @0 ["k"]
+    JS: @0 ["k"]
+    JS tr-TR: @0 ["k"]
+    JS lt-LT: @0 ["k"]
+     "(?i:\u005cu212a)" /u on "k" literal
+    VM: @0 ["k"]
+    JS: @0 ["k"]
+    JS tr-TR: @0 ["k"]
+    JS lt-LT: @0 ["k"]
+     "(?i:\u005cu212a)" /u on "k" literal, not evaluated
+    VM: not early
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?imsi:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?imsi:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+~    "(?imsi:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+!    "(?imsi:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?I:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?I:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?I:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?I:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?M:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?M:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?M:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?M:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?S:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?S:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?S:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?S:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?m-m:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?m-m:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+~    "(?m-m:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+!    "(?m-m:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?s-s:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?s-s:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+~    "(?s-s:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+!    "(?s-s:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?ims-m:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?ims-m:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+~    "(?ims-m:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+!    "(?ims-m:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?m-ims:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?m-ims:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+~    "(?m-ims:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not appear in both the added and removed flag sets
+!    "(?m-ims:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?-ii:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?-ii:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+~    "(?-ii:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+!    "(?-ii:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?-imsi:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?-imsi:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+~    "(?-imsi:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+!    "(?-imsi:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?ii-:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?ii-:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+~    "(?ii-:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+!    "(?ii-:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?imsi-:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?imsi-:a)/: Repeated flag in modifiers
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+~    "(?imsi-:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: a modifier flag must not be repeated within a modifier group
+!    "(?imsi-:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?I-:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?I-:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?I-:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?I-:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?M-:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?M-:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?M-:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?M-:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?S-:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?S-:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?S-:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?S-:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?-I:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?-I:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?-I:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?-I:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?-M:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?-M:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?-M:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?-M:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?-S:a)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?-S:a)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?-S:a)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?-S:a)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?ms-i)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?ms-i)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?ms-i)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?ms-i)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?-s)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?-s)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?-s)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?-s)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+~    "(?i-)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?i-)/: Invalid group
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+~    "(?i-)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS tr-TR: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+    JS lt-LT: THROWS SyntaxError: Invalid regular expression: invalid flag in modifier group
+!    "(?i-)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: not early
+    JS tr-TR: not early
+    JS lt-LT: not early
+# JS: exit=0

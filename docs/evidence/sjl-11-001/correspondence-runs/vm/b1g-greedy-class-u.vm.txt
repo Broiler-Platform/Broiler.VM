@@ -1,0 +1,1 @@
+/[a]*/u exec on a^10000001: index, length => @0 length 10000001

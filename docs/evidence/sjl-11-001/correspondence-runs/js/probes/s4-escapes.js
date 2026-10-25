@@ -1,0 +1,31 @@
+// S4: \0 and decimal digits. CharacterEscape :: 0 [lookahead not-in DecimalDigit], where
+// DecimalDigit is ASCII 0-9 only; so \0 before U+0661 (ARABIC-INDIC DIGIT ONE) is NUL then U+0661.
+var one = '\u0661';
+both('\\0\u0661 /u on NUL+U+0661', '\\0' + one, 'u', '\u0000' + one);
+both('\\0\u0661 / on NUL+U+0661', '\\0' + one, '', '\u0000' + one);
+both('[\\0\u0661] /u on U+0661', '[\\0' + one + ']', 'u', one);
+both('\\0\uff11 /u (FULLWIDTH DIGIT ONE) on NUL+U+FF11', '\\0\uff11', 'u', '\u0000\uff11');
+both('\\01 /u', '\\01', 'u', '\u0001');
+both('\\01 / (legacy octal) on U+0001', '\\01', '', '\u0001');
+both('\\00 /u', '\\00', 'u');
+both('[\\00] /u', '[\\00]', 'u');
+both('\\0 /u on NUL', '\\0', 'u', '\u0000');
+both('\\8 / on "8"', '\\8', '', '8');
+both('\\8 /u', '\\8', 'u');
+both('\\1(a) / on "a"', '\\1(a)', '', 'a');
+both('\\2(a) / on U+0002a', '\\2(a)', '', '\u0002a');
+both('\\2(a) /u', '\\2(a)', 'u');
+both('\\x4 / on "x4"', '\\x4', '', 'x4');
+both('\\x4 /u', '\\x4', 'u');
+both('\\u12 / on "u12"', '\\u12', '', 'u12');
+both('\\u12 /u', '\\u12', 'u');
+both('\\u{110000} /u', '\\u{110000}', 'u');
+both('\\u{3} / (u then quantifier) on "uuu"', '\\u{3}', '', 'uuu');
+both('\\c / on "\\\\c"', '\\c', '', '\\c');
+both('\\c /u', '\\c', 'u');
+both('[\\c_] / on U+001F', '[\\c_]', '', '\u001f');
+both('[\\c_] /u', '[\\c_]', 'u');
+both('\\cJ /u on LF', '\\cJ', 'u', '\n');
+both('\\- /u', '\\-', 'u');
+both('[\\-] /u on "-"', '[\\-]', 'u', '-');
+both('\\/ /u on "/"', '\\/', 'u', '/');

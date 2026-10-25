@@ -1,0 +1,272 @@
+# s2-group-names: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     "(?<a>x)" / new RegExp
+    VM: ok groups "a"
+    JS: ok groups "a"
+     "(?<a>x)" / literal
+    VM: ok groups "a"
+    JS: ok groups "a"
+     "(?<a>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<$>x)" / new RegExp
+    VM: ok groups "$"
+    JS: ok groups "$"
+     "(?<$>x)" / literal
+    VM: ok groups "$"
+    JS: ok groups "$"
+     "(?<$>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<_>x)" / new RegExp
+    VM: ok groups "_"
+    JS: ok groups "_"
+     "(?<_>x)" / literal
+    VM: ok groups "_"
+    JS: ok groups "_"
+     "(?<_>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\u00e9>x)" / new RegExp
+    VM: ok groups "\u00e9"
+    JS: ok groups "\u00e9"
+     "(?<\u00e9>x)" / literal
+    VM: ok groups "\u00e9"
+    JS: ok groups "\u00e9"
+     "(?<\u00e9>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<a\u200cb>x)" / new RegExp
+    VM: ok groups "a\u200cb"
+    JS: ok groups "a\u200cb"
+     "(?<a\u200cb>x)" / literal
+    VM: ok groups "a\u200cb"
+    JS: ok groups "a\u200cb"
+     "(?<a\u200cb>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+~    "(?<a b>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<a b>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "a b"
+~    "(?<a b>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<a b>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<1>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<1>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "1"
+~    "(?<1>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<1>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<a-b>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<a-b>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "a-b"
+~    "(?<a-b>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<a-b>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<a.b>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<a.b>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "a.b"
+~    "(?<a.b>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<a.b>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name ""
+~    "(?<>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     "(?<\u005cu0041>x)" / new RegExp
+    VM: ok groups "A"
+    JS: ok groups "A"
+     "(?<\u005cu0041>x)" / literal
+    VM: ok groups "A"
+    JS: ok groups "A"
+     "(?<\u005cu0041>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\u005cu0041>x)" /u new RegExp
+    VM: ok groups "A"
+    JS: ok groups "A"
+     "(?<\u005cu0041>x)" /u literal
+    VM: ok groups "A"
+    JS: ok groups "A"
+     "(?<\u005cu0041>x)" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\u005cu{41}>x)" / new RegExp
+    VM: ok groups "A"
+    JS: ok groups "A"
+     "(?<\u005cu{41}>x)" / literal
+    VM: ok groups "A"
+    JS: ok groups "A"
+     "(?<\u005cu{41}>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\u005cu{41}>x)" /u new RegExp
+    VM: ok groups "A"
+    JS: ok groups "A"
+     "(?<\u005cu{41}>x)" /u literal
+    VM: ok groups "A"
+    JS: ok groups "A"
+     "(?<\u005cu{41}>x)" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\u005cuD835\u005cuDC00>x)" / new RegExp
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\u005cuD835\u005cuDC00>x)" / literal
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\u005cuD835\u005cuDC00>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\u005cuD835\u005cuDC00>x)" /u new RegExp
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\u005cuD835\u005cuDC00>x)" /u literal
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\u005cuD835\u005cuDC00>x)" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\u005cu{1D400}>x)" / new RegExp
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\u005cu{1D400}>x)" / literal
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\u005cu{1D400}>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\u005cu{1D400}>x)" /u new RegExp
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\u005cu{1D400}>x)" /u literal
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\u005cu{1D400}>x)" /u literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\ud835\udc00>x)" / new RegExp
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\ud835\udc00>x)" / literal
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\ud835\udc00>x)" / literal, not evaluated
+    VM: not early
+    JS: not early
+     "(?<\ud835\udc00>x)" /u new RegExp
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\ud835\udc00>x)" /u literal
+    VM: ok groups "\ud835\udc00"
+    JS: ok groups "\ud835\udc00"
+     "(?<\ud835\udc00>x)" /u literal, not evaluated
+    VM: not early
+    JS: not early
+~    "(?<\u005cuD800>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<\uD800>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "\uD800"
+~    "(?<\u005cuD800>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<\u005cuD800>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<\u005cuD800>x)" /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<\uD800>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "\uD800"
+~    "(?<\u005cuD800>x)" /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<\u005cuD800>x)" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<\u005cu{D800}>x)" /u new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<\u{D800}>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "\u{D800}"
+~    "(?<\u005cu{D800}>x)" /u literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<\u005cu{D800}>x)" /u literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<a\u005cu0020>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<a\u0020>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "a\u0020"
+~    "(?<a\u005cu0020>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<a\u005cu0020>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<\u005cu0031>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<\u0031>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "\u0031"
+~    "(?<\u005cu0031>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<\u005cu0031>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<\u005cx41>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<\x41>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "\x41"
+~    "(?<\u005cx41>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<\u005cx41>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<\ud835\udfda>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<\ud835\udfda>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "\ud835\udfda"
+~    "(?<\ud835\udfda>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<\ud835\udfda>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+~    "(?<\ud83e\udd8a>x)" / new RegExp
+    VM: THROWS SyntaxError: Invalid regular expression: /(?<\ud83e\udd8a>x)/: Invalid capture group name
+    JS: THROWS SyntaxError: Invalid regular expression: invalid capture group name "\ud83e\udd8a"
+~    "(?<\ud83e\udd8a>x)" / literal
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+~    "(?<\ud83e\udd8a>x)" / literal, not evaluated
+    VM: THROWS SyntaxError: the evaluated source is not a program this profile admits
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     (?<A>x)\k<\u0041> on "xx" new RegExp
+    VM: @0 ["xx", "x"] groups{A: "x"}
+    JS: @0 ["xx", "x"] groups{A: "x"}
+!    (?<A>x)\k<\u0041> on "xx" literal
+    VM: @0 ["xx", "x"] groups{A: "x"}
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+!    (?<A>x)\k<\u0041> on "xx" literal, not evaluated
+    VM: not early
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+     (?<\u{1D400}>x)\k<𝐀> on "xx" new RegExp
+    VM: @0 ["xx", "x"] groups{𝐀: "x"}
+    JS: @0 ["xx", "x"] groups{𝐀: "x"}
+!    (?<\u{1D400}>x)\k<𝐀> on "xx" literal
+    VM: @0 ["xx", "x"] groups{𝐀: "x"}
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 1, 1
+!    (?<\u{1D400}>x)\k<𝐀> on "xx" literal, not evaluated
+    VM: not early
+    JS: THROWS SyntaxError: Unexpected token Divide: / at 2, 1
+# JS: exit=0

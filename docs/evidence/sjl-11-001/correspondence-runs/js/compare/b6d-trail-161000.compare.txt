@@ -1,0 +1,5 @@
+# b6d-trail-161000: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     /(?:(a)(b)(c))*/ exec on (abc)^161000
+    VM: @0 length 483000 ["a", "b", "c"]
+    JS: @0 length 483000 ["a", "b", "c"]
+# JS: exit=0

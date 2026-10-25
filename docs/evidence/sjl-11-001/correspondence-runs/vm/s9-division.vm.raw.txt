@@ -1,0 +1,42 @@
+# command (from correspondence-runs/vm/, VM_ROOT=/home/user/vm-s11corr): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/vm-s11corr/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl11/s9-division.js --fuel 200000000000 --wall 600000
+# revision: Broiler.VM aaa39fbc2030e1a2554317bea75bcbb56041c696
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl11/s9-division.js [raw]  uncaught Error: OUT<<var a=8,gg=2; var x = {}\n/a/gg; x => NaN
+var a=8,g=2; var x = {}\n/a/g; x => NaN
+var a=8,g=2; var x = function(){}\n/a/g; x => NaN
+var yield=6,a=2,g=3; yield /a/g => 1
+/a/gg (statement start) => THROWS SyntaxError: the evaluated source is not a program this profile admits
+x = /(?<a>.)(?<a>.)/ (duplicate in one alternative) => THROWS SyntaxError: the evaluated source is not a program this profile admits
+if (1) /(/  => THROWS SyntaxError: the evaluated source is not a program this profile admits
+return-position: (function(){ return /a/uu })() => THROWS SyntaxError: the evaluated source is not a program this profile admits
+typeof /[b-a]/ => THROWS SyntaxError: the evaluated source is not a program this profile admits
+generator: yield /a/gg => THROWS SyntaxError: the evaluated source is not a program this profile admits
+x = 1 ? /\u{110000}/u : 0 => THROWS SyntaxError: the evaluated source is not a program this profile admits
+x = [/a)/] => THROWS SyntaxError: the evaluated source is not a program this profile admits
+[/a)\/(/].length (invalid: an unbalanced parenthesis) => THROWS SyntaxError: the evaluated source is not a program this profile admits
+typeof /a/g => "object"
+[/a\/(b)/].length => 1
+eval("/\\<LF>/") (direct) => THROWS SyntaxError: the evaluated source is not a program this profile admits
+(0, eval)("/\\<LF>/") (indirect) => THROWS SyntaxError: the evaluated source is not a program this profile admits
+eval("/ab\\<U+2028>/") (direct) => THROWS SyntaxError: the evaluated source is not a program this profile admits
+eval("/ab[c\\<LF>]/") (direct) => THROWS SyntaxError: the evaluated source is not a program this profile admits
+eval("/a[bc\\") (direct) => THROWS EvalError: the artifact provider did not supply a program: HostFailure/HostCapabilityFaulted
+eval("\"a<LF>b\"") (direct; a string literal, for contrast) => THROWS SyntaxError: the evaluated source is not a program this profile admits>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl11/s9-division.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl11  e.g. test/sjl11/s9-division.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl11/s9-division.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

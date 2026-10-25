@@ -1,0 +1,5 @@
+# b1h-greedy-1048000: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     /a*/ exec on a^1048000: index, length
+    VM: @0 length 1048000
+    JS: @0 length 1048000
+# JS: exit=0

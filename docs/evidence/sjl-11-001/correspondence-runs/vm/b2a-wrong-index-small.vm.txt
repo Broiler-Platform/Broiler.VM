@@ -1,0 +1,2 @@
+/(?:(a+)+b|a*c)/u on a^16c => @0 length 17
+/(?:(a+)+b|a*c)/ on a^16c => @0 length 17

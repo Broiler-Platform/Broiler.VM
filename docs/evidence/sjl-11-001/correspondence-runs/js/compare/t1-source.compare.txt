@@ -1,0 +1,89 @@
+# t1-source: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+!    /\u{61}/u.source (literal)
+    VM: "\u005cu{61}"
+    JS: "\u005cu0061"
+     new RegExp("\\u{61}", "u").source
+    VM: "\u005cu{61}"
+    JS: "\u005cu{61}"
+!    /\u{1F600}/u.source (literal)
+    VM: "\u005cu{1F600}"
+    JS: "\u005cud83d\u005cude00"
+     new RegExp("\\u{1F600}", "u").source
+    VM: "\u005cu{1F600}"
+    JS: "\u005cu{1F600}"
+!    /\u{D83D}/u.source (literal)
+    VM: "\u005cu{D83D}"
+    JS: "\u005cu{d83d}"
+     new RegExp("\\u{D83D}", "u").source
+    VM: "\u005cu{D83D}"
+    JS: "\u005cu{D83D}"
+!    /[\u{61}-\u{7A}]/v.source (literal)
+    VM: "[\u005cu{61}-\u005cu{7A}]"
+    JS: "[\u005cu0061-\u005cu007a]"
+     new RegExp("[\\u{61}-\\u{7A}]", "v").source
+    VM: "[\u005cu{61}-\u005cu{7A}]"
+    JS: "[\u005cu{61}-\u005cu{7A}]"
+     /\u{3}/.source (literal, no u)
+    VM: "\u005cu{3}"
+    JS: "\u005cu{3}"
+     /\\u{61}/u.source (literal, escaped backslash)
+    VM: "\u005c\u005cu{61}"
+    JS: "\u005c\u005cu{61}"
+     /a(b)c/.source
+    VM: "a(b)c"
+    JS: "a(b)c"
+!    /[/]/.source
+    VM: "[\u005c/]"
+    JS: "[/]"
+!    new RegExp("[/]").source
+    VM: "[\u005c/]"
+    JS: "[/]"
+     new RegExp("/").source
+    VM: "\u005c/"
+    JS: "\u005c/"
+     new RegExp("\\/").source
+    VM: "\u005c/"
+    JS: "\u005c/"
+     new RegExp("a/b").toString()
+    VM: "/a\u005c/b/"
+    JS: "/a\u005c/b/"
+     new RegExp("\n").source
+    VM: "\u005cn"
+    JS: "\u005cn"
+     new RegExp("\r").source
+    VM: "\u005cr"
+    JS: "\u005cr"
+     new RegExp("\u2028").source
+    VM: "\u005cu2028"
+    JS: "\u005cu2028"
+     new RegExp("\u2029").source
+    VM: "\u005cu2029"
+    JS: "\u005cu2029"
+!    new RegExp("\\\n").source (backslash, LF)
+    VM: "\u005c\u000a"
+    JS: "\u005cn"
+!    new RegExp("\\\u2028").source (backslash, LS)
+    VM: "\u005c\u2028"
+    JS: "\u005cu2028"
+     new RegExp("\\\n").test("\n")
+    VM: true
+    JS: true
+     new RegExp("").source
+    VM: "(?:)"
+    JS: "(?:)"
+     RegExp.prototype.source
+    VM: "(?:)"
+    JS: "(?:)"
+     RegExp.prototype.toString()
+    VM: "/(?:)/"
+    JS: "/(?:)/"
+     new RegExp("\ud83d").source
+    VM: "\ud83d"
+    JS: "\ud83d"
+     new RegExp("\u0085").source
+    VM: "\u0085"
+    JS: "\u0085"
+     round trip of new RegExp("[/]\n/", "g")
+    VM: true
+    JS: true
+# JS: exit=0

@@ -1,0 +1,5 @@
+# b7b-compile-props-control: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     compile
+    VM: compiled
+    JS: compiled
+# JS: exit=0

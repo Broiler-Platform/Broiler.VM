@@ -1,0 +1,8 @@
+(?:a|a)x12b /u on a^12 => null elapsedMs 14
+(?:a|a)x12b / on a^12 => null elapsedMs 1
+(?:a|a)x16b /u on a^16 => null elapsedMs 9
+(?:a|a)x16b / on a^16 => null elapsedMs 6
+(?:a|a)x20b /u on a^20 => null elapsedMs 103
+(?:a|a)x20b / on a^20 => null elapsedMs 96
+(?:a|a)x22b /u on a^22 => null elapsedMs 435
+(?:a|a)x22b / on a^22 => null elapsedMs 302

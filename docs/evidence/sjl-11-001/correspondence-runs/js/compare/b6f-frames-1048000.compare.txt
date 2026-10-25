@@ -1,0 +1,5 @@
+# b6f-frames-1048000: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+     /(?:ab)*/ exec on (ab)^1048000
+    VM: @0 length 2096000
+    JS: @0 length 2096000
+# JS: exit=0

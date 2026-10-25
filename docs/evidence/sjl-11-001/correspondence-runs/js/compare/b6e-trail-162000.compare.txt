@@ -1,0 +1,6 @@
+# b6e-trail-162000: marks VM-vs-JS, JS culture; then the label, the VM answer, the JS answers
+# VM ended before printing: NO OUTPUT; the verdict line: FAIL        test/sjl11/b6e-trail-162000.js [raw]  the invocation answered ProfileFault/AllowanceExhausted and carried no payload
+?    /(?:(a)(b)(c))*/ exec on (abc)^162000
+    VM: (no line)
+    JS: @0 length 486000 ["a", "b", "c"]
+# JS: exit=0
