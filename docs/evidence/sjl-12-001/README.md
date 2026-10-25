@@ -336,13 +336,13 @@ part A, and no other reading is taken after a run.
     `BinderChecks` hold such sources since `964b460`, each with its list before item 4 and after. In each, the
     `await`'s 2104 becomes the parser's 2101 at the same place. Where the binder pass reported another diagnostic
     after the 2104, that diagnostic is absent as well, because the parser refused and the binder did not run:
-    - `[2104@1:30]` became `[2101@1:30]`, the plainest,
-      ``async function g() { (a = `${await 1}`) => a; }``; and in a module, `[2104@1:9]` became `[2101@1:9]`;
-    - `[2207@1:1 2104@1:37]` became `[2101@1:37]`, and `[2104@1:30 2207@1:62]` became `[2101@1:30 2102@1:47]`:
-      the binder's 2207 for a `break` is absent, and in the second the parser's recovery from the body it stops
-      reading adds a 2102 the base did not report;
-    - `[2104@1:30 2101@1:36]` became `[2101@1:30]`, and `[2104@1:31 2101@1:44]` became `[2101@1:31]`: the 2101
-      the binder reports for a regular expression's flags is absent.
+    - with the `await` alone, the plainest, ``async function g() { (a = `${await 1}`) => a; }``, went from
+      `[2104@1:30]` to `[2101@1:30]`, and its module form from `[2104@1:9]` to `[2101@1:9]`;
+    - with a `break` the binder refuses, `[2207@1:1 2104@1:37]` became `[2101@1:37]`, and
+      `[2104@1:30 2207@1:62]` became `[2101@1:30 2102@1:47]`: the binder's 2207 is absent, and in the second the
+      parser's recovery from the body it stops reading adds a 2102 the base did not report;
+    - with a regular expression whose flags the binder refuses, `[2104@1:30 2101@1:36]` became `[2101@1:30]`, and
+      `[2104@1:31 2101@1:44]` became `[2101@1:31]`: the binder's 2101 for the flags is absent.
   - **A 2103 for nesting or tree depth carried through a substitution**, under either bound edge 2 names, in an
     input the base refused for another reason. The parser refuses the template or the operand past the bound and
     reads on (`ParseTemplate` returns an empty template), so the list gains a 2103 before the base's diagnostics.
