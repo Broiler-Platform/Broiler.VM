@@ -331,11 +331,11 @@ part A, and no other reading is taken after a run.
 **Edge 1: an input the base already refused, whose diagnostic list decision D15 changes.**
 - **What it is.** Item 4's parser reads a template's substitutions in place, so the nesting depth, the tree depth
   and the parameter context carry into them (decision D15). An input refused at both commits that holds such a
-  substitution can then gain a refusal of the parser's before the diagnostics the base gave it, in two shapes.
+  substitution can then be refused by the parser inside it, which changes its diagnostic list, in two shapes.
   - **A 2101 for a `yield` or an `await` in a substitution in formal parameters.** The checks rows of
     `BinderChecks` hold such sources since `964b460`, each with its list before item 4 and after. In each, the
     `await`'s 2104 becomes the parser's 2101 at the same place. Where the binder pass reported another diagnostic
-    after the 2104, that diagnostic is absent as well, because the parser refused and the binder did not run:
+    besides the 2104, that diagnostic is absent as well, because the parser refused and the binder did not run:
     - with the `await` alone, the plainest, ``async function g() { (a = `${await 1}`) => a; }``, went from
       `[2104@1:30]` to `[2101@1:30]`, and its module form from `[2104@1:9]` to `[2101@1:9]`;
     - with a `break` the binder refuses, `[2207@1:1 2104@1:37]` became `[2101@1:37]`, and
@@ -344,9 +344,12 @@ part A, and no other reading is taken after a run.
     - with a regular expression whose flags the binder refuses, `[2104@1:30 2101@1:36]` became `[2101@1:30]`, and
       `[2104@1:31 2101@1:44]` became `[2101@1:31]`: the binder's 2101 for the flags is absent.
   - **A 2103 for nesting or tree depth carried through a substitution**, under either bound edge 2 names, in an
-    input the base refused for another reason. The parser refuses the template or the operand past the bound and
-    reads on (`ParseTemplate` returns an empty template), so the list gains a 2103 before the base's diagnostics.
-    No checks row holds this shape. It follows from the same carry as edge 2.
+    input the base refused for another reason. The parser refuses at the place inside the substitution where the
+    depth passes the bound, and, as in the 2101 shape, nothing after the parse runs. So a base list the lowering
+    gave is absent after, and the parser's list stands in its place. A base list the parser gave keeps only the
+    diagnostics the parse still reaches, in the order it reports them, with the 2103 among them. A 2102 of the
+    parser's recovery from the 2103 follows it, as edge 2 says of the nesting bound's. No checks row holds this
+    shape. It follows from the same carry as edge 2.
 - **Neither S nor T.** T names an input accepted at the base, and this one is refused at both commits.
   - The new 2101 or 2103 is the parser's, so it is not S4's early error "the base did not report, because the
     lowering left a construct after its first refusal in it", and neither is a 2102 of the parser's recovery.
