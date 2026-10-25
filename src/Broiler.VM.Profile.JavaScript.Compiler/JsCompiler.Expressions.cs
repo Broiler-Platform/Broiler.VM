@@ -295,10 +295,10 @@ public sealed partial class JsCompiler
                 // this component has: an `Await` in a unit carrying no async flag is refused by
                 // THIS HOST'S OWN VERIFIER, on bytes THIS HOST'S OWN lowering produced, which is
                 // the internal-consistency failure roadmap section 3.4 names. The parser's
-                // `[Await]` contexts keep it out of every unit but one a template substitution's own
-                // parse reaches, and the binder refuses what reaches it, under 2104, before any of
-                // the unit is lowered (SJL-12.6 item 2, JSD-0080 decision D12); here the lowering
-                // only asserts it.
+                // `[Await]` contexts keep it out of every unit - a template substitution's included,
+                // since SJL-12.6 item 4 has the parser read it in place (JSD-0080 decision D15) - and
+                // the binder refuses what would reach it, under 2104, before any of the unit is
+                // lowered (SJL-12.6 item 2, decision D12); here the lowering only asserts it.
                 if ((buffer.Flags & JsFormat.FunctionFlags.Async) == 0)
                 {
                     throw BinderAdmitted(awaited.Span, "an `await` outside an async function");
