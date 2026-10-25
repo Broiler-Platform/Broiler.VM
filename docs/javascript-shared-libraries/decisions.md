@@ -946,7 +946,11 @@ and `Parser` packages?
   - exact literal values;
   - no ambient state, under rule N12;
   - deterministic in principle. In practice its hoisting order relies on dictionary insertion
-    order, which backend stage JSB-1, not started, is meant to fix.
+    order, which backend stage JSB-1, not started, is meant to fix. *(Noted 2026-10-25, at SJL-12.6's
+    records, and the fact kept as written, as the decision read it: since `066abef`
+    (Broiler.VM#163) the wide hoisting order is the source's, and the two checks rows JSB-1's gate
+    names exist. [JSC-319](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319)
+    records them, and no record has judged JSB-1.)*
 - **Broiler.JS's tree:**
   - mutable, public classes;
   - partly desugared at parse time;

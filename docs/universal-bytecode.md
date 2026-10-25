@@ -439,7 +439,12 @@ it blocks the extraction record's filing, and everything built on it becomes wor
   when the roadmap said it would be.
 - **Deterministic lowering** is required of both translators, and stage UBC-3 asserts it over the
   whole wide corpus before any emitter consumes a byte — which is the ordering JSB-1 asked for and did
-  not get.
+  not get. *(Noted 2026-10-25, and the sentence kept as written: "and did not get" was true when it was
+  written. JSB-1's source order and its standing rows were built before UBC-3, at the shared JavaScript
+  libraries programme's SJL-12.6 item 3, `066abef` (Broiler.VM#163), and UBC-3 re-runs them, as the
+  [roadmap](universal-bytecode.roadmap.md#10-milestone-ubc-3--the-javascript-family)'s UBC-3.1 note of the
+  same date says. No record has judged JSB-1:
+  [JSC-319](../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319).)*
 
 ### 3.5 The WebAssembly plan's own refusals — asked to move, each by name
 
@@ -1568,7 +1573,10 @@ not acceptance: a milestone whose every clause were met would still be unaccepte
   recorded (there is one format and it is not this family's); the wide lowering is deterministic over
   the whole wide and module corpora, compiled twice and compared byte for byte, **before** any emitter
   consumes its output, with the global lexical hoisting order derived from source and its negative
-  control watched (JSB-1's gate, met here); every `JsOpcode` and `JavaScriptOpcode` member has a row in
+  control watched (JSB-1's gate, met here *(noted 2026-10-25, and "met here" kept as written: what that
+  gate names was built at the shared JavaScript libraries programme's SJL-12.6 item 3, `066abef`, before
+  this milestone, and UBC-3 re-runs it, as the roadmap's UBC-3.1 note of the same date says)*); every
+  `JsOpcode` and `JavaScriptOpcode` member has a row in
   Appendix B's table or a recorded reason for its absence; the retained corpus is re-based entry by
   entry with each old answer carried or its new answer recorded, and N5 to N8 hold in both directions
   over the result; **the whole pinned test262 suite driven under the wide manifest by

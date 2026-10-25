@@ -32,6 +32,11 @@ No collector took the bases: part A's was imported by hand, as
 *(Added 2026-10-20.)* The bundle now also holds part B's run at the ordering commit, in `after/` (section 5).
 Nothing here is a verdict still: part B is decided when its run at the after commit has been taken.
 
+*(Added 2026-10-25.)* SJL-12.6's four items have landed, and the after commit exists (section 1). Section 3 now
+also names, before any after run, how the rule's classes read the edges SJL-12.6 item 4's review found, under
+"Readings named before the after runs". No after run had been taken when it was written. Nothing here is a verdict
+still.
+
 **SJL-12 is not an area verdict.** It applies no extraction gate and files no X1 to X7 verdict. The frontend area's
 verdict is SJL-13.1's (JSD-0080 decision D1).
 
@@ -53,6 +58,11 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
   the after commit do not exist yet" was true when it was written. The ordering commit is
   `066abefea4351fb49bd8bf8e823fbdc7aac560de`, the default-branch merge of Broiler.VM#163, which lands SJL-12.6 item
   3, deterministic ordering, alone. The after commit does not exist yet.
+  *(Added 2026-10-25, when the readings named before the after runs were committed, section 3.)* "The after
+  commit does not exist yet" was true when it was written. The after commit is
+  `1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f`, the default-branch merge of Broiler.VM#167, which lands SJL-12.6
+  item 4, the last of its four items. Items 1 and 2 landed between the two, in `3fa4b39` (Broiler.VM#165) and
+  `daa92eb` (Broiler.VM#166). No run has been taken at the after commit.
 
 **The rule has five parts**, each deciding alone.
 - **Part A** takes test262 in both forms with the hosted workflow, at the rule commit and at the after commit
@@ -122,6 +132,10 @@ totals decide nothing.
 **Written 2026-10-20, at SJL-12.4**, with the parse corpus's copy and the slice compiler's `--parse-corpus` mode.
 Nothing here revises the rule. Each reading says how the rule's own words are read where the mode had to choose,
 or how a record the mode writes is read.
+
+*(Added 2026-10-25.)* The last subsection, "Readings named before the after runs", was added at SJL-12.6's
+records, before any after run. It is in this section because this is where the bundle names its readings before
+the runs they read.
 
 **What had been run when this section was written.**
 - No base run of part B or part C had been taken for this bundle. Those are taken at the corpus commit.
@@ -283,6 +297,171 @@ follows.
   - A run that loses its process gives no hash for the compilations it did not finish, and is read the same way.
   - `eng/compare-parse-corpus.py determinism` counts each such compilation as one whose four results are not one
     accepted hash.
+
+### Readings named before the after runs (SJL-12.6, 2026-10-25)
+
+**Written 2026-10-25, at SJL-12.6's records**, after its four items had landed and before any run at the after
+commit. Nothing here revises the rule: [`decision-rule-area.md`](decision-rule-area.md) is the rule commit's,
+unchanged. Each reading says how the rule's own words read an edge SJL-12.6 item 4's review found, or says that
+they cannot and names the edge a finding against JSD-0080. Either way a row of it in the after runs is reported,
+and no reading chosen after a run admits it.
+
+**What had been run when this section was written.**
+- No run of any part had been taken at the after commit. Part B's run at the ordering commit (section 5) is the
+  bundle's only run after its bases.
+- Item 4's local pre-checks were taken at its change's head, `3902f6f`, whose tree is the after commit's. They
+  compiled the corpus in part B's shape, and the pinned suite's directories of parse- and resolution-phase negative
+  tests in part A's bytecode form. They are not this bundle's runs, and it does not retain them. Each population
+  below is what those pre-checks found; the after runs decide.
+
+**How part A reads a changed verdict of neither kind.** Part A's C1 is "a variant that does not pass at the base and
+passes after, of one of two kinds JSD-0080 names before any run", V1 and V2, and its last clause says that "a C1
+row of neither kind is recorded in the bundle as a finding against JSD-0080". This bundle reads that clause as
+saying what the bundle records of such a row, and not as a third kind the class admits:
+- the class is defined by its two kinds;
+- JSD-0080's decision D39 gives as its reason that "the only verdicts it may improve are the ones this record
+  names";
+- and the rule's own account of how part A is read says "A row the comparison cannot classify is a regression,
+  even when the totals improve".
+
+So a changed verdict of neither kind is not in C1 for part A's MET clause. It is listed unclassified and is a
+regression, and the bundle also records it as a finding against JSD-0080. Edges 1 and 2 (ii) below are read so in
+part A, and no other reading is taken after a run.
+
+**Edge 1: an input the base already refused, whose diagnostic list decision D15 changes.**
+- **What it is.** Item 4's parser reads a template's substitutions in place, so the nesting depth, the tree depth
+  and the parameter context carry into them (decision D15). An input refused at both commits that holds such a
+  substitution can then be refused by the parser inside it, which changes its diagnostic list, in two shapes.
+  - **A 2101 for a `yield` or an `await` in a substitution in formal parameters.** The checks rows of
+    `BinderChecks` hold such sources since `964b460`, each with its list before item 4 and after. In each, the
+    `await`'s 2104 becomes the parser's 2101 at the same place. Where the binder pass reported another diagnostic
+    besides the 2104, that diagnostic is absent as well, because the parser refused and the binder did not run:
+    - with the `await` alone, the plainest, ``async function g() { (a = `${await 1}`) => a; }``, went from
+      `[2104@1:30]` to `[2101@1:30]`, and its module form from `[2104@1:9]` to `[2101@1:9]`;
+    - with a `break` the binder refuses, `[2207@1:1 2104@1:37]` became `[2101@1:37]`, and
+      `[2104@1:30 2207@1:62]` became `[2101@1:30 2102@1:47]`: the binder's 2207 is absent, and in the second the
+      parser's recovery from the body it stops reading adds a 2102 the base did not report;
+    - with a regular expression whose flags the binder refuses, `[2104@1:30 2101@1:36]` became `[2101@1:30]`, and
+      `[2104@1:31 2101@1:44]` became `[2101@1:31]`: the binder's 2101 for the flags is absent.
+  - **A 2103 for nesting or tree depth carried through a substitution**, under either bound edge 2 names, in an
+    input the base refused for another reason. The parser refuses at the place inside the substitution where the
+    depth passes the bound, and, as in the 2101 shape, nothing after the parse runs. So a base list the lowering
+    gave is absent after, and the parser's list stands in its place. A base list the parser gave keeps only the
+    diagnostics the parse still reaches, in the order it reports them, with the 2103 among them. A 2102 of the
+    parser's recovery from the 2103 follows it, as edge 2 says of the nesting bound's. No checks row holds this
+    shape. It follows from the same carry as edge 2.
+- **Neither S nor T.** T names an input accepted at the base, and this one is refused at both commits.
+  - The new 2101 or 2103 is the parser's, so it is not S4's early error "the base did not report, because the
+    lowering left a construct after its first refusal in it", and neither is a 2102 of the parser's recovery.
+  - The base's 2104 is absent after because the parser refused, not because "the binder pass refused first", and
+    it is not a diagnostic decision D12 keeps in the lowering, so S3 does not reach it. The 2207 and the
+    regular-expression 2101 that are absent after are not codes S3 lists either.
+  - S1 and S2 keep the codes.
+
+  So such a row is "a diagnostic difference outside S and T", which the rule makes a regression.
+- **A consequence of decision D15 that the rule does not list.** D15 lists acceptance changes. It does not say that
+  an input already refused changes its list. A row of this edge in the after run is reported unclassified, and the
+  bundle records it as a finding against JSD-0080 as well. Neither the reading nor the finding admits it.
+- **Part A.** A negative variant of this edge whose verdict changes, refused at the base with a first 2104 and
+  after with the parser's 2101 or 2103 first, is neither V1 (the base did not accept it) nor V2 (its first
+  diagnostic after is the parser's, not one the binder pass reports). It is a changed verdict of neither kind,
+  read as stated above: not admitted, and a finding against JSD-0080. A variant refused at both commits with any
+  other first diagnostic keeps its verdict, and part A compares verdicts.
+- **How it is told.** From the source and the message, at the line and column of the after list's new diagnostic:
+  - a 2101 at a `yield` or an `await` inside a template substitution that lies in a formal parameter list;
+  - a 2103 whose place lies inside a template substitution, as edge 2 tests it, with its bound read from its
+    message as edge 2 says.
+
+  The after comparison's classifier tests that, leaves such a row unclassified and attributes it to this edge. A
+  classifier that applied S's tests by code and position alone would put the plainest rows in S3 and S4, which
+  this reading refuses.
+- **Population: empty.** At item 4's head, the corpus's diagnostic differences from the base were item 2's, row
+  for row, so no input of the corpus moved under item 4. Item 4's part A pre-check, against a run at `f6facc2`,
+  before item 2, found no negative variant whose verdict or first diagnostic changed. Item 4's scan of the pinned
+  suite's `test/` for a substitution that begins with `yield` or `await` found such a substitution only in
+  `language/expressions/yield/rhs-template-middle.js`, in a generator's body, not in parameters. The commit that
+  shows the edge is `964b460`.
+
+**Edge 2: T's "2103 for template nesting past the nesting bound", and V1's "template nesting past the parser's
+nesting bound".**
+- **(i) Nesting counted through a substitution is read as T, and as V1.** The base's sub-parse began each
+  substitution at depth zero. Item 4 carries the depth into it, so the nesting around a template and the nesting
+  inside its substitution add up toward the nesting bound, whether the nesting inside is another template or
+  parentheses. The 2103 is the nesting bound's, for nesting that passes through a template, which is the
+  correction decision D15 lists: "template nesting counts toward the nesting bound, and past it is refused with
+  2103". So an input accepted at the base and refused after with that 2103 is in T, and a negative variant so
+  refused is V1. The commits that show it are `964b460` (`TemplateChecks`' row for templates nested in templates)
+  and `3902f6f` (its row for parentheses around a template and inside its substitution adding up). This is also
+  the edge the review named "nesting adding through a substitution".
+- **(ii) The tree-depth bound's 2103 is not read as T or V1, because the rule's words cannot bear it.** Item 4 also
+  carries the tree depth into a substitution. So a chain inside a substitution is charged from the depth the chain
+  around the template has reached, as a parenthesised operand's is (JSD-0080 decision D17's reason). An input
+  accepted at the base can then be refused after, with the 2103 of the tree-depth bound.
+  - T names "the nesting bound" and V1 "the parser's nesting bound". This rule names the two bounds apart, in part
+    D's "a source at the tree-depth bound" beside "a source nesting templates past the nesting bound", and so do
+    JSD-0080's limits. Decision D15 lists no tree-depth correction, though its account of the parser says that the
+    tree depth carries.
+  - So such a row is outside T, "an outcome that moves outside T", which the rule makes a regression in part B. In
+    part A, a negative variant so refused is a changed verdict of neither kind, read as stated above, and is not
+    admitted. In both, the bundle records it as a finding against JSD-0080, whose
+    listed corrections leave it out, and whose status says that no other change either engine makes at SJL-12
+    "moves an input between accepted and refused by the whole compile".
+  - The commit that shows it is `964b460`, whose `TemplateChecks` row was renamed and narrowed in `3902f6f`: "a
+    substitution is charged toward the tree-depth bound as a parenthesised operand is".
+- **How the two bounds are told apart: by the source.** The report holds codes and positions, and both bounds
+  report 2103. For each row refused after with a 2103 the base did not report, whether the base accepted the input
+  or refused it for another reason (edge 1), the after comparison compiles the row's input again at the after
+  commit, as the mode compiled it (its text, goal, variant and request), with a program of its own, because part B
+  holds the mode's source file unchanged. It reads the message the wide parser gives with that 2103:
+  - the nesting bound's says the source nests deeper than the levels "these parse options allow", from `JsParser`'s
+    `Enter` and `EnterNesting`, and from `ParseTemplate` for a template past the bound;
+  - the tree-depth bound's says the source builds a tree deeper than the levels "this compiler walks", from
+    `Deepen`.
+
+  Only a nesting bound's 2103 is read under (i), and only where the nesting at that place passes through a template
+  substitution. WP7 tests that from the source text: the 2103's line and column lie inside a template substitution,
+  after its `${` and before the `}` that closes it. A template past the bound is refused at its backtick, which lies
+  inside the substitution of the template around it. Outside every substitution, item 4 changes no depth, so an
+  input the base accepted gains a nesting-bound 2103 only inside one. The lowering's own 2103s, for evaluated source
+  past the scope-depth ceiling and for a JSON module too deep to read, are at line 0, column 0, and neither is a
+  template correction.
+- **T and V1 are read on the after list's first diagnostic.** The parser's recovery from a nesting-bound 2103 adds
+  a 2102 for each parenthesis open inside the substitution, as it does for parentheses past the bound outside a
+  template (`TemplateChecks`' remarks since `3902f6f`). Those 2102s follow the 2103 in the after list. They are
+  part of the one refusal and are not read as differences of their own. So an input is in T when its after list's
+  first diagnostic is the 2101 or the nesting bound's 2103 that T names, and a negative variant is V1 when its
+  first diagnostic after is. An input whose first diagnostic after is neither is not in T.
+- **Population: empty, for (i) and (ii) alike.** At item 4's head, every input of the corpus had the outcome it had
+  at the base, in B1 to B3, and the negative directories of the pinned suite changed no verdict.
+
+**Records, for after the runs.** These are not readings. They change no class, and none is judged here.
+- **The mode's stale remark.** `ParseCorpus.cs`'s remark on `WorkerStackBytes` says that the module walk asks
+  `JsCompiler.Requests` on the caller's stack, "the one place a compilation of this run does not get the compiler's
+  own declared stack". Since `2c590e4`, `Requests` parses inside `CompilationStack.Run`, so the remark is stale. It
+  is kept because part B's configuration holds the mode's source file unchanged between the corpus commit and the
+  after commit. A change after this bundle's runs corrects it.
+- **The structured mode's memory.** Within the nesting bound, the runs of item 4's structured mode hold up to the
+  nesting bound times the template's length, and are made while tokenizing, before the parse. So a source that the
+  parse would refuse before a large, deeply nested template now pays for the runs first. The base's sub-parses also
+  copied the text below each level, lazily and with no bound. No part of this rule reads memory, and SJL-12
+  measures nothing (`964b460`, and `SliceTokenizer`'s remarks since `fb6226e`).
+- **The parser's left-operand gap.** The parser does not charge a left operand's own spine to the chain it begins.
+  A chain whose first operand is a parenthesised chain, or a template whose substitution holds one, compiles at the
+  base and after with a tree deeper than the tree-depth bound (`TemplateChecks`' remarks since `3902f6f`). The gap
+  predates SJL-12 and lies outside SJL-12.6 item 4. It is recorded so that a reader of part D's rows knows what
+  they do not hold.
+
+**Two notes from SJL-12.6 item 3**, which Broiler.VM#163 left for these records.
+- **Class O's words are narrower than what the change could move.** O names bytes "located in the order of the
+  global lexical declarations or of the lexical names of the eval declaration row". The two dictionaries item 3
+  replaced also decided the interning of those names, the lexical names of the script-declarations row and an
+  evaluated program's lexical slots. It is moot: at the ordering commit no byte differs from the base (section 5),
+  so class O is empty whatever the after run shows.
+- **What part C's checks row compiles.** Part C names the row "the wide lowering is deterministic". JSD-0080's
+  decision D14 says the row compiles "the retained wide and module corpora", and JSB-1's gate says "the wide and
+  module corpora". How the row reads them is recorded in
+  [JSC-319](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-319): the retained corpus's
+  wide and module rows rebuilt by their producer, with the parse corpus's stored inputs and the row's own probes.
 
 ## 4. The bases (2026-10-20)
 
