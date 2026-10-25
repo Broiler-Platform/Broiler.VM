@@ -12,15 +12,22 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Each correction JSD-0080 lists has a row, and each row is one a run of the base could not
-/// pass.</b> The wide parser parsed a substitution with a parser of its own, which started at depth
-/// zero, at tree depth zero and outside any parameter list: so <c>${yield}</c> and <c>${await 1}</c>
-/// compiled in formal parameters, nesting templates did not count toward the nesting bound, and a
-/// substitution's tree did not count toward the tree-depth bound. Templates nested a few thousand deep
-/// ended the process in that parser, and a hundred thousand deep in the tokenizer's scan, which both
-/// front ends read; <c>JsCompiler.Requests</c> parsed on its caller's stack, so a module nested within
-/// the bound ended the process from a thread with a small one, and a 25 KB module nesting templates
-/// from a main thread.
+/// <b>Each correction JSD-0080 lists has a row that a run of the base could not pass.</b> The wide
+/// parser parsed a substitution with a parser of its own, which started at depth zero, at tree depth
+/// zero and outside any parameter list: so <c>${yield}</c> and <c>${await 1}</c> compiled in formal
+/// parameters, nesting did not count through a substitution toward the nesting bound - templates
+/// nested in templates, or parentheses around a template and inside its substitution - and a
+/// substitution's chain was not charged toward the tree-depth bound from the chain around it.
+/// Templates nested a few thousand deep ended the process in that parser, and a hundred thousand deep
+/// in the tokenizer's scan, which both front ends read; <c>JsCompiler.Requests</c> parsed on its
+/// caller's stack, so a module nested within the bound ended the process from a thread with a small
+/// one, and a 25 KB module nesting templates from a main thread.
+/// </para>
+/// <para>
+/// <b>The other rows guard answers the base already gave</b>: the two accepted shapes, where nothing
+/// moves; the two rows of the places a substitution's refusals name, which the base's arithmetic of
+/// moving a sub-parse's positions back gave too; and the half of each bound that compiles. They are
+/// here so that what moved is shown to be only what is listed.
 /// </para>
 /// <para>
 /// <b>Where the base ended the process, a run that reaches the row's assertion at all is a run in
@@ -59,7 +66,8 @@ internal static class TemplateChecks
             "async function f(a = async () => `${await 1}`) {}");
 
         yield return NestingCountsTowardTheBound();
-        yield return ASubstitutionsTreeCountsTowardTheTreeDepthBound();
+        yield return NestingAddsUpThroughASubstitution();
+        yield return ASubstitutionIsChargedAsAParenthesisedOperandIs();
 
         // the places a substitution's refusals name are where they stand in the source: the parser's,
         // from a run tokenized in place, and the lexer's, reported when the parse reaches the substitution
@@ -100,26 +108,62 @@ internal static class TemplateChecks
     }
 
     /// <summary>
-    /// A substitution's tree counts toward the tree-depth bound with the tree around it: two chains of
-    /// 6,000 additions, one in a substitution that is the other's last operand, are refused, where two of
-    /// 4,000 compile.
+    /// Nesting counts through a substitution: parentheses around a template and inside its substitution
+    /// add up toward the nesting bound, so under the default 64, 31 around and 30 inside compile, as do
+    /// 30 and 31, and 31 and 31 are refused with 2103.
     /// </summary>
     /// <remarks>
-    /// Each half is within the bound alone, which is all the base's sub-parse saw, so it compiled a tree
-    /// deeper than the bound every walk of the compiler is derived against (JSD-0080 decision D17).
+    /// The base's sub-parse began a substitution at depth zero, so it compiled 31 and 31, and 40 and 40.
+    /// The nesting past the nesting bound that JSD-0080 decision D15 corrects is this sum, counted
+    /// through the substitution, as much as templates nested in templates. The 2103 names the
+    /// <c>1</c> the innermost parenthesis holds; the parser's recovery from it then adds a 2102 for each
+    /// parenthesis open inside the substitution, as it does for parentheses past the bound outside a
+    /// template, so the row asks only the first.
     /// </remarks>
-    private static (string, bool, string) ASubstitutionsTreeCountsTowardTheTreeDepthBound()
+    private static (string, bool, string) NestingAddsUpThroughASubstitution()
+    {
+        var atTheBound = JsCompiler.Compile(Around(31, 30), SliceParseOptions.Script);
+        var otherWay = JsCompiler.Compile(Around(30, 31), SliceParseOptions.Script);
+        var past = JsCompiler.Compile(Around(31, 31), SliceParseOptions.Script);
+
+        return (
+            "template: nesting around a template and inside its substitution adds up toward the nesting bound",
+            atTheBound.Succeeded && otherWay.Succeeded && !past.Succeeded && First(past) == "2103@1:74",
+            $"31 around and 30 inside {Outcome(atTheBound)}; 30 and 31 {Outcome(otherWay)}; 31 and 31 " +
+                $"refused with `{First(past)}` first (expected 2103@1:74), {past.Diagnostics.Count} in all");
+    }
+
+    /// <summary>
+    /// A substitution is charged toward the tree-depth bound as a parenthesised operand is: two chains of
+    /// 6,000 additions, one in a substitution that is the other's last operand, are refused, as they are
+    /// with a parenthesis in the template's place, where two of 4,000 compile.
+    /// </summary>
+    /// <remarks>
+    /// The parser charges the spine its builders grow and parses a right operand from the depth the chain
+    /// has reached, so the substitution's chain begins at 6,000 and passes the bound, as the same chain in
+    /// parentheses did at the base too. The base's sub-parse began a substitution at zero and compiled it
+    /// (JSD-0080 decision D17). The row is about that charge and not about how deep the tree is: the
+    /// template is two levels below the root. With the template or the parenthesis as the chain's first
+    /// operand instead, both compile, at the base and now, because a left operand's own spine is not
+    /// charged to the chain it begins - a gap in the parser's accounting that predates SJL-12.6 item 4 and
+    /// lies outside it.
+    /// </remarks>
+    private static (string, bool, string) ASubstitutionIsChargedAsAParenthesisedOperandIs()
     {
         var within = JsCompiler.Compile(
             "var x = " + Chain(4_000) + " + `${" + Chain(4_000) + "}`;", SliceParseOptions.Script);
         var past = JsCompiler.Compile(
             "var x = " + Chain(6_000) + " + `${" + Chain(6_000) + "}`;", SliceParseOptions.Script);
+        var parenthesised = JsCompiler.Compile(
+            "var x = " + Chain(6_000) + " + (" + Chain(6_000) + ");", SliceParseOptions.Script);
 
         return (
-            "template: a substitution's tree counts toward the tree-depth bound",
-            within.Succeeded && !past.Succeeded && Answer(past) == "2103@1:12016",
-            $"4,000 and 4,000 {(within.Succeeded ? "compiled" : "refused `" + Answer(within) + "`")}; " +
-                $"6,000 and 6,000 `{Answer(past)}` (expected 2103@1:12016)");
+            "template: a substitution is charged toward the tree-depth bound as a parenthesised operand is",
+            within.Succeeded && !past.Succeeded && Answer(past) == "2103@1:12016" &&
+                !parenthesised.Succeeded && First(parenthesised) == "2103@1:12014",
+            $"4,000 and 4,000 {Outcome(within)}; 6,000 and 6,000 `{Answer(past)}` (expected 2103@1:12016); " +
+                $"with a parenthesis in the template's place, refused with `{First(parenthesised)}` first " +
+                "(expected 2103@1:12014)");
     }
 
     /// <summary>
@@ -202,9 +246,25 @@ internal static class TemplateChecks
     /// <summary>A left-associative chain of <paramref name="additions"/> additions of 1.</summary>
     private static string Chain(int additions) => "1" + string.Concat(Enumerable.Repeat("+1", additions));
 
+    /// <summary>
+    /// <c>var x = </c>, then <paramref name="around"/> parentheses around a template whose substitution is
+    /// <paramref name="inside"/> parentheses around <c>1</c>.
+    /// </summary>
+    private static string Around(int around, int inside) =>
+        "var x = " + new string('(', around) + "`${" + new string('(', inside) + "1" + new string(')', inside) +
+            "}`" + new string(')', around) + ";";
+
     /// <summary>The diagnostics of a compilation, each <c>code@line:column</c>, in the order reported.</summary>
     private static string Answer(JsCompilation compiled) =>
         string.Join(" ", compiled.Diagnostics.Select(d => (int)d.Code + "@" + d.Line + ":" + d.Column));
+
+    /// <summary>The first diagnostic of a compilation as <c>code@line:column</c>, or nothing.</summary>
+    private static string First(JsCompilation compiled) =>
+        compiled.Diagnostics.Select(d => (int)d.Code + "@" + d.Line + ":" + d.Column).FirstOrDefault() ?? string.Empty;
+
+    /// <summary>"compiled", or "refused" with the diagnostics.</summary>
+    private static string Outcome(JsCompilation compiled) =>
+        compiled.Succeeded ? "compiled" : "refused `" + Answer(compiled) + "`";
 
     /// <summary>One row: the script compiles to bytes with no diagnostic at all.</summary>
     private static (string, bool, string) Accepted(string name, string source)
