@@ -77,7 +77,8 @@ onto it.
     a JavaScript engine's closure (decision [SJL-D-6](../decisions.md#sjl-d-6) (c)).
 
 *(Read 2026-10-25, at SJL-11.1, by [JSD-0081](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md), which revises none of the eleven.)* Broiler.RegEx adopts
-them as owner conditions by the dated record of 2026-10-20 in its roadmap section 6, which numbers them R1 to R11;
+them as owner conditions by the dated record of 2026-10-20 in its roadmap section 6 (observed on Broiler.RegEx's
+branch `sjl-11-1-regex`, from `fca7a6d`, not yet merged), which numbers them R1 to R11;
 one not met by the end of SJL-11.2 refuses the area (decision D1). Four are read:
 - **Requirement 1's units are this family's**: one unit per instruction dispatched or character a run examines, a
   property class's weight per character tested, a back-reference's length and prefilter skips, prepaid in blocks of

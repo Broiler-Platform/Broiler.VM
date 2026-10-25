@@ -1772,7 +1772,8 @@ paths. SJL-11 stays `In progress`, every clause unmet, and may not meet its gate
 before SJL-3 meets SJL-3's. Decision SJL-D-14 is recorded. Next:
 - the merges of the three repositories' SJL-11.1 changes, Broiler.RegEx's first, by a merge commit, so that
   `c2aa771`, the commit both engines' adversarial manifests name, stays reachable from its default branch; each merge
-  commit then replaces the branch it was observed on, here, in JSD-0081 and in SJL-D-14's "Recorded by";
+  commit then replaces the branch it was observed on, here, in JSD-0081, in its row of the decisions index, in
+  SJL-D-14's "Recorded by" and in `areas/regexp.md`;
 - SJL-11.2 in Broiler.RegEx, and SJL-11.3's vectors.
 
 ---

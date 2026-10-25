@@ -25,6 +25,28 @@ ProfileFault/AllowanceExhausted and carried no payload""; part D retains both st
 commits, which the comparator does not report, where it read them only "for every row the comparison reports".
 Nothing else changed.*
 
+*Revised again 2026-10-25, before any run, because the note above quoted only parts of the passages it replaced. They
+read, in full: the header's fuel item, "A fuel exhaustion is reported by the conformance root as the verdict
+`Exhausted` with the dimension `Fuel`, and by the command-line root with the line "the program did not settle within
+its allowance: AllowanceExhausted on Fuel" and exit code 5."; the end of its matcher-ceiling item, "and the
+command-line root prints the same line and exits 7, the code its help calls "host defect"."; its reading item, "This
+rule reads that line, and only that line, as a stop at a matcher ceiling: a verdict of its own, neither a wrong answer
+nor an abnormal end, and the same at both commits, because the adapter maps Broiler.Regex's `LimitExceeded` for frames
+or trail to the same `JsAbort(Exhausted)` (decision D10). Every other `Failed` detail and every other exit 7 keeps its
+own reading."; part A's "How it is read" item, "A stop at a matcher ceiling is read only from the detail this file's
+header quotes. The comparison sees such a row as `Failed`, so a move between it and `Passed`, `Failed` with another
+detail, or an exhausted dimension is a changed verdict the table must classify, and a row the table cannot read from
+both reports is a regression."; part D's configuration, "for each process its exit code and its output retained"; and
+part D's reading, "each process's verdict is read from its exit code and its line - exit 0, completed, its answer the
+completion value the root prints; exit 5 with "AllowanceExhausted on Fuel", exhausted on fuel; exit 7 with exactly the
+line "the invocation answered ProfileFault/AllowanceExhausted and carried no payload", stopped at a matcher ceiling, its
+ceiling not named (this file's header, JSD-0081 decision D10); exit 1 with "uncaught" and an error's name, an uncaught
+error with that constructor; exit 5 naming any other dimension, exhausted on that dimension; any other exit, any other
+line under exit 7, and a process that ended without an exit code of its own, an abnormal end; a case declared exhausted
+gives its declared outcome by ending exhausted on fuel or stopped at a matcher ceiling, never on the wall clock, which
+is ample so that it bounds a hung case". The header's new item, "How the command-line root writes a result", replaced
+nothing.*
+
 **What this file is.** Five predeclared decisions, one per part.
 - **The templates.** Part A is template T1 of
   [the programme's validation document](../../javascript-shared-libraries/validation.md#4-predeclared-comparison-rules),

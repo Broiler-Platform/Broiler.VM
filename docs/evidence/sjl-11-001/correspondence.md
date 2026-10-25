@@ -13,6 +13,12 @@ decided on 2026-10-21, and no row's class is unknown. A class that rests on a re
 specification's text stands until `regexpref` (SJL-11.3's reference) checks that reading; a reading it refutes is
 a finding against JSD-0081, and the row is reclassified there.
 
+*(Revised 2026-10-25, after review, before any run and before this file reached the default branch. The plan's task
+numbers are replaced by the step or the committed file each named, and the tallies in the prose of rows S5, S8 and
+S11 and of "Rows no survey named" are removed, because this file holds no figure of a run in its prose; every answer
+stays in the tables, and no row's class changed. The text replaced is this file as commit `27cea28` holds it. It is
+not quoted here, because quoting it would put the tallies back into prose.)*
+
 **Read and run at**
 - **Broiler.VM `aaa39fb`** (the default branch after PR #156, the preview.7 re-pin). Every
   regular-expression source is byte-identical at today's `origin/main` `3fa4b39` but
