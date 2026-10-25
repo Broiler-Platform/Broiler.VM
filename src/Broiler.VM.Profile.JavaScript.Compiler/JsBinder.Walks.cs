@@ -814,8 +814,11 @@ internal sealed partial class JsBinder
 
             // `await` WAITS ONLY IN A UNIT THE LOWERING EMITS AS AN ASYNC ONE, and anywhere else it is
             // refused under the code the catalogue records for it (2104; JSD-0080 decisions D12 and
-            // D13). A template substitution's own parse lets one into the parameters of an arrow that
-            // is not async, whose unit is the arrow's.
+            // D13). A template substitution's own parse let one into the parameters of an arrow that
+            // is not async, whose unit is the arrow's, until SJL-12.6 item 4 (decision D15) had the
+            // parser read a substitution in its parameter list and refuse the `await` itself (2101).
+            // No other way to this refusal is known, so no source the parser admits reaches it now;
+            // it stays as the rule's place.
             case JsAwaitExpression expression:
                 if (!context.Is(Frame.Async))
                 {
