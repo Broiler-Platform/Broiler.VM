@@ -164,7 +164,10 @@ rather than a decision record.
 | [JSC-78](#jsc-78) | the retained corpus manifest's header and roadmap section 7's corpus discipline | One corpus holds entries of two format versions, distinguished by the replay mode column that already distinguished the nine entries bytes alone cannot produce | the regenerated corpus and its replay |
 | [JSC-80](#jsc-80) | roadmap section 9's *strict mode is recognised by the tokenizer and ruled on by the validator*, as JS-3b's ledger row states it | Strictness a CALLER imposes reached the lowering and never the parse, so every strict-only early error was invisible in the one variant that exists to test it | the conformance variant that regressed when an unconditional refusal stopped masking it |
 | [JSC-79](#jsc-79) | roadmap section 8's *`CallDepth` is measured, not chosen*; the gates' lifecycle clause | The interpreter recurses on the CLR stack, so the premise the bound rested on is false - and a conformance case terminated the process before anything refused it | the case that terminated it, and the declared stack that repairs it |
-| [JSC-319](#jsc-319) | backends "Where this document stands"; backends JSB-1's State bullet | What JSB-1's gate names exists since the programme's SJL-12.6 item 3, which orders the wide lowering's lexical names by the source and adds two standing checks rows; which half of the determinism claim those rows cover; the profile's ledger judges the stage, and this entry does not | [JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md), decision D14 |
+| [JSC-319](#jsc-319) | backends "Where this document stands", JSB-1's State bullet and section 7; delivery section 26.2's table of the proposal documents' stages | What JSB-1's gate names exists since the programme's SJL-12.6 item 3, which orders the wide lowering's lexical names by the source and adds two standing checks rows; which half of the determinism claim those rows cover; decision D14 leaves the stage's judgement to the profile's ledger, which holds no JSB-1 row yet, and this entry judges nothing | [JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md), decision D14 |
+
+*(Added 2026-10-25, with JSC-319's row.)* The index holds rows for JSC-01 to JSC-80 and for JSC-319. JSC-81 to
+JSC-318 are not indexed here, and each is found by its heading below.
 
 ### JSC-01
 
@@ -13646,16 +13649,28 @@ and the programme's milestone SJL-10. 2026-10-19.
 ### JSC-319
 
 **Where:** [`roadmap.backends.md`](roadmap.backends.md): the paragraph "Where this document stands", where it
-names the stages that are not started, and stage
+names the stages that are not started; stage
 [JSB-1](roadmap.backends.md#jsb-1--determinism-over-bytecode-before-determinism-over-machine-code)'s State
-bullet. JSB-1's objective and exit gate are not edited, and neither are
+bullet; and [section 7](roadmap.backends.md#7-order-and-what-is-schedulable-today), "Order, and what is schedulable
+today", whose first paragraph and whose paragraph on JSB-1 say the stage was not done. Also the table of the
+proposal documents' stages in [section 26.2](roadmap.delivery.md#262-what-is-finished) of the delivery plan, which
+lists JSB-1 as not started. JSB-1's objective and exit gate are not edited, and neither are
 [JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md) and the rule of bundle
 [`sjl-12-001`](../../../docs/evidence/sjl-12-001/README.md).
+- The backend roadmap's three places carry dated notes that quote the text they replace, as that file's earlier
+  dated notes do, beside the bare pointer this file's update rule 7 asks for.
+- The delivery table carries the bare pointer alone, and JSB-1 stays in its column. The table states the stages
+  as of 2026-10-03 ([JSC-251](#jsc-251)), and moving JSB-1 to another column would be the judgement decision D14
+  leaves to the profile's ledger.
 
 **What the plan said.** The paragraph, dated 2026-10-03: "JSB-1 and JSB-12 are not started; none is accepted."
 JSB-1's State bullet of 2026-09-07: "nothing here was built", "there is no such assertion over the wide front
 end", and "The global lexical hoisting order is untouched, the negative control does not exist, and the
-corrections file carries no entry about which half of the determinism claim is covered."
+corrections file carries no entry about which half of the determinism claim is covered." Section 7, of the same
+date: "Two stages need nothing that does not exist, and they are the two that were not done", and "**And JSB-1 was
+skipped outright, which no rule catches and nothing measured.** ... the determinism this programme puts first is
+asserted for the slice front end and not for the front end that lowers every artifact a backend has consumed." The
+delivery plan's table, dated 2026-10-03, put JSB-1 under "Not started".
 
 **What replaced it.** The shared JavaScript libraries programme's SJL-12.6 prepared this family's wide front end
 in place under JSD-0080, in four default-branch merges, item 3 first and alone as decision D14 asks. Each merge is
@@ -13709,6 +13724,19 @@ named with the change's own commits:
     `ParseInterpolation` are deleted (`964b460`).
   - Decision D15's listed corrections follow: `${yield}` and `${await …}` in formal parameters are refused with
     2101, and template nesting counts toward the nesting bound and past it is refused with 2103.
+  - **Two consequences of the same carry that decision D15 does not list.** Bundle `sjl-12-001` names both as
+    findings against JSD-0080, before its after runs, in its section 3,
+    ["Readings named before the after runs"](../../../docs/evidence/sjl-12-001/README.md#readings-named-before-the-after-runs-sjl-126-2026-10-25):
+    - **An input already refused can change its diagnostic list** (`964b460`). A `yield` or `await` in a
+      substitution in formal parameters is the parser's 2101 now, so where a later stage refused the input, the
+      list it gave changes. `BinderChecks`' rows for the `await` the binder refused before show it.
+    - **An input accepted before can be refused by the tree-depth bound** (`964b460`, and `TemplateChecks`' row
+      as `3902f6f` narrowed it). A substitution's chain is charged from the depth the chain around the template
+      has reached. JSD-0080's status says that no other change either engine makes at SJL-12 "moves an input
+      between accepted and refused by the whole compile", and decision D15 lists no tree-depth correction.
+
+    Item 4's pre-checks found neither in the parse corpus or in the pinned suite's negative tests. The after runs
+    decide.
   - `JsCompiler.Requests` parses inside `CompilationStack.Run` (`2c590e4`, decision D16). Checks rows hold a tree
     at the tree-depth bound through the binder (`fb2b40d`) and template nesting past the bound (decision D17).
     No public member changes.
@@ -13733,9 +13761,10 @@ Clause by clause:
   evaluated program's eval declaration row and slots, sloppy and strict.
 - **"A negative control that perturbs the order and is watched failing and watched passing after revert."** K1
   reverses the order and K2 shuffles it per compilation. Each was applied to a scratch copy before the ordering
-  commit merged, failed the rows it targets, and passed after its revert, as Broiler.VM#163 records. Neither was
-  retained. Bundle `sjl-12-001`'s part C applies both again, to a scratch copy of the after commit, and retains
-  them with their output.
+  commit merged and failed the rows it targets, and Broiler.VM#163 records each as "reverted clean". The checks
+  run again in that scratch copy after both reverts passed, and that run was not retained, nor were the controls.
+  Bundle `sjl-12-001`'s part C applies both again, to a scratch copy of the after commit, and retains them with
+  their output, failing and passing after revert.
 - **"The corrections file carries an appended entry recording which half of the determinism claim was covered
   and which was not."** This entry.
   - **Covered:** the wide lowering's bytecode, every compilation of the row's population in one process, in turn
@@ -13747,9 +13776,19 @@ Clause by clause:
     covered either, nor is machine code, whose determinism the re-emission and golden rows read and these rows do
     not.
 
-**Judged by the profile's ledger, not here.** Whether those rows meet JSB-1's gate is for the profile's
-[ledger](roadmap.status.md) to judge, on its own legend. This entry records what exists, judges nothing, and moves
-no row; the programme's evidence completes no plan of this profile (the programme ledger's update rule 6).
+**Judged by the profile's ledger, not here.** Decision D14 leaves whether those rows meet JSB-1's gate to the
+profile's [ledger](roadmap.status.md), on its own legend. This entry records what exists, judges nothing, and moves
+no row; the programme's evidence completes no plan of this profile (the programme ledger's update rule 6, "Separate
+ledgers"). JSD-0080 cites that ledger's update rule 3, "No transitive completion", for the same point. Rule 6 is
+the one that says it, a citation JSD-0080 may correct in a later dated note.
+- **No record judges JSB-1 at this commit.** The profile's ledger holds no JSB-1 row. Its preamble's paragraph on
+  the backend roadmap says that roadmap "moves nothing in this ledger", that it mints its stages in a `JSB-n`
+  namespace "section 2's table does not read", and that the paragraph is "observed repository state ... and is not
+  a status of any kind".
+- So the judgement decision D14 defers to has, at this commit, no row to be made in. This entry keeps the deferral,
+  and names the gap as a finding against JSD-0080's decision D14 for the profile owner: either the ledger comes to
+  read JSB-1, or the decision names another judge.
+
 SJL-12.6 itself is judged on bundle `sjl-12-001`'s after runs, which had not been taken when this entry was
 written, and SJL-12 cannot meet its gate before SJL-3 meets SJL-3's.
 

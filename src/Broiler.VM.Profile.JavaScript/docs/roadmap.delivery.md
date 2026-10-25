@@ -1031,7 +1031,7 @@ holds them.
 |---|---|---|---|
 | [Parity](roadmap.parity.md) | JSP-1 to JSP-10, every stage | — | — |
 | [Workloads](roadmap.workloads.md) | JSW-1, JSW-3, JSW-5 (under `wide`), JSW-6, JSW-7 | JSW-2 (its exclusion now reopened), JSW-4 (`broiler.javascript.regexp` not minted), JSW-8 (the module identity's remainder), JSW-9 (Native AOT depth, and the five Octane workloads `MaximumTreeDepth` refuses), JSW-10 (no retained whole run on a claimed RID) | — |
-| [Backends](roadmap.backends.md) | JSB-4, JSB-5, JSB-6 | JSB-2, JSB-3, JSB-7 to JSB-11 | JSB-1, and JSB-12 beyond its predeclared bounds |
+| [Backends](roadmap.backends.md) | JSB-4, JSB-5, JSB-6 | JSB-2, JSB-3, JSB-7 to JSB-11 | JSB-1 *(corrected: [JSC-319](roadmap.corrections.md#jsc-319))*, and JSB-12 beyond its predeclared bounds |
 | [Hosting](roadmap.hosting.md) | JSH-1, and JSH-2 and JSH-3 for the members their gates name | JSH-4 (the host-versus-guest provider route), JSH-7 (the clone carrier, without a second realm) | JSH-5, JSH-6, JSH-8 |
 
 **What that leaves of the parity roadmap is its record, not its work.** Its section 4 is the gap

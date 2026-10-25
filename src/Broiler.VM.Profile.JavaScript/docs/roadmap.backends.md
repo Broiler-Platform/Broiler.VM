@@ -54,8 +54,9 @@ note distinguishes its original decision from the current code.
 checkout; JSB-2, JSB-3 and JSB-7 to JSB-11 are partly implemented; JSB-12 is not started; what
 JSB-1's gate names exists since 2026-10-20, and its State bullet of 2026-10-25 says what; none is
 accepted *(revised 2026-10-25, at the shared JavaScript libraries programme's SJL-12.6: the sentence
-read "JSB-1 and JSB-12 are not started; none is accepted". Whether what exists meets JSB-1's gate is
-the profile's ledger's to judge, and this paragraph does not. Corrected: [JSC-319](roadmap.corrections.md#jsc-319))*. The plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) runs the remainder as a performance track beside the
+read "JSB-1 and JSB-12 are not started; none is accepted". JSD-0080 leaves whether what exists meets
+JSB-1's gate to the profile's ledger, which holds no JSB-1 row at this date, so no record has judged it,
+and this paragraph does not. Corrected: [JSC-319](roadmap.corrections.md#jsc-319))*. The plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) runs the remainder as a performance track beside the
 feature phases, meeting them at the release
 ([JSC-251](roadmap.corrections.md#jsc-251)).
 
@@ -620,10 +621,13 @@ names, and a stage identifier is never reused.
     determinism claim the rows cover, one process's compilations in turn and on two threads, and which they do
     not: an order that varies only between processes, identity across machines, and machine code.
 
-  **This bullet judges nothing.** The profile's [ledger](roadmap.status.md) judges this stage on its own legend,
-  and no row of it moves for this bullet. Re-emission equality is now asserted beside a standing row over the
-  wide front end's determinism in one process; across processes and machines, nothing in the checks lane asserts
-  it.
+  **This bullet judges nothing.** JSD-0080's decision D14 leaves the judgement of this stage to the profile's
+  [ledger](roadmap.status.md), on its own legend. That ledger holds no JSB-1 row at this date, and reads this
+  document's stages only as observed repository state, which moves nothing in it, so no record has judged this
+  stage yet. [JSC-319](roadmap.corrections.md#jsc-319) names that as a finding against decision D14 for the
+  profile owner. No row of the ledger moves for this bullet. Re-emission equality is now asserted beside a
+  standing row over the wide front end's determinism in one process; across processes and machines, nothing in
+  the checks lane asserts it.
 
 ### JSB-2 — The enforcement, which is right whether or not a backend is ever written
 
@@ -1310,6 +1314,16 @@ needed nothing that did not exist were the two most likely to be passed over, an
 the determinism this programme puts first is asserted for the slice front end and not for the front
 end that lowers every artifact a backend has consumed. **An ordering with no gate behind it is a
 preference**, and this is what that costs.
+
+*(Noted 2026-10-25, at the shared JavaScript libraries programme's SJL-12.6, and this paragraph and this
+section's first kept as written; corrected: [JSC-319](roadmap.corrections.md#jsc-319).)* They were true
+when they were written. The first paragraph's "they are the two that were not done", and this one's "the
+determinism this programme puts first is asserted for the slice front end and not for the front end that
+lowers every artifact a backend has consumed", no longer hold for JSB-1. Since `066abef` (Broiler.VM#163,
+merged on 2026-10-20) the wide hoisting order is the source's, and two standing rows assert the wide
+lowering's determinism in one process. JSB-1's State bullet of 2026-10-25, in
+[section 6](#jsb-1--determinism-over-bytecode-before-determinism-over-machine-code), says what exists and
+what it does not cover. Nothing here judges the stage, and the order this section argues does not change.
 
 **The rest are ordered by what they unblock rather than by size.** JSB-3 needs JSB-1's determinism;
 JSB-4 needs JSB-3's exit to have something to write; JSB-5 needs JSB-4's sections to have something to
