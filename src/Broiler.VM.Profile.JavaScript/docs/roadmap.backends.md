@@ -51,8 +51,11 @@ design. The current emitter uses blocks, and the value form additionally emits s
 note distinguishes its original decision from the current code.
 
 **Where this document stands, 2026-10-03.** JSB-4, JSB-5 and JSB-6 are implemented in this
-checkout; JSB-2, JSB-3 and JSB-7 to JSB-11 are partly implemented; JSB-1 and JSB-12 are not
-started; none is accepted. The plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) runs the remainder as a performance track beside the
+checkout; JSB-2, JSB-3 and JSB-7 to JSB-11 are partly implemented; JSB-12 is not started; what
+JSB-1's gate names exists since 2026-10-20, and its State bullet of 2026-10-25 says what; none is
+accepted *(revised 2026-10-25, at the shared JavaScript libraries programme's SJL-12.6: the sentence
+read "JSB-1 and JSB-12 are not started; none is accepted". Whether what exists meets JSB-1's gate is
+the profile's ledger's to judge, and this paragraph does not. Corrected: [JSC-319](roadmap.corrections.md#jsc-319))*. The plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) runs the remainder as a performance track beside the
 feature phases, meeting them at the release
 ([JSC-251](roadmap.corrections.md#jsc-251)).
 
@@ -591,7 +594,36 @@ names, and a stage identifier is never reused.
   about which half of the determinism claim is covered. **This stage's whole argument was that
   determinism has to hold for bytecode before it can be claimed over machine code, and the work went
   the other way round.** Re-emission equality is asserted today over a front end whose determinism is
-  asserted for its sibling.
+  asserted for its sibling. *(Superseded 2026-10-25 by the bullet below, and kept as written:
+  [JSC-319](roadmap.corrections.md#jsc-319).)*
+
+- **State on 2026-10-25: what the gate names exists; whether it meets the gate is the profile's ledger's
+  to judge** *(added 2026-10-25, at the shared JavaScript libraries programme's SJL-12.6, by
+  [JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)'s decision D14;
+  corrected: [JSC-319](roadmap.corrections.md#jsc-319))*. The bullet above read "there is no such assertion over
+  the wide front end", and "The global lexical hoisting order is untouched, the negative control does not exist,
+  and the corrections file carries no entry about which half of the determinism claim is covered". Since the
+  programme's ordering commit, `066abef` (Broiler.VM#163, merged alone on 2026-10-20), each has changed:
+  - **The order is the source's.** The global lexical declarations, and an evaluated program's lexical names,
+    come from `SourceOrderedLexicals`, a list in source order whose membership set is never enumerated, where two
+    dictionaries' enumeration decided them. No artifact's bytes moved.
+  - **The wide front end has its assertion.** The slice compiler's `--checks`, beside "the lowering is
+    deterministic", runs "the wide lowering is deterministic" and "the wide lowering declares lexical names in
+    source order", in `WideLoweringChecks`. The first compiles the retained corpus's wide and module rows rebuilt
+    by their producer, the parse corpus's stored inputs and the second row's probes, each twice in turn and twice
+    at once on two threads.
+  - **The controls were watched.** K1, which reverses the order, and K2, which shuffles it per compilation, were
+    watched failing and passing after revert in a scratch copy before that merge, and were not retained. Bundle
+    [`sjl-12-001`](../../../docs/evidence/sjl-12-001/README.md)'s part C applies them again at its after commit
+    and retains them.
+  - **The corrections file carries the entry.** [JSC-319](roadmap.corrections.md#jsc-319) says which half of the
+    determinism claim the rows cover, one process's compilations in turn and on two threads, and which they do
+    not: an order that varies only between processes, identity across machines, and machine code.
+
+  **This bullet judges nothing.** The profile's [ledger](roadmap.status.md) judges this stage on its own legend,
+  and no row of it moves for this bullet. Re-emission equality is now asserted beside a standing row over the
+  wide front end's determinism in one process; across processes and machines, nothing in the checks lane asserts
+  it.
 
 ### JSB-2 — The enforcement, which is right whether or not a backend is ever written
 
