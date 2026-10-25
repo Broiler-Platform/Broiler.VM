@@ -105,6 +105,9 @@ is the line at the revision above; a bare `:n` is in the file named last in the 
   revisions, the shell's output and exit) and, where run, `<name>.tr-TR.bjs.txt` and
   `<name>.lt-LT.bjs.txt`; `compare/<name>.compare.txt`, written by `sidebyside.py` from both engines'
   files; `library/` (the library probe, its project and `library.out.txt`); `run-js.sh`; `hashes.txt`.
+  *(Revised 2026-10-25, before this file reached the default branch: the project is kept as `Probe.csproj.txt`, as
+  bundle `sjl-8-001` keeps its probe's, so that no project file stands outside the solution, which rule A14 refuses;
+  its bytes are unchanged, and `hashes.txt` names it so.)*
 - A file over 100 KB is retained gzip-compressed under its name with `.gz` (`gzip -n -9`): the VM's
   transcripts of the 200,000-deep patterns, which echo the pattern, and the shell's stack trace for B8.
 
