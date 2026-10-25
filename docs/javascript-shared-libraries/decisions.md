@@ -890,7 +890,15 @@ and (b) to a comparison.
   translator. Broiler.VM, which refuses them today as a declared divergence, gains them at its
   cut-over as a listed correction ([SJL-D-16](#sjl-d-16)).
 
-**Recorded by** Broiler.RegEx's roadmap (SJL-0.6) and SJL-11's area-verdict JSD (SJL-11.1).
+**Recorded by** Broiler.RegEx's roadmap (SJL-0.6) and SJL-11's area-verdict JSD,
+[JSD-0081](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md)
+(SJL-11.1), decided on 2026-10-21, which records it as the area applies it: under (a), a new backend written in
+Broiler.Regex with Broiler.VM's matcher as its specification and no code ported, and Broiler.VM's matcher deleted at
+SJL-11.4; under (i), duplicate named groups in Broiler.Regex before Broiler.JS retires its translator. Broiler.RegEx's
+roadmap section 6 adopts the requirements as owner conditions by its record of 2026-10-20, and Broiler.JS's
+`docs/roadmap/SharedLibraries.md` records the verdict in its section "Area verdicts". *(Revised 2026-10-25, at
+SJL-11.1. The sentence read "**Recorded by** Broiler.RegEx's roadmap (SJL-0.6) and SJL-11's area-verdict JSD
+(SJL-11.1).")*
 
 <a id="sjl-d-11"></a>
 ### SJL-D-11 — Diagnostic codes and message text
