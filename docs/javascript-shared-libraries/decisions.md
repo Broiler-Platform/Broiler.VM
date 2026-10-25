@@ -896,8 +896,9 @@ and (b) to a comparison.
 Broiler.Regex with Broiler.VM's matcher as its specification and no code ported, and Broiler.VM's matcher deleted at
 SJL-11.4; under (i), duplicate named groups in Broiler.Regex before Broiler.JS retires its translator. Broiler.RegEx's
 roadmap section 6 adopts the requirements as owner conditions by its record of 2026-10-20, and Broiler.JS's
-`docs/roadmap/SharedLibraries.md` records the verdict in its section "Area verdicts", each observed on its
-repository's SJL-11.1 branch and not yet merged (`sjl-11-1-regex` from `fca7a6d`, `sjl-11-1-js` from `0f21a84c`).
+`docs/roadmap/SharedLibraries.md` records the verdict in its section "Area verdicts", each merged into its
+repository's default branch (Broiler.RegEx at `e568b88`, Broiler-Platform/Broiler.Regex#6; Broiler.JS at `f918b040`,
+Broiler-Platform/Broiler.JS#1069).
 *(Revised 2026-10-25, at SJL-11.1. The sentence read "**Recorded by** Broiler.RegEx's roadmap (SJL-0.6) and
 SJL-11's area-verdict JSD (SJL-11.1).")*
 

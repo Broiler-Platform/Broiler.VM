@@ -1694,8 +1694,8 @@ decided on 2026-10-21, and all six sub-areas are accepted:
 - **U**, the use of Unicode data.
 
 Each is placed with Broiler.RegEx, in its package `Broiler.Regex`, under the area design's requirements 1 to 11, which
-Broiler.RegEx's roadmap numbers R1 to R11 and adopts as owner conditions by its dated record of 2026-10-20 (observed on
-Broiler.RegEx's branch `sjl-11-1-regex`, filed at `fca7a6d`, not yet merged). **A condition not met by the end of
+Broiler.RegEx's roadmap numbers R1 to R11 and adopts as owner conditions by its dated record of 2026-10-20 (filed at
+`fca7a6d`, merged into Broiler.RegEx's default branch at `e568b88` by Broiler-Platform/Broiler.Regex#6). **A condition not met by the end of
 SJL-11.2 refuses the area**: neither engine then moves, and each keeps its own engine with a source pointer to
 JSD-0081. **Decision SJL-D-14 is recorded** as the area applies it: under (a), a new backend written in Broiler.Regex
 with this family's matcher as its specification and no code ported, and this family's matcher deleted at SJL-11.4;
@@ -1760,19 +1760,19 @@ Its README says that it holds rules and the correspondence only, and that nothin
   and the SJL-12 milestone's reading of its clause 1, which lists the same decoding for SJL-14.
 
 **Broiler.JS's and Broiler.RegEx's halves are filed in their own changes**: Broiler.JS's area record, its status rows
-and its bundle `sjl-11-001`'s rule (observed on Broiler.JS's branch `sjl-11-1-js`, from `0f21a84c`, not yet merged);
+and its bundle `sjl-11-001`'s rule (merged into Broiler.JS's default branch at `f918b040` by Broiler-Platform/Broiler.JS#1069);
 and Broiler.RegEx's roadmap record, its bundle's rules, the adversarial corpus with its generator, and a dated note in
-its `HUMAN_REVIEW.md` (observed on Broiler.RegEx's branch `sjl-11-1-regex`, from `fca7a6d`, not yet merged). This
-ledger observes each when it merges, and names its merge commit in place of the branch. Broiler.RegEx's merges first,
-because its corpus is both engines' input.
+its `HUMAN_REVIEW.md` (merged into Broiler.RegEx's default branch at `e568b88` by Broiler-Platform/Broiler.Regex#6). Each
+was observed on its branch until it merged, and its merge commit now stands in place of the branch. Broiler.RegEx's merged
+first, because its corpus is both engines' input.
 
 **Nothing is accepted, and no base is taken.** Review is deferred (update rule 7). Every base of this family's rule is
 taken at the admission commit, after SJL-12's after runs, until which no SJL-11 change merges into the profile's
 paths. SJL-11 stays `In progress`, every clause unmet, and may not meet its gate before SJL-7 meets SJL-7's, and so not
 before SJL-3 meets SJL-3's. Decision SJL-D-14 is recorded. Next:
-- the merges of the three repositories' SJL-11.1 changes, Broiler.RegEx's first, by a merge commit, so that
-  `c2aa771`, the commit both engines' adversarial manifests name, stays reachable from its default branch; each merge
-  commit then replaces the branch it was observed on, here, in JSD-0081, in its row of the decisions index, in
+- Broiler.RegEx's and Broiler.JS's SJL-11.1 changes are merged (`e568b88`, by a merge commit, so that `c2aa771`, the
+  commit both engines' adversarial manifests name, is reachable from its default branch; and `f918b040`); their merge
+  commits replace the branches they were observed on, here, in JSD-0081, in its row of the decisions index, in
   SJL-D-14's "Recorded by" and in `areas/regexp.md`;
 - SJL-11.2 in Broiler.RegEx, and SJL-11.3's vectors.
 

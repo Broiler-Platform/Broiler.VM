@@ -12,7 +12,7 @@
   - **T**, the text helpers, `RegExp.escape` and `source`;
   - **U**, the use of Unicode data.
 - **The placement is under owner conditions**: the area design's requirements 1 to 11, which Broiler.RegEx's
-  roadmap numbers R1 to R11, adopted by its dated record of 2026-10-20 (observed on its branch, not yet merged;
+  roadmap numbers R1 to R11, adopted by its dated record of 2026-10-20 (merged into Broiler.RegEx's default branch at `e568b88` by Broiler-Platform/Broiler.Regex#6;
   "Milestone" below). **A condition not met by the end of SJL-11.2 refuses the area** (decision D1).
 - **Decision SJL-D-14 is recorded**, as this area applies it: under (a), a new backend is written in Broiler.Regex
   with this family's matcher as its specification and no code ported, and this family's matcher is deleted at
@@ -40,12 +40,12 @@ read it.
 
 **Milestone:** the programme's SJL-11, work package SJL-11.1.
 - The same verdict is recorded in Broiler.JS's shared-libraries plan, `docs/roadmap/SharedLibraries.md`, section
-  "Area verdicts", "Regular expressions (SJL-11.1)" (observed on Broiler.JS's branch `sjl-11-1-js`, filed at
-  `0f21a84c`, not yet merged).
+  "Area verdicts", "Regular expressions (SJL-11.1)" (filed at `0f21a84c`,
+  merged into Broiler.JS's default branch at `f918b040` by Broiler-Platform/Broiler.JS#1069).
 - Broiler.RegEx's `docs/roadmap.md` section 6 records the owner conditions it adopts, by its record of 2026-10-20
-  (observed on Broiler.RegEx's branch `sjl-11-1-regex`, filed at `fca7a6d`, not yet merged).
-- Each of the two is observed state until its change reaches its repository's default branch; the ledger names
-  each merge commit when it lands.
+  (filed at `fca7a6d`, merged into Broiler.RegEx's default branch at `e568b88` by Broiler-Platform/Broiler.Regex#6).
+- Each of the two was observed on its branch until its change reached its repository's default branch; both had
+  merged before this record did, and the ledger names their merge commits.
 - **SJL-11 started before SJL-7, which it waits on, and SJL-3 met their gates**, at the owner's words of
   2026-10-19, "Also continue with the other remaining SJL milestones". SJL-11 may not meet its gate before SJL-7
   meets SJL-7's, and so not before SJL-3 meets SJL-3's. This record moves no gate.
@@ -152,8 +152,8 @@ record does not classify falsifies it.
 
 SJL-D-14 (a) places the area with Broiler.Regex **if it meets every requirement the area design lists**, which
 are this family's. Broiler.RegEx adopts them as owner conditions by the dated record of 2026-10-20 in its
-`docs/roadmap.md` section 6, which numbers them R1 to R11 (observed on its branch `sjl-11-1-regex`, filed at
-`fca7a6d`, not yet merged). It meets them at SJL-11.2, and its bundle `sjl-11-001`'s rule judges them at the
+`docs/roadmap.md` section 6, which numbers them R1 to R11 (filed at `fca7a6d`,
+merged into Broiler.RegEx's default branch at `e568b88` by Broiler-Platform/Broiler.Regex#6). It meets them at SJL-11.2, and its bundle `sjl-11-001`'s rule judges them at the
 candidate reading, the commit `0.2.0-preview.1` is packed from:
 
 | | Requirement | Where Broiler.Regex stands at `c1422f4d` (correspondence) |
@@ -497,7 +497,7 @@ search over the default branches of the `Broiler-Platform` organisation, run on 
 - no call into Broiler.Regex's API from Broiler or Broiler.Browser, whose only references are `using` aliases of
   .NET's `System.Text.RegularExpressions.Regex` that work around the namespace.
 
-Broiler.JS's area record states the same search for the members decision D21 removes (observed on its branch, as
+Broiler.JS's area record states the same search for the members decision D21 removes (merged, as
 "Milestone" above says). SJL-11.5 runs it again and records its queries and results in Broiler.JS's
 `docs/public-api.md`.
 
@@ -590,8 +590,7 @@ which corrects the literal path's rows S2b, S7, S8 and S11. **The division fallb
 S9). JSD-0080's decision D23 merged on 2026-10-19 as written, keeping the literal's `\u{…}` decoding for SJL-14, so
 the plan's amendment before its merge did not happen; this change files a dated note beside JSD-0080's decision D23
 instead, and beside the two other records that state the same placement: the SJL-12 milestone's reading of its
-clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS's own change files (observed on its
-branch). The reason: the scan is speculative, and the goal symbol is the shared front end's.
+clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS's own change files (merged into Broiler.JS's default branch at `f918b040` by Broiler-Platform/Broiler.JS#1069). The reason: the scan is speculative, and the goal symbol is the shared front end's.
 
 **Decision D23 - the corrections lists, revised before evidence.**
 - **Broiler.JS's (SJL-11.5).** The milestone's list is revised, quoting the old text: loose property names and
