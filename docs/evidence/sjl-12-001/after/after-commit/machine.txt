@@ -66,8 +66,11 @@ THE CHECKOUTS
   revert checked (controls/k1-revert-check.txt, controls/k2-revert-check.txt: git diff --exit-code, and against the
   after commit, both exit 0); controls/logs/checkout-k-end.txt and checkout-k-after-runs.txt the same.
   All three were removed with git worktree remove (exit 0 each), which removed every bin/ and obj/ they held.
-  (Added 2026-10-26, at the records step, WP7.3. The $KW sentence above reads as if its records were as complete as
-  $VMW's and $RW's. They are not. $KW has no git rev-parse HEAD or git status record taken before or after any of
+  (Added 2026-10-26, at the records step, WP7.3. The $KW sentence above, "$KW, the scratch copy for K1 and K2:
+  controls/logs/checkout-k-made.txt, the after commit and --ignored empty; each revert checked
+  (controls/k1-revert-check.txt, controls/k2-revert-check.txt: git diff --exit-code, and against the after commit, both
+  exit 0); controls/logs/checkout-k-end.txt and checkout-k-after-runs.txt the same.", reads as if its records were as
+  complete as $VMW's and $RW's. They are not. $KW has no git rev-parse HEAD or git status record taken before or after any of
   its three builds, k1-build, k2-build and k-reverted-build. Its records are the four named above:
   checkout-k-made.txt, as made; k1-revert-check.txt and k2-revert-check.txt, after each revert; checkout-k-end.txt,
   after both reverts and the rebuild; and checkout-k-after-runs.txt. The worktree is removed, so the missing records
