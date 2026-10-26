@@ -1,0 +1,39 @@
+{
+  "bundle": "sjl-12-001",
+  "milestone": "SJL-12",
+  "evidence-class": "conformance-parity-and-artifact-identity-and-determinism-and-rules-and-record-consistency",
+  "collected-at": "38775cda37c06f540ffdb2a269dd92ed388b17bb",
+  "worktree-clean": true,
+  "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
+  "note": "Broiler.VM's bundle for SJL-12: the rule (decision-rule-area.md, unchanged since the rule commit 889ea1568f59bf37aa21c0035b423d0d030eb87f), the bases at the rule commit (base/hosted/) and the corpus commit 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 (base/), part B's run at the ordering commit 066abefea4351fb49bd8bf8e823fbdc7aac560de (after/ordering/), and the after evidence at the after commit 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f (source-revision): part A's hosted after dispatch (after/hosted/) and its (c') and (e) re-runs at both commits, part B's and part C's runs, part C's controls (controls/), part D's rule runs at the after commit (after/rules-after/) and the rule commit (base/rules-rule-commit/), and part E's checker output. Each folder is hashed by its own hashes.txt, which inputs names; the files under the folders are not listed here one by one. The README says what each file demonstrates and judges every part; collected-at is the commit that holds the evidence files, and the README and this manifest are committed on top of it.",
+  "source-revision": "1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f",
+  "sources": {
+    ".github/workflows/test262-evidence.yml": "4119d11b25f4cc0842de297e04e9799a9a0a26fd",
+    "docs/evidence/sjl-12-001/decision-rule-area.md": "293b080f5c51dc6f151506e7536d3d41595ce859",
+    "eng/check-frontend-mapping.py": "09e07cd68646bdc9e382e441a806956b35b745fd",
+    "eng/collect-js-release-candidate.py": "cd5d8c0a797ea018d04a51382b5693347952fdb7",
+    "eng/compare-parse-corpus.py": "c1d3b53d957c1a23f409b466f667b0733772863d",
+    "eng/compare-test262-forms.py": "48e3091a872921849bab1f903b46698be0c69e33",
+    "eng/run-test262.py": "695674a86701368e4ee19536198c446c77cbeee1",
+    "eng/test262-evidence.py": "55f71ee3da6844dd3e3aeb23ea98d24143222a88",
+    "src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv": "60808c2f058a3b339b29c8cef39b76066634cefb",
+    "src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt": "1befe643f7616f07cf59bb9f44b3623b0abf147a",
+    "src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs": "0f4ce7022a26ed972393b70db584b76188f241f0",
+    "src/tests/Broiler.VM.Architecture.Tests/rules.register.json": "09b9d7731b7f356e52a83c7a61c321d3850643a2",
+    "src/tests/conformance/pins/test262.pin": "f8678de1ad261b1774f68cb46ec43b66f3a4d539",
+    "src/tests/corpus/parse-1/corpus.manifest": "2419aa2aabda30a9d3ca9aa703d38c6455859441"
+  },
+  "inputs": {
+    "docs/evidence/sjl-12-001/after/hashes.txt": "17c7e8417b96f7e66eb19c73c66983403474af9cd20b1ad3673e4ed747a324c6",
+    "docs/evidence/sjl-12-001/after/hosted/hashes.txt": "4c64fb276971b0963000cc601818f06385e8f4a1cb96e1eb319d96afad0cee62",
+    "docs/evidence/sjl-12-001/base/hashes.txt": "ab807d6610abf5cfdea74b86ee9c98dd7b2b5eca78120aecb9db5914425268aa",
+    "docs/evidence/sjl-12-001/base/hosted/hashes.txt": "3df86f957c33f85e0f3040a65d692d011d5b25ff91bf086999c3685f2c09346d",
+    "docs/evidence/sjl-12-001/base/rules-rule-commit/hashes.txt": "0388000f98b4018f776693751f1ceb5439b484dd99d853254e9f35ec55182201",
+    "docs/evidence/sjl-12-001/controls/hashes.txt": "30650670e6b2425b8e4c3700bea5398541ee81a5f53474430e90040b79a12d58",
+    "docs/evidence/sjl-12-001/corpus/hashes.txt": "2cf12b0db0311a9b155d3bc84ec2fca23cc0cc0189c3c68c253f14f3e93e746e"
+  },
+  "retained": {
+    "README.md": "716961415fdd3fe65f070561eee7f41ec4958836dd4f1b808deaa38c57b6cc95",
+    "decision-rule-area.md": "7c44a8e206cf1ad87173b4bad5d3ce4652fe0398c064a52cc6871bd96d4091d3"
+  }
+}
