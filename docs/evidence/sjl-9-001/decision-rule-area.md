@@ -96,8 +96,9 @@ completeness admits. A row the comparison cannot classify is a regression, even 
 `Intl.NumberFormat-v3` and `Intl.Locale-info` cases stay skipped at both commits, so they move no verdict.
 
 Rows L18 and L9 move no variant this part scores: every test262 file that calls `getCollations` claims
-`Intl.Locale-info`, and no file reaches L9. Rows S7 and T8 move nothing either (JSD-0082 decision D33). Their files
-are `RelativeTimeFormat/prototype/format/en-us-numeric-always.js`, and
+`Intl.Locale-info`, and no file reaches L9. Rows S7 and T8 move nothing either (JSD-0082 decision D33). Row S7's
+files are `RelativeTimeFormat/prototype/format/en-us-numeric-always.js` and
+`RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js`, and row T8's are
 `DateTimeFormat/prototype/resolvedOptions/hourCycle-dateStyle.js` and `hourCycle.js`. They keep their base verdicts,
 and no class admits a move.
 

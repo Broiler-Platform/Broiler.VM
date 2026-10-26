@@ -124,17 +124,19 @@ vectors check it, and a reading they refute is a finding against this record.
 reads them at this family's `76ace86` and Broiler.JS's `a6c68dd4`, documents only in each. At filing:
 - this family's is `f2ce6e9`, after SJL-12's after evidence (Broiler-Platform/Broiler.VM#170): documents and evidence
   only;
-- Broiler.JS's is `58928ac9`, after its SJL-12 records and two merges (Broiler-Platform/Broiler.JS#1071 and #1072)
-  that change `Broiler.JS/Broiler.JavaScript/`'s assembly code cache and project file, a compiler test and a
-  performance script. None is an Intl, built-ins or library file.
+- Broiler.JS's is `512b563b`, after its SJL-12 records (`58928ac9`) and three merges (Broiler-Platform/Broiler.JS#1071,
+  #1072 and #1074) that change `Broiler.JS/Broiler.JavaScript/`'s assembly code cache and project file, the
+  compiler's binding of `break` and `continue`, two compiler tests, a performance script and the changelog. None is an
+  Intl, built-ins or library file.
 
 **Two gaps are accepted as recorded:**
 - the test262 harness files copied into the runs' `vm262/` directory are not retained. The pinned suite holds them, as
   at SJL-8 and SJL-10;
 - **the `intl402` population is the report bundle `sjl-12-001` retains** at Broiler.JS's `4d813f2a` (`base/part-a`),
   the newest valid whole-suite report in UTC with negative tests, not a report at SJL-9's base, which is later.
-  Broiler.JS at `f918b040` gives the same verdict on every file the map holds. Decision D5's lists are run again on the
-  report of SJL-9's base before SJL-9.2 generates (finding F17).
+  Broiler.JS at `f918b040` gives the same verdict on every file the map holds. Decision D5's lists are run again before
+  SJL-9.2 generates any table, on the newest valid UTC whole-suite report with negative tests of Broiler.JS's default
+  branch at that time; SJL-9's base report is taken only at SJL-9.5 (decision D4) (finding F17).
 
 **The test262 population.** The map holds every `intl402` file of the report: each file that exercises a row, with its
 rows, the locale data it needs and each binary's verdict, and every other file with the milestone that owns it. So it
@@ -386,7 +388,9 @@ SJL-9. This record defines them, by decision D7 as revised:
   available locales, the host's cultures;
 - **in both, the default is available**: the available locales always include the default locale and the less narrow
   tags the same clause requires for it. Under invariant globalization Broiler.JS's are `en-US` and `en` (row L44, a
-  correction of Broiler.JS), which Broiler.JS's rule holds in its part D;
+  correction of Broiler.JS), which Broiler.JS's rule holds in its part D. In Broiler.JS every service's available
+  locales, `Intl.Collator`'s included, come from the revised available-locale provider at SJL-9.5; the Collator's data
+  and comparison stay the host's until SJL-17;
 - **in both, one default**: every reader of DefaultLocale reads the same provider, the Intl services, the `toLocale*`
   methods and TransformCase with no locale (row L35).
 
@@ -470,7 +474,9 @@ F3)*. Policies are unchanged, with two readings the correspondence's runs requir
   narrow tags the same clause requires for it. The pinned text requires it ("[[AvailableLocales]] ... must include the
   value returned by DefaultLocale", `sec-internal-slots`), and test262's `intl402/default-locale-is-supported.js`
   asserts it. Under invariant globalization Broiler.JS's available locales are therefore `en-US` and `en`. Today they
-  are none (row L44, a correction of Broiler.JS). Broiler.JS's rule holds this in its part D.
+  are none (row L44, a correction of Broiler.JS). Broiler.JS's rule holds this in its part D. In Broiler.JS every
+  service's available locales, `Intl.Collator`'s included, come from the revised available-locale provider at SJL-9.5;
+  the Collator's data and comparison stay the host's until SJL-17.
 - **One default.** Every reader of DefaultLocale in an engine reads the same default-locale provider: the Intl
   services, the `toLocale*` methods, and TransformCase with no locale (row L35). In Broiler.JS, under a host culture,
   `toLocaleLowerCase()` and `toLocaleUpperCase()` with no locale case by that culture's language, as its Intl services
@@ -768,9 +774,11 @@ disposition (a)). Nothing public is removed.
   (`VM/JsRealm.Base64.cs:186`), the GetOptionsObject the profile shares, or an equal call. SJL-9.4's adapter review
   names it.
 - **T42.** Broiler.JS's deletion list gains the members of `JSIntlDateTimeFormat` that no caller reaches: the
-  constructor from a `CultureInfo`, `Format(DateTimeOffset, JSObject)`, `FormatEnglishHour`, `FormatDayPeriod`, and
-  the `locale` field. The public static `Get(CultureInfo)` and `ApplyAllDefaults` stay, over the library, and
-  Broiler.JS's `docs/public-api.md` records them.
+  constructor from a `CultureInfo`, `Format(DateTimeOffset, JSObject)`, `FormatEnglishHour(DateTimeOffset)`,
+  `FormatDayPeriod(DateTimeOffset, string)`, and the `locale` field, as row T42 names them. The overload
+  `FormatEnglishHour(int)`, which the `dayPeriod` paths of `format` and `formatToParts` call, is not among them. The
+  public static `Get(CultureInfo)` and `ApplyAllDefaults` stay, over the library, and Broiler.JS's
+  `docs/public-api.md` records them.
 
 The reason: an incomplete list misses rule I5's rows; the public members are the prototype entry points the engine
 keeps; ToDurationRecord's work is reading a script value's properties, which is engine work, as ToTemporalDuration's
@@ -930,7 +938,8 @@ The library keeps both engines' answer.
 
 **(a) S7.** In PartitionRelativeTimePattern the number written into a past pattern is the magnitude of ℝ(value):
 `format(-1, "second")` is `"1 second ago"`. That is what `RelativeTimeFormat/prototype/format/en-us-numeric-always.js`
-asserts, and what both engines and Node write. The pinned step
+asserts, with `RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js`, which asserts the same magnitude
+with no `minusSign` part, and what both engines and Node write. The pinned step
 "PartitionNumberPattern(_relativeTimeFormat_.[[NumberFormat]], ℝ(_value_))", whose NumberFormat's `signDisplay` is
 `"auto"`, is read as formatting the absolute value, because the past pattern carries the sign. `tc39/ecma402` `main`
 at `3691634` (2026-10-23) reads as the pin.
@@ -947,8 +956,11 @@ Both rows stay "same" in both engines, and no answer moves. The vectors carry th
 pinned text does not require. The pinned text is the arbiter of the library's CollationsOfLocale, which reads each
 engine's `Intl.Collator` data. Broiler.JS's Collator keeps its host path until SJL-17 and lists `emoji` and `eor` for
 `en`, so the file keeps passing if Broiler.JS's adapter hands the operation that list. SJL-9.5's local pre-check
-holds it. SJL-17's plan inherits the condition: Broiler.JS's Collator data for `en` keeps a collation, or SJL-17's
-rule names the file.
+holds it. Broiler.JS's rule, part C class V, admits by the same list a `collations` line of the locales group of a
+Collator's tailorings (`src/tests/cldr/locales/divergences.txt` lines 62-92) whose answer after equals, sorted, the
+collations Broiler.JS's `Intl.Collator` resolves for the line's Locale. Its `zh`, `zh-Hant`, `zh-TW`, `zh-Hans-SG`
+and `ko` lines need it, since that list equals neither the retained answer nor this family's `[emoji,eor]`. SJL-17's
+plan inherits the condition: Broiler.JS's Collator data for `en` keeps a collation, or SJL-17's rule names the file.
 
 **How the rules read them.** In both rules the files keep their base verdicts, and no class admits a move. This
 family skips L17's file at both commits (`Intl.Locale-info` is not admitted). The falsifier reads "a passing test262
@@ -1083,8 +1095,10 @@ Each is corrected beside the reading, which is quoted there, in this record's ch
   L18 (decision D32).
 - **Broiler.JS's `divergence-groups.tsv`**, committed with its rule, keeps its bytes; its bundle's README carries a
   dated note on its rows 49, 50 and 43 (finding F16): the calendar group is class `spec`, where it read `coverage`;
-  the collations group stays `coverage`, its header the misreading row L18 corrects; and the durations `arab` group's
-  "Broiler.JS's carries" holds only after SJL-9.5 (decision D21).
+  the collations group stays `coverage`, its header the misreading row L18 corrects, and its Chinese and Korean lines
+  are read by the list of Broiler.JS's `Intl.Collator` (decision D33 (c)); and the durations `arab` group's
+  "Broiler.JS's carries" holds only after SJL-9.5 (decision D21). Broiler.JS's rule, part C, reads the table and the
+  README's corrections both as its rule commit holds them, so a correction added later binds nothing there.
 
 ## Decision
 

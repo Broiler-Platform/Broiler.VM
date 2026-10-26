@@ -220,7 +220,9 @@ decisions D13 and D24.)* **The list is extended:**
 - `JSIntlDefaultNumberingSystems.g.cs` and its script, `scripts/intl/generate_default_numbering_systems.py`, whose
   table the shared data absorbs (decision D13);
 - the members of `JSIntlDateTimeFormat` that no caller reaches (row T42): the constructor from a `CultureInfo`,
-  `Format(DateTimeOffset, JSObject)`, `FormatEnglishHour`, `FormatDayPeriod` and the `locale` field.
+  `Format(DateTimeOffset, JSObject)`, `FormatEnglishHour(DateTimeOffset)`, `FormatDayPeriod(DateTimeOffset, string)`
+  and the `locale` field, as row T42 names them. The overload `FormatEnglishHour(int)`, which the `dayPeriod` paths
+  of `format` and `formatToParts` call, is not among them.
 
 Broiler.JS's public Intl types stay as the engine's Intl objects, with every public member, `JSIntlDateTimeFormat`'s
 public static `Get(CultureInfo)` and `ApplyAllDefaults` among them (SJL-D-25, disposition (a)). The list read as above,

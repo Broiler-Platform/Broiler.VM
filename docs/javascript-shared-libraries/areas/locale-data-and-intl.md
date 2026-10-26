@@ -222,9 +222,11 @@ decision D24.)* Both lists are extended. Every deleted type and member of Broile
   and `CollatorKeyData` in `JsRealm.Intl`, which are SJL-17's, and `JsRealm.Segmenter.cs`, which is SJL-7's. The
   reading of DurationFormat's argument, ECMA-402's ToDurationRecord included, stays in the adapter.
 - **Broiler.JS, plus:** `JSIntlDefaultNumberingSystems.g.cs` and its script; and `JSIntlDateTimeFormat`'s members no
-  caller reaches (the constructor from a `CultureInfo`, `Format(DateTimeOffset, JSObject)`, `FormatEnglishHour`,
-  `FormatDayPeriod` and the `locale` field). Its public Intl types stay as the engine's Intl objects, with every public
-  member, the public static `Get(CultureInfo)` and `ApplyAllDefaults` among them (SJL-D-25, disposition (a)).
+  caller reaches (the constructor from a `CultureInfo`, `Format(DateTimeOffset, JSObject)`,
+  `FormatEnglishHour(DateTimeOffset)`, `FormatDayPeriod(DateTimeOffset, string)` and the `locale` field, as row T42
+  names them; not the overload `FormatEnglishHour(int)`, which the `dayPeriod` paths call). Its public Intl types stay
+  as the engine's Intl objects, with every public member, the public static `Get(CultureInfo)` and `ApplyAllDefaults`
+  among them (SJL-D-25, disposition (a)).
 
 The lists read as above, Broiler.VM's ending at "**at SJL-17:** `JsCollator` and `JsCollationData`" and Broiler.JS's
 at "**at SJL-17:** the `CompareInfo` path for the locales the shared data covers".
