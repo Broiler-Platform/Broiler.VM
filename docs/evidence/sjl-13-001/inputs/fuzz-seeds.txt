@@ -1,0 +1,143 @@
+# SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# The fuzz seeds of bundle sjl-13-001's area rule, part G (and of bundle sjl-13-002's part G, which reads this file).
+# Written at SJL-13.1 with the rule, before any session that reads it exists: the wide session, --fuzz-wide, is the
+# tools commit's (JSD-0083 decision D22). Never edited after the rule commit; a change is a new dated file.
+#
+# Two sessions, each run at the base commit (read, not judged) and at the after commit (judged):
+#   wide   the slice compiler's --fuzz-wide mode. Each "wide" line names one seed input of the parse corpus
+#          src/tests/corpus/parse-1/corpus.manifest by its id, with the manifest's SHA-256 and path; the session
+#          reads the seed's text as part B reads it (a test262 input from the pinned archive, any other from the
+#          corpus's inputs/ folder), checks it against the SHA-256, mutates it as SourceFuzzing does, and compiles
+#          each mutant through JsCompiler.Compile on CompilationStack under the seed's goal. A seed whose
+#          eval-flags column names flag sets is an eval-family seed: each of its mutants is also compiled as eval
+#          code under each flag set named (E0 to E7, as the manifest's header defines them). "mutants" is the
+#          number of mutants drawn from the seed; for an eval-family seed each is compiled under the goal and under
+#          every flag set named.
+#   slice  the slice compiler's --fuzz mode over its own seed programs (SliceSourcePrograms), one line per
+#          session: its --seed and its --iterations.
+# The mutator's seed of the wide session is the "wide-mutator-seed" value below, so a wide session is a total
+# function of this file and the corpus.
+#
+# Every wide seed was chosen, at SJL-13.1, as one that the base accepts: each is accepted in bundle sjl-12-001's
+# after baseline (docs/evidence/sjl-12-001/after/parse-corpus-after-run1.tsv.gz) in every sub-population B1 row
+# of its variants and forms, and an eval-family seed in B3 under each flag set named; none is a negative test, and
+# none is larger than 16 KiB. The selection: every input of the broiler-vm origin, every module input of the
+# broiler-js origin, and the first test262 input (by id) of each directory under test/language/, for each goal
+# and each answer of the manifest's eval-family column.
+#
+# A finding is an unhandled exception, a process that ended without its exit code, a refusal whose code the
+# registry does not hold, or one compilation that takes longer than the wall bound below.
+#
+#% format	broiler-vm-wide-fuzz-seeds	1
+#% corpus	parse-1	1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc
+#% wall-bound-ms	20000
+#% wide-mutator-seed	1
+session	id	goal	eval-flags	mutants	sha256	path
+wide	T028068	script	E0,E1,E2,E3,E4,E5,E6,E7	50	0f76c3b17d80ce0eda9e03d85ff72a51d4e6969a5485ecbc096decab288263f7	test/language/arguments-object/10.5-1-s.js
+wide	T028332	script	E0,E1,E2,E3,E4,E5,E6,E7	50	4fa559a97995918bfaa39aa145822f933c18815067ec36b83cc1130809c19d28	test/language/asi/S7.9.2_A1_T2.js
+wide	T028417	script	-	200	3a8197ee6e26bc6d1d2b9377a9ffa04357f55777398f7fcea0b70596bbe703b8	test/language/asi/S7.9_A7_T7.js
+wide	T028433	script	-	200	22747f2f58927f0e0719516185e3ef0b80a77981db0e65ba6c5f65be1682914a	test/language/block-scope/leave/finally-block-let-declaration-only-shadows-outer-parameter-value-1.js
+wide	T028439	script	E0,E1,E2,E3,E4,E5,E6,E7	50	e032d1e4fccf1d1466d12c4933edeee7c47dfa5e0a5c40628dbdabf2c82bef41	test/language/block-scope/leave/outermost-binding-updated-in-catch-block-nested-block-let-declaration-unseen-outside-of-block.js
+wide	T028578	script	E0,E1,E2,E3,E4,E5,E6,E7	50	add7d9e3ab9a98f468de7f1d32ce8f28ac2cd4e3483e51c5132ba3eed6fb26b9	test/language/comments/S7.4_A1_T1.js
+wide	T028608	module	-	200	5fe73a40369e7cbd61f4061b027c9b508d6f1752fc83b29a4f1e4af7e8471926	test/language/comments/hashbang/module.js
+wide	T028621	script	-	200	55795a2ce200a8cfd0c03cb6236a69cdabe216c08ec8e57027e0d4602be25d81	test/language/comments/mongolian-vowel-separator-multi.js
+wide	T028630	script	-	200	2ba271d8589ff0b50b51748ae3fc96adc52777af848de78b2db5f1efe0bab0e0	test/language/computed-property-names/basics/number.js
+wide	T028653	script	E0,E1,E2,E3,E4,E5,E6,E7	50	3b05fd4729ac5d7ea70f0f68a7599d773d8dcc0a410eaf52005de7e734c5d97a	test/language/computed-property-names/class/static/method-number-order.js
+wide	T028678	script	-	200	9ee6fd91b0d482ed6c5e419de92884be292bd6de332abf165bad37053cb08590	test/language/destructuring/binding/initialization-requires-object-coercible-null.js
+wide	T028680	script	E0,E1,E2,E3,E4,E5,E6,E7	50	4ac779ef25d73949ce875cec79f40da47ab5b98d497d21411d5b920b1e33cc77	test/language/destructuring/binding/initialization-returns-normal-completion-for-empty-objects.js
+wide	T028697	script	-	200	b8541cb24e8650faa39be73d33867efc35b61fa390bd33178763439584bc820b	test/language/directive-prologue/10.1.1-1-s.js
+wide	T028699	script	E0,E2,E4,E5,E6,E7	50	d205bdef92f022ab6d449c266223c4b66419ee3ac4817cdb5e343bbd17d8af95	test/language/directive-prologue/10.1.1-11-s.js
+wide	T028759	script	E0,E2,E4,E5,E6,E7	50	5e810260c65aff5200c3446e7c3e69bb49f69af0095087974464bcc0d375733e	test/language/eval-code/direct/arrow-fn-a-following-parameter-is-named-arguments-arrow-func-declare-arguments-assign-incl-def-param-arrow-arguments.js
+wide	T028881	module	-	200	648a257196bc895409842b12191cc0a8d9e10d28e66886afb89059412761caca	test/language/eval-code/direct/export.js
+wide	T029109	script	E0,E1,E2,E3,E4,E5,E6,E7	50	e19b6800a638faf54237a41ab7b772d65176ed29b5d9284fcb6f0bfc38b1dd92	test/language/expressions/addition/S11.6.1_A1.js
+wide	T029149	script	-	200	0286ff3896a5995fbc43e6044b2b41f78cb4fe7c7f13924f01362cd438a7ab3a	test/language/expressions/addition/coerce-bigint-to-string.js
+wide	T031685	module	-	200	1ef8cdd155316a48f5776976db577b69db390f5116c5a8939c7662860b285ccc	test/language/expressions/class/cpn-class-expr-accessors-computed-property-name-from-await-expression.js
+wide	T040205	script	-	200	5d07b268f9e741332bccae193c24d54d2f51fe07f27648743645c38d59393dda	test/language/function-code/10.4.3-1-1-s.js
+wide	T040230	script	E0,E1,E2,E3,E4,E5,E6,E7	50	71c7eb45026321e56ad90d88e6653809a3f52279d46f46d85cfb2f3cf978dd9e	test/language/function-code/10.4.3-1-17-s.js
+wide	T040422	script	-	200	02b29743c12710d6fe5f6a1cf5a58d349af0031657bb0a025f60e44e29be657b	test/language/future-reserved-words/_implements.js
+wide	T040477	script	E0,E1,E2,E3,E4,E5,E6,E7	50	f2b5599591d343d4512aca11808d2d6a010b493e02bced1af3068ffadf1936e7	test/language/global-code/S10.1.7_A1_T1.js
+wide	T040480	script	-	200	4c2f997728b2cc12ac2284e56b606e877220d864145aa182114b4362121482e7	test/language/global-code/block-decl-strict.js
+wide	T040519	script	E0,E1,E2,E3,E4,E5,E6,E7	50	b3913bbafb6ef92e8a8da71e02b321744c2cdc53670d128442b172e83aec726d	test/language/identifier-resolution/S10.2.2_A1_T1.js
+wide	T040532	script	-	200	b7975b1214696e975860d74cfa5dc0d1c9e1248d453d84be00e40ecb64bd3a6a	test/language/identifier-resolution/unscopables.js
+wide	T040533	script	-	200	deb73f334517afb4553fb3f12d716767b6ffe3333476af542ef5927b45d5e001	test/language/identifiers/other_id_continue-escaped.js
+wide	T040540	script	E0,E1,E2,E3,E4,E5,E6,E7	50	c408fc11ec2ea53c6312ffe01afc8bdd9fc149f48871b5be4a5b9c6760916f95	test/language/identifiers/part-unicode-10.0.0-class-escaped.js
+wide	T040805	module	-	200	a707cb9b8ee5b45fe7dd530ac26d03e67f63f2dcf2a83821755df75b6239ae5c	test/language/import/import-attributes/json-extensibility-array.js
+wide	T041019	script	-	200	ae56e77f43b13a1285bb8c0829d3efcf00a17b8259276562d43d05bd76e84c17	test/language/line-terminators/7.3-15.js
+wide	T041025	script	E0,E1,E2,E3,E4,E5,E6,E7	50	1cabb856757465a17d72950b0b6a0f23ceb69180e41917f8a7658e16c975f1e6	test/language/line-terminators/S7.3_A5.4.js
+wide	T041073	script	-	200	aba851664ecdd617c391ad2f6ab30c92a2969ef238cad3133cb46d5652f7c572	test/language/literals/bigint/numeric-separators/numeric-separator-literal-bil-bd-nsl-bd.js
+wide	T041119	script	E0,E1,E2,E3,E4,E5,E6,E7	50	43a21a8d9556662a7a642cd5f1e6c122bfc48e80c458f4f1a177f614d7171157	test/language/literals/boolean/S7.8.2_A1_T1.js
+wide	T041594	module	-	200	9aa5fa497acfa81ac1193d3683793a04e534e27685e9a32440ae0ff41fa18b32	test/language/module-code/ambiguous-export-bindings/error-export-from-named-1_FIXTURE.js
+wide	T042051	script	-	200	f878a92d40b4d01a441332a808d96d07be2261896e911058f4609c2359e4da7b	test/language/module-code/source-phase-import/import-source.js
+wide	T042073	script	E0,E1,E2,E3,E4,E5,E6,E7	50	339720673a134559d91844bc177731cc494adf1a221087fa8de1089f8ef1811f	test/language/module-code/top-level-await/dynamic-import-of-waiting-module.js
+wide	T042342	script	E0,E1,E2,E3,E4,E5,E6,E7	50	c31d5ef50d16b6a68371b84fc5c31c83e86c93c9624ff322a98490dfd77d19c2	test/language/punctuators/S7.7_A1.js
+wide	T042354	script	-	200	db28c5449114ecbde80c342447ada982a9b421bad0f96eec41a6789af38a9003	test/language/reserved-words/await-script.js
+wide	T042359	script	E0,E1,E2,E3,E4,E5,E6,E7	50	6345bcac12be0ffca356c81a56be7bc3ae01b2e2f4c904b969cdcf1550e91d8c	test/language/reserved-words/ident-name-keyword-accessor.js
+wide	T042380	script	-	200	be31dd32641fababc321629af07af851ae76300599ebc6d3dc04352b87b6f038	test/language/rest-parameters/array-pattern.js
+wide	T042383	script	E0,E1,E2,E3,E4,E5,E6,E7	50	64c39d0b4f67a43fd8d5c381e2c54064cc91d9cff1de529d34cf4f33c2cd0695	test/language/rest-parameters/no-alias-arguments.js
+wide	T042391	script	-	200	f4a7ff4c19ddc23501b5494a0173f294498fa94c83e27553dd8a405b0d188ece	test/language/source-text/6.1.js
+wide	T042392	script	-	200	0890e362f122e408cdee79566e7172d49414c982408f4d6bb19c9a447c78560f	test/language/statementList/block-array-literal-with-item.js
+wide	T042422	script	E0,E1,E2,E3,E4,E5,E6,E7	50	e08bc1d6e19141382938fdfa4f4dcc31be7a45bc2fc6a6908205bc886af74a65	test/language/statementList/eval-block-array-literal-with-item.js
+wide	T042479	script	E0,E1,E2,E3,E4,E5,E6,E7	50	24fcdf381cea49595a8d161954d303718607e7160bf64deb78b546067a0c23d9	test/language/statements/async-function/cptn-decl.js
+wide	T042480	script	-	200	985e2804beec92a6a69c7ca89a8639a0c2a1845eebae9a26f861fea4cbfc41e2	test/language/statements/async-function/declaration-returns-promise.js
+wide	T042895	module	-	200	d38c6e88804156e83afe1deb850212133ea00eadeea52825ddaaf620b2bc7e93	test/language/statements/await-using/syntax/await-using-allowed-at-top-level-of-module.js
+wide	T051809	script	E0,E1,E2,E3,E4,E5,E6,E7	50	543f93965964a2d31f12a3944b395a8a5afbb4124281a8ab94900d581883d512	test/language/types/boolean/S8.3_A1_T1.js
+wide	T051821	script	-	200	1722ea5ba175e089d99f5af37abf04d90112f8083a049b886f1d13f8af2e7e24	test/language/types/number/8.5.1.js
+wide	T051922	script	E0,E1,E2,E3,E4,E5,E6,E7	50	968889d824476f415a0542d0fca8f2339b58d3237aa853f728bc6c71728d89c7	test/language/white-space/S7.2_A2.1_T2.js
+wide	T051967	script	-	200	bc2c1491c7e026bd18246657e736b41ba23f9cbb21e3392e88c59f2cc273584b	test/language/white-space/between-form-feed.js
+wide	V000003	script	-	200	475858d2319d4dc2843318e137458af300f3cf34fe51ea7e24b9175e71624d6d	inputs/broiler-vm/js-1/accepted/source-a-block-scopes-a-let.js
+wide	V000004	script	-	200	143e0282e681e56a5aaba9f428085da228fdfd92d5998a200a689f2f376413c1	inputs/broiler-vm/js-1/accepted/source-a-comment-is-not-code.js
+wide	V000005	script	-	200	eb7854518012998e6f21d8a11ede308668cf4b255218a6779857c6af078b6a63	inputs/broiler-vm/js-1/accepted/source-a-comparison-produces-a-boolean.js
+wide	V000006	script	-	200	50d1c10040ae8a90a47fad1cfc91fe37c08d9fec49330de4a15eec230d6961fc	inputs/broiler-vm/js-1/accepted/source-a-conditional-expression.js
+wide	V000007	script	-	200	7e53bd79360cc8d42bc4487130bd17d8a5b4f43d7bf3ebf1e0beb9bf02933ae1	inputs/broiler-vm/js-1/accepted/source-a-counting-for-loop.js
+wide	V000008	script	-	200	2ff75e094fc295ceeb4048171fe3326618e65f20a512293e2362c446eacdf483	inputs/broiler-vm/js-1/accepted/source-a-declaration-without-an-initialiser.js
+wide	V000009	script	-	200	75e44c4e7f1268f44f68767d925005a27112659fff62969daa256acab1f01624	inputs/broiler-vm/js-1/accepted/source-a-directive-prologue-is-not-the-completion-value.js
+wide	V000010	script	-	200	6f5fa048cec06cf74bef27d39a42bd438489d01fe13654efe7ea8747d29b6251	inputs/broiler-vm/js-1/accepted/source-a-do-while-runs-once.js
+wide	V000011	script	-	200	0430108dea936c37cdcbc37f9e19ef99d2449b23bc973011922488225b1cfb20	inputs/broiler-vm/js-1/accepted/source-a-hexadecimal-literal.js
+wide	V000012	script	-	200	44f94955880e7e3d8a4d2df297fcfd8d29e72c4d6989b2ecd4071f147eca0616	inputs/broiler-vm/js-1/accepted/source-a-semicolon-is-inserted.js
+wide	V000013	script	-	200	1277c0b877d14a8f962bb078071cb95ab976a112005b31f3db0ff9fc56026911	inputs/broiler-vm/js-1/accepted/source-a-var-is-visible-before-its-declaration.js
+wide	V000014	script	-	200	fe7d7462a6183c85831297f065baf4e70f4e20d6caa4e638f45dc73c1a08fb4f	inputs/broiler-vm/js-1/accepted/source-an-untaken-else.js
+wide	V000015	script	-	200	0920ce9900fa1a16929db5c6f4703b618ccb31b517e10012dc0214fe26f75569	inputs/broiler-vm/js-1/accepted/source-assignment-is-right-associative.js
+wide	V000016	script	-	200	e11f6b53b1e717c2f85813c984d27543f2386cda54d47d51ba57a40b8e4dcc6f	inputs/broiler-vm/js-1/accepted/source-break-leaves-the-loop.js
+wide	V000017	script	-	200	6b67df18ebad31e23744108efa7f3c1ca3aa01414294bdebbb43080e60e9b289	inputs/broiler-vm/js-1/accepted/source-continue-reaches-the-update.js
+wide	V000018	script	-	200	f5ef345650d2016927ed14e3d662ca1efd030955addf741bbb4264d5f7e44235	inputs/broiler-vm/js-1/accepted/source-logical-and-answers-its-operand.js
+wide	V000019	script	-	200	035fd1933ad3c43cb0caf1b1c59471eb8de1c2224b526ad8bced2b20ddfd15b1	inputs/broiler-vm/js-1/accepted/source-logical-and-does-not-evaluate-the-right-side.js
+wide	V000020	script	-	200	5cbd7b247542d465a46bd20eecde45ae36d04efc4456226b848f18228381ea23	inputs/broiler-vm/js-1/accepted/source-logical-or-answers-its-operand.js
+wide	V000021	script	-	200	3553c468c86fade22a00dab4c3970537a6d2e1588fa7514a01b860de9a151ba1	inputs/broiler-vm/js-1/accepted/source-multiplication-binds-tighter.js
+wide	V000022	script	-	200	5a7e0aea55b602ab4ec4826bec6026efb6a4a22891a6a1176b8a58b31eb56ed2	inputs/broiler-vm/js-1/accepted/source-parentheses-regroup.js
+wide	V000023	script	-	200	cd350168751bcc400dc75eb291883bdcdd7677592e15fcd6f5cd36213e29dca9	inputs/broiler-vm/js-1/accepted/source-remainder-takes-the-dividends-sign.js
+wide	V000024	script	-	200	c9957c50df5e7eff7b73a1bf82bd8fe1f928f6124b181098e114831648af6d3c	inputs/broiler-vm/js-1/accepted/source-strict-equality-compares-kinds.js
+wide	V000025	script	-	200	2f4578508315e6d323520f2a65ffe165c10c84a4e173db88577c32e71384e7e8	inputs/broiler-vm/js-1/accepted/source-subtraction-is-left-associative.js
+wide	V000026	script	-	200	a6354d5afc157993d666cd55f3942ed27d2d3ab3fde3bda9cb28fc82729744a3	inputs/broiler-vm/js-1/accepted/source-unary-minus-binds-tighter-than-a-shift.js
+wide	V000027	script	-	200	278330b103680ffcb626780eee69ce91ce0bba61baa41a39590ce2b648e74333	inputs/broiler-vm/js-1/accepted/source-unary-plus-is-to-number.js
+wide	V000028	script	-	200	b869b62be6ead4aab588b59671c6a1489e05be1218791a7a981f1f4e241fd0eb	inputs/broiler-vm/js-1/refused/refuse-a-bigint-literal.js
+wide	V000033	script	-	200	6fd49c9632294277f81b7f8e5238a9deb3ca2403f402603cc69b3dce36c48e5d	inputs/broiler-vm/js-1/refused/refuse-a-function.js
+wide	V000042	script	-	200	b373e20495c927928e5629ede3d99e9d7da61257f29cd4faac4473dddb234d96	inputs/broiler-vm/js-1/refused/refuse-a-string-expression-that-looks-like-a-directive.js
+wide	V000043	script	-	200	0f79794167e3b06d8343cc0965244087c8bf0c9f443d89d441baf330df069464	inputs/broiler-vm/js-1/refused/refuse-a-string-value.js
+wide	V000046	script	-	200	7d5116ed80ee70f3eda88f4f37b61b98675e96412c0f3e00e194f4cc6a45f585	inputs/broiler-vm/js-1/refused/refuse-an-assignment-to-a-constant.js
+wide	V000055	script	-	200	2084752b906db28275ff4dc19036e9ff280d486a1af2ae80c308b0dcd1e1ed00	inputs/broiler-vm/js-1/refused/refuse-an-object-literal.js
+wide	V000057	script	-	200	35ddc492466195687af3f7f588b3ed2ea60d6c1878c9a9a0425b52dbdf31ea50	inputs/broiler-vm/js-1/refused/refuse-an-unresolvable-name.js
+wide	V000062	script	-	200	9169099790586ef6733bde4212652c6bcb81045f3534724e574cc977d275d9cd	inputs/broiler-vm/js-1/refused/refuse-bitwise-not.js
+wide	V000063	script	-	200	543bcfffd73155f4ba365996e9e10d5dea4333c79d5c0f3b6c4d3739d411ddc5	inputs/broiler-vm/js-1/refused/refuse-loose-equality.js
+wide	V000066	script	-	200	dcfc61ae510220d6a41e6ff10fa639d84ed14d64df80cb1ac388697eb7e2f7ad	inputs/broiler-vm/js-1/refused/refuse-typeof.js
+wide	J000010	module	-	200	011d2e23935ada69f0be5dcc642c80e33f04345054a37e5fd59014c5c9000175	inputs/broiler-js/011d2e23935ada69f0be5dcc642c80e33f04345054a37e5fd59014c5c9000175.mjs
+wide	J000012	module	-	200	015b7dd02964a5c593b5c1a58dfe75a9c87e1d43d255a32a45f8b109d91a7329	inputs/broiler-js/015b7dd02964a5c593b5c1a58dfe75a9c87e1d43d255a32a45f8b109d91a7329.mjs
+wide	J000390	module	-	200	2bf28849cade87113ec4170ef2bf9ffb1179fc9a276afa675c9de2424349560b	inputs/broiler-js/2bf28849cade87113ec4170ef2bf9ffb1179fc9a276afa675c9de2424349560b.mjs
+wide	J000536	module	-	200	3c9ac81e5f041916e2e9bf7d6636c54dd42655bc249023e72c0d4c9131803c6d	inputs/broiler-js/3c9ac81e5f041916e2e9bf7d6636c54dd42655bc249023e72c0d4c9131803c6d.mjs
+wide	J000574	module	-	200	404df48968d3c92eb24f41e12b93cab93d86270244a4b00ac3272daf9911b994	inputs/broiler-js/404df48968d3c92eb24f41e12b93cab93d86270244a4b00ac3272daf9911b994.mjs
+wide	J000640	module	-	200	485e877ef02cd1dd0d0466cff789e21132480b3bab3300b4830f3abadedbb5f3	inputs/broiler-js/485e877ef02cd1dd0d0466cff789e21132480b3bab3300b4830f3abadedbb5f3.mjs
+wide	J001002	module	-	200	71ddf677141649d4098872e35a16fd041b4eaad2278f22c86d7e84cf434d6076	inputs/broiler-js/71ddf677141649d4098872e35a16fd041b4eaad2278f22c86d7e84cf434d6076.mjs
+wide	J001042	module	-	200	76219c1ba2a613a5788d401ac18d18105a840707ed72ec882b105c26d573c3f4	inputs/broiler-js/76219c1ba2a613a5788d401ac18d18105a840707ed72ec882b105c26d573c3f4.mjs
+wide	J001125	module	-	200	7e3a9cf18e3fb23773c794a65297d415db0c8114104db2032570cbff7c515cc1	inputs/broiler-js/7e3a9cf18e3fb23773c794a65297d415db0c8114104db2032570cbff7c515cc1.mjs
+wide	J001306	module	-	200	937714801e888fbe3d12ed02003327cbec7be3c80c2d50b4d2cb3ee360337f05	inputs/broiler-js/937714801e888fbe3d12ed02003327cbec7be3c80c2d50b4d2cb3ee360337f05.mjs
+wide	J001358	module	-	200	9941e6f989eeb2e68c74d034681d9b5ff8a6088fa3940fe7741e0a1b2de82c1b	inputs/broiler-js/9941e6f989eeb2e68c74d034681d9b5ff8a6088fa3940fe7741e0a1b2de82c1b.mjs
+wide	J001779	module	-	200	cc5f58e9ebf7521cee709059865612dbd1a89567075fd23c7cfb0a942dcdbf28	inputs/broiler-js/cc5f58e9ebf7521cee709059865612dbd1a89567075fd23c7cfb0a942dcdbf28.mjs
+wide	J001788	module	-	200	cd7e67431bf606b702316b1783c52f30e6f82b222391e89ab0cc2bc3f49801c9	inputs/broiler-js/cd7e67431bf606b702316b1783c52f30e6f82b222391e89ab0cc2bc3f49801c9.mjs
+wide	J001810	module	-	200	ceeea1893e7048620d442ce19ed820226387008ee21221ce1c1c306970d88b23	inputs/broiler-js/ceeea1893e7048620d442ce19ed820226387008ee21221ce1c1c306970d88b23.mjs
+wide	J002124	module	-	200	f7f7d99ea63195a867ab01ffac999e07cc3385aee69a20a5ec7c7ed6f3a05424	inputs/broiler-js/f7f7d99ea63195a867ab01ffac999e07cc3385aee69a20a5ec7c7ed6f3a05424.mjs
+wide	J002181	module	-	200	fdf54405a36d9db8b2d22a19ec5c160ecc7fa93f454173abead77ecab59cda79	inputs/broiler-js/fdf54405a36d9db8b2d22a19ec5c160ecc7fa93f454173abead77ecab59cda79.mjs
+slice	1	-	-	2000	-	-
+slice	2	-	-	2000	-	-
+slice	3	-	-	2000	-	-
+slice	4	-	-	2000	-	-
