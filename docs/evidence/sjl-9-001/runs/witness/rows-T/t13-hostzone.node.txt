@@ -1,0 +1,14 @@
+# command (from <rows>/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 300 node -e '<print = stdout line; indirect eval of built/t13-hostzone.js>'
+# revision: node v22.22.0; ICU 77.1; CLDR 47.0; tz 2025b
+# probe: built/t13-hostzone.js sha256 9d6c10ea176d305d198dc1bfb1296d800ca997737b9301bcd3f434572b207c85
+{minute, second} timeZone UTC => [minute:"00", literal:":", second:"05"]
+{minute, second} no timeZone (the default zone) => [minute:"00", literal:":", second:"05"]
+{minute, second} timeZone Asia/Kathmandu => [minute:"45", literal:":", second:"05"]
+format {minute, second} timeZone UTC => "00:05"
+default zone resolved => "UTC"
+timeZone "America/Lo\u017f_Angeles" => THROWS RangeError: Invalid time zone specified: America/Lo\u017f_Angeles
+timeZone "Asia/\u212aolkata" => THROWS RangeError: Invalid time zone specified: Asia/\u212aolkata
+timeZone "Asia/Kolkat\u0131" => THROWS RangeError: Invalid time zone specified: Asia/Kolkat\u0131
+timeZone "AMERICA/LOS_ANGELES" => "America/Los_Angeles"
+timeZone "america/los_angeles" => "America/Los_Angeles"
+exit=0

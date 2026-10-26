@@ -1,0 +1,19 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/n7-scientific.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/n7-scientific.js sha256 e3a091986147182ac0b3b751c8bcaa601405de0c56ab1bce296e9a2d5083613f
+en scientific => ["1.235E5", "1.23E-4", "-1.5E-7", "1E21", "0E0", "1E1", "1E3"]
+en engineering => ["123.456E3", "123E-6", "-150E-9", "1E21", "0E0", "10E0", "999.95E0"]
+en scientific formatToParts(-0.000123) => [minusSign:"-", integer:"1", decimal:".", fraction:"23", exponentSeparator:"E", exponentMinusSign:"-", exponentInteger:"4"]
+en currency USD scientific 1234.5, engineering 1234567 => ["$1,234.50", "$1,234,567.00"]
+en unit meter scientific 1234.5 => "1.235E3 m"
+en scientific signDisplay always 1234, exceptZero 0 => ["+1.234E3", "0E0"]
+de scientific => ["1,235E5", "1,23E-4", "-1,5E-7", "1E21", "0E0", "1E1", "1E3"]
+de engineering => ["123,456E3", "123E-6", "-150E-9", "1E21", "0E0", "10E0", "999,95E0"]
+de scientific formatToParts(-0.000123) => [minusSign:"-", integer:"1", decimal:",", fraction:"23", exponentSeparator:"E", exponentMinusSign:"-", exponentInteger:"4"]
+de currency USD scientific 1234.5, engineering 1234567 => ["1.234,50\u00a0$", "1.234.567,00\u00a0$"]
+de unit meter scientific 1234.5 => "1,235E3 m"
+de scientific signDisplay always 1234, exceptZero 0 => ["+1,234E3", "0E0"]
+en scientific maximumSignificantDigits 2: 123456 => "1.2E5"
+en currency USD scientific formatToParts(1234.5) => [currency:"$", integer:"1", group:",", integer:"234", decimal:".", fraction:"50"]
+sv, fa scientific -1.5e-7 => ["-1,5E-7", "-\u06f1\u066b\u06f5E-\u06f7"]
+exit=0

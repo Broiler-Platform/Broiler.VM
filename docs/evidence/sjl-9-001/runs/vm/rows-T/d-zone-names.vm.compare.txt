@@ -1,0 +1,2 @@
+# compare: work/compare_dataset.py <rows> zone-names vm (Broiler.JS harness compare_program at f918b040 over runs/d-zone-names.vm.txt; expected = work/datasets/zone-names--zone-names.polyfill-e8cc03fc.txt with work/datasets/zone-names--divergences.txt applied)
+summary: lines=2713 compared=2713 equal=2713 differing=0 divergences-used=275

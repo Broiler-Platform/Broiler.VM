@@ -1,0 +1,9 @@
+de resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["de", "1.234.567,5", "50\u00a0%", "1.234,50\u00a0\u20ac"]
+fr resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["en-US", "1,234,567.5", "50%", "\u20ac1,234.50"]
+de-CH resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["de", "1.234.567,5", "50\u00a0%", "1.234,50\u00a0\u20ac"]
+en-IN resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["en", "1,234,567.5", "50%", "\u20ac1,234.50"]
+sv resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["en-US", "1,234,567.5", "50%", "\u20ac1,234.50"]
+ar resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["en-US", "1,234,567.5", "50%", "\u20ac1,234.50"]
+default: resolved locale; 1234567.5; percent 0.5 => ["en-US", "1,234,567.5", "50%"]
+(1234567.5).toLocaleString() => "1,234,567.5"
+supportedLocalesOf de, fr, en => ["de", "en"]

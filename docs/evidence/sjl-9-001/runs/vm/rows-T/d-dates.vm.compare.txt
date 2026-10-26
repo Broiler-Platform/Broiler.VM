@@ -1,0 +1,2 @@
+# compare: work/compare_dataset.py <rows> dates vm (Broiler.JS harness compare_program at f918b040 over runs/d-dates.vm.txt; expected = work/datasets/dates--dates.icu-77.1.txt with work/datasets/dates--divergences.txt applied)
+summary: lines=1430 compared=1430 equal=1430 differing=0 divergences-used=352

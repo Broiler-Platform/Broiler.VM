@@ -1,0 +1,518 @@
+= en default => "1/5/2024"
+= en dateStyle full => "Friday, January 5, 2024"
+= en dateStyle long => "January 5, 2024"
+= en dateStyle medium => "Jan 5, 2024"
+= en dateStyle short => "1/5/24"
+# en timeStyle full
+   VM: "3:07:09\u202fPM Coordinated Universal Time"
+   JS: "3:07:09 PM Coordinated Universal Time"
+   Node (JS): "3:07:09 PM Coordinated Universal Time"
+# en timeStyle long
+   VM: "3:07:09\u202fPM UTC"
+   JS: "3:07:09 PM UTC"
+   Node (JS): "3:07:09 PM UTC"
+# en timeStyle medium
+   VM: "3:07:09\u202fPM"
+   JS: "3:07:09 PM"
+   Node (JS): "3:07:09 PM"
+# en timeStyle short
+   VM: "3:07\u202fPM"
+   JS: "3:07 PM"
+   Node (JS): "3:07 PM"
+# en dateStyle full timeStyle full
+   VM: "Friday, January 5, 2024 at 3:07:09\u202fPM Coordinated Universal Time"
+   JS: "Friday, January 5, 2024, 3:07:09 PM Coordinated Universal Time"
+   Node (neither): "Friday, January 5, 2024 at 3:07:09 PM Coordinated Universal Time"
+# en dateStyle full timeStyle long
+   VM: "Friday, January 5, 2024 at 3:07:09\u202fPM UTC"
+   JS: "Friday, January 5, 2024, 3:07:09 PM UTC"
+   Node (neither): "Friday, January 5, 2024 at 3:07:09 PM UTC"
+# en dateStyle full timeStyle medium
+   VM: "Friday, January 5, 2024 at 3:07:09\u202fPM"
+   JS: "Friday, January 5, 2024, 3:07:09 PM"
+   Node (neither): "Friday, January 5, 2024 at 3:07:09 PM"
+# en dateStyle full timeStyle short
+   VM: "Friday, January 5, 2024 at 3:07\u202fPM"
+   JS: "Friday, January 5, 2024, 3:07 PM"
+   Node (neither): "Friday, January 5, 2024 at 3:07 PM"
+# en dateStyle long timeStyle full
+   VM: "January 5, 2024 at 3:07:09\u202fPM Coordinated Universal Time"
+   JS: "January 5, 2024, 3:07:09 PM Coordinated Universal Time"
+   Node (neither): "January 5, 2024 at 3:07:09 PM Coordinated Universal Time"
+# en dateStyle long timeStyle long
+   VM: "January 5, 2024 at 3:07:09\u202fPM UTC"
+   JS: "January 5, 2024, 3:07:09 PM UTC"
+   Node (neither): "January 5, 2024 at 3:07:09 PM UTC"
+# en dateStyle long timeStyle medium
+   VM: "January 5, 2024 at 3:07:09\u202fPM"
+   JS: "January 5, 2024, 3:07:09 PM"
+   Node (neither): "January 5, 2024 at 3:07:09 PM"
+# en dateStyle long timeStyle short
+   VM: "January 5, 2024 at 3:07\u202fPM"
+   JS: "January 5, 2024, 3:07 PM"
+   Node (neither): "January 5, 2024 at 3:07 PM"
+# en dateStyle medium timeStyle full
+   VM: "Jan 5, 2024, 3:07:09\u202fPM Coordinated Universal Time"
+   JS: "Jan 5, 2024, 3:07:09 PM Coordinated Universal Time"
+   Node (JS): "Jan 5, 2024, 3:07:09 PM Coordinated Universal Time"
+# en dateStyle medium timeStyle long
+   VM: "Jan 5, 2024, 3:07:09\u202fPM UTC"
+   JS: "Jan 5, 2024, 3:07:09 PM UTC"
+   Node (JS): "Jan 5, 2024, 3:07:09 PM UTC"
+# en dateStyle medium timeStyle medium
+   VM: "Jan 5, 2024, 3:07:09\u202fPM"
+   JS: "Jan 5, 2024, 3:07:09 PM"
+   Node (JS): "Jan 5, 2024, 3:07:09 PM"
+# en dateStyle medium timeStyle short
+   VM: "Jan 5, 2024, 3:07\u202fPM"
+   JS: "Jan 5, 2024, 3:07 PM"
+   Node (JS): "Jan 5, 2024, 3:07 PM"
+# en dateStyle short timeStyle full
+   VM: "1/5/24, 3:07:09\u202fPM Coordinated Universal Time"
+   JS: "1/5/24, 3:07:09 PM Coordinated Universal Time"
+   Node (JS): "1/5/24, 3:07:09 PM Coordinated Universal Time"
+# en dateStyle short timeStyle long
+   VM: "1/5/24, 3:07:09\u202fPM UTC"
+   JS: "1/5/24, 3:07:09 PM UTC"
+   Node (JS): "1/5/24, 3:07:09 PM UTC"
+# en dateStyle short timeStyle medium
+   VM: "1/5/24, 3:07:09\u202fPM"
+   JS: "1/5/24, 3:07:09 PM"
+   Node (JS): "1/5/24, 3:07:09 PM"
+# en dateStyle short timeStyle short
+   VM: "1/5/24, 3:07\u202fPM"
+   JS: "1/5/24, 3:07 PM"
+   Node (JS): "1/5/24, 3:07 PM"
+= de default => "5.1.2024"
+# de dateStyle full
+   VM: "Freitag, 5. Januar 2024"
+   JS: "Friday, January 5, 2024"
+   Node (VM): "Freitag, 5. Januar 2024"
+# de dateStyle long
+   VM: "5. Januar 2024"
+   JS: "January 5, 2024"
+   Node (VM): "5. Januar 2024"
+# de dateStyle medium
+   VM: "05.01.2024"
+   JS: "Jan 5, 2024"
+   Node (VM): "05.01.2024"
+# de dateStyle short
+   VM: "05.01.24"
+   JS: "1/5/24"
+   Node (VM): "05.01.24"
+# de timeStyle full
+   VM: "15:07:09 Koordinierte Weltzeit"
+   JS: "15:07:09 Coordinated Universal Time"
+   Node (VM): "15:07:09 Koordinierte Weltzeit"
+= de timeStyle long => "15:07:09 UTC"
+= de timeStyle medium => "15:07:09"
+= de timeStyle short => "15:07"
+# de dateStyle full timeStyle full
+   VM: "Freitag, 5. Januar 2024 um 15:07:09 Koordinierte Weltzeit"
+   JS: "Friday, January 5, 2024, 15:07:09 Coordinated Universal Time"
+   Node (VM): "Freitag, 5. Januar 2024 um 15:07:09 Koordinierte Weltzeit"
+# de dateStyle full timeStyle long
+   VM: "Freitag, 5. Januar 2024 um 15:07:09 UTC"
+   JS: "Friday, January 5, 2024, 15:07:09 UTC"
+   Node (VM): "Freitag, 5. Januar 2024 um 15:07:09 UTC"
+# de dateStyle full timeStyle medium
+   VM: "Freitag, 5. Januar 2024 um 15:07:09"
+   JS: "Friday, January 5, 2024, 15:07:09"
+   Node (VM): "Freitag, 5. Januar 2024 um 15:07:09"
+# de dateStyle full timeStyle short
+   VM: "Freitag, 5. Januar 2024 um 15:07"
+   JS: "Friday, January 5, 2024, 15:07"
+   Node (VM): "Freitag, 5. Januar 2024 um 15:07"
+# de dateStyle long timeStyle full
+   VM: "5. Januar 2024 um 15:07:09 Koordinierte Weltzeit"
+   JS: "January 5, 2024, 15:07:09 Coordinated Universal Time"
+   Node (VM): "5. Januar 2024 um 15:07:09 Koordinierte Weltzeit"
+# de dateStyle long timeStyle long
+   VM: "5. Januar 2024 um 15:07:09 UTC"
+   JS: "January 5, 2024, 15:07:09 UTC"
+   Node (VM): "5. Januar 2024 um 15:07:09 UTC"
+# de dateStyle long timeStyle medium
+   VM: "5. Januar 2024 um 15:07:09"
+   JS: "January 5, 2024, 15:07:09"
+   Node (VM): "5. Januar 2024 um 15:07:09"
+# de dateStyle long timeStyle short
+   VM: "5. Januar 2024 um 15:07"
+   JS: "January 5, 2024, 15:07"
+   Node (VM): "5. Januar 2024 um 15:07"
+# de dateStyle medium timeStyle full
+   VM: "05.01.2024, 15:07:09 Koordinierte Weltzeit"
+   JS: "Jan 5, 2024, 15:07:09 Coordinated Universal Time"
+   Node (VM): "05.01.2024, 15:07:09 Koordinierte Weltzeit"
+# de dateStyle medium timeStyle long
+   VM: "05.01.2024, 15:07:09 UTC"
+   JS: "Jan 5, 2024, 15:07:09 UTC"
+   Node (VM): "05.01.2024, 15:07:09 UTC"
+# de dateStyle medium timeStyle medium
+   VM: "05.01.2024, 15:07:09"
+   JS: "Jan 5, 2024, 15:07:09"
+   Node (VM): "05.01.2024, 15:07:09"
+# de dateStyle medium timeStyle short
+   VM: "05.01.2024, 15:07"
+   JS: "Jan 5, 2024, 15:07"
+   Node (VM): "05.01.2024, 15:07"
+# de dateStyle short timeStyle full
+   VM: "05.01.24, 15:07:09 Koordinierte Weltzeit"
+   JS: "1/5/24, 15:07:09 Coordinated Universal Time"
+   Node (VM): "05.01.24, 15:07:09 Koordinierte Weltzeit"
+# de dateStyle short timeStyle long
+   VM: "05.01.24, 15:07:09 UTC"
+   JS: "1/5/24, 15:07:09 UTC"
+   Node (VM): "05.01.24, 15:07:09 UTC"
+# de dateStyle short timeStyle medium
+   VM: "05.01.24, 15:07:09"
+   JS: "1/5/24, 15:07:09"
+   Node (VM): "05.01.24, 15:07:09"
+# de dateStyle short timeStyle short
+   VM: "05.01.24, 15:07"
+   JS: "1/5/24, 15:07"
+   Node (VM): "05.01.24, 15:07"
+= en {year: "numeric"} => "2024"
+= en {year: "2-digit"} => "24"
+= en {month: "numeric"} => "1"
+= en {month: "2-digit"} => "01"
+= en {month: "narrow"} => "J"
+= en {month: "short"} => "Jan"
+= en {month: "long"} => "January"
+= en {day: "numeric"} => "5"
+= en {day: "2-digit"} => "05"
+= en {weekday: "narrow"} => "F"
+= en {weekday: "short"} => "Fri"
+= en {weekday: "long"} => "Friday"
+= en {era: "short"} => "1/5/2024 AD"
+= en {era: "long"} => "1/5/2024 Anno Domini"
+= en {era: "narrow"} => "1/5/2024 A"
+= en {year: "numeric", month: "short"} => "Jan 2024"
+= en {year: "numeric", month: "long"} => "January 2024"
+= en {year: "numeric", month: "numeric"} => "1/2024"
+= en {year: "2-digit", month: "2-digit"} => "01/24"
+= en {month: "short", day: "numeric"} => "Jan 5"
+= en {month: "long", day: "numeric"} => "January 5"
+= en {month: "numeric", day: "numeric"} => "1/5"
+= en {month: "2-digit", day: "2-digit"} => "01/05"
+= en {year: "numeric", month: "short", day: "numeric"} => "Jan 5, 2024"
+= en {year: "numeric", month: "long", day: "numeric"} => "January 5, 2024"
+= en {year: "numeric", month: "2-digit", day: "2-digit"} => "01/05/2024"
+= en {weekday: "long", year: "numeric", month: "long", day: "numeric"} => "Friday, January 5, 2024"
+= en {weekday: "short", month: "short", day: "numeric"} => "Fri, Jan 5"
+# en {weekday: "long", day: "numeric"}
+   VM: "5 Friday"
+   JS: "Friday, 5"
+   Node (VM): "5 Friday"
+= en {era: "short", year: "numeric"} => "2024 AD"
+= en {era: "long", year: "numeric", month: "long", day: "numeric"} => "January 5, 2024 Anno Domini"
+= en {era: "short", month: "short", day: "numeric"} => "Jan 5 AD"
+# en {hour: "numeric"}
+   VM: "3\u202fPM"
+   JS: "3 PM"
+   Node (JS): "3 PM"
+# en {hour: "2-digit"}
+   VM: "03\u202fPM"
+   JS: "03 PM"
+   Node (JS): "03 PM"
+= en {minute: "numeric"} => "7"
+# en {minute: "2-digit"}
+   VM: "7"
+   JS: "07"
+   Node (VM): "7"
+= en {second: "numeric"} => "9"
+# en {hour: "numeric", minute: "numeric"}
+   VM: "3:07\u202fPM"
+   JS: "3:07 PM"
+   Node (JS): "3:07 PM"
+# en {hour: "2-digit", minute: "2-digit"}
+   VM: "03:07\u202fPM"
+   JS: "03:07 PM"
+   Node (JS): "03:07 PM"
+# en {hour: "numeric", minute: "numeric", second: "numeric"}
+   VM: "3:07:09\u202fPM"
+   JS: "3:07:09 PM"
+   Node (JS): "3:07:09 PM"
+= en {minute: "numeric", second: "numeric"} => "07:09"
+# en {hour: "numeric", minute: "2-digit", second: "2-digit", fractionalSecondDigits: 3}
+   VM: "3:07:09.123\u202fPM"
+   JS: "3:07:09.123 PM"
+   Node (JS): "3:07:09.123 PM"
+= en {second: "numeric", fractionalSecondDigits: 2} => "9.12"
+= en {fractionalSecondDigits: 1} => "1"
+# en {hour: "numeric", timeZoneName: "short"}
+   VM: "3\u202fPM UTC"
+   JS: "3 PM UTC"
+   Node (JS): "3 PM UTC"
+# en {hour: "numeric", minute: "numeric", timeZoneName: "long"}
+   VM: "3:07\u202fPM Coordinated Universal Time"
+   JS: "3:07 PM Coordinated Universal Time"
+   Node (JS): "3:07 PM Coordinated Universal Time"
+# en {timeZoneName: "short"}
+   VM: "1/5/2024, UTC"
+   JS: "1/5/2024 UTC"
+   Node (VM): "1/5/2024, UTC"
+# en {timeZoneName: "shortOffset"}
+   VM: "1/5/2024, GMT"
+   JS: "1/5/2024 GMT"
+   Node (VM): "1/5/2024, GMT"
+# en {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric"}
+   VM: "Jan 5, 2024, 3:07\u202fPM"
+   JS: "Jan 5, 2024, 3:07 PM"
+   Node (JS): "Jan 5, 2024, 3:07 PM"
+# en {weekday: "long", hour: "numeric"}
+   VM: "Friday 3\u202fPM"
+   JS: "Friday, 3 PM"
+   Node (JS): "Friday, 3 PM"
+# en {year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", timeZoneName: "short"}
+   VM: "January 5, 2024 at 3:07:09\u202fPM UTC"
+   JS: "January 5, 2024, 3:07:09 PM UTC"
+   Node (neither): "January 5, 2024 at 3:07:09 PM UTC"
+= en {weekday: "short", year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false} => "Fri, 1/5/2024, 15:07"
+= de {year: "numeric"} => "2024"
+= de {year: "2-digit"} => "24"
+= de {month: "numeric"} => "1"
+= de {month: "2-digit"} => "01"
+= de {month: "narrow"} => "J"
+= de {month: "short"} => "Jan"
+# de {month: "long"}
+   VM: "Januar"
+   JS: "January"
+   Node (VM): "Januar"
+= de {day: "numeric"} => "5"
+= de {day: "2-digit"} => "05"
+= de {weekday: "narrow"} => "F"
+# de {weekday: "short"}
+   VM: "Fr"
+   JS: "Fri"
+   Node (VM): "Fr"
+# de {weekday: "long"}
+   VM: "Freitag"
+   JS: "Friday"
+   Node (VM): "Freitag"
+# de {era: "short"}
+   VM: "05.01.2024 n. Chr."
+   JS: "5.1.2024 AD"
+   Node (VM): "05.01.2024 n. Chr."
+# de {era: "long"}
+   VM: "05.01.2024 n. Chr."
+   JS: "5.1.2024 Anno Domini"
+   Node (VM): "05.01.2024 n. Chr."
+# de {era: "narrow"}
+   VM: "05.01.2024 n. Chr."
+   JS: "5.1.2024 A"
+   Node (VM): "05.01.2024 n. Chr."
+# de {year: "numeric", month: "short"}
+   VM: "Jan. 2024"
+   JS: "Jan 2024"
+   Node (VM): "Jan. 2024"
+# de {year: "numeric", month: "long"}
+   VM: "Januar 2024"
+   JS: "January 2024"
+   Node (VM): "Januar 2024"
+# de {year: "numeric", month: "numeric"}
+   VM: "1/2024"
+   JS: "1.2024"
+   Node (VM): "1/2024"
+# de {year: "2-digit", month: "2-digit"}
+   VM: "01/24"
+   JS: "01.24"
+   Node (JS): "01.24"
+# de {month: "short", day: "numeric"}
+   VM: "5. Jan."
+   JS: "Jan 5"
+   Node (VM): "5. Jan."
+# de {month: "long", day: "numeric"}
+   VM: "5. Januar"
+   JS: "January 5"
+   Node (VM): "5. Januar"
+# de {month: "numeric", day: "numeric"}
+   VM: "5.1."
+   JS: "5.1"
+   Node (VM): "5.1."
+# de {month: "2-digit", day: "2-digit"}
+   VM: "05.01."
+   JS: "05.01"
+   Node (VM): "05.01."
+# de {year: "numeric", month: "short", day: "numeric"}
+   VM: "5. Jan. 2024"
+   JS: "Jan 5, 2024"
+   Node (VM): "5. Jan. 2024"
+# de {year: "numeric", month: "long", day: "numeric"}
+   VM: "5. Januar 2024"
+   JS: "January 5, 2024"
+   Node (VM): "5. Januar 2024"
+= de {year: "numeric", month: "2-digit", day: "2-digit"} => "05.01.2024"
+# de {weekday: "long", year: "numeric", month: "long", day: "numeric"}
+   VM: "Freitag, 5. Januar 2024"
+   JS: "Friday, January 5, 2024"
+   Node (VM): "Freitag, 5. Januar 2024"
+# de {weekday: "short", month: "short", day: "numeric"}
+   VM: "Fr., 5. Jan."
+   JS: "Fri, Jan 5"
+   Node (VM): "Fr., 5. Jan."
+# de {weekday: "long", day: "numeric"}
+   VM: "Freitag, 5."
+   JS: "Friday, 5"
+   Node (VM): "Freitag, 5."
+# de {era: "short", year: "numeric"}
+   VM: "2024 n. Chr."
+   JS: "2024 AD"
+   Node (VM): "2024 n. Chr."
+# de {era: "long", year: "numeric", month: "long", day: "numeric"}
+   VM: "5. Januar 2024 n. Chr."
+   JS: "January 5, 2024 Anno Domini"
+   Node (VM): "5. Januar 2024 n. Chr."
+# de {era: "short", month: "short", day: "numeric"}
+   VM: "n. Chr. 5. Jan."
+   JS: "Jan 5 AD"
+   Node (VM): "n. Chr. 5. Jan."
+# de {hour: "numeric"}
+   VM: "15 Uhr"
+   JS: "15"
+   Node (VM): "15 Uhr"
+# de {hour: "2-digit"}
+   VM: "15 Uhr"
+   JS: "15"
+   Node (VM): "15 Uhr"
+= de {minute: "numeric"} => "7"
+# de {minute: "2-digit"}
+   VM: "7"
+   JS: "07"
+   Node (VM): "7"
+= de {second: "numeric"} => "9"
+= de {hour: "numeric", minute: "numeric"} => "15:07"
+= de {hour: "2-digit", minute: "2-digit"} => "15:07"
+= de {hour: "numeric", minute: "numeric", second: "numeric"} => "15:07:09"
+= de {minute: "numeric", second: "numeric"} => "07:09"
+# de {hour: "numeric", minute: "2-digit", second: "2-digit", fractionalSecondDigits: 3}
+   VM: "15:07:09,123"
+   JS: "15:07:09.123"
+   Node (VM): "15:07:09,123"
+# de {second: "numeric", fractionalSecondDigits: 2}
+   VM: "9,12"
+   JS: "9.12"
+   Node (VM): "9,12"
+= de {fractionalSecondDigits: 1} => "1"
+# de {hour: "numeric", timeZoneName: "short"}
+   VM: "15 Uhr UTC"
+   JS: "15 UTC"
+   Node (VM): "15 Uhr UTC"
+# de {hour: "numeric", minute: "numeric", timeZoneName: "long"}
+   VM: "15:07 Koordinierte Weltzeit"
+   JS: "15:07 Coordinated Universal Time"
+   Node (VM): "15:07 Koordinierte Weltzeit"
+# de {timeZoneName: "short"}
+   VM: "5.1.2024, UTC"
+   JS: "5.1.2024 UTC"
+   Node (VM): "5.1.2024, UTC"
+# de {timeZoneName: "shortOffset"}
+   VM: "5.1.2024, GMT"
+   JS: "5.1.2024 GMT"
+   Node (VM): "5.1.2024, GMT"
+# de {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric"}
+   VM: "5. Jan. 2024, 15:07"
+   JS: "Jan 5, 2024, 15:07"
+   Node (VM): "5. Jan. 2024, 15:07"
+# de {weekday: "long", hour: "numeric"}
+   VM: "Freitag, 15 Uhr"
+   JS: "Friday, 15"
+   Node (VM): "Freitag, 15 Uhr"
+# de {year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", timeZoneName: "short"}
+   VM: "5. Januar 2024 um 15:07:09 UTC"
+   JS: "January 5, 2024, 15:07:09 UTC"
+   Node (VM): "5. Januar 2024 um 15:07:09 UTC"
+# de {weekday: "short", year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false}
+   VM: "Fr., 5.1.2024, 15:07"
+   JS: "Fri, 5.1.2024, 15:07"
+   Node (VM): "Fr., 5.1.2024, 15:07"
+# fr locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["fr", "5/1/2024", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["fr", "05/01/2024", "5 janvier 2024", "janvier", "vendredi", "15:07"]
+# es locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["es", "5/1/2024", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["es", "5/1/2024", "5 de enero de 2024", "enero", "viernes", "15:07"]
+# it locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["it", "5/1/2024", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["it", "05/01/2024", "5 gennaio 2024", "gennaio", "venerd\u00ec", "15:07"]
+# ja locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["ja", "2024/1/5", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["ja", "2024/1/5", "2024\u5e741\u67085\u65e5", "1\u6708", "\u91d1\u66dc\u65e5", "15:07"]
+# ko locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["ko", "2024.1.5", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["ko", "2024. 1. 5.", "2024\ub144 1\uc6d4 5\uc77c", "1\uc6d4", "\uae08\uc694\uc77c", "\uc624\ud6c4 3:07"]
+# zh-TW locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["zh-TW", "2024/1/5", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["zh-TW", "2024/1/5", "2024\u5e741\u67085\u65e5", "1\u6708", "\u661f\u671f\u4e94", "\u4e0b\u53483:07"]
+# ar-EG locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["ar-EG", "\u0665\u200f\u0661\u200f\u0662\u0660\u0662\u0664", "January \u0665, \u0662\u0660\u0662\u0664", "January", "Friday", "\u0663:\u0660\u0667 PM"]
+   Node (neither): ["ar-EG", "\u0665\u200f/\u0661\u200f/\u0662\u0660\u0662\u0664", "\u0665 \u064a\u0646\u0627\u064a\u0631 \u0662\u0660\u0662\u0664", "\u064a\u0646\u0627\u064a\u0631", "\u0627\u0644\u062c\u0645\u0639\u0629", "\u0663:\u0660\u0667 \u0645"]
+# ru locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["ru", "5.1.2024", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["ru", "05.01.2024", "5 \u044f\u043d\u0432\u0430\u0440\u044f 2024 \u0433.", "\u044f\u043d\u0432\u0430\u0440\u044c", "\u043f\u044f\u0442\u043d\u0438\u0446\u0430", "15:07"]
+# en-GB locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["en-GB", "5/1/2024", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["en-GB", "05/01/2024", "5 January 2024", "January", "Friday", "15:07"]
+# en-IN locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["en-IN", "5/1/2024", "January 5, 2024", "January", "Friday", "3:07 PM"]
+   Node (neither): ["en-IN", "5/1/2024", "5 January 2024", "January", "Friday", "3:07 pm"]
+# de-AT locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["de", "5.1.2024", "5. Januar 2024", "Januar", "Freitag", "15:07"]
+   JS: ["de-AT", "5.1.2024", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["de-AT", "5.1.2024", "5. J\u00e4nner 2024", "J\u00e4nner", "Freitag", "15:07"]
+# pt-BR locale, default, dateStyle long, month long, weekday long, timeStyle short
+   VM: ["en-US", "1/5/2024", "January 5, 2024", "January", "Friday", "3:07\u202fPM"]
+   JS: ["pt-BR", "5/1/2024", "January 5, 2024", "January", "Friday", "15:07"]
+   Node (neither): ["pt-BR", "05/01/2024", "5 de janeiro de 2024", "janeiro", "sexta-feira", "15:07"]
+= en months long (format, with a day) => ["January 1", "February 1", "March 1", "April 1", "May 1", "June 1", "July 1", "August 1", "September 1", "October 1", "November 1", "December 1"]
+= en months long (stand-alone) => ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+= en weekdays long => ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+= en months short (format, with a day) => ["Jan 1", "Feb 1", "Mar 1", "Apr 1", "May 1", "Jun 1", "Jul 1", "Aug 1", "Sep 1", "Oct 1", "Nov 1", "Dec 1"]
+= en months short (stand-alone) => ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+= en weekdays short => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+= en months narrow (format, with a day) => ["J 1", "F 1", "M 1", "A 1", "M 1", "J 1", "J 1", "A 1", "S 1", "O 1", "N 1", "D 1"]
+= en months narrow (stand-alone) => ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
+= en weekdays narrow => ["S", "M", "T", "W", "T", "F", "S"]
+# de months long (format, with a day)
+   VM: ["1. Januar", "1. Februar", "1. M\u00e4rz", "1. April", "1. Mai", "1. Juni", "1. Juli", "1. August", "1. September", "1. Oktober", "1. November", "1. Dezember"]
+   JS: ["January 1", "February 1", "March 1", "April 1", "May 1", "June 1", "July 1", "August 1", "September 1", "October 1", "November 1", "December 1"]
+   Node (VM): ["1. Januar", "1. Februar", "1. M\u00e4rz", "1. April", "1. Mai", "1. Juni", "1. Juli", "1. August", "1. September", "1. Oktober", "1. November", "1. Dezember"]
+# de months long (stand-alone)
+   VM: ["Januar", "Februar", "M\u00e4rz", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
+   JS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+   Node (VM): ["Januar", "Februar", "M\u00e4rz", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
+# de weekdays long
+   VM: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
+   JS: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+   Node (VM): ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
+# de months short (format, with a day)
+   VM: ["1. Jan.", "1. Feb.", "1. M\u00e4rz", "1. Apr.", "1. Mai", "1. Juni", "1. Juli", "1. Aug.", "1. Sept.", "1. Okt.", "1. Nov.", "1. Dez."]
+   JS: ["Jan 1", "Feb 1", "Mar 1", "Apr 1", "May 1", "Jun 1", "Jul 1", "Aug 1", "Sep 1", "Oct 1", "Nov 1", "Dec 1"]
+   Node (VM): ["1. Jan.", "1. Feb.", "1. M\u00e4rz", "1. Apr.", "1. Mai", "1. Juni", "1. Juli", "1. Aug.", "1. Sept.", "1. Okt.", "1. Nov.", "1. Dez."]
+# de months short (stand-alone)
+   VM: ["Jan", "Feb", "M\u00e4r", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
+   JS: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+   Node (VM): ["Jan", "Feb", "M\u00e4r", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
+# de weekdays short
+   VM: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+   JS: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+   Node (VM): ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+# de months narrow (format, with a day)
+   VM: ["1. J", "1. F", "1. M", "1. A", "1. M", "1. J", "1. J", "1. A", "1. S", "1. O", "1. N", "1. D"]
+   JS: ["J 1", "F 1", "M 1", "A 1", "M 1", "J 1", "J 1", "A 1", "S 1", "O 1", "N 1", "D 1"]
+   Node (VM): ["1. J", "1. F", "1. M", "1. A", "1. M", "1. J", "1. J", "1. A", "1. S", "1. O", "1. N", "1. D"]
+= de months narrow (stand-alone) => ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
+# de weekdays narrow
+   VM: ["S", "M", "D", "M", "D", "F", "S"]
+   JS: ["S", "M", "T", "W", "T", "F", "S"]
+   Node (VM): ["S", "M", "D", "M", "D", "F", "S"]
+-- 73 same, 111 differ; Node equals VM 67, JS 23, neither 21

@@ -1,0 +1,5 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/t12-charge-a.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/t12-charge-a.js sha256 252190a588bb890e54565e471f05b784ccb5f7bca017b9216f573c10e7253b3b
+formatted
+exit=0

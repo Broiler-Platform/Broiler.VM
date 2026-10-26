@@ -1,0 +1,66 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-NS/s8-displaynames.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/s8-displaynames.js sha256 f8ffa718b8b45b5f3444c8f155b0741a74f725b2e43a3ef77aa9a81867e02e12
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-NS/s8-displaynames.js [raw]  uncaught Error: OUT<<en language dialect: en-GB, de-AT, zh-Hant-TW, xyz, en-XY => ["British English", "Austrian German", "Chinese (Traditional, Taiwan)", "xyz", "English (XY)"]
+en region: US, DE, 419, ZZ, AA => ["United States", "Germany", "Latin America", "Unknown Region", "AA"]
+en script, currency, calendar, dateTimeField => ["Latin", "Euro", "Gregorian Calendar", "week"]
+de language dialect: en-GB, de-AT, zh-Hant-TW, xyz, en-XY => ["Englisch (Vereinigtes K\u00f6nigreich)", "\u00d6sterreichisches Deutsch", "Chinesisch (Traditionell, Taiwan)", "xyz", "Englisch (XY)"]
+de region: US, DE, 419, ZZ, AA => ["Vereinigte Staaten", "Deutschland", "Lateinamerika", "Unbekannte Region", "AA"]
+de script, currency, calendar, dateTimeField => ["Lateinisch", "Euro", "Gregorianischer Kalender", "Woche"]
+fr language dialect: en-GB, de-AT, zh-Hant-TW, xyz, en-XY => ["British English", "Austrian German", "Chinese (Traditional, Taiwan)", "xyz", "English (XY)"]
+fr region: US, DE, 419, ZZ, AA => ["United States", "Germany", "Latin America", "Unknown Region", "AA"]
+fr script, currency, calendar, dateTimeField => ["Latin", "Euro", "Gregorian Calendar", "week"]
+es language dialect: en-GB, de-AT, zh-Hant-TW, xyz, en-XY => ["British English", "Austrian German", "Chinese (Traditional, Taiwan)", "xyz", "English (XY)"]
+es region: US, DE, 419, ZZ, AA => ["United States", "Germany", "Latin America", "Unknown Region", "AA"]
+es script, currency, calendar, dateTimeField => ["Latin", "Euro", "Gregorian Calendar", "week"]
+ja language dialect: en-GB, de-AT, zh-Hant-TW, xyz, en-XY => ["British English", "Austrian German", "Chinese (Traditional, Taiwan)", "xyz", "English (XY)"]
+ja region: US, DE, 419, ZZ, AA => ["United States", "Germany", "Latin America", "Unknown Region", "AA"]
+ja script, currency, calendar, dateTimeField => ["Latin", "Euro", "Gregorian Calendar", "week"]
+zh-Hant language dialect: en-GB, de-AT, zh-Hant-TW, xyz, en-XY => ["British English", "Austrian German", "Chinese (Traditional, Taiwan)", "xyz", "English (XY)"]
+zh-Hant region: US, DE, 419, ZZ, AA => ["United States", "Germany", "Latin America", "Unknown Region", "AA"]
+zh-Hant script, currency, calendar, dateTimeField => ["Latin", "Euro", "Gregorian Calendar", "week"]
+en language standard: en-GB, zh-Hant-TW, en-Latn-US => ["English (United Kingdom)", "Chinese (Traditional, Taiwan)", "English (Latin, United States)"]
+en language short and narrow: en-GB, en-US => ["UK English", "US English"]
+en region short: US, GB, HK => ["US", "UK", "Hong Kong"]
+en fallback code/none: language xyz, region AA, script Qaaa, currency XYZ, calendar xyz => [["xyz", undefined], ["AA", undefined], ["Qaaa", undefined], ["XYZ", undefined], ["xyz", undefined]]
+en fallback none: known codes US, EUR, gregory, en => ["United States", "Euro", "Gregorian Calendar", "English"]
+en dateTimeField short and narrow: year, dayPeriod => ["yr.", "AM/PM"]
+region case: us, Us, 419 => ["United States", "United States", "United States"]
+script case: latn, HANS => ["Latin", "Latin", "Simplified"]
+calendar case: GREGORY, Islamic-Civil => ["Gregorian Calendar", "Gregorian Calendar", "Hijri Calendar (tabular, civil epoch)"]
+currency case: eur => ["Euro", "Euro"]
+language canonical: EN-us, iw, in, sh, und, en-latn-us, zh-hant-tw => ["American English", "Hebrew", "Indonesian", "Serbian (Latin)", "Unknown language", "English (Latin, United States)", "Chinese (Traditional, Taiwan)"]
+calendar aliases: islamicc, ethiopic-amete-alem, gregorian => ["Hijri Calendar (tabular, civil epoch)", "ethiopic-amete-alem", "RangeError"]
+region invalid codes => "\u0022\u005cu0661\u005cu0662\u005cu0663\u0022:RangeError \u0022US\u005cu000a\u0022:RangeError \u0022U\u005cu0130\u0022:RangeError \u00221\u005cu0663\u0022:RangeError \u0022\u005cuff35S\u0022:RangeError"
+script invalid codes => "\u0022Latn\u005cu000a\u0022:RangeError \u0022L\u005cu0430tn\u0022:RangeError \u0022\u005cuff2catn\u0022:RangeError"
+calendar invalid codes => "\u0022gregory\u005cu000a\u0022:RangeError \u0022gr\u005cu0435gory\u0022:RangeError \u0022abc_def\u0022:RangeError"
+currency invalid codes => "\u0022USD\u005cu000a\u0022:RangeError \u0022\u005cu0131SD\u0022:RangeError"
+language invalid codes => "\u0022en\u005cu000a\u0022:RangeError \u0022en-US\u005cu000a\u0022:RangeError \u0022de-\u005cu0661\u005cu0662\u005cu0663\u0022:RangeError \u0022en_US\u0022:RangeError \u0022root\u0022:RangeError \u0022en-u-ca-gregory\u0022:RangeError \u0022en-x-priv\u0022:RangeError \u0022i-klingon\u0022:RangeError"
+dateTimeField invalid codes => "\u0022year\u005cu000a\u0022:RangeError \u0022Year\u0022:RangeError \u0022era \u0022:RangeError"
+of(Symbol()), of({toString}), of(undefined) => ["TypeError", "Germany", "RangeError"]
+constructor reads => ["localeMatcher", "style", "type", "fallback", "languageDisplay"]
+resolvedOptions: language type; region type => ["locale,style,type,fallback,languageDisplay", "locale,style,type,fallback"]
+no options, {}, options a string, null => ["TypeError", "TypeError", "TypeError", "TypeError"]
+DisplayNames without new; length => ["TypeError", 2]
+typeof Intl.DisplayNames.supportedLocalesOf; result => ["function", ["de-AT", "en"]]
+invalid style, type, fallback, languageDisplay => "style:RangeError type:RangeError fallback:RangeError languageDisplay:RangeError"
+resolved locale: de-CH, fr, xyz => ["de", "en-US", "en-US"]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-NS/s8-displaynames.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-NS  e.g. test/sjl9/rows-NS/s8-displaynames.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-NS/s8-displaynames.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

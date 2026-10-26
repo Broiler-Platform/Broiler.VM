@@ -119,6 +119,29 @@ Each method follows its draft operation, over the data the profile holds:
 - **The region** is RegionPreference's (s15.5.8): the tag's, the one a `-u-sd` subdivision names, or
   the likely one, with `-u-rg`'s as an override.
 
+*(Noted 2026-10-26, at SJL-9.1, by
+[JSD-0082](0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s decisions D27 and D32, on rows
+L16, L18 and L23 of the programme's correspondence in bundle `sjl-9-001`.)* Three of the bullets above are stale, and
+are left as written:
+- **`getCalendars`.** The bullet reads "the region's calendars in use, kept where AvailableCalendars has them. That is
+  `gregory` alone, the only calendar the profile formats (JSD-0045 section 7)." The method answers `gregory` because
+  the profile's data holds no CLDR calendar preference data (row L16). The profile has formatted every calendar
+  `supportedValuesOf` lists since SJL-10.4, so the reason given is stale. Broiler.JS answers the same.
+- **`getCollations`.** The bullet reads "the collator's own collations for a locale it supports, without the default,
+  and `emoji` and `eor` for one it does not, as the operation states." For a language the Collator does not support,
+  CollationsOfLocale answers DefaultLocale's collations, `[]` for the profile's `en-US`, and `emoji` and `eor` only for
+  `und`. The profile's answer is corrected at SJL-9.4 (JSD-0082's decision D32, row L18), with the divergence lines of
+  `src/tests/cldr/locales/divergences.txt` that hold it.
+- **`getTimeZones`.** The bullet reads "`undefined` without a region, as the operation states, and an empty list with
+  one. The zones in use in a region are the time-zone database's knowledge, which the profile does not carry (JSD-0027
+  decision (d)). Of the zones it admits, none is a region's." The method answers a region's zones from tzdb's
+  `zone.tab` through SJL-8's shared database, in code-unit order, `[]` for a region with none, and `undefined` without
+  a region (row L23).
+
+The divergences file's calendar header, its lines 37 to 39, gives the same stale reason as the first bullet. It stays
+as committed through SJL-9's window, because the area rule of bundle `sjl-9-001` admits no change of a comment there
+outside its classes Z8 and L18.
+
 ## 6. Validation
 
 - **The retained Locale dataset**

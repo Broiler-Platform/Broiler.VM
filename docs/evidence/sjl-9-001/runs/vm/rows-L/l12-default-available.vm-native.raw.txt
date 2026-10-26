@@ -1,0 +1,59 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-L/l12-default-available.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/l12-default-available.js sha256 ddba019df279d75f2fb34c0b78b1082c17520cbfb2597329562b3483155712e1
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-L/l12-default-available.js [raw]  uncaught Error: OUT<<Collator DefaultLocale => "en-US"
+Collator supportedLocalesOf(DefaultLocale) => ["en-US"]
+Collator supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+Collator resolution of "en-US" => "en-US"
+DateTimeFormat DefaultLocale => "en-US"
+DateTimeFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+DateTimeFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+DateTimeFormat resolution of "en-US" => "en-US"
+DisplayNames DefaultLocale => "en-US"
+DisplayNames supportedLocalesOf(DefaultLocale) => ["en-US"]
+DisplayNames supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+DisplayNames resolution of "en-US" => "en-US"
+DurationFormat DefaultLocale => "en-US"
+DurationFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+DurationFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+DurationFormat resolution of "en-US" => "en-US"
+ListFormat DefaultLocale => "en-US"
+ListFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+ListFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+ListFormat resolution of "en-US" => "en-US"
+NumberFormat DefaultLocale => "en-US"
+NumberFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+NumberFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+NumberFormat resolution of "en-US" => "en-US"
+PluralRules DefaultLocale => "en-US"
+PluralRules supportedLocalesOf(DefaultLocale) => ["en-US"]
+PluralRules supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+PluralRules resolution of "en-US" => "en-US"
+RelativeTimeFormat DefaultLocale => "en-US"
+RelativeTimeFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+RelativeTimeFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+RelativeTimeFormat resolution of "en-US" => "en-US"
+Segmenter DefaultLocale => "en-US"
+Segmenter supportedLocalesOf(DefaultLocale) => ["en-US"]
+Segmenter supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+Segmenter resolution of "en-US" => "en-US"
+Intl.getCanonicalLocales of the DefaultLocale => ["en-US"]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-L/l12-default-available.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-L  e.g. test/sjl9/rows-L/l12-default-available.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-L/l12-default-available.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

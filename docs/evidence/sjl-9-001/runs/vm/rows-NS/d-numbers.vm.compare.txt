@@ -1,0 +1,2 @@
+# compare: work/compare_dataset.py <rows> numbers vm (Broiler.JS harness compare_program at f918b040 over runs/d-numbers.vm.txt; expected = work/datasets/numbers--numbers.icu-77.1.txt with work/datasets/numbers--divergences.txt applied)
+summary: lines=2241 compared=2241 equal=2241 differing=0 divergences-used=24

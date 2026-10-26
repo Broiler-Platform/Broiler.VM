@@ -1,0 +1,23 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/u05-fraction.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/u05-fraction.js sha256 b2d297ba610389e37ac2a7360c2e365ea21ae59568b588a349e17d57ff892c74
+U11 en {"style":"digital"} {"seconds":4503599627370497,"nanoseconds":1} => "0:00:4503599627370497.000000001"
+U11 en {"style":"digital"} {"seconds":10000000,"nanoseconds":1} => "0:00:10000000.000000001"
+U11 en {"style":"digital"} {"seconds":1,"milliseconds":2,"microseconds":3,"nanoseconds":9007199254740991} => "0:00:9007200.256743991"
+U11 en {"style":"digital"} {milliseconds: 4503599627370497000, microseconds: 4503599627370495000000} => "0:00:9007199254740991.975424"
+U11 en {"style":"digital"} {"seconds":1,"nanoseconds":5} => "0:00:01.000000005"
+U11 en {"style":"digital"} {microseconds: 1e20} => "0:00:100000000000000"
+U11 en {"style":"digital"} {"seconds":0,"nanoseconds":1} => "0:00:00.000000001"
+U11 en {"style":"digital","fractionalDigits":0} {"seconds":7,"milliseconds":999,"microseconds":999,"nanoseconds":999} => "0:00:07"
+U11 en {"style":"digital","fractionalDigits":3} {"seconds":7,"milliseconds":999,"microseconds":999,"nanoseconds":999} => "0:00:07.999"
+U11 en {"style":"digital","fractionalDigits":9} {"seconds":7} => "0:00:07.000000000"
+U11 en {"style":"short","milliseconds":"numeric"} {"milliseconds":1500} => "1.5 sec"
+U11 en {"style":"long","seconds":"numeric","fractionalDigits":3} {"seconds":1,"milliseconds":234,"microseconds":567} => "1.234"
+U11 en {"style":"narrow","microseconds":"numeric"} {"milliseconds":1,"microseconds":2,"nanoseconds":3} => "1.002003ms"
+U11 en {"style":"long","milliseconds":"numeric"} {"nanoseconds":1} => "0.000000001 seconds"
+U11 en {"style":"long","milliseconds":"numeric"} {"minutes":1} => "1 minute"
+U11 en {"style":"long","milliseconds":"numeric","fractionalDigits":2} {"seconds":2,"milliseconds":999} => "2.99 seconds"
+U11 en {"style":"short","microseconds":"numeric"} {"seconds":1,"milliseconds":2,"microseconds":3,"nanoseconds":4} => "1 sec, 2.003004 ms"
+U11 en {"style":"short","nanoseconds":"numeric"} {"seconds":1,"milliseconds":2,"microseconds":3,"nanoseconds":4} => "1 sec, 2 ms, 3.004 \u03bcs"
+U11 en {"style":"digital"} {"seconds":-4503599627370497,"nanoseconds":-1} => "-0:00:4503599627370497.000000001"
+exit=0

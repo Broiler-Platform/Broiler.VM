@@ -1,0 +1,30 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-MP/p4-compact-operands.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/p4-compact-operands.js sha256 e56a8dad37a3e71a792f0a2fe0bc69f4e8a6b5eead00e67507c5f5b4cfe71369
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-MP/p4-compact-operands.js [raw]  uncaught Error: OUT<<P4 en compact: 1 1000 1000000 1200000 => "en" one other other other
+P4 de compact: 1 1000 1000000 1200000 => "de" one other other other
+P4 fr standard: 1000000 1200000 2000 => "en-US" other other other
+P4 fr compact: 1000000 1200000 2000 => "en-US" other other other
+P4 es compact: 1000000 1200000 => "en-US" other other
+P4 it compact long: 1000000 1200000 => "en-US" other other
+P4 en scientific: 1 1000000 => "en" one other
+P4 fr NumberFormat compact long 1200000 (the plural pattern the formatter picks) => "1.2 million">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-MP/p4-compact-operands.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-MP  e.g. test/sjl9/rows-MP/p4-compact-operands.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-MP/p4-compact-operands.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

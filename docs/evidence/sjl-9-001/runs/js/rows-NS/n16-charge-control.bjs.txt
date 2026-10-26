@@ -1,0 +1,8 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/n16-charge-control.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/n16-charge-control.js sha256 b743be6a9ec0b18343e3252174ef0249341b0a8dae0604091d10acf29f5ab56e
+N16 list length => 20000
+N16 the list formatted (length) => "not taken"
+N16 the list formatted to parts (count) => "not taken"
+N16 2,000 numbers formatted to parts (parts) => "not taken"
+exit=0

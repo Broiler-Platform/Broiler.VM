@@ -1,0 +1,2 @@
+# compare: work/compare_dataset.py <rows> relativetimes vm (Broiler.JS harness compare_program at f918b040 over runs/d-relativetimes.vm.txt; expected = work/datasets/relativetimes--relativetimes.icu-77.1.txt with work/datasets/relativetimes--divergences.txt applied)
+summary: lines=2460 compared=2460 equal=2460 differing=0 divergences-used=96

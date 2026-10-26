@@ -1,0 +1,13 @@
+# command (from <rows>/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 300 node -e '<print = stdout line; indirect eval of built/t14-offset-seconds.js>'
+# revision: node v22.22.0; ICU 77.1; CLDR 47.0; tz 2025b
+# probe: built/t14-offset-seconds.js sha256 8ee15524ebc810f0a5b5d93dfed200cd0efc3c2a8e4217b8327aacda5ba8e13f
+Africa/Monrovia at 43200000 [short, long, shortOffset, longOffset] => ["11:15:30 GMT-0:44:30", "11:15:30 GMT-00:44:30", "11:15:30 GMT-0:44:30", "11:15:30 GMT-00:44:30"]
+Africa/Monrovia at 63028800000 [short, long, shortOffset, longOffset] => ["11:15:30 GMT-0:44:30", "11:15:30 GMT-00:44:30", "11:15:30 GMT-0:44:30", "11:15:30 GMT-00:44:30"]
+Europe/Amsterdam at -2208945600000 [short, long, shortOffset, longOffset] => ["12:00:00 GMT", "12:00:00 GMT", "12:00:00 GMT", "12:00:00 GMT"]
+America/New_York at -2840097600000 [short, long, shortOffset, longOffset] => ["07:03:58 GMT-4:56:02", "07:03:58 GMT-04:56:02", "07:03:58 GMT-4:56:02", "07:03:58 GMT-04:56:02"]
+Asia/Kolkata at -2208945600000 [short, long, shortOffset, longOffset] => ["17:21:10 GMT+5:21:10", "17:21:10 GMT+05:21:10", "17:21:10 GMT+5:21:10", "17:21:10 GMT+05:21:10"]
+Europe/Dublin at -2208945600000 [short, long, shortOffset, longOffset] => ["11:34:39 GMT-0:25:21", "11:34:39 GMT-00:25:21", "11:34:39 GMT-0:25:21", "11:34:39 GMT-00:25:21"]
+America/Sao_Paulo at -2208945600000 [short, long, shortOffset, longOffset] => ["08:53:32 GMT-3:06:28", "08:53:32 GMT-03:06:28", "08:53:32 GMT-3:06:28", "08:53:32 GMT-03:06:28"]
+Africa/Monrovia 1970 formatToParts timeZoneName shortOffset => [month:"1", literal:"/", day:"1", literal:"/", year:"1970", literal:", ", timeZoneName:"GMT-0:44:30"]
+de Africa/Monrovia 1970 [shortOffset, longOffset] => ["1.1.1970, GMT-0:44:30", "1.1.1970, GMT-00:44:30"]
+exit=0

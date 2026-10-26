@@ -1,0 +1,8 @@
+P4 en compact: 1 1000 1000000 1200000 => "en" one other other other
+P4 de compact: 1 1000 1000000 1200000 => "de" one other other other
+P4 fr standard: 1000000 1200000 2000 => "en-US" other other other
+P4 fr compact: 1000000 1200000 2000 => "en-US" other other other
+P4 es compact: 1000000 1200000 => "en-US" other other
+P4 it compact long: 1000000 1200000 => "en-US" other other
+P4 en scientific: 1 1000000 => "en" one other
+P4 fr NumberFormat compact long 1200000 (the plural pattern the formatter picks) => "1.2 million"

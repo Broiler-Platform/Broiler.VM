@@ -1,0 +1,37 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-NS/n7-scientific.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/n7-scientific.js sha256 e3a091986147182ac0b3b751c8bcaa601405de0c56ab1bce296e9a2d5083613f
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-NS/n7-scientific.js [raw]  uncaught Error: OUT<<en scientific => ["1.235E5", "1.23E-4", "-1.5E-7", "1E21", "0E0", "1E1", "1E3"]
+en engineering => ["123.456E3", "123E-6", "-150E-9", "1E21", "0E0", "10E0", "999.95E0"]
+en scientific formatToParts(-0.000123) => [minusSign:"-", integer:"1", decimal:".", fraction:"23", exponentSeparator:"E", exponentMinusSign:"-", exponentInteger:"4"]
+en currency USD scientific 1234.5, engineering 1234567 => ["$1.235E3", "$1.235E6"]
+en unit meter scientific 1234.5 => "1.235E3 m"
+en scientific signDisplay always 1234, exceptZero 0 => ["+1.234E3", "0E0"]
+de scientific => ["1,235E5", "1,23E-4", "-1,5E-7", "1E21", "0E0", "1E1", "1E3"]
+de engineering => ["123,456E3", "123E-6", "-150E-9", "1E21", "0E0", "10E0", "999,95E0"]
+de scientific formatToParts(-0.000123) => [minusSign:"-", integer:"1", decimal:",", fraction:"23", exponentSeparator:"E", exponentMinusSign:"-", exponentInteger:"4"]
+de currency USD scientific 1234.5, engineering 1234567 => ["1,235E3\u00a0$", "1,235E6\u00a0$"]
+de unit meter scientific 1234.5 => "1,235E3 m"
+de scientific signDisplay always 1234, exceptZero 0 => ["+1,234E3", "0E0"]
+en scientific maximumSignificantDigits 2: 123456 => "1.2E5"
+en currency USD scientific formatToParts(1234.5) => [currency:"$", integer:"1", decimal:".", fraction:"235", exponentSeparator:"E", exponentInteger:"3"]
+sv, fa scientific -1.5e-7 => ["-1.5E-7", "-1.5E-7"]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-NS/n7-scientific.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-NS  e.g. test/sjl9/rows-NS/n7-scientific.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-NS/n7-scientific.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

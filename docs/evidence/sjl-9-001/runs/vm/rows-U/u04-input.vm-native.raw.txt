@@ -1,0 +1,64 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-U/u04-input.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/u04-input.js sha256 5285838485416ee1d26b24a48247c7815d9a798833c8390cf91183817da54e1a
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-U/u04-input.js [raw]  uncaught Error: OUT<<U7 the reads of format({hours: 1, minutes: 2}) => "get days, get hours, get microseconds, get milliseconds, get minutes, get months, get nanoseconds, get seconds, get weeks, get years => 1 hr, 2 min"
+U7 the reads of formatToParts({seconds: 3}) => "get days, get hours, get microseconds, get milliseconds, get minutes, get months, get nanoseconds, get seconds, get weeks, get years => 3 parts"
+U7 reads and conversions interleaved, {days, hours} as objects with valueOf => "get days, valueOf days, get hours, valueOf hours, get microseconds, get milliseconds, get minutes, get months, get nanoseconds, get seconds, get weeks, get years => 1 day, 2 hr"
+U7 valueOf calls of a field object {valueOf: 7} => [1, "7 hr"]
+U7 a getter answering 1, then -1, then 1 => [1, "1 hr"]
+U7 a getter answering 1, then 1.5 => [1, "1 hr"]
+U7 a getter throwing on its second read => "1 hr"
+U7 format({hours: "2"}) => "2 hr"
+U7 format({hours: -0}) => ""
+U7 format({hours: undefined, minutes: 1}) => "1 min"
+U8 format(new Temporal.Duration(0, 0, 0, 0, 1, 2)) => "1 hr, 2 min"
+U9 format("PT1H30M") => "1 hr, 30 min"
+U9 format("P1Y2M3W4DT5H6M7.008009010S") => "1 yr, 2 mths, 3 wks, 4 days, 5 hr, 6 min, 7 sec, 8 ms, 9 \u03bcs, 10 ns"
+U9 format("-PT5M") => "-5 min"
+U9 format("1 hour") => THROWS RangeError: Temporal: 1 hour is not a duration
+U9 format("") => THROWS RangeError: Temporal:  is not a duration
+U10 format(5) => THROWS TypeError: Temporal: a duration must be a string, an object or a Temporal.Duration
+U10 format(undefined) => THROWS TypeError: Temporal: a duration must be a string, an object or a Temporal.Duration
+U10 format(null) => THROWS TypeError: Temporal: a duration must be a string, an object or a Temporal.Duration
+U10 format(true) => THROWS TypeError: Temporal: a duration must be a string, an object or a Temporal.Duration
+U10 format(5n) => THROWS TypeError: Temporal: a duration must be a string, an object or a Temporal.Duration
+U10 format({}) => THROWS TypeError: Temporal: a duration-like object needs at least one duration property
+U10 format({foo: 1}) => THROWS TypeError: Temporal: a duration-like object needs at least one duration property
+U10 format({hours: 1.5}) => THROWS RangeError: Temporal: 1.5 is not an integer
+U10 format({hours: Infinity}) => THROWS RangeError: Temporal: Infinity is not an integer
+U10 format({hours: NaN}) => THROWS RangeError: Temporal: NaN is not an integer
+U10 format({hours: 2n}) => THROWS TypeError: Cannot convert a BigInt value to a number
+U10 format({hours: 1, minutes: -1}) => THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large
+U10 format({years: 2**32}) => THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large
+U10 format({years: 2**32 - 1}) => "4,294,967,295 yrs"
+U10 format({weeks: -(2**32)}) => THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large
+U10 format({seconds: 2**53}) => THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large
+U10 format({seconds: 2**53 - 1}) => "9,007,199,254,740,991 sec"
+U10 format({days: 104249991374}) => "104,249,991,374 days"
+U10 format({days: 104249991375}) => THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large
+U10 format({nanoseconds: Number.MAX_VALUE}) => THROWS RangeError: Temporal: the duration is not valid: mixed signs, or too large
+U10 format(a symbol) => THROWS TypeError: Temporal: a duration must be a string, an object or a Temporal.Duration
+U8 format(new Temporal.Duration(0, 0, 0, 0, 1, 2)), prototype getters wrapped => "1 hr, 2 min | getters called: "
+U9 format("PT1H2M"), prototype getters wrapped => "1 hr, 2 min | getters called: "
+U9 formatToParts("PT3S"), prototype getters wrapped => "3 parts | getters called: "
+U9 format("PT1H2M"), prototype getters throwing => "1 hr, 2 min"
+U8 format(Temporal.Duration.from("PT1H2M")), prototype getters throwing => "1 hr, 2 min">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-U/u04-input.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-U  e.g. test/sjl9/rows-U/u04-input.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-U/u04-input.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

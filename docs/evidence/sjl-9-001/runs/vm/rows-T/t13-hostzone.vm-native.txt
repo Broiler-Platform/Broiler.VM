@@ -1,0 +1,10 @@
+{minute, second} timeZone UTC => [minute:"00", literal:":", second:"05"]
+{minute, second} no timeZone (the default zone) => [minute:"00", literal:":", second:"05"]
+{minute, second} timeZone Asia/Kathmandu => [minute:"45", literal:":", second:"05"]
+format {minute, second} timeZone UTC => "00:05"
+default zone resolved => "UTC"
+timeZone "America/Lo\u017f_Angeles" => THROWS RangeError: Intl.DateTimeFormat: America/Lo\u017f_Angeles is not an available time zone
+timeZone "Asia/\u212aolkata" => THROWS RangeError: Intl.DateTimeFormat: Asia/\u212aolkata is not an available time zone
+timeZone "Asia/Kolkat\u0131" => THROWS RangeError: Intl.DateTimeFormat: Asia/Kolkat\u0131 is not an available time zone
+timeZone "AMERICA/LOS_ANGELES" => "America/Los_Angeles"
+timeZone "america/los_angeles" => "America/Los_Angeles"

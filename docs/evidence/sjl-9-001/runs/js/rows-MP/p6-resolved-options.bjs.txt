@@ -1,0 +1,16 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/p6-resolved-options.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/p6-resolved-options.js sha256 a3066a60f27b73f7526afb94b70a7d5029f5df23e0b877ef3c545e7efd78690e
+P6 en {} => {locale: "en", type: "cardinal", notation: "standard", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 3, pluralCategories: ["one", "other"]}
+P6 en ordinal => {locale: "en", type: "ordinal", notation: "standard", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 3, pluralCategories: ["one", "two", "few", "other"]}
+P6 en compact => {locale: "en", type: "cardinal", notation: "compact", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 3, pluralCategories: ["one", "other"]}
+P6 en compact long => {locale: "en", type: "cardinal", notation: "compact", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 3, pluralCategories: ["one", "other"]}
+P6 en maxSD 3 => {locale: "en", type: "cardinal", notation: "standard", minimumIntegerDigits: 1, minimumSignificantDigits: 1, maximumSignificantDigits: 3, pluralCategories: ["one", "other"]}
+P6 en morePrecision maxSD 3 => {locale: "en", type: "cardinal", notation: "standard", minimumIntegerDigits: 1, minimumSignificantDigits: 1, maximumSignificantDigits: 3, pluralCategories: ["one", "other"]}
+P6 en increment 5 minFD 1 maxFD 1 floor stripIfInteger => {locale: "en", type: "cardinal", notation: "standard", minimumIntegerDigits: 1, minimumFractionDigits: 1, maximumFractionDigits: 1, pluralCategories: ["one", "other"]}
+P6 de {} pluralCategories; de ordinal pluralCategories => [["one", "other"], ["other"]]
+P6 refusals: type "bogus", notation "bogus", compactDisplay "bogus", minFD 3 maxFD 2, increment 3, increment 5 maxSD 2 => ["RangeError", "RangeError", "ok", "ok", "RangeError", "ok"]
+P6 called without new => THROWS TypeError: Intl.PluralRules requires 'new'
+P6 select on a non-PluralRules this => THROWS TypeError: Intl.PluralRules.prototype.select called on incompatible receiver
+P6 resolvedOptions on a non-PluralRules this => THROWS TypeError: Intl.PluralRules.prototype.resolvedOptions called on incompatible receiver
+exit=0

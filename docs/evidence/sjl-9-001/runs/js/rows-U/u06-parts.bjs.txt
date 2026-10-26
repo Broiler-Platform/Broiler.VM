@@ -1,0 +1,12 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/u06-parts.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/u06-parts.js sha256 60ca006f8ab2be344486e6caf1a253a9bafffaee96e098f9a489a14d40ec2ca9
+U12 en {"style":"long"} {"hours":1,"minutes":2} => [integer:"1":hour, literal:" ":hour, unit:"hour":hour, literal:", ", integer:"2":minute, literal:" ":minute, unit:"minutes":minute]
+U12 en {"style":"long"} {"days":1000,"hours":1,"minutes":2} => [integer:"1":day, group:",":day, integer:"000":day, literal:" ":day, unit:"days":day, literal:", ", integer:"1":hour, literal:" ":hour, unit:"hour":hour, literal:", ", integer:"2":minute, literal:" ":minute, unit:"minutes":minute]
+U12 en {"style":"digital"} {"hours":1,"minutes":2,"seconds":3,"milliseconds":4} => [integer:"1":hour, literal:":", integer:"02":minute, literal:":", integer:"03":second, decimal:".":second, fraction:"004":second]
+U12 en {"style":"digital"} {"hours":-1,"minutes":-2} => [minusSign:"-":hour, integer:"1":hour, literal:":", integer:"02":minute, literal:":", integer:"00":second]
+U12 en {"style":"long","minutes":"numeric"} {"hours":1,"minutes":2} => [integer:"1":hour, literal:" ":hour, unit:"hour":hour, literal:", ", integer:"2":minute]
+U12 en {"style":"narrow"} {"years":1,"months":2,"weeks":3,"days":4,"hours":5,"minutes":6,"seconds":7,"milliseconds":8,"microseconds":9,"nanoseconds":10} => [integer:"1":year, unit:"y":year, literal:" ", integer:"2":month, unit:"m":month, literal:" ", integer:"3":week, unit:"w":week, literal:" ", integer:"4":day, unit:"d":day, literal:" ", integer:"5":hour, unit:"h":hour, literal:" ", integer:"6":minute, unit:"m":minute, literal:" ", integer:"7":second, unit:"s":second, literal:" ", integer:"8":millisecond, unit:"ms":millisecond, literal:" ", integer:"9":microsecond, unit:"\u03bcs":microsecond, literal:" ", integer:"10":nanosecond, unit:"ns":nanosecond]
+U12 en {} {"seconds":0} => []
+U12 Object.getPrototypeOf(parts[0]) === Object.prototype, parts is an Array => [true, true]
+exit=0

@@ -1,0 +1,5 @@
+# command (from <rows>/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll --fuel 200000000000 --wall 600000 built/smoke.js
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/smoke.js sha256 0b233192b85b792fef55dfc8a567232e6818c1e74097141ecc77eeff522ea540
+broiler-js: built/smoke.js: the verifier refused an artifact this host produced: 1608 (InvalidArtifact/UnsupportedFeatureManifest) at byte 11163
+exit=4

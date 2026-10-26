@@ -1,0 +1,9 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/s-p3.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/s-p3.js sha256 bbc62d7ed9a2c617038a779580e7b95c465f4f46d4675f02b49695f25152078b
+de,en,ja
+1.234,5 de
+1/1/70
+a,A,ä,b,B -1
+few a und b
+exit=0

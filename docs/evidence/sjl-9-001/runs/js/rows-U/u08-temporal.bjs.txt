@@ -1,0 +1,18 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/u08-temporal.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/u08-temporal.js sha256 8cc2a31578f76f6906ea6802db444d1bcb08a05bfbf03ea447c909d5c629ccfb
+U17 toLocaleString() => "1 hr, 2 min, 3 sec"
+U17 toLocaleString("en", {style: "digital"}) => "1:02:03"
+U17 toLocaleString("de", {style: "long"}) => "1 Stunde, 2 Minuten und 3 Sekunden"
+U17 equals new Intl.DurationFormat("de", {style: "long"}).format(d) => true
+U17 toLocaleString("en", {style: "long", minutes: "numeric"}) => "1 hour, 2:03"
+U17 Temporal.Duration.from({hours: 2}).toLocaleString("en", {style: "long", minutes: "numeric"}) => "2 hours, 0"
+U17 negative toLocaleString("en", {style: "digital"}) => "-1:00:00.5"
+U17 large toLocaleString("en", {style: "digital"}) => "0:00:4503599627370497.000000001"
+U17 toLocaleString("en", {style: "full"}) => THROWS RangeError: Invalid style option
+U17 toLocaleString("en", {milliseconds: "numeric", millisecondsDisplay: "always"}) => "1 hr, 2 min, 3 sec"
+U17 toLocaleString.call({hours: 1}) => THROWS TypeError: Failed to convert this to JSTemporalDuration
+U17 toLocaleString("en", null) => THROWS TypeError: Options must be an object or undefined
+U17 option reads of toLocaleString("en", spy) => "localeMatcher,numberingSystem,style,years,yearsDisplay,months,monthsDisplay,weeks,weeksDisplay,days,daysDisplay,hours,hoursDisplay,minutes,minutesDisplay,seconds,secondsDisplay,milliseconds,millisecondsDisplay,microseconds,microsecondsDisplay,nanoseconds,nanosecondsDisplay,fractionalDigits"
+U17 toLocaleString("en"), prototype getters throwing => "1 hr, 2 min, 3 sec"
+exit=0

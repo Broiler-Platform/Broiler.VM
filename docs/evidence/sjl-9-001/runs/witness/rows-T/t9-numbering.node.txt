@@ -1,0 +1,19 @@
+# command (from <rows>/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 300 node -e '<print = stdout line; indirect eval of built/t9-numbering.js>'
+# revision: node v22.22.0; ICU 77.1; CLDR 47.0; tz 2025b
+# probe: built/t9-numbering.js sha256 69624746f1cf7b93ebb4c711cef38e37bc167e840cb73aff94e64783cb4b8a05
+en-u-nu-arab [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["arab", "\u0661/\u0665/\u0662\u0660\u0662\u0664", "\u0661\u0665:\u0660\u0667:\u0660\u0669\u066b\u0661\u0662\u0663", "Jan \u0665, \u0662\u0660\u0662\u0664"]
+en-u-nu-arabext [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["arabext", "\u06f1/\u06f5/\u06f2\u06f0\u06f2\u06f4", "\u06f1\u06f5:\u06f0\u06f7:\u06f0\u06f9\u066b\u06f1\u06f2\u06f3", "Jan \u06f5, \u06f2\u06f0\u06f2\u06f4"]
+en-u-nu-beng [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["beng", "\u09e7/\u09eb/\u09e8\u09e6\u09e8\u09ea", "\u09e7\u09eb:\u09e6\u09ed:\u09e6\u09ef.\u09e7\u09e8\u09e9", "Jan \u09eb, \u09e8\u09e6\u09e8\u09ea"]
+en-u-nu-deva [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["deva", "\u0967/\u096b/\u0968\u0966\u0968\u096a", "\u0967\u096b:\u0966\u096d:\u0966\u096f.\u0967\u0968\u0969", "Jan \u096b, \u0968\u0966\u0968\u096a"]
+en-u-nu-hanidec [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["hanidec", "\u4e00/\u4e94/\u4e8c\u3007\u4e8c\u56db", "\u4e00\u4e94:\u3007\u4e03:\u3007\u4e5d.\u4e00\u4e8c\u4e09", "Jan \u4e94, \u4e8c\u3007\u4e8c\u56db"]
+en-u-nu-thai [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["thai", "\u0e51/\u0e55/\u0e52\u0e50\u0e52\u0e54", "\u0e51\u0e55:\u0e50\u0e57:\u0e50\u0e59.\u0e51\u0e52\u0e53", "Jan \u0e55, \u0e52\u0e50\u0e52\u0e54"]
+en-u-nu-fullwide [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["fullwide", "\uff11/\uff15/\uff12\uff10\uff12\uff14", "\uff11\uff15:\uff10\uff17:\uff10\uff19.\uff11\uff12\uff13", "Jan \uff15, \uff12\uff10\uff12\uff14"]
+en-u-nu-latn [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["latn", "1/5/2024", "15:07:09.123", "Jan 5, 2024"]
+en-u-nu-tamldec [numberingSystem, default, {hour,minute,second,fractionalSecondDigits:3}, dateStyle medium] => ["tamldec", "\u0be7/\u0beb/\u0be8\u0be6\u0be8\u0bea", "\u0be7\u0beb:\u0be6\u0bed:\u0be6\u0bef.\u0be7\u0be8\u0be9", "Jan \u0beb, \u0be8\u0be6\u0be8\u0bea"]
+de {numberingSystem:arab} default and fractional second => ["\u0665.\u0661.\u0662\u0660\u0662\u0664", "\u0669\u066b\u0661\u0662"]
+en {numberingSystem:hanidec} year 2024 and 10000 => ["\u4e8c\u3007\u4e8c\u56db", "\u4e00\u3007\u3007\u3007\u3007"]
+en-u-nu-arab {timeZoneName:shortOffset} in Asia/Kolkata => "\u0668 PM GMT+\u0665:\u0663\u0660"
+en-u-nu-arab formatToParts => [month:"\u0661", literal:"/", day:"\u0665", literal:"/", year:"\u0662\u0660\u0662\u0664"]
+ar-EG default numberingSystem => "arab"
+en {numberingSystem:"arab"} with -u-nu-latn => ["en", "arab"]
+exit=0

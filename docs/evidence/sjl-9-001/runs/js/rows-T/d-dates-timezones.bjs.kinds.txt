@@ -1,0 +1,13 @@
+# work/classify_dates.py over runs/d-dates.bjs.compare.txt (Broiler.JS at f918b040)
+dates	de (not a range)	divergence	50
+dates	de (not a range)	retained	167
+dates	en: U+202F and the " at " join	divergence	40
+dates	en: only U+202F (and thin-space range separator)	divergence	207
+dates	en: other	divergence	14
+dates	en: other	retained	62
+dates	range	divergence	40
+dates	range	retained	382
+dates	any line equal to its expectation once U+202F and the thin-spaced range dash are read as spaces	-	352
+dates	any line of a de case (range or not)	-	361
+timezones	only the resolved name differs: the identifier as given (answered) against its primary (expected)	-	152
+dates	any line equal to its expectation once U+202F alone is read as a space	-	273

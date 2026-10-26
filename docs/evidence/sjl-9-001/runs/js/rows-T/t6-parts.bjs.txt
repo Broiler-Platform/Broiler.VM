@@ -1,0 +1,30 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/t6-parts.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/t6-parts.js sha256 e767fc2a54040b3ba24d5ea596fc6570bcdfe14fe5b3eea66d040a8c84820fe8
+en full parts => [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" ", era:"AD", literal:", ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:".", fractionalSecond:"123", literal:" ", dayPeriod:"PM", literal:" ", timeZoneName:"UTC"]
+de full parts => [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" ", era:"AD", literal:", ", hour:"15", literal:":", minute:"07", literal:":", second:"09", literal:".", fractionalSecond:"123", literal:" ", timeZoneName:"UTC"]
+en default parts => [month:"1", literal:"/", day:"5", literal:"/", year:"2024"]
+en dateStyle full timeStyle full parts => [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:", ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:" ", dayPeriod:"PM", literal:" ", timeZoneName:"Coordinated Universal Time"]
+en relatedYear and yearName (chinese) => [month:"November", literal:" ", relatedYear:"2023", literal:"(", yearName:"\u7678\u536f", literal:")"]
+en {year:2-digit} for 2024, 1999, 5, -1 => ["24", "99", "05", "02"]
+en {year:numeric, era:short} for year 0 and -1 (1 BC, 2 BC) => ["1 BC", "2 BC"]
+en {year:numeric} for year 0 and -1 => ["1", "2"]
+8.64e15 parts => [month:"Sep", literal:" ", day:"13", literal:", ", year:"275760", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:" ", dayPeriod:"AM"]
+-8.64e15 parts => [month:"Apr", literal:" ", day:"20", literal:", ", year:"271822", literal:" ", era:"BC", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:" ", dayPeriod:"AM"]
+8.64e15 {minute, second} => [minute:"00", literal:":", second:"00"]
+8.64e15 + 1 => THROWS RangeError: Invalid time value
+NaN => THROWS RangeError: Invalid time value
+a string "0" => [month:"1", literal:"/", day:"1", literal:"/", year:"1970"]
+a Date object => [month:"1", literal:"/", day:"5", literal:"/", year:"2024"]
+1.9 (TimeClip truncates) => [second:"0", literal:".", fractionalSecond:"001"]
+-0.5 => [second:"0", literal:".", fractionalSecond:"000"]
+a BigInt => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+a Symbol => THROWS TypeError: Cannot convert a Symbol value to a number.
+{minute, second} in Asia/Kolkata at 12:00:05Z (sjl-6-001 leftover) => [minute:"30", literal:":", second:"05"]
+{minute, second} in Asia/Kathmandu => ["45:05"]
+{minute} in Asia/Kolkata => "30"
+{hour, minute} in Asia/Kolkata at the epoch => "5:30 AM"
+Date#toLocaleTimeString({minute, second}) in Asia/Kolkata => "30:05"
+format of an Object with valueOf => "1/5/2024"
+formatToParts property order and prototype => ["type,value", true]
+exit=0

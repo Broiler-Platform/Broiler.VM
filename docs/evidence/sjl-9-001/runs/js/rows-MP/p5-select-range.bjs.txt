@@ -1,0 +1,15 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/p5-select-range.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/p5-select-range.js sha256 d2b85b536e7b2d054be5e1d2f6a22ffd2cab88e788e7feb61549268b081d757f
+P5 en (1,1) (1,1.0001) (-1,1) ("1","1.0") => ["other", "other", "other", "other"]
+P5 de (1,1); en {minFD 1} (1,1) => ["other", "other"]
+P5 en (0,1) (1,2) (2,1) (0,0.5) (1,1.5) => ["other", "other", "other", "other", "other"]
+P5 de (0,1) (1,2) (2,1) (1,1.5) => ["other", "other", "other", "other"]
+P5 en ordinal (1,2) (1,1) (2,3) => ["other", "other", "other"]
+P5 fr (0,1) (1,2) => ["fr", "other", "other"]
+P5 (Infinity, Infinity), (5, 1) no throw, (-Infinity, Infinity) => ["other", "other", "other"]
+P5 (NaN, 1) => THROWS RangeError: Intl.PluralRules.prototype.selectRange called with a NaN start or end value
+P5 (undefined, 1) => THROWS TypeError: Intl.PluralRules.prototype.selectRange requires defined start and end values
+P5 (1) one argument => THROWS TypeError: Intl.PluralRules.prototype.selectRange requires defined start and end values
+P5 order of coercion: start then end, both before the NaN test => ["start", "end", "RangeError"]
+exit=0

@@ -1,0 +1,48 @@
+# en full parts
+   VM: [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" ", era:"AD", literal:" at ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:".", fractionalSecond:"123", literal:"\u202f", dayPeriod:"PM", literal:" ", timeZoneName:"UTC"]
+   JS: [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" ", era:"AD", literal:", ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:".", fractionalSecond:"123", literal:" ", dayPeriod:"PM", literal:" ", timeZoneName:"UTC"]
+   Node (VM): [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" ", era:"AD", literal:" at ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:".", fractionalSecond:"123", literal:"\u202f", dayPeriod:"PM", literal:" ", timeZoneName:"UTC"]
+# de full parts
+   VM: [weekday:"Freitag", literal:", ", day:"5", literal:". ", month:"Januar", literal:" ", year:"2024", literal:" ", era:"n. Chr.", literal:" um ", hour:"15", literal:":", minute:"07", literal:":", second:"09", literal:",", fractionalSecond:"123", literal:" ", timeZoneName:"UTC"]
+   JS: [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" ", era:"AD", literal:", ", hour:"15", literal:":", minute:"07", literal:":", second:"09", literal:".", fractionalSecond:"123", literal:" ", timeZoneName:"UTC"]
+   Node (VM): [weekday:"Freitag", literal:", ", day:"5", literal:". ", month:"Januar", literal:" ", year:"2024", literal:" ", era:"n. Chr.", literal:" um ", hour:"15", literal:":", minute:"07", literal:":", second:"09", literal:",", fractionalSecond:"123", literal:" ", timeZoneName:"UTC"]
+= en default parts => [month:"1", literal:"/", day:"5", literal:"/", year:"2024"]
+# en dateStyle full timeStyle full parts
+   VM: [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" at ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:"\u202f", dayPeriod:"PM", literal:" ", timeZoneName:"Coordinated Universal Time"]
+   JS: [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:", ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:" ", dayPeriod:"PM", literal:" ", timeZoneName:"Coordinated Universal Time"]
+   Node (VM): [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" at ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:"\u202f", dayPeriod:"PM", literal:" ", timeZoneName:"Coordinated Universal Time"]
+# en relatedYear and yearName (chinese)
+   VM: [month:"Eleventh Month", literal:" ", relatedYear:"2023", literal:"(", yearName:"gui-mao", literal:")"]
+   JS: [month:"November", literal:" ", relatedYear:"2023", literal:"(", yearName:"\u7678\u536f", literal:")"]
+   Node (VM): [month:"Eleventh Month", literal:" ", relatedYear:"2023", literal:"(", yearName:"gui-mao", literal:")"]
+= en {year:2-digit} for 2024, 1999, 5, -1 => ["24", "99", "05", "02"]
+= en {year:numeric, era:short} for year 0 and -1 (1 BC, 2 BC) => ["1 BC", "2 BC"]
+= en {year:numeric} for year 0 and -1 => ["1", "2"]
+# 8.64e15 parts
+   VM: [month:"Sep", literal:" ", day:"13", literal:", ", year:"275760", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:"\u202f", dayPeriod:"AM"]
+   JS: [month:"Sep", literal:" ", day:"13", literal:", ", year:"275760", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:" ", dayPeriod:"AM"]
+   Node (VM): [month:"Sep", literal:" ", day:"13", literal:", ", year:"275760", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:"\u202f", dayPeriod:"AM"]
+# -8.64e15 parts
+   VM: [month:"Apr", literal:" ", day:"20", literal:", ", year:"271822", literal:" ", era:"BC", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:"\u202f", dayPeriod:"AM"]
+   JS: [month:"Apr", literal:" ", day:"20", literal:", ", year:"271822", literal:" ", era:"BC", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:" ", dayPeriod:"AM"]
+   Node (VM): [month:"Apr", literal:" ", day:"20", literal:", ", year:"271822", literal:" ", era:"BC", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:"\u202f", dayPeriod:"AM"]
+= 8.64e15 {minute, second} => [minute:"00", literal:":", second:"00"]
+= 8.64e15 + 1 => THROWS RangeError: Invalid time value
+= NaN => THROWS RangeError: Invalid time value
+= a string "0" => [month:"1", literal:"/", day:"1", literal:"/", year:"1970"]
+= a Date object => [month:"1", literal:"/", day:"5", literal:"/", year:"2024"]
+= 1.9 (TimeClip truncates) => [second:"0", literal:".", fractionalSecond:"001"]
+= -0.5 => [second:"0", literal:".", fractionalSecond:"000"]
+= a BigInt => THROWS TypeError
+= a Symbol => THROWS TypeError
+= {minute, second} in Asia/Kolkata at 12:00:05Z (sjl-6-001 leftover) => [minute:"30", literal:":", second:"05"]
+= {minute, second} in Asia/Kathmandu => ["45:05"]
+= {minute} in Asia/Kolkata => "30"
+# {hour, minute} in Asia/Kolkata at the epoch
+   VM: "5:30\u202fAM"
+   JS: "5:30 AM"
+   Node (JS): "5:30 AM"
+= Date#toLocaleTimeString({minute, second}) in Asia/Kolkata => "30:05"
+= format of an Object with valueOf => "1/5/2024"
+= formatToParts property order and prototype => ["type,value", true]
+-- 19 same, 7 differ; Node equals VM 6, JS 1, neither 0

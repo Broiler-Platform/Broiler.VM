@@ -1,0 +1,14 @@
+# command (from JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC TMPDIR=<tmp> timeout 1800 python3 scripts/compliance/run_test262.py --suite-root /home/user/tc39/test262 --broiler-dll /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --output <json> --no-summary-stdout test/intl402/Locale/prototype/getCalendars/name.js test/intl402/DateTimeFormat/timezone-case-insensitive.js test/intl402/NumberFormat/constructor-roundingIncrement.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+[test262] Starting test262 run for suite ref ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e using local suite root /home/user/tc39/test262
+[test262] Selected 3 runnable test(s) for shard 1/1 from 3 selected file(s) and 3 candidate path(s) using mode requested.
+[test262] Using Broiler script host at /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll
+[test262] Running 3 test(s) for shard 1/1.
+[test262] Per-test timeout is 30s; POSIX memory cap is disabled.
+[test262] Completed 3/3 path(s), 3 variant case(s) (passed=3, failed=0, skipped=0, timedOut=0).
+[test262] Wrote machine-readable summary to <tmp>/admission-control.bjs.json
+[test262] Finished test262 run: variantCases=3, executed=3, passed=3, failed=0, skipped=0, timedOut=0
+exit=0
+{"features": ["canonical-tz"], "flags": [], "path": "test/intl402/DateTimeFormat/timezone-case-insensitive.js", "status": "passed", "variant": "original"}
+{"features": ["Intl.Locale", "Intl.Locale-info"], "flags": [], "path": "test/intl402/Locale/prototype/getCalendars/name.js", "status": "passed", "variant": "original"}
+{"features": ["Intl.NumberFormat-v3"], "flags": [], "path": "test/intl402/NumberFormat/constructor-roundingIncrement.js", "status": "passed", "variant": "original"}

@@ -1,0 +1,252 @@
+# command (VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 1800 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 /home/user/tc39/test262 --test test/intl402/BigInt/prototype/toLocaleString/builtin.js --test test/intl402/BigInt/prototype/toLocaleString/de-DE.js --test test/intl402/BigInt/prototype/toLocaleString/default-options-object-prototype.js --test test/intl402/BigInt/prototype/toLocaleString/en-US.js --test test/intl402/BigInt/prototype/toLocaleString/length.js --test test/intl402/BigInt/prototype/toLocaleString/name.js --test test/intl402/BigInt/prototype/toLocaleString/prop-desc.js --test test/intl402/BigInt/prototype/toLocaleString/returns-same-results-as-NumberFormat.js --test test/intl402/BigInt/prototype/toLocaleString/taint-Intl-NumberFormat.js --test test/intl402/BigInt/prototype/toLocaleString/this-value-invalid.js --test test/intl402/BigInt/prototype/toLocaleString/throws-same-exceptions-as-NumberFormat.js --test test/intl402/Number/prototype/toLocaleString/builtin.js --test test/intl402/Number/prototype/toLocaleString/default-options-object-prototype.js --test test/intl402/Number/prototype/toLocaleString/length.js --test test/intl402/Number/prototype/toLocaleString/returns-same-results-as-NumberFormat.js --test test/intl402/Number/prototype/toLocaleString/taint-Intl-NumberFormat.js --test test/intl402/Number/prototype/toLocaleString/this-number-value.js --test test/intl402/Number/prototype/toLocaleString/throws-same-exceptions-as-NumberFormat.js --test test/intl402/NumberFormat/constructor-default-value.js --test test/intl402/NumberFormat/constructor-option-read-order.js --test test/intl402/NumberFormat/constructor-options-roundingMode-invalid.js --test test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-increment.js --test test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-mode.js --test test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-priority.js --test test/intl402/NumberFormat/constructor-options-throwing-getters-trailing-zero-display.js --test test/intl402/NumberFormat/constructor-options-throwing-getters.js --test test/intl402/NumberFormat/constructor-roundingIncrement-invalid.js --test test/intl402/NumberFormat/constructor-roundingIncrement.js --test test/intl402/NumberFormat/constructor-trailingZeroDisplay-invalid.js --test test/intl402/NumberFormat/constructor-trailingZeroDisplay.js --test test/intl402/NumberFormat/currency-digits-nonstandard-notation.js --test test/intl402/NumberFormat/currency-digits.js --test test/intl402/NumberFormat/default-minimum-singificant-digits.js --test test/intl402/NumberFormat/dft-currency-mnfd-range-check-mxfd.js --test test/intl402/NumberFormat/fraction-digit-options-read-once.js --test test/intl402/NumberFormat/prototype/format/default-value.js --test test/intl402/NumberFormat/prototype/format/format-fraction-digits-precision.js --test test/intl402/NumberFormat/prototype/format/format-fraction-digits.js --test test/intl402/NumberFormat/prototype/format/format-max-min-fraction-significant-digits.js --test test/intl402/NumberFormat/prototype/format/format-negative-numbers.js --test test/intl402/NumberFormat/prototype/format/format-non-finite-numbers.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-1.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-10.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-100.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-1000.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-2.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-20.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-200.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-2000.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-25.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-250.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-2500.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-5.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-50.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-500.js --test test/intl402/NumberFormat/prototype/format/format-rounding-increment-5000.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-ceil.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-expand.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-floor.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-ceil.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-even.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-expand.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-floor.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-trunc.js --test test/intl402/NumberFormat/prototype/format/format-rounding-mode-trunc.js --test test/intl402/NumberFormat/prototype/format/format-rounding-priority-auto.js --test test/intl402/NumberFormat/prototype/format/format-rounding-priority-less-precision.js --test test/intl402/NumberFormat/prototype/format/format-rounding-priority-more-precision.js --test test/intl402/NumberFormat/prototype/format/format-significant-digits-precision.js --test test/intl402/NumberFormat/prototype/format/format-significant-digits.js --test test/intl402/NumberFormat/prototype/format/percent-formatter.js --test test/intl402/NumberFormat/prototype/format/signDisplay-rounding.js --test test/intl402/NumberFormat/prototype/format/value-arg-coerced-to-number.js --test test/intl402/NumberFormat/prototype/format/value-decimal-string.js --test test/intl402/NumberFormat/prototype/format/value-tonumber.js --test test/intl402/NumberFormat/prototype/formatRange/argument-to-Intlmathematicalvalue-throws.js --test test/intl402/NumberFormat/prototype/formatRange/nan-arguments-throws.js --test test/intl402/NumberFormat/prototype/formatRange/undefined-arguments-throws.js --test test/intl402/NumberFormat/prototype/formatRange/x-greater-than-y-not-throws.js --test test/intl402/NumberFormat/prototype/formatRangeToParts/argument-to-Intlmathematicalvalue-throws.js --test test/intl402/NumberFormat/prototype/formatRangeToParts/nan-arguments-throws.js --test test/intl402/NumberFormat/prototype/formatRangeToParts/undefined-arguments-throws.js --test test/intl402/NumberFormat/prototype/formatRangeToParts/x-greater-than-y-not-throws.js --test test/intl402/NumberFormat/prototype/formatToParts/default-parameter.js --test test/intl402/NumberFormat/prototype/formatToParts/value-tonumber.js --test test/intl402/NumberFormat/prototype/resolvedOptions/basic.js --test test/intl402/NumberFormat/prototype/resolvedOptions/return-keys-order-default.js --test test/intl402/NumberFormat/prototype/resolvedOptions/roundingMode.js --test test/intl402/NumberFormat/significant-digits-options-get-sequence.js --test test/intl402/NumberFormat/test-option-roundingPriority-mixed-options.js --test test/intl402/NumberFormat/test-option-roundingPriority.js --test test/intl402/NumberFormat/throws-for-maximumFractionDigits-over-limit.js --test test/intl402/NumberFormat/throws-for-maximumFractionDigits-under-limit.js --test test/intl402/NumberFormat/throws-for-minimumFractionDigits-over-limit.js --test test/intl402/NumberFormat/throws-for-minimumFractionDigits-under-limit.js --test test/intl402/PluralRules/builtin.js --test test/intl402/PluralRules/can-be-subclassed.js --test test/intl402/PluralRules/constructor-option-read-order.js --test test/intl402/PluralRules/constructor-options-throwing-getters.js --test test/intl402/PluralRules/default-options-object-prototype.js --test test/intl402/PluralRules/internals.js --test test/intl402/PluralRules/length.js --test test/intl402/PluralRules/name.js --test test/intl402/PluralRules/notation.js --test test/intl402/PluralRules/prop-desc.js --test test/intl402/PluralRules/proto-from-ctor-realm.js --test test/intl402/PluralRules/prototype/bind.js --test test/intl402/PluralRules/prototype/builtins.js --test test/intl402/PluralRules/prototype/constructor/main.js --test test/intl402/PluralRules/prototype/constructor/prop-desc.js --test test/intl402/PluralRules/prototype/properties.js --test test/intl402/PluralRules/prototype/prototype.js --test test/intl402/PluralRules/prototype/resolvedOptions/builtins.js --test test/intl402/PluralRules/prototype/resolvedOptions/length.js --test test/intl402/PluralRules/prototype/resolvedOptions/name.js --test test/intl402/PluralRules/prototype/resolvedOptions/order.js --test test/intl402/PluralRules/prototype/resolvedOptions/plural-categories-order.js --test test/intl402/PluralRules/prototype/resolvedOptions/pluralCategories.js --test test/intl402/PluralRules/prototype/resolvedOptions/prop-desc.js --test test/intl402/PluralRules/prototype/resolvedOptions/properties.js --test test/intl402/PluralRules/prototype/resolvedOptions/return-keys-order-default.js --test test/intl402/PluralRules/prototype/select/length.js --test test/intl402/PluralRules/prototype/select/name.js --test test/intl402/PluralRules/prototype/select/non-finite.js --test test/intl402/PluralRules/prototype/select/notation.js --test test/intl402/PluralRules/prototype/select/prop-desc.js --test test/intl402/PluralRules/prototype/select/tainting.js --test test/intl402/PluralRules/prototype/selectRange/argument-tonumber-throws.js --test test/intl402/PluralRules/prototype/selectRange/default-en-us.js --test test/intl402/PluralRules/prototype/selectRange/invoked-as-func.js --test test/intl402/PluralRules/prototype/selectRange/length.js --test test/intl402/PluralRules/prototype/selectRange/name.js --test test/intl402/PluralRules/prototype/selectRange/nan-arguments-throws.js --test test/intl402/PluralRules/prototype/selectRange/prop-desc.js --test test/intl402/PluralRules/prototype/selectRange/undefined-arguments-throws.js --test test/intl402/PluralRules/prototype/selectRange/x-greater-than-y-not-throws.js --test test/intl402/PluralRules/prototype/toStringTag/toString-changed-tag.js --test test/intl402/PluralRules/prototype/toStringTag/toString-removed-tag.js --test test/intl402/PluralRules/prototype/toStringTag/toString.js --test test/intl402/PluralRules/prototype/toStringTag/toStringTag.js --test test/intl402/PluralRules/supportedLocalesOf/arguments.js --test test/intl402/PluralRules/supportedLocalesOf/length.js --test test/intl402/PluralRules/supportedLocalesOf/main.js --test test/intl402/PluralRules/supportedLocalesOf/name.js --test test/intl402/PluralRules/supportedLocalesOf/prop-desc.js --test test/intl402/PluralRules/supportedLocalesOf/supportedLocalesOf.js --test test/intl402/PluralRules/undefined-newtarget-throws.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40; test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=147 selected=147 thisShard=147
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+pass        test/intl402/BigInt/prototype/toLocaleString/builtin.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/builtin.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/de-DE.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/de-DE.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/default-options-object-prototype.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/default-options-object-prototype.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/en-US.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/en-US.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/length.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/length.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/name.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/name.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/prop-desc.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/prop-desc.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/returns-same-results-as-NumberFormat.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/returns-same-results-as-NumberFormat.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/taint-Intl-NumberFormat.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/taint-Intl-NumberFormat.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/this-value-invalid.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/this-value-invalid.js [sloppy]
+pass        test/intl402/BigInt/prototype/toLocaleString/throws-same-exceptions-as-NumberFormat.js [strict]
+pass        test/intl402/BigInt/prototype/toLocaleString/throws-same-exceptions-as-NumberFormat.js [sloppy]
+pass        test/intl402/Number/prototype/toLocaleString/builtin.js [strict]
+pass        test/intl402/Number/prototype/toLocaleString/builtin.js [sloppy]
+pass        test/intl402/Number/prototype/toLocaleString/default-options-object-prototype.js [strict]
+pass        test/intl402/Number/prototype/toLocaleString/default-options-object-prototype.js [sloppy]
+pass        test/intl402/Number/prototype/toLocaleString/length.js [strict]
+pass        test/intl402/Number/prototype/toLocaleString/length.js [sloppy]
+pass        test/intl402/Number/prototype/toLocaleString/returns-same-results-as-NumberFormat.js [strict]
+pass        test/intl402/Number/prototype/toLocaleString/returns-same-results-as-NumberFormat.js [sloppy]
+pass        test/intl402/Number/prototype/toLocaleString/taint-Intl-NumberFormat.js [strict]
+pass        test/intl402/Number/prototype/toLocaleString/taint-Intl-NumberFormat.js [sloppy]
+pass        test/intl402/Number/prototype/toLocaleString/this-number-value.js [strict]
+pass        test/intl402/Number/prototype/toLocaleString/this-number-value.js [sloppy]
+pass        test/intl402/Number/prototype/toLocaleString/throws-same-exceptions-as-NumberFormat.js [strict]
+pass        test/intl402/Number/prototype/toLocaleString/throws-same-exceptions-as-NumberFormat.js [sloppy]
+pass        test/intl402/NumberFormat/constructor-default-value.js [strict]
+pass        test/intl402/NumberFormat/constructor-default-value.js [sloppy]
+skipped     test/intl402/NumberFormat/constructor-option-read-order.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/constructor-options-roundingMode-invalid.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-increment.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-mode.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-priority.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/constructor-options-throwing-getters-trailing-zero-display.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/NumberFormat/constructor-options-throwing-getters.js [strict]
+pass        test/intl402/NumberFormat/constructor-options-throwing-getters.js [sloppy]
+skipped     test/intl402/NumberFormat/constructor-roundingIncrement-invalid.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/constructor-roundingIncrement.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/constructor-trailingZeroDisplay-invalid.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/constructor-trailingZeroDisplay.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/NumberFormat/currency-digits-nonstandard-notation.js [strict]
+pass        test/intl402/NumberFormat/currency-digits-nonstandard-notation.js [sloppy]
+pass        test/intl402/NumberFormat/currency-digits.js [strict]
+pass        test/intl402/NumberFormat/currency-digits.js [sloppy]
+pass        test/intl402/NumberFormat/default-minimum-singificant-digits.js [strict]
+pass        test/intl402/NumberFormat/default-minimum-singificant-digits.js [sloppy]
+pass        test/intl402/NumberFormat/dft-currency-mnfd-range-check-mxfd.js [strict]
+pass        test/intl402/NumberFormat/dft-currency-mnfd-range-check-mxfd.js [sloppy]
+pass        test/intl402/NumberFormat/fraction-digit-options-read-once.js [strict]
+pass        test/intl402/NumberFormat/fraction-digit-options-read-once.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/format/default-value.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/default-value.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/format/format-fraction-digits-precision.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/format-fraction-digits-precision.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/format/format-fraction-digits.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/format-fraction-digits.js [sloppy]
+skipped     test/intl402/NumberFormat/prototype/format/format-max-min-fraction-significant-digits.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/NumberFormat/prototype/format/format-negative-numbers.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/format-negative-numbers.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/format/format-non-finite-numbers.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/format-non-finite-numbers.js [sloppy]
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-1.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-10.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-100.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-1000.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-2.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-20.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-200.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-2000.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-25.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-250.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-2500.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-5.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-50.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-500.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-increment-5000.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-ceil.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-expand.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-floor.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-ceil.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-even.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-expand.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-floor.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-trunc.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-mode-trunc.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-priority-auto.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-priority-less-precision.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/format/format-rounding-priority-more-precision.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/NumberFormat/prototype/format/format-significant-digits-precision.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/format-significant-digits-precision.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/format/format-significant-digits.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/format-significant-digits.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/format/percent-formatter.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/percent-formatter.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/format/signDisplay-rounding.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/signDisplay-rounding.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/format/value-arg-coerced-to-number.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/value-arg-coerced-to-number.js [sloppy]
+skipped     test/intl402/NumberFormat/prototype/format/value-decimal-string.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/NumberFormat/prototype/format/value-tonumber.js [strict]
+pass        test/intl402/NumberFormat/prototype/format/value-tonumber.js [sloppy]
+skipped     test/intl402/NumberFormat/prototype/formatRange/argument-to-Intlmathematicalvalue-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/formatRange/nan-arguments-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/formatRange/undefined-arguments-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/formatRange/x-greater-than-y-not-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/formatRangeToParts/argument-to-Intlmathematicalvalue-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/formatRangeToParts/nan-arguments-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/formatRangeToParts/undefined-arguments-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/formatRangeToParts/x-greater-than-y-not-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/NumberFormat/prototype/formatToParts/default-parameter.js [strict]
+pass        test/intl402/NumberFormat/prototype/formatToParts/default-parameter.js [sloppy]
+pass        test/intl402/NumberFormat/prototype/formatToParts/value-tonumber.js [strict]
+pass        test/intl402/NumberFormat/prototype/formatToParts/value-tonumber.js [sloppy]
+skipped     test/intl402/NumberFormat/prototype/resolvedOptions/basic.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/resolvedOptions/return-keys-order-default.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/prototype/resolvedOptions/roundingMode.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/NumberFormat/significant-digits-options-get-sequence.js [strict]
+pass        test/intl402/NumberFormat/significant-digits-options-get-sequence.js [sloppy]
+skipped     test/intl402/NumberFormat/test-option-roundingPriority-mixed-options.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/NumberFormat/test-option-roundingPriority.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/NumberFormat/throws-for-maximumFractionDigits-over-limit.js [strict]
+pass        test/intl402/NumberFormat/throws-for-maximumFractionDigits-over-limit.js [sloppy]
+pass        test/intl402/NumberFormat/throws-for-maximumFractionDigits-under-limit.js [strict]
+pass        test/intl402/NumberFormat/throws-for-maximumFractionDigits-under-limit.js [sloppy]
+pass        test/intl402/NumberFormat/throws-for-minimumFractionDigits-over-limit.js [strict]
+pass        test/intl402/NumberFormat/throws-for-minimumFractionDigits-over-limit.js [sloppy]
+pass        test/intl402/NumberFormat/throws-for-minimumFractionDigits-under-limit.js [strict]
+pass        test/intl402/NumberFormat/throws-for-minimumFractionDigits-under-limit.js [sloppy]
+pass        test/intl402/PluralRules/builtin.js [strict]
+pass        test/intl402/PluralRules/builtin.js [sloppy]
+pass        test/intl402/PluralRules/can-be-subclassed.js [strict]
+pass        test/intl402/PluralRules/can-be-subclassed.js [sloppy]
+skipped     test/intl402/PluralRules/constructor-option-read-order.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/PluralRules/constructor-options-throwing-getters.js [strict]
+pass        test/intl402/PluralRules/constructor-options-throwing-getters.js [sloppy]
+pass        test/intl402/PluralRules/default-options-object-prototype.js [strict]
+pass        test/intl402/PluralRules/default-options-object-prototype.js [sloppy]
+pass        test/intl402/PluralRules/internals.js [strict]
+pass        test/intl402/PluralRules/internals.js [sloppy]
+pass        test/intl402/PluralRules/length.js [strict]
+pass        test/intl402/PluralRules/length.js [sloppy]
+pass        test/intl402/PluralRules/name.js [strict]
+pass        test/intl402/PluralRules/name.js [sloppy]
+pass        test/intl402/PluralRules/notation.js [strict]
+pass        test/intl402/PluralRules/notation.js [sloppy]
+pass        test/intl402/PluralRules/prop-desc.js [strict]
+pass        test/intl402/PluralRules/prop-desc.js [sloppy]
+pass        test/intl402/PluralRules/proto-from-ctor-realm.js [strict]
+pass        test/intl402/PluralRules/proto-from-ctor-realm.js [sloppy]
+pass        test/intl402/PluralRules/prototype/bind.js [strict]
+pass        test/intl402/PluralRules/prototype/bind.js [sloppy]
+pass        test/intl402/PluralRules/prototype/builtins.js [strict]
+pass        test/intl402/PluralRules/prototype/builtins.js [sloppy]
+pass        test/intl402/PluralRules/prototype/constructor/main.js [strict]
+pass        test/intl402/PluralRules/prototype/constructor/main.js [sloppy]
+pass        test/intl402/PluralRules/prototype/constructor/prop-desc.js [strict]
+pass        test/intl402/PluralRules/prototype/constructor/prop-desc.js [sloppy]
+pass        test/intl402/PluralRules/prototype/properties.js [strict]
+pass        test/intl402/PluralRules/prototype/properties.js [sloppy]
+pass        test/intl402/PluralRules/prototype/prototype.js [strict]
+pass        test/intl402/PluralRules/prototype/prototype.js [sloppy]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/builtins.js [strict]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/builtins.js [sloppy]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/length.js [strict]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/length.js [sloppy]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/name.js [strict]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/name.js [sloppy]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/order.js [strict]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/order.js [sloppy]
+FAIL        test/intl402/PluralRules/prototype/resolvedOptions/plural-categories-order.js [strict]  uncaught Error: Actual [one, other] and expected [zero, one, two, few, many, other] should have the same contents. pluralCategories order or contents incorrect for 'ar' locale
+FAIL        test/intl402/PluralRules/prototype/resolvedOptions/plural-categories-order.js [sloppy]  uncaught Error: Actual [one, other] and expected [zero, one, two, few, many, other] should have the same contents. pluralCategories order or contents incorrect for 'ar' locale
+pass        test/intl402/PluralRules/prototype/resolvedOptions/pluralCategories.js [strict]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/pluralCategories.js [sloppy]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/prop-desc.js [strict]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/prop-desc.js [sloppy]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/properties.js [strict]
+pass        test/intl402/PluralRules/prototype/resolvedOptions/properties.js [sloppy]
+skipped     test/intl402/PluralRules/prototype/resolvedOptions/return-keys-order-default.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/PluralRules/prototype/select/length.js [strict]
+pass        test/intl402/PluralRules/prototype/select/length.js [sloppy]
+pass        test/intl402/PluralRules/prototype/select/name.js [strict]
+pass        test/intl402/PluralRules/prototype/select/name.js [sloppy]
+pass        test/intl402/PluralRules/prototype/select/non-finite.js [strict]
+pass        test/intl402/PluralRules/prototype/select/non-finite.js [sloppy]
+FAIL        test/intl402/PluralRules/prototype/select/notation.js [strict]  uncaught Error: standard notation: 1000000 Expected SameValue(«"other"», «"many"») to be true
+FAIL        test/intl402/PluralRules/prototype/select/notation.js [sloppy]  uncaught Error: standard notation: 1000000 Expected SameValue(«"other"», «"many"») to be true
+pass        test/intl402/PluralRules/prototype/select/prop-desc.js [strict]
+pass        test/intl402/PluralRules/prototype/select/prop-desc.js [sloppy]
+pass        test/intl402/PluralRules/prototype/select/tainting.js [strict]
+pass        test/intl402/PluralRules/prototype/select/tainting.js [sloppy]
+skipped     test/intl402/PluralRules/prototype/selectRange/argument-tonumber-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/PluralRules/prototype/selectRange/default-en-us.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/PluralRules/prototype/selectRange/invoked-as-func.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/PluralRules/prototype/selectRange/length.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/PluralRules/prototype/selectRange/name.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/PluralRules/prototype/selectRange/nan-arguments-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/PluralRules/prototype/selectRange/prop-desc.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/PluralRules/prototype/selectRange/undefined-arguments-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+skipped     test/intl402/PluralRules/prototype/selectRange/x-greater-than-y-not-throws.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+pass        test/intl402/PluralRules/prototype/toStringTag/toString-changed-tag.js [strict]
+pass        test/intl402/PluralRules/prototype/toStringTag/toString-changed-tag.js [sloppy]
+pass        test/intl402/PluralRules/prototype/toStringTag/toString-removed-tag.js [strict]
+pass        test/intl402/PluralRules/prototype/toStringTag/toString-removed-tag.js [sloppy]
+pass        test/intl402/PluralRules/prototype/toStringTag/toString.js [strict]
+pass        test/intl402/PluralRules/prototype/toStringTag/toString.js [sloppy]
+pass        test/intl402/PluralRules/prototype/toStringTag/toStringTag.js [strict]
+pass        test/intl402/PluralRules/prototype/toStringTag/toStringTag.js [sloppy]
+pass        test/intl402/PluralRules/supportedLocalesOf/arguments.js [strict]
+pass        test/intl402/PluralRules/supportedLocalesOf/arguments.js [sloppy]
+pass        test/intl402/PluralRules/supportedLocalesOf/length.js [strict]
+pass        test/intl402/PluralRules/supportedLocalesOf/length.js [sloppy]
+pass        test/intl402/PluralRules/supportedLocalesOf/main.js [strict]
+pass        test/intl402/PluralRules/supportedLocalesOf/main.js [sloppy]
+pass        test/intl402/PluralRules/supportedLocalesOf/name.js [strict]
+pass        test/intl402/PluralRules/supportedLocalesOf/name.js [sloppy]
+pass        test/intl402/PluralRules/supportedLocalesOf/prop-desc.js [strict]
+pass        test/intl402/PluralRules/supportedLocalesOf/prop-desc.js [sloppy]
+pass        test/intl402/PluralRules/supportedLocalesOf/supportedLocalesOf.js [strict]
+pass        test/intl402/PluralRules/supportedLocalesOf/supportedLocalesOf.js [sloppy]
+pass        test/intl402/PluralRules/undefined-newtarget-throws.js [strict]
+pass        test/intl402/PluralRules/undefined-newtarget-throws.js [sloppy]
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 4 failing variant(s)
+#   by kind: 1 distinct, 4 variants
+#           4  an uncaught Test262Error  e.g. test/intl402/PluralRules/prototype/resolvedOptions/plural-categories-order.js [sloppy]
+#   by area: 1 distinct, 4 variants
+#           4  test/intl402/PluralRules/prototype  e.g. test/intl402/PluralRules/prototype/resolvedOptions/plural-categories-order.js [sloppy]
+#   by declared feature (0 of 4 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 147 files, 231 variants: pass 164, fail 4, unsupported 0, exhausted 0, skipped 63
+coverage partial a named selection rather than the whole test tree: test/intl402/BigInt/prototype/toLocaleString/builtin.js test/intl402/BigInt/prototype/toLocaleString/de-DE.js test/intl402/BigInt/prototype/toLocaleString/default-options-object-prototype.js test/intl402/BigInt/prototype/toLocaleString/en-US.js test/intl402/BigInt/prototype/toLocaleString/length.js test/intl402/BigInt/prototype/toLocaleString/name.js test/intl402/BigInt/prototype/toLocaleString/prop-desc.js test/intl402/BigInt/prototype/toLocaleString/returns-same-results-as-NumberFormat.js test/intl402/BigInt/prototype/toLocaleString/taint-Intl-NumberFormat.js test/intl402/BigInt/prototype/toLocaleString/this-value-invalid.js test/intl402/BigInt/prototype/toLocaleString/throws-same-exceptions-as-NumberFormat.js test/intl402/Number/prototype/toLocaleString/builtin.js test/intl402/Number/prototype/toLocaleString/default-options-object-prototype.js test/intl402/Number/prototype/toLocaleString/length.js test/intl402/Number/prototype/toLocaleString/returns-same-results-as-NumberFormat.js test/intl402/Number/prototype/toLocaleString/taint-Intl-NumberFormat.js test/intl402/Number/prototype/toLocaleString/this-number-value.js test/intl402/Number/prototype/toLocaleString/throws-same-exceptions-as-NumberFormat.js test/intl402/NumberFormat/constructor-default-value.js test/intl402/NumberFormat/constructor-option-read-order.js test/intl402/NumberFormat/constructor-options-roundingMode-invalid.js test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-increment.js test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-mode.js test/intl402/NumberFormat/constructor-options-throwing-getters-rounding-priority.js test/intl402/NumberFormat/constructor-options-throwing-getters-trailing-zero-display.js test/intl402/NumberFormat/constructor-options-throwing-getters.js test/intl402/NumberFormat/constructor-roundingIncrement-invalid.js test/intl402/NumberFormat/constructor-roundingIncrement.js test/intl402/NumberFormat/constructor-trailingZeroDisplay-invalid.js test/intl402/NumberFormat/constructor-trailingZeroDisplay.js test/intl402/NumberFormat/currency-digits-nonstandard-notation.js test/intl402/NumberFormat/currency-digits.js test/intl402/NumberFormat/default-minimum-singificant-digits.js test/intl402/NumberFormat/dft-currency-mnfd-range-check-mxfd.js test/intl402/NumberFormat/fraction-digit-options-read-once.js test/intl402/NumberFormat/prototype/format/default-value.js test/intl402/NumberFormat/prototype/format/format-fraction-digits-precision.js test/intl402/NumberFormat/prototype/format/format-fraction-digits.js test/intl402/NumberFormat/prototype/format/format-max-min-fraction-significant-digits.js test/intl402/NumberFormat/prototype/format/format-negative-numbers.js test/intl402/NumberFormat/prototype/format/format-non-finite-numbers.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-1.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-10.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-100.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-1000.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-2.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-20.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-200.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-2000.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-25.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-250.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-2500.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-5.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-50.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-500.js test/intl402/NumberFormat/prototype/format/format-rounding-increment-5000.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-ceil.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-expand.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-floor.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-ceil.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-even.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-expand.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-floor.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-half-trunc.js test/intl402/NumberFormat/prototype/format/format-rounding-mode-trunc.js test/intl402/NumberFormat/prototype/format/format-rounding-priority-auto.js test/intl402/NumberFormat/prototype/format/format-rounding-priority-less-precision.js test/intl402/NumberFormat/prototype/format/format-rounding-priority-more-precision.js test/intl402/NumberFormat/prototype/format/format-significant-digits-precision.js test/intl402/NumberFormat/prototype/format/format-significant-digits.js test/intl402/NumberFormat/prototype/format/percent-formatter.js test/intl402/NumberFormat/prototype/format/signDisplay-rounding.js test/intl402/NumberFormat/prototype/format/value-arg-coerced-to-number.js test/intl402/NumberFormat/prototype/format/value-decimal-string.js test/intl402/NumberFormat/prototype/format/value-tonumber.js test/intl402/NumberFormat/prototype/formatRange/argument-to-Intlmathematicalvalue-throws.js test/intl402/NumberFormat/prototype/formatRange/nan-arguments-throws.js test/intl402/NumberFormat/prototype/formatRange/undefined-arguments-throws.js test/intl402/NumberFormat/prototype/formatRange/x-greater-than-y-not-throws.js test/intl402/NumberFormat/prototype/formatRangeToParts/argument-to-Intlmathematicalvalue-throws.js test/intl402/NumberFormat/prototype/formatRangeToParts/nan-arguments-throws.js test/intl402/NumberFormat/prototype/formatRangeToParts/undefined-arguments-throws.js test/intl402/NumberFormat/prototype/formatRangeToParts/x-greater-than-y-not-throws.js test/intl402/NumberFormat/prototype/formatToParts/default-parameter.js test/intl402/NumberFormat/prototype/formatToParts/value-tonumber.js test/intl402/NumberFormat/prototype/resolvedOptions/basic.js test/intl402/NumberFormat/prototype/resolvedOptions/return-keys-order-default.js test/intl402/NumberFormat/prototype/resolvedOptions/roundingMode.js test/intl402/NumberFormat/significant-digits-options-get-sequence.js test/intl402/NumberFormat/test-option-roundingPriority-mixed-options.js test/intl402/NumberFormat/test-option-roundingPriority.js test/intl402/NumberFormat/throws-for-maximumFractionDigits-over-limit.js test/intl402/NumberFormat/throws-for-maximumFractionDigits-under-limit.js test/intl402/NumberFormat/throws-for-minimumFractionDigits-over-limit.js test/intl402/NumberFormat/throws-for-minimumFractionDigits-under-limit.js test/intl402/PluralRules/builtin.js test/intl402/PluralRules/can-be-subclassed.js test/intl402/PluralRules/constructor-option-read-order.js test/intl402/PluralRules/constructor-options-throwing-getters.js test/intl402/PluralRules/default-options-object-prototype.js test/intl402/PluralRules/internals.js test/intl402/PluralRules/length.js test/intl402/PluralRules/name.js test/intl402/PluralRules/notation.js test/intl402/PluralRules/prop-desc.js test/intl402/PluralRules/proto-from-ctor-realm.js test/intl402/PluralRules/prototype/bind.js test/intl402/PluralRules/prototype/builtins.js test/intl402/PluralRules/prototype/constructor/main.js test/intl402/PluralRules/prototype/constructor/prop-desc.js test/intl402/PluralRules/prototype/properties.js test/intl402/PluralRules/prototype/prototype.js test/intl402/PluralRules/prototype/resolvedOptions/builtins.js test/intl402/PluralRules/prototype/resolvedOptions/length.js test/intl402/PluralRules/prototype/resolvedOptions/name.js test/intl402/PluralRules/prototype/resolvedOptions/order.js test/intl402/PluralRules/prototype/resolvedOptions/plural-categories-order.js test/intl402/PluralRules/prototype/resolvedOptions/pluralCategories.js test/intl402/PluralRules/prototype/resolvedOptions/prop-desc.js test/intl402/PluralRules/prototype/resolvedOptions/properties.js test/intl402/PluralRules/prototype/resolvedOptions/return-keys-order-default.js test/intl402/PluralRules/prototype/select/length.js test/intl402/PluralRules/prototype/select/name.js test/intl402/PluralRules/prototype/select/non-finite.js test/intl402/PluralRules/prototype/select/notation.js test/intl402/PluralRules/prototype/select/prop-desc.js test/intl402/PluralRules/prototype/select/tainting.js test/intl402/PluralRules/prototype/selectRange/argument-tonumber-throws.js test/intl402/PluralRules/prototype/selectRange/default-en-us.js test/intl402/PluralRules/prototype/selectRange/invoked-as-func.js test/intl402/PluralRules/prototype/selectRange/length.js test/intl402/PluralRules/prototype/selectRange/name.js test/intl402/PluralRules/prototype/selectRange/nan-arguments-throws.js test/intl402/PluralRules/prototype/selectRange/prop-desc.js test/intl402/PluralRules/prototype/selectRange/undefined-arguments-throws.js test/intl402/PluralRules/prototype/selectRange/x-greater-than-y-not-throws.js test/intl402/PluralRules/prototype/toStringTag/toString-changed-tag.js test/intl402/PluralRules/prototype/toStringTag/toString-removed-tag.js test/intl402/PluralRules/prototype/toStringTag/toString.js test/intl402/PluralRules/prototype/toStringTag/toStringTag.js test/intl402/PluralRules/supportedLocalesOf/arguments.js test/intl402/PluralRules/supportedLocalesOf/length.js test/intl402/PluralRules/supportedLocalesOf/main.js test/intl402/PluralRules/supportedLocalesOf/name.js test/intl402/PluralRules/supportedLocalesOf/prop-desc.js test/intl402/PluralRules/supportedLocalesOf/supportedLocalesOf.js test/intl402/PluralRules/undefined-newtarget-throws.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

@@ -1,0 +1,13 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANGUAGE LANG=de_DE.UTF-8 LC_ALL=de_DE.UTF-8 TZ=America/New_York timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/t11-host.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/t11-host.js sha256 5b93c598a8e7ad666cf7e0b9357fa88d999a72dd086e2578f04fd8a63b1dccb4
+resolvedOptions default [locale, timeZone] => ["de-DE", "America/New_York"]
+format(summer), format(winter) default => ["8:00 GMT-4", "7:00 GMT-5"]
+Date#toLocaleString() no arguments => "15.7.2024, 8:00:00"
+Date#toLocaleDateString() no arguments => "15.7.2024"
+Date#toLocaleTimeString() no arguments => "8:00:00"
+en dateStyle full timeStyle full, default zone => "Monday, July 15, 2024, 8:00:00 AM GMT-04:00"
+en {timeZoneName:longGeneric}, default zone => "7/15/2024 GMT-04:00"
+Temporal.Now.timeZoneId() => "America/New_York"
+Temporal.Instant toLocaleString default zone => "7/15/2024, 8:00:00 AM"
+exit=0

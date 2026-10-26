@@ -1,0 +1,82 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-T/t2-resolved.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/t2-resolved.js sha256 f107c92d89a825a594fb038eac15a0e38cca3462ceab768e88f9063c5240a179
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-T/t2-resolved.js [raw]  uncaught Error: OUT<<resolvedOptions "en" {} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "en-US" {} => {locale: "en-US", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "de" {} => {locale: "de", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "de-DE" {} => {locale: "de-DE", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "de-AT" {} => {locale: "de", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "en-GB" {} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "fr" {} => {locale: "en-US", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "ja" {} => {locale: "en-US", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "ko" {} => {locale: "en-US", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "zh-TW" {} => {locale: "en-US", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions "ar-EG" {} => {locale: "en-US", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+resolvedOptions undefined {} => {locale: "en-US", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric"}
+en {hour:numeric, minute:numeric} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", hourCycle: "h12", hour12: true, hour: "numeric", minute: "2-digit"}
+en {minute:numeric} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", minute: "numeric"}
+en {hour:2-digit} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", hourCycle: "h12", hour12: true, hour: "2-digit"}
+en {year:2-digit, month:long} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "2-digit", month: "long"}
+en {month:short, day:2-digit} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", month: "short", day: "2-digit"}
+en {weekday:narrow, era:long, second:numeric, fractionalSecondDigits:1, timeZoneName:longGeneric} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", weekday: "narrow", era: "long", second: "numeric", fractionalSecondDigits: 1, timeZoneName: "longGeneric"}
+en {dayPeriod:short} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", dayPeriod: "short"}
+en {dayPeriod:long, hour:numeric} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", hourCycle: "h12", hour12: true, dayPeriod: "long", hour: "numeric"}
+en {dateStyle:long} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", dateStyle: "long"}
+en {timeStyle:short} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", hourCycle: "h12", hour12: true, timeStyle: "short"}
+en {dateStyle:full, timeStyle:full} => {locale: "en", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", hourCycle: "h12", hour12: true, dateStyle: "full", timeStyle: "full"}
+de {month:numeric, day:numeric} => {locale: "de", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", month: "numeric", day: "numeric"}
+de {year:numeric, month:short} => {locale: "de", calendar: "gregory", numberingSystem: "latn", timeZone: "UTC", year: "numeric", month: "short"}
+hour cycle en {} => ["en", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle en {hour12: true} => ["en", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle en {hour12: false} => ["en", "h23", false, "00:05", "12:05"]
+hour cycle en {hourCycle: "h11"} => ["en", "h11", true, "0:05\u202fAM", "0:05\u202fPM"]
+hour cycle en {hourCycle: "h24"} => ["en", "h24", false, "24:05", "12:05"]
+hour cycle en {hourCycle: "h23", hour12: true} => ["en", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle en-u-hc-h23 {} => ["en-u-hc-h23", "h23", false, "00:05", "12:05"]
+hour cycle en-u-hc-h23 {hourCycle: "h11"} => ["en", "h11", true, "0:05\u202fAM", "0:05\u202fPM"]
+hour cycle en-u-hc-h23 {hour12: true} => ["en", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle en-u-hc-h24 {hourCycle: "h24"} => ["en-u-hc-h24", "h24", false, "24:05", "12:05"]
+hour cycle de {} => ["de", "h23", false, "0:05", "12:05"]
+hour cycle de {hour12: true} => ["de", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle de {hour12: false} => ["de", "h23", false, "0:05", "12:05"]
+hour cycle de-u-hc-h12 {} => ["de-u-hc-h12", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle en-GB {} => ["en", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle en-GB {hour12: true} => ["en", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle ja {} => ["en-US", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle ja {hour12: true} => ["en-US", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle ja-JP {hour12: true} => ["en-US", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle ko {} => ["en-US", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle en-IN {} => ["en", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+hour cycle zh-TW {} => ["en-US", "h12", true, "12:05\u202fAM", "12:05\u202fPM"]
+timeStyle short hourCycle h11 => ["h11", "0:05\u202fAM", "0:05\u202fPM"]
+de timeStyle medium hourCycle h11 => ["h11", "00:05:00\u202fAM", "00:05:00\u202fPM"]
+timeStyle short hourCycle h12 => ["h12", "12:05\u202fAM", "12:05\u202fPM"]
+de timeStyle medium hourCycle h12 => ["h12", "12:05:00\u202fAM", "12:05:00\u202fPM"]
+timeStyle short hourCycle h23 => ["h23", "00:05", "12:05"]
+de timeStyle medium hourCycle h23 => ["h23", "00:05:00", "12:05:00"]
+timeStyle short hourCycle h24 => ["h24", "24:05", "12:05"]
+de timeStyle medium hourCycle h24 => ["h24", "24:05:00", "12:05:00"]
+hourCycle without an hour field (year only) => [undefined, undefined]
+hourCycle with dateStyle only => [undefined, undefined]
+default timeZone => "UTC"
+default timeZone of Date#toLocaleString, as text => "7/15/2024, 9:30:00\u202fAM"
+default locale => "en-US">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-T/t2-resolved.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-T  e.g. test/sjl9/rows-T/t2-resolved.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-T/t2-resolved.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

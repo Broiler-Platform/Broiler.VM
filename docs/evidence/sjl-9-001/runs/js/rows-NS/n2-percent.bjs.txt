@@ -1,0 +1,28 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/n2-percent.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/n2-percent.js sha256 a282c61dd06c5347ec619132d10e04d3839f2ee333a821ee84ff2ad98dd1e1f6
+en percent 0.5, -0.5, 12.34 => ["50%", "-50%", "1,234%"]
+en percent formatToParts(-0.5) => [minusSign:"-", integer:"50", percentSign:"%"]
+de percent 0.5, -0.5, 12.34 => ["50\u00a0%", "-50\u00a0%", "1.234\u00a0%"]
+de percent formatToParts(-0.5) => [minusSign:"-", integer:"50", literal:"\u00a0", percentSign:"%"]
+de-CH percent 0.5, -0.5, 12.34 => ["50%", "-50%", "1\u2019234%"]
+de-CH percent formatToParts(-0.5) => [minusSign:"-", integer:"50", percentSign:"%"]
+fr percent 0.5, -0.5, 12.34 => ["50\u00a0%", "-50\u00a0%", "1\u202f234\u00a0%"]
+fr percent formatToParts(-0.5) => [minusSign:"-", integer:"50", literal:"\u00a0", percentSign:"%"]
+sv percent 0.5, -0.5, 12.34 => ["50\u00a0%", "-50\u00a0%", "1\u00a0234\u00a0%"]
+sv percent formatToParts(-0.5) => [minusSign:"-", integer:"50", literal:"\u00a0", percentSign:"%"]
+tr percent 0.5, -0.5, 12.34 => ["%50", "%-50", "%1.234"]
+tr percent formatToParts(-0.5) => [percentSign:"%", minusSign:"-", integer:"50"]
+es percent 0.5, -0.5, 12.34 => ["50\u00a0%", "-50\u00a0%", "1234\u00a0%"]
+es percent formatToParts(-0.5) => [minusSign:"-", integer:"50", literal:"\u00a0", percentSign:"%"]
+ar percent 0.5, -0.5, 12.34 => ["50\u066a\u061c", "-50\u066a\u061c", "1\u066c234\u066a\u061c"]
+ar percent formatToParts(-0.5) => [minusSign:"-", integer:"50", percentSign:"\u066a\u061c"]
+ja percent 0.5, -0.5, 12.34 => ["50%", "-50%", "1,234%"]
+ja percent formatToParts(-0.5) => [minusSign:"-", integer:"50", percentSign:"%"]
+en percent signDisplay always 0.5, exceptZero 0 => ["+50%", "0%"]
+de unit percent 50, long 50 => ["50 %", "50 Prozent"]
+en unit percent formatToParts(50) => [integer:"50", unit:"%"]
+de percent formatToParts(0.5) => [integer:"50", literal:"\u00a0", percentSign:"%"]
+en percent compact 1234.5 => "123K%"
+en percent scientific 1234.5 => "1.235E5%"
+exit=0

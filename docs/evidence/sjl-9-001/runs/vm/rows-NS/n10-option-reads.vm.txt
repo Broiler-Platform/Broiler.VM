@@ -1,0 +1,12 @@
+constructor reads (currency options) => ["localeMatcher", "numberingSystem", "style", "currency", "currencyDisplay", "currencySign", "unit", "unitDisplay", "notation", "minimumIntegerDigits", "minimumFractionDigits", "maximumFractionDigits", "minimumSignificantDigits", "maximumSignificantDigits", "roundingIncrement", "roundingMode", "roundingPriority", "trailingZeroDisplay", "compactDisplay", "useGrouping", "signDisplay"]
+reads by format(-1) => []
+reads by formatToParts and formatRange => []
+reads by resolvedOptions => []
+unit style: reads by format and resolvedOptions => []
+before mutation: format(1), resolved style/currency => ["\u20ac1.00", "currency", "EUR"]
+after o.currency = "usd": format(1), resolved currency => ["\u20ac1.00", "EUR"]
+after o.style = "percent": format(1), resolved style => ["\u20ac1.00", "currency"]
+after u.unit = "meter": format(2), resolved unit => ["2 L", "liter"]
+after currencyDisplay/currencySign changed: format(-1), resolved => ["-\u20ac1.00", "symbol", "standard"]
+a getter that throws after construction: format(1) => "\u20ac1.00"
+Number.prototype.toLocaleString reads each time (two calls) => 2

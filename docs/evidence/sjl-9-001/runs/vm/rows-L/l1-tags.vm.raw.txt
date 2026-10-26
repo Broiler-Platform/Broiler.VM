@@ -1,0 +1,106 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-L/l1-tags.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/l1-tags.js sha256 92bf58863c4c5579eddf3060bafae45c20c62629f93cc21f3df16c338be17b9d
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-L/l1-tags.js [raw]  uncaught Error: OUT<<case "EN-us" => ["en-US"]
+case "en-latn-us" => ["en-Latn-US"]
+case "zh-hant-tw" => ["zh-Hant-TW"]
+case "SR-CYRL-rs" => ["sr-Cyrl-RS"]
+case "EN-u-CA-Gregory" => ["en-u-ca-gregory"]
+case "DE-1996-1901" => ["de-1901-1996"]
+case "en-Latn-US-POSIX" => ["en-Latn-US-posix"]
+invalid "" => THROWS RangeError: Incorrect locale information provided: 
+invalid "en-" => THROWS RangeError: Incorrect locale information provided: en-
+invalid "-en" => THROWS RangeError: Incorrect locale information provided: -en
+invalid "en--US" => THROWS RangeError: Incorrect locale information provided: en--US
+invalid "e" => THROWS RangeError: Incorrect locale information provided: e
+invalid "english" => ["english"]
+invalid "abcd" => THROWS RangeError: Incorrect locale information provided: abcd
+invalid "en_US" => THROWS RangeError: Incorrect locale information provided: en_US
+invalid "root" => THROWS RangeError: Incorrect locale information provided: root
+invalid "Latn-en" => THROWS RangeError: Incorrect locale information provided: Latn-en
+invalid "zh-cmn-Hans" => THROWS RangeError: Incorrect locale information provided: zh-cmn-Hans
+invalid "en-els" => THROWS RangeError: Incorrect locale information provided: en-els
+invalid "x-private" => THROWS RangeError: Incorrect locale information provided: x-private
+invalid "i-klingon" => THROWS RangeError: Incorrect locale information provided: i-klingon
+invalid "zh-min-nan" => THROWS RangeError: Incorrect locale information provided: zh-min-nan
+invalid "en-gb-oed" => THROWS RangeError: Incorrect locale information provided: en-gb-oed
+invalid "de-1996-1996" => THROWS RangeError: Incorrect locale information provided: de-1996-1996
+invalid "de-DE-1996-1996" => THROWS RangeError: Incorrect locale information provided: de-DE-1996-1996
+invalid "en-u-ca-gregory-u-nu-latn" => THROWS RangeError: Incorrect locale information provided: en-u-ca-gregory-u-nu-latn
+invalid "en-a-bbb-a-ccc" => THROWS RangeError: Incorrect locale information provided: en-a-bbb-a-ccc
+invalid "en-u" => THROWS RangeError: Incorrect locale information provided: en-u
+invalid "en-t" => THROWS RangeError: Incorrect locale information provided: en-t
+invalid "en-u-1a-gregory" => ["en-u-1a-gregory"]
+invalid "en-t-root" => THROWS RangeError: Incorrect locale information provided: en-t-root
+invalid "en-t-d0" => THROWS RangeError: Incorrect locale information provided: en-t-d0
+invalid "de-t-en-emodeng-emodeng" => THROWS RangeError: Incorrect locale information provided: de-t-en-emodeng-emodeng
+invalid "en-x" => THROWS RangeError: Incorrect locale information provided: en-x
+invalid "en-x-abcdefghi" => THROWS RangeError: Incorrect locale information provided: en-x-abcdefghi
+invalid "en-US-u-ca-abcdefghi" => THROWS RangeError: Incorrect locale information provided: en-US-u-ca-abcdefghi
+non-ASCII "\u212ao" => THROWS RangeError: Incorrect locale information provided: \u212ao
+non-ASCII "en-\u212aE" => THROWS RangeError: Incorrect locale information provided: en-\u212aE
+non-ASCII "\u017fr" => THROWS RangeError: Incorrect locale information provided: \u017fr
+non-ASCII "en-u-ca-gregor\u212a" => THROWS RangeError: Incorrect locale information provided: en-u-ca-gregor\u212a
+non-ASCII "\u0131t" => THROWS RangeError: Incorrect locale information provided: \u0131t
+non-ASCII "\u0130T" => THROWS RangeError: Incorrect locale information provided: \u0130T
+non-ASCII "en-US\u0000" => THROWS RangeError: Incorrect locale information provided: en-US\u0000
+non-ASCII "\uff45\uff4e" => THROWS RangeError: Incorrect locale information provided: \uff45\uff4e
+ext "en-u-nu-latn-ca-gregory" => ["en-u-ca-gregory-nu-latn"]
+ext "en-u-bbb-aaa-ca-gregory" => ["en-u-aaa-bbb-ca-gregory"]
+ext "en-u-aaa-aaa-ca-gregory" => ["en-u-aaa-ca-gregory"]
+ext "en-u-ca-gregory-ca-buddhist" => ["en-u-ca-gregory"]
+ext "en-u-kn-true" => ["en-u-kn"]
+ext "en-u-ca-true" => ["en-u-ca"]
+ext "en-u-kn-false" => ["en-u-kn-false"]
+ext "en-u-kn" => ["en-u-kn"]
+ext "en-u-ca" => ["en-u-ca"]
+ext "en-u-ca-islamic-civil" => ["en-u-ca-islamic-civil"]
+ext "en-u-ca-gregory-a-bbb" => ["en-a-bbb-u-ca-gregory"]
+ext "en-z-zzz-u-ca-gregory-a-aaa-x-private" => ["en-a-aaa-u-ca-gregory-z-zzz-x-private"]
+ext "en-x-u-ca-gregory" => ["en-x-u-ca-gregory"]
+ext "en-x-a-b-c" => ["en-x-a-b-c"]
+ext "en-u-attr-x-private" => ["en-u-attr-x-private"]
+ext "en-t-en-latn-us-h0-hybrid-m0-ungegn" => ["en-t-en-latn-us-h0-hybrid-m0-ungegn"]
+ext "en-t-m0-ungegn-h0-hybrid" => ["en-t-h0-hybrid-m0-ungegn"]
+ext "EN-T-EN-LATN" => ["en-t-en-latn"]
+ext "de-t-en-emodeng-1996" => ["de-t-en-1996-emodeng"]
+list ["en-us", "EN-US", "en-US"] => ["en-US"]
+list ["de", "en", "de"] => ["de", "en"]
+list [Locale(en-US), "EN"] => ["en-US", "en"]
+list Locale(en-u-kn-true) alone => ["en-u-kn"]
+list [1] => THROWS TypeError: Intl: a locale in the list is neither a String nor an Object
+list ["en", null] => THROWS TypeError: Intl: a locale in the list is neither a String nor an Object
+list ["en", undefined] => THROWS TypeError: Intl: a locale in the list is neither a String nor an Object
+list [true] => THROWS TypeError: Intl: a locale in the list is neither a String nor an Object
+list [Symbol] => THROWS TypeError: Intl: a locale in the list is neither a String nor an Object
+list String object => THROWS RangeError: Incorrect locale information provided: E
+list undefined => []
+list null => THROWS TypeError: Cannot convert undefined or null to object
+list 5 => []
+list true => []
+list {length: 2, 0: "en", 1: "de"} => ["en", "de"]
+list {length: -1, 0: "en"} => []
+list holes [, "en"] => ["en"]
+list read order => "get length, has 0, get 0, has 1, get 1"
+list element toString object => ["de-AT"]
+getCanonicalLocales.length, name => [1, "getCanonicalLocales"]
+result is a fresh array => [true, true, false]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-L/l1-tags.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-L  e.g. test/sjl9/rows-L/l1-tags.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-L/l1-tags.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

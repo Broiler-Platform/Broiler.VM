@@ -1,0 +1,7 @@
+# command (from <rows>/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll --fuel 200000000000 --wall 600000 --native x86-64-sysv built/cli-intl-absent.js
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/cli-intl-absent.js sha256 d9eb70c16f45e14ecfcfcf1b905f6a08ef371d52b7bd51605fe862a4b5f70357
+typeof Intl => "undefined"
+typeof globalThis.Intl === "undefined" => true
+undefined
+exit=0

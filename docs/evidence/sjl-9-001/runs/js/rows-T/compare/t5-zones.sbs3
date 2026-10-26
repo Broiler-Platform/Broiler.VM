@@ -1,0 +1,337 @@
+# resolved timeZone for "Asia/Calcutta"
+   VM: "Asia/Kolkata"
+   JS: "Asia/Calcutta"
+   Node (JS): "Asia/Calcutta"
+# resolved timeZone for "asia/calcutta"
+   VM: "Asia/Kolkata"
+   JS: "Asia/Calcutta"
+   Node (JS): "Asia/Calcutta"
+= resolved timeZone for "Asia/Kolkata" => "Asia/Kolkata"   [Node: "Asia/Calcutta"]
+= resolved timeZone for "ASIA/KOLKATA" => "Asia/Kolkata"   [Node: "Asia/Calcutta"]
+# resolved timeZone for "US/Eastern"
+   VM: "America/New_York"
+   JS: "US/Eastern"
+   Node (VM): "America/New_York"
+= resolved timeZone for "America/New_York" => "America/New_York"
+# resolved timeZone for "Europe/Kiev"
+   VM: "Europe/Kyiv"
+   JS: "Europe/Kiev"
+   Node (JS): "Europe/Kiev"
+= resolved timeZone for "Europe/Kyiv" => "Europe/Kyiv"   [Node: "Europe/Kiev"]
+# resolved timeZone for "America/Buenos_Aires"
+   VM: "America/Argentina/Buenos_Aires"
+   JS: "America/Buenos_Aires"
+   Node (JS): "America/Buenos_Aires"
+= resolved timeZone for "UTC" => "UTC"
+= resolved timeZone for "utc" => "UTC"
+# resolved timeZone for "Etc/UTC"
+   VM: "UTC"
+   JS: "Etc/UTC"
+   Node (VM): "UTC"
+# resolved timeZone for "Etc/GMT"
+   VM: "UTC"
+   JS: "Etc/GMT"
+   Node (VM): "UTC"
+# resolved timeZone for "GMT"
+   VM: "UTC"
+   JS: "GMT"
+   Node (VM): "UTC"
+# resolved timeZone for "Etc/UCT"
+   VM: "UTC"
+   JS: "Etc/UCT"
+   Node (VM): "UTC"
+# resolved timeZone for "Universal"
+   VM: "UTC"
+   JS: "Universal"
+   Node (VM): "UTC"
+# resolved timeZone for "Zulu"
+   VM: "UTC"
+   JS: "Zulu"
+   Node (VM): "UTC"
+= resolved timeZone for "Etc/GMT+5" => "Etc/GMT+5"
+= resolved timeZone for "etc/gmt-14" => "Etc/GMT-14"
+# resolved timeZone for "Etc/GMT0"
+   VM: "UTC"
+   JS: "Etc/GMT0"
+   Node (VM): "UTC"
+# resolved timeZone for "EST"
+   VM: "America/Panama"
+   JS: "EST"
+   Node (VM): "America/Panama"
+# resolved timeZone for "CET"
+   VM: "Europe/Brussels"
+   JS: "CET"
+   Node (VM): "Europe/Brussels"
+# resolved timeZone for "Atlantic/Jan_Mayen"
+   VM: "Arctic/Longyearbyen"
+   JS: "Atlantic/Jan_Mayen"
+   Node (VM): "Arctic/Longyearbyen"
+# resolved timeZone for "Antarctica/South_Pole"
+   VM: "Antarctica/McMurdo"
+   JS: "Antarctica/South_Pole"
+   Node (VM): "Antarctica/McMurdo"
+# resolved timeZone for "Pacific/Enderbury"
+   VM: "Pacific/Kanton"
+   JS: "Pacific/Enderbury"
+   Node (JS): "Pacific/Enderbury"
+# resolved timeZone for "America/Godthab"
+   VM: "America/Nuuk"
+   JS: "America/Godthab"
+   Node (JS): "America/Godthab"
+= resolved timeZone for "+05:30" => "+05:30"
+= resolved timeZone for "+0530" => "+05:30"
+= resolved timeZone for "-08" => "-08:00"
+= resolved timeZone for "+00:00" => "+00:00"
+= resolved timeZone for "-00:00" => "+00:00"
+= resolved timeZone for "+05:30:00" => THROWS RangeError
+= resolved timeZone for "+24:00" => THROWS RangeError
+= resolved timeZone for "Mars/Phobos" => THROWS RangeError
+= resolved timeZone for "" => THROWS RangeError
+= resolved timeZone for "Asia/Kolkata " => THROWS RangeError
+= resolved timeZone for "2024-01-01T00:00+01:00[Europe/Paris]" => THROWS RangeError
+= timeZone: undefined => "UTC"
+= timeZone: an object with toString => "Europe/Berlin"
+= timeZone: Symbol => THROWS TypeError
+= Asia/Calcutta and Asia/Kolkata format alike => ["17:30", "17:30"]
+# en UTC names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["UTC | Coordinated Universal Time | GMT | GMT | GMT | GMT", "UTC | Coordinated Universal Time | GMT | GMT | GMT | GMT"]
+   JS: ["UTC | Coordinated Universal Time | GMT | GMT | UTC | Coordinated Universal Time", "UTC | Coordinated Universal Time | GMT | GMT | UTC | Coordinated Universal Time"]
+   Node (VM): ["UTC | Coordinated Universal Time | GMT | GMT | GMT | GMT", "UTC | Coordinated Universal Time | GMT | GMT | GMT | GMT"]
+# en Etc/GMT names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["UTC | Coordinated Universal Time | GMT | GMT | GMT | GMT", "UTC | Coordinated Universal Time | GMT | GMT | GMT | GMT"]
+   JS: ["GMT | Greenwich Mean Time | GMT | GMT | GMT | GMT", "GMT | Greenwich Mean Time | GMT | GMT | GMT | GMT"]
+   Node (VM): ["UTC | Coordinated Universal Time | GMT | GMT | GMT | GMT", "UTC | Coordinated Universal Time | GMT | GMT | GMT | GMT"]
+= en America/New_York names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["EST | Eastern Standard Time | GMT-5 | GMT-05:00 | ET | Eastern Time", "EDT | Eastern Daylight Time | GMT-4 | GMT-04:00 | ET | Eastern Time"]
+= en US/Eastern names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["EST | Eastern Standard Time | GMT-5 | GMT-05:00 | ET | Eastern Time", "EDT | Eastern Daylight Time | GMT-4 | GMT-04:00 | ET | Eastern Time"]
+= en America/Los_Angeles names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["PST | Pacific Standard Time | GMT-8 | GMT-08:00 | PT | Pacific Time", "PDT | Pacific Daylight Time | GMT-7 | GMT-07:00 | PT | Pacific Time"]
+# en America/Phoenix names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["MST | Mountain Standard Time | GMT-7 | GMT-07:00 | MST | Mountain Standard Time", "MST | Mountain Standard Time | GMT-7 | GMT-07:00 | MST | Mountain Standard Time"]
+   JS: ["MST | Mountain Standard Time | GMT-7 | GMT-07:00 | MT | Mountain Time", "MST | Mountain Standard Time | GMT-7 | GMT-07:00 | MT | Mountain Time"]
+   Node (VM): ["MST | Mountain Standard Time | GMT-7 | GMT-07:00 | MST | Mountain Standard Time", "MST | Mountain Standard Time | GMT-7 | GMT-07:00 | MST | Mountain Standard Time"]
+= en America/Indiana/Knox names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["CST | Central Standard Time | GMT-6 | GMT-06:00 | CT | Central Time", "CDT | Central Daylight Time | GMT-5 | GMT-05:00 | CT | Central Time"]
+= en America/Indiana/Indianapolis names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["EST | Eastern Standard Time | GMT-5 | GMT-05:00 | ET | Eastern Time", "EDT | Eastern Daylight Time | GMT-4 | GMT-04:00 | ET | Eastern Time"]
+# en Europe/Berlin names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+1 | Central European Standard Time | GMT+1 | GMT+01:00 | Germany Time | Central European Time", "GMT+2 | Central European Summer Time | GMT+2 | GMT+02:00 | Germany Time | Central European Time"]
+   JS: ["GMT+1 | Central European Standard Time | GMT+1 | GMT+01:00 | GMT+1 | Central European Time", "GMT+2 | Central European Summer Time | GMT+2 | GMT+02:00 | GMT+2 | Central European Time"]
+   Node (VM): ["GMT+1 | Central European Standard Time | GMT+1 | GMT+01:00 | Germany Time | Central European Time", "GMT+2 | Central European Summer Time | GMT+2 | GMT+02:00 | Germany Time | Central European Time"]
+# en Europe/London names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT | Greenwich Mean Time | GMT | GMT | United Kingdom Time | United Kingdom Time", "GMT+1 | British Summer Time | GMT+1 | GMT+01:00 | United Kingdom Time | United Kingdom Time"]
+   JS: ["GMT | Greenwich Mean Time | GMT | GMT | GMT | GMT", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00"]
+   Node (VM): ["GMT | Greenwich Mean Time | GMT | GMT | United Kingdom Time | United Kingdom Time", "GMT+1 | British Summer Time | GMT+1 | GMT+01:00 | United Kingdom Time | United Kingdom Time"]
+# en Europe/Dublin names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT | Greenwich Mean Time | GMT | GMT | Ireland Time | Ireland Time", "GMT+1 | Irish Standard Time | GMT+1 | GMT+01:00 | Ireland Time | Ireland Time"]
+   JS: ["GMT | Greenwich Mean Time | GMT | GMT | GMT | GMT", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00"]
+   Node (VM): ["GMT | Greenwich Mean Time | GMT | GMT | Ireland Time | Ireland Time", "GMT+1 | Irish Standard Time | GMT+1 | GMT+01:00 | Ireland Time | Ireland Time"]
+# en Europe/Moscow names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+3 | Moscow Standard Time | GMT+3 | GMT+03:00 | Moscow Time | Moscow Standard Time", "GMT+3 | Moscow Standard Time | GMT+3 | GMT+03:00 | Moscow Time | Moscow Standard Time"]
+   JS: ["GMT+3 | Moscow Standard Time | GMT+3 | GMT+03:00 | GMT+3 | Moscow Time", "GMT+3 | Moscow Standard Time | GMT+3 | GMT+03:00 | GMT+3 | Moscow Time"]
+   Node (VM): ["GMT+3 | Moscow Standard Time | GMT+3 | GMT+03:00 | Moscow Time | Moscow Standard Time", "GMT+3 | Moscow Standard Time | GMT+3 | GMT+03:00 | Moscow Time | Moscow Standard Time"]
+# en Asia/Calcutta names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | India Time | India Standard Time", "GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | India Time | India Standard Time"]
+   JS: ["GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30", "GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30"]
+   Node (VM): ["GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | India Time | India Standard Time", "GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | India Time | India Standard Time"]
+# en Asia/Kolkata names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | India Time | India Standard Time", "GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | India Time | India Standard Time"]
+   JS: ["GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30", "GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30"]
+   Node (VM): ["GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | India Time | India Standard Time", "GMT+5:30 | India Standard Time | GMT+5:30 | GMT+05:30 | India Time | India Standard Time"]
+# en Asia/Tokyo names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+9 | Japan Standard Time | GMT+9 | GMT+09:00 | Japan Time | Japan Standard Time", "GMT+9 | Japan Standard Time | GMT+9 | GMT+09:00 | Japan Time | Japan Standard Time"]
+   JS: ["GMT+9 | Japan Standard Time | GMT+9 | GMT+09:00 | GMT+9 | Japan Time", "GMT+9 | Japan Standard Time | GMT+9 | GMT+09:00 | GMT+9 | Japan Time"]
+   Node (VM): ["GMT+9 | Japan Standard Time | GMT+9 | GMT+09:00 | Japan Time | Japan Standard Time", "GMT+9 | Japan Standard Time | GMT+9 | GMT+09:00 | Japan Time | Japan Standard Time"]
+# en Australia/Lord_Howe names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+11 | Lord Howe Daylight Time | GMT+11 | GMT+11:00 | Lord Howe Island Time | Lord Howe Time", "GMT+10:30 | Lord Howe Standard Time | GMT+10:30 | GMT+10:30 | Lord Howe Island Time | Lord Howe Time"]
+   JS: ["GMT+11 | Lord Howe Daylight Time | GMT+11 | GMT+11:00 | GMT+11 | Lord Howe Time", "GMT+10:30 | Lord Howe Standard Time | GMT+10:30 | GMT+10:30 | GMT+10:30 | Lord Howe Time"]
+   Node (VM): ["GMT+11 | Lord Howe Daylight Time | GMT+11 | GMT+11:00 | Lord Howe Island Time | Lord Howe Time", "GMT+10:30 | Lord Howe Standard Time | GMT+10:30 | GMT+10:30 | Lord Howe Island Time | Lord Howe Time"]
+# en Pacific/Honolulu names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["HST | Hawaii-Aleutian Standard Time | GMT-10 | GMT-10:00 | HST | Hawaii-Aleutian Standard Time", "HST | Hawaii-Aleutian Standard Time | GMT-10 | GMT-10:00 | HST | Hawaii-Aleutian Standard Time"]
+   JS: ["HST | Hawaii-Aleutian Standard Time | GMT-10 | GMT-10:00 | GMT-10 | GMT-10:00", "HST | Hawaii-Aleutian Standard Time | GMT-10 | GMT-10:00 | GMT-10 | GMT-10:00"]
+   Node (VM): ["HST | Hawaii-Aleutian Standard Time | GMT-10 | GMT-10:00 | HST | Hawaii-Aleutian Standard Time", "HST | Hawaii-Aleutian Standard Time | GMT-10 | GMT-10:00 | HST | Hawaii-Aleutian Standard Time"]
+# en America/Sao_Paulo names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-3 | Brasilia Standard Time | GMT-3 | GMT-03:00 | S\u00e3o Paulo Time | Brasilia Standard Time", "GMT-3 | Brasilia Standard Time | GMT-3 | GMT-03:00 | S\u00e3o Paulo Time | Brasilia Standard Time"]
+   JS: ["GMT-3 | Brasilia Standard Time | GMT-3 | GMT-03:00 | GMT-3 | Brasilia Time", "GMT-3 | Brasilia Standard Time | GMT-3 | GMT-03:00 | GMT-3 | Brasilia Time"]
+   Node (neither): ["GMT-3 | Brasilia Standard Time | GMT-3 | GMT-03:00 | Sao Paulo Time | Brasilia Standard Time", "GMT-3 | Brasilia Standard Time | GMT-3 | GMT-03:00 | Sao Paulo Time | Brasilia Standard Time"]
+# en Africa/Casablanca names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | Morocco Time | Morocco Time", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | Morocco Time | Morocco Time"]
+   JS: ["GMT+1 | Western European Summer Time | GMT+1 | GMT+01:00 | GMT+1 | Western European Time", "GMT+1 | Western European Summer Time | GMT+1 | GMT+01:00 | GMT+1 | Western European Time"]
+   Node (VM): ["GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | Morocco Time | Morocco Time", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | Morocco Time | Morocco Time"]
+# en America/Argentina/Buenos_Aires names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-3 | Argentina Standard Time | GMT-3 | GMT-03:00 | Buenos Aires Time | Argentina Standard Time", "GMT-3 | Argentina Standard Time | GMT-3 | GMT-03:00 | Buenos Aires Time | Argentina Standard Time"]
+   JS: ["GMT-3 | Argentina Standard Time | GMT-3 | GMT-03:00 | GMT-3 | Argentina Time", "GMT-3 | Argentina Standard Time | GMT-3 | GMT-03:00 | GMT-3 | Argentina Time"]
+   Node (VM): ["GMT-3 | Argentina Standard Time | GMT-3 | GMT-03:00 | Buenos Aires Time | Argentina Standard Time", "GMT-3 | Argentina Standard Time | GMT-3 | GMT-03:00 | Buenos Aires Time | Argentina Standard Time"]
+= en Etc/GMT+5 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00", "GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00"]
+= en Etc/GMT-14 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["GMT+14 | GMT+14:00 | GMT+14 | GMT+14:00 | GMT+14 | GMT+14:00", "GMT+14 | GMT+14:00 | GMT+14 | GMT+14:00 | GMT+14 | GMT+14:00"]
+# en Antarctica/Troll names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT | Greenwich Mean Time | GMT | GMT | Troll Station Time | Troll Station Time", "GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00 | Troll Station Time | Troll Station Time"]
+   JS: ["GMT | Greenwich Mean Time | GMT | GMT | GMT | GMT", "GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00"]
+   Node (neither): ["GMT | Greenwich Mean Time | GMT | GMT | Troll Time | Troll Time", "GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00 | Troll Time | Troll Time"]
+# en Pacific/Chatham names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+13:45 | Chatham Daylight Time | GMT+13:45 | GMT+13:45 | Chatham Islands Time | Chatham Time", "GMT+12:45 | Chatham Standard Time | GMT+12:45 | GMT+12:45 | Chatham Islands Time | Chatham Time"]
+   JS: ["GMT+13:45 | Chatham Daylight Time | GMT+13:45 | GMT+13:45 | GMT+13:45 | Chatham Time", "GMT+12:45 | Chatham Standard Time | GMT+12:45 | GMT+12:45 | GMT+12:45 | Chatham Time"]
+   Node (neither): ["GMT+13:45 | Chatham Daylight Time | GMT+13:45 | GMT+13:45 | Chatham Time | Chatham Time", "GMT+12:45 | Chatham Standard Time | GMT+12:45 | GMT+12:45 | Chatham Time | Chatham Time"]
+= en +05:30 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30", "GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30"]
+= en -08:00 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00", "GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00"]
+# en +00:00 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT | Greenwich Mean Time | GMT | GMT | GMT | Greenwich Mean Time", "GMT | Greenwich Mean Time | GMT | GMT | GMT | Greenwich Mean Time"]
+   JS: ["GMT | GMT | GMT | GMT | GMT | GMT", "GMT | GMT | GMT | GMT | GMT | GMT"]
+   Node (VM): ["GMT | Greenwich Mean Time | GMT | GMT | GMT | Greenwich Mean Time", "GMT | Greenwich Mean Time | GMT | GMT | GMT | Greenwich Mean Time"]
+# de UTC names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["UTC | Koordinierte Weltzeit | GMT | GMT | GMT | GMT", "UTC | Koordinierte Weltzeit | GMT | GMT | GMT | GMT"]
+   JS: ["UTC | Coordinated Universal Time | GMT | GMT | UTC | Coordinated Universal Time", "UTC | Coordinated Universal Time | GMT | GMT | UTC | Coordinated Universal Time"]
+   Node (VM): ["UTC | Koordinierte Weltzeit | GMT | GMT | GMT | GMT", "UTC | Koordinierte Weltzeit | GMT | GMT | GMT | GMT"]
+# de Etc/GMT names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["UTC | Koordinierte Weltzeit | GMT | GMT | GMT | GMT", "UTC | Koordinierte Weltzeit | GMT | GMT | GMT | GMT"]
+   JS: ["GMT | GMT | GMT | GMT | GMT | GMT", "GMT | GMT | GMT | GMT | GMT | GMT"]
+   Node (VM): ["UTC | Koordinierte Weltzeit | GMT | GMT | GMT | GMT", "UTC | Koordinierte Weltzeit | GMT | GMT | GMT | GMT"]
+# de America/New_York names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-5 | Nordamerikanische Ostk\u00fcsten-Normalzeit | GMT-5 | GMT-05:00 | New York (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit", "GMT-4 | Nordamerikanische Ostk\u00fcsten-Sommerzeit | GMT-4 | GMT-04:00 | New York (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit"]
+   JS: ["GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00", "GMT-4 | GMT-04:00 | GMT-4 | GMT-04:00 | GMT-4 | GMT-04:00"]
+   Node (VM): ["GMT-5 | Nordamerikanische Ostk\u00fcsten-Normalzeit | GMT-5 | GMT-05:00 | New York (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit", "GMT-4 | Nordamerikanische Ostk\u00fcsten-Sommerzeit | GMT-4 | GMT-04:00 | New York (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit"]
+# de US/Eastern names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-5 | Nordamerikanische Ostk\u00fcsten-Normalzeit | GMT-5 | GMT-05:00 | New York (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit", "GMT-4 | Nordamerikanische Ostk\u00fcsten-Sommerzeit | GMT-4 | GMT-04:00 | New York (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit"]
+   JS: ["GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00", "GMT-4 | GMT-04:00 | GMT-4 | GMT-04:00 | GMT-4 | GMT-04:00"]
+   Node (VM): ["GMT-5 | Nordamerikanische Ostk\u00fcsten-Normalzeit | GMT-5 | GMT-05:00 | New York (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit", "GMT-4 | Nordamerikanische Ostk\u00fcsten-Sommerzeit | GMT-4 | GMT-04:00 | New York (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit"]
+# de America/Los_Angeles names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-8 | Nordamerikanische Westk\u00fcsten-Normalzeit | GMT-8 | GMT-08:00 | Los Angeles (Ortszeit) | Nordamerikanische Westk\u00fcstenzeit", "GMT-7 | Nordamerikanische Westk\u00fcsten-Sommerzeit | GMT-7 | GMT-07:00 | Los Angeles (Ortszeit) | Nordamerikanische Westk\u00fcstenzeit"]
+   JS: ["GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00", "GMT-7 | GMT-07:00 | GMT-7 | GMT-07:00 | GMT-7 | GMT-07:00"]
+   Node (VM): ["GMT-8 | Nordamerikanische Westk\u00fcsten-Normalzeit | GMT-8 | GMT-08:00 | Los Angeles (Ortszeit) | Nordamerikanische Westk\u00fcstenzeit", "GMT-7 | Nordamerikanische Westk\u00fcsten-Sommerzeit | GMT-7 | GMT-07:00 | Los Angeles (Ortszeit) | Nordamerikanische Westk\u00fcstenzeit"]
+# de America/Phoenix names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-7 | Rocky-Mountains-Normalzeit | GMT-7 | GMT-07:00 | Phoenix (Ortszeit) | Rocky-Mountains-Normalzeit", "GMT-7 | Rocky-Mountains-Normalzeit | GMT-7 | GMT-07:00 | Phoenix (Ortszeit) | Rocky-Mountains-Normalzeit"]
+   JS: ["GMT-7 | GMT-07:00 | GMT-7 | GMT-07:00 | GMT-7 | GMT-07:00", "GMT-7 | GMT-07:00 | GMT-7 | GMT-07:00 | GMT-7 | GMT-07:00"]
+   Node (VM): ["GMT-7 | Rocky-Mountains-Normalzeit | GMT-7 | GMT-07:00 | Phoenix (Ortszeit) | Rocky-Mountains-Normalzeit", "GMT-7 | Rocky-Mountains-Normalzeit | GMT-7 | GMT-07:00 | Phoenix (Ortszeit) | Rocky-Mountains-Normalzeit"]
+# de America/Indiana/Knox names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-6 | Nordamerikanische Zentral-Normalzeit | GMT-6 | GMT-06:00 | Knox, Indiana (Ortszeit) | Nordamerikanische Zentralzeit", "GMT-5 | Nordamerikanische Zentral-Sommerzeit | GMT-5 | GMT-05:00 | Knox, Indiana (Ortszeit) | Nordamerikanische Zentralzeit"]
+   JS: ["GMT-6 | GMT-06:00 | GMT-6 | GMT-06:00 | GMT-6 | GMT-06:00", "GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00"]
+   Node (VM): ["GMT-6 | Nordamerikanische Zentral-Normalzeit | GMT-6 | GMT-06:00 | Knox, Indiana (Ortszeit) | Nordamerikanische Zentralzeit", "GMT-5 | Nordamerikanische Zentral-Sommerzeit | GMT-5 | GMT-05:00 | Knox, Indiana (Ortszeit) | Nordamerikanische Zentralzeit"]
+# de America/Indiana/Indianapolis names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-5 | Nordamerikanische Ostk\u00fcsten-Normalzeit | GMT-5 | GMT-05:00 | Indianapolis (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit", "GMT-4 | Nordamerikanische Ostk\u00fcsten-Sommerzeit | GMT-4 | GMT-04:00 | Indianapolis (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit"]
+   JS: ["GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00", "GMT-4 | GMT-04:00 | GMT-4 | GMT-04:00 | GMT-4 | GMT-04:00"]
+   Node (VM): ["GMT-5 | Nordamerikanische Ostk\u00fcsten-Normalzeit | GMT-5 | GMT-05:00 | Indianapolis (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit", "GMT-4 | Nordamerikanische Ostk\u00fcsten-Sommerzeit | GMT-4 | GMT-04:00 | Indianapolis (Ortszeit) | Nordamerikanische Ostk\u00fcstenzeit"]
+# de Europe/Berlin names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["MEZ | Mitteleurop\u00e4ische Normalzeit | GMT+1 | GMT+01:00 | MEZ | Mitteleurop\u00e4ische Zeit", "MESZ | Mitteleurop\u00e4ische Sommerzeit | GMT+2 | GMT+02:00 | MEZ | Mitteleurop\u00e4ische Zeit"]
+   JS: ["GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00", "GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00"]
+   Node (VM): ["MEZ | Mitteleurop\u00e4ische Normalzeit | GMT+1 | GMT+01:00 | MEZ | Mitteleurop\u00e4ische Zeit", "MESZ | Mitteleurop\u00e4ische Sommerzeit | GMT+2 | GMT+02:00 | MEZ | Mitteleurop\u00e4ische Zeit"]
+# de Europe/London names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT | Mittlere Greenwich-Zeit | GMT | GMT | Vereinigtes K\u00f6nigreich (Ortszeit) | Vereinigtes K\u00f6nigreich (Ortszeit)", "GMT+1 | Britische Sommerzeit | GMT+1 | GMT+01:00 | Vereinigtes K\u00f6nigreich (Ortszeit) | Vereinigtes K\u00f6nigreich (Ortszeit)"]
+   JS: ["GMT | GMT | GMT | GMT | GMT | GMT", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00"]
+   Node (VM): ["GMT | Mittlere Greenwich-Zeit | GMT | GMT | Vereinigtes K\u00f6nigreich (Ortszeit) | Vereinigtes K\u00f6nigreich (Ortszeit)", "GMT+1 | Britische Sommerzeit | GMT+1 | GMT+01:00 | Vereinigtes K\u00f6nigreich (Ortszeit) | Vereinigtes K\u00f6nigreich (Ortszeit)"]
+# de Europe/Dublin names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT | Mittlere Greenwich-Zeit | GMT | GMT | Irland (Ortszeit) | Irland (Ortszeit)", "GMT+1 | Irische Sommerzeit | GMT+1 | GMT+01:00 | Irland (Ortszeit) | Irland (Ortszeit)"]
+   JS: ["GMT | GMT | GMT | GMT | GMT | GMT", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00"]
+   Node (VM): ["GMT | Mittlere Greenwich-Zeit | GMT | GMT | Irland (Ortszeit) | Irland (Ortszeit)", "GMT+1 | Irische Sommerzeit | GMT+1 | GMT+01:00 | Irland (Ortszeit) | Irland (Ortszeit)"]
+# de Europe/Moscow names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+3 | Moskauer Normalzeit | GMT+3 | GMT+03:00 | Moskau (Ortszeit) | Moskauer Normalzeit", "GMT+3 | Moskauer Normalzeit | GMT+3 | GMT+03:00 | Moskau (Ortszeit) | Moskauer Normalzeit"]
+   JS: ["GMT+3 | GMT+03:00 | GMT+3 | GMT+03:00 | GMT+3 | GMT+03:00", "GMT+3 | GMT+03:00 | GMT+3 | GMT+03:00 | GMT+3 | GMT+03:00"]
+   Node (VM): ["GMT+3 | Moskauer Normalzeit | GMT+3 | GMT+03:00 | Moskau (Ortszeit) | Moskauer Normalzeit", "GMT+3 | Moskauer Normalzeit | GMT+3 | GMT+03:00 | Moskau (Ortszeit) | Moskauer Normalzeit"]
+# de Asia/Calcutta names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+5:30 | Indische Normalzeit | GMT+5:30 | GMT+05:30 | Indien (Ortszeit) | Indische Normalzeit", "GMT+5:30 | Indische Normalzeit | GMT+5:30 | GMT+05:30 | Indien (Ortszeit) | Indische Normalzeit"]
+   JS: ["GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30", "GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30"]
+   Node (VM): ["GMT+5:30 | Indische Normalzeit | GMT+5:30 | GMT+05:30 | Indien (Ortszeit) | Indische Normalzeit", "GMT+5:30 | Indische Normalzeit | GMT+5:30 | GMT+05:30 | Indien (Ortszeit) | Indische Normalzeit"]
+# de Asia/Kolkata names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+5:30 | Indische Normalzeit | GMT+5:30 | GMT+05:30 | Indien (Ortszeit) | Indische Normalzeit", "GMT+5:30 | Indische Normalzeit | GMT+5:30 | GMT+05:30 | Indien (Ortszeit) | Indische Normalzeit"]
+   JS: ["GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30", "GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30"]
+   Node (VM): ["GMT+5:30 | Indische Normalzeit | GMT+5:30 | GMT+05:30 | Indien (Ortszeit) | Indische Normalzeit", "GMT+5:30 | Indische Normalzeit | GMT+5:30 | GMT+05:30 | Indien (Ortszeit) | Indische Normalzeit"]
+# de Asia/Tokyo names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+9 | Japanische Normalzeit | GMT+9 | GMT+09:00 | Japan (Ortszeit) | Japanische Normalzeit", "GMT+9 | Japanische Normalzeit | GMT+9 | GMT+09:00 | Japan (Ortszeit) | Japanische Normalzeit"]
+   JS: ["GMT+9 | GMT+09:00 | GMT+9 | GMT+09:00 | GMT+9 | GMT+09:00", "GMT+9 | GMT+09:00 | GMT+9 | GMT+09:00 | GMT+9 | GMT+09:00"]
+   Node (VM): ["GMT+9 | Japanische Normalzeit | GMT+9 | GMT+09:00 | Japan (Ortszeit) | Japanische Normalzeit", "GMT+9 | Japanische Normalzeit | GMT+9 | GMT+09:00 | Japan (Ortszeit) | Japanische Normalzeit"]
+# de Australia/Lord_Howe names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+11 | Lord-Howe-Sommerzeit | GMT+11 | GMT+11:00 | Lord Howe (Ortszeit) | Lord-Howe-Zeit", "GMT+10:30 | Lord-Howe-Normalzeit | GMT+10:30 | GMT+10:30 | Lord Howe (Ortszeit) | Lord-Howe-Zeit"]
+   JS: ["GMT+11 | GMT+11:00 | GMT+11 | GMT+11:00 | GMT+11 | GMT+11:00", "GMT+10:30 | GMT+10:30 | GMT+10:30 | GMT+10:30 | GMT+10:30 | GMT+10:30"]
+   Node (VM): ["GMT+11 | Lord-Howe-Sommerzeit | GMT+11 | GMT+11:00 | Lord Howe (Ortszeit) | Lord-Howe-Zeit", "GMT+10:30 | Lord-Howe-Normalzeit | GMT+10:30 | GMT+10:30 | Lord Howe (Ortszeit) | Lord-Howe-Zeit"]
+# de Pacific/Honolulu names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-10 | Hawaii-Aleuten-Normalzeit | GMT-10 | GMT-10:00 | Honolulu (Ortszeit) | Hawaii-Aleuten-Normalzeit", "GMT-10 | Hawaii-Aleuten-Normalzeit | GMT-10 | GMT-10:00 | Honolulu (Ortszeit) | Hawaii-Aleuten-Normalzeit"]
+   JS: ["GMT-10 | GMT-10:00 | GMT-10 | GMT-10:00 | GMT-10 | GMT-10:00", "GMT-10 | GMT-10:00 | GMT-10 | GMT-10:00 | GMT-10 | GMT-10:00"]
+   Node (VM): ["GMT-10 | Hawaii-Aleuten-Normalzeit | GMT-10 | GMT-10:00 | Honolulu (Ortszeit) | Hawaii-Aleuten-Normalzeit", "GMT-10 | Hawaii-Aleuten-Normalzeit | GMT-10 | GMT-10:00 | Honolulu (Ortszeit) | Hawaii-Aleuten-Normalzeit"]
+# de America/Sao_Paulo names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-3 | Bras\u00edlia-Normalzeit | GMT-3 | GMT-03:00 | S\u00e3o Paulo (Ortszeit) | Bras\u00edlia-Normalzeit", "GMT-3 | Bras\u00edlia-Normalzeit | GMT-3 | GMT-03:00 | S\u00e3o Paulo (Ortszeit) | Bras\u00edlia-Normalzeit"]
+   JS: ["GMT-3 | GMT-03:00 | GMT-3 | GMT-03:00 | GMT-3 | GMT-03:00", "GMT-3 | GMT-03:00 | GMT-3 | GMT-03:00 | GMT-3 | GMT-03:00"]
+   Node (VM): ["GMT-3 | Bras\u00edlia-Normalzeit | GMT-3 | GMT-03:00 | S\u00e3o Paulo (Ortszeit) | Bras\u00edlia-Normalzeit", "GMT-3 | Bras\u00edlia-Normalzeit | GMT-3 | GMT-03:00 | S\u00e3o Paulo (Ortszeit) | Bras\u00edlia-Normalzeit"]
+# de Africa/Casablanca names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | Marokko (Ortszeit) | Marokko (Ortszeit)", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | Marokko (Ortszeit) | Marokko (Ortszeit)"]
+   JS: ["GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00"]
+   Node (VM): ["GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | Marokko (Ortszeit) | Marokko (Ortszeit)", "GMT+1 | GMT+01:00 | GMT+1 | GMT+01:00 | Marokko (Ortszeit) | Marokko (Ortszeit)"]
+# de America/Argentina/Buenos_Aires names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT-3 | Argentinische Normalzeit | GMT-3 | GMT-03:00 | Buenos Aires (Ortszeit) | Argentinische Normalzeit", "GMT-3 | Argentinische Normalzeit | GMT-3 | GMT-03:00 | Buenos Aires (Ortszeit) | Argentinische Normalzeit"]
+   JS: ["GMT-3 | GMT-03:00 | GMT-3 | GMT-03:00 | GMT-3 | GMT-03:00", "GMT-3 | GMT-03:00 | GMT-3 | GMT-03:00 | GMT-3 | GMT-03:00"]
+   Node (VM): ["GMT-3 | Argentinische Normalzeit | GMT-3 | GMT-03:00 | Buenos Aires (Ortszeit) | Argentinische Normalzeit", "GMT-3 | Argentinische Normalzeit | GMT-3 | GMT-03:00 | Buenos Aires (Ortszeit) | Argentinische Normalzeit"]
+= de Etc/GMT+5 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00", "GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00 | GMT-5 | GMT-05:00"]
+= de Etc/GMT-14 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["GMT+14 | GMT+14:00 | GMT+14 | GMT+14:00 | GMT+14 | GMT+14:00", "GMT+14 | GMT+14:00 | GMT+14 | GMT+14:00 | GMT+14 | GMT+14:00"]
+# de Antarctica/Troll names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT | Mittlere Greenwich-Zeit | GMT | GMT | Troll (Ortszeit) | Troll (Ortszeit)", "GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00 | Troll (Ortszeit) | Troll (Ortszeit)"]
+   JS: ["GMT | GMT | GMT | GMT | GMT | GMT", "GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00"]
+   Node (VM): ["GMT | Mittlere Greenwich-Zeit | GMT | GMT | Troll (Ortszeit) | Troll (Ortszeit)", "GMT+2 | GMT+02:00 | GMT+2 | GMT+02:00 | Troll (Ortszeit) | Troll (Ortszeit)"]
+# de Pacific/Chatham names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT+13:45 | Chatham-Sommerzeit | GMT+13:45 | GMT+13:45 | Chatham (Ortszeit) | Chatham-Zeit", "GMT+12:45 | Chatham-Normalzeit | GMT+12:45 | GMT+12:45 | Chatham (Ortszeit) | Chatham-Zeit"]
+   JS: ["GMT+13:45 | GMT+13:45 | GMT+13:45 | GMT+13:45 | GMT+13:45 | GMT+13:45", "GMT+12:45 | GMT+12:45 | GMT+12:45 | GMT+12:45 | GMT+12:45 | GMT+12:45"]
+   Node (VM): ["GMT+13:45 | Chatham-Sommerzeit | GMT+13:45 | GMT+13:45 | Chatham (Ortszeit) | Chatham-Zeit", "GMT+12:45 | Chatham-Normalzeit | GMT+12:45 | GMT+12:45 | Chatham (Ortszeit) | Chatham-Zeit"]
+= de +05:30 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30", "GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30 | GMT+5:30 | GMT+05:30"]
+= de -08:00 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric => ["GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00", "GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00 | GMT-8 | GMT-08:00"]
+# de +00:00 names (winter; summer) short long shortOffset longOffset shortGeneric longGeneric
+   VM: ["GMT | Mittlere Greenwich-Zeit | GMT | GMT | GMT | Mittlere Greenwich-Zeit", "GMT | Mittlere Greenwich-Zeit | GMT | GMT | GMT | Mittlere Greenwich-Zeit"]
+   JS: ["GMT | GMT | GMT | GMT | GMT | GMT", "GMT | GMT | GMT | GMT | GMT | GMT"]
+   Node (VM): ["GMT | Mittlere Greenwich-Zeit | GMT | GMT | GMT | Mittlere Greenwich-Zeit", "GMT | Mittlere Greenwich-Zeit | GMT | GMT | GMT | Mittlere Greenwich-Zeit"]
+# en America/Indiana/Knox at 790128000000 long, longGeneric
+   VM: ["1995, Eastern Standard Time", "1995, Eastern Standard Time", "1995, GMT-5"]
+   JS: ["1995 Central Standard Time", "1995 Central Time", "1995 GMT-5"]
+   Node (VM): ["1995, Eastern Standard Time", "1995, Eastern Standard Time", "1995, GMT-5"]
+# en America/Indiana/Knox at 1263513600000 long, longGeneric
+   VM: ["2010, Central Standard Time", "2010, Central Time", "2010, GMT-6"]
+   JS: ["2010 Central Standard Time", "2010 Central Time", "2010 GMT-6"]
+   Node (VM): ["2010, Central Standard Time", "2010, Central Time", "2010, GMT-6"]
+# en Europe/Moscow at 1326585600000 long, longGeneric
+   VM: ["2012, Moscow Standard Time", "2012, Moscow Standard Time", "2012, GMT+4"]
+   JS: ["2012 Moscow Standard Time", "2012 Moscow Time", "2012 GMT+4"]
+   Node (VM): ["2012, Moscow Standard Time", "2012, Moscow Standard Time", "2012, GMT+4"]
+# en Europe/Moscow at 1452816000000 long, longGeneric
+   VM: ["2016, Moscow Standard Time", "2016, Moscow Standard Time", "2016, GMT+3"]
+   JS: ["2016 Moscow Standard Time", "2016 Moscow Time", "2016 GMT+3"]
+   Node (VM): ["2016, Moscow Standard Time", "2016, Moscow Standard Time", "2016, GMT+3"]
+# en America/Sao_Paulo at 1515974400000 long, longGeneric
+   VM: ["2018, Brasilia Summer Time", "2018, Brasilia Time", "2018, GMT-2"]
+   JS: ["2018 Brasilia Summer Time", "2018 Brasilia Time", "2018 GMT-2"]
+   Node (VM): ["2018, Brasilia Summer Time", "2018, Brasilia Time", "2018, GMT-2"]
+# en Asia/Kolkata at -867974400000 long, longGeneric
+   VM: ["1942, GMT+05:30", "1942, India Time", "1942, GMT+5:30"]
+   JS: ["1942 India Standard Time", "1942 GMT+05:30", "1942 GMT+5:30"]
+   Node (VM): ["1942, GMT+05:30", "1942, India Time", "1942, GMT+5:30"]
+# en Europe/London at 0 long, longGeneric
+   VM: ["1970, GMT+01:00", "1970, United Kingdom Time", "1970, GMT+1"]
+   JS: ["1970 Greenwich Mean Time", "1970 GMT+01:00", "1970 GMT+1"]
+   Node (VM): ["1970, GMT+01:00", "1970, United Kingdom Time", "1970, GMT+1"]
+# en Pacific/Apia at 1262304000000 long, longGeneric
+   VM: ["2009, Samoa Standard Time", "2009, Samoa Standard Time", "2009, GMT-11"]
+   JS: ["2009 Samoa Standard Time", "2009 Samoa Time", "2009 GMT-11"]
+   Node (VM): ["2009, Samoa Standard Time", "2009, Samoa Standard Time", "2009, GMT-11"]
+# en Asia/Calcutta at -8640000000000000 long, longGeneric
+   VM: ["271822, GMT+05:53:28", "271822, India Time", "271822, GMT+5:53:28"]
+   JS: ["271822 India Standard Time", "271822 GMT+05:53:28", "271822 GMT+5:53:28"]
+   Node (VM): ["271822, GMT+05:53:28", "271822, India Time", "271822, GMT+5:53:28"]
+# en UTC at -1 long, longGeneric
+   VM: ["1969, Coordinated Universal Time", "1969, GMT", "1969, GMT"]
+   JS: ["1969 Coordinated Universal Time", "1969 Coordinated Universal Time", "1969 GMT"]
+   Node (VM): ["1969, Coordinated Universal Time", "1969, GMT", "1969, GMT"]
+# en Etc/GMT at -1 long, longGeneric
+   VM: ["1969, Coordinated Universal Time", "1969, GMT", "1969, GMT"]
+   JS: ["1969 Greenwich Mean Time", "1969 GMT", "1969 GMT"]
+   Node (VM): ["1969, Coordinated Universal Time", "1969, GMT", "1969, GMT"]
+# en Etc/GMT at 0 long, longGeneric
+   VM: ["1970, Coordinated Universal Time", "1970, GMT", "1970, GMT"]
+   JS: ["1970 Greenwich Mean Time", "1970 GMT", "1970 GMT"]
+   Node (VM): ["1970, Coordinated Universal Time", "1970, GMT", "1970, GMT"]
+# en Etc/GMT at 8640000000000000 long, longGeneric
+   VM: ["275760, Coordinated Universal Time", "275760, GMT", "275760, GMT"]
+   JS: ["275760 Greenwich Mean Time", "275760 GMT", "275760 GMT"]
+   Node (VM): ["275760, Coordinated Universal Time", "275760, GMT", "275760, GMT"]
+# en timeStyle full in America/New_York (summer)
+   VM: "8:00:00\u202fAM Eastern Daylight Time"
+   JS: "8:00:00 AM Eastern Daylight Time"
+   Node (JS): "8:00:00 AM Eastern Daylight Time"
+# de timeStyle full in Europe/Berlin (summer)
+   VM: "14:00:00 Mitteleurop\u00e4ische Sommerzeit"
+   JS: "14:00:00 GMT+02:00"
+   Node (VM): "14:00:00 Mitteleurop\u00e4ische Sommerzeit"
+# en timeStyle long in Asia/Calcutta
+   VM: "5:30:00\u202fPM GMT+5:30"
+   JS: "5:30:00 PM GMT+5:30"
+   Node (JS): "5:30:00 PM GMT+5:30"
+-- 36 same, 75 differ; Node equals VM 64, JS 8, neither 3

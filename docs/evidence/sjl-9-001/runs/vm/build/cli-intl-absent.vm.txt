@@ -1,0 +1,2 @@
+typeof Intl => "object"
+typeof globalThis.Intl === "undefined" => false

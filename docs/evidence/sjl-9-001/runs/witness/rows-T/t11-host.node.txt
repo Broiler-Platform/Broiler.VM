@@ -1,0 +1,13 @@
+# command (from <rows>/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 300 node -e '<print = stdout line; indirect eval of built/t11-host.js>'
+# revision: node v22.22.0; ICU 77.1; CLDR 47.0; tz 2025b
+# probe: built/t11-host.js sha256 5b93c598a8e7ad666cf7e0b9357fa88d999a72dd086e2578f04fd8a63b1dccb4
+resolvedOptions default [locale, timeZone] => ["en-US", "UTC"]
+format(summer), format(winter) default => ["12:00 PM UTC", "12:00 PM UTC"]
+Date#toLocaleString() no arguments => "7/15/2024, 12:00:00 PM"
+Date#toLocaleDateString() no arguments => "7/15/2024"
+Date#toLocaleTimeString() no arguments => "12:00:00 PM"
+en dateStyle full timeStyle full, default zone => "Monday, July 15, 2024 at 12:00:00 PM Coordinated Universal Time"
+en {timeZoneName:longGeneric}, default zone => "7/15/2024, GMT"
+Temporal.Now.timeZoneId() => "no Temporal"
+Temporal.Instant toLocaleString default zone => THROWS ReferenceError: Temporal is not defined
+exit=0

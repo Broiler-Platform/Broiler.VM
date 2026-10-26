@@ -1,0 +1,17 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/m3-bigint.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/m3-bigint.js sha256 fa39fc1d0e51e8a31e891ec496cc7a9ef16b3f054b818146f5b54f246d8f46fe
+M3 default 12345678901234567890123n => "12,345,678,901,234,567,890,123"
+M3 scientific maxSD 21: 123456789012345678901n => "1.23456789012345683968E20"
+M3 engineering maxSD 21: 123456789012345678901n => "123.456789012345683968E18"
+M3 scientific default: 123456789012345678901n => "1.235E20"
+M3 maxSD 3: 12345n; -5n; 0n => ["12,300", "-5", "0"]
+M3 percent: 1n => "100%"
+M3 10n**30n formatToParts => [integer:"1", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000"]
+M3 10n**400n (length, first, last) => [1, "\u221e", "\u221e"]
+M3 (2n**64n+1n).toLocaleString en => "18,446,744,073,709,551,617"
+M3 BigInt toLocaleString maxSD 21 scientific 123456789012345678901n => "1.23456789012345683968E20"
+M3 Object(5n) ToPrimitive => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+M3 10n**308n and 10n**309n and -(10n**400n) (lengths) => [309, 1, 2]
+M3 PluralRules en select(10n**400n) => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+exit=0

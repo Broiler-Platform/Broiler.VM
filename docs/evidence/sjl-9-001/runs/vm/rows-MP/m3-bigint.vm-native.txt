@@ -1,0 +1,13 @@
+M3 default 12345678901234567890123n => "12,345,678,901,234,567,890,123"
+M3 scientific maxSD 21: 123456789012345678901n => "1.23456789012345678901E20"
+M3 engineering maxSD 21: 123456789012345678901n => "123.456789012345678901E18"
+M3 scientific default: 123456789012345678901n => "1.235E20"
+M3 maxSD 3: 12345n; -5n; 0n => ["12,300", "-5", "0"]
+M3 percent: 1n => "100%"
+M3 10n**30n formatToParts => [integer:"1", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000"]
+M3 10n**400n (length, first, last) => [401, "100", "000"]
+M3 (2n**64n+1n).toLocaleString en => "18,446,744,073,709,551,617"
+M3 BigInt toLocaleString maxSD 21 scientific 123456789012345678901n => "1.23456789012345678901E20"
+M3 Object(5n) ToPrimitive => "5"
+M3 10n**308n and 10n**309n and -(10n**400n) (lengths) => [309, 310, 402]
+M3 PluralRules en select(10n**400n) => "other"

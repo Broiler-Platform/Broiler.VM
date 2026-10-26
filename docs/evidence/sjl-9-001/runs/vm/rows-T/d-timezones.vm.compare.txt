@@ -1,0 +1,2 @@
+# compare: work/compare_dataset.py <rows> timezones vm (Broiler.JS harness compare_program at f918b040 over runs/d-timezones.vm.txt; expected = work/datasets/timezones--timezones.icu-77.1.txt with work/datasets/timezones--divergences.txt applied)
+summary: lines=610 compared=610 equal=610 differing=0 divergences-used=51

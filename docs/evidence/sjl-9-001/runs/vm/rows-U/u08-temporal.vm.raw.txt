@@ -1,0 +1,36 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-U/u08-temporal.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/u08-temporal.js sha256 8cc2a31578f76f6906ea6802db444d1bcb08a05bfbf03ea447c909d5c629ccfb
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-U/u08-temporal.js [raw]  uncaught Error: OUT<<U17 toLocaleString() => "1 hr, 2 min, 3 sec"
+U17 toLocaleString("en", {style: "digital"}) => "1:02:03"
+U17 toLocaleString("de", {style: "long"}) => "1 Stunde, 2 Minuten und 3 Sekunden"
+U17 equals new Intl.DurationFormat("de", {style: "long"}).format(d) => true
+U17 toLocaleString("en", {style: "long", minutes: "numeric"}) => "1 hour, 2:03"
+U17 Temporal.Duration.from({hours: 2}).toLocaleString("en", {style: "long", minutes: "numeric"}) => "2 hours, 0:00"
+U17 negative toLocaleString("en", {style: "digital"}) => "-1:00:00.5"
+U17 large toLocaleString("en", {style: "digital"}) => "0:00:4503599627370497.000000001"
+U17 toLocaleString("en", {style: "full"}) => THROWS RangeError: Value full out of range for option style
+U17 toLocaleString("en", {milliseconds: "numeric", millisecondsDisplay: "always"}) => THROWS RangeError: Intl.DurationFormat: milliseconds cannot always be displayed as a fraction
+U17 toLocaleString.call({hours: 1}) => THROWS TypeError: Temporal.Duration.prototype.toLocaleString requires that 'this' be a Temporal.Duration
+U17 toLocaleString("en", null) => THROWS TypeError: the options argument is not an object
+U17 option reads of toLocaleString("en", spy) => "localeMatcher,numberingSystem,style,years,yearsDisplay,months,monthsDisplay,weeks,weeksDisplay,days,daysDisplay,hours,hoursDisplay,minutes,minutesDisplay,seconds,secondsDisplay,milliseconds,millisecondsDisplay,microseconds,microsecondsDisplay,nanoseconds,nanosecondsDisplay,fractionalDigits"
+U17 toLocaleString("en"), prototype getters throwing => "1 hr, 2 min, 3 sec">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-U/u08-temporal.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-U  e.g. test/sjl9/rows-U/u08-temporal.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-U/u08-temporal.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

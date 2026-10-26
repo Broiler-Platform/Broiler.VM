@@ -1,0 +1,6 @@
+P2 en select(1n), select(2n), select(0n), select(-1n) => ["one", "other", "other", "one"]
+P2 en ordinal select(2n), select(3n) => ["two", "few"]
+P2 en select(10n**30n) => "other"
+P2 en {minFD 1}.select(1n) => "other"
+P2 en select(Object(1n)) => "one"
+P2 de selectRange(0n, 1n); en selectRange(1n, 1n) => ["one", "one"]

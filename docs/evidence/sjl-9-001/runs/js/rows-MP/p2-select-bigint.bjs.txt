@@ -1,0 +1,10 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/p2-select-bigint.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/p2-select-bigint.js sha256 60e6b68e070bbb6f94c53f345b2d5ed25b36fed4db8bce2a5d7d949c4b5dab5f
+P2 en select(1n), select(2n), select(0n), select(-1n) => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+P2 en ordinal select(2n), select(3n) => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+P2 en select(10n**30n) => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+P2 en {minFD 1}.select(1n) => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+P2 en select(Object(1n)) => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+P2 de selectRange(0n, 1n); en selectRange(1n, 1n) => THROWS TypeError: Cannot mix BigInt and other types, use explicit conversions
+exit=0

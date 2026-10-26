@@ -1,0 +1,9 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/n6b-compact-magnitude.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/n6b-compact-magnitude.js sha256 48fb79b40dc8e43616e9e486b686538be59cd44a8de16cb7c74cf34f2de1b9f4
+en compact short => ["1,000,000,000T", "10,000,000,000T", "100,000,000,000T", "100,000,000,000T", "1,000,000,000,000T", "123,456,789T", "100K", "1000K", "0.001", "0.001"]
+en compact long => ["1,000,000,000 trillion", "10,000,000,000 trillion", "100,000,000,000 trillion", "100,000,000,000 trillion", "1,000,000,000,000 trillion", "123,456,789 trillion", "100 thousand", "1000 thousand", "0.001", "0.001"]
+en compact formatToParts(1e23) => [integer:"100", group:",", integer:"000", group:",", integer:"000", group:",", integer:"000", compact:"T"]
+de compact 1e23, 999999.9999999999 => ["100.000.000.000\u00a0Bio.", "1.000.000"]
+en engineering 1e23, 9.999999999999999e22 => ["100E21", "100E21"]
+exit=0

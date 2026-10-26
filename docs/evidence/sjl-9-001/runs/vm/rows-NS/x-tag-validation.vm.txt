@@ -1,0 +1,5 @@
+tag "en\u000a": getCanonicalLocales; Intl.Locale; NumberFormat locales => ["RangeError", "RangeError", "RangeError"]
+tag "en-US\u000a": getCanonicalLocales; Intl.Locale; NumberFormat locales => ["RangeError", "RangeError", "RangeError"]
+tag "de-\u0661\u0662\u0663": getCanonicalLocales; Intl.Locale; NumberFormat locales => ["RangeError", "RangeError", "RangeError"]
+tag "en-\u0661\u0662\u0663": getCanonicalLocales; Intl.Locale; NumberFormat locales => ["RangeError", "RangeError", "RangeError"]
+tag "de-DE\u000a": getCanonicalLocales; Intl.Locale; NumberFormat locales => ["RangeError", "RangeError", "RangeError"]

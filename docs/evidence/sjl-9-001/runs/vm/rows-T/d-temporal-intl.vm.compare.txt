@@ -1,0 +1,2 @@
+# compare: work/compare_dataset.py <rows> temporal-intl vm (Broiler.JS harness compare_program at f918b040 over runs/d-temporal-intl.vm.txt; expected = work/datasets/temporal-intl--temporal-intl.polyfill-e8cc03fc.txt with work/datasets/temporal-intl--divergences.txt applied)
+summary: lines=1233 compared=1233 equal=1233 differing=0 divergences-used=82
