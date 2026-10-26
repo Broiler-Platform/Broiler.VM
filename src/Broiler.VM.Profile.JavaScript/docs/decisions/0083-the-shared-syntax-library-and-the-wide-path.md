@@ -107,8 +107,8 @@ review." This record reads it in two parts, as JSD-0080, JSD-0081 and JSD-0082 d
   `sjl-13-002`'s rule" is [its step 2 rule](../../../../docs/evidence/sjl-13-002/decision-rule-area.md); "the home's
   rule" is Broiler.JS's `docs/evidence/sjl-13-001/decision-rule.md`.
 - **Classes.** C1 to C5 are the classes of the programme's comparison templates
-  ([`validation.md`](../../../../docs/javascript-shared-libraries/validation.md) section 4). R, R2, S1 to S8, F and L
-  are the classes of part B of bundle `sjl-13-001`'s rule; (R), (G), (B) and (F) the kinds of its part A's C1.
+  ([`validation.md`](../../../../docs/javascript-shared-libraries/validation.md) section 4). R, R2, S1 and S3 to S8, F
+  and L are the classes of part B of bundle `sjl-13-001`'s rule; (R), (G), (B) and (F) the kinds of its part A's C1.
 - **Paths.** A line number is the line at `4cf9ca4` in this repository and at `d6795fc8` in Broiler.JS, as the
   correspondence gives them.
 
@@ -156,8 +156,11 @@ what the run showed.
   every other early-error site are byte-identical at both heads, and no probe input and no corpus input holds such a
   loop, so no row's Broiler.JS answer can differ there; no probe was run again.
 
-**The stage table and the classification** are Broiler.JS's, filed in its SJL-13.1 change (observed at `70bc4899` on
-its branch `sjl-13-1-js`, cut from `8a95076c`):
+**The stage table and the classification** are Broiler.JS's, filed in its SJL-13.1 change (observed at `684667e2` on
+its branch `sjl-13-1-js`, cut from `8a95076c`, where the stage table's SHA-256 is
+`3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6`; both were first committed at `70bc4899`, and
+`684667e2` fills the stage table's goal rows' compiler-only and lazy cells and three of this family's site cells, the
+classification changing only in the digest it records):
 - `Broiler.ECMAScript/docs/frontend/stages.tsv` gives every catalogue row its stage under decision D10, `syntax`,
   `request`, `engine` or `semantics`, with each engine's stage and site re-read at the heads above, whether Broiler.JS
   checks a `syntax` row only in its compiler and whether lazily, and the catalogue cells that no longer hold
@@ -362,6 +365,81 @@ The JavaScript profile owner, the Broiler.JS maintainer, the verification-bounda
 the Broiler.Unicode maintainer accept all five sub-areas, and record decisions D2 to D39 under the owner's direction
 of 2026-10-18. One person holds the roles (EX-30).
 
+## Every row, classified
+
+Each row is in one class, as the correspondence's section "The rows by class" puts it, and the gate's X2 above lists
+them sub-area by sub-area. **What the decisions of 2026-10-26 add to the classes:**
+- **Rows in one class with a second class for some inputs**, as the correspondence's notes say: P06a (engine policy
+  for the call forms' positives; a correction of Broiler.JS for the negatives under the flag, decision D17); P32
+  (engine-kept, but its item 10, a correction of this family that SJL-15's model makes, H19); T15, T27, P08, D12-2,
+  D12-7, D31, D44, D45, D51 to D54 and D59, the same in outcome, with Broiler.JS refusing only in its compiler (stage E:
+  the stage table's matter, and SJL-14's classes E and T, decision D45); D46 and D55, the same in outcome, with a
+  correction of Broiler.JS on some inputs.
+- **D30** stays a correction of this family that SJL-13 does not make (H20): the rows it holds are `semantics`, and no
+  parser checks jump targets (finding F30). The catalogue's "both" for EE0082, EE0137, EE0166 and EE0176 is stale
+  (decision D28).
+- **D40** is a correction of both, read from the run: Broiler.JS accepts a reserved word as an import specifier
+  without `as` too (finding F19); its Broiler.JS half is SJL-14's (decision D45's K10).
+- **R24** is a correction of Broiler.JS, read from the run: `eval('super()')` in a base-class constructor is admitted at
+  Broiler.JS's parse and fails when it runs (decision D44).
+- **Every correction of Broiler.JS** is SJL-14's, listed in its `corrections.md` (decision D45, H22).
+
+## The corrections step 1 makes, and how each is shown
+
+Bundle `sjl-13-001`'s part A, kind (F), and part B, class F, name exactly these rows (decision D25, findings F19 and
+F32). No test262 file reaches any of them, so part A's kind (F) is expected to list nothing.
+
+| Row | What step 1 corrects | How it is shown |
+|---|---|---|
+| T6 | `#!` and `-->` right after a substitution's `${` | the `syntax` vectors (part H's C1) and the correspondence's probes |
+| T7 | the template-end scan and HTML-like comments in a substitution | the same |
+| T8 | the template-end scan's regular-expression-or-division guess | the same |
+| T13 | ASCII white space inside `\x` and `\u` escapes, on the wide path | the same; the slice path keeps it until SJL-15.4 (H23) |
+| T16 | strict refusal of legacy octal and non-octal decimal literals in object keys and class element names | the same |
+| T24d, T24e, T24f | a regular-expression literal after a `for await (…)` head, after a prefix `++` or `--`, and after `await` used as an identifier | the same |
+| D32 | `new.target` in a class field initialiser at function depth 0 | the same |
+| P31 | an assignment rest property whose target is an object or array literal | the same |
+| P15b | a parenthesised nested target that is not a simple target, in a cover grammar | the parse corpus (part B's class F), which holds inputs of it |
+| P05a | an import-attribute key that is an identifier name not starting with a letter | the correspondence's probes only: only the Module goal reaches it |
+| D40 | a reserved word as an import specifier written without `as` | the correspondence's probes only: only the Module goal reaches it |
+
+**Corrections of this family that SJL-13 does not make**, each handed on and admitting nothing in either of SJL-13's
+bundles: P26 and D61, the dynamic function's goals (H18); P32's item 10, the top-level-`await` reading of an async
+arrow at a module's top level (H19); D30, `continue` to an outer label of a label set (H20); R19, the
+regular-expression validator's errors (H21, SJL-11.4).
+
+## The hand-offs
+
+H1 to H17 are the items earlier bundles and records labelled SJL-13, each reassigned with its source; H18 to H24 are
+what the correspondence hands to later work. Line numbers are at the heads the correspondence names.
+
+| Hand-off | Source | What | Where it goes | Why |
+|---|---|---|---|---|
+| H1 | Broiler.VM `docs/evidence/sjl-1-001/README.md:55` | `07.5` read as 7.5 | closed | settled at SJL-3.4 (`src/Broiler.VM.Profile.JavaScript/docs/decisions/0066-the-profile-on-the-shared-number-conversions.md:94-97`); both engines refuse it through the library (T17) |
+| H2 | Broiler.VM `docs/evidence/sjl-3-001/README.md:269` | the front end's escape and template scans: `SliceTokenizer` (3), `JsParser.ScanSubstitution` (1) | `ScanSubstitution`: closed (removed at SJL-12.6). The three `SliceTokenizer` reads are the `HexNumber` parses `VMT:1180`, `:1196`, `:1723`, which carry T13's defect: the wide path stops using them at step 1; the slice path keeps them until SJL-15.4 | the milestone keeps the slice tokenizer until SJL-15 (`docs/javascript-shared-libraries/milestones/sjl-13-shared-syntax-and-vm.md:69-71`) |
+| H3 | Broiler.VM `docs/evidence/sjl-5-001/README.md:248`, `:258-261` | the tokenizer's code-point read (`CodePointAt` `VMT:2984`), its escapes, the lexical `WhiteSpace` predicate | WhiteSpace: closed (the owner's since SJL-7.4, T1). CodePointAt and the escape readers: off the wide path at step 1; SJL-15.4 for the slice path | as H2 |
+| H4 | Broiler.JS `docs/evidence/sjl-3-001/README.md:211-215` | U+0085 as white space in the lexer | closed | settled at SJL-7.5 (`JSS:429-431`, T1); the SharedLibraries note of 2026-10-16 already says so |
+| H5 | Broiler.JS `docs/evidence/sjl-5-001/README.md:317` | the lexer's code-point reads and its identifier and escape tests (`FastScanner` 10, `CharExtensions` 3) | SJL-14 | SJL-13 does not change Broiler.JS's front end. T12 (`_` in IsDigitPart and HexValue) is one of these tests |
+| H6 | Broiler.JS `docs/evidence/sjl-7-001/README.md:176` | the decimal-digit lookahead after `?.` and `.` | SJL-14 | the member is `_ReadToken`, now `JSS:679` and `:703` (the bundle's line numbers are stale); T19 |
+| H7 | Broiler.JS `docs/evidence/sjl-7-001/README.md:576` | eight lines of the scanner and `CharExtensions.IsLineTerminator` | SJL-14 (the lexer); `JSUnicode.IsLineTerminator` is the owner's | T2 |
+| H8 | Broiler.JS `docs/roadmap/SharedLibraries.md:335` | the tagged-template path's trimming of a raw segment | SJL-14 | T28 (K3) |
+| H9 | Broiler.JS `docs/roadmap/SharedLibraries.md:1381-1390`, JSD-0081 D22 | DecodeBracedUnicodeEscapes and the parenthesis patch; the division fallback | SJL-11.5 (else SJL-14) for the first two; SJL-14 for the fallback (S9) | T26, T25, T24i |
+| H10 | Broiler.VM `docs/javascript-shared-libraries/areas/numbers.md:173`, `milestones/sjl-3-number-conversion-pilot.md:286` | literal scanning, diagnostics and strict-mode checks stay in each front end until SJL-13 and SJL-14 | consistent: Broiler.VM's move with step 1, Broiler.JS's at SJL-14 | T16's corrections land with those moves |
+| H11 | Broiler.VM `src/Broiler.VM.Profile.JavaScript/docs/decisions/0071-the-profile-on-the-shared-text-algorithms.md:107-108` | "`JsParser.IsWellFormed`, the compiler's early error on a lone surrogate in an export name, which the correspondence assigns to SJL-15" | **SJL-13**, not SJL-15: the library's check of EE0178 (`JSE1619`, mapped to 2101 within meaning, `frontend-mapping.tsv:290`), a `syntax` row by D10 because both parsers refuse it at parse time (`VMJP:1402-1417` through `ModuleExportName` `:1439`; Broiler.JS `FastParser.Import.cs:186-200`, called at `:126`, `FastParser.Export.cs:105`, `:244`). Broiler.VM's site goes with `JsParser` at step 1 (D20, X6, I5); Broiler.JS's at SJL-14's W2. Its row is D56. The second caller, `ModuleSpecifier` `VMJP:1468-1495` (`:1477-1483`, the export-name text copied), refuses EX0029, an `engine` row: its owner after step 1 is F6's | baseline T041637, T041712, T041720, T041722, T041724 (B1 2101, P and K refused: agree); JSD-0071's sentence is stale from step 1 (F31) |
+| H12 | Broiler.VM `…/decisions/0065-number-conversion-moves-to-the-shared-algorithms-library.md:66` | literal *scanning* divergences left "until SJL-13 and SJL-14": Broiler.JS's `strict-non-octal-decimal`, `legacy-octal-fraction`, `empty-exponent`, `bigint-fraction`; Broiler.VM's `vm-legacy-octal-fraction` | **only `strict-non-octal-decimal` survives**, and it is **SJL-14's** (K1; T16): Broiler.JS `scripts/conformance/number-divergences.txt:20-25` at `d6795fc8` (vectors `numbers/literal/0082`, `0084`, `0088`, `0090`). The other three of Broiler.JS were retired at corpus revision 5 (Broiler.JS `docs/evidence/sjl-3-001/engine/retired-divergences.tsv`), Broiler.VM's at revision 6 (Broiler.JS `docs/evidence/sjl-4-001/engine/retired-divergences.tsv`, three rows): **closed** | T16, T17, H1; JSD-0065:66 is a stale statement: its dated note is SJL-14.1's |
+| H13 | Broiler.VM `…/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md:272` | "Sharing the lexers' and the regular expressions' white space: SJL-13, SJL-14 and SJL-11 own them" | **T's, and the sentence holds.** The lexers already read one predicate, Broiler.Unicode's `WhiteSpace` (SJL-7.4 and SJL-7.5: `JsCompilerUnicode.cs:48-53` behind `VMT:2916`; `JSS:204-207`, T1, H3, H4). What moves is the code that reads it: Broiler.VM's wide path at step 1 (the library's tokenizer, through the request's `IUnicodeTables`, D8); the slice path's `SliceTokenizer.IsWhiteSpace` at SJL-15.4 (H3, D60); Broiler.JS's `FastScanner.IsWhiteSpace` at SJL-14's W2. The regular expressions' white space (`\s`) is SJL-11's, outside the correspondence | T1; no record stale |
+| H14 | Broiler.JS `Broiler.JS/CHANGELOG.md:158-166` at `4ae1c747` = `:254-262` at `d6795fc8` (`ContainsContinue`, internal; `Ast` grants its internals to `Compiler`), and `:88-96` (#1076, `IsLoopBookkeeping`) | "which raw facts a shared tree publishes is SJL-14's to decide" | **SJL-14's bridge (W1) synthesises `ContainsContinue` only** (D44 lists it): the parser sets it (`FastParser.ForStatement.cs:256-309`, counting at `FastParser.Statement.cs:561-562`) and the for-loop pass reads it (`ForLoopPreparation.cs:263-284`). **`IsLoopBookkeeping` needs no bridge**: the pass sets it (`ForLoopPreparation.cs:860-953`) and `FastCompiler.cs:465` reads it (decision D44: "Not `IsLoopBookkeeping`"). The internals grant (`Broiler.JavaScript.Ast.csproj:37`) stays until the compiler stops reading `Ast` (SJL-15.5, D41). A tree fact, not a token: P33 item 4 | the bridge's list is decision D44's |
+| H15 | Broiler.JS `Broiler.ECMAScript/docs/frontend/early-errors.md:19` and `:283` | the catalogue names "the message identifier the shared front end (SJL-13) emits"; "SJL-13 defines each identifier's arguments" | **SJL-13.2 stage 4d** ("message identifiers with arguments (`early-errors.md`'s section 6)", SJL-13.2d; decision D11). **D's** sub-area | open until stage 4d |
+| H16 | Broiler.JS `Broiler.ECMAScript/docs/frontend/design.md:216-220` ("What this document does not decide") | the library's names, types and API (SJL-13); the registry revision (SJL-13); the `Ast` and `Parser` disposition (SJL-14.4); the model (SJL-15); "the nesting bound's value, which is SJL-13's measurement" | names and API: Broiler.JS's SJL-13.1 change (`design.md` revised, decisions D6 to D17) and SJL-13.2a; the registry revision: step 1's registry commit (decision D12); the disposition: SJL-14.1's `dispositions.md` and SJL-14.4 (decision D50); the model: SJL-15.2; the bound: SJL-13.2e's tree-depth derivation, the nesting depth staying each engine's parameter (decision D14; `design.md:74` reads the same). **R's** for the limits, **D's** for the registry | consistent with this record; no record stale until each lands |
+| H17 | Broiler.VM `docs/javascript-shared-libraries/native-aot.md:226` (G5) | Broiler.JS's Native AOT sample "evidence at SJL-14 but in no clause" | **SJL-14's**, already a clause: `milestones/sjl-14-broiler-js-syntax.md:107-110` (clause 4, revised 2026-10-11); SJL-13's plan's decision D53 and SJL-14's rule. Not SJL-13's | closed as a record |
+| H18 | the correspondence (rows P26, D61; probes PR01, PR02) | Broiler.VM's dynamic function parses its parameters and its body under the library's FormalParameters and FunctionBody goals before it compiles the assembled function (`VMP/JsRealm.Dynamic.cs:159-187`) | a later Broiler.VM change with its own row and window; recommended: SJL-15's Broiler.VM window, which re-pins the frontend | no change of SJL-13 routes `FromSource` through the library's goals (F32) |
+| H19 | the correspondence (row P32, item 10; probe PR06) | Broiler.VM counts an `await` inside an async arrow at a module's top level as a top-level `await`, which changes evaluation order | SJL-15's model (stage e, module records and top-level `await`); the adapter keeps Broiler.VM's rule at both steps of SJL-13 | part B admits no byte difference of an accepted input at step 1 or step 2 (F12) |
+| H20 | the correspondence (row D30; probes PD01, RD01) | Broiler.VM's binder refuses `continue` naming an outer label of a loop's label set (`JBW:653-666`, `:1455-1477`), and `SC/BinderChecks.cs:127-130` pins it | a Broiler.VM correction of the binder's `Target`, with the checks row, outside SJL-13's library (the rows are `semantics`); or SJL-15's jump-target fact | the catalogue's "both" for EE0082, EE0137, EE0166 and EE0176 is stale (F30) |
+| H21 | the correspondence (rows R19, R20) | the two engines' regular-expression validators decide some patterns wrongly | Broiler.VM's at SJL-11.4 (Broiler.Regex's validate entry behind the provider, JSD-0081 D18); Broiler.JS's at SJL-11.5, or K9 at SJL-14 (D45) | consistent with JSD-0081; the library only calls the provider (D7) |
+| H22 | the correspondence (the column "Correction of Broiler.JS" in every sub-area) | every correction of Broiler.JS this file classes | SJL-14's `corrections.md` (D45's K1 to K10), with the specific actions F23 to F28 name: the derived-constructor flag (R24), the direct-eval prefix and its skip sites (N25, N26), the two token re-scans (R36, T16), each entry point's request (R35), the bridged token facts (N18), and the tests that assert acceptance past the limits (R12, R13) | SJL-13 changes no Broiler.JS front end; the library corrects these when Broiler.JS parses with it (F28) |
+| H23 | the correspondence (rows T13, T12's .NET hexadecimal parses on the slice path; H2, H3) | the slice path's tokenizer defects (white space and `_` inside an escape's hexadecimal digits) | SJL-15.4, which removes `SliceTokenizer` (D60) | the slice path keeps `SliceTokenizer` until SJL-15 (F17 on part F) |
+| H24 | the correspondence (row R35, J1k) | Broiler.JS's opt-in tiering recompile parses a promoted function's text under the Script goal whatever goal the function was compiled under, and gets strictness by a `'use strict';` prefix | SJL-14's W1 (the bridge passes the function's goal and forced strictness at that site), or Broiler.JS's own backlog | behind a switch that is off by default; no probe reaches it (F26) |
+
 ## The owner's decisions of 2026-10-26
 
 Each decision below was taken on 2026-10-26 by the owner, under the direction quoted above, but decision D1, which is
@@ -430,8 +508,10 @@ implicit.
 change corrects, each by a dated note quoting what it replaces: roadmap sections 4, 5, 10 and 11; `areas/frontend.md`
 section 3; `architecture.md` sections 2 and 3.1; governance section 8; the programme README's status and its line on
 Broiler.JS's `FrontEnd/Semantics` boundary; JSD-0081's decision D18; **JSD-0071's "What stays"**
-(`JsParser.IsWellFormed`, EE0178's check, moves to the library at step 1 with EE0178's code, not to SJL-15); JS-2's
-"Next action" (JSC-320); and, in Broiler.JS's change, its status row and `design.md`. The reason: update rule 1; each
+(`JsParser.IsWellFormed`, EE0178's check, moves to the library at step 1 with EE0178's code, not to SJL-15); **SJL-13's
+milestone's "Does not do"** ("It does not share the static semantics", read with decisions D10 and D20: the
+parse-time early errors and their declarations walk are SJL-13's, and the binder keeps only its `semantics` checks;
+added after review); JS-2's "Next action" (JSC-320); and, in Broiler.JS's change, its status row and `design.md`. The reason: update rule 1; each
 would mislead SJL-13's executors. The plan's text ended "`README.md:3`, `:191`; JSD-0081 D18; JS-2's "Next action"
 (JSC); Broiler.JS's status row and `design.md`." JSD-0071 assigns `JsParser.IsWellFormed` to SJL-15, but step 1
 deletes `JsParser` and EE0178 is a `syntax` row both parsers refuse (hand-off H11).
@@ -554,9 +634,12 @@ rule N19's text checks stand. The nesting depth stays a parameter with each engi
 `DefaultMaximumNestingDepth` and `MaximumSupportedNestingDepth`). **The left-operand gap is closed in the library in
 all four shapes the base compiles past the bound**: a binary chain whose first operand is a parenthesised chain, a
 template whose substitution holds one, a binary chain whose first operand is a member or call chain, and a member or
-call chain whose object is a parenthesised binary chain. Each refusal is an implementation limit (bundle
-`sjl-13-001`'s part B class L and part A's C3, the home's outcome L), never a correction (part B's class F and part
-A's kind (F) list none of them). The specification sets no depth limit and the base loses no process on any of them,
+call chain whose object is a parenthesised binary chain. **The charge**, which the home's part G reads at the bound:
+tree depth is charged as `JsParser.Deepen` charges it, one level for each node a binary chain or a member or call
+chain adds, and none for a parenthesis, a template or a substitution; and a left operand's spine adds its own length
+to the chain it begins, so a chain of `a` nodes as the left operand of a chain of `b` nodes is charged `a + b`. Each
+refusal is an implementation limit (bundle `sjl-13-001`'s part B class L and part A's C3, the home's outcome L), never
+a correction (part B's class F and part A's kind (F) list none of them). The specification sets no depth limit and the base loses no process on any of them,
 so what the gap costs at the base is depth accounting, not robustness. The reason: JSD-0080's decision D27; rule N19
 reads the constant's text; a lower bound would move refusals with no class; bundle `sjl-12-001` carried the gap here,
 and keeping it would put a known hole in a shared library. The plan's text read: "**The left-operand gap is closed in
@@ -643,8 +726,8 @@ the rows the mapping found, and the non-language splits EX0013, EX0020, EX0024, 
   revision 19 changes them** (`BinderChecks.cs`, `BigIntChecks.cs`, `SourceFrontEndChecks.cs`), so that the lane
   passes on the branch.
 - **The other codes the mapping marks `split` at sites that serve several rules** (`JsParser`'s
-  `ValidateDeclaredNames`, `Expect`, `BindingName`, `ParsePrimary`, `ParseObjectEntry` and `TryParseArrow` sites, for
-  EE0087, EE0155, EE0168 and EX0008; and the binder's `Declares` check, which reports EE0168 and EE0169 at no place)
+  `ValidateDeclaredNames`, `Expect`, `BindingName`, `ParsePrimary`, `ParseObjectEntry`, `ParseObjectBindingPattern`
+  and `TryParseArrow` sites, for EE0087, EE0155, EE0168 and EX0008; and the binder's `Declares` check, which reports EE0168 and EE0169 at no place)
   are consolidated by the library's emission at the after commit, the binder's place with them; part B's class R2
   names them. **At an arrow head whose cover does not cover its parameters, the library reports EE0087 (EE0155 for an
   async arrow head)**: it parses the head as the cover and refuses the conversion with the cover's rule, where
@@ -1033,81 +1116,6 @@ segmentation, if it keeps it" is Broiler.JS's): the library holds no engine type
 a dark merge, if SJL-14's measurement shows the hop's cost. The plan's text ended "the parse uses no `StackSegment`."
 (finding F26).
 
-## Every row, classified
-
-Each row is in one class, as the correspondence's section "The rows by class" puts it, and the gate's X2 above lists
-them sub-area by sub-area. **What the decisions of 2026-10-26 add to the classes:**
-- **Rows in one class with a second class for some inputs**, as the correspondence's notes say: P06a (engine policy
-  for the call forms' positives; a correction of Broiler.JS for the negatives under the flag, decision D17); P32
-  (engine-kept, but its item 10, a correction of this family that SJL-15's model makes, H19); T15, T27, P08, D12-2,
-  D12-7, D31, D44, D45, D51 to D54 and D59, the same in outcome, with Broiler.JS refusing only in its compiler (stage E:
-  the stage table's matter, and SJL-14's classes E and T, decision D45); D46 and D55, the same in outcome, with a
-  correction of Broiler.JS on some inputs.
-- **D30** stays a correction of this family that SJL-13 does not make (H20): the rows it holds are `semantics`, and no
-  parser checks jump targets (finding F30). The catalogue's "both" for EE0082, EE0137, EE0166 and EE0176 is stale
-  (decision D28).
-- **D40** is a correction of both, read from the run: Broiler.JS accepts a reserved word as an import specifier
-  without `as` too (finding F19); its Broiler.JS half is SJL-14's (decision D45's K10).
-- **R24** is a correction of Broiler.JS, read from the run: `eval('super()')` in a base-class constructor is admitted at
-  Broiler.JS's parse and fails when it runs (decision D44).
-- **Every correction of Broiler.JS** is SJL-14's, listed in its `corrections.md` (decision D45, H22).
-
-## The corrections step 1 makes, and how each is shown
-
-Bundle `sjl-13-001`'s part A, kind (F), and part B, class F, name exactly these rows (decision D25, findings F19 and
-F32). No test262 file reaches any of them, so part A's kind (F) is expected to list nothing.
-
-| Row | What step 1 corrects | How it is shown |
-|---|---|---|
-| T6 | `#!` and `-->` right after a substitution's `${` | the `syntax` vectors (part H's C1) and the correspondence's probes |
-| T7 | the template-end scan and HTML-like comments in a substitution | the same |
-| T8 | the template-end scan's regular-expression-or-division guess | the same |
-| T13 | ASCII white space inside `\x` and `\u` escapes, on the wide path | the same; the slice path keeps it until SJL-15.4 (H23) |
-| T16 | strict refusal of legacy octal and non-octal decimal literals in object keys and class element names | the same |
-| T24d, T24e, T24f | a regular-expression literal after a `for await (…)` head, after a prefix `++` or `--`, and after `await` used as an identifier | the same |
-| D32 | `new.target` in a class field initialiser at function depth 0 | the same |
-| P31 | an assignment rest property whose target is an object or array literal | the same |
-| P15b | a parenthesised nested target that is not a simple target, in a cover grammar | the parse corpus (part B's class F), which holds inputs of it |
-| P05a | an import-attribute key that is an identifier name not starting with a letter | the correspondence's probes only: only the Module goal reaches it |
-| D40 | a reserved word as an import specifier written without `as` | the correspondence's probes only: only the Module goal reaches it |
-
-**Corrections of this family that SJL-13 does not make**, each handed on and admitting nothing in either of SJL-13's
-bundles: P26 and D61, the dynamic function's goals (H18); P32's item 10, the top-level-`await` reading of an async
-arrow at a module's top level (H19); D30, `continue` to an outer label of a label set (H20); R19, the
-regular-expression validator's errors (H21, SJL-11.4).
-
-## The hand-offs
-
-H1 to H17 are the items earlier bundles and records labelled SJL-13, each reassigned with its source; H18 to H24 are
-what the correspondence hands to later work. Line numbers are at the heads the correspondence names.
-
-| Hand-off | Source | What | Where it goes | Why |
-|---|---|---|---|---|
-| H1 | Broiler.VM `docs/evidence/sjl-1-001/README.md:55` | `07.5` read as 7.5 | closed | settled at SJL-3.4 (`src/Broiler.VM.Profile.JavaScript/docs/decisions/0066-the-profile-on-the-shared-number-conversions.md:94-97`); both engines refuse it through the library (T17) |
-| H2 | Broiler.VM `docs/evidence/sjl-3-001/README.md:269` | the front end's escape and template scans: `SliceTokenizer` (3), `JsParser.ScanSubstitution` (1) | `ScanSubstitution`: closed (removed at SJL-12.6). The three `SliceTokenizer` reads are the `HexNumber` parses `VMT:1180`, `:1196`, `:1723`, which carry T13's defect: the wide path stops using them at step 1; the slice path keeps them until SJL-15.4 | the milestone keeps the slice tokenizer until SJL-15 (`docs/javascript-shared-libraries/milestones/sjl-13-shared-syntax-and-vm.md:69-71`) |
-| H3 | Broiler.VM `docs/evidence/sjl-5-001/README.md:248`, `:258-261` | the tokenizer's code-point read (`CodePointAt` `VMT:2984`), its escapes, the lexical `WhiteSpace` predicate | WhiteSpace: closed (the owner's since SJL-7.4, T1). CodePointAt and the escape readers: off the wide path at step 1; SJL-15.4 for the slice path | as H2 |
-| H4 | Broiler.JS `docs/evidence/sjl-3-001/README.md:211-215` | U+0085 as white space in the lexer | closed | settled at SJL-7.5 (`JSS:429-431`, T1); the SharedLibraries note of 2026-10-16 already says so |
-| H5 | Broiler.JS `docs/evidence/sjl-5-001/README.md:317` | the lexer's code-point reads and its identifier and escape tests (`FastScanner` 10, `CharExtensions` 3) | SJL-14 | SJL-13 does not change Broiler.JS's front end. T12 (`_` in IsDigitPart and HexValue) is one of these tests |
-| H6 | Broiler.JS `docs/evidence/sjl-7-001/README.md:176` | the decimal-digit lookahead after `?.` and `.` | SJL-14 | the member is `_ReadToken`, now `JSS:679` and `:703` (the bundle's line numbers are stale); T19 |
-| H7 | Broiler.JS `docs/evidence/sjl-7-001/README.md:576` | eight lines of the scanner and `CharExtensions.IsLineTerminator` | SJL-14 (the lexer); `JSUnicode.IsLineTerminator` is the owner's | T2 |
-| H8 | Broiler.JS `docs/roadmap/SharedLibraries.md:335` | the tagged-template path's trimming of a raw segment | SJL-14 | T28 (K3) |
-| H9 | Broiler.JS `docs/roadmap/SharedLibraries.md:1381-1390`, JSD-0081 D22 | DecodeBracedUnicodeEscapes and the parenthesis patch; the division fallback | SJL-11.5 (else SJL-14) for the first two; SJL-14 for the fallback (S9) | T26, T25, T24i |
-| H10 | Broiler.VM `docs/javascript-shared-libraries/areas/numbers.md:173`, `milestones/sjl-3-number-conversion-pilot.md:286` | literal scanning, diagnostics and strict-mode checks stay in each front end until SJL-13 and SJL-14 | consistent: Broiler.VM's move with step 1, Broiler.JS's at SJL-14 | T16's corrections land with those moves |
-| H11 | Broiler.VM `src/Broiler.VM.Profile.JavaScript/docs/decisions/0071-the-profile-on-the-shared-text-algorithms.md:107-108` | "`JsParser.IsWellFormed`, the compiler's early error on a lone surrogate in an export name, which the correspondence assigns to SJL-15" | **SJL-13**, not SJL-15: the library's check of EE0178 (`JSE1619`, mapped to 2101 within meaning, `frontend-mapping.tsv:290`), a `syntax` row by D10 because both parsers refuse it at parse time (`VMJP:1402-1417` through `ModuleExportName` `:1439`; Broiler.JS `FastParser.Import.cs:186-200`, called at `:126`, `FastParser.Export.cs:105`, `:244`). Broiler.VM's site goes with `JsParser` at step 1 (D20, X6, I5); Broiler.JS's at SJL-14's W2. Its row is D56. The second caller, `ModuleSpecifier` `VMJP:1468-1495` (`:1477-1483`, the export-name text copied), refuses EX0029, an `engine` row: its owner after step 1 is F6's | baseline T041637, T041712, T041720, T041722, T041724 (B1 2101, P and K refused: agree); JSD-0071's sentence is stale from step 1 (F31) |
-| H12 | Broiler.VM `…/decisions/0065-number-conversion-moves-to-the-shared-algorithms-library.md:66` | literal *scanning* divergences left "until SJL-13 and SJL-14": Broiler.JS's `strict-non-octal-decimal`, `legacy-octal-fraction`, `empty-exponent`, `bigint-fraction`; Broiler.VM's `vm-legacy-octal-fraction` | **only `strict-non-octal-decimal` survives**, and it is **SJL-14's** (K1; T16): Broiler.JS `scripts/conformance/number-divergences.txt:20-25` at `d6795fc8` (vectors `numbers/literal/0082`, `0084`, `0088`, `0090`). The other three of Broiler.JS were retired at corpus revision 5 (Broiler.JS `docs/evidence/sjl-3-001/engine/retired-divergences.tsv`), Broiler.VM's at revision 6 (Broiler.JS `docs/evidence/sjl-4-001/engine/retired-divergences.tsv`, three rows): **closed** | T16, T17, H1; JSD-0065:66 is a stale statement: its dated note is SJL-14.1's |
-| H13 | Broiler.VM `…/decisions/0070-text-algorithms-move-to-the-shared-algorithms-library.md:272` | "Sharing the lexers' and the regular expressions' white space: SJL-13, SJL-14 and SJL-11 own them" | **T's, and the sentence holds.** The lexers already read one predicate, Broiler.Unicode's `WhiteSpace` (SJL-7.4 and SJL-7.5: `JsCompilerUnicode.cs:48-53` behind `VMT:2916`; `JSS:204-207`, T1, H3, H4). What moves is the code that reads it: Broiler.VM's wide path at step 1 (the library's tokenizer, through the request's `IUnicodeTables`, D8); the slice path's `SliceTokenizer.IsWhiteSpace` at SJL-15.4 (H3, D60); Broiler.JS's `FastScanner.IsWhiteSpace` at SJL-14's W2. The regular expressions' white space (`\s`) is SJL-11's, outside the correspondence | T1; no record stale |
-| H14 | Broiler.JS `Broiler.JS/CHANGELOG.md:158-166` at `4ae1c747` = `:254-262` at `d6795fc8` (`ContainsContinue`, internal; `Ast` grants its internals to `Compiler`), and `:88-96` (#1076, `IsLoopBookkeeping`) | "which raw facts a shared tree publishes is SJL-14's to decide" | **SJL-14's bridge (W1) synthesises `ContainsContinue` only** (D44 lists it): the parser sets it (`FastParser.ForStatement.cs:256-309`, counting at `FastParser.Statement.cs:561-562`) and the for-loop pass reads it (`ForLoopPreparation.cs:263-284`). **`IsLoopBookkeeping` needs no bridge**: the pass sets it (`ForLoopPreparation.cs:860-953`) and `FastCompiler.cs:465` reads it (decision D44: "Not `IsLoopBookkeeping`"). The internals grant (`Broiler.JavaScript.Ast.csproj:37`) stays until the compiler stops reading `Ast` (SJL-15.5, D41). A tree fact, not a token: P33 item 4 | the bridge's list is decision D44's |
-| H15 | Broiler.JS `Broiler.ECMAScript/docs/frontend/early-errors.md:19` and `:283` | the catalogue names "the message identifier the shared front end (SJL-13) emits"; "SJL-13 defines each identifier's arguments" | **SJL-13.2 stage 4d** ("message identifiers with arguments (`early-errors.md`'s section 6)", SJL-13.2d; decision D11). **D's** sub-area | open until stage 4d |
-| H16 | Broiler.JS `Broiler.ECMAScript/docs/frontend/design.md:216-220` ("What this document does not decide") | the library's names, types and API (SJL-13); the registry revision (SJL-13); the `Ast` and `Parser` disposition (SJL-14.4); the model (SJL-15); "the nesting bound's value, which is SJL-13's measurement" | names and API: Broiler.JS's SJL-13.1 change (`design.md` revised, decisions D6 to D17) and SJL-13.2a; the registry revision: step 1's registry commit (decision D12); the disposition: SJL-14.1's `dispositions.md` and SJL-14.4 (decision D50); the model: SJL-15.2; the bound: SJL-13.2e's tree-depth derivation, the nesting depth staying each engine's parameter (decision D14; `design.md:74` reads the same). **R's** for the limits, **D's** for the registry | consistent with this record; no record stale until each lands |
-| H17 | Broiler.VM `docs/javascript-shared-libraries/native-aot.md:226` (G5) | Broiler.JS's Native AOT sample "evidence at SJL-14 but in no clause" | **SJL-14's**, already a clause: `milestones/sjl-14-broiler-js-syntax.md:107-110` (clause 4, revised 2026-10-11); SJL-13's plan's decision D53 and SJL-14's rule. Not SJL-13's | closed as a record |
-| H18 | the correspondence (rows P26, D61; probes PR01, PR02) | Broiler.VM's dynamic function parses its parameters and its body under the library's FormalParameters and FunctionBody goals before it compiles the assembled function (`VMP/JsRealm.Dynamic.cs:159-187`) | a later Broiler.VM change with its own row and window; recommended: SJL-15's Broiler.VM window, which re-pins the frontend | no change of SJL-13 routes `FromSource` through the library's goals (F32) |
-| H19 | the correspondence (row P32, item 10; probe PR06) | Broiler.VM counts an `await` inside an async arrow at a module's top level as a top-level `await`, which changes evaluation order | SJL-15's model (stage e, module records and top-level `await`); the adapter keeps Broiler.VM's rule at both steps of SJL-13 | part B admits no byte difference of an accepted input at step 1 or step 2 (F12) |
-| H20 | the correspondence (row D30; probes PD01, RD01) | Broiler.VM's binder refuses `continue` naming an outer label of a loop's label set (`JBW:653-666`, `:1455-1477`), and `SC/BinderChecks.cs:127-130` pins it | a Broiler.VM correction of the binder's `Target`, with the checks row, outside SJL-13's library (the rows are `semantics`); or SJL-15's jump-target fact | the catalogue's "both" for EE0082, EE0137, EE0166 and EE0176 is stale (F30) |
-| H21 | the correspondence (rows R19, R20) | the two engines' regular-expression validators decide some patterns wrongly | Broiler.VM's at SJL-11.4 (Broiler.Regex's validate entry behind the provider, JSD-0081 D18); Broiler.JS's at SJL-11.5, or K9 at SJL-14 (D45) | consistent with JSD-0081; the library only calls the provider (D7) |
-| H22 | the correspondence (the column "Correction of Broiler.JS" in every sub-area) | every correction of Broiler.JS this file classes | SJL-14's `corrections.md` (D45's K1 to K10), with the specific actions F23 to F28 name: the derived-constructor flag (R24), the direct-eval prefix and its skip sites (N25, N26), the two token re-scans (R36, T16), each entry point's request (R35), the bridged token facts (N18), and the tests that assert acceptance past the limits (R12, R13) | SJL-13 changes no Broiler.JS front end; the library corrects these when Broiler.JS parses with it (F28) |
-| H23 | the correspondence (rows T13, T12's .NET hexadecimal parses on the slice path; H2, H3) | the slice path's tokenizer defects (white space and `_` inside an escape's hexadecimal digits) | SJL-15.4, which removes `SliceTokenizer` (D60) | the slice path keeps `SliceTokenizer` until SJL-15 (F17 on part F) |
-| H24 | the correspondence (row R35, J1k) | Broiler.JS's opt-in tiering recompile parses a promoted function's text under the Script goal whatever goal the function was compiled under, and gets strictness by a `'use strict';` prefix | SJL-14's W1 (the bridge passes the function's goal and forced strictness at that site), or Broiler.JS's own backlog | behind a switch that is off by default; no probe reaches it (F26) |
-
 ## Readings recorded with the stage table
 
 - **The admission walk's refusals reach no corpus input.** Bundle `sjl-13-001`'s part A, kind (B), and part B's S3
@@ -1187,7 +1195,8 @@ plan's section 4.1" is bundle `sjl-13-001`'s area rule, "4.2" bundle `sjl-13-002
    included, each named by member. Answers **F1**, **F2** and **F3**.
 4. **"Consolidation at the parse"**: the sites serving several rules are named by member, the binder's `Declares`
    check among them with its place; the code the library reports at an uncovered arrow head is stated. Answers **F1**
-   and **F2**.
+   and **F2**. `ParseObjectBindingPattern` joins the sites after review: an arrow head reaches its two refusals with
+   no cover (the correspondence's D12-5 and D12-9).
 5. **"The parse"**: how the library applies the top-level-`await` switch, with no diagnostic of its own (decisions D10
    and D11 as revised). Answers **F7**. The same bullet's last sentence names the four left-operand shapes. Answers
    **F18**.
@@ -1206,7 +1215,8 @@ plan's section 4.1" is bundle `sjl-13-001`'s area rule, "4.2" bundle `sjl-13-002
 13. **Part A, "How it is read"**: the native floor's unsupported row (decision D13 as revised); kinds (B) and (F)
     expected to list nothing. Answers **F20**, **F6** (b) and **F19**.
 14. **Part B, class R2**: confined to the sites serving several rules, named by member, the binder's `Declares`
-    included with its place; the arrow head's code. Answers **F1** and **F2**.
+    included with its place; the arrow head's code. Answers **F1** and **F2**. `ParseObjectBindingPattern` joins the
+    sites after review, as in item 4.
 15. **Part B, class S, kind S3**: EX0029's refusal beside the BigInt refusals. Answers **F6**.
 16. **Part B, class S, new kinds S7 (first refusal) and S8 (scope order)**. Answers **F9**.
 17. **Part B, class F**: the rows named, as part A's kind (F). Answers **F19** and **F32**.
@@ -1236,6 +1246,12 @@ part E; part G; part H's rule; part I; part J; "Revisions"; "What this file does
 2. **"Step 2 changes no outcome, no byte and no diagnostic"**: the lowering computes the adapter's facts by
    `JsParser`'s rules, the top-level-`await` rule included, and places diagnostics as step 1 did (decision D15 as
    revised). Answers **F12** (and F10 at step 2).
+3. **Part B, population, configuration, controls and comparison, and "Step 2 changes no outcome"**: sub-population
+   B5, the ordered module specifiers `JsCompiler.Requests` returns, joins B1 to B4; the comparison reads B5's
+   specifiers, the control changes one, and a specifier list that differs for a B5 input accepted at both is a
+   regression, with no class. Not from a finding of the correspondence: the plan gave rule 4.1's part B the
+   sub-population B5 the tools commit adds (decision D27) and left rule 4.2's at B1 to B4, though step 2 rewrites
+   `JsCompiler.Requests`, which walks `JsSyntax`. Found in review.
 
 Everything else is unchanged. Part C's fifth row holds the four left-operand shapes through bundle `sjl-13-001`'s
 part C, which it cites (F18); part B admits no class, so step 2 keeps step 1's single diagnostic per refused input
@@ -1257,10 +1273,22 @@ part C, which it cites (F18); part B admits no class, so step 2 keeps step 1's s
 5. **Part G, population**: the four left-operand shapes (decision D14 as revised). Answers **F18**.
 6. **Part H, MET**: the caller's lexical names are listed as absent with decision D16's reason (decision D16 as
    revised). Answers **F21**.
+7. **Part A, configuration and admitted outcome L, and part G, MET**: a refusal at either limit reports its depth;
+   L admits a refusal with the contract's nesting diagnostic (EX0011's shared code) past the nesting parameter the
+   configuration sets, or with the tree-depth diagnostic (EX0012's) past the library's tree-depth constant, which no
+   configuration sets; part G expects each source refused with its own kind's diagnostic. The plan named "the
+   contract's nesting diagnostic" for both, and the left-operand charge of decision D14 is EX0012's. Found in review;
+   no finding of the correspondence.
+8. **Part A, comparison, and part H, configuration**: each script is committed to the bundle's `tools/` after this
+   file and before any run of its part, and part A's reads only the runner's report, the classification and the
+   catalogue's shared codes, with no expectation of its own. The plan said "a script committed to the bundle with
+   this file"; neither script can be written before the library writes what it reads (the runner's report, the
+   library's `PublicAPI.txt`). Part A's "How it is read" says why its script cannot move an expectation. Found in
+   review; no finding of the correspondence.
 
 Unchanged: the header's milestone, owner and EX-30 sentences; "What this file is"; "Which part reads which clause";
-"As classified"; the commits; part A's population, completeness, controls, comparison, admitted outcomes and MET;
-parts B to F; part H's population, configuration and controls; "Revisions"; "What this file does not decide".
+"As classified"; the commits; part A's population, completeness, controls and MET; parts B to F; part G's
+configuration; part H's population and controls; "Revisions"; "What this file does not decide".
 
 ## Decision
 
