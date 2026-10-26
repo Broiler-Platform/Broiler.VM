@@ -1,0 +1,40 @@
+#% format	broiler-js-parse-corpus-report	1
+#% mode	acceptance
+#% tool	docs/evidence/sjl-12-001/tools/parse-corpus
+#% manifest-sha256	d8503fcf69dbfc8c673c3c0b372c35e3a7c8e7df908afc1760b29fbdf50fa5db
+#% manifest-rows	5
+#% corpus	sjl13-R-gap
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% selection	all
+#% order	manifest
+#% threads	1
+#% thread-stack-bytes	268435456
+#% compile-stack-bytes	0	CompilationStack.SizeBytes: 0 compiles on the calling thread
+#% environment	TZ=UTC	LANG unset	LC_* unset	BROILER_* unset
+#% culture	(invariant)
+#% time-zone	UTC
+#% runtime	.NET 10.0.12
+#% os	Ubuntu 24.04.5 LTS X64
+#% processors	4
+#% context	JSContext(experimentalFeatures: JavaScriptFeatureFlags.AllExperimentalEs2026), one per thread
+#% strict-variant	the manifest's strict-prologue followed by the text
+#% source-names	virtual-root or stored-root followed by the path
+#% json-goal	the text unchanged at the entry points of every goal but module: ParseProgram, and CoreScript.Compile with isModule false
+#% assembly	Broiler.JavaScript.Ast	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	8cd8a85f-85ff-47c0-908e-ac230eac450e
+#% assembly	Broiler.JavaScript.Parser	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	cd76c4ea-d19e-4282-866f-d011fe85f925
+#% assembly	Broiler.JavaScript.Compiler	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	22136af2-9732-4651-88ae-c22cd35e54c9
+#% assembly	Broiler.JavaScript.Engine	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	497004ca-fd1b-4298-82f1-a8cddd75d56d
+#% assembly	Broiler.JavaScript.Runtime	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	f749a9c9-0285-4453-88a5-8ac4e1f660da
+#% rows	10
+id	variant	entry	outcome	type	message
+RP01	sloppy	P	accepted	-	-
+RP01	sloppy	K	accepted	-	-
+RP02	sloppy	P	accepted	-	-
+RP02	sloppy	K	accepted	-	-
+RP03	sloppy	P	accepted	-	-
+RP03	sloppy	K	accepted	-	-
+RP04	sloppy	P	accepted	-	-
+RP04	sloppy	K	accepted	-	-
+RP05	sloppy	P	accepted	-	-
+RP05	sloppy	K	accepted	-	-
+#% end	10

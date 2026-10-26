@@ -1,0 +1,68 @@
+#% format	broiler-js-parse-corpus-report	1
+#% mode	acceptance
+#% tool	docs/evidence/sjl-12-001/tools/parse-corpus
+#% manifest-sha256	4654507bfe042022512052553a3508fb6c914574ff57d37b10fabd4c640419fe
+#% manifest-rows	17
+#% corpus	sjl13-probes-N
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% selection	all
+#% order	manifest
+#% threads	1
+#% thread-stack-bytes	268435456
+#% compile-stack-bytes	0	CompilationStack.SizeBytes: 0 compiles on the calling thread
+#% environment	TZ=UTC	LANG unset	LC_* unset	BROILER_* unset
+#% culture	(invariant)
+#% time-zone	UTC
+#% runtime	.NET 10.0.12
+#% os	Ubuntu 24.04.5 LTS X64
+#% processors	4
+#% context	JSContext(experimentalFeatures: JavaScriptFeatureFlags.AllExperimentalEs2026), one per thread
+#% strict-variant	the manifest's strict-prologue followed by the text
+#% source-names	virtual-root or stored-root followed by the path
+#% json-goal	the text unchanged at the entry points of every goal but module: ParseProgram, and CoreScript.Compile with isModule false
+#% assembly	Broiler.JavaScript.Ast	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	8cd8a85f-85ff-47c0-908e-ac230eac450e
+#% assembly	Broiler.JavaScript.Parser	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	cd76c4ea-d19e-4282-866f-d011fe85f925
+#% assembly	Broiler.JavaScript.Compiler	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	22136af2-9732-4651-88ae-c22cd35e54c9
+#% assembly	Broiler.JavaScript.Engine	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	497004ca-fd1b-4298-82f1-a8cddd75d56d
+#% assembly	Broiler.JavaScript.Runtime	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	f749a9c9-0285-4453-88a5-8ac4e1f660da
+#% rows	38
+id	variant	entry	outcome	type	message
+NP01	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 1
+NP01	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 1
+NP02	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 1
+NP02	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 1
+NP03	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 1
+NP03	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 1
+NP04	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 1
+NP04	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 1
+NP05	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 1
+NP05	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 1
+NP06	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 2, 5
+NP06	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 2, 5
+NP07	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 4, 1
+NP07	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 4, 1
+NP08	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 4
+NP08	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 4
+NP09	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 1, 9
+NP09	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 1, 9
+NP10	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 1, 13
+NP10	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 1, 13
+NP11	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 1, 2
+NP11	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 1, 2
+NP12	raw	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 2, 1
+NP12	raw	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 2, 1
+NP13	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 1
+NP13	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 1
+NP14	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 2, 3
+NP14	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 2, 3
+NP15	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unterminated string literal at 1, 6
+NP15	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unterminated string literal at 1, 6
+NP16	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 2, 7
+NP16	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 2, 7
+NP16	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 1, 7
+NP16	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 1, 7
+NP17	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 3
+NP17	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 3
+NP17	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 2, 3
+NP17	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 2, 3
+#% end	38

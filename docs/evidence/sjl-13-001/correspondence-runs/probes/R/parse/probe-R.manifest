@@ -1,0 +1,26 @@
+# SJL-13.1 task 1.1, sub-area R: request, switch and limit probes in the parse corpus's format 1 (conformance/parse/README.md),
+# read unchanged by Broiler.VM's --parse-corpus mode and Broiler.JS's SJL-12 parse-corpus tool. Probes, not a corpus.
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-R
+#% rows	7
+#% virtual-root	/test262/
+#% stored-root	/sjl13-R/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+RP06	broiler-vm	inputs/sjl13-R/rp06-member-chain-past-tree-bound.js	151ed81aacd4fd0e517c41c524eca72c30ffef5590c8efba9bc4681518c2b8f3	script	sloppy	-	no	sjl13 R reader: R13 control: a member chain one node past the tree-depth bound, no parentheses
+RP07	broiler-vm	inputs/sjl13-R/rp07-templates-nested-63.js	0fe500a904bcf872223e156fa3e5f52c2f380f7c40529925036b605efb9c7b16	script	sloppy	-	no	sjl13 R reader: R12: 63 nested templates (TemplateChecks NestingCountsTowardTheBound's past-the-bound text)
+RP08	broiler-vm	inputs/sjl13-R/rp08-templates-nested-600.js	1673239bbef2c65d084bdd27b668501ee15ad9c44140ea7e5eeac06cca100d3a	script	sloppy	-	no	sjl13 R reader: R12: 600 nested templates, past the largest nesting bound SliceParseOptions admits (512)
+RP09	broiler-vm	inputs/sjl13-R/rp09-parentheses-nested-600.js	1c6e50f1209dd5d515757bc4d0a5db9e4b755fd3754d89636a56e01d1bd38e59	script	sloppy	-	no	sjl13 R reader: R12: 600 nested parentheses, past the largest nesting bound SliceParseOptions admits (512)
+RP10	broiler-vm	inputs/sjl13-R/rp10-script-await-using-in-block.js	7152e12698f789c565d131b7d98632ac6e777809d976a74b3b480bc60270b94d	script	sloppy	parse:SyntaxError	no	sjl13 R reader: R05: await using in a block of a Script (no [+Await]): the parse Broiler.JS's shell retries with top-level await
+RP11	broiler-vm	inputs/sjl13-R/rp11-script-await-expression.js	1d48d2fb5ae6cf221fd7f9517f95c87209175050411ce398383e7aa3b1abf5ff	script	sloppy	parse:SyntaxError	no	sjl13 R reader: R05: an await expression at a Script's top level (await is an identifier there)
+RP12	broiler-vm	inputs/sjl13-R/rp12-regexp-groups-nested-600.js	1fb4e9816e26c408e05d6dd8dfd18677e3e1e145a29240f8510a928154e3ce10	script	sloppy	-	no	sjl13 R reader: R21: a regular-expression literal with 600 nested groups (the language sets no bound; Broiler.VM's matcher 512)

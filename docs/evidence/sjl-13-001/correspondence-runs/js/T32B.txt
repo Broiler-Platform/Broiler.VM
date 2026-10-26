@@ -1,0 +1,57 @@
+# probe T32B (js): input inputs/sjl13-T-tokens/t32b-escaped-contextual-keywords-as-names.js; its rows of reports/T-tokens-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/T/tokens/corpus.manifest --test262 <work>/t262 --out <runs>/js/reports/T-tokens-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	ff7f2867e38c03d0b916349df2ab598145247c5930d8a9b5c0941ea35b67dc87
+#% corpus	sjl13-T-tokens
+#% end	6
+id	variant	entry	outcome	type	message
+T32B	sloppy	P	accepted	-	-
+T32B	sloppy	K	accepted	-	-
+
+## JS-dump (part D, the tree's canonical dump hashes) (reports/T-tokens-dump.tsv)
+id	variant	slot	parse	parser-sha256	pass	pass-sha256
+T32B	sloppy	1	accepted	37f2ec59621d903a3e5db0447324a4d0df1683039d0f41fa9f58fb2e3c26679c	prepared	37f2ec59621d903a3e5db0447324a4d0df1683039d0f41fa9f58fb2e3c26679c
+
+## JS-dump text (reports/T-tokens-dump.txt)
+=== T32B sloppy 1 parser
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["of","async"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 2
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..16 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..11 IsStatement=false IsBinding=false WasParenthesized=false Name="of" inferenceName=null InferenceName="of"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @14..15 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [1]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @17..36 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @21..31 IsStatement=false IsBinding=false WasParenthesized=false Name="async" inferenceName=null InferenceName="async"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @34..35 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=2 StringValue="2" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+=== T32B sloppy 1 prepared
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["of","async"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 2
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..16 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..11 IsStatement=false IsBinding=false WasParenthesized=false Name="of" inferenceName=null InferenceName="of"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @14..15 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [1]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @17..36 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @21..31 IsStatement=false IsBinding=false WasParenthesized=false Name="async" inferenceName=null InferenceName="async"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @34..35 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=2 StringValue="2" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+
+## JS-tokens (reports/T32-tokens.txt)
+=== t32b-escaped-contextual-keywords-as-names.js
+0	Identifier	span="var"	at=0..3	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=1:1
+1	Identifier	span="\\u006ff"	at=4..11	cooked="of"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:5
+2	Assign	span="="	at=12..13	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:13
+3	Number	span="1"	at=14..15	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=1	start=1:15
+4	SemiColon	span=";"	at=15..16	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:16
+5	LineTerminator	span="\u000A"	at=16..17	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:17
+6	Identifier	span="var"	at=17..20	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=2:1
+7	Identifier	span="\\u0061sync"	at=21..31	cooked="async"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:5
+8	Assign	span="="	at=32..33	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:16
+9	Number	span="2"	at=34..35	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=2	start=2:18
+10	SemiColon	span=";"	at=35..36	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:19
+11	LineTerminator	span="\u000A"	at=36..37	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:20

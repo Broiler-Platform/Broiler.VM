@@ -1,0 +1,4 @@
+# probe TV-T06a (js): the line labelled T06a of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t-values.js 
+# exit=0
+T06a #! at a substitution start => THROWS SyntaxError: Unexpected token Negate: ! at 1, 5

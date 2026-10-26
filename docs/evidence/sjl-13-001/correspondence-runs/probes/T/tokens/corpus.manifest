@@ -1,0 +1,22 @@
+# SJL-13.1 task 1.1, sub-area T, row T32: token probes in the parse corpus's format 1 (conformance/parse/README.md),
+# read unchanged by Broiler.VM's --parse-corpus mode and Broiler.JS's SJL-12 parse-corpus tool. Probes, not a corpus.
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-T-tokens
+#% rows	3
+#% virtual-root	/test262/
+#% stored-root	/sjl13-T-tokens/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+T32A	broiler-vm	inputs/sjl13-T-tokens/t32a-escaped-identifiers-slice-path.js	61f602047eeeab767633a992929e0eac8a8758634b1c71e633c0b69baf646243	script	sloppy	-	no	T32: escaped identifiers in forms the slice path accepts (T040442, T040533, J001138), an unescaped control on line 1
+T32B	broiler-vm	inputs/sjl13-T-tokens/t32b-escaped-contextual-keywords-as-names.js	005c75cee930ea30257dff1c943d1fd2e7eee3369a285587cef6c56fcd3f7bb1	script	sloppy	-	no	T32: escaped contextual keywords used as binding names (the slice tokenizer's kind table is bypassed)
+T32C	broiler-vm	inputs/sjl13-T-tokens/t32c-escaped-string-literal.js	8e652ddb9dfab875d85a57339edb8591b963cc93a7283690fcdb92d0f0c94b18	script	sloppy	-	no	T32 control: a string literal written with an escape (J001493's form): SliceToken.IsEscaped is false on strings

@@ -1,0 +1,70 @@
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl13t/t-values.js --fuel 200000000000 --wall 600000 
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl13t/t-values.js [raw]  uncaught Error: OUT<<T01a U+0085 between tokens => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T01b U+FEFF between tokens => 2
+T01c U+180E between tokens => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T01d raw U+FFFF in a string => 3
+T01e raw U+FFFF in comments and a template => 3
+T01f raw U+FFFF in a regular expression => 3
+T06a #! at a substitution start => "1"
+T06b --> at a substitution start => "1"
+T06c --> at a line start in a substitution => "1"
+T07a <!-- holding } in a substitution => "1\u000a}"
+T07b --> holding } in a substitution => "1\u000a}"
+T08a typeof /}/ in a substitution => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T08b return /`/ in a substitution => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T11a "\u{000000000041}" => "A"
+T11b \u{000000000061} as a binding => 5
+T12a "\u{0_41}" => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T12b "\x_1" => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T12c tagged `\x_1`, cooked => undefined
+T12d untagged `\x_1` => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T13a "\x 1" => "\u0001"
+T13b "\u 041" => "A"
+T13c "\x1 ".length => 1
+T13d a\u 062 as a binding => 7
+T13e "\x<LF>1" => 1
+T13f tagged `\x 1`, cooked => undefined
+T14a legacy escapes, sloppy => "A| 0|8|9|\u0000x|\u00008"
+T14b line continuations => "abcdef"
+T14c raw LS and PS in a string => 5
+T17a 07.5 => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T17b 08.5 => 8.5
+T18a 1.5m => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T19a a ?.٣ : 0 => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T24a line terminator, then /b/g => 1
+T24a2 line comment, then /b/g => 1
+T24b object literal, then / 2 / 3 => 1
+T24c1 for-of over /a/g.exec => 1
+T24c2 extends /x/.constructor => "function"
+T24e ++/x/.lastIndex => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T24f await / 2 / 1 in a script => THROWS SyntaxError: the evaluated source is not a program this profile admits
+T24g1 yield /a/g in a generator => "a"
+T24g2 yield as a name in an arrow in a generator => 1
+T24g3 yield as a name outside a generator => 1
+T24h if head, then a regular expression => boolean true
+T26a /\u{1F600}/u.source => "\u005cu{1F600}"
+T26b /\u{61}/u.source => "\u005cu{61}"
+T26c /\u{D83D}/u.source => "\u005cu{D83D}"
+T28a String.raw after }} => "1}}x2}y"
+T28b cooked after }} => "|}}x|}y"
+T28c raw of a lone } part => "|}|"
+T28d String.raw, first part opening with }} => "}}a1">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl13t/t-values.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl13t  e.g. test/sjl13t/t-values.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl13t/t-values.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+# exit=1

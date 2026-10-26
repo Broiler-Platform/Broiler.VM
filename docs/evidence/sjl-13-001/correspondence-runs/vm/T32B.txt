@@ -1,0 +1,24 @@
+# probe T32B (vm): input inputs/sjl13-T-tokens/t32b-escaped-contextual-keywords-as-names.js; its rows of reports/T-tokens-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/tokens/corpus.manifest <runs>/vm/reports/T-tokens-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T-tokens
+#% manifest-sha256	ff7f2867e38c03d0b916349df2ab598145247c5930d8a9b5c0941ea35b67dc87
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T32B	B1	sloppy	bytecode	accepted	-	30585cde8f20d07e881f20db019c516f3824c5ea30408d63b1c1f71fec60bfd8	231	-
+T32B	B1	sloppy	native	accepted	-	cbe4fd362a533300b8639ff7408b6a105913ddf38cac0fdc21e629134856ee72	368	-
+T32B	B4	script	slice	accepted	-	25aa0f2b850147be8b2f8f69f6ef1cdacdb51332f016716d7eff97ff7126b1d1	110	-
+
+## VM-tokens (reports/T32-tokens.txt)
+=== t32b-escaped-contextual-keywords-as-names.js
+0	Var	raw="var"	source="var"	raw-is-source=yes	string=""	number=0	at=1:1	span=0..3	nl=false	octal=false	escaped=false	keyword-table=-
+1	Identifier	raw="of"	source="\\u006ff"	raw-is-source=no	string=""	number=0	at=1:5	span=4..11	nl=false	octal=false	escaped=true	keyword-table=Of
+2	Equals	raw="="	source="="	raw-is-source=yes	string=""	number=0	at=1:13	span=12..13	nl=false	octal=false	escaped=false	keyword-table=-
+3	NumericLiteral	raw="1"	source="1"	raw-is-source=yes	string=""	number=1	at=1:15	span=14..15	nl=false	octal=false	escaped=false	keyword-table=-
+4	Semicolon	raw=";"	source=";"	raw-is-source=yes	string=""	number=0	at=1:16	span=15..16	nl=false	octal=false	escaped=false	keyword-table=-
+5	Var	raw="var"	source="var"	raw-is-source=yes	string=""	number=0	at=2:1	span=17..20	nl=true	octal=false	escaped=false	keyword-table=-
+6	Identifier	raw="async"	source="\\u0061sync"	raw-is-source=no	string=""	number=0	at=2:5	span=21..31	nl=false	octal=false	escaped=true	keyword-table=Async
+7	Equals	raw="="	source="="	raw-is-source=yes	string=""	number=0	at=2:16	span=32..33	nl=false	octal=false	escaped=false	keyword-table=-
+8	NumericLiteral	raw="2"	source="2"	raw-is-source=yes	string=""	number=2	at=2:18	span=34..35	nl=false	octal=false	escaped=false	keyword-table=-
+9	Semicolon	raw=";"	source=";"	raw-is-source=yes	string=""	number=0	at=2:19	span=35..36	nl=false	octal=false	escaped=false	keyword-table=-
+10	EndOfSource	raw=""	source=""	raw-is-source=yes	string=""	number=0	at=3:1	span=37..37	nl=true	octal=false	escaped=false	keyword-table=-

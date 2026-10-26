@@ -1,0 +1,20 @@
+<!-- SJL-13.1 probe T32 (Broiler.VM). Copied by the probe runner to a scratch directory as vm-tokens.csproj and built
+     with -p:EngineBin=<the slice compiler's Release output of the Broiler.VM worktree at 4cf9ca4>, so the probe reads
+     the compiler assembly the VM-parse probes ran. No package is restored; nothing here is committed as a project. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- No deps file: the host then loads every assembly copied beside the probe, the compiler's dependencies included. -->
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Broiler.VM.Profile.JavaScript.Compiler">
+      <HintPath>$(EngineBin)/Broiler.VM.Profile.JavaScript.Compiler.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

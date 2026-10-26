@@ -1,0 +1,96 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-N
+#% manifest-sha256	4654507bfe042022512052553a3508fb6c914574ff57d37b10fabd4c640419fe
+#% manifest-rows	17
+#% archive-sha256	-
+#% populations	B1,B2,B3,B4
+#% selection	all
+#% compilations	79
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+NP01	B1	sloppy	bytecode	refused	2101:3:1	-	-	-
+NP01	B1	sloppy	native	refused	2101:3:1	-	-	-
+NP02	B1	sloppy	bytecode	refused	2101:3:1	-	-	-
+NP02	B1	sloppy	native	refused	2101:3:1	-	-	-
+NP03	B1	sloppy	bytecode	refused	2101:3:1	-	-	-
+NP03	B1	sloppy	native	refused	2101:3:1	-	-	-
+NP04	B1	sloppy	bytecode	refused	2101:3:1	-	-	-
+NP04	B1	sloppy	native	refused	2101:3:1	-	-	-
+NP05	B1	sloppy	bytecode	refused	2101:3:1	-	-	-
+NP05	B1	sloppy	native	refused	2101:3:1	-	-	-
+NP06	B1	sloppy	bytecode	refused	2101:2:5	-	-	-
+NP06	B1	sloppy	native	refused	2101:2:5	-	-	-
+NP07	B1	sloppy	bytecode	refused	2101:4:1	-	-	-
+NP07	B1	sloppy	native	refused	2101:4:1	-	-	-
+NP08	B1	sloppy	bytecode	refused	2101:3:4	-	-	-
+NP08	B1	sloppy	native	refused	2101:3:4	-	-	-
+NP09	B1	sloppy	bytecode	refused	2101:1:9	-	-	-
+NP09	B1	sloppy	native	refused	2101:1:9	-	-	-
+NP10	B1	sloppy	bytecode	refused	2101:1:13	-	-	-
+NP10	B1	sloppy	native	refused	2101:1:13	-	-	-
+NP11	B1	sloppy	bytecode	refused	2101:1:1	-	-	-
+NP11	B1	sloppy	native	refused	2101:1:1	-	-	-
+NP12	B1	raw	bytecode	refused	2101:2:1	-	-	-
+NP12	B1	raw	native	refused	2101:2:1	-	-	-
+NP13	B1	sloppy	bytecode	refused	2101:3:1	-	-	-
+NP13	B1	sloppy	native	refused	2101:3:1	-	-	-
+NP14	B1	sloppy	bytecode	refused	2101:2:3	-	-	-
+NP14	B1	sloppy	native	refused	2101:2:3	-	-	-
+NP15	B1	sloppy	bytecode	refused	2004:1:4	-	-	-
+NP15	B1	sloppy	native	refused	2004:1:4	-	-	-
+NP16	B1	strict	bytecode	refused	2101:1:7	-	-	-
+NP16	B1	strict	native	refused	2101:1:7	-	-	-
+NP16	B1	sloppy	bytecode	refused	2101:1:7	-	-	-
+NP16	B1	sloppy	native	refused	2101:1:7	-	-	-
+NP17	B1	strict	bytecode	refused	2101:2:3	-	-	-
+NP17	B1	strict	native	refused	2101:2:3	-	-	-
+NP17	B1	sloppy	bytecode	refused	2101:2:3	-	-	-
+NP17	B1	sloppy	native	refused	2101:2:3	-	-	-
+NP12	B3	E0	bytecode	refused	2101:2:1	-	-	-
+NP12	B3	E1	bytecode	refused	2101:2:1	-	-	-
+NP12	B3	E2	bytecode	refused	2101:2:1	-	-	-
+NP12	B3	E3	bytecode	refused	2101:2:1	-	-	-
+NP12	B3	E4	bytecode	refused	2101:2:1	-	-	-
+NP12	B3	E5	bytecode	refused	2101:2:1	-	-	-
+NP12	B3	E6	bytecode	refused	2101:2:1	-	-	-
+NP12	B3	E7	bytecode	refused	2101:2:1	-	-	-
+NP16	B3	E0	bytecode	refused	2101:1:7	-	-	-
+NP16	B3	E1	bytecode	refused	2101:1:7	-	-	-
+NP16	B3	E2	bytecode	refused	2101:1:7	-	-	-
+NP16	B3	E3	bytecode	refused	2101:1:7	-	-	-
+NP16	B3	E4	bytecode	refused	2101:1:7	-	-	-
+NP16	B3	E5	bytecode	refused	2101:1:7	-	-	-
+NP16	B3	E6	bytecode	refused	2101:1:7	-	-	-
+NP16	B3	E7	bytecode	refused	2101:1:7	-	-	-
+NP17	B3	E0	bytecode	refused	2101:2:3	-	-	-
+NP17	B3	E1	bytecode	refused	2101:2:3	-	-	-
+NP17	B3	E2	bytecode	refused	2101:2:3	-	-	-
+NP17	B3	E3	bytecode	refused	2101:2:3	-	-	-
+NP17	B3	E4	bytecode	refused	2101:2:3	-	-	-
+NP17	B3	E5	bytecode	refused	2101:2:3	-	-	-
+NP17	B3	E6	bytecode	refused	2101:2:3	-	-	-
+NP17	B3	E7	bytecode	refused	2101:2:3	-	-	-
+NP01	B4	script	slice	refused	2101:3:1	-	-	-
+NP02	B4	script	slice	refused	2101:3:1	-	-	-
+NP03	B4	script	slice	refused	2101:3:1	-	-	-
+NP04	B4	script	slice	refused	2101:3:1	-	-	-
+NP05	B4	script	slice	refused	2101:3:1	-	-	-
+NP06	B4	script	slice	refused	2101:2:5	-	-	-
+NP07	B4	script	slice	refused	2101:4:1	-	-	-
+NP08	B4	script	slice	refused	2101:3:4	-	-	-
+NP09	B4	script	slice	refused	2101:1:9	-	-	-
+NP10	B4	script	slice	refused	2101:1:13	-	-	-
+NP11	B4	script	slice	refused	2101:1:1	-	-	-
+NP12	B4	script	slice	refused	2101:2:1	-	-	-
+NP13	B4	script	slice	refused	2101:2:3	-	-	-
+NP14	B4	script	slice	refused	2104:1:1	-	-	-
+NP15	B4	script	slice	refused	2104:1:1	-	-	-
+NP16	B4	script	slice	refused	2101:1:7	-	-	-
+NP17	B4	script	slice	refused	2101:2:3	-	-	-

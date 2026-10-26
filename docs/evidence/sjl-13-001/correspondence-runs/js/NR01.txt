@@ -1,0 +1,7 @@
+# probe NR01 (js): stack-js.js through the shell
+# command (in <probes>/N/run): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host stack-js.js 
+Error: x
+    at f:<probes>/N/run/stack-js.js:2,3
+    at native:<probes>/N/run/stack-js.js:5,1
+
+# exit=0

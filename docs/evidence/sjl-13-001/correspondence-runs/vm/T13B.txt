@@ -1,0 +1,10 @@
+# probe T13B (vm): input inputs/sjl13-T/t13b-string-unicode-escape-leading-space.js; its rows of reports/T-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/parse/corpus.manifest <runs>/vm/reports/T-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T13B	B1	sloppy	bytecode	accepted	-	37f15309d739c0208bb91b847c239279c4706797e3a1f8978f4faa40058b1a70	177	-
+T13B	B1	sloppy	native	accepted	-	6280d8c29bf3e10ad81f1ef38776ac4ba9b87248250386107d462b4780241aef	314	-
+T13B	B4	script	slice	refused	2104:1:9	-	-	-

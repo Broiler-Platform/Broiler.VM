@@ -1,0 +1,10 @@
+# probe T06C (vm): input inputs/sjl13-T/t06c-html-close-at-line-start-in-substitution.js; its rows of reports/T-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/parse/corpus.manifest <runs>/vm/reports/T-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T06C	B1	sloppy	bytecode	accepted	-	81bc4e1fc83daffc7dfb15c38df3e4e8b49b093f50f2f65ba8d8d75f3a572a8d	235	-
+T06C	B1	sloppy	native	accepted	-	8344f950caf917622f3a08342ff37f8cc083fae0d29ea563ccdfa0ca7dbcabf0	459	-
+T06C	B4	script	slice	refused	2104:1:9	-	-	-

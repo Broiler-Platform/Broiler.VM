@@ -1,0 +1,5 @@
+# The correspondence's runs are retained byte for byte, as each folder's hashes.txt hashes them. Five probe inputs
+# hold CR LF or a lone CR, the line terminators their rows test, and two worktree logs hold the carriage returns a
+# tool printed. The repository's "* text=auto eol=lf" would rewrite those bytes and break the hashes, so nothing under
+# correspondence-runs/ is converted.
+correspondence-runs/** -text

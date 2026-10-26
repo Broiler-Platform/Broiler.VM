@@ -1,0 +1,12 @@
+# probe PP08 (vm): input inputs/rest-property-object-target.js; its rows of reports/P-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/P/probe-P.manifest <runs>/vm/reports/P-parse.tsv --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-P
+#% manifest-sha256	68e9a35ce102c61bc80729e6b20ad762f141efd0e2514a31b2736fb6baf606c9
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PP08	B1	strict	bytecode	accepted	-	d30fdb1c489bf058bae31626210ab6c29660f71f849a885aaf54621d8d9e7f0f	183	-
+PP08	B1	strict	native	accepted	-	bd9cdc73cb9cca384d3c74857a4dd191a4bed8ece361f2777c64e128e9fa39cc	320	-
+PP08	B1	sloppy	bytecode	accepted	-	041e7495632effcfbef0e2600187e7d541706117b52985a086b553a45f752717	183	-
+PP08	B1	sloppy	native	accepted	-	47f86902fdbe6e2373371c55cef59d6c330da0e86c3631135423042adbbd9a27	320	-
+PP08	B4	script	slice	refused	2205:1:9;2104:1:20	-	-	-

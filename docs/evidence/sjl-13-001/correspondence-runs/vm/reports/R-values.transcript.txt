@@ -1,0 +1,68 @@
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl13r/r-values.js --fuel 200000000000 --wall 600000 
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl13r/r-values.js [raw]  uncaught Error: OUT<<RE01 strict caller: var public => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE02 strict caller: legacy octal 010 => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE03 strict caller: with => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE04 sloppy caller control => 9
+RE05 strict caller: function public() {} => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE06 global code: eval new.target => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE07 global code: arrow, eval new.target => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE08 function: eval new.target => undefined
+RE09 constructed function: eval new.target === F => boolean true
+RE10 arrow in a function: eval new.target => undefined
+RE11 function: indirect eval new.target => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE12 function: nested direct eval new.target => undefined
+RE13 method: eval super property => boolean true
+RE14 plain function: eval super property => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE15 arrow in a method: eval super property => "function"
+RE16 getter: eval super property => "function"
+RE17 derived constructor: eval super() => 1
+RE18 arrow in a derived constructor: eval super() => 1
+RE19 base-class constructor: eval super() => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE20 derived class field initialiser: eval super() => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE21 object method: eval super() => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE22 field initialiser: eval arguments => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE23 field initialiser: eval an arrow reading arguments => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE24 field initialiser: eval a function reading its own arguments => 2
+RE25 method: eval arguments => 3
+RE26 static field initialiser: eval arguments => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE27 static block: eval new.target => undefined
+RE28 static block: eval super property => "function"
+RE29 static block: eval arguments => "object"
+RE30 method: eval this.#p (declared) => 7
+RE31 method: eval this.#q (not declared) => THROWS SyntaxError: the evaluated source names the private name #q, which no class enclosing the call declares
+RE32 no class: eval this.#p => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE33 static method: eval #p in o => boolean true
+RE34 nested class: eval reads the outer class private name => 1
+RE35 function let x, sloppy eval var x => THROWS SyntaxError: a direct eval cannot declare var x: a lexical declaration, or a parameter the evaluation's parameter list binds, of the same name lies between the call and its variable environment
+RE36 outer block let y, inner block sloppy eval var y => THROWS SyntaxError: a direct eval cannot declare var y: a lexical declaration, or a parameter the evaluation's parameter list binds, of the same name lies between the call and its variable environment
+RE37 strict caller: let x, eval var x => 1
+RE38 catch parameter e, sloppy eval var e => 2
+RE39 strict caller: Function body with and 010 => 8
+RE40 Function body: new.target => undefined
+RE41 Function body: super property => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE42 Function body in a class method: o.#p => THROWS SyntaxError: the evaluated source is not a program this profile admits
+RE43 strict caller: eval a class field named static => 1
+RE44 strict caller: eval a class field named public => 2
+RE45 sloppy caller control: eval a class field named static => 1
+RE46 strict caller control: eval o.public = 3 (after a dot) => 3
+RE47 strict caller: eval a static field named public => 4
+RE48 strict caller: eval assigns to the name public => THROWS SyntaxError: the evaluated source is not a program this profile admits>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl13r/r-values.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl13r  e.g. test/sjl13r/r-values.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl13r/r-values.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+# exit=1

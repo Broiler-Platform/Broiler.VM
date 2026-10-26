@@ -1,0 +1,4 @@
+# probe RE02 (vm): the line labelled RE02 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl13r/r-values.js --fuel 200000000000 --wall 600000 
+# exit=1
+RE02 strict caller: legacy octal 010 => THROWS SyntaxError: the evaluated source is not a program this profile admits

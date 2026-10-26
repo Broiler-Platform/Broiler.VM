@@ -1,0 +1,31 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-R
+#% manifest-sha256	8ceb3afd73288436a6fb5ff7fcf631ba6dde12b5038b2805d19d476d0260f32f
+#% manifest-rows	7
+#% archive-sha256	-
+#% populations	B1
+#% selection	all
+#% compilations	14
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+RP06	B1	sloppy	bytecode	refused	2103:2:9	-	-	-
+RP06	B1	sloppy	native	refused	2103:2:9	-	-	-
+RP07	B1	sloppy	bytecode	refused	2103:1:198	-	-	-
+RP07	B1	sloppy	native	refused	2103:1:198	-	-	-
+RP08	B1	sloppy	bytecode	refused	2103:1:198	-	-	-
+RP08	B1	sloppy	native	refused	2103:1:198	-	-	-
+RP09	B1	sloppy	bytecode	refused	2103:1:72;2102:1:72;2102:1:73;2102:1:74;2102:1:75;2102:1:76;2102:1:77;2102:1:78;2102:1:79;2102:1:80;2102:1:81;2102:1:82;2102:1:83;2102:1:84;2102:1:85;2102:1:86;2102:1:87;2102:1:88;2102:1:89;2102:1:90;2102:1:91;2102:1:92;2102:1:93;2102:1:94;2102:1:95;2102:1:96;2102:1:97;2102:1:98;2102:1:99;2102:1:100;2102:1:101;2102:1:102;2102:1:103;2102:1:104;2102:1:105;2102:1:106;2102:1:107;2102:1:108;2102:1:109;2102:1:110;2102:1:111;2102:1:112;2102:1:113;2102:1:114;2102:1:115;2102:1:116;2102:1:117;2102:1:118;2102:1:119;2102:1:120;2102:1:121;2102:1:122;2102:1:123;2102:1:124;2102:1:125;2102:1:126;2102:1:127;2102:1:128;2102:1:129;2102:1:130;2102:1:131;2102:1:132;2102:1:133;2102:1:134	-	-	-
+RP09	B1	sloppy	native	refused	2103:1:72;2102:1:72;2102:1:73;2102:1:74;2102:1:75;2102:1:76;2102:1:77;2102:1:78;2102:1:79;2102:1:80;2102:1:81;2102:1:82;2102:1:83;2102:1:84;2102:1:85;2102:1:86;2102:1:87;2102:1:88;2102:1:89;2102:1:90;2102:1:91;2102:1:92;2102:1:93;2102:1:94;2102:1:95;2102:1:96;2102:1:97;2102:1:98;2102:1:99;2102:1:100;2102:1:101;2102:1:102;2102:1:103;2102:1:104;2102:1:105;2102:1:106;2102:1:107;2102:1:108;2102:1:109;2102:1:110;2102:1:111;2102:1:112;2102:1:113;2102:1:114;2102:1:115;2102:1:116;2102:1:117;2102:1:118;2102:1:119;2102:1:120;2102:1:121;2102:1:122;2102:1:123;2102:1:124;2102:1:125;2102:1:126;2102:1:127;2102:1:128;2102:1:129;2102:1:130;2102:1:131;2102:1:132;2102:1:133;2102:1:134	-	-	-
+RP10	B1	sloppy	bytecode	refused	2102:1:9;2102:1:9	-	-	-
+RP10	B1	sloppy	native	refused	2102:1:9;2102:1:9	-	-	-
+RP11	B1	sloppy	bytecode	refused	2102:1:15	-	-	-
+RP11	B1	sloppy	native	refused	2102:1:15	-	-	-
+RP12	B1	sloppy	bytecode	refused	2101:1:9	-	-	-
+RP12	B1	sloppy	native	refused	2101:1:9	-	-	-

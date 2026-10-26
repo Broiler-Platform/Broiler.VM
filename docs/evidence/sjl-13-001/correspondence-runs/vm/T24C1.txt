@@ -1,0 +1,10 @@
+# probe T24C1 (vm): input inputs/sjl13-T/t24c1-for-of-regex.js; its rows of reports/T-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/parse/corpus.manifest <runs>/vm/reports/T-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T24C1	B1	sloppy	bytecode	accepted	-	c68111b9c8af0adc32f89aaf3709f5cb1d608fc3fa7d5c66b86c4e4d2d602087	261	-
+T24C1	B1	sloppy	native	accepted	-	4a7cf86dfc17fe2d66d6d3bf92f951b3015ef5c54f3092d56576417eba6c77a4	835	-
+T24C1	B4	script	slice	refused	2104:1:1;2104:1:24;2104:1:19;2104:1:15;2104:1:25	-	-	-

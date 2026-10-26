@@ -1,0 +1,12 @@
+# probe PP09 (js): input inputs/rest-property-array-target.js; its rows of reports/P-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/P/probe-P.manifest --test262 <work>/t262 --out <runs>/js/reports/P-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	68e9a35ce102c61bc80729e6b20ad762f141efd0e2514a31b2736fb6baf606c9
+#% corpus	sjl13-probes-P
+#% end	30
+id	variant	entry	outcome	type	message
+PP09	strict	P	accepted	-	-
+PP09	strict	K	crashed	System.NotImplementedException	The method or operation is not implemented.
+PP09	sloppy	P	accepted	-	-
+PP09	sloppy	K	crashed	System.NotImplementedException	The method or operation is not implemented.

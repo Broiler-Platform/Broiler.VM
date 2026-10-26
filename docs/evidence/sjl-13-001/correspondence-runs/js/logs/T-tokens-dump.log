@@ -1,0 +1,5 @@
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --dump --manifest <probes>/T/tokens/corpus.manifest --test262 <work>/t262 --out <runs>/js/reports/T-tokens-dump.tsv --text <runs>/js/reports/T-tokens-dump.txt 
+parse-corpus: for-loop pass found: Broiler.JavaScript.Compiler.ForLoopPreparation.Prepare(Broiler.JavaScript.Ast.AstProgram, System.Int32) : Broiler.JavaScript.Ast.AstProgram
+parse-corpus: 0/3
+parse-corpus: 3 input variant(s), 3 row(s), 0.3 s, written to <runs>/js/reports/T-tokens-dump.tsv
+# exit=0

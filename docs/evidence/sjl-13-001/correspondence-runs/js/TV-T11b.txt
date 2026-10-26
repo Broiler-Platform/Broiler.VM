@@ -1,0 +1,4 @@
+# probe TV-T11b (js): the line labelled T11b of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t-values.js 
+# exit=0
+T11b \u{000000000061} as a binding => 5

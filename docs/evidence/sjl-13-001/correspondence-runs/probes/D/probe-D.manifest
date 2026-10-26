@@ -1,0 +1,51 @@
+# Sub-area D's parse probes for SJL-13.1 task 1.1, in format 1 of the parse corpus's manifest (Broiler.JS
+# conformance/parse/README.md). Written by make_probes.py; every input is under inputs/ beside this file. Probes, not a corpus.
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-probes-D
+#% rows	30
+#% virtual-root	/test262/
+#% stored-root	/probes-D/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% eval-family-markers	eval	arguments	super	new.target	#
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+#% builder	hand-written (sjl13 D reader, make_probes.py)
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+PD01	broiler-vm	inputs/d01-label-set-continue.js	68d6da6327765d6d6842d6951f13a4ec977f644f98d692f8287ca23f64c4ae1b	script	strict,sloppy	-	no	sjl13 D reader: row D30 (continue names an outer label of a loop label set, which the specification admits)
+PD02	broiler-vm	inputs/d02-label-set-break.js	c5383a05f78d04c53a8e9d36937e2a267f181c0988347d786048322f989fda5e	script	strict,sloppy	-	no	sjl13 D reader: row D30 control (break names an outer label of a loop label set)
+PD03	broiler-vm	inputs/d03-new-target-field.js	b9735bdeadb50c9bb102649376e2b9ed620718fce4d85f710188fe4cdfb0193b	script	strict,sloppy	-	yes	sjl13 D reader: row D12-2 (new.target in a class field initializer at the top level)
+PD04	broiler-vm	inputs/d04-new-target-field-arrow.js	b198c33d84d53976123c45e1638be3a16326ab7df47ac6f5de1fc2b218b42bc3	script	strict,sloppy	-	yes	sjl13 D reader: row D12-2 (new.target in an arrow in a class field initializer at the top level)
+PD05	broiler-vm	inputs/d05-bigint-wide-literal.js	c093d155f895984289f6489281b8557bb9d97f313ebeeaa4ec16a455d12039c3	script	sloppy	-	no	sjl13 D reader: row D18-2 (a BigInt literal one bit wider than the format ceiling)
+PD06	broiler-vm	inputs/d06-bigint-wide-then-error.js	25bfcf7e78687958cfd70e5dd332ea5843b7807f3158d242b8bf0313242f0d4c	script	sloppy	parse:SyntaxError	no	sjl13 D reader: row D18-2 (the width refusal before a later language refusal)
+PD07	broiler-vm	inputs/d07-bigint-wide-key.js	0bafe71a4f8bc5f621890b91a623091f5f550c8bda8c8436040f134f1e5cbc6f	script	sloppy	-	no	sjl13 D reader: row D18-3 (a BigInt property key one bit wider than the format ceiling)
+PD08	broiler-vm	inputs/d08-error-after-duplicate.js	1d31ff2b74e2feb940b525b90492da6f8921f09ac73e63a883ec7fd2eb0e1cc2	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader: row D05 (a scope conflict followed by a later refusal in the same block)
+PD09	broiler-vm	inputs/d09-two-conflicts-one-scope.js	f549618ef1b681bc9ffaecb78b2da695921dae038010ccfd21034f5b16c59903	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader: row D04 (two conflicts in one scope)
+PD10	broiler-vm	inputs/d10-binder-all-errors.js	1a58ee6f7b052a9affbb720c8aee2d42278437ad28cf1ee42c1906c0739b26b6	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader: row D04 (two binder-stage refusals of one rule)
+PD11	broiler-vm	inputs/d11-break-cap.js	892403472616928f0ba24249cd93c78aef20298cf17df280b2b250d9aea12313	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader: row D03 (seventy refusals of one binder rule against the per-stage cap)
+PD12	broiler-vm	inputs/d12-tla-for-await.mjs	f98009a5af067dfbfe6114f4ffc3119056b44b125bb332733b1feadc60de78d2	module	module	-	no	sjl13 D reader: row D18-4 (for await at a module top level, under each tool s top-level-await setting)
+PD13	broiler-vm	inputs/d13-export-reserved-local.mjs	970e160c44800e9cb8f3e6fd1490fbe0eab80a4005bc54a3dc0196f0b090a44d	module	module	parse:SyntaxError	no	sjl13 D reader: row D20-B33 (an export clause naming a reserved word, EE0182)
+PD14	broiler-vm	inputs/d14-import-reserved-no-as.mjs	7f505a917d66a5e335ae872721c2dcf27d384c1295163e8e668e5ae55a391c61	module	module	parse:SyntaxError	no	sjl13 D reader: row D40 (an import specifier that is a reserved word, without as)
+PD15	broiler-vm	inputs/d15-import-string-no-as.mjs	0ea48d6fea310e3a541e021789bfba44106316bc8ae97249796add961573b15e	module	module	parse:SyntaxError	no	sjl13 D reader: row D40 (a string import specifier without as)
+PD16	broiler-vm	inputs/d16-function-private-name.js	ef0458ffe1f6f029bf4b9fea8a1fc4f722617ee5a8ba234cdde71e8b89636fbe	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader: row D12-6 (a private name as a function name: EX0008 2209 at a JsParser site that serves it alone)
+PD17	broiler-vm	inputs/d17-specifier-lone-surrogate.mjs	11d9f823ee3a65bddacc607cf5e218139880ec0b503a450196a056ac3cdc9a3b	module	module	-	no	sjl13 D reader: row D18-5 (a module specifier holding a lone surrogate, EX0029, an engine policy JsParser refuses during the parse)
+PD18	broiler-vm	inputs/d18-template-unterminated.js	9c2448a365318f3356717d8112e3f7ed3ff15945e20618e317df7982a761b574	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D43 (EX0007, a template literal with no closing backquote)
+PD19	broiler-vm	inputs/d19-template-tail-escape.js	90bdf244080c5dce484dc1815aded401558b4490b7356132058eb6a5e9dbf165	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D45 (EE0023, a NotEscapeSequence in the TemplateTail of an untagged template)
+PD20	broiler-vm	inputs/d20-template-middle-escape.js	d88f06f0117d713cbc761e68dcc8f1f180a12e8afc02252bfa1db6e087ce2168	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D45 (EE0024, a NotEscapeSequence in a TemplateMiddle of an untagged template)
+PD21	broiler-vm	inputs/d21-object-private-method-declared.js	df4e1fdbdec1e857bad1cf041793b2a8991e0edbfe0ab1b0f574193dfe270244	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D46 (EE0016, an object-literal method named by a private name the enclosing class declares)
+PD22	broiler-vm	inputs/d22-let-duplicate-binding.js	a3ef94a7b0328fafe8a01494593227c4d04f6e20e7371c6ca1b7f1c89e45041e	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D50 (EE0043, one let declaration binding a name twice)
+PD23	broiler-vm	inputs/d23-using-duplicate-binding.js	0cf8ee4f6e8a743cccd775c61b06ccfe14581b600a071e7649085e04b87b8cd4	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D50 (EP0002, one using declaration binding a name twice)
+PD24	broiler-vm	inputs/d24-catch-pattern-var.js	3e3bddb670c2d658b06560fb8eb9813bd19067e3a8fedf5c148888b607615aaf	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D50 (EE0067, a var naming a destructuring catch parameter, which Annex B.3.4 does not exempt)
+PD25	broiler-vm	inputs/d25-setter-pattern-duplicate.js	6bbc54446ffc4a98b71fa5b43206331f8d48d73574ba7678c9eb70f4dc1a8243	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D51 (EE0090, a setter parameter pattern binding a name twice)
+PD26	broiler-vm	inputs/d26-generator-eval-name-strict-body.js	096ba546ca4aa268a024e1559ef166d78f12a5e51207d1bacbb433dd9193cb60	script	sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D52 (EE0098, a generator named eval whose body is strict)
+PD27	broiler-vm	inputs/d27-label-duplicate-in-function.js	cf4b74100d403fb448cbf6898a5e328a9ff10aa28d67293ee313db53a3321c8b	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D53 (EE0080, a label nested inside itself in a function body)
+PD28	broiler-vm	inputs/d28-label-duplicate-in-script.js	ff53af3255d32d4e0dc0a9b9916cbaedbaf20192cac91a75d07d8e3e4101514b	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D53 (EE0164, a label nested inside itself at a script top level)
+PD29	broiler-vm	inputs/d29-class-two-constructors-in-case.js	71c142cba43b04dc4b6f447df39c7596efe7d2b8fe0040c296b40abc6bd153c0	script	strict,sloppy	parse:SyntaxError	no	sjl13 D reader GAP: row D55 (EE0122, a class with two constructors written in a case clause)
+PD30	broiler-vm	inputs/d30-strict-with-in-case.js	118f2ec3824854616c5b4cbc57ffc1166e1370ee3209848fda38cdb705ed31f3	script	strict	parse:SyntaxError	no	sjl13 D reader GAP: row D63 (EE0060, a with statement in strict code written in a case clause)

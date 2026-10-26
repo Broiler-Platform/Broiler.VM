@@ -1,0 +1,9 @@
+# probe RP07 (vm): input inputs/sjl13-R/rp07-templates-nested-63.js; its rows of reports/R-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/R/parse/probe-R.manifest <runs>/vm/reports/R-parse.tsv --populations B1 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-R
+#% manifest-sha256	8ceb3afd73288436a6fb5ff7fcf631ba6dde12b5038b2805d19d476d0260f32f
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+RP07	B1	sloppy	bytecode	refused	2103:1:198	-	-	-
+RP07	B1	sloppy	native	refused	2103:1:198	-	-	-

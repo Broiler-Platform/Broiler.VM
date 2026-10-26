@@ -1,0 +1,163 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-D
+#% manifest-sha256	0d7596c890bba137a82441e7b0efbe60d8fbdbbb612f1ae8e9572cb042fc82db
+#% manifest-rows	30
+#% archive-sha256	-
+#% populations	B1,B2,B3,B4
+#% selection	all
+#% compilations	146
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PD01	B1	strict	bytecode	refused	2208:2:21	-	-	-
+PD01	B1	strict	native	refused	2208:2:21	-	-	-
+PD01	B1	sloppy	bytecode	refused	2208:2:21	-	-	-
+PD01	B1	sloppy	native	refused	2208:2:21	-	-	-
+PD02	B1	strict	bytecode	accepted	-	9d3829cae660a268a61f2057447709ee897daae26b71b938c442340a10c217b7	155	-
+PD02	B1	strict	native	accepted	-	057571d2f6cc9de32e667bd691bda8c5437041d28e89bbaeffe799dfa98b6cf4	430	-
+PD02	B1	sloppy	bytecode	accepted	-	e91d812032332f566fe491e22d69c0ca953e225b754b6a0da9d6a75a9791e135	155	-
+PD02	B1	sloppy	native	accepted	-	a38e365a50a1638c64cfe3bc61c18af2ec16b7251fcda5d5b5530348ec96f612	430	-
+PD03	B1	strict	bytecode	refused	2101:1:15	-	-	-
+PD03	B1	strict	native	refused	2101:1:15	-	-	-
+PD03	B1	sloppy	bytecode	refused	2101:1:15	-	-	-
+PD03	B1	sloppy	native	refused	2101:1:15	-	-	-
+PD04	B1	strict	bytecode	refused	2101:1:21	-	-	-
+PD04	B1	strict	native	refused	2101:1:21	-	-	-
+PD04	B1	sloppy	bytecode	refused	2101:1:21	-	-	-
+PD04	B1	sloppy	native	refused	2101:1:21	-	-	-
+PD05	B1	sloppy	bytecode	refused	2104:1:9	-	-	-
+PD05	B1	sloppy	native	refused	2104:1:9	-	-	-
+PD06	B1	sloppy	bytecode	refused	2104:1:9	-	-	-
+PD06	B1	sloppy	native	refused	2104:1:9	-	-	-
+PD07	B1	sloppy	bytecode	refused	2104:1:4	-	-	-
+PD07	B1	sloppy	native	refused	2104:1:4	-	-	-
+PD08	B1	strict	bytecode	refused	2205:1:17	-	-	-
+PD08	B1	strict	native	refused	2205:1:17	-	-	-
+PD08	B1	sloppy	bytecode	refused	2205:1:17	-	-	-
+PD08	B1	sloppy	native	refused	2205:1:17	-	-	-
+PD09	B1	strict	bytecode	refused	2201:1:14	-	-	-
+PD09	B1	strict	native	refused	2201:1:14	-	-	-
+PD09	B1	sloppy	bytecode	refused	2201:1:14	-	-	-
+PD09	B1	sloppy	native	refused	2201:1:14	-	-	-
+PD10	B1	strict	bytecode	refused	2203:1:7;2203:1:16	-	-	-
+PD10	B1	strict	native	refused	2203:1:7;2203:1:16	-	-	-
+PD10	B1	sloppy	bytecode	refused	2203:1:7;2203:1:16	-	-	-
+PD10	B1	sloppy	native	refused	2203:1:7;2203:1:16	-	-	-
+PD11	B1	strict	bytecode	refused	2207:1:1;2207:2:1;2207:3:1;2207:4:1;2207:5:1;2207:6:1;2207:7:1;2207:8:1;2207:9:1;2207:10:1;2207:11:1;2207:12:1;2207:13:1;2207:14:1;2207:15:1;2207:16:1;2207:17:1;2207:18:1;2207:19:1;2207:20:1;2207:21:1;2207:22:1;2207:23:1;2207:24:1;2207:25:1;2207:26:1;2207:27:1;2207:28:1;2207:29:1;2207:30:1;2207:31:1;2207:32:1;2207:33:1;2207:34:1;2207:35:1;2207:36:1;2207:37:1;2207:38:1;2207:39:1;2207:40:1;2207:41:1;2207:42:1;2207:43:1;2207:44:1;2207:45:1;2207:46:1;2207:47:1;2207:48:1;2207:49:1;2207:50:1;2207:51:1;2207:52:1;2207:53:1;2207:54:1;2207:55:1;2207:56:1;2207:57:1;2207:58:1;2207:59:1;2207:60:1;2207:61:1;2207:62:1;2207:63:1;2207:64:1	-	-	-
+PD11	B1	strict	native	refused	2207:1:1;2207:2:1;2207:3:1;2207:4:1;2207:5:1;2207:6:1;2207:7:1;2207:8:1;2207:9:1;2207:10:1;2207:11:1;2207:12:1;2207:13:1;2207:14:1;2207:15:1;2207:16:1;2207:17:1;2207:18:1;2207:19:1;2207:20:1;2207:21:1;2207:22:1;2207:23:1;2207:24:1;2207:25:1;2207:26:1;2207:27:1;2207:28:1;2207:29:1;2207:30:1;2207:31:1;2207:32:1;2207:33:1;2207:34:1;2207:35:1;2207:36:1;2207:37:1;2207:38:1;2207:39:1;2207:40:1;2207:41:1;2207:42:1;2207:43:1;2207:44:1;2207:45:1;2207:46:1;2207:47:1;2207:48:1;2207:49:1;2207:50:1;2207:51:1;2207:52:1;2207:53:1;2207:54:1;2207:55:1;2207:56:1;2207:57:1;2207:58:1;2207:59:1;2207:60:1;2207:61:1;2207:62:1;2207:63:1;2207:64:1	-	-	-
+PD11	B1	sloppy	bytecode	refused	2207:1:1;2207:2:1;2207:3:1;2207:4:1;2207:5:1;2207:6:1;2207:7:1;2207:8:1;2207:9:1;2207:10:1;2207:11:1;2207:12:1;2207:13:1;2207:14:1;2207:15:1;2207:16:1;2207:17:1;2207:18:1;2207:19:1;2207:20:1;2207:21:1;2207:22:1;2207:23:1;2207:24:1;2207:25:1;2207:26:1;2207:27:1;2207:28:1;2207:29:1;2207:30:1;2207:31:1;2207:32:1;2207:33:1;2207:34:1;2207:35:1;2207:36:1;2207:37:1;2207:38:1;2207:39:1;2207:40:1;2207:41:1;2207:42:1;2207:43:1;2207:44:1;2207:45:1;2207:46:1;2207:47:1;2207:48:1;2207:49:1;2207:50:1;2207:51:1;2207:52:1;2207:53:1;2207:54:1;2207:55:1;2207:56:1;2207:57:1;2207:58:1;2207:59:1;2207:60:1;2207:61:1;2207:62:1;2207:63:1;2207:64:1	-	-	-
+PD11	B1	sloppy	native	refused	2207:1:1;2207:2:1;2207:3:1;2207:4:1;2207:5:1;2207:6:1;2207:7:1;2207:8:1;2207:9:1;2207:10:1;2207:11:1;2207:12:1;2207:13:1;2207:14:1;2207:15:1;2207:16:1;2207:17:1;2207:18:1;2207:19:1;2207:20:1;2207:21:1;2207:22:1;2207:23:1;2207:24:1;2207:25:1;2207:26:1;2207:27:1;2207:28:1;2207:29:1;2207:30:1;2207:31:1;2207:32:1;2207:33:1;2207:34:1;2207:35:1;2207:36:1;2207:37:1;2207:38:1;2207:39:1;2207:40:1;2207:41:1;2207:42:1;2207:43:1;2207:44:1;2207:45:1;2207:46:1;2207:47:1;2207:48:1;2207:49:1;2207:50:1;2207:51:1;2207:52:1;2207:53:1;2207:54:1;2207:55:1;2207:56:1;2207:57:1;2207:58:1;2207:59:1;2207:60:1;2207:61:1;2207:62:1;2207:63:1;2207:64:1	-	-	-
+PD12	B1	module	bytecode	accepted	-	7ed800705f577af9c085f0f51ba77ebb39ddf11e7fa177d1c66c4fb51daebd8f	296	-
+PD12	B1	module	native	accepted	-	94af2da65aad33431cd2cb604b22956284d55d3403b9930e7865c689dc3e65fc	1170	-
+PD13	B1	module	bytecode	refused	2403:1:10	-	-	-
+PD13	B1	module	native	refused	2403:1:10	-	-	-
+PD14	B1	module	bytecode	accepted	-	0b3c229ade710d81b0a2c179c4a31f15c4e6099699722fe5449696e04171e527	217	-
+PD14	B1	module	native	accepted	-	a4d49fcf48cf28e3218b4bd65b76152053b76de156e8d64403f2328a10efe852	440	-
+PD15	B1	module	bytecode	accepted	-	95bc9796f201b8393211e016156bff6525f92145120aa67029396416b95ee4fa	214	-
+PD15	B1	module	native	accepted	-	890d70b20a0006669244b9fce7c33ba3624671528cecc7b077e5cb9ee2e57661	437	-
+PD16	B1	strict	bytecode	refused	2209:1:10	-	-	-
+PD16	B1	strict	native	refused	2209:1:10	-	-	-
+PD16	B1	sloppy	bytecode	refused	2209:1:10	-	-	-
+PD16	B1	sloppy	native	refused	2209:1:10	-	-	-
+PD17	B1	module	bytecode	refused	2101:1:15	-	-	-
+PD17	B1	module	native	refused	2101:1:15	-	-	-
+PD18	B1	strict	bytecode	refused	2007:1:9	-	-	-
+PD18	B1	strict	native	refused	2007:1:9	-	-	-
+PD18	B1	sloppy	bytecode	refused	2007:1:9	-	-	-
+PD18	B1	sloppy	native	refused	2007:1:9	-	-	-
+PD19	B1	strict	bytecode	refused	2005:1:1	-	-	-
+PD19	B1	strict	native	refused	2005:1:1	-	-	-
+PD19	B1	sloppy	bytecode	refused	2005:1:1	-	-	-
+PD19	B1	sloppy	native	refused	2005:1:1	-	-	-
+PD20	B1	strict	bytecode	refused	2005:1:1	-	-	-
+PD20	B1	strict	native	refused	2005:1:1	-	-	-
+PD20	B1	sloppy	bytecode	refused	2005:1:1	-	-	-
+PD20	B1	sloppy	native	refused	2005:1:1	-	-	-
+PD21	B1	strict	bytecode	refused	2101:1:30	-	-	-
+PD21	B1	strict	native	refused	2101:1:30	-	-	-
+PD21	B1	sloppy	bytecode	refused	2101:1:30	-	-	-
+PD21	B1	sloppy	native	refused	2101:1:30	-	-	-
+PD22	B1	strict	bytecode	refused	2201:1:8	-	-	-
+PD22	B1	strict	native	refused	2201:1:8	-	-	-
+PD22	B1	sloppy	bytecode	refused	2201:1:8	-	-	-
+PD22	B1	sloppy	native	refused	2201:1:8	-	-	-
+PD23	B1	strict	bytecode	refused	2201:1:19	-	-	-
+PD23	B1	strict	native	refused	2201:1:19	-	-	-
+PD23	B1	sloppy	bytecode	refused	2201:1:19	-	-	-
+PD23	B1	sloppy	native	refused	2201:1:19	-	-	-
+PD24	B1	strict	bytecode	refused	2202:1:26	-	-	-
+PD24	B1	strict	native	refused	2202:1:26	-	-	-
+PD24	B1	sloppy	bytecode	refused	2202:1:26	-	-	-
+PD24	B1	sloppy	native	refused	2202:1:26	-	-	-
+PD25	B1	strict	bytecode	refused	2201:1:10	-	-	-
+PD25	B1	strict	native	refused	2201:1:10	-	-	-
+PD25	B1	sloppy	bytecode	refused	2201:1:10	-	-	-
+PD25	B1	sloppy	native	refused	2201:1:10	-	-	-
+PD26	B1	sloppy	bytecode	refused	2209:1:1	-	-	-
+PD26	B1	sloppy	native	refused	2209:1:1	-	-	-
+PD27	B1	strict	bytecode	refused	2201:1:21	-	-	-
+PD27	B1	strict	native	refused	2201:1:21	-	-	-
+PD27	B1	sloppy	bytecode	refused	2201:1:21	-	-	-
+PD27	B1	sloppy	native	refused	2201:1:21	-	-	-
+PD28	B1	strict	bytecode	refused	2201:1:6	-	-	-
+PD28	B1	strict	native	refused	2201:1:6	-	-	-
+PD28	B1	sloppy	bytecode	refused	2201:1:6	-	-	-
+PD28	B1	sloppy	native	refused	2201:1:6	-	-	-
+PD29	B1	strict	bytecode	refused	2201:1:49	-	-	-
+PD29	B1	strict	native	refused	2201:1:49	-	-	-
+PD29	B1	sloppy	bytecode	refused	2201:1:49	-	-	-
+PD29	B1	sloppy	native	refused	2201:1:49	-	-	-
+PD30	B1	strict	bytecode	refused	2101:1:22;2102:1:22	-	-	-
+PD30	B1	strict	native	refused	2101:1:22;2102:1:22	-	-	-
+PD03	B3	E0	bytecode	refused	2101:1:15	-	-	-
+PD03	B3	E1	bytecode	refused	2101:1:15	-	-	-
+PD03	B3	E2	bytecode	accepted	-	0680cb5a4927a80d5bcbb6716b9932d1c72aadb8cba77d74a8e3353d3ee37bd6	239	-
+PD03	B3	E3	bytecode	accepted	-	394fd26f69285a200ade1a4ef08d7514deab564ea26c136c9f1ad41ea0cd8f78	239	-
+PD03	B3	E4	bytecode	accepted	-	302ff09121acb9e408fe690f57f88209ed1f19f753d81b37afb86658ab9f6c41	239	-
+PD03	B3	E5	bytecode	accepted	-	589f7f0f8d6a22360d22e59f4b16269bc34487b3db32f1b48a6c0677c9280ddd	239	-
+PD03	B3	E6	bytecode	accepted	-	13dbb356f2b11824ee70db47534f7c0a08fc3bc844a617ceae103b64edeeac6b	239	-
+PD03	B3	E7	bytecode	accepted	-	ba3c5820f435172d260658e966001bae79b93e32ff980e73c55575507de6c884	239	-
+PD04	B3	E0	bytecode	refused	2101:1:21	-	-	-
+PD04	B3	E1	bytecode	refused	2101:1:21	-	-	-
+PD04	B3	E2	bytecode	accepted	-	b9723a05b4796efc6cad502f4f321201100b01af2e822112210c67be2cdf7694	267	-
+PD04	B3	E3	bytecode	accepted	-	3adfb4dbc06ba172a495ef0f74918218fdb9f548713e920514ccb18e4ce7221b	267	-
+PD04	B3	E4	bytecode	accepted	-	57c6bb18036a9b8557684ba15f4bbb8bae00cbb82ff28c66a908fb9107ca8adb	267	-
+PD04	B3	E5	bytecode	accepted	-	af40366a108eea0bbfc32c87a2e6e69bf1b6b0b7c475b430f4a8a9cf39455838	267	-
+PD04	B3	E6	bytecode	accepted	-	aebe357520715de40ac24fba02af27197e2921fb0c65d23c3e3dbb196aa3fa2b	267	-
+PD04	B3	E7	bytecode	accepted	-	bfbb472de3e75becbb63417643cacc7a9781b73ece891aa79ea9ac430f95bdf3	267	-
+PD01	B4	script	slice	refused	2104:2:1;2104:2:5;2104:2:21	-	-	-
+PD02	B4	script	slice	refused	2104:1:1;2104:1:5;2104:1:24	-	-	-
+PD03	B4	script	slice	refused	2104:1:1;2104:1:11;2104:1:15	-	-	-
+PD04	B4	script	slice	refused	2104:1:1;2104:1:11;2104:1:15;2104:1:21	-	-	-
+PD05	B4	script	slice	refused	2104:1:9	-	-	-
+PD06	B4	script	slice	refused	2104:1:9;2205:2:1	-	-	-
+PD07	B4	script	slice	refused	2104:1:2;2104:1:4	-	-	-
+PD08	B4	script	slice	refused	2201:1:14;2205:1:17	-	-	-
+PD09	B4	script	slice	refused	2201:1:14;2201:1:28	-	-	-
+PD10	B4	script	slice	refused	2203:1:7;2203:1:16	-	-	-
+PD11	B4	script	slice	refused	2207:1:1;2207:2:1;2207:3:1;2207:4:1;2207:5:1;2207:6:1;2207:7:1;2207:8:1;2207:9:1;2207:10:1;2207:11:1;2207:12:1;2207:13:1;2207:14:1;2207:15:1;2207:16:1;2207:17:1;2207:18:1;2207:19:1;2207:20:1;2207:21:1;2207:22:1;2207:23:1;2207:24:1;2207:25:1;2207:26:1;2207:27:1;2207:28:1;2207:29:1;2207:30:1;2207:31:1;2207:32:1;2207:33:1;2207:34:1;2207:35:1;2207:36:1;2207:37:1;2207:38:1;2207:39:1;2207:40:1;2207:41:1;2207:42:1;2207:43:1;2207:44:1;2207:45:1;2207:46:1;2207:47:1;2207:48:1;2207:49:1;2207:50:1;2207:51:1;2207:52:1;2207:53:1;2207:54:1;2207:55:1;2207:56:1;2207:57:1;2207:58:1;2207:59:1;2207:60:1;2207:61:1;2207:62:1;2207:63:1;2207:64:1;2207:65:1;2207:66:1;2207:67:1;2207:68:1;2207:69:1;2207:70:1	-	-	-
+PD12	B4	module	slice	refused	2104:1:1;2104:1:23;2104:2:1	-	-	-
+PD13	B4	module	slice	refused	2104:1:1	-	-	-
+PD14	B4	module	slice	refused	2104:1:1	-	-	-
+PD15	B4	module	slice	refused	2104:1:1	-	-	-
+PD16	B4	script	slice	refused	2104:1:1	-	-	-
+PD17	B4	module	slice	refused	2104:1:1	-	-	-
+PD18	B4	script	slice	refused	2007:1:9	-	-	-
+PD19	B4	script	slice	refused	2104:1:1	-	-	-
+PD20	B4	script	slice	refused	2104:1:1	-	-	-
+PD21	B4	script	slice	refused	2104:1:1;2104:1:11;2104:1:15;2104:1:21;2104:1:28;2104:1:30	-	-	-
+PD22	B4	script	slice	refused	2201:1:8	-	-	-
+PD23	B4	script	slice	refused	2102:1:9	-	-	-
+PD24	B4	script	slice	refused	2104:1:1;2104:1:15;2104:1:15;2206:1:16	-	-	-
+PD25	B4	script	slice	refused	2104:1:2;2104:1:4;2104:1:10;2104:1:10;2206:1:11;2206:1:14	-	-	-
+PD26	B4	script	slice	refused	2104:1:1;2104:1:20	-	-	-
+PD27	B4	script	slice	refused	2104:1:1;2104:1:16;2104:1:21	-	-	-
+PD28	B4	script	slice	refused	2104:1:1;2104:1:6	-	-	-
+PD29	B4	script	slice	refused	2104:1:1;2104:1:22;2104:1:32;2104:1:49	-	-	-
+PD30	B4	script	slice	refused	2104:1:1;2104:1:22;2104:1:28	-	-	-

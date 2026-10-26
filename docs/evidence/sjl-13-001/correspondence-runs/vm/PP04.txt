@@ -1,0 +1,10 @@
+# probe PP04 (vm): input inputs/attr-target.json; its rows of reports/P-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/P/probe-P.manifest <runs>/vm/reports/P-parse.tsv --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-P
+#% manifest-sha256	68e9a35ce102c61bc80729e6b20ad762f141efd0e2514a31b2736fb6baf606c9
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PP04	B1	json	bytecode	accepted	-	1e589abf12e7fdff517b8477ee012f0a5d2ee0219e241a40a9533cb0447f99d6	186	-
+PP04	B1	json	native	accepted	-	5dd2c677384b2e6e4df5f147acf5fae8b888f4043ab18fdbfc9017f5cce89021	409	-
+PP04	B4	json	slice	not-compiled	-	-	-	no-json-goal

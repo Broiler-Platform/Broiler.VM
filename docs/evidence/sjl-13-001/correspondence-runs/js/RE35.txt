@@ -1,0 +1,4 @@
+# probe RE35 (js): the line labelled RE35 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host r-values.js 
+# exit=0
+RE35 function let x, sloppy eval var x => THROWS SyntaxError: Invalid declaration in direct eval code

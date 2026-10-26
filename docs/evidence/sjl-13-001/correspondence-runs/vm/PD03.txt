@@ -1,0 +1,20 @@
+# probe PD03 (vm): input inputs/d03-new-target-field.js; its rows of reports/D-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/D/probe-D.manifest <runs>/vm/reports/D-parse.tsv --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-D
+#% manifest-sha256	0d7596c890bba137a82441e7b0efbe60d8fbdbbb612f1ae8e9572cb042fc82db
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PD03	B1	strict	bytecode	refused	2101:1:15	-	-	-
+PD03	B1	strict	native	refused	2101:1:15	-	-	-
+PD03	B1	sloppy	bytecode	refused	2101:1:15	-	-	-
+PD03	B1	sloppy	native	refused	2101:1:15	-	-	-
+PD03	B3	E0	bytecode	refused	2101:1:15	-	-	-
+PD03	B3	E1	bytecode	refused	2101:1:15	-	-	-
+PD03	B3	E2	bytecode	accepted	-	0680cb5a4927a80d5bcbb6716b9932d1c72aadb8cba77d74a8e3353d3ee37bd6	239	-
+PD03	B3	E3	bytecode	accepted	-	394fd26f69285a200ade1a4ef08d7514deab564ea26c136c9f1ad41ea0cd8f78	239	-
+PD03	B3	E4	bytecode	accepted	-	302ff09121acb9e408fe690f57f88209ed1f19f753d81b37afb86658ab9f6c41	239	-
+PD03	B3	E5	bytecode	accepted	-	589f7f0f8d6a22360d22e59f4b16269bc34487b3db32f1b48a6c0677c9280ddd	239	-
+PD03	B3	E6	bytecode	accepted	-	13dbb356f2b11824ee70db47534f7c0a08fc3bc844a617ceae103b64edeeac6b	239	-
+PD03	B3	E7	bytecode	accepted	-	ba3c5820f435172d260658e966001bae79b93e32ff980e73c55575507de6c884	239	-
+PD03	B4	script	slice	refused	2104:1:1;2104:1:11;2104:1:15	-	-	-

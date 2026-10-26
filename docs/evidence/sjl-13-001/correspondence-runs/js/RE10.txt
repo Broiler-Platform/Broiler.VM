@@ -1,0 +1,4 @@
+# probe RE10 (js): the line labelled RE10 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host r-values.js 
+# exit=0
+RE10 arrow in a function: eval new.target => undefined

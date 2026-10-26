@@ -1,0 +1,18 @@
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/R/parse/probe-R.manifest <runs>/vm/reports/R-parse.tsv --populations B1 --workers 1 
+broiler-js-slice-compiler: --parse-corpus 1 of 14
+broiler-js-slice-compiler: --parse-corpus 2 of 14
+broiler-js-slice-compiler: --parse-corpus 3 of 14
+broiler-js-slice-compiler: --parse-corpus 4 of 14
+broiler-js-slice-compiler: --parse-corpus 5 of 14
+broiler-js-slice-compiler: --parse-corpus 6 of 14
+broiler-js-slice-compiler: --parse-corpus 7 of 14
+broiler-js-slice-compiler: --parse-corpus 8 of 14
+broiler-js-slice-compiler: --parse-corpus 9 of 14
+broiler-js-slice-compiler: --parse-corpus 10 of 14
+broiler-js-slice-compiler: --parse-corpus 11 of 14
+broiler-js-slice-compiler: --parse-corpus 12 of 14
+broiler-js-slice-compiler: --parse-corpus 13 of 14
+broiler-js-slice-compiler: --parse-corpus 14 of 14
+broiler-js-slice-compiler: B1: refused 14
+broiler-js-slice-compiler: --parse-corpus reported 14 compilations of 7 inputs with 1 worker(s) in 0.3 s; 0 crashed
+# exit=0

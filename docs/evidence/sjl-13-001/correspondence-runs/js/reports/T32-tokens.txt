@@ -1,0 +1,53 @@
+# command (in <probes>/T/tokens/inputs/sjl13-T-tokens): dotnet <work>/js-tokens/out/js-tokens.dll t32a-escaped-identifiers-slice-path.js t32b-escaped-contextual-keywords-as-names.js t32c-escaped-string-literal.js 
+=== t32a-escaped-identifiers-slice-path.js
+0	Identifier	span="var"	at=0..3	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=1:1
+1	Identifier	span="implements"	at=4..14	cooked=null	keyword=true/implements	contextual=none	escaped-reserved=false	number=0	start=1:5
+2	Assign	span="="	at=15..16	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:16
+3	Number	span="1"	at=17..18	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=1	start=1:18
+4	SemiColon	span=";"	at=18..19	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:19
+5	LineTerminator	span="\u000A"	at=19..20	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:20
+6	Identifier	span="var"	at=20..23	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=2:1
+7	Identifier	span="impl\\u0065ments"	at=24..39	cooked="implements"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:5
+8	Assign	span="="	at=40..41	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:21
+9	Number	span="2"	at=42..43	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=2	start=2:23
+10	SemiColon	span=";"	at=43..44	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:24
+11	LineTerminator	span="\u000A"	at=44..45	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:25
+12	CurlyBracketStart	span="{"	at=45..46	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:1
+13	Identifier	span="let"	at=47..50	cooked=null	keyword=true/let	contextual=none	escaped-reserved=false	number=0	start=3:3
+14	Identifier	span="impl\\u0065ments"	at=51..66	cooked="implements"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:7
+15	Assign	span="="	at=67..68	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:23
+16	Number	span="4"	at=69..70	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=4	start=3:25
+17	SemiColon	span=";"	at=70..71	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:26
+18	CurlyBracketEnd	span="}"	at=72..73	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:28
+19	LineTerminator	span="\u000A"	at=73..74	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:29
+20	Identifier	span="var"	at=74..77	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=4:1
+21	Identifier	span="a\\u2118"	at=78..85	cooked="a\u2118"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=4:5
+22	SemiColon	span=";"	at=85..86	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=4:12
+23	LineTerminator	span="\u000A"	at=86..87	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=4:13
+24	Identifier	span="var"	at=87..90	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=5:1
+25	Identifier	span="\\u{16D40}"	at=91..100	cooked="\uD81B\uDD40"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=5:5
+26	Assign	span="="	at=101..102	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=5:15
+27	Number	span="1"	at=103..104	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=1	start=5:17
+28	SemiColon	span=";"	at=104..105	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=5:18
+29	LineTerminator	span="\u000A"	at=105..106	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=5:19
+=== t32b-escaped-contextual-keywords-as-names.js
+0	Identifier	span="var"	at=0..3	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=1:1
+1	Identifier	span="\\u006ff"	at=4..11	cooked="of"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:5
+2	Assign	span="="	at=12..13	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:13
+3	Number	span="1"	at=14..15	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=1	start=1:15
+4	SemiColon	span=";"	at=15..16	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:16
+5	LineTerminator	span="\u000A"	at=16..17	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:17
+6	Identifier	span="var"	at=17..20	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=2:1
+7	Identifier	span="\\u0061sync"	at=21..31	cooked="async"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:5
+8	Assign	span="="	at=32..33	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:16
+9	Number	span="2"	at=34..35	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=2	start=2:18
+10	SemiColon	span=";"	at=35..36	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:19
+11	LineTerminator	span="\u000A"	at=36..37	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:20
+=== t32c-escaped-string-literal.js
+0	Identifier	span="var"	at=0..3	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=1:1
+1	Identifier	span="s"	at=4..5	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:5
+2	Assign	span="="	at=6..7	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:7
+3	String	span="'it\\'s'"	at=8..15	cooked="it's"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:9
+4	SemiColon	span=";"	at=15..16	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:16
+5	LineTerminator	span="\u000A"	at=16..17	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:17
+# exit=0

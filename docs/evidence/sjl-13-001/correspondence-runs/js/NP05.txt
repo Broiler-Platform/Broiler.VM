@@ -1,0 +1,10 @@
+# probe NP05 (js): input inputs/ls-in-string.js; its rows of reports/N-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/N/probe-N.manifest --test262 <work>/t262 --out <runs>/js/reports/N-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	4654507bfe042022512052553a3508fb6c914574ff57d37b10fabd4c640419fe
+#% corpus	sjl13-probes-N
+#% end	38
+id	variant	entry	outcome	type	message
+NP05	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 1
+NP05	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 1

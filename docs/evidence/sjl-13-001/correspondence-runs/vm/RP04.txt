@@ -1,0 +1,9 @@
+# probe RP04 (vm): input inputs/sjl13-R-gap/rp04-gap-member-chain-first.js; its rows of reports/R-gap.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/R/parse/probe-R-gap.manifest <runs>/vm/reports/R-gap.tsv --populations B1 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-R-gap
+#% manifest-sha256	d8503fcf69dbfc8c673c3c0b372c35e3a7c8e7df908afc1760b29fbdf50fa5db
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+RP04	B1	sloppy	bytecode	accepted	-	bec42da725f20d9eda5c634e366fe6b88927de936ee53a315bfff922d6bf1005	91613	-
+RP04	B1	sloppy	native	accepted	-	0225189df273aea51c36516c3cab6a41db444858b852b119e02b17366ebb7076	91750	-

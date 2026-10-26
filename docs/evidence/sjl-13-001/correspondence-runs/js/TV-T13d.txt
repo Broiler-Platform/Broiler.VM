@@ -1,0 +1,4 @@
+# probe TV-T13d (js): the line labelled T13d of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t-values.js 
+# exit=0
+T13d a\u 062 as a binding => THROWS SyntaxError: Unexpected token Identifier: var at 1, 8

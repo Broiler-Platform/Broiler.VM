@@ -1,0 +1,4 @@
+# probe RE31 (vm): the line labelled RE31 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl13r/r-values.js --fuel 200000000000 --wall 600000 
+# exit=1
+RE31 method: eval this.#q (not declared) => THROWS SyntaxError: the evaluated source names the private name #q, which no class enclosing the call declares

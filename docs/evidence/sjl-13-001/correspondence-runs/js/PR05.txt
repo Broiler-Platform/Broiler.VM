@@ -1,0 +1,4 @@
+# probe PR05 (js): function-separate-parse-control.js through the shell
+# command (in <probes>/P/run): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host function-separate-parse-control.js 
+PR05 accepted 3
+# exit=0

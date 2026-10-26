@@ -1,0 +1,39 @@
+# probe T32A (vm): input inputs/sjl13-T-tokens/t32a-escaped-identifiers-slice-path.js; its rows of reports/T-tokens-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/tokens/corpus.manifest <runs>/vm/reports/T-tokens-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T-tokens
+#% manifest-sha256	ff7f2867e38c03d0b916349df2ab598145247c5930d8a9b5c0941ea35b67dc87
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T32A	B1	sloppy	bytecode	accepted	-	74e5863ab84dd681ec2746495543682dfe0bd1f44bb1cf468b87cb60a8b68495	290	-
+T32A	B1	sloppy	native	accepted	-	d6cf4431f85152ffb0db61412cbd9ec90d84e409666fde1af869825d7293283e	427	-
+T32A	B4	script	slice	accepted	-	58018897ae817ae9e4a74642c0b73becdada0f1dabd2c2eea17f2b8fc0f87ffb	146	-
+
+## VM-tokens (reports/T32-tokens.txt)
+=== t32a-escaped-identifiers-slice-path.js
+0	Var	raw="var"	source="var"	raw-is-source=yes	string=""	number=0	at=1:1	span=0..3	nl=false	octal=false	escaped=false	keyword-table=-
+1	Identifier	raw="implements"	source="implements"	raw-is-source=yes	string=""	number=0	at=1:5	span=4..14	nl=false	octal=false	escaped=false	keyword-table=Identifier
+2	Equals	raw="="	source="="	raw-is-source=yes	string=""	number=0	at=1:16	span=15..16	nl=false	octal=false	escaped=false	keyword-table=-
+3	NumericLiteral	raw="1"	source="1"	raw-is-source=yes	string=""	number=1	at=1:18	span=17..18	nl=false	octal=false	escaped=false	keyword-table=-
+4	Semicolon	raw=";"	source=";"	raw-is-source=yes	string=""	number=0	at=1:19	span=18..19	nl=false	octal=false	escaped=false	keyword-table=-
+5	Var	raw="var"	source="var"	raw-is-source=yes	string=""	number=0	at=2:1	span=20..23	nl=true	octal=false	escaped=false	keyword-table=-
+6	Identifier	raw="implements"	source="impl\\u0065ments"	raw-is-source=no	string=""	number=0	at=2:5	span=24..39	nl=false	octal=false	escaped=true	keyword-table=Identifier
+7	Equals	raw="="	source="="	raw-is-source=yes	string=""	number=0	at=2:21	span=40..41	nl=false	octal=false	escaped=false	keyword-table=-
+8	NumericLiteral	raw="2"	source="2"	raw-is-source=yes	string=""	number=2	at=2:23	span=42..43	nl=false	octal=false	escaped=false	keyword-table=-
+9	Semicolon	raw=";"	source=";"	raw-is-source=yes	string=""	number=0	at=2:24	span=43..44	nl=false	octal=false	escaped=false	keyword-table=-
+10	OpenBrace	raw="{"	source="{"	raw-is-source=yes	string=""	number=0	at=3:1	span=45..46	nl=true	octal=false	escaped=false	keyword-table=-
+11	Let	raw="let"	source="let"	raw-is-source=yes	string=""	number=0	at=3:3	span=47..50	nl=false	octal=false	escaped=false	keyword-table=-
+12	Identifier	raw="implements"	source="impl\\u0065ments"	raw-is-source=no	string=""	number=0	at=3:7	span=51..66	nl=false	octal=false	escaped=true	keyword-table=Identifier
+13	Equals	raw="="	source="="	raw-is-source=yes	string=""	number=0	at=3:23	span=67..68	nl=false	octal=false	escaped=false	keyword-table=-
+14	NumericLiteral	raw="4"	source="4"	raw-is-source=yes	string=""	number=4	at=3:25	span=69..70	nl=false	octal=false	escaped=false	keyword-table=-
+15	Semicolon	raw=";"	source=";"	raw-is-source=yes	string=""	number=0	at=3:26	span=70..71	nl=false	octal=false	escaped=false	keyword-table=-
+16	CloseBrace	raw="}"	source="}"	raw-is-source=yes	string=""	number=0	at=3:28	span=72..73	nl=false	octal=false	escaped=false	keyword-table=-
+17	Var	raw="var"	source="var"	raw-is-source=yes	string=""	number=0	at=4:1	span=74..77	nl=true	octal=false	escaped=false	keyword-table=-
+18	Identifier	raw="a\u2118"	source="a\\u2118"	raw-is-source=no	string=""	number=0	at=4:5	span=78..85	nl=false	octal=false	escaped=true	keyword-table=Identifier
+19	Semicolon	raw=";"	source=";"	raw-is-source=yes	string=""	number=0	at=4:12	span=85..86	nl=false	octal=false	escaped=false	keyword-table=-
+20	Var	raw="var"	source="var"	raw-is-source=yes	string=""	number=0	at=5:1	span=87..90	nl=true	octal=false	escaped=false	keyword-table=-
+21	Identifier	raw="\uD81B\uDD40"	source="\\u{16D40}"	raw-is-source=no	string=""	number=0	at=5:5	span=91..100	nl=false	octal=false	escaped=true	keyword-table=Identifier
+22	Equals	raw="="	source="="	raw-is-source=yes	string=""	number=0	at=5:15	span=101..102	nl=false	octal=false	escaped=false	keyword-table=-
+23	NumericLiteral	raw="1"	source="1"	raw-is-source=yes	string=""	number=1	at=5:17	span=103..104	nl=false	octal=false	escaped=false	keyword-table=-
+24	Semicolon	raw=";"	source=";"	raw-is-source=yes	string=""	number=0	at=5:18	span=104..105	nl=false	octal=false	escaped=false	keyword-table=-
+25	EndOfSource	raw=""	source=""	raw-is-source=yes	string=""	number=0	at=6:1	span=106..106	nl=true	octal=false	escaped=false	keyword-table=-

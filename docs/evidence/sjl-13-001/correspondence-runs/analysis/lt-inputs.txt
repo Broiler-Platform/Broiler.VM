@@ -1,0 +1,30 @@
+astral {('accepted', 'accepted'): 365, ('refused', 'refused'): 5}
+crlf {('accepted', 'accepted'): 20}
+feff {('accepted', 'accepted'): 6, ('refused', 'refused'): 3}
+lone-cr {('accepted', 'accepted'): 30, ('accepted', 'refused'): 1, ('refused', 'refused'): 3}
+ls-ps {('accepted', 'accepted'): 48, ('refused', 'refused'): 17}
+== astral
+   T041464:sloppy vm=2101:15:1 js=15,1 Unexpected token Divide: / at 15, 1
+   T041465:sloppy vm=2101:15:1 js=15,1 Unexpected token Divide: / at 15, 1
+   T041637:module vm=2101:21:17 js=- A module export name must be well-formed Unicode
+   J001445:sloppy vm=2001:1:1 js=1,1 Unexpected character '\uD83D\uDE00' (U+1F600) at 1
+   J001931:sloppy vm=2101:1:1 js=1,1 Unexpected token Divide: / at 1, 1
+== feff
+   T041356:sloppy vm=2101:19:1 js=19,1 Unexpected token Divide: / at 19, 1
+   T041378:sloppy vm=2101:19:1 js=19,1 Unexpected token Divide: / at 19, 1
+   T041408:sloppy vm=2101:19:1 js=19,1 Unexpected token Divide: / at 19, 1
+== lone-cr
+   T041050:sloppy vm=2102:17:7 js=17,7 Unexpected token Identifier: text at 17, 7
+   T041054:sloppy vm=2006:17:1 js=17,1 Unexpected token Divide: / at 17, 1
+   T041058:sloppy vm=2004:16:1 js=16,2 Unterminated string literal at 16, 2
+== lone-cr-differ
+   T040823:json vm=accepted - js=refused Unexpected token Colon: : at 4, 11
+== ls-ps
+   T039584:sloppy vm=2101:17:3 js=17,1 Unexpected token Decrement: -- at 17, 1 \u2014 the
+   T039585:sloppy vm=2101:17:3 js=17,1 Unexpected token Decrement: -- at 17, 1 \u2014 the
+   T039622:sloppy vm=2101:17:3 js=17,1 Unexpected token Increment: ++ at 17, 1 \u2014 the
+   T039623:sloppy vm=2101:17:3 js=17,1 Unexpected token Increment: ++ at 17, 1 \u2014 the
+   T041052:sloppy vm=2101:18:1 js=18,1 Unexpected token Coalesce: ?? at 18, 1
+   T041053:sloppy vm=2101:16:1 js=16,1 Unexpected token Coalesce: ?? at 16, 1
+   T041056:sloppy vm=2006:17:1 js=17,1 Unexpected token Divide: / at 17, 1
+   T041057:sloppy vm=2006:17:1 js=17,1 Unexpected token Divide: / at 17, 1

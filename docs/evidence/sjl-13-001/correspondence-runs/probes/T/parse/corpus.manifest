@@ -1,0 +1,63 @@
+# SJL-13.1 task 1.1, sub-area T: tokenizer probes in the parse corpus's format 1 (conformance/parse/README.md),
+# read unchanged by Broiler.VM's --parse-corpus mode and Broiler.JS's SJL-12 parse-corpus tool. Probes, not a corpus.
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-T
+#% rows	44
+#% virtual-root	/test262/
+#% stored-root	/sjl13-T/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+T06A	broiler-vm	inputs/sjl13-T/t06a-hashbang-at-substitution-start.js	ee4cfe97ab7a7327d352c75e15f914b3b5aa499cce00a57db34c05495ef3c030	script	sloppy	parse:SyntaxError	no	T6: #! after ${ is not a hashbang
+T06B	broiler-vm	inputs/sjl13-T/t06b-html-close-at-substitution-start.js	eee49eadb96faa79140bcb0183f147ae92028f9ec8426b04e132f3a605a69222	script	sloppy	parse:SyntaxError	no	T6: --> right after ${ is not at a line start
+T06C	broiler-vm	inputs/sjl13-T/t06c-html-close-at-line-start-in-substitution.js	10f81ea9d87b7b3acb52e189339d01f293deba250c0c582c2c3edfafb363d57b	script	sloppy	-	no	T6 control: --> at a line start inside a substitution
+T08A	broiler-vm	inputs/sjl13-T/t08a-typeof-regex-brace-in-substitution.js	9cb329331875f08b8afb42483c200da6e7042857db8bdcbe090b66f1b8433337	script	sloppy	-	no	T8: typeof /}/ inside a substitution
+T08B	broiler-vm	inputs/sjl13-T/t08b-return-regex-backtick-in-substitution.js	b406a5fb09866069023343e4a9aca90361f0dd8f35c65ca302a3470cc8db9322	script	sloppy	-	no	T8: return /`/ inside a substitution
+T09A	broiler-vm	inputs/sjl13-T/t09a-parse-error-before-lexical-error.js	79c456b06aa1c397925969e4501d55879f87a37916a78a41c2151e17a745d369	script	sloppy	parse:SyntaxError	no	T9: a parse error earlier in the text than a lexical error
+T09B	broiler-vm	inputs/sjl13-T/t09b-parse-error-before-decorator.js	0c6c9beefb8f5fb7cc2d5702cb4a5410665a749387388eaa621920f33e14cf26	script	sloppy	parse:SyntaxError	no	T9/T22: a parse error earlier in the text than an @
+T12A	broiler-vm	inputs/sjl13-T/t12a-string-braced-escape-underscore.js	7a30902b9b3ef4c0263ab24867ab9036b77a2241156170c9bdce2b7289cf3869	script	sloppy	parse:SyntaxError	no	T12: _ among the digits of \u{...}
+T12B	broiler-vm	inputs/sjl13-T/t12b-string-hex-escape-underscore.js	6009f4a5652d74bcb9ce78e52c124757df1766d341fa6f78455900cbb24f79fd	script	sloppy	parse:SyntaxError	no	T12: _ among the digits of \x
+T12C	broiler-vm	inputs/sjl13-T/t12c-template-hex-escape-underscore.js	e334e194f96d089fe51915426750d9e2137ed144e98eaceb0a2032fedcaabbdb	script	sloppy	parse:SyntaxError	no	T12: _ among the digits of \x in an untagged template
+T12E	broiler-vm	inputs/sjl13-T/t12e-string-unicode-escape-underscore.js	97634772cc98ba98773f949afa76eae78831a875b508cdfa478bd8bef0732625	script	sloppy	parse:SyntaxError	no	T12: _ among the four digits of \u
+T13A	broiler-vm	inputs/sjl13-T/t13a-string-hex-escape-leading-space.js	fa718ba71e6d1a3e18ab6eb4fd1688192f94d2433b91b1ce4dc1bfb2514a20a9	script	sloppy	parse:SyntaxError	no	T13: a space before the digits of \x
+T13B	broiler-vm	inputs/sjl13-T/t13b-string-unicode-escape-leading-space.js	df3cebcde4fe03ac543885568b5755b36213de53e6f18030e71576f94c535a05	script	sloppy	parse:SyntaxError	no	T13: a space before the digits of \u
+T13C	broiler-vm	inputs/sjl13-T/t13c-identifier-unicode-escape-leading-space.js	dc76f47493cc808d9da8f66972e754139d428007a137afdf773b9a6fbeab5583	script	sloppy	parse:SyntaxError	no	T13: a space before the digits of an identifier's \u
+T13D	broiler-vm	inputs/sjl13-T/t13d-string-hex-escape-trailing-space.js	e6c1c6e9fec33bdbf46cb56939dedbe9c6e145a96061df16e0289d8751d13fa6	script	sloppy	parse:SyntaxError	no	T13: a space after the one digit of \x
+T13E	broiler-vm	inputs/sjl13-T/t13e-template-hex-escape-leading-space.js	ffb09ac0897494a8f3d417ca5ae8437f21aa763b389cde130ed4a7d8954c369c	script	sloppy	parse:SyntaxError	no	T13 control: the same escape in an untagged template
+T13F	broiler-vm	inputs/sjl13-T/t13f-string-hex-escape-line-feed.js	5c5ddf8dfa9ef279d478787b394bb888059edf10f45947af4ee916dfb612a1e7	script	sloppy	parse:SyntaxError	no	T13: a line feed before the digit of \x, inside a string
+T16A	broiler-vm	inputs/sjl13-T/t16a-strict-legacy-octal-property-key.js	3810a9c5ea9187cd97e752186519f29590845c8ea314d9e852fcc25be4c7cd72	script	strict	parse:SyntaxError	no	T16: a legacy octal numeric property key in strict code
+T16B	broiler-vm	inputs/sjl13-T/t16b-class-legacy-octal-method-name.js	9ad50adf24b93b5b2e3568f6045ceb97eb4e0dd70ce1133202e661ba62f92adf	script	sloppy	parse:SyntaxError	no	T16: a legacy octal method name in a class body (strict)
+T16D	broiler-vm	inputs/sjl13-T/t16d-strict-non-octal-decimal-fraction.js	d67b4aee951f75db6268cca22da05360df0ec7360e4998bdd1399220d27a87d3	script	strict	parse:SyntaxError	no	T16: 08.5 in strict code
+T16E	broiler-vm	inputs/sjl13-T/t16e-strict-function-legacy-octal-key.js	640c66f67c639cc9700ed89242b3176e033f68f04fa36240bfe52edcd61691c5	script	sloppy	parse:SyntaxError	no	T16: a legacy octal key in a function whose body is strict
+T16F	broiler-vm	inputs/sjl13-T/t16f-strict-function-legacy-octal-value.js	4d0286279ce041a20e023b20c5884cc4dabab0e18b372d007578131d01eec064	script	sloppy	parse:SyntaxError	no	T16 control: a legacy octal value in a function whose body is strict
+T17A	broiler-vm	inputs/sjl13-T/t17a-legacy-octal-with-fraction.js	e68cc0e3a5b3236bbc8abc1302873050599f61a86c6d708ea3258248924108e9	script	sloppy	parse:SyntaxError	no	T17/hand-off H1: 07.5
+T17B	broiler-vm	inputs/sjl13-T/t17b-numeric-literal-touching-dollar.js	f78630b555d598ccd7c53135bb230f3567a9f674556b2462e327ecf3fc1d4fcc	script	sloppy	parse:SyntaxError	no	T17: an identifier start right after a numeric literal
+T18A	broiler-vm	inputs/sjl13-T/t18a-m-suffix.js	dd868f7c4c23fd97fd5f842a7d31ab3c0d1e8b0579dd94feacffde35c1e7f704	script	sloppy	parse:SyntaxError	no	T18: the m suffix
+T18B	broiler-vm	inputs/sjl13-T/t18b-m-suffix-on-a-leading-zero.js	52aa4429082e41e197d68c06c3291a2600c07769c048cd4ea986b2df3c79399a	script	sloppy	parse:SyntaxError	no	T18: the m suffix after a leading zero
+T18C	broiler-vm	inputs/sjl13-T/t18c-m-suffix-after-exponent.js	d5c5064bf7a22f93b9bd853c0495308261707831a915b4f40fc6ded454869215	script	sloppy	parse:SyntaxError	no	T18: the m suffix after an exponent
+T19A	broiler-vm	inputs/sjl13-T/t19a-optional-chain-before-arabic-indic-digit.js	eedb5b75fa252ef48670c078a459bd5584be7abe5fddff91dd9568fcddb42d50	script	sloppy	parse:SyntaxError	no	T19: ?. before U+0663
+T19B	broiler-vm	inputs/sjl13-T/t19b-dot-before-arabic-indic-digit.js	23b89c682e66b90345e42fe790fd264e004a1c823aaffceda6f0ae9723bd8c56	script	sloppy	parse:SyntaxError	no	T19: . before U+0663
+T20A	broiler-vm	inputs/sjl13-T/t20a-two-dots.js	de97bd61dada9b680c735861dc8020f24ef18ecde1a6827928e854194074e2f6	script	sloppy	parse:SyntaxError	no	T20: .. is no punctuator
+T24B	broiler-vm	inputs/sjl13-T/t24b-object-literal-then-division.js	8493559fc8482c68d7200b3e583c5e1f4919babbda82fc317eea48a5294157f2	script	sloppy	-	no	T24b: } closing an object literal, then / on the same line
+T24B2	broiler-vm	inputs/sjl13-T/t24b2-function-expression-then-division.js	b747088a223d4c0f6fc8fc8f74139d70893c6d388a7f87b893fa956feeef520c	script	sloppy	-	no	T24b: } closing a function expression, then /
+T24C1	broiler-vm	inputs/sjl13-T/t24c1-for-of-regex.js	9255bf5fe8d626c41f1ec3cc4d478d52e199d1c875de288d0be51a681b7bc6b9	script	sloppy	-	no	T24c: a regular expression after of
+T24C2	broiler-vm	inputs/sjl13-T/t24c2-extends-regex.js	02387346562b6c74e3e3a988032467ba94d6b0ccbfd77d6b00eb3c132227e5d6	script	sloppy	-	no	T24c: a regular expression after extends
+T24C3	broiler-vm	inputs/sjl13-T/t24c3-export-default-regex.mjs	34fe2a0c94fd44bb4c409a274ac0a01e716518cfda25c8a1a42bed668a1bdb9a	module	module	-	no	T24c: a regular expression after export default
+T24D	broiler-vm	inputs/sjl13-T/t24d-for-await-head-then-regex.js	8772290e1ddc4a6fefedd819ed7df7d101c3f59b0ea6d5f74c36a31d5b8e6821	script	sloppy	-	no	T24d: a regular expression after a for-await head
+T24E	broiler-vm	inputs/sjl13-T/t24e-prefix-increment-regex.js	34f364d19dff43baa1953f344c05daa191fd14d807fba942dfbb0becdf3ae88d	script	sloppy	-	no	T24e: a regular expression after prefix ++
+T24F	broiler-vm	inputs/sjl13-T/t24f-await-identifier-then-division.js	55c58661628dffb6cc37d08a5c411d99a4991a926d8682aa6b2471c6b14c48ff	script	sloppy	-	no	T24f: / after await used as an identifier
+T24G1	broiler-vm	inputs/sjl13-T/t24g1-yield-regex-in-generator.js	8cb812eab2b0bcc2d3aab02b63728893cef81188f212444cd133a0e1f284a941	script	sloppy	-	no	T24g: yield /a/g in a generator
+T24G2	broiler-vm	inputs/sjl13-T/t24g2-yield-division-in-arrow-in-generator.js	496c67eefd27237114e1ba93463ca3625779c1eda3e32cc75a2962cfb0a79ca4	script	sloppy	-	no	T24g: yield as a name in an arrow inside a generator
+T24G3	broiler-vm	inputs/sjl13-T/t24g3-yield-identifier-division.js	bfc5fbbf4fb7b1de05886a79223355ec41b5a9b95792c7bc39bd2e8505c4ab86	script	sloppy	-	no	T24g: yield as a name outside a generator
+T24H	broiler-vm	inputs/sjl13-T/t24h-statement-head-then-regex.js	80c792ce37805c7abe87ea6bdf3b2c3c5b0770a712fb3d471377c5324053fbf9	script	sloppy	-	no	T24h control: regular expressions after statement heads, a block and a function declaration
+T30A	broiler-vm	inputs/sjl13-T/t30a-html-close-comment-slice-path.js	c03bb4734f54053964c3cc602ec24f02af642b71565abb1d7b5495027ee94f68	script	sloppy	-	no	T30: --> at a line start in a script the slice front end otherwise admits
+T30B	broiler-vm	inputs/sjl13-T/t30b-html-open-comment-slice-path.js	d90e64c2454eefc2f98a4019eae92eaf606fc56277d2cc677807e6c17055e6ec	script	sloppy	-	no	T30: <!-- in a script the slice front end otherwise admits

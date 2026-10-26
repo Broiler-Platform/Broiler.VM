@@ -1,0 +1,4 @@
+# probe PR06 (js): PR06-arrow-await-not-tla.js through the shell
+# command (in <work>/js-mod): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --module-host --preload preload.js PR06-arrow-await-not-tla.js 
+Test262:AsyncTestComplete
+# exit=0

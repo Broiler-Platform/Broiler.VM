@@ -1,0 +1,10 @@
+# probe PD05 (js): input inputs/d05-bigint-wide-literal.js; its rows of reports/D-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/D/probe-D.manifest --test262 <work>/t262 --out <runs>/js/reports/D-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	0d7596c890bba137a82441e7b0efbe60d8fbdbbb612f1ae8e9572cb042fc82db
+#% corpus	sjl13-probes-D
+#% end	100
+id	variant	entry	outcome	type	message
+PD05	sloppy	P	accepted	-	-
+PD05	sloppy	K	accepted	-	-

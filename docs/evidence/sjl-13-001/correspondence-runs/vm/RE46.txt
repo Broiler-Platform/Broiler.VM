@@ -1,0 +1,4 @@
+# probe RE46 (vm): the line labelled RE46 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl13r/r-values.js --fuel 200000000000 --wall 600000 
+# exit=1
+RE46 strict caller control: eval o.public = 3 (after a dot) => 3

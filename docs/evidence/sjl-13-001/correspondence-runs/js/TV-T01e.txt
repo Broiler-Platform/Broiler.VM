@@ -1,0 +1,4 @@
+# probe TV-T01e (js): the line labelled T01e of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t-values.js 
+# exit=0
+T01e raw U+FFFF in comments and a template => 3

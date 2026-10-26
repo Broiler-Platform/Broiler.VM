@@ -1,0 +1,21 @@
+# probe T32C (vm): input inputs/sjl13-T-tokens/t32c-escaped-string-literal.js; its rows of reports/T-tokens-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/tokens/corpus.manifest <runs>/vm/reports/T-tokens-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T-tokens
+#% manifest-sha256	ff7f2867e38c03d0b916349df2ab598145247c5930d8a9b5c0941ea35b67dc87
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T32C	B1	sloppy	bytecode	accepted	-	3dfffc167ace9b7d949af6a0d113ee0f998c0e4ea131744c18b98351282dd31c	181	-
+T32C	B1	sloppy	native	accepted	-	598565d6b829e788c77722c0bcdf2702273e38ea9e955c0ba612b299cd6bbf39	318	-
+T32C	B4	script	slice	refused	2104:1:9	-	-	-
+
+## VM-tokens (reports/T32-tokens.txt)
+=== t32c-escaped-string-literal.js
+0	Var	raw="var"	source="var"	raw-is-source=yes	string=""	number=0	at=1:1	span=0..3	nl=false	octal=false	escaped=false	keyword-table=-
+1	Identifier	raw="s"	source="s"	raw-is-source=yes	string=""	number=0	at=1:5	span=4..5	nl=false	octal=false	escaped=false	keyword-table=Identifier
+2	Equals	raw="="	source="="	raw-is-source=yes	string=""	number=0	at=1:7	span=6..7	nl=false	octal=false	escaped=false	keyword-table=-
+3	StringLiteral	raw="'it\\'s'"	source="'it\\'s'"	raw-is-source=yes	string="it's"	number=0	at=1:9	span=8..15	nl=false	octal=false	escaped=false	keyword-table=-
+4	Semicolon	raw=";"	source=";"	raw-is-source=yes	string=""	number=0	at=1:16	span=15..16	nl=false	octal=false	escaped=false	keyword-table=-
+5	EndOfSource	raw=""	source=""	raw-is-source=yes	string=""	number=0	at=2:1	span=17..17	nl=true	octal=false	escaped=false	keyword-table=-
+# exit=0
+

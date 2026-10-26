@@ -1,0 +1,26 @@
+# broiler-js-conformance test262 report 2
+# run|suite|revision|upstream|upstreamRevision|shardIndex|shardCount|partition
+# edition|standard|year|source|revision|document|digest|archived
+# manifest|id|formatVersion|harness|admitted|declined
+# allowance|fuel|wallClockMs
+# narrowing|reason
+# selection|candidates|selected|sharded|files
+# coverage|whole, or partial and why
+# total|files|variants|passed|failed|unsupported|exhausted|skipped
+# family|name|count|example
+# exhausted|dimension|count|example
+# failure|kind|count|example
+# area|directory|count|example
+# feature|name|count|example
+# result|path|variant|verdict|family|dimension|kind|features|detail
+# config|failure|detail
+edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+run|test262|unpinned|-|-|-1|1|FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard
+manifest|broiler.javascript.wide|2|loaded|broiler.javascript.bigint,broiler.javascript.binary,broiler.javascript.dynamic,broiler.javascript.intl,broiler.javascript.modules,broiler.javascript.native,broiler.javascript.shadowrealm,broiler.javascript.shared,broiler.javascript.temporal|-
+allowance|200000000000|600000
+narrowing|a named selection rather than the whole test tree: test/sjl13-P/PR04-eval-using-top.js
+selection|1|1|1|1
+coverage|partial|a named selection rather than the whole test tree: test/sjl13-P/PR04-eval-using-top.js; configuration failure MissingSuiteRevision
+total|1|1|1|0|0|0|0
+result|test/sjl13-P/PR04-eval-using-top.js|raw|Passed||||explicit-resource-management|threw SyntaxError
+config|MissingSuiteRevision|suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing

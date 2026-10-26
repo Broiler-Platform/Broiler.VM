@@ -1,0 +1,100 @@
+=== T32A sloppy 1 parser
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["implements","a\u2118","\uD81B\uDD40"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 5
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..19 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..14 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @17..18 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [1]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @20..44 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @24..39 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @42..43 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=2 StringValue="2" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [2]: Broiler.JavaScript.Ast.AstBlock Block @47..73 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["implements"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false
+3 Statements: list 1
+4 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @47..71 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Let Using=false AwaitUsing=false
+5 Declarators: list 1
+6 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+7 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @51..66 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+7 Init: Broiler.JavaScript.Ast.AstLiteral Literal @69..70 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=4 StringValue="4" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [3]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @74..86 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator Init=null
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @78..85 IsStatement=false IsBinding=false WasParenthesized=false Name="a\u2118" inferenceName=null InferenceName="a\u2118"
+2 [4]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @87..105 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @91..100 IsStatement=false IsBinding=false WasParenthesized=false Name="\uD81B\uDD40" inferenceName=null InferenceName="\uD81B\uDD40"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @103..104 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+=== T32A sloppy 1 prepared
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["implements","a\u2118","\uD81B\uDD40"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 5
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..19 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..14 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @17..18 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [1]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @20..44 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @24..39 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @42..43 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=2 StringValue="2" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [2]: Broiler.JavaScript.Ast.AstBlock Block @47..73 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["implements"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false
+3 Statements: list 1
+4 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @47..71 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Let Using=false AwaitUsing=false
+5 Declarators: list 1
+6 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+7 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @51..66 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+7 Init: Broiler.JavaScript.Ast.AstLiteral Literal @69..70 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=4 StringValue="4" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [3]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @74..86 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator Init=null
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @78..85 IsStatement=false IsBinding=false WasParenthesized=false Name="a\u2118" inferenceName=null InferenceName="a\u2118"
+2 [4]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @87..105 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @91..100 IsStatement=false IsBinding=false WasParenthesized=false Name="\uD81B\uDD40" inferenceName=null InferenceName="\uD81B\uDD40"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @103..104 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+=== T32B sloppy 1 parser
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["of","async"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 2
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..16 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..11 IsStatement=false IsBinding=false WasParenthesized=false Name="of" inferenceName=null InferenceName="of"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @14..15 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [1]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @17..36 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @21..31 IsStatement=false IsBinding=false WasParenthesized=false Name="async" inferenceName=null InferenceName="async"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @34..35 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=2 StringValue="2" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+=== T32B sloppy 1 prepared
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["of","async"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 2
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..16 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..11 IsStatement=false IsBinding=false WasParenthesized=false Name="of" inferenceName=null InferenceName="of"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @14..15 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [1]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @17..36 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @21..31 IsStatement=false IsBinding=false WasParenthesized=false Name="async" inferenceName=null InferenceName="async"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @34..35 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=2 StringValue="2" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+=== T32C sloppy 1 parser
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["s"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 1
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..16 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..5 IsStatement=false IsBinding=false WasParenthesized=false Name="s" inferenceName=null InferenceName="s"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @8..15 IsStatement=false IsBinding=false WasParenthesized=false TokenType=String NumericValue=0 StringValue="it's" Regex=System.ValueTuple<System.String,System.String>(Item1="it's",Item2=null)
+=== T32C sloppy 1 prepared
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["s"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 1
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..16 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..5 IsStatement=false IsBinding=false WasParenthesized=false Name="s" inferenceName=null InferenceName="s"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @8..15 IsStatement=false IsBinding=false WasParenthesized=false TokenType=String NumericValue=0 StringValue="it's" Regex=System.ValueTuple<System.String,System.String>(Item1="it's",Item2=null)

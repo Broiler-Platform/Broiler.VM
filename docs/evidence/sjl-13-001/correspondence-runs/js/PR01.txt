@@ -1,0 +1,4 @@
+# probe PR01 (js): function-params-comment.js through the shell
+# command (in <probes>/P/run): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host function-params-comment.js 
+PR01 threw SyntaxError
+# exit=0

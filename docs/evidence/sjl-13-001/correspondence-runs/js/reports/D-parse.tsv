@@ -1,0 +1,130 @@
+#% format	broiler-js-parse-corpus-report	1
+#% mode	acceptance
+#% tool	docs/evidence/sjl-12-001/tools/parse-corpus
+#% manifest-sha256	0d7596c890bba137a82441e7b0efbe60d8fbdbbb612f1ae8e9572cb042fc82db
+#% manifest-rows	30
+#% corpus	sjl13-probes-D
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% selection	all
+#% order	manifest
+#% threads	1
+#% thread-stack-bytes	268435456
+#% compile-stack-bytes	0	CompilationStack.SizeBytes: 0 compiles on the calling thread
+#% environment	TZ=UTC	LANG unset	LC_* unset	BROILER_* unset
+#% culture	(invariant)
+#% time-zone	UTC
+#% runtime	.NET 10.0.12
+#% os	Ubuntu 24.04.5 LTS X64
+#% processors	4
+#% context	JSContext(experimentalFeatures: JavaScriptFeatureFlags.AllExperimentalEs2026), one per thread
+#% strict-variant	the manifest's strict-prologue followed by the text
+#% source-names	virtual-root or stored-root followed by the path
+#% json-goal	the text unchanged at the entry points of every goal but module: ParseProgram, and CoreScript.Compile with isModule false
+#% assembly	Broiler.JavaScript.Ast	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	8cd8a85f-85ff-47c0-908e-ac230eac450e
+#% assembly	Broiler.JavaScript.Parser	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	cd76c4ea-d19e-4282-866f-d011fe85f925
+#% assembly	Broiler.JavaScript.Compiler	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	22136af2-9732-4651-88ae-c22cd35e54c9
+#% assembly	Broiler.JavaScript.Engine	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	497004ca-fd1b-4298-82f1-a8cddd75d56d
+#% assembly	Broiler.JavaScript.Runtime	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	f749a9c9-0285-4453-88a5-8ac4e1f660da
+#% rows	100
+id	variant	entry	outcome	type	message
+PD01	strict	P	accepted	-	-
+PD01	strict	K	accepted	-	-
+PD01	sloppy	P	accepted	-	-
+PD01	sloppy	K	accepted	-	-
+PD02	strict	P	accepted	-	-
+PD02	strict	K	accepted	-	-
+PD02	sloppy	P	accepted	-	-
+PD02	sloppy	K	accepted	-	-
+PD03	strict	P	accepted	-	-
+PD03	strict	K	accepted	-	-
+PD03	sloppy	P	accepted	-	-
+PD03	sloppy	K	accepted	-	-
+PD04	strict	P	accepted	-	-
+PD04	strict	K	accepted	-	-
+PD04	sloppy	P	accepted	-	-
+PD04	sloppy	K	accepted	-	-
+PD05	sloppy	P	accepted	-	-
+PD05	sloppy	K	accepted	-	-
+PD06	sloppy	P	accepted	-	-
+PD06	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid left-hand side in assignment
+PD07	sloppy	P	accepted	-	-
+PD07	sloppy	K	accepted	-	-
+PD08	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	a is already defined in current scope at 2, 14
+PD08	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	a is already defined in current scope at 2, 14
+PD08	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	a is already defined in current scope at 1, 14
+PD08	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	a is already defined in current scope at 1, 14
+PD09	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	a is already defined in current scope at 2, 14
+PD09	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	a is already defined in current scope at 2, 14
+PD09	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	a is already defined in current scope at 1, 14
+PD09	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	a is already defined in current scope at 1, 14
+PD10	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Missing initializer in const declaration
+PD10	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Missing initializer in const declaration
+PD10	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Missing initializer in const declaration
+PD10	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Missing initializer in const declaration
+PD11	strict	P	accepted	-	-
+PD11	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Illegal break statement
+PD11	sloppy	P	accepted	-	-
+PD11	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Illegal break statement
+PD12	module	P	accepted	-	-
+PD12	module	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	for await (... of ...) is only valid in async functions and modules
+PD13	module	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	'if' is not a valid exported binding name
+PD13	module	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	'if' is not a valid exported binding name
+PD14	module	P	accepted	-	-
+PD14	module	K	accepted	-	-
+PD15	module	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Expecting keyword as at 1, 16
+PD15	module	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Expecting keyword as at 1, 16
+PD16	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Expecting BracketStart at 2, 10
+PD16	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Expecting BracketStart at 2, 10
+PD16	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Expecting BracketStart at 1, 10
+PD16	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Expecting BracketStart at 1, 10
+PD17	module	P	accepted	-	-
+PD17	module	K	accepted	-	-
+PD18	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unterminated template literal at 3, 1
+PD18	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unterminated template literal at 3, 1
+PD18	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unterminated template literal at 2, 1
+PD18	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unterminated template literal at 2, 1
+PD19	strict	P	accepted	-	-
+PD19	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid escape sequence in template literal
+PD19	sloppy	P	accepted	-	-
+PD19	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid escape sequence in template literal
+PD20	strict	P	accepted	-	-
+PD20	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid escape sequence in template literal
+PD20	sloppy	P	accepted	-	-
+PD20	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid escape sequence in template literal
+PD21	strict	P	accepted	-	-
+PD21	strict	K	accepted	-	-
+PD21	sloppy	P	accepted	-	-
+PD21	sloppy	K	accepted	-	-
+PD22	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	a is already defined in current scope at 2, 8
+PD22	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	a is already defined in current scope at 2, 8
+PD22	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	a is already defined in current scope at 1, 8
+PD22	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	a is already defined in current scope at 1, 8
+PD23	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	x is already defined in current scope at 2, 19
+PD23	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	x is already defined in current scope at 2, 19
+PD23	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	x is already defined in current scope at 1, 19
+PD23	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	x is already defined in current scope at 1, 19
+PD24	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	e has already been declared
+PD24	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	e has already been declared
+PD24	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	e has already been declared
+PD24	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	e has already been declared
+PD25	strict	P	accepted	-	-
+PD25	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Duplicate parameter name not allowed in this context
+PD25	sloppy	P	accepted	-	-
+PD25	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Duplicate parameter name not allowed in this context
+PD26	sloppy	P	accepted	-	-
+PD26	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid function name in strict mode
+PD27	strict	P	accepted	-	-
+PD27	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Label 'a' has already been declared
+PD27	sloppy	P	accepted	-	-
+PD27	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Label 'a' has already been declared
+PD28	strict	P	accepted	-	-
+PD28	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Label 'a' has already been declared
+PD28	sloppy	P	accepted	-	-
+PD28	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Label 'a' has already been declared
+PD29	strict	P	accepted	-	-
+PD29	strict	K	accepted	-	-
+PD29	sloppy	P	accepted	-	-
+PD29	sloppy	K	accepted	-	-
+PD30	strict	P	accepted	-	-
+PD30	strict	K	accepted	-	-
+#% end	100

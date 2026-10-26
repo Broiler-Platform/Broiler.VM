@@ -1,0 +1,176 @@
+EE0001	vm	SliceTokenizer.cs:825	->	1116	SliceSourceDiagnosticCode.UnexpectedCharacter,
+EE0001	js	FastScanner.cs:1786	->	715,876,897,1008,1022,1028,1036,1080,1084,1093,1791,1803,1809,1813,1819,1830,1838,1889,1894	throw Unexpected();
+EE0002	vm	SliceTokenizer.cs:825	->	1116	SliceSourceDiagnosticCode.UnexpectedCharacter,
+EE0002	js	FastScanner.cs:1786	->	715,876,897,1008,1022,1028,1036,1080,1084,1093,1791,1803,1809,1813,1819,1830,1838,1889,1894	throw Unexpected();
+EE0004	vm	JsParser.cs:7216	->	7260	SliceSourceDiagnosticCode.LegacyOctalInStrictCode,
+EE0004	js	SyntaxValidation.cs:27	->	36	throw new FastParseException(program.Start, "Unexpected legacy octal literal in strict mode");
+EE0004	js	SyntaxValidation.cs:1025	->	1044	throw new FastParseException(literal.Start, "Octal escape sequences are not allowed in strict mode");
+EE0004	js	FastCompiler.EarlyErrors.cs:22	->	22	throw new FastParseException(functionDeclaration.Start, "Unexpected legacy octal literal in strict mode");
+EE0016	vm	JsParser.cs:6266	->	1443,1481,2296,3472,5051,5438,5491,5523,5581,5629,5670,6296,6330,6448,7043,7426	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0016	js	SyntaxValidation.cs:711	->	730	throw new FastParseException(property.Start, "Private name is not declared in an enclosing class");
+EE0020	vm	JsParser.cs:6663	->	6766	Refuse(span, SliceSourceDiagnosticCode.UnknownEscapeSequence, undefinedEscape);
+EE0020	js	FastCompiler.VisitTemplateExpression.cs:31	->	31	throw new FastParseException(l.Start, "Invalid escape sequence in template literal");
+EE0022	vm	JsParser.cs:6663	->	6766	Refuse(span, SliceSourceDiagnosticCode.UnknownEscapeSequence, undefinedEscape);
+EE0022	js	FastCompiler.VisitTemplateExpression.cs:31	->	31	throw new FastParseException(l.Start, "Invalid escape sequence in template literal");
+EE0023	vm	JsParser.cs:6663	->	6766	Refuse(span, SliceSourceDiagnosticCode.UnknownEscapeSequence, undefinedEscape);
+EE0023	js	FastCompiler.VisitTemplateExpression.cs:31	->	31	throw new FastParseException(l.Start, "Invalid escape sequence in template literal");
+EE0024	vm	JsParser.cs:6663	->	6766	Refuse(span, SliceSourceDiagnosticCode.UnknownEscapeSequence, undefinedEscape);
+EE0024	js	FastCompiler.VisitTemplateExpression.cs:31	->	31	throw new FastParseException(l.Start, "Invalid escape sequence in template literal");
+EE0025	vm	JsParser.cs:5930	->	1370,3492,5993	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0025	vm	JsParser.cs:7382	->	1443,1481,2296,3472,5051,5438,5491,5523,5581,5629,5670,6296,6330,6448,7043,7426	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0025	js	FastParser.SingleExpression.cs:246	->	245	throw new FastParseException(end, "Unexpected token )");
+EE0025	js	FastParser.SingleExpression.cs:256	->	255	throw new FastParseException(item.Start, "Unexpected token ...");
+EE0026	vm	JsParser.cs:5428	->	1443,1481,2296,3472,5051,5438,5491,5523,5581,5629,5670,6296,6330,6448,7043,7426	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0026	vm	JsParser.cs:5460	->	1443,1481,2296,3472,5051,5438,5491,5523,5581,5629,5670,6296,6330,6448,7043,7426	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0026	js	FastParser.SingleMemberExpression.cs:109	->	109	throw new FastParseException(token, "Tagged template expressions are not permitted in an optional chain");
+EE0026	js	FastParser.SingleMemberExpression.cs:122	->	122	throw new FastParseException(token, "Tagged template expressions are not permitted in an optional chain");
+EE0026	js	FastParser.SingleMemberExpression.cs:234	->	234	throw stream.Unexpected();
+EE0032	vm	JsParser.cs:7060	->	7104	SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+EE0032	vm	JsParser.cs:7091	->	7135,7147	SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+EE0032	vm	JsParser.cs:7103	->	7135,7147	SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+EE0032	vm	JsParser.cs:7148	->	7192	SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+EE0032	js	VariableDeclarator.cs:43	->	43	throw new FastParseException(exp.Start, $"Invalid pattern of {exp.Type} at {exp.Start.Start}");
+EE0038	vm	JsParser.cs:7060	->	7104	SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+EE0038	vm	JsParser.cs:7091	->	7135,7147	SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+EE0038	vm	JsParser.cs:7103	->	7135,7147	SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+EE0038	vm	JsParser.cs:7148	->	7192	SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+EE0038	js	VariableDeclarator.cs:43	->	43	throw new FastParseException(exp.Start, $"Invalid pattern of {exp.Type} at {exp.Start.Start}");
+EE0043	vm	JsParser.cs:3998	->	3808,3914,3956,3974,4061	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0043	js	FastScopeItem.cs:121	->	121	throw new FastParseException(token, $"{name} is already defined in current scope at {token.Start}");
+EE0065	vm	JsParser.cs:3893	->	3808,3914,3956,3974,4061	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0065	js	FastScopeItem.cs:121	->	121	throw new FastParseException(token, $"{name} is already defined in current scope at {token.Start}");
+EE0067	vm	JsParser.cs:3935	->	3998,4116	SliceSourceDiagnosticCode.VarAndLexicalCollision,
+EE0067	js	FastScopeItem.cs:188	->	188	throw new FastParseException(token, $"{name} has already been declared");
+EE0068	vm	JsParser.cs:4161	->	4224	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0068	js	SyntaxValidation.cs:794	->	813	throw new FastParseException(functionExpression.Start, "Duplicate parameter name not allowed in this context")
+EE0069	vm	JsParser.cs:4161	->	4224	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0069	js	SyntaxValidation.cs:794	->	813	throw new FastParseException(functionExpression.Start, "Duplicate parameter name not allowed in this context")
+EE0070	vm	JsParser.cs:4161	->	4224	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0070	js	SyntaxValidation.cs:794	->	813	throw new FastParseException(functionExpression.Start, "Duplicate parameter name not allowed in this context")
+EE0071	vm	JsParser.cs:2363	->	2426,5891,6546	SliceSourceDiagnosticCode.ReservedWordAsBinding,
+EE0071	js	SyntaxValidation.cs:772	->	791	throw new FastParseException(functionExpression.Start, "Invalid function name in strict mode");
+EE0080	vm	JsParser.cs:580	->	643	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0080	js	SyntaxValidation.cs:557	->	568	throw new FastParseException(labeledStatement.Start, $"Label '{label}' has already been declared");
+EE0085	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0085	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0088	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0088	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0090	vm	JsParser.cs:4161	->	4224	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0090	js	SyntaxValidation.cs:794	->	813	throw new FastParseException(functionExpression.Start, "Duplicate parameter name not allowed in this context")
+EE0091	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0091	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0095	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0095	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0097	vm	JsParser.cs:4161	->	4224	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0097	js	SyntaxValidation.cs:794	->	813	throw new FastParseException(functionExpression.Start, "Duplicate parameter name not allowed in this context")
+EE0098	vm	JsParser.cs:2363	->	2426,5891,6546	SliceSourceDiagnosticCode.ReservedWordAsBinding,
+EE0098	js	SyntaxValidation.cs:772	->	791	throw new FastParseException(functionExpression.Start, "Invalid function name in strict mode");
+EE0099	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0099	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0109	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0109	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0111	vm	JsParser.cs:4161	->	4224	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0111	js	SyntaxValidation.cs:794	->	813	throw new FastParseException(functionExpression.Start, "Duplicate parameter name not allowed in this context")
+EE0112	vm	JsParser.cs:2363	->	2426,5891,6546	SliceSourceDiagnosticCode.ReservedWordAsBinding,
+EE0112	js	SyntaxValidation.cs:772	->	791	throw new FastParseException(functionExpression.Start, "Invalid function name in strict mode");
+EE0113	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0113	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0122	vm	JsParser.cs:3078	->	3091,3127,3141	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0122	js	SyntaxValidation.cs:1300	->	1319	throw new FastParseException(member.Start, "A class may only have one constructor");
+EE0123	vm	JsParser.cs:3124	->	3110,3187	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0123	js	SyntaxValidation.cs:1355	->	1374	throw new FastParseException(member.Start, $"Duplicate private name #{identifier.Name.Value}");
+EE0125	vm	JsParser.cs:3064	->	3091,3127,3141	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0125	js	SyntaxValidation.cs:1329	->	1348	throw new FastParseException(member.Start, "Class constructor may not be a generator or async method");
+EE0125	js	FastParser.ObjectLiteral.cs:324	->	324	else throw stream.Unexpected();
+EE0127	vm	JsParser.cs:3028	->	3091,3127,3141	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0127	js	SyntaxValidation.cs:1317	->	1336	throw new FastParseException(member.Start, "Classes may not have a static property named 'prototype'");
+EE0128	vm	JsParser.cs:3064	->	3091,3127,3141	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0128	js	SyntaxValidation.cs:1323	->	1342	throw new FastParseException(member.Start, "Classes may not have a field named 'constructor'");
+EE0129	vm	JsParser.cs:3028	->	3091,3127,3141	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0129	vm	JsParser.cs:3047	->	3110,3187	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0129	js	SyntaxValidation.cs:1317	->	1336	throw new FastParseException(member.Start, "Classes may not have a static property named 'prototype'");
+EE0129	js	SyntaxValidation.cs:1323	->	1342	throw new FastParseException(member.Start, "Classes may not have a field named 'constructor'");
+EE0135	vm	JsParser.cs:580	->	643	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0135	js	SyntaxValidation.cs:557	->	568	throw new FastParseException(labeledStatement.Start, $"Label '{label}' has already been declared");
+EE0141	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0141	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0145	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0145	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0147	vm	JsParser.cs:4161	->	4224	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0147	js	SyntaxValidation.cs:794	->	813	throw new FastParseException(functionExpression.Start, "Duplicate parameter name not allowed in this context")
+EE0148	vm	JsParser.cs:2363	->	2426,5891,6546	SliceSourceDiagnosticCode.ReservedWordAsBinding,
+EE0148	js	SyntaxValidation.cs:772	->	791	throw new FastParseException(functionExpression.Start, "Invalid function name in strict mode");
+EE0159	vm	JsParser.cs:4120	->	4183,4280	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0159	js	FastCompiler.EarlyErrors.cs:19	->	19	throw new FastParseException(functionDeclaration.Start, "Illegal 'use strict' directive in function with non-s
+EE0164	vm	JsParser.cs:580	->	643	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0164	js	SyntaxValidation.cs:557	->	568	throw new FastParseException(labeledStatement.Start, $"Label '{label}' has already been declared");
+EE0174	vm	JsParser.cs:580	->	643	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EE0174	js	SyntaxValidation.cs:557	->	568	throw new FastParseException(labeledStatement.Start, $"Label '{label}' has already been declared");
+EE0178	vm	JsParser.cs:1380	->	1443,1481,2296,3472,5051,5438,5491,5523,5581,5629,5670,6296,6330,6448,7043,7426	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0178	js	FastParser.Import.cs:200	->	200	throw new FastParseException(literal.Start, "A module export name must be well-formed Unicode");
+EE0181	vm	JsParser.cs:1056	->	1119	SliceSourceDiagnosticCode.UnexpectedToken,
+EE0181	js	FastParser.Export.cs:168	->	168	throw new FastParseException(stringLocalName, "A string literal cannot be used as an exported binding without 
+EA0010	vm	JsCompiler.cs:835	->	846	return Refused(first, script.SourceName);
+EA0010	vm	JsCompiler.cs:863	->	875	return Refused(first, script.SourceName);
+EA0010	vm	JsCompiler.cs:899	->	889,929	return Refused(first, script.SourceName);
+EA0010	js	JSFunction.cs:1353	->	NONE	_ = CoreScript.Compile($"({functionKind} ({parameterText}\n) {{\n\n}})", loc, codeCache: null);
+EA0011	vm	JsCompiler.cs:835	->	846	return Refused(first, script.SourceName);
+EA0011	vm	JsCompiler.cs:863	->	875	return Refused(first, script.SourceName);
+EA0011	vm	JsCompiler.cs:899	->	889,929	return Refused(first, script.SourceName);
+EA0011	js	JSFunction.cs:1354	->	NONE	_ = CoreScript.Compile($"({functionKind} (\n) {{\n{bodyText}\n}})", loc, codeCache: null);
+EA0012	vm	JsCompiler.cs:835	->	846	return Refused(first, script.SourceName);
+EA0012	vm	JsCompiler.cs:863	->	875	return Refused(first, script.SourceName);
+EA0012	vm	JsCompiler.cs:899	->	889,929	return Refused(first, script.SourceName);
+EA0012	js	JSFunction.cs:1356	->	NONE	_ = CoreScript.Compile(source, loc, codeCache: null);
+EG0001	vm	JsParser.cs:5930	->	1370,3492,5993	SliceSourceDiagnosticCode.UnexpectedToken,
+EG0001	js	FastParser.SingleExpression.cs:225	->	224	throw stream.Unexpected();
+EG0006	vm	JsParser.cs:3935	->	3998,4116	SliceSourceDiagnosticCode.VarAndLexicalCollision,
+EG0006	js	FastScopeItem.cs:188	->	188	throw new FastParseException(token, $"{name} has already been declared");
+EG0007	vm	JsParser.cs:1936	->	1999,2016	SliceSourceDiagnosticCode.UnexpectedToken,
+EG0007	js	SyntaxValidation.cs:1162	->	1181	throw new FastParseException(declaration.Start, "for-in loop variable declaration may not have an initializer 
+EP0002	vm	JsParser.cs:3998	->	3808,3914,3956,3974,4061	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EP0002	js	FastScopeItem.cs:121	->	121	throw new FastParseException(token, $"{name} is already defined in current scope at {token.Start}");
+EP0005	vm	JsParser.cs:3998	->	3808,3914,3956,3974,4061	SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EP0005	js	FastScopeItem.cs:121	->	121	throw new FastParseException(token, $"{name} is already defined in current scope at {token.Start}");
+EP0015	vm	JsCompiler.cs:835	->	846	return Refused(first, script.SourceName);
+EP0015	vm	JsCompiler.cs:863	->	875	return Refused(first, script.SourceName);
+EP0015	vm	JsCompiler.cs:899	->	889,929	return Refused(first, script.SourceName);
+EP0015	vm	JsEngine.ShadowRealm.cs:81	->	81	ThrowSyntaxError("the evaluated source names the private name " + declaration.PrivateNames[0][1..] + ", which 
+EP0015	js	JSShadowRealm.cs:105	->	NONE	compiled = CoreScript.Compile(sourceText, location, codeCache: evalRealm.CodeCache);
+EP0015	js	JSShadowRealm.cs:110	->	112	throw JSEngine.NewSyntaxError("ShadowRealm.prototype.evaluate: the provided source text could not be parsed");
+EX0001	vm	SliceTokenizer.cs:2329	->	2772	SliceSourceDiagnosticCode.UnexpectedCharacter,
+EX0001	vm	SliceTokenizer.cs:801	->	1092,1116,2772	SliceSourceDiagnosticCode.UnexpectedCharacter,
+EX0001	js	FastScanner.cs:706	->	758	throw UnexpectedCharacter(first);
+EX0001	js	FastScanner.cs:1739	->	1791	throw Unexpected();
+EX0002	vm	SliceTokenizer.cs:650	->	941	SliceSourceDiagnosticCode.UnterminatedComment,
+EX0002	js	FastScanner.cs:1573	->	1625	throw Unterminated("comment");
+EX0002	js	FastScanner.cs:1583	->	1635	throw Unterminated("comment");
+EX0003	vm	SliceTokenizer.cs:1287	->	1578	Refuse(SliceSourceDiagnosticCode.MalformedNumericLiteral, what, startLine, startColumn);
+EX0003	js	FastScanner.cs:1826	->	1878	throw Unexpected(); // identifier start after numeric literal
+EX0003	js	FastScanner.cs:1837	->	1889	throw Unexpected();
+EX0003	js	FastScanner.cs:1842	->	1894	throw Unexpected();
+EX0003	js	FastScanner.cs:1859	->	1911	throw Unexpected(); // 0x without hex digits
+EX0003	js	FastScanner.cs:1802	->	1854	throw Unexpected(); // leading numeric separator
+EX0004	vm	SliceTokenizer.cs:1322	->	1613	SliceSourceDiagnosticCode.UnterminatedStringLiteral,
+EX0004	js	FastScanner.cs:1640	->	1692	throw Unterminated("string literal");
+EX0004	js	FastScanner.cs:1645	->	1697	throw Unterminated("string literal");
+EX0005	vm	SliceTokenizer.cs:1417	->	1105,1708	SliceSourceDiagnosticCode.UnknownEscapeSequence,
+EX0005	vm	SliceTokenizer.cs:1439	->	1730	SliceSourceDiagnosticCode.UnknownEscapeSequence,
+EX0005	js	FastScanner.cs:824	->	876	throw Unexpected();
+EX0005	js	FastScanner.cs:845	->	897	throw Unexpected();
+EX0005	js	FastScanner.cs:956	->	1008	throw Unexpected();
+EX0005	js	FastScanner.cs:970	->	1022	throw Unexpected();
+EX0005	js	FastScanner.cs:976	->	1028	throw Unexpected();
+EX0006	vm	SliceTokenizer.cs:1938	->	2229	SliceSourceDiagnosticCode.UnterminatedRegularExpression,
+EX0006	js	FastScanner.cs:1328	->	1380	return false;
+EX0006	js	FastScanner.cs:1339	->	1391	return false;
+EX0006	js	FastTokenStream.cs:22	->	22	return new FastParseException(c, $"Unexpected token {c.Type}: {c.Span} at {c.Start}");
+EX0007	vm	SliceTokenizer.cs:1985	->	2297	SliceSourceDiagnosticCode.UnterminatedTemplateLiteral,
+EX0007	js	FastScanner.cs:1138	->	1190	throw Unterminated("template literal");
+EX0010	vm	JsParser.cs:1329	->	1392	SliceSourceDiagnosticCode.ModuleDeclarationOutsideModuleGoal,
+EX0010	vm	JsCompiler.cs:927	->	957	SliceSourceDiagnosticCode.ModuleDeclarationOutsideModuleGoal,
+EX0010	js	FastParser.Statement.cs:686	->	686	throw new FastParseException(token, $"'{token.Span}' may only appear at the top level of a module");
+EX0010	js	FastCompiler.Module.cs:206	->	206	throw new FastParseException(exportStatement.Start, "'export' is only valid inside a module");
+EX0010	js	FastCompiler.Module.cs:253	->	253	throw new FastParseException(importStatement.Start, "Cannot use import statement outside a module");
+EE0044	vm	JsCompiler.Statements.cs:244	->	NONE	SliceSourceDiagnosticCode.ConstWithoutInitialiser,
+EE0044	js	FastParser.VariableDeclaration.cs:50	->	50	throw new FastParseException(declaration.Start, "Missing initializer in const declaration");

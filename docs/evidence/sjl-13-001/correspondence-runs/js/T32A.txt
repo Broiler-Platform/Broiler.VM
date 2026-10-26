@@ -1,0 +1,107 @@
+# probe T32A (js): input inputs/sjl13-T-tokens/t32a-escaped-identifiers-slice-path.js; its rows of reports/T-tokens-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/T/tokens/corpus.manifest --test262 <work>/t262 --out <runs>/js/reports/T-tokens-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	ff7f2867e38c03d0b916349df2ab598145247c5930d8a9b5c0941ea35b67dc87
+#% corpus	sjl13-T-tokens
+#% end	6
+id	variant	entry	outcome	type	message
+T32A	sloppy	P	accepted	-	-
+T32A	sloppy	K	accepted	-	-
+
+## JS-dump (part D, the tree's canonical dump hashes) (reports/T-tokens-dump.tsv)
+id	variant	slot	parse	parser-sha256	pass	pass-sha256
+T32A	sloppy	1	accepted	4bd4d13eb83f01283a7c181c92393fd2aa5b62d445aa645d7f6bd73454613736	prepared	4bd4d13eb83f01283a7c181c92393fd2aa5b62d445aa645d7f6bd73454613736
+
+## JS-dump text (reports/T-tokens-dump.txt)
+=== T32A sloppy 1 parser
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["implements","a\u2118","\uD81B\uDD40"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 5
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..19 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..14 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @17..18 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [1]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @20..44 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @24..39 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @42..43 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=2 StringValue="2" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [2]: Broiler.JavaScript.Ast.AstBlock Block @47..73 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["implements"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false
+3 Statements: list 1
+4 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @47..71 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Let Using=false AwaitUsing=false
+5 Declarators: list 1
+6 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+7 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @51..66 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+7 Init: Broiler.JavaScript.Ast.AstLiteral Literal @69..70 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=4 StringValue="4" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [3]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @74..86 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator Init=null
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @78..85 IsStatement=false IsBinding=false WasParenthesized=false Name="a\u2118" inferenceName=null InferenceName="a\u2118"
+2 [4]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @87..105 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @91..100 IsStatement=false IsBinding=false WasParenthesized=false Name="\uD81B\uDD40" inferenceName=null InferenceName="\uD81B\uDD40"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @103..104 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+=== T32A sloppy 1 prepared
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["implements","a\u2118","\uD81B\uDD40"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 5
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..19 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..14 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @17..18 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [1]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @20..44 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @24..39 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @42..43 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=2 StringValue="2" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [2]: Broiler.JavaScript.Ast.AstBlock Block @47..73 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["implements"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false
+3 Statements: list 1
+4 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @47..71 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Let Using=false AwaitUsing=false
+5 Declarators: list 1
+6 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+7 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @51..66 IsStatement=false IsBinding=false WasParenthesized=false Name="implements" inferenceName=null InferenceName="implements"
+7 Init: Broiler.JavaScript.Ast.AstLiteral Literal @69..70 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=4 StringValue="4" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+2 [3]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @74..86 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator Init=null
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @78..85 IsStatement=false IsBinding=false WasParenthesized=false Name="a\u2118" inferenceName=null InferenceName="a\u2118"
+2 [4]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @87..105 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @91..100 IsStatement=false IsBinding=false WasParenthesized=false Name="\uD81B\uDD40" inferenceName=null InferenceName="\uD81B\uDD40"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @103..104 IsStatement=false IsBinding=false WasParenthesized=false TokenType=Number NumericValue=1 StringValue="1" Regex=System.ValueTuple<System.String,System.String>(Item1=null,Item2=null)
+
+## JS-tokens (reports/T32-tokens.txt)
+=== t32a-escaped-identifiers-slice-path.js
+0	Identifier	span="var"	at=0..3	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=1:1
+1	Identifier	span="implements"	at=4..14	cooked=null	keyword=true/implements	contextual=none	escaped-reserved=false	number=0	start=1:5
+2	Assign	span="="	at=15..16	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:16
+3	Number	span="1"	at=17..18	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=1	start=1:18
+4	SemiColon	span=";"	at=18..19	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:19
+5	LineTerminator	span="\u000A"	at=19..20	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:20
+6	Identifier	span="var"	at=20..23	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=2:1
+7	Identifier	span="impl\\u0065ments"	at=24..39	cooked="implements"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:5
+8	Assign	span="="	at=40..41	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:21
+9	Number	span="2"	at=42..43	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=2	start=2:23
+10	SemiColon	span=";"	at=43..44	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:24
+11	LineTerminator	span="\u000A"	at=44..45	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=2:25
+12	CurlyBracketStart	span="{"	at=45..46	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:1
+13	Identifier	span="let"	at=47..50	cooked=null	keyword=true/let	contextual=none	escaped-reserved=false	number=0	start=3:3
+14	Identifier	span="impl\\u0065ments"	at=51..66	cooked="implements"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:7
+15	Assign	span="="	at=67..68	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:23
+16	Number	span="4"	at=69..70	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=4	start=3:25
+17	SemiColon	span=";"	at=70..71	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:26
+18	CurlyBracketEnd	span="}"	at=72..73	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:28
+19	LineTerminator	span="\u000A"	at=73..74	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=3:29
+20	Identifier	span="var"	at=74..77	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=4:1
+21	Identifier	span="a\\u2118"	at=78..85	cooked="a\u2118"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=4:5
+22	SemiColon	span=";"	at=85..86	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=4:12
+23	LineTerminator	span="\u000A"	at=86..87	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=4:13
+24	Identifier	span="var"	at=87..90	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=5:1
+25	Identifier	span="\\u{16D40}"	at=91..100	cooked="\uD81B\uDD40"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=5:5
+26	Assign	span="="	at=101..102	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=5:15
+27	Number	span="1"	at=103..104	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=1	start=5:17
+28	SemiColon	span=";"	at=104..105	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=5:18
+29	LineTerminator	span="\u000A"	at=105..106	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=5:19
