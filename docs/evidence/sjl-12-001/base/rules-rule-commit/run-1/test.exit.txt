@@ -1,0 +1,1 @@
+partd-rule	rc=1	wall=60.2s	maxrss=237MB	started=2026-10-25T23:43:55Z	ended=2026-10-25T23:44:56Z

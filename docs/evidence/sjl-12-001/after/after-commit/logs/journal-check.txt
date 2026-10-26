@@ -1,0 +1,21 @@
+=== parse-corpus-after-run1 journal: 1121926 lines, 40817887 bytes
+begin 560963, end 560963
+keys begun and not ended: 0
+=== parse-corpus-after-run2 journal: 1121926 lines, 40817887 bytes
+begin 560963, end 560963
+keys begun and not ended: 0
+=== parse-corpus-after-run3 journal: 2243852 lines, 81635774 bytes
+begin 1121926, end 1121926
+keys begun and not ended: 0
+=== k1-parse-corpus journal: 1121926 lines, 40817887 bytes
+begin 560963, end 560963
+keys begun and not ended: 0
+=== k2-parse-corpus-run1 journal: 1121926 lines, 40817887 bytes
+begin 560963, end 560963
+keys begun and not ended: 0
+=== k2-parse-corpus-run2 journal: 1121926 lines, 40817887 bytes
+begin 560963, end 560963
+keys begun and not ended: 0
+=== k2-parse-corpus-run3 journal: 2243852 lines, 81635774 bytes
+begin 1121926, end 1121926
+keys begun and not ended: 0

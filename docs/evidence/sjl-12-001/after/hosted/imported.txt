@@ -1,0 +1,7 @@
+# imported: the hosted run was taken by .github/workflows/test262-evidence.yml
+workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/40231328560 (attempt 1), dispatched 2026-10-25T20:33:26Z, completed 2026-10-25T20:39:44Z
+dispatched ref: refs/heads/main at 76ace8692c1e51a95c3615b253bd2d31438718e3 (the merge of Broiler.VM#169); the workflow (blob 4119d11b) and its driver eng/test262-evidence.py (blob 55f71ee3) there are the rule commit's
+inputs: commit 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f (the after commit), forms both
+artifact: test262-evidence, id 12613262582, 2,625,625 bytes, sha256 9ac186958365b1e926f8cb59adeecf10260c1138afab24314642f981bb46b7fb (the zip as downloaded; GitHub records the same digest)
+image: every runner and the merging job, ubuntu26 20261023.163.3, SDK 10.0.403 (run.txt, wide-bytecode.runners.txt, wide-native.runners.txt); the base's runners and merging job ran ubuntu24 (base/hosted/), a record, since the rule names no image
+retained: every file of the artifact, unchanged, in this directory (54 entries; diff -r against the zip's extraction finds none different); this file and hashes.txt are the only ones added

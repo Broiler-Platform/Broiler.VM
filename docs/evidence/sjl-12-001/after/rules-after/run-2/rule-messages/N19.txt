@@ -1,0 +1,11 @@
+# what group N19's rules said about this checkout
+#
+# Reported, not judged. A rule with no lines said nothing, which is what a clean
+# checkout looks like; a rule that threw is recorded as throwing.
+
+[N19-entry-points-declare-a-stack] 0 message(s)
+
+[N19-the-stack-is-declared-here] 0 message(s)
+
+[N19-the-tree-bound-is-not-host-settable] 0 message(s)
+

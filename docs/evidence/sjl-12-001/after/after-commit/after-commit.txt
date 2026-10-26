@@ -1,0 +1,148 @@
+# bundle sjl-12-001: the after commit's identity, and the paths and blobs the after runs rest on. Written
+# 2026-10-26T00:35:54Z from git reads alone, after the runs, in /home/user/Broiler.VM, whose origin/main, the default branch as
+# last fetched, is 76ace8692c1e51a95c3615b253bd2d31438718e3. Every command as it was run, with its output and exit code.
+rule-commit     889ea1568f59bf37aa21c0035b423d0d030eb87f
+corpus-commit   865b69b9ede430d5a548e5b97b85e5a7b5e1aed4
+ordering-commit 066abefea4351fb49bd8bf8e823fbdc7aac560de
+after-commit    1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+
+## the after commit
+$ git -C /home/user/Broiler.VM log -1 --format=commit %H%nparents %P%ncommitted %cI%nsubject %s 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+commit 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+parents daa92eb7b771363ebdede49f114b392f0048852a 394bc330081cb6ef02210d4b80fa929f19da9bb2
+committed 2026-10-25T17:32:47+01:00
+subject Merge pull request #167 from Broiler-Platform/claude/busy-lamport-m3yprr
+(exit 0)
+$ git -C /home/user/Broiler.VM merge-base --is-ancestor 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f origin/main
+(exit 0)
+$ git -C /home/user/Broiler.VM merge-base --is-ancestor 066abefea4351fb49bd8bf8e823fbdc7aac560de 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+(exit 0)
+$ git -C /home/user/Broiler.VM merge-base --is-ancestor 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+(exit 0)
+$ git -C /home/user/Broiler.VM merge-base --is-ancestor 889ea1568f59bf37aa21c0035b423d0d030eb87f 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+(exit 0)
+
+## from the corpus commit to the after commit, every path outside docs/
+$ git -C /home/user/Broiler.VM diff --name-only 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f -- . :(exclude)docs
+CODE-ASSURANCE.md
+HUMAN_REVIEW.md
+assurance.manifest.json
+src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Classes.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ControlFlow.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Eval.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Expressions.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Functions.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Names.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Operators.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Patterns.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ResourceScopes.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Walk.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BinderChecks.cs
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/SourceFrontEndChecks.cs
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/TemplateChecks.cs
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideLoweringChecks.cs
+src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs
+src/tests/Broiler.VM.Architecture.Tests/ReviewRecordRuleTests.cs
+(exit 0)
+
+## the rule, the mode's source file and the comparison tools: the blob at each commit
+$ git -C /home/user/Broiler.VM rev-parse 889ea1568f59bf37aa21c0035b423d0d030eb87f:docs/evidence/sjl-12-001/decision-rule-area.md 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4:docs/evidence/sjl-12-001/decision-rule-area.md 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f:docs/evidence/sjl-12-001/decision-rule-area.md
+293b080f5c51dc6f151506e7536d3d41595ce859
+293b080f5c51dc6f151506e7536d3d41595ce859
+293b080f5c51dc6f151506e7536d3d41595ce859
+(exit 0)
+$ git -C /home/user/Broiler.VM rev-parse 889ea1568f59bf37aa21c0035b423d0d030eb87f:eng/compare-test262-forms.py 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4:eng/compare-test262-forms.py 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f:eng/compare-test262-forms.py
+48e3091a872921849bab1f903b46698be0c69e33
+48e3091a872921849bab1f903b46698be0c69e33
+48e3091a872921849bab1f903b46698be0c69e33
+(exit 0)
+# the next three are not at the rule commit; the corpus commit adds them
+$ git -C /home/user/Broiler.VM rev-parse 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4:src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f:src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs
+0f4ce7022a26ed972393b70db584b76188f241f0
+0f4ce7022a26ed972393b70db584b76188f241f0
+(exit 0)
+$ git -C /home/user/Broiler.VM rev-parse 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4:eng/compare-parse-corpus.py 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f:eng/compare-parse-corpus.py
+c1d3b53d957c1a23f409b466f667b0733772863d
+c1d3b53d957c1a23f409b466f667b0733772863d
+(exit 0)
+$ git -C /home/user/Broiler.VM rev-parse 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4:eng/check-frontend-mapping.py 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f:eng/check-frontend-mapping.py
+09e07cd68646bdc9e382e441a806956b35b745fd
+09e07cd68646bdc9e382e441a806956b35b745fd
+(exit 0)
+
+## part A's configuration: the workflow and its driver at the after run's dispatched ref (76ace8692c1e51a95c3615b253bd2d31438718e3) and at the rule commit
+$ git -C /home/user/Broiler.VM rev-parse 889ea1568f59bf37aa21c0035b423d0d030eb87f:.github/workflows/test262-evidence.yml 76ace8692c1e51a95c3615b253bd2d31438718e3:.github/workflows/test262-evidence.yml 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f:.github/workflows/test262-evidence.yml
+4119d11b25f4cc0842de297e04e9799a9a0a26fd
+4119d11b25f4cc0842de297e04e9799a9a0a26fd
+4119d11b25f4cc0842de297e04e9799a9a0a26fd
+(exit 0)
+$ git -C /home/user/Broiler.VM rev-parse 889ea1568f59bf37aa21c0035b423d0d030eb87f:eng/test262-evidence.py 76ace8692c1e51a95c3615b253bd2d31438718e3:eng/test262-evidence.py 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f:eng/test262-evidence.py
+55f71ee3da6844dd3e3aeb23ea98d24143222a88
+55f71ee3da6844dd3e3aeb23ea98d24143222a88
+55f71ee3da6844dd3e3aeb23ea98d24143222a88
+(exit 0)
+
+## the manifest at the after commit
+$ git show 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f:src/tests/corpus/parse-1/corpus.manifest | sha256sum
+1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc  -
+(exit 0)
+
+## the corpus commit's third condition, read at the after commit: every commit after the rule commit, up to the
+## after commit, that changes a path under src/Broiler.VM.Profile.JavaScript*/ outside src/Broiler.VM.Profile.JavaScript/docs/,
+## or under src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ (git log's TREESAME reading, README section 3),
+## each with whether the corpus commit is its ancestor
+$ git log --format=%H 889ea1568f59bf37aa21c0035b423d0d030eb87f..1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f -- :(glob)src/Broiler.VM.Profile.JavaScript*/** :(exclude,glob)src/Broiler.VM.Profile.JavaScript/docs/** src/compositions/Broiler.VM.Composition.JavaScript.Conformance
+fb6226e44244901acbc5d5b06cdafb9bd09a313c  corpus commit an ancestor: exit 0  SJL-12.6: the tokenizer's contract names the structured mode's runs and what they cost
+2c590e4e0a3101c036498362c925b3f622867d43  corpus commit an ancestor: exit 0  SJL-12.6: JsCompiler.Requests parses on the compiler's stack
+964b460848f2d65319ae9d50e81ffe385d6d669e  corpus commit an ancestor: exit 0  SJL-12.6: the wide parser reads a template's substitutions in place, from runs the tokenizer tokenizes
+8ff3a587b8c2130dc241de253a5d25768f22fdc5  corpus commit an ancestor: exit 0  SJL-12.6: the shared tokenizer scans a template in one loop with a stack of its own
+812d82e46363e562fd79ff7185b676c56bb34ce5  corpus commit an ancestor: exit 0  SJL-12.6: the binder's async and resource frames say where they come from, and one idiom sets them
+f89391556434899b49eac9fbb020ef29b684d26b  corpus commit an ancestor: exit 0  SJL-12.6: the parser's and the tree's comments say the binder refuses a stray cover entry
+3018ed9561b93383c79320a41f5c98a1352b8c0c  corpus commit an ancestor: exit 0  SJL-12.6: the three language rules the lowering coded 2104 are the binder's early errors
+abe10d41a79a45234e4aba6759a27cdcba3d0598  corpus commit an ancestor: exit 0  SJL-12.6: return in a class static block is the binder's early error, under 2207
+9d824bbe4de1cee99feeeb8f9692c9e099fb1bcf  corpus commit an ancestor: exit 0  SJL-12.6: the lowering's comments say the binder refuses, and the moved rules keep their history
+ec5646edc9bff7b266440b4dcbb04f8073ff5664  corpus commit an ancestor: exit 0  SJL-12.6: one diagnostics cap and one place formatter for the front end's stages
+dd81112c1f9426818bd591cd8d3f93ad6cc66db5  corpus commit an ancestor: exit 0  SJL-12.6: the binder's private-name scope and arguments record helpers have names of their own
+fdac44662ec651a64464e9fbe361741b358a3a0e  corpus commit an ancestor: exit 0  SJL-12.6: the binder's early errors read the loop-head, catch and jump-target facts they record
+7a7ab8d1281a393b1bd16335630eca11d5f07689  corpus commit an ancestor: exit 0  SJL-12.6: past the scope-depth ceiling, eval code's private name keeps the lowering's refusal
+fb4ae2753c4fdb83cd4d444297611ec3b4925994  corpus commit an ancestor: exit 0  SJL-12.6: arguments in eval code in a field initialiser is reported once for each reference
+0235c67402d1a53dbc623ff61bd833289712e35f  corpus commit an ancestor: exit 0  SJL-12.6: a module's declaration, collision and export checks are the binder's early errors
+c5f4da2fa7cdc4df489f6f9c9a5c109281a20f05  corpus commit an ancestor: exit 0  SJL-12.6: private names and arguments in class bodies are the binder's early errors
+231b87888ed845a8e2c53a9a4f2d9f858a5b111b  corpus commit an ancestor: exit 0  SJL-12.6: a declaration without the initialiser it needs is the binder's early error
+b9f5a6664f7a52f092eaca3496005813efbc0580  corpus commit an ancestor: exit 0  SJL-12.6: assignment targets are the binder's early errors
+1bf14f1f5c0d0bf711585035711193870fc4f2ed  corpus commit an ancestor: exit 0  SJL-12.6: the cover grammar, __proto__ and regular-expression literals are the binder's early errors
+da1b2e0e020977bcc3552df5f7a2eaebfe27de41  corpus commit an ancestor: exit 0  SJL-12.6: a break or continue with nowhere to go is the binder's early error
+4222d36f65073563592ef42e39e1297fd328cfad  corpus commit an ancestor: exit 0  SJL-12.6: super, return, new.target and import.meta are the binder's early errors
+575a5469c0330fde4373d325d2621f6c11b7a97a  corpus commit an ancestor: exit 0  SJL-12.6: the binder's early-error reporter, and a unit the binder refuses is not lowered
+7b1888f1861c867c5189abdce78600971977c2f4  corpus commit an ancestor: exit 0  SJL-12.6: the binder records lexical loop heads, catch parameters and a module's lexical declarations
+eab73aa0b0aead285415dc545ba1bcb00e8a3f40  corpus commit an ancestor: exit 0  SJL-12.6: the Annex B scan and the var collection keep the criteria and history they had
+5e498ba34898ccbc8154b51b325a75a226afd312  corpus commit an ancestor: exit 0  SJL-12.6: one reading of a module's exported declarations, and the module's bindings read the scope they are given
+d95d60aad82395d793c2b476e205dd41f7907e77  corpus commit an ancestor: exit 0  SJL-12.6: a unit's strictness is the binder's alone
+c8f141ea788cb272ff3d6b723f68aa6581ef5179  corpus commit an ancestor: exit 0  SJL-12.6: the binder's walk over the unit meets its nodes in source order
+25d5c6039d206811ca77b0fea2dd362c8c66f52e  corpus commit an ancestor: exit 0  SJL-12.6: the binder names every kind of node it walks, and a fact it never bound names its node
+8e475d7fabce7c308808092cd77d9946b6d9ee4c  corpus commit an ancestor: exit 0  SJL-12.6: every hoisting scope's var names and functions are the binder's
+882f0a906307d697bb2a957bd9b197469a84d8cf  corpus commit an ancestor: exit 0  SJL-12.6: Annex B's aliases and admitted declarations are the binder's
+4e2ce0818c354b5fd4173dddb986d9764c93c851  corpus commit an ancestor: exit 0  SJL-12.6: every statement list's lexical declarations are the binder's
+fc85a1a42ed92f80b59b7541ae5f59ab4e4ad655  corpus commit an ancestor: exit 0  SJL-12.6: a class body's private names are the binder's
+5c74d660a8ed10e0e489f6a41a8ee857370fa9de  corpus commit an ancestor: exit 0  SJL-12.6: a function's lowering reads its shape from the binder
+719796e88e76743ffeacb073018b2722df6d5b1e  corpus commit an ancestor: exit 0  SJL-12.6: the wide lowering's binder pass computes its facts per unit
+3ff6b35cea220228ea98877cf95c9b4bc49f439c  corpus commit an ancestor: exit 0  SJL-12.6: SourceOrderedLexicals loses its unread Count and names the constant pool among what it orders
+c23ffced0f7607e6e25697e76f248a79e101cba8  corpus commit an ancestor: exit 0  SJL-12.6: the wide lowering declares lexical names in source order by construction
+(end of list)

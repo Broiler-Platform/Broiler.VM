@@ -1,0 +1,12 @@
+path	variant	base run	after run	base re-run	after re-run	re-runs agree	re-run report index
+test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js	strict	Exhausted/NestedLoadFanOut	Exhausted/WallClock	Exhausted/NestedLoadFanOut	Exhausted/NestedLoadFanOut	yes	0
+test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	1
+test/staging/sm/Date/dst-offset-caching-1-of-8.js	strict	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	1
+test/staging/sm/Date/dst-offset-caching-4-of-8.js	sloppy	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/Fuel	NO	2
+test/staging/sm/Date/dst-offset-caching-4-of-8.js	strict	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	2
+test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	3
+test/staging/sm/Date/dst-offset-caching-6-of-8.js	strict	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	3
+test/staging/sm/Date/dst-offset-caching-7-of-8.js	sloppy	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	4
+test/staging/sm/Date/dst-offset-caching-7-of-8.js	strict	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	4
+test/staging/sm/TypedArray/sort_large_countingsort.js	sloppy	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	5
+test/staging/sm/TypedArray/sort_large_countingsort.js	strict	Exhausted/WallClock	Exhausted/Fuel	Exhausted/WallClock	Exhausted/WallClock	yes	5

@@ -1,0 +1,6 @@
+test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js
+test/staging/sm/Date/dst-offset-caching-1-of-8.js
+test/staging/sm/Date/dst-offset-caching-4-of-8.js
+test/staging/sm/Date/dst-offset-caching-6-of-8.js
+test/staging/sm/Date/dst-offset-caching-7-of-8.js
+test/staging/sm/TypedArray/sort_large_countingsort.js

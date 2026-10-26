@@ -1,0 +1,16 @@
+# what group U's rules said about this checkout
+#
+# Reported, not judged. A rule with no lines said nothing, which is what a clean
+# checkout looks like; a rule that threw is recorded as throwing.
+
+[U1] 0 message(s)
+
+[U2] 0 message(s)
+
+[U4] 1 message(s)
+    0x05 jump_table: Appendix A says terminal is no, the table says yes
+
+[U8] 0 message(s)
+
+[U9] 0 message(s)
+
