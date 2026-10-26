@@ -25,7 +25,8 @@
 # of its variants and forms, and an eval-family seed in B3 under each flag set named; none is a negative test, and
 # none is larger than 16 KiB. The selection: every input of the broiler-vm origin, every module input of the
 # broiler-js origin, and the first test262 input (by id) of each directory under test/language/, for each goal
-# and each answer of the manifest's eval-family column.
+# and each answer of the manifest's eval-family column, except json-goal inputs, which --fuzz-wide does not
+# compile (it compiles under the Script and Module goals and as eval code).
 #
 # A finding is an unhandled exception, a process that ended without its exit code, a refusal whose code the
 # registry does not hold, or one compilation that takes longer than the wall bound below.

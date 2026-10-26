@@ -16,7 +16,8 @@ part F in T5, part C layer L13, part D the rule runs and part G layer L9. Each p
 (decision D24). It holds no figure.
 
 **Step 2 changes no outcome, no byte and no diagnostic** (decision D19). Every input's outcome, every accepted input's
-artifact, every refused input's diagnostic list and every test262 verdict is expected the same at both commits. The
+artifact, every module-goal input's ordered specifiers from `JsCompiler.Requests`, every refused input's diagnostic
+list and every test262 verdict is expected the same at both commits. The
 lowering computes from the shared tree, by `JsParser`'s rules, every fact the adapter computed at step 1, the
 top-level-`await` rule included (decision D15), and places every diagnostic as step 1 did. This rule therefore
 admits no class but part A's harness classes.
@@ -54,12 +55,13 @@ NOT MET otherwise.
 
 ```rule
 evidence class: artifact identity (not a measurement)
-population: bundle sjl-13-001's part B's, sub-populations B1 to B4, as the base commit holds the manifest
-configuration: the slice compiler's --parse-corpus mode, as the base commit holds it and unchanged at the after commit, built in Release from a clean checkout on the local machine; run at the base commit and at the after commit, and with --census at both
+population: bundle sjl-13-001's part B's, sub-populations B1 to B5, B5 being each module-goal input through JsCompiler.Requests under the module options, as the base commit holds the manifest
+configuration: the slice compiler's --parse-corpus mode, as the base commit holds it and unchanged at the after commit, built in Release from a clean checkout on the local machine, reporting for each input, sub-population, variant and form what bundle sjl-13-001's part B reports, in B5 the ordered specifiers of an accepted input; run at the base commit and at the after commit, and with --census at both
 completeness: every manifest input reported in every sub-population, variant and form at both commits, the manifest's digest equal at both, and no run lost its process
-controls: a copy of the base report with one artifact hash changed and one diagnostic's column changed, which the comparison must report as two differences; retained
-comparison: eng/compare-parse-corpus.py, as the base commit holds it: the outcome; the artifact hash of an input accepted at both; the ordered diagnostic list of an input refused at both; the census, byte for byte
+controls: a copy of the base report with one artifact hash changed, one diagnostic's column changed and one specifier of a B5 input changed, which the comparison must report as three differences; retained
+comparison: eng/compare-parse-corpus.py, as the base commit holds it: the outcome; the artifact hash of an input accepted at both, or in B5 its ordered specifiers; the ordered diagnostic list of an input refused at both; the census, byte for byte
 admitted difference classes: none
+every difference is a regression, a specifier list that differs for a B5 input accepted at both among them
 MET if and only if both runs are complete, the control is reported as stated, and no difference of any kind is reported.
 NOT MET otherwise.
 ```

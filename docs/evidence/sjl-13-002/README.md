@@ -33,11 +33,12 @@ but part A's harness classes.
   its after commit. This README names each, by all forty digits, when it lands.
 
 **The rule has seven parts**, each deciding alone: part A, test262 in both forms on hosted runners (template T1), with
-class C4 only; part B, artifact identity over the parse corpus's sub-populations B1 to B4, with no class (template
-T6); part C, determinism and the five checks rows of bundle `sjl-13-001`'s part C (layer L13); part D, the front end's
-rules, with rule I5 registering every member of `JsSyntax` and of the adapter; part E, the fuel-parity twins (template
-T7); part F, this family's compile measurement over bundle `sjl-13-001`'s workloads (template T5), not a gate clause;
-part G, source fuzzing over bundle `sjl-13-001`'s seeds, both sessions (layer L9).
+class C4 only; part B, artifact identity over the parse corpus's sub-populations B1 to B5, B5's ordered module
+specifiers among them, with no class (template T6); part C, determinism and the five checks rows of bundle
+`sjl-13-001`'s part C (layer L13); part D, the front end's rules, with rule I5 registering every member of `JsSyntax`
+and of the adapter; part E, the fuel-parity twins (template T7); part F, this family's compile measurement over bundle
+`sjl-13-001`'s workloads (template T5), not a gate clause; part G, source fuzzing over bundle `sjl-13-001`'s seeds,
+both sessions (layer L9).
 
 **The pins** are bundle `sjl-13-001`'s.
 

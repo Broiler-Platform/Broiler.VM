@@ -21,9 +21,23 @@ of 2026-10-25. Its input is [`correspondence.md`](correspondence.md), with
   (`rows-P-baseline.tsv.gz`, `rows-P-agree.tsv.gz`).
 
 Each of those four folders carries a `hashes.txt` that `sha256sum -c` verifies. [`.gitattributes`](.gitattributes)
-keeps every byte under `correspondence-runs/` as hashed: some probe inputs hold CR LF or a lone CR, the line
-terminators their rows test. The rule's own inputs are [`inputs/fuzz-seeds.txt`](inputs/fuzz-seeds.txt), part G's
-seeds, and [`inputs/workloads/`](inputs/workloads/README.md), part J's workloads, each with its control.
+keeps every byte under `correspondence-runs/` as hashed. **Some of its files are exceptions to the ledger's section 3**
+("Text files are stored with LF line endings before they are hashed.") and keep the bytes they were hashed with:
+- on purpose, the probe inputs whose rows test line terminators, under `probes/N/inputs/`: `crlf-lines.js`,
+  `continuation-crlf.js` and `comment-lines.js` (CR LF), `lone-cr-lines.js` (a lone CR) and `template-lines.js` (CR LF
+  and LF);
+- as run, the worktree logs `vm/logs/worktree.log` and `js/logs/worktree.log`, whose carriage returns are git's
+  progress output.
+
+**Running the probes again.** `probes/run_all.sh` is kept as it ran, so it expects the layout it ran in, which its
+hashed bytes cannot change: `SCRATCH` names a folder holding `sjl-rest/sjl13-corr/`, whose `probes/` is
+`correspondence-runs/probes/` here, whose `runs/vm/` and `runs/js/` became `correspondence-runs/vm/` and `js/`, and
+whose `runner-work/` is the scratch folder the runs call `<work>`; `VM_REPO` and `JS_REPO` name the clones and
+`VMW` and `JSW` the worktrees to add; and the .NET SDK is the one at `/root/.dotnet`, which the script names. The
+correspondence's section "The runs" lists every rewrite of the runs' bytes.
+
+The rule's own inputs are [`inputs/fuzz-seeds.txt`](inputs/fuzz-seeds.txt), part G's seeds, and
+[`inputs/workloads/`](inputs/workloads/README.md), part J's workloads, each with its control.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
