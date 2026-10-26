@@ -45,7 +45,8 @@ formatter, and duration also needs lists:
 5. **(e)** duration formatting.
 
 The list above is left as written: its second item, "**Small formatters**", came before "**Number formatting**",
-whose first items were the Intl mathematical value and digit options. Each sub-area can still be refused on its own.
+whose first items were the Intl mathematical value and digit options. Each sub-area could still be refused on its own
+at SJL-9.1, and JSD-0082 accepts all five.
 
 **Collation** comes last, in its own milestone, [SJL-17](../milestones/sjl-17-collation.md), after
 SJL-9 (decision [SJL-D-24](../decisions.md#sjl-d-24) (c)). Its design is section 3.4.
@@ -118,13 +119,14 @@ stands.
 
 *(Read 2026-10-26, at SJL-9.1, by
 [JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
-decision D8, which revises nothing.)* **The contract has two layers.** `IIntlDataSet`, above, carries a version and
-one span per `IntlTable`; the enum keeps `JsIntlTable`'s numbers, with 7, 23 and 24 retired and not reused, and
-appends values only for tables Broiler.VM's data never carries, and each engine answers an empty span for a table it
-lacks. The library decodes it into a question-level `ILocaleData`, which Broiler.JS's host provider also implements,
-and which `CompositeLocaleData` orders: the shared data, then an optional secondary, then the parent and root. **The
-Format interface is adapted, not replaced**: `IJsIntlData` and `JsIntlTable` stay public in Broiler.VM's Format
-assembly, and Broiler.VM adapts them internally.
+decision D8, which settles one choice the section leaves open and revises nothing else.)* **The contract has two
+layers.** `IIntlDataSet`, above, carries a version and one span per `IntlTable`; the enum keeps `JsIntlTable`'s numbers,
+with 7, 23 and 24 retired and not reused, and appends values only for tables Broiler.VM's data never carries, and each
+engine answers an empty span for a table it lacks. The library decodes it into a question-level `ILocaleData`, which
+Broiler.JS's host provider also implements, and which `CompositeLocaleData` orders: the shared data, then an optional
+secondary, then the parent and root. **The Format interface is adapted, not replaced**, which settles the section's "the
+Format interface is replaced or adapted": `IJsIntlData` and `JsIntlTable` stay public in Broiler.VM's Format assembly,
+and Broiler.VM adapts them internally.
 
 ### 3.2 The algorithms
 
@@ -258,7 +260,8 @@ row by row** (the milestone file names the rows). Read against the list above:
 - the order and repetition of option reads hold for Date's `toLocale*`, NumberFormat after construction, PluralRules
   and DurationFormat's argument, and not for any constructor's option order;
 - "the `timeZone` option ignored in one parts path" was fixed on 2026-10-16 (row T28), and leaves the list;
-- the list's other items are confirmed, and the correspondence adds corrections in every sub-area.
+- the list's other items are confirmed, but for its last, "`numeric` and `caseFirst` in collation, at SJL-17.", which
+  stays SJL-17's and which the correspondence did not run; and the correspondence adds corrections in every sub-area.
 
 The list read as above, from "`selectRange`" to "`numeric` and `caseFirst` in collation, at SJL-17."
 

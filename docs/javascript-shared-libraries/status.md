@@ -2024,8 +2024,8 @@ says that it holds rules and the correspondence only, and that nothing in it is 
 
 **Dated notes**, each quoting the text it supersedes:
 - SJL-9's milestone: SJL-9.1's population; SJL-9.2's agreed locale set, per embedding, and its split; SJL-9.3's order
-  and the gate of each library stage; SJL-9.4's deletion list and corrections; SJL-9.5's correction list; SJL-9.6's
-  "as in SJL-3.6"; and exit clause 3, per embedding;
+  and the gate of each library stage; SJL-9.4's deletion list and corrections; SJL-9.5's deletion list and correction
+  list; SJL-9.6's "as in SJL-3.6"; and exit clause 3, per embedding;
 - `areas/locale-data-and-intl.md`: section 1's order, section 3.1's two layers, section 3.3's host provider and locale
   providers, section 3.4's stale "Today" cell, section 4's deletion lists and section 5's corrections;
 - SJL-17's milestone: SJL-17.5's "the collator's platform normalization", done at SJL-7.5;

@@ -120,9 +120,9 @@ Each method follows its draft operation, over the data the profile holds:
   the likely one, with `-u-rg`'s as an override.
 
 *(Noted 2026-10-26, at SJL-9.1, by
-[JSD-0082](0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s decisions D27 and D32, on rows
-L16, L18 and L23 of the programme's correspondence in bundle `sjl-9-001`.)* Three of the bullets above are stale, and
-are left as written:
+[JSD-0082](0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s decisions D27 and D32 and its
+record of finding F16, on rows L16, L18 and L23 of the programme's correspondence in bundle `sjl-9-001`.)* Three of the
+bullets above are stale, and are left as written:
 - **`getCalendars`.** The bullet reads "the region's calendars in use, kept where AvailableCalendars has them. That is
   `gregory` alone, the only calendar the profile formats (JSD-0045 section 7)." The method answers `gregory` because
   the profile's data holds no CLDR calendar preference data (row L16). The profile has formatted every calendar

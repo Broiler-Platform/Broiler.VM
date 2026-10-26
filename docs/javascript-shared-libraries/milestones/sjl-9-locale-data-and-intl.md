@@ -214,6 +214,19 @@ decisions D8, D15, D24 and D32.)*
 - its uses of `Broiler.Unicode.Cldr.LocaleData` for Intl data, and the package reference itself
   once SJL-8 has removed the calendar uses.
 
+*(Revised 2026-10-26, at SJL-9.1, before any evidence of SJL-9 existed, by
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+decisions D13 and D24.)* **The list is extended:**
+- `JSIntlDefaultNumberingSystems.g.cs` and its script, `scripts/intl/generate_default_numbering_systems.py`, whose
+  table the shared data absorbs (decision D13);
+- the members of `JSIntlDateTimeFormat` that no caller reaches (row T42): the constructor from a `CultureInfo`,
+  `Format(DateTimeOffset, JSObject)`, `FormatEnglishHour`, `FormatDayPeriod` and the `locale` field.
+
+Broiler.JS's public Intl types stay as the engine's Intl objects, with every public member, `JSIntlDateTimeFormat`'s
+public static `Get(CultureInfo)` and `ApplyAllDefaults` among them (SJL-D-25, disposition (a)). The list read as above,
+ending at "its uses of `Broiler.Unicode.Cldr.LocaleData` for Intl data, and the package reference itself once SJL-8 has
+removed the calendar uses."
+
 **Embedded instead:** the CLDR tables the shared generator produces, in Broiler.JS's own assemblies
 ([SJL-D-6](../decisions.md#sjl-d-6) (c)).
 

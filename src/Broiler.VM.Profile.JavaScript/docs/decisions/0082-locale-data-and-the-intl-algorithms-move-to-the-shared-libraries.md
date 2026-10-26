@@ -86,6 +86,8 @@ review." This record reads it in two parts, as JSD-0078, JSD-0080 and JSD-0081 d
 - **Classes.** C1 to C5 are the classes of the programme's comparison templates
   ([`validation.md`](../../../../docs/javascript-shared-libraries/validation.md) section 4): a correction, a moved
   charge, an implementation-defined choice, the harness or the environment, and data policy by decision.
+- **Paths.** `VM/` is `src/Broiler.VM.Profile.JavaScript/`, as in the correspondence, and a line number is the line at
+  `cd1928d`.
 
 ---
 
@@ -402,15 +404,15 @@ Each decision below was taken on 2026-10-26 by the owner, under the direction qu
   each, and are recorded as revised. Each quotes the plan's text it replaces.
 - **D32 to D35** are new, on findings the plan had no decision for.
 
-The decisions that bind Broiler.JS are D5 to D8, D11 to D13, D16, D17, D21, D24, D25, D29 and D33 to D35. Broiler.JS's
-area entry records its half of them, by these numbers.
+The decisions that bind Broiler.JS, in its engine, its data home or its rule, are D3 to D18, D20 to D26, D28 to D30 and
+D32 to D35. Broiler.JS's area entry records its half of them, by these numbers.
 
 ### Start, numbers and staging
 
 **Decision D1 - the start record.** One dated ledger entry, SJL-9.0, quoting the owner's words of 2026-10-19 and the
 standing direction. It says that SJL-9 waits on SJL-7, SJL-8 and SJL-4's rounding, and through them on SJL-3, and that
-the choice moves no gate. SJL-9's row moves to `In progress`. The reason: the precedent of SJL-4.0 to SJL-8.0,
-SJL-10.0 and SJL-11.0; update rule 10 holds the row to the milestones it waits on.
+the choice moves no gate. SJL-9's row moves to `In progress`. The reason: the precedent of SJL-4.0 to SJL-8.0 and
+SJL-10.0; update rule 10 holds the row to the milestones it waits on.
 
 **Decision D2 - numbers, names and people.** This record is the verdict, at the next free number, JSD-0082; a second
 record, the cut-over's, at SJL-9.4; bundles `sjl-9-001` in both repositories, this family's rule
@@ -419,15 +421,15 @@ next free JSC and SJL-9.6 the next free EX, at filing. The owner, the co-signers
 header states. The plan's text read "Verdict JSD at the next free number (expected JSD-0081)"; JSD-0081 is SJL-11's,
 which filed first. The reason: JSD-0078's shape; SJL-D-22's holders include the Broiler.Unicode maintainer.
 
-**Decision D3 - staging and order.** **One ledger row, with lettered work packages.** SJL-9.2 is split a to c;
-SJL-9.3a to f is one merge per library stage; SJL-9.4 and SJL-9.5 are each **one cut-over merge**, prepared as one
-commit per sub-area. The sub-areas are taken in the order (a) to (e) of this record's status: locale identifiers;
-the mathematical value and plural rules; number formatting and the small formatters; date-time; duration. That order
-is a dated work-package revision of SJL-9.3's and of the area design's section 1, each quoting the old text. Each
-sub-area can still be refused, and its commit then leaves the branch. The reason: this family's plural rules,
-relative time and duration call its number formatter, and duration also needs lists; one merge keeps each window to a
-single merge (decision D4) and needs one published package; the precedent of SJL-4.3a to g and of SJL-10.4's and
-SJL-10.5's single cut-overs.
+**Decision D3 - staging and order.** **One ledger row, with lettered work packages.** SJL-9.2 is split a to c; SJL-9.3a
+to f is one merge per library stage; SJL-9.4 and SJL-9.5 are each **one cut-over merge**, prepared as one commit per
+sub-area. The sub-areas are taken in the order (a) to (e) of this record's status: locale identifiers; the mathematical
+value and plural rules; number formatting and the small formatters; date-time; duration. That order is a dated
+work-package revision of SJL-9.3's and of the area design's section 1, each quoting the old text. Each sub-area can
+still be refused at SJL-9.1, and its commit then leaves the branch. The reason: this family's plural rules, relative
+time and duration call its number formatter, and duration also needs lists; one merge keeps each window to a single
+merge (decision D4) and needs one published package; the precedent of SJL-4.3a to g and of SJL-10.4's and SJL-10.5's
+single cut-overs.
 
 **Decision D4 - the base and after commits.** **The after commit is the cut-over merge, and the base is its first
 parent.** The base descends from the rule commit and from bundle `sjl-12-001`'s after commit in that repository, and
@@ -488,13 +490,14 @@ shows that under invariant globalization `en-US` is not in Broiler.JS's list (F2
 another default than its Intl services (F3).
 
 **Decision D8 - the data contract.** **Two layers.** First, `IIntlDataSet`, a version and one span per `IntlTable`,
-whose enum keeps `JsIntlTable`'s numbers, with 7, 23 and 24 retired and not reused, and appends values only for
-tables this family's data never carries; each engine answers an empty span for a table it lacks. Second, the library
-decodes it into a question-level `ILocaleData`, which Broiler.JS's host provider also implements, and which
-`CompositeLocaleData` orders: the shared data first, then an optional secondary, then the parent and root. **This
-family keeps `IJsIntlData` and `JsIntlTable` public** in Format and adapts them internally. The reason: SJL-D-6 (c),
-decoding stays in shared code; `IJsIntlData`, `JsIntlTable` and `JsComposition.IntlData` are in `public-api.txt`, and
-replacing them breaches rule I6 and the baseline, as SJL-8.5 avoided.
+whose enum keeps `JsIntlTable`'s numbers, with 7, 23 and 24 retired and not reused, and appends values only for tables
+this family's data never carries; each engine answers an empty span for a table it lacks. Second, the library decodes it
+into a question-level `ILocaleData`, which Broiler.JS's host provider also implements, and which `CompositeLocaleData`
+orders: the shared data first, then an optional secondary, then the parent and root, as the plan's step for the
+library's skeleton orders it. **This family keeps `IJsIntlData` and `JsIntlTable` public** in Format and adapts them
+internally. The reason: SJL-D-6 (c), decoding stays in shared code; `IJsIntlData`, `JsIntlTable` and
+`JsComposition.IntlData` are in `public-api.txt`, and replacing them breaches rule I6 and the baseline, as SJL-8.5
+avoided.
 
 **Decision D9 - the package.** **A new `Broiler.ECMAScript.Intl`**, referencing `Broiler.ECMAScript.Algorithms` and
 `Broiler.Unicode.Algorithms`. This family's profile project references it as a product entry, and every root that
@@ -586,16 +589,31 @@ Broiler.JS, which passes the `canonical-tz` tests; `ecma402`'s `main` still read
 Temporal revision both engines pin overrides it; JSD-0076 left the edition question to SJL-9; and T26's names are the
 implementation's, which this family's rule keeps.
 
-The plan's text was the paragraphs above without the one marked *New*, and named SJL-D-20 and this family as
-"Broiler.VM". Without it, "only the resolved-name lines" held only if the zone's names kept coming from the primary
-(F9).
+The plan's text read: "**Settled by the pinned text: the identifier as given, case-normalised.** `e8cc03fc`'s
+`intl.html:434` replaces CanonicalizeTimeZoneName with `[[Identifier]]`, and both engines follow it (JSD-0078 D1);
+SJL-D-20 ties canonical-tz to that edition. **It is Broiler.VM's correction, made at SJL-9.4**, which also admits
+`canonical-tz` to its scored suite, and touches only the resolved-name lines of its divergences files (rewritten,
+removed where Node's retained line already resolves the identifier to itself, or added) and their headers. Broiler.JS
+does not change. The shared resolution answers both names, and the engine adapter takes the identifier. The vectors'
+per-engine Z8 expectations become one at the next revision." Its reason: "T2 forbids moving Broiler.JS, which passes
+the canonical-tz tests. `ecma402` `main` still reads `[[PrimaryIdentifier]]`, but the Temporal revision both pin
+overrides it. JSD-0076 left the edition question to SJL-9."
+
+Finding F9 showed that "only the resolved-name lines" held only if the zone's names kept coming from the primary. The
+revision changes two of the plan's sentences:
+- "Broiler.JS does not change." now reads "Broiler.JS does not change its resolved identifier.", because its names for
+  an identifier that is not its own primary move under row T26;
+- "The shared resolution answers both names, and the engine adapter takes the identifier." gives way to the paragraph
+  marked *New*, which also has the library name the zone by the primary.
+
+The paragraph marked *New* and the reason's last clause, on T26's names, are added.
 
 **Decision D16 - the reference datasets as acceptance data.** Copy every `src/tests/cldr/` area except `orderings`
 (SJL-17's) and `timezones` (already copied, SJL-8.4), plus the three Temporal Intl programs, into Broiler.JS's
 `conformance/datasets/intl/` with a new pin. Extend the harness (`--bundle sjl-9-001`,
 `--invariant-globalization`). **Classify every divergence group** as `spec`, `coverage` or `zone` in Broiler.JS's
 `divergence-groups.tsv`, committed with its rule. Broiler.JS's part C admits classes V, R, Z8, O and H only.
-`segments` is copied, as the milestone says, and its lines are class O. The reason: the milestone's "acceptance data
+`segments` is copied, as the milestone says, and its line is class O. The reason: the milestone's "acceptance data
 for both engines"; it follows SJL-8.4's dataset discipline; this family's divergence files mix the draft's
 corrections with its coverage policy.
 
@@ -757,8 +775,22 @@ disposition (a)). Nothing public is removed.
 The reason: an incomplete list misses rule I5's rows; the public members are the prototype entry points the engine
 keeps; ToDurationRecord's work is reading a script value's properties, which is engine work, as ToTemporalDuration's
 reads already are, and deleting it would drop a reading ECMA-402 alone still states, for a composition, Intl without
-Temporal, that the profile's optionality may yet build. The plan's text was the list above without the paragraph
-marked *New*.
+Temporal, that the profile's optionality may yet build.
+
+The plan's text read: "**Broiler.VM:** the area design's list, **plus**: the `JsRealm.Locale` cores (`:333-592`);
+every `JsIntlTables` decoder and its lazies (numbers, dates, locale info, zone names); `SupportedValuesOf`'s core; the
+helper types (`JsDecimalKind`, `JsRawFormat`, `JsNumberPart`, `JsCurrencyNames`, `JsAffixKind` and `JsAffixToken`,
+`JsNumberPattern`, `JsPluralOperands`, `JsDatePart`, `JsDateField`, `JsZoneKind`, `JsLocalTime`, `JsZoneNaming`,
+`JsDayPeriodRule`); and, on the test side, `CldrTableGenerator.cs`, `UnicodeDatabase.cs` and `CldrPin.cs`.
+**Minus:** `NewCollator` and `CollatorKeyData` (SJL-17), and `JsRealm.Segmenter.cs` (SJL-7). **Broiler.JS:** the area
+design's list, plus `JSIntlDefaultNumberingSystems.g.cs` and its script. Its public Intl types (`JSIntlNumberFormat`
+and the others) **stay as the engine's Intl objects with every public member**, disposition (a). Nothing is
+removed." Its reason: "An incomplete list misses I5 rows. The public members are the prototype entry points the engine
+keeps."
+
+Finding F14 narrows the plan's last sentence, "Nothing is removed.", to "Nothing public is removed.": the members of
+T42 that are not public join Broiler.JS's deletion list, and its public ones stay. The paragraph marked *New* and the
+reason's sentence on ToDurationRecord are added.
 
 **Decision D25 - Broiler.JS's correction list** *(revised 2026-10-26, findings F6 and F7)*. SJL-9.5's correction list
 is the correspondence's column "Correction of Broiler.JS", row by row:
@@ -826,14 +858,24 @@ correspondence, whose section "The leftover items (D26)" gives each verdict.
 - `sjl-6-001/README.md:356, 368`;
 - `sjl-7-001/README.md:172, 548`.
 
-The reason: they are recorded as SJL-9's in five bundles and would otherwise be missed. The plan's citations had
-drifted, and one item read as an open defect what SJL-7.5 had already changed.
+The reason: they are recorded as SJL-9's in earlier bundles of both repositories and would otherwise be missed. The
+plan's citations had drifted, and one item read as an open defect what SJL-7.5 had already changed.
+
+The plan's text read: "Each becomes a row of the correspondence. From Broiler.VM's bundles: `sjl-3-001/README.md:254`;
+`sjl-4-001/correspondence.md:120-124` (rows 1, 4 and 5); `sjl-5-001/README.md:247, 252` and `correspondence.md:183`;
+`sjl-6-001/correspondence.md:186-189`; `sjl-8-001/README.md:544` (`JsZoneNames.City` for `Etc/`);
+`sjl-10-001/correspondence.md:198-202, 236-241` (377fb80e, the [n] Intl calendar identifiers); Z8. From Broiler.JS's
+bundles: `sjl-3-001/README.md:194`; `sjl-4-001/README.md:267-268, 278`; `sjl-6-001/README.md:356, 368`;
+`sjl-7-001/README.md:172, 548`." Its reason: "They are recorded as SJL-9's in [n] bundles and would otherwise be
+missed." Its counts are left out here (validation principle 5).
 
 **Decision D27 - earlier records.** JSD-0027 §4 **stands** (the package was not accepted, and the shared data is this
-family's generator's output, pinned and reviewed). JSD-0046 §5 is **amended** by a dated note: for `getTimeZones`,
-which now answers a region's zones, as the plan said, and for `getCalendars` and `getCollations`, whose readings
-finding F16 found stale too. JSD-0043 is **not amended** here; it is SJL-17's. The reason: the roadmap's section 11
-row for SJL-9, and update rules 1 and 5.
+family's generator's output, pinned and reviewed). JSD-0046 §5 is **amended** for `getTimeZones`, by a dated note.
+JSD-0043 is **not amended** here; it is SJL-17's. The reason: the roadmap's section 11 row for SJL-9, and update rules
+1 and 5.
+
+The same dated note also carries finding F16's readings of the section's `getCalendars` (row L16) and `getCollations`
+(row L18, decision D32), which are a record only (section "The design's readings"). They do not revise this decision.
 
 **Decision D28 - cut-over order.** **This family first**, which validates the port against an unchanged answer set;
 then Broiler.JS. The two merges may be days apart, and each repository is judged alone. The reason: SJL-10.4 then
@@ -890,7 +932,8 @@ The library keeps both engines' answer.
 `format(-1, "second")` is `"1 second ago"`. That is what `RelativeTimeFormat/prototype/format/en-us-numeric-always.js`
 asserts, and what both engines and Node write. The pinned step
 "PartitionNumberPattern(_relativeTimeFormat_.[[NumberFormat]], ℝ(_value_))", whose NumberFormat's `signDisplay` is
-`"auto"`, is read as formatting the absolute value, because the past pattern carries the sign. `tc39/ecma402` `main` at `3691634` (2026-10-23) reads as the pin.
+`"auto"`, is read as formatting the absolute value, because the past pattern carries the sign. `tc39/ecma402` `main`
+at `3691634` (2026-10-23) reads as the pin.
 
 **(b) T8.** CreateDateTimeFormat, as `e8cc03fc` amends it, sets [[HourCycle]] always. `resolvedOptions` reports
 `hourCycle` and `hour12` only when [[DateTimeFormat]] has an [[hour]] field, as `3d4c558`'s text and
@@ -955,9 +998,10 @@ engines.
 
 ## Every row, classified
 
-Each row is in one class, as the correspondence's section "The rows by class" puts it.
+Each row is in one class, as the correspondence's section "The rows by class" puts it. The columns are its classes,
+"Same in both" and "Engine policy (a parameter)" shortened.
 
-| Sub-area | Same | Correction of Broiler.JS | Correction of this family | Implementation-defined | Data policy (C5) | Engine policy | Code no input reaches |
+| Sub-area | Same | Correction of Broiler.JS | Correction of Broiler.VM | Implementation-defined | Data policy (C5) | Engine policy | Code no input reaches |
 |---|---|---|---|---|---|---|---|
 | (a) L | L1, L3, L4, L11, L13, L16, L23, L27, L31, L34, L36, L38, L39, L41 | L2, L10, L12, L14, L15, L17, L20, L21, L25, L29, L30, L37, L44, L45 | L9, L18 (decision D32) | | L5, L6, L7, L8, L19, L22, L24, L26, L32 | L28, L33, L35, L40, L43 | L42 |
 | (b) M and P | M2a, M6, M8, M10, P5c, P8 | M1a, M1b, M2b, M3, M4, M5, M7, P1, P2, P5a, P6, P7 | | P5b (an adoption) | P3 | M9 | P4 |
@@ -1022,8 +1066,8 @@ Each is corrected beside the reading, which is quoted there, in this record's ch
   - section 5's corrections are reconciled with SJL-9.5's list (decision D25).
 - **The milestone**, `sjl-9-locale-data-and-intl.md`: SJL-9.1's population (decision D16); SJL-9.2's "the agreed
   locale set", per embedding (decision D5); SJL-9.3's order and gate (decisions D3 and D22); SJL-9.4's deletion list
-  and corrections (decisions D24 and D32); SJL-9.5's correction list (decision D25); SJL-9.6's "as in SJL-3.6"
-  (decisions D22 and D23); and exit clause 3, per engine (decision D5).
+  and corrections (decisions D24 and D32); SJL-9.5's deletion list (decision D24) and correction list (decision D25);
+  SJL-9.6's "as in SJL-3.6" (decisions D22 and D23); and exit clause 3, per embedding (decision D5).
 - **SJL-17's milestone**: SJL-17.5's deletion item "the collator's platform normalization" was done at SJL-7.5.
 - **JSD-0046 §5** (decision D27, finding F16):
   - **`getCalendars`** answers `gregory` because the profile's data holds no CLDR calendar preference data (row L16),
@@ -1060,8 +1104,8 @@ Each is corrected beside the reading, which is quoted there, in this record's ch
    - **This family's** are Z8, L18 and L9, made at SJL-9.4 (decisions D15 and D32).
    - **Broiler.JS's** are the rows decision D25 lists, fixes under SJL-D-16 (a), each listed in its changelog at
      SJL-9.5 with its data and implementation-defined changes.
-6. **The deletion lists** are X6's (decision D24). The milestone's SJL-9.4 and SJL-9.5 lists are revised under update
-   rule 5.
+6. **The deletion lists** are X6's (decision D24). The milestone's SJL-9.4 and SJL-9.5 deletion lists are revised
+   under update rule 5.
 7. **The reference datasets** this family retains under `src/tests/cldr/` and `src/tests/temporal/` are the acceptance
    data of both engines (decision D16). Here, part B holds them unchanged but for classes Z8 and L18.
 8. **The bases** are each repository's bundle `sjl-9-001`'s, at the first parent of its cut-over merge (decision D4).
