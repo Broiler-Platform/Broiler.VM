@@ -1,0 +1,9 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/x-tag-validation.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/x-tag-validation.js sha256 26b0e9e848e6426b039b6b1cff83f29703dd5923c7774117c4c0191dd246628d
+tag "en\u000a": getCanonicalLocales; Intl.Locale; NumberFormat locales => [["en\u000a"], "en\u000a", "en-US"]
+tag "en-US\u000a": getCanonicalLocales; Intl.Locale; NumberFormat locales => [["en-us\u000a"], "en-us\u000a", "en-us\u000a"]
+tag "de-\u0661\u0662\u0663": getCanonicalLocales; Intl.Locale; NumberFormat locales => [["de-\u0661\u0662\u0663"], "de-\u0661\u0662\u0663", "de-\u0661\u0662\u0663"]
+tag "en-\u0661\u0662\u0663": getCanonicalLocales; Intl.Locale; NumberFormat locales => [["en-\u0661\u0662\u0663"], "en-\u0661\u0662\u0663", "en-\u0661\u0662\u0663"]
+tag "de-DE\u000a": getCanonicalLocales; Intl.Locale; NumberFormat locales => [["de-de\u000a"], "de-de\u000a", "de-de\u000a"]
+exit=0

@@ -1,0 +1,18 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/u09-object.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/u09-object.js sha256 bed3f832b2b38cc23e9db4818d6cfd66f3b09038cf40a0eee30336e4fb98739b
+U18 new Sub() prototype is Sub.prototype => [true, true, "1 hr"]
+U18 Reflect.construct(Intl.DurationFormat, [], Array) prototype => true
+U18 Intl.DurationFormat() => THROWS TypeError: Intl.DurationFormat requires 'new'
+U18 format.call({}) => THROWS TypeError: Intl.DurationFormat.prototype.format called on incompatible receiver
+U18 resolvedOptions.call(Intl.DurationFormat.prototype) => THROWS TypeError: Intl.DurationFormat.prototype.resolvedOptions called on incompatible receiver
+U18 Object.prototype.toString => "[object Intl.DurationFormat]"
+U18 lengths => [0, 1, 1, 0, 1]
+U18 new Intl.DurationFormat("en", null) => THROWS TypeError: Options must be an object or undefined
+U18 new Intl.DurationFormat("en", "long") => THROWS TypeError: Options must be an object or undefined
+U18 new Intl.DurationFormat("en", undefined).resolvedOptions().style => "short"
+U18 style read through ToString => "long"
+U18 option reads, every option given => "localeMatcher,numberingSystem,style,years,yearsDisplay,months,monthsDisplay,weeks,weeksDisplay,days,daysDisplay,hours,hoursDisplay,minutes,minutesDisplay,seconds,secondsDisplay,milliseconds,millisecondsDisplay,microseconds,microsecondsDisplay,nanoseconds,nanosecondsDisplay,fractionalDigits"
+U18 option reads, an empty bag => "localeMatcher,numberingSystem,style,years,yearsDisplay,months,monthsDisplay,weeks,weeksDisplay,days,daysDisplay,hours,hoursDisplay,minutes,minutesDisplay,seconds,secondsDisplay,milliseconds,millisecondsDisplay,microseconds,microsecondsDisplay,nanoseconds,nanosecondsDisplay,fractionalDigits"
+U18 format is the prototype method on every instance => true
+exit=0

@@ -1,0 +1,43 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/n6-compact.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/n6-compact.js sha256 413ed62aed9f58b3dcf9b50c5240354168642d1d7bc994737c8607f7614a7f70
+en compact short => ["999", "1000", "1000", "1K", "1.5K", "12K", "100K", "1000K", "1M", "1.2M", "2M", "1B", "1T", "1500T", "0.012", "-12K"]
+en compact long => ["999", "1000", "1000", "1 thousand", "1.5 thousand", "12 thousand", "100 thousand", "1000 thousand", "1 million", "1.2 million", "2 million", "1 billion", "1 trillion", "1500 trillion", "0.012", "-12 thousand"]
+de compact short => ["999", "1000", "1000", "1000", "1500", "12.345", "99.999", "999.999", "1\u00a0Mio.", "1,2\u00a0Mio.", "2\u00a0Mio.", "1\u00a0Mrd.", "1\u00a0Bio.", "1500\u00a0Bio.", "0,012", "-12.345"]
+de compact long => ["999", "1000", "1000", "1 Tausend", "1,5 Tausend", "12 Tausend", "100 Tausend", "1000 Tausend", "1 Millionen", "1,2 Millionen", "2 Millionen", "1 Milliarden", "1 Billionen", "1500 Billionen", "0,012", "-12 Tausend"]
+ja compact short => ["999", "1000", "1000", "1000", "1500", "1.2\u4e07", "10\u4e07", "100\u4e07", "100\u4e07", "120\u4e07", "200\u4e07", "10\u5104", "1\u5146", "1500\u5146", "0.012", "-1.2\u4e07"]
+ja compact long => ["999", "1000", "1000", "1000", "1500", "1.2\u4e07", "10\u4e07", "100\u4e07", "100\u4e07", "120\u4e07", "200\u4e07", "10\u5104", "1\u5146", "1500\u5146", "0.012", "-1.2\u4e07"]
+ko compact short => ["999", "1000", "1000", "1\ucc9c", "1.5\ucc9c", "1.2\ub9cc", "10\ub9cc", "100\ub9cc", "100\ub9cc", "120\ub9cc", "200\ub9cc", "10\uc5b5", "1\uc870", "1500\uc870", "0.012", "-1.2\ub9cc"]
+ko compact long => ["999", "1000", "1000", "1\ucc9c", "1.5\ucc9c", "1.2\ub9cc", "10\ub9cc", "100\ub9cc", "100\ub9cc", "120\ub9cc", "200\ub9cc", "10\uc5b5", "1\uc870", "1500\uc870", "0.012", "-1.2\ub9cc"]
+zh compact short => ["999", "1000", "1000", "1000", "1500", "1.2\u4e07", "10\u4e07", "100\u4e07", "100\u4e07", "120\u4e07", "200\u4e07", "10\u4ebf", "1\u5146", "1500\u5146", "0.012", "-1.2\u4e07"]
+zh compact long => ["999", "1000", "1000", "1000", "1500", "1.2\u4e07", "10\u4e07", "100\u4e07", "100\u4e07", "120\u4e07", "200\u4e07", "10\u4ebf", "1\u5146", "1500\u5146", "0.012", "-1.2\u4e07"]
+zh-TW compact short => ["999", "1000", "1000", "1000", "1500", "1.2\u842c", "10\u842c", "100\u842c", "100\u842c", "120\u842c", "200\u842c", "10\u5104", "1\u5146", "1500\u5146", "0.012", "-1.2\u842c"]
+zh-TW compact long => ["999", "1000", "1000", "1000", "1500", "1.2\u842c", "10\u842c", "100\u842c", "100\u842c", "120\u842c", "200\u842c", "10\u5104", "1\u5146", "1500\u5146", "0.012", "-1.2\u842c"]
+en-IN compact short => ["999", "1000", "1000", "1K", "1.5K", "12K", "100K", "10L", "10L", "12L", "20L", "100Cr", "1,00,000Cr", "15,00,00,000Cr", "0.012", "-12K"]
+en-IN compact long => ["999", "1000", "1000", "1thousand", "1.5thousand", "12thousand", "100thousand", "10lakh", "10lakh", "12lakh", "20lakh", "100crore", "1,00,000crore", "15,00,00,000crore", "0.012", "-12thousand"]
+fr compact short => ["999", "999,5", "999,995", "1000", "1500", "12\u202f345", "99\u202f999", "999\u202f999", "1\u202f000\u202f000", "1\u202f200\u202f000", "2\u202f000\u202f000", "1\u202f000\u202f000\u202f000", "1\u202f000\u202f000\u202f000\u202f000", "1\u202f500\u202f000\u202f000\u202f000\u202f000", "0,012", "-12\u202f345"]
+fr compact long => ["999", "999,5", "999,995", "1000", "1500", "12\u202f345", "99\u202f999", "999\u202f999", "1\u202f000\u202f000", "1\u202f200\u202f000", "2\u202f000\u202f000", "1\u202f000\u202f000\u202f000", "1\u202f000\u202f000\u202f000\u202f000", "1\u202f500\u202f000\u202f000\u202f000\u202f000", "0,012", "-12\u202f345"]
+es compact short => ["999", "999,5", "999,995", "1000", "1500", "12.345", "99.999", "999.999", "1.000.000", "1.200.000", "2.000.000", "1.000.000.000", "1.000.000.000.000", "1.500.000.000.000.000", "0,012", "-12.345"]
+es compact long => ["999", "999,5", "999,995", "1000", "1500", "12.345", "99.999", "999.999", "1.000.000", "1.200.000", "2.000.000", "1.000.000.000", "1.000.000.000.000", "1.500.000.000.000.000", "0,012", "-12.345"]
+pt compact short => ["999", "999,5", "999,995", "1000", "1500", "12.345", "99.999", "999.999", "1.000.000", "1.200.000", "2.000.000", "1.000.000.000", "1.000.000.000.000", "1.500.000.000.000.000", "0,012", "-12.345"]
+pt compact long => ["999", "999,5", "999,995", "1000", "1500", "12.345", "99.999", "999.999", "1.000.000", "1.200.000", "2.000.000", "1.000.000.000", "1.000.000.000.000", "1.500.000.000.000.000", "0,012", "-12.345"]
+ru compact short => ["999", "999,5", "999,995", "1000", "1500", "12\u00a0345", "99\u00a0999", "999\u00a0999", "1\u00a0000\u00a0000", "1\u00a0200\u00a0000", "2\u00a0000\u00a0000", "1\u00a0000\u00a0000\u00a0000", "1\u00a0000\u00a0000\u00a0000\u00a0000", "1\u00a0500\u00a0000\u00a0000\u00a0000\u00a0000", "0,012", "-12\u00a0345"]
+ru compact long => ["999", "999,5", "999,995", "1000", "1500", "12\u00a0345", "99\u00a0999", "999\u00a0999", "1\u00a0000\u00a0000", "1\u00a0200\u00a0000", "2\u00a0000\u00a0000", "1\u00a0000\u00a0000\u00a0000", "1\u00a0000\u00a0000\u00a0000\u00a0000", "1\u00a0500\u00a0000\u00a0000\u00a0000\u00a0000", "0,012", "-12\u00a0345"]
+de compact long 1e6, 2e6, 1e9, 2e9 (plural) => ["1 Millionen", "2 Millionen", "1 Milliarden", "2 Milliarden"]
+en compact 5e-324, 0.0001234 => ["0", "0.00012"]
+en compact "123456789012345678901234567890.5" => "123,456,789,012,345,678T"
+en compact maximumSignificantDigits 3: 12345, 1234567 => ["12K", "1.2M"]
+en compact maximumFractionDigits 2: 12345, 1234567 => ["12.35K", "1.23M"]
+en compact roundingMode floor 1990 => "1.9K"
+en compact formatToParts(-1234567) => [minusSign:"-", integer:"1", decimal:".", fraction:"2", compact:"M"]
+en compact long formatToParts(1234567) => [integer:"1", decimal:".", fraction:"2", literal:" ", compact:"million"]
+ja compact formatToParts(987654321) => [integer:"9", decimal:".", fraction:"9", compact:"\u5104"]
+en compact useGrouping default 1234 (no compact), 12345678912 => ["1.2K", "1235T"]
+en currency USD compact 0, 1234.5, 1234567, -1234567 => ["$0.00", "$1234.50", "$1,234,567.00", "-$1,234,567.00"]
+en currency EUR compact long 1234567 => "\u20ac1,234,567.00"
+en currency EUR name compact 1234567 => "\u20ac1,234,567.00"
+de currency USD compact 0, 1234.5, 1234567, -1234567 => ["0,00\u00a0$", "1234,50\u00a0$", "1.234.567,00\u00a0$", "-1.234.567,00\u00a0$"]
+de currency EUR compact long 1234567 => "1.234.567,00\u00a0\u20ac"
+de currency EUR name compact 1234567 => "1.234.567,00\u00a0\u20ac"
+en currency USD compact formatToParts(1234567) => [currency:"$", integer:"1", group:",", integer:"234", group:",", integer:"567", decimal:".", fraction:"00"]
+exit=0

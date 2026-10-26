@@ -1,0 +1,58 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-U/u07-locale-data.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/u07-locale-data.js sha256 1a72c678111d336e033a9d16ea7859a07de567f62615f86dfe3c96e8bb10b8bb
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-U/u07-locale-data.js [raw]  uncaught Error: OUT<<U13-U14 en {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en latn \u00221:02:03\u0022"
+U13-U14 de {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "de latn \u00221:02:03\u0022"
+U13-U14 da {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13-U14 id {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13-U14 si {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13-U14 en-DK {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en latn \u00221:02:03\u0022"
+U13-U14 fi {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13-U14 af {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13-U14 lt {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13-U14 es-CL {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13-U14 sr {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13-U14 be {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U13 da {"style":"long","minutes":"numeric"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221 hour, 2:03\u0022"
+U15 fr {"style":"long"} {"hours":1,"minutes":2} => "en-US latn \u00221 hour, 2 minutes\u0022"
+U15 ja {"style":"long"} {"hours":1,"minutes":2} => "en-US latn \u00221 hour, 2 minutes\u0022"
+U15 es {"style":"long"} {"hours":1,"minutes":2} => "en-US latn \u00221 hour, 2 minutes\u0022"
+U15 ar {"style":"long"} {"hours":1,"minutes":2} => "en-US latn \u00221 hour, 2 minutes\u0022"
+U15 zh-TW {"style":"long"} {"hours":1,"minutes":2} => "en-US latn \u00221 hour, 2 minutes\u0022"
+U15 de {"style":"short"} {"nanoseconds":1} => "de latn \u00221 ns\u0022"
+U15 de {"style":"short"} {"milliseconds":1,"microseconds":1} => "de latn \u00221 ms, 1 \u005cu03bcs\u0022"
+U15 de {"style":"narrow"} {"hours":1,"milliseconds":1} => "de latn \u00221h, 1ms\u0022"
+U15 de {"style":"narrow"} {"hours":2,"milliseconds":2} => "de latn \u00222h, 2 ms\u0022"
+U16 en {"style":"short","numberingSystem":"arab"} {"hours":-1,"minutes":-2,"seconds":-3} => "en arab \u0022-\u005cu0661 hr, \u005cu0662 min, \u005cu0663 sec\u0022"
+U16 en {"style":"short","numberingSystem":"arab"} {"days":1000} => "en arab \u0022\u005cu0661,\u005cu0660\u005cu0660\u005cu0660 days\u0022"
+U16 en {"style":"digital","numberingSystem":"arab"} {"hours":1,"minutes":2,"seconds":3,"milliseconds":500} => "en arab \u0022\u005cu0661:\u005cu0660\u005cu0662:\u005cu0660\u005cu0663.\u005cu0665\u0022"
+U16 de {"style":"short","numberingSystem":"arab"} {"years":-1,"months":-2} => "de arab \u0022-\u005cu0661 J, \u005cu0662 Mon.\u0022"
+U16 en-u-nu-arab {"style":"short"} {"hours":1} => "en-u-nu-arab arab \u0022\u005cu0661 hr\u0022"
+U16 en-u-nu-arab {"style":"short","numberingSystem":"latn"} {"hours":1} => "en latn \u00221 hr\u0022"
+U16 en-u-ca-gregory-nu-latn {} {"hours":1} => "en-u-nu-latn latn \u00221 hr\u0022"
+U16 ar-EG {"style":"short"} {"hours":1,"minutes":2} => "en-US latn \u00221 hr, 2 min\u0022"
+U16 fa {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "en-US latn \u00221:02:03\u0022"
+U16 en {"style":"short","numberingSystem":"abcd"} {"hours":1} => "en latn \u00221 hr\u0022"
+U15 supportedLocalesOf([fr, de-AT, da, en]) => ["de-AT", "en"]
+U15 NumberFormat ar unit hour long 1, 2 => ["en-US", "1 hour", "2 hours"]
+U15 ListFormat ar unit long ["x", "y"] => "x, y"
+U16 NumberFormat en arab -1234.5 => "-\u0661,\u0662\u0663\u0664.\u0665">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-U/u07-locale-data.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-U  e.g. test/sjl9/rows-U/u07-locale-data.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-U/u07-locale-data.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

@@ -1,0 +1,20 @@
+# bisect-vm-fuel.sh over probes/t12-charge-c.js (sha256 7e09ca99b236950d746a42ffdbbf0bc13cf435fef2374236a4c890567074023b), form native, Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40; each step: run-vm.sh's command with --fuel N
+fuel 1: exhausted
+fuel 100000: completes
+fuel 50000: completes
+fuel 25000: completes
+fuel 12500: completes
+fuel 6250: completes
+fuel 3125: completes
+fuel 1563: completes
+fuel 782: completes
+fuel 391: exhausted
+fuel 586: completes
+fuel 488: completes
+fuel 439: completes
+fuel 415: completes
+fuel 403: completes
+fuel 397: completes
+fuel 394: exhausted
+fuel 395: completes
+result: smallest completing fuel 395 (exhausted at 394)

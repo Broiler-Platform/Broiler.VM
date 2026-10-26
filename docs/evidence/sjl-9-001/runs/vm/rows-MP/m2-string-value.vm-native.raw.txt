@@ -1,0 +1,40 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-MP/m2-string-value.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/m2-string-value.js sha256 b370cd5e7e41577241e1d1e04db8f122b57f6aa5adac772a599f727349ccd4f7
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-MP/m2-string-value.js [raw]  uncaught Error: OUT<<M2 "1.15" maxFD 1; "1.005" maxFD 2 => ["1.2", "1.01"]
+M2 " 12345678901234567890.5 " => "12,345,678,901,234,567,890.5"
+M2 "9007199254740993" => "9,007,199,254,740,993"
+M2 "1e3", ".5", "5.", "+.5e1", "-.5E-1" => ["1,000", "0.5", "5", "5", "-0.05"]
+M2 "", "   ", "-0", "+0", "-0.0001" => ["0", "0", "-0", "0", "-0"]
+M2 "0x1F", "0b101", "0o17", "0X1f" => ["31", "5", "15", "31"]
+M2 "-0x1F", "0x", "1_000", "1e", "abc", "1n", "--1" => ["NaN", "NaN", "NaN", "NaN", "NaN", "NaN", "NaN"]
+M2 "Infinity", "+Infinity", "-Infinity", " Infinity ", "infinity" => ["\u221e", "\u221e", "-\u221e", "\u221e", "NaN"]
+M2 "1e309", "-1e309", "1e-400", "-1e-400" => ["\u221e", "-\u221e", "0", "-0"]
+M2 "1.7976931348623158e308" (rounds to MAX) vs "1.7976931348623159e308" (to Infinity), lengths => [309, "\u221e"]
+M2 "2.4703282292062328e-324" (to MIN) vs "2.4703282292062327e-324" (to 0) maxSD 2 => [327, "0"]
+M2 white space: "\u00a01\ufeff", "\u20281\u2029", "\u00851" => ["1", "1", "NaN"]
+M2 "1.0000000000000000000001" maxFD 25 => "1.0000000000000000000001"
+M2 "1e-7" default and maxSD 3 => ["0", "0.0000001"]
+M2 "0.5" halfEven maxFD 0; "1.5"; "2.5"; "-2.5" => ["0", "2", "2", "-2"]
+M2 Symbol throws => THROWS TypeError: Cannot convert a Symbol value to a number
+M2 formatToParts("-0") => [minusSign:"-", integer:"0"]
+M2 maxSD 2: "1e-400" (length), "-1e-400" (length) => [1, 2]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-MP/m2-string-value.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-MP  e.g. test/sjl9/rows-MP/m2-string-value.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-MP/m2-string-value.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

@@ -1,0 +1,26 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/m5-rounding.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/m5-rounding.js sha256 6e3a53df227d5c5beb151751ea0c504afc9e9c405989f32ab8f62f86b249a0fa
+M6 ceil maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-2 -1 -0 1 2 3 -0 1"
+M6 floor maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-3 -2 -1 0 1 2 -1 0"
+M6 expand maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-3 -2 -1 1 2 3 -1 1"
+M6 trunc maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-2 -1 -0 0 1 2 -0 0"
+M6 halfCeil maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-2 -1 -0 1 2 3 -0 1"
+M6 halfFloor maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-3 -2 -1 0 1 2 -0 1"
+M6 halfExpand maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-3 -2 -1 1 2 3 -0 1"
+M6 halfTrunc maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-2 -1 -0 0 1 2 -0 1"
+M6 halfEven maxFD 0: -2.5 -1.5 -0.5 0.5 1.5 2.5 -0.4 0.6 => "-2 -2 -0 0 2 2 -0 1"
+M6 increment 25 minFD 2 maxFD 2: 1.13, 1.12, 1.125 halfEven, 1.375 halfEven => ["1.25", "1.00", "1.00", "1.50"]
+M6 increment 5000 maxFD 0... minFD 0 maxFD 0: 12345, 7499, 7500 => ["10,000", "5,000", "10,000"]
+M6 morePrecision minSD 2 maxFD 0: 1.234; 123.4 => ["1.2", "123"]
+M6 lessPrecision maxSD 2 maxFD 0: 1.234; 123.4 => ["1", "120"]
+M6 maxSD 3 minSD 3: 0, 9.995, 0.000123456 => ["0.00", "9.99", "0.000123"]
+M7 trailingZeroDisplay stripIfInteger minFD 2: 5, 5.1, 4.9999, 5.001 => ["5.00", "5.10", "5.00", "5.001"]
+M7 trailingZeroDisplay stripIfInteger minSD 2 maxSD 2: 1, 1.5 => ["1.0", "1.5"]
+M7 trailingZeroDisplay stripIfInteger currency EUR: 5, 5.5 => ["\u20ac5.00", "\u20ac5.50"]
+M7 trailingZeroDisplay stripIfInteger formatToParts minFD 2: 5 => [integer:"5", decimal:".", fraction:"00"]
+M7 trailingZeroDisplay stripIfInteger percent minFD 1: 0.05 => "5.0%"
+M6 increment 25 with minFD 2 only (maxFD resolves to 2): 1.13, 1.12; resolvedOptions maxFD => ["1.125", "1.125", 3]
+M6 increment 5 with no fraction option (both resolve to 0): 7, 12; currency USD increment 5: 1.23 => ["7", "12", "$1.25"]
+M6 increment 5 currency JPY (cDigits 0): 7 => "\u00a55"
+exit=0

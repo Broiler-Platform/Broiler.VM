@@ -1,0 +1,21 @@
+# command (from <rows>/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 300 node -e '<print = stdout line; indirect eval of built/t10-temporal.js>'
+# revision: node v22.22.0; ICU 77.1; CLDR 47.0; tz 2025b
+# probe: built/t10-temporal.js sha256 2d6b6e0c1ae25d94f0e0ea9b1d0db69e9bf70b1abd0bfbc9d7cc1db8b5838148
+<anonymous_script>:79
+var T = Temporal;
+        ^
+
+ReferenceError: Temporal is not defined
+    at eval (eval at <anonymous> ([eval]:1:87), <anonymous>:79:9)
+    at eval (<anonymous>)
+    at [eval]:1:87
+    at runScriptInThisContext (node:internal/vm:209:10)
+    at node:internal/process/execution:446:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:444:60)
+    at evalFunction (node:internal/process/execution:279:30)
+    at evalTypeScript (node:internal/process/execution:291:3)
+    at node:internal/main/eval_string:74:3
+
+Node.js v22.22.0
+exit=1

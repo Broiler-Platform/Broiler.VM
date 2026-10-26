@@ -1,0 +1,2 @@
+# compare: work/compare_dataset.py <rows> lists bjs (Broiler.JS harness compare_program at f918b040 over runs/d-lists.bjs.txt; expected = work/datasets/lists--lists.icu-77.1.txt with work/datasets/lists--divergences.txt applied)
+summary: lines=481 compared=481 equal=481 differing=0 divergences-used=36

@@ -1,0 +1,111 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-NS/n5-units.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/n5-units.js sha256 5f809bd6feef151c22dc454a2208a3e7e152a3b46d133ccb639300014c01f1ef
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-NS/n5-units.js [raw]  uncaught Error: OUT<<en kilometer-per-hour short 1, 2, -1.5 => ["1 km/h", "2 km/h", "-1.5 km/h"]
+en kilometer-per-hour long 1, 2, -1.5 => ["1 kilometer per hour", "2 kilometers per hour", "-1.5 kilometers per hour"]
+en kilometer-per-hour narrow 1, 2, -1.5 => ["1km/h", "2km/h", "-1.5km/h"]
+en liter short 1, 2, -1.5 => ["1 L", "2 L", "-1.5 L"]
+en liter long 1, 2, -1.5 => ["1 liter", "2 liters", "-1.5 liters"]
+en liter narrow 1, 2, -1.5 => ["1L", "2L", "-1.5L"]
+en megabyte short 1, 2, -1.5 => ["1 MB", "2 MB", "-1.5 MB"]
+en megabyte long 1, 2, -1.5 => ["1 megabyte", "2 megabytes", "-1.5 megabytes"]
+en megabyte narrow 1, 2, -1.5 => ["1MB", "2MB", "-1.5MB"]
+en celsius short 1, 2, -1.5 => ["1\u00b0C", "2\u00b0C", "-1.5\u00b0C"]
+en celsius long 1, 2, -1.5 => ["1 degree Celsius", "2 degrees Celsius", "-1.5 degrees Celsius"]
+en celsius narrow 1, 2, -1.5 => ["1\u00b0C", "2\u00b0C", "-1.5\u00b0C"]
+en second short 1, 2, -1.5 => ["1 sec", "2 sec", "-1.5 sec"]
+en second long 1, 2, -1.5 => ["1 second", "2 seconds", "-1.5 seconds"]
+en second narrow 1, 2, -1.5 => ["1s", "2s", "-1.5s"]
+en mile-per-gallon short 1, 2, -1.5 => ["1 mpg", "2 mpg", "-1.5 mpg"]
+en mile-per-gallon long 1, 2, -1.5 => ["1 mile per gallon", "2 miles per gallon", "-1.5 miles per gallon"]
+en mile-per-gallon narrow 1, 2, -1.5 => ["1mpg", "2mpg", "-1.5mpg"]
+en liter-per-kilometer short 1, 2, -1.5 => ["1 L/km", "2 L/km", "-1.5 L/km"]
+en liter-per-kilometer long 1, 2, -1.5 => ["1 liter per kilometer", "2 liters per kilometer", "-1.5 liters per kilometer"]
+en liter-per-kilometer narrow 1, 2, -1.5 => ["1L/km", "2L/km", "-1.5L/km"]
+en byte-per-second short 1, 2, -1.5 => ["1 byte/s", "2 byte/s", "-1.5 byte/s"]
+en byte-per-second long 1, 2, -1.5 => ["1 byte per second", "2 bytes per second", "-1.5 bytes per second"]
+en byte-per-second narrow 1, 2, -1.5 => ["1B/s", "2B/s", "-1.5B/s"]
+en kilobit-per-stone short 1, 2, -1.5 => ["1 kb/st", "2 kb/st", "-1.5 kb/st"]
+en kilobit-per-stone long 1, 2, -1.5 => ["1 kilobit per stone", "2 kilobits per stone", "-1.5 kilobits per stone"]
+en kilobit-per-stone narrow 1, 2, -1.5 => ["1kb/st", "2kb/st", "-1.5kb/st"]
+en fluid-ounce short 1, 2, -1.5 => ["1 fl oz", "2 fl oz", "-1.5 fl oz"]
+en fluid-ounce long 1, 2, -1.5 => ["1 fluid ounce", "2 fluid ounces", "-1.5 fluid ounces"]
+en fluid-ounce narrow 1, 2, -1.5 => ["1fl oz", "2fl oz", "-1.5fl oz"]
+en day short 1, 2, -1.5 => ["1 day", "2 days", "-1.5 days"]
+en day long 1, 2, -1.5 => ["1 day", "2 days", "-1.5 days"]
+en day narrow 1, 2, -1.5 => ["1d", "2d", "-1.5d"]
+de kilometer-per-hour short 1, 2, -1.5 => ["1 km/h", "2 km/h", "-1,5 km/h"]
+de kilometer-per-hour long 1, 2, -1.5 => ["1 Kilometer pro Stunde", "2 Kilometer pro Stunde", "-1,5 Kilometer pro Stunde"]
+de kilometer-per-hour narrow 1, 2, -1.5 => ["1 km/h", "2 km/h", "-1,5 km/h"]
+de liter short 1, 2, -1.5 => ["1 l", "2 l", "-1,5 l"]
+de liter long 1, 2, -1.5 => ["1 Liter", "2 Liter", "-1,5 Liter"]
+de liter narrow 1, 2, -1.5 => ["1 l", "2 l", "-1,5 l"]
+de megabyte short 1, 2, -1.5 => ["1 MB", "2 MB", "-1,5 MB"]
+de megabyte long 1, 2, -1.5 => ["1\u00a0Megabyte", "2 Megabyte", "-1,5 Megabyte"]
+de megabyte narrow 1, 2, -1.5 => ["1 MB", "2 MB", "-1,5 MB"]
+de celsius short 1, 2, -1.5 => ["1 \u00b0C", "2 \u00b0C", "-1,5 \u00b0C"]
+de celsius long 1, 2, -1.5 => ["1 Grad Celsius", "2 Grad Celsius", "-1,5 Grad Celsius"]
+de celsius narrow 1, 2, -1.5 => ["1 \u00b0C", "2 \u00b0C", "-1,5 \u00b0C"]
+de second short 1, 2, -1.5 => ["1 Sek.", "2 Sek.", "-1,5 Sek."]
+de second long 1, 2, -1.5 => ["1 Sekunde", "2 Sekunden", "-1,5 Sekunden"]
+de second narrow 1, 2, -1.5 => ["1 Sek.", "2 Sek.", "-1,5 Sek."]
+de mile-per-gallon short 1, 2, -1.5 => ["1 mpg", "2 mpg", "-1,5 mpg"]
+de mile-per-gallon long 1, 2, -1.5 => ["1\u00a0Meile pro Gallone", "2\u00a0Meilen pro Gallone", "-1,5\u00a0Meilen pro Gallone"]
+de mile-per-gallon narrow 1, 2, -1.5 => ["1mpg", "2mpg", "-1,5mpg"]
+de liter-per-kilometer short 1, 2, -1.5 => ["1\u00a0l/km", "2\u00a0l/km", "-1,5\u00a0l/km"]
+de liter-per-kilometer long 1, 2, -1.5 => ["1\u00a0Liter pro Kilometer", "2\u00a0Liter pro Kilometer", "-1,5\u00a0Liter pro Kilometer"]
+de liter-per-kilometer narrow 1, 2, -1.5 => ["1l/km", "2l/km", "-1,5l/km"]
+de byte-per-second short 1, 2, -1.5 => ["1\u00a0Byte/s", "2 Byte/s", "-1,5 Byte/s"]
+de byte-per-second long 1, 2, -1.5 => ["1\u00a0Byte pro Sekunde", "2 Byte pro Sekunde", "-1,5 Byte pro Sekunde"]
+de byte-per-second narrow 1, 2, -1.5 => ["1 B/s", "2 B/s", "-1,5 B/s"]
+de kilobit-per-stone short 1, 2, -1.5 => ["1 kb/Stone", "2 kb/Stone", "-1,5 kb/Stone"]
+de kilobit-per-stone long 1, 2, -1.5 => ["1\u00a0Kilobit pro Stone", "2 Kilobit pro Stone", "-1,5 Kilobit pro Stone"]
+de kilobit-per-stone narrow 1, 2, -1.5 => ["1 kb/Stone", "2 kb/Stone", "-1,5 kb/Stone"]
+de fluid-ounce short 1, 2, -1.5 => ["1 fl.oz.", "2 fl oz", "-1,5 fl oz"]
+de fluid-ounce long 1, 2, -1.5 => ["1\u00a0Fl\u00fcssigunze", "2\u00a0Fl\u00fcssigunzen", "-1,5\u00a0Fl\u00fcssigunzen"]
+de fluid-ounce narrow 1, 2, -1.5 => ["1 fl.oz.", "2 fl oz", "-1,5 fl oz"]
+de day short 1, 2, -1.5 => ["1 Tg.", "2 Tg.", "-1,5 Tg."]
+de day long 1, 2, -1.5 => ["1 Tag", "2 Tage", "-1,5 Tage"]
+de day narrow 1, 2, -1.5 => ["1 T", "2 T", "-1,5 T"]
+en liter long 1 with minimumFractionDigits 1 => "1.0 liters"
+en liter long 1.0001 (max 3 fraction digits) => "1 liter"
+en liter long 0.9999 with maximumFractionDigits 0 => "1 liter"
+en day long 1 and 1n => ["1 day", "1 day"]
+de kilometer-per-hour long formatToParts(-1.5) => [minusSign:"-", integer:"1", decimal:",", fraction:"5", literal:" ", unit:"Kilometer pro Stunde"]
+en kilometer-per-hour short formatToParts(1000) => [integer:"1", group:",", integer:"000", literal:" ", unit:"km/h"]
+en megabyte narrow formatToParts(5) => [integer:"5", unit:"MB"]
+en kilometer compact 1234567 => "1.2M km"
+en kilometer long compact 1234567 => "1.2M kilometers"
+ja kilometer-per-hour short -987, long 2 => ["-987 km/h", "2 kilometers per hour"]
+ko kilometer-per-hour short -987, long 2 => ["-987 km/h", "2 kilometers per hour"]
+zh-TW kilometer-per-hour short -987, long 2 => ["-987 km/h", "2 kilometers per hour"]
+fr kilometer-per-hour short -987, long 2 => ["-987 km/h", "2 kilometers per hour"]
+es kilometer-per-hour short -987, long 2 => ["-987 km/h", "2 kilometers per hour"]
+pl kilometer-per-hour short -987, long 2 => ["-987 km/h", "2 kilometers per hour"]
+invalid unit "METER" => THROWS RangeError: Intl.NumberFormat: invalid unit: METER
+invalid unit "meter-per" => THROWS RangeError: Intl.NumberFormat: invalid unit: meter-per
+invalid unit "kilometer-per-hour-per-second" => THROWS RangeError: Intl.NumberFormat: invalid unit: kilometer-per-hour-per-second
+invalid unit "per-meter" => THROWS RangeError: Intl.NumberFormat: invalid unit: per-meter
+invalid unit "acre-foot" => THROWS RangeError: Intl.NumberFormat: invalid unit: acre-foot
+invalid unit "meter\u000a" => THROWS RangeError: Intl.NumberFormat: invalid unit: meter\u000a
+invalid unit "k\u0131lometer" => THROWS RangeError: Intl.NumberFormat: invalid unit: k\u0131lometer
+unit with style decimal is not resolved => [false, false]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-NS/n5-units.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-NS  e.g. test/sjl9/rows-NS/n5-units.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-NS/n5-units.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

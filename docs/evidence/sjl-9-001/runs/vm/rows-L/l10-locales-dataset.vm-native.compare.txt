@@ -1,0 +1,2 @@
+# compare: work/compare_locales_dataset.py <rows> vm-native (Broiler.JS harness compare_program over runs/l10-locales-dataset.vm-native.txt)
+summary: lines=780 compared=780 equal=780 differing=0 divergences-used=132

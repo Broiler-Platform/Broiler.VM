@@ -1,0 +1,7 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/s-p4.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/s-p4.js sha256 2f08a5681f9b32ebab49cefbb4f499713e951643446c97c458ccb160494ea432
+[{"type":"minute","value":"30"},{"type":"literal","value":":"},{"type":"second","value":"05"}] 30:05
+[{"type":"minute","value":"00"},{"type":"literal","value":":"},{"type":"second","value":"00"}]
+weekday,year,month,day,hour,minute,second,weekday,year,month,day,hour,minute,second
+exit=0

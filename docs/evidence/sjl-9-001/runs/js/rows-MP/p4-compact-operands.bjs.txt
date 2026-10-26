@@ -1,0 +1,12 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/p4-compact-operands.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/p4-compact-operands.js sha256 e56a8dad37a3e71a792f0a2fe0bc69f4e8a6b5eead00e67507c5f5b4cfe71369
+P4 en compact: 1 1000 1000000 1200000 => "en" one other other other
+P4 de compact: 1 1000 1000000 1200000 => "de" one other other other
+P4 fr standard: 1000000 1200000 2000 => "fr" many other other
+P4 fr compact: 1000000 1200000 2000 => "fr" many many other
+P4 es compact: 1000000 1200000 => "es" many many
+P4 it compact long: 1000000 1200000 => "it" many many
+P4 en scientific: 1 1000000 => "en" one other
+P4 fr NumberFormat compact long 1200000 (the plural pattern the formatter picks) => "1\u202f200\u202f000"
+exit=0

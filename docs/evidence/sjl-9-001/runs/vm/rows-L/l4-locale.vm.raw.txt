@@ -1,0 +1,84 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-L/l4-locale.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/l4-locale.js sha256 5efd97998e95efbc958047e935a3ba905f8ccb5f1bd6a59412b7e22e43786d3d
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-L/l4-locale.js [raw]  uncaught Error: OUT<<getters "en-latn-us-u-ca-gregory-co-phonebk-hc-h12-kf-upper-kn-nu-latn-fw-mon" => {toString: "en-Latn-US-u-ca-gregory-co-phonebk-fw-mon-hc-h12-kf-upper-kn-nu-latn", baseName: "en-Latn-US", language: "en", script: "Latn", region: "US", variants: undefined, calendar: "gregory", caseFirst: "upper", collation: "phonebk", firstDayOfWeek: "mon", hourCycle: "h12", numberingSystem: "latn", numeric: true}
+getters "en-u-kn-false" => {toString: "en-u-kn-false", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+getters "en-u-kn-true" => {toString: "en-u-kn", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: true}
+getters "en-u-kf" => {toString: "en-u-kf", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: "", collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+getters "de-DE-1996-fonipa" => {toString: "de-DE-1996-fonipa", baseName: "de-DE-1996-fonipa", language: "de", script: undefined, region: "DE", variants: "1996-fonipa", calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+getters "en-x-foo" => {toString: "en-x-foo", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+getters "und" => {toString: "und", baseName: "und", language: "und", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+getters "en-u-ca-islamicc-co-dict" => {toString: "en-u-ca-islamic-civil-co-dict", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: "islamic-civil", caseFirst: undefined, collation: "dict", firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en-US-u-ca-gregory" {language: "fr", script: "cyrl", region: "ca", variants: "FONIPA-1996", calendar: "Buddhist", collation: "EMOJI", hourCycle: "h23", caseFirst: "lower", numeric: false, numberingSystem: "Arab", firstDayOfWeek: "3"} => {toString: "fr-Cyrl-CA-1996-fonipa-u-ca-buddhist-co-emoji-fw-wed-hc-h23-kf-lower-kn-false-nu-arab", baseName: "fr-Cyrl-CA-1996-fonipa", language: "fr", script: "Cyrl", region: "CA", variants: "1996-fonipa", calendar: "buddhist", caseFirst: "lower", collation: "emoji", firstDayOfWeek: "wed", hourCycle: "h23", numberingSystem: "arab", numeric: false}
+options "en" {calendar: "islamicc"} => {toString: "en-u-ca-islamic-civil", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: "islamic-civil", caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en-u-ca-gregory" {calendar: "japanese"} => {toString: "en-u-ca-japanese", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: "japanese", caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en-u-kn-true" {numeric: false} => {toString: "en-u-kn-false", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en" {numeric: "yes"} => {toString: "en-u-kn", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: true}
+options "en" {numeric: 0} => {toString: "en-u-kn-false", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en" {firstDayOfWeek: "0"} => {toString: "en-u-fw-sun", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: "sun", hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en" {firstDayOfWeek: "7"} => {toString: "en-u-fw-sun", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: "sun", hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en" {firstDayOfWeek: "MON"} => {toString: "en-u-fw-mon", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: "mon", hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en" {firstDayOfWeek: "monday"} => {toString: "en-u-fw-monday", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: "monday", hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en" {region: "419"} => {toString: "en-419", baseName: "en-419", language: "en", script: undefined, region: "419", variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "cel" {variants: "gaulish"} => {toString: "xtg", baseName: "xtg", language: "xtg", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en" {language: "iw"} => {toString: "he", baseName: "he", language: "he", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en-US" {region: "SU"} => {toString: "en-RU", baseName: "en-RU", language: "en", script: undefined, region: "RU", variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en" {variants: "hepburn-heploc"} => {toString: "en-alalc97", baseName: "en-alalc97", language: "en", script: undefined, region: undefined, variants: "alalc97", calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options "en-u-ca-gregory" {calendar: undefined} => {toString: "en-u-ca-gregory", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: "gregory", caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+refused "en" {language: ""} => THROWS RangeError: Intl.Locale: invalid language subtag: 
+refused "en" {language: "a"} => THROWS RangeError: Intl.Locale: invalid language subtag: a
+refused "en" {language: "abcd"} => THROWS RangeError: Intl.Locale: invalid language subtag: abcd
+refused "en" {language: "en-US"} => THROWS RangeError: Intl.Locale: invalid language subtag: en-US
+refused "en" {script: "Lat"} => THROWS RangeError: Intl.Locale: invalid script subtag: Lat
+refused "en" {region: "US1"} => THROWS RangeError: Intl.Locale: invalid region subtag: US1
+refused "en" {variants: ""} => THROWS RangeError: Intl.Locale: the variants option is empty
+refused "en" {variants: "aaaa"} => THROWS RangeError: Intl.Locale: invalid variants: aaaa
+refused "en" {variants: "fonipa-fonipa"} => THROWS RangeError: Intl.Locale: invalid variants: fonipa-fonipa
+refused "en" {variants: "fonipa-"} => THROWS RangeError: Intl.Locale: invalid variants: fonipa-
+refused "en" {calendar: "ab"} => THROWS RangeError: Intl.Locale: the calendar option is not a well-formed type: ab
+refused "en" {calendar: "gregory-"} => THROWS RangeError: Intl.Locale: the calendar option is not a well-formed type: gregory-
+refused "en" {collation: "phonebook"} => THROWS RangeError: Intl.Locale: the collation option is not a well-formed type: phonebook
+refused "en" {hourCycle: "h25"} => THROWS RangeError: Value h25 out of range for option hourCycle
+refused "en" {caseFirst: "UPPER"} => THROWS RangeError: Value UPPER out of range for option caseFirst
+refused "en" {numberingSystem: "latn_"} => THROWS RangeError: Intl.Locale: the numberingSystem option is not a well-formed type: latn_
+refused "en" {firstDayOfWeek: "8"} => THROWS RangeError: Intl.Locale: the firstDayOfWeek option is not a well-formed type: 8
+refused "en" {firstDayOfWeek: ""} => THROWS RangeError: Intl.Locale: the firstDayOfWeek option is not a well-formed type: 
+non-ASCII "en" {variants: "\u212aaaaa"} => THROWS RangeError: Intl.Locale: invalid variants: \u212aaaaa
+non-ASCII "en" {numberingSystem: "\u212ahmr"} => THROWS RangeError: Intl.Locale: the numberingSystem option is not a well-formed type: \u212ahmr
+non-ASCII "en" {calendar: "b\u0130ddhist"} => THROWS RangeError: Intl.Locale: the calendar option is not a well-formed type: b\u0130ddhist
+non-ASCII "en" {collation: "pho\u212aebk"} => THROWS RangeError: Intl.Locale: the collation option is not a well-formed type: pho\u212aebk
+non-ASCII "en" {language: "\u212ao"} => THROWS RangeError: Intl.Locale: invalid language subtag: \u212ao
+non-ASCII "en" {region: "\u212aR"} => THROWS RangeError: Intl.Locale: invalid region subtag: \u212aR
+non-ASCII "en" {firstDayOfWeek: "mo\u212a"} => THROWS RangeError: Intl.Locale: the firstDayOfWeek option is not a well-formed type: mo\u212a
+called without new => THROWS TypeError: Constructor Intl.Locale requires 'new'
+tag 5 => THROWS TypeError: Intl.Locale: the tag is neither a String nor an Object
+tag undefined => THROWS TypeError: Intl.Locale: the tag is neither a String nor an Object
+tag null => THROWS TypeError: Intl.Locale: the tag is neither a String nor an Object
+tag a Locale, with options => {toString: "en-GB-u-ca-gregory", baseName: "en-GB", language: "en", script: undefined, region: "GB", variants: undefined, calendar: "gregory", caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+tag an object with toString => {toString: "de-AT", baseName: "de-AT", language: "de", script: undefined, region: "AT", variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+options null => THROWS TypeError: Cannot convert undefined or null to object
+options 5 => {toString: "en", baseName: "en", language: "en", script: undefined, region: undefined, variants: undefined, calendar: undefined, caseFirst: undefined, collation: undefined, firstDayOfWeek: undefined, hourCycle: undefined, numberingSystem: undefined, numeric: false}
+option reads, in order => "language,script,region,variants,calendar,collation,firstDayOfWeek,hourCycle,caseFirst,numeric,numberingSystem"
+option reads stop at the first bad value => "language,script,RangeError"
+tag read before options are coerced => "tag,language"
+getters on Intl.Locale.prototype => ["function", undefined, false, true, "get baseName", 1, "Locale"]
+Object.prototype.toString of a Locale => "[object Intl.Locale]">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-L/l4-locale.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-L  e.g. test/sjl9/rows-L/l4-locale.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-L/l4-locale.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

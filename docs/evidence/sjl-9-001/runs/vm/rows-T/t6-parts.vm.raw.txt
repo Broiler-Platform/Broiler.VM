@@ -1,0 +1,48 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-T/t6-parts.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/t6-parts.js sha256 e767fc2a54040b3ba24d5ea596fc6570bcdfe14fe5b3eea66d040a8c84820fe8
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-T/t6-parts.js [raw]  uncaught Error: OUT<<en full parts => [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" ", era:"AD", literal:" at ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:".", fractionalSecond:"123", literal:"\u202f", dayPeriod:"PM", literal:" ", timeZoneName:"UTC"]
+de full parts => [weekday:"Freitag", literal:", ", day:"5", literal:". ", month:"Januar", literal:" ", year:"2024", literal:" ", era:"n. Chr.", literal:" um ", hour:"15", literal:":", minute:"07", literal:":", second:"09", literal:",", fractionalSecond:"123", literal:" ", timeZoneName:"UTC"]
+en default parts => [month:"1", literal:"/", day:"5", literal:"/", year:"2024"]
+en dateStyle full timeStyle full parts => [weekday:"Friday", literal:", ", month:"January", literal:" ", day:"5", literal:", ", year:"2024", literal:" at ", hour:"3", literal:":", minute:"07", literal:":", second:"09", literal:"\u202f", dayPeriod:"PM", literal:" ", timeZoneName:"Coordinated Universal Time"]
+en relatedYear and yearName (chinese) => [month:"Eleventh Month", literal:" ", relatedYear:"2023", literal:"(", yearName:"gui-mao", literal:")"]
+en {year:2-digit} for 2024, 1999, 5, -1 => ["24", "99", "05", "02"]
+en {year:numeric, era:short} for year 0 and -1 (1 BC, 2 BC) => ["1 BC", "2 BC"]
+en {year:numeric} for year 0 and -1 => ["1", "2"]
+8.64e15 parts => [month:"Sep", literal:" ", day:"13", literal:", ", year:"275760", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:"\u202f", dayPeriod:"AM"]
+-8.64e15 parts => [month:"Apr", literal:" ", day:"20", literal:", ", year:"271822", literal:" ", era:"BC", literal:", ", hour:"12", literal:":", minute:"00", literal:":", second:"00", literal:"\u202f", dayPeriod:"AM"]
+8.64e15 {minute, second} => [minute:"00", literal:":", second:"00"]
+8.64e15 + 1 => THROWS RangeError: Invalid time value
+NaN => THROWS RangeError: Invalid time value
+a string "0" => [month:"1", literal:"/", day:"1", literal:"/", year:"1970"]
+a Date object => [month:"1", literal:"/", day:"5", literal:"/", year:"2024"]
+1.9 (TimeClip truncates) => [second:"0", literal:".", fractionalSecond:"001"]
+-0.5 => [second:"0", literal:".", fractionalSecond:"000"]
+a BigInt => THROWS TypeError: Cannot convert a BigInt value to a number
+a Symbol => THROWS TypeError: Cannot convert a Symbol value to a number
+{minute, second} in Asia/Kolkata at 12:00:05Z (sjl-6-001 leftover) => [minute:"30", literal:":", second:"05"]
+{minute, second} in Asia/Kathmandu => ["45:05"]
+{minute} in Asia/Kolkata => "30"
+{hour, minute} in Asia/Kolkata at the epoch => "5:30\u202fAM"
+Date#toLocaleTimeString({minute, second}) in Asia/Kolkata => "30:05"
+format of an Object with valueOf => "1/5/2024"
+formatToParts property order and prototype => ["type,value", true]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-T/t6-parts.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-T  e.g. test/sjl9/rows-T/t6-parts.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-T/t6-parts.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

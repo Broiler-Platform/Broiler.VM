@@ -1,0 +1,20 @@
+# command (VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 1800 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 /home/user/tc39/test262 --test test/intl402/Locale/prototype/getCalendars/name.js --test test/intl402/DateTimeFormat/timezone-case-insensitive.js --test test/intl402/NumberFormat/constructor-roundingIncrement.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40; test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=3 selected=3 thisShard=3
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+skipped     test/intl402/DateTimeFormat/timezone-case-insensitive.js [-]  the test claims the proposed feature `canonical-tz`
+skipped     test/intl402/Locale/prototype/getCalendars/name.js [-]  the test claims the proposed feature `Intl.Locale-info`
+skipped     test/intl402/NumberFormat/constructor-roundingIncrement.js [-]  the test claims the proposed feature `Intl.NumberFormat-v3`
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# no variant failed, so there is nothing to classify
+# test262 3 files, 3 variants: pass 0, fail 0, unsupported 0, exhausted 0, skipped 3
+coverage partial a named selection rather than the whole test tree: test/intl402/Locale/prototype/getCalendars/name.js test/intl402/DateTimeFormat/timezone-case-insensitive.js test/intl402/NumberFormat/constructor-roundingIncrement.js; configuration failure MissingSuiteRevision; configuration failure NoExecutedTests
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+CONFIGURATION NoExecutedTests: 3 variants ran and none of them reached a verdict about the engine
+exit=1

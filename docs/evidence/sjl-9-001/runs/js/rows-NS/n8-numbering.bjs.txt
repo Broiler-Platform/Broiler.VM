@@ -1,0 +1,30 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/n8-numbering.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/n8-numbering.js sha256 8821bcfd2ecfe486d505c21932100a0cc0b0f971348ba62613f47b383a2a7722
+en-u-nu-arab {} resolved, -1234.5, 0.5 => ["en-u-nu-arab", "arab", "-\u0661,\u0662\u0663\u0664.\u0665", "\u0660.\u0665"]
+en {"numberingSystem":"arab"} resolved, -1234.5, 0.5 => ["en", "arab", "-\u0661,\u0662\u0663\u0664.\u0665", "\u0660.\u0665"]
+ar {} resolved, -1234.5, 0.5 => ["ar", "latn", "-1\u066c234\u066b5", "0\u066b5"]
+ar-EG {} resolved, -1234.5, 0.5 => ["ar-EG", "arab", "-\u0661\u066c\u0662\u0663\u0664\u066b\u0665", "\u0660\u066b\u0665"]
+ar-u-nu-latn {} resolved, -1234.5, 0.5 => ["ar-u-nu-latn", "latn", "-1\u066c234\u066b5", "0\u066b5"]
+fa {} resolved, -1234.5, 0.5 => ["fa", "arabext", "-\u06f1\u066c\u06f2\u06f3\u06f4\u066b\u06f5", "\u06f0\u066b\u06f5"]
+en-u-nu-arabext {} resolved, -1234.5, 0.5 => ["en-u-nu-arabext", "arabext", "-\u06f1,\u06f2\u06f3\u06f4.\u06f5", "\u06f0.\u06f5"]
+hi-IN-u-nu-deva {} resolved, -1234.5, 0.5 => ["hi-IN-u-nu-deva", "deva", "-\u0967,\u0968\u0969\u096a.\u096b", "\u0966.\u096b"]
+th-u-nu-thai {} resolved, -1234.5, 0.5 => ["th-u-nu-thai", "thai", "-\u0e51,\u0e52\u0e53\u0e54.\u0e55", "\u0e50.\u0e55"]
+en-u-nu-thai {} resolved, -1234.5, 0.5 => ["en-u-nu-thai", "thai", "-\u0e51,\u0e52\u0e53\u0e54.\u0e55", "\u0e50.\u0e55"]
+de-u-nu-thai {} resolved, -1234.5, 0.5 => ["de-u-nu-thai", "thai", "-\u0e51.\u0e52\u0e53\u0e54,\u0e55", "\u0e50,\u0e55"]
+zh-u-nu-hanidec {} resolved, -1234.5, 0.5 => ["zh-u-nu-hanidec", "hanidec", "-\u4e00,\u4e8c\u4e09\u56db.\u4e94", "\u3007.\u4e94"]
+en-u-nu-fullwide {} resolved, -1234.5, 0.5 => ["en-u-nu-fullwide", "fullwide", "-\uff11,\uff12\uff13\uff14.\uff15", "\uff10.\uff15"]
+en-u-nu-mathbold {} resolved, -1234.5, 0.5 => ["en-u-nu-mathbold", "mathbold", "-\ud835\udfcf,\ud835\udfd0\ud835\udfd1\ud835\udfd2.\ud835\udfd3", "\ud835\udfce.\ud835\udfd3"]
+en-u-nu-jpanfin {} resolved, -1234.5, 0.5 => ["en", "latn", "-1,234.5", "0.5"]
+en-u-nu-hant {} resolved, -1234.5, 0.5 => ["en", "latn", "-1,234.5", "0.5"]
+en-u-nu-roman {} resolved, -1234.5, 0.5 => ["en", "latn", "-1,234.5", "0.5"]
+en-u-nu-xyz {} resolved, -1234.5, 0.5 => ["en", "latn", "-1,234.5", "0.5"]
+en {"numberingSystem":"xyz"} resolved, -1234.5, 0.5 => ["en", "latn", "-1,234.5", "0.5"]
+de-u-nu-arab {"style":"percent"} resolved, -1234.5, 0.5 => ["de-u-nu-arab", "arab", "-\u0661\u0662\u0663.\u0664\u0665\u0660\u00a0%", "\u0665\u0660\u00a0%"]
+en-u-nu-arab formatToParts(-1234.5) => [minusSign:"-", integer:"\u0661", group:",", integer:"\u0662\u0663\u0664", decimal:".", fraction:"\u0665"]
+ar formatToParts(-1234.5) => [minusSign:"-", integer:"1", group:"\u066c", integer:"234", decimal:"\u066b", fraction:"5"]
+en-u-nu-arab scientific 1234.5 => "\u0661.\u0662\u0663\u0665E\u0663"
+en-u-nu-thai currency USD -1234.5 => "-$\u0e51,\u0e52\u0e53\u0e54.\u0e55\u0e50"
+numberingSystem option invalid "latn!" and "ab" => ["RangeError", "RangeError"]
+(1234.5).toLocaleString("en-u-nu-arab") => "\u0661,\u0662\u0663\u0664.\u0665"
+exit=0

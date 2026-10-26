@@ -1,0 +1,14 @@
+U18 new Sub() prototype is Sub.prototype => [true, true, "1 hr"]
+U18 Reflect.construct(Intl.DurationFormat, [], Array) prototype => true
+U18 Intl.DurationFormat() => THROWS TypeError: Constructor Intl.DurationFormat requires 'new'
+U18 format.call({}) => THROWS TypeError: Intl.DurationFormat.prototype.format requires that 'this' be an Intl.DurationFormat
+U18 resolvedOptions.call(Intl.DurationFormat.prototype) => THROWS TypeError: Intl.DurationFormat.prototype.resolvedOptions requires that 'this' be an Intl.DurationFormat
+U18 Object.prototype.toString => "[object Intl.DurationFormat]"
+U18 lengths => [0, 1, 1, 0, 1]
+U18 new Intl.DurationFormat("en", null) => THROWS TypeError: the options argument is not an object
+U18 new Intl.DurationFormat("en", "long") => THROWS TypeError: the options argument is not an object
+U18 new Intl.DurationFormat("en", undefined).resolvedOptions().style => "short"
+U18 style read through ToString => "long"
+U18 option reads, every option given => "localeMatcher,numberingSystem,style,years,yearsDisplay,months,monthsDisplay,weeks,weeksDisplay,days,daysDisplay,hours,hoursDisplay,minutes,minutesDisplay,seconds,secondsDisplay,milliseconds,millisecondsDisplay,microseconds,microsecondsDisplay,nanoseconds,nanosecondsDisplay,fractionalDigits"
+U18 option reads, an empty bag => "localeMatcher,numberingSystem,style,years,yearsDisplay,months,monthsDisplay,weeks,weeksDisplay,days,daysDisplay,hours,hoursDisplay,minutes,minutesDisplay,seconds,secondsDisplay,milliseconds,millisecondsDisplay,microseconds,microsecondsDisplay,nanoseconds,nanosecondsDisplay,fractionalDigits"
+U18 format is the prototype method on every instance => true

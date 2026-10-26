@@ -1,0 +1,49 @@
+# work/classify_temporal.py over runs/d-{temporal-intl,calendar-formats,zone-names}.bjs.compare.txt (Broiler.JS at f918b040)
+temporal-intl	a range (T29-T31)	104
+temporal-intl	an error, or its kind (T39: the calendar check before the format)	76
+temporal-intl	de (T14, T15: names and layouts)	176
+temporal-intl	en, U+202F alone (T12)	47
+temporal-intl	en, U+202F and the at-join (T12)	9
+temporal-intl	en, other (T13: pattern selection; T35, T36: calendars)	80
+calendar-formats	de ? (T33-T36)	177
+calendar-formats	de buddhist (T33-T36)	130
+calendar-formats	de chinese (T33-T36)	195
+calendar-formats	de coptic (T33-T36)	169
+calendar-formats	de dangi (T33-T36)	195
+calendar-formats	de ethioaa (T33-T36)	195
+calendar-formats	de ethiopic (T33-T36)	169
+calendar-formats	de hebrew (T33-T36)	182
+calendar-formats	de indian (T33-T36)	195
+calendar-formats	de islamic-civil (T33-T36)	104
+calendar-formats	de islamic-tbla (T33-T36)	104
+calendar-formats	de islamic-umalqura (T33-T36)	104
+calendar-formats	de japanese (T33-T36)	169
+calendar-formats	de persian (T33-T36)	169
+calendar-formats	de roc (T33-T36)	117
+calendar-formats	en ? (T33-T36)	131
+calendar-formats	en buddhist (T33-T36)	13
+calendar-formats	en chinese (T33-T36)	182
+calendar-formats	en coptic (T33-T36)	169
+calendar-formats	en dangi (T33-T36)	182
+calendar-formats	en ethioaa (T33-T36)	182
+calendar-formats	en ethiopic (T33-T36)	156
+calendar-formats	en hebrew (T33-T36)	158
+calendar-formats	en indian (T33-T36)	182
+calendar-formats	en islamic-civil (T33-T36)	44
+calendar-formats	en islamic-tbla (T33-T36)	50
+calendar-formats	en islamic-umalqura (T33-T36)	42
+calendar-formats	en japanese (T33-T36)	130
+calendar-formats	en persian (T33-T36)	156
+calendar-formats	en roc (T33-T36)	11
+calendar-formats	resolved ? (T33-T36)	4
+zone-names	Vienna, differing in short (T22, T23)	1
+zone-names	de, differing in long+shortGeneric+longGeneric (T22, T23)	1049
+zone-names	de, differing in short (T22, T23)	16
+zone-names	de, differing in short+long+shortGeneric+longGeneric (T22, T23)	175
+zone-names	de, differing in shortGeneric+longGeneric (T22, T23)	33
+zone-names	en, differing in long+shortGeneric+longGeneric (T22, T23)	56
+zone-names	en, differing in longGeneric (T22, T23)	48
+zone-names	en, differing in short (T22, T23)	24
+zone-names	en, differing in short+long+shortGeneric+longGeneric (T22, T23)	13
+zone-names	en, differing in shortGeneric (T22, T23)	249
+zone-names	en, differing in shortGeneric+longGeneric (T22, T23)	759

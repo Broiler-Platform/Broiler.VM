@@ -1,0 +1,11 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/s-p5.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/s-p5.js sha256 d9d7b7ad057e4803b7dd93f5fe796e8182c832c518334e5203e88c7a0f59f98d
+few few one two
+cs
+January 2024(甲辰)
+[{"type":"relatedYear","value":"2024"},{"type":"yearName","value":"甲辰"},{"type":"literal","value":"年"}]
+2513 BE
+123 latn
+true
+exit=0

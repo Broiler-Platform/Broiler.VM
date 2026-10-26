@@ -1,0 +1,19 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANGUAGE LANG=tr_TR.UTF-8 LC_ALL=tr_TR.UTF-8 TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/l8-host.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/l8-host.js sha256 e0d6c0e5f97659b7dc3c5e512aa0db35eb60f6ed1549cccc48328afa1ca0e5aa
+Intl.NumberFormat().resolvedOptions().locale => "tr-TR"
+Intl.Collator().resolvedOptions().locale => "tr-TR"
+Intl.DateTimeFormat().resolvedOptions().locale => "tr-TR"
+Intl.PluralRules().resolvedOptions().locale => "tr-TR"
+Intl.ListFormat().resolvedOptions().locale => "tr-TR"
+Intl.Segmenter().resolvedOptions().locale => "tr-TR"
+Intl.NumberFormat("xx").resolvedOptions().locale => "tr-TR"
+"I".toLocaleLowerCase() => "i"
+"i".toLocaleUpperCase() => "I"
+(1234.5).toLocaleString() => "1.234,5"
+(1234.5).toLocaleString(undefined, {}) => "1.234,5"
+new Date(0).toLocaleDateString(undefined, {timeZone: "UTC"}) => "1.1.1970"
+["a", 1000].toLocaleString() => "a,1.000"
+Intl.Collator.supportedLocalesOf(["tr", "de-DE", "en-US"]) => ["tr", "de-DE", "en-US"]
+new Intl.Locale("und").maximize().toString() => "en-Latn-US"
+exit=0

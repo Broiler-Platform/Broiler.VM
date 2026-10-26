@@ -1,0 +1,36 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-MP/p1-select-digits.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/p1-select-digits.js sha256 4a3653e35ba02af3dbb7831d4d0a2e6b6822c34476bf2d2b070d99a18c863281
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-MP/p1-select-digits.js [raw]  uncaught Error: OUT<<P1 en {minFD 1}.select(1); de {minFD 1}.select(1) => ["other", "other"]
+P1 en {maxFD 0}.select(1.4); select(0.6) => ["one", "one"]
+P1 en default (maxFD 3): select(1.0001), select(0.9999), select(1.0005), select(1.5) => ["one", "one", "other", "other"]
+P1 en {maxSD 1}.select(1.5); {minSD 2}.select(1) => ["other", "other"]
+P1 en {maxFD 0, roundingMode floor}.select(1.9); {maxFD 0, roundingMode ceil}.select(0.1) => ["one", "one"]
+P1 en {minFD 1, trailingZeroDisplay stripIfInteger}.select(1) => "one"
+P1 en {minimumIntegerDigits 2}.select(1) => "one"
+P1 en {roundingIncrement 5, minFD 1, maxFD 1}.select(0.98) => "other"
+P1 en select("1.0"), select(" 1 "), select("1.50"), select("abc") => ["one", "one", "other", "other"]
+P1 en select({valueOf: "1"}), ToPrimitive count => ["one", 1]
+P1 en ordinal select 1 2 3 4 11 12 13 21 22 23 101 111 1.5 => "one two few other other other other one two few one other other"
+P1 en ordinal {minFD 1}.select(1); {maxFD 0}.select(1.4) => ["one", "one"]
+P1 de ordinal select(1); de select 0 1 2 1.5 => ["other", "other one other other"]
+P1 en select NaN Infinity -Infinity 1e21 -1 undefined => ["other", "other", "other", "other", "one", "other"]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-MP/p1-select-digits.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-MP  e.g. test/sjl9/rows-MP/p1-select-digits.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-MP/p1-select-digits.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

@@ -1,0 +1,16 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/smoke.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/smoke.js sha256 0b233192b85b792fef55dfc8a567232e6818c1e74097141ecc77eeff522ea540
+default locale (NumberFormat) => "en-US"
+default time zone (DateTimeFormat) => "UTC"
+a getCanonicalLocales => ["en-US", "zh-Hant-TW"]
+a Locale maximize => "zh-Hant-TW"
+b PluralRules en select(1), select(2) => ["one", "other"]
+c NumberFormat en 1234.5 => "1,234.5"
+c NumberFormat de 1234.5 => "1.234,5"
+d DateTimeFormat en UTC dateStyle medium, epoch => "Jan 1, 1970"
+e DurationFormat en long => "1 hour, 2 minutes"
+canonical-tz: resolved zone for Asia/Calcutta => "Asia/Calcutta"
+Intl.Locale-info: typeof getWeekInfo => "function"
+Intl.NumberFormat-v3: formatRange en 3-5 => "3\u20135"
+exit=0

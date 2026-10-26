@@ -1,0 +1,25 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-L/l11-direction.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/l11-direction.js sha256 52f59f36fb5a9950c9fae60796f6f3e268ceab93a2c709ceb063c5350f3ea627
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-L/l11-direction.js [raw]  uncaught Error: OUT<<und-<script>, every script CLDR names => rtl: und-Adlm und-Arab und-Armi und-Avst und-Chrs und-Cprt und-Elym und-Gara und-Hatr und-Hebr und-Hung und-Khar und-Lydi und-Mand und-Mani und-Mend und-Merc und-Mero und-Narb und-Nbat und-Nkoo und-Orkh und-Ougr und-Palm und-Phli und-Phlp und-Phnx und-Prti und-Rohg und-Samr und-Sarb und-Sidt und-Sogd und-Sogo und-Syrc und-Thaa und-Yezi | ltr: und-Aghb und-Ahom und-Armn und-Bali und-Bamu und-Bass und-Batk und-Beng und-Berf und-Bhks und-Bopo und-Brah und-Bugi und-Buhd und-Cakm und-Cans und-Cari und-Cham und-Cher und-Copt und-Cpmn und-Cyrl und-Deva und-Diak und-Dogr und-Dsrt und-Dupl und-Egyp und-Elba und-Ethi und-Geor und-Glag und-Gong und-Gonm und-Goth und-Gran und-Grek und-Gujr und-Gukh und-Guru und-Hanb und-Hang und-Hani und-Hano und-Hans und-Hant und-Hira und-Hluw und-Hmng und-Hmnp und-Ital und-Jamo und-Java und-Jpan und-Kali und-Kana und-Kawi und-Khmr und-Khoj und-Kits und-Knda und-Kore und-Krai und-Kthi und-Lana und-Laoo und-Latn und-Lepc und-Limb und-Lina und-Linb und-Lisu und-Lyci und-Mahj und-Maka und-Marc und-Medf und-Mlym und-Modi und-Mong und-Mroo und-Mtei und-Mult und-Mymr und-Nagm und-Nand und-Newa und-Nshu und-Ogam und-Olck und-Onao und-Orya und-Osge und-Osma und-Pauc und-Perm und-Phag und-Plrd und-Rjng und-Runr und-Saur und-Sgnw und-Shaw und-Shrd und-Sidd und-Sind und-Sinh und-Sora und-Soyo und-Sund und-Sunu und-Sylo und-Tagb und-Takr und-Tale und-Talu und-Taml und-Tang und-Tavt und-Tayo und-Telu und-Tfng und-Tglg und-Thai und-Tibt und-Tirh und-Tnsa und-Todr und-Tols und-Toto und-Tutg und-Ugar und-Vaii und-Vith und-Wara und-Wcho und-Xpeo und-Xsux und-Yiii und-Zanb
+und-<script>, scripts CLDR does not name => undefined: und-Qaaa und-Qabx und-Aran und-Zzzz und-Zyyy und-Zinh und-Zxxx und-Zmth und-Zsye und-Latf und-Syre | ltr: und-Hanb und-Jamo
+languages without a script => rtl: ar he fa ur ps sd ug dv yi syr ks ckb mzn lrc glk bal bqi pa-PK uz-AF az-IR ku-IQ arc nqo prs und-IL und-SA | ltr: ms-BN ku sd-IN ff-GN en ja und zh-MO | undefined: xyz>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-L/l11-direction.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-L  e.g. test/sjl9/rows-L/l11-direction.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-L/l11-direction.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

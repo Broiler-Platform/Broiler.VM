@@ -1,0 +1,169 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-L/l2-aliases.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/l2-aliases.js sha256 026ac8499fa68a6760615b2989a224bce63564a717c41c4306375ba4d5e043d8
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-L/l2-aliases.js [raw]  uncaught Error: OUT<<language "iw" => ["he"]
+language "in" => ["id"]
+language "ji" => ["yi"]
+language "jw" => ["jv"]
+language "mo" => ["ro"]
+language "tl" => ["fil"]
+language "aar" => ["aa"]
+language "ces" => ["cs"]
+language "heb" => ["he"]
+language "tw" => ["ak"]
+language "cmn" => ["zh"]
+language "cmn-TW" => ["zh-TW"]
+language "drw" => ["fa-AF"]
+language "aju" => ["jrb"]
+language "aam" => ["aas"]
+language "swc" => ["sw-CD"]
+language "no" => ["no"]
+language "no-NO" => ["no-NO"]
+language "nb" => ["nb"]
+language "sh" => ["sr-Latn"]
+language "sh-Cyrl" => ["sr-Cyrl"]
+language "sh-BA" => ["sr-Latn-BA"]
+language "cnr" => ["sr-ME"]
+language "cnr-BA" => ["sr-BA"]
+language "zh-hakka" => ["hak"]
+language "zh-xiang" => ["hsn"]
+language "zh-guoyu" => ["zh"]
+language "art-lojban" => ["jbo"]
+language "cel-gaulish" => ["xtg"]
+language "art-lojban-fonipa" => ["jbo-fonipa"]
+language "sgn-GR" => ["gss"]
+language "sgn-BE-FR" => THROWS RangeError: Incorrect locale information provided: sgn-BE-FR
+language "sgn-BE-NL" => THROWS RangeError: Incorrect locale information provided: sgn-BE-NL
+language "sgn-US" => ["ase"]
+language "sgn-CH-DE" => THROWS RangeError: Incorrect locale information provided: sgn-CH-DE
+language "und-aaland" => ["und-AX"]
+language "sv-aaland" => ["sv-AX"]
+language "hy-arevela" => ["hy"]
+language "hy-arevmda" => ["hyw"]
+language "el-polytoni" => ["el-polyton"]
+language "ja-Latn-hepburn-heploc" => ["ja-Latn-alalc97"]
+language "ja-Latn-heploc" => ["ja-Latn-alalc97"]
+language "en-heploc" => ["en-alalc97"]
+language "sl-rozaj-biske-1994" => ["sl-1994-biske-rozaj"]
+language "en-scouse" => ["en-scouse"]
+language "zh-cmn" => THROWS RangeError: Incorrect locale information provided: zh-cmn
+language "zh-yue" => THROWS RangeError: Incorrect locale information provided: zh-yue
+language "yue-HK" => ["yue-HK"]
+language "tlh" => ["tlh"]
+language "sgn" => ["sgn"]
+language "und-hepburn-heploc" => ["und-alalc97"]
+language "ru-tarask" => ["ru-tarask"]
+language "be-tarask" => ["be-tarask"]
+language "en-arevela" => ["en"]
+language "aa-saaho" => ["ssy"]
+language "und-Latn-saaho" => ["und-Latn"]
+script "und-Qaai" => ["und-Zinh"]
+script "en-Qaai" => ["en-Zinh"]
+script "und-Qaai-US" => ["und-Zinh-US"]
+region "en-BU" => ["en-MM"]
+region "de-DD" => ["de-DE"]
+region "fr-FX" => ["fr-FR"]
+region "en-UK" => ["en-GB"]
+region "pt-TP" => ["pt-TL"]
+region "sr-YU" => ["sr-RS"]
+region "fr-ZR" => ["fr-CD"]
+region "en-QU" => ["en-EU"]
+region "en-554" => ["en-NZ"]
+region "en-840" => ["en-US"]
+region "en-276" => ["en-DE"]
+region "de-276" => ["de-DE"]
+region "es-419" => ["es-419"]
+region "en-062" => ["en-034"]
+region "en-SU" => ["en-RU"]
+region "hy-SU" => ["hy-AM"]
+region "ru-SU" => ["ru-RU"]
+region "uz-SU" => ["uz-UZ"]
+region "en-810" => ["en-RU"]
+region "sr-CS" => ["sr-RS"]
+region "en-CS" => ["en-RS"]
+region "en-NT" => ["en-SA"]
+region "en-AN" => ["en-CW"]
+region "nl-AN" => ["nl-CW"]
+region "en-YD" => ["en-YE"]
+region "und-172" => ["und-RU"]
+region "und-Cyrl-172" => ["und-Cyrl-RU"]
+region "und-200" => ["und-CZ"]
+region "cs-200" => ["cs-CZ"]
+u "en-u-ca-islamicc" => ["en-u-ca-islamic-civil"]
+u "en-u-ca-ethiopic-amete-alem" => ["en-u-ca-ethioaa"]
+u "en-u-ks-primary" => ["en-u-ks-level1"]
+u "en-u-ks-identic" => ["en-u-ks-identic"]
+u "en-u-ms-imperial" => ["en-u-ms-uksystem"]
+u "en-u-tz-cnckg" => ["en-u-tz-cnsha"]
+u "en-u-tz-usnavajo" => ["en-u-tz-usden"]
+u "en-u-tz-eire" => ["en-u-tz-iedub"]
+u "en-u-tz-utc" => ["en-u-tz-utc"]
+u "en-u-tz-gmt0" => ["en-u-tz-gmt"]
+u "en-u-tz-aqams" => ["en-u-tz-aqmcm"]
+u "en-u-tz-cnhrb" => ["en-u-tz-cnsha"]
+u "en-u-tz-fiplt" => ["en-u-tz-fiplt"]
+u "en-u-tz-usnyc" => ["en-u-tz-usnyc"]
+u "en-u-sd-no23" => ["en-u-sd-no50"]
+u "en-u-rg-cn11" => ["en-u-rg-cnbj"]
+u "en-u-sd-frg" => ["en-u-sd-frges"]
+u "en-u-rg-cz10a" => ["en-u-rg-cz110"]
+u "en-u-sd-gbzzzz" => ["en-u-sd-gbzzzz"]
+u "en-u-rg-uszzzz" => ["en-u-rg-uszzzz"]
+u "en-u-sd-fi01" => ["en-u-sd-AX"]
+u "en-u-sd-lud" => ["en-u-sd-lucl"]
+u "en-u-kb-yes" => ["en-u-kb"]
+u "en-u-kc-yes" => ["en-u-kc"]
+u "en-u-kh-yes" => ["en-u-kh"]
+u "en-u-kk-yes" => ["en-u-kk"]
+u "en-u-ka-yes" => ["en-u-ka-yes"]
+u "en-u-kr-yes" => ["en-u-kr-yes"]
+u "en-u-kn-yes" => ["en-u-kn"]
+u "en-u-co-dict" => ["en-u-co-dict"]
+u "en-u-co-trad" => ["en-u-co-trad"]
+u "en-u-dx-latn" => ["en-u-dx-latn"]
+u "en-u-nu-traditio" => ["en-u-nu-traditio"]
+u "en-u-hc-h24" => ["en-u-hc-h24"]
+u "en-u-cf-account" => ["en-u-cf-account"]
+u "en-u-em-emoji" => ["en-u-em-emoji"]
+u "en-u-mu-celsius" => ["en-u-mu-celsius"]
+u "en-u-va-posix" => ["en-u-va-posix"]
+u "en-u-ca-gregory-co-standard" => ["en-u-ca-gregory-co-standard"]
+t "en-t-iw" => ["en-t-he"]
+t "en-t-sh" => ["en-t-sr-latn"]
+t "en-t-aaland" => ["en-t-aaland"]
+t "en-t-zh-cmn" => THROWS RangeError: Incorrect locale information provided: en-t-zh-cmn
+t "und-t-m0-names" => ["und-t-m0-prprname"]
+t "und-t-d0-fwidth" => ["und-t-d0-fwidth"]
+t "und-t-d0-hwidth" => ["und-t-d0-hwidth"]
+t "und-t-d0-name" => ["und-t-d0-charname"]
+t "und-t-m0-bgn" => ["und-t-m0-bgn"]
+t "und-t-k0-azerty" => ["und-t-k0-azerty"]
+t "en-t-hi-h0-hybrid" => ["en-t-hi-h0-hybrid"]
+t "en-t-en-sgn-us" => THROWS RangeError: Incorrect locale information provided: en-t-en-sgn-us
+Locale "iw" => "he"
+Locale "sh" => "sr-Latn"
+Locale "en-840" => "en-US"
+Locale "und-Qaai" => "und-Zinh"
+Locale "en-u-tz-usnavajo" => "en-u-tz-usden"
+Locale "ja-Latn-hepburn-heploc" => "ja-Latn-alalc97"
+Locale "sgn-BE-FR" => THROWS RangeError: Incorrect locale information provided: sgn-BE-FR
+Locale "en-SU" => "en-RU">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-L/l2-aliases.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-L  e.g. test/sjl9/rows-L/l2-aliases.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-L/l2-aliases.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

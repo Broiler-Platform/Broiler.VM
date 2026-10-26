@@ -1,0 +1,14 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/t13-hostzone.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/t13-hostzone.js sha256 9d6c10ea176d305d198dc1bfb1296d800ca997737b9301bcd3f434572b207c85
+{minute, second} timeZone UTC => [minute:"00", literal:":", second:"05"]
+{minute, second} no timeZone (the default zone) => [minute:"00", literal:":", second:"05"]
+{minute, second} timeZone Asia/Kathmandu => [minute:"45", literal:":", second:"05"]
+format {minute, second} timeZone UTC => "00:05"
+default zone resolved => "UTC"
+timeZone "America/Lo\u017f_Angeles" => THROWS RangeError: Invalid timeZone option: America/Lo\u017f_Angeles
+timeZone "Asia/\u212aolkata" => THROWS RangeError: Invalid timeZone option: Asia/\u212aolkata
+timeZone "Asia/Kolkat\u0131" => THROWS RangeError: Invalid timeZone option: Asia/Kolkat\u0131
+timeZone "AMERICA/LOS_ANGELES" => "America/Los_Angeles"
+timeZone "america/los_angeles" => "America/Los_Angeles"
+exit=0

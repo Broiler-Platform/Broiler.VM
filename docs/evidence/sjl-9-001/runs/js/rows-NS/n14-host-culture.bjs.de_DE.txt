@@ -1,0 +1,13 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANGUAGE LANG=de_DE.UTF-8 LC_ALL=de_DE.UTF-8 TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/n14-host-culture.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/n14-host-culture.js sha256 769c9c6352d9fc5492f309766e53be7e668664dc853fa9ca7aeb8ea50ceabb57
+de resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["de", "1.234.567,5", "50\u00a0%", "1.234,50\u00a0\u20ac"]
+fr resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["fr", "1\u202f234\u202f567,5", "50\u00a0%", "1\u202f234,50\u00a0\u20ac"]
+de-CH resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["de-CH", "1\u2019234\u2019567.5", "50%", "1\u2019234.50\u00a0\u20ac"]
+en-IN resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["en-IN", "12,34,567.5", "50%", "\u20ac1,234.50"]
+sv resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["sv", "1\u00a0234\u00a0567,5", "50\u00a0%", "1\u00a0234,50\u00a0\u20ac"]
+ar resolved locale; 1234567.5; percent 0.5; EUR 1234.5 => ["ar", "1\u066c234\u066c567\u066b5", "50\u066a\u061c", "1\u066c234\u066b50\u20ac"]
+default: resolved locale; 1234567.5; percent 0.5 => ["de-DE", "1.234.567,5", "50\u00a0%"]
+(1234567.5).toLocaleString() => "1.234.567,5"
+supportedLocalesOf de, fr, en => ["de", "fr", "en"]
+exit=0

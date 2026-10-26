@@ -1,0 +1,18 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/p1-select-digits.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/p1-select-digits.js sha256 4a3653e35ba02af3dbb7831d4d0a2e6b6822c34476bf2d2b070d99a18c863281
+P1 en {minFD 1}.select(1); de {minFD 1}.select(1) => ["one", "one"]
+P1 en {maxFD 0}.select(1.4); select(0.6) => ["other", "other"]
+P1 en default (maxFD 3): select(1.0001), select(0.9999), select(1.0005), select(1.5) => ["one", "one", "one", "other"]
+P1 en {maxSD 1}.select(1.5); {minSD 2}.select(1) => ["other", "one"]
+P1 en {maxFD 0, roundingMode floor}.select(1.9); {maxFD 0, roundingMode ceil}.select(0.1) => ["other", "other"]
+P1 en {minFD 1, trailingZeroDisplay stripIfInteger}.select(1) => "one"
+P1 en {minimumIntegerDigits 2}.select(1) => "one"
+P1 en {roundingIncrement 5, minFD 1, maxFD 1}.select(0.98) => "other"
+P1 en select("1.0"), select(" 1 "), select("1.50"), select("abc") => ["one", "one", "other", "other"]
+P1 en select({valueOf: "1"}), ToPrimitive count => ["one", 1]
+P1 en ordinal select 1 2 3 4 11 12 13 21 22 23 101 111 1.5 => "one two few other other other other one two few one other other"
+P1 en ordinal {minFD 1}.select(1); {maxFD 0}.select(1.4) => ["one", "other"]
+P1 de ordinal select(1); de select 0 1 2 1.5 => ["other", "other one other other"]
+P1 en select NaN Infinity -Infinity 1e21 -1 undefined => ["other", "other", "other", "other", "one", "other"]
+exit=0

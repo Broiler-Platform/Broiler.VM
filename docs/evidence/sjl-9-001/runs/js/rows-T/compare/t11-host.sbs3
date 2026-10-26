@@ -1,0 +1,28 @@
+= resolvedOptions default [locale, timeZone] => ["en-US", "UTC"]
+# format(summer), format(winter) default
+   VM: ["12:00\u202fPM UTC", "12:00\u202fPM UTC"]
+   JS: ["12:00 PM GMT", "12:00 PM GMT"]
+   Node (neither): ["12:00 PM UTC", "12:00 PM UTC"]
+# Date#toLocaleString() no arguments
+   VM: "7/15/2024, 12:00:00\u202fPM"
+   JS: "7/15/2024, 12:00:00 PM"
+   Node (JS): "7/15/2024, 12:00:00 PM"
+= Date#toLocaleDateString() no arguments => "7/15/2024"
+# Date#toLocaleTimeString() no arguments
+   VM: "12:00:00\u202fPM"
+   JS: "12:00:00 PM"
+   Node (JS): "12:00:00 PM"
+# en dateStyle full timeStyle full, default zone
+   VM: "Monday, July 15, 2024 at 12:00:00\u202fPM Coordinated Universal Time"
+   JS: "Monday, July 15, 2024, 12:00:00 PM GMT"
+   Node (neither): "Monday, July 15, 2024 at 12:00:00 PM Coordinated Universal Time"
+# en {timeZoneName:longGeneric}, default zone
+   VM: "7/15/2024, GMT"
+   JS: "7/15/2024 GMT"
+   Node (VM): "7/15/2024, GMT"
+= Temporal.Now.timeZoneId() => "UTC"   [Node: "no Temporal"]
+# Temporal.Instant toLocaleString default zone
+   VM: "7/15/2024, 12:00:00\u202fPM"
+   JS: "7/15/2024, 12:00:00 PM"
+   Node (neither): THROWS ReferenceError: Temporal is not defined
+-- 3 same, 6 differ; Node equals VM 1, JS 2, neither 3

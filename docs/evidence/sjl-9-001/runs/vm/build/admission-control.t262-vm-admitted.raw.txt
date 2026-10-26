@@ -1,0 +1,28 @@
+# command (VM_ROOT=/home/user/s9-vm-admitted): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 1800 dotnet /home/user/s9-vm-admitted/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 /home/user/tc39/test262 --test test/intl402/Locale/prototype/getCalendars/name.js --test test/intl402/DateTimeFormat/timezone-case-insensitive.js --test test/intl402/NumberFormat/constructor-roundingIncrement.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40, working tree = that commit plus admitted-proposals.patch (sha256 a07561b3e7aa06ea6f55d25d77759364615785cadfac5b9c550ccb0d429637b1); test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=3 selected=3 thisShard=3
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), Intl.Locale-info (SJL-9.1 scratch copy, never committed), Intl.NumberFormat-v3 (SJL-9.1 scratch copy, never committed), ShadowRealm (JSD-0040), Temporal (JSD-0054), canonical-tz (SJL-9.1 scratch copy, never committed), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/intl402/DateTimeFormat/timezone-case-insensitive.js [strict]  uncaught Error: Time zone created from string "America/Yellowknife" Expected SameValue(«"America/Edmonton"», «"America/Yellowknife"») to be true
+FAIL        test/intl402/DateTimeFormat/timezone-case-insensitive.js [sloppy]  uncaught Error: Time zone created from string "America/Yellowknife" Expected SameValue(«"America/Edmonton"», «"America/Yellowknife"») to be true
+pass        test/intl402/Locale/prototype/getCalendars/name.js [strict]
+pass        test/intl402/Locale/prototype/getCalendars/name.js [sloppy]
+pass        test/intl402/NumberFormat/constructor-roundingIncrement.js [strict]
+pass        test/intl402/NumberFormat/constructor-roundingIncrement.js [sloppy]
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 2 failing variant(s)
+#   by kind: 1 distinct, 2 variants
+#           2  an uncaught Test262Error  e.g. test/intl402/DateTimeFormat/timezone-case-insensitive.js [sloppy]
+#   by area: 1 distinct, 2 variants
+#           2  test/intl402/DateTimeFormat  e.g. test/intl402/DateTimeFormat/timezone-case-insensitive.js [sloppy]
+#   by declared feature (2 of 2 failing variants declare one; a variant with two is in two rows): 1 distinct, 2 taggings over 2 variants
+#           2  canonical-tz  e.g. test/intl402/DateTimeFormat/timezone-case-insensitive.js [sloppy]
+# test262 3 files, 6 variants: pass 4, fail 2, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/intl402/Locale/prototype/getCalendars/name.js test/intl402/DateTimeFormat/timezone-case-insensitive.js test/intl402/NumberFormat/constructor-roundingIncrement.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

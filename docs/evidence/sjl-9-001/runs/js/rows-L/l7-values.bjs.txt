@@ -1,0 +1,32 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/l7-values.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/l7-values.js sha256 99451f958f4ad4cd3c0e28643ce835a1884708241ed5e7f567b4e5a8a145a5a0
+supportedValuesOf "calendar" => 16 values, sorted true, duplicates false: ["buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic"] ... ["japanese", "persian", "roc"]
+supportedValuesOf "collation" => 9 values, sorted true, duplicates false: ["emoji", "eor", "phonebk", "phonetic", "pinyin", "stroke"] ... ["trad", "unihan", "zhuyin"]
+supportedValuesOf "currency" => 307 values, sorted true, duplicates false: ["ADP", "AED", "AFA", "AFN", "ALK", "ALL"] ... ["ZWG", "ZWL", "ZWR"]
+supportedValuesOf "numberingSystem" => 78 values, sorted true, duplicates false: ["adlm", "ahom", "arab", "arabext", "bali", "beng"] ... ["vaii", "wara", "wcho"]
+supportedValuesOf "timeZone" => 445 values, sorted true, duplicates false: ["Africa/Abidjan", "Africa/Accra", "Africa/Addis_Ababa", "Africa/Algiers", "Africa/Asmara", "Africa/Bamako"] ... ["Pacific/Wake", "Pacific/Wallis", "UTC"]
+supportedValuesOf "unit" => 45 values, sorted true, duplicates false: ["acre", "bit", "byte", "celsius", "centimeter", "day"] ... ["week", "yard", "year"]
+calendar, whole => ["buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "gregory", "hebrew", "indian", "islamic-civil", "islamic-tbla", "islamic-umalqura", "iso8601", "japanese", "persian", "roc"]
+collation, whole => ["emoji", "eor", "phonebk", "phonetic", "pinyin", "stroke", "trad", "unihan", "zhuyin"]
+numberingSystem, whole => ["adlm", "ahom", "arab", "arabext", "bali", "beng", "bhks", "brah", "cakm", "cham", "deva", "diak", "fullwide", "gara", "gong", "gonm", "gujr", "gukh", "guru", "hanidec", "hmng", "hmnp", "java", "kali", "kawi", "khmr", "knda", "krai", "lana", "lanatham", "laoo", "latn", "lepc", "limb", "mathbold", "mathdbl", "mathmono", "mathsanb", "mathsans", "mlym", "modi", "mong", "mroo", "mtei", "mymr", "mymrepka", "mymrpao", "mymrshan", "mymrtlng", "nagm", "newa", "nkoo", "olck", "onao", "orya", "osma", "outlined", "rohg", "saur", "segment", "shrd", "sind", "sinh", "sora", "sund", "sunu", "takr", "talu", "tamldec", "telu", "thai", "tibt", "tirh", "tnsa", "tols", "vaii", "wara", "wcho"]
+unit, whole => ["acre", "bit", "byte", "celsius", "centimeter", "day", "degree", "fahrenheit", "fluid-ounce", "foot", "gallon", "gigabit", "gigabyte", "gram", "hectare", "hour", "inch", "kilobit", "kilobyte", "kilogram", "kilometer", "liter", "megabit", "megabyte", "meter", "microsecond", "mile", "mile-scandinavian", "milliliter", "millimeter", "millisecond", "minute", "month", "nanosecond", "ounce", "percent", "petabyte", "pound", "second", "stone", "terabit", "terabyte", "week", "yard", "year"]
+currency: EUR, USD, XXX, XTS, ZWL, VES, VEB, SLE, XCG, ANG => ["EUR:true", "USD:true", "XXX:true", "XTS:true", "ZWL:true", "VES:true", "VEB:true", "SLE:true", "XCG:true", "ANG:true"]
+timeZone: links and primaries => ["UTC:true", "Etc/UTC:false", "Etc/GMT:false", "Asia/Kolkata:true", "Asia/Calcutta:false", "Europe/Kyiv:true", "Europe/Kiev:false", "America/Buenos_Aires:false", "America/Argentina/Buenos_Aires:true", "Antarctica/South_Pole:false", "EST5EDT:false", "Etc/GMT+5:true"]
+every calendar resolves in DateTimeFormat => []
+every numbering system resolves in NumberFormat => []
+every collation resolves in some Collator => []
+every unit is accepted by NumberFormat => []
+every currency is well-formed => []
+supportedValuesOf "" => THROWS RangeError: Intl.supportedValuesOf: invalid key ""
+supportedValuesOf "calendars" => THROWS RangeError: Intl.supportedValuesOf: invalid key "calendars"
+supportedValuesOf "Calendar" => THROWS RangeError: Intl.supportedValuesOf: invalid key "Calendar"
+supportedValuesOf "region" => THROWS RangeError: Intl.supportedValuesOf: invalid key "region"
+supportedValuesOf "language" => THROWS RangeError: Intl.supportedValuesOf: invalid key "language"
+supportedValuesOf "hourCycle" => THROWS RangeError: Intl.supportedValuesOf: invalid key "hourCycle"
+supportedValuesOf undefined => THROWS RangeError: Intl.supportedValuesOf: invalid key "undefined"
+supportedValuesOf a Symbol => THROWS TypeError: Cannot convert a Symbol value to a string.
+supportedValuesOf {toString} => 16 values, sorted true, duplicates false: ["buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic"] ... ["japanese", "persian", "roc"]
+fresh array each call => true
+length, name => [1, "supportedValuesOf"]
+exit=0

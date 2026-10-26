@@ -1,0 +1,117 @@
+# The digital clock's locale data in the cldr-json npm packages, read by scripts/cldr_digital.py from each tarball streamed from
+# the registry and never unpacked to disk; the tarball's sha512 is checked against the registry's integrity value. Commands:
+#   curl -sS https://registry.npmjs.org/cldr-units-full/-/cldr-units-full-48.2.0.tgz | python3 -I scripts/cldr_digital.py units sha512-BjDC7V46eeXzgalnIumrJ1XQDk8wJaOxNLME4hmkBT9Q0hnzxn3XgtavigPUwnljk7FxlNQW9Wx+hbFrARPrQg==
+#   curl -sS https://registry.npmjs.org/cldr-numbers-full/-/cldr-numbers-full-48.2.0.tgz | python3 -I scripts/cldr_digital.py numbers sha512-0EQ+UkVDsyXOlxnWnL1RIENVZFqCnb04D1Yrku0obnOyttbuZz8tHmUd5c5AEvhGS/Gg2zI4fTaCm51LSGITog==
+#   curl -sS https://registry.npmjs.org/cldr-units-full/-/cldr-units-full-47.0.0.tgz | python3 -I scripts/cldr_digital.py units <its registry integrity>
+# The two 48.2.0 integrity values are the json-integrity lines of Broiler.VM's src/tests/cldr/pins/cldr.pin (:94-95). Below: each
+# tarball's check line, then every locale whose durationUnit-type-hms is not h:mm:ss (units) or whose latn timeSeparator is not
+# ':' (numbers), and the lines of the locales the rows name.
+## cldr48-units-hms
+# tarball bytes 9773310, sha512-BjDC7V46eeXzgalnIumrJ1XQDk8wJaOxNLME4hmkBT9Q0hnzxn3XgtavigPUwnljk7FxlNQW9Wx+hbFrARPrQg==, registry integrity sha512-BjDC7V46eeXzgalnIumrJ1XQDk8wJaOxNLME4hmkBT9Q0hnzxn3XgtavigPUwnljk7FxlNQW9Wx+hbFrARPrQg==, EQUAL
+af	hh:mm:ss
+af-NA	hh:mm:ss
+ba	hh:mm:ss
+be	hh:mm:ss
+be-tarask	hh:mm:ss
+da	h.mm.ss
+da-GL	h.mm.ss
+es-CL	hh:mm:ss
+fi	h.mm.ss
+ia	hh:mm:ss
+id	h.mm.ss
+lt	hh:mm:ss
+mn	hh:mm:ss
+mn-Mong-MN	hh:mm:ss
+scn	hh:mm:ss
+si	h.mm.ss
+sr	h.mm.ss
+sr-Cyrl	h.mm.ss
+sr-Cyrl-BA	h.mm.ss
+sr-Cyrl-ME	h.mm.ss
+sr-Cyrl-XK	h.mm.ss
+sr-Latn	h.mm.ss
+sr-Latn-BA	h.mm.ss
+sr-Latn-ME	h.mm.ss
+sr-Latn-XK	h.mm.ss
+su	h.mm.ss
+su-Latn	h.mm.ss
+tk	hh:mm:ss
+tok	hh:mm:ss
+named: af	hh:mm:ss
+named: be	hh:mm:ss
+named: da	h.mm.ss
+named: de	h:mm:ss
+named: en	h:mm:ss
+named: en-DK	h:mm:ss
+named: es-CL	hh:mm:ss
+named: fi	h.mm.ss
+named: id	h.mm.ss
+named: lt	hh:mm:ss
+named: si	h.mm.ss
+named: sr	h.mm.ss
+## cldr48-numbers-timesep
+# tarball bytes 3518125, sha512-0EQ+UkVDsyXOlxnWnL1RIENVZFqCnb04D1Yrku0obnOyttbuZz8tHmUd5c5AEvhGS/Gg2zI4fTaCm51LSGITog==, registry integrity sha512-0EQ+UkVDsyXOlxnWnL1RIENVZFqCnb04D1Yrku0obnOyttbuZz8tHmUd5c5AEvhGS/Gg2zI4fTaCm51LSGITog==, EQUAL
+da	default=latn latn=.
+da-GL	default=latn latn=.
+en-DK	default=latn latn=.
+en-FI	default=latn latn=.
+fi	default=latn latn=.
+id	default=latn latn=.
+ms-ID	default=latn latn=.
+si	default=latn latn=.
+smn	default=latn latn=.
+su	default=latn latn=.
+su-Latn	default=latn latn=.
+sv-FI	default=latn latn=.
+named: af	default=latn latn=:
+named: be	default=latn latn=:
+named: da	default=latn latn=.
+named: de	default=latn latn=:
+named: en	default=latn latn=:
+named: en-DK	default=latn latn=.
+named: es-CL	default=latn latn=:
+named: fi	default=latn latn=.
+named: id	default=latn latn=.
+named: lt	default=latn latn=:
+named: si	default=latn latn=.
+named: sr	default=latn latn=:
+## cldr47-units-hms
+# tarball bytes 5807848, sha512-JZTaawtsqV74XMWImiDNwWY7sTLBY/Djtez3owEGTNen17dfpaQ6VXN3rdVfAFxMiUn2gRcY7Mj/JkoBAywgUQ==, registry integrity sha512-JZTaawtsqV74XMWImiDNwWY7sTLBY/Djtez3owEGTNen17dfpaQ6VXN3rdVfAFxMiUn2gRcY7Mj/JkoBAywgUQ==, EQUAL
+af	hh:mm:ss
+af-NA	hh:mm:ss
+be	hh:mm:ss
+be-tarask	hh:mm:ss
+da	h.mm.ss
+da-GL	h.mm.ss
+es-CL	hh:mm:ss
+fi	h.mm.ss
+ia	hh:mm:ss
+id	h.mm.ss
+lt	hh:mm:ss
+mn	hh:mm:ss
+mn-Mong-MN	hh:mm:ss
+si	h.mm.ss
+sr	h.mm.ss
+sr-Cyrl	h.mm.ss
+sr-Cyrl-BA	h.mm.ss
+sr-Cyrl-ME	h.mm.ss
+sr-Cyrl-XK	h.mm.ss
+sr-Latn	h.mm.ss
+sr-Latn-BA	h.mm.ss
+sr-Latn-ME	h.mm.ss
+sr-Latn-XK	h.mm.ss
+su	h.mm.ss
+su-Latn	h.mm.ss
+tk	hh:mm:ss
+named: af	hh:mm:ss
+named: be	hh:mm:ss
+named: da	h.mm.ss
+named: de	h:mm:ss
+named: en	h:mm:ss
+named: en-DK	h:mm:ss
+named: es-CL	hh:mm:ss
+named: fi	h.mm.ss
+named: id	h.mm.ss
+named: lt	hh:mm:ss
+named: si	h.mm.ss
+named: sr	h.mm.ss

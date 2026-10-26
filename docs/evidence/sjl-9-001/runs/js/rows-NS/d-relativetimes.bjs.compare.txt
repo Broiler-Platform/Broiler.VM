@@ -1,0 +1,3 @@
+# compare: work/compare_dataset.py <rows> relativetimes bjs (Broiler.JS harness compare_program at f918b040 over runs/d-relativetimes.bjs.txt; expected = work/datasets/relativetimes--relativetimes.icu-77.1.txt with work/datasets/relativetimes--divergences.txt applied)
+summary: lines=2460 compared=2460 equal=2459 differing=1 divergences-used=96
+2450	retained	expected: arab => \u0661\u0662 days ago {"locale":"en","style":"long","numeric":"always","numberingSystem":"arab"}	answered: arab => 12 days ago {"locale":"en","style":"long","numeric":"always","numberingSystem":"arab"}

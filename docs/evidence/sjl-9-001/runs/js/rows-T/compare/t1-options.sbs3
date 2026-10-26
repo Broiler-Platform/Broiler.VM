@@ -1,0 +1,84 @@
+= constructor reads, component bag => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+= constructor reads, style bag => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+= constructor reads, empty bag => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+= reads during format and resolvedOptions after construction => 
+# Date#toLocaleString reads
+   VM: localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+   JS: weekday,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,dateStyle,timeStyle,localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+   Node (VM): localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+# Date#toLocaleDateString reads
+   VM: localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+   JS: weekday,year,month,day,dateStyle,timeStyle,localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+   Node (VM): localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+# Date#toLocaleTimeString reads
+   VM: localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+   JS: dayPeriod,hour,minute,second,fractionalSecondDigits,dateStyle,timeStyle,localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+   Node (VM): localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+# Date#toLocaleString reads, empty bag
+   VM: localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+   JS: weekday,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,dateStyle,timeStyle,localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+   Node (VM): localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+= weekday: "LONG" => THROWS RangeError
+= month: 3 => THROWS RangeError
+= fractionalSecondDigits: 0 => THROWS RangeError
+= fractionalSecondDigits: 4 => THROWS RangeError
+= fractionalSecondDigits: "2.9" => "12"
+= hour12: "false" (a string is true) => "h12"
+= calendar: "gregory-x" (malformed) => THROWS RangeError
+= calendar: "abc" (well formed, unknown) => "gregory"
+= numberingSystem: "latn!" => THROWS RangeError
+= formatMatcher: "basic" => "January 5"
+= formatMatcher: "x" => THROWS RangeError
+= dateStyle with month => THROWS TypeError
+= timeStyle with timeZoneName => THROWS TypeError
+= dateStyle with era => THROWS TypeError
+= dateStyle: "LONG" => THROWS RangeError
+= options null => THROWS TypeError: Cannot convert undefined or null to object
+= options "abc" (a string) => "numeric"
+= Date#toLocaleDateString with timeStyle => THROWS TypeError
+= Date#toLocaleTimeString with dateStyle => THROWS TypeError
+# Date#toLocaleString with dateStyle and timeStyle
+   VM: "Jan 5, 2024, 3:07\u202fPM"
+   JS: "Jan 5, 2024, 3:07 PM"
+   Node (JS): "Jan 5, 2024, 3:07 PM"
+= Date#toLocaleDateString with dateStyle => "Friday, January 5, 2024"
+# Date#toLocaleTimeString with timeStyle
+   VM: "3:07:09\u202fPM Coordinated Universal Time"
+   JS: "3:07:09 PM Coordinated Universal Time"
+   Node (JS): "3:07:09 PM Coordinated Universal Time"
+# Date#toLocaleDateString with hour only
+   VM: "1/5/2024, 3\u202fPM"
+   JS: "1/5/2024, 3 PM"
+   Node (JS): "1/5/2024, 3 PM"
+# Date#toLocaleTimeString with year only
+   VM: "2024, 3:07:09\u202fPM"
+   JS: "2024, 3:07:09 PM"
+   Node (JS): "2024, 3:07:09 PM"
+= Date#toLocaleString of an invalid date => "Invalid Date"
+# Date#toLocaleString with a string second argument "yyyy"
+   VM: "1/5/2024, 3:07:09\u202fPM"
+   JS: "2024"
+   Node (neither): "1/5/2024, 3:07:09 PM"
+# Date#toLocaleDateString with a string second argument "yyyy-MM-dd"
+   VM: "1/5/2024"
+   JS: "2024-01-05"
+   Node (VM): "1/5/2024"
+# format getter returns one function
+   VM: true
+   JS: false
+   Node (VM): true
+= bound format name and length => ["", 1, true]
+= bound format detached => ["1/5/2024", "1/1/1970"]
+= format getter on a plain object => THROWS TypeError
+= formatToParts on a NumberFormat => THROWS TypeError
+= resolvedOptions on the prototype => THROWS TypeError
+= called as a function => "[object Intl.DateTimeFormat]"
+# legacy: called on an object inheriting the prototype
+   VM: [true, 1, "5.1.2024", "de"]
+   JS: THROWS TypeError: Intl.DateTimeFormat.prototype.format called on incompatible receiver
+   Node (VM): [true, 1, "5.1.2024", "de"]
+= legacy: formatToParts on that object => THROWS TypeError
+= new with a subclass => [true, "1/5/2024"]
+= toStringTag => "[object Intl.DateTimeFormat]"
+= constructor length, prototype methods => [0, 1, 2, 2, 0]
+-- 35 same, 12 differ; Node equals VM 7, JS 4, neither 1

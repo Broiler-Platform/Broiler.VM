@@ -1,0 +1,2 @@
+# compare: work/compare_dataset.py <rows> calendar-formats vm (Broiler.JS harness compare_program at f918b040 over runs/d-calendar-formats.vm.txt; expected = work/datasets/calendar-formats--calendar-formats.polyfill-e8cc03fc.txt with work/datasets/calendar-formats--divergences.txt applied)
+summary: lines=5951 compared=5951 equal=5951 differing=0 divergences-used=1395

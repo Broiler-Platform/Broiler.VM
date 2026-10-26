@@ -1,0 +1,3 @@
+[{"type":"minute","value":"30"},{"type":"literal","value":":"},{"type":"second","value":"05"}] 30:05
+[{"type":"minute","value":"00"},{"type":"literal","value":":"},{"type":"second","value":"00"}]
+weekday,year,month,day,hour,minute,second

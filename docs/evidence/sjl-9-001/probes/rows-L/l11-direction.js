@@ -1,0 +1,14 @@
+// SJL-9.1 sub-area (a), row L17: getTextInfo's direction (ECMA-402 15.5.15 TextDirectionOfLocale: the script, or
+// the likely script, and CLDR's script metadata) for every script CLDR 48.2.0's script metadata names (the list
+// below is that table's keys at Broiler.VM cd1928d), for scripts it does not name, and for languages written
+// without a script. One line per group: the tags whose answer is each value.
+var scripts = ['Adlm', 'Aghb', 'Ahom', 'Arab', 'Armi', 'Armn', 'Avst', 'Bali', 'Bamu', 'Bass', 'Batk', 'Beng', 'Berf', 'Bhks', 'Bopo', 'Brah', 'Bugi', 'Buhd', 'Cakm', 'Cans', 'Cari', 'Cham', 'Cher', 'Chrs', 'Copt', 'Cpmn', 'Cprt', 'Cyrl', 'Deva', 'Diak', 'Dogr', 'Dsrt', 'Dupl', 'Egyp', 'Elba', 'Elym', 'Ethi', 'Gara', 'Geor', 'Glag', 'Gong', 'Gonm', 'Goth', 'Gran', 'Grek', 'Gujr', 'Gukh', 'Guru', 'Hanb', 'Hang', 'Hani', 'Hano', 'Hans', 'Hant', 'Hatr', 'Hebr', 'Hira', 'Hluw', 'Hmng', 'Hmnp', 'Hung', 'Ital', 'Jamo', 'Java', 'Jpan', 'Kali', 'Kana', 'Kawi', 'Khar', 'Khmr', 'Khoj', 'Kits', 'Knda', 'Kore', 'Krai', 'Kthi', 'Lana', 'Laoo', 'Latn', 'Lepc', 'Limb', 'Lina', 'Linb', 'Lisu', 'Lyci', 'Lydi', 'Mahj', 'Maka', 'Mand', 'Mani', 'Marc', 'Medf', 'Mend', 'Merc', 'Mero', 'Mlym', 'Modi', 'Mong', 'Mroo', 'Mtei', 'Mult', 'Mymr', 'Nagm', 'Nand', 'Narb', 'Nbat', 'Newa', 'Nkoo', 'Nshu', 'Ogam', 'Olck', 'Onao', 'Orkh', 'Orya', 'Osge', 'Osma', 'Ougr', 'Palm', 'Pauc', 'Perm', 'Phag', 'Phli', 'Phlp', 'Phnx', 'Plrd', 'Prti', 'Rjng', 'Rohg', 'Runr', 'Samr', 'Sarb', 'Saur', 'Sgnw', 'Shaw', 'Shrd', 'Sidd', 'Sidt', 'Sind', 'Sinh', 'Sogd', 'Sogo', 'Sora', 'Soyo', 'Sund', 'Sunu', 'Sylo', 'Syrc', 'Tagb', 'Takr', 'Tale', 'Talu', 'Taml', 'Tang', 'Tavt', 'Tayo', 'Telu', 'Tfng', 'Tglg', 'Thaa', 'Thai', 'Tibt', 'Tirh', 'Tnsa', 'Todr', 'Tols', 'Toto', 'Tutg', 'Ugar', 'Vaii', 'Vith', 'Wara', 'Wcho', 'Xpeo', 'Xsux', 'Yezi', 'Yiii', 'Zanb'];
+function dir(tag) { try { return String(new Intl.Locale(tag).getTextInfo().direction); } catch (e) { return 'THROWS ' + errName(e); } }
+function groups(tags) {
+  var by = {}, order = [];
+  tags.forEach(function (tag) { var d = dir(tag); if (!by[d]) { by[d] = []; order.push(d); } by[d].push(tag); });
+  return R(order.map(function (d) { return d + ': ' + by[d].join(' '); }).join(' | '));
+}
+t('und-<script>, every script CLDR names', function () { return groups(scripts.map(function (s) { return 'und-' + s; })); });
+t('und-<script>, scripts CLDR does not name', function () { return groups(['und-Qaaa', 'und-Qabx', 'und-Aran', 'und-Zzzz', 'und-Zyyy', 'und-Zinh', 'und-Zxxx', 'und-Zmth', 'und-Zsye', 'und-Latf', 'und-Syre', 'und-Hanb', 'und-Jamo']); });
+t('languages without a script', function () { return groups(['ar', 'he', 'fa', 'ur', 'ps', 'sd', 'ug', 'dv', 'yi', 'syr', 'ks', 'ckb', 'mzn', 'lrc', 'glk', 'bal', 'bqi', 'pa-PK', 'uz-AF', 'az-IR', 'ku-IQ', 'ms-BN', 'arc', 'nqo', 'prs', 'ku', 'sd-IN', 'ff-GN', 'en', 'ja', 'xyz', 'und', 'und-IL', 'und-SA', 'zh-MO']); });

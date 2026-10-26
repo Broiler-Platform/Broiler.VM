@@ -1,0 +1,9 @@
+resolvedOptions default [locale, timeZone] => ["en-US", "UTC"]
+format(summer), format(winter) default => ["12:00\u202fPM UTC", "12:00\u202fPM UTC"]
+Date#toLocaleString() no arguments => "7/15/2024, 12:00:00\u202fPM"
+Date#toLocaleDateString() no arguments => "7/15/2024"
+Date#toLocaleTimeString() no arguments => "12:00:00\u202fPM"
+en dateStyle full timeStyle full, default zone => "Monday, July 15, 2024 at 12:00:00\u202fPM Coordinated Universal Time"
+en {timeZoneName:longGeneric}, default zone => "7/15/2024, GMT"
+Temporal.Now.timeZoneId() => "UTC"
+Temporal.Instant toLocaleString default zone => "7/15/2024, 12:00:00\u202fPM"

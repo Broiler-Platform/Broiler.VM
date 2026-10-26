@@ -1,0 +1,49 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-NS/n9-range.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/n9-range.js sha256 4943f6351d16399bcb7fd369ac2019657b9b73304bbecad781e10431b6106ee9
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-NS/n9-range.js [raw]  uncaught Error: OUT<<en {} formatRange => ["3\u20135", "~1", "-5 \u2013 -1", "-1 \u2013 1", "1,000\u20135,000", "1\u20132", "~1", "5\u20133"]
+en {"signDisplay":"always"} formatRange => ["+3 \u2013 +5", "~+1", "-5 \u2013 -1", "-1 \u2013 +1", "+1,000 \u2013 +5,000", "+1 \u2013 +2", "~+1", "+5 \u2013 +3"]
+en {"style":"percent"} formatRange => ["300% \u2013 500%", "~100%", "-500\u2013100%", "-100% \u2013 100%", "100,000% \u2013 500,000%", "100% \u2013 200%", "~100%", "500% \u2013 300%"]
+en {"style":"currency","currency":"USD"} formatRange => ["$3.00 \u2013 $5.00", "~$1.00", "-$5.00\u20131.00", "-$1.00 \u2013 $1.00", "$1,000.00 \u2013 $5,000.00", "$1.00 \u2013 $2.00", "~$1.00", "$5.00 \u2013 $3.00"]
+en {"style":"currency","currency":"EUR","currencyDisplay":"code"} formatRange => ["EUR\u00a03.00\u20135.00", "~EUR\u00a01.00", "-EUR\u00a05.00\u20131.00", "-EUR\u00a01.00 \u2013 EUR\u00a01.00", "EUR\u00a01,000.00\u20135,000.00", "EUR\u00a01.00\u20132.00", "~EUR\u00a01.00", "EUR\u00a05.00\u20133.00"]
+en {"style":"currency","currency":"EUR","currencyDisplay":"name"} formatRange => ["3.00\u20135.00 euros", "~1.00 euros", "-5.00 \u2013 -1.00 euros", "-1.00 \u2013 1.00 euros", "1,000.00\u20135,000.00 euros", "1.00\u20132.00 euros", "~1.00 euros", "5.00\u20133.00 euros"]
+en {"style":"currency","currency":"USD","currencySign":"accounting"} formatRange => ["$3.00 \u2013 $5.00", "~$1.00", "($5.00\u20131.00)", "($1.00) \u2013 $1.00", "$1,000.00 \u2013 $5,000.00", "$1.00 \u2013 $2.00", "~$1.00", "$5.00 \u2013 $3.00"]
+en {"style":"unit","unit":"kilometer"} formatRange => ["3\u20135 km", "~1 km", "-5 \u2013 -1 km", "-1 \u2013 1 km", "1,000\u20135,000 km", "1\u20132 km", "~1 km", "5\u20133 km"]
+en {"style":"unit","unit":"kilometer","unitDisplay":"long"} formatRange => ["3\u20135 kilometers", "~1 kilometer", "-5 \u2013 -1 kilometers", "-1 \u2013 1 kilometers", "1,000\u20135,000 kilometers", "1\u20132 kilometers", "~1 kilometer", "5\u20133 kilometers"]
+en {"notation":"compact"} formatRange => ["3\u20135", "~1", "-5 \u2013 -1", "-1 \u2013 1", "1K \u2013 5K", "1\u20132", "~1", "5\u20133"]
+en {"notation":"scientific"} formatRange => ["3E0 \u2013 5E0", "~1E0", "-5E0 \u2013 -1E0", "-1E0 \u2013 1E0", "1E3 \u2013 5E3", "1E0 \u2013 2E0", "9.999E-1 \u2013 1E0", "5E0 \u2013 3E0"]
+de {} formatRange => ["3\u20135", "\u22481", "-5 \u2013 -1", "-1 \u2013 1", "1.000\u20135.000", "1\u20132", "\u22481", "5\u20133"]
+de {"style":"currency","currency":"EUR"} formatRange => ["3,00\u20135,00\u00a0\u20ac", "\u22481,00\u00a0\u20ac", "-5,00\u20131,00\u00a0\u20ac", "-1,00\u00a0\u20ac \u2013 1,00\u00a0\u20ac", "1.000,00\u20135.000,00\u00a0\u20ac", "1,00\u20132,00\u00a0\u20ac", "\u22481,00\u00a0\u20ac", "5,00\u20133,00\u00a0\u20ac"]
+de {"style":"unit","unit":"kilometer","unitDisplay":"long"} formatRange => ["3\u20135 Kilometer", "\u22481 Kilometer", "-5 \u2013 -1 Kilometer", "-1 \u2013 1 Kilometer", "1.000\u20135.000 Kilometer", "1\u20132 Kilometer", "\u22481 Kilometer", "5\u20133 Kilometer"]
+de {"style":"percent"} formatRange => ["300\u2013500\u00a0%", "\u2248100\u00a0%", "-500\u2013100\u00a0%", "-100\u00a0% \u2013 100\u00a0%", "100.000\u2013500.000\u00a0%", "100\u2013200\u00a0%", "\u2248100\u00a0%", "500\u2013300\u00a0%"]
+en USD formatRangeToParts(3, 5) => [currency/startRange:"$", integer/startRange:"3", decimal/startRange:".", fraction/startRange:"00", literal/shared:" \u2013 ", currency/endRange:"$", integer/endRange:"5", decimal/endRange:".", fraction/endRange:"00"]
+en {} formatRangeToParts(-5, -1) => [minusSign/startRange:"-", integer/startRange:"5", literal/shared:" \u2013 ", minusSign/endRange:"-", integer/endRange:"1"]
+en kilometer long formatRangeToParts(1, 5) => [integer/startRange:"1", literal/shared:"\u2013", integer/endRange:"5", literal/shared:" ", unit/shared:"kilometers"]
+de {} formatRangeToParts(1, 1) => [approximatelySign/shared:"\u2248", integer/shared:"1"]
+en maximumFractionDigits 0 formatRangeToParts(0.9999, 1.0001) => [approximatelySign/shared:"~", integer/shared:"1"]
+en signDisplay never formatRange(-1, 1) => "~1"
+en USD accounting formatRangeToParts(-5, -1) => [literal/shared:"(", currency/shared:"$", integer/startRange:"5", decimal/startRange:".", fraction/startRange:"00", literal/shared:"\u2013", integer/endRange:"1", decimal/endRange:".", fraction/endRange:"00", literal/shared:")"]
+pt-PT EUR formatRange(3, 5), {} formatRange(3, 5) => ["\u20ac3 \u2013 \u20ac5", "3\u20135"]
+fr EUR formatRange(3, 5), {} formatRange(3, 5) => ["\u20ac3 \u2013 \u20ac5", "3\u20135"]
+ja EUR formatRange(3, 5), {} formatRange(3, 5) => ["\u20ac3 \u2013 \u20ac5", "3\u20135"]
+es EUR formatRange(3, 5), {} formatRange(3, 5) => ["\u20ac3 \u2013 \u20ac5", "3\u20135"]
+formatRange with BigInt and String ends => ["1\u20135", "1\u20135.5"]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-NS/n9-range.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-NS  e.g. test/sjl9/rows-NS/n9-range.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-NS/n9-range.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

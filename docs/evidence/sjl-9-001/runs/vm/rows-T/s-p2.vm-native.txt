@@ -1,0 +1,8 @@
+Collator:function DateTimeFormat:function DisplayNames:function DurationFormat:function ListFormat:function NumberFormat:function PluralRules:function RelativeTimeFormat:function Segmenter:function
+1.234,5 123K 1,234.5
+January 1, 1970 January
+a, b, and c 3 days ago
+in ١٢ days
+function
+true
+9 AM [{"type":"hour","value":"9"},{"type":"literal","value":" "},{"type":"dayPeriod","value":"AM"}]

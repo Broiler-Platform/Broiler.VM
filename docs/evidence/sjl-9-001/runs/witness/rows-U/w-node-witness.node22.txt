@@ -1,0 +1,30 @@
+# command (from <rows>/): /opt/node22/bin/node --harmony-intl-duration-format probes/w-node-witness.js
+# revision: Node v22.22.0 icu 77.1 cldr 47.0 (a witness only, never the arbiter of a class)
+# probe: probes/w-node-witness.js sha256 c18faa3175972071466613fd117c5091297217b51d05e1b4d6615b71907880da
+en {"style":"short","numberingSystem":"arab"} {"hours":-1,"minutes":-2,"seconds":-3} => en arab "\u061c-\u0661 hr, \u061c-\u0662 min, \u061c-\u0663 sec"
+en {"style":"short","numberingSystem":"arab"} {"days":1000} => en arab "\u0661\u066c\u0660\u0660\u0660 days"
+en {"style":"digital","numberingSystem":"arab"} {"hours":1,"minutes":2,"seconds":3,"milliseconds":500} => en arab "\u0661:\u0660\u0662:\u0660\u0663\u066b\u0665"
+ar {"style":"long"} {"hours":1,"minutes":2} => ar latn "\u0633\u0627\u0639\u0629 \u0648\u062f\u0642\u064a\u0642\u062a\u0627\u0646"
+ar-EG {"style":"short"} {"hours":1,"minutes":2} => ar-EG arab "\u0661 \u0633 \u0648\u0662 \u062f"
+da {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => da latn "1.02.03"
+id {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => id latn "1.02.03"
+si {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => si latn "1.02.03"
+en-DK {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => en-DK latn "1.02.03"
+fi {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => fi latn "1.02.03"
+af {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => af latn "1:02:03"
+lt {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => lt latn "1:02:03"
+es-CL {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => es-CL latn "1:02:03"
+sr {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => sr latn "1:02:03"
+be {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => be latn "1:02:03"
+en {"style":"long","minutes":"numeric"} {"minutes":5} => en latn "5"
+en {"style":"long","hours":"numeric"} {"hours":1} => en latn "1"
+en {"milliseconds":"numeric","millisecondsDisplay":"always"} {"hours":1} => en latn "1 hr"
+nf en arab -1234.5 => "\u061c-\u0661\u066c\u0662\u0663\u0664\u066b\u0665"
+nf ar unit hour long 1 => "\u0633\u0627\u0639\u0629"
+zh-TW {"style":"long"} {"hours":1,"minutes":2} => zh-TW latn "1 \u5c0f\u6642 2 \u5206\u9418"
+ja {"style":"long"} {"hours":1,"minutes":2} => ja latn "1 \u6642\u9593 2 \u5206"
+fr {"style":"long"} {"hours":1,"minutes":2} => fr latn "1\u00a0heure et 2 minutes"
+es {"style":"long"} {"hours":1,"minutes":2} => es latn "1 hora y 2 minutos"
+nf ar unit hour long 2 => "\u0633\u0627\u0639\u062a\u0627\u0646"
+v22.22.0 icu 77.1 cldr 47.0
+exit=0

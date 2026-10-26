@@ -1,0 +1,79 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-NS/s4-relativetime.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/s4-relativetime.js sha256 9d8ac1d6181bf72fd75362b55780987fc5a556565ebc3e080dc91933596296fb
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-NS/s4-relativetime.js [raw]  uncaught Error: OUT<<en long always: -3 day, 1 hour, 1000 second, 2 quarter => ["en", "3 days ago", "in 1 hour", "in 1,000 seconds", "in 2 quarters"]
+en short always: -3 day, 1 hour, 1000 second, 2 quarter => ["en", "3 days ago", "in 1 hr.", "in 1,000 sec.", "in 2 qtrs."]
+en narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["en", "3d ago", "in 1h", "in 1,000s", "in 2q"]
+en long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["2 days ago", "yesterday", "today", "today", "tomorrow", "in 2 days", "now", "last year"]
+de long always: -3 day, 1 hour, 1000 second, 2 quarter => ["de", "vor 3 Tagen", "in 1 Stunde", "in 1.000 Sekunden", "in 2 Quartalen"]
+de short always: -3 day, 1 hour, 1000 second, 2 quarter => ["de", "vor 3 Tagen", "in 1 Std.", "in 1.000 Sek.", "in 2 Quart."]
+de narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["de", "vor 3 Tagen", "in 1 Std.", "in 1.000 s", "in 2 Q"]
+de long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["vorgestern", "gestern", "heute", "heute", "morgen", "\u00fcbermorgen", "jetzt", "letztes Jahr"]
+es long always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hour", "in 1,000 seconds", "in 2 quarters"]
+es short always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hr.", "in 1,000 sec.", "in 2 qtrs."]
+es narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3d ago", "in 1h", "in 1,000s", "in 2q"]
+es long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["2 days ago", "yesterday", "today", "today", "tomorrow", "in 2 days", "now", "last year"]
+fr long always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hour", "in 1,000 seconds", "in 2 quarters"]
+fr short always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hr.", "in 1,000 sec.", "in 2 qtrs."]
+fr narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3d ago", "in 1h", "in 1,000s", "in 2q"]
+fr long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["2 days ago", "yesterday", "today", "today", "tomorrow", "in 2 days", "now", "last year"]
+pl long always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hour", "in 1,000 seconds", "in 2 quarters"]
+pl short always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hr.", "in 1,000 sec.", "in 2 qtrs."]
+pl narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3d ago", "in 1h", "in 1,000s", "in 2q"]
+pl long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["2 days ago", "yesterday", "today", "today", "tomorrow", "in 2 days", "now", "last year"]
+ja long always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hour", "in 1,000 seconds", "in 2 quarters"]
+ja short always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hr.", "in 1,000 sec.", "in 2 qtrs."]
+ja narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3d ago", "in 1h", "in 1,000s", "in 2q"]
+ja long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["2 days ago", "yesterday", "today", "today", "tomorrow", "in 2 days", "now", "last year"]
+ru long always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hour", "in 1,000 seconds", "in 2 quarters"]
+ru short always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hr.", "in 1,000 sec.", "in 2 qtrs."]
+ru narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3d ago", "in 1h", "in 1,000s", "in 2q"]
+ru long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["2 days ago", "yesterday", "today", "today", "tomorrow", "in 2 days", "now", "last year"]
+ar long always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hour", "in 1,000 seconds", "in 2 quarters"]
+ar short always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hr.", "in 1,000 sec.", "in 2 qtrs."]
+ar narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3d ago", "in 1h", "in 1,000s", "in 2q"]
+ar long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["2 days ago", "yesterday", "today", "today", "tomorrow", "in 2 days", "now", "last year"]
+xyz long always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hour", "in 1,000 seconds", "in 2 quarters"]
+xyz short always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3 days ago", "in 1 hr.", "in 1,000 sec.", "in 2 qtrs."]
+xyz narrow always: -3 day, 1 hour, 1000 second, 2 quarter => ["en-US", "3d ago", "in 1h", "in 1,000s", "in 2q"]
+xyz long auto: -2, -1, 0, -0, 1, 2 day; 0 second; -1 year => ["2 days ago", "yesterday", "today", "today", "tomorrow", "in 2 days", "now", "last year"]
+en short auto: -1 day, 1 week, 0 month (short patterns fall back) => ["yesterday", "next wk.", "this mo."]
+en numberingSystem "arab": 12 day, resolved => ["in \u0661\u0662 days", "arab", "en"]
+en-u-nu-arab: 12 day, resolved => ["in \u0661\u0662 days", "arab", "en-u-nu-arab"]
+de numberingSystem "thai": -1234.5 day => "vor \u0e51.\u0e52\u0e53\u0e54,\u0e55 Tagen"
+en numberingSystem "arab" formatToParts(12, "day") => [literal:"in ", integer:"\u0661\u0662", literal:" days"]
+en always: 1.0001, 1.0004, -1.0004, 0.9999, 1.5, 1.25 day => ["in 1 day", "in 1 day", "1 day ago", "in 1 day", "in 1.5 days", "in 1.25 days"]
+de always: 1.0001 day, -1.0001 year => ["in 1 Tag", "vor 1 Jahr"]
+en always: -1, -0, 0, -1000 second (the sign of the number) => ["1 second ago", "0 seconds ago", "in 0 seconds", "1,000 seconds ago"]
+en formatToParts(-1000.5, "day") => [integer:"1", group:",", integer:"000", decimal:".", fraction:"5", literal:" days ago"]
+en formatToParts(1000, "seconds") units => ["-", "second", "second", "second", "-"]
+en auto formatToParts(-1, "day") => [literal:"yesterday"]
+en 1e21 day, 123456789.123 day => ["in 1,000,000,000,000,000,000,000 days", "in 123,456,789.123 days"]
+format("2", "day"), format(2n, "day") => ["in 2 days", "TypeError"]
+NaN, Infinity, unit "decade", unit "Day" => ["RangeError", "RangeError", "RangeError", "RangeError"]
+ToNumber before ToString(unit) => ["value", "unit"]
+constructor reads => ["localeMatcher", "numberingSystem", "style", "numeric"]
+resolvedOptions keys => ["locale", "style", "numeric", "numberingSystem"]
+RelativeTimeFormat without new => THROWS TypeError: Constructor Intl.RelativeTimeFormat requires 'new'
+invalid style, numeric, numberingSystem => "style:RangeError numeric:RangeError numberingSystem:RangeError"
+options a string (coerced) => "long"
+options null => "TypeError">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-NS/s4-relativetime.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-NS  e.g. test/sjl9/rows-NS/s4-relativetime.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-NS/s4-relativetime.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

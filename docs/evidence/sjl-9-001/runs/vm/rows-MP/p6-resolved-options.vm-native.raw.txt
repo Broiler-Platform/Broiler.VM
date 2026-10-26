@@ -1,0 +1,34 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-MP/p6-resolved-options.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/p6-resolved-options.js sha256 a3066a60f27b73f7526afb94b70a7d5029f5df23e0b877ef3c545e7efd78690e
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-MP/p6-resolved-options.js [raw]  uncaught Error: OUT<<P6 en {} => {locale: "en", type: "cardinal", notation: "standard", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 3, pluralCategories: ["one", "other"], roundingIncrement: 1, roundingMode: "halfExpand", roundingPriority: "auto", trailingZeroDisplay: "auto"}
+P6 en ordinal => {locale: "en", type: "ordinal", notation: "standard", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 3, pluralCategories: ["one", "two", "few", "other"], roundingIncrement: 1, roundingMode: "halfExpand", roundingPriority: "auto", trailingZeroDisplay: "auto"}
+P6 en compact => {locale: "en", type: "cardinal", notation: "compact", compactDisplay: "short", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 0, minimumSignificantDigits: 1, maximumSignificantDigits: 2, pluralCategories: ["one", "other"], roundingIncrement: 1, roundingMode: "halfExpand", roundingPriority: "morePrecision", trailingZeroDisplay: "auto"}
+P6 en compact long => {locale: "en", type: "cardinal", notation: "compact", compactDisplay: "long", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 0, minimumSignificantDigits: 1, maximumSignificantDigits: 2, pluralCategories: ["one", "other"], roundingIncrement: 1, roundingMode: "halfExpand", roundingPriority: "morePrecision", trailingZeroDisplay: "auto"}
+P6 en maxSD 3 => {locale: "en", type: "cardinal", notation: "standard", minimumIntegerDigits: 1, minimumSignificantDigits: 1, maximumSignificantDigits: 3, pluralCategories: ["one", "other"], roundingIncrement: 1, roundingMode: "halfExpand", roundingPriority: "auto", trailingZeroDisplay: "auto"}
+P6 en morePrecision maxSD 3 => {locale: "en", type: "cardinal", notation: "standard", minimumIntegerDigits: 1, minimumFractionDigits: 0, maximumFractionDigits: 3, minimumSignificantDigits: 1, maximumSignificantDigits: 3, pluralCategories: ["one", "other"], roundingIncrement: 1, roundingMode: "halfExpand", roundingPriority: "morePrecision", trailingZeroDisplay: "auto"}
+P6 en increment 5 minFD 1 maxFD 1 floor stripIfInteger => {locale: "en", type: "cardinal", notation: "standard", minimumIntegerDigits: 1, minimumFractionDigits: 1, maximumFractionDigits: 1, pluralCategories: ["one", "other"], roundingIncrement: 5, roundingMode: "floor", roundingPriority: "auto", trailingZeroDisplay: "stripIfInteger"}
+P6 de {} pluralCategories; de ordinal pluralCategories => [["one", "other"], ["other"]]
+P6 refusals: type "bogus", notation "bogus", compactDisplay "bogus", minFD 3 maxFD 2, increment 3, increment 5 maxSD 2 => ["RangeError", "RangeError", "RangeError", "RangeError", "RangeError", "TypeError"]
+P6 called without new => THROWS TypeError: Constructor Intl.PluralRules requires 'new'
+P6 select on a non-PluralRules this => THROWS TypeError: Intl.PluralRules.prototype.select requires that 'this' be an Intl.PluralRules
+P6 resolvedOptions on a non-PluralRules this => THROWS TypeError: Intl.PluralRules.prototype.resolvedOptions requires that 'this' be an Intl.PluralRules>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-MP/p6-resolved-options.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-MP  e.g. test/sjl9/rows-MP/p6-resolved-options.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-MP/p6-resolved-options.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

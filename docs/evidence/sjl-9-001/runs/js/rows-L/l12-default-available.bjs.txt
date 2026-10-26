@@ -1,0 +1,41 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/l12-default-available.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/l12-default-available.js sha256 ddba019df279d75f2fb34c0b78b1082c17520cbfb2597329562b3483155712e1
+Collator DefaultLocale => "en-US"
+Collator supportedLocalesOf(DefaultLocale) => ["en-US"]
+Collator supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+Collator resolution of "en-US" => "en-US"
+DateTimeFormat DefaultLocale => "en-US"
+DateTimeFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+DateTimeFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+DateTimeFormat resolution of "en-US" => "en-US"
+DisplayNames DefaultLocale => "en-US"
+DisplayNames supportedLocalesOf(DefaultLocale) => (no supportedLocalesOf)
+DisplayNames supportedLocalesOf(["en-US", "en"]) => (no supportedLocalesOf)
+DisplayNames resolution of "en-US" => "en-US"
+DurationFormat DefaultLocale => "en-US"
+DurationFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+DurationFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+DurationFormat resolution of "en-US" => "en-US"
+ListFormat DefaultLocale => "en-US"
+ListFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+ListFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+ListFormat resolution of "en-US" => "en-US"
+NumberFormat DefaultLocale => "en-US"
+NumberFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+NumberFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+NumberFormat resolution of "en-US" => "en-US"
+PluralRules DefaultLocale => "en-US"
+PluralRules supportedLocalesOf(DefaultLocale) => ["en-US"]
+PluralRules supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+PluralRules resolution of "en-US" => "en-US"
+RelativeTimeFormat DefaultLocale => "en-US"
+RelativeTimeFormat supportedLocalesOf(DefaultLocale) => ["en-US"]
+RelativeTimeFormat supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+RelativeTimeFormat resolution of "en-US" => "en-US"
+Segmenter DefaultLocale => "en-US"
+Segmenter supportedLocalesOf(DefaultLocale) => ["en-US"]
+Segmenter supportedLocalesOf(["en-US", "en"]) => ["en-US", "en"]
+Segmenter resolution of "en-US" => "en-US"
+Intl.getCanonicalLocales of the DefaultLocale => ["en-US"]
+exit=0

@@ -1,0 +1,4 @@
+N16 list length => 20000
+N16 the list formatted (length) => 60002
+N16 the list formatted to parts (count) => 39999
+N16 2,000 numbers formatted to parts (parts) => 14000

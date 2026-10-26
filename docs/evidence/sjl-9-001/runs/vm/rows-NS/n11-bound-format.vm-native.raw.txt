@@ -1,0 +1,34 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-NS/n11-bound-format.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/n11-bound-format.js sha256 643572ac79a7d3ace864002784164d4f4d075bec7b5333ecf527379a006327ed
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-NS/n11-bound-format.js [raw]  uncaught Error: OUT<<nf.format === nf.format => true
+bound format name, length, own prototype => ["", 1, true, false]
+detached bound format(1234.5) => "1,234.5"
+[1000, 2.5].map(nf.format) => ["1,000", "2.5"]
+format getter on a non-NumberFormat => THROWS TypeError: Intl.NumberFormat.prototype.format requires that 'this' be an Intl.NumberFormat
+format getter descriptor => ["function", undefined, false, true, "get format"]
+Intl.NumberFormat() without new is a NumberFormat => [true, "1.234,5"]
+legacy: Intl.NumberFormat.call(Object.create(Intl.NumberFormat.prototype)) returns the receiver => [true, ["Symbol(IntlLegacyConstructedSymbol)"]]
+legacy: resolvedOptions and format through the receiver => ["de", "1.234,5"]
+legacy: formatToParts through the receiver => THROWS TypeError: Intl.NumberFormat.prototype.formatToParts requires that 'this' be an Intl.NumberFormat
+legacy: called on a plain object returns a new NumberFormat => [false, true]
+legacy: new.target subclass => [true, "1,5"]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-NS/n11-bound-format.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-NS  e.g. test/sjl9/rows-NS/n11-bound-format.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-NS/n11-bound-format.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

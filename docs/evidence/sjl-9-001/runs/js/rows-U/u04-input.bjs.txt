@@ -1,0 +1,46 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/u04-input.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/u04-input.js sha256 5285838485416ee1d26b24a48247c7815d9a798833c8390cf91183817da54e1a
+U7 the reads of format({hours: 1, minutes: 2}) => "get years, get months, get weeks, get days, get hours, get minutes, get seconds, get milliseconds, get microseconds, get nanoseconds, get years, get months, get weeks, get days, get hours, get minutes, get seconds, get milliseconds, get microseconds, get nanoseconds => 1 hr, 2 min"
+U7 the reads of formatToParts({seconds: 3}) => "get years, get months, get weeks, get days, get hours, get minutes, get seconds, get milliseconds, get microseconds, get nanoseconds, get years, get months, get weeks, get days, get hours, get minutes, get seconds, get milliseconds, get microseconds, get nanoseconds => 3 parts"
+U7 reads and conversions interleaved, {days, hours} as objects with valueOf => "get years, get months, get weeks, get days, valueOf days, get hours, valueOf hours, get minutes, get seconds, get milliseconds, get microseconds, get nanoseconds, get years, get months, get weeks, get days, valueOf days, get hours, valueOf hours, get minutes, get seconds, get milliseconds, get microseconds, get nanoseconds => 1 day, 2 hr"
+U7 valueOf calls of a field object {valueOf: 7} => [2, "7 hr"]
+U7 a getter answering 1, then -1, then 1 => [2, "-1 hr"]
+U7 a getter answering 1, then 1.5 => [2, "1.5 hr"]
+U7 a getter throwing on its second read => THROWS EvalError: second read
+U7 format({hours: "2"}) => "2 hr"
+U7 format({hours: -0}) => ""
+U7 format({hours: undefined, minutes: 1}) => "1 min"
+U8 format(new Temporal.Duration(0, 0, 0, 0, 1, 2)) => "1 hr, 2 min"
+U9 format("PT1H30M") => "1 hr, 30 min"
+U9 format("P1Y2M3W4DT5H6M7.008009010S") => "1 yr, 2 mths, 3 wks, 4 days, 5 hr, 6 min, 7 sec, 8 ms, 9 \u03bcs, 10 ns"
+U9 format("-PT5M") => "-5 min"
+U9 format("1 hour") => THROWS RangeError: Cannot parse Temporal.Duration from "1 hour"
+U9 format("") => THROWS RangeError: Cannot parse Temporal.Duration from ""
+U10 format(5) => THROWS TypeError: Duration argument must be an object or string
+U10 format(undefined) => THROWS TypeError: Duration argument must be an object or string
+U10 format(null) => THROWS TypeError: Duration argument must be an object or string
+U10 format(true) => THROWS TypeError: Duration argument must be an object or string
+U10 format(5n) => THROWS TypeError: Duration argument must be an object or string
+U10 format({}) => THROWS TypeError: Duration must specify at least one field
+U10 format({foo: 1}) => THROWS TypeError: Duration must specify at least one field
+U10 format({hours: 1.5}) => THROWS RangeError: Invalid duration value for hours
+U10 format({hours: Infinity}) => THROWS RangeError: Invalid duration value for hours
+U10 format({hours: NaN}) => THROWS RangeError: Invalid duration value for hours
+U10 format({hours: 2n}) => THROWS TypeError: Cannot convert a BigInt duration value for hours
+U10 format({hours: 1, minutes: -1}) => THROWS RangeError: Invalid duration: inconsistent sign
+U10 format({years: 2**32}) => THROWS RangeError: Duration value for years is out of range
+U10 format({years: 2**32 - 1}) => "4,294,967,295 yrs"
+U10 format({weeks: -(2**32)}) => THROWS RangeError: Duration value for weeks is out of range
+U10 format({seconds: 2**53}) => THROWS RangeError: Duration time total is out of range
+U10 format({seconds: 2**53 - 1}) => "9,007,199,254,740,991 sec"
+U10 format({days: 104249991374}) => "104,249,991,374 days"
+U10 format({days: 104249991375}) => THROWS RangeError: Duration time total is out of range
+U10 format({nanoseconds: Number.MAX_VALUE}) => THROWS RangeError: Duration time total is out of range
+U10 format(a symbol) => THROWS TypeError: Duration argument must be an object or string
+U8 format(new Temporal.Duration(0, 0, 0, 0, 1, 2)), prototype getters wrapped => "1 hr, 2 min | getters called: "
+U9 format("PT1H2M"), prototype getters wrapped => "1 hr, 2 min | getters called: years,months,weeks,days,hours,minutes,seconds,milliseconds,microseconds,nanoseconds"
+U9 formatToParts("PT3S"), prototype getters wrapped => "3 parts | getters called: years,months,weeks,days,hours,minutes,seconds,milliseconds,microseconds,nanoseconds"
+U9 format("PT1H2M"), prototype getters throwing => THROWS EvalError: tainted years
+U8 format(Temporal.Duration.from("PT1H2M")), prototype getters throwing => "1 hr, 2 min"
+exit=0

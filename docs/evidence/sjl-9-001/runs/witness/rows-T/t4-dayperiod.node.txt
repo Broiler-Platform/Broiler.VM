@@ -1,0 +1,30 @@
+# command (from <rows>/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 300 node -e '<print = stdout line; indirect eval of built/t4-dayperiod.js>'
+# revision: node v22.22.0; ICU 77.1; CLDR 47.0; tz 2025b
+# probe: built/t4-dayperiod.js sha256 bd21028027a0e91705f1bebcabf659daaeedbe8fbaae421ef943d4d0f334b31a
+en {dayPeriod:narrow} at 0:0 0:30 3:0 6:0 9:15 11:59 12:0 12:1 13:0 15:0 18:0 20:59 21:0 23:0 => ["in the morning", "in the morning", "in the morning", "in the morning", "in the morning", "in the morning", "n", "n", "in the afternoon", "in the afternoon", "in the evening", "in the evening", "at night", "at night"]
+en {dayPeriod:short} at 0:0 0:30 3:0 6:0 9:15 11:59 12:0 12:1 13:0 15:0 18:0 20:59 21:0 23:0 => ["in the morning", "in the morning", "in the morning", "in the morning", "in the morning", "in the morning", "noon", "noon", "in the afternoon", "in the afternoon", "in the evening", "in the evening", "at night", "at night"]
+en {dayPeriod:long} at 0:0 0:30 3:0 6:0 9:15 11:59 12:0 12:1 13:0 15:0 18:0 20:59 21:0 23:0 => ["in the morning", "in the morning", "in the morning", "in the morning", "in the morning", "in the morning", "noon", "noon", "in the afternoon", "in the afternoon", "in the evening", "in the evening", "at night", "at night"]
+en {dayPeriod:short, hour:numeric} => ["12 in the morning", "12 in the morning", "3 in the morning", "6 in the morning", "9 in the morning", "11 in the morning", "12 noon", "12 noon", "1 in the afternoon", "3 in the afternoon", "6 in the evening", "8 in the evening", "9 at night", "11 at night"]
+en {dayPeriod:long, hour:numeric, minute:numeric} => ["12:00 in the morning", "12:30 in the morning", "3:00 in the morning", "6:00 in the morning", "9:15 in the morning", "11:59 in the morning", "12:00 noon", "12:01 in the afternoon", "1:00 in the afternoon", "3:00 in the afternoon", "6:00 in the evening", "8:59 in the evening", "9:00 at night", "11:00 at night"]
+en {dayPeriod:narrow, hour:numeric, minute:numeric, second:numeric} => ["12:00:00 n", "3:00:00 in the afternoon"]
+en {dayPeriod:short, hour:numeric, hourCycle:h23} => ["09", "15", "h23"]
+en {dayPeriod:short, year:numeric, month:short, day:numeric} => "Jan 5, 2024, in the afternoon"
+en {dayPeriod:short, weekday:long} => "Friday, in the afternoon"
+en {dayPeriod:long, hour:numeric} formatToParts at 15:00 => [hour:"3", literal:" ", dayPeriod:"in the afternoon"]
+en {dayPeriod:long, minute:numeric} at 15:07 => "7 \u251cAM/PM: in the afternoon\u2524"
+en {dayPeriod:short} in Asia/Kolkata at 06:00 UTC => "11 in the morning"
+en {hour:numeric, hour12:true} AM/PM => ["12 AM", "12 PM", "11 PM"]
+de {dayPeriod:narrow} at 0:0 0:30 3:0 6:0 9:15 11:59 12:0 12:1 13:0 15:0 18:0 20:59 21:0 23:0 => ["nachts", "nachts", "nachts", "morgens", "morgens", "vorm.", "mittags", "mittags", "nachm.", "nachm.", "abends", "abends", "abends", "abends"]
+de {dayPeriod:short} at 0:0 0:30 3:0 6:0 9:15 11:59 12:0 12:1 13:0 15:0 18:0 20:59 21:0 23:0 => ["nachts", "nachts", "nachts", "morgens", "morgens", "vorm.", "mittags", "mittags", "nachm.", "nachm.", "abends", "abends", "abends", "abends"]
+de {dayPeriod:long} at 0:0 0:30 3:0 6:0 9:15 11:59 12:0 12:1 13:0 15:0 18:0 20:59 21:0 23:0 => ["nachts", "nachts", "nachts", "morgens", "morgens", "vormittags", "mittags", "mittags", "nachmittags", "nachmittags", "abends", "abends", "abends", "abends"]
+de {dayPeriod:short, hour:numeric} => ["00 Uhr", "00 Uhr", "03 Uhr", "06 Uhr", "09 Uhr", "11 Uhr", "12 Uhr", "12 Uhr", "13 Uhr", "15 Uhr", "18 Uhr", "20 Uhr", "21 Uhr", "23 Uhr"]
+de {dayPeriod:long, hour:numeric, minute:numeric} => ["00:00", "00:30", "03:00", "06:00", "09:15", "11:59", "12:00", "12:01", "13:00", "15:00", "18:00", "20:59", "21:00", "23:00"]
+de {dayPeriod:narrow, hour:numeric, minute:numeric, second:numeric} => ["12:00:00", "15:00:00"]
+de {dayPeriod:short, hour:numeric, hourCycle:h23} => ["09 Uhr", "15 Uhr", "h23"]
+de {dayPeriod:short, year:numeric, month:short, day:numeric} => "5. Jan. 2024, nachm."
+de {dayPeriod:short, weekday:long} => "Freitag, nachm."
+de {dayPeriod:long, hour:numeric} formatToParts at 15:00 => [hour:"15", literal:" Uhr"]
+de {dayPeriod:long, minute:numeric} at 15:07 => "7 \u251cTagesh\u00e4lfte: nachmittags\u2524"
+de {dayPeriod:short} in Asia/Kolkata at 06:00 UTC => "11 Uhr"
+de {hour:numeric, hour12:true} AM/PM => ["12 Uhr AM", "12 Uhr PM", "11 Uhr PM"]
+exit=0

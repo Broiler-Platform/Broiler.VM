@@ -1,0 +1,12 @@
+default locale (NumberFormat) => "en-US"
+default time zone (DateTimeFormat) => "UTC"
+a getCanonicalLocales => ["en-US", "zh-Hant-TW"]
+a Locale maximize => "zh-Hant-TW"
+b PluralRules en select(1), select(2) => ["one", "other"]
+c NumberFormat en 1234.5 => "1,234.5"
+c NumberFormat de 1234.5 => "1.234,5"
+d DateTimeFormat en UTC dateStyle medium, epoch => "Jan 1, 1970"
+e DurationFormat en long => "1 hour, 2 minutes"
+canonical-tz: resolved zone for Asia/Calcutta => "Asia/Kolkata"
+Intl.Locale-info: typeof getWeekInfo => "function"
+Intl.NumberFormat-v3: formatRange en 3-5 => "3\u20135"

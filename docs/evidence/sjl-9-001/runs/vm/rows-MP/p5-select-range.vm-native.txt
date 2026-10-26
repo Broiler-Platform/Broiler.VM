@@ -1,0 +1,11 @@
+P5 en (1,1) (1,1.0001) (-1,1) ("1","1.0") => ["one", "one", "one", "one"]
+P5 de (1,1); en {minFD 1} (1,1) => ["one", "other"]
+P5 en (0,1) (1,2) (2,1) (0,0.5) (1,1.5) => ["other", "other", "other", "other", "other"]
+P5 de (0,1) (1,2) (2,1) (1,1.5) => ["one", "other", "one", "other"]
+P5 en ordinal (1,2) (1,1) (2,3) => ["other", "one", "other"]
+P5 fr (0,1) (1,2) => ["en-US", "other", "other"]
+P5 (Infinity, Infinity), (5, 1) no throw, (-Infinity, Infinity) => ["other", "other", "other"]
+P5 (NaN, 1) => THROWS RangeError: Intl.PluralRules: a range cannot start or end at NaN
+P5 (undefined, 1) => THROWS TypeError: Intl.PluralRules: a range needs a start and an end
+P5 (1) one argument => THROWS TypeError: Intl.PluralRules: a range needs a start and an end
+P5 order of coercion: start then end, both before the NaN test => ["start", "end", "RangeError"]

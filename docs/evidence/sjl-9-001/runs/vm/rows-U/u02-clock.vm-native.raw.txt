@@ -1,0 +1,51 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-U/u02-clock.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/u02-clock.js sha256 6312969e0c0f40a1760aa9d74c0e5b73e843109a1a349fab733eddc65cd3c684
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-U/u02-clock.js [raw]  uncaught Error: OUT<<U5 en {"style":"long","minutes":"numeric"} {"minutes":5} => "5:00"
+U5 en {"style":"long","minutes":"numeric"} {"seconds":0} => "0:00"
+U5 en {"style":"long","minutes":"numeric"} {"hours":1,"minutes":2} => "1 hour, 2:00"
+U5 en {"style":"long","minutes":"numeric"} {"minutes":1,"seconds":30} => "1:30"
+U5 en {"style":"long","minutes":"numeric"} {"days":1} => "1 day, 0:00"
+U5 en {"style":"long","minutes":"numeric"} {"minutes":-5,"seconds":0} => "-5:00"
+U5 en {"style":"long","hours":"numeric"} {"hours":1} => "1:00:00"
+U5 en {"style":"long","hours":"numeric"} {"hours":1,"seconds":5} => "1:00:05"
+U5 en {"style":"long","hours":"numeric"} {"minutes":3} => "0:03:00"
+U5 en {"style":"long","hours":"numeric"} {"days":2,"hours":1} => "2 days, 1:00:00"
+U5 en {"style":"long","hours":"numeric"} {"hours":0} => "0:00:00"
+U5 en {"hours":"numeric"} {"hours":2,"minutes":3} => "2:03:00"
+U5 en {"minutes":"numeric"} {"hours":2,"minutes":3} => "2 hr, 3:00"
+U5 en {"minutes":"numeric"} {"hours":2} => "2 hr, 0:00"
+U5 en {"style":"digital"} {"hours":1,"minutes":2,"seconds":3} => "1:02:03"
+U5 en {"style":"digital"} {"minutes":5} => "0:05:00"
+U5 en {"style":"digital"} {"hours":12345,"minutes":1} => "12345:01:00"
+U5 en {"style":"digital"} {"days":1,"hours":25} => "1 day, 25:00:00"
+U5 en {"style":"digital"} {"seconds":7,"milliseconds":8,"microseconds":9} => "0:00:07.008009"
+U5 en {"style":"digital"} {"seconds":0} => "0:00:00"
+U5 en {"style":"digital"} {"years":1,"hours":1} => "1 yr, 1:00:00"
+U5 en {"style":"digital","fractionalDigits":2} {"seconds":7,"milliseconds":999} => "0:00:07.99"
+U5 en {"style":"digital","hoursDisplay":"auto"} {"minutes":5} => "05:00"
+U5 en {"style":"digital","hoursDisplay":"auto"} {"seconds":5} => "00:05"
+U5 en {"style":"short","seconds":"numeric"} {"minutes":1,"seconds":2} => "1 min, 2"
+U5 en {"style":"long","hours":"numeric","minutesDisplay":"auto","secondsDisplay":"auto"} {"hours":1,"seconds":5} => "1:00:05"
+U5 en {"style":"digital","hours":"2-digit"} {"hours":1} => "01:00:00"
+U5 en {"style":"digital","hours":"long"} {"hours":1,"minutes":2,"seconds":3} => "1 hour, 2:03"
+U5 en {"style":"long","seconds":"numeric"} {"minutes":1} => "1 minute, 0">>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-U/u02-clock.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-U  e.g. test/sjl9/rows-U/u02-clock.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-U/u02-clock.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1

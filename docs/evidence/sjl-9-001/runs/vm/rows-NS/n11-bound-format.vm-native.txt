@@ -1,0 +1,12 @@
+nf.format === nf.format => true
+bound format name, length, own prototype => ["", 1, true, false]
+detached bound format(1234.5) => "1,234.5"
+[1000, 2.5].map(nf.format) => ["1,000", "2.5"]
+format getter on a non-NumberFormat => THROWS TypeError: Intl.NumberFormat.prototype.format requires that 'this' be an Intl.NumberFormat
+format getter descriptor => ["function", undefined, false, true, "get format"]
+Intl.NumberFormat() without new is a NumberFormat => [true, "1.234,5"]
+legacy: Intl.NumberFormat.call(Object.create(Intl.NumberFormat.prototype)) returns the receiver => [true, ["Symbol(IntlLegacyConstructedSymbol)"]]
+legacy: resolvedOptions and format through the receiver => ["de", "1.234,5"]
+legacy: formatToParts through the receiver => THROWS TypeError: Intl.NumberFormat.prototype.formatToParts requires that 'this' be an Intl.NumberFormat
+legacy: called on a plain object returns a new NumberFormat => [false, true]
+legacy: new.target subclass => [true, "1,5"]

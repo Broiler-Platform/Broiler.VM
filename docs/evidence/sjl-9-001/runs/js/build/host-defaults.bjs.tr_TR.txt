@@ -1,0 +1,9 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANGUAGE LANG=tr_TR.UTF-8 LC_ALL=tr_TR.UTF-8 TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/host-defaults.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/host-defaults.js sha256 271a55f458935f48695813e0f98858e6ddc219b46c59552f4287bb5cfe4b0881
+default locale (NumberFormat) => "tr-TR"
+default locale (DateTimeFormat) => "tr-TR"
+default time zone (DateTimeFormat) => "UTC"
+Date offset at epoch (minutes) => 0
+toLocaleString of 1234.5 with no locale => "1.234,5"
+exit=0

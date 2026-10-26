@@ -1,0 +1,12 @@
+# command (from <rows>/, JS_ROOT=/home/user/s9-js): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/s-p2.js
+# revision: Broiler.JS f918b040f4992b8a230b8b6d9a0f2c03000632be; Broiler.Regex 0.1.0-preview.4; Broiler.Unicode.Algorithms 0.1.0-preview.5
+# probe: built/s-p2.js sha256 efd354dfcc3538fe52df36be496f94b75d1147b3a9969e0f0b27af299236a91d
+Collator:function DateTimeFormat:function DisplayNames:undefined DurationFormat:function ListFormat:function NumberFormat:function PluralRules:function RelativeTimeFormat:function Segmenter:function
+1.234,5 12万 1 234,5
+January 1, 1970 January
+a, b y c 3 dni temu
+in 12 days
+function
+false
+9 AM [{"type":"hour","value":"9"},{"type":"literal","value":" "},{"type":"dayPeriod","value":"AM"}]
+exit=0

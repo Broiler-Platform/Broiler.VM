@@ -1,0 +1,15 @@
+en scientific => ["1.235E5", "1.23E-4", "-1.5E-7", "1E21", "0E0", "1E1", "1E3"]
+en engineering => ["123.456E3", "123E-6", "-150E-9", "1E21", "0E0", "10E0", "999.95E0"]
+en scientific formatToParts(-0.000123) => [minusSign:"-", integer:"1", decimal:".", fraction:"23", exponentSeparator:"E", exponentMinusSign:"-", exponentInteger:"4"]
+en currency USD scientific 1234.5, engineering 1234567 => ["$1.235E3", "$1.235E6"]
+en unit meter scientific 1234.5 => "1.235E3 m"
+en scientific signDisplay always 1234, exceptZero 0 => ["+1.234E3", "0E0"]
+de scientific => ["1,235E5", "1,23E-4", "-1,5E-7", "1E21", "0E0", "1E1", "1E3"]
+de engineering => ["123,456E3", "123E-6", "-150E-9", "1E21", "0E0", "10E0", "999,95E0"]
+de scientific formatToParts(-0.000123) => [minusSign:"-", integer:"1", decimal:",", fraction:"23", exponentSeparator:"E", exponentMinusSign:"-", exponentInteger:"4"]
+de currency USD scientific 1234.5, engineering 1234567 => ["1,235E3\u00a0$", "1,235E6\u00a0$"]
+de unit meter scientific 1234.5 => "1,235E3 m"
+de scientific signDisplay always 1234, exceptZero 0 => ["+1,234E3", "0E0"]
+en scientific maximumSignificantDigits 2: 123456 => "1.2E5"
+en currency USD scientific formatToParts(1234.5) => [currency:"$", integer:"1", decimal:".", fraction:"235", exponentSeparator:"E", exponentInteger:"3"]
+sv, fa scientific -1.5e-7 => ["-1.5E-7", "-1.5E-7"]

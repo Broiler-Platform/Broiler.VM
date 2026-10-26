@@ -93,6 +93,12 @@ data.
 **Deleted:** the `CompareInfo` path of `Intl.Collator` and `String.prototype.localeCompare` for the
 locales the shared data covers, and the collator's platform normalization.
 
+*(Noted 2026-10-26, at SJL-9.1, by
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md).)*
+The collator's platform normalization is already gone: since SJL-7.5, Broiler.JS's collator decomposes both strings
+through Broiler.Unicode's normalization before the host's collation runs. The item is left as written, and holds
+nothing for SJL-17.5 to delete.
+
 **Kept:** an optional host provider for the locales the shared data does not cover, behind the same
 provider as decision [SJL-D-22](../decisions.md#sjl-d-22) (c).
 

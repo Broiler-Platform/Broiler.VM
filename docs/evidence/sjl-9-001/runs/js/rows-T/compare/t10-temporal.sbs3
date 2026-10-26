@@ -1,0 +1,193 @@
+# en NY {} format of each type
+   VM: PlainDate "3/10/2024"; PlainTime "2:30:15\u202fAM"; PlainDateTime "3/10/2024, 2:30:15\u202fAM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "3/10/2024, 3:30:15\u202fAM"; ZonedDateTime THROWS TypeError
+   JS: PlainDate "3/10/2024"; PlainTime "2:30:15 AM"; PlainDateTime "3/10/2024, 2:30:15 AM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "3/10/2024, 3:30:15 AM"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+# en NY {year: "numeric"} format of each type
+   VM: PlainDate "2024"; PlainTime THROWS TypeError; PlainDateTime "2024"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "2024"; ZonedDateTime THROWS TypeError
+   JS: PlainDate "2024"; PlainTime THROWS TypeError; PlainDateTime "2024"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS TypeError; Instant "2024"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+# en NY {hour: "numeric"} format of each type
+   VM: PlainDate THROWS TypeError; PlainTime "2\u202fAM"; PlainDateTime "2\u202fAM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "3\u202fAM"; ZonedDateTime THROWS TypeError
+   JS: PlainDate THROWS TypeError; PlainTime "2 AM"; PlainDateTime "2 AM"; PlainYearMonth THROWS TypeError; PlainMonthDay THROWS TypeError; Instant "3 AM"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+= en NY {month: "long", day: "numeric"} format of each type => PlainDate "March 10"; PlainTime THROWS TypeError; PlainDateTime "March 10"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "March 10"; ZonedDateTime THROWS TypeError   [Node: None]
+# en NY {minute: "numeric"} format of each type
+   VM: PlainDate THROWS TypeError; PlainTime "30"; PlainDateTime "30"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "30"; ZonedDateTime THROWS TypeError
+   JS: PlainDate THROWS TypeError; PlainTime "30"; PlainDateTime "30"; PlainYearMonth THROWS TypeError; PlainMonthDay THROWS TypeError; Instant "30"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+# en NY {era: "short"} format of each type
+   VM: PlainDate "3/10/2024 AD"; PlainTime "2:30:15\u202fAM"; PlainDateTime "3/10/2024 AD, 2:30:15\u202fAM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "3/10/2024 AD, 3:30:15\u202fAM"; ZonedDateTime THROWS TypeError
+   JS: PlainDate "3/10/2024 AD"; PlainTime "2:30:15 AM"; PlainDateTime "3/10/2024 AD, 2:30:15 AM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "3/10/2024 AD, 3:30:15 AM"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+# en NY {timeZoneName: "short"} format of each type
+   VM: PlainDate "3/10/2024"; PlainTime "2:30:15\u202fAM"; PlainDateTime "3/10/2024, 2:30:15\u202fAM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "3/10/2024, 3:30:15\u202fAM EDT"; ZonedDateTime THROWS TypeError
+   JS: PlainDate "3/10/2024"; PlainTime "2:30:15 AM"; PlainDateTime "3/10/2024, 2:30:15 AM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "3/10/2024, 3:30:15 AM EDT"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+= en NY {dateStyle: "medium"} format of each type => PlainDate "Mar 10, 2024"; PlainTime THROWS TypeError; PlainDateTime "Mar 10, 2024"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "Mar 10, 2024"; ZonedDateTime THROWS TypeError   [Node: None]
+# en NY {timeStyle: "short"} format of each type
+   VM: PlainDate THROWS TypeError; PlainTime "2:30\u202fAM"; PlainDateTime "2:30\u202fAM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "3:30\u202fAM"; ZonedDateTime THROWS TypeError
+   JS: PlainDate THROWS TypeError; PlainTime "2:30 AM"; PlainDateTime "2:30 AM"; PlainYearMonth THROWS TypeError; PlainMonthDay THROWS TypeError; Instant "3:30 AM"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+# en NY {dateStyle: "full", timeStyle: "long"} format of each type
+   VM: PlainDate "Sunday, March 10, 2024"; PlainTime "2:30:15\u202fAM"; PlainDateTime "Sunday, March 10, 2024 at 2:30:15\u202fAM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "Sunday, March 10, 2024 at 3:30:15\u202fAM EDT"; ZonedDateTime THROWS TypeError
+   JS: PlainDate "Sunday, March 10, 2024"; PlainTime "2:30:15 AM"; PlainDateTime "Sunday, March 10, 2024, 2:30:15 AM"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "Sunday, March 10, 2024, 3:30:15 AM EDT"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+# en NY {weekday: "long"} format of each type
+   VM: PlainDate "Sunday"; PlainTime THROWS TypeError; PlainDateTime "Sunday"; PlainYearMonth THROWS RangeError; PlainMonthDay THROWS RangeError; Instant "Sunday"; ZonedDateTime THROWS TypeError
+   JS: PlainDate "Sunday"; PlainTime THROWS TypeError; PlainDateTime "Sunday"; PlainYearMonth THROWS TypeError; PlainMonthDay THROWS TypeError; Instant "Sunday"; ZonedDateTime THROWS TypeError
+   Node (neither): None
+# en NY formatToParts of PlainDateTime (377fb80e: no zone shift in the DST gap)
+   VM: [hour:"2", literal:":", minute:"30", literal:"\u202f", dayPeriod:"AM"]
+   JS: [hour:"2", literal:":", minute:"30", literal:" ", dayPeriod:"AM"]
+   Node (neither): None
+# en Asia/Kolkata PlainTime 02:30 and Instant
+   VM: ["2:30:15\u202fAM", "1:00:15\u202fPM GMT+5:30"]
+   JS: ["2:30:15 AM", "1:00:15 PM GMT+5:30"]
+   Node (neither): None
+# en formatRange PlainDate-PlainDate
+   VM: "3/10/2024\u2009\u2013\u20093/12/2024"
+   JS: "3/10/2024 \u2013 3/12/2024"
+   Node (neither): None
+= en formatRange PlainDate-PlainDateTime => THROWS TypeError   [Node: None]
+= en formatRange PlainDate-Number => THROWS TypeError   [Node: None]
+# en formatRange Instant-Instant
+   VM: "3/10/2024, 7:30:15\u202fAM\u2009\u2013\u20099:30:15\u202fAM"
+   JS: "3/10/2024, 7:30:15 AM \u2013 9:30:15 AM"
+   Node (neither): None
+# en formatRangeToParts PlainTime-PlainTime
+   VM: [hour/startRange:"2", literal/startRange:":", minute/startRange:"30", literal/startRange:":", second/startRange:"15", literal/startRange:"\u202f", dayPeriod/startRange:"AM", literal/shared:"\u2009\u2013\u2009", hour/endRange:"5", literal/endRange:":", minute/endRange:"00", literal/endRange:":", second/endRange:"00", literal/endRange:"\u202f", dayPeriod/endRange:"AM"]
+   JS: [hour/startRange:"2", literal/startRange:":", minute/startRange:"30", literal/startRange:":", second/startRange:"15", literal/startRange:" ", dayPeriod/startRange:"AM", literal/shared:" \u2013 ", hour/endRange:"5", literal/endRange:":", minute/endRange:"00", literal/endRange:":", second/endRange:"00", literal/endRange:" ", dayPeriod/endRange:"AM"]
+   Node (neither): None
+# en-u-ca-japanese PlainDate (iso8601)
+   VM: "March 10, 6 Reiwa"
+   JS: "March 10, 6"
+   Node (neither): None
+# en-u-ca-japanese PlainDate (japanese)
+   VM: "March 10, 6 Reiwa"
+   JS: "March 10, 6"
+   Node (neither): None
+= en PlainDate in hebrew calendar => THROWS RangeError   [Node: None]
+= en PlainYearMonth iso8601 (gregory formatter) => THROWS RangeError   [Node: None]
+# en-u-ca-iso8601 PlainYearMonth
+   VM: "2024-03"
+   JS: "3/2024"
+   Node (neither): None
+# en-u-ca-iso8601 PlainMonthDay
+   VM: "03-10"
+   JS: "3/10"
+   Node (neither): None
+= en-u-ca-gregory PlainYearMonth in gregory => "3/2024"   [Node: None]
+= PlainDate#toLocaleString("en") => "3/10/2024"   [Node: None]
+# PlainDate#toLocaleString("de", {dateStyle:"long"})
+   VM: "10. M\u00e4rz 2024"
+   JS: "March 10, 2024"
+   Node (neither): None
+= PlainDate#toLocaleString("en", {timeStyle:"short"}) => THROWS TypeError   [Node: None]
+= PlainDate#toLocaleString("en", {hour:"numeric"}) => THROWS TypeError   [Node: None]
+= PlainDate#toLocaleString("en", {year:"numeric"}) => "2024"   [Node: None]
+# PlainTime#toLocaleString("en")
+   VM: "2:30:15\u202fAM"
+   JS: "2:30:15 AM"
+   Node (neither): None
+= PlainTime#toLocaleString("de", {dateStyle:"long"}) => THROWS TypeError   [Node: None]
+# PlainTime#toLocaleString("en", {timeStyle:"short"})
+   VM: "2:30\u202fAM"
+   JS: "2:30 AM"
+   Node (neither): None
+# PlainTime#toLocaleString("en", {hour:"numeric"})
+   VM: "2\u202fAM"
+   JS: "2 AM"
+   Node (neither): None
+= PlainTime#toLocaleString("en", {year:"numeric"}) => THROWS TypeError   [Node: None]
+# PlainDateTime#toLocaleString("en")
+   VM: "3/10/2024, 2:30:15\u202fAM"
+   JS: "3/10/2024, 2:30:15 AM"
+   Node (neither): None
+# PlainDateTime#toLocaleString("de", {dateStyle:"long"})
+   VM: "10. M\u00e4rz 2024"
+   JS: "March 10, 2024"
+   Node (neither): None
+# PlainDateTime#toLocaleString("en", {timeStyle:"short"})
+   VM: "2:30\u202fAM"
+   JS: "2:30 AM"
+   Node (neither): None
+# PlainDateTime#toLocaleString("en", {hour:"numeric"})
+   VM: "2\u202fAM"
+   JS: "2 AM"
+   Node (neither): None
+= PlainDateTime#toLocaleString("en", {year:"numeric"}) => "2024"   [Node: None]
+= PlainYearMonth#toLocaleString("en") => THROWS RangeError   [Node: None]
+= PlainYearMonth#toLocaleString("de", {dateStyle:"long"}) => THROWS RangeError   [Node: None]
+= PlainYearMonth#toLocaleString("en", {timeStyle:"short"}) => THROWS TypeError   [Node: None]
+# PlainYearMonth#toLocaleString("en", {hour:"numeric"})
+   VM: THROWS RangeError: Intl.DateTimeFormat: a Temporal.PlainYearMonth in the iso8601 calendar cannot be formatted in the gregory calendar
+   JS: THROWS TypeError: Intl.DateTimeFormat: the format options and the Temporal type have no fields in common
+   Node (neither): None
+= PlainYearMonth#toLocaleString("en", {year:"numeric"}) => THROWS RangeError   [Node: None]
+= PlainMonthDay#toLocaleString("en") => THROWS RangeError   [Node: None]
+= PlainMonthDay#toLocaleString("de", {dateStyle:"long"}) => THROWS RangeError   [Node: None]
+= PlainMonthDay#toLocaleString("en", {timeStyle:"short"}) => THROWS TypeError   [Node: None]
+# PlainMonthDay#toLocaleString("en", {hour:"numeric"})
+   VM: THROWS RangeError: Intl.DateTimeFormat: a Temporal.PlainMonthDay in the iso8601 calendar cannot be formatted in the gregory calendar
+   JS: THROWS TypeError: Intl.DateTimeFormat: the format options and the Temporal type have no fields in common
+   Node (neither): None
+# PlainMonthDay#toLocaleString("en", {year:"numeric"})
+   VM: THROWS RangeError: Intl.DateTimeFormat: a Temporal.PlainMonthDay in the iso8601 calendar cannot be formatted in the gregory calendar
+   JS: THROWS TypeError: Intl.DateTimeFormat: the format options and the Temporal type have no fields in common
+   Node (neither): None
+# Instant#toLocaleString("en")
+   VM: "3/10/2024, 7:30:15\u202fAM"
+   JS: "3/10/2024, 7:30:15 AM"
+   Node (neither): None
+# Instant#toLocaleString("de", {dateStyle:"long"})
+   VM: "10. M\u00e4rz 2024"
+   JS: "March 10, 2024"
+   Node (neither): None
+# Instant#toLocaleString("en", {timeStyle:"short"})
+   VM: "7:30\u202fAM"
+   JS: "7:30 AM"
+   Node (neither): None
+# Instant#toLocaleString("en", {hour:"numeric"})
+   VM: "7\u202fAM"
+   JS: "7 AM"
+   Node (neither): None
+= Instant#toLocaleString("en", {year:"numeric"}) => "2024"   [Node: None]
+# ZonedDateTime#toLocaleString("en")
+   VM: "3/10/2024, 3:30:15\u202fAM EDT"
+   JS: "3/10/2024, 3:30:15 AM EDT"
+   Node (neither): None
+# ZonedDateTime#toLocaleString("de", {dateStyle:"long"})
+   VM: "10. M\u00e4rz 2024"
+   JS: "March 10, 2024"
+   Node (neither): None
+# ZonedDateTime#toLocaleString("en", {timeStyle:"short"})
+   VM: "3:30\u202fAM"
+   JS: "3:30 AM"
+   Node (neither): None
+# ZonedDateTime#toLocaleString("en", {hour:"numeric"})
+   VM: "3\u202fAM"
+   JS: "3 AM"
+   Node (neither): None
+= ZonedDateTime#toLocaleString("en", {year:"numeric"}) => "2024"   [Node: None]
+= ZonedDateTime#toLocaleString with a timeZone option => THROWS TypeError   [Node: None]
+# ZonedDateTime#toLocaleString in Asia/Calcutta
+   VM: "3/10/2024, 12:00:00\u202fPM India Standard Time"
+   JS: "3/10/2024, 12:00:00 PM India Standard Time"
+   Node (neither): None
+# ZonedDateTime#toLocaleString resolvedOptions-like zone (Asia/Calcutta) in parts
+   VM: "3/10/2024, 12:00:00\u202fPM GMT+5:30"
+   JS: "3/10/2024, 12:00:00 PM GMT+5:30"
+   Node (neither): None
+# ZonedDateTime in japanese calendar, en-u-ca-japanese
+   VM: "March 10, 6 Reiwa"
+   JS: "March 10, 6"
+   Node (neither): None
+= ZonedDateTime in japanese calendar, en => THROWS RangeError   [Node: None]
+# Instant#toLocaleString default in UTC host
+   VM: "3/10/2024, 7:30:15\u202fAM"
+   JS: "3/10/2024, 7:30:15 AM"
+   Node (neither): None
+= PlainDate#toLocaleString reads => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle   [Node: None]
+= ZonedDateTime#toLocaleString reads => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle   [Node: None]
+= Duration#toLocaleString (DurationFormat, sub-area e) => "string"   [Node: None]
+-- 28 same, 41 differ; Node equals VM 0, JS 0, neither 41

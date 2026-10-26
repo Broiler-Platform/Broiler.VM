@@ -1,0 +1,14 @@
+diff --git a/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs b/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs
+index a8ca256..eaeca8a 100644
+--- a/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs
++++ b/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs
+@@ -94,6 +94,9 @@ internal sealed record SuiteFeatures(
+             ["ShadowRealm"] = "JSD-0040",
+             ["Temporal"] = "JSD-0054",
+             ["Intl.Era-monthcode"] = "JSD-0056",
++            ["canonical-tz"] = "SJL-9.1 scratch copy, never committed",
++            ["Intl.Locale-info"] = "SJL-9.1 scratch copy, never committed",
++            ["Intl.NumberFormat-v3"] = "SJL-9.1 scratch copy, never committed",
+         };
+ 
+     /// <summary>The proposed flags a <c>--test262</c> run skips: every proposal not admitted.</summary>

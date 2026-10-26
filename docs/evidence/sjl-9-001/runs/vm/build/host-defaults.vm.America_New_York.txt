@@ -1,0 +1,5 @@
+default locale (NumberFormat) => "en-US"
+default locale (DateTimeFormat) => "en-US"
+default time zone (DateTimeFormat) => "UTC"
+Date offset at epoch (minutes) => 0
+toLocaleString of 1234.5 with no locale => "1,234.5"

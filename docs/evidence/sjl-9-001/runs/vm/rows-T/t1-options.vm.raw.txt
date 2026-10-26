@@ -1,0 +1,69 @@
+# command (from harness/, VM_ROOT=/home/user/s9-vm): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/s9-vm/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl9/rows-T/t1-options.js --form bytecode --fuel 200000000000 --wall 600000
+# revision: Broiler.VM cd1928d67a735c467ee0a93e4640834eb4bd2e40
+# probe: built/t1-options.js sha256 e6fe15d1102add79eac9423a04e5d420e01255564d5ffa3055ec08c277e0bbdf
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl9/rows-T/t1-options.js [raw]  uncaught Error: OUT<<constructor reads, component bag => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+constructor reads, style bag => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+constructor reads, empty bag => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+reads during format and resolvedOptions after construction => 
+Date#toLocaleString reads => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+Date#toLocaleDateString reads => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+Date#toLocaleTimeString reads => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+Date#toLocaleString reads, empty bag => localeMatcher,calendar,numberingSystem,hour12,hourCycle,timeZone,weekday,era,year,month,day,dayPeriod,hour,minute,second,fractionalSecondDigits,timeZoneName,formatMatcher,dateStyle,timeStyle
+weekday: "LONG" => THROWS RangeError: Value LONG out of range for option weekday
+month: 3 => THROWS RangeError: Value 3 out of range for option month
+fractionalSecondDigits: 0 => THROWS RangeError: fractionalSecondDigits value is out of range.
+fractionalSecondDigits: 4 => THROWS RangeError: fractionalSecondDigits value is out of range.
+fractionalSecondDigits: "2.9" => "12"
+hour12: "false" (a string is true) => "h12"
+calendar: "gregory-x" (malformed) => THROWS RangeError: Intl.DateTimeFormat: the calendar option is not a well-formed type: gregory-
+calendar: "abc" (well formed, unknown) => "gregory"
+numberingSystem: "latn!" => THROWS RangeError: Intl.DateTimeFormat: the numberingSystem option is not a well-formed type: latn!
+formatMatcher: "basic" => "January 5"
+formatMatcher: "x" => THROWS RangeError: Value x out of range for option formatMatcher
+dateStyle with month => THROWS TypeError: Intl.DateTimeFormat: dateStyle and timeStyle cannot be combined with date-time components
+timeStyle with timeZoneName => THROWS TypeError: Intl.DateTimeFormat: dateStyle and timeStyle cannot be combined with date-time components
+dateStyle with era => THROWS TypeError: Intl.DateTimeFormat: dateStyle and timeStyle cannot be combined with date-time components
+dateStyle: "LONG" => THROWS RangeError: Value LONG out of range for option dateStyle
+options null => THROWS TypeError: Cannot convert undefined or null to object
+options "abc" (a string) => "numeric"
+Date#toLocaleDateString with timeStyle => THROWS TypeError: Intl.DateTimeFormat: a date format cannot have a timeStyle
+Date#toLocaleTimeString with dateStyle => THROWS TypeError: Intl.DateTimeFormat: a time format cannot have a dateStyle
+Date#toLocaleString with dateStyle and timeStyle => "Jan 5, 2024, 3:07\u202fPM"
+Date#toLocaleDateString with dateStyle => "Friday, January 5, 2024"
+Date#toLocaleTimeString with timeStyle => "3:07:09\u202fPM Coordinated Universal Time"
+Date#toLocaleDateString with hour only => "1/5/2024, 3\u202fPM"
+Date#toLocaleTimeString with year only => "2024, 3:07:09\u202fPM"
+Date#toLocaleString of an invalid date => "Invalid Date"
+Date#toLocaleString with a string second argument "yyyy" => "1/5/2024, 3:07:09\u202fPM"
+Date#toLocaleDateString with a string second argument "yyyy-MM-dd" => "1/5/2024"
+format getter returns one function => true
+bound format name and length => ["", 1, true]
+bound format detached => ["1/5/2024", "1/1/1970"]
+format getter on a plain object => THROWS TypeError: Intl.DateTimeFormat.prototype.format requires that 'this' be an Intl.DateTimeFormat
+formatToParts on a NumberFormat => THROWS TypeError: Intl.DateTimeFormat.prototype.formatToParts requires that 'this' be an Intl.DateTimeFormat
+resolvedOptions on the prototype => THROWS TypeError: Intl.DateTimeFormat.prototype.resolvedOptions requires that 'this' be an Intl.DateTimeFormat
+called as a function => "[object Intl.DateTimeFormat]"
+legacy: called on an object inheriting the prototype => [true, 1, "5.1.2024", "de"]
+legacy: formatToParts on that object => THROWS TypeError: Intl.DateTimeFormat.prototype.formatToParts requires that 'this' be an Intl.DateTimeFormat
+new with a subclass => [true, "1/5/2024"]
+toStringTag => "[object Intl.DateTimeFormat]"
+constructor length, prototype methods => [0, 1, 2, 2, 0]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl9/rows-T/t1-options.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl9/rows-T  e.g. test/sjl9/rows-T/t1-options.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl9/rows-T/t1-options.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1
