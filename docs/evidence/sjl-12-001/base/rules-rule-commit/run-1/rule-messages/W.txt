@@ -1,0 +1,10 @@
+# what group W's rules said about this checkout
+#
+# Reported, not judged. A rule with no lines said nothing, which is what a clean
+# checkout looks like; a rule that threw is recorded as throwing.
+
+[W1] 0 message(s)
+
+[W2] 1 message(s)
+    the describer found 0 of the family's 1 assemblies on disk, so this rule compared a partial surface
+

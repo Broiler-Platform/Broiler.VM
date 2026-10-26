@@ -1,0 +1,13 @@
+manifest digest ok: True | compilations header 560963 | body 560963 | expected 560963 | keys == expected in plan order: True | workers 2 | twice True | populations B1,B2,B3,B4 | selection all
+  ('B1', 'accepted') 194208
+  ('B1', 'refused') 19718
+  ('B2', 'accepted') 93134
+  ('B2', 'not-compiled') 287
+  ('B2', 'refused') 9033
+  ('B3', 'accepted') 169347
+  ('B3', 'refused') 19485
+  ('B4', 'accepted') 268
+  ('B4', 'not-compiled') 13
+  ('B4', 'refused') 55470
+rows outside the rule's outcomes or reading 2: 0 []
+rows whose two concurrent compilations differ: 0

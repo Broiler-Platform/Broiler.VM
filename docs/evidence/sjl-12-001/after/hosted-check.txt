@@ -1,0 +1,89 @@
+## base: (cd docs/evidence/sjl-12-001/base/hosted at origin/main 76ace8692c1e51a95c3615b253bd2d31438718e3 && sha256sum -c hashes.txt)
+binaries.sha256: OK
+build-conformance.log: OK
+imported.txt: OK
+limits-wide-bytecode.log: OK
+limits-wide-native.log: OK
+run.txt: OK
+shards/wide-bytecode/shard-0000.log.gz: OK
+shards/wide-bytecode/shard-0001.log.gz: OK
+shards/wide-bytecode/shard-0002.log.gz: OK
+shards/wide-bytecode/shard-0003.log.gz: OK
+shards/wide-bytecode/shard-0004.log.gz: OK
+shards/wide-bytecode/shard-0005.log.gz: OK
+shards/wide-bytecode/shard-0006.log.gz: OK
+shards/wide-bytecode/shard-0007.log.gz: OK
+shards/wide-bytecode/shard-0008.log.gz: OK
+shards/wide-bytecode/shard-0009.log.gz: OK
+shards/wide-bytecode/shard-0010.log.gz: OK
+shards/wide-bytecode/shard-0011.log.gz: OK
+shards/wide-bytecode/shard-0012.log.gz: OK
+shards/wide-bytecode/shard-0013.log.gz: OK
+shards/wide-bytecode/shard-0014.log.gz: OK
+shards/wide-bytecode/shard-0015.log.gz: OK
+shards/wide-native/shard-0000.log.gz: OK
+shards/wide-native/shard-0001.log.gz: OK
+shards/wide-native/shard-0002.log.gz: OK
+shards/wide-native/shard-0003.log.gz: OK
+shards/wide-native/shard-0004.log.gz: OK
+shards/wide-native/shard-0005.log.gz: OK
+shards/wide-native/shard-0006.log.gz: OK
+shards/wide-native/shard-0007.log.gz: OK
+shards/wide-native/shard-0008.log.gz: OK
+shards/wide-native/shard-0009.log.gz: OK
+shards/wide-native/shard-0010.log.gz: OK
+shards/wide-native/shard-0011.log.gz: OK
+shards/wide-native/shard-0012.log.gz: OK
+shards/wide-native/shard-0013.log.gz: OK
+shards/wide-native/shard-0014.log.gz: OK
+shards/wide-native/shard-0015.log.gz: OK
+test262-binary.txt: OK
+wide-bytecode.binaries.log: OK
+wide-bytecode.failures.txt: OK
+wide-bytecode.floor.log: OK
+wide-bytecode.merge.log: OK
+wide-bytecode.report.gz: OK
+wide-bytecode.run.log: OK
+wide-bytecode.runners.txt: OK
+wide-bytecode.test262.json: OK
+wide-native.binaries.log: OK
+wide-native.failures.txt: OK
+wide-native.floor.log: OK
+wide-native.merge.log: OK
+wide-native.report.gz: OK
+wide-native.run.log: OK
+wide-native.runners.txt: OK
+wide-native.test262.json: OK
+exit 0
+## after: sha256sum test262-evidence.zip (run 40231328560, artifact 12613262582; GitHub's digest sha256:9ac186958365b1e926f8cb59adeecf10260c1138afab24314642f981bb46b7fb)
+9ac186958365b1e926f8cb59adeecf10260c1138afab24314642f981bb46b7fb  <scratch>/sjl12/wp7-vm-hosted/dl/test262-evidence.zip
+## after: the zip extracted afresh and compared with the extraction read below (diff -r)
+diff exit 0
+  2894731                     54 files
+## run.txt of each
+# base
+repository: Broiler-Platform/Broiler.VM
+workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/39336895555 (attempt 1)
+dispatched ref: refs/heads/main at 889ea1568f59bf37aa21c0035b423d0d030eb87f
+tested commit: 889ea1568f59bf37aa21c0035b423d0d030eb87f
+tested tree: clean
+inputs: {"commit": "889ea1568f59bf37aa21c0035b423d0d030eb87f", "forms": "both"}
+forms: bytecode native
+partition: 4 runners of 4 shards per form, 16 shards
+allowance: fuel=100000000 wallClockMs=5000
+suite pin: src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+merging job: image ubuntu24 20261018.339.1; Linux-7.0.0-1017-azure-x86_64-with-glibc2.39 x86_64 cpus=4; sdk 10.0.402
+runners: each form's <run>.runners.txt
+# after
+repository: Broiler-Platform/Broiler.VM
+workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/40231328560 (attempt 1)
+dispatched ref: refs/heads/main at 76ace8692c1e51a95c3615b253bd2d31438718e3
+tested commit: 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+tested tree: clean
+inputs: {"commit": "1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f", "forms": "both"}
+forms: bytecode native
+partition: 4 runners of 4 shards per form, 16 shards
+allowance: fuel=100000000 wallClockMs=5000
+suite pin: src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+merging job: image ubuntu26 20261023.163.3; Linux-7.0.0-1017-azure-x86_64-with-glibc2.43 x86_64 cpus=4; sdk 10.0.403
+runners: each form's <run>.runners.txt

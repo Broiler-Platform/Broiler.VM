@@ -1,0 +1,13 @@
+# what group X's rules said about this checkout
+#
+# Reported, not judged. A rule with no lines said nothing, which is what a clean
+# checkout looks like; a rule that threw is recorded as throwing.
+
+[X1] 0 message(s)
+
+[X2] THREW DirectoryNotFoundException: Could not find a part of the path '/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl12/wp7/vm-rule/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll'.
+
+[X3] 0 message(s)
+
+[X4] 0 message(s)
+

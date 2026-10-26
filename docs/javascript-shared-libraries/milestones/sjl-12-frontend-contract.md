@@ -328,6 +328,33 @@ roadmap section 6 item 10).
 - **Broiler.JS's rule** is `docs/evidence/sjl-12-001/decision-rule.md`. It adds the determinism of its parser and of
   its compiler's `for`-loop pass.
 
+*(Added 2026-10-26, at SJL-12.7, when Broiler.VM's after evidence was recorded.)* **Broiler.VM's after runs are
+taken, and its bundle judges each part of its rule MET as written, with no revision**
+([`docs/evidence/sjl-12-001/README.md`](../../evidence/sjl-12-001/README.md), sections 6 to 8). The after commit is
+`1de3af6`, the merge of SJL-12.6's last item.
+- **The runs.** Part A's after dispatch of the hosted workflow, in both forms, at the after commit, on 2026-10-25;
+  part B's and part C's runs at the after commit, part C's two controls in a scratch copy of it, part D's rule runs at
+  the after commit and at the rule commit, part E's checker, and part A's re-runs of every wall-clock row at both
+  commits, all on the programme's local machine, idle, on 2026-10-25 and 2026-10-26 (the bundle's section 6).
+- **Part A, test262 in both forms: MET** (section 7). Every changed verdict is a race between the wall clock and
+  another allowance, class C4 (c'), whose re-runs agree, or, for one row, whose (e) runs give the same verdict at both
+  commits. No verdict moved between a pass, a failure and a refusal.
+- **Part B, artifact identity over the parse corpus: MET** (section 7). No artifact's bytes and no outcome differ, and
+  the slice front end and the census show no difference. Every difference is in a refused input's diagnostic list, and
+  each is classified: an early error the binder pass reports where the lowering had stopped at its first refusal (S4),
+  or a diagnostic the lowering repeated now reported once (S2). Both are SJL-12.6 item 2's (JSD-0080 decision D12).
+- **Part C, determinism: MET** (section 7). Every accepted compilation gives one hash in two runs and on two
+  threads, both checks rows pass, and controls K1 and K2 fail as stated and pass after their revert.
+- **Part D, rules N5 to N9, N12 and N19: MET** (section 7), on the run after a build of the solution, as bundle
+  `sjl-3-001`'s collector runs the rules; the seven rules' tests pass on the test project's own build too.
+- **Part E, the diagnostic mapping: MET** (section 7). The checker passes on the mapping and refuses both controls.
+- **The findings against JSD-0080 stand and decide no part** (section 8): no row of the after runs is of edge 1 or
+  edge 2 (ii) of the bundle's section 3, and no record judges stage JSB-1.
+
+Whether those parts meet this family's exit clauses 4 to 6 and its half of clauses 7 and 8 is read in the programme's
+ledger. Broiler.JS's clauses are judged in its own bundle. **SJL-12 cannot meet its gate before SJL-3 meets SJL-3's**
+(JSD-0080), so the gate waits on SJL-3's exit whatever both bundles show.
+
 ---
 
 ## Does not do

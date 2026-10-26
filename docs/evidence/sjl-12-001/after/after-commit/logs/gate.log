@@ -1,0 +1,129 @@
+2026-10-25T21:35:41Z s1 start
+2026-10-25T21:36:29Z s1 done
+2026-10-25T21:39:00Z s2 start
+2026-10-25T21:40:00Z gate build-after: idle (load 0.02 0.12 0.08 1/108 926; no dotnet/python process) after 0s of waiting
+2026-10-25T21:41:00Z build-after: done: build-after	rc=0	wall=53.4s	maxrss=723MB	started=2026-10-25T21:40:07Z	ended=2026-10-25T21:41:00Z
+2026-10-25T21:42:00Z gate census-inputs-after: NOT idle: load 1.06 0.72 0.32 1/108 1376; processes: none
+2026-10-25T21:44:00Z gate census-inputs-after: idle (load 0.21 0.50 0.28 1/108 1428; no dotnet/python process) after 120s of waiting
+2026-10-25T21:44:03Z census-inputs-after: done: census-inputs-after	rc=0	wall=1.9s	maxrss=277MB	started=2026-10-25T21:44:01Z	ended=2026-10-25T21:44:03Z
+2026-10-25T21:45:03Z gate census-test-after: idle (load 0.07 0.40 0.26 1/107 1514; no dotnet/python process) after 0s of waiting
+2026-10-25T21:45:14Z census-test-after: done: census-test-after	rc=0	wall=10.9s	maxrss=353MB	started=2026-10-25T21:45:03Z	ended=2026-10-25T21:45:14Z
+2026-10-25T21:46:14Z gate parse-corpus-after-run1: idle (load 0.10 0.35 0.25 1/104 1574; no dotnet/python process) after 0s of waiting
+2026-10-25T21:56:09Z parse-corpus-after-run1: done: parse-corpus-after-run1	rc=0	wall=595.5s	maxrss=1245MB	started=2026-10-25T21:46:14Z	ended=2026-10-25T21:56:09Z
+2026-10-25T21:56:21Z s2 done
+2026-10-25T21:56:59Z s3 start
+2026-10-25T21:57:59Z gate parse-corpus-after-run2: idle (load 0.23 0.74 0.61 1/110 15005; no dotnet/python process) after 0s of waiting
+2026-10-25T22:08:00Z parse-corpus-after-run2: done: parse-corpus-after-run2	rc=0	wall=601.3s	maxrss=1173MB	started=2026-10-25T21:57:59Z	ended=2026-10-25T22:08:00Z
+2026-10-25T22:09:02Z gate parse-corpus-after-run3: idle (load 0.43 0.87 0.81 1/109 28379; no dotnet/python process) after 0s of waiting
+2026-10-25T22:22:10Z parse-corpus-after-run3: done: parse-corpus-after-run3	rc=0	wall=787.9s	maxrss=1706MB	started=2026-10-25T22:09:02Z	ended=2026-10-25T22:22:10Z
+2026-10-25T22:23:14Z gate checks-after: idle (load 0.86 1.54 1.35 1/106 22529; no dotnet/python process) after 0s of waiting
+2026-10-25T22:28:25Z checks-after: done: checks-after	rc=0	wall=311.5s	maxrss=465MB	started=2026-10-25T22:23:14Z	ended=2026-10-25T22:28:25Z
+2026-10-25T22:28:51Z s3 done
+2026-10-25T22:28:51Z s3k start
+2026-10-25T22:29:54Z gate k1-build: idle (load 0.32 0.93 1.15 1/105 15903; no dotnet/python process) after 0s of waiting
+2026-10-25T22:30:32Z k1-build: done: k1-build	rc=0	wall=38.3s	maxrss=720MB	started=2026-10-25T22:29:54Z	ended=2026-10-25T22:30:32Z
+2026-10-25T22:31:32Z gate k1-checks: idle (load 0.93 1.19 1.24 1/112 16315; no dotnet/python process) after 0s of waiting
+2026-10-25T22:36:36Z k1-checks: done: k1-checks	rc=1	wall=303.8s	maxrss=469MB	started=2026-10-25T22:31:33Z	ended=2026-10-25T22:36:36Z
+2026-10-25T22:37:36Z gate k1-parse-corpus: idle (load 0.25 0.77 1.04 1/109 9618; no dotnet/python process) after 0s of waiting
+2026-10-25T22:47:15Z k1-parse-corpus: done: k1-parse-corpus	rc=0	wall=578.5s	maxrss=1199MB	started=2026-10-25T22:37:37Z	ended=2026-10-25T22:47:15Z
+2026-10-25T22:48:33Z gate k2-build: idle (load 0.37 0.78 0.94 1/110 23118; no dotnet/python process) after 0s of waiting
+2026-10-25T22:48:42Z k2-build: done: k2-build	rc=0	wall=8.8s	maxrss=263MB	started=2026-10-25T22:48:34Z	ended=2026-10-25T22:48:42Z
+2026-10-25T22:49:42Z gate k2-checks: idle (load 0.31 0.71 0.90 1/108 23306; no dotnet/python process) after 0s of waiting
+2026-10-25T22:54:53Z k2-checks: done: k2-checks	rc=1	wall=310.3s	maxrss=529MB	started=2026-10-25T22:49:43Z	ended=2026-10-25T22:54:53Z
+2026-10-25T22:55:53Z gate k2-parse-corpus-run1: idle (load 0.22 0.62 0.82 1/104 16609; no dotnet/python process) after 0s of waiting
+2026-10-25T23:05:49Z k2-parse-corpus-run1: done: k2-parse-corpus-run1	rc=0	wall=595.8s	maxrss=1249MB	started=2026-10-25T22:55:53Z	ended=2026-10-25T23:05:49Z
+2026-10-25T23:06:51Z gate k2-parse-corpus-run2: idle (load 0.39 0.77 0.86 1/105 29975; no dotnet/python process) after 0s of waiting
+2026-10-25T23:16:41Z k2-parse-corpus-run2: done: k2-parse-corpus-run2	rc=0	wall=590.0s	maxrss=1273MB	started=2026-10-25T23:06:51Z	ended=2026-10-25T23:16:41Z
+2026-10-25T23:17:42Z gate k2-parse-corpus-run3: idle (load 0.40 0.83 0.89 1/105 10911; no dotnet/python process) after 0s of waiting
+2026-10-25T23:30:57Z k2-parse-corpus-run3: done: k2-parse-corpus-run3	rc=0	wall=794.0s	maxrss=1761MB	started=2026-10-25T23:17:43Z	ended=2026-10-25T23:30:57Z
+2026-10-25T23:32:19Z gate k-reverted-build: idle (load 0.61 1.36 1.31 1/103 5185; no dotnet/python process) after 0s of waiting
+2026-10-25T23:32:35Z k-reverted-build: done: k-reverted-build	rc=0	wall=15.6s	maxrss=243MB	started=2026-10-25T23:32:19Z	ended=2026-10-25T23:32:35Z
+2026-10-25T23:33:35Z gate k-reverted-checks: idle (load 0.55 1.25 1.28 1/110 5407; no dotnet/python process) after 0s of waiting
+2026-10-25T23:38:45Z k-reverted-checks: done: k-reverted-checks	rc=0	wall=310.3s	maxrss=527MB	started=2026-10-25T23:33:35Z	ended=2026-10-25T23:38:45Z
+2026-10-25T23:38:45Z s3k done
+2026-10-25T23:38:45Z s4 start
+2026-10-25T23:39:45Z gate partd-after: idle (load 0.28 0.82 1.09 1/106 31235; no dotnet/python process) after 0s of waiting
+2026-10-25T23:40:53Z partd-after: done: partd-after	rc=1	wall=67.3s	maxrss=1813MB	started=2026-10-25T23:39:46Z	ended=2026-10-25T23:40:53Z
+2026-10-25T23:41:55Z gate partd-rule: NOT idle: load 1.18 1.35 1.28 1/121 31703; processes: none
+2026-10-25T23:43:55Z gate partd-rule: idle (load 0.16 0.90 1.12 1/123 31748; no dotnet/python process) after 120s of waiting
+2026-10-25T23:44:56Z partd-rule: done: partd-rule	rc=1	wall=60.2s	maxrss=237MB	started=2026-10-25T23:43:55Z	ended=2026-10-25T23:44:56Z
+2026-10-25T23:44:56Z s4 done
+2026-10-25T23:44:56Z s5 start
+2026-10-25T23:45:56Z gate parte-mapping: NOT idle: load 1.31 1.46 1.32 1/127 32231; processes: none
+2026-10-25T23:47:56Z gate parte-mapping: idle (load 0.25 0.99 1.16 1/127 32320; no dotnet/python process) after 120s of waiting
+2026-10-25T23:47:56Z parte-mapping: done: parte-mapping	rc=0	wall=0.1s	maxrss=19MB	started=2026-10-25T23:47:56Z	ended=2026-10-25T23:47:56Z
+2026-10-25T23:48:56Z gate parte-control-1: idle (load 0.09 0.81 1.09 1/126 32389; no dotnet/python process) after 0s of waiting
+2026-10-25T23:48:57Z parte-control-1: done: parte-control-1	rc=1	wall=0.1s	maxrss=19MB	started=2026-10-25T23:48:57Z	ended=2026-10-25T23:48:57Z
+2026-10-25T23:49:57Z gate parte-control-2: idle (load 0.03 0.66 1.02 1/125 32455; no dotnet/python process) after 0s of waiting
+2026-10-25T23:49:57Z parte-control-2: done: parte-control-2	rc=1	wall=0.1s	maxrss=19MB	started=2026-10-25T23:49:57Z	ended=2026-10-25T23:49:57Z
+2026-10-25T23:49:57Z s5 done
+2026-10-25T23:50:16Z s4b start
+2026-10-25T23:51:16Z gate partd-after-2-solution-build: idle (load 0.01 0.50 0.93 1/120 32575; no dotnet/python process) after 0s of waiting
+2026-10-25T23:51:58Z partd-after-2-solution-build: done: partd-after-2-solution-build	rc=0	wall=41.3s	maxrss=373MB	started=2026-10-25T23:51:16Z	ended=2026-10-25T23:51:58Z
+2026-10-25T23:52:58Z gate partd-after-2: NOT idle: load 1.68 1.32 1.20 1/125 734; processes: none
+2026-10-25T23:54:58Z gate partd-after-2: idle (load 0.26 0.89 1.06 1/111 779; no dotnet/python process) after 120s of waiting
+2026-10-25T23:55:47Z partd-after-2: done: partd-after-2	rc=0	wall=48.2s	maxrss=2080MB	started=2026-10-25T23:54:58Z	ended=2026-10-25T23:55:47Z
+2026-10-25T23:56:47Z gate partd-rule-2-solution-build: idle (load 0.79 1.06 1.11 1/127 1172; no dotnet/python process) after 0s of waiting
+2026-10-25T23:57:53Z partd-rule-2-solution-build: done: partd-rule-2-solution-build	rc=0	wall=66.3s	maxrss=741MB	started=2026-10-25T23:56:47Z	ended=2026-10-25T23:57:53Z
+2026-10-25T23:58:53Z gate partd-rule-2: NOT idle: load 2.53 2.33 1.62 2/130 1988; processes: none
+2026-10-26T00:00:53Z gate partd-rule-2: idle (load 0.42 1.57 1.42 1/127 2042; no dotnet/python process) after 120s of waiting
+2026-10-26T00:01:39Z partd-rule-2: done: partd-rule-2	rc=0	wall=45.2s	maxrss=2216MB	started=2026-10-26T00:00:54Z	ended=2026-10-26T00:01:39Z
+2026-10-26T00:01:39Z s4b done
+2026-10-26T00:02:28Z s6 start
+2026-10-26T00:03:29Z gate build-conformance-rule: idle (load 0.30 1.25 1.34 1/124 2457; no dotnet/python process) after 0s of waiting
+2026-10-26T00:03:32Z build-conformance-rule: done: build-conformance-rule	rc=0	wall=3.3s	maxrss=229MB	started=2026-10-26T00:03:29Z	ended=2026-10-26T00:03:32Z
+2026-10-26T00:04:32Z gate build-conformance-after: idle (load 0.34 1.11 1.29 1/124 2680; no dotnet/python process) after 0s of waiting
+2026-10-26T00:04:36Z build-conformance-after: done: build-conformance-after	rc=0	wall=3.4s	maxrss=231MB	started=2026-10-26T00:04:32Z	ended=2026-10-26T00:04:36Z
+2026-10-26T00:05:36Z gate rerun-wide-bytecode-rule-0: idle (load 0.70 1.16 1.30 1/125 2888; no dotnet/python process) after 0s of waiting
+2026-10-26T00:05:53Z rerun-wide-bytecode-rule-0: done: rerun-wide-bytecode-rule-0	rc=1	wall=16.8s	maxrss=265MB	started=2026-10-26T00:05:36Z	ended=2026-10-26T00:05:53Z
+2026-10-26T00:06:53Z gate rerun-wide-bytecode-rule-1: idle (load 0.44 0.98 1.22 1/122 2973; no dotnet/python process) after 0s of waiting
+2026-10-26T00:07:03Z rerun-wide-bytecode-rule-1: done: rerun-wide-bytecode-rule-1	rc=1	wall=10.1s	maxrss=265MB	started=2026-10-26T00:06:53Z	ended=2026-10-26T00:07:03Z
+2026-10-26T00:08:03Z gate rerun-wide-bytecode-rule-2: idle (load 0.22 0.81 1.14 1/124 3060; no dotnet/python process) after 0s of waiting
+2026-10-26T00:08:12Z rerun-wide-bytecode-rule-2: done: rerun-wide-bytecode-rule-2	rc=1	wall=8.3s	maxrss=265MB	started=2026-10-26T00:08:04Z	ended=2026-10-26T00:08:12Z
+2026-10-26T00:09:12Z gate rerun-wide-bytecode-rule-3: idle (load 0.12 0.67 1.07 1/125 3149; no dotnet/python process) after 0s of waiting
+2026-10-26T00:09:20Z rerun-wide-bytecode-rule-3: done: rerun-wide-bytecode-rule-3	rc=1	wall=8.0s	maxrss=265MB	started=2026-10-26T00:09:12Z	ended=2026-10-26T00:09:20Z
+2026-10-26T00:10:20Z gate rerun-wide-bytecode-rule-4: idle (load 0.09 0.55 1.00 1/122 3239; no dotnet/python process) after 0s of waiting
+2026-10-26T00:10:29Z rerun-wide-bytecode-rule-4: done: rerun-wide-bytecode-rule-4	rc=1	wall=8.5s	maxrss=265MB	started=2026-10-26T00:10:21Z	ended=2026-10-26T00:10:29Z
+2026-10-26T00:11:29Z gate rerun-wide-bytecode-rule-5: idle (load 0.06 0.45 0.93 1/108 3324; no dotnet/python process) after 0s of waiting
+2026-10-26T00:11:47Z rerun-wide-bytecode-rule-5: done: rerun-wide-bytecode-rule-5	rc=1	wall=17.6s	maxrss=2939MB	started=2026-10-26T00:11:29Z	ended=2026-10-26T00:11:47Z
+2026-10-26T00:12:47Z gate rerun-wide-bytecode-after-0: idle (load 0.12 0.40 0.87 1/107 3402; no dotnet/python process) after 0s of waiting
+2026-10-26T00:12:57Z rerun-wide-bytecode-after-0: done: rerun-wide-bytecode-after-0	rc=1	wall=9.6s	maxrss=265MB	started=2026-10-26T00:12:47Z	ended=2026-10-26T00:12:57Z
+2026-10-26T00:13:57Z gate rerun-wide-bytecode-after-1: idle (load 0.09 0.34 0.82 1/110 3482; no dotnet/python process) after 0s of waiting
+2026-10-26T00:14:06Z rerun-wide-bytecode-after-1: done: rerun-wide-bytecode-after-1	rc=1	wall=9.1s	maxrss=265MB	started=2026-10-26T00:13:57Z	ended=2026-10-26T00:14:06Z
+2026-10-26T00:15:06Z gate rerun-wide-bytecode-after-2: idle (load 0.08 0.29 0.77 1/110 3554; no dotnet/python process) after 0s of waiting
+2026-10-26T00:15:15Z rerun-wide-bytecode-after-2: done: rerun-wide-bytecode-after-2	rc=1	wall=8.2s	maxrss=265MB	started=2026-10-26T00:15:06Z	ended=2026-10-26T00:15:15Z
+2026-10-26T00:16:15Z gate rerun-wide-bytecode-after-3: idle (load 0.06 0.25 0.72 1/108 3627; no dotnet/python process) after 0s of waiting
+2026-10-26T00:16:23Z rerun-wide-bytecode-after-3: done: rerun-wide-bytecode-after-3	rc=1	wall=8.4s	maxrss=265MB	started=2026-10-26T00:16:15Z	ended=2026-10-26T00:16:23Z
+2026-10-26T00:17:23Z gate rerun-wide-bytecode-after-4: idle (load 0.07 0.22 0.67 1/105 3702; no dotnet/python process) after 0s of waiting
+2026-10-26T00:17:32Z rerun-wide-bytecode-after-4: done: rerun-wide-bytecode-after-4	rc=1	wall=8.1s	maxrss=265MB	started=2026-10-26T00:17:23Z	ended=2026-10-26T00:17:32Z
+2026-10-26T00:18:32Z gate rerun-wide-bytecode-after-5: idle (load 0.08 0.20 0.63 1/108 3779; no dotnet/python process) after 0s of waiting
+2026-10-26T00:18:44Z rerun-wide-bytecode-after-5: done: rerun-wide-bytecode-after-5	rc=1	wall=11.9s	maxrss=2210MB	started=2026-10-26T00:18:32Z	ended=2026-10-26T00:18:44Z
+2026-10-26T00:19:44Z gate rerun-wide-native-rule-0: idle (load 0.08 0.18 0.59 1/109 3902; no dotnet/python process) after 0s of waiting
+2026-10-26T00:19:50Z rerun-wide-native-rule-0: done: rerun-wide-native-rule-0	rc=1	wall=5.2s	maxrss=310MB	started=2026-10-26T00:19:44Z	ended=2026-10-26T00:19:49Z
+2026-10-26T00:20:50Z gate rerun-wide-native-rule-1: idle (load 0.05 0.16 0.56 1/105 12165; no dotnet/python process) after 0s of waiting
+2026-10-26T00:21:02Z rerun-wide-native-rule-1: done: rerun-wide-native-rule-1	rc=1	wall=11.8s	maxrss=266MB	started=2026-10-26T00:20:50Z	ended=2026-10-26T00:21:02Z
+2026-10-26T00:22:02Z gate rerun-wide-native-rule-2: idle (load 0.10 0.16 0.52 1/109 12248; no dotnet/python process) after 0s of waiting
+2026-10-26T00:22:13Z rerun-wide-native-rule-2: done: rerun-wide-native-rule-2	rc=1	wall=11.6s	maxrss=266MB	started=2026-10-26T00:22:02Z	ended=2026-10-26T00:22:13Z
+2026-10-26T00:23:13Z gate rerun-wide-native-rule-3: idle (load 0.08 0.15 0.50 1/105 12331; no dotnet/python process) after 0s of waiting
+2026-10-26T00:23:25Z rerun-wide-native-rule-3: done: rerun-wide-native-rule-3	rc=1	wall=11.5s	maxrss=266MB	started=2026-10-26T00:23:14Z	ended=2026-10-26T00:23:25Z
+2026-10-26T00:24:25Z gate rerun-wide-native-rule-4: idle (load 0.08 0.14 0.47 1/109 12416; no dotnet/python process) after 0s of waiting
+2026-10-26T00:24:37Z rerun-wide-native-rule-4: done: rerun-wide-native-rule-4	rc=1	wall=11.6s	maxrss=266MB	started=2026-10-26T00:24:26Z	ended=2026-10-26T00:24:37Z
+2026-10-26T00:25:37Z gate rerun-wide-native-rule-5: idle (load 0.10 0.15 0.44 1/105 12495; no dotnet/python process) after 0s of waiting
+2026-10-26T00:25:49Z rerun-wide-native-rule-5: done: rerun-wide-native-rule-5	rc=1	wall=11.8s	maxrss=278MB	started=2026-10-26T00:25:37Z	ended=2026-10-26T00:25:49Z
+2026-10-26T00:26:49Z gate rerun-wide-native-after-0: idle (load 0.17 0.16 0.43 1/105 12577; no dotnet/python process) after 0s of waiting
+2026-10-26T00:26:55Z rerun-wide-native-after-0: done: rerun-wide-native-after-0	rc=1	wall=5.1s	maxrss=311MB	started=2026-10-26T00:26:49Z	ended=2026-10-26T00:26:55Z
+2026-10-26T00:27:55Z gate rerun-wide-native-after-1: idle (load 0.15 0.16 0.41 1/106 20844; no dotnet/python process) after 0s of waiting
+2026-10-26T00:28:06Z rerun-wide-native-after-1: done: rerun-wide-native-after-1	rc=1	wall=11.6s	maxrss=266MB	started=2026-10-26T00:27:55Z	ended=2026-10-26T00:28:06Z
+2026-10-26T00:29:06Z gate rerun-wide-native-after-2: idle (load 0.12 0.16 0.39 1/105 20927; no dotnet/python process) after 0s of waiting
+2026-10-26T00:29:18Z rerun-wide-native-after-2: done: rerun-wide-native-after-2	rc=1	wall=11.4s	maxrss=266MB	started=2026-10-26T00:29:07Z	ended=2026-10-26T00:29:18Z
+2026-10-26T00:30:18Z gate rerun-wide-native-after-3: idle (load 0.09 0.15 0.36 1/107 21010; no dotnet/python process) after 0s of waiting
+2026-10-26T00:30:30Z rerun-wide-native-after-3: done: rerun-wide-native-after-3	rc=1	wall=11.6s	maxrss=266MB	started=2026-10-26T00:30:18Z	ended=2026-10-26T00:30:30Z
+2026-10-26T00:31:30Z gate rerun-wide-native-after-4: idle (load 0.08 0.14 0.35 1/111 21093; no dotnet/python process) after 0s of waiting
+2026-10-26T00:31:42Z rerun-wide-native-after-4: done: rerun-wide-native-after-4	rc=1	wall=11.5s	maxrss=266MB	started=2026-10-26T00:31:30Z	ended=2026-10-26T00:31:42Z
+2026-10-26T00:32:42Z gate rerun-wide-native-after-5: idle (load 0.10 0.15 0.33 2/107 21172; no dotnet/python process) after 0s of waiting
+2026-10-26T00:32:54Z rerun-wide-native-after-5: done: rerun-wide-native-after-5	rc=1	wall=11.8s	maxrss=282MB	started=2026-10-26T00:32:42Z	ended=2026-10-26T00:32:54Z
+2026-10-26T00:33:54Z gate wall-race-wide-native-rule-0: idle (load 0.09 0.14 0.32 1/109 21291; no dotnet/python process) after 0s of waiting
+2026-10-26T00:34:06Z wall-race-wide-native-rule-0: done: wall-race-wide-native-rule-0	rc=1	wall=11.9s	maxrss=266MB	started=2026-10-26T00:33:54Z	ended=2026-10-26T00:34:06Z
+2026-10-26T00:35:06Z gate wall-race-wide-native-after-0: idle (load 0.11 0.15 0.31 1/107 21389; no dotnet/python process) after 0s of waiting
+2026-10-26T00:35:21Z wall-race-wide-native-after-0: done: wall-race-wide-native-after-0	rc=1	wall=14.1s	maxrss=266MB	started=2026-10-26T00:35:06Z	ended=2026-10-26T00:35:21Z
+2026-10-26T00:35:21Z s6 done

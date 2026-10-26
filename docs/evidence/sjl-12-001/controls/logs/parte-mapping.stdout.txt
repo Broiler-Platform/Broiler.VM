@@ -1,0 +1,4 @@
+check-frontend-mapping: mapping src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: registry revision 18
+check-frontend-mapping: passed: 284 shared codes, each mapped to one registry code; 30 registry rows; checks E1 to E9 hold

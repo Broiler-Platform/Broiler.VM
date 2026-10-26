@@ -1,0 +1,20 @@
+# base
+wide-bytecode: partition shardCount 16; shard logs 16, every one 0..15 present: True; merge.log merged ['16']
+wide-bytecode: run.log exit code ['1']
+wide-bytecode: coverage {"whole": true, "field": "whole", "reasons": []}; retention {"retainable": true, "reasons": []}; findings 0
+wide-bytecode: binaries.log lists 5, distinct 1 ['77b67996994de7159f73e139ef73c4bdebcd95bc26ab085ee4b79f4742cda766']; ['runners: 4; lists: 5; distinct lists: 1']
+# base
+wide-native: partition shardCount 16; shard logs 16, every one 0..15 present: True; merge.log merged ['16']
+wide-native: run.log exit code ['4']
+wide-native: coverage {"whole": true, "field": "whole", "reasons": []}; retention {"retainable": true, "reasons": []}; findings 0
+wide-native: binaries.log lists 5, distinct 1 ['77b67996994de7159f73e139ef73c4bdebcd95bc26ab085ee4b79f4742cda766']; ['runners: 4; lists: 5; distinct lists: 1']
+# after
+wide-bytecode: partition shardCount 16; shard logs 16, every one 0..15 present: True; merge.log merged ['16']
+wide-bytecode: run.log exit code ['1']
+wide-bytecode: coverage {"whole": true, "field": "whole", "reasons": []}; retention {"retainable": true, "reasons": []}; findings 0
+wide-bytecode: binaries.log lists 5, distinct 1 ['af28163382682a4900dc63a6d3a6397e1fd5decc44596fa3a674a0df1270e1a8']; ['runners: 4; lists: 5; distinct lists: 1']
+# after
+wide-native: partition shardCount 16; shard logs 16, every one 0..15 present: True; merge.log merged ['16']
+wide-native: run.log exit code ['4']
+wide-native: coverage {"whole": true, "field": "whole", "reasons": []}; retention {"retainable": true, "reasons": []}; findings 0
+wide-native: binaries.log lists 5, distinct 1 ['af28163382682a4900dc63a6d3a6397e1fd5decc44596fa3a674a0df1270e1a8']; ['runners: 4; lists: 5; distinct lists: 1']

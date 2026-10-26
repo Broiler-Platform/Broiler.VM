@@ -1,0 +1,90 @@
+Bundle sjl-12-001, the local after steps of part VM at the after commit 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f (the
+default-branch merge of Broiler-Platform/Broiler.VM#167, SJL-12.6 item 4), with part A's re-runs and part D's read-only
+run at the rule commit 889ea1568f59bf37aa21c0035b423d0d030eb87f, taken 2026-10-25T21:35:41Z to 2026-10-26T00:35:21Z
+(logs/gate.log). Every command is in commands.txt.
+
+THE MACHINE (the rule names it by its processor count, its SDK and its operating system)
+The programme's local machine, the one base/machine.txt and after/ordering/machine.txt name.
+  processors   4 (nproc 4, recorded before every build and run: logs/pre-run.txt; lscpu: Intel(R) Xeon(R) Processor
+               @ 2.10GHz, 1 socket, 4 cores, 1 thread per core)
+  SDK          .NET SDK 10.0.401, runtime Microsoft.NETCore.App 10.0.12, RID linux-x64 (dotnet --info's head before every
+               build and run: logs/pre-run.txt; dotnet --list-sdks lists 10.0.401 alone, under /root/.dotnet, the
+               DOTNET_ROOT every run set; the repository has no global.json)
+  OS           Ubuntu 24.04.5 LTS, Linux 6.18.44-fc-v153 x86_64 (logs/pre-run.txt)
+  memory       16091 MB (free -m)
+  Python       3.13.16 (python3, which ran timed.py, the comparisons, the checker and the completeness readers)
+Recorded, not judged: the kernel's build string reads fc-v153; the base's and the ordering run's records read fc-v139.
+The machine had been started at about 21:28Z, four minutes before these steps began (uptime at 21:32:35Z: "up 4 min").
+
+THE IDLE MACHINE
+WP4.7's gate (scripts/lib.sh, unchanged but for its folder), before every build and every run: a 60 s wait, then a
+1-minute load average of at most 1.0 and no dotnet or python process, polled every 120 s, for up to 30 minutes, never
+stopping another process. 54 gates (logs/pre-run.txt). 49 went ahead at their first look. Five waited one poll of
+120 s, each for the 1-minute load alone, with no dotnet or python process listed, after a build or run of these steps
+had just ended (logs/gate.log):
+  census-inputs-after             21:42:00Z load 1.06, after build-after              -> idle at 21:44:00Z (0.21)
+  partd-rule                      23:41:55Z load 1.18, after partd-after              -> idle at 23:43:55Z (0.16)
+  parte-mapping                   23:45:56Z load 1.31, after partd-rule               -> idle at 23:47:56Z (0.25)
+  partd-after-2                   23:52:58Z load 1.68, after the solution's build     -> idle at 23:54:58Z (0.26)
+  partd-rule-2                    23:58:53Z load 2.53, after the solution's build     -> idle at 00:00:53Z (0.42)
+No gate reached its 30-minute limit. The gate read the 1-minute figure; the 5- and 15-minute figures at several gates
+were above 1.0, carried from these steps' own builds and runs (logs/runs.tsv gives the load before and after each).
+No other agent built, tested or ran anything on the machine while these steps were taken. The orchestrating
+session's own reads (cat, grep, git show, du) ran between and during runs; none was a build, test or run. Other
+worktrees of /home/user/Broiler.VM existed (vm-s11w1, vm-s12w64, vm-s12w65); none was touched, and no process ran in
+them.
+
+THE RUNS (exit, wall clock and peak RSS are records; SJL-12 measures nothing)
+logs/runs.tsv holds all 54, with start, end and the load before and after. In brief:
+  build-after (slice compiler)              exit 0   53.4 s   0 warnings, 0 errors (logs/build.log)
+  census over parse-1/inputs                exit 0    1.9 s
+  census over the extracted suite's test/   exit 0   10.9 s
+  parse-corpus run 1 (one worker)           exit 0  595.5 s   journal 560,963 begun and ended
+  parse-corpus run 2 (one worker)           exit 0  601.3 s   journal 560,963 begun and ended
+  parse-corpus run 3 (--twice-concurrent)   exit 0  787.9 s   journal 1,121,926 begun and ended
+  --checks --verbose                        exit 0  311.5 s   719 passed, 3 not run on this machine
+  K1: build, checks, parse-corpus           exit 0, 1, 0
+  K2: build, checks, runs 1 to 3            exit 0, 1, 0, 0, 0
+  after both reverts: build, checks         exit 0, 0
+  part D, test project alone (after, rule)  exit 1, 1   (run 1; cause in commands.txt and the runner's report)
+  part D, solution built first (after, rule) builds exit 0, 0; tests exit 0, 0 (run 2)
+  part E: mapping, control 1, control 2     exit 0, 1, 1
+  conformance root builds (rule, after)     exit 0, 0
+  (c') re-runs, 24 processes                exit 1 each (each report holds its path's two result rows)
+  (e) runs, 2 processes                     exit 1 each (likewise)
+
+THE CHECKOUTS
+  $VMW, the after commit: made with git worktree add --detach after git merge-base --is-ancestor of it and the default
+  branch exited 0; logs/checkout-after-commit-made.txt and logs/checkout-before-build.txt: HEAD 1de3af62...8c2f and
+  git status --porcelain --ignored empty, so no bin/ or obj/ before the build; logs/checkout-after-build.txt,
+  checkout-after-step2.txt, checkout-after-step3.txt, checkout-after-controls.txt, checkout-partd-*.txt,
+  checkout-conformance-after-*.txt and checkout-after-runs.txt: the same HEAD and git status --porcelain empty.
+  $RW, the rule commit: logs/checkout-rule-commit-made.txt (HEAD 889ea156...eb87f and --ignored empty), and every
+  later record of it (checkout-partd-rule*.txt, checkout-conformance-rule-*.txt, checkout-rule-commit-after-runs.txt)
+  the same HEAD and empty.
+  $KW, the scratch copy for K1 and K2: controls/logs/checkout-k-made.txt, the after commit and --ignored empty; each
+  revert checked (controls/k1-revert-check.txt, controls/k2-revert-check.txt: git diff --exit-code, and against the
+  after commit, both exit 0); controls/logs/checkout-k-end.txt and checkout-k-after-runs.txt the same.
+  All three were removed with git worktree remove (exit 0 each), which removed every bin/ and obj/ they held.
+  (Added 2026-10-26, at the records step, WP7.3. The $KW sentence above, "$KW, the scratch copy for K1 and K2:
+  controls/logs/checkout-k-made.txt, the after commit and --ignored empty; each revert checked
+  (controls/k1-revert-check.txt, controls/k2-revert-check.txt: git diff --exit-code, and against the after commit, both
+  exit 0); controls/logs/checkout-k-end.txt and checkout-k-after-runs.txt the same.", reads as if its records were as
+  complete as $VMW's and $RW's. They are not. $KW has no git rev-parse HEAD or git status record taken before or after any of
+  its three builds, k1-build, k2-build and k-reverted-build. Its records are the four named above:
+  checkout-k-made.txt, as made; k1-revert-check.txt and k2-revert-check.txt, after each revert; checkout-k-end.txt,
+  after both reverts and the rebuild; and checkout-k-after-runs.txt. The worktree is removed, so the missing records
+  cannot be made now. What fixes the tree each build compiled is the patch taken with git diff while it was applied
+  (controls/k1.patch, controls/k2.patch), the revert checks after it, and checkout-k-end.txt for the reverted copy's
+  build. The rule asks for the patches, their output and their reverts checked against the after commit, and for
+  nothing more of the scratch copy.)
+
+THE BINARIES
+  binaries.sha256: the slice compiler's twelve assemblies as the after commit's build wrote them. Against
+  base/binaries.sha256 the nine Broiler.VM assemblies differ and the three of Broiler.ECMAScript and Broiler.Unicode
+  are the same (the same pattern after/ordering/machine.txt records, with the same caveat: the builds also write
+  something path- or commit-dependent into what they compile). rerun/binaries-conformance-<rule|after>.sha256: the
+  conformance root's assemblies at each commit, as the solution builds left them.
+  The mode's source file ParseCorpus.cs (0f4ce702) and eng/compare-parse-corpus.py (c1d3b53d) are the corpus commit's
+  blobs at the after commit; eng/check-frontend-mapping.py (09e07cd6) too; eng/compare-test262-forms.py (48e3091a) is
+  one blob at the rule, corpus and after commits (after-commit.txt).

@@ -1,0 +1,4 @@
+## controls/part-e-control-1-second-registry-code.tsv against the bundle's retained copy (origin/main 76ace8692c1e51a95c3615b253bd2d31438718e3)
+cmp exit 0
+## controls/part-e-control-2-merge-not-split.tsv against the bundle's retained copy (origin/main 76ace8692c1e51a95c3615b253bd2d31438718e3)
+cmp exit 0
