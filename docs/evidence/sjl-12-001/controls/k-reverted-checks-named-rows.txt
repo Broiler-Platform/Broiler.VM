@@ -1,0 +1,10 @@
+ok   the lowering is deterministic: 25 sources compiled twice to identical bytes
+ok   the wide lowering is deterministic: 2359 sources, each four times - twice in turn and twice at once on two threads: the retained corpus's 87 wide and module rows rebuilt by their producer, every one its manifest lists; the parse corpus's 2269 stored inputs compiled, every one its manifest lists; and 3 lexical-order probes compiled, each accepted. 1984 artifacts identical in all four, every refusal refused all four times
+ok   the wide lowering declares lexical names in source order: two scripts' 18 global lexical declarations and both script-declarations rows, and an evaluated program's 7 lexical slots and declaration row, sloppy and strict, all in source order
+ok   the binder walks a tree at the tree-depth bound: expected the compilation to produce bytes with no diagnostic, and it reported ``
+ok   a tree one level past the tree-depth bound is refused before the binder: expected `2103@1:9` and the compilation reported `2103@1:9`
+ok   early errors are in source order: expected `2207@1:1 2101@1:30` and the compilation reported `2207@1:1 2101@1:30`
+ok   template: nesting counts toward the nesting bound, and past it is refused with 2103: 62 deep compiled; 63 deep `2103@1:198`; 100,000 deep `2103@1:198` (expected 2103@1:198 for both)
+ok   template: nesting around a template and inside its substitution adds up toward the nesting bound: 31 around and 30 inside compiled; 30 and 31 compiled; 31 and 31 refused with `2103@1:74` first (expected 2103@1:74), 32 in all
+ok   template: a substitution is charged toward the tree-depth bound as a parenthesised operand is: 4,000 and 4,000 compiled; 6,000 and 6,000 `2103@1:12016` (expected 2103@1:12016); with a parenthesis in the template's place, refused with `2103@1:12014` first (expected 2103@1:12014)
+broiler-js-slice-compiler: 719 checks passed, 3 not run on this machine and claimed by nothing

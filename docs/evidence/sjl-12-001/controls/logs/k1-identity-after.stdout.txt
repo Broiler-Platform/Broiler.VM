@@ -1,0 +1,13 @@
+# compare-parse-corpus identity (bundle sjl-12-001 part B); the script decides no class
+# base docs/evidence/sjl-12-001/after/parse-corpus-after-run1.tsv.gz
+# after docs/evidence/sjl-12-001/controls/k1-parse-corpus.tsv.gz
+# manifest-sha256 1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc (both reports checked against src/tests/corpus/parse-1/corpus.manifest: its digest, and every owed compilation present and no other)
+# compilations 560963
+# base outcomes B1 accepted 194208, refused 19718; B2 accepted 93134, refused 9033, not-compiled 287; B3 accepted 169347, refused 19485; B4 accepted 268, refused 55470, not-compiled 13
+# after outcomes B1 accepted 194208, refused 19718; B2 accepted 93134, refused 9033, not-compiled 287; B3 accepted 169347, refused 19485; B4 accepted 268, refused 55470, not-compiled 13
+# incomplete 0 (crashed, or not compiled outside reading 2, on either side)
+# differences 46727, every one unclassified until the bundle lists it with a class
+# by sub-population B1 30264, B2 16463, B3 0, B4 0
+# by what differs outcome 0, artifact 46727, diagnostics 0, note 0
+# B4 differences 0 (no class admits one)
+# census not compared (--no-census): part B compares it only between the corpus commit and the after commit, and this comparison was named as another

@@ -1,0 +1,1 @@
+partd-rule-2-solution-build	rc=0	wall=66.3s	maxrss=741MB	started=2026-10-25T23:56:47Z	ended=2026-10-25T23:57:53Z

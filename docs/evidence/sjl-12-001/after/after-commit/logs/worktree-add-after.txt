@@ -1,0 +1,4 @@
+# git worktree add's output, its progress segments (each ended by a carriage return) trimmed to the last, as a terminal shows it; untrimmed SHA-256 0b869c5350d50101663c56c1c169c79cc504a6a53a094efb912ebd4b7599ee37
+Preparing worktree (detached HEAD 1de3af6)
+Updating files: 100% (10081/10081), done.
+HEAD is now at 1de3af6 Merge pull request #167 from Broiler-Platform/claude/busy-lamport-m3yprr

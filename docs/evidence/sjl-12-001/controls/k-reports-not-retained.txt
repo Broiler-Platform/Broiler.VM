@@ -1,0 +1,28 @@
+Bundle sjl-12-001, part C's controls K1 and K2: the four parse-corpus reports of the patched builds, named and
+not retained. Written 2026-10-26, at the records step (WP7.3), from the scratch copies the after steps wrote.
+
+The rule retains each control "with their output" (part C's controls clause). What decides each control is
+retained in this folder:
+  K1  k1.patch; k1-checks.log.gz and k1-checks-named-rows.txt (the source-order row fails);
+      k1-identity-base.tsv.gz, part B's comparison of base run 1 against the K1 report (byte differences reported),
+      and k1-identity-after.tsv.gz, the same against the after run 1, which isolates the patch; k1-revert-check.txt.
+  K2  k2.patch; k2-checks.log.gz and k2-checks-named-rows.txt (the determinism row fails);
+      k2-determinism.tsv.gz, the four-hash comparison over runs 1 to 3 (it lists every compilation whose four
+      results are not one accepted hash, with all four results); logs/k2-parse-corpus-run3.stdout.txt (run 3's own
+      count of compilations whose two concurrent compilations differ); k2-revert-check.txt.
+  Both  k-reverted-checks.log.gz and k-reverted-checks-named-rows.txt (the reverted copy, rebuilt, passes every row).
+  Each run's standard output, standard error and exit are in logs/.
+
+The reports themselves are not retained, for size: together they are about four times one after run's report, and
+the bundle keeps its growth near the base's. Each comparison output above names its report by the path it was to
+have in this folder, because the comparisons ran with the reports copied there and removed afterwards
+(after/after-commit/commands.txt, step s3k). The reports, as the runs wrote them (gzip -n -9 of the mode's output):
+
+sha256                                                            bytes      report
+3ba3586ea385e5a1e2687697082bfb84c8050991c2b60bd1cd3fd09b71655f09  25306557   k1-parse-corpus.tsv.gz       (one worker)
+6433439a080fd732882d3ca52d03ac33e6c371c952e4e121ada17bbec0de9d17  25306468   k2-parse-corpus-run1.tsv.gz  (one worker)
+a586a41e676c48dc32b416ccf126619aba3bd1486ae8614e9ce321fcb5c9fc9f  25306428   k2-parse-corpus-run2.tsv.gz  (one worker)
+94a4fd3753e4aca3a304e30f68745ad6b51b3a3fdf85e5b48a796bd4109e78e0  31230956   k2-parse-corpus-run3.tsv.gz  (--twice-concurrent)
+
+K1's report can be made again from k1.patch on the after commit, because K1's order is fixed. K2's cannot, because
+K2 draws its order from an unseeded source; what part C reads of it is the comparison output, which is retained.

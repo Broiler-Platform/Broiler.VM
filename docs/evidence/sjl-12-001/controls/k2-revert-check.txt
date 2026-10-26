@@ -1,0 +1,5 @@
+# k2 reverted: git checkout -- src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs
+1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+git diff --exit-code (worktree against HEAD): exit 0
+git diff --exit-code 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f: exit 0
+git status --porcelain:

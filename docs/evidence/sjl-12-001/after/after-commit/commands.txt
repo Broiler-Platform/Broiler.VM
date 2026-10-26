@@ -1,0 +1,223 @@
+# Bundle sjl-12-001, the local after steps of Broiler.VM's part VM (SJL-12 WP7.2), 2026-10-25T21:35Z to 2026-10-26T00:36Z,
+# on the programme's local machine (machine.txt). The after commit is 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f, the
+# default-branch merge of Broiler-Platform/Broiler.VM#167 (SJL-12.6 item 4); part A's base commit is the rule commit
+# 889ea1568f59bf37aa21c0035b423d0d030eb87f. Every command as it was run, in order: they are the commands of the driver
+# scripts retained in scripts/, each run once, in the order below (s1, s2, then s3, s3k, s4 and s5 chained, then s4b,
+# s6, s7). The variables expand to the exact paths. The scripts ran under `set -u`; each records every exit code and
+# goes on. Nothing was committed, pushed or dispatched, and /home/user/Broiler.VM was changed by nothing but
+# `git fetch`, `git worktree add` and `git worktree remove` of the three checkouts named here.
+
+W=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl12/wp7   # scratch folder
+O=$W/vm                                     # the outputs, laid out as the bundle's after/ (this folder's parent)
+R=$W/runs                                   # each run's raw stdout, stderr and status (copied into logs/ by s7)
+AC=1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f # the after commit
+RC=889ea1568f59bf37aa21c0035b423d0d030eb87f # the rule commit, part A's base
+VMW=$W/vm-after                             # the after commit's clean detached checkout (removed afterwards)
+RW=$W/vm-rule                               # the rule commit's clean detached checkout (removed afterwards)
+KW=$W/vm-k                                  # the scratch copy of the after commit for controls K1 and K2 (removed afterwards)
+SC=src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler
+CF=src/compositions/Broiler.VM.Composition.JavaScript.Conformance
+V=$VMW/$SC/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+M=$VMW/src/tests/corpus/parse-1/corpus.manifest
+SUITE=$W/suite-a/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e   # the pinned archive, extracted (removed afterwards)
+export PATH=/root/.dotnet:$PATH DOTNET_ROOT=/root/.dotnet
+
+# ---- THE GATE AND THE WRAPPER (scripts/lib.sh, WP4.7's lib.sh with W changed and nothing else). Before every build
+#      and every run: wait 60 s, then require a 1-minute load average of at most 1.0 and no dotnet or python process,
+#      polling every 120 s for up to 30 minutes; record the load, nproc, the OS and the head of `dotnet --info`
+#      (logs/pre-run.txt, logs/gate.log). The run itself: `cd <checkout> && env -u LANG TZ=UTC python3 -I
+#      scripts/timed.py ...`, which strips LANG and every LC_* and records exit, wall, peak RSS, start and end
+#      (logs/runs.tsv), with the load just before and after. The comparisons and checkers' reads below that are not
+#      marked `run` were not gated, as WP4.7's stage C ran its comparisons.
+
+# ==== s1-parta.sh: step 1, part A's comparisons (no build, no run)
+git -C /home/user/Broiler.VM fetch -q origin main
+git -C /home/user/Broiler.VM merge-base --is-ancestor $AC origin/main          # exit 0 (logs/after-commit-ancestry.txt)
+git -C /home/user/Broiler.VM merge-base --is-ancestor $RC $AC                  # exit 0
+git -C /home/user/Broiler.VM worktree add --detach $VMW $AC                    # logs/worktree-add-after.txt
+{ git -C $VMW rev-parse HEAD; git -C $VMW status --porcelain --ignored; }     # logs/checkout-after-commit-made.txt
+# the base's hosted folder as the default branch (76ace8692c1e51a95c3615b253bd2d31438718e3) retains it, and the after
+# artifact (run 40231328560, artifact 12613262582) as the orchestrator downloaded and extracted it
+git -C /home/user/Broiler.VM archive origin/main docs/evidence/sjl-12-001/base/hosted | tar -x -C $W/parta/base-src
+(cd $W/parta/base-src/docs/evidence/sjl-12-001/base/hosted && sha256sum -c hashes.txt)                      # exit 0
+sha256sum .../wp7-vm-hosted/dl/test262-evidence.zip                            # 9ac18695...46b7fb, GitHub's digest
+(cd $W/parta/zipx && unzip -q .../wp7-vm-hosted/dl/test262-evidence.zip); diff -r $W/parta/zipx .../wp7-vm-hosted/x   # exit 0
+#                                                                              # all of these: hosted-check.txt
+python3 -I scripts/parta_complete.py <folder> wide-bytecode|wide-native        # base and after: hosted-completeness.txt
+sha256sum $VMW/src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz   # = the pin's archive-sha256 (logs/suite-archive.txt)
+tar xzf $VMW/src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz -C $W/suite-a
+gunzip -c <base hosted>/wide-bytecode.report.gz > $W/parta/base-wide-bytecode.report   # and the native, and both after (logs/parta-reports.sha256)
+cd $VMW && python3 -I eng/compare-test262-forms.py $W/parta/base-wide-bytecode.report $W/parta/after-wide-bytecode.report \
+  --same-form --suite $SUITE                                                    # compare-wide-bytecode.log, exit 0
+cd $VMW && python3 -I eng/compare-test262-forms.py $W/parta/base-wide-native.report $W/parta/after-wide-native.report \
+  --same-form --exempt-guest-loads --suite $SUITE                               # compare-wide-native.log, exit 0
+# eng/compare-test262-forms.py is one blob at the rule, corpus and after commits, 48e3091a (after-commit.txt)
+
+# ==== s2-partb.sh: step 2, part B at the after commit
+{ git -C $VMW rev-parse HEAD; git -C $VMW status --porcelain --ignored; }     # logs/checkout-before-build.txt
+run build-after: cd $VMW && dotnet build -c Release -nologo --disable-build-servers $VMW/$SC/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj   # logs/build.log
+{ git -C $VMW rev-parse HEAD; git -C $VMW status --porcelain; }               # logs/checkout-after-build.txt
+(cd $VMW/$SC/bin/Release/net10.0 && sha256sum *.dll | sort -k2) > binaries.sha256
+run census-inputs-after: cd $VMW && dotnet $V --census $VMW/src/tests/corpus/parse-1/inputs   # census-inputs-after.txt.gz (gzip -n -9 of stdout)
+run census-test-after:   cd $VMW && dotnet $V --census $SUITE/test                            # census-test-after.txt.gz
+run parse-corpus-after-run1: cd $VMW && dotnet $V --parse-corpus $M $R/parse-corpus-after-run1.tsv.gz --workers 1 --journal $R/parse-corpus-after-run1.journal
+#   the journal read by WP4.7's stage-b.sh check (logs/journal-check.txt) and deleted; the report moved to
+#   parse-corpus-after-run1.tsv.gz; python3 -I scripts/vm_complete.py $M <report> (logs/complete-parse-corpus-after-run1.txt)
+# the comparison, eng/compare-parse-corpus.py as the corpus commit holds it (c1d3b53d, the after commit's blob too), from
+# the checkout's root, with the after files copied to the paths the bundle will commit them at, removed afterwards
+# (B=docs/evidence/sjl-12-001, A=$B/after); base/ is the after commit's own
+cd $VMW && python3 -I eng/compare-parse-corpus.py identity $B/base/parse-corpus-run1.tsv.gz $A/parse-corpus-after-run1.tsv.gz \
+  --manifest src/tests/corpus/parse-1/corpus.manifest \
+  --census $B/base/census-inputs-1.txt.gz $A/census-inputs-after.txt.gz --census $B/base/census-test-1.txt.gz $A/census-test-after.txt.gz \
+  --out $A/identity-base-after.tsv --differing-keys $A/differing-keys-base-after.txt   # exit 1; identity-base-after.tsv.gz, differing-keys-base-after.txt (empty)
+cmp <(zcat $VMW/$B/base/census-<inputs|test>-1.txt.gz) <(zcat census-<inputs|test>-after.txt.gz)   # exit 0, both (logs/census-base-after-cmp.txt)
+# No --write-bytes: no compilation's hash differs between the two runs (the differing-keys file is empty), so the rule
+# names no artifact bytes to write.
+
+# ==== s3-partc.sh: step 3, part C at the after commit (the same build)
+run parse-corpus-after-run2: cd $VMW && dotnet $V --parse-corpus $M $R/parse-corpus-after-run2.tsv.gz --workers 1 --journal $R/parse-corpus-after-run2.journal
+run parse-corpus-after-run3: cd $VMW && dotnet $V --parse-corpus $M $R/parse-corpus-after-run3.tsv.gz --twice-concurrent --journal $R/parse-corpus-after-run3.journal
+#   each journal checked and deleted as above; vm_complete.py over each report
+run checks-after: cd $VMW && dotnet $V --checks --verbose                      # checks-after.log.gz (stdout); checks-after-named-rows.txt (grep)
+cd $VMW && python3 -I eng/compare-parse-corpus.py determinism $A/parse-corpus-after-run1.tsv.gz $A/parse-corpus-after-run2.tsv.gz \
+  $A/parse-corpus-after-run3.tsv.gz --population $A/parse-corpus-after-run1.tsv.gz --manifest src/tests/corpus/parse-1/corpus.manifest \
+  --out $A/determinism-after-runs-1-2-3.tsv                                     # exit 0; determinism-after-runs-1-2-3.tsv
+
+# ==== s3k-controls.sh: step 3's controls K1 and K2 (controls/), in a scratch copy of the after commit, never committed
+git -C /home/user/Broiler.VM worktree add --detach $KW $AC                     # logs/worktree-add-k.txt; controls/logs/checkout-k-made.txt
+F=src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs
+# K1: the global lexical declarations reversed (the change of WP6.1's k1.patch, on the after commit's file), by copying
+#     the edited file in; then git -C $KW diff > controls/k1.patch
+run k1-build:  cd $KW && dotnet build -c Release -nologo --disable-build-servers $KW/$SC/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj
+run k1-checks: cd $KW && dotnet $KW/$SC/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --checks --verbose   # exit 1
+run k1-parse-corpus: cd $KW && dotnet <the same dll> --parse-corpus $KW/src/tests/corpus/parse-1/corpus.manifest $R/k1-parse-corpus.tsv.gz --workers 1 --journal $R/k1-parse-corpus.journal
+git -C $KW checkout -- $F; git -C $KW diff --exit-code; git -C $KW diff --exit-code $AC   # both exit 0 (controls/k1-revert-check.txt)
+cd $VMW && python3 -I eng/compare-parse-corpus.py identity $B/base/parse-corpus-run1.tsv.gz $B/controls/k1-parse-corpus.tsv.gz \
+  --manifest src/tests/corpus/parse-1/corpus.manifest --no-census --out $B/controls/k1-identity-base.tsv     # exit 1
+cd $VMW && python3 -I eng/compare-parse-corpus.py identity $A/parse-corpus-after-run1.tsv.gz $B/controls/k1-identity... \
+  (the same, the after run 1 as the base side, --out $B/controls/k1-identity-after.tsv)                     # exit 1
+# K2: the global lexical declarations shuffled per compilation from an unseeded System.Random (WP6.1's k2 change);
+#     git -C $KW diff > controls/k2.patch
+run k2-build, k2-checks (exit 1), then
+run k2-parse-corpus-run1 and -run2: ... --parse-corpus <manifest> $R/k2-parse-corpus-run<n>.tsv.gz --workers 1 --journal ...
+run k2-parse-corpus-run3: ... --parse-corpus <manifest> $R/k2-parse-corpus-run3.tsv.gz --twice-concurrent --journal ...
+git -C $KW checkout -- $F; git -C $KW diff --exit-code; git -C $KW diff --exit-code $AC   # both exit 0 (controls/k2-revert-check.txt)
+cd $VMW && python3 -I eng/compare-parse-corpus.py determinism $B/controls/k2-parse-corpus-run1.tsv.gz $B/controls/k2-parse-corpus-run2.tsv.gz \
+  $B/controls/k2-parse-corpus-run3.tsv.gz --population $A/parse-corpus-after-run1.tsv.gz --manifest src/tests/corpus/parse-1/corpus.manifest \
+  --out $B/controls/k2-determinism.tsv                                          # exit 1
+# after both reverts: the copy built again and every checks row run again
+run k-reverted-build, k-reverted-checks (exit 0)                                # controls/k-reverted-checks.log.gz
+# (the files copied into $VMW for the comparisons were removed: logs/checkout-after-controls.txt reads it clean)
+
+# ==== s4-partd.sh: step 4, part D, first runs (rules-after/run-1/, rules-rule-commit/run-1/)
+run partd-after: cd $VMW && env BROILER_RULE_MESSAGES=$O/rules-after/rule-messages dotnet test $VMW/src/tests/Broiler.VM.Architecture.Tests \
+  -c Release --nologo --disable-build-servers --results-directory $R/partd-after-results \
+  --logger "console;verbosity=normal" --logger "trx;LogFileName=partd-after.trx"                                 # exit 1
+git -C /home/user/Broiler.VM worktree add --detach $RW $RC                     # logs/worktree-add-rule.txt; logs/checkout-rule-commit-made.txt
+run partd-rule: the same at $RW, into $O/rules-rule-commit/                   # exit 1
+# Both failed tests that read every shipping assembly's built image (B3, B5, B5c, N10, U2, U9, W2, X2), which a test
+# project's own build does not produce: a cause outside the change, which bundle sjl-3-001's collector names in its
+# rules step. The outputs were moved into run-1/ and kept.
+
+# ==== s5-parte.sh: step 5, part E at the after commit
+awk ... $VMW/src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv > controls/part-e-control-1-second-registry-code.tsv   # JSE1401's registry_code 2201;2202
+awk ... (the same mapping) > controls/part-e-control-2-merge-not-split.tsv     # JSE1621 within-meaning of 2402
+cmp each against origin/main's docs/evidence/sjl-12-001/controls/ copy        # exit 0, both (controls/part-e-controls-against-retained.txt)
+run parte-mapping:   cd $VMW && python3 -I eng/check-frontend-mapping.py                                      # exit 0
+run parte-control-1: cd $VMW && python3 -I eng/check-frontend-mapping.py --mapping $O/controls/part-e-control-1-second-registry-code.tsv   # exit 1
+run parte-control-2: cd $VMW && python3 -I eng/check-frontend-mapping.py --mapping $O/controls/part-e-control-2-merge-not-split.tsv       # exit 1
+#   part-e-checker-runs.txt, in the shape of controls/part-e-checker-runs.txt; the run logs are in controls/logs/
+
+# ==== s4b-partd-rerun.sh: step 4 run again once, the solution built first (rules-*/run-2/)
+run partd-after-2-solution-build: cd $VMW && dotnet build $VMW/Broiler.VM.slnx -c Release -nologo --disable-build-servers
+run partd-after-2: cd $VMW && env BROILER_RULE_MESSAGES=$O/rules-after/run-2/rule-messages dotnet test $VMW/src/tests/Broiler.VM.Architecture.Tests \
+  -c Release --nologo --disable-build-servers --results-directory $R/partd-after-2-results \
+  --logger "console;verbosity=normal" --logger "trx;LogFileName=partd-after-2.trx"                               # exit 0
+run partd-rule-2-solution-build and partd-rule-2: the same at $RW            # exit 0, 0
+
+# ==== s6-rerun.sh: step 6, part A's (c') re-runs and (e) (rerun/)
+run build-conformance-rule:  cd $RW && dotnet build -c Release -nologo --disable-build-servers $RW/$CF/Broiler.VM.Composition.JavaScript.Conformance.csproj
+run build-conformance-after: cd $VMW && dotnet build -c Release -nologo --disable-build-servers $VMW/$CF/Broiler.VM.Composition.JavaScript.Conformance.csproj
+#   (both already built by the solution builds: 3.3 s and 3.4 s); rerun/binaries-conformance-<rule|after>.sha256
+python3 -I scripts/rerun_table.py rows compare-<run>.log > rerun/rows-<run>.tsv  # the (c') rows, read as bundle sjl-4-001's step reads them
+cut -f1 rerun/rows-<run>.tsv | LC_ALL=C sort -u > rerun/paths-<run>.txt        # 6 paths per form; path i is report i
+# for each form, at the rule commit then at the after commit, each path its own process (rerun-<run>-<rule|after>-<i>):
+run: cd <checkout> && <checkout>/$CF/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance --test262 $SUITE \
+  --manifest broiler.javascript.wide --expect <checkout>/src/tests/conformance/pins/test262.pin --report $R/rerun-<run>-<side>/rerun-<i>.report \
+  --fuel 100000000 --wall 5000 --form <bytecode|native> --test <path i>
+python3 -I scripts/rerun_table.py table ...                                     # rerun/rerun-<run>.tsv; rows whose re-runs differ: rerun/differ-<run>.tsv
+cd $VMW && python3 -I eng/compare-test262-forms.py <rule re-run i> <after re-run i> --same-form [--exempt-guest-loads] --suite $SUITE   # rerun/rerun-<run>-compare.log
+# (e), for wide-native's one differing row's path (rerun/race-paths-wide-native.txt), at each commit, alone:
+run wall-race-wide-native-<rule|after>-0: the same command with --wall 50000   # rerun/wall-race-wide-native.tsv
+# wide-bytecode had no row whose re-runs differ (rerun/wall-race-none.txt). Every report: rerun/reports/*.report.gz (gzip -n -9).
+
+# ==== s7-records.sh: records, no run
+#   after-commit.txt from git reads alone; the raw logs copied into logs/ (runs.tsv, pre-run.txt, gate.log, journal-check.txt,
+#   each run's stdout, stderr and exit); the scripts into scripts/.
+# Then, by hand: the final checkout records (logs/checkout-after-runs.txt, logs/checkout-rule-commit-after-runs.txt,
+# controls/logs/checkout-k-after-runs.txt); every file over 100 KB not yet compressed gzipped with gzip -n -9
+# (identity-base-after.tsv and the four rule-message J.txt files); `git -C /home/user/Broiler.VM worktree remove` of
+# $VMW, $RW and $KW, each exit 0, which removed every bin/ and obj/ they held; $W/suite-a and $W/parta removed; this
+# file, machine.txt, runner-report.md and every hashes.txt written. logs/worktree-add-*.txt are git worktree add's
+# output with its progress segments trimmed to the last, each with the untrimmed file's SHA-256.
+
+# ==== THE RECORDS STEP (WP7.3), 2026-10-26: how these outputs entered bundle sjl-12-001, and what changed on the way.
+# Nothing here ran a build, a test or the slice compiler. The outputs above were written to $O and its sub-folders; they
+# are in the bundle at the places README section 2 gives (its dated note of 2026-10-26):
+#   $O/*.tsv.gz, *.txt, *.log, checks-*, census-*, hosted-*   -> after/                (the after commit's reports and comparisons)
+#   $O/after-commit/                                           -> after/after-commit/   (this folder: the runs' records, logs/, scripts/)
+#   $O/rerun/                                                  -> after/rerun/          (part A's (c') and (e) re-runs)
+#   $O/rules-after/run-1/, run-2/                              -> after/rules-after/    (part D at the after commit)
+#   $O/rules-rule-commit/run-1/, run-2/                        -> base/rules-rule-commit/ (part D at the rule commit, read and not judged)
+#   $O/controls/ (K1, K2, the reverted copy) and controls/logs/ -> controls/ and controls/logs/
+# Part A's after artifact (run 40231328560, artifact 12613262582) was unzipped from the zip as downloaded into after/hosted/,
+# which adds imported.txt and hashes.txt alone. Each folder's hashes.txt is written anew: after/hashes.txt covers every file of
+# after/ but after/hosted/, which has its own; controls/hashes.txt every file of controls/; base/rules-rule-commit/hashes.txt
+# every file of that folder. The runner's per-folder hashes.txt files are not imported; they are named below with their SHA-256.
+#
+# Not imported, each named by the SHA-256 it had as the runner wrote it:
+#   2f4e6ac09c6eb13d47a179ce9875746e6c79b70255dfe45d20b4d4761ca19c1a  after-commit/hashes.txt
+#   0f03584c14af1e78894fc6b61be70c8005f5076d9f495c43f37911190f75336e  after-commit/logs/hashes.txt
+#   3c64a9c5fb75c815839dbef9eb140e89544675ca414f4cbd21c7ef90e7e85580  after-commit/scripts/hashes.txt
+#   9a8a78f7963c129da8307f8c62170293a7c07330203ce4e7698fd40db6be56d3  controls/hashes.txt
+#   bc32d50bf16fc83faac32848c16787fd1ac0520c9d1ea462f4a594c11edd38b6  controls/logs/hashes.txt
+#   72c97da63b3a5306c265725de26c0e074d72dd4ca905e7ec81e71e534e4e0f8f  hashes.txt
+#   f4b9568cb77c25a991dac4c7483b587326a519a230d2dd21acd751ef26237ea4  rerun/hashes.txt
+#   732431f65212aa28ab1692f63205988711a6d8443df5713ed102e7fbce7c2bb3  rerun/logs/hashes.txt
+#   5a86bd24c46ba59d3ab88ddf133e5c98dd8ad745ea860a96878261f61d019e40  rerun/reports/hashes.txt
+#   e8f00e3978c91d729f6829aae675a9ffbf41d5bb7d51d3406f78b3d0ef416363  rules-after/run-1/hashes.txt
+#   77b7192e464e7bb30b5b451139bfd3ab75a612267217c371252f5ac949b6f313  rules-after/run-1/rule-messages/hashes.txt
+#   dda811641912c4a74dfeec53ccfcdb8f4c9601f4106574c97a109e7aa37cb99d  rules-after/run-2/hashes.txt
+#   7ff9db91f8dd5292e8c795b45448c4a8c290d61652863371d7a130ba732a663c  rules-after/run-2/rule-messages/hashes.txt
+#   f34b27cd5e55a34007a839a3d2e7adc0f50f1ba2604d17fb8571c179452ade09  rules-rule-commit/run-1/hashes.txt
+#   3d4a83053808fed508b99d8c4b80aa0b85360f11f214ac45a53035089306cc58  rules-rule-commit/run-1/rule-messages/hashes.txt
+#   1126a0a97ea0c7c6e2923c83b18de49ca15037e8371d25f437b0f6a6786e0ae2  rules-rule-commit/run-2/hashes.txt
+#   4d1ddbdb188f079061acef181a7f91eb57f29c1dad8e7cc36b2ad720e0580fc9  rules-rule-commit/run-2/rule-messages/hashes.txt
+#   b4be71dac0305b435ed6d9295eaf181764a9641b38ee9f4e9c551f31a02d8750  runner-report.md
+#   3ba3586ea385e5a1e2687697082bfb84c8050991c2b60bd1cd3fd09b71655f09  controls/k1-parse-corpus.tsv.gz  (controls/k-reports-not-retained.txt)
+#   6433439a080fd732882d3ca52d03ac33e6c371c952e4e121ada17bbec0de9d17  controls/k2-parse-corpus-run1.tsv.gz  (controls/k-reports-not-retained.txt)
+#   a586a41e676c48dc32b416ccf126619aba3bd1486ae8614e9ce321fcb5c9fc9f  controls/k2-parse-corpus-run2.tsv.gz  (controls/k-reports-not-retained.txt)
+#   94a4fd3753e4aca3a304e30f68745ad6b51b3a3fdf85e5b48a796bd4109e78e0  controls/k2-parse-corpus-run3.tsv.gz  (controls/k-reports-not-retained.txt)
+# runner-report.md was the runner's account to the records step, not a record of a run; README sections 6 and 7 say what it said
+# that the bundle relies on, with two of its sentences corrected (README section 6).
+#
+# Changed on the way, each with the SHA-256 it had as the runner wrote it (the bundle's copy is in the folder's hashes.txt):
+#   the session's scratch directory, /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad, written <scratch>,
+#   as bundle sjl-10-001's comparison logs write it, in the comparison outputs and the records that name compared files:
+#     fb95ef517c8ad96cb3ff2cdba167c46710ba8e8d88134eca7e71ac301877d9eb  after/compare-wide-bytecode.log  (3 occurrences)
+#     48a4863e57ba597344e919679f0d4462d24d7630c757683c2500852601ec52cc  after/compare-wide-native.log  (3 occurrences)
+#     67e8bf3214f811c716c104642ef3efca63e8d0e7df162992abbeb22448658470  after/rerun/rerun-wide-bytecode-compare.log  (12 occurrences)
+#     d4ba85e2e2a74e1e1aa1220f45f8422ec8b1ebca4d1a7e7344471b4f90091f97  after/rerun/rerun-wide-native-compare.log  (12 occurrences)
+#     9e20d58e1026257e58b0de1fb2f958a359e4fe17b4615b350f5dd83a348ab5c5  after/hosted-check.txt  (1 occurrence)
+#     b235be76d65798aa463173b3d6b9c5ac19e4010c3f7d844d8850321fffc2f080  after/after-commit/logs/parta-reports.sha256  (4 occurrences)
+#     728c8fb3ba66e1814aac4d7544f489b4beddf537a63489cef8929130fc73cad5  after/after-commit/logs/suite-archive.txt  (1 occurrence)
+#     508ab9aba7a801011082802e244783d08f486486a1228f1294d05f2c41bb07b2  after/part-e-checker-runs.txt  (2 occurrences)
+#     bf6d0aa3c8ebf8c525f054f0531e5e07e51d374af93fb15bad160bb72f8448b7  controls/logs/parte-control-1.stdout.txt  (1 occurrence)
+#     aa429f46800b57b54857b474b89793eb61eee8490692dac39a90510fce507cd9  controls/logs/parte-control-2.stdout.txt  (1 occurrence)
+#   after/part-e-checker-runs.txt also: its four `$` lines for the two controls corrected to the commands run (its dated note).
+#   after/after-commit/machine.txt: a dated note in THE CHECKOUTS, on the scratch copy's missing records; it had SHA-256
+#     fe94bea9bcca15fa1319d501e31418551ef65d1a38807290478495266ad921f6.
+#   this file: this section appended; it had SHA-256 af3e2f4efeda16092f976095ab1b904d94007ee8ea30950875db2b01395f1973.
+# Every other file is byte for byte as the runner wrote it, scratch paths included: this file, the scripts and
+# logs/runs-commands.log, as base/commands.txt and after/ordering/commands.txt keep them; the build logs, as base/logs/ and
+# after/ordering/logs/ keep them; and the test logs, TRX files and rule messages of part D, which are the tools' own output.

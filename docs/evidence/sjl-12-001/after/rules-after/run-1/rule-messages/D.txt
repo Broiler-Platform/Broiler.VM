@@ -1,0 +1,8 @@
+# what group D's rules said about this checkout
+#
+# Reported, not judged. A rule with no lines said nothing, which is what a clean
+# checkout looks like; a rule that threw is recorded as throwing.
+
+[D1] 1 message(s)
+    INCONCLUSIVE - no aggregate checkout above the component root, so D1 scanned nothing
+

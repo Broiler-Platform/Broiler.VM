@@ -1,0 +1,11 @@
+[xUnit.net 00:00:05.22]     Broiler.VM.Architecture.Tests.NativeMappingRuleTests.B5c_Names_Every_Shipping_Assembly_It_Could_Not_Read [FAIL]
+[xUnit.net 00:00:05.62]     Broiler.VM.Architecture.Tests.UbcRuleTests.U9_The_Ubc_Surface_Is_Exactly_What_Its_Baseline_Declares [FAIL]
+[xUnit.net 00:00:05.64]     Broiler.VM.Architecture.Tests.UbcRuleTests.U9_Covers_The_Ubc_Assembly_And_Nothing_Else [FAIL]
+[xUnit.net 00:00:05.66]     Broiler.VM.Architecture.Tests.UbcRuleTests.U9_Rejects_A_Baseline_That_Omits_An_Exported_Member [FAIL]
+[xUnit.net 00:00:05.69]     Broiler.VM.Architecture.Tests.UbcRuleTests.U2_No_Exported_Identifier_Is_In_The_Banned_Vocabulary [FAIL]
+[xUnit.net 00:00:05.84]     Broiler.VM.Architecture.Tests.UbcRuleTests.U2_The_Assembly_Exports_No_Family_Row [FAIL]
+[xUnit.net 00:00:09.82]     Broiler.VM.Architecture.Tests.WebAssemblyFamilyRuleTests.W2_Rejects_A_Baseline_That_Omits_An_Exported_Member [FAIL]
+[xUnit.net 00:00:09.82]     Broiler.VM.Architecture.Tests.WebAssemblyFamilyRuleTests.W2_Covers_Every_Family_Assembly_And_Nothing_Else [FAIL]
+[xUnit.net 00:00:09.82]     Broiler.VM.Architecture.Tests.WebAssemblyFamilyRuleTests.W2_The_WebAssembly_Family_Surface_Is_Exactly_What_Its_Baseline_Declares [FAIL]
+[xUnit.net 00:00:30.85]     Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B5_And_B5b_Name_Every_Shipping_Assembly_They_Could_Not_Read [FAIL]
+Test Run Failed.
