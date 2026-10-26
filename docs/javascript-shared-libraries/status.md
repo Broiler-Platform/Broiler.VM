@@ -1,7 +1,9 @@
 # The shared JavaScript libraries programme — status ledger
 
-**Last updated:** 2026-10-26, at SJL-9's start by the owner's words of 2026-10-19 and SJL-9.1's records in this
-repository (SJL-9 `In progress`: all five sub-areas accepted, plural ranges and display-name naming as adoptions, and
+**Last updated:** 2026-10-26, at SJL-13's start by the owner's words of 2026-10-25 (SJL-13 `In progress`: every
+clause unmet, and SJL-13 waits on SJL-12, SJL-3 and SJL-7; the start a reading of the owner's words, not a decision;
+nothing accepted). Before that: 2026-10-26, at SJL-9's start by the owner's words of 2026-10-19 and SJL-9.1's records
+in this repository (SJL-9 `In progress`: all five sub-areas accepted, plural ranges and display-name naming as adoptions, and
 decisions SJL-D-22 and SJL-D-24 recorded, in JSD-0082, with the locale providers SJL-D-19 left to SJL-9; the owner's
 decisions of 2026-10-26 recorded under the owner's direction of 2026-10-18, which changes no rule; bundle
 `sjl-9-001`'s rule committed with its correspondence, before any code it judges, naming this family's corrections Z8,
@@ -165,14 +167,15 @@ milestone `Not started`; every decision open).
 [the programme roadmap](roadmap.md). The roadmap and the [milestone files](milestones/) define the
 planned work and the objective exit gates. This ledger records whether those gates have evidence.
 
-**Today SJL-0 to SJL-12 are `In progress` and every other milestone is `Not started`**
+**Today SJL-0 to SJL-13 are `In progress` and every other milestone is `Not started`**
 *(2026-10-13; read "**Today SJL-0 to SJL-3 are `In progress` and every other milestone is `Not started`:**"; then,
 until 2026-10-14, "SJL-0 to SJL-4"; then, until 2026-10-15, at SJL-6.1, "SJL-0 to SJL-5", which SJL-6.0's
 record should have moved; then, until 2026-10-16, at SJL-7's start, "SJL-0 to SJL-6"; then, until 2026-10-17,
 at SJL-8's start, "SJL-0 to SJL-7"; then, until 2026-10-18, at SJL-10's start, "SJL-0 to SJL-8"; then, until
 2026-10-19, at SJL-12's start, "SJL-0 to SJL-8 and SJL-10"; then, until 2026-10-26, at SJL-12's after evidence,
 "SJL-0 to SJL-8, SJL-10 and SJL-12", which SJL-11's start on 2026-10-25 should have moved; then, until
-2026-10-26, at SJL-9's start, "SJL-0 to SJL-8 and SJL-10 to SJL-12")*:
+2026-10-26, at SJL-9's start, "SJL-0 to SJL-8 and SJL-10 to SJL-12"; then, until 2026-10-26, at SJL-13's start,
+"SJL-0 to SJL-12")*:
 
 - the shared folder exists in Broiler.JS, `Broiler.ECMAScript/`, with its conventions, rules SL1 to
   SL10, its version stream and its Native AOT probe. It holds the areas of number conversion, numerics,
@@ -2057,6 +2060,34 @@ Decisions SJL-D-22 and SJL-D-24 are recorded. Next:
   SJL-D-22's and SJL-D-24's rows, in place of its branch;
 - SJL-9.2: the dataset copies and the Intl vectors, and the data home's pin, generator and tables.
 
+**2026-10-26, later again: SJL-13 starts before SJL-12, SJL-3 and SJL-7, which it waits on, meet their gates, at the
+owner's words of 2026-10-25 (SJL-13.0).** SJL-13 waits on SJL-12 for the frontend's contract, on SJL-3 for literal
+values and on SJL-7 for identifier classes. SJL-12 and SJL-7 have every clause met on their records and bundles and
+none accepted, and neither may meet its gate before SJL-3 meets SJL-3's. SJL-3 is still not met: clauses 7 and 13
+are unmet, as its row says.
+
+On 2026-10-25 the owner wrote "Continue with the remaining SJL milestones". This ledger reads it as the choice to
+start SJL-13 before the milestones it waits on meet their gates. **This is a reading of the owner's words, and it is
+recorded as one.** It is not a decision taken under the owner's standing direction of 2026-10-18, "Please do all
+recommended decisions and skip waiting for review.", which takes the decisions a plan recommends and does not choose
+to start a milestone.
+- **It extends the ledger's earlier readings.** The SJL-11.0 and SJL-9.0 entries above read the owner's words of
+  2026-10-19, "Also continue with the other remaining SJL milestones", as the choice to start SJL-11, SJL-9 and
+  SJL-17; those words named no milestone and excluded none. The words of 2026-10-25 are read the same way, and for
+  SJL-13 as well. SJL-8.0's reading of general words was narrower: "the next milestone in the delivery order".
+- **Each milestone files its own start entry** (JSD-0081 decision D2). This one is SJL-13's. SJL-14 and SJL-15 file
+  their own when their first work packages file their records, reading the same words the same way, and their rows
+  stay `Not started` until then. SJL-16 is not started.
+- It is SJL-13's first record in this repository, filed with SJL-13.1's records in the change that lands them (update
+  rule 1). The standing direction governs the decisions SJL-13 takes, and changes no rule.
+
+The choice moves no gate:
+- **SJL-13 may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs.** Update rule 10 still holds SJL-13's row
+  to the milestones it waits on.
+- No other row moves with it.
+
+SJL-13's row moves to `In progress` under update rule 4, because this record is SJL-13's first; every clause is unmet.
+
 ---
 
 ## 1. Reading this ledger
@@ -2125,7 +2156,7 @@ Rows are in delivery order (roadmap section 4), not numeric order.
 | SJL-10 | Temporal core | `In progress` | **Every clause is met on its bundles, and none is accepted**: this family's on its own, and Broiler.JS's and the home's on Broiler.JS's *(2026-10-19, at SJL-10.6 for Broiler.JS; began "**This family's clauses are met on its bundle, and none is accepted**; Broiler.JS's and the home's are judged in Broiler.JS's bundle")* *(2026-10-19, at SJL-10.6; began "All.")*. Started on 2026-10-18 at the owner's direction, before SJL-6 and SJL-8, which it waits on, meet their gates, recorded above; SJL-10 may not meet its gate before they meet theirs, and so not before SJL-3 meets SJL-3's. SJL-10.1 is filed: the seven sub-areas accepted (JSD-0078), `tc39/proposal-temporal@e8cc03fc` recorded for both engines and test262 `ccaac100` for the area's rules, the owner's decisions of 2026-10-18 recorded under the owner's direction of that day, which changes no rule of this ledger, and the comparison rules committed in both repositories before any code. SJL-10.2 is done: the bases of both repositories' rules taken at their rule commits, and the Temporal vectors at corpus revisions 24 and 25, their expected values from the proposal's polyfill at the pinned revision (decision D10), which this family matches but for row R6. SJL-10.3 is done in Broiler.JS: the seven sub-areas in `Broiler.ECMAScript.Algorithms`, held by the correspondence's answers, both datasets, the vectors and a differential check against this family's code; row D12's day window, which a zone's skipped day reaches, answers a `RangeError` by the owner's decision D11. SJL-10.4 is done: this family's Temporal core is the shared library's from the committed feed, on `0.1.0-preview.7` since 2026-10-19, published to nuget.org that day from Broiler.JS `5ddee404` (JSC-317), and before that on `0.1.0-preview.6`, published on 2026-10-18 from Broiler.JS `fc829f8a` (JSD-0079, JSC-315; until the publication this read "packed from Broiler.JS `bf81d1b7` and not yet published (JSD-0079)"; until this family's move to `0.1.0-preview.7` it read "on `0.1.0-preview.6` from the committed feed, published to nuget.org on 2026-10-18 from Broiler.JS `fc829f8a`"); its 147 deleted types and members are registered in rule I5; rows R6 and D12's day window are corrected, and row R6's six vector divergences no longer hold. SJL-10.5 is done in Broiler.JS, observed, merged as `00b65dd0` (Broiler-Platform/Broiler.JS#1054): its Temporal core is the shared library's, every correction JSD-0078 lists for it is made and listed in its changelog, and corpus revision 26 retires the area's divergences, which this family matches in full on its pin; the owner's decision D12 of 2026-10-19 answers a `RangeError` where NudgeToZonedTime's day span has another sign than the duration's, which the library carries from `0.1.0-preview.7`, with which this family takes it, a policy change made here (JSD-0078, JSC-317) *(2026-10-19, at this family's move to `0.1.0-preview.7`; read "which the library carries after `0.1.0-preview.6` and this family takes with the shared stream's next version, a policy change pending here (JSD-0078)")* *(2026-10-19, when Broiler-Platform/Broiler.JS#1054 merged and this family's pin moved to corpus revision 26; read "SJL-10.5 is observed in Broiler.JS and not yet merged, in Broiler-Platform/Broiler.JS#1054 at its head `c33933f9`" and "corpus revision 26 retires the area's divergences;")*. SJL-10.6 is done for this family: its after arm at `96876432`, on `0.1.0-preview.6`, meets parts A to C of its area rule as written, every changed test262 verdict a race between allowances that class C4 admits, the reference datasets unchanged and every twin at its base figure *(2026-10-19, at this family's move to `0.1.0-preview.7`; read "its after arm at `96876432` meets", and ended "; decision D12 stays a policy change pending here")*. SJL-10.6 is done for Broiler.JS, observed, merged as `24510b0e` (Broiler-Platform/Broiler.JS#1056): its after arm at `00b65dd0`, the merge that lands its cut-over, meets parts A to C of its rule as written, no test262 row changed in either zone and every line of this family's reference datasets equal to its expected answer, and the home's clauses hold by their own tests *(2026-10-18; read "`Not started` \| All \| None"; then, until SJL-10.1, without its last seven sentences; then, until SJL-10.2, without its last six; then, until SJL-10.3, without its last five; then, until SJL-10.4, without its last four; then, until SJL-10.5 was observed in Broiler.JS on 2026-10-19, without its last three; then, until SJL-10.6, without its last two; then, until SJL-10.6 for Broiler.JS, without its last)* | Broiler.VM [`sjl-10-001`](../evidence/sjl-10-001/README.md) (rules, correspondence, the base of all three parts, the vectors at corpus revisions 25 and 26 on this family's pin, the cut-over's checks, and the after arm at `96876432`); Broiler.JS `docs/evidence/sjl-10-001/` (observed: its rule, the base of all three parts, the vectors with both engines' runs, the library's checks, the cut-over's checks, merged in `00b65dd0`, and the after arm at `00b65dd0`, merged in `24510b0e`) *(2026-10-19, at SJL-10.6 for Broiler.JS; Broiler.JS's ended "and the cut-over's checks, merged in `00b65dd0`)")* *(2026-10-19, at SJL-10.6; this bundle's read "the vectors at corpus revisions 25 and 26 on this family's pin, and the cut-over's checks)")* *(2026-10-19, when Broiler-Platform/Broiler.JS#1054 merged and this family's pin moved to corpus revision 26; this bundle's read "the vectors at corpus revision 25 on this family's pin", and Broiler.JS's ended "the cut-over's checks in Broiler-Platform/Broiler.JS#1054, not yet merged)")* *(2026-10-19, at SJL-10.5; Broiler.JS's ended "and the library's checks)")* *(2026-10-18, at SJL-10.3; Broiler.JS's ended "and the vectors with both engines' runs)")* *(2026-10-18, at SJL-10.1; read "None"; then, until SJL-10.2, "(rules and correspondence only)" and "(observed: its rule)"; then, until this family's pin moved to revision 25, "(rules, correspondence and the base of all three parts)"; then, until SJL-10.4, without "and the cut-over's checks")* | 2026-10-19 (SJL-10.6, both repositories; this family on `0.1.0-preview.7`) |
 | SJL-9 | Locale data and Intl algorithms | `In progress` | **Every clause is unmet, and none is accepted.** Unmet: all, Broiler.JS's clauses 1 to 10 (the data home's 1 to 3, the Intl library's 4 to 6 and its engine's 7 to 10) and this family's clauses 11 to 15. Started at the owner's words of 2026-10-19, recorded above on 2026-10-26, before SJL-7 and SJL-8, which it waits on, and SJL-3 meet their gates; SJL-9 waits on SJL-7 and SJL-8, and takes SJL-4's rounding, and may not meet its gate before SJL-7 and SJL-8 meet theirs, and so not before SJL-3 meets SJL-3's. SJL-9.1 is filed in this repository: the five sub-areas accepted, plural ranges and display-name naming as adoptions, and decisions SJL-D-22 and SJL-D-24 recorded ([JSD-0082](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)), the owner's decisions of 2026-10-26 recorded under the owner's direction of 2026-10-18, which changes no rule of this ledger, the correspondence retained, and the comparison rule committed before any code, naming this family's corrections Z8, L18 and L9; Broiler.JS's half is observed when it merges *(2026-10-26; read "`Not started` \| All \| None"; then, until SJL-9.1, without its last sentence)* | Broiler.VM [`sjl-9-001`](../evidence/sjl-9-001/README.md) (rules and correspondence only) *(2026-10-26; read "None")* | 2026-10-26 (SJL-9's start and SJL-9.1) |
 | SJL-17 | Collation, shared after SJL-9 | `Not started` | All | None | 2026-10-11 (created, by decision `SJL-D-24`) |
-| SJL-13 | The shared syntax library and Broiler.VM's wide path | `Not started` | All | None | 2026-10-11 (created) |
+| SJL-13 | The shared syntax library and Broiler.VM's wide path | `In progress` | **Every clause is unmet, and none is accepted.** Unmet: all, the home's clauses 1 to 3 (Broiler.JS) and this family's clauses 4 to 10. Started at the owner's words of 2026-10-25, recorded above on 2026-10-26 as a reading of them, before SJL-12, SJL-3 and SJL-7, which it waits on, meet their gates; SJL-13 may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs *(2026-10-26; read "`Not started` \| All \| None")* | None | 2026-10-26 (SJL-13's start) |
 | SJL-14 | Broiler.JS on the shared syntax library | `Not started` | All | None | 2026-10-11 (created) |
 | SJL-15 | Shared static semantics | `Not started` | All | None | 2026-10-11 (created) |
 | SJL-16 | Close-out | `Not started` | All | None | 2026-10-11 (created) |
