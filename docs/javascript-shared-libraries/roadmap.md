@@ -335,10 +335,12 @@ decision D1. The parenthesis in this section's first paragraph read "(SJL-3 to S
 
 *(Added 2026-10-26, at SJL-13.1, by [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md).)* The frontend area's verdict is JSD-0083, filed
 at SJL-13.1. Its gate's X1 reads both engines' merged front ends, so it covers Broiler.JS's front end as well as this
-family's. SJL-14 is the second engine's cut-over of the same area, and files no verdict of its own; it completes X6's
-Broiler.JS half by a dated note on JSD-0083 at SJL-14.1, from its dispositions, so the gate this section applies "at
-the start of every area milestone" has its Broiler.JS half on record before SJL-14's code. Section 11's SJL-13 row
-names the verdict from this date.
+family's. **This narrows, for SJL-14, the first paragraph's** "(SJL-3 to SJL-11, SJL-13 to SJL-15, and SJL-17). The
+area's first work package files the verdict." SJL-14 is the second engine's cut-over of the same area, and its verdict
+is read as SJL-13.1's, JSD-0083 (SJL-13's plan's decision D40, which SJL-14.1 files): SJL-14's first work package
+files no verdict of its own, and completes X6's Broiler.JS half by a dated note on JSD-0083 at SJL-14.1, from its
+dispositions, so that the gate this section applies at the start of every area milestone has its Broiler.JS half on
+record before SJL-14's code. Section 11's SJL-13 row names the verdict from this date.
 
 ---
 

@@ -189,3 +189,12 @@ SJL-13.5 files. There is no circularity.
 - **It does not share the static semantics.** That is SJL-15. Broiler.VM's binder pass from SJL-12
   stays in Broiler.VM until then.
 - **It does not rebuild the slice path.** SJL-15 does, under decision `SJL-D-13` (a).
+
+*(Read 2026-10-26, at SJL-13.1, before any evidence of SJL-13 existed, by [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
+decisions D10, D20 and D39.)* "**It does not share the static semantics.** That is SJL-15. Broiler.VM's binder pass
+from SJL-12 stays in Broiler.VM until then." is read with SJL-13.2's scope above. SJL-13 shares the parse-time early
+errors, every one either engine's parser reports at parse time today, through a declarations walk in
+`Broiler.ECMAScript.Semantics` that exposes scopes, declarations, parameter names and strictness as side tables
+(decision D10). Step 1 deletes the binder's checks of every row the stage table assigns `syntax`, so the binder pass
+keeps only its checks of `semantics` rows and its facts for the lowering (decision D20). The semantic model, and the
+binder's remaining checks, stay SJL-15's.

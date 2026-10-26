@@ -2153,9 +2153,9 @@ changes no outcome, byte or diagnostic. Each bundle's README says that it holds 
 verdict.
 
 **Dated notes**, each quoting the text it reads or supersedes: SJL-13's milestone (its verdict and rules, SJL-13.2's
-scope and done-when, SJL-13.3's steps and deletions, SJL-13.6's fuzzing and measurement, clause 10); SJL-15's milestone
-(SJL-15.2); the roadmap's sections 4, 5, 10 and 11, section 4 recording late the starts of SJL-11 and SJL-9 at the
-owner's words of 2026-10-19, as the entries above quote them; `architecture.md` sections 2 and 3.1;
+scope and done-when, SJL-13.3's steps and deletions, SJL-13.6's fuzzing and measurement, clause 10, and its "Does not
+do"); SJL-15's milestone (SJL-15.2); the roadmap's sections 4, 5, 10 and 11, section 4 recording late the starts of
+SJL-11 and SJL-9 at the owner's words of 2026-10-19, as the entries above quote them; `architecture.md` sections 2 and 3.1;
 `areas/frontend.md` sections 3 and 9; governance section 8; the programme README; and the profile's JSD-0071 and
 JSD-0081. JSC-320 corrects JS-2's "Next action", which still waited on SJL-12.
 
@@ -2164,8 +2164,8 @@ classifier and classification, the home's rule and its design document. This led
 
 **Nothing is accepted, and no base is taken.** Review is deferred (update rule 7). SJL-13 stays `In progress`, every
 clause unmet, and may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs. Next:
-- Broiler.JS's SJL-13.1 change merges; its merge commit then stands in JSD-0083 and in this ledger's SJL-13 row, in
-  place of its branch;
+- Broiler.JS's SJL-13.1 change merges; its merge commit then stands in JSD-0083 in place of the branch commit JSD-0083
+  observed, and this ledger's SJL-13 row names it;
 - SJL-13's `syntax` vectors, the tools commit, and SJL-13.2's library in the home.
 
 ---
