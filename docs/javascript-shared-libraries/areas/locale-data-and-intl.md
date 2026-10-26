@@ -34,6 +34,19 @@ its own:
    - zone names with metazone history.
 5. **Duration formatting.**
 
+*(Revised 2026-10-26, at SJL-9.1, before any evidence of SJL-9 existed, by
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+decision D3.)* The order is revised, because this family's plural rules, relative time and duration call its number
+formatter, and duration also needs lists:
+1. **(a)** locale identifiers, likely subtags, negotiation, Locale info and `supportedValuesOf`;
+2. **(b)** the Intl mathematical value, digit options and FormatNumericToString, then plural rules and plural ranges;
+3. **(c)** number formatting, then list, relative-time and display-name formatting;
+4. **(d)** date-time formatting, with zone names and Intl over Temporal;
+5. **(e)** duration formatting.
+
+The list above is left as written: its second item, "**Small formatters**", came before "**Number formatting**",
+whose first items were the Intl mathematical value and digit options. Each sub-area can still be refused on its own.
+
 **Collation** comes last, in its own milestone, [SJL-17](../milestones/sjl-17-collation.md), after
 SJL-9 (decision [SJL-D-24](../decisions.md#sjl-d-24) (c)). Its design is section 3.4.
 
@@ -103,6 +116,16 @@ engine embeds the tables and hands them to the library through `IIntlDataSet`
 was option (b), so the verdict Broiler.VM's JSD-0027 §4 gave it, "Candidate input, not accepted",
 stands.
 
+*(Read 2026-10-26, at SJL-9.1, by
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+decision D8, which revises nothing.)* **The contract has two layers.** `IIntlDataSet`, above, carries a version and
+one span per `IntlTable`; the enum keeps `JsIntlTable`'s numbers, with 7, 23 and 24 retired and not reused, and
+appends values only for tables Broiler.VM's data never carries, and each engine answers an empty span for a table it
+lacks. The library decodes it into a question-level `ILocaleData`, which Broiler.JS's host provider also implements,
+and which `CompositeLocaleData` orders: the shared data, then an optional secondary, then the parent and root. **The
+Format interface is adapted, not replaced**: `IJsIntlData` and `JsIntlTable` stay public in Broiler.VM's Format
+assembly, and Broiler.VM adapts them internally.
+
 ### 3.2 The algorithms
 
 The library is organised by sub-area: `LocaleId` and `LocaleNegotiation`, `IntlDecimal` and
@@ -124,6 +147,18 @@ AOT applications commonly set, the host has only the invariant culture, and
 `CultureInfo.GetCultureInfo` throws for a named one. The provider then answers that the locale is
 unavailable, and negotiation falls back as it does for any locale the data lacks.
 
+*(Read 2026-10-26, at SJL-9.1, by
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+decisions D6 and D7, which revise nothing.)*
+- **What the provider answers.** Only what .NET exposes exactly: number symbols and native digits, month, day and era
+  names, AM and PM, and the first day of the week, for the locales the shared data lacks. Every other question
+  answers "no data", so the algorithm uses the parent or root.
+- **The default-locale and available-locale providers** keep each engine's policy (SJL-D-19). In both engines the
+  available locales always include the default locale and the less narrow tags the same clause requires, as the
+  pinned text requires: under invariant globalization Broiler.JS's are `en-US` and `en`, where they are none today
+  (row L44). And every reader of DefaultLocale in an engine reads the one default-locale provider, its `toLocale*`
+  methods and TransformCase with no locale included (row L35).
+
 ### 3.4 Collation (SJL-17)
 
 | | Broiler.VM | Broiler.JS |
@@ -135,6 +170,12 @@ The library takes resolved options as a record and normalizes through the Unicod
 The collation data comes from the CLDR generator in the Broiler.JS repository, embedded by each
 engine ([SJL-D-6](../decisions.md#sjl-d-6) (c)). The oracles are the UCA test files Broiler.VM pins
 and its retained `orderings` reference dataset.
+
+*(Noted 2026-10-26, at SJL-9.1, by
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md).)*
+The table's "Today" cell for Broiler.JS ends "platform normalization first", which is stale since SJL-7.5: Broiler.JS's
+collator decomposes both strings through Broiler.Unicode's normalization, not the platform's, before the host's
+collation runs. The cell is left as written.
 
 ---
 
@@ -168,6 +209,24 @@ and its retained `orderings` reference dataset.
 - its uses of `Broiler.Unicode.Cldr.LocaleData` for Intl data;
 - **at SJL-17:** the `CompareInfo` path for the locales the shared data covers.
 
+*(Revised 2026-10-26, at SJL-9.1, before any evidence of SJL-9 existed, by
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+decision D24.)* Both lists are extended. Every deleted type and member of Broiler.VM's is registered in rule I5.
+- **Broiler.VM, plus:** the `JsRealm.Locale` cores; every `JsIntlTables` decoder and its lazies (numbers, dates, locale
+  information, zone names), beyond those named above; `SupportedValuesOf`'s core; the helper types `JsDecimalKind`,
+  `JsRawFormat`, `JsNumberPart`, `JsCurrencyNames`, `JsAffixKind` and `JsAffixToken`, `JsNumberPattern`,
+  `JsPluralOperands`, `JsDatePart`, `JsDateField`, `JsZoneKind`, `JsLocalTime`, `JsZoneNaming` and `JsDayPeriodRule`;
+  and, on the test side, `CldrTableGenerator.cs`, `UnicodeDatabase.cs` and `CldrPin.cs`. **Minus:** `NewCollator`
+  and `CollatorKeyData` in `JsRealm.Intl`, which are SJL-17's, and `JsRealm.Segmenter.cs`, which is SJL-7's. The
+  reading of DurationFormat's argument, ECMA-402's ToDurationRecord included, stays in the adapter.
+- **Broiler.JS, plus:** `JSIntlDefaultNumberingSystems.g.cs` and its script; and `JSIntlDateTimeFormat`'s members no
+  caller reaches (the constructor from a `CultureInfo`, `Format(DateTimeOffset, JSObject)`, `FormatEnglishHour`,
+  `FormatDayPeriod` and the `locale` field). Its public Intl types stay as the engine's Intl objects, with every public
+  member, the public static `Get(CultureInfo)` and `ApplyAllDefaults` among them (SJL-D-25, disposition (a)).
+
+The lists read as above, Broiler.VM's ending at "**at SJL-17:** `JsCollator` and `JsCollationData`" and Broiler.JS's
+at "**at SJL-17:** the `CompareInfo` path for the locales the shared data covers".
+
 ---
 
 ## 5. Corrections Broiler.JS should expect
@@ -186,6 +245,22 @@ Each correction is to be confirmed and listed:
 - `numberingSystem` in relative time;
 - the identity of the bound `format` function;
 - `numeric` and `caseFirst` in collation, at SJL-17.
+
+*(Revised 2026-10-26, at SJL-9.1, before any evidence of SJL-9 existed, by
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+decision D25.)* **Reconciled with SJL-9.5's list, which is the correspondence's column "Correction of Broiler.JS",
+row by row** (the milestone file names the rows). Read against the list above:
+- `selectRange` is two rows: both ends formatting alike, a correction (P5a), and every other range, an
+  implementation-defined adoption (P5b);
+- `DisplayNames.of` is two rows: the code's case and validation, a correction (S9), and the names, a data adoption
+  (S8);
+- the `atTime` joins and the narrow no-break space are CLDR data (C5, row T12), not corrections;
+- the order and repetition of option reads hold for Date's `toLocale*`, NumberFormat after construction, PluralRules
+  and DurationFormat's argument, and not for any constructor's option order;
+- "the `timeZone` option ignored in one parts path" was fixed on 2026-10-16 (row T28), and leaves the list;
+- the list's other items are confirmed, and the correspondence adds corrections in every sub-area.
+
+The list read as above, from "`selectRange`" to "`numeric` and `caseFirst` in collation, at SJL-17."
 
 ---
 

@@ -730,6 +730,13 @@ read the provider: today `Date` uses the host's data and `Temporal` the bundled 
 **Taken 2026-10-11, as recommended:** provider interfaces, with each engine supplying its own policy.
 **Recorded by** SJL-6's records (SJL-6.1).
 
+*(Noted 2026-10-26, at SJL-9.1.)* SJL-6's record,
+[JSD-0072](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0072-date-algorithms-move-to-the-shared-algorithms-library.md),
+defined the local-time provider and left the locale providers to SJL-9. SJL-9's area verdict,
+[JSD-0082](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+records them by its decision D7: each engine keeps its default-locale and available-locale policy, its available
+locales always include its default locale, and every reader of the default locale in an engine reads one provider.
+
 <a id="sjl-d-20"></a>
 ### SJL-D-20 — Time-zone dataset policy
 
@@ -813,7 +820,14 @@ maintainer. **Needed before** SJL-9.
 **Taken 2026-10-11: (a) with (c), as recommended.** Broiler.VM's generator, moved with its pins to
 the Broiler.JS repository ([SJL-D-1](#sjl-d-1) (b-ii)), generates the agreed locale set. Broiler.JS
 keeps a host-culture provider for the locales the shared data lacks, and Broiler.VM registers none.
-**Recorded by** SJL-9's records (SJL-9.1), which revisit JSD-0027 §4.
+**Recorded by** SJL-9's area-verdict JSD, [JSD-0082](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)
+(SJL-9.1), decided on 2026-10-26, which records it as the area applies it: Broiler.VM's generator, moved with its
+pins to the Broiler.JS repository, writes the shared data for each embedding's own list, Broiler.VM's not growing; and
+Broiler.JS's host provider answers only what .NET exposes exactly, and never throws. It revisits JSD-0027 §4, whose
+"Candidate input, not accepted" stands. Broiler.JS's `docs/roadmap/SharedLibraries.md` records the verdict in its
+section "Area verdicts", in Broiler.JS's own change.
+*(Revised 2026-10-26, at SJL-9.1. The sentence read "**Recorded by** SJL-9's records (SJL-9.1), which revisit
+JSD-0027 §4.")*
 
 <a id="sjl-d-24"></a>
 ### SJL-D-24 — Collation
@@ -836,7 +850,11 @@ collation work package.
 
 **Taken 2026-10-11: (c), as recommended.** Collation leaves SJL-9 and is shared after it, by its own
 milestone, [SJL-17](milestones/sjl-17-collation.md). Until SJL-17's cut-overs, each engine keeps its
-own. **Recorded by** SJL-9's records (SJL-9.1). SJL-17.1 files the area verdict.
+own. **Recorded by** SJL-9's area-verdict JSD, [JSD-0082](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)
+(SJL-9.1), decided on 2026-10-26: collation leaves SJL-9, the generator moves whole with its collation tables, and each
+engine keeps its own Collator until SJL-17's cut-overs. SJL-17.1 files the area verdict.
+*(Revised 2026-10-26, at SJL-9.1. The sentence read "**Recorded by** SJL-9's records (SJL-9.1). SJL-17.1 files the
+area verdict.")*
 
 <a id="sjl-d-14"></a>
 ### SJL-D-14 — Implementation base of the shared regular-expression engine, and duplicate named groups
