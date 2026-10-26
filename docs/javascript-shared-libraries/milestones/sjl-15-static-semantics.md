@@ -59,6 +59,12 @@ deterministic and free of ambient state. It is built against:
 - test262's early-error tests;
 - both engines' semantic test suites.
 
+*(Added 2026-10-26, at SJL-13.1, by [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md), decision D10.)* The model
+grows from the declarations walk SJL-13.2 begins in `Broiler.ECMAScript.Semantics`: SJL-13's syntax half already
+reports every early error either engine's parser reports at parse time, and exposes each scope's kind and
+declarations, each function's parameter names and each program's and function's strictness as side tables ordered by
+source position. SJL-15.2 adds the rest of the model to that walk; it does not start a second one.
+
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
 The binder pass of SJL-12 is replaced by the shared model, and is deleted. The lowering reads:

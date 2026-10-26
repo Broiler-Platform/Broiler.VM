@@ -339,6 +339,8 @@ Broiler.Regex references neither engine and nothing in this repository. After R1
 - **The Compiler gains a reference to Broiler.Regex for literal validation from SJL-11.4 until SJL-13** (decision
   D18). The runtime's reference replaces this family's matcher, which Format carries into every root today, the
   compiler-free ones included; Broiler.Regex brings no JavaScript front end into any of them.
+  *(Noted 2026-10-26, at SJL-13.1, by [JSD-0083](0083-the-shared-syntax-library-and-the-wide-path.md) decision D7:
+  "until SJL-13" is read as decision D18's note below reads it.)*
 
 ### X7 - owners accept
 
@@ -547,6 +549,17 @@ the grammar to Broiler.Regex. The Compiler references Broiler.Regex from SJL-11.
 on `architecture.md` section 3.1. The entry is the
 seam JSD-0080's decision D41 names for SJL-13. The reason: the compiler has no fuel; expansions are compilation's; one
 parser keeps "the two cannot disagree".
+
+*(Noted 2026-10-26, at SJL-13.1, by [JSD-0083](0083-the-shared-syntax-library-and-the-wide-path.md) decision D7.)*
+The seam SJL-13 builds is a validator interface in the shared frontend's request, with **no package edge** from the
+frontend to Broiler.Regex. From SJL-13's step 1 the binder's `CheckRegExp` leaves for that provider, which this
+family's compiler implements over the validator `CheckRegExp` calls, Broiler.Regex's validate entry once SJL-11.4 has
+landed, keeping this family's code and the literal's span. So "The Compiler references Broiler.Regex from SJL-11.4
+**until SJL-13**" and X5's "from SJL-11.4 until SJL-13" are read as: until the frontend's own edge to Broiler.Regex,
+which is decided at SJL-15.1, and only if SJL-11.4 and SJL-11.5 have both landed; meanwhile the compiler's reference
+stays, for the provider. If SJL-13's step 1 lands before SJL-11.4, SJL-11.4 re-points the provider's implementation
+instead of `CheckRegExp`, and SJL-11's rule here is revised by a new dated file before any of its runs (JSD-0083
+decision D36).
 
 **Decision D19 - the measurements.** A predeclared part of template T5 in each engine's rule, judged and recorded;
 **not a gate clause**. A NOT MET is recorded in the cut-over JSD as "a slower but bounded matcher", the trade
