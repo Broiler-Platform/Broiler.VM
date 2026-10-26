@@ -31,7 +31,7 @@ names is held by one person (EX-30), and this rule does not claim that anyone in
   other build, test or run on it while a run of this bundle is taken.
 - **This family's tables do not move.** Rule N28 holds `src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs` byte
   for byte at both commits. Its CLDR release is 48.2.0, as `src/tests/cldr/pins/cldr.pin` pins it (rule N27). Its
-  locales stay `de`, `de-DE`, `en` and `en-US` (JSD-0082 decision D5). Its test262 pin is `ccaac100`.
+  locales stay `de`, `de-DE`, `en`, `en-US` and `und` (JSD-0082 decision D5). Its test262 pin is `ccaac100`.
 - **This family has three corrections in this area, rows Z8, L18 and L9** (JSD-0082 decisions D15 and D32). They are
   the rows the correspondence puts in its column "Correction of Broiler.VM", and SJL-9.4's cut-over makes all three.
   - **Z8.** The formatter reports a time-zone identifier as given, case-normalised, as
