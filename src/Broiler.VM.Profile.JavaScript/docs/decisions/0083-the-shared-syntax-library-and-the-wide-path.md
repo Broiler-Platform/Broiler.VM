@@ -504,17 +504,17 @@ shared between Broiler.VM's profiles or placed in the core, and SJL-D-8 records 
 The reason: this is the first library that is literally a shared parser, and the verdict must not leave the reading
 implicit.
 
-**Decision D39 - stale statements corrected at SJL-13.1** *(revised 2026-10-26, finding F31)*. The records this
-change corrects, each by a dated note quoting what it replaces: roadmap sections 4, 5, 10 and 11; `areas/frontend.md`
-section 3; `architecture.md` sections 2 and 3.1; governance section 8; the programme README's status and its line on
+**Decision D39 - stale statements corrected at SJL-13.1** *(revised 2026-10-26, finding F31)*. The records this change
+corrects, each by a dated note quoting what it replaces: roadmap sections 4, 5, 10 and 11; `areas/frontend.md` section
+3; `architecture.md` sections 2 and 3.1; governance section 8; the programme README's status and its line on
 Broiler.JS's `FrontEnd/Semantics` boundary; JSD-0081's decision D18; **JSD-0071's "What stays"**
-(`JsParser.IsWellFormed`, EE0178's check, moves to the library at step 1 with EE0178's code, not to SJL-15); **SJL-13's
-milestone's "Does not do"** ("It does not share the static semantics", read with decisions D10 and D20: the
+(`JsParser.IsWellFormed`, EE0178's check, moves to the library at step 1 with EE0178's code, not to SJL-15);
+**SJL-13's milestone's "Does not do"** ("It does not share the static semantics", read with decisions D10 and D20: the
 parse-time early errors and their declarations walk are SJL-13's, and the binder keeps only its `semantics` checks;
-added after review); JS-2's "Next action" (JSC-320); and, in Broiler.JS's change, its status row and `design.md`. The reason: update rule 1; each
-would mislead SJL-13's executors. The plan's text ended "`README.md:3`, `:191`; JSD-0081 D18; JS-2's "Next action"
-(JSC); Broiler.JS's status row and `design.md`." JSD-0071 assigns `JsParser.IsWellFormed` to SJL-15, but step 1
-deletes `JsParser` and EE0178 is a `syntax` row both parsers refuse (hand-off H11).
+added after review); JS-2's "Next action" (JSC-320); and, in Broiler.JS's change, its status row and `design.md`. The
+reason: update rule 1; each would mislead SJL-13's executors. The plan's text ended "`README.md:3`, `:191`; JSD-0081
+D18; JS-2's "Next action" (JSC); Broiler.JS's status row and `design.md`." JSD-0071 assigns `JsParser.IsWellFormed` to
+SJL-15, but step 1 deletes `JsParser` and EE0178 is a `syntax` row both parsers refuse (hand-off H11).
 
 ### The library
 
@@ -628,9 +628,9 @@ ended at "(`Test262Families`, `SourceFrontEndChecks`)." (finding F7).
 
 **Decision D14 - the limits** *(revised 2026-10-26, finding F18)*. **The tree-depth constant is derived at SJL-13.2e
 as JSD-0022 derived this family's**, with the stack it requires stated beside it; **the derivation must admit this
-family's bound on the stack `CompilationStack` declares**; if it cannot, the library is reworked (explicit stacks), not
-the bound lowered. `SliceParseOptions.MaximumTreeDepth` stays, equal to the library's (a test holds the equality), so
-rule N19's text checks stand. The nesting depth stays a parameter with each engine's default (this family's
+family's bound on the stack `CompilationStack` declares**; if it cannot, the library is reworked (explicit stacks),
+not the bound lowered. `SliceParseOptions.MaximumTreeDepth` stays, equal to the library's (a test holds the equality),
+so rule N19's text checks stand. The nesting depth stays a parameter with each engine's default (this family's
 `DefaultMaximumNestingDepth` and `MaximumSupportedNestingDepth`). **The left-operand gap is closed in the library in
 all four shapes the base compiles past the bound**: a binary chain whose first operand is a parenthesised chain, a
 template whose substitution holds one, a binary chain whose first operand is a member or call chain, and a member or
@@ -639,12 +639,12 @@ tree depth is charged as `JsParser.Deepen` charges it, one level for each node a
 chain adds, and none for a parenthesis, a template or a substitution; and a left operand's spine adds its own length
 to the chain it begins, so a chain of `a` nodes as the left operand of a chain of `b` nodes is charged `a + b`. Each
 refusal is an implementation limit (bundle `sjl-13-001`'s part B class L and part A's C3, the home's outcome L), never
-a correction (part B's class F and part A's kind (F) list none of them). The specification sets no depth limit and the base loses no process on any of them,
-so what the gap costs at the base is depth accounting, not robustness. The reason: JSD-0080's decision D27; rule N19
-reads the constant's text; a lower bound would move refusals with no class; bundle `sjl-12-001` carried the gap here,
-and keeping it would put a known hole in a shared library. The plan's text read: "**The left-operand gap is closed in
-the library** (class L; part C's fifth row)." The correspondence's row R14 found two shapes besides the two bundle
-`sjl-12-001` records (finding F18).
+a correction (part B's class F and part A's kind (F) list none of them). The specification sets no depth limit and the
+base loses no process on any of them, so what the gap costs at the base is depth accounting, not robustness. The
+reason: JSD-0080's decision D27; rule N19 reads the constant's text; a lower bound would move refusals with no class;
+bundle `sjl-12-001` carried the gap here, and keeping it would put a known hole in a shared library. The plan's text
+read: "**The left-operand gap is closed in the library** (class L; part C's fifth row)." The correspondence's row R14
+found two shapes besides the two bundle `sjl-12-001` records (finding F18).
 
 **Decision D15 - positions and anchors** *(revised 2026-10-26, findings F10, F11 and F12)*.
 - **Units.** Offsets are 0-based indices in UTF-16 code units; lines and columns are 1-based, columns in UTF-16 code
@@ -727,7 +727,8 @@ the rows the mapping found, and the non-language splits EX0013, EX0020, EX0024, 
   passes on the branch.
 - **The other codes the mapping marks `split` at sites that serve several rules** (`JsParser`'s
   `ValidateDeclaredNames`, `Expect`, `BindingName`, `ParsePrimary`, `ParseObjectEntry`, `ParseObjectBindingPattern`
-  and `TryParseArrow` sites, for EE0087, EE0155, EE0168 and EX0008; and the binder's `Declares` check, which reports EE0168 and EE0169 at no place)
+  and `TryParseArrow` sites, for EE0087, EE0155, EE0168 and EX0008; and the binder's `Declares` check, which reports
+  EE0168 and EE0169 at no place)
   are consolidated by the library's emission at the after commit, the binder's place with them; part B's class R2
   names them. **At an arrow head whose cover does not cover its parameters, the library reports EE0087 (EE0155 for an
   async arrow head)**: it parses the head as the cover and refuses the conversion with the cover's rule, where
