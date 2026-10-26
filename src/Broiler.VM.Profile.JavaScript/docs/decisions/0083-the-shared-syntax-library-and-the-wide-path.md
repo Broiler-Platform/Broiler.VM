@@ -777,8 +777,8 @@ family's public options (N10, I6): the compiler maps it internally onto the requ
 strictness and the function context, and the rest reach the request as the inherited context; top-level `await`
 reaches it from the module options, as today. **The visible private names are not passed at SJL-13**: the request's
 private-name set is absent, which leaves an eval program's undeclared private name to the executor's run-time check.
-**The caller's lexical names**, which JSD-0080's request lists for Broiler.JS's direct `eval`, are absent from the
-request at SJL-13 and SJL-14: the conflict they serve is EvalDeclarationInstantiation's, a run-time SyntaxError each
+**The caller's lexical names**, which JSD-0080's request lists for Broiler.JS's direct `eval`, are left out of
+the request at SJL-13 and SJL-14: the conflict they serve is EvalDeclarationInstantiation's, a run-time SyntaxError each
 engine raises today (row R28), until SJL-15's model; the home's rule lists the field as absent with this reason. The
 reason: no public shared type in this family (I6). Eval's private names are checked by the executor at run time today,
 so passing them would move a run-time check to parse time, a behaviour change the model may take at SJL-15 as a
