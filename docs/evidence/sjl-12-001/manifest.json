@@ -2,7 +2,7 @@
   "bundle": "sjl-12-001",
   "milestone": "SJL-12",
   "evidence-class": "conformance-parity-and-artifact-identity-and-determinism-and-rules-and-record-consistency",
-  "collected-at": "38775cda37c06f540ffdb2a269dd92ed388b17bb",
+  "collected-at": "0638f75f513d5e8edbd48791415ffe1a9af84d8c",
   "worktree-clean": true,
   "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
   "note": "Broiler.VM's bundle for SJL-12: the rule (decision-rule-area.md, unchanged since the rule commit 889ea1568f59bf37aa21c0035b423d0d030eb87f), the bases at the rule commit (base/hosted/) and the corpus commit 865b69b9ede430d5a548e5b97b85e5a7b5e1aed4 (base/), part B's run at the ordering commit 066abefea4351fb49bd8bf8e823fbdc7aac560de (after/ordering/), and the after evidence at the after commit 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f (source-revision): part A's hosted after dispatch (after/hosted/) and its (c') and (e) re-runs at both commits, part B's and part C's runs, part C's controls (controls/), part D's rule runs at the after commit (after/rules-after/) and the rule commit (base/rules-rule-commit/), and part E's checker output. Each folder is hashed by its own hashes.txt, which inputs names; the files under the folders are not listed here one by one. The README says what each file demonstrates and judges every part; collected-at is the commit that holds the evidence files, and the README and this manifest are committed on top of it.",
@@ -24,16 +24,16 @@
     "src/tests/corpus/parse-1/corpus.manifest": "2419aa2aabda30a9d3ca9aa703d38c6455859441"
   },
   "inputs": {
-    "docs/evidence/sjl-12-001/after/hashes.txt": "17c7e8417b96f7e66eb19c73c66983403474af9cd20b1ad3673e4ed747a324c6",
+    "docs/evidence/sjl-12-001/after/hashes.txt": "63f024df3527dcbd919eebcf34fef371091d1f8fba731276a826f924ae62ee29",
     "docs/evidence/sjl-12-001/after/hosted/hashes.txt": "4c64fb276971b0963000cc601818f06385e8f4a1cb96e1eb319d96afad0cee62",
     "docs/evidence/sjl-12-001/base/hashes.txt": "ab807d6610abf5cfdea74b86ee9c98dd7b2b5eca78120aecb9db5914425268aa",
     "docs/evidence/sjl-12-001/base/hosted/hashes.txt": "3df86f957c33f85e0f3040a65d692d011d5b25ff91bf086999c3685f2c09346d",
     "docs/evidence/sjl-12-001/base/rules-rule-commit/hashes.txt": "0388000f98b4018f776693751f1ceb5439b484dd99d853254e9f35ec55182201",
-    "docs/evidence/sjl-12-001/controls/hashes.txt": "30650670e6b2425b8e4c3700bea5398541ee81a5f53474430e90040b79a12d58",
+    "docs/evidence/sjl-12-001/controls/hashes.txt": "36f564043a5df3e1e73a7f65de65bad31f8378eaa5fd8f7f66472c11f4e1ebc4",
     "docs/evidence/sjl-12-001/corpus/hashes.txt": "2cf12b0db0311a9b155d3bc84ec2fca23cc0cc0189c3c68c253f14f3e93e746e"
   },
   "retained": {
-    "README.md": "716961415fdd3fe65f070561eee7f41ec4958836dd4f1b808deaa38c57b6cc95",
+    "README.md": "4fd0e3338b6d4116108f5d7210c3d95c875b7bc94a02cbf606308c08438b3214",
     "decision-rule-area.md": "7c44a8e206cf1ad87173b4bad5d3ce4652fe0398c064a52cc6871bd96d4091d3"
   }
 }

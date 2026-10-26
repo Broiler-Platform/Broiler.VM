@@ -43,6 +43,12 @@ still.
 findings against JSD-0080 where they bear, and closes or carries section 3's records. SJL-12 is not met by this
 bundle: its gate waits on SJL-3's exit, and Broiler.JS's clauses are judged in Broiler.JS's bundle.
 
+*(Added 2026-10-26, after the after evidence was first committed.)* "A collector joins this bundle when there is a
+run to take" was true when it was written. No collector took the after runs either. Part A's after dispatch was
+imported by hand, as [`after/hosted/imported.txt`](after/hosted/imported.txt) records, and the local after steps were
+taken by the driver scripts in [`after/after-commit/scripts/`](after/after-commit/scripts/), whose every command is in
+[`after/after-commit/commands.txt`](after/after-commit/commands.txt).
+
 **SJL-12 is not an area verdict.** It applies no extraction gate and files no X1 to X7 verdict. The frontend area's
 verdict is SJL-13.1's (JSD-0080 decision D1).
 
@@ -69,6 +75,8 @@ Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name. This bu
   `1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f`, the default-branch merge of Broiler.VM#167, which lands SJL-12.6
   item 4, the last of its four items. Items 1 and 2 landed between the two, in `3fa4b39` (Broiler.VM#165) and
   `daa92eb` (Broiler.VM#166). No run has been taken at the after commit.
+  *(Added 2026-10-26, after the after evidence was first committed.)* "No run has been taken at the after commit"
+  was true when it was written. The after runs were taken on 2026-10-25 and 2026-10-26, and section 6 reads them.
 
 **The rule has five parts**, each deciding alone.
 - **Part A** takes test262 in both forms with the hosted workflow, at the rule commit and at the after commit
@@ -143,14 +151,18 @@ run's pattern:
   commit.
 - **`base/rules-rule-commit/`** holds part D's runs at the rule commit, read and not judged, which the `base/`
   bullet above places in `base/`. It is added; no file `base/` held is changed.
-- **`controls/`** gains part C's patches K1 and K2, their checks and comparisons, their revert checks and the
-  reverted copy's checks, with every run's log in `controls/logs/`. Part E's control copies made at the after
-  commit are byte for byte the ones `controls/` already held, so none is added.
+- **`controls/`** gains part C's patches K1 and K2, the parse-corpus reports of the patched builds, their checks and
+  comparisons, their revert checks and the reverted copy's checks, with every run's log in `controls/logs/`. Part
+  E's control copies made at the after commit are byte for byte the ones `controls/` already held, so none is added.
 
-`after/hashes.txt` is now the SHA-256 of every file of `after/` but `after/hosted/`, which has its own, as
-`base/hashes.txt` leaves out `base/hosted/`. `controls/hashes.txt` covers every file of `controls/`, with
-`controls/logs/`, and `base/rules-rule-commit/hashes.txt` every file of its folder. In each, `sha256sum -c
-hashes.txt`, run in the folder, passes. What the import changed, and what it left out, is in section 6.
+"[`after/hashes.txt`](after/hashes.txt) is the SHA-256 of every other file of `after/`, with `after/ordering/`" was
+true when it was written. `after/hashes.txt` is now the SHA-256 of every file of `after/` but `after/hosted/`, which
+has its own, as `base/hashes.txt` leaves out `base/hosted/`. "The SHA-256 of every other file of the folder (for
+`base/`, with `base/logs/` and without `base/hosted/`)" was true of `base/hashes.txt` when it was written. That file
+is unchanged, so it now also leaves out `base/rules-rule-commit/`, which has its own. `controls/hashes.txt` covers
+every file of `controls/`, with `controls/logs/`, and `base/rules-rule-commit/hashes.txt` every file of its folder.
+In each, `sha256sum -c hashes.txt`, run in the folder, passes. What the import changed, and what it left out, is in
+section 6.
 
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
@@ -503,6 +515,9 @@ each base with a run at the ordering commit or the after commit, and neither com
 
 *(Added 2026-10-20.)* The words "neither commit exists yet" were true when this section was written. The ordering
 commit now exists, and section 5 reads part B's run there. The after commit does not exist yet.
+*(Added 2026-10-26, after the after evidence was first committed.)* "The after commit does not exist yet" was true
+when it was written. It is `1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f` (section 1), and section 6 reads the after
+runs taken at it.
 
 | Part | Commit | Taken | Retained in |
 |---|---|---|---|
@@ -770,9 +785,10 @@ them at the after commit. No other part runs at the ordering commit.
 **Retained and checked.** [`after/hashes.txt`](after/hashes.txt) holds the SHA-256 of every other file of `after/`,
 with `after/ordering/`, and `sha256sum -c hashes.txt`, run in the folder, passes. Of the logs, `driver.log` alone was
 trimmed, of the progress segments `git worktree add` wrote, as [`commands.txt`](after/ordering/commands.txt) records
-with the untrimmed file's SHA-256. *(Added 2026-10-26.)* `after/hashes.txt` now also covers the after commit's
-files, and leaves out `after/hosted/`, which has its own (section 2's note of 2026-10-26). Every line it held for
-this section's files is unchanged.
+with the untrimmed file's SHA-256. *(Added 2026-10-26.)* "[`after/hashes.txt`](after/hashes.txt) holds the
+SHA-256 of every other file of `after/`, with `after/ordering/`" was true when it was written. `after/hashes.txt` now
+also covers the after commit's files, and leaves out `after/hosted/`, which has its own (section 2's note of
+2026-10-26). Every line it held for this section's files is unchanged.
 
 ## 6. The after runs (2026-10-26)
 
@@ -809,7 +825,9 @@ in [`logs/runs.tsv`](after/after-commit/logs/runs.tsv), its standard output and 
 - **The artifact** `test262-evidence` is retained unchanged in [`after/hosted/`](after/hosted/), the same 54 files
   `base/hosted/` holds. `imported.txt` records the run, its dispatch time and ref, its inputs, the artifact's id and
   the digest of the zip as downloaded, `9ac18695...46b7fb`, which is the digest GitHub records for it. The zip,
-  extracted afresh, matches the files as retained ([`after/hosted-check.txt`](after/hosted-check.txt)), and
+  extracted afresh, equals the extraction the after steps read, `diff -r` finding nothing different
+  ([`after/hosted-check.txt`](after/hosted-check.txt)). `imported.txt` records that the folder holds the zip's every
+  file unchanged, `diff -r` against its extraction finding none different, with only itself and `hashes.txt` added.
   `sha256sum -c hashes.txt`, run in the folder, passes.
 - **The runners' images, recorded and not judged.** Every runner and the merging job ran image `ubuntu26`
   20261023.163.3 with SDK 10.0.403. At the base they ran `ubuntu24` images with SDK 10.0.402 (section 4). The rule
@@ -817,10 +835,12 @@ in [`logs/runs.tsv`](after/after-commit/logs/runs.tsv), its standard output and 
 
 ### The local steps
 
-- **The machine** is the one the rule's header names and the bases were taken on: four processors, .NET SDK
-  10.0.401, Ubuntu 24.04.5 LTS, `linux-x64` ([`after/after-commit/machine.txt`](after/after-commit/machine.txt)).
-  Two things are recorded and not judged: the kernel's build string, which the bases' records give differently, and
-  that the machine had been started a few minutes before the steps began.
+- **The machine** has the processor count, the SDK and the operating system by which the rule's header names it, the
+  same as the bases' records give: four processors, .NET SDK 10.0.401, Ubuntu 24.04.5 LTS, `linux-x64`
+  ([`after/after-commit/machine.txt`](after/after-commit/machine.txt)). The records show those attributes, not that
+  it is the same machine, and `machine.txt`'s "the one base/machine.txt and after/ordering/machine.txt name" is read
+  that way. Two things are recorded and not judged: its kernel build string differs (`fc-v153` against the bases'
+  `fc-v139`), and the machine had been started a few minutes before the steps began.
 - **The idle machine.** WP4.7's gate, with only its folder changed, ran before every build and every run: a
   one-minute load average of at most 1.0 and no `dotnet` or `python` process
   ([`gate.log`](after/after-commit/logs/gate.log), [`pre-run.txt`](after/after-commit/logs/pre-run.txt)). The gates
@@ -851,8 +871,11 @@ recorded at the end of [`commands.txt`](after/after-commit/commands.txt), with t
 - **Scratch paths.** The session's scratch directory is written `<scratch>`, as bundle `sjl-10-001`'s comparison
   logs write it, in part A's two comparisons and the re-runs' comparisons, in `hosted-check.txt`, in the two logs that
   name the decompressed reports and the extracted archive, in part E's checker output and in its two controls'
-  standard output. The commands, the driver scripts, the build logs and part D's test logs, TRX files and rule
-  messages keep it, as `base/` and `after/ordering/` keep it in their commands and build logs.
+  standard output. The commands, the driver scripts and the build logs keep it, as `base/` and `after/ordering/` keep
+  it in their commands and build logs. Part D's test logs, TRX files and rule messages keep it as the tools wrote
+  them, as the records section of `commands.txt` says. Bundles [`vm-2`](../vm-2/test.log) and
+  [`vm-3`](../vm-3/test.log) keep the local paths their builds printed in their `test.log`, and bundle `vm-5-002`
+  keeps a local path in its TRX files ([`r2/e13/t6-trx/`](../vm-5-002/r2/e13/t6-trx/)).
 - **Part E's `$` lines.** The four `$` lines for the two controls in
   [`after/part-e-checker-runs.txt`](after/part-e-checker-runs.txt) named the copies as `controls/...`. The commands
   run named them in the scratch folder, as the checker's own first line says. They are corrected, with a dated note.
@@ -861,17 +884,24 @@ recorded at the end of [`commands.txt`](after/after-commit/commands.txt), with t
   after any of its three builds. The patches, taken with `git diff` while each was applied, and the revert checks fix
   what each build compiled.
 - **Not imported.** The runner's own report to the records step, which is an account and not a record of a run;
-  the runner's per-folder `hashes.txt` files, replaced by the three named in section 2; and the four reports of the
-  patched builds, which are named by SHA-256 in
-  [`controls/k-reports-not-retained.txt`](controls/k-reports-not-retained.txt) and not retained, for size. What
-  decides each control, the comparison outputs and the checks, is retained.
-- **Two sentences of the runner's report, corrected here**, because section 7 relies on what that report says of
-  part D. "The failing tests (B3, B5, B5c, N10, U2, U9, W2 and X2)" named the two commits' failures together. Part
-  D's first run at the after commit failed tests of rules B5, B5c, U2, U9 and W2 alone; at the rule commit it also
-  failed tests of B3, N10 and X2. The after commit's checkout already held the slice compiler's build, from part B,
-  and the rule commit's was fresh. And "the 12 tests of N5 to N9, N12 and N19" are every test of
-  `DiagnosticRegistryRuleTests.cs` and `CompilationStackRuleTests.cs`, among them N11's test and the two tests that
-  write rule messages, beside the seven rules' own.
+  and the runner's per-folder `hashes.txt` files, replaced by the three named in section 2. `commands.txt` names
+  each by the SHA-256 it had.
+- **Part C's control reports.** *(Added 2026-10-26, after the after evidence was first committed.)* The bullet above
+  first also left out "the four reports of the patched builds, which are named by SHA-256 in
+  `controls/k-reports-not-retained.txt` and not retained, for size". That was a reading of the rule's "retained with
+  their output", made after the runs, which section 8 did not list, and it broke section 2's "part C's patches K1 and
+  K2 with their output". It is withdrawn. The four reports are retained in
+  [`controls/`](controls/), byte for byte as the runs wrote them and under the SHA-256 that file gave, at the paths
+  the comparison outputs name: `k1-parse-corpus.tsv.gz`, and `k2-parse-corpus-run1.tsv.gz` to `-run3.tsv.gz`.
+  K2's could not have been made again, because K2 draws its order from an unseeded source. The file that named them
+  is removed, and `commands.txt` records the import.
+- **Two sentences of the runner's report, corrected here**, because the bundle states part D's failures from the
+  retained test logs and TRX files, and not from that report. "The failing tests (B3, B5, B5c, N10, U2, U9, W2 and
+  X2)" named the two commits' failures together. Part D's first run at the after commit failed tests of rules B5,
+  B5c, U2, U9 and W2 alone; at the rule commit it also failed tests of B3, N10 and X2. The after commit's checkout
+  already held the slice compiler's build, from part B, and the rule commit's was fresh. And "the 12 tests of N5 to
+  N9, N12 and N19" are every test of `DiagnosticRegistryRuleTests.cs` and `CompilationStackRuleTests.cs`, among them
+  N11's test and the two tests that write rule messages, beside the seven rules' own.
 
 **The manifest.** [`manifest.json`](manifest.json) is written by `eng/ubc-bundle-manifest.py`, as bundle `sjl-3-001`'s
 was, with this README and the rule as its retained files, every folder's `hashes.txt` as its inputs, and the tools and
@@ -893,7 +923,8 @@ the tree as unclean; staging the README avoids that, and the manifest says `work
 **Written 2026-10-26, at SJL-12.7.** Each part decides alone, on its own rule, from the files named with it, and no
 part reads another's verdict. Section 3's readings, named before the runs, are applied as they were named. Where a
 row or a run turns on the rule's words and no reading of section 3 covers it, this section quotes the words and says
-how it reads them; section 8 lists each such reading as made after the runs.
+how it reads them; section 8 lists each such reading, and says which were formed before the runs outside this
+bundle.
 
 | Part | Verdict | What it reads |
 |---|---|---|
@@ -1029,8 +1060,8 @@ behind it. A `?` in the script's shape is not a class: each row was read against
 
 | Group | Rows | Inputs | Where | Base list | After list | Class | JSD-0080 |
 |---|---|---|---|---|---|---|---|
-| 1 | 1,716 | 132, under `test/language/{expressions,statements}/class/elements/syntax/early-errors/delete/` | B1 (both variants, both forms), B2 (both variants), B3 under E0 to E6 | a 2205 at the `delete` | the same 2205, then a 2206 at the `delete`'s operand | **S4** | decision D12, SJL-12.6 item 2 |
-| 2 | 24 | 24, under `test/language/expressions/{compound-assignment,logical-assignment,postfix-*,prefix-*}/` | B3 under E6 alone, bytecode | 2206 at 0:0, twice | 2206 at 0:0, once | **S2** | decisions D11 and D12, SJL-12.6 item 2 |
+| 1 | 1,716 | under `test/language/{expressions,statements}/class/elements/syntax/early-errors/delete/` | B1 (both variants, both forms), B2 (both variants), B3 under E0 to E6 | a 2205 at the `delete` | the same 2205, then a 2206 at the `delete`'s operand | **S4** | decision D12, SJL-12.6 item 2 |
+| 2 | 24 | under `test/language/expressions/{compound-assignment,logical-assignment,postfix-*,prefix-*}/`, one row each | B3 under E6 alone, bytecode | 2206 at 0:0, twice | 2206 at 0:0, once | **S2** | decisions D11 and D12, SJL-12.6 item 2 |
 
 - **Group 1 is S4**, "an early error after that the base did not report, because the lowering left a construct after
   its first refusal in it, with a code the binder pass reports".
@@ -1039,18 +1070,23 @@ behind it. A `?` in the script's shape is not a class: each row was read against
     reference, which this family codes 2205, and a private name no class declares, coded 2206.
   - At the corpus commit the lowering refused the `delete` with 2205 and emitted `true`, and lowered nothing of the
     operand (`JsCompiler.Operators.cs`'s `delete o.#x` arm). So it never resolved `#m`, which is where it reported
-    2206 (`JsCompiler.Classes.cs`). That is "a construct after its first refusal" the lowering left.
+    2206 (`JsCompiler.Classes.cs`). That is "a construct after its first refusal" the lowering left. JSD-0080's
+    Context, written before any change, names the artefact: "The lowering also stops a construct at its first
+    refusal, so a later early error in it is not reported." Item 2's commit `abe10d4` read S4 the same way on
+    2026-10-21, before any after run, for an early error in the value of a static block's refused `return`.
   - At the after commit the binder reports the 2205 and walks on into the operand, where its private-name check
     reports the 2206 (`JsBinder.Walks.cs`, `JsBinder.EarlyErrors.cs`). 2206 is a code the binder pass reports.
   - The classifier checks, for each row, that the 2205 is at the `delete`, that the 2206 is at the operand's first
     token after the `delete` and its parentheses, that `#m` appears once in the input's code, and that the input
     holds no template literal, so the new entry cannot be the parser's (section 3's edge 1).
-  - Three things corroborate it. The other 60 inputs of those directories delete a private name their class
-    declares, and none of them differs. Under E7, where eval code may read its caller's class's private names, the
-    same inputs keep the 2205 alone at both commits, and do not differ. And where the operand is a call's private
-    member, `g().#m`, the slice front end, which B4 compares, reports a 2206 at the same place at both commits.
+  - Three things corroborate it. The other inputs the manifest lists under those directories delete a private name
+    their class declares, and none of them differs. Under E7, where eval code may read its caller's class's private
+    names, the same inputs keep the 2205 alone at both commits, and do not differ. And where the operand is a call's
+    private member, `g().#m`, the slice front end, which B4 compares, reports a 2206 at the same place at both
+    commits.
   - The class's name says "with the same codes", and S4 adds a code. S4's own words admit an early error the base
-    did not report; the name says that no code is renumbered (decision D12, "with their codes unchanged").
+    did not report; the name is read as saying that no code is renumbered (decision D12, "They move with their codes
+    unchanged"). Section 8 lists this reading.
 - **Group 2 is S2**, "a diagnostic the base repeated at one position, because a finally block or another construct
   was lowered more than once, appears once after".
   - Each input names `arguments` once, as the target of a compound assignment (`arguments += 20` and its ten
@@ -1100,8 +1136,18 @@ after commit, and both controls fail as stated and pass after their revert."
   after commit, both exit 0 ([`k1-revert-check.txt`](controls/k1-revert-check.txt),
   [`k2-revert-check.txt`](controls/k2-revert-check.txt)). **Both pass after their revert**: the reverted copy, rebuilt,
   passes every checks row, both named rows among them
-  ([`k-reverted-checks-named-rows.txt`](controls/k-reverted-checks-named-rows.txt)).
-- The patched builds' reports are not retained (section 6); the comparisons above, which decide each control, are.
+  ([`k-reverted-checks-named-rows.txt`](controls/k-reverted-checks-named-rows.txt)). Only the checks rows were run
+  again on the reverted build. The comparison half of each control is read as passing after the revert from the
+  after commit's own runs, and this is a reading: the revert checks make the reverted tree the after commit's, and
+  that commit's run 1 shows no byte difference against the base (part B) and its runs 1 to 3 give one hash for every
+  compilation of this part's population (above).
+- The patched builds' reports are retained beside the comparisons that read them
+  ([`k1-parse-corpus.tsv.gz`](controls/k1-parse-corpus.tsv.gz),
+  [`k2-parse-corpus-run1.tsv.gz`](controls/k2-parse-corpus-run1.tsv.gz),
+  [`-run2`](controls/k2-parse-corpus-run2.tsv.gz), [`-run3`](controls/k2-parse-corpus-run3.tsv.gz)).
+  *(Added 2026-10-26, after the after evidence was first committed.)* This bullet first read "The patched builds'
+  reports are not retained (section 6); the comparisons above, which decide each control, are." Section 6 says why
+  that is withdrawn.
 
 The checks rows are stage JSB-1's standing check, and this part does not complete JSB-1 (part C's "How it is read";
 section 8).
@@ -1135,10 +1181,12 @@ clean checkout of the after commit". It was run twice at each commit, both times
 - **Every witness they name is refused.** Each of the seven register rows names a witness, and each rule's test reads
   its witness and asserts that the rule refuses it (`DiagnosticRegistryRuleTests.cs` for N5 to N9 and N12,
   `CompilationStackRuleTests.cs` for N19). Those tests pass.
-- **N12 counts the compiler assembly's files**, 54 at the after commit where the corpus commit's test counted 51,
-  with a dated comment naming each of the three files SJL-12.6 added: `JsBinder.cs` and `JsBinder.Walks.cs`, item 1,
-  and `JsBinder.EarlyErrors.cs`, item 2. They are the only files `git diff --name-status` adds to the compiler
-  assembly between the corpus commit and the after commit.
+- **N12 counts the compiler assembly's files**: `N12_The_Front_End_Holds_No_State_That_Outlives_A_Call` in
+  `DiagnosticRegistryRuleTests.cs` asserts `Assert.Equal(54, lowering.Length)` at the after commit where the corpus
+  commit's asserts `Assert.Equal(51, lowering.Length)`, and passes in run 2, with a dated comment naming each of the
+  three files SJL-12.6 added: `JsBinder.cs` and `JsBinder.Walks.cs`, item 1, and `JsBinder.EarlyErrors.cs`, item 2.
+  They are the only files `git diff --name-status` adds to the compiler assembly between the corpus commit and the
+  after commit.
 - **Both checks rows pass**: "the binder walks a tree at the tree-depth bound" and "template: nesting counts toward
   the nesting bound, and past it is refused with 2103" read `ok`
   ([`after/checks-after-named-rows.txt`](after/checks-after-named-rows.txt)).
@@ -1192,8 +1240,9 @@ ledger comes to read JSB-1, or the decision names another judge.
   held the file unchanged between the corpus commit and the after commit, and the after runs are now taken under it.
   Correcting the remark is a change to a product path, which this records step does not make; a later change
   corrects it.
-- **The structured mode's memory**: **closed.** No part reads memory and the after runs measured none. The property
-  stays recorded where section 3 found it, `SliceTokenizer`'s remarks.
+- **The structured mode's memory**: **closed.** No part reads memory; the runs' peak RSS is a record
+  ([`logs/runs.tsv`](after/after-commit/logs/runs.tsv)) and is judged by nothing. The property stays recorded where
+  section 3 found it, `SliceTokenizer`'s remarks.
 - **The parser's left-operand gap**: **carried to SJL-13**, which derives the shared front end's tree depth. Part D's
   row "the binder walks a tree at the tree-depth bound" passes at the after commit, and does not hold the gap.
 
@@ -1203,20 +1252,44 @@ ledger comes to read JSB-1, or the decision names another judge.
 - **What part C's checks row compiles**: **closed.** JSC-319 records how the row reads its corpora, and the row passes
   at the after commit.
 
-**Readings this section 7 made after the runs**, each of the rule's own words, none revising them, and none named
-in section 3 because no row or run had raised it:
+**Readings section 7 wrote into this bundle after the runs**, each of the rule's own words, none revising them, and
+none named in section 3. Part B's were applied before the runs, outside this bundle, as each says; the others were
+made after them:
 - **Part A, the (c') re-runs' processes**: "one process of the conformance root over the row's path" is read as one
   process per path, which runs that path's two variants and nothing else. Earlier bundles read the same words more
   loosely; this reading keeps closer to them.
 - **Part B, S4**: the `delete`'s operand, which the lowering did not lower after it refused the `delete`, is read as
-  "a construct after its first refusal" the lowering left.
+  "a construct after its first refusal" the lowering left. JSD-0080's Context says it of the lowering before any
+  change: "The lowering also stops a construct at its first refusal, so a later early error in it is not reported."
+  Item 2's commit `abe10d4` (2026-10-21) read S4 the same way, for an early error in the value of a static block's
+  refused `return`: `class A { static { return /(/; } }` gives `[2207@1:20, 2101@1:27]`.
 - **Part B, S2**: a reference the lowering emitted as a read and a write is read as "another construct" lowered more
-  than once. Item 2's commit `fb4ae27` read it the same way before any after run.
+  than once. Item 2's commit `fb4ae27` (2026-10-21) read it the same way, and the binder's remark on `Referenced` in
+  `JsBinder.EarlyErrors.cs` says so at the after commit.
+- **Part B, class S's name**: "a refusal that moved stage with the same codes" is read as saying that no code is
+  renumbered, so the code S4 adds is within it. Decision D12 says "They move with their codes unchanged", and S4's
+  own words admit "an early error after that the base did not report". Both were written on 2026-10-19. Item 2's
+  classification of these rows as S4, before the runs, applied the reading without stating it.
+- **Part C, the comparison half of each control after its revert**: only the checks rows were run again on the
+  reverted build. The comparisons are read as passing after the revert from the after commit's own runs, because the
+  revert checks make the reverted tree the after commit's (section 7).
 - **Part D**: the run after a build of the solution is read as the rule's "dotnet test of
   Broiler.VM.Architecture.Tests", as bundle `sjl-3-001`'s collector runs it; the verdict is the same on either run.
 
-Had either reading of part B gone the other way, its rows would be unclassified and part B NOT MET; the reading of
-part D and of part A's processes changes no verdict.
+Had any reading of part B gone the other way, its rows would be unclassified and part B NOT MET. Had the reading of
+part C's revert gone the other way, the reverted build's comparisons would have had to be run before part C could be
+judged. The reading of part D and of part A's processes changes no verdict.
+
+*(Added 2026-10-26, after the after evidence was first committed.)* This list first called its readings "none named
+in section 3 because no row or run had raised it", and listed neither class S's name nor part C's revert. For part B
+that was not so. Section 3 itself records that, at item 4's head, the corpus's diagnostic differences from the base
+were item 2's, row for row, so these rows had been raised before the after runs. They were read as S4 and S2 before
+the runs: in `abe10d4`'s and `fb4ae27`'s commit records, in the binder's remark, and in item 2's and item 4's
+pre-checks, whose records are those work packages' own and are not retained in this bundle. Section 3 did not name
+those readings, so this bundle records them as readings first written into it after the runs, formed before them.
+Part C's revert reading was made after the runs. So was section 6's first omission of the patched builds' reports,
+a reading of "retained with their output" that this list did not hold; section 6 withdraws it, and the reports are
+retained.
 
 **SJL-12 is not met by this bundle.** Every part of this family's rule is MET, and the exit clauses those parts serve
 are read on them in the milestone and the programme's ledger. SJL-12 cannot meet its gate before SJL-3 meets SJL-3's
