@@ -1,0 +1,10 @@
+# probe RP05 (js): input inputs/sjl13-R-gap/rp05-gap-parenthesised-chain-object.js; its rows of reports/R-gap.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/R/parse/probe-R-gap.manifest --test262 <work>/t262 --out <runs>/js/reports/R-gap.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	d8503fcf69dbfc8c673c3c0b372c35e3a7c8e7df908afc1760b29fbdf50fa5db
+#% corpus	sjl13-R-gap
+#% end	10
+id	variant	entry	outcome	type	message
+RP05	sloppy	P	accepted	-	-
+RP05	sloppy	K	accepted	-	-

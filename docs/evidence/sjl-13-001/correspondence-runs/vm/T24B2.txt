@@ -1,0 +1,10 @@
+# probe T24B2 (vm): input inputs/sjl13-T/t24b2-function-expression-then-division.js; its rows of reports/T-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/parse/corpus.manifest <runs>/vm/reports/T-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T24B2	B1	sloppy	bytecode	accepted	-	5653c11faf2051cac75a0051cbc2246202fdcd9e8b0e1f7dec646ac4d5862c60	254	-
+T24B2	B1	sloppy	native	accepted	-	fd9f5e7b071170aade907bca70edd785282a286f5a0acae059609ac900e195a4	480	-
+T24B2	B4	script	slice	refused	2104:1:9	-	-	-

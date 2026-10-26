@@ -1,0 +1,34 @@
+#% format	broiler-js-parse-corpus-report	1
+#% mode	dump
+#% tool	docs/evidence/sjl-12-001/tools/parse-corpus
+#% manifest-sha256	ff7f2867e38c03d0b916349df2ab598145247c5930d8a9b5c0941ea35b67dc87
+#% manifest-rows	3
+#% corpus	sjl13-T-tokens
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% selection	all
+#% order	manifest
+#% threads	1
+#% thread-stack-bytes	268435456
+#% compile-stack-bytes	0	CompilationStack.SizeBytes: 0 compiles on the calling thread
+#% environment	TZ=UTC	LANG unset	LC_* unset	BROILER_* unset
+#% culture	(invariant)
+#% time-zone	UTC
+#% runtime	.NET 10.0.12
+#% os	Ubuntu 24.04.5 LTS X64
+#% processors	4
+#% context	JSContext(experimentalFeatures: JavaScriptFeatureFlags.AllExperimentalEs2026), one per thread
+#% strict-variant	the manifest's strict-prologue followed by the text
+#% source-names	virtual-root or stored-root followed by the path
+#% json-goal	the text unchanged at the entry points of every goal but module: ParseProgram, and CoreScript.Compile with isModule false
+#% assembly	Broiler.JavaScript.Ast	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	8cd8a85f-85ff-47c0-908e-ac230eac450e
+#% assembly	Broiler.JavaScript.Parser	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	cd76c4ea-d19e-4282-866f-d011fe85f925
+#% assembly	Broiler.JavaScript.Compiler	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	22136af2-9732-4651-88ae-c22cd35e54c9
+#% assembly	Broiler.JavaScript.Engine	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	497004ca-fd1b-4298-82f1-a8cddd75d56d
+#% assembly	Broiler.JavaScript.Runtime	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	f749a9c9-0285-4453-88a5-8ac4e1f660da
+#% for-loop-pass	found: Broiler.JavaScript.Compiler.ForLoopPreparation.Prepare(Broiler.JavaScript.Ast.AstProgram, System.Int32) : Broiler.JavaScript.Ast.AstProgram
+#% rows	3
+id	variant	slot	parse	parser-sha256	pass	pass-sha256
+T32A	sloppy	1	accepted	4bd4d13eb83f01283a7c181c92393fd2aa5b62d445aa645d7f6bd73454613736	prepared	4bd4d13eb83f01283a7c181c92393fd2aa5b62d445aa645d7f6bd73454613736
+T32B	sloppy	1	accepted	37f2ec59621d903a3e5db0447324a4d0df1683039d0f41fa9f58fb2e3c26679c	prepared	37f2ec59621d903a3e5db0447324a4d0df1683039d0f41fa9f58fb2e3c26679c
+T32C	sloppy	1	accepted	659f8db794ac55e02d2eeef0096326424fc49e2a9786a1893132b822c53cf0a7	prepared	659f8db794ac55e02d2eeef0096326424fc49e2a9786a1893132b822c53cf0a7
+#% end	3

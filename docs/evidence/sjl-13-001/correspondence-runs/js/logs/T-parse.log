@@ -1,0 +1,4 @@
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/T/parse/corpus.manifest --test262 <work>/t262 --out <runs>/js/reports/T-parse.tsv 
+parse-corpus: 0/44
+parse-corpus: 44 input variant(s), 88 row(s), 0.6 s, written to <runs>/js/reports/T-parse.tsv
+# exit=0

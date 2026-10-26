@@ -1,0 +1,17 @@
+# probe RT01 (vm): test/sjl13-R/RT01-script-await-using-in-block.js through the conformance root; report reports/RT01.report.txt
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --manifest broiler.javascript.wide --form bytecode --test test/sjl13-R/RT01-script-await-using-in-block.js --fuel 200000000000 --wall 600000 --report <runs>/vm/reports/RT01.report.txt 
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+pass        test/sjl13-R/RT01-script-await-using-in-block.js [raw]
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# no variant failed, so there is nothing to classify
+# test262 1 files, 1 variants: pass 1, fail 0, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl13-R/RT01-script-await-using-in-block.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+# exit=1

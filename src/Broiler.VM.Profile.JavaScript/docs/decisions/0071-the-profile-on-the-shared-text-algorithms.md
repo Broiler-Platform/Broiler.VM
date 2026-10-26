@@ -108,6 +108,13 @@ stay, each for a reason the area's own rules give:
   correspondence assigns to SJL-15; and the matcher's own readers in `.Format`, which admits no shared
   package (SJL-11).
 
+*(Noted 2026-10-26, at SJL-13.1, by [JSD-0083](0083-the-shared-syntax-library-and-the-wide-path.md) decision D39.)*
+`JsParser.IsWellFormed`'s export-name check is the early-error catalogue's EE0178, a `syntax` row: both engines'
+parsers refuse it at parse time. So the shared syntax library refuses it from SJL-13's step 1, which deletes
+`JsParser`, with EE0178's code; it is SJL-13's, not SJL-15's, as "which the correspondence assigns to SJL-15" read. Its
+other caller, the module specifier's check (the catalogue's EX0029, an engine-only row), becomes this family's
+admission walk's at the same step (JSD-0083 decision D18).
+
 ### 4. Corrections
 
 This family's three corrections, P1, P2 and S1, under decision SJL-D-16 (a). At this family's pin of the

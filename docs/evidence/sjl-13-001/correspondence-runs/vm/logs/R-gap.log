@@ -1,0 +1,14 @@
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/R/parse/probe-R-gap.manifest <runs>/vm/reports/R-gap.tsv --populations B1 --workers 1 
+broiler-js-slice-compiler: --parse-corpus 1 of 10
+broiler-js-slice-compiler: --parse-corpus 2 of 10
+broiler-js-slice-compiler: --parse-corpus 3 of 10
+broiler-js-slice-compiler: --parse-corpus 4 of 10
+broiler-js-slice-compiler: --parse-corpus 5 of 10
+broiler-js-slice-compiler: --parse-corpus 6 of 10
+broiler-js-slice-compiler: --parse-corpus 7 of 10
+broiler-js-slice-compiler: --parse-corpus 8 of 10
+broiler-js-slice-compiler: --parse-corpus 9 of 10
+broiler-js-slice-compiler: --parse-corpus 10 of 10
+broiler-js-slice-compiler: B1: accepted 8, refused 2
+broiler-js-slice-compiler: --parse-corpus reported 10 compilations of 5 inputs with 1 worker(s) in 0.8 s; 0 crashed
+# exit=0

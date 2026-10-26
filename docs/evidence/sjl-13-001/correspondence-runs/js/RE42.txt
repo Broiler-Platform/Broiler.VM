@@ -1,0 +1,4 @@
+# probe RE42 (js): the line labelled RE42 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host r-values.js 
+# exit=0
+RE42 Function body in a class method: o.#p => THROWS SyntaxError: Private name is not declared in an enclosing class

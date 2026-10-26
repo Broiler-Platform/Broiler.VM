@@ -1,0 +1,4 @@
+# probe RT01 (js): rt01-script-await-using-in-block.js through the shell
+# command (in <probes>/R/run): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host rt01-script-await-using-in-block.js 
+RT01 accepted
+# exit=0

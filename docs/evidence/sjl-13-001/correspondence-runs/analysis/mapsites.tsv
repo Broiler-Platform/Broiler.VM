@@ -1,0 +1,38 @@
+EE0030	other-split	JsCompiler.Operators.cs:152	old: SliceSourceDiagnosticCode.InvalidAssignmentTarget,	-> head NONE	| head line 152 now: // `delete x` FOR A BARE NAME NEVER EVALUATES `x`. The operator takes 
+EE0031	other-split	JsCompiler.Operators.cs:152	old: SliceSourceDiagnosticCode.InvalidAssignmentTarget,	-> head NONE	| head line 152 now: // `delete x` FOR A BARE NAME NEVER EVALUATES `x`. The operator takes 
+EE0035	other-split	JsCompiler.Operators.cs:770	old: SliceSourceDiagnosticCode.ConstructOutsideManifest,	-> head NONE	| head line 770 now: CompileNamedValue(assignment.Value, assignment.ParenthesisedTarget ? s
+EE0035	other-split	JsParser.cs:4468	old: SliceSourceDiagnosticCode.InvalidAssignmentTarget,	-> head 4498,4506,4531,4543,5323	| head line 4468 now: // `yield a + b` parse as `(yield a) + b`, which is the wrong tree and
+EE0087	other-split	JsParser.cs:7235	old: SliceSourceDiagnosticCode.ExpectedToken,	-> head 1491,1525,3427,7279,7302	| head line 7235 now: // Broiler-Human:        PENDING
+EE0087	other-split	JsParser.cs:6604	old: SliceSourceDiagnosticCode.ReservedWordAsBinding,	-> head 6668	| head line 6604 now: var token = Current;
+EE0140	other-split	JsCompiler.Expressions.cs:314	old: SliceSourceDiagnosticCode.ConstructOutsideManifest,	-> head 326	| head line 314 now: 
+EE0155	other-split	JsParser.cs:7235	old: SliceSourceDiagnosticCode.ExpectedToken,	-> head 1491,1525,3427,7279,7302	| head line 7235 now: // Broiler-Human:        PENDING
+EE0155	other-split	JsParser.cs:6604	old: SliceSourceDiagnosticCode.ReservedWordAsBinding,	-> head 6668	| head line 6604 now: var token = Current;
+EE0163	rel-split	JsParser.cs:5619	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head 624,1668,1848,1920,2146,4259,4589,5115,5254,5284,5682,5707,7031	| head line 5619 now: // Broiler-Human:        PENDING
+EE0163	rel-split	JsCompiler.Expressions.cs:107	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head NONE	| head line 107 now: }
+EE0168	other-split	JsParser.cs:3757	old: SliceSourceDiagnosticCode.VarAndLexicalCollision,	-> head 3820	| head line 3757 now: /// <b>The second rule is not the first one with a wider set.</b> Two 
+EE0169	other-split	JsCompiler.Modules.cs:443	old: SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,	-> head 62	| head line 443 now: }
+EE0173	rel-split	JsParser.cs:5619	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head 624,1668,1848,1920,2146,4259,4589,5115,5254,5284,5682,5707,7031	| head line 5619 now: // Broiler-Human:        PENDING
+EE0173	rel-split	JsCompiler.Expressions.cs:107	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head NONE	| head line 107 now: }
+EA0002	rel-split	JsParser.cs:5619	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head 624,1668,1848,1920,2146,4259,4589,5115,5254,5284,5682,5707,7031	| head line 5619 now: // Broiler-Human:        PENDING
+EA0002	rel-split	JsCompiler.Expressions.cs:107	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head NONE	| head line 107 now: }
+EA0009	rel-split	JsEngine.Eval.cs:514	old: ThrowSyntaxError(	-> head 514	| head line 514 now: ThrowSyntaxError(
+EP0006	other-split	JsCompiler.ResourceScopes.cs:278	old: SliceSourceDiagnosticCode.ConstructOutsideManifest,	-> head NONE	| head line 278 now: // `const` it resembles.
+EP0007	other-split	JsCompiler.ResourceScopes.cs:278	old: SliceSourceDiagnosticCode.ConstructOutsideManifest,	-> head NONE	| head line 278 now: // `const` it resembles.
+EP0008	other-split	JsCompiler.ResourceScopes.cs:278	old: SliceSourceDiagnosticCode.ConstructOutsideManifest,	-> head NONE	| head line 278 now: // `const` it resembles.
+EP0016	rel-split	JsParser.cs:5619	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head 624,1668,1848,1920,2146,4259,4589,5115,5254,5284,5682,5707,7031	| head line 5619 now: // Broiler-Human:        PENDING
+EP0016	rel-split	JsCompiler.Expressions.cs:107	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head NONE	| head line 107 now: }
+EP0016	rel-split	JsEngine.ShadowRealm.cs:77	old: var (evaluated, unit, declaration) = LoadEvalCode(Format.JsFormat.Eval	-> head 77	| head line 77 now: var (evaluated, unit, declaration) = LoadEvalCode(Format.JsFormat.Eval
+EP0017	rel-split	JsEngine.ShadowRealm.cs:77	old: var (evaluated, unit, declaration) = LoadEvalCode(Format.JsFormat.Eval	-> head 77	| head line 77 now: var (evaluated, unit, declaration) = LoadEvalCode(Format.JsFormat.Eval
+EP0018	rel-split	JsEngine.ShadowRealm.cs:77	old: var (evaluated, unit, declaration) = LoadEvalCode(Format.JsFormat.Eval	-> head 77	| head line 77 now: var (evaluated, unit, declaration) = LoadEvalCode(Format.JsFormat.Eval
+EX0008	other-split	JsParser.cs:4207	old: SliceSourceDiagnosticCode.ExpectedToken,	-> head 3286,4270	| head line 4207 now: if (strictHere && IsStrictOnlyName(name))
+EX0008	other-split	JsCompiler.Expressions.cs:314	old: SliceSourceDiagnosticCode.ConstructOutsideManifest,	-> head 326	| head line 314 now: 
+EX0008	other-split	JsCompiler.Patterns.cs:173	old: SliceSourceDiagnosticCode.InvalidAssignmentTarget,	-> head NONE	| head line 173 now: 
+EX0008	other-split	JsParser.cs:2323	old: SliceSourceDiagnosticCode.ReservedWordAsBinding,	-> head 2386,2959,4750,4794,6612,6632,6646,6657	| head line 2323 now: Expect(SliceTokenKind.CloseBrace, "}");
+EX0008	other-split	JsParser.cs:5828	old: SliceSourceDiagnosticCode.ReservedWordAsBinding,	-> head 2426,5891,6546	| head line 5828 now: }
+EX0009	other-split	JsCompiler.Statements.cs:219	old: SliceSourceDiagnosticCode.ConstWithoutInitialiser,	-> head NONE	| head line 219 now: 
+EX0020	rel-split	JsCompiler.Modules.cs:62	old: SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,	-> head 62	| head line 62 now: SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+EX0023	other-split	JsParser.cs:1857	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head 624,1668,1848,1920,2146,4259,4589,5115,5254,5284,5682,5707,7031	| head line 1857 now: Expect(SliceTokenKind.CloseParen, ")");
+EX0028	rel-split	JsParser.cs:7364	old: SliceSourceDiagnosticCode.ConstructOutsideManifest,	-> head 7408	| head line 7364 now: /// <summary>The same nesting guard <see cref="Enter"/> applies, for a
+EX0031	rel-split	JsCompiler.Classes.cs:420	old: SliceSourceDiagnosticCode.UnresolvableIdentifier,	-> head 369	| head line 420 now: /// <remarks>
+EX0032	rel-split	JsCompiler.Exceptions.cs:261	old: SliceSourceDiagnosticCode.UnexpectedToken,	-> head NONE	| head line 261 now: 
+EX0033	rel-split	JsCompiler.Exceptions.cs:275	old: SliceSourceDiagnosticCode.IllegalBreak,	-> head NONE	| head line 275 now: for (var index = exits.Count - 1; index >= 0 && !unwinds; index--)

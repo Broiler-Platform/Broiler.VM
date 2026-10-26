@@ -1,0 +1,10 @@
+# probe T16A (vm): input inputs/sjl13-T/t16a-strict-legacy-octal-property-key.js; its rows of reports/T-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/parse/corpus.manifest <runs>/vm/reports/T-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T16A	B1	strict	bytecode	accepted	-	36235b95d8a5f37c8dd08e6bd8ba1d5dac662359972ec10e37c9086b6ce8e7a6	190	-
+T16A	B1	strict	native	accepted	-	ee69f30a503569ef41043b8216145ed6d8b7e08cac4868e2197ec44bdf6ea336	327	-
+T16A	B4	script	slice	refused	2104:1:9;2104:1:11	-	-	-

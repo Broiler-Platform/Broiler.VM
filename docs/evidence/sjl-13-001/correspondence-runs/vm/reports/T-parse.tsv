@@ -1,0 +1,149 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+#% manifest-rows	44
+#% archive-sha256	-
+#% populations	B1,B4
+#% selection	all
+#% compilations	132
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T06A	B1	sloppy	bytecode	accepted	-	db21e384acc7dd7e870326c0ffb379ff05f8156bfba005315b7e14863a6ac4f6	225	-
+T06A	B1	sloppy	native	accepted	-	b61d30e9f919de9d404983d8559ee13ea3910a96fef9e3e7fe1f663d9108b93b	449	-
+T06B	B1	sloppy	bytecode	accepted	-	ec70ceea3f79d1a7fdb3daf13b6648942a3b68d575a6f8626118838854d96d82	227	-
+T06B	B1	sloppy	native	accepted	-	b0a380baa781b3374bd40d33095331ca3f43084d443c531d09d2a3fe8c25ad69	451	-
+T06C	B1	sloppy	bytecode	accepted	-	81bc4e1fc83daffc7dfb15c38df3e4e8b49b093f50f2f65ba8d8d75f3a572a8d	235	-
+T06C	B1	sloppy	native	accepted	-	8344f950caf917622f3a08342ff37f8cc083fae0d29ea563ccdfa0ca7dbcabf0	459	-
+T08A	B1	sloppy	bytecode	refused	2006:1:19	-	-	-
+T08A	B1	sloppy	native	refused	2006:1:19	-	-	-
+T08B	B1	sloppy	bytecode	refused	2007:1:9	-	-	-
+T08B	B1	sloppy	native	refused	2007:1:9	-	-	-
+T09A	B1	sloppy	bytecode	refused	2005:1:8	-	-	-
+T09A	B1	sloppy	native	refused	2005:1:8	-	-	-
+T09B	B1	sloppy	bytecode	refused	2104:2:1	-	-	-
+T09B	B1	sloppy	native	refused	2104:2:1	-	-	-
+T12A	B1	sloppy	bytecode	refused	2005:1:9	-	-	-
+T12A	B1	sloppy	native	refused	2005:1:9	-	-	-
+T12B	B1	sloppy	bytecode	refused	2005:1:9	-	-	-
+T12B	B1	sloppy	native	refused	2005:1:9	-	-	-
+T12C	B1	sloppy	bytecode	refused	2005:1:9	-	-	-
+T12C	B1	sloppy	native	refused	2005:1:9	-	-	-
+T12E	B1	sloppy	bytecode	refused	2005:1:9	-	-	-
+T12E	B1	sloppy	native	refused	2005:1:9	-	-	-
+T13A	B1	sloppy	bytecode	accepted	-	a7b84dc1b07626e8312729bd3ac422f6b974dceb6fa411b7c2aa74e68630ce45	173	-
+T13A	B1	sloppy	native	accepted	-	bc73bc25a9046fa15e15bcb6d65d79f775d414a54d70e2c3d8465be913d95dc9	310	-
+T13B	B1	sloppy	bytecode	accepted	-	37f15309d739c0208bb91b847c239279c4706797e3a1f8978f4faa40058b1a70	177	-
+T13B	B1	sloppy	native	accepted	-	6280d8c29bf3e10ad81f1ef38776ac4ba9b87248250386107d462b4780241aef	314	-
+T13C	B1	sloppy	bytecode	accepted	-	ac05e353e3b6e02da0e26b0cb1c243f20b4902dbc1dbc04b23b58b807a8e6b48	188	-
+T13C	B1	sloppy	native	accepted	-	487251b04caeb81e5dee55baa14d5770a4caf7ef8b0d1900f49a127354316039	325	-
+T13D	B1	sloppy	bytecode	accepted	-	a1236b22ad47a6882658c2d4579670d46fe6e0eea6547f67cceee1402659c690	174	-
+T13D	B1	sloppy	native	accepted	-	1623a4eb77813de986dc9aac597ab48fcf97ad180050805d53ce7bdfd1189f9a	311	-
+T13E	B1	sloppy	bytecode	refused	2005:1:9	-	-	-
+T13E	B1	sloppy	native	refused	2005:1:9	-	-	-
+T13F	B1	sloppy	bytecode	accepted	-	488d63715286e68775b4fbda8e578b7ed0a51de1022e750610b1eb2d098f76c1	169	-
+T13F	B1	sloppy	native	accepted	-	c05f74d903087c58363b45df5cbe1a62e986b55a5ca6eabecb28e72ce6bd2396	306	-
+T16A	B1	strict	bytecode	accepted	-	36235b95d8a5f37c8dd08e6bd8ba1d5dac662359972ec10e37c9086b6ce8e7a6	190	-
+T16A	B1	strict	native	accepted	-	ee69f30a503569ef41043b8216145ed6d8b7e08cac4868e2197ec44bdf6ea336	327	-
+T16B	B1	sloppy	bytecode	accepted	-	6c63b23026d4fac905af640b757ed5798f95e4fe129e49ae1183170e03917d3f	263	-
+T16B	B1	sloppy	native	accepted	-	459d211346de1da2aef46b283329484337e5b111210a1cb78ccbf92343ff011a	577	-
+T16D	B1	strict	bytecode	refused	2210:1:9	-	-	-
+T16D	B1	strict	native	refused	2210:1:9	-	-	-
+T16E	B1	sloppy	bytecode	accepted	-	6210f9c502fd3c6befece7dfb716ff371c744cf1fce65e03d4324b87e5197dde	265	-
+T16E	B1	sloppy	native	accepted	-	b937bc1b6195515e27e7fdc880c372a96ec9c39ed29b8e5d6d242f5e16b492bf	510	-
+T16F	B1	sloppy	bytecode	refused	2210:1:37	-	-	-
+T16F	B1	sloppy	native	refused	2210:1:37	-	-	-
+T17A	B1	sloppy	bytecode	refused	2003:1:9	-	-	-
+T17A	B1	sloppy	native	refused	2003:1:9	-	-	-
+T17B	B1	sloppy	bytecode	refused	2003:1:9	-	-	-
+T17B	B1	sloppy	native	refused	2003:1:9	-	-	-
+T18A	B1	sloppy	bytecode	refused	2003:1:9	-	-	-
+T18A	B1	sloppy	native	refused	2003:1:9	-	-	-
+T18B	B1	sloppy	bytecode	refused	2003:1:9	-	-	-
+T18B	B1	sloppy	native	refused	2003:1:9	-	-	-
+T18C	B1	sloppy	bytecode	refused	2003:1:9	-	-	-
+T18C	B1	sloppy	native	refused	2003:1:9	-	-	-
+T19A	B1	sloppy	bytecode	refused	2001:1:31	-	-	-
+T19A	B1	sloppy	native	refused	2001:1:31	-	-	-
+T19B	B1	sloppy	bytecode	refused	2001:1:22	-	-	-
+T19B	B1	sloppy	native	refused	2001:1:22	-	-	-
+T20A	B1	sloppy	bytecode	refused	2101:1:11;2102:1:12	-	-	-
+T20A	B1	sloppy	native	refused	2101:1:11;2102:1:12	-	-	-
+T24B	B1	sloppy	bytecode	accepted	-	4eb3721554eb7bc34e41545d756fcd9467f64206f260197e3254efaaf2efc2ad	188	-
+T24B	B1	sloppy	native	accepted	-	a516585be7b97cf1e19a20e51c7dae0d67510c1b5b2165d566ab1ea85f21f97d	325	-
+T24B2	B1	sloppy	bytecode	accepted	-	5653c11faf2051cac75a0051cbc2246202fdcd9e8b0e1f7dec646ac4d5862c60	254	-
+T24B2	B1	sloppy	native	accepted	-	fd9f5e7b071170aade907bca70edd785282a286f5a0acae059609ac900e195a4	480	-
+T24C1	B1	sloppy	bytecode	accepted	-	c68111b9c8af0adc32f89aaf3709f5cb1d608fc3fa7d5c66b86c4e4d2d602087	261	-
+T24C1	B1	sloppy	native	accepted	-	4a7cf86dfc17fe2d66d6d3bf92f951b3015ef5c54f3092d56576417eba6c77a4	835	-
+T24C2	B1	sloppy	bytecode	accepted	-	7ff392051ae0c0687b24097abbc1b6a97146b7f701282d88ef2ac0e34c6ac875	264	-
+T24C2	B1	sloppy	native	accepted	-	3d96daf641f7bc006525d60d90c6de75714d1724ac87037053e2a800efd5a038	563	-
+T24C3	B1	module	bytecode	accepted	-	7b88aa943282e278dcf25b314e102bbfa1f7add13f17996c4eafde7a9c40ff90	225	-
+T24C3	B1	module	native	accepted	-	6affe1959d6f36b6863c954923eb135823cc26f579582ff87365372368293100	498	-
+T24D	B1	sloppy	bytecode	refused	2101:1:46;2102:1:47;2102:1:47	-	-	-
+T24D	B1	sloppy	native	refused	2101:1:46;2102:1:47;2102:1:47	-	-	-
+T24E	B1	sloppy	bytecode	refused	2101:1:3;2102:1:4	-	-	-
+T24E	B1	sloppy	native	refused	2101:1:3;2102:1:4	-	-	-
+T24F	B1	sloppy	bytecode	refused	2102:1:30	-	-	-
+T24F	B1	sloppy	native	refused	2102:1:30	-	-	-
+T24G1	B1	sloppy	bytecode	accepted	-	3d7313e55ad4ab589b815ef6bc132d1b1b7235bfd1ebd9b492c7f1e9107b158a	242	-
+T24G1	B1	sloppy	native	accepted	-	f955505b0cf1cbc1690e06fd951e9c50de8d878fdc583860f8229e552c50facb	548	-
+T24G2	B1	sloppy	bytecode	accepted	-	704c739ea54fc92586fc74fae9c26d519c4a215d699360c1c187de90edbafcaf	410	-
+T24G2	B1	sloppy	native	accepted	-	3e0266041fee672fb4ade9a510580b957a24c680acc03c6489dd5396a2e92dcf	759	-
+T24G3	B1	sloppy	bytecode	accepted	-	65bcc3afdc1bdef9af76fa4d94f5590f106dfda866b54bec7e4f967dd23b4601	261	-
+T24G3	B1	sloppy	native	accepted	-	1e136c7f635de5b6edc2c0d73228959c95ee780bc304aff382615e923fdf6b3f	398	-
+T24H	B1	sloppy	bytecode	accepted	-	c6626b26c9dfbea7329383faa5c346273db65143f86e10dc08feb31b2113c2a6	461	-
+T24H	B1	sloppy	native	accepted	-	f3d18dd043c07237957b82db925dc6b563ed44c7ab5be9b07d1d83834f026c29	1231	-
+T30A	B1	sloppy	bytecode	accepted	-	2c6770dd086279ced1f78eff0f88a6b637580ec02b908bc6620ab70dc9c7e182	177	-
+T30A	B1	sloppy	native	accepted	-	630a8c2b7d9d7f37ec3387670af08ff9e41d0d7a9d0a1ec3b632f5847a600305	314	-
+T30B	B1	sloppy	bytecode	accepted	-	2a76350962ade059085624a6d2bb14dc09c8f0807882363ef7c422263612b6dc	176	-
+T30B	B1	sloppy	native	accepted	-	a32d51c848359fd7e0435039e3cfd71583ce1f4debde478e39b14d19107210f8	313	-
+T06A	B4	script	slice	refused	2104:1:9	-	-	-
+T06B	B4	script	slice	refused	2104:1:9	-	-	-
+T06C	B4	script	slice	refused	2104:1:9	-	-	-
+T08A	B4	script	slice	refused	2104:1:9	-	-	-
+T08B	B4	script	slice	refused	2007:1:9	-	-	-
+T09A	B4	script	slice	refused	2005:1:8	-	-	-
+T09B	B4	script	slice	refused	2104:2:1	-	-	-
+T12A	B4	script	slice	refused	2005:1:9	-	-	-
+T12B	B4	script	slice	refused	2005:1:9	-	-	-
+T12C	B4	script	slice	refused	2104:1:9	-	-	-
+T12E	B4	script	slice	refused	2005:1:9	-	-	-
+T13A	B4	script	slice	refused	2104:1:9	-	-	-
+T13B	B4	script	slice	refused	2104:1:9	-	-	-
+T13C	B4	script	slice	accepted	-	11eab2dd9c22cf02ed4d4a0df13e0d0fbcdf9fc0db8b6e169455c2fd5699093a	92	-
+T13D	B4	script	slice	refused	2104:1:9	-	-	-
+T13E	B4	script	slice	refused	2104:1:9	-	-	-
+T13F	B4	script	slice	refused	2104:1:9	-	-	-
+T16A	B4	script	slice	refused	2104:1:9;2104:1:11	-	-	-
+T16B	B4	script	slice	refused	2104:1:1;2104:1:11	-	-	-
+T16D	B4	script	slice	accepted	-	551725226bcd88afdd517f56f1b52f89d22b035fabfd30feb5725dbf70f10e5c	92	-
+T16E	B4	script	slice	refused	2104:1:1;2104:1:16;2104:1:30;2104:1:37;2104:1:39	-	-	-
+T16F	B4	script	slice	refused	2104:1:1;2104:1:16;2104:1:30	-	-	-
+T17A	B4	script	slice	refused	2003:1:9	-	-	-
+T17B	B4	script	slice	refused	2003:1:9	-	-	-
+T18A	B4	script	slice	refused	2003:1:9	-	-	-
+T18B	B4	script	slice	refused	2003:1:9	-	-	-
+T18C	B4	script	slice	refused	2003:1:9	-	-	-
+T19A	B4	script	slice	refused	2001:1:31	-	-	-
+T19B	B4	script	slice	refused	2001:1:22	-	-	-
+T20A	B4	script	slice	refused	2102:1:12	-	-	-
+T24B	B4	script	slice	refused	2104:1:9	-	-	-
+T24B2	B4	script	slice	refused	2104:1:9	-	-	-
+T24C1	B4	script	slice	refused	2104:1:1;2104:1:24;2104:1:19;2104:1:15;2104:1:25	-	-	-
+T24C2	B4	script	slice	refused	2104:1:1;2104:1:20;2104:1:17	-	-	-
+T24C3	B4	module	slice	refused	2104:1:1;2104:1:16	-	-	-
+T24D	B4	script	slice	refused	2101:1:46	-	-	-
+T24E	B4	script	slice	refused	2101:1:3	-	-	-
+T24F	B4	script	slice	refused	2102:1:36	-	-	-
+T24G1	B4	script	slice	refused	2104:1:1;2104:1:17;2104:1:23	-	-	-
+T24G2	B4	script	slice	refused	2101:1:76	-	-	-
+T24G3	B4	script	slice	refused	2101:1:44	-	-	-
+T24H	B4	script	slice	refused	2104:1:20;2104:1:15;2104:1:11;2104:1:21;2104:2:15;2104:4:10;2104:4:5;2104:4:1;2104:4:11;2104:5:1;2104:6:10;2104:6:5;2104:6:1;2104:6:11	-	-	-
+T30A	B4	script	slice	refused	2101:2:3	-	-	-
+T30B	B4	script	slice	refused	2101:1:12	-	-	-

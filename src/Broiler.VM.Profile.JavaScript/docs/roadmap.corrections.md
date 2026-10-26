@@ -165,9 +165,11 @@ rather than a decision record.
 | [JSC-80](#jsc-80) | roadmap section 9's *strict mode is recognised by the tokenizer and ruled on by the validator*, as JS-3b's ledger row states it | Strictness a CALLER imposes reached the lowering and never the parse, so every strict-only early error was invisible in the one variant that exists to test it | the conformance variant that regressed when an unconditional refusal stopped masking it |
 | [JSC-79](#jsc-79) | roadmap section 8's *`CallDepth` is measured, not chosen*; the gates' lifecycle clause | The interpreter recurses on the CLR stack, so the premise the bound rested on is false - and a conformance case terminated the process before anything refused it | the case that terminated it, and the declared stack that repairs it |
 | [JSC-319](#jsc-319) | backends "Where this document stands", JSB-1's State bullet and section 7; delivery section 26.2's table of the proposal documents' stages | What JSB-1's gate names exists since the programme's SJL-12.6 item 3, which orders the wide lowering's lexical names by the source and adds two standing checks rows; which half of the determinism claim those rows cover; decision D14 leaves the stage's judgement to the profile's ledger, which holds no JSB-1 row yet, and this entry judges nothing | [JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md), decision D14 |
+| [JSC-320](#jsc-320) | delivery [JS-2](roadmap.delivery.md#js-2--the-general-front-end-is-the-shared-frontend)'s "Next action" | JS-2's next action still waited on SJL-12 fixing the frontend's contract, which SJL-12.1 did on 2026-10-19; SJL-13 has started, and its two bundles are JS-2's evidence | [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md), decision D33 |
 
 *(Added 2026-10-25, with JSC-319's row.)* The index holds rows for JSC-01 to JSC-80 and for JSC-319. JSC-81 to
-JSC-318 are not indexed here, and each is found by its heading below.
+JSC-318 are not indexed here, and each is found by its heading below. *(Added 2026-10-26, with JSC-320's row: the
+index holds JSC-320's row too.)*
 
 ### JSC-01
 
@@ -13798,3 +13800,28 @@ written, and SJL-12 cannot meet its gate before SJL-3 meets SJL-3's.
 [JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)'s decisions D10 to D17,
 decision D14 for this file's JSB-1 text, taken by the owner on 2026-10-19 under the direction of 2026-10-18; and
 the four merges named above, the last on 2026-10-25. 2026-10-25.
+
+### JSC-320
+
+**Where:** [`roadmap.delivery.md`](roadmap.delivery.md), milestone JS-2's "Next action". JS-2's objective, its exit
+gate, its owner and its dependencies are not edited, and neither is its row in the
+[ledger](roadmap.status.md).
+
+**What the plan said.** "**Next action:** None in this component until the programme's milestone SJL-12 has fixed the
+frontend's contract. Then the programme's milestone SJL-13 replaces the wide path's parser with the shared frontend,
+and that milestone's bundle is this one's evidence."
+
+**What replaced it.** The wait it named is over. SJL-12.1 fixed the frontend's contract on 2026-10-19
+([JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)), and SJL-13 started on
+2026-10-26, its area verdict filed at SJL-13.1
+([JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md)). SJL-13 replaces the wide path's parser
+in two steps, each one merge with a bundle of its own: an adapter from the shared tree into `JsSyntax` at step 1
+(bundle [`sjl-13-001`](../../../docs/evidence/sjl-13-001/README.md)), and the lowering, the numeric admission and the
+binder on the shared tree at step 2 (bundle [`sjl-13-002`](../../../docs/evidence/sjl-13-002/README.md)). So "that
+milestone's bundle" is two bundles. By JSD-0083's decision D33, JS-2's re-scoped gate is met by SJL-13's clauses 4 to
+6 and JSD-0063's requirements on those two bundles, and SJL-13's clause 10 by the JSC entries and the closed JS-2 row
+that SJL-13.5 files. This entry judges nothing and moves no row: JS-2 stays where the profile's ledger has it.
+
+**Authority and date.** [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md), decisions D3 and
+D33, taken by the owner on 2026-10-26 under the direction of 2026-10-18, and the programme ledger's SJL-13.0 entry,
+which records SJL-13's start at the owner's words of 2026-10-25. 2026-10-26.

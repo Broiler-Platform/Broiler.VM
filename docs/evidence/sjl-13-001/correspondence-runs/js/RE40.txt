@@ -1,0 +1,4 @@
+# probe RE40 (js): the line labelled RE40 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host r-values.js 
+# exit=0
+RE40 Function body: new.target => undefined

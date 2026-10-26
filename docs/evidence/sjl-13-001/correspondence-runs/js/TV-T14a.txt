@@ -1,0 +1,4 @@
+# probe TV-T14a (js): the line labelled T14a of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t-values.js 
+# exit=0
+T14a legacy escapes, sloppy => "A| 0|8|9|\u0000x|\u00008"

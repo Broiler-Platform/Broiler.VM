@@ -252,6 +252,32 @@ IL and bytecode; references neither back end". It is a hypothesis pending MOD-M2
 the parser's runtime reference, and MOD-M2-5 asks for a priced extraction plan. **None of it has
 started.**
 
+*(Read 2026-10-26, at SJL-13.1, by [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D39, from Broiler.JS at
+`8a95076c`.)* SJL-12.5 changed Broiler.JS's front end in place, and the note of 2026-10-25 at this file's head
+corrected Broiler.VM's statements only. These statements of this section no longer hold:
+- **"No options object."** The parser takes `FastParserOptions` (`Broiler.JavaScript.Parser/FastParserOptions.cs`), a
+  record of parse options with Script and Module presets, since SJL-12.5's item 1.
+- **"through `Runtime`'s `JSUnicode`"**: `JSUnicode` is in `Broiler.JavaScript.Ast` (`Unicode/JSUnicode.cs`) since
+  SJL-12.5's item 4.
+- **"A shared static end-of-file token whose `Previous` field every parse writes."** The scanner makes each parse's
+  end-of-file token (`FastScanner.cs`); no static token is left in the parser.
+- **"The module goal and top-level-`await` permission are read from `AsyncLocal` state in `Runtime`'s `CoreScript`"**
+  and **"a process-wide static counter"**: the goal and the permission are fields of the parse options, and neither
+  the parser nor `CoreScript.cs` holds an `AsyncLocal` or a temporaries counter.
+- **"The parser uses six `Runtime` types:"**: the parser's project references no `Runtime` assembly since SJL-12.5's
+  item 4 (`CoreScript` became the parse options, and the five other types moved to `Ast`); its project references
+  `Ast`, `Expressions` and `Broiler.ECMAScript.Algorithms` alone.
+- **"`for (let/const …)` is lowered in the parser"**: the compiler's preparation pass `ForLoopPreparation`
+  (`Broiler.JavaScript.Compiler`) lowers it since SJL-12.5.
+- **"outside any ambient scope, so always as a script"**: the portable compiler passes `FastParserOptions.Script`
+  (`PortableCompiler.cs`), still on the calling thread.
+- **"None of it has started."**: MOD-M2-4 closed on 2026-10-25, at SJL-12.5, and MOD-M2-5 is superseded in part since
+  2026-10-19 (JSD-0080 decision D28): its boundary specification by the frontend contract, its extraction plan by
+  SJL-13 to SJL-15.
+
+Section 7's Broiler.JS cells for top-level `await`, "yes (ambient)", and HTML-like comments, "script goal only
+(ambient)", read the same way: each is a field of the parse options, set by goal.
+
 ## 4. The contract
 
 Recorded at SJL-12.1.
@@ -361,9 +387,9 @@ flags where the feature is a proposal. Each engine admits what its own manifest 
 
 | Risk | Mitigation |
 |---|---|
-| A diagnostic code shifts in Broiler.VM and regrades its conformance results | The mapping of SJL-12.3. A registry revision for every meaning change. Test262 compared per variant, including early-error verdicts. |
+| A diagnostic code shifts in Broiler.VM and regrades its conformance results | The mapping of SJL-12.3. A registry revision for every meaning change. Test262 compared per variant, including early-error verdicts. *(Read 2026-10-26, at SJL-13.1, by [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D12: the revision is 19, minted at SJL-13's step 1 by its first commit, which renumbers every site that serves one rule alone before the parse changes; the regrades bundle `sjl-13-001`'s part A admits are named before any run.)* |
 | Broiler.JS's parse speed or allocation worsens: Broiler.VM's tokenizer allocates a string per token | Broiler.JS's own measurement under a rule. The shared tokenizer may keep spans instead of strings, which the contract allows. |
 | Behaviour that depended on Broiler.JS's parse-time desugaring | The desugaring moves to a compiler pass at SJL-12, with test262 per path compared before the parser changes |
-| Deep-nesting policy: Broiler.VM refuses at a bound, Broiler.JS survives through stack segmentation | **Decided at SJL-12.1** (JSD-0080 decision D27). The tree depth is a library constant, derived as JSD-0022 derives Broiler.VM's, against the large thread the caller supplies; the nesting depth is a bounded parameter. In both engines, every input deeper than the bound is refused with the contract's nesting diagnostic. Broiler.JS's inputs it accepts today past the bound become listed refusals at SJL-14, as an implementation limit (class C3), enumerated from the parse corpus's baseline. SJL-13 derives the bound's value, and SJL-12 changes no Broiler.JS acceptance. *(Revised 2026-10-19. The cell read "A library constant, with the large thread supplied by the caller. Broiler.JS's inputs deeper than the bound become a listed refusal, decided at SJL-12.")* |
+| Deep-nesting policy: Broiler.VM refuses at a bound, Broiler.JS survives through stack segmentation | **Decided at SJL-12.1** (JSD-0080 decision D27). The tree depth is a library constant, derived as JSD-0022 derives Broiler.VM's, against the large thread the caller supplies; the nesting depth is a bounded parameter. In both engines, every input deeper than the bound is refused with the contract's nesting diagnostic. Broiler.JS's inputs it accepts today past the bound become listed refusals at SJL-14, as an implementation limit (class C3), enumerated from the parse corpus's baseline. SJL-13 derives the bound's value, and SJL-12 changes no Broiler.JS acceptance. *(Revised 2026-10-19. The cell read "A library constant, with the large thread supplied by the caller. Broiler.JS's inputs deeper than the bound become a listed refusal, decided at SJL-12.")* *(Read 2026-10-26, at SJL-13.1, by [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D14: the tree-depth constant is derived in SJL-13.2's limits stage, with the stack it requires, and the derivation must admit Broiler.VM's bound on `CompilationStack`'s stack, or the library is reworked; the nesting depth stays a parameter with each engine's default; the library charges a left operand's spine to the chain it begins, closing the gap bundle `sjl-12-001` carried in all four shapes the base compiles past the bound, an implementation limit.)* |
 | The universal bytecode programme changes Broiler.VM's lowering in the same period | Neither programme waits on the other. The frontend's output is the "validated tree" JSD-0036 names. Each cut-over lands on whichever lowering exists then. |
 | Public API break for Broiler.JS's `Ast` and `Parser` consumers | Decision `SJL-D-12` (i): adapter packages, obsolete, and then removed in a major version |

@@ -1,0 +1,12 @@
+# probe PD02 (vm): input inputs/d02-label-set-break.js; its rows of reports/D-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/D/probe-D.manifest <runs>/vm/reports/D-parse.tsv --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-D
+#% manifest-sha256	0d7596c890bba137a82441e7b0efbe60d8fbdbbb612f1ae8e9572cb042fc82db
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PD02	B1	strict	bytecode	accepted	-	9d3829cae660a268a61f2057447709ee897daae26b71b938c442340a10c217b7	155	-
+PD02	B1	strict	native	accepted	-	057571d2f6cc9de32e667bd691bda8c5437041d28e89bbaeffe799dfa98b6cf4	430	-
+PD02	B1	sloppy	bytecode	accepted	-	e91d812032332f566fe491e22d69c0ca953e225b754b6a0da9d6a75a9791e135	155	-
+PD02	B1	sloppy	native	accepted	-	a38e365a50a1638c64cfe3bc61c18af2ec16b7251fcda5d5b5530348ec96f612	430	-
+PD02	B4	script	slice	refused	2104:1:1;2104:1:5;2104:1:24	-	-	-

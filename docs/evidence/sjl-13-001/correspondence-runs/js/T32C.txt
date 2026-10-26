@@ -1,0 +1,44 @@
+# probe T32C (js): input inputs/sjl13-T-tokens/t32c-escaped-string-literal.js; its rows of reports/T-tokens-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/T/tokens/corpus.manifest --test262 <work>/t262 --out <runs>/js/reports/T-tokens-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	ff7f2867e38c03d0b916349df2ab598145247c5930d8a9b5c0941ea35b67dc87
+#% corpus	sjl13-T-tokens
+#% end	6
+id	variant	entry	outcome	type	message
+T32C	sloppy	P	accepted	-	-
+T32C	sloppy	K	accepted	-	-
+
+## JS-dump (part D, the tree's canonical dump hashes) (reports/T-tokens-dump.tsv)
+id	variant	slot	parse	parser-sha256	pass	pass-sha256
+T32C	sloppy	1	accepted	659f8db794ac55e02d2eeef0096326424fc49e2a9786a1893132b822c53cf0a7	prepared	659f8db794ac55e02d2eeef0096326424fc49e2a9786a1893132b822c53cf0a7
+
+## JS-dump text (reports/T-tokens-dump.txt)
+=== T32C sloppy 1 parser
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["s"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 1
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..16 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..5 IsStatement=false IsBinding=false WasParenthesized=false Name="s" inferenceName=null InferenceName="s"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @8..15 IsStatement=false IsBinding=false WasParenthesized=false TokenType=String NumericValue=0 StringValue="it's" Regex=System.ValueTuple<System.String,System.String>(Item1="it's",Item2=null)
+=== T32C sloppy 1 prepared
+0 program: Broiler.JavaScript.Ast.AstProgram Program @0..eof IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false HoistingScope=["s"] AnnexBFunctionNames=[] IsSyntheticFunctionStatementBlock=false IsAsync=false
+1 Statements: list 1
+2 [0]: Broiler.JavaScript.Ast.AstVariableDeclaration VariableDeclaration @0..16 IsStatement=true IsBinding=false WasParenthesized=false IsLoopBookkeeping=false Kind=Var Using=false AwaitUsing=false
+3 Declarators: list 1
+4 [0]: Broiler.JavaScript.Ast.VariableDeclarator
+5 Identifier: Broiler.JavaScript.Ast.AstIdentifier Identifier @4..5 IsStatement=false IsBinding=false WasParenthesized=false Name="s" inferenceName=null InferenceName="s"
+5 Init: Broiler.JavaScript.Ast.AstLiteral Literal @8..15 IsStatement=false IsBinding=false WasParenthesized=false TokenType=String NumericValue=0 StringValue="it's" Regex=System.ValueTuple<System.String,System.String>(Item1="it's",Item2=null)
+
+
+## JS-tokens (reports/T32-tokens.txt)
+=== t32c-escaped-string-literal.js
+0	Identifier	span="var"	at=0..3	cooked=null	keyword=true/var	contextual=none	escaped-reserved=false	number=0	start=1:1
+1	Identifier	span="s"	at=4..5	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:5
+2	Assign	span="="	at=6..7	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:7
+3	String	span="'it\\'s'"	at=8..15	cooked="it's"	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:9
+4	SemiColon	span=";"	at=15..16	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:16
+5	LineTerminator	span="\u000A"	at=16..17	cooked=null	keyword=false/none	contextual=none	escaped-reserved=false	number=0	start=1:17
+# exit=0
+

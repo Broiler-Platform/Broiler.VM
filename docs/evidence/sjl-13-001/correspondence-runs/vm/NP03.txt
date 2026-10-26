@@ -1,0 +1,10 @@
+# probe NP03 (vm): input inputs/lone-cr-lines.js; its rows of reports/N-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/N/probe-N.manifest <runs>/vm/reports/N-parse.tsv --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-N
+#% manifest-sha256	4654507bfe042022512052553a3508fb6c914574ff57d37b10fabd4c640419fe
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+NP03	B1	sloppy	bytecode	refused	2101:3:1	-	-	-
+NP03	B1	sloppy	native	refused	2101:3:1	-	-	-
+NP03	B4	script	slice	refused	2101:3:1	-	-	-

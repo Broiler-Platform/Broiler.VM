@@ -1,0 +1,4 @@
+# probe TV-T01b (js): the line labelled T01b of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t-values.js 
+# exit=0
+T01b U+FEFF between tokens => 2

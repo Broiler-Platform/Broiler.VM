@@ -1,0 +1,126 @@
+622	Refuse	span	UnexpectedToken	"a private name belongs to a class body and cannot be a label"
+641	Refuse	span	DuplicateLexicalDeclaration	"the label `" + label + "` is already in force here
+804	Refuse	span	UnexpectedToken	"`" + Describe(Current) + "` may appear only at a module's top level"
+922	Refuse	at	ExpectedToken	"an import attribute is named by an identifier or by a string"
+939	Refuse	Span()	ExpectedToken	"an import attribute's value is a string literal"
+951	Refuse	at	DuplicateExportName	"the import attribute `" + key + "` is given twice"
+1117	Refuse	stringLocals[0]	UnexpectedToken	"a string names no local binding
+1368	Refuse	span	UnexpectedToken	"`" + Describe(Current) + "` begins no export declaration"
+1390	Refuse	span	ModuleDeclarationOutsideModuleGoal	"`" + what + "` is a module declaration and this source was presented as a script"
+1441	Refuse	Span()	UnexpectedToken	"an export name holds a lone surrogate
+1457	Refuse	Span()	UnexpectedToken	"`" + Describe(Current) + "` is not an export name"
+1479	Refuse	Span()	UnexpectedToken	"an export name holds a lone surrogate
+1489	Refuse	Span()	ExpectedToken	"a module specifier was expected and `" + Describe(Current) + "` was found"
+1523	Refuse	Span()	ExpectedToken	"`" + word + "` was expected and `" + Describe(Current) + "` was found"
+1666	Refuse	span	UnexpectedToken	"a `using` declaration needs a block
+1710	Refuse	declarator.Span	UnexpectedToken	"a `using` declaration binds names
+1720	Refuse	declarator.Span	ConstWithoutInitialiser	"`using " + declarator.Name + "` needs an initialiser"
+1846	Refuse	span	UnexpectedToken	"the `with` statement is a syntax error in strict code"
+1918	Refuse	span	UnexpectedToken	"`for await` is only admitted inside an async function or an async generator"
+1997	Refuse	declarators[0].Span	UnexpectedToken	"a `for … in` or `for … of` head declares its binding and does not " + "initialise it"
+2014	Refuse	declarators[0].Span	UnexpectedToken	"a `for … in` head cannot declare a `using` resource"
+2067	Refuse	headSpan	UnexpectedToken	"a `for … of` head may not begin with `async of`"
+2144	Refuse	span	UnexpectedToken	"`for await` is only a production with an `of` head"
+2205	Refuse	span	UnexpectedToken	"`throw` needs an expression on its own line"
+2258	Refuse	span	ExpectedToken	"`try` needs a `catch` or a `finally`"
+2294	Refuse	Span()	UnexpectedToken	"a `switch` has at most one `default` clause"
+2384	Refuse	Span()	ReservedWordAsBinding	"`" + Current.RawText + "` is a private name and not a binding name"
+2399	Refuse	Span()	ReservedWordAsBinding	"`" + Current.RawText + "` is not a binding name"
+2408	Refuse	span	ExpectedToken	"a function declaration needs a name"
+2424	Refuse	span	ReservedWordAsBinding	"`" + name + "` is not a function name in strict code"
+2541	RefusedAfterRest	span		"a rest parameter is admitted only as the last parameter"
+2632	RefusedAfterRest	restSpan		"a rest element is admitted only as the last element of a pattern"
+2672	RefusedAfterRest	restSpan		"a rest property is admitted only as the last entry of a pattern"
+2694	Refuse	entrySpan	ExpectedToken	"`:` was expected and `" + Describe(Current) + "` was found"
+2709	Refuse	entrySpan	ReservedWordAsBinding	"`" + keyToken.RawText + "` is not a binding name in strict code"
+2723	Refuse	entrySpan	ReservedWordAsBinding	"`" + Describe(keyToken) + "` is not a binding name"
+2957	Refuse	Span()	ReservedWordAsBinding	"`" + name + "` is not a class name
+2974	Refuse	Span()	ReservedWordAsBinding	"`" + Current.RawText + "` is not a binding name"
+2983	Refuse	span	ExpectedToken	"a class declaration needs a name"
+3089	Refuse	member.Span	DuplicateLexicalDeclaration	"the class definition declares `prototype` on the constructor
+3108	Refuse	member.Span	DuplicateLexicalDeclaration	"the class definition declares `constructor`
+3125	Refuse	member.Span	DuplicateLexicalDeclaration	"the class definition declares `constructor`
+3139	Refuse	member.Span	DuplicateLexicalDeclaration	"a class body declares one `constructor`
+3156	Refuse	member.Span	ReservedWordAsBinding	"`#constructor` is a private name a class body reserves and cannot declare"
+3185	Refuse	member.Span	DuplicateLexicalDeclaration	"`" + member.Key + "` is declared more than once by this class body"
+3284	Refuse	span	ExpectedToken	"a class element with a `*`
+3425	Refuse	Span()	ExpectedToken	"a class field ends with `;`
+3470	Refuse	Span()	UnexpectedToken	"`super` has no private elements of its own"
+3490	Refuse	span	UnexpectedToken	"`super` is followed by `.`
+3806	Refuse	entry.Span	DuplicateLexicalDeclaration	"`" + entry.Name + "` is declared twice in one scope"
+3818	Refuse	entry.Span	VarAndLexicalCollision	"`" + entry.Name + "` is declared both lexically and as a `var`"
+3912	Refuse	entry.Span	DuplicateLexicalDeclaration	"`" + entry.Name + "` is a parameter of this function
+3954	Refuse	entry.Span	DuplicateLexicalDeclaration	"`" + entry.Name + "` is bound twice by one `catch` parameter"
+3972	Refuse	entry.Span	DuplicateLexicalDeclaration	"`" + entry.Name + "` is the `catch` parameter
+3996	Refuse	entry.Span	VarAndLexicalCollision	"`" + entry.Name + "` is bound by a destructuring `catch` parameter
+4046	Refuse	entry.Span	ReservedWordAsBinding	"`let` is not a name a `let` or `const` declaration may bind"
+4059	Refuse	entry.Span	DuplicateLexicalDeclaration	"`" + entry.Name + "` is declared twice by one declaration"
+4114	Refuse	entry.Span	VarAndLexicalCollision	"`" + entry.Name + "` is declared by this loop's head
+4181	Refuse	parameters[0].Span	UnexpectedToken	"a body cannot declare `use strict` over a parameter list that has a default
+4209	Refuse	parameter.Span	ReservedWordAsBinding	"`" + name + "` is not a parameter name in strict code"
+4222	Refuse	parameter.Span	DuplicateLexicalDeclaration	"`" + name + "` is bound twice by one parameter list"
+4257	Refuse	span	UnexpectedToken	"a getter takes no parameters"
+4268	Refuse	span	ExpectedToken	"a setter takes exactly one parameter"
+4278	Refuse	parameters[0].Span	UnexpectedToken	"a setter's one parameter cannot be a rest parameter"
+4360	Refuse	start	UnexpectedToken	"a labelled function declaration cannot be the body of " + position
+4373	Refuse	span	UnexpectedToken	"a declaration is not a statement
+4496	Refuse	span	InvalidAssignmentTarget	"a parenthesised literal is not an assignment target"
+4504	Refuse	span	InvalidAssignmentTarget	"a destructuring assignment has no compound form"
+4529	Refuse	span	InvalidAssignmentTarget	"the left-hand side of an assignment is not a reference"
+4541	Refuse	span	InvalidAssignmentTarget	"`" + assigned.Name + "` is not the target of an assignment in strict code"
+4587	Refuse	span	UnexpectedToken	"a `yield` expression is not admitted in a function's parameters"
+4748	Refuse	Span()	ReservedWordAsBinding	"`" + Current.RawText + "` is not a binding name"
+4792	Refuse	Span()	ReservedWordAsBinding	"`" + Current.RawText + "` is reserved in strict code and is not a binding name"
+5049	Refuse	Span()	UnexpectedToken	"a unary operator cannot be applied directly to the base of `**`; parenthesise " + "the op
+5113	Refuse	span	UnexpectedToken	"`??` cannot stand beside `||` or `&&` without parentheses around one of them"
+5252	Refuse	span	UnexpectedToken	"an `await` expression is not admitted in a function's parameters"
+5282	Refuse	span	UnexpectedToken	"`delete " + deleted.Name + "` is a syntax error in strict code: a bare " + "name is a bin
+5321	Refuse	span	InvalidAssignmentTarget	"`" + name.Name + "` is not the operand of an update in strict code"
+5436	Refuse	Span()	UnexpectedToken	"an optional chain does not begin at a `new` expression"
+5489	Refuse	Span()	UnexpectedToken	"a tagged template has no reading inside an optional chain"
+5521	Refuse	Span()	UnexpectedToken	"a tagged template has no reading inside an optional chain"
+5579	Refuse	Span()	UnexpectedToken	"a dynamic `import()` needs a module specifier"
+5627	Refuse	Span()	UnexpectedToken	"`import.` is followed by `meta` and by nothing else"
+5640	Refuse	span	ImportMetaOutsideModuleGoal	"`import.meta` names a module's own metadata and this source was presented as " + "a scrip
+5668	Refuse	Span()	UnexpectedToken	"`new.` is followed by `target` and by nothing else"
+5680	Refuse	span	UnexpectedToken	"`new.target` names how a function was called and no function encloses this one"
+5705	Refuse	span	UnexpectedToken	"a dynamic `import()` is a call expression and `new` takes a member expression"
+5819	OutsideExpression	span		"a BigInt literal"
+5824	Refuse	span	LegacyOctalInStrictCode	"a legacy octal literal is not admitted in strict code"
+5889	Refuse	span	ReservedWordAsBinding	"`" + token.RawText + "` is a reserved word " + (token.Kind == SliceTokenKind.Await ? awai
+5910	Refuse	span	UnexpectedToken	"a private name is read through `.` or tested with `in`
+5991	Refuse	span	UnexpectedToken	"`" + Describe(token) + "` begins no expression"
+6236	Refuse	new SliceSourceSpan(keyToken.Line, keyToken.Column)	ReservedWordAsBinding	"`" + Describe(keyToken) + "` is a reserved word here
+6294	Refuse	Span()	UnexpectedToken	"a property name after `.` is an identifier name
+6328	Refuse	Span()	UnexpectedToken	"a private name belongs to a class body and cannot be a property key"
+6395	OutsideExpression	span		"a BigInt literal wider than " + (Format.JsFormat.CeilingBigIntConstantBytes * 8).ToString
+6412	Refuse	new SliceSourceSpan(token.Line, token.Column)		"a BigInt literal wider than " + (Format.JsFormat.CeilingBigIntConstantBytes * 8).ToString
+6446	Refuse	Span()	UnexpectedToken	"a private name belongs to a class body and cannot be a property key here"
+6544	Refuse	span	ReservedWordAsBinding	"`" + token.RawText + "` is a reserved word in strict code and is not an identifier"
+6591	Refuse	new SliceSourceSpan(token.Line, token.Column)	ReservedWordAsBinding	"`" + token.RawText + "` is a reserved word here
+6610	Refuse	Span()	ReservedWordAsBinding	"`" + token.RawText + "` is a private name and not a binding name"
+6630	Refuse	Span()	ReservedWordAsBinding	"`" + token.RawText + "` is not a binding name in strict code"
+6644	Refuse	Span()	ReservedWordAsBinding	"`let` is a reserved word in strict code and is not a binding name"
+6655	Refuse	Span()	ReservedWordAsBinding	"`" + token.RawText + "` is a reserved word in strict code and is not a binding " + "name"
+6666	Refuse	Span()	ReservedWordAsBinding	"`" + Describe(token) + "` is not a binding name"
+6728	Refuse	span	NestingTooDeep	"the source nests deeper than the " + options.MaximumNestingDepth + " levels these parse o
+6766	Refuse	span	UnknownEscapeSequence	
+7003	Refuse	new SliceSourceSpan(refusal.Line, refusal.Column)		
+7029	Refuse	span	UnexpectedToken	"a template substitution holds no expression"
+7041	Refuse	Span()	UnexpectedToken	"`" + Describe(Current) + "` follows the expression of a template substitution"
+7102	Refuse	spread.Span	InvalidAssignmentTarget	"a rest element is admitted only as the last element of a pattern"
+7133	Refuse	entry.Span	InvalidAssignmentTarget	"a rest property is admitted only as the last entry of a pattern"
+7145	Refuse	entry.Span	InvalidAssignmentTarget	"an accessor is not an assignment target"
+7168	Refuse	expression.Span	InvalidAssignmentTarget	"`" + identifier.Name + "` is not the target of a destructuring assignment in strict code"
+7190	Refuse	expression.Span	InvalidAssignmentTarget	"the left-hand side of a destructuring assignment is not a reference"
+7258	Refuse	new SliceSourceSpan(token.Line, token.Column)	LegacyOctalInStrictCode	"a legacy octal escape or `\\8` or `\\9` in a string literal is not admitted in strict cod
+7277	Refuse	Span()	ExpectedToken	"`" + text + "` was expected and `" + Describe(Current) + "` was found"
+7300	Refuse	Span()	ExpectedToken	"`;` was expected and `" + Describe(Current) + "` was found"
+7321	Refuse	span	NestingTooDeep	"the source nests deeper than the " + options.MaximumNestingDepth + " levels these parse o
+7354	Refuse	span	NestingTooDeep	"the source builds a tree deeper than the " + SliceParseOptions.MaximumTreeDepth + " level
+7378	Refuse	Span()	NestingTooDeep	"the source nests deeper than the " + options.MaximumNestingDepth + " levels these parse o
+7391	Refuse	span		
+7399	Refuse	span		
+7406	Refuse	span	ConstructOutsideManifest	what + " is not admitted by the declared feature manifest"
+7424	Refuse	Span()	UnexpectedToken	"an arrow function's `=>` must stand on the line its parameters end on"
+7454	Refuse	rest	UnexpectedToken	

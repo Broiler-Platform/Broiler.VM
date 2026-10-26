@@ -1,0 +1,118 @@
+#% format	broiler-js-parse-corpus-report	1
+#% mode	acceptance
+#% tool	docs/evidence/sjl-12-001/tools/parse-corpus
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+#% manifest-rows	44
+#% corpus	sjl13-T
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% selection	all
+#% order	manifest
+#% threads	1
+#% thread-stack-bytes	268435456
+#% compile-stack-bytes	0	CompilationStack.SizeBytes: 0 compiles on the calling thread
+#% environment	TZ=UTC	LANG unset	LC_* unset	BROILER_* unset
+#% culture	(invariant)
+#% time-zone	UTC
+#% runtime	.NET 10.0.12
+#% os	Ubuntu 24.04.5 LTS X64
+#% processors	4
+#% context	JSContext(experimentalFeatures: JavaScriptFeatureFlags.AllExperimentalEs2026), one per thread
+#% strict-variant	the manifest's strict-prologue followed by the text
+#% source-names	virtual-root or stored-root followed by the path
+#% json-goal	the text unchanged at the entry points of every goal but module: ParseProgram, and CoreScript.Compile with isModule false
+#% assembly	Broiler.JavaScript.Ast	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	8cd8a85f-85ff-47c0-908e-ac230eac450e
+#% assembly	Broiler.JavaScript.Parser	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	cd76c4ea-d19e-4282-866f-d011fe85f925
+#% assembly	Broiler.JavaScript.Compiler	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	22136af2-9732-4651-88ae-c22cd35e54c9
+#% assembly	Broiler.JavaScript.Engine	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	497004ca-fd1b-4298-82f1-a8cddd75d56d
+#% assembly	Broiler.JavaScript.Runtime	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	f749a9c9-0285-4453-88a5-8ac4e1f660da
+#% rows	88
+id	variant	entry	outcome	type	message
+T06A	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Negate: ! at 1, 13
+T06A	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Negate: ! at 1, 13
+T06B	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Greater: > at 1, 14
+T06B	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Greater: > at 1, 14
+T06C	sloppy	P	accepted	-	-
+T06C	sloppy	K	accepted	-	-
+T08A	sloppy	P	accepted	-	-
+T08A	sloppy	K	accepted	-	-
+T08B	sloppy	P	accepted	-	-
+T08B	sloppy	K	accepted	-	-
+T09A	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Number: 1 at 1, 5
+T09A	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Number: 1 at 1, 5
+T09B	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Number: 1 at 1, 5
+T09B	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Number: 1 at 1, 5
+T12A	sloppy	P	accepted	-	-
+T12A	sloppy	K	accepted	-	-
+T12B	sloppy	P	accepted	-	-
+T12B	sloppy	K	accepted	-	-
+T12C	sloppy	P	accepted	-	-
+T12C	sloppy	K	accepted	-	-
+T12E	sloppy	P	accepted	-	-
+T12E	sloppy	K	accepted	-	-
+T13A	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Assign: = at 1, 12
+T13A	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Assign: = at 1, 12
+T13B	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Assign: = at 1, 12
+T13B	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Assign: = at 1, 12
+T13C	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: var at 1, 8
+T13C	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: var at 1, 8
+T13D	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Assign: = at 1, 13
+T13D	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Assign: = at 1, 13
+T13E	sloppy	P	accepted	-	-
+T13E	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid escape sequence in template literal
+T13F	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Assign: = at 1, 12
+T13F	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Assign: = at 1, 12
+T16A	strict	P	accepted	-	-
+T16A	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected legacy octal literal in strict mode
+T16B	sloppy	P	accepted	-	-
+T16B	sloppy	K	accepted	-	-
+T16D	strict	P	accepted	-	-
+T16D	strict	K	accepted	-	-
+T16E	sloppy	P	accepted	-	-
+T16E	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected legacy octal literal in strict mode
+T16F	sloppy	P	accepted	-	-
+T16F	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected legacy octal literal in strict mode
+T17A	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Assign: = at 1, 13
+T17A	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Assign: = at 1, 13
+T17B	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: $ at 1, 10
+T17B	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: $ at 1, 10
+T18A	sloppy	P	accepted	-	-
+T18A	sloppy	K	accepted	-	-
+T18B	sloppy	P	accepted	-	-
+T18B	sloppy	K	accepted	-	-
+T18C	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Assign: = at 1, 12
+T18C	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Assign: = at 1, 12
+T19A	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token QuestionMark: ? at 1, 31
+T19A	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token QuestionMark: ? at 1, 31
+T19B	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: a at 1, 22
+T19B	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: a at 1, 22
+T20A	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: a at 1, 12
+T20A	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: a at 1, 12
+T24B	sloppy	P	accepted	-	-
+T24B	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Undefined binary operation RegExLiteral
+T24B2	sloppy	P	accepted	-	-
+T24B2	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Undefined binary operation RegExLiteral
+T24C1	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Divide: / at 1, 15
+T24C1	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Divide: / at 1, 15
+T24C2	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Divide: / at 1, 17
+T24C2	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Divide: / at 1, 17
+T24C3	module	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Divide: / at 1, 16
+T24C3	module	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Divide: / at 1, 16
+T24D	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Divide: / at 1, 46
+T24D	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Divide: / at 1, 46
+T24E	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Divide: / at 1, 3
+T24E	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Divide: / at 1, 3
+T24F	sloppy	P	accepted	-	-
+T24F	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Undefined binary operation RegExLiteral
+T24G1	sloppy	P	accepted	-	-
+T24G1	sloppy	K	accepted	-	-
+T24G2	sloppy	P	accepted	-	-
+T24G2	sloppy	K	accepted	-	-
+T24G3	sloppy	P	accepted	-	-
+T24G3	sloppy	K	accepted	-	-
+T24H	sloppy	P	accepted	-	-
+T24H	sloppy	K	accepted	-	-
+T30A	sloppy	P	accepted	-	-
+T30A	sloppy	K	accepted	-	-
+T30B	sloppy	P	accepted	-	-
+T30B	sloppy	K	accepted	-	-
+#% end	88

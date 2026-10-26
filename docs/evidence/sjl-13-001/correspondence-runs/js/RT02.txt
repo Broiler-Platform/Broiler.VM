@@ -1,0 +1,9 @@
+# probe RT02 (js): rt02-script-await-expression.js through the shell
+# command (in <probes>/R/run): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host rt02-script-await-expression.js 
+Uncaught SyntaxError: Unexpected token Identifier: Promise at 1, 15
+at Compile in <probes>/R/run/rt02-script-await-expression.js:line 1
+
+    at Compile:<probes>/R/run/rt02-script-await-expression.js:1,1
+
+
+# exit=1

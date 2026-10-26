@@ -1,0 +1,4 @@
+# probe PR03 (js): eval-export.js through the shell
+# command (in <probes>/P/run): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host eval-export.js 
+PR03 threw SyntaxError
+# exit=0

@@ -1,0 +1,4 @@
+# probe RE11 (js): the line labelled RE11 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host r-values.js 
+# exit=0
+RE11 function: indirect eval new.target => THROWS SyntaxError: Unexpected new.target in eval code

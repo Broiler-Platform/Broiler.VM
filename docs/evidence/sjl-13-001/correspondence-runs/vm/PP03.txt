@@ -1,0 +1,10 @@
+# probe PP03 (vm): input inputs/attr-newline-string-key.mjs; its rows of reports/P-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/P/probe-P.manifest <runs>/vm/reports/P-parse.tsv --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-P
+#% manifest-sha256	68e9a35ce102c61bc80729e6b20ad762f141efd0e2514a31b2736fb6baf606c9
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PP03	B1	module	bytecode	accepted	-	2248bcf1826443fdae61a1b361980c792c8c2f0fe1fe97d3eb381bed84efa9d8	295	-
+PP03	B1	module	native	accepted	-	71ee74003fdfd7230b97c70d9e46aa5be691f4deff79cd67d16413c9dfb21f2a	694	-
+PP03	B4	module	slice	refused	2104:1:1	-	-	-

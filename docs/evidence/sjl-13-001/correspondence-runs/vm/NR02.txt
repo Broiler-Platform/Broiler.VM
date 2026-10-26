@@ -1,0 +1,10 @@
+# probe NR02 (vm): strict-eval-vm.js through the command-line root
+# command (in <probes>/N/run): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll strict-eval-vm.js 
+A1 SyntaxError: the evaluated source is not a program this profile admits
+A2 SyntaxError: the evaluated source is not a program this profile admits
+B1 SyntaxError: the evaluated source is not a program this profile admits
+B2 SyntaxError: the evaluated source is not a program this profile admits
+C1 value 1
+C2 value 1
+D1 SyntaxError: the evaluated source is not a program this profile admits
+# exit=0

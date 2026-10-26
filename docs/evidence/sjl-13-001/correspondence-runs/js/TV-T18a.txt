@@ -1,0 +1,4 @@
+# probe TV-T18a (js): the line labelled T18a of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t-values.js 
+# exit=0
+T18a 1.5m => "1.5n"

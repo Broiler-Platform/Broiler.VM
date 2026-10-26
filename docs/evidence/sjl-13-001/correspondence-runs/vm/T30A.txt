@@ -1,0 +1,10 @@
+# probe T30A (vm): input inputs/sjl13-T/t30a-html-close-comment-slice-path.js; its rows of reports/T-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/parse/corpus.manifest <runs>/vm/reports/T-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T30A	B1	sloppy	bytecode	accepted	-	2c6770dd086279ced1f78eff0f88a6b637580ec02b908bc6620ab70dc9c7e182	177	-
+T30A	B1	sloppy	native	accepted	-	630a8c2b7d9d7f37ec3387670af08ff9e41d0d7a9d0a1ec3b632f5847a600305	314	-
+T30A	B4	script	slice	refused	2101:2:3	-	-	-

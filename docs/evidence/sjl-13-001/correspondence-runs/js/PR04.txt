@@ -1,0 +1,4 @@
+# probe PR04 (js): eval-using-top.js through the shell
+# command (in <probes>/P/run): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host eval-using-top.js 
+PR04 threw SyntaxError
+# exit=0

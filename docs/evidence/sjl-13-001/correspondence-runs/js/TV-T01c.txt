@@ -1,0 +1,4 @@
+# probe TV-T01c (js): the line labelled T01c of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t-values.js 
+# exit=0
+T01c U+180E between tokens => THROWS SyntaxError: Unexpected character '\u180e' (U+180E) at 1, 2

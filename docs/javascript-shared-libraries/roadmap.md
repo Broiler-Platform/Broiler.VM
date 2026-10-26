@@ -263,6 +263,16 @@ before SJL-3 meets SJL-3's, and SJL-9 and SJL-10 still wait on SJL-8's.)*
 2026-10-18, which the [ledger](status.md) records. The order above is unchanged, and so is what it gates:
 SJL-10 may not meet its gate before SJL-6 and SJL-8 meet theirs, and so not before SJL-3 meets SJL-3's.)*
 
+*(Added 2026-10-26, at SJL-13's start, by [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D2: SJL-13 started before SJL-12, SJL-3 and
+SJL-7 met their gates, at the owner's words of 2026-10-25, "Continue with the remaining SJL milestones", which the
+[ledger](status.md)'s SJL-13.0 entry quotes and reads, the reading recorded as a reading. This note also records late
+two starts no note of this section recorded, as the note of 2026-10-15 recorded SJL-6.1 to SJL-6.4 late: SJL-11's, on
+2026-10-25, before SJL-7 met its gate, and SJL-9's, on 2026-10-26, before SJL-7 and SJL-8 met theirs, each at the
+owner's words of 2026-10-19, "Also continue with the other remaining SJL milestones", as the ledger's SJL-11.0 and
+SJL-9.0 entries quote them. SJL-14 and SJL-15 file their own notes when they start. The order above is unchanged, and
+so is what it gates: SJL-13 may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs, SJL-11 not before SJL-7
+meets SJL-7's, SJL-9 not before SJL-7 and SJL-8 meet theirs, and none before SJL-3 meets SJL-3's.)*
+
 **What can start today:**
 
 - SJL-0 in full;
@@ -322,6 +332,15 @@ decision D1. The parenthesis in this section's first paragraph read "(SJL-3 to S
   cannot exit before SJL-3 does (its milestone's "Waits on"), and the ledger's entry for SJL-12's start says so.
 - **This corrects the summary to the milestone file, and is not a gate revision**: SJL-12's milestone file never
   named a verdict.
+
+*(Added 2026-10-26, at SJL-13.1, by [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md).)* The frontend area's verdict is JSD-0083, filed
+at SJL-13.1. Its gate's X1 reads both engines' merged front ends, so it covers Broiler.JS's front end as well as this
+family's. **This narrows, for SJL-14, the first paragraph's** "(SJL-3 to SJL-11, SJL-13 to SJL-15, and SJL-17). The
+area's first work package files the verdict." SJL-14 is the second engine's cut-over of the same area, and its verdict
+is read as SJL-13.1's, JSD-0083 (SJL-13's plan's decision D40, which SJL-14.1 files): SJL-14's first work package
+files no verdict of its own, and completes X6's Broiler.JS half by a dated note on JSD-0083 at SJL-14.1, from its
+dispositions, so that the gate this section applies at the start of every area milestone has its Broiler.JS half on
+record before SJL-14's code. Section 11's SJL-13 row names the verdict from this date.
 
 ---
 
@@ -493,7 +512,7 @@ Broiler.VM rules are in its register. `SL` rules are in the shared libraries' ow
 | SJL-10 | (none) | (none beyond I5) | (none) |
 | SJL-11 | (none) | N18 vacuity guard re-pointed; N10 baseline (the matcher's public types leave Format) | (none) |
 | SJL-12 | (none) | (none: in-place changes keep N12, N19) | (none) |
-| SJL-13 | (none) | N5 to N9 over the registry mapping; N12, N19 remarks for code that moved; N19's textual pattern widened to catch a public entry point that parses off `CompilationStack` *(revised 2026-10-19, at SJL-12.1, by [JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md) decision D16, which routes `JsCompiler.Requests` through `CompilationStack` at SJL-12.6 and leaves the pattern's widening to SJL-13; the cell read "N5 to N9 over the registry mapping; N12, N19 remarks for code that moved")* | Frontend determinism (SL9) |
+| SJL-13 | (none) | N5 to N9 over the registry mapping; N12, N19 remarks for code that moved; N19's textual pattern widened to catch a public entry point that parses off `CompilationStack` *(revised 2026-10-19, at SJL-12.1, by [JSD-0080](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md) decision D16, which routes `JsCompiler.Requests` through `CompilationStack` at SJL-12.6 and leaves the pattern's widening to SJL-13; the cell read "N5 to N9 over the registry mapping; N12, N19 remarks for code that moved")* | Frontend determinism (SL9) *(read 2026-10-26, at SJL-13.1, by [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D25: SL9 is not revised. It already runs the whole vector corpus through the library-level runner, which gains a frontend adapter, so it holds the frontend through the `syntax` vectors; the home's rule adds the parse corpus's determinism)* |
 | SJL-14 | (none) | (none: Broiler.JS only) | (none) |
 | SJL-15 | (none) | (none: the slice path is rebuilt, not retired, so N16 stands, `SJL-D-13`) | (none) |
 | SJL-16 | (none) | Every rule whose remarks the end state made stale | (none) |
@@ -516,7 +535,7 @@ Broiler.VM rules are in its register. `SL` rules are in the shared libraries' ow
 | SJL-10 | (none) | Area verdict JSD | Area verdict | (none) |
 | SJL-11 | (none) | Area verdict JSD; the API-baseline change | Area verdict; `Component.md` §3 closed | Broiler.RegEx records |
 | SJL-12 | (none) | JSD on the frontend contract (cites JSD-0014 and JSD-0036) | MOD-M2-3, MOD-M2-4 and MOD-M2-5 closed or cross-referenced | (none) |
-| SJL-13 | (none) | Registry revision; JSC entries; JS-2 closed under its re-scoped gate | (none) | (none) |
+| SJL-13 | `docs/compositions.md` rows and the notices for the frontend's admission *(revised 2026-10-26, at SJL-13.1, by [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D29; the cell read "(none)")* | Area verdict JSD ([JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)); the cut-over JSD at step 1, with registry revision 19 and the admission; JSC entries; JS-2 closed under its re-scoped gate *(revised 2026-10-26, at SJL-13.1, by JSD-0083 decision D3; the cell read "Registry revision; JSC entries; JS-2 closed under its re-scoped gate")* | Area verdict, for both engines' front ends *(revised 2026-10-26, at SJL-13.1, by JSD-0083; the cell read "(none)")* | (none) |
 | SJL-14 | (none) | (none) | `public-api.md` for `Ast` and `Parser` (`SJL-D-12`) | (none) |
 | SJL-15 | (none) | `SJL-D-13`'s record; JSC entries | Modernization invariant 3 closed | (none) |
 | SJL-16 | ADR 0014 revision describing the end state; register rows' final status | Final JSC entries | Final plan and status state | Final roadmap state |

@@ -341,7 +341,12 @@ Data is a trusted input: pinned, hashed, and embedded by each engine (decision `
    host cannot raise (rule N19). The frontend keeps both properties.
 3. **Fuzzing.**
    - Broiler.VM's fuzz host and source fuzz seeds cover the compiler-bearing compositions and so
-     reach the frontend.
+     reach the frontend. *(Read 2026-10-26, at SJL-13.1, by
+     [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D22. As written it did not hold of
+     the wide path: Broiler.VM's source fuzz session reaches `SliceTokenizer` and the slice front end, and no
+     session reached the wide parser. SJL-13's tools commit adds a wide-path session, `--fuzz-wide`, in the slice
+     compiler root, over seeds bundle `sjl-13-001` commits with its rule, CI running the seeds the lane's seed file
+     names from the Native AOT image; both of SJL-13's Broiler.VM bundles run both sessions.)*
    - The home repository adds fuzz targets for its parsers: numbers, Date strings, Temporal
      strings, JSON, regular-expression patterns, and source text.
    - Crashes become vectors.

@@ -1,0 +1,10 @@
+# probe RP12 (js): input inputs/sjl13-R/rp12-regexp-groups-nested-600.js; its rows of reports/R-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/R/parse/probe-R.manifest --test262 <work>/t262 --out <runs>/js/reports/R-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	8ceb3afd73288436a6fb5ff7fcf631ba6dde12b5038b2805d19d476d0260f32f
+#% corpus	sjl13-R
+#% end	14
+id	variant	entry	outcome	type	message
+RP12	sloppy	P	accepted	-	-
+RP12	sloppy	K	accepted	-	-

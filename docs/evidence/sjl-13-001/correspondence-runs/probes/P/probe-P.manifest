@@ -1,0 +1,31 @@
+# The P reader's parse probes for SJL-13.1 task 1.1 (sub-area P), in format 1 of the parse corpus's manifest
+# (Broiler.JS conformance/parse/README.md). Written by hand; every input is under inputs/ beside this file.
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-probes-P
+#% rows	10
+#% virtual-root	/test262/
+#% stored-root	/probes-P/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% eval-family-markers	eval	arguments	super	new.target	#
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+#% builder	hand-written (sjl13 P reader)
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+PP01	broiler-vm	inputs/attr-key-underscore.mjs	fdc9b195e616affece4c810951751e75703d11932ee97beb8400dddebab6108b	module	module	-	no	sjl13 P reader: row P05 (an IdentifierName attribute key that does not begin with a letter)
+PP02	broiler-vm	inputs/attr-key-plain.mjs	8b30255149fc84ecd84ce5a369ceb3f127864c048021be99f83fc40df02fa1ae	module	module	-	no	sjl13 P reader: row P05 (an attribute key neither engine honours)
+PP03	broiler-vm	inputs/attr-newline-string-key.mjs	ce375510772feb8bbbf52c1c3e6ae190476b2ce38181044bef4896e61e186306	module	module	-	no	sjl13 P reader: row P05 (a line break before a string attribute key)
+PP04	broiler-vm	inputs/attr-target.json	ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356	json	json	-	no	sjl13 P reader: row P04 (the JSON module PP01 to PP03 and PP05 import)
+PP05	broiler-vm	inputs/attr-assert-legacy.mjs	f957027b0ea44bfeea0bed946b6260ae4f3672c6f535fff2ea074bd22e3f4b7a	module	module	-	no	sjl13 P reader: row P05 (the removed assert spelling)
+PP06	broiler-vm	inputs/class-heritage-conditional.js	585dc1a0debd513d3d25c7d93c9ecae7c1228d4aba58e87c8a3af3defa55847a	script	strict,sloppy	-	no	sjl13 P reader: row P18 (a ClassHeritage is a LeftHandSideExpression, not an Expression)
+PP07	broiler-vm	inputs/eval-using-top.js	a6b75adae81aa67934b5259e15e7d573820838015ef1b6bf5a9c8ab46a6d534c	script	strict,sloppy	-	yes	sjl13 P reader: row P25 (using at the top level of a script and of eval code)
+PP08	broiler-vm	inputs/rest-property-object-target.js	fbdb0a1cc37d9cd9dc3e4f08929b61c3baf6bc48e4dae530c67ae29026e512ee	script	strict,sloppy	-	no	sjl13 P GAP step: row P31 (EE0037: an AssignmentRestProperty whose target is an object literal)
+PP09	broiler-vm	inputs/rest-property-array-target.js	e725c039e372c842755fda5d86222588b9537c4138bf1b064dcce37721e3da02	script	strict,sloppy	-	no	sjl13 P GAP step: row P31 (EE0037: an AssignmentRestProperty whose target is an array literal)
+PP10	broiler-vm	inputs/rest-element-array-target.js	68a6033ffe4e248707a6781f0c01323ce96bd9ac7d9399b13f7729e2e8e49101	script	strict,sloppy	-	no	sjl13 P GAP step: row P31 control (an AssignmentRestElement may be a pattern)

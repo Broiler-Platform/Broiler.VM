@@ -1,0 +1,7 @@
+# probe NR01 (vm): stack-vm.js through the command-line root
+# command (in <probes>/N/run): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll stack-vm.js 
+Error: x
+    at f (<probes>/N/run/stack-vm.js:2:10)
+    at m (<probes>/N/run/stack-vm.js:4:35)
+    at <probes>/N/run/stack-vm.js:6:3
+# exit=0

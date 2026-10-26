@@ -1,0 +1,122 @@
+1 ('json', 'diff-line')
+3 ('module', 'diff-line')
+132 ('module', 'same')
+19 ('module', 'same-line')
+1 ('raw', 'diff-line')
+7 ('raw', 'same')
+9 ('raw', 'same-line')
+30 ('sloppy', 'diff-line')
+25 ('sloppy', 'js-0-0')
+761 ('sloppy', 'same')
+1423 ('sloppy', 'same-line')
+30 ('strict', 'diff-line')
+25 ('strict', 'js-0-0')
+750 ('strict', 'same')
+1409 ('strict', 'same-line')
+
+diff-line | Invalid pattern of CallExpression at L, C | T030394:strict vm=2102:33:7 js=33,1; T030394:sloppy vm=2102:33:7 js=32,1
+diff-line | Invalid pattern of OptionalChain at L, C | T029640:strict vm=2205:55:5 js=60,1; T029640:sloppy vm=2205:55:5 js=59,1; T029853:strict vm=2205:55:9 js=60,1
+diff-line | Unexpected token Assign: X at L, C | T028582:strict vm=2006:22:2 js=22,1; T028582:sloppy vm=2006:22:2 js=21,1; T042901:strict vm=2102:15:1 js=17,18
+diff-line | Unexpected token BracketEnd: X at L, C | T028406:strict vm=2102:20:5 js=22,1; T028406:sloppy vm=2102:20:5 js=21,1; T028407:strict vm=2102:21:5 js=23,1
+diff-line | Unexpected token Colon: X at L, C | V000034:json vm=2406:0:0 js=1,13
+diff-line | Unexpected token Identifier: X at L, C | T028609:raw vm=2006:4:2 js=3,7
+diff-line | Unexpected token Increment: X at L, C | T028376:strict vm=2205:23:1 js=25,1; T028376:sloppy vm=2205:23:1 js=24,1
+diff-line | Unexpected token LineTerminator: X at L, C | T041729:module vm=2402:22:3 js=21,16; T041730:module vm=2402:23:3 js=22,16; T041731:module vm=2402:23:3 js=22,16
+diff-line | Unterminated comment at L, C | T028581:strict vm=2002:15:1 js=17,1; T028581:sloppy vm=2002:15:1 js=16,1; T041288:strict vm=2002:23:1 js=25,1
+diff-line | Unterminated template literal at L, C | V000061:strict vm=2007:1:9 js=3,1; V000061:sloppy vm=2007:1:9 js=2,1; J000868:strict vm=2007:2:5 js=5,4
+js-0-0 | Unexpected token EOF: X at L, C | T028428:strict vm=2101:18:1 js=0,0; T028428:sloppy vm=2101:18:1 js=0,0; T028429:strict vm=2101:19:1 js=0,0
+same | Expecting BracketEnd at L, C | T049540:strict vm=2102:17:17 js=18,17; T049540:sloppy vm=2102:17:17 js=17,17; T049541:strict vm=2102:18:13 js=19,13
+same | Expecting BracketStart at L, C | T041003:strict vm=2102:20:5 js=21,5; T041003:sloppy vm=2102:20:5 js=20,5; T041005:strict vm=2102:20:4 js=21,4
+same | Expecting CurlyBracketStart at L, C | T051015:strict vm=2102:15:14 js=16,14; T051015:sloppy vm=2102:15:14 js=15,14
+same | Expecting keyword as at L, C | T040803:module vm=2102:24:9 js=24,9
+same | Expecting keyword from at L, C | T040804:module vm=2102:24:11 js=24,11; T040841:module vm=2102:5:14 js=5,14; T040842:module vm=2102:4:14 js=4,14
+same | Expecting keyword while at L, C | T047514:strict vm=2102:17:13 js=18,13; T047514:sloppy vm=2102:17:13 js=17,13
+same | Invalid pattern of FunctionExpression at L, C | T029629:strict vm=2205:23:7 js=24,7; T029629:sloppy vm=2205:23:7 js=23,7; T029733:strict vm=2205:23:10 js=24,10
+same | Invalid pattern of Meta at L, C | T037837:module vm=2205:31:2 js=31,2; T037838:module vm=2205:31:5 js=31,5; T037843:module vm=2205:31:6 js=31,6
+same | Invalid pattern of OptionalChain at L, C | T029628:strict vm=2205:56:5 js=57,5; T029628:sloppy vm=2205:56:5 js=56,5; T029852:strict vm=2205:56:9 js=57,9
+same | Unexpected character '\u00A1' (U+00A1) at L, C | V000056:strict vm=2001:1:3 js=2,3; V000056:sloppy vm=2001:1:3 js=1,3
+same | Unexpected character '\u180E' (U+180E) at L, C | T051983:strict vm=2001:32:4 js=33,4; T051983:sloppy vm=2001:32:4 js=32,4
+same | Unexpected character '\u2013' (U+2013) at L, C | J000806:strict vm=2001:1:1 js=2,1; J000806:sloppy vm=2001:1:1 js=1,1
+same | Unexpected character '\u2022' (U+2022) at L, C | J001841:strict vm=2001:1:1 js=2,1; J001841:sloppy vm=2001:1:1 js=1,1; J001897:strict vm=2001:1:9 js=2,9
+same | Unexpected character '\u20AC' (U+20AC) at L, C | J002152:strict vm=2001:1:1 js=2,1; J002152:sloppy vm=2001:1:1 js=1,1
+same | Unexpected character '\u2E2F' (U+2E2F) at L, C | T040798:strict vm=2001:16:6 js=17,6; T040798:sloppy vm=2001:16:6 js=16,6; T040800:strict vm=2001:16:5 js=17,5
+same | Unexpected character '\uD83D\uDE00' (U+1F600) at L, C | J001445:strict vm=2001:1:1 js=2,1; J001445:sloppy vm=2001:1:1 js=1,1
+same | Unexpected character U+0000 (a control character) at L, C | J001355:strict vm=2001:1:1 js=2,1; J001355:sloppy vm=2001:1:1 js=1,1
+same | Unexpected character U+001F (a control character) at L, C | J000883:strict vm=2001:1:1 js=2,1; J000883:sloppy vm=2001:1:1 js=1,1
+same | Unexpected character U+007F (a control character) at L, C | J002049:strict vm=2001:1:1 js=2,1; J002049:sloppy vm=2001:1:1 js=1,1
+same | Unexpected character U+0085 (a control character) at L, C | J000714:strict vm=2001:1:2 js=2,2; J000714:sloppy vm=2001:1:2 js=1,2; J002004:strict vm=2001:1:4 js=2,4
+same | Unexpected character U+FFFD (the replacement character \u201 | J000822:strict vm=2001:1:1 js=2,1; J000822:sloppy vm=2001:1:1 js=1,1
+same | Unexpected token Assign: X at L, C | T030043:strict vm=2102:20:10 js=21,10; T030043:sloppy vm=2102:20:10 js=20,10; T030050:strict vm=2102:20:16 js=21,16
+same | Unexpected token AssignAdd: X at L, C | T051442:strict vm=2102:17:7 js=18,7; T051442:sloppy vm=2102:17:7 js=17,7
+same | Unexpected token BitwiseAnd: X at L, C | T050437:strict vm=2101:17:19 js=18,19; T050437:sloppy vm=2101:17:19 js=17,19
+same | Unexpected token BitwiseOr: X at L, C | T051443:strict vm=2102:17:7 js=18,7; T051443:sloppy vm=2102:17:7 js=17,7
+same | Unexpected token BooleanAnd: X at L, C | T051444:strict vm=2102:17:7 js=18,7; T051444:sloppy vm=2102:17:7 js=17,7
+same | Unexpected token BracketEnd: X at L, C | T028333:strict vm=2102:17:1 js=18,1; T028333:sloppy vm=2102:17:1 js=17,1; T028392:strict vm=2101:20:1 js=21,1
+same | Unexpected token Coalesce: X at L, C | T041024:strict vm=2101:16:2 js=17,2; T041024:sloppy vm=2101:16:2 js=16,2; T041052:strict vm=2101:18:1 js=19,1
+same | Unexpected token Colon: X at L, C | T042374:strict vm=2102:20:6 js=21,6; T042374:sloppy vm=2102:20:6 js=20,6; T042376:strict vm=2102:20:5 js=21,5
+same | Unexpected token Comma: X at L, C | T031289:strict vm=2101:20:9 js=21,9; T031289:sloppy vm=2101:20:9 js=20,9; T042020:module vm=2102:26:20 js=26,20
+same | Unexpected token CurlyBracketEnd: X at L, C | T039478:strict vm=2102:35:14 js=36,14; T039478:sloppy vm=2102:35:14 js=35,14; T039479:strict vm=2102:21:8 js=22,8
+same | Unexpected token CurlyBracketStart: X at L, C | T034212:strict vm=2102:17:9 js=18,9; T034212:sloppy vm=2102:17:9 js=17,9; T034213:strict vm=2102:17:10 js=18,10
+same | Unexpected token Decrement: X at L, C | T051446:strict vm=2209:17:5 js=18,5; T051446:sloppy vm=2209:17:5 js=17,5; J000132:strict vm=2209:1:12 js=2,12
+same | Unexpected token Divide: X at L, C | T013890:strict vm=2101:20:1 js=21,1; T013890:sloppy vm=2101:20:1 js=20,1; T013891:strict vm=2101:20:1 js=21,1
+same | Unexpected token Dot: X at L, C | T041242:strict vm=2101:31:1 js=32,1; T041242:sloppy vm=2101:31:1 js=31,1; T041243:strict vm=2101:29:1 js=30,1
+same | Unexpected token Equal: X at L, C | T034354:strict vm=2102:32:16 js=33,16; T034354:sloppy vm=2102:32:16 js=32,16; T034355:strict vm=2102:25:16 js=26,16
+same | Unexpected token False: X at L, C | T040715:strict vm=2209:15:5 js=16,5; T040715:sloppy vm=2209:15:5 js=15,5
+same | Unexpected token Greater: X at L, C | T028629:strict vm=2101:23:4 js=24,4; T028629:sloppy vm=2101:23:4 js=23,4; T041620:module vm=2101:17:5 js=17,5
+same | Unexpected token Hash: X at L, C | T034972:strict vm=2101:30:13 js=31,13; T034972:sloppy vm=2101:30:13 js=30,13; T035011:strict vm=2102:35:6 js=36,6
+same | Unexpected token Identifier: X at L, C | T015699:module vm=2102:4:6 js=4,6; T028336:strict vm=2101:20:1 js=21,1; T028336:sloppy vm=2101:20:1 js=20,1
+same | Unexpected token In: X at L, C | T040733:strict vm=2209:15:5 js=16,5; T040733:sloppy vm=2209:15:5 js=15,5; T041006:strict vm=2101:20:1 js=21,1
+same | Unexpected token Increment: X at L, C | T049706:strict vm=2102:21:35 js=22,35; T049706:sloppy vm=2102:21:35 js=21,35; T049707:strict vm=2102:21:24 js=22,24
+same | Unexpected token InstanceOf: X at L, C | T040736:strict vm=2209:15:5 js=16,5; T040736:sloppy vm=2209:15:5 js=15,5; T041007:strict vm=2101:20:1 js=21,1
+same | Unexpected token Lambda: X at L, C | T029544:strict vm=2101:16:1 js=17,1; T029544:sloppy vm=2101:16:1 js=16,1; T029545:strict vm=2101:18:1 js=19,1
+same | Unexpected token Less: X at L, C | T041622:module vm=2101:16:1 js=16,1; J001987:module vm=2101:1:1 js=1,1
+same | Unexpected token Multiply: X at L, C | T028343:strict vm=2101:16:4 js=17,4; T028343:sloppy vm=2101:16:4 js=16,4; T028347:strict vm=2101:17:2 js=18,2
+same | Unexpected token Negate: X at L, C | T028603:strict vm=2102:19:17 js=20,17; T028603:sloppy vm=2102:19:17 js=19,17; T028612:raw vm=2102:2:2 js=2,2
+same | Unexpected token Null: X at L, C | T040742:strict vm=2209:15:5 js=16,5; T040742:sloppy vm=2209:15:5 js=15,5; T042028:module vm=2102:27:21 js=27,21
+same | Unexpected token Number: X at L, C | T028331:strict vm=2102:16:5 js=17,5; T028331:sloppy vm=2102:16:5 js=16,5; T028349:strict vm=2102:16:4 js=17,4
+same | Unexpected token QuestionMark: X at L, C | T037706:strict vm=2101:18:9 js=19,9; T037706:sloppy vm=2101:18:9 js=18,9; T039459:strict vm=2101:18:11 js=19,11
+same | Unexpected token RightShift: X at L, C | T051448:strict vm=2102:17:6 js=18,6; T051448:sloppy vm=2102:17:6 js=17,6
+same | Unexpected token SemiColon: X at L, C | T028345:strict vm=2102:16:4 js=17,4; T028345:sloppy vm=2102:16:4 js=16,4; T030367:strict vm=2101:33:13 js=34,13
+same | Unexpected token SquareBracketEnd: X at L, C | T053113:module vm=2101:15:27 js=15,27; J000962:strict vm=2101:1:27 js=2,27; J000962:sloppy vm=2101:1:27 js=1,27
+same | Unexpected token String: X at L, C | T039719:strict vm=2101:20:23 js=21,23; T039719:sloppy vm=2101:20:23 js=20,23; T051169:strict vm=2209:23:7 js=24,7
+same | Unexpected token TemplateEnd: X at L, C | T039521:strict vm=2101:25:3 js=26,3; T039521:sloppy vm=2101:25:3 js=25,3; T039522:strict vm=2101:22:7 js=23,7
+same | Unexpected token TripleDots: X at L, C | T029529:strict vm=2101:16:10 js=17,10; T029529:sloppy vm=2101:16:10 js=16,10
+same | Unexpected token True: X at L, C | T040760:strict vm=2209:15:5 js=16,5; T040760:sloppy vm=2209:15:5 js=15,5
+same | f is already defined in current scope at L, C | T028486:strict vm=2201:23:31 js=24,31; T028486:sloppy vm=2201:23:31 js=23,31; T028489:strict vm=2201:23:29 js=24,29
+same | x is already defined in current scope at L, C | T041631:module vm=2201:18:7 js=18,7; T041643:module vm=2202:18:5 js=18,5; T047160:strict vm=2201:22:9 js=23,9
+same-line | A is already defined in current scope at L, C | T041701:module vm=2202:23:16 js=23,31
+same-line | AG is already defined in current scope at L, C | T041703:module vm=2202:23:16 js=23,33
+same-line | Expecting BracketStart at L, C | T041004:strict vm=2102:20:1 js=21,10; T041004:sloppy vm=2102:20:1 js=20,10; T041018:strict vm=2101:20:1 js=21,6
+same-line | F is already defined in current scope at L, C | T041705:module vm=2202:23:16 js=23,25
+same-line | G is already defined in current scope at L, C | T041707:module vm=2202:23:16 js=23,27
+same-line | Invalid left hand side assignemnt at L, C | T030037:strict vm=2205:20:1 js=21,7; T030037:sloppy vm=2205:20:1 js=20,7; T030038:strict vm=2205:20:1 js=21,7
+same-line | Invalid pattern of CallExpression at L, C | T030396:strict vm=2102:24:15 js=25,1; T030396:sloppy vm=2102:24:15 js=24,1
+same-line | Invalid pattern of SequenceExpression at L, C | T029619:strict vm=2205:23:7 js=24,6; T029619:sloppy vm=2205:23:7 js=23,6; T029723:strict vm=2205:23:10 js=24,9
+same-line | Unexpected token Assign: X at L, C | T030095:module vm=2101:21:8 js=21,16; T030096:module vm=2101:21:8 js=21,17; T030097:module vm=2101:20:8 js=20,10
+same-line | Unexpected token BracketEnd: X at L, C | T028409:strict vm=2102:18:22 js=19,23; T028409:sloppy vm=2102:18:22 js=18,23; T030251:module vm=2101:24:9 js=24,16
+same-line | Unexpected token BracketStart: X at L, C | T036476:strict vm=2101:35:22 js=36,29; T036476:sloppy vm=2101:35:22 js=35,29; T036489:strict vm=2101:36:10 js=37,17
+same-line | Unexpected token Comma: X at L, C | J001471:strict vm=2102:1:19 js=2,17; J001471:sloppy vm=2102:1:19 js=1,17
+same-line | Unexpected token CurlyBracketEnd: X at L, C | T029414:strict vm=2209:40:12 js=41,23; T029414:sloppy vm=2209:40:12 js=40,23; T029415:strict vm=2209:40:12 js=41,22
+same-line | Unexpected token CurlyBracketStart: X at L, C | T029483:strict vm=2101:27:8 js=28,18; T029483:sloppy vm=2101:27:8 js=27,18; T030371:strict vm=2101:16:19 js=17,33
+same-line | Unexpected token Decrement: X at L, C | T028367:strict vm=2101:18:3 js=19,1; T028367:sloppy vm=2101:18:3 js=18,1; T039582:strict vm=2101:17:3 js=18,1
+same-line | Unexpected token Divide: X at L, C | T013876:strict vm=2101:18:1 js=19,3; T013876:sloppy vm=2101:18:1 js=18,3; T013877:strict vm=2101:18:1 js=19,3
+same-line | Unexpected token Dot: X at L, C | T035078:strict vm=2001:31:11 js=32,17; T035078:sloppy vm=2001:31:11 js=31,17; T035081:strict vm=2001:31:10 js=32,16
+same-line | Unexpected token Empty: X at L, C | T028596:raw vm=2001:1:1 js=1,2; T028597:raw vm=2001:1:1 js=1,7; T028598:raw vm=2001:1:1 js=1,7
+same-line | Unexpected token False: X at L, C | T028410:strict vm=2101:18:17 js=19,18; T028410:sloppy vm=2101:18:17 js=18,18
+same-line | Unexpected token Hash: X at L, C | T028592:raw vm=2001:1:1 js=1,3; T028593:raw vm=2001:1:1 js=1,8; T028594:raw vm=2001:1:1 js=1,8
+same-line | Unexpected token Identifier: X at L, C | T029107:module vm=2101:24:1 js=24,8; T030195:strict vm=2209:20:1 js=21,7; T030351:strict vm=2209:23:2 js=24,8
+same-line | Unexpected token Increment: X at L, C | T028365:strict vm=2101:17:3 js=18,1; T028365:sloppy vm=2101:17:3 js=17,1; T039620:strict vm=2101:17:3 js=18,1
+same-line | Unexpected token Lambda: X at L, C | T030370:strict vm=2101:16:11 js=17,17; T030370:sloppy vm=2101:16:11 js=16,17; T037866:strict vm=2101:24:16 js=25,18
+same-line | Unexpected token LineTerminator: X at L, C | T014976:strict vm=2101:17:1 js=18,5; T014976:sloppy vm=2101:17:1 js=17,5; T028364:strict vm=2101:17:3 js=18,8
+same-line | Unexpected token Multiply: X at L, C | T035076:strict vm=2001:24:11 js=25,17; T035076:sloppy vm=2001:24:11 js=24,17; T035080:strict vm=2001:24:5 js=25,11
+same-line | Unexpected token Negate: X at L, C | J001272:strict vm=2101:1:2 js=2,1; J001272:sloppy vm=2101:1:2 js=1,1; J001630:strict vm=2101:1:2 js=2,1
+same-line | Unexpected token Negate: X at the end of the script | J001630:sloppy vm=2101:1:2 js=1,1
+same-line | Unexpected token Number: X at L, C | T030920:strict vm=2102:25:8 js=26,10; T030920:sloppy vm=2102:25:8 js=25,10; T037721:strict vm=2209:16:33 js=17,39
+same-line | Unexpected token SemiColon: X at L, C | T030366:strict vm=2209:33:8 js=34,18; T030366:sloppy vm=2209:33:8 js=33,18; T030423:strict vm=2209:29:8 js=30,18
+same-line | Unexpected token SquareBracketStart: X at L, C | T030583:strict vm=2102:33:31 js=34,33; T030583:sloppy vm=2102:33:31 js=33,33; T030584:strict vm=2102:33:27 js=34,29
+same-line | Unexpected token String: X at L, C | T041715:module vm=2101:21:1 js=21,8
+same-line | Unterminated comment at L, C | J000380:strict vm=2002:1:1 js=2,10; J000380:sloppy vm=2002:1:1 js=1,10; J000787:strict vm=2002:1:1 js=2,8
+same-line | Unterminated string literal at L, C | T041022:strict vm=2004:16:1 js=17,2; T041022:sloppy vm=2004:16:1 js=16,2; T041023:strict vm=2004:16:1 js=17,2
+same-line | Unterminated template literal at L, C | J000329:strict vm=2007:1:1 js=2,6; J000329:sloppy vm=2007:1:1 js=1,6
+same-line | f is already defined in current scope at L, C | T028499:strict vm=2201:23:14 js=24,29; T028499:sloppy vm=2201:23:14 js=23,29; T028500:strict vm=2201:23:14 js=24,30
+same-line | x is already defined in current scope at L, C | T048850:strict vm=2201:17:12 js=18,16; T048850:sloppy vm=2201:17:12 js=17,16; T048857:strict vm=2201:17:10 js=18,14

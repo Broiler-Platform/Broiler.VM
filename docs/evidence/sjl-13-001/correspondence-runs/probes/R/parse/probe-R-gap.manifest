@@ -1,0 +1,24 @@
+# SJL-13.1 task 1.1, sub-area R: the left-operand gap's probes (run in a process of their own) in the parse corpus's format 1 (conformance/parse/README.md),
+# read unchanged by Broiler.VM's --parse-corpus mode and Broiler.JS's SJL-12 parse-corpus tool. Probes, not a corpus.
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-R-gap
+#% rows	5
+#% virtual-root	/test262/
+#% stored-root	/sjl13-R-gap/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+RP01	broiler-vm	inputs/sjl13-R-gap/rp01-gap-parenthesised-chain-first.js	79dd800870160c5222ca8c7be42608e89e9eb1222a156bdbcfb431c92a7f5f68	script	sloppy	-	no	sjl13 R reader: R14: a binary chain whose first operand is a parenthesised binary chain (5,001 + 5,001 levels)
+RP02	broiler-vm	inputs/sjl13-R-gap/rp02-gap-template-chain-first.js	8eb86035ca424c6955bbb5751e7f3bdfb52d0a290717c7698280914788f26981	script	sloppy	-	no	sjl13 R reader: R14: a binary chain whose first operand is a template whose substitution holds a binary chain
+RP03	broiler-vm	inputs/sjl13-R-gap/rp03-gap-control-parenthesised-chain-last.js	2ccc04aadf0d65ee4fe192cd5bf52f0d456518b61a90721fdf4eec1b8861bbb1	script	sloppy	-	no	sjl13 R reader: R14 control: TemplateChecks' text, the parenthesised chain as the last operand (6,000 and 6,000)
+RP04	broiler-vm	inputs/sjl13-R-gap/rp04-gap-member-chain-first.js	1d173f5242791356dfdb50942cdb2053480916b0822456ccf651ef42390a40e8	script	sloppy	-	no	sjl13 R reader: R14: a binary chain whose first operand is a member chain, no parentheses (5,001 + 5,001)
+RP05	broiler-vm	inputs/sjl13-R-gap/rp05-gap-parenthesised-chain-object.js	0593bc55bbf2c3176b713645addb31c3563542a2f14fbfe5cda3c4b8921ce311	script	sloppy	-	no	sjl13 R reader: R14: a member chain whose object is a parenthesised binary chain (5,001 + 5,001)

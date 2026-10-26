@@ -1,0 +1,10 @@
+# probe NR02 (js): strict-eval-js.js through the shell
+# command (in <probes>/N/run): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host strict-eval-js.js 
+A1 SyntaxError: Unexpected token BracketEnd: ) at 2, 7
+A2 SyntaxError: Unexpected token BracketEnd: ) at 1, 7
+B1 SyntaxError: Unexpected token BracketEnd: ) at 3, 3
+B2 SyntaxError: Unexpected token BracketEnd: ) at 2, 3
+C1 SyntaxError: Unexpected token Negate: ! at 2, 2
+C2 value 1
+D1 SyntaxError: Unexpected token BracketEnd: ) at 3, 4
+# exit=0

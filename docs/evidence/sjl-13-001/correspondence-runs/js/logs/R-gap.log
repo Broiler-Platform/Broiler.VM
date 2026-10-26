@@ -1,0 +1,4 @@
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/R/parse/probe-R-gap.manifest --test262 <work>/t262 --out <runs>/js/reports/R-gap.tsv 
+parse-corpus: 0/5
+parse-corpus: 5 input variant(s), 10 row(s), 8.6 s, written to <runs>/js/reports/R-gap.tsv
+# exit=0

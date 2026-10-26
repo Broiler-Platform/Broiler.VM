@@ -1,0 +1,4 @@
+# probe C01 (vm): c01-bigint-numeric.js through the command-line root
+# command (in <probes>/D/cli): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll --numeric --check --all c01-bigint-numeric.js 
+broiler-js: c01-bigint-numeric.js: 2104:ConstructOutsideManifest at 1:9: a BigInt literal is not admitted by the declared feature manifest
+# exit=3

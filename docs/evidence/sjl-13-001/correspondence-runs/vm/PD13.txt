@@ -1,0 +1,10 @@
+# probe PD13 (vm): input inputs/d13-export-reserved-local.mjs; its rows of reports/D-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/D/probe-D.manifest <runs>/vm/reports/D-parse.tsv --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-D
+#% manifest-sha256	0d7596c890bba137a82441e7b0efbe60d8fbdbbb612f1ae8e9572cb042fc82db
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PD13	B1	module	bytecode	refused	2403:1:10	-	-	-
+PD13	B1	module	native	refused	2403:1:10	-	-	-
+PD13	B4	module	slice	refused	2104:1:1	-	-	-

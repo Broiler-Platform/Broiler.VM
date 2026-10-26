@@ -1,0 +1,4 @@
+# probe TV-T17b (vm): the line labelled T17b of t-values.js's run; whole transcript reports/T-values.transcript.txt
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl13t/t-values.js --fuel 200000000000 --wall 600000 
+# exit=1
+T17b 08.5 => 8.5

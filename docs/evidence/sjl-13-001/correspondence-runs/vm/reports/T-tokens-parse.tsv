@@ -1,0 +1,26 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T-tokens
+#% manifest-sha256	ff7f2867e38c03d0b916349df2ab598145247c5930d8a9b5c0941ea35b67dc87
+#% manifest-rows	3
+#% archive-sha256	-
+#% populations	B1,B4
+#% selection	all
+#% compilations	9
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T32A	B1	sloppy	bytecode	accepted	-	74e5863ab84dd681ec2746495543682dfe0bd1f44bb1cf468b87cb60a8b68495	290	-
+T32A	B1	sloppy	native	accepted	-	d6cf4431f85152ffb0db61412cbd9ec90d84e409666fde1af869825d7293283e	427	-
+T32B	B1	sloppy	bytecode	accepted	-	30585cde8f20d07e881f20db019c516f3824c5ea30408d63b1c1f71fec60bfd8	231	-
+T32B	B1	sloppy	native	accepted	-	cbe4fd362a533300b8639ff7408b6a105913ddf38cac0fdc21e629134856ee72	368	-
+T32C	B1	sloppy	bytecode	accepted	-	3dfffc167ace9b7d949af6a0d113ee0f998c0e4ea131744c18b98351282dd31c	181	-
+T32C	B1	sloppy	native	accepted	-	598565d6b829e788c77722c0bcdf2702273e38ea9e955c0ba612b299cd6bbf39	318	-
+T32A	B4	script	slice	accepted	-	58018897ae817ae9e4a74642c0b73becdada0f1dabd2c2eea17f2b8fc0f87ffb	146	-
+T32B	B4	script	slice	accepted	-	25aa0f2b850147be8b2f8f69f6ef1cdacdb51332f016716d7eff97ff7126b1d1	110	-
+T32C	B4	script	slice	refused	2104:1:9	-	-	-

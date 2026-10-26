@@ -1,0 +1,10 @@
+# probe T12C (js): input inputs/sjl13-T/t12c-template-hex-escape-underscore.js; its rows of reports/T-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/T/parse/corpus.manifest --test262 <work>/t262 --out <runs>/js/reports/T-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	a12051b41c3519a629f34f93b9c4a5e803f6a98b2888f49c0df5125d35ad5ec4
+#% corpus	sjl13-T
+#% end	88
+id	variant	entry	outcome	type	message
+T12C	sloppy	P	accepted	-	-
+T12C	sloppy	K	accepted	-	-

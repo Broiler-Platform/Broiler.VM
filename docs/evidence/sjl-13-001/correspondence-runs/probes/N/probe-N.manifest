@@ -1,0 +1,39 @@
+# The N reader's parse probes for SJL-13.1 task 1.1 (sub-area N, positions), in format 1 of the parse corpus's
+# manifest (Broiler.JS conformance/parse/README.md). Written by a script (N-work/scripts/make_probes.py); every input
+# is under inputs/ beside this file, byte-exact (CR, CR LF, U+2028, U+2029, a leading UTF-8 byte-order mark).
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-probes-N
+#% rows	17
+#% virtual-root	/test262/
+#% stored-root	/probes-N/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% eval-family-markers	eval	arguments	super	new.target	#
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+#% builder	hand-written (sjl13 N reader)
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+NP01	broiler-vm	inputs/lf-lines.js	19e39896c8e52221d97ee138201a36edbcbb4a041411f6c7d9dfa938b8279141	script	sloppy	-	no	sjl13 N reader: row N2 control: LF lines
+NP02	broiler-vm	inputs/crlf-lines.js	8e5d3fabc0d7ce9e36a82196165300fce4d0be46414b1ab7e12b1091626399ac	script	sloppy	-	no	sjl13 N reader: row N2: CR LF counts once
+NP03	broiler-vm	inputs/lone-cr-lines.js	a47b993960873998f2c6f41ec361dfbfe606a6a5152267245c1de75cd9df1e48	script	sloppy	-	no	sjl13 N reader: row N2: a lone CR is a line
+NP04	broiler-vm	inputs/ls-ps-lines.js	5d5975a0c0043dce49f4f6a40c621b1fa3ce623cabb07cded76fb2b503fc0653	script	sloppy	-	no	sjl13 N reader: row N2: LS and PS between tokens
+NP05	broiler-vm	inputs/ls-in-string.js	cfb121bc624c39fca4c2a03878b0fa1f5da0c10deeec3020430db4f5f573576a	script	sloppy	-	no	sjl13 N reader: row N3: LS inside a string literal ends a line
+NP06	broiler-vm	inputs/continuation-crlf.js	2f6c359c0428bb164a6dc1aa7b69bf9c6050c7d461fc19657caadd15a80afbe3	script	sloppy	-	no	sjl13 N reader: row N3: a CR LF line continuation is one line
+NP07	broiler-vm	inputs/template-lines.js	b8325ed12cc44c922cdc8d8be4c91f5f563ca217fea482c2b093182c9481e210	script	sloppy	-	no	sjl13 N reader: row N3: CR LF and LS inside a template
+NP08	broiler-vm	inputs/comment-lines.js	1ce0e022dcbb145433cd7f0ed0b4af3f59b427a711be89e660c22d16271a521e	script	sloppy	-	no	sjl13 N reader: row N3: CR LF and PS inside a block comment
+NP09	broiler-vm	inputs/astral-string.js	15ce605a0f76c90179d90b525c406c57c075072d67120766a683b2f1bf1a44c7	script	sloppy	-	no	sjl13 N reader: row N4: a surrogate pair is two columns (string)
+NP10	broiler-vm	inputs/astral-identifier.js	8bcf19ffd55320cbf0567b25c800356485b2964bd975d1e034ebb66d4f6bd92f	script	sloppy	-	no	sjl13 N reader: row N4: a surrogate pair is two columns (identifier)
+NP11	broiler-vm	inputs/bom-start.js	a1d4b4172edeb2c40c3a4297a4131f0a9203222ec5db73d33f81a81d51af60f7	script	sloppy	-	no	sjl13 N reader: row N5: a leading U+FEFF (byte-order mark) and the hosts that drop it
+NP12	broiler-vm	inputs/hashbang-line.js	8f7e9f8313812695933d23ff7c5ff7d581949c67c0971dd87155bfbb2abba608	script	raw	-	yes	sjl13 N reader: row N6: the line after a hashbang; eval-family through the # marker (B3 positions are the eval text's)
+NP13	broiler-vm	inputs/html-close-line.js	9949b6c73c8b7efe9999e6850b8acf90ab707d169ddd611999653606ffd4c8be	script	sloppy	-	no	sjl13 N reader: row N6: the line after an HTML-like close comment
+NP14	broiler-vm	inputs/substitution-position.js	4a958c55bb7073816dd1dd648d5812fa9986c670a0c5380109a46be31ae2b7a2	script	sloppy	-	no	sjl13 N reader: row N7: a parse refusal inside a template substitution is at its own place
+NP15	broiler-vm	inputs/substitution-lexical.js	b62af327247511b19012b49a02377092d13ec7ee58038ae0e85f835946e2e220	script	sloppy	-	no	sjl13 N reader: row N7 and N10: a deferred lexical refusal inside a substitution, and where each engine anchors it
+NP16	broiler-vm	inputs/strict-eval-line1.js	ac82443cd48c810d7ef8aa1a6a02a4e9849586e91385dda9af814aa9c7484092	script	strict,sloppy	-	yes	sjl13 N reader: row N25: eval code refused on its line 1 (B3 E1 against JS strict = the direct-eval prefix)
+NP17	broiler-vm	inputs/strict-eval-line2.js	acb7ae9a8e329211cad516a8ff8f889fb236da1fefa89b63ae4b991eff7cc9f1	script	strict,sloppy	-	yes	sjl13 N reader: row N25: eval code refused on its line 2 (the shift is one line, columns kept)

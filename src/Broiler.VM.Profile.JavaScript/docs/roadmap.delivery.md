@@ -190,9 +190,12 @@ taken, and JS-2's gate is re-scoped.
 - **Ledger:** JS-2's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
   its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
-- **Next action:** None in this component until the programme's milestone SJL-12 has fixed the
-  frontend's contract. Then the programme's milestone SJL-13 replaces the wide path's parser with
-  the shared frontend, and that milestone's bundle is this one's evidence.
+- **Next action:** The programme's milestone SJL-13, started on 2026-10-26 on the contract SJL-12
+  fixed, replaces the wide path's parser with the shared frontend in two steps, an adapter into the
+  wide tree and then the shared tree itself; its bundles `sjl-13-001` and `sjl-13-002` are this
+  milestone's evidence ([JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
+  decision D33). Nothing is due in this component before that milestone's steps land *(corrected:
+  [JSC-320](roadmap.corrections.md#jsc-320))*.
 - **Dependencies:** JS-1, plus **one external dependency: the shared frontend**, built in the
   Broiler.JS repository by the programme's milestones SJL-12 and SJL-13 and admitted under core
   record ADR 0014 from the programme's SJL-2. The core contract's acceptance no longer binds this

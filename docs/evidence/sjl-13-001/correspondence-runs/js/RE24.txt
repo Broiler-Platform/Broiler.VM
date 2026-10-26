@@ -1,0 +1,4 @@
+# probe RE24 (js): the line labelled RE24 of r-values.js's run; whole transcript reports/R-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host r-values.js 
+# exit=0
+RE24 field initialiser: eval a function reading its own arguments => 2

@@ -1,0 +1,11 @@
+# dotnet build -c Release --disable-build-servers -nologo <work>/js-tokens/js-tokens.csproj -p:EngineBin=<js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0 -o <work>/js-tokens/out
+  Determining projects to restore...
+  Restored <work>/js-tokens/js-tokens.csproj (in 200 ms).
+  js-tokens -> <work>/js-tokens/out/js-tokens.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.74
+# exit=0

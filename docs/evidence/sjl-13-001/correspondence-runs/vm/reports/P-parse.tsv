@@ -1,0 +1,65 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-P
+#% manifest-sha256	68e9a35ce102c61bc80729e6b20ad762f141efd0e2514a31b2736fb6baf606c9
+#% manifest-rows	10
+#% archive-sha256	-
+#% populations	B1,B2,B3,B4
+#% selection	all
+#% compilations	48
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PP01	B1	module	bytecode	refused	2102:1:36;2102:1:36;2102:1:36	-	-	-
+PP01	B1	module	native	refused	2102:1:36;2102:1:36;2102:1:36	-	-	-
+PP02	B1	module	bytecode	refused	2405:1:1	-	-	-
+PP02	B1	module	native	refused	2405:1:1	-	-	-
+PP03	B1	module	bytecode	accepted	-	2248bcf1826443fdae61a1b361980c792c8c2f0fe1fe97d3eb381bed84efa9d8	295	-
+PP03	B1	module	native	accepted	-	71ee74003fdfd7230b97c70d9e46aa5be691f4deff79cd67d16413c9dfb21f2a	694	-
+PP04	B1	json	bytecode	accepted	-	1e589abf12e7fdff517b8477ee012f0a5d2ee0219e241a40a9533cb0447f99d6	186	-
+PP04	B1	json	native	accepted	-	5dd2c677384b2e6e4df5f147acf5fae8b888f4043ab18fdbfc9017f5cce89021	409	-
+PP05	B1	module	bytecode	refused	2102:1:29	-	-	-
+PP05	B1	module	native	refused	2102:1:29	-	-	-
+PP06	B1	strict	bytecode	refused	2102:1:30;2102:1:30;2102:1:47	-	-	-
+PP06	B1	strict	native	refused	2102:1:30;2102:1:30;2102:1:47	-	-	-
+PP06	B1	sloppy	bytecode	refused	2102:1:30;2102:1:30;2102:1:47	-	-	-
+PP06	B1	sloppy	native	refused	2102:1:30;2102:1:30;2102:1:47	-	-	-
+PP07	B1	strict	bytecode	refused	2101:1:1	-	-	-
+PP07	B1	strict	native	refused	2101:1:1	-	-	-
+PP07	B1	sloppy	bytecode	refused	2101:1:1	-	-	-
+PP07	B1	sloppy	native	refused	2101:1:1	-	-	-
+PP08	B1	strict	bytecode	accepted	-	d30fdb1c489bf058bae31626210ab6c29660f71f849a885aaf54621d8d9e7f0f	183	-
+PP08	B1	strict	native	accepted	-	bd9cdc73cb9cca384d3c74857a4dd191a4bed8ece361f2777c64e128e9fa39cc	320	-
+PP08	B1	sloppy	bytecode	accepted	-	041e7495632effcfbef0e2600187e7d541706117b52985a086b553a45f752717	183	-
+PP08	B1	sloppy	native	accepted	-	47f86902fdbe6e2373371c55cef59d6c330da0e86c3631135423042adbbd9a27	320	-
+PP09	B1	strict	bytecode	accepted	-	1c207c718828b18bc12a2477419f8c00a7f35bb47cad2f96301afded2b23b567	236	-
+PP09	B1	strict	native	accepted	-	695f5a202074f2876f622076fa25f4d404cc562979f003ba1306d58905e12a53	785	-
+PP09	B1	sloppy	bytecode	accepted	-	0a97b89d1d67072a97f074481379caff01143f58430ea7047e322fff7c522125	236	-
+PP09	B1	sloppy	native	accepted	-	00e39dd445453fa2b92160bcd8995bb5548fd0dfeaeec0cd51e822ebb1cacfe8	785	-
+PP10	B1	strict	bytecode	accepted	-	dad319b0bf0ee3948dfd8669d94acefbf2ad26856193849e1a7525f98412d183	273	-
+PP10	B1	strict	native	accepted	-	7eaaac11fd939022d37215064d98f8c4a97c8bfa5625b93521d8ae4211b35b63	1148	-
+PP10	B1	sloppy	bytecode	accepted	-	c986223b8b4c5812a6196c5e36067fe8e105c0c6a9c47489b133c3f515e3d4d8	273	-
+PP10	B1	sloppy	native	accepted	-	67607d7b0b6046f6c98a6a9abdbaec41a75497c45915e40f03d85c5ca9b00eda	1148	-
+PP07	B3	E0	bytecode	refused	2101:1:1	-	-	-
+PP07	B3	E1	bytecode	refused	2101:1:1	-	-	-
+PP07	B3	E2	bytecode	refused	2101:1:1	-	-	-
+PP07	B3	E3	bytecode	refused	2101:1:1	-	-	-
+PP07	B3	E4	bytecode	refused	2101:1:1	-	-	-
+PP07	B3	E5	bytecode	refused	2101:1:1	-	-	-
+PP07	B3	E6	bytecode	refused	2101:1:1	-	-	-
+PP07	B3	E7	bytecode	refused	2101:1:1	-	-	-
+PP01	B4	module	slice	refused	2104:1:1	-	-	-
+PP02	B4	module	slice	refused	2104:1:1	-	-	-
+PP03	B4	module	slice	refused	2104:1:1	-	-	-
+PP04	B4	json	slice	not-compiled	-	-	-	no-json-goal
+PP05	B4	module	slice	refused	2104:1:1	-	-	-
+PP06	B4	script	slice	refused	2102:1:30	-	-	-
+PP07	B4	script	slice	refused	2102:1:7	-	-	-
+PP08	B4	script	slice	refused	2205:1:9;2104:1:20	-	-	-
+PP09	B4	script	slice	refused	2205:1:9;2104:1:20	-	-	-
+PP10	B4	script	slice	refused	2205:1:8;2104:1:19	-	-	-

@@ -1,0 +1,60 @@
+#% format	broiler-js-parse-corpus-report	1
+#% mode	acceptance
+#% tool	docs/evidence/sjl-12-001/tools/parse-corpus
+#% manifest-sha256	68e9a35ce102c61bc80729e6b20ad762f141efd0e2514a31b2736fb6baf606c9
+#% manifest-rows	10
+#% corpus	sjl13-probes-P
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% selection	all
+#% order	manifest
+#% threads	1
+#% thread-stack-bytes	268435456
+#% compile-stack-bytes	0	CompilationStack.SizeBytes: 0 compiles on the calling thread
+#% environment	TZ=UTC	LANG unset	LC_* unset	BROILER_* unset
+#% culture	(invariant)
+#% time-zone	UTC
+#% runtime	.NET 10.0.12
+#% os	Ubuntu 24.04.5 LTS X64
+#% processors	4
+#% context	JSContext(experimentalFeatures: JavaScriptFeatureFlags.AllExperimentalEs2026), one per thread
+#% strict-variant	the manifest's strict-prologue followed by the text
+#% source-names	virtual-root or stored-root followed by the path
+#% json-goal	the text unchanged at the entry points of every goal but module: ParseProgram, and CoreScript.Compile with isModule false
+#% assembly	Broiler.JavaScript.Ast	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	8cd8a85f-85ff-47c0-908e-ac230eac450e
+#% assembly	Broiler.JavaScript.Parser	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	cd76c4ea-d19e-4282-866f-d011fe85f925
+#% assembly	Broiler.JavaScript.Compiler	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	22136af2-9732-4651-88ae-c22cd35e54c9
+#% assembly	Broiler.JavaScript.Engine	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	497004ca-fd1b-4298-82f1-a8cddd75d56d
+#% assembly	Broiler.JavaScript.Runtime	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	f749a9c9-0285-4453-88a5-8ac4e1f660da
+#% rows	30
+id	variant	entry	outcome	type	message
+PP01	module	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Invalid attribute key "_k".
+PP01	module	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid attribute key "_k".
+PP02	module	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Invalid attribute key "k".
+PP02	module	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Invalid attribute key "k".
+PP03	module	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token LineTerminator: \n   at 1, 35
+PP03	module	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token LineTerminator: \n   at 1, 35
+PP04	json	P	accepted	-	-
+PP04	json	K	accepted	-	-
+PP05	module	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: assert at 1, 29
+PP05	module	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: assert at 1, 29
+PP06	strict	P	accepted	-	-
+PP06	strict	K	accepted	-	-
+PP06	sloppy	P	accepted	-	-
+PP06	sloppy	K	accepted	-	-
+PP07	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	'using' is not allowed at the top level of a script
+PP07	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	'using' is not allowed at the top level of a script
+PP07	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	'using' is not allowed at the top level of a script
+PP07	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	'using' is not allowed at the top level of a script
+PP08	strict	P	accepted	-	-
+PP08	strict	K	crashed	System.NotImplementedException	The method or operation is not implemented.
+PP08	sloppy	P	accepted	-	-
+PP08	sloppy	K	crashed	System.NotImplementedException	The method or operation is not implemented.
+PP09	strict	P	accepted	-	-
+PP09	strict	K	crashed	System.NotImplementedException	The method or operation is not implemented.
+PP09	sloppy	P	accepted	-	-
+PP09	sloppy	K	crashed	System.NotImplementedException	The method or operation is not implemented.
+PP10	strict	P	accepted	-	-
+PP10	strict	K	accepted	-	-
+PP10	sloppy	P	accepted	-	-
+PP10	sloppy	K	accepted	-	-
+#% end	30

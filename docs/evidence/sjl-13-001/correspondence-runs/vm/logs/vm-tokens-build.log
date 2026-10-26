@@ -1,0 +1,11 @@
+# dotnet build -c Release --disable-build-servers -nologo <work>/vm-tokens/vm-tokens.csproj -p:EngineBin=<vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0 -o <work>/vm-tokens/out
+  Determining projects to restore...
+  Restored <work>/vm-tokens/vm-tokens.csproj (in 109 ms).
+  vm-tokens -> <work>/vm-tokens/out/vm-tokens.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.65
+# exit=0
