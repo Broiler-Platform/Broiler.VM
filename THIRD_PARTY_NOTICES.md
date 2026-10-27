@@ -255,7 +255,15 @@ person makes. It is recorded as owed.
 is listed because it is ingested the same way and kept out by the same mechanism. The corpus is the
 Broiler.JS repository's, under Apache-2.0 and this repository's copyright holder; it quotes no
 specification text and copies no Unicode data file, naming ECMA-262 clauses by their identifiers and
-stating which code points a set holds. The archive is a `.tar.gz` under `src/tests/`, no project
+stating which code points a set holds. Its Temporal area, from corpus revision 24, names clauses of the
+Temporal proposal's text and of the Intl era and month code proposal's the same way, and its expected
+values are the answers of the proposal's reference polyfill at `e8cc03fc`, under the ISC licence, with
+none of the polyfill's code or text. Its Intl area, from revision 27, names clauses of ECMA-402 at
+`tc39/ecma402` `3d4c558` the same way, and its expected values are ICU's answers or, where the pin's
+README says, CLDR 48.2.0's data as the corpus's generator reads it, with none of ICU's code or CLDR's
+files, as that README states under "Terms". *(Added 2026-10-27, when the pin moved to revision 28. The
+paragraph did not move when the pin moved to revision 25, as it should have.)* The archive is a
+`.tar.gz` under `src/tests/`, no project
 includes it, the conformance root reads it from a path on its command line and packs nothing, and
 rule **N13** names `tests/vectors` beside the other three directories, with a witness that names it
 from the profile's own project file. **The release owner's confirmation is not made here**, for the
