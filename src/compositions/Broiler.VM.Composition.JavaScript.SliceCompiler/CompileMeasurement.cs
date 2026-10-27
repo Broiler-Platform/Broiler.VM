@@ -35,16 +35,29 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// (3) The lane's name is on every timed line, so the A/A lane is a name and not a second program.
 /// (4) Every compilation it times is printed; nothing is dropped, averaged or judged here. (5) Every
 /// timed compilation's own outcome and artifact hash are printed beside its time, so a lane that timed
-/// a refusal says so in the same output.
+/// a refusal says so in the same output; and the same condition is written by an untimed pass over
+/// every file before the timed one and by another after it, the check before and after the lane.
 /// </para>
 /// <para>
 /// <b>What is timed is the compilation and nothing around it</b>: one call of
 /// <see cref="JsCompiler.Compile(IReadOnlyList{JsScriptUnit}, IReadOnlyList{JsModuleUnit}, JsCompileRequest)"/>
 /// under the wide manifest in the bytecode form, which parses on the stack the compiler declares.
-/// Process start, reading the file and hashing the artifact are outside it. A child is one process, so
-/// under the JIT its first compilation also pays for compiling the compiler's own code; that is the
-/// same for every arm of one build, and it is part of what the arm costs a host that compiles once.
-/// Nothing is reset between two compilations of one child.
+/// Process start, reading the file and hashing the artifact are outside it. Nothing is reset between
+/// two compilations of one child.
+/// </para>
+/// <para>
+/// <b>What is timed is a warm compiler: the child compiles every file once, untimed, before it times
+/// any.</b> A child is one process, so under the JIT the first compilation that reaches a path of the
+/// compiler's own code also pays for compiling that code. Timed cold, that cost would fall on whichever
+/// workload came first to each path: a workload's time would depend on its place in the child, and its
+/// control, which follows it and reaches less of the compiler, would run warm, so the workload minus
+/// its control would charge the JIT to the workload and the pair would differ in more than one thing
+/// (<c>docs/baselines.md</c> rule 1). Every repetition of the collector is a fresh child, so excluding
+/// whole repetitions cannot remove that cost; the untimed pass does. Its condition lines, and those of
+/// a closing untimed pass, are the checks before and after the lane of rule 5. The collector of the
+/// measurement parts decision D24 names uses this mode as it is, warm; there is no cold mode. What a
+/// warm compilation still pays is the runtime's own later tiering, which the collector holds to one
+/// configuration through <c>--runtime</c>.
 /// </para>
 /// <para>
 /// <b>The population is the directory's own statement of it.</b> Its <c>README.md</c> names each
@@ -57,9 +70,10 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// <para>
 /// <b>It judges nothing.</b> No rule reads a time it writes but the measurement parts decision D24
 /// names; the condition lines are the same on every run of one build over one directory, and the
-/// collector compares them between arms. The exit code is 1 when any compilation was not accepted,
-/// because the workloads are sources the wide path accepts and a timed refusal measures the refusal
-/// path; the lines are written either way.
+/// collector compares them between arms. The exit code is 1 when any timed compilation was not
+/// accepted, because the workloads are sources the wide path accepts and a timed refusal measures the
+/// refusal path, and when a file's condition before, timed and after the lane is not one; the lines are
+/// written either way.
 /// </para>
 /// </remarks>
 internal static class CompileMeasurement
@@ -264,15 +278,22 @@ internal static class CompileMeasurement
             "declares; a script is one unit named test whose referrer is /workloads/<file>, a module one unit " +
             "keyed /workloads/<file>");
         Line(
-            "# source <file> <goal> <sha256> <bytes>; condition <file> <goal> <outcome> <diagnostics> " +
-            "<artifact sha256> <artifact length>; time <arm> <file> <compile milliseconds>");
+            "# before and after <file> <goal> <outcome> <diagnostics> <artifact sha256> <artifact length>, " +
+            "untimed, every file before the timed pass and again after it; source <file> <goal> <sha256> " +
+            "<bytes>; condition <file> <goal> <outcome> <diagnostics> <artifact sha256> <artifact length>; " +
+            "time <arm> <file> <compile milliseconds>");
 
         if (runtime)
         {
             Line(RuntimeLine());
         }
 
+        // THE CHECK BEFORE THE LANE, UNTIMED, which is also what warms the compiler's code: every file
+        // the timed pass compiles, in its order, once (docs/baselines.md rule 5, and the class's remarks).
+        var before = Untimed("before");
+
         var refused = 0;
+        var timed = new Dictionary<string, string>(StringComparer.Ordinal);
 
         foreach (var workload in workloads)
         {
@@ -297,20 +318,48 @@ internal static class CompileMeasurement
                     refused++;
                 }
 
-                Line(string.Join(
-                    '\t', "condition", file, workload.Goal, answer.Outcome, answer.Diagnostics, answer.Sha256,
-                    answer.Length));
+                timed[file] = Condition(file, workload.Goal, answer);
+                Line("condition\t" + timed[file]);
                 Line(string.Join(
                     '\t', "time", arm, file, answer.Milliseconds.ToString("F3", CultureInfo.InvariantCulture)));
             }
         }
 
-        Line(
-            $"# {(2 * workloads.Count).ToString(CultureInfo.InvariantCulture)} compilations, " +
-            $"{refused.ToString(CultureInfo.InvariantCulture)} not accepted");
+        // THE CHECK AFTER THE LANE, UNTIMED, as the one before it.
+        var after = Untimed("after");
 
-        return refused == 0 ? 0 : 1;
+        var moved = timed.Keys.Count(file => before[file] != timed[file] || after[file] != timed[file]);
+
+        Line(
+            $"# {(2 * workloads.Count).ToString(CultureInfo.InvariantCulture)} compilations timed, " +
+            $"{refused.ToString(CultureInfo.InvariantCulture)} not accepted; " +
+            $"{moved.ToString(CultureInfo.InvariantCulture)} files whose condition before, timed and after " +
+            "is not one");
+
+        return refused == 0 && moved == 0 ? 0 : 1;
+
+        // One untimed compilation of every file, in the timed pass's order, each written as its condition.
+        Dictionary<string, string> Untimed(string check)
+        {
+            var conditions = new Dictionary<string, string>(StringComparer.Ordinal);
+
+            foreach (var workload in workloads)
+            {
+                foreach (var file in new[] { workload.File, workload.Control })
+                {
+                    var text = Decode(File.ReadAllBytes(Path.Combine(directory, file)));
+                    conditions[file] = Condition(file, workload.Goal, Compile(file, workload.Goal, text));
+                    Line(check + "\t" + conditions[file]);
+                }
+            }
+
+            return conditions;
+        }
     }
+
+    /// <summary>A compilation's condition: the file, its goal, the outcome, the diagnostics and the artifact.</summary>
+    private static string Condition(string file, string goal, Answer answer) =>
+        string.Join('\t', file, goal, answer.Outcome, answer.Diagnostics, answer.Sha256, answer.Length);
 
     /// <summary>
     /// Compiles one file under its goal and times the call; it never throws, and an exception that left
