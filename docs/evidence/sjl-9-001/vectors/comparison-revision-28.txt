@@ -1,0 +1,80 @@
+Comparison of this family's run on corpus revision 28, on the committed pin, with the run Broiler.JS's bundle sjl-9-001 retains of
+this family on revision 28 before the merge, made 2026-10-27.
+
+this run:  run-revision-28.tsv.gz here, sha256 0a2930b0849370922c183259a9a5bb8c626038fbdc76e7577d7a7e9e3793c0d6 (decompressed 1b2fecf20d55fb371a8874412d4cc148d335c4e946816db3fba25db9346a95ec)
+           corpus Broiler-Platform/broiler.js@ff54e1d8a89875163cea6d6c2e790043d9a4155a content sha256 043ad56440b42318c87d08985cd84006dbeff25071c66ed149a54082e60fdb7c
+retained:  Broiler-Platform/broiler.js ff54e1d8a89875163cea6d6c2e790043d9a4155a:docs/evidence/sjl-9-001/engine/broiler-vm-run-revision-28.tsv.gz,
+           sha256 26a7d6d17d60c0b0c4064fbdc38a13ad3a953b5b9a1813a1375368d6c589c1b5 (decompressed 285385446e6c831f5a26cc1c0b1b23f0ed3bf328ea4b0c7d4f3d0face1f3ac46), taken at Broiler.VM 4cf9ca44
+           corpus Broiler-Platform/broiler.js@2f240fecc502af7d843077ec664b1b7a65c45bb1 content sha256 cd153a0b654de3a3357849dec757beb8d6529765e9d3d938544382381c8ff850
+           (2f240fec's corpus differs from ff54e1d8's in two ops of row L23, 497158a3, and 11 divergence.broiler-js fields, 0c8feb64)
+
+== the summary lines (# ...), retained then this run
+2c2
+< # corpus: Broiler-Platform/broiler.js@2f240fecc502af7d843077ec664b1b7a65c45bb1 content sha256 cd153a0b654de3a3357849dec757beb8d6529765e9d3d938544382381c8ff850
+---
+> # corpus: Broiler-Platform/broiler.js@ff54e1d8a89875163cea6d6c2e790043d9a4155a content sha256 043ad56440b42318c87d08985cd84006dbeff25071c66ed149a54082e60fdb7c
+
+== every row by id, expected value, rendering and verdict (columns 1, 3, 4 and 5): diff of retained against this run
+(no difference)
+
+== every row whole: diff of retained against this run
+8160c8160
+< intl/date-times/families/0003	normative	value: str:"h12"	value: str:"h12"	match
+---
+> intl/date-times/families/0003	divergence	value: str:"h12"	value: str:"h12"	match
+8163c8163
+< intl/date-times/families/0006	normative	value: str:"Eastern Standard Time"	value: str:"Eastern Standard Time"	match
+---
+> intl/date-times/families/0006	divergence	value: str:"Eastern Standard Time"	value: str:"Eastern Standard Time"	match
+8466c8466
+< intl/date-times/families/0309	normative	value: str:"h12"	value: str:"h12"	match
+---
+> intl/date-times/families/0309	divergence	value: str:"h12"	value: str:"h12"	match
+8469c8469
+< intl/date-times/families/0312	normative	value: str:"Eastern Standard Time"	value: str:"Eastern Standard Time"	match
+---
+> intl/date-times/families/0312	divergence	value: str:"Eastern Standard Time"	value: str:"Eastern Standard Time"	match
+8785c8785
+< intl/durations/families/0001	normative	value: str:"1 hour, 2 minutes, 3 seconds"	value: str:"1 hour, 2 minutes, 3 seconds"	match
+---
+> intl/durations/families/0001	divergence	value: str:"1 hour, 2 minutes, 3 seconds"	value: str:"1 hour, 2 minutes, 3 seconds"	match
+9912c9912
+< intl/numbers-and-text/families/0005	normative	value: str:"1.2M"	value: str:"1.2M"	match
+---
+> intl/numbers-and-text/families/0005	divergence	value: str:"1.2M"	value: str:"1.2M"	match
+10058c10058
+< intl/numbers-and-text/families/0151	normative	value: str:"-\u20AC1,234.50"	value: str:"-\u20AC1,234.50"	match
+---
+> intl/numbers-and-text/families/0151	divergence	value: str:"-\u20AC1,234.50"	value: str:"-\u20AC1,234.50"	match
+10418c10418
+< intl/numbers-and-text/families/0511	normative	value: str:"1.2M"	value: str:"1.2M"	match
+---
+> intl/numbers-and-text/families/0511	divergence	value: str:"1.2M"	value: str:"1.2M"	match
+10954,10956c10954,10956
+< intl/values-and-plurals/families/0001	normative	value: str:"[\"one\",\"other\"]"	value: str:"[\"one\",\"other\"]"	match
+< intl/values-and-plurals/families/0002	normative	value: str:"[\"one\",\"two\",\"few\",\"other\"]"	value: str:"[\"one\",\"two\",\"few\",\"other\"]"	match
+< intl/values-and-plurals/families/0003	normative	value: str:"[\"other\",\"one\",\"other\",\"other\",\"other\",\"other\",\"other\",\"other\"]"	value: str:"[\"other\",\"one\",\"other\",\"other\",\"other\",\"other\",\"other\",\"other\"]"	match
+---
+> intl/values-and-plurals/families/0001	divergence	value: str:"[\"one\",\"other\"]"	value: str:"[\"one\",\"other\"]"	match
+> intl/values-and-plurals/families/0002	divergence	value: str:"[\"one\",\"two\",\"few\",\"other\"]"	value: str:"[\"one\",\"two\",\"few\",\"other\"]"	match
+> intl/values-and-plurals/families/0003	divergence	value: str:"[\"other\",\"one\",\"other\",\"other\",\"other\",\"other\",\"other\",\"other\"]"	value: str:"[\"other\",\"one\",\"other\",\"other\",\"other\",\"other\",\"other\",\"other\"]"	match
+(diff exit code 1)
+
+== the same, for the Intl area's rows alone: rows in each, and rows that differ
+retained 3496, this run 3496, differing 11
+== every other row: rows in each, and rows that differ
+retained 103312, this run 103312, differing 0
+
+== the rows that differ, against the vectors whose divergence.broiler-js field names CI's run 40400894567 (0c8feb64's), in the pinned archive
+the same 11 ids:
+intl/date-times/families/0003
+intl/date-times/families/0006
+intl/date-times/families/0309
+intl/date-times/families/0312
+intl/durations/families/0001
+intl/numbers-and-text/families/0005
+intl/numbers-and-text/families/0151
+intl/numbers-and-text/families/0511
+intl/values-and-plurals/families/0001
+intl/values-and-plurals/families/0002
+intl/values-and-plurals/families/0003
