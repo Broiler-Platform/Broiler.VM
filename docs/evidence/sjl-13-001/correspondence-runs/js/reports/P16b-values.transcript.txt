@@ -1,0 +1,11 @@
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host p-values.js 
+PE01 PP11 var, a line break for the first semicolon => 3
+PE02 PP12 let, a line break for the first semicolon => 3
+PE03 PP13 const, a line break for the first semicolon => THROWS TypeError: Cannot assign to read only variable
+PE04 PP14 an expression, a line break for the first semicolon => THROWS SyntaxError: Unexpected token BracketEnd: ) at 3, 11
+PE05 PP15 a line break for the second semicolon => THROWS SyntaxError: Unexpected token Identifier: i at 2, 1
+PE06 PP16 control, a line break in a for-in head => "a"
+PE07 PP17 control, a line break in a for-of head => 3
+PE08 PP18 control, PE01 with no line break => THROWS SyntaxError: Unexpected token Identifier: i at 1, 16
+PE09 PP19 control, PE01 with its semicolon before the line break => 3
+# exit=0

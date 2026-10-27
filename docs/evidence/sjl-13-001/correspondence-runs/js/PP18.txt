@@ -1,0 +1,12 @@
+# probe PP18 (js): input inputs/for-head-var-no-line-break.js; its rows of reports/P16b-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/P/probe-P16b.manifest --test262 <work>/t262 --out <runs>/js/reports/P16b-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	dbbc27eabf721a1ed70281e92e77cbdfc491f2fa48e361ce9997c1918398d313
+#% corpus	sjl13-probes-P16b
+#% end	36
+id	variant	entry	outcome	type	message
+PP18	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: i at 2, 16
+PP18	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: i at 2, 16
+PP18	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: i at 1, 16
+PP18	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: i at 1, 16

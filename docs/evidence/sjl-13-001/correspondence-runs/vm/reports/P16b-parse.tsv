@@ -1,0 +1,134 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-P16b
+#% manifest-sha256	dbbc27eabf721a1ed70281e92e77cbdfc491f2fa48e361ce9997c1918398d313
+#% manifest-rows	9
+#% archive-sha256	-
+#% populations	B1,B2,B3,B4
+#% selection	all
+#% compilations	117
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PP11	B1	strict	bytecode	refused	2102:2:1	-	-	-
+PP11	B1	strict	native	refused	2102:2:1	-	-	-
+PP11	B1	sloppy	bytecode	refused	2102:2:1	-	-	-
+PP11	B1	sloppy	native	refused	2102:2:1	-	-	-
+PP12	B1	strict	bytecode	refused	2102:2:1	-	-	-
+PP12	B1	strict	native	refused	2102:2:1	-	-	-
+PP12	B1	sloppy	bytecode	refused	2102:2:1	-	-	-
+PP12	B1	sloppy	native	refused	2102:2:1	-	-	-
+PP13	B1	strict	bytecode	refused	2102:2:1	-	-	-
+PP13	B1	strict	native	refused	2102:2:1	-	-	-
+PP13	B1	sloppy	bytecode	refused	2102:2:1	-	-	-
+PP13	B1	sloppy	native	refused	2102:2:1	-	-	-
+PP14	B1	strict	bytecode	refused	2102:2:1	-	-	-
+PP14	B1	strict	native	refused	2102:2:1	-	-	-
+PP14	B1	sloppy	bytecode	refused	2102:2:1	-	-	-
+PP14	B1	sloppy	native	refused	2102:2:1	-	-	-
+PP15	B1	strict	bytecode	refused	2102:2:1	-	-	-
+PP15	B1	strict	native	refused	2102:2:1	-	-	-
+PP15	B1	sloppy	bytecode	refused	2102:2:1	-	-	-
+PP15	B1	sloppy	native	refused	2102:2:1	-	-	-
+PP16	B1	strict	bytecode	accepted	-	5759ca93b9632c88cb394aa7386a6b0fead83010e3371013901a41da3c66dcdf	176	-
+PP16	B1	strict	native	accepted	-	04027b212d03cdfd3291dd3090d7afc18522984bdade8ef97bee0bbb46e084b6	421	-
+PP16	B1	sloppy	bytecode	accepted	-	707b4810acde2f2f314829c279ac811d925a55abcd79acb3da7cbdf18117e5a3	176	-
+PP16	B1	sloppy	native	accepted	-	8faa1b19467ddcfa7af03171e9a597254fdc5ed90983b174a27c60dba11ba20f	421	-
+PP17	B1	strict	bytecode	accepted	-	4c0aa4d53a516b38344bfb6c28ef946038af95203d19039cdb463f282284a5ca	214	-
+PP17	B1	strict	native	accepted	-	fb46fdbc404837fd86d5cacb1ac6f767308636a268501596357d097ca43f7d38	713	-
+PP17	B1	sloppy	bytecode	accepted	-	bfe501a8665291ab20ed3460e161200df2ac07d8be2a9fddc688329640fd52b6	214	-
+PP17	B1	sloppy	native	accepted	-	ce991fa0985fa4c72a229b0c0108f3498f988069a9b8ff4fbf3af8297b54fc5c	713	-
+PP18	B1	strict	bytecode	refused	2102:1:16	-	-	-
+PP18	B1	strict	native	refused	2102:1:16	-	-	-
+PP18	B1	sloppy	bytecode	refused	2102:1:16	-	-	-
+PP18	B1	sloppy	native	refused	2102:1:16	-	-	-
+PP19	B1	strict	bytecode	accepted	-	74362a3312502ea59b0f585bd35c57e48a42aad1065747e294c96eef04fc65c5	226	-
+PP19	B1	strict	native	accepted	-	7c346c2fa32544e799106bf397657c40a5946d7f2b37f99aa3ac563ecd32604a	471	-
+PP19	B1	sloppy	bytecode	accepted	-	30f5fec6e641aa5bca0e147dbdcb4ff97e34ced19bf8a67dfa64e4e64c2538b2	226	-
+PP19	B1	sloppy	native	accepted	-	56b8c02d9ac218189cbfc5293c4e41c2f8af698babb52faf95f7bec321f19d98	471	-
+PP11	B3	E0	bytecode	refused	2102:2:1	-	-	-
+PP11	B3	E1	bytecode	refused	2102:2:1	-	-	-
+PP11	B3	E2	bytecode	refused	2102:2:1	-	-	-
+PP11	B3	E3	bytecode	refused	2102:2:1	-	-	-
+PP11	B3	E4	bytecode	refused	2102:2:1	-	-	-
+PP11	B3	E5	bytecode	refused	2102:2:1	-	-	-
+PP11	B3	E6	bytecode	refused	2102:2:1	-	-	-
+PP11	B3	E7	bytecode	refused	2102:2:1	-	-	-
+PP12	B3	E0	bytecode	refused	2102:2:1	-	-	-
+PP12	B3	E1	bytecode	refused	2102:2:1	-	-	-
+PP12	B3	E2	bytecode	refused	2102:2:1	-	-	-
+PP12	B3	E3	bytecode	refused	2102:2:1	-	-	-
+PP12	B3	E4	bytecode	refused	2102:2:1	-	-	-
+PP12	B3	E5	bytecode	refused	2102:2:1	-	-	-
+PP12	B3	E6	bytecode	refused	2102:2:1	-	-	-
+PP12	B3	E7	bytecode	refused	2102:2:1	-	-	-
+PP13	B3	E0	bytecode	refused	2102:2:1	-	-	-
+PP13	B3	E1	bytecode	refused	2102:2:1	-	-	-
+PP13	B3	E2	bytecode	refused	2102:2:1	-	-	-
+PP13	B3	E3	bytecode	refused	2102:2:1	-	-	-
+PP13	B3	E4	bytecode	refused	2102:2:1	-	-	-
+PP13	B3	E5	bytecode	refused	2102:2:1	-	-	-
+PP13	B3	E6	bytecode	refused	2102:2:1	-	-	-
+PP13	B3	E7	bytecode	refused	2102:2:1	-	-	-
+PP14	B3	E0	bytecode	refused	2102:2:1	-	-	-
+PP14	B3	E1	bytecode	refused	2102:2:1	-	-	-
+PP14	B3	E2	bytecode	refused	2102:2:1	-	-	-
+PP14	B3	E3	bytecode	refused	2102:2:1	-	-	-
+PP14	B3	E4	bytecode	refused	2102:2:1	-	-	-
+PP14	B3	E5	bytecode	refused	2102:2:1	-	-	-
+PP14	B3	E6	bytecode	refused	2102:2:1	-	-	-
+PP14	B3	E7	bytecode	refused	2102:2:1	-	-	-
+PP15	B3	E0	bytecode	refused	2102:2:1	-	-	-
+PP15	B3	E1	bytecode	refused	2102:2:1	-	-	-
+PP15	B3	E2	bytecode	refused	2102:2:1	-	-	-
+PP15	B3	E3	bytecode	refused	2102:2:1	-	-	-
+PP15	B3	E4	bytecode	refused	2102:2:1	-	-	-
+PP15	B3	E5	bytecode	refused	2102:2:1	-	-	-
+PP15	B3	E6	bytecode	refused	2102:2:1	-	-	-
+PP15	B3	E7	bytecode	refused	2102:2:1	-	-	-
+PP16	B3	E0	bytecode	accepted	-	0df3c59d5c2776833d2edb6c3f797339fe10f4fa7f7e687ab82c68c8d85d1148	161	-
+PP16	B3	E1	bytecode	accepted	-	114d36ee6af6b773e83d9240b4e7cf038559febaa47114a86cb49d15f3ba6fc8	162	-
+PP16	B3	E2	bytecode	accepted	-	64c1efaadcac3c0136f96b3fb785efebe0c414d936a78361ae551c249043542e	161	-
+PP16	B3	E3	bytecode	accepted	-	85adb41a904f46f1a09f8ecbe0a70d77e2f6f6b262b6d4125a49b663a5e1d9ec	162	-
+PP16	B3	E4	bytecode	accepted	-	650ba784c39f26cee6bc2f7073e1f7e03f80b8cbc1dee61e509b0eef9cb577e6	161	-
+PP16	B3	E5	bytecode	accepted	-	100dda03bec519c2fa9aa3e59b8b77d84681949cfc6b981d5e55334e52145e05	161	-
+PP16	B3	E6	bytecode	accepted	-	065ce01d6305b63f50ae5ab1cb444fc9a8d27e4560b054ab9dcc1ff73d970ba7	161	-
+PP16	B3	E7	bytecode	accepted	-	ac447591bb0cdc539d4d6620bacc4f668e2c3c5566b56cd3b96e406b2b5851b4	161	-
+PP17	B3	E0	bytecode	accepted	-	023445a733e40eff7690dfbd49ad80bf5a4b17396129a08acebabc83ad89237d	199	-
+PP17	B3	E1	bytecode	accepted	-	b54eac58c49ab461526bbf7a0e6dd89e30d61ee426cd61d5ce025f6299fd4858	200	-
+PP17	B3	E2	bytecode	accepted	-	8f69f8a50a27f16ccc520dc0a85f5ea3221670ca07b49cba901a70697315ccd3	199	-
+PP17	B3	E3	bytecode	accepted	-	dc8fd63a94189d6c25fecce629d727a7b8108800314490685d6731cdad9c9544	200	-
+PP17	B3	E4	bytecode	accepted	-	b44e09f607faf4fca58e9de7eac0101a347b0f95a1f3ec198bb2a9e3986a5af0	199	-
+PP17	B3	E5	bytecode	accepted	-	2fc831e823c486d5a3d823962c1fe5b0ab645c78cc5e23ad98fd9b2ce60e41c3	199	-
+PP17	B3	E6	bytecode	accepted	-	5eef6b17cb1b7ffad6d18751edf0d1b804a425e6866316184a30d54cc6880190	199	-
+PP17	B3	E7	bytecode	accepted	-	5fabeca403f6462baaf59588e8cc2e3dc6cbb14f5fb9c8d99cd4694861b9b0fa	199	-
+PP18	B3	E0	bytecode	refused	2102:1:16	-	-	-
+PP18	B3	E1	bytecode	refused	2102:1:16	-	-	-
+PP18	B3	E2	bytecode	refused	2102:1:16	-	-	-
+PP18	B3	E3	bytecode	refused	2102:1:16	-	-	-
+PP18	B3	E4	bytecode	refused	2102:1:16	-	-	-
+PP18	B3	E5	bytecode	refused	2102:1:16	-	-	-
+PP18	B3	E6	bytecode	refused	2102:1:16	-	-	-
+PP18	B3	E7	bytecode	refused	2102:1:16	-	-	-
+PP19	B3	E0	bytecode	accepted	-	c48953a9b4fcc2451aa091d1448a046ae349ec702d14194e2b4effb7e24a0520	203	-
+PP19	B3	E1	bytecode	accepted	-	0f71bbe9f04f7a6ac3fdf5a164c29915b1a9021eb461b88e8e06f6667cfe88e7	204	-
+PP19	B3	E2	bytecode	accepted	-	2cd56532b0692fd723cccb780ed9722faf9aef288ead6a9f57ff8332380f67fa	203	-
+PP19	B3	E3	bytecode	accepted	-	0d338b7d4cc8c3809e8ec1c7a16369e87ec38fde2def4c223771233a42ec8d16	204	-
+PP19	B3	E4	bytecode	accepted	-	77072eff040ae25b07bc92ebbeedd30fe52c11fd6a4c64d5d323646c8e7ad0c5	203	-
+PP19	B3	E5	bytecode	accepted	-	7b5ebcfc1b3601558e6577261aa1d5d95e9f9b6f55ac33dd571695c3b60da87f	203	-
+PP19	B3	E6	bytecode	accepted	-	dffc84c75d433c82e45c024589052a2d09d95891eda5f3ee8526c2b6ac9e7ab2	203	-
+PP19	B3	E7	bytecode	accepted	-	97907640c554464e448004dcdefbc8009bbbaf4f64f075770e0f0975096d400e	203	-
+PP11	B4	script	slice	refused	2102:2:1	-	-	-
+PP12	B4	script	slice	refused	2102:2:1	-	-	-
+PP13	B4	script	slice	refused	2102:2:1	-	-	-
+PP14	B4	script	slice	refused	2102:2:1	-	-	-
+PP15	B4	script	slice	refused	2102:2:1	-	-	-
+PP16	B4	script	slice	refused	2104:1:1;2104:2:4	-	-	-
+PP17	B4	script	slice	refused	2104:1:1;2104:2:4	-	-	-
+PP18	B4	script	slice	refused	2102:1:16	-	-	-
+PP19	B4	script	slice	refused	2104:2:8	-	-	-

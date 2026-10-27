@@ -1,0 +1,4 @@
+# probe PE06 (vm): the line labelled PE06 of p-values.js's run; whole transcript reports/P16b-values.transcript.txt
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl13p/p-values.js --fuel 200000000000 --wall 600000 
+# exit=1
+PE06 PP16 control, a line break in a for-in head => "a"

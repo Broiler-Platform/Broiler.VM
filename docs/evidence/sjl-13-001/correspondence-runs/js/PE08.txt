@@ -1,0 +1,4 @@
+# probe PE08 (js): the line labelled PE08 of p-values.js's run; whole transcript reports/P16b-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host p-values.js 
+# exit=0
+PE08 PP18 control, PE01 with no line break => THROWS SyntaxError: Unexpected token Identifier: i at 1, 16

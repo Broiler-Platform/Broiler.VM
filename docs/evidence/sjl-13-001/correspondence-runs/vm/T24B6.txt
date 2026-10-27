@@ -1,0 +1,10 @@
+# probe T24B6 (vm): input inputs/sjl13-T/t24b6-function-expression-regex-at-end-of-input.js; its rows of reports/T24-end-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/parse/t24-end.manifest <runs>/vm/reports/T24-end-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T24-end
+#% manifest-sha256	3a35c3675bb305c00961ee715add99b3715f5a1467af3b88b5a1b5dc24745184
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T24B6	B1	sloppy	bytecode	accepted	-	e074b92de773cfb0cb7255ba688b0b66af2498ff40d765ddf2117dfb4c2ec04b	315	-
+T24B6	B1	sloppy	native	accepted	-	742a8eb100b7b7842ce132e51911bf72a8d706f6e008671cafb3497681c7d132	541	-
+T24B6	B4	script	slice	refused	2104:1:26	-	-	-

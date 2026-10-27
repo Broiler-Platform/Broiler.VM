@@ -1,0 +1,27 @@
+# The T24b and T24f probes of 2026-10-27 for SJL-13.1's correspondence (sub-area T): each row's source with `;`, or
+# the end of input, after the text the specification reads as two divisions and Broiler.JS as a regular-expression
+# literal. Format 1 of the parse corpus's manifest (conformance/parse/README.md), read unchanged by Broiler.VM's
+# --parse-corpus mode and Broiler.JS's SJL-12 parse-corpus tool. corpus.manifest, the probes of 2026-10-26, is unchanged.
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-T24-end
+#% rows	6
+#% virtual-root	/test262/
+#% stored-root	/sjl13-T/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+T24B3	broiler-vm	inputs/sjl13-T/t24b3-object-literal-regex-then-semicolon.js	f38a8205a90681a86847970fa4edcddcb63a6b4799f2f8b6162d74a194b346a0	script	sloppy	-	no	T24b: } closing an object literal, then /b/g and ;
+T24B4	broiler-vm	inputs/sjl13-T/t24b4-object-literal-regex-at-end-of-input.js	0ea257d652b8a567848f5c503f3ebfc92b6f83b66224d6170e79361299186018	script	sloppy	-	no	T24b: } closing an object literal, then /b/g and the end of input
+T24B5	broiler-vm	inputs/sjl13-T/t24b5-function-expression-regex-then-semicolon.js	f23208a1f63178d7505860590fc19f5857c2c056d14a879ec2718971a856d76e	script	sloppy	-	no	T24b: } closing a function expression, then /b/g and ;
+T24B6	broiler-vm	inputs/sjl13-T/t24b6-function-expression-regex-at-end-of-input.js	2bdae0dfd8f1d19a7451cebf4396039b379adfd0c7bba1191f5021d999b8f644	script	sloppy	-	no	T24b: } closing a function expression, then /b/g and the end of input
+T24F2	broiler-vm	inputs/sjl13-T/t24f2-await-identifier-regex-then-semicolon.js	9418b88026990bc1fa83fec02b6c05a99eb85aff86faad104a2e4ed125ae8d6b	script	sloppy	-	no	T24f: await used as an identifier, then /b/g and ;
+T24F3	broiler-vm	inputs/sjl13-T/t24f3-await-identifier-regex-at-end-of-input.js	3b63f5be54b70f5a436d237ce5418bd7642fbfe4a22368dc4f9a2d2fa15579ee	script	sloppy	-	no	T24f: await used as an identifier, then /b/g and the end of input

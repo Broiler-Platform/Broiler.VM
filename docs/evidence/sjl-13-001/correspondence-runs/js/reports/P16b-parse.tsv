@@ -1,0 +1,66 @@
+#% format	broiler-js-parse-corpus-report	1
+#% mode	acceptance
+#% tool	docs/evidence/sjl-12-001/tools/parse-corpus
+#% manifest-sha256	dbbc27eabf721a1ed70281e92e77cbdfc491f2fa48e361ce9997c1918398d313
+#% manifest-rows	9
+#% corpus	sjl13-probes-P16b
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% selection	all
+#% order	manifest
+#% threads	1
+#% thread-stack-bytes	268435456
+#% compile-stack-bytes	0	CompilationStack.SizeBytes: 0 compiles on the calling thread
+#% environment	TZ=UTC	LANG unset	LC_* unset	BROILER_* unset
+#% culture	(invariant)
+#% time-zone	UTC
+#% runtime	.NET 10.0.12
+#% os	Ubuntu 24.04.5 LTS X64
+#% processors	4
+#% context	JSContext(experimentalFeatures: JavaScriptFeatureFlags.AllExperimentalEs2026), one per thread
+#% strict-variant	the manifest's strict-prologue followed by the text
+#% source-names	virtual-root or stored-root followed by the path
+#% json-goal	the text unchanged at the entry points of every goal but module: ParseProgram, and CoreScript.Compile with isModule false
+#% assembly	Broiler.JavaScript.Ast	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	bda455e0-787c-49e7-8098-96bbc5a72061
+#% assembly	Broiler.JavaScript.Parser	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	80e8377e-993c-4ddf-ae7e-081d7bb8e796
+#% assembly	Broiler.JavaScript.Compiler	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	3a194220-4f5e-46dc-92a4-61b2a404e508
+#% assembly	Broiler.JavaScript.Engine	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	dcb2ad85-f40d-44a7-98dd-771f1a05c05e
+#% assembly	Broiler.JavaScript.Runtime	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	405041c6-6b96-4a1a-a5df-3bc9e5cf015d
+#% rows	36
+id	variant	entry	outcome	type	message
+PP11	strict	P	accepted	-	-
+PP11	strict	K	accepted	-	-
+PP11	sloppy	P	accepted	-	-
+PP11	sloppy	K	accepted	-	-
+PP12	strict	P	accepted	-	-
+PP12	strict	K	accepted	-	-
+PP12	sloppy	P	accepted	-	-
+PP12	sloppy	K	accepted	-	-
+PP13	strict	P	accepted	-	-
+PP13	strict	K	accepted	-	-
+PP13	sloppy	P	accepted	-	-
+PP13	sloppy	K	accepted	-	-
+PP14	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 3, 11
+PP14	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 3, 11
+PP14	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token BracketEnd: ) at 2, 11
+PP14	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token BracketEnd: ) at 2, 11
+PP15	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: i at 3, 1
+PP15	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: i at 3, 1
+PP15	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: i at 2, 1
+PP15	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: i at 2, 1
+PP16	strict	P	accepted	-	-
+PP16	strict	K	accepted	-	-
+PP16	sloppy	P	accepted	-	-
+PP16	sloppy	K	accepted	-	-
+PP17	strict	P	accepted	-	-
+PP17	strict	K	accepted	-	-
+PP17	sloppy	P	accepted	-	-
+PP17	sloppy	K	accepted	-	-
+PP18	strict	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: i at 2, 16
+PP18	strict	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: i at 2, 16
+PP18	sloppy	P	refused	Broiler.JavaScript.Ast.Misc.FastParseException	Unexpected token Identifier: i at 1, 16
+PP18	sloppy	K	refused	Broiler.JavaScript.Runtime.JSException:SyntaxError	Unexpected token Identifier: i at 1, 16
+PP19	strict	P	accepted	-	-
+PP19	strict	K	accepted	-	-
+PP19	sloppy	P	accepted	-	-
+PP19	sloppy	K	accepted	-	-
+#% end	36

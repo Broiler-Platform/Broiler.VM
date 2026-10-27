@@ -1,0 +1,35 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T24-end
+#% manifest-sha256	3a35c3675bb305c00961ee715add99b3715f5a1467af3b88b5a1b5dc24745184
+#% manifest-rows	6
+#% archive-sha256	-
+#% populations	B1,B4
+#% selection	all
+#% compilations	18
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T24B3	B1	sloppy	bytecode	accepted	-	16afb2042a23ab3123d7d25acd2d3f7cf56dfe076f3713d5c90bd69d76010158	245	-
+T24B3	B1	sloppy	native	accepted	-	c5657fe44c64fe0c444f0d2d0f95f585abf5f4b06a32beb325f66ad871600bfc	382	-
+T24B4	B1	sloppy	bytecode	accepted	-	efc2c3736bc06bdabc1da0cbee90b42fc6835651990fe3bd20a0a89d710bea04	246	-
+T24B4	B1	sloppy	native	accepted	-	0d932984a51cb85453b95cc2bbd0c1b32c953ff9c2208dfc39abff6668588391	383	-
+T24B5	B1	sloppy	bytecode	accepted	-	52183a83eb11e2eeca5e65d80d93117453874b6f3801b08c6edcc693d98cbcb6	316	-
+T24B5	B1	sloppy	native	accepted	-	d670628639e25cde710c3571c4d1d144c9f0b0b45ba3335f5de31ba2c4af7f18	542	-
+T24B6	B1	sloppy	bytecode	accepted	-	e074b92de773cfb0cb7255ba688b0b66af2498ff40d765ddf2117dfb4c2ec04b	315	-
+T24B6	B1	sloppy	native	accepted	-	742a8eb100b7b7842ce132e51911bf72a8d706f6e008671cafb3497681c7d132	541	-
+T24F2	B1	sloppy	bytecode	refused	2102:1:36	-	-	-
+T24F2	B1	sloppy	native	refused	2102:1:36	-	-	-
+T24F3	B1	sloppy	bytecode	refused	2102:1:36	-	-	-
+T24F3	B1	sloppy	native	refused	2102:1:36	-	-	-
+T24B3	B4	script	slice	refused	2104:1:26	-	-	-
+T24B4	B4	script	slice	refused	2104:1:26	-	-	-
+T24B5	B4	script	slice	refused	2104:1:26	-	-	-
+T24B6	B4	script	slice	refused	2104:1:26	-	-	-
+T24F2	B4	script	slice	refused	2104:1:30;2104:1:36	-	-	-
+T24F3	B4	script	slice	refused	2104:1:30;2104:1:36	-	-	-

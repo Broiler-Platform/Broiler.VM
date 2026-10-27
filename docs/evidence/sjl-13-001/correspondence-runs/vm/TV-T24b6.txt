@@ -1,0 +1,4 @@
+# probe TV-T24b6 (vm): the line labelled T24b6 of t24-values.js's run; whole transcript reports/T24-end-values.transcript.txt
+# command (in <work>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl13t24/t24-values.js --fuel 200000000000 --wall 600000 
+# exit=1
+T24b6 function expression, then /b/g and the end of input => NaN
