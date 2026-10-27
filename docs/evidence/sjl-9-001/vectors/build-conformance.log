@@ -1,0 +1,27 @@
+== build at da4c07c855b1346a9adec20a81b839f0783a6a4c, clean tree (git status --porcelain empty: yes), start 2026-10-27T05:55:55Z
+== command: dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Conformance -c Release --disable-build-servers
+  Determining projects to restore...
+  Restored /home/user/vm-s9w24/src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj (in 296 ms).
+  Restored /home/user/vm-s9w24/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 117 ms).
+  Restored /home/user/vm-s9w24/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 954 ms).
+  Restored /home/user/vm-s9w24/src/Broiler.VM.Profile.JavaScript.Intl/Broiler.VM.Profile.JavaScript.Intl.csproj (in 920 ms).
+  Restored /home/user/vm-s9w24/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 171 ms).
+  Restored /home/user/vm-s9w24/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 972 ms).
+  3 of 9 projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/vm-s9w24/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/vm-s9w24/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/vm-s9w24/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/vm-s9w24/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.MachineCode -> /home/user/vm-s9w24/src/Broiler.VM.Profile.MachineCode/bin/Release/net10.0/Broiler.VM.Profile.MachineCode.dll
+  Broiler.VM.Runtime -> /home/user/vm-s9w24/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Intl -> /home/user/vm-s9w24/src/Broiler.VM.Profile.JavaScript.Intl/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Intl.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/vm-s9w24/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/vm-s9w24/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:01:08.79
+exit code 0
+== end 2026-10-27T05:57:04Z

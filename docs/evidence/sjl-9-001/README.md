@@ -26,12 +26,16 @@ name the machine's worktrees as run.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules and correspondence only, 2026-10-26, at SJL-9.1. **Nothing here is a verdict, and nothing has been
-taken.**
+**State:** rules and correspondence, 2026-10-26, at SJL-9.1, and this family's engine-level run of the vectors on its
+pin at corpus revision 28, 2026-10-27, at SJL-9.2 (section 3). **Nothing here is a verdict, and no run of the rule
+has been taken.** *(Revised 2026-10-27, at SJL-9.2, when the pin moved to revision 28. It read "rules and
+correspondence only, 2026-10-26, at SJL-9.1. **Nothing here is a verdict, and nothing has been taken.**")*
 - Every run of the rule is taken at the base commit or the after commit, which the rule defines before either exists
   (JSD-0082 decision D4): the after commit is the default-branch merge that lands SJL-9.4's cut-over, and the base
   commit is its first parent.
-- A collector joins this bundle when there is a run to take.
+- A collector joins this bundle when there is a run of the rule to take. Section 3's run is no run of the rule, and
+  was taken without one. *(Revised 2026-10-27, at SJL-9.2. It read "A collector joins this bundle when there is a run
+  to take.")*
 
 Broiler.JS's clauses, and the data home's and the home's, are judged in Broiler.JS's bundle of the same name. This
 bundle reads none of their runs.
@@ -103,6 +107,71 @@ folder; no part of the rule defines a control, and the folder is added only if a
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
 totals decide nothing.
+
+## 3. Engine-level vectors on the Intl area (SJL-9.2)
+
+Broiler.JS's corpus revision 27 adds the Intl area, five files under `conformance/vectors/intl/`, one per sub-area of
+JSD-0082, and pins ECMA-402 at decision D14's commit in `conformance/vectors/sources/ecma402.pin`. Revision 28
+classifies both engines' first runs on revision 27. Both revisions are on Broiler.JS's default branch since
+Broiler-Platform/Broiler.JS#1080 merged as `ff54e1d8`, whose corpus is that of `0c8feb64`, revision 28 as corrected
+before the merge.
+- **Where the expected values come from.** ICU's answers, through the reference Node.js release Broiler.JS's bundle
+  `sjl-9-001` names (`ref:intlref@1`, decision D17), except where the pinned text rules: there the vector takes the
+  text's answer and records ICU's. A date-time string carries U+202F where ICU's pattern has it (decision D17 (b)).
+  A region's hour cycles, DurationFormat's `digital` data and this family's composition of a compound unit are read
+  from CLDR 48.2.0 (`ref:intlcldr@1`, decisions D34 and D35).
+- **This family's `divergence.broiler-vm` fields are its three corrections**, which SJL-9.4 makes (decisions D15 and
+  D32): row Z8, the formatter resolving an identifier that is not its own primary to the primary, in
+  `intl/date-times/zones/`; row L9, a subdivision whose replacement is a region written as the region, in
+  `intl/locales/subdivision/`; and row L18, `getCollations` of a locale whose language the Collator lacks, in
+  `intl/locales/collations/`. Broiler.JS's fields are its own, which its SJL-9.5 answers.
+
+**Where the first runs are.** This family's first runs on revisions 27 and 28 were taken for Broiler.JS's
+classification, at the rule commit `4cf9ca4`, from scratch archives and scratch pins, and Broiler.JS's bundle
+`sjl-9-001` keeps them in its `engine/` as the basis of those fields. This section's run is on the committed pin, at
+revision 28 as Broiler.JS's default branch carries it.
+
+**The pin** is at revision 28 since `da4c07c`, and was at revision 26 from `d625402` (SJL-10.5). Its archive was taken
+twice, byte-identical, and its files hashed from an extracted copy; the same method, applied to revision 26's commit,
+`00b65dd0`, gives that pin's two digests and its count exactly. Against revision 26 the archive adds the Intl area's
+five files and `sources/ecma402.pin`, and changes the corpus's README, revision log and schema; every other file is
+revision 26's byte for byte.
+
+**The run.** The conformance root was built in Release with `--disable-build-servers` in the clean tree of `da4c07c`
+([`vectors/build-conformance.log`](vectors/build-conformance.log)), whose code is the rule commit's, `4cf9ca4`'s: the
+two differ in documents, the pin's folder and the notices only. It was run there on the committed pin under
+`TZ=UTC`, with no `LANG` and no `LANGUAGE`, by a script that wrote each log whole: a header naming the commit, the
+build, the pin and its archive with their SHA-256, the host and the command; then the runner's output; then the exit
+code and the end time. The command names the report by its file name: it was written outside the tree, which stayed
+clean, and is kept here gzip-compressed. This family's Intl reads no host's ICU: the root is built with invariant
+globalization and reads its own CLDR 48.2.0 tables. [`vectors/hashes.txt`](vectors/hashes.txt) holds every file's
+SHA-256, which `sha256sum -c` verifies.
+
+| Run | Taken | Result | Files |
+|---|---|---|---|
+| Revision 28 | At `da4c07c`, clean, on the committed pin, from 05:57Z on 2026-10-27 | 106,808 vectors: 106,767 match, 41 classified divergences and 0 unclassified differences, and no divergence that no longer holds | [`run-revision-28.log`](vectors/run-revision-28.log), [`run-revision-28.tsv.gz`](vectors/run-revision-28.tsv.gz) |
+| Its negative control | The same, with `--mutate intl/numbers-and-text/decimal/0001` | 106,766 match, the same 41 classified divergences, and 1 unclassified difference, the mutated vector | [`run-negative-control-revision-28.log`](vectors/run-negative-control-revision-28.log), [`run-negative-control-revision-28.tsv.gz`](vectors/run-negative-control-revision-28.tsv.gz) |
+
+**This family matches every vector of revision 28 or differs exactly as its `divergence.broiler-vm` field says.** The
+41 classified divergences are the 41 vectors that carry such a field: 18 of row Z8 and 18 of row L9, `normative` at
+revision 27 and `divergence` since revision 28, and 5 of row L18, `impl-defined` at both. Each is reported as a
+classified divergence, so none is unclassified and none no longer holds. The 23 of rows L9 and L18 carry Broiler.JS's
+field as well. Every other vector of class `divergence` in the report carries Broiler.JS's field alone, the number
+area's four among them, and matches here. So the vectors find no difference of this family's that the correspondence
+does not classify, which JSD-0082 names as falsifying it.
+
+**The run agrees row for row with the one Broiler.JS's bundle retains** of this family on revision 28 at `4cf9ca4`,
+on the corpus at `2f240fec` (its `engine/broiler-vm-run-revision-28.tsv.gz`).
+[`vectors/comparison-revision-28.txt`](vectors/comparison-revision-28.txt) holds the comparison.
+- Every row has the same id, expected value, rendering and verdict in both, the Intl area's 3,496 and every other.
+- The rows of the other areas are the same byte for byte.
+- 11 rows of the Intl area differ, in their class alone: `normative` there, `divergence` here, and a match in both.
+  They are the 11 vectors to which `0c8feb64` gave a `divergence.broiler-js` field after that run, for the
+  differences CI's hosts showed in Broiler.JS, which this family's root, reading no host's ICU, does not show.
+- `497158a3`, the other correction since that run, renames the op of two vectors of row L23; an engine-level run
+  evaluates a vector's script, not its op, and the report does not name the op.
+
+This section is no part of the rule's parts A to C, and nothing in it is a verdict.
 
 ## 9. Exclusions
 
