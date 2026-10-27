@@ -34,6 +34,13 @@
   to H21), and every correction of Broiler.JS is SJL-14's (hand-off H22).
 - Nothing in this profile changes with this record. The library is SJL-13.2's, the cut-overs are SJL-13.3's own
   changes, and this record is what they apply.
+- *(Added 2026-10-27.)* **The owner's decisions D-asi and D-t24 of 2026-10-27 are recorded**, under the same
+  direction, in section "The owner's decisions of 2026-10-27". SJL-13.2's first runs of the `syntax` vectors found
+  them. Row **P16b**, automatic semicolon insertion in a for statement's head, joins the correspondence as a correction
+  of Broiler.JS that SJL-14 answers, and P16 is narrowed to the rest of automatic semicolon insertion; rows T24b and
+  T24f record Broiler.JS's answer where `;` or the end of input follows the regular-expression literal, with the same
+  classes. No sub-area's verdict, no other row's class and no correction of this family changes, and no clause of
+  "Falsified if" is met.
 
 **Date:** 2026-10-26.
 
@@ -245,6 +252,10 @@ and they stand unchanged for what they refuse. ADR 0011's table is not edited.
   `JsSyntax`, which the adapter rebuilds (decision D15); its item 10, the top-level-`await` reading of an async arrow,
   is a correction of this family that SJL-15's model makes (H19). P33 holds the facts `FastParser` computes that
   Broiler.JS's compiler reads, which SJL-14's bridge rebuilds.
+- *(Note of 2026-10-27, decision D-asi.)* **Corrections of Broiler.JS** gains **P16b**, automatic semicolon insertion
+  in a for statement's head; the list above, "P02, P05c, P07, P09, P10, P11, P12, P13, P14, P15a, P18, P21, P22, P23,
+  P24", is read with P16b among them. **P16** stays under **Same**, narrowed by the correspondence's dated note to
+  automatic semicolon insertion outside a for statement's head.
 
 ### (N) Positions
 
@@ -1091,6 +1102,14 @@ every check this family's parser makes, many of which Broiler.JS makes only in i
 only rows Broiler.JS does not check. The plan's text read "**K10** rows task 1.1 adds." (finding F28) and "for an input
 P accepts and P or B refuses, K refusing on both sides;" (finding F8).
 
+*(Note of 2026-10-27, decision D-asi.)* K10's rows include **P16b**, automatic semicolon insertion in a for statement's
+head: Broiler.JS accepts a line break where the head's first `;` belongs after a `var`, `let` or `const` declaration,
+at P and K, and the loop runs as though the `;` were written (the correspondence's probes PP11 to PP13 and PE01 to
+PE03). K8's `completeness.md` does not list it. K10's list above, from "N11 (the end of input at 0,0)" to "and
+Broiler.JS's tests that assert acceptance past the contract's limits", is read with P16b among its rows; nothing else
+in D45 changes. T24a, T24b and T24f, which it names, keep their entry, and T24b and T24f also record the answer
+where `;` or the end of input follows the literal (decision D-t24).
+
 **Decision D46 - messages** *(revised 2026-10-26, findings F8 and F24)*. V8-style text rendered from identifiers;
 **the texts hosts and tests read are kept** ("Unexpected await", which the shell's retry reads, and the texts
 Broiler.JS's tests assert); any other change is class M, listed by a generated table, among them N25's move (a strict
@@ -1117,6 +1136,50 @@ segmentation, if it keeps it" is Broiler.JS's): the library holds no engine type
 a dark merge, if SJL-14's measurement shows the hop's cost. The plan's text ended "the parse uses no `StackSegment`."
 (finding F26).
 
+## The owner's decisions of 2026-10-27
+
+*(Added 2026-10-27.)* SJL-13.2's first runs of the `syntax` vectors, Broiler.JS's corpus revisions 29 and 30 (its
+branch `sjl-13-2-vectors`, bundle `sjl-13-001`'s README there), stopped on two items the correspondence did not hold
+as the runs showed them. Each was decided on 2026-10-27 as recommended, under the owner's direction of 2026-10-18
+quoted above: "Please do all recommended decisions and skip waiting for review." Each is recorded here as the owner's
+decision of 2026-10-27. The plan's numbers D1 to D74 are all assigned, so the two carry the names the work gave them,
+**D-asi** and **D-t24**, and no plan number. Neither changes a sub-area's verdict, another row's class, the corrections
+step 1 makes, a hand-off's owner or any rule, and the decisions of 2026-10-26 stand as recorded.
+
+**Decision D-asi - automatic semicolon insertion in a for statement's head (row P16b).** Broiler.JS accepts the vector
+`syntax/lexical/asi/0009`, `for (var i = 0` LF `i < 1; i++) ;` under PerformEval, which ES2026 refuses: no semicolon
+is inserted where it would become one of the two semicolons of a for statement's head (12.10.1). The correspondence's
+row P16 recorded Broiler.JS's automatic semicolon insertion as the specification's, class same; it was read from
+test262's `test/language/asi` tests, none of which puts a declaration before the line break.
+- **It is not a falsification of this record.** It is none of the clauses of "Falsified if": the classification
+  explains every corpus input (none holds the construct), and no shared code, compilation, tokenizer agreement or
+  tree-depth derivation is in question.
+- **It is a gap in the correspondence, and the correspondence answers it.** P16 is narrowed by a dated note to
+  automatic semicolon insertion outside a for statement's head. A new row, **P16b**, records both engines' answers,
+  read from code and probed in both engines at the correspondence's heads (probes PP11 to PP19 and PE01 to PE09).
+  Broiler.VM refuses the line break where either semicolon belongs, as the specification does. Broiler.JS accepts
+  it after a `var`, `let` or `const` declaration, and refuses it after an expression and where the second semicolon
+  belongs.
+- **P16b's class is correction of Broiler.JS, and SJL-14 answers it** as decision D45's other corrections of
+  Broiler.JS: K10's rows gain P16b (the note under D45), and hand-off H22 carries it with the rest.
+- The reason: each difference the vectors show is classified by a row that holds it (decision D25), and a row read
+  from tests that never reach the construct cannot be stretched to hold it. Broiler.VM's answer is the
+  specification's, so this family has nothing to correct and step 1's lists do not change.
+
+**Decision D-t24 - rows T24b and T24f where `;` or the end of input follows the literal.** The reading SJL-13.2's run
+adds is accepted: where `;` or the end of input follows the regular-expression literal, Broiler.JS completes with the
+left operand's value, with no refusal. The rows recorded only the refusal at compilation, "Undefined binary operation
+RegExLiteral", which their probes reach by putting an operand after the literal.
+- The rows record the new answer beside the one they hold, from a probe of both engines (probes T24B3 to T24B6,
+  T24F2 and T24F3; values T24b3 to T24b8, T24f2 and T24f3, among them the vectors' own sources): Broiler.JS accepts
+  at P and K and completes with the object, the function or `await`'s value, where the specification divides;
+  Broiler.VM divides after `}` and refuses after `await`, as T24f records.
+- **The classes stay**: T24b a correction of Broiler.JS, T24f a correction of both, each answered as before (D45's
+  K10 for Broiler.JS; step 1 for this family's half of T24f).
+- The reason: the mechanism is the one the rows record. The parser takes the regular-expression token as a binary
+  operator; with no right operand before `;` or the end it drops the token and keeps the left operand, so the class
+  follows, and the answer is now probed rather than read from the vectors' run alone.
+
 ## Readings recorded with the stage table
 
 - **The admission walk's refusals reach no corpus input.** Bundle `sjl-13-001`'s part A, kind (B), and part B's S3
@@ -1136,6 +1199,9 @@ a dark merge, if SJL-14's measurement shows the hop's cost. The plan's text ende
 - **The classifier pins two of the correspondence's analysis tables by digest**: `rows-P-baseline.tsv.gz` and
   `rows-P-agree.tsv.gz`. This record's change retains bundle `sjl-13-001`'s `correspondence-runs/` byte for byte as
   assembled, every `hashes.txt` verifying, and both files' digests equal the classifier's pins (item S2).
+  *(Note of 2026-10-27: the probes of decisions D-asi and D-t24 joined `correspondence-runs/` on 2026-10-27 as new
+  files only, and the `hashes.txt` of `probes/`, `vm/` and `js/` were written again over every file each holds, each
+  earlier line unchanged. `analysis/` is untouched, so both pinned digests still hold.)*
 
 ## The correspondence's findings, and what answers each
 
@@ -1177,6 +1243,11 @@ a dark merge, if SJL-14's measurement shows the hop's cost. The plan's text ende
 | S2 | The classifier pins two analysis tables kept in this repository's bundle | Record only: they are retained byte for byte, digests checked |
 | S3 | The stage table's `stale_cells` | Record only: decision D28 |
 | S4 | Two non-syntax rows with a Broiler.JS parser site | Record only: read and confirmed |
+
+*(Note of 2026-10-27.)* SJL-13.2's first runs of the `syntax` vectors added two items, each answered by an owner's
+decision of 2026-10-27: Broiler.JS's acceptance of `syntax/lexical/asi/0009`, which no row of the correspondence held
+(decision D-asi, row P16b), and Broiler.JS's completion of T24b's and T24f's sources where `;` or the end of input
+follows the literal (decision D-t24).
 
 ## The rules' changes from SJL-13's plan
 
