@@ -1,0 +1,41 @@
+// Rule N19's witness for its entry-point clause as widened on 2026-10-27 (JSD-0080 decision D16): a
+// public member that parses on its caller's stack under a name other than Compile.
+//
+// This is JsCompiler.Requests as it stood before SJL-12.6 item 4, and it was written for a good
+// reason. A composition walking a module graph needs each module's specifiers before it can load the
+// next, and nothing in that question is a compilation: no artifact, no lowering, one parse. So it was
+// written as a plain call that parses and answers, and the clause, which read members named Compile,
+// never saw it.
+//
+// What it cost is the thing the declared stack exists for. The parse recurses once per nested
+// construct, so a module nested within the bound the parse options admit ended the process from a
+// thread with a small stack, and a 25 KB module nesting templates ended it from a main thread. The
+// depth the options admit meant a different thing on every host, which is the property rule N19 holds.
+
+namespace Broiler.VM.Profile.JavaScript.Compiler;
+
+public sealed partial class JsCompiler
+{
+    public static JsModuleRequests Requests(string text, SliceParseOptions options)
+    {
+        // The violation: the parse runs here, on whatever stack the caller has.
+        var compiler = new JsCompiler();
+
+        if (!compiler.TryParse(text, options, forceStrict: true, out var program))
+        {
+            return new JsModuleRequests(false, [], compiler.diagnostics);
+        }
+
+        var specifiers = new System.Collections.Generic.List<string>();
+
+        foreach (var statement in program.Body)
+        {
+            if (statement is JsImportDeclaration import && !specifiers.Contains(import.Specifier))
+            {
+                specifiers.Add(import.Specifier);
+            }
+        }
+
+        return new JsModuleRequests(true, specifiers, compiler.diagnostics);
+    }
+}
