@@ -43,6 +43,23 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// reading of this session ends at the compiler's answer.
 /// </para>
 /// <para>
+/// <b>Each seed is compiled once itself, unmutated and under its goal, before its mutants, and that
+/// compilation is judged as a mutant's is.</b> An exception out of the compiler, a refusal with no
+/// diagnostic or with a code the registry does not hold, and a compilation past the wall bound are
+/// each a finding, on a line that names the seed with the word <c>seed</c> where a mutant's line names
+/// its number (<c>FINDING at &lt;id&gt; seed &lt;goal&gt;</c>), as the journal names the compilation; the
+/// seed's text is retained under the same cap, and the session exits 1. A seed refused with a code the registry
+/// holds is a finding too, which a mutant so refused is not: the seed file states that every wide
+/// seed is one the base accepts and that none is a negative test, so such a refusal says that
+/// statement no longer holds, and the seed's mutants are drawn from a source the compiler refuses.
+/// The line that counts the seeds accepted is still printed after the last seed, as a summary.
+/// <i>Corrected 2026-10-27, before the tools commit merged, after a planted throw that one seed's own
+/// compilation met was printed only on that line and the session exited 0. It read: "THE SEED ITSELF,
+/// ONCE, UNDER ITS GOAL: a reading of the file, not a mutant. Every wide seed was chosen as one the
+/// base accepts, so a refused seed says the corpus moved under it; the line is printed and decides
+/// nothing."</i>
+/// </para>
+/// <para>
 /// <b>The wall bound is enforced while a compilation runs, not read after it returns</b>, because a
 /// compilation that never returns is the extreme case of one past the bound, and a check made after
 /// the return would never be reached. Each compilation runs on a pool thread, which runs the compiler
@@ -168,16 +185,21 @@ internal static class WideFuzzing
 
         foreach (var seed in file.Seeds)
         {
-            // THE SEED ITSELF, ONCE, UNDER ITS GOAL: a reading of the file, not a mutant. Every wide seed
-            // was chosen as one the base accepts, so a refused seed says the corpus moved under it; the
-            // line is printed and decides nothing.
+            // THE SEED ITSELF, ONCE, UNDER ITS GOAL, JUDGED AS A MUTANT IS, for the reason the class's
+            // remarks give: what would make a mutant's compilation a finding makes this one a finding,
+            // and so does any refusal, because the seed file names no seed the base refuses.
+            var ownKey = seed.Id + "\tseed\t" + seed.Goal;
+            var ownName = $"wide-fuzz-{seed.Id}-seed-{seed.Goal}.js";
+            journal?.WriteLine("begin\t" + ownKey);
             var own = CompileWithin(seed.Text, seed.Goal, string.Empty, file.WallBoundMs);
 
             if (own is null)
             {
-                return PastTheWallBound(
-                    "seed " + seed.Id + " " + seed.Goal, seed.Text, $"wide-fuzz-{seed.Id}-seed-{seed.Goal}.js");
+                journal?.WriteLine("stop\t" + ownKey + "\tpast the wall bound");
+                return PastTheWallBound(ownKey.Replace('\t', ' '), seed.Text, ownName);
             }
+
+            journal?.WriteLine("end\t" + ownKey + "\t" + own.Answer);
 
             if (own.Accepted)
             {
@@ -186,6 +208,19 @@ internal static class WideFuzzing
             else
             {
                 seedsRefused.Add(seed.Id + " " + own.Answer);
+            }
+
+            var ownWhy = WhyItIsAFinding(own, registered, file.WallBoundMs);
+
+            if (ownWhy.Length == 0 && !own.Accepted)
+            {
+                ownWhy = $"the seed itself was refused with {(int)own.Diagnostics[0].Code}, a code the registry " +
+                    $"holds, and the seed file names every wide seed as one the base accepts: {own.Diagnostics[0]}";
+            }
+
+            if (ownWhy.Length != 0)
+            {
+                Report(ownKey.Replace('\t', ' '), ownWhy, seed.Text, ownName);
             }
 
             var accepted = 0;
@@ -222,19 +257,11 @@ internal static class WideFuzzing
 
                     if (why.Length != 0)
                     {
-                        found++;
-                        Console.WriteLine($"broiler-js-wide-fuzz: FINDING at {key.Replace('\t', ' ')}: {why}");
-
-                        if (retained < RetainedFindings)
-                        {
-                            Directory.CreateDirectory(findingsDirectory);
-                            var path = Path.Combine(
-                                findingsDirectory,
-                                $"wide-fuzz-{seed.Id}-mutant{number.ToString(CultureInfo.InvariantCulture)}-{context}.js");
-                            File.WriteAllText(path, mutant);
-                            Console.WriteLine("broiler-js-wide-fuzz: retained " + path);
-                            retained++;
-                        }
+                        Report(
+                            key.Replace('\t', ' '),
+                            why,
+                            mutant,
+                            $"wide-fuzz-{seed.Id}-mutant{number.ToString(CultureInfo.InvariantCulture)}-{context}.js");
                     }
 
                     if (observed.Accepted)
@@ -290,14 +317,11 @@ internal static class WideFuzzing
         Console.WriteLine("broiler-js-wide-fuzz: no finding");
         return 0;
 
-        // A COMPILATION STILL RUNNING AT THE WALL BOUND: reported and retained as every finding is, and
-        // the last thing the session does, for the reason the class's remarks give.
-        int PastTheWallBound(string at, string text, string name)
+        // ONE FINDING, A SEED'S OR A MUTANT'S: its line, and the text that met it retained under the cap.
+        void Report(string at, string why, string text, string name)
         {
             found++;
-            Console.WriteLine(
-                $"broiler-js-wide-fuzz: FINDING at {at}: the compilation had not returned at the wall bound " +
-                $"of {file.WallBoundMs.ToString(CultureInfo.InvariantCulture)} ms");
+            Console.WriteLine($"broiler-js-wide-fuzz: FINDING at {at}: {why}");
 
             if (retained < RetainedFindings)
             {
@@ -307,6 +331,18 @@ internal static class WideFuzzing
                 Console.WriteLine("broiler-js-wide-fuzz: retained " + path);
                 retained++;
             }
+        }
+
+        // A COMPILATION STILL RUNNING AT THE WALL BOUND: reported and retained as every finding is, and
+        // the last thing the session does, for the reason the class's remarks give.
+        int PastTheWallBound(string at, string text, string name)
+        {
+            Report(
+                at,
+                "the compilation had not returned at the wall bound of " +
+                $"{file.WallBoundMs.ToString(CultureInfo.InvariantCulture)} ms",
+                text,
+                name);
 
             Console.WriteLine(
                 "broiler-js-wide-fuzz: the session stops at the first compilation past the wall bound, whose " +
