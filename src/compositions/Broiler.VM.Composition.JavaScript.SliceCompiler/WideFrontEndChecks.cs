@@ -45,31 +45,45 @@ internal static class WideFrontEndChecks
     private const int Rounds = 200;
 
     /// <summary>
-    /// The sources the two-goals row compiles under both goals, each answered differently by the two.
+    /// The sources the two-goals row compiles under both goals, each accepted under one goal and refused
+    /// under the other.
     /// </summary>
     /// <remarks>
-    /// <b>Each source's answer depends on its goal and on nothing else.</b> The first is accepted under
-    /// both and lowers to two different artifacts, because <c>this</c> at a module's top level is not
-    /// the global object; the second and third are accepted as a script and refused as a module, a
-    /// module being strict and <c>await</c> reserved in it. A compilation answered under the other
-    /// goal's request therefore shows as a different artifact hash, or as a refusal where an artifact
-    /// was due, or an artifact where a refusal was. The filler declarations make each compilation long
-    /// enough that two of them overlap on a machine with more than one core.
+    /// <para>
+    /// <b>Each source's answer depends on its goal and on nothing else, and the parse decides it.</b>
+    /// The first is a module declaration, which a module accepts and a script refuses; the second and
+    /// third are accepted as a script and refused as a module, a module being strict and <c>await</c>
+    /// reserved in it. So a compilation parsed under the other goal's request shows, in either
+    /// direction, as an artifact where a refusal was due or a refusal where an artifact was, and an
+    /// artifact's hash is still compared with the one its own goal gives alone. The filler declarations
+    /// make each compilation long enough that two of them overlap on a machine with more than one core.
+    /// </para>
+    /// <para>
+    /// <b>No source is accepted under both goals, because two such artifacts would differ whatever the
+    /// parse did</b>: a script and a module are lowered as different kinds of unit under different names,
+    /// so a check that their hashes differ could not fail, and a mix-up of the goals' requests that left
+    /// the parse unchanged would not show.
+    /// </para>
     /// </remarks>
-    private static readonly (string Name, string Text, SliceSourceDiagnosticCode? ModuleRefusal)[] GoalSources =
+    private static readonly (string Name, string Text, SliceSourceDiagnosticCode? ScriptRefusal, SliceSourceDiagnosticCode? ModuleRefusal)[] GoalSources =
     [
-        ("this at the top level", Padded("var x = this; x;"), null),
-        ("a legacy octal literal", Padded("var y = 0123; y;"), SliceSourceDiagnosticCode.LegacyOctalInStrictCode),
-        ("await as a binding name", Padded("var await = 1; await;"), SliceSourceDiagnosticCode.ReservedWordAsBinding),
+        ("an export declaration", Padded("export var e = 1; e;"), SliceSourceDiagnosticCode.ModuleDeclarationOutsideModuleGoal, null),
+        ("a legacy octal literal", Padded("var y = 0123; y;"), null, SliceSourceDiagnosticCode.LegacyOctalInStrictCode),
+        ("await as a binding name", Padded("var await = 1; await;"), null, SliceSourceDiagnosticCode.ReservedWordAsBinding),
     ];
 
-    /// <summary>One answer of the wide path: an artifact's hash, or the first refusal's code.</summary>
-    private readonly record struct Answer(bool Accepted, string Hash, SliceSourceDiagnosticCode? First)
+    /// <summary>
+    /// One answer of the wide path: an artifact's hash, the first refusal's code, or the exception that
+    /// left the compiler.
+    /// </summary>
+    private readonly record struct Answer(bool Accepted, string Hash, SliceSourceDiagnosticCode? First, string? Threw = null)
     {
         public override string ToString() =>
-            Accepted
-                ? "accepted " + Hash[..16]
-                : "refused " + (First?.ToString() ?? "with no diagnostic");
+            Threw is not null
+                ? "threw " + Threw
+                : Accepted
+                    ? "accepted " + Hash[..16]
+                    : "refused " + (First?.ToString() ?? "with no diagnostic");
     }
 
     /// <summary>
@@ -87,9 +101,10 @@ internal static class WideFrontEndChecks
     /// why it runs many rounds rather than one.
     /// </para>
     /// <para>
-    /// <b>The expected answers are checked before they are used</b>: the first source's two artifacts
-    /// must differ, and the other two must be accepted as a script and refused as a module with the code
-    /// the language's rule gives. A pair of goals that answered alike would make a mix-up invisible.
+    /// <b>The expected answers are checked before they are used</b>: each source must be accepted under
+    /// the goal that admits it and refused under the other with the code the language's rule gives. A
+    /// pair of goals that answered alike would make a mix-up invisible. An exception that leaves the
+    /// compiler during the rounds is an answer the row reports, not one that stops the checks.
     /// </para>
     /// </remarks>
     private static (string, bool, string) TwoGoalsOnTheWidePathDoNotReachEachOther()
@@ -100,23 +115,23 @@ internal static class WideFrontEndChecks
 
         for (var index = 0; index < GoalSources.Length; index++)
         {
-            var (name, text, refusal) = GoalSources[index];
+            var (name, text, scriptRefusal, moduleRefusal) = GoalSources[index];
             expected[index] = (Compile(text, SliceGoal.Script), Compile(text, SliceGoal.Module));
-            var (script, module) = expected[index];
 
-            if (!script.Accepted)
+            foreach (var (goal, answer, refusal) in new[]
             {
-                failed.Add($"{name}: refused as a script, alone: {script}");
-            }
-
-            if (refusal is null
-                    ? !module.Accepted || module.Hash == script.Hash
-                    : module.Accepted || module.First != refusal)
+                ("script", expected[index].Script, scriptRefusal),
+                ("module", expected[index].Module, moduleRefusal),
+            })
             {
-                failed.Add(
-                    $"{name}: as a module, alone, answered {module}, where " +
-                    (refusal is null ? "an artifact other than the script's" : "a refusal with " + refusal) +
-                    " was due");
+                if (refusal is null
+                        ? !answer.Accepted
+                        : answer.Accepted || answer.Threw is not null || answer.First != refusal)
+                {
+                    failed.Add(
+                        $"{name}: as a {goal}, alone, answered {answer}, where " +
+                        (refusal is null ? "an artifact" : "a refusal with " + refusal) + " was due");
+                }
             }
         }
 
@@ -162,8 +177,8 @@ internal static class WideFrontEndChecks
             wrong == 0,
             wrong == 0
                 ? $"{Rounds} concurrent Script and Module compilations of {GoalSources.Length} texts through " +
-                  "JsCompiler.Compile, each answering as its goal answers alone: one text two artifacts, two " +
-                  "texts an artifact as a script and a refusal as a module"
+                  "JsCompiler.Compile, each answering as its goal answers alone: one text a refusal as a " +
+                  "script and an artifact as a module, two texts an artifact as a script and a refusal as a module"
                 : $"{wrong} of {Rounds * 2} compilations answered as the other goal does; the first: {first}");
     }
 
@@ -238,18 +253,30 @@ internal static class WideFrontEndChecks
                 : string.Join("; ", failed));
     }
 
-    /// <summary>One text through the wide path under one goal, as an embedder compiles it.</summary>
+    /// <summary>
+    /// One text through the wide path under one goal, as an embedder compiles it; an exception that
+    /// leaves the compiler is the answer rather than the end of the checks.
+    /// </summary>
     private static Answer Compile(string text, SliceGoal goal)
     {
-        var compiled = goal == SliceGoal.Module
-            ? JsCompiler.Compile(
-                [],
-                [new JsModuleUnit("mem:/main.mjs", text, SliceParseOptions.Module, [])],
-                new JsCompileRequest())
-            : JsCompiler.Compile(
-                [new JsScriptUnit("main", text, SliceParseOptions.Script)],
-                [],
-                new JsCompileRequest());
+        JsCompilation compiled;
+
+        try
+        {
+            compiled = goal == SliceGoal.Module
+                ? JsCompiler.Compile(
+                    [],
+                    [new JsModuleUnit("mem:/main.mjs", text, SliceParseOptions.Module, [])],
+                    new JsCompileRequest())
+                : JsCompiler.Compile(
+                    [new JsScriptUnit("main", text, SliceParseOptions.Script)],
+                    [],
+                    new JsCompileRequest());
+        }
+        catch (Exception failure) when (failure is not OutOfMemoryException)
+        {
+            return new Answer(false, string.Empty, null, failure.GetType().Name);
+        }
 
         return compiled.Succeeded && compiled.Artifact is { } artifact
             ? new Answer(true, Convert.ToHexStringLower(SHA256.HashData(artifact)), null)
