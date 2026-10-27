@@ -1,4 +1,7 @@
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Broiler.VM.Architecture.Tests;
 
@@ -23,14 +26,86 @@ namespace Broiler.VM.Architecture.Tests;
 /// asking for the process termination the bound exists to prevent, in a call that looks like
 /// configuration.
 /// </para>
+/// <para>
+/// <b>The entry-point clause was widened on 2026-10-27, at SJL-13's tools commit</b> (JSD-0080
+/// decision D16, JSD-0083 decision D27). It read every public static member NAMED <c>Compile</c>,
+/// and <c>JsCompiler.Requests</c>, which parses a module to answer its specifiers, parsed on its
+/// caller's stack until SJL-12.6 without the clause seeing it. It now reads every public static
+/// member of the assembly that reaches a front-end stage, whatever its name: a member whose body, or
+/// the body of a member of the same file it calls, names the wide compiler, a parser or a tokenizer
+/// (see <see cref="NamesAStage"/>). Such a member runs that work through <c>CompilationStack.Run</c>, or
+/// reaches it only through a sibling public member that does. The clause read: "Every public compile
+/// entry point routes through the declared stack", over the pattern
+/// <c>public static\s+(?&lt;returns&gt;\w+)\s+Compile\s*\(</c> and a 600-character window after it.
+/// It admitted an entry point whose window held the text <c>CompilationStack.Run</c> or the text
+/// <c>Compile(</c>, and its remark gave the reason: "An entry point that delegates to another entry
+/// point satisfies this by the one it calls, which is why a body naming either the helper or a sibling
+/// <c>Compile</c> is admitted." That substring test is what the widening replaces: a window could hold
+/// <c>Compile(</c> from any call of that name, or from the next member's declaration, and the clause
+/// still admitted the member; it now admits a delegation only to a sibling public static member that
+/// itself complies.
+/// </para>
 /// </remarks>
 public sealed class CompilationStackRuleTests
 {
     private const string Assembly = "Broiler.VM.Profile.JavaScript.Compiler";
 
-    /// <summary>Public compile entry points, which are what a caller reaches the walks through.</summary>
-    private static readonly Regex EntryPoint = new(
+    /// <summary>
+    /// The pattern the entry-point clause read until 2026-10-27, kept to show what the widening adds:
+    /// it matches no member of the witness, which parses off the stack under another name.
+    /// </summary>
+    private static readonly Regex NamedCompileOnly = new(
         @"public static\s+(?<returns>\w+)\s+Compile\s*\(", RegexOptions.Compiled);
+
+    /// <summary>
+    /// The names whose appearance in a member's body says it reaches a front-end stage by name: the wide
+    /// compiler, which parses in its own run. Every name that ends in one of
+    /// <see cref="FrontEndStageSuffixes"/> is a stage too.
+    /// </summary>
+    private static readonly string[] FrontEndStages = ["JsCompiler"];
+
+    /// <summary>
+    /// The endings that make a name a front-end stage: a parser or a tokenizer, whatever it is called.
+    /// </summary>
+    /// <remarks>
+    /// <b>Endings rather than a list of today's types, settled 2026-10-27 before the tools commit
+    /// merged.</b> The list read <c>["JsCompiler", "JsParser", "SliceParser", "SliceTokenizer"]</c>, and
+    /// in this assembly the endings match those three types and nothing else. SJL-13's step 1 deletes
+    /// <c>JsParser</c> and parses through the shared syntax library (JSD-0083 decisions D19 and D20),
+    /// whose parse entry's name SJL-13.2 fixes; a list of today's names would not see a member that
+    /// called that library's parser directly, off the stack, and the rule's part D in bundle
+    /// <c>sjl-13-001</c> judges N19 as the tools commit leaves it. So a name ending in <c>Parser</c> or
+    /// <c>Tokenizer</c> is a stage, and so is anything named through that library's namespace,
+    /// <see cref="SharedSyntaxNamespace"/>. A library type named neither way, and imported by a
+    /// <c>using</c> directive rather than named through its namespace, would still not be seen; step 1
+    /// checks its parse entry against this test.
+    /// </remarks>
+    private static readonly string[] FrontEndStageSuffixes = ["Parser", "Tokenizer"];
+
+    /// <summary>The shared syntax library's namespace (JSD-0083 decision D6): a name under it is a stage.</summary>
+    private const string SharedSyntaxNamespace = "Broiler.ECMAScript.Syntax";
+
+    /// <summary>
+    /// Public static members known to reach a front-end stage on their caller's stack, each with the
+    /// reason it is named rather than excused: an entry here is a gap the rule shows, not a member it
+    /// admits, and an entry whose member no longer does so is itself reported, so that it cannot outlive
+    /// the gap.
+    /// </summary>
+    /// <remarks>
+    /// <b>One entry, found when the clause was widened on 2026-10-27.</b> The construct census parses and
+    /// walks every source it is given on its caller's stack; it is no compilation, so the clause as it
+    /// read before did not reach it, and its routing through <c>CompilationStack</c> is a change to this
+    /// product assembly, which SJL-13's tools commit may not make (bundle <c>sjl-13-001</c>'s rule, "The
+    /// commits, named before they exist"). It is handed on to a product change of its own.
+    /// </remarks>
+    private static readonly (string File, string Member, string Why)[] KnownOffTheStack =
+    [
+        (
+            "src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs",
+            "Take",
+            "the construct census tokenizes, parses and walks each source on its caller's stack; routing it " +
+            "through CompilationStack is a product change SJL-13's tools commit may not make"),
+    ];
 
     private static IEnumerable<AssuranceSourceFile> CompilerFiles =>
         AssuranceSources.Files.Where(static file => file.Assembly == Assembly);
@@ -50,48 +125,255 @@ public sealed class CompilationStackRuleTests
     ];
 
     /// <summary>
-    /// Every public compile entry point routes through the declared stack.
+    /// Every public static member that reaches a front-end stage routes through the declared stack.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Read off the source rather than the metadata because what is asserted is that the CALL is
     /// there, and a call is not a thing an assembly's shape records. An entry point that delegates
-    /// to another entry point satisfies this by the one it calls, which is why a body naming
-    /// either the helper or a sibling <c>Compile</c> is admitted.
+    /// to another entry point satisfies this by the one it calls.
+    /// </para>
+    /// <para>
+    /// <b>Widened 2026-10-27</b> from the members named <c>Compile</c> to every public static member
+    /// that parses, <c>JsCompiler.Requests</c> among them (JSD-0080 decision D16); the class's remarks
+    /// quote what it read. Two further findings keep it from passing by finding nothing: no such member
+    /// at all, and a <c>Requests</c> declared in <c>JsCompiler.cs</c> that the scan does not reach.
+    /// </para>
     /// </remarks>
     private static IEnumerable<string> EntryPointViolations()
     {
         var scanned = 0;
+        var reachedRequests = false;
+        var requestsDeclared = false;
+        var known = new List<(string File, string Member)>();
 
         foreach (var file in CompilerFiles)
         {
-            var path = Path.Combine(
-                ComponentGraph.Root, file.RelativePath.Replace('/', Path.DirectorySeparatorChar));
-            var text = File.ReadAllText(path);
-
-            foreach (Match match in EntryPoint.Matches(text))
+            foreach (var entry in ParsingEntryPoints(file.Tree))
             {
                 scanned++;
-                var body = text[match.Index..Math.Min(text.Length, match.Index + 600)];
 
-                if (!body.Contains("CompilationStack.Run", StringComparison.Ordinal) &&
-                    !body.Contains("Compile(", StringComparison.Ordinal))
+                if (file.RelativePath.EndsWith("/JsCompiler.cs", StringComparison.Ordinal) && entry.Name == "Requests")
                 {
-                    yield return
-                        $"{file.RelativePath} declares a public Compile entry point that reaches " +
-                        "the tree walks on the caller's stack";
+                    reachedRequests = true;
                 }
+
+                if (entry.Compliant)
+                {
+                    continue;
+                }
+
+                if (KnownOffTheStack.Any(gap => gap.File == file.RelativePath && gap.Member == entry.Name))
+                {
+                    known.Add((file.RelativePath, entry.Name));
+                    continue;
+                }
+
+                yield return
+                    $"{file.RelativePath}:{entry.Line} declares a public static member `{entry.Name}` that reaches " +
+                    "a front-end stage on its caller's stack: it neither runs through CompilationStack.Run nor " +
+                    "reaches the stage only through a sibling public member that does";
+            }
+
+            if (file.RelativePath.EndsWith("/JsCompiler.cs", StringComparison.Ordinal) &&
+                file.Tree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
+                    .Any(static method => method.Identifier.ValueText == "Requests" && IsPublicStatic(method)))
+            {
+                requestsDeclared = true;
             }
         }
 
-        // The vacuity clause: this rule passes by finding nothing, so a run that matched no entry
+        foreach (var gap in KnownOffTheStack.Where(gap => !known.Contains((gap.File, gap.Member))))
+        {
+            yield return
+                $"{gap.File} `{gap.Member}` is named among the members known to parse off the stack, and the " +
+                "scan no longer finds it doing so: remove the entry, so the rule holds the member as it holds " +
+                "every other";
+        }
+
+        // The vacuity clauses: this rule passes by finding nothing, so a run that matched no entry
         // point at all would be its cleanest result and would mean the pattern had gone stale.
         if (scanned == 0)
         {
             yield return
-                "no public compile entry point was found, so this rule is quantifying over " +
-                "nothing rather than deciding anything";
+                "no public static member that reaches a front-end stage was found, so this rule is " +
+                "quantifying over nothing rather than deciding anything";
+        }
+
+        if (requestsDeclared && !reachedRequests)
+        {
+            yield return
+                "JsCompiler.cs declares a public static Requests, and the scan does not count it among the " +
+                "members that parse, which is the widening this clause exists for (JSD-0080 decision D16)";
         }
     }
+
+    /// <summary>One public static member that reaches a front-end stage, and whether it complies.</summary>
+    private readonly record struct ParsingEntry(string Name, int Line, bool Compliant);
+
+    /// <summary>
+    /// The public static members of one file that reach a front-end stage, each with whether it runs on
+    /// the declared stack.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>What "reaches" means here.</b> A method reaches a stage when its body names one
+    /// (<see cref="NamesAStage"/>), or calls by name a method declared in the same file that reaches
+    /// one. Names and calls are read from the syntax tree, so a stage named in a comment or a string
+    /// reaches nothing. The call graph stops at the file: the compiler's entry points construct the
+    /// stage they reach, or call the private member of their own file that does. The set of methods
+    /// that reach a stage is computed as a fixpoint over the file's call graph (see
+    /// <see cref="Reaching"/>), so a cycle in the graph changes nothing.
+    /// </para>
+    /// <para>
+    /// <b>What "complies" means.</b> The member's body invokes <c>CompilationStack.Run</c>; or it names
+    /// no stage itself and every method of the same file it reaches a stage through is another public
+    /// static member that complies.
+    /// </para>
+    /// </remarks>
+    private static IEnumerable<ParsingEntry> ParsingEntryPoints(SyntaxTree tree)
+    {
+        var methods = tree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Where(static method => method.Body is not null || method.ExpressionBody is not null)
+            .ToArray();
+        var byName = methods.ToLookup(static method => method.Identifier.ValueText, StringComparer.Ordinal);
+        var reaching = Reaching(methods, byName);
+
+        bool Complies(MethodDeclarationSyntax method, HashSet<MethodDeclarationSyntax> visiting)
+        {
+            if (RunsOnTheDeclaredStack(method))
+            {
+                return true;
+            }
+
+            if (NamesAStage(method) || !visiting.Add(method))
+            {
+                return false;
+            }
+
+            var answer = Callees(method)
+                .SelectMany(name => byName[name])
+                .Where(callee => callee != method && reaching.Contains(callee))
+                .All(callee => IsPublicStatic(callee) && Complies(callee, visiting));
+
+            visiting.Remove(method);
+            return answer;
+        }
+
+        foreach (var method in methods.Where(IsPublicStatic))
+        {
+            if (reaching.Contains(method))
+            {
+                yield return new ParsingEntry(
+                    method.Identifier.ValueText,
+                    method.GetLocation().GetLineSpan().StartLinePosition.Line + 1,
+                    Complies(method, []));
+            }
+        }
+    }
+
+    /// <summary>
+    /// The methods of one file that reach a front-end stage: those whose own body names one, and then,
+    /// until nothing changes, every method that calls by name a method already in the set.
+    /// </summary>
+    /// <remarks>
+    /// <b>A fixpoint, settled 2026-10-27 before the tools commit merged,</b> in place of a depth-first
+    /// walk that cut a cycle by answering "does not reach" for the method it met again and cached that
+    /// answer for the method it was computing, so that a later member reaching a stage only through
+    /// that method was never counted. <see cref="N19_Counts_A_Member_That_Reaches_A_Stage_Through_A_Cycle"/>
+    /// holds the case.
+    /// </remarks>
+    private static HashSet<MethodDeclarationSyntax> Reaching(
+        IReadOnlyList<MethodDeclarationSyntax> methods,
+        ILookup<string, MethodDeclarationSyntax> byName)
+    {
+        var reaching = methods.Where(NamesAStage).ToHashSet();
+        var calls = methods.ToDictionary(
+            static method => method,
+            method => Callees(method).SelectMany(name => byName[name]).ToArray());
+
+        for (var grew = true; grew;)
+        {
+            grew = false;
+
+            foreach (var method in methods)
+            {
+                if (!reaching.Contains(method) && calls[method].Any(reaching.Contains))
+                {
+                    reaching.Add(method);
+                    grew = true;
+                }
+            }
+        }
+
+        return reaching;
+    }
+
+    private static bool IsPublicStatic(MethodDeclarationSyntax method) =>
+        method.Modifiers.Any(SyntaxKind.PublicKeyword) && method.Modifiers.Any(SyntaxKind.StaticKeyword);
+
+    /// <summary>
+    /// Whether the method's own body names a front-end stage: one of <see cref="FrontEndStages"/>, a
+    /// name ending in one of <see cref="FrontEndStageSuffixes"/>, or a name under
+    /// <see cref="SharedSyntaxNamespace"/>.
+    /// </summary>
+    private static bool NamesAStage(MethodDeclarationSyntax method) =>
+        BodyOf(method).DescendantNodesAndSelf().Any(static node => node switch
+        {
+            IdentifierNameSyntax name => IsAStage(name.Identifier.ValueText),
+            GenericNameSyntax generic => IsAStage(generic.Identifier.ValueText),
+            QualifiedNameSyntax or MemberAccessExpressionSyntax or AliasQualifiedNameSyntax =>
+                IsUnderTheSharedSyntaxNamespace(node),
+            _ => false,
+        });
+
+    private static bool IsAStage(string name) =>
+        FrontEndStages.Contains(name, StringComparer.Ordinal) ||
+        FrontEndStageSuffixes.Any(suffix => name.EndsWith(suffix, StringComparison.Ordinal));
+
+    /// <summary>Whether a dotted name, with its whitespace and any <c>global::</c> removed, lies under the namespace.</summary>
+    private static bool IsUnderTheSharedSyntaxNamespace(SyntaxNode node)
+    {
+        if (node.GetFirstToken().ValueText is not ("Broiler" or "global"))
+        {
+            return false;
+        }
+
+        var dotted = string.Concat(node.ToString().Where(static c => !char.IsWhiteSpace(c)));
+
+        if (dotted.StartsWith("global::", StringComparison.Ordinal))
+        {
+            dotted = dotted["global::".Length..];
+        }
+
+        return dotted == SharedSyntaxNamespace ||
+            dotted.StartsWith(SharedSyntaxNamespace + ".", StringComparison.Ordinal);
+    }
+
+    /// <summary>Whether the method's own body invokes <c>CompilationStack.Run</c>.</summary>
+    private static bool RunsOnTheDeclaredStack(MethodDeclarationSyntax method) =>
+        BodyOf(method).DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>()
+            .Any(static call => call.Expression is MemberAccessExpressionSyntax
+            {
+                Expression: IdentifierNameSyntax { Identifier.ValueText: "CompilationStack" },
+                Name.Identifier.ValueText: "Run",
+            });
+
+    /// <summary>The names the method's body calls: a bare name, or a member of a receiver.</summary>
+    private static IEnumerable<string> Callees(MethodDeclarationSyntax method) =>
+        BodyOf(method).DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>()
+            .Select(static call => call.Expression switch
+            {
+                IdentifierNameSyntax name => name.Identifier.ValueText,
+                GenericNameSyntax generic => generic.Identifier.ValueText,
+                MemberAccessExpressionSyntax member => member.Name.Identifier.ValueText,
+                _ => string.Empty,
+            })
+            .Where(static name => name.Length != 0)
+            .Distinct(StringComparer.Ordinal);
+
+    private static SyntaxNode BodyOf(MethodDeclarationSyntax method) =>
+        (SyntaxNode?)method.Body ?? method.ExpressionBody!;
 
     /// <summary>The declared stack exists, states a size, and runs the work on a thread.</summary>
     private static IEnumerable<string> StackDeclarationViolations()
@@ -188,6 +470,104 @@ public sealed class CompilationStackRuleTests
         // The real file passes the same predicate the witness fails, which is what makes the
         // comparison a rule rather than a pair of strings.
         Assert.DoesNotContain("maximumTreeDepth", TextOf("SliceParseOptions.cs"), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The rejecting direction of the widened entry-point clause, run over its witness (2026-10-27).
+    /// </summary>
+    /// <remarks>
+    /// The witness is <c>JsCompiler.Requests</c> as it stood before SJL-12.6 item 4 (the parent of
+    /// <c>2c590e4</c>), its body copied unchanged: a public static member that is not named
+    /// <c>Compile</c>, that parses a module to answer its typed specifiers, and that does so on its
+    /// caller's stack. The pattern the clause read before the widening matches nothing in it, and the
+    /// widened clause refuses it; the real <c>Requests</c> passes the predicate the witness fails.
+    /// </remarks>
+    [Fact]
+    public void N19_Rejects_A_Parsing_Entry_Point_Off_The_Declared_Stack()
+    {
+        var witness = File.ReadAllText(Path.Combine(
+            ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests", "witnesses",
+            "N19-a-parsing-entry-point-off-the-declared-stack.cs.witness"));
+
+        Assert.Empty(NamedCompileOnly.Matches(witness));
+
+        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(witness)).ToArray();
+        var refused = Assert.Single(entries);
+        Assert.Equal("Requests", refused.Name);
+        Assert.False(refused.Compliant);
+
+        var real = CompilerFiles.Single(static file => file.RelativePath.EndsWith("/JsCompiler.cs", StringComparison.Ordinal));
+        Assert.Contains(
+            ParsingEntryPoints(real.Tree),
+            static entry => entry.Name == "Requests" && entry.Compliant);
+    }
+
+    /// <summary>
+    /// A member that reaches a stage only through a method a cycle passes through is counted, in
+    /// whatever order the file declares its members (2026-10-27).
+    /// </summary>
+    /// <remarks>
+    /// <c>Middle</c> calls <c>Back</c> before <c>Parse</c>, and <c>Back</c> calls <c>Middle</c>, so a
+    /// walk that cut the cycle at <c>Middle</c> and kept the answer it gave <c>Back</c> there would count
+    /// <c>First</c> and never <c>Second</c>, which reaches the parser through <c>Back</c> alone.
+    /// </remarks>
+    [Fact]
+    public void N19_Counts_A_Member_That_Reaches_A_Stage_Through_A_Cycle()
+    {
+        const string Source = """
+            namespace Probe;
+
+            public static class Cycle
+            {
+                public static int First(string text) => Middle(text);
+
+                private static int Middle(string text)
+                {
+                    Back(text);
+                    return Parse(text);
+                }
+
+                private static int Back(string text) => Middle(text);
+
+                private static int Parse(string text) => new SliceParser(text).Count;
+
+                public static int Second(string text) => Back(text);
+            }
+            """;
+
+        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(Source)).ToArray();
+
+        Assert.Equal(new[] { "First", "Second" }, entries.Select(static entry => entry.Name));
+        Assert.All(entries, static entry => Assert.False(entry.Compliant));
+    }
+
+    /// <summary>
+    /// A parser or a tokenizer is a stage whatever it is called, and so is a name under the shared
+    /// syntax library's namespace, so the shared library's parse entry is seen from SJL-13's step 1
+    /// (2026-10-27).
+    /// </summary>
+    [Fact]
+    public void N19_Counts_A_Parser_By_Its_Ending_And_The_Shared_Library_By_Its_Namespace()
+    {
+        const string Source = """
+            namespace Probe;
+
+            public static class Library
+            {
+                public static int ByEnding(string text) => new SyntaxParser(text).Count;
+
+                public static int ByNamespace(string text) => Broiler.ECMAScript.Syntax.Frontend.Parse(text).Count;
+
+                public static int Neither(string text) => text.Length;
+
+                public static int OnTheStack(string text) => CompilationStack.Run(() => new SyntaxTokenizer(text).Count);
+            }
+            """;
+
+        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(Source)).ToArray();
+
+        Assert.Equal(new[] { "ByEnding", "ByNamespace", "OnTheStack" }, entries.Select(static entry => entry.Name));
+        Assert.Equal(new[] { false, false, true }, entries.Select(static entry => entry.Compliant));
     }
 
     /// <summary>The bound and the stack cite one another, so neither can move alone.</summary>
