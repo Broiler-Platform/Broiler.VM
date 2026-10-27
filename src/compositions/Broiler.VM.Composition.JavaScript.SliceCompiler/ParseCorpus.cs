@@ -90,10 +90,20 @@ internal static class ParseCorpus
     private const int MaximumModules = 256;
 
     /// <summary>
-    /// The stack each worker runs on. The module walk asks <see cref="JsCompiler.Requests"/> on the
-    /// caller's stack, which is the one place a compilation of this run does not get the compiler's
-    /// own declared stack; this one is larger than that, so a deep module cannot end the process.
+    /// The stack each worker runs on: this mode's own code, and no parse of the run.
     /// </summary>
+    /// <remarks>
+    /// <b>Corrected 2026-10-27, at SJL-13's tools commit (JSD-0083 decision D27).</b> This summary read:
+    /// "The module walk asks <see cref="JsCompiler.Requests"/> on the caller's stack, which is the one
+    /// place a compilation of this run does not get the compiler's own declared stack; this one is
+    /// larger than that, so a deep module cannot end the process." Since SJL-12.6 (<c>2c590e4</c>)
+    /// <c>Requests</c> parses inside <c>CompilationStack.Run</c>, as <c>JsCompiler.Compile</c> and the
+    /// slice front end's <c>SliceSourceCompiler.Compile</c> do, so every parse and walk of a syntax tree
+    /// this run asks for runs on the stack the compiler declares, and none on this one. What runs here is
+    /// the mode's own code: the graph walk, the front-matter reader, hashing and the report. The figure
+    /// is unchanged, and so is what the mode does. Bundle <c>sjl-12-001</c> carried the stale summary
+    /// because its part B held this file unchanged between its corpus commit and its after commit.
+    /// </remarks>
     private const int WorkerStackBytes = 64 * 1024 * 1024;
 
     /// <summary>The four sub-populations, in report order.</summary>
