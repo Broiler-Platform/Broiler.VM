@@ -108,6 +108,15 @@ internal static class Program
                 return WideFuzzing.Run(args[1..]);
             }
 
+            // THE WIDE PATH'S COMPILE MEASUREMENT (SJL-13's tools commit, JSD-0083 decision D24): one
+            // lane's timed turn at the workloads a directory names, each beside its control, writing each
+            // compilation's outcome and artifact hash beside its time. The collector that runs it
+            // interleaves the arms; this mode compares nothing.
+            if (args.Length >= 1 && string.Equals(args[0], "--measure-compile", StringComparison.Ordinal))
+            {
+                return CompileMeasurement.Run(args[1..]);
+            }
+
             // THE VALUE FORM'S WORD, TABLE AND SCAN, UNDER A LONGER SEEDED RUN THAN --checks TAKES
             // (JSD-0035 stage JSV-0). The checks lane runs three fixed seeds; this is how a reader
             // runs the same model for as long as they like, with or without handle-stress.
@@ -139,6 +148,7 @@ internal static class Program
                 "--fuzz <source directory> [--seed <n>] [--iterations <n>] | " +
                 "--fuzz-wide <parse corpus directory> --seeds <seed file> [--archive <archive>] " +
                 "[--registry <file>] [--findings <directory>] [--journal <file>] | " +
+                "--measure-compile <workloads directory> --arm <name> [--only <workload>] [--runtime] | " +
                 "--fuzz-words [--seed <n>] [--iterations <n>] [--stress]");
 
             return 2;
