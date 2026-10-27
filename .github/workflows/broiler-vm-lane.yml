@@ -984,8 +984,14 @@ jobs:
       # the lane and the rule run one session. It reads the parse corpus and the pinned test262 archive
       # from this checkout, and the registry beside them. The seed file fixes every mutant count, so
       # this step does not take `fuzz-iterations`: a session is a total function of the file and the
-      # corpus, and decides the same here as on a workstation. A finding is retained under artifacts/.
+      # corpus, and decides the same here as on a workstation. A finding's line names its seed, its
+      # mutant's number and its context, so this log alone rebuilds the mutant; the copy the session
+      # retains under artifacts/ is not uploaded. The session enforces the seed file's wall bound while
+      # each compilation runs, so a compilation that never returns is reported as a finding and ends
+      # the session; the step's own timeout is a backstop for a process that stops anywhere else,
+      # because this job has none of its own.
       - name: Fuzz the JavaScript wide path from bundle sjl-13-001's seeds
+        timeout-minutes: 30
         run: |
           set -euo pipefail
           binary="artifacts/ci-aot-JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler"

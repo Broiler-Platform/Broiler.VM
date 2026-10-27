@@ -42,6 +42,16 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// (up to a cap), and exits 1 when there was any. An accepted mutant is not verified: the rule's
 /// reading of this session ends at the compiler's answer.
 /// </para>
+/// <para>
+/// <b>The wall bound is enforced while a compilation runs, not read after it returns</b>, because a
+/// compilation that never returns is the extreme case of one past the bound, and a check made after
+/// the return would never be reached. Each compilation runs on a pool thread, which runs the compiler
+/// on the stack the compiler declares, and the session waits for it for the wall bound and no longer.
+/// A compilation still running at the bound is a finding, reported with its seed, mutant and context
+/// and retained like any other, and it ends the session with exit code 1: the thread it runs on cannot
+/// be stopped, and left running it would share the machine with every later compilation and move
+/// their times. Both threads are background threads, so the process ends when the session returns.
+/// </para>
 /// </remarks>
 internal static class WideFuzzing
 {
@@ -161,7 +171,14 @@ internal static class WideFuzzing
             // THE SEED ITSELF, ONCE, UNDER ITS GOAL: a reading of the file, not a mutant. Every wide seed
             // was chosen as one the base accepts, so a refused seed says the corpus moved under it; the
             // line is printed and decides nothing.
-            var own = Compile(seed.Text, seed.Goal, string.Empty);
+            var own = CompileWithin(seed.Text, seed.Goal, string.Empty, file.WallBoundMs);
+
+            if (own is null)
+            {
+                return PastTheWallBound(
+                    "seed " + seed.Id + " " + seed.Goal, seed.Text, $"wide-fuzz-{seed.Id}-seed-{seed.Goal}.js");
+            }
+
             if (own.Accepted)
             {
                 seedsAccepted++;
@@ -182,7 +199,17 @@ internal static class WideFuzzing
                 {
                     var key = seed.Id + "\t" + number.ToString(CultureInfo.InvariantCulture) + "\t" + context;
                     journal?.WriteLine("begin\t" + key);
-                    var observed = Compile(mutant, seed.Goal, context);
+                    var observed = CompileWithin(mutant, seed.Goal, context, file.WallBoundMs);
+
+                    if (observed is null)
+                    {
+                        journal?.WriteLine("stop\t" + key + "\tpast the wall bound");
+                        return PastTheWallBound(
+                            key.Replace('\t', ' '),
+                            mutant,
+                            $"wide-fuzz-{seed.Id}-mutant{number.ToString(CultureInfo.InvariantCulture)}-{context}.js");
+                    }
+
                     journal?.WriteLine("end\t" + key + "\t" + observed.Answer);
 
                     if (observed.Elapsed > slowest)
@@ -262,6 +289,31 @@ internal static class WideFuzzing
 
         Console.WriteLine("broiler-js-wide-fuzz: no finding");
         return 0;
+
+        // A COMPILATION STILL RUNNING AT THE WALL BOUND: reported and retained as every finding is, and
+        // the last thing the session does, for the reason the class's remarks give.
+        int PastTheWallBound(string at, string text, string name)
+        {
+            found++;
+            Console.WriteLine(
+                $"broiler-js-wide-fuzz: FINDING at {at}: the compilation had not returned at the wall bound " +
+                $"of {file.WallBoundMs.ToString(CultureInfo.InvariantCulture)} ms");
+
+            if (retained < RetainedFindings)
+            {
+                Directory.CreateDirectory(findingsDirectory);
+                var path = Path.Combine(findingsDirectory, name);
+                File.WriteAllText(path, text);
+                Console.WriteLine("broiler-js-wide-fuzz: retained " + path);
+                retained++;
+            }
+
+            Console.WriteLine(
+                "broiler-js-wide-fuzz: the session stops at the first compilation past the wall bound, whose " +
+                $"thread cannot be stopped; {found.ToString(CultureInfo.InvariantCulture)} finding(s), " +
+                $"{retained.ToString(CultureInfo.InvariantCulture)} retained under {findingsDirectory}");
+            return 1;
+        }
     }
 
     /// <summary>The compilations one mutant gets: its seed's goal, then each eval-flag set named.</summary>
@@ -291,6 +343,16 @@ internal static class WideFuzzing
     [
         ("E0", 0), ("E1", 1), ("E2", 2), ("E3", 3), ("E4", 6), ("E5", 14), ("E6", 22), ("E7", 38),
     ];
+
+    /// <summary>
+    /// <see cref="Compile"/> on a pool thread, waited for for the wall bound: its observation, or
+    /// <see langword="null"/> when the compilation had not returned by then.
+    /// </summary>
+    private static Observation? CompileWithin(string text, string goal, string context, int wallBoundMs)
+    {
+        var running = Task.Run(() => Compile(text, goal, context));
+        return running.Wait(wallBoundMs) ? running.Result : null;
+    }
 
     /// <summary>
     /// Compiles one text through <see cref="JsCompiler"/>: a script, a module, or eval code under a
