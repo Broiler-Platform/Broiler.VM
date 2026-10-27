@@ -21,7 +21,7 @@ repository holds it the way it holds test262: as the archive of one named revisi
 
 ```bash
 dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.Conformance -c Release -- \
-  --vectors src/tests/vectors/pins/broiler-js-vectors-00b65dd055a277859d5325ead6338a040bcf2f30.tar.gz \
+  --vectors src/tests/vectors/pins/broiler-js-vectors-ff54e1d8a89875163cea6d6c2e790043d9a4155a.tar.gz \
   --expect src/tests/vectors/pins/vectors.pin --report vectors-report.tsv
 ```
 
@@ -57,6 +57,13 @@ proposal's text and of the Intl era and month code proposal's the same way, by i
 neither. Its expected values are the answers of the Temporal proposal's reference polyfill at
 `e8cc03fc`, which is under the ISC licence, except where the pinned text rules: the corpus holds those
 answers and none of the polyfill's code or text, as this repository holds its own datasets' polyfill
-answers. *(Added 2026-10-18, at SJL-10.2, when the pin moved to revision 25.)*
+answers. *(Added 2026-10-18, at SJL-10.2, when the pin moved to revision 25.)* The Intl area, from revision 27,
+names clauses of ECMA-402 at the commit its `sources/ecma402.pin` records, `tc39/ecma402` `3d4c558`, and of the
+Temporal and Intl era and month code proposals' texts, the same way, by identifier, and quotes none of them. Its
+expected values are ICU's answers, through the reference Node.js release Broiler.JS's bundle `sjl-9-001` names, except
+where the pinned text rules, and, for a region's hour cycles, DurationFormat's `digital` data and this profile's
+composition of a compound unit, CLDR 48.2.0's data as its generator reads it: the corpus holds those answers and none
+of ICU's code or CLDR's files, as this repository holds its own datasets' answers. *(Added 2026-10-27, at SJL-9.2,
+when the pin moved to revision 28.)*
 [`THIRD_PARTY_NOTICES.md`](../../../../THIRD_PARTY_NOTICES.md) lists it with the other material this
 repository ingests.
