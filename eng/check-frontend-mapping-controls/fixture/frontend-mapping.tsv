@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# A FIXTURE of eng/check-frontend-mapping.py's controls, not a mapping of this family: the smallest
+# mapping at registry revision 19 that the checker passes, with two codes revision 19 adds - 2105, a
+# non-language rule that left 2104, and 2211, a language rule that left 2104. See ../README.md.
+#
+# catalogue-repository: fixture
+# catalogue-path: early-errors.tsv
+# catalogue-commit: 0000000000000000000000000000000000000000
+# catalogue-sha256: a7a93aa44d93fc9e911e33f4e7eb7f2c3ae6508f56d5cba246229632029cdf67
+# catalogue-copy: early-errors.tsv
+# registry: registry.txt
+# registry-revision: 19
+# stage-table-path: stages.tsv
+# stage-table-commit: 0000000000000000000000000000000000000000
+# stage-table-sha256: 40227b9122db8f373657a78d89016c6657529f7da9564d515523b7172f9f5d88
+# stage-table-copy: stages.tsv
+#
+kind	shared_code	row	conditions	wide_codes	slice_codes	registry_code	relation	meaning	other_codes	notes
+registry	-	-	UnexpectedTokenRule	-	-	2101	published	2101 UnexpectedToken: a token at which the parser cannot continue	-	-
+registry	-	-	ManifestRefusal	-	-	2104	published	2104 ConstructOutsideManifest: a construct the declared feature manifest does not admit	-	-
+registry	-	-	BigIntTooWide	-	-	2105	published	2105 BigIntWiderThanTheFormat: a BigInt literal wider than the format's BigInt constant	-	left 2104 ConstructOutsideManifest at registry revision 19 (decision D12)
+registry	-	-	AwaitInStaticBlock	-	-	2211	published	2211 AwaitOutsideItsFunction: `await` where no async function body encloses it	-	left 2104 ConstructOutsideManifest at registry revision 19, a language rule (decision D12)
+code	JSE1201	EE0001	UnexpectedTokenRule	2101	2101	2101	within-meaning	2101 UnexpectedToken: a token at which the parser cannot continue	-	-
+code	JSE1202	EE0002	AwaitInStaticBlock	2104	none	2211	within-meaning	2211 AwaitOutsideItsFunction: `await` where no async function body encloses it	2104 split: the code the lowering's defensive site gave the rule at the base, which revision 19 renumbers	-
+code	JSE9301	EX0001	ManifestRefusal	2104	manifest	2104	within-meaning	2104 ConstructOutsideManifest: a construct the declared feature manifest does not admit	-	-
+code	JSE9209	EX0002	BigIntTooWide	2104	none	2105	within-meaning	2105 BigIntWiderThanTheFormat: a BigInt literal wider than the format's BigInt constant	2104 split: the width refusal's code at the base, which revision 19 renumbers	-

@@ -1,0 +1,6 @@
+# A FIXTURE of eng/check-frontend-mapping.py's controls: the retained source corpus manifest's shape.
+# kind|name|sha256|answer|retained
+refused|refuse-a-missing-operand|0000000000000000000000000000000000000000000000000000000000000001|UnexpectedToken|file
+refused|refuse-a-function|0000000000000000000000000000000000000000000000000000000000000002|ConstructOutsideManifest|file
+refused|refuse-a-bigint-wider-than-the-format|0000000000000000000000000000000000000000000000000000000000000003|BigIntWiderThanTheFormat|file
+refused|refuse-await-in-a-static-block|0000000000000000000000000000000000000000000000000000000000000004|AwaitOutsideItsFunction|file
