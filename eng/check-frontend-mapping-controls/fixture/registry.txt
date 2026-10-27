@@ -1,0 +1,11 @@
+# A FIXTURE of eng/check-frontend-mapping.py's controls, not this family's registry. See ../README.md.
+#
+# registry-revision: 19
+# published-at-milestone: JS-3b (revision 2); revision 19 at the fixture's step 1
+# owning-decision: JSD-0009
+#
+# code|name|half|reason|stage|reachability|case|since
+2101|UnexpectedToken|embedder-seam|-|parser|source|refuse-a-missing-operand|2
+2104|ConstructOutsideManifest|embedder-seam|-|parser|source|refuse-a-function|2
+2105|BigIntWiderThanTheFormat|embedder-seam|-|parser|source|refuse-a-bigint-wider-than-the-format|19
+2211|AwaitOutsideItsFunction|embedder-seam|-|semantics|source|refuse-await-in-a-static-block|19

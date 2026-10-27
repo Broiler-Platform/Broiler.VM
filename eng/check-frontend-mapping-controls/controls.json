@@ -1,0 +1,304 @@
+{
+  "$comment": [
+    "The controls of eng/check-frontend-mapping.py's revision-19 checks (E10 to E14), run by",
+    "`python3 eng/check-frontend-mapping.py --controls eng/check-frontend-mapping-controls`. README.md",
+    "says what each is. Every edit replaces a text that occurs exactly once in the file it names."
+  ],
+  "fixture": "fixture",
+  "files": {
+    "mapping": "frontend-mapping.tsv",
+    "enum": "SliceSourceDiagnostics.cs.txt",
+    "language-errors": "LanguageErrors.cs.txt",
+    "test262-run": "Test262Run.cs.txt",
+    "source-manifest": "source.manifest"
+  },
+  "fixture-files": [
+    "early-errors.tsv",
+    "registry.txt",
+    "stages.tsv"
+  ],
+  "controls": [
+    {
+      "id": "C1",
+      "what": "a split row left in place at revision 19 (part E's second control)",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "2105\twithin-meaning\t2105 BigIntWiderThanTheFormat: a BigInt literal wider than the format's BigInt constant",
+          "new": "2104\tsplit\tleaves 2104 ConstructOutsideManifest: a BigInt literal wider than the format's BigInt constant; the new number is minted at SJL-13 under JSD-0009"
+        }
+      ],
+      "refused": [
+        "E10"
+      ]
+    },
+    {
+      "id": "C2",
+      "what": "a shared code given a second registry code (part E's first control)",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "code\tJSE1201\tEE0001\tUnexpectedTokenRule\t2101\t2101\t2101\t",
+          "new": "code\tJSE1201\tEE0001\tUnexpectedTokenRule\t2101\t2101\t2101;2105\t"
+        }
+      ],
+      "refused": [
+        "E3"
+      ]
+    },
+    {
+      "id": "C3",
+      "what": "a new code's LanguageErrors class removed (part E's third control)",
+      "edits": [
+        {
+          "file": "LanguageErrors.cs.txt",
+          "old": "            SliceSourceDiagnosticCode.AwaitOutsideItsFunction,\n",
+          "new": ""
+        }
+      ],
+      "refused": [
+        "E14"
+      ]
+    },
+    {
+      "id": "C4",
+      "what": "a new code not graded as the code it left: 2105 left 2104 and is not graded unsupported",
+      "edits": [
+        {
+          "file": "Test262Run.cs.txt",
+          "old": "\n                or SliceSourceDiagnosticCode.BigIntWiderThanTheFormat)",
+          "new": ")"
+        }
+      ],
+      "refused": [
+        "E14"
+      ]
+    },
+    {
+      "id": "C5",
+      "what": "a language rule graded unsupported",
+      "edits": [
+        {
+          "file": "Test262Run.cs.txt",
+          "old": "or SliceSourceDiagnosticCode.BigIntWiderThanTheFormat)",
+          "new": "or SliceSourceDiagnosticCode.BigIntWiderThanTheFormat\n                or SliceSourceDiagnosticCode.AwaitOutsideItsFunction)"
+        }
+      ],
+      "refused": [
+        "E14"
+      ]
+    },
+    {
+      "id": "C6",
+      "what": "a new code classed otherwise than the code it left",
+      "edits": [
+        {
+          "file": "LanguageErrors.cs.txt",
+          "old": "SliceSourceDiagnosticCode.BigIntWiderThanTheFormat => RefusalClass.OutsideManifest,",
+          "new": "SliceSourceDiagnosticCode.BigIntWiderThanTheFormat => RefusalClass.ImplementationLimit,"
+        }
+      ],
+      "refused": [
+        "E14"
+      ]
+    },
+    {
+      "id": "C7",
+      "what": "a new code with no member of SliceSourceDiagnosticCode",
+      "edits": [
+        {
+          "file": "SliceSourceDiagnostics.cs.txt",
+          "old": "    AwaitOutsideItsFunction = 2211,\n",
+          "new": ""
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C8",
+      "what": "a new code whose case is no refused entry of the retained source corpus",
+      "edits": [
+        {
+          "file": "source.manifest",
+          "old": "refused|refuse-await-in-a-static-block|0000000000000000000000000000000000000000000000000000000000000004|AwaitOutsideItsFunction|file\n",
+          "new": ""
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C9",
+      "what": "a new code whose mapping row does not name the code it left",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "left 2104 ConstructOutsideManifest at registry revision 19 (decision D12)",
+          "new": "minted at registry revision 19 (decision D12)"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C10",
+      "what": "a new defensive row",
+      "edits": [
+        {
+          "file": "registry.txt",
+          "old": "2105|BigIntWiderThanTheFormat|embedder-seam|-|parser|source|refuse-a-bigint-wider-than-the-format|19",
+          "new": "2105|BigIntWiderThanTheFormat|embedder-seam|-|parser|defensive|no source reaches it|19"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C11",
+      "what": "the stage table's copy differs from the digest the header names",
+      "edits": [
+        {
+          "file": "stages.tsv",
+          "old": "EX0002\tJSE9209\tengine",
+          "new": "EX0002\tJSE9209\tsyntax"
+        }
+      ],
+      "refused": [
+        "E11"
+      ]
+    },
+    {
+      "id": "C12",
+      "what": "the header names no stage table",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "# stage-table-sha256: 40227b9122db8f373657a78d89016c6657529f7da9564d515523b7172f9f5d88\n",
+          "new": ""
+        }
+      ],
+      "refused": [
+        "E11"
+      ]
+    },
+    {
+      "id": "C13",
+      "what": "the registry's published-at-milestone list does not name revision 19",
+      "edits": [
+        {
+          "file": "registry.txt",
+          "old": "; revision 19 at the fixture's step 1",
+          "new": ""
+        }
+      ],
+      "refused": [
+        "E12"
+      ]
+    },
+    {
+      "id": "C14",
+      "what": "the registry names no owning decision",
+      "edits": [
+        {
+          "file": "registry.txt",
+          "old": "# owning-decision: JSD-0009\n",
+          "new": ""
+        }
+      ],
+      "refused": [
+        "E12"
+      ]
+    },
+    {
+      "id": "C15",
+      "what": "a new code reached by no mapping row (its row now maps to 2104)",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "AwaitInStaticBlock\t2104\tnone\t2211\twithin-meaning\t2211 AwaitOutsideItsFunction: `await` where no async function body encloses it\t2104 split: the code the lowering's defensive site gave the rule at the base, which revision 19 renumbers",
+          "new": "AwaitInStaticBlock\t2104\tnone\t2104\twithin-meaning\t2104 ConstructOutsideManifest: a construct the declared feature manifest does not admit\t-"
+        }
+      ],
+      "refused": [
+        "E7"
+      ]
+    },
+    {
+      "id": "C16",
+      "what": "the fixture stated at revision 18: E10 to E14 are inert, so a split row passes",
+      "edits": [
+        {
+          "file": "registry.txt",
+          "old": "# registry-revision: 19",
+          "new": "# registry-revision: 18"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "# registry-revision: 19",
+          "new": "# registry-revision: 18"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "2105\twithin-meaning\t2105 BigIntWiderThanTheFormat: a BigInt literal wider than the format's BigInt constant",
+          "new": "2104\tsplit\tleaves 2104 ConstructOutsideManifest: a BigInt literal wider than the format's BigInt constant; the new number is minted at SJL-13 under JSD-0009"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "registry\t-\t-\tBigIntTooWide\t-\t-\t2105\tpublished\t2105 BigIntWiderThanTheFormat: a BigInt literal wider than the format's BigInt constant\t-\tleft 2104 ConstructOutsideManifest at registry revision 19 (decision D12)\n",
+          "new": ""
+        },
+        {
+          "file": "registry.txt",
+          "old": "2105|BigIntWiderThanTheFormat|embedder-seam|-|parser|source|refuse-a-bigint-wider-than-the-format|19\n",
+          "new": ""
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "2104 split: the width refusal's code at the base, which revision 19 renumbers",
+          "new": "-"
+        }
+      ],
+      "refused": []
+    }
+  ],
+  "real": [
+    {
+      "id": "R1",
+      "what": "this checkout's mapping and registry, stated at revision 19",
+      "edits": [
+        {
+          "file": "registry.txt",
+          "old": "# registry-revision: 18",
+          "new": "# registry-revision: 19"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "# registry-revision: 18",
+          "new": "# registry-revision: 19"
+        }
+      ],
+      "refused": [
+        "E10",
+        "E11",
+        "E12"
+      ]
+    },
+    {
+      "id": "R2",
+      "what": "this checkout's mapping and registry at revision 18, the four revision-19 inputs named where nothing is",
+      "edits": [],
+      "sources": {
+        "enum": "absent.cs",
+        "language-errors": "absent.cs",
+        "test262-run": "absent.cs",
+        "source-manifest": "absent.manifest"
+      },
+      "refused": []
+    }
+  ]
+}

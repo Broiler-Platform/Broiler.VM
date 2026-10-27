@@ -1,0 +1,5 @@
+id	family	shared_code	message_id	vm_slice	vm_code
+EE0001	EE	JSE1201	UnexpectedTokenRule	-	2101
+EE0002	EE	JSE1202	AwaitInStaticBlock	-	2104
+EX0001	EX	JSE9301	ManifestRefusal	manifest	2104
+EX0002	EX	JSE9209	BigIntTooWide	-	2104

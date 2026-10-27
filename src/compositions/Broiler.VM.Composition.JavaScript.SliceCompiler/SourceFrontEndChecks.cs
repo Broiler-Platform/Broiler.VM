@@ -38,6 +38,14 @@ internal static class SourceFrontEndChecks
 
         yield return TwoGoalsInOneProcessDoNotReachEachOther();
         yield return DeepNestingIsRefusedRatherThanSurvived();
+
+        // THE WIDE PATH'S HALVES OF THE TWO ROWS ABOVE (SJL-13's tools commit, JSD-0083 decision D23):
+        // their own file, because they compile through JsCompiler rather than the slice front end.
+        foreach (var row in WideFrontEndChecks.Run())
+        {
+            yield return row;
+        }
+
         yield return AnEarlyErrorNeverProducesBytes();
         yield return TheSourceFuzzGuidanceLoopIsWired();
         yield return EveryLineTerminatorInsideALiteralIsCountedOnce();
