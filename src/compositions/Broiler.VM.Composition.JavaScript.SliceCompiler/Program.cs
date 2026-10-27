@@ -100,6 +100,14 @@ internal static class Program
                     (int)Unsigned(Argument(args, "--iterations"), 2000));
             }
 
+            // THE WIDE PATH'S SOURCE SESSION (SJL-13's tools commit, JSD-0083 decision D22): the seeds a
+            // seed file names, read from the parse corpus and compiled through JsCompiler. The slice
+            // session above reaches SliceTokenizer and the slice front end, and never the wide parser.
+            if (args.Length >= 1 && string.Equals(args[0], "--fuzz-wide", StringComparison.Ordinal))
+            {
+                return WideFuzzing.Run(args[1..]);
+            }
+
             // THE VALUE FORM'S WORD, TABLE AND SCAN, UNDER A LONGER SEEDED RUN THAN --checks TAKES
             // (JSD-0035 stage JSV-0). The checks lane runs three fixed seeds; this is how a reader
             // runs the same model for as long as they like, with or without handle-stress.
@@ -129,6 +137,8 @@ internal static class Program
                 "[--write-bytes <directory>] [--populations <list>] [--select <keys>] " +
                 "[--archive <archive>] [--journal <file>] | " +
                 "--fuzz <source directory> [--seed <n>] [--iterations <n>] | " +
+                "--fuzz-wide <parse corpus directory> --seeds <seed file> [--archive <archive>] " +
+                "[--registry <file>] [--findings <directory>] [--journal <file>] | " +
                 "--fuzz-words [--seed <n>] [--iterations <n>] [--stress]");
 
             return 2;

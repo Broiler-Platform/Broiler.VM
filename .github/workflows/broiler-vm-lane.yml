@@ -977,6 +977,26 @@ jobs:
           # out, as `publish` asserts after its own sessions.
           git diff --exit-code -- src/tests/corpus/js-1
 
+      # THE WIDE PATH'S SOURCE SESSION (added 2026-10-27, at SJL-13's tools commit; JSD-0083 decision
+      # D22). The session above reaches SliceTokenizer and the slice front end, never the wide parser;
+      # this one compiles mutants of the seeds bundle sjl-13-001 commits with its rule through the wide
+      # compiler, and it is the lane's seed file: the same file part G of that bundle's rule reads, so
+      # the lane and the rule run one session. It reads the parse corpus and the pinned test262 archive
+      # from this checkout, and the registry beside them. The seed file fixes every mutant count, so
+      # this step does not take `fuzz-iterations`: a session is a total function of the file and the
+      # corpus, and decides the same here as on a workstation. A finding is retained under artifacts/.
+      - name: Fuzz the JavaScript wide path from bundle sjl-13-001's seeds
+        run: |
+          set -euo pipefail
+          binary="artifacts/ci-aot-JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler"
+          [ -f "$binary.exe" ] && binary="$binary.exe"
+
+          "$binary" --fuzz-wide src/tests/corpus/parse-1 \
+            --seeds docs/evidence/sjl-13-001/inputs/fuzz-seeds.txt \
+            --findings artifacts/wide-fuzz-findings
+
+          git diff --exit-code -- src/tests/corpus/parse-1 docs/evidence/sjl-13-001/inputs
+
   # THE ANDROID HEAD, ON AN EMULATOR.
   #
   # Split out for the reason the consuming repository splits its own: the workload costs several
