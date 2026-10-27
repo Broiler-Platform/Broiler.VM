@@ -3,7 +3,8 @@
 **Last updated:** 2026-10-27, at SJL-9.2's merge in Broiler.JS, when this family's vectors pin moved to corpus revision
 28 (SJL-9 `In progress`: Broiler-Platform/Broiler.JS#1080 merged as `ff54e1d8`, and the conformance root on the
 committed pin matches every vector of revision 28 or differs exactly as its `divergence.broiler-vm` field says, rows
-Z8, L9 and L18, and leaves none unclassified; every clause unmet; nothing accepted). Before that: 2026-10-26, at
+Z8, L9 and L18, and leaves none unclassified; every clause unmet; nothing accepted; the "Today" paragraph's bundle item
+corrected to name this family's run and Broiler.JS's `sjl-9-001`). Before that: 2026-10-26, at
 SJL-13's start by the owner's words of 2026-10-25 and SJL-13.1's records in this
 repository (SJL-13 `In progress`: all five sub-areas accepted for both engines' front ends, in JSD-0083; the owner's
 decisions of 2026-10-26 recorded under the owner's direction of 2026-10-18, which changes no rule, and the start a
@@ -205,15 +206,22 @@ at SJL-8's start, "SJL-0 to SJL-7"; then, until 2026-10-18, at SJL-10's start, "
   [`sjl-9-001`](../evidence/sjl-9-001/README.md), [`sjl-10-001`](../evidence/sjl-10-001/README.md),
   [`sjl-11-001`](../evidence/sjl-11-001/README.md), [`sjl-12-001`](../evidence/sjl-12-001/README.md),
   [`sjl-13-001`](../evidence/sjl-13-001/README.md) and [`sjl-13-002`](../evidence/sjl-13-002/README.md);
-  Broiler.JS's `docs/evidence/sjl-0-001/` to `docs/evidence/sjl-8-001/` and `docs/evidence/sjl-10-001/` to
-  `docs/evidence/sjl-12-001/`; Broiler.Unicode's
+  Broiler.JS's `docs/evidence/sjl-0-001/` to `docs/evidence/sjl-12-001/`; Broiler.Unicode's
   `docs/evidence/sjl-7-001/`; and Broiler.RegEx's `docs/evidence/sjl-11-001/`. **`sjl-10-001` holds its after arm in
   both repositories**, each part of each rule met as written, and nothing in either is accepted. **`sjl-12-001` holds
   its after evidence in both repositories**, each part of each rule met as written, Broiler.JS's observed at
   `060d77d9` and merged in `58928ac9`, and nothing in either is accepted. `sjl-11-001` holds no base yet in any of its
-  repositories. This family's `sjl-9-001` holds its rule and its correspondence only, and Broiler.JS's is observed
-  when its SJL-9.1 change merges. This family's `sjl-13-001` holds its rules, its correspondence and its rule's inputs
-  only, and `sjl-13-002` its rule only.
+  repositories. This family's `sjl-9-001` holds its rule, its correspondence and its vectors run at corpus revision 28
+  on its pin, and Broiler.JS's (observed) its rule with its data files, merged in Broiler-Platform/Broiler.JS#1077 as
+  `50978882`, and the data home's sizes and both engines' runs on the Intl vectors, merged in #1080 as `ff54e1d8`;
+  nothing in either is a verdict, and no base of either rule is taken. This family's `sjl-13-001` holds its rules, its
+  correspondence and its rule's inputs only, and `sjl-13-002` its rule only.
+
+*(Revised 2026-10-27, when this family's pin moved to corpus revision 28. Its last item named Broiler.JS's bundles
+as "`docs/evidence/sjl-0-001/` to `docs/evidence/sjl-8-001/` and `docs/evidence/sjl-10-001/` to
+`docs/evidence/sjl-12-001/`" and read "This family's `sjl-9-001` holds its rule and its correspondence only, and
+Broiler.JS's is observed when its SJL-9.1 change merges." It did not move when Broiler-Platform/Broiler.JS#1077 merged
+as `50978882`, as it should have.)*
 
 *(Revised 2026-10-26, at SJL-13.1. Its last item named Broiler.VM's bundles to `sjl-12-001`, with no `sjl-13-001` or
 `sjl-13-002`, and ended "and Broiler.JS's is observed when its SJL-9.1 change merges.")*
